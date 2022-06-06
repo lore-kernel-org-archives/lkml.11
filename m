@@ -2,34 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96102C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:03:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C6EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:03:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230384AbiFFSDd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 14:03:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46636 "EHLO
+        id S230446AbiFFSDt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 14:03:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230057AbiFFSDc (ORCPT
+        with ESMTP id S230405AbiFFSDj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 14:03:32 -0400
+        Mon, 6 Jun 2022 14:03:39 -0400
 Received: from EX-PRD-EDGE01.vmware.com (EX-PRD-EDGE01.vmware.com [208.91.3.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A513019FF6C;
-        Mon,  6 Jun 2022 11:03:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706901B0788;
+        Mon,  6 Jun 2022 11:03:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
     s=s1024; d=vmware.com;
-    h=from:to:cc:subject:date:message-id:mime-version:content-type;
-    bh=0QdeZQpzPFKxooAPc4/wcd9vahVJt/ODCSvM5mr14K4=;
-    b=gfqTlQEHt9thR3u/9y+vj2JWSuKlepZwtpG02Q9dZ7rIO1ysHeK0fGmBfSVUu2
-      3C8SLKrv9dSOzljTCUU/GG5o83fPsh0dVwdrhCUp23ag3TKLBPjIyNjZV30vHI
-      KFAsdhCxCedbecZd1rwGD4e5dGzJ0vm6vxR9Fxn4fCbf3Gc=
-Received: from sc9-mailhost1.vmware.com (10.113.161.71) by
+    h=from:to:cc:subject:date:message-id:in-reply-to:mime-version:
+      content-type;
+    bh=jQLM7aOGNHNNMLNr7/+d9eokfbn+1rZu6bgBFimtCx8=;
+    b=jmZOFs54jcRTvpce1w17fx72wJFoKrdwpysvQF7a2VmlZxl8t/aiN/lUBY4A/s
+      Z/UA68du6fgQ+ea4BzsQ1wrHnGA4oa7saMr+ixiBzRmZ8PkNtNfHBmub3Gduq6
+      brJqu2c3QfsW6z9aEq08rE+s3LiwpcwszKYnNCswQnwtUpw=
+Received: from sc9-mailhost3.vmware.com (10.113.161.73) by
  EX-PRD-EDGE01.vmware.com (10.188.245.6) with Microsoft SMTP Server id
- 15.1.2308.20; Mon, 6 Jun 2022 11:03:09 -0700
+ 15.1.2308.20; Mon, 6 Jun 2022 11:03:21 -0700
 Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
-        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id 1FDB0202A8;
-        Mon,  6 Jun 2022 11:03:24 -0700 (PDT)
+        by sc9-mailhost3.vmware.com (Postfix) with ESMTP id A188F20149;
+        Mon,  6 Jun 2022 11:03:35 -0700 (PDT)
 Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id 13C32AA1E5; Mon,  6 Jun 2022 11:03:24 -0700 (PDT)
+        id 9C98CAA1E5; Mon,  6 Jun 2022 11:03:35 -0700 (PDT)
 From:   Ronak Doshi <doshir@vmware.com>
 To:     <netdev@vger.kernel.org>
 CC:     Ronak Doshi <doshir@vmware.com>,
@@ -39,10 +40,12 @@ CC:     Ronak Doshi <doshir@vmware.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next 0/8] vmxnet3: upgrade to version 7
-Date:   Mon, 6 Jun 2022 11:03:06 -0700
-Message-ID: <20220606180316.27793-1-doshir@vmware.com>
+Subject: [PATCH net-next 3/8] vmxnet3: add support for large passthrough BAR register
+Date:   Mon, 6 Jun 2022 11:03:09 -0700
+Message-ID: <20220606180316.27793-4-doshir@vmware.com>
 X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20220606180316.27793-1-doshir@vmware.com>
+References: <20220606180316.27793-1-doshir@vmware.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Received-SPF: None (EX-PRD-EDGE01.vmware.com: doshir@vmware.com does not
@@ -51,71 +54,151 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-vmxnet3 emulation has recently added several new features including
-support for uniform passthrough(UPT). To make UPT work vmxnet3 has
-to be enhanced as per the new specification. This patch series
-extends the vmxnet3 driver to leverage these new features.
+For vmxnet3 to work in UPT mode, the BAR sizes have been increased.
+The PT page has been extended to 2 pages and also includes OOB pages
+as a part of PT BAR. This patch enhances vmxnet3 to use appropriate
+BAR offsets based on the capability registered. To use new offsets,
+VMXNET3_CAP_LARGE_BAR needs to be set by the device. If it is not set
+then the device will use legacy PT page layout.
 
-Compatibility is maintained using existing vmxnet3 versioning mechanism as
-follows:
- - new features added to vmxnet3 emulation are associated with new vmxnet3
-   version viz. vmxnet3 version 7.
- - emulation advertises all the versions it supports to the driver.
- - during initialization, vmxnet3 driver picks the highest version number
- supported by both the emulation and the driver and configures emulation
- to run at that version.
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+---
+ drivers/net/vmxnet3/vmxnet3_defs.h    | 14 ++++++++++++--
+ drivers/net/vmxnet3/vmxnet3_drv.c     | 25 ++++++++++++++++++++-----
+ drivers/net/vmxnet3/vmxnet3_ethtool.c |  6 +++---
+ drivers/net/vmxnet3/vmxnet3_int.h     |  3 +++
+ 4 files changed, 38 insertions(+), 10 deletions(-)
 
-In particular, following changes are introduced:
-
-Patch 1:
-  This patch introduces utility macros for vmxnet3 version 7 comparison
-  and updates Copyright information.
-
-Patch 2:
-  This patch adds new capability registers to fine control enablement of
-  individual features based on emulation and passthrough.
-
-Patch 3:
-  This patch adds support for large passthrough BAR register.
-
-Patch 4:
-  This patch adds support for out of order rx completion processing.
-
-Patch 5:
-  This patch introduces new command to set ring buffer sizes to pass this
-  information to the hardware.
-
-Patch 6:
-  For better performance, hardware has a requirement to limit number of TSO
-  descriptors. This patch adds that support.
-
-Patch 7:
-  With vmxnet3 version 7, new descriptor fields are used to indicate
-  encapsulation offload.
-
-Patch 8:
-  With all vmxnet3 version 7 changes incorporated in the vmxnet3 driver,
-  with this patch, the driver can configure emulation to run at vmxnet3
-  version 7.
-
-Ronak Doshi (8):
-  vmxnet3: prepare for version 7 changes
-  vmxnet3: add support for capability registers
-  vmxnet3: add support for large passthrough BAR register
-  vmxnet3: add support for out of order rx completion
-  vmxnet3: add command to set ring buffer sizes
-  vmxnet3: limit number of TXDs used for TSO packet
-  vmxnet3: use ext1 field to indicate encapsulated packet
-  vmxnet3: update to version 7
-
- drivers/net/vmxnet3/Makefile          |   2 +-
- drivers/net/vmxnet3/upt1_defs.h       |   2 +-
- drivers/net/vmxnet3/vmxnet3_defs.h    |  80 ++++++++--
- drivers/net/vmxnet3/vmxnet3_drv.c     | 291 ++++++++++++++++++++++++++++++----
- drivers/net/vmxnet3/vmxnet3_ethtool.c | 116 ++++++++++++--
- drivers/net/vmxnet3/vmxnet3_int.h     |  24 ++-
- 6 files changed, 457 insertions(+), 58 deletions(-)
-
+diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
+index 0157155ff677..8d626611ab2d 100644
+--- a/drivers/net/vmxnet3/vmxnet3_defs.h
++++ b/drivers/net/vmxnet3/vmxnet3_defs.h
+@@ -57,8 +57,18 @@ enum {
+ 	VMXNET3_REG_RXPROD2	= 0xA00	 /* Rx Producer Index for ring 2 */
+ };
+ 
+-#define VMXNET3_PT_REG_SIZE     4096	/* BAR 0 */
+-#define VMXNET3_VD_REG_SIZE     4096	/* BAR 1 */
++/* For Large PT BAR, the following offset to DB register */
++enum {
++	VMXNET3_REG_LB_TXPROD   = 0x1000, /* Tx Producer Index */
++	VMXNET3_REG_LB_RXPROD   = 0x1400, /* Rx Producer Index for ring 1 */
++	VMXNET3_REG_LB_RXPROD2  = 0x1800, /* Rx Producer Index for ring 2 */
++};
++
++#define VMXNET3_PT_REG_SIZE         4096		/* BAR 0 */
++#define VMXNET3_LARGE_PT_REG_SIZE   8192		/* large PT pages */
++#define VMXNET3_VD_REG_SIZE         4096		/* BAR 1 */
++#define VMXNET3_LARGE_BAR0_REG_SIZE (4096 * 4096)	/* LARGE BAR 0 */
++#define VMXNET3_OOB_REG_SIZE        (4094 * 4096)	/* OOB pages */
+ 
+ #define VMXNET3_REG_ALIGN       8	/* All registers are 8-byte aligned. */
+ #define VMXNET3_REG_ALIGN_MASK  0x7
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index edc4f23d4965..93f237db463d 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1207,7 +1207,7 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 	if (tx_num_deferred >= le32_to_cpu(tq->shared->txThreshold)) {
+ 		tq->shared->txNumDeferred = 0;
+ 		VMXNET3_WRITE_BAR0_REG(adapter,
+-				       VMXNET3_REG_TXPROD + tq->qid * 8,
++				       adapter->tx_prod_offset + tq->qid * 8,
+ 				       tq->tx_ring.next2fill);
+ 	}
+ 
+@@ -1359,8 +1359,8 @@ static int
+ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 		       struct vmxnet3_adapter *adapter, int quota)
+ {
+-	static const u32 rxprod_reg[2] = {
+-		VMXNET3_REG_RXPROD, VMXNET3_REG_RXPROD2
++	u32 rxprod_reg[2] = {
++		adapter->rx_prod_offset, adapter->rx_prod2_offset
+ 	};
+ 	u32 num_pkts = 0;
+ 	bool skip_page_frags = false;
+@@ -2783,9 +2783,9 @@ vmxnet3_activate_dev(struct vmxnet3_adapter *adapter)
+ 
+ 	for (i = 0; i < adapter->num_rx_queues; i++) {
+ 		VMXNET3_WRITE_BAR0_REG(adapter,
+-				VMXNET3_REG_RXPROD + i * VMXNET3_REG_ALIGN,
++				adapter->rx_prod_offset + i * VMXNET3_REG_ALIGN,
+ 				adapter->rx_queue[i].rx_ring[0].next2fill);
+-		VMXNET3_WRITE_BAR0_REG(adapter, (VMXNET3_REG_RXPROD2 +
++		VMXNET3_WRITE_BAR0_REG(adapter, (adapter->rx_prod2_offset +
+ 				(i * VMXNET3_REG_ALIGN)),
+ 				adapter->rx_queue[i].rx_ring[1].next2fill);
+ 	}
+@@ -3608,6 +3608,10 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 	if (VMXNET3_VERSION_GE_7(adapter)) {
+ 		adapter->devcap_supported[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_DCR);
+ 		adapter->ptcap_supported[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_PTCR);
++		if (adapter->devcap_supported[0] & (1UL << VMXNET3_CAP_LARGE_BAR)) {
++			adapter->dev_caps[0] = adapter->devcap_supported[0] &
++							(1UL << VMXNET3_CAP_LARGE_BAR);
++		}
+ 		if (adapter->dev_caps[0])
+ 			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_DCR, adapter->dev_caps[0]);
+ 
+@@ -3617,6 +3621,17 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
+ 	}
+ 
++	if (VMXNET3_VERSION_GE_7(adapter) &&
++	    adapter->dev_caps[0] & (1UL << VMXNET3_CAP_LARGE_BAR)) {
++		adapter->tx_prod_offset = VMXNET3_REG_LB_TXPROD;
++		adapter->rx_prod_offset = VMXNET3_REG_LB_RXPROD;
++		adapter->rx_prod2_offset = VMXNET3_REG_LB_RXPROD2;
++	} else {
++		adapter->tx_prod_offset = VMXNET3_REG_TXPROD;
++		adapter->rx_prod_offset = VMXNET3_REG_RXPROD;
++		adapter->rx_prod2_offset = VMXNET3_REG_RXPROD2;
++	}
++
+ 	if (VMXNET3_VERSION_GE_6(adapter)) {
+ 		spin_lock_irqsave(&adapter->cmd_lock, flags);
+ 		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
+diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+index 0ca21dc5abc7..a755199f0176 100644
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+@@ -520,7 +520,7 @@ vmxnet3_get_regs(struct net_device *netdev, struct ethtool_regs *regs, void *p)
+ 	for (i = 0; i < adapter->num_tx_queues; i++) {
+ 		struct vmxnet3_tx_queue *tq = &adapter->tx_queue[i];
+ 
+-		buf[j++] = VMXNET3_READ_BAR0_REG(adapter, VMXNET3_REG_TXPROD +
++		buf[j++] = VMXNET3_READ_BAR0_REG(adapter, adapter->tx_prod_offset +
+ 						 i * VMXNET3_REG_ALIGN);
+ 
+ 		buf[j++] = VMXNET3_GET_ADDR_LO(tq->tx_ring.basePA);
+@@ -548,9 +548,9 @@ vmxnet3_get_regs(struct net_device *netdev, struct ethtool_regs *regs, void *p)
+ 	for (i = 0; i < adapter->num_rx_queues; i++) {
+ 		struct vmxnet3_rx_queue *rq = &adapter->rx_queue[i];
+ 
+-		buf[j++] =  VMXNET3_READ_BAR0_REG(adapter, VMXNET3_REG_RXPROD +
++		buf[j++] =  VMXNET3_READ_BAR0_REG(adapter, adapter->rx_prod_offset +
+ 						  i * VMXNET3_REG_ALIGN);
+-		buf[j++] =  VMXNET3_READ_BAR0_REG(adapter, VMXNET3_REG_RXPROD2 +
++		buf[j++] =  VMXNET3_READ_BAR0_REG(adapter, adapter->rx_prod2_offset +
+ 						  i * VMXNET3_REG_ALIGN);
+ 
+ 		buf[j++] = VMXNET3_GET_ADDR_LO(rq->rx_ring[0].basePA);
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index a7c8f80702c2..a4f832f0ad5b 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -406,6 +406,9 @@ struct vmxnet3_adapter {
+ 	u32    devcap_supported[8];
+ 	u32    ptcap_supported[8];
+ 	u32    dev_caps[8];
++	u16    tx_prod_offset;
++	u16    rx_prod_offset;
++	u16    rx_prod2_offset;
+ };
+ 
+ #define VMXNET3_WRITE_BAR0_REG(adapter, reg, val)  \
 -- 
 2.11.0
 
