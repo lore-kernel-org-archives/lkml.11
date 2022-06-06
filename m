@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A62BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 20:14:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29630C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 20:14:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233332AbiFFUOi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 16:14:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33024 "EHLO
+        id S233310AbiFFUOq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 16:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233241AbiFFUOK (ORCPT
+        with ESMTP id S233156AbiFFUOH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 16:14:10 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD3111099D
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 13:14:06 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id x17so21288562wrg.6
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 13:14:06 -0700 (PDT)
+        Mon, 6 Jun 2022 16:14:07 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52093139CB2
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 13:14:05 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id k19so21267033wrd.8
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 13:14:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=conchuod.ie; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5LiBD7ETAGSipD59rZ5R3fZQHe99BQ8ESuz+qnt0JLA=;
-        b=Cm7MI8wGY9+W4wnTHhLFbn3TOyOC381EJnAR5t1iLoX0gPlAxHLuIEBDKbpFgcSGFh
-         h7gLiG1ctSnpoo1Aiql0C0pLyMSU52u8C0PyxvZwJna3gf/au2j7sXZhAvcT2Nyk/aIh
-         dgKxlVMfKIYylA2NhShOIGBc36m9DE6jypelvI7XpPDmvMp2k8Qggv3Eb1eZopWe0gEB
-         YymFNf5u1E3SnGcnY81x6DIuhlGsni3rCvT0k/0ZZC0NTMJiA5D4WD0vfxOs/EbLjl73
-         Y5gZUMA3iK+fSDiyr2UMzIr5G4FABvaumxemg37L1dTG989aegKPdYFVDwIEkS5BYepM
-         A/Bg==
+        bh=7vCPgtA3BbvZtshze5CQUg4kM9ICh/+RTxGA4WD1mf0=;
+        b=LC4gaaoUVgwwaH+unaf96kROWS2r6vondQTIeTrkLXqhEYhHYME9g/jc4nwTRx0x4t
+         EriKh2T7D6lmykbp7aU4rsziWsg8lrjMtj91I4R4MKX0gcnxKajPFaLzqDo2FhJ3sfys
+         bzYrmQZO03q3bcE8oBIYN55C5dDnTZDPPgffqaInr4MxebfJqbHz47SoWMlnCILzyiMK
+         H/eo01OYjK4IETEedcNAXgfOxsKQJVjrm3wKwF4T5X9f/L2RMxnFoF1x27k2l+4lj1LU
+         naZGQOjfzZfXlVKaGjCZuytouGCS0IS0e4aAz/VRjkj7mS3pLA+73ESvNbkf4jNzeJz/
+         eyUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5LiBD7ETAGSipD59rZ5R3fZQHe99BQ8ESuz+qnt0JLA=;
-        b=AmaC2voPgE65dll+mPVI8u0UFuvMBzovG1pdy6gtLBdSSKg5VDam7u1s2c+qBsjrVM
-         QAR9qDN7TdrHAOB/qNV6SLEdfjzIcN/TFWnOcaQs8JUmvy011hYxU56zd7tw1YZx3IE+
-         /VrlXldVOb4DDXdcmGpmyQ8bicHHKmBEZcyjnPRsP0aTn9Ui1FvLR13G1GLXDRqXuHPj
-         jRkxs1pY7oA3Av1aiCVcOZqCjRJwNzHOrb1F4CTKdm0QEvVdJvkyvGjViFips0fDNcN9
-         fOMG9xi1Iiwj8hx7v/AdtcQmOB1m8VmS2tHKuCJF17Q4dRag2q2VkF0ROFvFwqLfPLex
-         0LKw==
-X-Gm-Message-State: AOAM531A6mh+YOB/KRK5hVYgPzgKgjphxWjNCKESUWvLxtEydR6ts0Zk
-        Ki88kdawLYrKXzVZaDWqGc8ucw==
-X-Google-Smtp-Source: ABdhPJw2mh+zQn6p0mduRZ+EoKav1HCES+6Z8m51QWg51oPFIGEfQGB3bRwUQ7qjgrkoeSH6VceI/A==
-X-Received: by 2002:a05:6000:1819:b0:210:2eb7:559f with SMTP id m25-20020a056000181900b002102eb7559fmr23463173wrh.386.1654546445899;
-        Mon, 06 Jun 2022 13:14:05 -0700 (PDT)
+        bh=7vCPgtA3BbvZtshze5CQUg4kM9ICh/+RTxGA4WD1mf0=;
+        b=smkueo1bg69Gk82xnestWZ0tlh6KKwZ8za5qgJJAQmaRPwwVizkdfu5jdms6dACCTy
+         /WwAbvEaEIJOzm3y/WIaKweP5rPpUNLK1wzYTMEKlygtHFkos/8DW6SzgFPquooiaEUt
+         bpiya13AJVCOkPNI++XA8F0BLWruAY8b5avweu3UAI6Zf2VHftWxgz/fooWJukr+Hmz2
+         xfsyHWn76JI0+0pkX2wRdu7s2rXFVtvkOPHvhrTOHy71dv0XQLcIF7eBFUWYKCIjifQu
+         mGFW27rmD8Gz/EgRyt36FyN/JDdWPszV1CMEhDesR7SKr7TO9R6xUIwZCegQgwq8Pr9a
+         queg==
+X-Gm-Message-State: AOAM531ApWu+x/30VoqkgHkFZ6ndtd94wuiv6BP1YM7gMZQGc6qLE7AY
+        Zn0dBizRgJq0YgUwIWBnd0DgOw==
+X-Google-Smtp-Source: ABdhPJxvgT6fY/VVwTGBW393iUEwu2JtUuZPhYqj8miS4mwpMcsuIC4g/CyKAFrs4/Q3oylmeATaVQ==
+X-Received: by 2002:a5d:67c9:0:b0:218:4a6a:298e with SMTP id n9-20020a5d67c9000000b002184a6a298emr2016266wrw.153.1654546443329;
+        Mon, 06 Jun 2022 13:14:03 -0700 (PDT)
 Received: from henark71.. ([51.37.234.167])
-        by smtp.gmail.com with ESMTPSA id p9-20020a5d4589000000b0020fcf070f61sm16038489wrq.59.2022.06.06.13.14.04
+        by smtp.gmail.com with ESMTPSA id p9-20020a5d4589000000b0020fcf070f61sm16038489wrq.59.2022.06.06.13.14.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 13:14:05 -0700 (PDT)
+        Mon, 06 Jun 2022 13:14:02 -0700 (PDT)
 From:   Conor Dooley <mail@conchuod.ie>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -65,9 +65,9 @@ Cc:     Conor Dooley <conor.dooley@microchip.com>,
         linux-riscv@lists.infradead.org,
         Atul Khare <atulkhare@rivosinc.com>,
         Rob Herring <robh@kernel.org>
-Subject: [PATCH v3 3/4] dt-bindings: mfd: convert da9063 to yaml
-Date:   Mon,  6 Jun 2022 21:13:43 +0100
-Message-Id: <20220606201343.514391-4-mail@conchuod.ie>
+Subject: [PATCH v3 1/4] dt-bindings: mmc: convert mmc-spi-slot to yaml
+Date:   Mon,  6 Jun 2022 21:13:41 +0100
+Message-Id: <20220606201343.514391-2-mail@conchuod.ie>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220606201343.514391-1-mail@conchuod.ie>
 References: <20220606201343.514391-1-mail@conchuod.ie>
@@ -79,302 +79,137 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Conor Dooley <conor.dooley@microchip.com>
 
-Convert the dt binding for the da9063/da9063l to yaml.
+Convert the mmc-spi-slot text based binding doc to yaml,
+with the side effect of cleaning up some of the riscv
+dtbs_check warnings.
 
 Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- .../devicetree/bindings/mfd/da9063.txt        | 114 ---------------
- .../devicetree/bindings/mfd/dlg,da9063.yaml   | 132 ++++++++++++++++++
- .../devicetree/bindings/trivial-devices.yaml  |   2 -
- MAINTAINERS                                   |   1 +
- 4 files changed, 133 insertions(+), 116 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/mfd/da9063.txt
- create mode 100644 Documentation/devicetree/bindings/mfd/dlg,da9063.yaml
+ .../devicetree/bindings/mmc/mmc-spi-slot.txt  | 29 -------
+ .../devicetree/bindings/mmc/mmc-spi-slot.yaml | 77 +++++++++++++++++++
+ 2 files changed, 77 insertions(+), 29 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/mmc/mmc-spi-slot.txt
+ create mode 100644 Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml
 
-diff --git a/Documentation/devicetree/bindings/mfd/da9063.txt b/Documentation/devicetree/bindings/mfd/da9063.txt
+diff --git a/Documentation/devicetree/bindings/mmc/mmc-spi-slot.txt b/Documentation/devicetree/bindings/mmc/mmc-spi-slot.txt
 deleted file mode 100644
-index aa8b800cc4ad..000000000000
---- a/Documentation/devicetree/bindings/mfd/da9063.txt
+index 5e74db69f581..000000000000
+--- a/Documentation/devicetree/bindings/mmc/mmc-spi-slot.txt
 +++ /dev/null
-@@ -1,114 +0,0 @@
--* Dialog DA9063/DA9063L Power Management Integrated Circuit (PMIC)
+@@ -1,29 +0,0 @@
+-MMC/SD/SDIO slot directly connected to a SPI bus
 -
--DA9063 consists of a large and varied group of sub-devices (I2C Only):
--
--Device                   Supply Names    Description
--------                   ------------    -----------
--da9063-regulator        :               : LDOs & BUCKs
--da9063-onkey            :               : On Key
--da9063-rtc              :               : Real-Time Clock (DA9063 only)
--da9063-watchdog         :               : Watchdog
--
--======
+-This file documents differences between the core properties described
+-by mmc.txt and the properties used by the mmc_spi driver.
 -
 -Required properties:
+-- spi-max-frequency : maximum frequency for this device (Hz).
 -
--- compatible : Should be "dlg,da9063" or "dlg,da9063l"
--- reg : Specifies the I2C slave address (this defaults to 0x58 but it can be
--  modified to match the chip's OTP settings).
--- interrupts : IRQ line information.
--- interrupt-controller
--
--Sub-nodes:
--
--- regulators : This node defines the settings for the LDOs and BUCKs.
--  The DA9063(L) regulators are bound using their names listed below:
--
--    bcore1    : BUCK CORE1
--    bcore2    : BUCK CORE2
--    bpro      : BUCK PRO
--    bmem      : BUCK MEM
--    bio       : BUCK IO
--    bperi     : BUCK PERI
--    ldo1      : LDO_1	(DA9063 only)
--    ldo2      : LDO_2	(DA9063 only)
--    ldo3      : LDO_3
--    ldo4      : LDO_4	(DA9063 only)
--    ldo5      : LDO_5	(DA9063 only)
--    ldo6      : LDO_6	(DA9063 only)
--    ldo7      : LDO_7
--    ldo8      : LDO_8
--    ldo9      : LDO_9
--    ldo10     : LDO_10	(DA9063 only)
--    ldo11     : LDO_11
--
--  The component follows the standard regulator framework and the bindings
--  details of individual regulator device can be found in:
--  Documentation/devicetree/bindings/regulator/regulator.txt
--
--- rtc : This node defines settings for the Real-Time Clock associated with
--  the DA9063 only. The RTC is not present in DA9063L. There are currently
--  no entries in this binding, however compatible = "dlg,da9063-rtc" should
--  be added if a node is created.
--
--- onkey : This node defines the OnKey settings for controlling the key
--  functionality of the device. The node should contain the compatible property
--  with the value "dlg,da9063-onkey".
--
--  Optional onkey properties:
--
--  - dlg,disable-key-power : Disable power-down using a long key-press. If this
--    entry exists the OnKey driver will remove support for the KEY_POWER key
--    press. If this entry does not exist then by default the key-press
--    triggered power down is enabled and the OnKey will support both KEY_POWER
--    and KEY_SLEEP.
--
--- watchdog : This node defines settings for the Watchdog timer associated
--  with the DA9063 and DA9063L. The node should contain the compatible property
--  with the value "dlg,da9063-watchdog".
--
--  Optional watchdog properties:
--  - dlg,use-sw-pm: Add this property to disable the watchdog during suspend.
--  Only use this option if you can't use the watchdog automatic suspend
--  function during a suspend (see register CONTROL_B).
+-Optional properties:
+-- voltage-ranges : two cells are required, first cell specifies minimum
+-  slot voltage (mV), second cell specifies maximum slot voltage (mV).
+-  Several ranges could be specified. If not provided, 3.2v..3.4v is assumed.
+-- gpios : may specify GPIOs in this order: Card-Detect GPIO,
+-  Write-Protect GPIO. Note that this does not follow the
+-  binding from mmc.txt, for historical reasons.
 -
 -Example:
 -
--	pmic0: da9063@58 {
--		compatible = "dlg,da9063"
--		reg = <0x58>;
--		interrupt-parent = <&gpio6>;
--		interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
--		interrupt-controller;
--
--		rtc {
--			compatible = "dlg,da9063-rtc";
--		};
--
--		wdt {
--			compatible = "dlg,da9063-watchdog";
--		};
--
--		onkey {
--			compatible = "dlg,da9063-onkey";
--			dlg,disable-key-power;
--		};
--
--		regulators {
--			DA9063_BCORE1: bcore1 {
--				regulator-name = "BCORE1";
--				regulator-min-microvolt = <300000>;
--				regulator-max-microvolt = <1570000>;
--				regulator-min-microamp = <500000>;
--				regulator-max-microamp = <2000000>;
--				regulator-boot-on;
--			};
--			DA9063_LDO11: ldo11 {
--				regulator-name = "LDO_11";
--				regulator-min-microvolt = <900000>;
--				regulator-max-microvolt = <3600000>;
--				regulator-boot-on;
--			};
--		};
+-	mmc-slot@0 {
+-		compatible = "fsl,mpc8323rdb-mmc-slot",
+-			     "mmc-spi-slot";
+-		reg = <0>;
+-		gpios = <&qe_pio_d 14 1
+-			 &qe_pio_d 15 0>;
+-		voltage-ranges = <3300 3300>;
+-		spi-max-frequency = <50000000>;
+-		interrupts = <42>;
+-		interrupt-parent = <&PIC>;
 -	};
--
-diff --git a/Documentation/devicetree/bindings/mfd/dlg,da9063.yaml b/Documentation/devicetree/bindings/mfd/dlg,da9063.yaml
+diff --git a/Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml b/Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml
 new file mode 100644
-index 000000000000..d71933460e90
+index 000000000000..c45b91099325
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/dlg,da9063.yaml
-@@ -0,0 +1,132 @@
++++ b/Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml
+@@ -0,0 +1,77 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/mfd/dlg,da9063.yaml#
++$id: http://devicetree.org/schemas/mmc/mmc-spi-slot.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Dialog DA9063/DA9063L Power Management Integrated Circuit (PMIC)
++title: MMC/SD/SDIO slot directly connected to a SPI bus
 +
 +maintainers:
-+  - Steve Twiss <stwiss.opensource@diasemi.com>
++  - Ulf Hansson <ulf.hansson@linaro.org>
++
++allOf:
++  - $ref: "mmc-controller.yaml"
++  - $ref: /schemas/spi/spi-peripheral-props.yaml
 +
 +description: |
-+  For device-tree bindings of other sub-modules refer to the binding documents
-+  under the respective sub-system directories.
++  The extra properties used by an mmc connected via SPI.
 +
 +properties:
 +  compatible:
-+    enum:
-+      - dlg,da9063
-+      - dlg,da9063l
++    const: mmc-spi-slot
 +
 +  reg:
 +    maxItems: 1
 +
++  spi-max-frequency: true
++
 +  interrupts:
 +    maxItems: 1
 +
-+  interrupt-controller: true
++  voltage-ranges:
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    description: |
++      Two cells are required, first cell specifies minimum slot voltage (mV),
++      second cell specifies maximum slot voltage (mV).
++    items:
++      - description: |
++          value for minimum slot voltage in mV
++        default: 3200
++      - description: |
++          value for maximum slot voltage in mV
++        default: 3400
 +
-+  "#interrupt-cells":
-+    const: 2
-+
-+  dlg,use-sw-pm:
-+    type: boolean
-+    description:
-+      Disable the watchdog during suspend.
-+      Only use this option if you can't use the watchdog automatic suspend
-+      function during a suspend (see register CONTROL_B).
-+
-+  watchdog:
-+    type: object
-+    $ref: /schemas/watchdog/watchdog.yaml#
-+    unevaluatedProperties: false
-+    properties:
-+      compatible:
-+        const: dlg,da9063-watchdog
-+
-+  rtc:
-+    type: object
-+    $ref: /schemas/rtc/rtc.yaml#
-+    unevaluatedProperties: false
-+    properties:
-+      compatible:
-+        const: dlg,da9063-rtc
-+
-+  onkey:
-+    type: object
-+    $ref: /schemas/input/input.yaml#
-+    unevaluatedProperties: false
-+    properties:
-+      compatible:
-+        const: dlg,da9063-onkey
-+
-+      dlg,disable-key-power:
-+        type: boolean
-+        description: |
-+          Disable power-down using a long key-press.
-+          If this entry does not exist then by default the key-press triggered
-+          power down is enabled and the OnKey will support both KEY_POWER and
-+          KEY_SLEEP.
-+
-+  regulators:
-+    type: object
-+    patternProperties:
-+      "^(ldo[1-11]|bcore[1-2]|bpro|bmem|bio|bperi)$":
-+        $ref: /schemas/regulator/regulator.yaml
-+        unevaluatedProperties: false
++  gpios:
++    description: |
++      For historical reasons, this does not follow the generic mmc-controller
++      binding.
++    minItems: 1
++    items:
++      - description: Card-Detect GPIO
++      - description: Write-Protect GPIO
 +
 +required:
 +  - compatible
 +  - reg
-+  - interrupts
-+  - interrupt-controller
++  - spi-max-frequency
 +
-+additionalProperties: false
++unevaluatedProperties: false
 +
 +examples:
 +  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c {
++    #include <dt-bindings/gpio/gpio.h>
++    spi {
 +      #address-cells = <1>;
 +      #size-cells = <0>;
-+      pmic@58 {
-+        compatible = "dlg,da9063";
-+        reg = <0x58>;
-+        #interrupt-cells = <2>;
-+        interrupt-parent = <&gpio6>;
-+        interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
-+        interrupt-controller;
-+
-+        rtc {
-+          compatible = "dlg,da9063-rtc";
-+        };
-+
-+        watchdog {
-+          compatible = "dlg,da9063-watchdog";
-+        };
-+
-+        onkey {
-+          compatible = "dlg,da9063-onkey";
-+          dlg,disable-key-power;
-+        };
-+
-+        regulators {
-+          regulator-bcore1 {
-+            regulator-name = "BCORE1";
-+            regulator-min-microvolt = <300000>;
-+            regulator-max-microvolt = <1570000>;
-+            regulator-min-microamp = <500000>;
-+            regulator-max-microamp = <2000000>;
-+            regulator-boot-on;
-+          };
-+          regulator-ldo11 {
-+            regulator-name = "LDO_11";
-+            regulator-min-microvolt = <900000>;
-+            regulator-max-microvolt = <3600000>;
-+            regulator-boot-on;
-+          };
-+        };
++      mmc@0 {
++        compatible = "mmc-spi-slot";
++        reg = <0>;
++        gpios = <&gpio 14 GPIO_ACTIVE_LOW>, <&gpio 15 GPIO_ACTIVE_HIGH>;
++        voltage-ranges = <3300 3300>;
++        spi-max-frequency = <50000000>;
++        interrupts = <42>;
++        interrupt-parent = <&PIC>;
 +      };
 +    };
++
 +...
-diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
-index 6aafa71806a3..00acb9078cc0 100644
---- a/Documentation/devicetree/bindings/trivial-devices.yaml
-+++ b/Documentation/devicetree/bindings/trivial-devices.yaml
-@@ -93,8 +93,6 @@ properties:
-           - dh,dhcom-board
-             # DA9053: flexible system level PMIC with multicore support
-           - dlg,da9053
--            # DA9063: system PMIC for quad-core application processors
--          - dlg,da9063
-             # DMARD05: 3-axis I2C Accelerometer
-           - domintech,dmard05
-             # DMARD06: 3-axis I2C Accelerometer
-diff --git a/MAINTAINERS b/MAINTAINERS
-index cfaf02fc9191..777b453593ad 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5831,6 +5831,7 @@ W:	http://www.dialog-semiconductor.com/products
- F:	Documentation/devicetree/bindings/input/da90??-onkey.txt
- F:	Documentation/devicetree/bindings/input/dlg,da72??.txt
- F:	Documentation/devicetree/bindings/mfd/da90*.txt
-+F:	Documentation/devicetree/bindings/mfd/da90*.yaml
- F:	Documentation/devicetree/bindings/regulator/dlg,da9*.yaml
- F:	Documentation/devicetree/bindings/regulator/da92*.txt
- F:	Documentation/devicetree/bindings/regulator/slg51000.txt
 -- 
 2.36.1
 
