@@ -2,48 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AAAEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 05:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F16F5C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 05:29:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229735AbiFFF32 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 01:29:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50220 "EHLO
+        id S229619AbiFFF3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 01:29:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230061AbiFFF2g (ORCPT
+        with ESMTP id S229983AbiFFF2m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 01:28:36 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C3B5F5D0D
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 22:27:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654493247; x=1686029247;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UfzaDoYlmDPCg7MXaycEV0UEOKo3JUX+3RfdY7kBXd4=;
-  b=ne/hJ/XpdzmeUyKSSC8Us7eggcTnvinJX7ZY1Kv+yHCKR/V6eO0f2sEv
-   czVa5YEZO98h1lJYh3iktxX408ZPfjUQSaU3e5oUA87PlAMJPebCTYzjb
-   5kmfBVFZScRGSqsQ2iz9g2vLzG7d4XXy1bXIZfvWFZu/yiqdsdWd/WKGG
-   Q8+S7ewRimIuI+sdU14jebAa0DOR8kFZSCqzaDkbLtPTmlpk2lqEGpf6W
-   MS7lzUrDDnwJFi0HZiM7obRDLjGZpzN+aW5EelqK9vqeyV4alyxY/9+5P
-   scgNpgQZz3C/YZ3CUitbGgOcLHHztxoDBjFP5ZVZWumbVqeLbLFwJ0lHW
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="276776782"
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="276776782"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2022 22:26:59 -0700
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="635415251"
-Received: from xingguom-mobl.ccr.corp.intel.com ([10.254.213.116])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2022 22:26:51 -0700
-Message-ID: <65919df6b3302741780ff6fa69e497af06a9825e.camel@intel.com>
-Subject: Re: [RFC PATCH v4 7/7] mm/demotion: Demote pages according to
- allocation fallback order
-From:   Ying Huang <ying.huang@intel.com>
-To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>, linux-mm@kvack.org,
-        akpm@linux-foundation.org
-Cc:     Greg Thelen <gthelen@google.com>, Yang Shi <shy828301@gmail.com>,
+        Mon, 6 Jun 2022 01:28:42 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9655CBBC
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 22:17:07 -0700 (PDT)
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25611ZES023526;
+        Mon, 6 Jun 2022 04:54:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : in-reply-to : references : date : message-id : mime-version :
+ content-type; s=pp1; bh=AK8VTiHmZxVWgxKU+PEg8p6oOO/RT8TA0ohFC90Evak=;
+ b=hsROOd57sQ8HZ3p9Ln6kgn2UM2hoFhqBSyPKyLVZ75B9qrxT4AF1earP2/q1jLz3T/EY
+ 7PLuwF/BOdeY4A6qnA25xL7Fp0xcZ29aS0upUsvufgCk+AQhlLjP0bigQSngah0by9Vr
+ 1drJNWOjbf2C6GU248wI7DLlA6M/v1WB0EhY4+r7J0qLN/ju6R+kSFLcM2YvjkXbdxOL
+ EvAMA/t3qIN3Rw6VNKGWjMSpU8ujYBpTBQIpVgnoaBymzrAqU6D7b14Dgi3o2vYieucu
+ dt21+K0YbsdylPR0dseQwZLoKTRbL51Ndtgi+YeiP21HjV5vW//XOJAFt+YrJy0jZnrY Pg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gg206s6wg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Jun 2022 04:54:08 +0000
+Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2564nroK014495;
+        Mon, 6 Jun 2022 04:54:08 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gg206s6w7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Jun 2022 04:54:08 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2564oAW5024146;
+        Mon, 6 Jun 2022 04:54:07 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma03wdc.us.ibm.com with ESMTP id 3gfy19b9c6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Jun 2022 04:54:07 +0000
+Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2564s7JM25100606
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 6 Jun 2022 04:54:07 GMT
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EE9BC124058;
+        Mon,  6 Jun 2022 04:54:06 +0000 (GMT)
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 650C6124053;
+        Mon,  6 Jun 2022 04:53:59 +0000 (GMT)
+Received: from skywalker.linux.ibm.com (unknown [9.43.87.254])
+        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon,  6 Jun 2022 04:53:59 +0000 (GMT)
+X-Mailer: emacs 29.0.50 (via feedmail 11-beta-1 I)
+From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+To:     linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
+        Greg Thelen <gthelen@google.com>,
+        Yang Shi <shy828301@gmail.com>,
         Davidlohr Bueso <dave@stgolabs.net>,
         Tim C Chen <tim.c.chen@intel.com>,
         Brice Goglin <brice.goglin@gmail.com>,
@@ -58,151 +77,130 @@ Cc:     Greg Thelen <gthelen@google.com>, Yang Shi <shy828301@gmail.com>,
         Jagdish Gediya <jvgediya@linux.ibm.com>,
         Baolin Wang <baolin.wang@linux.alibaba.com>,
         David Rientjes <rientjes@google.com>
-Date:   Mon, 06 Jun 2022 13:26:44 +0800
-In-Reply-To: <a7d3829e-8bc5-d7a8-5e9e-a7943bb50740@linux.ibm.com>
-References: <CAAPL-u-dFp7PwPH6DfbYdnY8xaGsHz3tRQ0CPGVkiqURvdN8=A@mail.gmail.com>
-         <20220527122528.129445-1-aneesh.kumar@linux.ibm.com>
-         <20220527122528.129445-8-aneesh.kumar@linux.ibm.com>
-         <b102d5773bffd6391283773044f756e810c1f044.camel@intel.com>
-         <046c373a-f30b-091d-47a1-e28bfb7e9394@linux.ibm.com>
-         <9f6e60cc8be3cbde4871458c612c5c31d2a9e056.camel@intel.com>
-         <a7d3829e-8bc5-d7a8-5e9e-a7943bb50740@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+Subject: [PATCH] mm/demotion: Add sysfs ABI documentation
+In-Reply-To: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
+References: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
+Date:   Mon, 06 Jun 2022 10:23:56 +0530
+Message-ID: <87r1428k9n.fsf@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: APa9aTVJURlGYUqnOxoSaN0iZv8cQcAQ
+X-Proofpoint-GUID: Kgl80yoV0xVh-NuSz9ALzJJ-2uXVBDmi
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-06_01,2022-06-03_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
+ suspectscore=0 impostorscore=0 bulkscore=0 mlxlogscore=999
+ lowpriorityscore=0 spamscore=0 priorityscore=1501 malwarescore=0
+ clxscore=1015 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206060023
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-06-06 at 09:37 +0530, Aneesh Kumar K V wrote:
-> On 6/6/22 6:13 AM, Ying Huang wrote:
-> > On Fri, 2022-06-03 at 20:39 +0530, Aneesh Kumar K V wrote:
-> > > On 6/2/22 1:05 PM, Ying Huang wrote:
-> > > > On Fri, 2022-05-27 at 17:55 +0530, Aneesh Kumar K.V wrote:
-> > > > > From: Jagdish Gediya <jvgediya@linux.ibm.com>
-> > > > > 
-> > > > > currently, a higher tier node can only be demoted to selected
-> > > > > nodes on the next lower tier as defined by the demotion path,
-> > > > > not any other node from any lower tier.  This strict, hard-coded
-> > > > > demotion order does not work in all use cases (e.g. some use cases
-> > > > > may want to allow cross-socket demotion to another node in the same
-> > > > > demotion tier as a fallback when the preferred demotion node is out
-> > > > > of space). This demotion order is also inconsistent with the page
-> > > > > allocation fallback order when all the nodes in a higher tier are
-> > > > > out of space: The page allocation can fall back to any node from any
-> > > > > lower tier, whereas the demotion order doesn't allow that currently.
-> > > > > 
-> > > > > This patch adds support to get all the allowed demotion targets mask
-> > > > > for node, also demote_page_list() function is modified to utilize this
-> > > > > allowed node mask by filling it in migration_target_control structure
-> > > > > before passing it to migrate_pages().
-> > > > 
-> > > 
-> > > ...
-> > > 
-> > > > >     * Take pages on @demote_list and attempt to demote them to
-> > > > >     * another node.  Pages which are not demoted are left on
-> > > > > @@ -1481,6 +1464,19 @@ static unsigned int demote_page_list(struct list_head *demote_pages,
-> > > > >    {
-> > > > >    	int target_nid = next_demotion_node(pgdat->node_id);
-> > > > >    	unsigned int nr_succeeded;
-> > > > > +	nodemask_t allowed_mask;
-> > > > > +
-> > > > > +	struct migration_target_control mtc = {
-> > > > > +		/*
-> > > > > +		 * Allocate from 'node', or fail quickly and quietly.
-> > > > > +		 * When this happens, 'page' will likely just be discarded
-> > > > > +		 * instead of migrated.
-> > > > > +		 */
-> > > > > +		.gfp_mask = (GFP_HIGHUSER_MOVABLE & ~__GFP_RECLAIM) | __GFP_NOWARN |
-> > > > > +			__GFP_NOMEMALLOC | GFP_NOWAIT,
-> > > > > +		.nid = target_nid,
-> > > > > +		.nmask = &allowed_mask
-> > > > > +	};
-> > > > 
-> > > > IMHO, we should try to allocate from preferred node firstly (which will
-> > > > kick kswapd of the preferred node if necessary).  If failed, we will
-> > > > fallback to all allowed node.
-> > > > 
-> > > > As we discussed as follows,
-> > > > 
-> > > > https://lore.kernel.org/lkml/69f2d063a15f8c4afb4688af7b7890f32af55391.camel@intel.com/
-> > > > 
-> > > > That is, something like below,
-> > > > 
-> > > > static struct page *alloc_demote_page(struct page *page, unsigned long node)
-> > > > {
-> > > > 	struct page *page;
-> > > > 	nodemask_t allowed_mask;
-> > > > 	struct migration_target_control mtc = {
-> > > > 		/*
-> > > > 		 * Allocate from 'node', or fail quickly and quietly.
-> > > > 		 * When this happens, 'page' will likely just be discarded
-> > > > 		 * instead of migrated.
-> > > > 		 */
-> > > > 		.gfp_mask = (GFP_HIGHUSER_MOVABLE & ~__GFP_RECLAIM) |
-> > > > 			    __GFP_THISNODE  | __GFP_NOWARN |
-> > > > 			    __GFP_NOMEMALLOC | GFP_NOWAIT,
-> > > > 		.nid = node
-> > > > 	};
-> > > > 
-> > > > 	page = alloc_migration_target(page, (unsigned long)&mtc);
-> > > > 	if (page)
-> > > > 		return page;
-> > > > 
-> > > > 	mtc.gfp_mask &= ~__GFP_THISNODE;
-> > > > 	mtc.nmask = &allowed_mask;
-> > > > 
-> > > > 	return alloc_migration_target(page, (unsigned long)&mtc);
-> > > > }
-> > > 
-> > > I skipped doing this in v5 because I was not sure this is really what we
-> > > want.
-> > 
-> > I think so.  And this is the original behavior.  We should keep the
-> > original behavior as much as possible, then make changes if necessary.
-> > 
-> 
-> That is the reason I split the new page allocation as a separate patch. 
-> Previous discussion on this topic didn't conclude on whether we really 
-> need to do the above or not
-> https://lore.kernel.org/lkml/CAAPL-u9endrWf_aOnPENDPdvT-2-YhCAeJ7ONGckGnXErTLOfQ@mail.gmail.com/
 
-Please check the later email in the thread you referenced.  Both Wei and
-me agree that the use case needs to be supported.  We just didn't reach
-concensus about how to implement it.  If you think Wei's solution is
-better (referenced as below), you can try to do that too.  Although I
-think my proposed implementation is much simpler.
+From dd986c5aab4f6ccf41cc8d2dde5d9702a17adb6f Mon Sep 17 00:00:00 2001
+From: "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+Date: Mon, 6 Jun 2022 10:14:17 +0530
+Subject: [PATCH] mm/demotion: Add sysfs ABI documentation
 
-"
-This is true with the current allocation code. But I think we can make
-some changes for demotion allocations. For example, we can add a
-GFP_DEMOTE flag and update the allocation function to wake up kswapd
-when this flag is set and we need to fall back to another node.
-"
+Add sysfs ABI documentation.
 
-> Based on the above I looked at avoiding GFP_THISNODE allocation. If you 
-> have experiment results that suggest otherwise can you share? I could 
-> summarize that in the commit message for better description of why 
-> GFP_THISNODE enforcing is needed.
+Suggested-by: Wei Xu <weixugc@google.com>
+Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+---
+ .../ABI/testing/sysfs-kernel-mm-memory-tiers  | 81 +++++++++++++++++++
+ 1 file changed, 81 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-kernel-mm-memory-tiers
 
-Why?  GFP_THISNODE is just the first step.  We will fallback to
-allocation without it if necessary.
-
-Best Regards,
-Huang, Ying
-
-> > > I guess we can do this as part of the change that is going to
-> > > introduce the usage of memory policy for the allocation?
-> > 
-> > Like the memory allocation policy, the default policy should be local
-> > preferred.  We shouldn't force users to use explicit memory policy for
-> > that.
-> > 
-> > And the added code isn't complex.
-> > 
-> 
-> -aneesh
-
+diff --git a/Documentation/ABI/testing/sysfs-kernel-mm-memory-tiers b/Documentation/ABI/testing/sysfs-kernel-mm-memory-tiers
+new file mode 100644
+index 000000000000..41b0d1756ddb
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-kernel-mm-memory-tiers
+@@ -0,0 +1,81 @@
++What:		/sys/devices/system/memtier/
++Date:		Jun 2022
++Contact:	Linux memory management mailing list <linux-mm@kvack.org>
++Description:	Interface for tiered memory
++
++		This is the directory containing the information about memory tiers.
++
++		Each memory tier has its own subdirectory.
++
++		The order of memory tiers is determined by their rank values, not by
++		their memtier device names.  A higher rank value means a higher tier.
++
++What:		/sys/devices/system/memtier/default_tier
++Date:		Jun 2022
++Contact:	Linux memory management mailing list <linux-mm@kvack.org>
++Description:	Interface for tiered memory
++
++		The default memory tier to which memory would get added via hotplug
++		if the NUMA node is not part of any memory tier.
++
++What:		/sys/devices/system/memtier/max_tier
++Date:		Jun 2022
++Contact:	Linux memory management mailing list <linux-mm@kvack.org>
++Description:	Interface for tiered memory
++
++		The max memory tier device ID we can create. Users can create memory
++		tiers in range [0 - max_tier)
++
++What:		/sys/devices/system/memtier/memtierN/
++Date:		Jun 2022
++Contact:	Linux memory management mailing list <linux-mm@kvack.org>
++Description:	Interface for tiered memory
++
++		This is the directory containing the information about a particular
++		memory tier, memtierN, where N is the memtier device ID (e.g. 0, 1).
++
++		The memtier device ID number itself is just an identifier and has no
++		special meaning, i.e. memtier device ID numbers do not determine the
++		order of memory tiers.
++
++What:		/sys/devices/system/memtier/memtierN/rank
++Date:		Jun 2022
++Contact:	Linux memory management mailing list <linux-mm@kvack.org>
++Description:	Interface for tiered memory
++
++
++		When read, list the "rank" value associated with memtierN.
++
++		"Rank" is an opaque value. Its absolute value doesn't have any
++		special meaning. But the rank values of different memtiers can be
++		compared with each other to determine the memory tier order.
++
++		For example, if we have 3 memtiers: memtier0, memtier1, memiter2, and
++		their rank values are 100, 10, 50, then the memory tier order is:
++		memtier0 -> memtier2 -> memtier1, where memtier0 is the highest tier
++		and memtier1 is the lowest tier.
++
++		The rank value of each memtier should be unique.
++
++What:		/sys/devices/system/memtier/memtierN/nodelist
++Date:		Jun 2022
++Contact:	Linux memory management mailing list <linux-mm@kvack.org>
++Description:	Interface for tiered memory
++
++
++		When read, list the memory nodes in the specified tier.
++
++What:		/sys/devices/system/node/nodeN/memtier
++Date:		Jun 2022
++Contact:	Linux memory management mailing list <linux-mm@kvack.org>
++Description:	Interface for tiered memory
++
++		When read, list the device ID of the memory tier that the node belongs
++		to.  Its value is empty for a CPU-only NUMA node.
++
++		When written, the kernel moves the node into the specified memory
++		tier if the move is allowed. The tier assignments of all other
++		nodes are not affected.
++
++		When written with the special string "none" the specific node is removed
++		from participating in memory demotion.
+-- 
+2.36.1
 
