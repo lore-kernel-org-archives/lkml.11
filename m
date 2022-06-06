@@ -2,139 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E5EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:29:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5261EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:29:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239881AbiFFO3a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:29:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35592 "EHLO
+        id S239882AbiFFO3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:29:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239844AbiFFO31 (ORCPT
+        with ESMTP id S239714AbiFFO3p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:29:27 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC5FC7E3D;
-        Mon,  6 Jun 2022 07:29:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654525766; x=1686061766;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6gFuK9m/CegkpD/g+gX8hVz/ChSurSOe3kM0kYWm6aE=;
-  b=eMC426nikFbLleMpcDTh7f0evVLQFOc0EOD+mur79kxbvG6TELXmV8Aj
-   nKCCefZWHVfjqCAiqyuxa6AoT7ForInPA8yVKBMPw0N5veqmcsRD0MHpG
-   WfnXh0EIX4qO/xF58JQ14SySJcla3/QhtBM00+2CbGX7MYqJ01fHG4pCM
-   OmHgeLZTj9y3aiEgmKrcwqGTCAd27vIFsy+QS7RkB6xTPSlM/eYjbTEvY
-   jIYL5BuSi5oE4+2LfaM97VvzDcnwrsHa0onSb5vU/EInWkCdLieVMka/T
-   D5FyRsO5GakZz4AcB75dugRKVfr3X7rX7Hio/NQkBb6988DLPTnDDPa6P
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="275436363"
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="275436363"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 07:29:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="554471422"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 06 Jun 2022 07:29:19 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nyDjK-000Cnd-JV;
-        Mon, 06 Jun 2022 14:29:18 +0000
-Date:   Mon, 6 Jun 2022 22:28:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     ChiaEn Wu <peterwu.pub@gmail.com>, lee.jones@linaro.org,
-        daniel.thompson@linaro.org, jingoohan1@gmail.com, pavel@ucw.cz,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        matthias.bgg@gmail.com, sre@kernel.org, chunfeng.yun@mediatek.com,
-        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
-        lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
-        heikki.krogerus@linux.intel.com, deller@gmx.de
-Cc:     kbuild-all@lists.01.org, cy_huang@richtek.com,
-        alice_chen@richtek.com, chiaen_wu@richtek.com,
-        peterwu.pub@gmail.com, dri-devel@lists.freedesktop.org,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Subject: Re: [RESEND 12/14] leds: mt6370: Add Mediatek MT6370 Indicator
- support
-Message-ID: <202206062207.q0S8wxpj-lkp@intel.com>
-References: <20220531111900.19422-13-peterwu.pub@gmail.com>
+        Mon, 6 Jun 2022 10:29:45 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A162CA3C6
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:29:45 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id h23so18236377ejj.12
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:29:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GtB/1q8V6w+BWdhC9EKrHFyvz/JN34Sk5t7oVzNMdlI=;
+        b=S54yq+aqgMtQgBARzs3r9I0ZrPQI5ZVZEutMIlcApQ0O+ylp3x4EGRtSkJThXVjx2y
+         aHxka38JYLUmgi2B0Sh9t/3M28Bm9PGYHW8+XnhqG2jI9keSQmZuZPdHSadC73yyLPQ7
+         Io5j+kBcKNbhtIatxrfuoa626ix5piOgJmDyk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GtB/1q8V6w+BWdhC9EKrHFyvz/JN34Sk5t7oVzNMdlI=;
+        b=1ZApFvadYQdQK+CMhW8TLXm7uI0RfK0lPfhXGRJR5ntACXT+nZze5DYAPh1td/rwRT
+         QyEW4C5nrQ+3zdaKz9MUYKNBkGYwDiREkfY1EYhgRrXaY4RvwoWlAAimw5r1pSvT34oT
+         Rk+hyP6HE26WRyAbCbiqfI51gTxbWzntX+dspEQrzMcFOXPDrxrPKvVSx7mlFN6T4coi
+         o/XXL22VEbYp0T5a8vR5r8Udw5pO3lPWT46+hZxbXQGa6QI5D8E6qOVBZoJBj0YfZaXm
+         q2r3gOt9PP22nlwYjhQMZBNU98n/C+2ORyahrMnMcNj3i8heMXLvjDq2LbT7gVttUetf
+         tIvQ==
+X-Gm-Message-State: AOAM532wgfaypwwy8EalI8eZFYqlmjRLhYDc5eA3mLlz3DqTYtkHJToe
+        bDuhQn96xBW0BHTJM6KSGkg6M7y5wwThleAGPts=
+X-Google-Smtp-Source: ABdhPJzksOhBzJ8brFRc/rdSUHDCX+YcVAGdyZit9syOWQ7/3wHErHdcqbWrTnVhTZ3Z0gJ1FvQBlQ==
+X-Received: by 2002:a17:906:7252:b0:6fe:9163:a4f5 with SMTP id n18-20020a170906725200b006fe9163a4f5mr21605067ejk.562.1654525783387;
+        Mon, 06 Jun 2022 07:29:43 -0700 (PDT)
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com. [209.85.128.48])
+        by smtp.gmail.com with ESMTPSA id gt43-20020a1709072dab00b0070f1b033de4sm4049787ejc.200.2022.06.06.07.29.42
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jun 2022 07:29:42 -0700 (PDT)
+Received: by mail-wm1-f48.google.com with SMTP id r123-20020a1c2b81000000b0039c1439c33cso8010866wmr.5
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:29:42 -0700 (PDT)
+X-Received: by 2002:a05:600c:202:b0:39c:40de:ec19 with SMTP id
+ 2-20020a05600c020200b0039c40deec19mr16405042wmi.29.1654525391306; Mon, 06 Jun
+ 2022 07:23:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220531111900.19422-13-peterwu.pub@gmail.com>
+References: <20220606044720.945964-1-hsinyi@chromium.org> <20220606044720.945964-7-hsinyi@chromium.org>
+In-Reply-To: <20220606044720.945964-7-hsinyi@chromium.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 6 Jun 2022 07:22:59 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UwFuNrgBqyseHNLzuRQqyYHXe_sgSfQUSfsp80923h7A@mail.gmail.com>
+Message-ID: <CAD=FV=UwFuNrgBqyseHNLzuRQqyYHXe_sgSfQUSfsp80923h7A@mail.gmail.com>
+Subject: Re: [PATCH v3 6/8] drm/panel: ili9881c: Implement .get_orientation callback
+To:     Hsin-Yi Wang <hsinyi@chromium.org>
+Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi ChiaEn,
+Hi,
 
-Thank you for the patch! Yet something to improve:
+On Sun, Jun 5, 2022 at 9:47 PM Hsin-Yi Wang <hsinyi@chromium.org> wrote:
+>
+> To return the orientation property to drm/kms driver.
+>
+> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+> ---
+> v2->v3: add comments for notice.
+> ---
+>  drivers/gpu/drm/panel/panel-ilitek-ili9881c.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
 
-[auto build test ERROR on pavel-leds/for-next]
-[also build test ERROR on lee-mfd/for-mfd-next lee-backlight/for-backlight-next v5.19-rc1 next-20220606]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/ChiaEn-Wu/Add-Mediatek-MT6370-PMIC-support/20220531-211432
-base:   git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git for-next
-config: nios2-allyesconfig (https://download.01.org/0day-ci/archive/20220606/202206062207.q0S8wxpj-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/4de9e5ff11aeade155aa744bcaf9efca82b3d4ee
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review ChiaEn-Wu/Add-Mediatek-MT6370-PMIC-support/20220531-211432
-        git checkout 4de9e5ff11aeade155aa744bcaf9efca82b3d4ee
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=nios2 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/leds/leds-mt6370.c: In function 'mt6370_check_vendor_info':
->> drivers/leds/leds-mt6370.c:873:15: error: implicit declaration of function 'FIELD_GET'; did you mean 'FOLL_GET'? [-Werror=implicit-function-declaration]
-     873 |         vid = FIELD_GET(MT6370_VENID_MASK, devinfo);
-         |               ^~~~~~~~~
-         |               FOLL_GET
-   cc1: some warnings being treated as errors
-
-
-vim +873 drivers/leds/leds-mt6370.c
-
-   863	
-   864	static int mt6370_check_vendor_info(struct mt6370_priv *priv)
-   865	{
-   866		unsigned int devinfo, vid;
-   867		int ret;
-   868	
-   869		ret = regmap_read(priv->regmap, MT6370_REG_DEV_INFO, &devinfo);
-   870		if (ret)
-   871			return ret;
-   872	
- > 873		vid = FIELD_GET(MT6370_VENID_MASK, devinfo);
-   874		if (vid == 0x9 || vid == 0xb) {
-   875			priv->reg_fields = mt6372_reg_fields;
-   876			priv->ranges = mt6372_led_ranges;
-   877			priv->is_mt6372 = true;
-   878		} else {
-   879			priv->reg_fields = common_reg_fields;
-   880			priv->ranges = common_led_ranges;
-   881		}
-   882	
-   883		return 0;
-   884	}
-   885	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
