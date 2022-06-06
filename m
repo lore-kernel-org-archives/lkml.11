@@ -2,77 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E214C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 12:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF417C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 12:54:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237911AbiFFMyF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 08:54:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53214 "EHLO
+        id S237922AbiFFMyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 08:54:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237828AbiFFMx7 (ORCPT
+        with ESMTP id S237840AbiFFMyC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 08:53:59 -0400
-Received: from mail-io1-f42.google.com (mail-io1-f42.google.com [209.85.166.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1E6025282;
-        Mon,  6 Jun 2022 05:53:58 -0700 (PDT)
-Received: by mail-io1-f42.google.com with SMTP id z197so7902520iof.1;
-        Mon, 06 Jun 2022 05:53:58 -0700 (PDT)
+        Mon, 6 Jun 2022 08:54:02 -0400
+Received: from mail-il1-f178.google.com (mail-il1-f178.google.com [209.85.166.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AAB02528F;
+        Mon,  6 Jun 2022 05:54:01 -0700 (PDT)
+Received: by mail-il1-f178.google.com with SMTP id f7so11846563ilr.5;
+        Mon, 06 Jun 2022 05:54:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=5oeNRqJHXQOxmP96SxoUW0sboEGHvZBA+hQSWA/WSEQ=;
-        b=Wvj1E21XoGcRBcm3qNxK7jry4xp1mui9rYXglCpTHUw5moFWUYrRpH/XUkC9nTBuyp
-         jx9jip9t4B1CDvxB7LBXGpWtqLv05P1zg6yHiuEZlu7kg9gGNZf68PK7oEAPAqOsPmYz
-         HDhY2hcbwCXPBZnd611/ho5nvt+YDbvxl8RpkAqkJH78WfCh4oeDFLUS1+OYLxMuyAeo
-         bIgdzYkqF/ChghLIzzVtf82ua8j5VZRGC6eUGLQ1E3mnLRduF+YxY0dhfzx02FefQ4tr
-         3k6uHMqyWugkA7J7cvFPc3j1w84sjqR67UFkCLcDDZB572F/A0bjOjiz/JnZYjSqrFYn
-         6qkg==
-X-Gm-Message-State: AOAM533DRsJLyHjHYUjJFbmGBSOVRxkU+E9DPeYKeoberKPLA7bHU3OT
-        U+xdg83pIMTEyFW+Gof/MA==
-X-Google-Smtp-Source: ABdhPJxl4I6L73YL+CEdCXFSlZqbhylQ9woaXl6Dvpd8oQXNa8pk/9ibMdKb7n3+JHc51K6Q4Iy7KQ==
-X-Received: by 2002:a05:6638:389f:b0:331:b463:fbee with SMTP id b31-20020a056638389f00b00331b463fbeemr2681428jav.145.1654520038133;
-        Mon, 06 Jun 2022 05:53:58 -0700 (PDT)
+        bh=RgW4935QCsAGMmkhuRJMk7RJh1JHfN66O7hxz5zZQuI=;
+        b=MQ9RkyQH4F4XbqfJGKSvPTC8yewM8QJbIltZY2E4Yd/Txm1PL4PSKLFTPo4Sl+jAHY
+         /bHjZfgDteH++Z478AJrwGo5A3cZ4exh63MwNdZAiH6irEijUqTkfMdjJT4Heq8hebAA
+         Z5iucwT98ojpgGPy7YeDDuy0BWOqFFGMzUVfmenFleLaUp1f6VLxCcYD4TzevoYPEA1B
+         kCjoBUAIE1xBhgrpTikNM9wSEbAEaJQwdKVIAif3DEK9Gpuab29Z8Zg34Jl4cIJgL+zK
+         HR2GVgnAftb35aPKIuYVY7FJhrN/3D3aQAY3NfWQIBCSuS3wWT5qi7nCc5HHKsUtaRVZ
+         eswg==
+X-Gm-Message-State: AOAM530SNh8HOh0ejdlDR0Qb9mL7xSp5wivZEv67oUAs+zq0FHyu3a2V
+        vjRSJ/AfaqSeIQ1lC59eQg==
+X-Google-Smtp-Source: ABdhPJx8Ddb/0qM1ktVNbazk8LwdBo/5aLQiFZIdEU/GvqAx//WMhBNcB+l9qZAtxabGJJtIVk9sHQ==
+X-Received: by 2002:a05:6e02:1d91:b0:2d3:bef3:a073 with SMTP id h17-20020a056e021d9100b002d3bef3a073mr14231575ila.60.1654520040280;
+        Mon, 06 Jun 2022 05:54:00 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id f2-20020a02b782000000b003315c00e885sm5429712jam.0.2022.06.06.05.53.56
+        by smtp.gmail.com with ESMTPSA id y15-20020a92950f000000b002d3adf71893sm6194943ilh.20.2022.06.06.05.53.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 05:53:57 -0700 (PDT)
-Received: (nullmailer pid 534475 invoked by uid 1000);
+        Mon, 06 Jun 2022 05:53:59 -0700 (PDT)
+Received: (nullmailer pid 534473 invoked by uid 1000);
         Mon, 06 Jun 2022 12:53:53 -0000
 From:   Rob Herring <robh@kernel.org>
 To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Cc:     chunkuang.hu@kernel.org, airlied@linux.ie,
-        angelogioacchino.delregno@collabora.com, robh+dt@kernel.org,
-        pavel@ucw.cz, Project_Global_Chrome_Upstream_Group@mediatek.com,
-        krzysztof.kozlowski+dt@linaro.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, nancy.lin@mediatek.com,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        matthias.bgg@gmail.com, p.zabel@pengutronix.de,
-        linux-arm-kernel@lists.infradead.org, ck.hu@mediatek.com
-In-Reply-To: <20220606051131.14182-4-rex-bc.chen@mediatek.com>
-References: <20220606051131.14182-1-rex-bc.chen@mediatek.com> <20220606051131.14182-4-rex-bc.chen@mediatek.com>
-Subject: Re: [RESEND v4 3/3] dt-bindings: mediatek: add ethdr definition for mt8195
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        airlied@linux.ie, linux-arm-kernel@lists.infradead.org,
+        robh+dt@kernel.org, pavel@ucw.cz, nancy.lin@mediatek.com,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        krzysztof.kozlowski+dt@linaro.org, chunkuang.hu@kernel.org,
+        ck.hu@mediatek.com, matthias.bgg@gmail.com,
+        linux-kernel@vger.kernel.org,
+        angelogioacchino.delregno@collabora.com,
+        linux-mediatek@lists.infradead.org, p.zabel@pengutronix.de
+In-Reply-To: <20220606051131.14182-2-rex-bc.chen@mediatek.com>
+References: <20220606051131.14182-1-rex-bc.chen@mediatek.com> <20220606051131.14182-2-rex-bc.chen@mediatek.com>
+Subject: Re: [RESEND v4 1/3] dt-bindings: mediatek: add vdosys1 RDMA definition for mt8195
 Date:   Mon, 06 Jun 2022 07:53:53 -0500
-Message-Id: <1654520033.535645.534474.nullmailer@robh.at.kernel.org>
+Message-Id: <1654520033.524963.534472.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 06 Jun 2022 13:11:31 +0800, Bo-Chen Chen wrote:
+On Mon, 06 Jun 2022 13:11:29 +0800, Bo-Chen Chen wrote:
 > From: "Nancy.Lin" <nancy.lin@mediatek.com>
 > 
-> Add vdosys1 ETHDR definition.
+> Add vdosys1 RDMA definition.
 > 
 > Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
 > Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-> Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 > Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 > Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 > ---
->  .../display/mediatek/mediatek,ethdr.yaml      | 188 ++++++++++++++++++
->  1 file changed, 188 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
+>  .../display/mediatek/mediatek,mdp-rdma.yaml   | 88 +++++++++++++++++++
+>  1 file changed, 88 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
@@ -81,10 +81,10 @@ on your patch (DT_CHECKER_FLAGS is new in v5.13):
 yamllint warnings/errors:
 
 dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml: properties:compatible: [{'const': 'mediatek,mt8195-disp-ethdr'}] is not of type 'object', 'boolean'
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml: properties:compatible: [{'const': 'mediatek,mt8195-vdo1-rdma'}] is not of type 'object', 'boolean'
 	from schema $id: http://json-schema.org/draft-07/schema#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml: ignoring, error in schema: properties: compatible
-Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.example.dtb:0:0: /example-0/soc/hdr-engine@1c114000: failed to match any schema with compatible: ['mediatek,mt8195-disp-ethdr']
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml: ignoring, error in schema: properties: compatible
+Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.example.dtb:0:0: /example-0/soc/rdma@1c104000: failed to match any schema with compatible: ['mediatek,mt8195-vdo1-rdma']
 
 doc reference errors (make refcheckdocs):
 
