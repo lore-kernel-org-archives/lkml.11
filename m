@@ -2,122 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6DBFCCA473
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 13:40:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C945C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 13:42:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239104AbiFFNkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 09:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36292 "EHLO
+        id S239157AbiFFNmJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 09:42:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239078AbiFFNk2 (ORCPT
+        with ESMTP id S239145AbiFFNmH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 09:40:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 77B8C9CF37
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 06:40:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654522825;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8qoXnoqYpBHw1hBc7oMi8KrfARACS0m8xSrOHvWHVRQ=;
-        b=UtO+g8ZJN8gyRWuFORByS89SnT3I5ZCPG8o9kLEjUSdK9+Wb9uSZqrImkphWqTHMT7xJzO
-        VIY3d4uZcXqEAn4R5UdnWcuMQnQpwoadtL4HXiE+MYv1G6CdK1HaC8QO3roksETVdtzE2m
-        vBnlK0xb/13olPaVP9KUqr/+VzxqAco=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-74-JK7SlUnvO_Gavfv36vCWpw-1; Mon, 06 Jun 2022 09:40:24 -0400
-X-MC-Unique: JK7SlUnvO_Gavfv36vCWpw-1
-Received: by mail-wm1-f70.google.com with SMTP id ay1-20020a05600c1e0100b0039c3a3fc6a4so4799044wmb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 06:40:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8qoXnoqYpBHw1hBc7oMi8KrfARACS0m8xSrOHvWHVRQ=;
-        b=XiNZsw2PA32DMkB5hBPtFjq6gi2EhJAV1gsOBtE3jNH8HQ3yRPSfghqU+pfGDNlDnj
-         UBZqj2BhrKIe+S/VnBDO1NB/MdHFz7rwF82fNdnHBbm+tT7KOKAxMPx8AwuAXloLpY0O
-         OLsKqgImfJ5kNLXU24pwEat96V7EuivBpDz/uxZnJkSueB9SaIWspibdxZqhE9lZRryg
-         2jyX9PAUQjhQx4GDarKJRd2uibzOAb7opJCa1BlqbBLOzXBrjgi9zdbDqN+PZSD2ZctO
-         Tyb+KEO7NitPda1i9wsEk9In65G1HNU00YanuKbn2rU4pjxuSq/L4LcgVuLhWHT3qUTU
-         mk+Q==
-X-Gm-Message-State: AOAM532B0q2xGgeS0231g0OnP6S40+fuC1jn4tNVdfseFNTz+uVB/gAF
-        bDyBBarq3ZPly4vTy3bJn/4zT9rrmFeaIaB/ze8qe2TIy/IXYaRLvbxgQucOjWtvlj0D0aYW3sR
-        4DDyYPb9MXHX0wCAJmc4IExuu
-X-Received: by 2002:adf:f403:0:b0:218:82e:4c9e with SMTP id g3-20020adff403000000b00218082e4c9emr6360624wro.247.1654522822988;
-        Mon, 06 Jun 2022 06:40:22 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzZVdyGqAyzV/vlvckyOLNGFcL34R33cBgwYqi3lWgUaeO7ZYsoldrhJ+J93QvdRXiow3GN5g==
-X-Received: by 2002:adf:f403:0:b0:218:82e:4c9e with SMTP id g3-20020adff403000000b00218082e4c9emr6360601wro.247.1654522822756;
-        Mon, 06 Jun 2022 06:40:22 -0700 (PDT)
-Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id h6-20020adfa4c6000000b0020fe61acd09sm16056329wrb.12.2022.06.06.06.40.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Jun 2022 06:40:22 -0700 (PDT)
-Message-ID: <cbef78d3-c392-37e6-afdd-177806dfb033@redhat.com>
-Date:   Mon, 6 Jun 2022 15:40:20 +0200
+        Mon, 6 Jun 2022 09:42:07 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A825DC1;
+        Mon,  6 Jun 2022 06:42:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654522926; x=1686058926;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=TJzIGaY2NNdLCVpz1fV6eNpKvahRQfNMGYTni/eJge0=;
+  b=dcxWDpT00prEt9NMDlhfXcOsWjZnT32NVaL/jCw3cQ9lqwqj5ioymtrb
+   6cvNbDvrivyvclkAOM8if3adI8/1Yi0ct7GwPeGZYr0R+6JP998EuyPvY
+   HENV3RhXiD46GhRHq+0JoRVPWdig5h3XT0VpAS03ZPfp66yloR3RnKQiO
+   7m2GwLukbK1xgMtG9bIOFlty7kpQXxLL0h/OVhRA3YnEeu4k+5XF7qQwf
+   U+bWh4nxGtLI5Vbgb4QtjIuwLngcywZXsrVMwHkAo7vZxyV2PZqAG0a/V
+   eKtF/Rytl5g1hTVsUWLodpGK7YsBJMuWtPySecUrSh0tAL9t6/KImpXxb
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="264594191"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="264594191"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 06:42:03 -0700
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="635605053"
+Received: from amkossek-mobl1.ger.corp.intel.com ([10.252.57.11])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 06:42:01 -0700
+Date:   Mon, 6 Jun 2022 16:41:58 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
+        LKML <linux-kernel@vger.kernel.org>,
+        =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v2 1/6] serial: 8250: Store to lsr_save_flags after lsr
+ read
+In-Reply-To: <20220606131124.53394-2-ilpo.jarvinen@linux.intel.com>
+Message-ID: <fb32bda5-ea44-da8d-493a-a043b8619022@linux.intel.com>
+References: <20220606131124.53394-1-ilpo.jarvinen@linux.intel.com> <20220606131124.53394-2-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 1/1] drm/format-helper: Add KUnit tests for
- drm_fb_xrgb8888_to_rgb332()
-Content-Language: en-US
-To:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
-Cc:     davidgow@google.com, dlatypov@google.com, tzimmermann@suse.de,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
-        kunit-dev@googlegroups.com, linux-kernel@vger.kernel.org
-References: <20220606095516.938934-1-jose.exposito89@gmail.com>
- <20220606095516.938934-2-jose.exposito89@gmail.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <20220606095516.938934-2-jose.exposito89@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323329-1584012708-1654522922=:1547"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello José,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-On 6/6/22 11:55, José Expósito wrote:
-> Test the conversion from XRGB8888 to RGB332.
-> 
-> What is tested?
-> 
->  - Different values for the X in XRGB8888 to make sure it is ignored
->  - Different clip values: Single pixel and full and partial buffer
->  - Well known colors: White, black, red, green, blue, magenta, yellow
->    and cyan
->  - Other colors: Randomly picked
->  - Destination pitch
-> 
-> How to run the tests?
-> 
->  $ ./tools/testing/kunit/kunit.py run --kunitconfig=drivers/gpu/drm \
->          --kconfig_add CONFIG_VIRTIO_UML=y \
->          --kconfig_add CONFIG_UML_PCI_OVER_VIRTIO=y
-> 
-> Suggested-by: Javier Martinez Canillas <javierm@redhat.com>
-> Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-> 
-> ---
+--8323329-1584012708-1654522922=:1547
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-Thanks for addressing the issues pointed out. Patch looks good to me now.
+On Mon, 6 Jun 2022, Ilpo Järvinen wrote:
 
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+> Not all LSR register flags are preserved across reads. Therefore, LSR
+> readers must store the non-preserved bits into lsr_save_flags.
+> 
+> This fix was initially mixed into feature commit f6f586102add ("serial:
+> 8250: Handle UART without interrupt on TEMT using em485"). However,
+> that feature change had a flaw and it was reverted to make room for
+> simpler approach providing the same feature. The embedded fix got
+> reverted with the feature change.
+> 
+> Re-add the lsr_save_flags fix and properly mark it's a fix.
+> 
+> Fixes: e490c9144cfa ("tty: Add software emulated RS485 support for 8250")
+> Link: https://lore.kernel.org/all/1d6c31d-d194-9e6a-ddf9-5f29af829f3@linux.intel.com/T/#m1737eef986bd20cf19593e344cebd7b0244945fc
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> Acked-by: Uwe Kleine-König <u.kleine-koenig@penugtronix.de>
 
-By the way, I think you should request an account [0], so that you can push
-patches to drm-misc directly. Specially since AFAIU the plan is to add more
-KUnit tests in future patch series.
+It seems that Uwe managed to mistype his email for the A-by which I just 
+happily copy-pasted.
 
-[0]: https://www.freedesktop.org/wiki/AccountRequests/
+Greg, please let me know if you want me to resend the series (or if you 
+will just change it on the fly while applying).
 
 -- 
-Best regards,
+ i.
 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  drivers/tty/serial/8250/8250_port.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 4998799abae2..c5e0f925f4b6 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -1511,6 +1511,8 @@ static inline void __stop_tx(struct uart_8250_port *p)
+>  		unsigned char lsr = serial_in(p, UART_LSR);
+>  		u64 stop_delay = 0;
+>  
+> +		p->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
+> +
+>  		if (!(lsr & UART_LSR_THRE))
+>  			return;
+>  		/*
+> 
 
+--8323329-1584012708-1654522922=:1547--
