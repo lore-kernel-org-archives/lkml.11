@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F86C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:08:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD916C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:08:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233699AbiFFKIt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 06:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42472 "EHLO
+        id S233732AbiFFKHi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 06:07:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233479AbiFFKGG (ORCPT
+        with ESMTP id S233322AbiFFKFl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 06:06:06 -0400
+        Mon, 6 Jun 2022 06:05:41 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F561207C1;
-        Mon,  6 Jun 2022 03:06:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0890939D3;
+        Mon,  6 Jun 2022 03:05:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654509963; x=1686045963;
+  t=1654509935; x=1686045935;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=VcmEhh33jjTVe3ALqkigMTRIMktLH1f2shl4rAVdsNo=;
-  b=AqkQC/tCmQaRPkmD8xPghrPUconYc5+bo4flPgoKUClgpcwaURf7ui9f
-   AnP41louFP+sLyKdnxl53cy3ka69Ks7lRrO5g9khfWvlirQR4dMalAS3M
-   /TAjnsxaY/D0odmZwFWUuDl1KlHE2F5FjOru+M6Dwhj1eKan83wjcTvl+
-   IlZO345kwectIf8mWJKxHorsSkFn3tb0h1wwHjdyCKrtsgU+EHq+wlM95
-   /YZNRrE+4SfE3JcRkcJ89/zOIcBfLL1/fT4Iaig/N8bLVOIHhrqJm5Xb+
-   YjEtgaWIZonReeBXMj/yBpIGS/YylueQy487rtzp1BCjk1jnWRjs4Zkvc
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="362987076"
+  bh=X41obtw/Rrfpr4lluXXoiB8WmKq7kV84aelg5fksidU=;
+  b=C2FS1WzF/0mmKoMa71TL62yEgonVQGQN69DZD0T5KqFmKHoThCOE0sTs
+   23efTcNNvmEkYrG+u4nkDNHxWcNJ9HnDmQf47qtmJL5Gdthlf8WG8e8Cv
+   Nt2yqjPU4HxE6YVqbyNhuMVIranvoxiCG4hV36aqnKS6z2IJnDAHJkOZ9
+   TtX5SPcUulaQX4tneoFpbOUQPTQWkUhjOjDCnlqAA1m0K++CGf+oOKhd9
+   dRQ0BccSV1OsH8b7roXYNWbdrqfyBXcQIn6wafE7Bt1zpQH33iezQMqtC
+   N0ulrX+/3nNWq4dZmvMrMBe9/FIQjj++5uFzSziNU0wzXJ+zMRfCSJGvr
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="362987052"
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="362987076"
+   d="scan'208";a="362987052"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:06:03 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:05:27 -0700
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="635523814"
+   d="scan'208";a="635523671"
 Received: from amkossek-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.57.11])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:06:01 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:05:25 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
+        Jiri Slaby <jirislaby@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org
 Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 24/36] serial: return -EINVAL for non-legacy RS485 flags
-Date:   Mon,  6 Jun 2022 13:04:21 +0300
-Message-Id: <20220606100433.13793-25-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 12/36] serial: pl011: Fill in rs485_supported
+Date:   Mon,  6 Jun 2022 13:04:09 +0300
+Message-Id: <20220606100433.13793-13-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
 References: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
@@ -54,62 +56,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to be add new flags more cleanly and safely, return -EINVAL
-from TIOCSRS485 ioctl for the flags bits which are not among the
-current legacy ones.
-
-This might cause a regression for userspace as those non-flag bits do
-not currently trigger -EINVAL. However, it would only occur if the
-userspace is sending garbage bits so perhaps we'll get away with this
-change.
+Add information on supported serial_rs485 features.
 
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/serial_core.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ drivers/tty/serial/amba-pl011.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 6be538720564..621fc15e2e54 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1276,6 +1276,27 @@ static int uart_get_icount(struct tty_struct *tty,
- 	return 0;
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 97ef41cb2721..cdc466e89aa8 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2751,6 +2751,13 @@ static int pl011_register_port(struct uart_amba_port *uap)
+ 	return ret;
  }
  
-+#define SER_RS485_LEGACY_FLAGS	(SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | \
-+				 SER_RS485_RTS_AFTER_SEND | SER_RS485_RX_DURING_TX | \
-+				 SER_RS485_TERMINATE_BUS)
++static const struct serial_rs485 pl011_rs485_supported = {
++	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND |
++		 SER_RS485_RX_DURING_TX,
++	.delay_rts_before_send = 1,
++	.delay_rts_after_send = 1,
++};
 +
-+static int uart_check_rs485_flags(struct uart_port *port, struct serial_rs485 *rs485)
-+{
-+	u32 flags = rs485->flags;
-+
-+	/* Don't return -EINVAL for unsupported legacy flags */
-+	flags &= ~SER_RS485_LEGACY_FLAGS;
-+
-+	/*
-+	 * For any bit outside of the legacy ones that is not supported by
-+	 * the driver, return -EINVAL.
-+	 */
-+	if (flags & ~port->rs485_supported->flags)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
- static void uart_sanitize_serial_rs485(struct uart_port *port, struct serial_rs485 *rs485)
+ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
  {
- 	u32 supported_flags = port->rs485_supported->flags;
-@@ -1375,6 +1396,9 @@ static int uart_set_rs485_config(struct uart_port *port,
- 	if (copy_from_user(&rs485, rs485_user, sizeof(*rs485_user)))
- 		return -EFAULT;
+ 	struct uart_amba_port *uap;
+@@ -2777,6 +2784,7 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 	uap->port.irq = dev->irq[0];
+ 	uap->port.ops = &amba_pl011_pops;
+ 	uap->port.rs485_config = pl011_rs485_config;
++	uap->port.rs485_supported = &pl011_rs485_supported;
+ 	snprintf(uap->type, sizeof(uap->type), "PL011 rev%u", amba_rev(dev));
  
-+	ret = uart_check_rs485_flags(port, &rs485);
-+	if (ret)
-+		return ret;
- 	uart_sanitize_serial_rs485(port, &rs485);
- 
- 	spin_lock_irqsave(&port->lock, flags);
+ 	ret = pl011_setup_port(&dev->dev, uap, &dev->res, portnr);
 -- 
 2.30.2
 
