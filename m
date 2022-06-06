@@ -2,125 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1502CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 05:29:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63972C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 05:29:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229650AbiFFF3p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 01:29:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51768 "EHLO
+        id S229668AbiFFF3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 01:29:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230021AbiFFF2k (ORCPT
+        with ESMTP id S229494AbiFFF2F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 01:28:40 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 348FB15894B;
-        Sun,  5 Jun 2022 22:26:04 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id m25so11289048lji.11;
-        Sun, 05 Jun 2022 22:26:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=zc/BM4GS1deZPOseA9eQ1lDUVrP10O3L44lbLiYjtN4=;
-        b=WfMUkiB++a8lTicSUCIf6khGYZnXKmpITWncoBuKUvCNDiDR4bNDkMOHWeBp69Xht4
-         6ergkuIGvga7ERsmBmLbvp7OwbeWIrj5MQL+5l7qwUQXjGHhbv/Q6EPndg/H40Q84HtQ
-         wpkUGlwxhC05PnMoJ8KQrUouNIYHo5q2PUmlYq7Gz2xsV9EbymrNtcYm4fU1rpTEDzQ1
-         BP8lKRj960a8H+1bCFyymYtEqZOqXEuv7dusbLDdFRtLZOqahhFJc52csPKNbHT8xBao
-         MD61EqRE/0HqhQ/gPbEoj2tLjJiuR53F9ae58C4xgkbCwXcwuPzjzP1IFIQQeTig490s
-         ibkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=zc/BM4GS1deZPOseA9eQ1lDUVrP10O3L44lbLiYjtN4=;
-        b=Gb6DHOr92v2uOhLhMV8yu5cVXIvtN8KFLVsiDXAR57qZ751mj8EDx8WKk1OjH3Y1Rv
-         nB/6opsxvcH5Klq4qrbihFMQOt8wuVCASYt4Ce2zuD9wJYyP49WA72hZBAQjeGP+hbti
-         jmIAp7Ek/8oocRLqsjuaH8/uLwZ70lY8/rLgyVwvbFAitzcFZWXkNHV0RbjZNU58uGCx
-         4hFw7R9SAEoleCBWapDFbURCBrVu6s6a4tQpK1kwBJ41Iup88r5vPdUZNvx5kFmjM/KF
-         CzRmxtrg4/i//ssL8ABsQ+kyxAAZerqfUOyB8uztZ8tXpqmYaRlw1j2TmaWX+jiRHZ5e
-         dvXw==
-X-Gm-Message-State: AOAM530ENXbImK6hw6s25/X9B45lVIm9SzYZixWRjrDO1QsFxFdlU9MD
-        JxYzBYYThUE2CG3bQImJ1MhrDb2lTI4=
-X-Google-Smtp-Source: ABdhPJwOcEoJ5m94o5VmovTTeks+T0EJ/vH213RpahokS5OtgCLMD9LmeICRSw3AEr3Jd5A24Kn1cg==
-X-Received: by 2002:a2e:8752:0:b0:255:6df7:7ad5 with SMTP id q18-20020a2e8752000000b002556df77ad5mr13523255ljj.73.1654493162053;
-        Sun, 05 Jun 2022 22:26:02 -0700 (PDT)
-Received: from ?IPV6:2001:14ba:16ee:fa00::1? (dc73szyyyyyyyyyyyyyyt-3.rev.dnainternet.fi. [2001:14ba:16ee:fa00::1])
-        by smtp.gmail.com with ESMTPSA id x2-20020a05651c024200b002556fd0c336sm2164571ljn.78.2022.06.05.22.26.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 05 Jun 2022 22:26:00 -0700 (PDT)
-Message-ID: <5f34b6d6-c2dd-44f9-c1bc-fe1deb336334@gmail.com>
-Date:   Mon, 6 Jun 2022 08:25:58 +0300
+        Mon, 6 Jun 2022 01:28:05 -0400
+Received: from condef-08.nifty.com (condef-08.nifty.com [202.248.20.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B65713A2E2;
+        Sun,  5 Jun 2022 22:07:59 -0700 (PDT)
+Received: from conuserg-10.nifty.com ([10.126.8.73])by condef-08.nifty.com with ESMTP id 2564tuC1017874;
+        Mon, 6 Jun 2022 13:56:17 +0900
+Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-10.nifty.com with ESMTP id 2564rxUB026256;
+        Mon, 6 Jun 2022 13:54:03 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 2564rxUB026256
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1654491244;
+        bh=8DsFZaGELYB7JvwytYb5vfoaMr6TS1NLhkVqZf+4BBQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fJ/D8hXjFIh+wPt+yETn7vdGZzNYq1/3hzgsf0g1WYd5EvNUKb7sFe09qxQP3X6gY
+         LxIASv+ka9fQHrDIPDpxMsTAaO+AlqlWnhFLkNWI+uEk/r6yTEorleWfqnhh/kdpAs
+         KwCsXgpyVxeFWbadM7lVp0wWLOmjLNGcHHyzDhgztK56+fJKLq72cUvYqKOcIbWCGA
+         ZDOFibDqFM4sFQCLqQk+ahSkZcBIpEzZRNhjqiJ2X/3NhdrYp0EOIPVBNW47lG6xNt
+         uGDsC0txo+64CJXCY3FbmnCGOFOV93uRPyVqejSorqsP8z3Z3k2oxDW4ZvKOAT4Frj
+         eu9G5Y/Yl4MSw==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Ahern <dsahern@kernel.org>,
+        David Lebrun <david.lebrun@uclouvain.be>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 3/3] net: ipv6: unexport __init-annotated seg6_hmac_init()
+Date:   Mon,  6 Jun 2022 13:53:55 +0900
+Message-Id: <20220606045355.4160711-4-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220606045355.4160711-1-masahiroy@kernel.org>
+References: <20220606045355.4160711-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     Michael Trimarchi <michael@amarulasolutions.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "open list:COMMON CLK FRAMEWORK" <linux-clk@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Cc:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        linux-amarula@amarulasolutions.com, Marek Vasut <marex@denx.de>
-References: <20220605165703.1565234-1-michael@amarulasolutions.com>
- <20220605165703.1565234-3-michael@amarulasolutions.com>
-From:   Matti Vaittinen <mazziesaccount@gmail.com>
-Subject: Re: [RFC PATCH 2/3] clk: bd718x7: Enable the possibility to mark the
- clock as critical
-In-Reply-To: <20220605165703.1565234-3-michael@amarulasolutions.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Michael,
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-On 6/5/22 19:57, Michael Trimarchi wrote:
-> If the clock is used to generate the osc_32k, we need to mark
-> as critical. clock-critical has no binding description at the moment
-> but it's defined in linux kernel
-> 
-> bd71847: pmic@4b {
-> ...
-> 	rohm,reset-snvs-powered;
-> 
-> 	#clock-cells = <0>;
-> 	clock-critical = <1>;
-> 	clocks = <&osc_32k 0>;
-> 	clock-output-names = "clk-32k-out";
-> ...
-> }
-> 
-> Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
-> ---
->   drivers/clk/clk-bd718x7.c | 4 ++++
+modpost used to detect it, but it has been broken for a decade.
 
-//snip
+Recently, I fixed modpost so it started to warn it again, then this
+showed up in linux-next builds.
 
-> @@ -100,6 +101,9 @@ static int bd71837_clk_probe(struct platform_device *pdev)
->   
->   	parent_clk = of_clk_get_parent_name(parent->of_node, 0);
->   
-> +	of_clk_detect_critical(dev->of_node, 0, &flags);
+There are two ways to fix it:
 
-Purely judging the kerneldoc for of_clk_detect_critical - you may have 
-hard time getting this accepted.
+  - Remove __init
+  - Remove EXPORT_SYMBOL
 
-I think you're working on a very valid problem though. Maybe you could 
-see if you could align your effort with Marek?
+I chose the latter for this case because the caller (net/ipv6/seg6.c)
+and the callee (net/ipv6/seg6_hmac.c) belong to the same module.
+It seems an internal function call in ipv6.ko.
 
-https://lore.kernel.org/all/20220517235919.200375-1-marex@denx.de/T/#m52d6d0831bf43d5f293e35cb27f3021f278d0564
+Fixes: bf355b8d2c30 ("ipv6: sr: add core files for SR HMAC support")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
 
-Best Regards
-	-- Matti
+ net/ipv6/seg6_hmac.c | 1 -
+ 1 file changed, 1 deletion(-)
 
+diff --git a/net/ipv6/seg6_hmac.c b/net/ipv6/seg6_hmac.c
+index 29bc4e7c3046..6de01185cc68 100644
+--- a/net/ipv6/seg6_hmac.c
++++ b/net/ipv6/seg6_hmac.c
+@@ -399,7 +399,6 @@ int __init seg6_hmac_init(void)
+ {
+ 	return seg6_hmac_init_algo();
+ }
+-EXPORT_SYMBOL(seg6_hmac_init);
+ 
+ int __net_init seg6_hmac_net_init(struct net *net)
+ {
 -- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
+2.32.0
 
-~~ When things go utterly wrong vim users can always type :help! ~~
-
-Discuss - Estimate - Plan - Report and finally accomplish this:
-void do_work(int time) __attribute__ ((const));
