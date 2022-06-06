@@ -2,516 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BA05C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BAA7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:39:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240958AbiFFPi7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:38:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60642 "EHLO
+        id S240923AbiFFPjV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 11:39:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240978AbiFFPit (ORCPT
+        with ESMTP id S240927AbiFFPjO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 11:38:49 -0400
-X-Greylist: delayed 365 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Jun 2022 08:38:46 PDT
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A89962A246;
-        Mon,  6 Jun 2022 08:38:46 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 3C9DA6601E15;
-        Mon,  6 Jun 2022 16:31:50 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654529510;
-        bh=B7Xbr/lr3CA4n/XcYJq86VAM8oW7AH2+a1fAdoXr7k0=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=hmLKFCD4OezKrMDbjVIWmGynZhZUTZQEkqMST4NFu4eL+cnNu8dd4+eniukSS14Pq
-         Xn0CR9Gxtn5Qvm8BgyqPiziBVnhJ7SKqurzxCBkqON9M4L62HUTW9ku0zOZb6Bljh9
-         boqYE2MaxtOyDqZfz02udbK03ZwheORxX8giFNoFAe0gOGOaSUXaL2mrHR8YJpQ4B8
-         ZlE5PEUvLvuLqUmX+vIPIm2JpwZgdSfcEdHBDo1Jp2RwHaj5JEHd5Rnvrv+Jfx9zmw
-         nPih97/GYX6fPikr/jMy+hzTHybuA35mFqDV1FYoBhugOrCWwxUapgGI8zkE5ILAGy
-         jyFFlCMI+bY6g==
-Message-ID: <d7e6fe89-76fc-41ed-f179-80915ef62092@collabora.com>
-Date:   Mon, 6 Jun 2022 17:31:47 +0200
+        Mon, 6 Jun 2022 11:39:14 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9741E2CC8E
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 08:39:13 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id h188so20199657oia.2
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 08:39:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/AEtQyVxob3WTNVCWKsRPr46NA0vB00z66orli4Jkzc=;
+        b=lbbPC/JkqQBV+D2hsmNidhnbM94Q+uc0OZ+Rm576tRXkARdFnUnkOAuHtIVDWBa+gu
+         P4sRkHeLq+kd6ZpS+jsoQ57jOG6diQhkXLMsqG5q6BlELb07DbJh1X8eMOiARPcxXHaQ
+         fFBeEWaqoVJN2ZlrfaP60g0P0atZRhmEDmVj6HV+triGolM7wNwskrUqvzq9vtdrN0do
+         feZZBJswb3uK6ONy97sf9PMdBJ9ofcPGNmoUBDuXhFQB1H8m0Dr1nFezGkjCA4sGLoz5
+         Z1x1Y9LVY7tLWA/sSASNR34R5XVxFFTj0p9i+UMeqBQRnj/1UeVdtI1TyGuXIY+X7z+U
+         0Gcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=/AEtQyVxob3WTNVCWKsRPr46NA0vB00z66orli4Jkzc=;
+        b=iZ9jkdRHQ099zh541CEzoTYBZoTqVkdsP/oeMo+Iho5m/XU8rBGyzhtlearWuA8LfX
+         he6ZtGe6xCQcq0I6ZbBxJWg5BdghbSIE50nO6nbV1FBIcHO6BefBDkGVrJN47qst2ZqV
+         dhBWSw+PEvxmRhgp/CAkU79+wThMEI0BFYbr577BvpM+DX+q+gZINQ0Mn8FoZhdi6EJR
+         2nTHQi3wbnLcHyzRGxCO7jJkIA/yUWu2DCXpALGFNVvje6/OcdMf8pNhILcwhfpyERNS
+         1ZkL/94h8zj2oQUsJdUEsHx/zTYeApO0Kr0La+Yq33PQNfiBdBoDDgM7iOmFVdkLbbcG
+         7WaQ==
+X-Gm-Message-State: AOAM530Pwh7yYImhmyrHVtIMcf7ROb9W8Q+JFXnB0aqL7JoVjwroXZZW
+        /jjp2l73jEQ5c8NwahjttvhyplsOEto=
+X-Google-Smtp-Source: ABdhPJwXbRf9WVMryDpsg/jtBad6KPRpX9FwZddetzZivMle1wY73NoAQzhwsGRrFXuftlp5H0Vk/g==
+X-Received: by 2002:aca:b782:0:b0:325:7a29:352d with SMTP id h124-20020acab782000000b003257a29352dmr28501677oif.217.1654529952914;
+        Mon, 06 Jun 2022 08:39:12 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id bf1-20020a056808190100b0032af3cffac7sm8845122oib.2.2022.06.06.08.39.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 08:39:12 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Mon, 6 Jun 2022 08:39:10 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: Linux 5.19-rc1
+Message-ID: <20220606153910.GA1773067@roeck-us.net>
+References: <CAHk-=wgZt-YDSKfdyES2p6A_KJoG8DwQ0mb9CeS8jZYp+0Y2Rw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2 2/2] clk: mediatek: add driver for MT8365 SoC
-Content-Language: en-US
-To:     Fabien Parent <fparent@baylibre.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20220530214434.1012889-1-fparent@baylibre.com>
- <20220530214434.1012889-2-fparent@baylibre.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220530214434.1012889-2-fparent@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wgZt-YDSKfdyES2p6A_KJoG8DwQ0mb9CeS8jZYp+0Y2Rw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 30/05/22 23:44, Fabien Parent ha scritto:
-> Add clock drivers for MT8365 SoC.
+On Sun, Jun 05, 2022 at 05:42:33PM -0700, Linus Torvalds wrote:
+> So the last two weeks were _fairly_ normal, although I will gripe and
+> moan a bit about how many late pull requests I got. The second week
+> started out very calm, but that was sadly only because a _lot_ of
+> people left their final pull request pretty late. Not very pleasant at
+> all.
 > 
-> Signed-off-by: Fabien Parent <fparent@baylibre.com>
-
-Hello Fabien,
-
-thanks for these clock drivers! ...but there's a few things to address, check below
-
-> ---
-> v2: rename header file (dt-bindings/clock/mediatek,mt8365-clk.h)
+. ... ]
 > 
->   drivers/clk/mediatek/Kconfig           |   50 +
->   drivers/clk/mediatek/Makefile          |    7 +
->   drivers/clk/mediatek/clk-mt8365-apu.c  |   54 ++
->   drivers/clk/mediatek/clk-mt8365-cam.c  |   56 ++
->   drivers/clk/mediatek/clk-mt8365-mfg.c  |   62 ++
->   drivers/clk/mediatek/clk-mt8365-mm.c   |   95 ++
->   drivers/clk/mediatek/clk-mt8365-vdec.c |   62 ++
->   drivers/clk/mediatek/clk-mt8365-venc.c |   51 +
->   drivers/clk/mediatek/clk-mt8365.c      | 1197 ++++++++++++++++++++++++
->   9 files changed, 1634 insertions(+)
->   create mode 100644 drivers/clk/mediatek/clk-mt8365-apu.c
->   create mode 100644 drivers/clk/mediatek/clk-mt8365-cam.c
->   create mode 100644 drivers/clk/mediatek/clk-mt8365-mfg.c
->   create mode 100644 drivers/clk/mediatek/clk-mt8365-mm.c
->   create mode 100644 drivers/clk/mediatek/clk-mt8365-vdec.c
->   create mode 100644 drivers/clk/mediatek/clk-mt8365-venc.c
->   create mode 100644 drivers/clk/mediatek/clk-mt8365.c
+> So hey, let's start calming things down and testing this all.
 > 
-> diff --git a/drivers/clk/mediatek/Kconfig b/drivers/clk/mediatek/Kconfig
-> index d5936cfb3bee..f2ae987485f8 100644
-> --- a/drivers/clk/mediatek/Kconfig
-> +++ b/drivers/clk/mediatek/Kconfig
-> @@ -608,6 +608,56 @@ config COMMON_CLK_MT8195
->           help
->             This driver supports MediaTek MT8195 clocks.
->   
-> +config COMMON_CLK_MT8365
-> +	bool "Clock driver for MediaTek MT8365"
 
-Since there's an ongoing process to cleanup the MediaTek clocks API, it'd be nice
-if new drivers follow that... especially when there's no real reason to avoid that.
-
-Can you please change this bool to tristate and make sure that all these drivers
-can be compiled as modules? It's fairly trivial to do so!
-
-> +	depends on (ARCH_MEDIATEK && ARM64) || COMPILE_TEST
-
-Are you sure that this SoC cannot execute a 32-bit (AArch32) Linux kernel?
-...I am pretty sure it can, as the AP is a quad-A53, so it makes no sense
-to restrict this clock driver to ARM64, right? :-)
-
-> +	select COMMON_CLK_MEDIATEK
-> +	default ARCH_MEDIATEK && ARM64
-> +	help
-> +	  This driver supports MediaTek MT8365 basic clocks.
-> +
-> +config COMMON_CLK_MT8365_APU
-> +	bool "Clock driver for MediaTek MT8365 apu"
-
-tristate...... (here and everywhere else)
-
-> +	depends on COMMON_CLK_MT8365
-> +	default COMMON_CLK_MT8365
-> +	help
-> +	  This driver supports MediaTek MT8365 apu clocks.
-> +
-
-..snip..
-
-> diff --git a/drivers/clk/mediatek/clk-mt8365-mm.c b/drivers/clk/mediatek/clk-mt8365-mm.c
-> new file mode 100644
-> index 000000000000..83d3a27ece6c
-> --- /dev/null
-> +++ b/drivers/clk/mediatek/clk-mt8365-mm.c
-> @@ -0,0 +1,95 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (C) 2022 MediaTek Inc.
-> + * Copyright (c) 2022 BayLibre, SAS
-> + */
-> +
-
-..snip..
-
-> +
-> +static int clk_mt8365_mm_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct device_node *node = dev->parent->of_node;
-> +	struct clk_hw_onecell_data *clk_data;
-> +
-> +	clk_data = mtk_alloc_clk_data(CLK_MM_NR_CLK);
-> +
-> +	mtk_clk_register_gates(node, mm_clks, ARRAY_SIZE(mm_clks),
-> +			clk_data);
-
-Please use the new functions that are using struct device wherever possible;
-in this case, you should use mtk_clk_register_gates_with_dev().
-
-Also, you should *really* check the return value.
-
-> +
-> +	return of_clk_add_hw_provider(node, of_clk_hw_onecell_get, clk_data);
-
-...and in case of failure, there's a leak: function mtk_alloc_clk_data() is *not*
-using (in any case) devm_kzalloc(), but kzalloc().
-
-That's something that has to be fixed for the cases in which the clock driver
-can provide a struct device, but it's obviously out of this series' scope...
-but still, you should *really* call mtk_free_clk_data() in case anything goes
-wrong after the allocation.
-
-Of course, this comment is valid for any instance in all of the new drivers.
-
-> +}
-> +
-> +static struct platform_driver clk_mt8365_mm_drv = {
-> +	.probe = clk_mt8365_mm_probe,
-> +	.driver = {
-> +		.name = "clk-mt8365-mm",
-> +	},
-> +};
-> +builtin_platform_driver(clk_mt8365_mm_drv);
-
-..snip..
-
-> diff --git a/drivers/clk/mediatek/clk-mt8365.c b/drivers/clk/mediatek/clk-mt8365.c
-> new file mode 100644
-> index 000000000000..6fb8c7cb29d9
-> --- /dev/null
-> +++ b/drivers/clk/mediatek/clk-mt8365.c
-> @@ -0,0 +1,1197 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (C) 2022 MediaTek Inc.
-> + */
-> +
-> +#include <dt-bindings/clock/mediatek,mt8365-clk.h>
-> +#include <linux/clk.h>
-> +#include <linux/delay.h>
-> +#include <linux/mfd/syscon.h>
-> +#include <linux/of.h>
-> +#include <linux/of_address.h>
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/slab.h>
-> +
-> +#include "clk-gate.h"
-> +#include "clk-mtk.h"
-> +#include "clk-mux.h"
-> +#include "clk-pll.h"
-> +
-> +static DEFINE_SPINLOCK(mt8365_clk_lock);
-> +
-> +static const struct mtk_fixed_clk top_fixed_clks[] = {
-> +	FIXED_CLK(CLK_TOP_CLK_NULL, "clk_null", NULL, 0),
-
-What's that?! A "null" clock?!
-
-> +	FIXED_CLK(CLK_TOP_I2S0_BCK, "i2s0_bck", "clk_null", 26000000),
-
-You can simply declare all of these fixed clocks with a NULL pointer there
-instead of "clk_null" ... that's going to work just fine, don't worry.
-
-So... remove CLK_TOP_CLK_NULL, as it's useless, then s/\"clk_null\"/NULL/g.
-
-> +	FIXED_CLK(CLK_TOP_DSI0_LNTC_DSICK, "dsi0_lntc_dsick", "clk26m",
-> +		  75000000),
-> +	FIXED_CLK(CLK_TOP_VPLL_DPIX, "vpll_dpix", "clk26m", 75000000),
-> +	FIXED_CLK(CLK_TOP_LVDSTX_CLKDIG_CTS, "lvdstx_dig_cts", "clk26m",
-> +		  52500000),
-> +};
-> +
-> +static const struct mtk_gate_regs pll_cg_regs = {
-> +	.set_ofs = 0x204,
-> +	.clr_ofs = 0x204,
-> +	.sta_ofs = 0x204,
-> +};
-
-If set, clear, status offsets are located all at 0x204... are you sure that
-this is really a mtk_gate?!
-
-Like this, you don't need any "special" mtk_gate... the common clock framework's
-generic clk-gate is what you want here: you will also be able to simplify some
-handling in your driver like this, as there's a devm_clk_hw_register_gate() helper
-to make the day :-)
-
-> +
-> +#define GATE_APMIXED(_id, _name, _parent, _shift) \
-> +		GATE_MTK(_id, _name, _parent, &pll_cg_regs, _shift, \
-> +			 &mtk_clk_gate_ops_no_setclr_inv)
-> +
-> +static const struct mtk_gate pll_clks[] = {
-> +	/* PLL */
-> +	GATE_APMIXED(CLK_APMIXED_UNIV_EN, "univ_en", "univpll2", 0),
-> +	GATE_APMIXED(CLK_APMIXED_USB20_EN, "usb20_en", "univ_en", 1),
-> +};
-> +
-
-..snip..
-
-> +
-> +static const char * const axi_parents[] = {
-> +	"clk26m_ck",
-
-Hmm... so this is "clk26m_ck" and, in the fixed clocks, you declare a parent
-that's called "clk26m" instead.
-
-I can't find any definition of clk26m, nor clk26m_ck in these drivers, so I
-assume that you're declaring both as fixed clocks in your devicetree, which
-is fine, but this brings a good question:
-
-Why would we need two clocks "clk26m" and "clk26m_ck"? I guess that these
-are referring both to the same crystal, aren't they?
-
-So... isn't just "clk26m" enough?
-
-> +	"syspll_d7",
-> +	"syspll1_d4",
-> +	"syspll3_d2"
-> +};
-> +
-
-..snip..
-
-> +
-> +static struct mtk_composite top_misc_muxes[] = {
-
-Are you really sure that these top_misc clocks are *composite clocks*?
-
-I've noticed that there are a lot of misuses of clk-composite in MediaTek clock
-drivers and from how I get it, that driver is made to actually drive clocks that
-are actually composed of two different types of controls, for example, one clock
-composed by a mux and a gate (at two different offsets, but controlling the same
-clock output)...
-
-...from how I get it (again), that's not meant as a "cheat" to register multiple
-clocks of different type all at once (and - again - it's not the first time that
-I see this in MediaTek clock drivers).
-
-I get that this is not your fault and you're simply following what's done in the
-other drivers that you checked, but that ain't right :-(
-
-P.S.: Unless anyone beats me to it, I'm planning to actually fix all of the
-       clock drivers that are abusing this, hoping that no more developers get
-       confused by that.
-
-> +	/* CLK_CFG_11 */
-> +	MUX_GATE(CLK_TOP_MBIST_DIAG_SEL, "mbist_diag_sel", mbist_diag_parents,
-> +		0x0ec, 0, 2, 7),
-
- From how I see it, this one being MUX *and* GATE together is indeed a composite
-clock, and it's right - but....
-
-> +	/* CLK_AUDDIV_0 */
-> +	MUX(CLK_TOP_APLL_I2S0_SEL, "apll_i2s0_sel", apll_i2s0_parents,
-> +		 0x320, 11, 1),
-
-...these ones are just MUX, there's no divider, no gate, nothing else, so it's
-actually wrong to throw them into the mix here.
-
-> +	MUX(CLK_TOP_APLL_I2S1_SEL, "apll_i2s1_sel", apll_i2s0_parents,
-> +		 0x320, 12, 1),
-> +	MUX(CLK_TOP_APLL_I2S2_SEL, "apll_i2s2_sel", apll_i2s0_parents,
-> +		 0x320, 13, 1),
-> +	MUX(CLK_TOP_APLL_I2S3_SEL, "apll_i2s3_sel", apll_i2s0_parents,
-> +		 0x320, 14, 1),
-> +	MUX(CLK_TOP_APLL_TDMOUT_SEL, "apll_tdmout_sel", apll_i2s0_parents,
-> +		 0x320, 15, 1),
-> +	MUX(CLK_TOP_APLL_TDMIN_SEL, "apll_tdmin_sel", apll_i2s0_parents,
-> +		 0x320, 16, 1),
-> +	MUX(CLK_TOP_APLL_SPDIF_SEL, "apll_spdif_sel", apll_i2s0_parents,
-> +		 0x320, 17, 1),
-> +};
-> +
-> +#define MT8365_MUX_CLR_SET_UPD(_id, _name, _parents, _mux_ofs, _mux_set_ofs,	\
-> +			_mux_clr_ofs, _shift, _width, _gate,		\
-> +			_upd_ofs, _upd)				\
-
-Unless my eyes are failing me, this macro is exactly the same as
-MUX_GATE_CLR_SET_UPD(), defined in clk-mux.h.
-
-In that case, why are you reinventing the (not exactly pretty, btw) wheel?
-
-> +		MUX_GATE_CLR_SET_UPD_FLAGS(_id, _name, _parents, _mux_ofs,	\
-> +			_mux_set_ofs, _mux_clr_ofs, _shift, _width,	\
-> +			_gate, _upd_ofs, _upd, CLK_SET_RATE_PARENT)
-> +
-> +#define CLK_CFG_UPDATE 0x004
-> +#define CLK_CFG_UPDATE1 0x008
-> +
-
-..snip..
-
-> +
-> +static struct mtk_composite mcu_muxes[] = {
-> +	/* bus_pll_divider_cfg */
-> +	MUX_GATE_FLAGS(CLK_MCU_BUS_SEL, "mcu_bus_sel", mcu_bus_parents, 0x7C0,
-> +		9, 2, -1, CLK_SET_RATE_PARENT | CLK_IS_CRITICAL),
-> +};
-> +
-> +#define DIV_ADJ_F(_id, _name, _parent, _reg, _shift, _width, _flags) {	\
-> +		.id = _id,					\
-> +		.name = _name,					\
-> +		.parent_name = _parent,				\
-> +		.div_reg = _reg,				\
-> +		.div_shift = _shift,				\
-> +		.div_width = _width,				\
-> +		.clk_divider_flags = _flags,			\
-> +}
-> +
-> +static const struct mtk_clk_divider top_adj_divs[] = {
-> +	DIV_ADJ_F(CLK_TOP_APLL12_CK_DIV0, "apll12_ck_div0", "apll_i2s0_sel",
-> +		0x324, 0, 8, CLK_DIVIDER_ROUND_CLOSEST),
-> +	DIV_ADJ_F(CLK_TOP_APLL12_CK_DIV1, "apll12_ck_div1", "apll_i2s1_sel",
-> +		0x324, 8, 8, CLK_DIVIDER_ROUND_CLOSEST),
-> +	DIV_ADJ_F(CLK_TOP_APLL12_CK_DIV2, "apll12_ck_div2", "apll_i2s2_sel",
-> +		0x324, 16, 8, CLK_DIVIDER_ROUND_CLOSEST),
-> +	DIV_ADJ_F(CLK_TOP_APLL12_CK_DIV3, "apll12_ck_div3", "apll_i2s3_sel",
-> +		0x324, 24, 8, CLK_DIVIDER_ROUND_CLOSEST),
-> +	DIV_ADJ_F(CLK_TOP_APLL12_CK_DIV6, "apll12_ck_div6", "apll_spdif_sel",
-> +		0x32c, 0, 8, CLK_DIVIDER_ROUND_CLOSEST),
-> +};
-> +
-> +static const struct mtk_gate_regs top0_cg_regs = {
-> +	.set_ofs = 0x0,
-> +	.clr_ofs = 0x0,
-> +	.sta_ofs = 0x0,
-> +};
-> +
-> +static const struct mtk_gate_regs top1_cg_regs = {
-> +	.set_ofs = 0x104,
-> +	.clr_ofs = 0x104,
-> +	.sta_ofs = 0x104,
-> +};
-> +
-> +static const struct mtk_gate_regs top2_cg_regs = {
-> +	.set_ofs = 0x320,
-> +	.clr_ofs = 0x320,
-> +	.sta_ofs = 0x320,
-> +};
-
-These are again generic gates...
-
-> +
-> +#define GATE_TOP0(_id, _name, _parent, _shift) \
-> +		GATE_MTK(_id, _name, _parent, &top0_cg_regs, _shift, \
-> +			 &mtk_clk_gate_ops_no_setclr)
-> +
-> +#define GATE_TOP0_I(_id, _name, _parent, _shift) \
-> +		GATE_MTK(_id, _name, _parent, &top0_cg_regs, _shift, \
-> +			 &mtk_clk_gate_ops_no_setclr_inv)
-
-Hint: `.flags = CLK_GATE_SET_TO_DISABLE`
-
-> +
-
-..snip..
-
-> +
-> +static const struct mtk_gate_regs ifr0_cg_regs = {
-> +	.set_ofs = 0x200,
-> +	.clr_ofs = 0x200,
-> +	.sta_ofs = 0x200,
-> +};
-> +
-> +static const struct mtk_gate_regs ifr1_cg_regs = {
-> +	.set_ofs = 0x74,
-> +	.clr_ofs = 0x74,
-> +	.sta_ofs = 0x74,
-> +};
-
-IFR0 and IFR1 are unused?! What's missing, here?! :-)
-
-..snip..
-
-> +
-> +static const struct mtk_gate_regs peri_cg_regs = {
-> +	.set_ofs = 0x20c,
-> +	.clr_ofs = 0x20c,
-> +	.sta_ofs = 0x20c,
-> +};
-
-Another instance of a generic gate.....!
-
-> +
-> +#define GATE_PERI(_id, _name, _parent, _shift) \
-> +		GATE_MTK(_id, _name, _parent, &peri_cg_regs, _shift, \
-> +			 &mtk_clk_gate_ops_no_setclr_inv)
-> +
-> +static const struct mtk_gate peri_clks[] = {
-> +	GATE_PERI(CLK_PERIAXI, "periaxi", "axi_sel", 31),
-> +};
-> +
-
-> +..snip..
-
-
-> +static int clk_mt8365_apmixed_probe(struct platform_device *pdev)
-> +{
-> +	struct clk_hw_onecell_data *clk_data;
-> +	struct device_node *node = pdev->dev.of_node;
-> +	int ret;
-> +
-> +	clk_data = mtk_alloc_clk_data(CLK_APMIXED_NR_CLK);
-> +	if (!clk_data)
-> +		return -ENOMEM;
-> +
-> +	ret = mtk_clk_register_gates(node, pll_clks, ARRAY_SIZE(pll_clks),
-> +				     clk_data);
-> +	if (ret)
-
-mtk_clk_register_gates_with_dev() please.
-
-> +		goto free_clk_data;
-> +
-> +	ret = mtk_clk_register_plls(node, plls, ARRAY_SIZE(plls), clk_data);
-> +	if (ret)
-> +		goto unregister_gates;
-> +
-> +	ret = of_clk_add_hw_provider(node, of_clk_hw_onecell_get, clk_data);
-> +	if (ret)
-> +		goto unregister_plls;
-> +
-> +	return 0;
-> +
-> +unregister_plls:
-> +	mtk_clk_unregister_plls(plls, ARRAY_SIZE(plls), clk_data);
-> +unregister_gates:
-> +	mtk_clk_unregister_gates(pll_clks, ARRAY_SIZE(pll_clks), clk_data);
-> +free_clk_data:
-> +	mtk_free_clk_data(clk_data);
-> +
-> +	return ret;
-> +}
-> +
-
-...snip...
-
-
-> +
-> +static const struct of_device_id of_match_clk_mt8365[] = {
-> +	{
-> +		.compatible = "mediatek,mt8365-apmixedsys",
-> +		.data = clk_mt8365_apmixed_probe,
-
-Define multiple platform drivers, each one with its probe function, instead of
-defining the probe functions for each driver as platform data.
-
-That will allow you to *easily* use builtin_platform_driver()... and will also
-allow you to add a .remove() callback for all of these clock controllers.
-Go for it, please!
-
-Regards,
-Angelo
+Build results:
+	total: 147 pass: 145 fail: 2
+Failed builds:
+	arm:allmodconfig
+	powerpc:allmodconfig
+Qemu test results:
+	total: 489 pass: 489 fail: 0
+
+arm:allmodconfig:
+
+Error log:
+ERROR: modpost: missing MODULE_LICENSE() in drivers/watchdog/gxp-wdt.o
+
+Guess that one is on me. Fix is at
+https://patchwork.kernel.org/project/linux-watchdog/patch/20220603131419.2948578-1-linux@roeck-us.net/
+
+powerpc:allmodconfig:
+
+Error: External symbol 'memset' referenced from prom_init.c
+make[3]: [arch/powerpc/kernel/Makefile:202: arch/powerpc/kernel/prom_init_check] Error 1 (ignored)
+powerpc64-linux-ld: drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o uses hard float,
+	drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_resource.o uses soft float
+powerpc64-linux-ld: failed to merge target specific data of
+	file drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_resource.o
+powerpc64-linux-ld: drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o uses hard float,
+	drivers/gpu/drm/amd/amdgpu/../display/dc/dcn315/dcn315_resource.o uses soft float
+powerpc64-linux-ld: failed to merge target specific data of file
+	drivers/gpu/drm/amd/amdgpu/../display/dc/dcn315/dcn315_resource.o
+powerpc64-linux-ld: drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o uses hard float,
+	drivers/gpu/drm/amd/amdgpu/../display/dc/dcn316/dcn316_resource.o uses soft float
+powerpc64-linux-ld: failed to merge target specific data of file
+	drivers/gpu/drm/amd/amdgpu/../display/dc/dcn316/dcn316_resource.o 
+
+Bisects to commit 41b7a347bf14 ("powerpc: Book3S 64-bit outline-only KASAN support")
+which seems to change dependencies.
+
+There is also a runtime warning, seen with various qemu arm boot tests.
+
+WARNING: CPU: 0 PID: 1 at lib/refcount.c:28 of_platform_bus_create+0x33c/0x3dc
+refcount_t: underflow; use-after-free.
+Modules linked in:
+CPU: 0 PID: 1 Comm: swapper Not tainted 5.19.0-rc1 #1
+Hardware name: ARM-Versatile (Device Tree Support)
+ unwind_backtrace from show_stack+0x10/0x14
+ show_stack from dump_stack_lvl+0x38/0x5c
+ dump_stack_lvl from __warn+0xc8/0x1d4
+ __warn from warn_slowpath_fmt+0x90/0xc8
+ warn_slowpath_fmt from of_platform_bus_create+0x33c/0x3dc
+ of_platform_bus_create from of_platform_bus_create+0x1ec/0x3dc
+ of_platform_bus_create from of_platform_populate+0x68/0xd8
+ of_platform_populate from customize_machine+0x1c/0x30
+ customize_machine from do_one_initcall+0x8c/0x2fc
+ do_one_initcall from kernel_init_freeable+0x190/0x220
+ kernel_init_freeable from kernel_init+0x10/0x108
+ kernel_init from ret_from_fork+0x14/0x3c
+
+This is fixed with commit d2ca1fd2bc70 ("ARM: 9207/1: amba: fix refcount
+underflow if amba_device_add() fails") in linux-next.
+
+Guenter
