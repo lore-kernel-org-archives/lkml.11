@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF10BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 20:43:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84A06C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 20:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232356AbiFFUnF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 16:43:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54880 "EHLO
+        id S234146AbiFFUnJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 16:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234343AbiFFUmY (ORCPT
+        with ESMTP id S234244AbiFFUmc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 16:42:24 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B3AED738
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 13:38:47 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-f2bb84f9edso20573712fac.10
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 13:38:47 -0700 (PDT)
+        Mon, 6 Jun 2022 16:42:32 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5325D1208B1
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 13:38:51 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-e656032735so20653554fac.0
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 13:38:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=12KHJFePHvtELaFCoDutiatufKE2J0aYO+nHGRn0w7U=;
-        b=XFqePO7P5W4gGPYSV2JFBsih67jDxFl6rHWGV7Gjp+gQSTUAaeLmHW0G8E04fPOr6k
-         SRnRh8ggJHCbEMW0p4opnochH/ZK7by3lDcM8st+sYazL1bQfs9tcY7m5PvCyQ57QxZu
-         ORgDX7mgRXbUi36JeZr1Ea2XfDKMSO8WuQGgdargTYM9vwiqxdNNNC7lfbVQN9LqaKoj
-         vcCVXXFc42VZehyMEEoR25Dwf9HBwwvEjV7M8S9a8+D5Y7wW3IYI4HDlLOPbkhFqLJkb
-         MxHSEam3aQnWqVAcLo+0MqjWxnaIJafSEeCX1v+TpKHT88o4cjB8Uk03veBbFE7O/sN9
-         YYrQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=zN7yZdXGDF9PPNDxZsgYWxX8yKA4nCi67h3WnKoi/Sc=;
+        b=gR+ZqTNEY2oneCOOINaXerlABfVjfegVqPEAFOUx+e41iHPZqWuoSvB3U7W+hG637B
+         SLS4OfO+8R6z0aLbzDhoxgNXz7OecFthBjJVdWzppPR3gOH3JL/lWCe7aa1CvwIeuDsz
+         MYoQ9YA6J4efrzkkKb5UIYKUbidZoSXMxYgeXeNTaC2F4PiPpEi7hx7w7qiPuVFP1vCS
+         c9zoMH4HmZhwPC4kHRveq3sr39ydbDioDIufjmhfcEFeLKmqok/hOSkroaESNG42C6td
+         SR2oeM6Ys5NcAmmTaOmNWvG2vT+4hDamnw4a86phgUCcExZlVfBzAUCJqv258spBA4GY
+         DB4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=12KHJFePHvtELaFCoDutiatufKE2J0aYO+nHGRn0w7U=;
-        b=MkxDwASH29LMkf6KTtztC6hQ8kZiP3MvGrX4JE4+xV9uWVkjDhkWmSsme9B/PAVzZa
-         lps+P2yaUBc/mbwTbmIoWdEu6aaCM2OaWPVmuC10y9g5g+J1ppZcCytfkNXgPlqROZsz
-         fbYRAmnTRTzM1BDd1FS2O3pdcUMUARTPa0TxM5bcSWpzg2zyJ6axN9WPEJpwZT0+tGJf
-         p1CzdZ2q/RpYdsOPjuewfehd9xD0AJCTBppbOmaaPus7q0NMsPYsHxlxoRm1uLbBrgIE
-         8XCTdzTNeFDQAcPC3arp/6znucZK0AilQbeX3EaUcrwxLWOQeHGq48Hju8xJpZCymKqR
-         W0TQ==
-X-Gm-Message-State: AOAM532ZuKVdWuwWcKw+CT14lxceJX/5Rqe7wp9P9B7Ng9b8Gn26s4mZ
-        eSVJzlaCerE04deihJmrQ0FR1Cm2zA==
-X-Google-Smtp-Source: ABdhPJyO6fz1ThOKgBZsK8EYb+odK170hwxKGDuy0N53o3rwBvDNOYuey19adH36SsBVJmEThUqoIg==
-X-Received: by 2002:a05:6870:c88a:b0:f2:8d92:318a with SMTP id er10-20020a056870c88a00b000f28d92318amr14635466oab.281.1654547926892;
-        Mon, 06 Jun 2022 13:38:46 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zN7yZdXGDF9PPNDxZsgYWxX8yKA4nCi67h3WnKoi/Sc=;
+        b=h8238dM6yxZQnqM3exNY1kf/LREPnGZQ1agyFBUzOH7Ue6iXqMic7AP/SukyfjxzTW
+         6O5ZsAVHkZ3mNfoMfJD0orxJc9ar7fQoRbSHR8ty5IPPOuAiaABQjecwOUVbKbJmlr29
+         bE+5J1N7A/s0jTBjrkk1Pw9oCKDzMaTPYnSL/LyzTTTgpdZIX7bNb+CYpKwHqxfM/YNq
+         PuLZsA+VWtWDFWIQEsOdSH2DCa79qiayqt9U5AomiLaNSrUSWA88jLufgMz8uNFd+pjx
+         8ATsHnhU38LvxGLpbMP0mHEj7xQO3vxVkYbd9ntqLwnEr6ZFnpMGM6wCXLlMBqpdzA0C
+         r5PA==
+X-Gm-Message-State: AOAM532arabpvV07PFy/nP47Q3m+gd7HwPaGzxRI0M039Q5ij7hYhMav
+        +QfKSkWx9C5yL42a21f7rrunhxpB6A==
+X-Google-Smtp-Source: ABdhPJw/XjRxHKzCBw4N3AcILogPcpEvbEODBwQq63HwujCnt98GlY2TKNISuQnTW15c0UGWqt8lVw==
+X-Received: by 2002:a05:6870:7009:b0:f3:4965:5b1a with SMTP id u9-20020a056870700900b000f349655b1amr14053098oae.234.1654547930552;
+        Mon, 06 Jun 2022 13:38:50 -0700 (PDT)
 Received: from citadel.. (174-084-153-250.res.spectrum.com. [174.84.153.250])
-        by smtp.gmail.com with ESMTPSA id j22-20020a056808035600b0032e3cca8561sm4327188oie.21.2022.06.06.13.38.45
+        by smtp.gmail.com with ESMTPSA id j22-20020a056808035600b0032e3cca8561sm4327188oie.21.2022.06.06.13.38.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 13:38:46 -0700 (PDT)
+        Mon, 06 Jun 2022 13:38:49 -0700 (PDT)
 From:   Brian Gerst <brgerst@gmail.com>
 To:     linux-kernel@vger.kernel.org, x86@kernel.org
 Cc:     Thomas Gleixner <tglx@linutronix.de>,
@@ -57,49 +57,42 @@ Cc:     Thomas Gleixner <tglx@linutronix.de>,
         Peter Zijlstra <peterz@infradead.org>,
         "Eric W . Biederman" <ebiederm@xmission.com>,
         Brian Gerst <brgerst@gmail.com>
-Subject: [PATCH 0/8] x86 signal code cleanups
-Date:   Mon,  6 Jun 2022 16:37:54 -0400
-Message-Id: <20220606203802.158958-1-brgerst@gmail.com>
+Subject: [PATCH 3/8] signal/compat: Remove compat_sigset_t override
+Date:   Mon,  6 Jun 2022 16:37:57 -0400
+Message-Id: <20220606203802.158958-4-brgerst@gmail.com>
 X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220606203802.158958-1-brgerst@gmail.com>
+References: <20220606203802.158958-1-brgerst@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 32-bit signal code has significant differences from 64-bit, and
-those are duplicated for native and compat modes.  This patch series
-merges the 32-bit code into one file, and does some general cleanups
-in the x86 signal code.  There should be no functional changes.
+x86 no longer uses compat_sigset_t when CONFIG_COMPAT isn't enabled, so
+remove the override define.
 
-Brian Gerst (8):
-  x86/signal: Remove sig parameter from frame setup functions
-  x86/signal: Remove sigset_t parameter from frame setup functions
-  signal/compat: Remove compat_sigset_t override
-  x86: Remove __USER32_DS
-  x86/signal: Merge get_sigframe()
-  x86/signal: Add ABI prefixes to frame setup functions
-  x86/signal/32: Merge native and compat 32-bit signal code
-  x86/signal/64: Move 64-bit signal code to its own file
+Signed-off-by: Brian Gerst <brgerst@gmail.com>
+---
+ include/linux/compat.h | 2 --
+ 1 file changed, 2 deletions(-)
 
- arch/x86/entry/entry_64_compat.S              |   4 +-
- arch/x86/ia32/Makefile                        |   2 -
- arch/x86/include/asm/elf.h                    |   4 -
- arch/x86/include/asm/fpu/signal.h             |   7 -
- arch/x86/include/asm/segment.h                |   2 +-
- arch/x86/include/asm/sighandling.h            |   9 +
- arch/x86/include/asm/signal.h                 |   5 -
- arch/x86/kernel/Makefile                      |   4 +-
- arch/x86/kernel/signal.c                      | 654 +-----------------
- .../ia32_signal.c => kernel/signal_32.c}      | 117 ++--
- arch/x86/kernel/signal_64.c                   | 383 ++++++++++
- arch/x86/xen/xen-asm.S                        |   8 +-
- include/linux/compat.h                        |   2 -
- include/linux/syscalls.h                      |   2 +
- 14 files changed, 493 insertions(+), 710 deletions(-)
- rename arch/x86/{ia32/ia32_signal.c => kernel/signal_32.c} (82%)
- create mode 100644 arch/x86/kernel/signal_64.c
-
+diff --git a/include/linux/compat.h b/include/linux/compat.h
+index 594357881b0b..44b1736c95b5 100644
+--- a/include/linux/compat.h
++++ b/include/linux/compat.h
+@@ -126,11 +126,9 @@ struct compat_tms {
+ 
+ #define _COMPAT_NSIG_WORDS	(_COMPAT_NSIG / _COMPAT_NSIG_BPW)
+ 
+-#ifndef compat_sigset_t
+ typedef struct {
+ 	compat_sigset_word	sig[_COMPAT_NSIG_WORDS];
+ } compat_sigset_t;
+-#endif
+ 
+ int set_compat_user_sigmask(const compat_sigset_t __user *umask,
+ 			    size_t sigsetsize);
 -- 
 2.35.3
 
