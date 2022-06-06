@@ -2,95 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C1EAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:30:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 718A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:30:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241837AbiFFQae (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 12:30:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50514 "EHLO
+        id S241720AbiFFQa5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 12:30:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241783AbiFFQa2 (ORCPT
+        with ESMTP id S241716AbiFFQau (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 12:30:28 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73ED6331C08;
-        Mon,  6 Jun 2022 09:30:27 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id h18so10530633qvj.11;
-        Mon, 06 Jun 2022 09:30:27 -0700 (PDT)
+        Mon, 6 Jun 2022 12:30:50 -0400
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Jun 2022 09:30:48 PDT
+Received: from ewsoutbound.kpnmail.nl (ewsoutbound.kpnmail.nl [195.121.94.183])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E0B331C1C
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 09:30:47 -0700 (PDT)
+X-KPN-MessageId: 54269503-e5b5-11ec-8ee3-005056992ed3
+Received: from smtp.kpnmail.nl (unknown [10.31.155.7])
+        by ewsoutbound.so.kpn.org (Halon) with ESMTPS
+        id 54269503-e5b5-11ec-8ee3-005056992ed3;
+        Mon, 06 Jun 2022 18:25:50 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Uj9IThCIXw7MmlitWv/kpBQW2fnYrdG6q6L4yRpNXrU=;
-        b=WSVHIJ2V4JVxNIpNbF02Y5N3cY/ORPB5W+ELXtMq3RlArA3/Ww9ebxkySarX1fiif+
-         7yylsTlypXMbeWEGDFghk6egHH7zdc0OSmIbakyDwbdrr0kSeE3J050dxn/5Kur9zZRt
-         y2TsdrprBjIMiRcfbB9oe5yDSxWx4FtJwu5CF0zhY0k+Swv1Aerdlbsv08r3KYZ/yA5f
-         IkdhXVaBROswnx1lMCPn1CESZ1ISHWOMpGlGFhA0h7j+pZ63oddoVWlpt77GshKpVGyq
-         OMzQfS+8rqs5+2bKTe0vPAGKeToLstintiQMRgdM1yGz+KoP53W4U4LU6gqxghhjkqk7
-         kPqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Uj9IThCIXw7MmlitWv/kpBQW2fnYrdG6q6L4yRpNXrU=;
-        b=J2vkMUKMEJFH/+27b6g52Cia3V/weVQY2vs4l9NssBb4rb/ukvZe72giWXA6Xxi/pg
-         aeHdlWxi59Js7qgwVkknYMBb1u8j5khb5RH0rXUUK4HwRCbBe/8690A/RRxZ4AMgwC0F
-         fhohk1XV71Qaj5VsmiZV+O+4LzCdpIVep4fU/YQseAFCQCgMhd/5dd7EtyeIEcGVs3Ta
-         q2h0bcd5nSFbl4xqogy/j6P0le/+lHo9i7a7pOcJZtKgHLNeAvjR0ytv0DrL2pEoMa6I
-         Bs2amYUv8TsA4p6432eL9TCWr0lDiddWC2ZGkhvuffAYbi1Gav5Zs5o5oUNdOILNDDPX
-         2Cqw==
-X-Gm-Message-State: AOAM532kzbJxJlr4tfZ5/laMqlCeg781dO70ONKu+4CemPPlaXeroBvM
-        zW2KCsQj9Z9tnDVrl/bMrIM=
-X-Google-Smtp-Source: ABdhPJx8DcER+KpdwW/dNyTBFgzXFRCtviHEu5OoAfCgnM6qWGz9mtUpn4YaL1thxkL4dgUTEWOY0g==
-X-Received: by 2002:ad4:5fcf:0:b0:467:dc87:82ff with SMTP id jq15-20020ad45fcf000000b00467dc8782ffmr13728091qvb.14.1654533026466;
-        Mon, 06 Jun 2022 09:30:26 -0700 (PDT)
-Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
-        by smtp.gmail.com with ESMTPSA id bk3-20020a05620a1a0300b006a6ba92d852sm3329789qkb.83.2022.06.06.09.30.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 09:30:25 -0700 (PDT)
-From:   Peter Geis <pgwipeout@gmail.com>
-To:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
+        d=kpnmail.nl; s=kpnmail01;
+        h=mime-version:message-id:date:subject:to:from;
+        bh=t63OwfhftQBAyL+fD30q+bT1pNxqFcyfuKg2Jivjc+Q=;
+        b=NnR5/jMNJy7fKwGLzBDJb+7vKGxpMv6unVQu+wRU6nzH03mDnN54TZX2zuFBwYfIgIZy9JVAnU86A
+         cNYoWSn+98xKLKM1s8yf0m/qTohHXKno0oZDU6xpzQ61gPoH84pLhrQkZlwYZpNV8H1UYiYN3FoLw/
+         FZe6Qpa3GMUp/iGw=
+X-KPN-MID: 33|aL9PUIB7qkWLTPrS0P64JdvWC3henaHPZmFqEnNfYTMTLrlXAfey2k1eZRTcV/G
+ JqPqfuq/HDP8UfyOKzoEunHjtNzJusZNnGI/gT7ZsFaE=
+X-KPN-VerifiedSender: No
+X-CMASSUN: 33|A8jqBSxURq+ObuYB9ir+OR6sDf0y1Pyq+KNCzoUeVKU7xfk/lnYhgxDZOP/oTZ8
+ NuID5OAQyQIEWmMoElTqImQ==
+X-Originating-IP: 80.61.163.207
+Received: from copland.sibelius.xs4all.nl (80-61-163-207.fixed.kpn.net [80.61.163.207])
+        by smtp.xs4all.nl (Halon) with ESMTPSA
+        id ddb736f1-e5b5-11ec-961a-005056998788;
+        Mon, 06 Jun 2022 18:29:41 +0200 (CEST)
+From:   Mark Kettenis <kettenis@openbsd.org>
+To:     kernel@esmil.dk, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Peter Geis <pgwipeout@gmail.com>
-Cc:     Frank Mankel <frank.mankel@gmail.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] arm64: dts: rockchip: Fix ethernet on production Quartz64-B
-Date:   Mon,  6 Jun 2022 12:30:23 -0400
-Message-Id: <20220606163023.3677147-1-pgwipeout@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Cc:     Mark Kettenis <kettenis@openbsd.org>, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] riscv: dts: startfive: currect number of external interrupts
+Date:   Mon,  6 Jun 2022 18:29:23 +0200
+Message-Id: <20220606162924.71418-1-kettenis@openbsd.org>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The production Quartz64 Model B has compatibility issues when using
-rgmii-id mode. Switch to rgmii mode and use the SoC's delays to ensure
-full compatibility.
+The PLIC integrated on the Vic_U7_Core integrated on the StarFive
+JH7100 SoC actually supports 133 external interrupts.  127 of these
+are exposed to the outside world; the remainder are used by other
+devices that are part of the core-complex such as the L2 cache
+controller.  But all 133 interrupts are external interrupts as far
+as the PLIC is concerned.  Fixing the property that specifies the
+number of external interrupts allows the driver to manage these
+additional interrupts, whch is important since the interrupts for
+the L2 cache controller are enabled by default.
 
-Reported-by: Frank Mankel <frank.mankel@gmail.com>
-Fixes: dcc8c66bef79 ("arm64: dts: rockchip: add Pine64 Quartz64-B device
-tree")
-Signed-off-by: Peter Geis <pgwipeout@gmail.com>
-Tested-by: Frank Mankel <frank.mankel@gmail.com>
+Signed-off-by: Mark Kettenis <kettenis@openbsd.org>
 ---
- arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts | 2 +-
+ arch/riscv/boot/dts/starfive/jh7100.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts
-index 7bdcecc0dfe4..02d5f5a8ca03 100644
---- a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-b.dts
-@@ -133,7 +133,7 @@ &gmac1 {
- 	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>, <&cru SCLK_GMAC1_RGMII_SPEED>, <&cru SCLK_GMAC1>;
- 	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>, <&cru SCLK_GMAC1>, <&gmac1_clkin>;
- 	clock_in_out = "input";
--	phy-mode = "rgmii-id";
-+	phy-mode = "rgmii";
- 	phy-supply = <&vcc_3v3>;
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&gmac1m1_miim
+diff --git a/arch/riscv/boot/dts/starfive/jh7100.dtsi b/arch/riscv/boot/dts/starfive/jh7100.dtsi
+index 69f22f9aad9d..f48e232a72a7 100644
+--- a/arch/riscv/boot/dts/starfive/jh7100.dtsi
++++ b/arch/riscv/boot/dts/starfive/jh7100.dtsi
+@@ -118,7 +118,7 @@ plic: interrupt-controller@c000000 {
+ 			interrupt-controller;
+ 			#address-cells = <0>;
+ 			#interrupt-cells = <1>;
+-			riscv,ndev = <127>;
++			riscv,ndev = <133>;
+ 		};
+ 
+ 		clkgen: clock-controller@11800000 {
 -- 
-2.25.1
+2.36.0
 
