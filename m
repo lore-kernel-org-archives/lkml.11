@@ -2,116 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 590BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:42:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5396C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241905AbiFFQms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 12:42:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44376 "EHLO
+        id S241869AbiFFQnM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 12:43:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241869AbiFFQmQ (ORCPT
+        with ESMTP id S241889AbiFFQnB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 12:42:16 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C9112A96;
-        Mon,  6 Jun 2022 09:42:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654533727; x=1686069727;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=kPfOvWxtiOQgydvhidTbirNyYEpGUtcQOWxp4O2/dTk=;
-  b=M1FkoIGpdtkIE3Ex55nVqOW7QEhDG/b53A6t9t023pQ8w9TJh7gF4Sdr
-   Yrl+Ihv0EpPGpRndSIQSjBEK4WsOY2CnvITaZO1UUpOQq0MYXYR98S6b8
-   k3DC0mvy0s76Q7j+EQ0xtdNrvXmJakE8JiJnB4d24CFMJNnwwQilAZtIT
-   oFbByyItxnNNquCkBJaWKp9FJtzXkKYYWwIOUu7VAOwjihC6r+RzH7CLg
-   LnOf94LG3AVeUQB55+xfqeBSiUvStc0RDUijJkGaYJiyNXc5w3rMEu/4F
-   xxEC02k4gm81dVxxaJFdx0nA03cILCGpg+RVQUxdfmaYgKfRaEttqxbYg
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="275446410"
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="275446410"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 09:42:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="579224475"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga007.jf.intel.com with ESMTP; 06 Jun 2022 09:41:55 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id B81D6F60; Mon,  6 Jun 2022 19:41:50 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Tony Luck <tony.luck@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Henning Schild <henning.schild@siemens.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jonathan Yong <jonathan.yong@intel.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-gpio@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-watchdog@vger.kernel.org
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Jean Delvare <jdelvare@suse.com>, Pavel Machek <pavel@ucw.cz>,
-        Peter Tyser <ptyser@xes-inc.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Mark Gross <markgross@kernel.org>
-Subject: [PATCH v6 07/12] EDAC, pnd2: Use proper I/O accessors and address space annotation
-Date:   Mon,  6 Jun 2022 19:41:33 +0300
-Message-Id: <20220606164138.66535-8-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220606164138.66535-1-andriy.shevchenko@linux.intel.com>
-References: <20220606164138.66535-1-andriy.shevchenko@linux.intel.com>
+        Mon, 6 Jun 2022 12:43:01 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E85553A4A
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 09:42:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654533779; x=1686069779;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ZU9NUTFu48CfY0LMclqxeVvNVtz2AA0DNT4zjmIRCHc=;
+  b=K9l4iiUF0kTLpBgx78d6J0gAck9BjLACG71sjj8nMdDR5slWrgykTf93
+   Wq4w8PRntYXq/niInUTZKVjWIwkTNfqDvEKQwZ6b+mloO7oRHcxbbWNB+
+   NHOZBFNOal1yWVHfppLi94b/n77Bv/jafkTkC73JpOLWwK4/IVGQWTNah
+   Y=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 06 Jun 2022 09:42:59 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 09:42:59 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 6 Jun 2022 09:42:58 -0700
+Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 6 Jun 2022
+ 09:42:57 -0700
+Date:   Mon, 6 Jun 2022 12:42:55 -0400
+From:   Qian Cai <quic_qiancai@quicinc.com>
+To:     Liam Howlett <liam.howlett@oracle.com>
+CC:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v9 08/69] mm: start tracking VMAs with maple tree
+Message-ID: <Yp4uj/fGd56ku8SM@qian>
+References: <20220504010716.661115-1-Liam.Howlett@oracle.com>
+ <20220504010716.661115-10-Liam.Howlett@oracle.com>
+ <Yp3yYmNJ5dd8g8Ur@qian>
+ <20220606161612.ujglo6i3zbnrygqs@revolver>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220606161612.ujglo6i3zbnrygqs@revolver>
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver uses rather voodoo kind of castings and I/O accessors.
-Replace it with proper __iomem annotation and readl()/readq() calls.
+On Mon, Jun 06, 2022 at 04:16:27PM +0000, Liam Howlett wrote:
+> Does your fuzzer create a reproducer at all?  It would be helpful a lot
+> since I cannot see my bug right now.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tested-by: Henning Schild <henning.schild@siemens.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
----
- drivers/edac/pnd2_edac.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+The same reproducer that running it over the weekend.
 
-diff --git a/drivers/edac/pnd2_edac.c b/drivers/edac/pnd2_edac.c
-index c94ca1f790c4..7d1df120e24c 100644
---- a/drivers/edac/pnd2_edac.c
-+++ b/drivers/edac/pnd2_edac.c
-@@ -265,7 +265,7 @@ static u64 get_sideband_reg_base_addr(void)
- static int dnv_rd_reg(int port, int off, int op, void *data, size_t sz, char *name)
- {
- 	struct pci_dev *pdev;
--	char *base;
-+	void __iomem *base;
- 	u64 addr;
- 	unsigned long size;
- 
-@@ -297,8 +297,9 @@ static int dnv_rd_reg(int port, int off, int op, void *data, size_t sz, char *na
- 			return -ENODEV;
- 
- 		if (sz == 8)
--			*(u32 *)(data + 4) = *(u32 *)(base + off + 4);
--		*(u32 *)data = *(u32 *)(base + off);
-+			*(u64 *)data = readq(base + off);
-+		else
-+			*(u32 *)data = readl(base + off);
- 
- 		iounmap(base);
- 	}
--- 
-2.35.1
-
+$ trinity -C 160
