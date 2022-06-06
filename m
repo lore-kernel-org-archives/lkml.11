@@ -2,51 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B81D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:26:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FDECC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:26:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240690AbiFFP0w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:26:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46292 "EHLO
+        id S240628AbiFFP04 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 11:26:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240610AbiFFPZy (ORCPT
+        with ESMTP id S240608AbiFFPZy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 6 Jun 2022 11:25:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFAB1CD36E;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD021CD36A;
         Mon,  6 Jun 2022 08:25:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1069D6154B;
-        Mon,  6 Jun 2022 15:25:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EFB2C341E8;
-        Mon,  6 Jun 2022 15:25:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA4F5B81A8F;
+        Mon,  6 Jun 2022 15:25:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D88EBC341C6;
+        Mon,  6 Jun 2022 15:25:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654529149;
-        bh=P/ZZQJbpLLBjuQh2G6MF/T6nwAhbQfPWvBqgMsptpx4=;
+        s=k20201202; t=1654529148;
+        bh=dKol4sgwd+aRZfbYxUG7kC/mmhFopuLPynC+Zt89S7k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ko5+VusQxc88bi5bLZkz9C30n0GqVEWwi7lPqyCxMEfS/5Lxu+WyJ0VpF6r65BQDX
-         qtn661HpXY3EA4IdaR5thgiryc0rKlBC6axQoiCvV32js/gPV16tk9NxhIc78lRUxk
-         iI50i60mrZNkaNJWyNxg7zWJlZDOgbCdJw5zIVb1wqDd3xnK3smmzpItKxvbqffY5f
-         et/sLiJYChTb4jOOP90CXxzpavDcC31r8kMUxHLEqfMB5kpE0mjSEngFywuK+nHr1t
-         NVdEAjjQdFYcwWGH3ejTLFckd9zf1RuXsXWDbfR28au5aoFCB3Jzj2wMLrA8r//Kvn
-         qm5uA9pEoIQGA==
+        b=k8MCp4JwlbfSiWbjBb9YOKkjqALcKFsEqiZhw1T2ZdEB/J+WxHcROaoKSgxGzMdgv
+         OXkF0n+QnyHSO5GpZ2+ILjk752Ho0GB7OlVqiOdjYT1d8GbHepbeOY683K/vlxAnbE
+         IrXywtNhv5sLaZmCD1zmnP1/XW17nqzcOAF8jwzOmCIO8p8go7XYd5u7Op0duDC6rJ
+         7prK0s9J/4B464n/XNT+WFEquyotVYMszxsG2CM9NauiD4jcPLA+gM222vcZ2GIUVa
+         U5LTbyDdJglgF4ii7QRvy8Lr+fkdw3+/L+QoZmH+T0D94m0ROZ1D9GW5N3PxaxSfGj
+         F5rEZL3LDijjQ==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1nyEby-0012Q9-GE;
+        id 1nyEby-0012PS-9l;
         Mon, 06 Jun 2022 16:25:46 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
         Jonathan Corbet <corbet@lwn.net>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
-        linux-m68k@lists.linux-m68k.org
-Subject: [PATCH 23/23] arch: m68k: q40: README: drop references to IDE driver
-Date:   Mon,  6 Jun 2022 16:25:45 +0100
-Message-Id: <39b24f99f5b71eb5ac025b438b7eb2a0df2258a1.1654529011.git.mchehab@kernel.org>
+        Ashish Kalra <ashish.kalra@amd.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Steve Rutherford <srutherford@google.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 13/23] Documentation: KVM: update s390-diag.rst reference
+Date:   Mon,  6 Jun 2022 16:25:35 +0100
+Message-Id: <a43ac709fe3130c21dd54d0a43d0c0fc80f5ad2c.1654529011.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1654529011.git.mchehab@kernel.org>
 References: <cover.1654529011.git.mchehab@kernel.org>
@@ -56,34 +58,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since IDE support was deleted by Christoph Hellwig <hch@lst.de>,
-Jun 16 2021, drop the left-over from README file.
+Changeset daec8d408308 ("Documentation: KVM: add separate directories for architecture-specific documentation")
+renamed: Documentation/virt/kvm/s390-diag.rst
+to: Documentation/virt/kvm/s390/s390-diag.rst.
 
-Fixes: b7fb14d3ac63 ("ide: remove the legacy ide driver")
+Update its cross-reference accordingly.
+
+Fixes: daec8d408308 ("Documentation: KVM: add separate directories for architecture-specific documentation")
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/23] at: https://lore.kernel.org/all/cover.1654529011.git.mchehab@kernel.org/
 
- arch/m68k/q40/README | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ Documentation/virt/kvm/x86/hypercalls.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/m68k/q40/README b/arch/m68k/q40/README
-index a4991d2d8af6..4db6db54d57a 100644
---- a/arch/m68k/q40/README
-+++ b/arch/m68k/q40/README
-@@ -30,9 +30,7 @@ drivers used by the Q40, apart from the very obvious (console etc.):
- 		     genrtc.c		# RTC
- 		char/joystick/*		# most of this should work, not
- 				        # in default config.in
--	        block/q40ide.c		# startup for ide
--		      ide*		# see Documentation/ide/ide.rst
--		      floppy.c		# normal PC driver, DMA emu in asm/floppy.h
-+	        block/floppy.c		# normal PC driver, DMA emu in asm/floppy.h
- 					# and arch/m68k/kernel/entry.S
- 					# see drivers/block/README.fd
- 		net/ne.c
+diff --git a/Documentation/virt/kvm/x86/hypercalls.rst b/Documentation/virt/kvm/x86/hypercalls.rst
+index e56fa8b9cfca..10db7924720f 100644
+--- a/Documentation/virt/kvm/x86/hypercalls.rst
++++ b/Documentation/virt/kvm/x86/hypercalls.rst
+@@ -22,7 +22,7 @@ S390:
+   number in R1.
+ 
+   For further information on the S390 diagnose call as supported by KVM,
+-  refer to Documentation/virt/kvm/s390-diag.rst.
++  refer to Documentation/virt/kvm/s390/s390-diag.rst.
+ 
+ PowerPC:
+   It uses R3-R10 and hypercall number in R11. R4-R11 are used as output registers.
 -- 
 2.36.1
 
