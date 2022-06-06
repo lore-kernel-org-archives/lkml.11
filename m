@@ -2,108 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 177C6CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 19:48:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F589C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 19:49:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232663AbiFFTsU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 15:48:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35434 "EHLO
+        id S231601AbiFFTtV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 15:49:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232658AbiFFTsQ (ORCPT
+        with ESMTP id S232720AbiFFTtP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 15:48:16 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71374186D8
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 12:48:15 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id h23so19890941ejj.12
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 12:48:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DT6839JbDy2yIdEYMFoTCSnqwzHXVdWj4aG9+gbEJ94=;
-        b=TD3VNjXXe98Co3b86I6MMAPvAqs7GFH9zK5G2EFMl80w/4jTsLDTJTlvJaPlCJ165s
-         hN2+7BnMlwCh8SH5aG2nXEF9n5Jn6LQtN4zAVq5mmshHyYzYyDJZcnSBlQSMRFduucv2
-         UlPhDYoxVlqwIbAP7DMLZrAx/ovYm8t7HBN8I=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DT6839JbDy2yIdEYMFoTCSnqwzHXVdWj4aG9+gbEJ94=;
-        b=xljy6gZ6iwpA6JxEO6sfq7RhfgdTp6gbIToXpqXtv+ioJKl7U2LnhmVWzV+HwuvE4G
-         lItTAIz06smGcpZspJsZ409IPt9VM0+psg/IuQH/tMtqnXAjIevIohOP0VP7VtXLcFU7
-         V0Y2yCeiWZRQGLLw7hpwYkr6bIJL8vgscZihpsHeGc3MgG8iri7DBbP52w0hZP79iiT6
-         CTkQ92XfDy8QoCT3XFevRxM5/MbMEgQKyUalCs0OkiaJ4T826ozJAKkUoSdPZLbSSd+i
-         n9KklLszgut7VEBBAReqKPNJy53IlPlRL815yWXeYSGsX16wsZx+6G3pimtMbdhFMJ4o
-         yrGA==
-X-Gm-Message-State: AOAM532mipxCBnWWc0u94/EAlyc2W6nSFnX3qwirAmaDfSh39MekDW2E
-        SvgIra6ukgpociiU86uR+HI1SwrnzuXtLfEmJTE=
-X-Google-Smtp-Source: ABdhPJw4DyFmFQHx1tALMYVI4FHkHsRHeSmLt9XIPMFM83fe0+QcEtTChXoOTM9RDSo3RWJrOBw89g==
-X-Received: by 2002:a17:906:3ed5:b0:6f5:108c:a45 with SMTP id d21-20020a1709063ed500b006f5108c0a45mr22834264ejj.623.1654544893703;
-        Mon, 06 Jun 2022 12:48:13 -0700 (PDT)
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com. [209.85.221.41])
-        by smtp.gmail.com with ESMTPSA id a14-20020a170906368e00b006fec5cef701sm6663428ejc.197.2022.06.06.12.48.11
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Jun 2022 12:48:11 -0700 (PDT)
-Received: by mail-wr1-f41.google.com with SMTP id u3so21227571wrg.3
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 12:48:11 -0700 (PDT)
-X-Received: by 2002:a05:6000:16c4:b0:20f:cd5d:4797 with SMTP id
- h4-20020a05600016c400b0020fcd5d4797mr23878066wrf.193.1654544891292; Mon, 06
- Jun 2022 12:48:11 -0700 (PDT)
+        Mon, 6 Jun 2022 15:49:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 194CE64E3;
+        Mon,  6 Jun 2022 12:49:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C59E1B81B46;
+        Mon,  6 Jun 2022 19:49:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC115C3411D;
+        Mon,  6 Jun 2022 19:49:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654544952;
+        bh=UzryUnnGvZZBNEMB0odKe1O3TvXeLuFqBrHf32g9aVE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iSyhAlslzDDLj/7+Ko7uPEdCPdRI4c8xh7YsepEmcyIlfyiKhprn2+f9X5Uqkymuv
+         4tkQNb1dIa13VQQdvzszUg+0yNoXARS3zWuu5hq4Ak+Y5B21nhDSSlU991gfMTO144
+         /MU9S1P/yQSnhBdRvcSuLFSaHDuzSF+ttkze0lVvkJX5YykMaNKl21+daYla1GWA9N
+         9yhKNQSQpMSBiBhR7/I+00PZvgapPRk2hgHEJ2PHV3KOuTUj5ngjvx1kROjhoDwmw1
+         jnZhZ7BP3uEkBiupsa6PUosb/egFxyIVpPk7SQqgh9o+Ry9lSeop6vKXQ4VDZETtv5
+         25y1JxiHsQUUg==
+Date:   Mon, 6 Jun 2022 20:49:06 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mark Kettenis <kettenis@openbsd.org>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>, asahi@lists.linux.dev
+Subject: Re: [RFC PATCH v2 2/5] dt-bindings: sound: Add Apple Macs sound
+ peripherals
+Message-ID: <Yp5aMi0sSfBQzk0p@sirena.org.uk>
+References: <20220606191910.16580-1-povik+lin@cutebit.org>
+ <20220606191910.16580-3-povik+lin@cutebit.org>
 MIME-Version: 1.0
-References: <CAHk-=whmtHMzjaVUF9bS+7vE_rrRctcCTvsAeB8fuLYcyYLN-g@mail.gmail.com>
- <226cee6a-6ca1-b603-db08-8500cd8f77b7@gnuweeb.org> <CAHk-=whayT+o58FrPCXVVJ3Bn-3SeoDkMA77TOd9jg4yMGNExw@mail.gmail.com>
- <87r1414y5v.fsf@email.froward.int.ebiederm.org> <CAHk-=wijAnOcC2qQEAvFtRD_xpPbG+aSUXkfM-nFTHuMmPbZGA@mail.gmail.com>
- <266e648a-c537-66bc-455b-37105567c942@canonical.com>
-In-Reply-To: <266e648a-c537-66bc-455b-37105567c942@canonical.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 6 Jun 2022 12:47:54 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wi+C9XYbu59vuBv1Z9KHd7_tQN_Skd6xzrM512hFJq5aw@mail.gmail.com>
-Message-ID: <CAHk-=wi+C9XYbu59vuBv1Z9KHd7_tQN_Skd6xzrM512hFJq5aw@mail.gmail.com>
-Subject: Re: Linux 5.18-rc4
-To:     John Johansen <john.johansen@canonical.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        James Morris <jmorris@namei.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Kees Cook <keescook@chromium.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>, gwml@vger.gnuweeb.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="vLLkHsME4UnMDWvc"
+Content-Disposition: inline
+In-Reply-To: <20220606191910.16580-3-povik+lin@cutebit.org>
+X-Cookie: Have an adequate day.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 12:19 PM John Johansen
-<john.johansen@canonical.com> wrote:
->
-> > I suspect that part is that both Apparmor and IPC use the idr local lock.
->
-> bingo,
->
-> apparmor moved its secids allocation from a custom radix tree to idr in
->
->   99cc45e48678 apparmor: Use an IDR to allocate apparmor secids
->
-> and ipc is using the idr for its id allocation as well
 
-The thing is, I'm not entirely convinced you can deadlock on a local lock.
+--vLLkHsME4UnMDWvc
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-A local lock is per-cpu, so one CPU holding that lock won't actually
-block another CPU holding it. Even on RT, I think.
+On Mon, Jun 06, 2022 at 09:19:07PM +0200, Martin Povi=C5=A1er wrote:
 
-I *think* local locks are useful for lockdep not because of any lock
-chains they introduce, but because of how lockdep catches irq mis-use
-(where they *can* deadlock).
+> +      dai-link@1 {
+> +        reg =3D <1>;
+> +        link-name =3D "Headphones Jack";
 
-But I may be entirely wrong, and maybe that lock chain through the
-local lock actually does matter.
+Incredibly trivial bikeshed but normally that'd be "Headphone Jack"
+(singular).
 
-Let's bring in people who actually know what they are doing, rather
-than my wild speculation. Thomas?
+--vLLkHsME4UnMDWvc
+Content-Type: application/pgp-signature; name="signature.asc"
 
-                    Linus
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKeWjEACgkQJNaLcl1U
+h9BZ3wgAhIlgRunaKB0X+XBqE2TxgOKqeJ9dsZt0OJULGSwYFsGmFVb+calG3r2T
+TnKHqrx30urVJntDF1UmZu4m6Z31PMR5NXDvmMTy1DLb/LHyjOG/kAdRI1DW1zZm
+xVQFXD4QgCsyB10o+UL+Xl8AfWrj7FqoGXGioG3nYMWmtqsldUI2FinUDZKLZ5ef
+kqWVr17QjYvQSS/HbxlDfwQV4x+7JcMoVXn53oP21uOuYtg1peXr1ST50UpY+ixU
+fSGC+tIq7h/zTiKoXcbB8kPyLxZrAHMW8d+KolWhZzfq0ff06SMb0nfS4t7vT8Vy
+tbWwjbvUTkF7PRrrwCW6KCXI19BxWQ==
+=9TYE
+-----END PGP SIGNATURE-----
+
+--vLLkHsME4UnMDWvc--
