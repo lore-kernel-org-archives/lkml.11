@@ -2,160 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D9FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9044DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241591AbiFFQGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 12:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44936 "EHLO
+        id S241316AbiFFQGv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 12:06:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241596AbiFFQG0 (ORCPT
+        with ESMTP id S241168AbiFFQGn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 12:06:26 -0400
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 501551A04AD;
-        Mon,  6 Jun 2022 09:06:25 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:51234)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nyFF4-003oNe-A8; Mon, 06 Jun 2022 10:06:10 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:36080 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nyFF3-0064GU-5Q; Mon, 06 Jun 2022 10:06:09 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Oleg Nesterov <oleg@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org,
-        Robert OCallahan <roc@pernos.co>, Kyle Huey <khuey@pernos.co>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Douglas Miller <dougmill@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>
-References: <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org>
-        <20220518225355.784371-5-ebiederm@xmission.com>
-        <20220524114250.GB14347@redhat.com> <20220525143303.GB2687@redhat.com>
-Date:   Mon, 06 Jun 2022 11:06:01 -0500
-In-Reply-To: <20220525143303.GB2687@redhat.com> (Oleg Nesterov's message of
-        "Wed, 25 May 2022 16:33:03 +0200")
-Message-ID: <87ee014w0m.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 6 Jun 2022 12:06:43 -0400
+Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F1F1A44B4;
+        Mon,  6 Jun 2022 09:06:41 -0700 (PDT)
+Received: from g550jk.arnhem.chello.nl (31-151-115-246.dynamic.upc.nl [31.151.115.246])
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 783DECCE35;
+        Mon,  6 Jun 2022 16:06:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
+        t=1654531569; bh=FDmhzeRJXLln4Tsh/IURDfuOWharrgHiMsf+T6eZVRk=;
+        h=From:To:Cc:Subject:Date;
+        b=kIXuQ34jpxSgTAlu5WQwYutKhQUg6+TwsdaWr3k9kvYEfI5uyWrGa6TrRcvbiAWxJ
+         EPWQrlhfOVl/5YFwN7isG+qeC3a53HRBmMX+fMvvPOlOTjXqe7oSBMpTFt+5GJABhQ
+         /m4BrcW7yN/T/rIKEVaEQfyDVZrFkCKa/mewNKD0=
+From:   Luca Weiss <luca@z3ntu.xyz>
+To:     linux-arm-msm@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Luca Weiss <luca@z3ntu.xyz>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] ARM: dts: qcom: msm8974: re-add missing pinctrl
+Date:   Mon,  6 Jun 2022 18:04:21 +0200
+Message-Id: <20220606160421.1641778-1-luca@z3ntu.xyz>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nyFF3-0064GU-5Q;;;mid=<87ee014w0m.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1/bCD521uCeNyMK1sI9HAcjhaI84gTloTc=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 05/16] ptrace: Remove dead code from __ptrace_detach
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Oleg Nesterov <oleg@redhat.com> writes:
+As part of a recent cleanup commit, the pinctrl for a few uart and i2c
+nodes was removed. Adjust the names and/or add it back and assign it to
+the uart and i2c nodes.
 
-> On 05/24, Oleg Nesterov wrote:
->>
->> Sorry for delay.
->>
->> On 05/18, Eric W. Biederman wrote:
->> >
->> > Ever since commit 28d838cc4dfe ("Fix ptrace self-attach rule") it has
->> > been impossible to attach another thread in the same thread group.
->> >
->> > Remove the code from __ptrace_detach that was trying to support
->> > detaching from a thread in the same thread group.
->>
->> may be I am totally confused, but I think you misunderstood this code
->> and thus this patch is very wrong.
->>
->> The same_thread_group() check does NOT try to check if debugger and
->> tracee is in the same thread group, this is indeed impossible.
->>
->> We need this check to know if the tracee was ptrace_reparented() before
->> __ptrace_unlink() or not.
->>
->>
->> > -static int ignoring_children(struct sighand_struct *sigh)
->> > -{
->> > -	int ret;
->> > -	spin_lock(&sigh->siglock);
->> > -	ret = (sigh->action[SIGCHLD-1].sa.sa_handler == SIG_IGN) ||
->> > -	      (sigh->action[SIGCHLD-1].sa.sa_flags & SA_NOCLDWAIT);
->> > -	spin_unlock(&sigh->siglock);
->> > -	return ret;
->> > -}
->>
->> ...
->>
->> > @@ -565,14 +552,9 @@ static bool __ptrace_detach(struct task_struct *tracer, struct task_struct *p)
->> >
->> >  	dead = !thread_group_leader(p);
->> >
->> > -	if (!dead && thread_group_empty(p)) {
->> > -		if (!same_thread_group(p->real_parent, tracer))
->> > -			dead = do_notify_parent(p, p->exit_signal);
->> > -		else if (ignoring_children(tracer->sighand)) {
->> > -			__wake_up_parent(p, tracer);
->> > -			dead = true;
->> > -		}
->> > -	}
->>
->> So the code above does:
->>
->> 	- if !same_thread_group(p->real_parent, tracer), then the tracee was
->> 	  ptrace_reparented(), and now we need to notify its natural parent
->> 	  to let it know it has a zombie child.
->>
->> 	- otherwise, the tracee is our natural child, and it is actually dead.
->> 	  however, since we are going to reap this task, we need to wake up our
->> 	  sub-threads possibly sleeping on ->wait_chldexit wait_queue_head_t.
->>
->> See?
->>
->> > +	if (!dead && thread_group_empty(p))
->> > +		dead = do_notify_parent(p, p->exit_signal);
->>
->> No, this looks wrong. Or I missed something?
->
-> Yes, but...
->
-> That said, it seems that we do not need __wake_up_parent() if it was our
-> natural child?
+Fixes: 1dfe967ec7cf ("ARM: dts: qcom-msm8974*: Consolidate I2C/UART/SDHCI")
+Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+---
+Bjorn, could you please pick this up for -fixes so it lands in an
+upcoming 5.19-rc?
 
-Agreed on both counts.
+ arch/arm/boot/dts/qcom-msm8974.dtsi | 30 +++++++++++++++++++++++++----
+ 1 file changed, 26 insertions(+), 4 deletions(-)
 
-Hmm.  I see where the logic comes from.  The ignoring_children test and
-the __wake_up_parent are what do_notify_parent does when the parent
-ignores children.  Hmm.  I even see all of this document in the comment
-above __ptrace_detach.
-
-So I am just going to drop this change.
-
-> I'll recheck. Eric, I'll continue to read this series tomorrow, can't
-> concentrate on ptrace today.
-
-No worries.  This was entirely too close to the merge window so I
-dropped it all until today.
-
-Eric
+diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
+index 814ad0b46232..c3b8a6d63027 100644
+--- a/arch/arm/boot/dts/qcom-msm8974.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
+@@ -506,6 +506,8 @@ blsp1_uart2: serial@f991e000 {
+ 			interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&gcc GCC_BLSP1_UART2_APPS_CLK>, <&gcc GCC_BLSP1_AHB_CLK>;
+ 			clock-names = "core", "iface";
++			pinctrl-names = "default";
++			pinctrl-0 = <&blsp1_uart2_default>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -581,6 +583,9 @@ blsp2_uart1: serial@f995d000 {
+ 			interrupts = <GIC_SPI 113 IRQ_TYPE_NONE>;
+ 			clocks = <&gcc GCC_BLSP2_UART1_APPS_CLK>, <&gcc GCC_BLSP2_AHB_CLK>;
+ 			clock-names = "core", "iface";
++			pinctrl-names = "default", "sleep";
++			pinctrl-0 = <&blsp2_uart1_default>;
++			pinctrl-1 = <&blsp2_uart1_sleep>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -599,6 +604,8 @@ blsp2_uart4: serial@f9960000 {
+ 			interrupts = <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&gcc GCC_BLSP2_UART4_APPS_CLK>, <&gcc GCC_BLSP2_AHB_CLK>;
+ 			clock-names = "core", "iface";
++			pinctrl-names = "default";
++			pinctrl-0 = <&blsp2_uart4_default>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -639,6 +646,9 @@ blsp2_i2c6: i2c@f9968000 {
+ 			interrupts = <0 106 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&gcc GCC_BLSP2_QUP6_I2C_APPS_CLK>, <&gcc GCC_BLSP2_AHB_CLK>;
+ 			clock-names = "core", "iface";
++			pinctrl-names = "default", "sleep";
++			pinctrl-0 = <&blsp2_i2c6_default>;
++			pinctrl-1 = <&blsp2_i2c6_sleep>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 		};
+@@ -1256,7 +1266,7 @@ cd {
+ 				};
+ 			};
+ 
+-			blsp1_uart2_active: blsp1-uart2-active {
++			blsp1_uart2_default: blsp1-uart2-default {
+ 				rx {
+ 					pins = "gpio5";
+ 					function = "blsp_uart2";
+@@ -1272,7 +1282,7 @@ tx {
+ 				};
+ 			};
+ 
+-			blsp2_uart1_active: blsp2-uart1-active {
++			blsp2_uart1_default: blsp2-uart1-default {
+ 				tx-rts {
+ 					pins = "gpio41", "gpio44";
+ 					function = "blsp_uart7";
+@@ -1295,7 +1305,7 @@ blsp2_uart1_sleep: blsp2-uart1-sleep {
+ 				bias-pull-down;
+ 			};
+ 
+-			blsp2_uart4_active: blsp2-uart4-active {
++			blsp2_uart4_default: blsp2-uart4-default {
+ 				tx-rts {
+ 					pins = "gpio53", "gpio56";
+ 					function = "blsp_uart10";
+@@ -1406,7 +1416,19 @@ blsp2_i2c5_sleep: blsp2-i2c5-sleep {
+ 				bias-pull-up;
+ 			};
+ 
+-			/* BLSP2_I2C6 info is missing - nobody uses it though? */
++			blsp2_i2c6_default: blsp2-i2c6-default {
++				pins = "gpio87", "gpio88";
++				function = "blsp_i2c12";
++				drive-strength = <2>;
++				bias-disable;
++			};
++
++			blsp2_i2c6_sleep: blsp2-i2c6-sleep {
++				pins = "gpio87", "gpio88";
++				function = "blsp_i2c12";
++				drive-strength = <2>;
++				bias-pull-up;
++			};
+ 
+ 			spi8_default: spi8_default {
+ 				mosi {
+-- 
+2.36.1
 
