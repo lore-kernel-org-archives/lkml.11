@@ -2,82 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 807BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 13:48:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27612CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 13:48:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239229AbiFFNsf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 09:48:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46740 "EHLO
+        id S239253AbiFFNsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 09:48:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239208AbiFFNsb (ORCPT
+        with ESMTP id S239234AbiFFNso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 09:48:31 -0400
-Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45BC49A985;
-        Mon,  6 Jun 2022 06:48:27 -0700 (PDT)
-Received: by mail-il1-f181.google.com with SMTP id v7so11961216ilo.3;
-        Mon, 06 Jun 2022 06:48:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Iq+/ZT5S/tsKY65k+c5zzqLlMmHdbOtpYrK6tQD4cqY=;
-        b=0zL69b45rZX+vti6TKAhUTuVAXolTaDVadZv3AygbgK75Iwf2HvWmPV4oa88S+yJDi
-         uREPJe51ALGVCoXQ9D+EaLN8GPGLRMptCyAyVYTFsMGPGQ1pnSLSe3vaHkvKnwRuT55A
-         swxhSbjT4a+9YHKrF28nIaaupjbMwfzCjrGGdwPhRj39NEvTbgTTqMaouCU1d5Y3Cn+W
-         548W5PBtE/5tupQ8GxbfTjde1KPkD+QlTtsLY5tXZ7pO6ikoJXT3OUViUpPwVZc6Afrr
-         Tl7GxeahBcEJUGQghjsP7/TZah1tJqZQH271sfFcRSkXnhNMwOUUu0T3KTKO9l0cLa1X
-         uiTA==
-X-Gm-Message-State: AOAM530SmjNBbwU5Jgg0m4QurEfekARzbCbcaDzuVYxGVDHDg50PRGVy
-        yCmETxiOrZpNxQxXezBKSQ==
-X-Google-Smtp-Source: ABdhPJwbi6EJiI2PaM91wEcFQReWOmrXQCRfzQHoHXpccKkWDSHoKnOoq6i68X1AyLTQWbbX3840mg==
-X-Received: by 2002:a05:6e02:15ca:b0:2bf:ad58:4a6d with SMTP id q10-20020a056e0215ca00b002bfad584a6dmr14825916ilu.13.1654523306793;
-        Mon, 06 Jun 2022 06:48:26 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id y38-20020a029529000000b0032e583132e4sm5675598jah.123.2022.06.06.06.48.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 06:48:26 -0700 (PDT)
-Received: (nullmailer pid 632986 invoked by uid 1000);
-        Mon, 06 Jun 2022 13:48:24 -0000
-Date:   Mon, 6 Jun 2022 08:48:24 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Sameer Pujar <spujar@nvidia.com>
-Cc:     broonie@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        thierry.reding@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        perex@perex.cz, tiwai@suse.com, jonathanh@nvidia.com,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v3 1/6] ASoC: tegra: Add binding doc for OPE module
-Message-ID: <20220606134824.GB564610-robh@kernel.org>
-References: <1654238172-16293-1-git-send-email-spujar@nvidia.com>
- <1654238172-16293-2-git-send-email-spujar@nvidia.com>
- <20220603203003.GA852734-robh@kernel.org>
- <b70e024b-4f80-16b9-4bbe-ed8a24a384df@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b70e024b-4f80-16b9-4bbe-ed8a24a384df@nvidia.com>
+        Mon, 6 Jun 2022 09:48:44 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 911CB9EB52;
+        Mon,  6 Jun 2022 06:48:42 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id CB56B1E80D76;
+        Mon,  6 Jun 2022 21:48:30 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id bqrMqcGi6c96; Mon,  6 Jun 2022 21:48:28 +0800 (CST)
+Received: from localhost.localdomain (unknown [180.167.10.98])
+        (Authenticated sender: liqiong@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 96AA61E80D27;
+        Mon,  6 Jun 2022 21:48:27 +0800 (CST)
+From:   Li Qiong <liqiong@nfschina.com>
+To:     Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Pandruvada@lists.nfsmail.com,
+        Srinivas <srinivas.pandruvada@intel.com>,
+        Ye Xiang <xiang.ye@intel.com>, Even Xu <even.xu@intel.com>,
+        Li Qiong <liqiong@nfschina.com>
+Cc:     linux-kernel@vger.kernel.org, yuzhe@nfschina.com,
+        renyu@nfschina.com, linux-input@vger.kernel.org
+Subject: [PATCH 1/2] HID: intel-ish-hid: ipc: use time_before to replace "jiffies < a"
+Date:   Mon,  6 Jun 2022 21:47:50 +0800
+Message-Id: <20220606134750.20736-1-liqiong@nfschina.com>
+X-Mailer: git-send-email 2.11.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 06, 2022 at 01:47:48PM +0530, Sameer Pujar wrote:
-> 
-> On 04-06-2022 02:00, Rob Herring wrote:
-> > Doesn't apply for me. I guess there is some undocumented dependency
-> > here? Resend after the merge window if that solves it.
-> 
-> These were getting applied fine on linux-next.
+time_before deals with timer wrapping correctly.
 
-linux-next is not a base maintainers can apply to. Convenient instead of 
-having to get a specific tree, but you still need to say what the base 
-is (what tree it should be applied to).
+Signed-off-by: Li Qiong <liqiong@nfschina.com>
+---
+ drivers/hid/intel-ish-hid/ipc/ipc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Merge window seems to have closed now and v5.19-rc1 release is out. I can
-> apply these cleanly on v5.19-rc1. Please let me know if re-send is needed
-> now or I need to wait for some more time? Thanks.
+diff --git a/drivers/hid/intel-ish-hid/ipc/ipc.c b/drivers/hid/intel-ish-hid/ipc/ipc.c
+index 8ccb246b0114..15e14239af82 100644
+--- a/drivers/hid/intel-ish-hid/ipc/ipc.c
++++ b/drivers/hid/intel-ish-hid/ipc/ipc.c
+@@ -578,7 +578,7 @@ static void _ish_sync_fw_clock(struct ishtp_device *dev)
+ 	static unsigned long	prev_sync;
+ 	uint64_t	usec;
+ 
+-	if (prev_sync && jiffies - prev_sync < 20 * HZ)
++	if (prev_sync && time_before(jiffies, prev_sync + 20 * HZ))
+ 		return;
+ 
+ 	prev_sync = jiffies;
+-- 
+2.25.1
 
-Yes, or the automated checks don't run.
-
-Rob
