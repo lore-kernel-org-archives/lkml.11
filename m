@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A8C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 04:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0BC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 04:50:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229508AbiFFEuX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 00:50:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45316 "EHLO
+        id S229540AbiFFEua (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 00:50:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiFFEuV (ORCPT
+        with ESMTP id S229518AbiFFEuY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 00:50:21 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB05C2F1F32
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 21:47:34 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id mh16-20020a17090b4ad000b001e8313301f1so4907459pjb.1
-        for <linux-kernel@vger.kernel.org>; Sun, 05 Jun 2022 21:47:34 -0700 (PDT)
+        Mon, 6 Jun 2022 00:50:24 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37B42F4497
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 21:47:41 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id c18so3667124pgh.11
+        for <linux-kernel@vger.kernel.org>; Sun, 05 Jun 2022 21:47:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hGnDD5r5M3UXCU6BZiTbTzLZsBiSocgUQfxs0cDS1G4=;
-        b=l30rCOLic8LaKGIFsKhI6vz67rGgjxbrO3jiCldFNIW8I5OkLf9aDeJzRGh8jMUXQr
-         SdCvlbgXiwhwr5/BW2rNXyL5J0Ps9u1DEZr8MjIpgqYLPWpvNzo7Yl+yZKxpXm2JIANR
-         IIiMhDTbZV4a5Cc7egdsQqqF+o3IIyQ41+HPU=
+        bh=jJ29kS9c54d0XZMXg/mI13/u5APCZGzRFuqJAJLTaSY=;
+        b=Kx8+twWhs/MPzSGyOLbfniqa2/hFoAzxdS5zJtPY3HxAawuRcw8KkL4mgSmRFD6xAy
+         TLCEAO9autEMesNlLsqrz0eEEQehlWzf4CMj7ow9KfICb0QKPZKvjj9jjU0uLAN+BCde
+         ZWUMw6pzqRfkezTfLlpU8gnUUiZhoVvmX6dWI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hGnDD5r5M3UXCU6BZiTbTzLZsBiSocgUQfxs0cDS1G4=;
-        b=UgbquxQb1V6Lz7ZXR1KVCtotfAyYAjGyHHKDtKpC5KBeaFZ6Wn0pU8pW4LCWEaAmLK
-         kRhRuZZDCA/8HHR6uQJrokgDtjmzAcelKAWBO/UIjaFqdWE56E/Nk4ZzGQjtJGZoXU36
-         VZ/91cD5c2Mvb1bpj6ueqf87nw5HA1x/C8iGwG0oh1yT0Qo1QgJF1Sgjd9wKALwAr0iL
-         D0Q1kvm2MiS9Cuvh8JCZsN12Pyxt21v3bczaczj0xPK/KkBZtHjPJDVLLwbEmlSLg42x
-         UmJ9qi0scOdRQmj7s2rUhkKaWU4G6hPUi5UrW39/S59k0QdvpIiWGYMKfy4RKU+7RR7X
-         cluA==
-X-Gm-Message-State: AOAM533tnqrJdRrUM21Xraaio73Feq78tCDzt1HxG+A45b0QcieAWu6h
-        CdSaO1Ul4lKg/GiYkqmCZ+OEQg==
-X-Google-Smtp-Source: ABdhPJzbBbErXs2PWbpEsxPCivcXPl2J9WhwCBQUubS9o01KqgtcAIWDGinwPaxoXPioh5PpozS7CA==
-X-Received: by 2002:a17:902:c407:b0:163:df01:bbbc with SMTP id k7-20020a170902c40700b00163df01bbbcmr22376780plk.4.1654490854118;
-        Sun, 05 Jun 2022 21:47:34 -0700 (PDT)
+        bh=jJ29kS9c54d0XZMXg/mI13/u5APCZGzRFuqJAJLTaSY=;
+        b=R6XCHdnmVeZcRV67uR2nEa9bblRDaClcXzlQ+8Q49DwWxCFo/1HtMpwFXL9wY2Pa20
+         49wNc0IRPUL1R4wRDCp8QZG+4j/skyPoYFcPguNfCCoHXJ1i2fS9XMq2X60OsF6g0na+
+         hAYKHdvvMiiooYTHdt2LncmfEkQFQuMixxrFBONA2xTArYwU894aEhsDXuwKSWA78xga
+         pN1TA3s/LcIiE4RCE71PlHCe+zb3WItf9E6S1APBzmh9nznqwMAXwNsdMptiRhUeAGJr
+         rpjlpIymi+nT5nRkWP5NmcEypzkHmMW4SOIVU65zrfsPLxD4ceCUomIBd5qJDVBj0Gqb
+         6KEw==
+X-Gm-Message-State: AOAM533JSq4sp5XLk4VVDP15XcZKhr4vh5UKTkegdC6nv3o4aesqX9J5
+        Z4v5ZYDcNf6Pm1ZJntqgQpHCXw==
+X-Google-Smtp-Source: ABdhPJxboXw4784UYCoUHqaFDgjTzJl4vu2MwUNiNzP8AEvIWZFJ27MkePTqp5g456Y0NeSDSc3yvg==
+X-Received: by 2002:a62:e116:0:b0:51b:c452:47e6 with SMTP id q22-20020a62e116000000b0051bc45247e6mr21890310pfh.25.1654490861026;
+        Sun, 05 Jun 2022 21:47:41 -0700 (PDT)
 Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:ced3:b110:401b:b32c])
-        by smtp.gmail.com with ESMTPSA id t190-20020a6381c7000000b003db7de758besm9718609pgd.5.2022.06.05.21.47.30
+        by smtp.gmail.com with ESMTPSA id t190-20020a6381c7000000b003db7de758besm9718609pgd.5.2022.06.05.21.47.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jun 2022 21:47:33 -0700 (PDT)
+        Sun, 05 Jun 2022 21:47:40 -0700 (PDT)
 From:   Hsin-Yi Wang <hsinyi@chromium.org>
 To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Cc:     Hans de Goede <hdegoede@redhat.com>,
@@ -64,9 +64,9 @@ Cc:     Hans de Goede <hdegoede@redhat.com>,
         Douglas Anderson <dianders@chromium.org>,
         Rob Herring <robh+dt@kernel.org>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/8] drm/panel: boe-tv101wum-nl6: Implement .get_orientation callback
-Date:   Mon,  6 Jun 2022 12:47:14 +0800
-Message-Id: <20220606044720.945964-3-hsinyi@chromium.org>
+Subject: [PATCH v3 4/8] drm/panel: lvds: Implement .get_orientation callback
+Date:   Mon,  6 Jun 2022 12:47:16 +0800
+Message-Id: <20220606044720.945964-5-hsinyi@chromium.org>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 In-Reply-To: <20220606044720.945964-1-hsinyi@chromium.org>
 References: <20220606044720.945964-1-hsinyi@chromium.org>
@@ -83,44 +83,43 @@ Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 ---
 v2->v3: add comments for notice.
 ---
- drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c | 14 ++++++++++++++
+ drivers/gpu/drm/panel/panel-lvds.c | 14 ++++++++++++++
  1 file changed, 14 insertions(+)
 
-diff --git a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
-index 1be150ac758f..a9cd07234179 100644
---- a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
-+++ b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
-@@ -1511,16 +1511,30 @@ static int boe_panel_get_modes(struct drm_panel *panel,
- 	connector->display_info.width_mm = boe->desc->size.width_mm;
- 	connector->display_info.height_mm = boe->desc->size.height_mm;
- 	connector->display_info.bpc = boe->desc->bpc;
+diff --git a/drivers/gpu/drm/panel/panel-lvds.c b/drivers/gpu/drm/panel/panel-lvds.c
+index 27a1c9923b09..239527409b00 100644
+--- a/drivers/gpu/drm/panel/panel-lvds.c
++++ b/drivers/gpu/drm/panel/panel-lvds.c
+@@ -102,15 +102,29 @@ static int panel_lvds_get_modes(struct drm_panel *panel,
+ 	connector->display_info.bus_flags = lvds->data_mirror
+ 					  ? DRM_BUS_FLAG_DATA_LSB_TO_MSB
+ 					  : DRM_BUS_FLAG_DATA_MSB_TO_LSB;
 +	/*
 +	 * drm drivers are expected to call drm_panel_get_orientation() to get
 +	 * panel's orientation then drm_connector_set_panel_orientation() to
 +	 * set the property before drm_dev_register(). Otherwise there will be
 +	 * a WARN_ON if orientation is set after drm is registered.
 +	 */
- 	drm_connector_set_panel_orientation(connector, boe->orientation);
+ 	drm_connector_set_panel_orientation(connector, lvds->orientation);
  
  	return 1;
  }
  
-+static enum drm_panel_orientation boe_panel_get_orientation(struct drm_panel *panel)
++static enum drm_panel_orientation panel_lvds_get_orientation,(struct drm_panel *panel)
 +{
-+	struct boe_panel *boe = to_boe_panel(panel);
++       struct panel_lvds *lvds = to_panel_lvds(panel);
 +
-+	return boe->orientation;
++       return lvds->orientation;
 +}
 +
- static const struct drm_panel_funcs boe_panel_funcs = {
- 	.unprepare = boe_panel_unprepare,
- 	.prepare = boe_panel_prepare,
- 	.enable = boe_panel_enable,
- 	.get_modes = boe_panel_get_modes,
-+	.get_orientation = boe_panel_get_orientation,
+ static const struct drm_panel_funcs panel_lvds_funcs = {
+ 	.unprepare = panel_lvds_unprepare,
+ 	.prepare = panel_lvds_prepare,
+ 	.get_modes = panel_lvds_get_modes,
++	.get_orientation = panel_lvds_get_orientation,
  };
  
- static int boe_panel_add(struct boe_panel *boe)
+ static int panel_lvds_parse_dt(struct panel_lvds *lvds)
 -- 
 2.36.1.255.ge46751e96f-goog
 
