@@ -2,98 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B865EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 21:32:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2067C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 21:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234931AbiFFVcS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 17:32:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40386 "EHLO
+        id S234944AbiFFVdB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 17:33:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233631AbiFFVcQ (ORCPT
+        with ESMTP id S233631AbiFFVdA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 17:32:16 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB66E7A;
-        Mon,  6 Jun 2022 14:32:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1654551128;
-        bh=0HIULZ+QP47IbHx9ecHTqk4qfd6wTa7bUnEWZ6Ul/pU=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=LGBF5z2kQpKcqSn8NXeg9N7NOiyjuNsyRANovXTFFoSsA9P+XBhKCbJU3p3D01RCf
-         8hwQHle5o3cWY3KyNOcH8h0BxLdW5viokBnRVqGi1tLiBUrck9JwWfACLh3+Jkkupw
-         XaTHDTIfBBf8nPWDgRhZq+1dY+xmW7cX6I512HNs=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([5.146.195.3]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MN5iZ-1oF2Mk3EH7-00IzfX; Mon, 06
- Jun 2022 23:32:07 +0200
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     openbmc@lists.ozlabs.org
-Cc:     =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3] ARM: dts: nuvoton: wpcm450: Add missing aliases for serial0/serial1
-Date:   Mon,  6 Jun 2022 23:31:53 +0200
-Message-Id: <20220606213154.2055462-1-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.35.1
+        Mon, 6 Jun 2022 17:33:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1641A3B55A;
+        Mon,  6 Jun 2022 14:32:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE681B81BD4;
+        Mon,  6 Jun 2022 21:32:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64E7BC3411F;
+        Mon,  6 Jun 2022 21:32:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654551176;
+        bh=9wW78eqRW+8CIx9i+7pjI5Ws5cP7kXj2HXPttlOJSKc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=RMWpFeT9OKyPVlCjkLE8sQqVvrGS9lAvEGB5ykHS/u9A0m3KmmSLZItcDha4xJ1C+
+         3hhrCaMy5J97Ljvx5P6VVtutPFC3nbeNQirTqlPLUJ/a6Vy/6APybG6ZyWJc1O4WGR
+         noIYGahmi9bTrlusRMdgayYJVyizyAov/9JELVMG6Zg24UqnBNM0okdy5e1Ab7mP2t
+         AZHrbEL5mSWbbg7ZANrKSmliJJx4SBrTc7P3TgJTxh5F72PCSSFjUIRz8+CdOlO6rL
+         A8EW7zpRPz6H0EnTrIe6qyWK02jG8mfbcDefQeHZdq8xU+JiexAs62rs9aezZzdkbV
+         kQtIQpSUTw/Hw==
+Received: by mail-ua1-f51.google.com with SMTP id d18so387720uaw.2;
+        Mon, 06 Jun 2022 14:32:56 -0700 (PDT)
+X-Gm-Message-State: AOAM5313Noy2X3bppCZvgGuqJwGTKQsDn3iNzF8innqWqjj7LVSC/FIn
+        9XJgrgm5WniqFVI49h+7MQ1QxelwuwOXzTmKSw==
+X-Google-Smtp-Source: ABdhPJzU1/YbR6XZqlEg7jT+k0qWmDbk6RiFLeErl96iSR6CBrFqhe/OUYqf8vnTuncw0bdEQ1REX1ZFbtaL1/Kzw9U=
+X-Received: by 2002:ab0:5a95:0:b0:369:1a3f:358c with SMTP id
+ w21-20020ab05a95000000b003691a3f358cmr24079388uae.63.1654551175305; Mon, 06
+ Jun 2022 14:32:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:LtQZT3D+BZrxCdI5eT8HYdXnSpeQX5cgZkRRcTjGUGJg7dIL8Ni
- 1ksqGpWYcHKX6IpAbqXjp1lM74QHRV+cgGvJV8y/nlMZ0sMyIopRIQN0uFuSmrByN6PNxex
- V2SgSH4/fhfHaC1ic4B5awunyPCQyLoZLnFClTT/Zv++2hNKuGPm5p1+FfyD4fb2P2Qq7/O
- 6q2k3Htc+k0JTQdM9PcGw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:eJ0U6DDgKAo=:+29B9ZWSIcRb7rOY68M354
- Y2FlAIacp5pNWI45nRCfkuTBshXIy2X3liqJXQJQYl9EmUdkqnNrmX8lz9p0kQezJSP9/UHcK
- BVyd5fB4/a0lcPxbuKrG74f8jgaXopesUVIvjG8bG2tGq95eWAkBe9CaRLisiTzmD8RiNuCbu
- dmYh8rCfrNfbpyQh78APTp4X1pU1DRcoC6OgC1j5O4qxqvwdnqcnjf33wiNmOhsMn5q9MCDId
- 7xOlzA5f0MK5LEnr6x2bwhuWs1n48wOsfGIm79f8Y2yrbhhXm6xXAYznMoNyUCrz+RE60dwbr
- J/6eyoeJhBSsJivlpOWc1EglBbU1S8ozpuC22rJxPGkjXmKD1p9Q4Ub7g9JMeGcRUnylCx3cy
- Y/CVGXleg0HDqWubQNHOirEBDsDha/PYTYeTbufvnPJgmdLwxXVDrT0XgM2zHc+qCbbgsl5uu
- AHb+NQvp5LwV98456quC1CMQWouwZTDGrNIc9njMtNaC7n42uB4/LlJBC8S5uhnsHeZPl4qiN
- mKniEasQDuNLxgotVc44MUVO6rPzjSltm1rf0jxH6rJ6e6wMgDcJYxdH6ndNaSTAhIxGtpYQ0
- bSqVGgkr4M7Y17NqATkQlgSpnYBCZ6+Y/TTesPdWWJV4jf+kjAVL/Je7oI1hHfxbPSc1dCJfW
- jjM1TqhHK5T62fl7xmNazupUgLtTcVyiNNgq7/tRJU+qMm2w20dkOBjvdbazZ1OlUOE8fdM1K
- aPMApAEwZmzYsso9UJHKnEphtB4cGgcsw8h3bOMGw/KaDOBUBOd+0T4KUY+FPlYCZ6We2K8y2
- mJ3k7ffFjS3CKWbkplXXn2kaHvLD39MmfiT7unWHYDGqoi0gMHnU2WTYlJzPDVYdEZpLPrNTO
- jtXMk+jNVMPhKjNm9+TlMYMtW4BHjWUgcoawNa4jiYQFBncRkIq3bkF0XJzOxPc/Q0X1gknUD
- b0rD4C8RwiEUy2bGAQX+eOsio4/nt1IAtLZS5rgjvWiWMIfpWtWkCocDR8Xxa98HYd6MvH4Qq
- 8oCGRhmHx2QodVFGYBM9ZnmX7lo3gpbYMl5YJUSv3tm65dnJh6F9aeBQQoFEaxTgokQGqi5zo
- ebhz44EZ8aJC+hKE0AsfNOeSb5dz8VixfR5rr9SbKWOSTrhWf1kvtvYew==
+References: <20220605055123.59127-1-linmq006@gmail.com>
+In-Reply-To: <20220605055123.59127-1-linmq006@gmail.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Mon, 6 Jun 2022 16:32:43 -0500
+X-Gmail-Original-Message-ID: <CAL_Jsq+x=vqaWTBa6gb+p0ZmKgzwQFdbmhgT0Phfye6rtmPnEQ@mail.gmail.com>
+Message-ID: <CAL_Jsq+x=vqaWTBa6gb+p0ZmKgzwQFdbmhgT0Phfye6rtmPnEQ@mail.gmail.com>
+Subject: Re: [PATCH] PCI: microchip: Fix refcount leak in mc_pcie_init_irq_domains
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Daire McNamara <daire.mcnamara@microchip.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        PCI <linux-pci@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Without these, /chosen/stdout-path =3D "serial0:115200n8" does not work.
+On Sun, Jun 5, 2022 at 12:51 AM Miaoqian Lin <linmq006@gmail.com> wrote:
+>
+> of_get_next_child() returns a node pointer with refcount incremented,
+> we should use of_node_put() on it when not need anymore.
+> This function only call of_node_put() in normal path,
+> missing it in some error paths.
+> Add missing of_node_put() to avoid refcount leak.
+>
+> Fixes: 6f15a9c9f941 ("PCI: microchip: Add Microchip PolarFire PCIe controller driver")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> ---
+>  drivers/pci/controller/pcie-microchip-host.c | 2 ++
+>  1 file changed, 2 insertions(+)
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-=2D--
-v3:
-- Move serial aliases to board-specific file
-
-v2:
-- mention WPCM450 in the summary
-=2D--
- arch/arm/boot/dts/nuvoton-wpcm450-supermicro-x9sci-ln4f.dts | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/arch/arm/boot/dts/nuvoton-wpcm450-supermicro-x9sci-ln4f.dts b=
-/arch/arm/boot/dts/nuvoton-wpcm450-supermicro-x9sci-ln4f.dts
-index 3ee61251a16d0..83363c578f53c 100644
-=2D-- a/arch/arm/boot/dts/nuvoton-wpcm450-supermicro-x9sci-ln4f.dts
-+++ b/arch/arm/boot/dts/nuvoton-wpcm450-supermicro-x9sci-ln4f.dts
-@@ -15,6 +15,11 @@ / {
- 	model =3D "Supermicro X9SCi-LN4F BMC";
- 	compatible =3D "supermicro,x9sci-ln4f-bmc", "nuvoton,wpcm450";
-
-+	aliases {
-+		serial0 =3D &serial0;
-+		serial1 =3D &serial1;
-+	};
-+
- 	chosen {
- 		stdout-path =3D "serial0:115200n8";
- 	};
-=2D-
-2.35.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
