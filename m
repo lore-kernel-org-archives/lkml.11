@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8569C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:12:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9519FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:12:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239640AbiFFOMR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39290 "EHLO
+        id S239648AbiFFOMT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239610AbiFFOMD (ORCPT
+        with ESMTP id S239624AbiFFOMF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:12:03 -0400
+        Mon, 6 Jun 2022 10:12:05 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319CC286CA
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:12:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 919E2286E9
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:12:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1D596137A
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 14:12:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F333C3411D;
-        Mon,  6 Jun 2022 14:12:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 282BF61376
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 14:12:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B61B6C3411D;
+        Mon,  6 Jun 2022 14:12:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654524721;
-        bh=iV6GhG3HSROh+z7BH4me2g0TrNYK+Ev992HDhTgueqg=;
+        s=k20201202; t=1654524723;
+        bh=RnH0fzWxCPD22wn/jU3q2AjRqABY470RtTuq54kRfkY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F0nLvprPnjL77YA9W3XsD9rCVdvb8LIvFipi7fUlGmpCXAX41zTqibfaRoSae1YVf
-         2lAsTr47A/9jxVN05Oy2QwgIJS8BHhj49J/lROuHYqSJi2N+uYsYkEIxm01eHyCK6K
-         nvKXNYt88MYaCOhOEdn3umif85kOUIfadHe3s7C8zDI5hTbt26u38/oN/NKGSC3XE2
-         lTyMa17Ytyl4HE5D+WkE32Gm1VIdbmehIESltMZPg5qUflpnhC5NSiWXMtqCwtX0Z6
-         yBCjba+31BQ1/NnU6PQSmi1et2d5S+QpG2HSfQ0/tswC+2GCzJbvswEDqpSHv4iZi7
-         WMVmE7Jocty4w==
+        b=YU1ySO20vnU/I4kEoWJpb5Cgjv8Q6VZj0WOIy7HkSn+JMIompxbX0eALuqhpLAeaz
+         QWrRzTCPMdXRI704uTPD9x3UoETZBWWICwOL6iOGtoerVdnWQNRMxLZRjMkWDumdCu
+         GG/N7Po0i+7GQZGRhZQDzqnrztNr8BxzaH1lU2UGFsiPps1IFDtkZSvY5xPwFOds7V
+         kIk0Ydno6EbX5Ur58u3z+I9reP4E7dnuLhI3I+xzJFHGL6AOViq3CmDvt1AtduULiC
+         7xxLF7F931ZbtnXJLLETUrRXuu1khcJgSJhFT98AZzkAdtBm+fzAbszoY6X3KoNLRh
+         FtysHshIe7m4w==
 From:   Tzung-Bi Shih <tzungbi@kernel.org>
 To:     bleung@chromium.org, groeck@chromium.org
 Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 04/13] platform/chrome: cros_ec_proto: assign buffer size from protocol info
-Date:   Mon,  6 Jun 2022 14:10:42 +0000
-Message-Id: <20220606141051.285823-5-tzungbi@kernel.org>
+Subject: [PATCH 06/13] platform/chrome: cros_ec_proto: use cros_ec_map_error()
+Date:   Mon,  6 Jun 2022 14:10:44 +0000
+Message-Id: <20220606141051.285823-7-tzungbi@kernel.org>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 In-Reply-To: <20220606141051.285823-1-tzungbi@kernel.org>
 References: <20220606141051.285823-1-tzungbi@kernel.org>
@@ -48,36 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-`din_size` is calculated from `ec_dev->max_response`.
-`ec_dev->max_response` is further calculated from the protocol info.
+Use cros_ec_map_error() in cros_ec_get_host_event_wake_mask().
 
-To make it clear, assign `din_size` and `dout_size` from protocol info
-directly.
+The behavior of cros_ec_get_host_event_wake_mask() slightly changed.  It
+is acceptable because the caller only needs it returns negative integers
+for indicating errors.  Especially, the EC_RES_INVALID_COMMAND still
+maps to -EOPNOTSUPP.
 
 Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 ---
- drivers/platform/chrome/cros_ec_proto.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/platform/chrome/cros_ec_proto.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index 65191af5139c..629dce3e6ab3 100644
+index 1b851dcd20c9..71ba6a56ad7c 100644
 --- a/drivers/platform/chrome/cros_ec_proto.c
 +++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -449,12 +449,8 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
- 			"using proto v%u\n",
- 			ec_dev->proto_version);
+@@ -247,7 +247,7 @@ static int cros_ec_get_host_event_wake_mask(struct cros_ec_device *ec_dev,
+ 					    uint32_t *mask)
+ {
+ 	struct ec_response_host_event_mask *r;
+-	int ret;
++	int ret, mapped;
  
--		ec_dev->din_size = ec_dev->max_response +
--			sizeof(struct ec_host_response) +
--			EC_MAX_RESPONSE_OVERHEAD;
--		ec_dev->dout_size = ec_dev->max_request +
--			sizeof(struct ec_host_request) +
--			EC_MAX_REQUEST_OVERHEAD;
-+		ec_dev->din_size = proto_info->max_response_packet_size + EC_MAX_RESPONSE_OVERHEAD;
-+		ec_dev->dout_size = proto_info->max_request_packet_size + EC_MAX_REQUEST_OVERHEAD;
+ 	msg->command = EC_CMD_HOST_EVENT_GET_WAKE_MASK;
+ 	msg->version = 0;
+@@ -256,10 +256,9 @@ static int cros_ec_get_host_event_wake_mask(struct cros_ec_device *ec_dev,
  
- 		/*
- 		 * Check for PD
+ 	ret = send_command(ec_dev, msg);
+ 	if (ret >= 0) {
+-		if (msg->result == EC_RES_INVALID_COMMAND)
+-			return -EOPNOTSUPP;
+-		if (msg->result != EC_RES_SUCCESS)
+-			return -EPROTO;
++		mapped = cros_ec_map_error(msg->result);
++		if (mapped)
++			return mapped;
+ 	}
+ 	if (ret > 0) {
+ 		r = (struct ec_response_host_event_mask *)msg->data;
 -- 
 2.36.1.255.ge46751e96f-goog
 
