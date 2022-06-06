@@ -2,103 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DE68C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 13:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C14C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 13:28:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238985AbiFFN2b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 09:28:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38954 "EHLO
+        id S238989AbiFFN2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 09:28:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238969AbiFFN23 (ORCPT
+        with ESMTP id S238969AbiFFN2s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 09:28:29 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0CAB522E3
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 06:28:27 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LGvP44XlpzRhjD;
-        Mon,  6 Jun 2022 21:25:12 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 6 Jun 2022 21:28:23 +0800
-Received: from [10.174.177.243] (10.174.177.243) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 6 Jun 2022 21:28:22 +0800
-Message-ID: <7a8f19b5-f22e-83be-0f9a-63cef6152812@huawei.com>
-Date:   Mon, 6 Jun 2022 21:28:22 +0800
+        Mon, 6 Jun 2022 09:28:48 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B91458CCF1
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 06:28:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654522124; x=1686058124;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=jV+w5dOWr1t7rNYIEA+7OT7tjQehbbZXnLkxc6LGUA0=;
+  b=GWomXD8oaScSabVQWAlbe4Fg3R4dww9OgBVyyaGPHtPaFvc9P3TA201a
+   bZrxuwBoDHAGYEc4GXCW9LQHOgg7q/Qe3dJO91ewwKlukG2iKHJRE+vyF
+   wbD/njW9iVf/0WoLRT9HJlHYF8YBQKJGg/V/BXKfcyp6fAmLO+4WmwmqZ
+   SEAjal6Ptg8f5pByNkh+6b7gDbZKROpY2RoMKv4iHT6HJ7dMANQL5tAqM
+   6e04vsMOdUqBXqSR1THw65DaZWX0+HxzpNrCtzrsXkW4JhR6Pf0kx38yD
+   e0G+zu+MV2hKq0IB/y1A2wTzpedFnaiOG+/XISzZYQIWnUvyGu2hLLNLV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="276951855"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="276951855"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 06:28:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="532126032"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 06 Jun 2022 06:28:16 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nyCmF-000CkX-H9;
+        Mon, 06 Jun 2022 13:28:15 +0000
+Date:   Mon, 6 Jun 2022 21:27:14 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Paul Gazzillo <paul@pgazz.com>,
+        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
+        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>
+Subject: [jsarha:topic/chromeos-4.19-s0ix 6373/9999] kismet: WARNING: unmet
+ direct dependencies detected for PM_GENERIC_DOMAINS when selected by
+ QCOM_AOSS_QMP
+Message-ID: <202206062135.fQzlABwc-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v4 5/6] arm64: mm: Convert to GENERIC_IOREMAP
-Content-Language: en-US
-To:     Christoph Hellwig <hch@infradead.org>
-CC:     <catalin.marinas@arm.com>, <will@kernel.org>,
-        <akpm@linux-foundation.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        <arnd@arndb.de>, <anshuman.khandual@arm.com>
-References: <20220606074815.139265-1-wangkefeng.wang@huawei.com>
- <20220606074815.139265-6-wangkefeng.wang@huawei.com>
- <Yp2yoRkHLuONDO9y@infradead.org>
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-In-Reply-To: <Yp2yoRkHLuONDO9y@infradead.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.243]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://github.com/jsarha/linux topic/chromeos-4.19-s0ix
+head:   430bdaa0a8c38697780f45a148964d71951df11f
+commit: fdd3df25c06810614b642173cf8eca20610958ce [6373/9999] FROMGIT: soc: qcom: Add AOSS QMP driver
+config: (https://download.01.org/0day-ci/archive/20220606/202206062135.fQzlABwc-lkp@intel.com/config)
+reproduce:
+        # https://github.com/jsarha/linux/commit/fdd3df25c06810614b642173cf8eca20610958ce
+        git remote add jsarha https://github.com/jsarha/linux
+        git fetch --no-tags jsarha topic/chromeos-4.19-s0ix
+        git checkout fdd3df25c06810614b642173cf8eca20610958ce
+        # 1. reproduce by kismet
+           # install kmax per https://github.com/paulgazz/kmax/blob/master/README.md
+           kismet --linux-ksrc=linux --selectees CONFIG_PM_GENERIC_DOMAINS --selectors CONFIG_QCOM_AOSS_QMP -a=x86_64
+        # 2. reproduce by make
+           # save the config file to linux source tree
+           cd linux
+           make ARCH=x86_64 olddefconfig
 
-On 2022/6/6 15:54, Christoph Hellwig wrote:
->> +#define ioremap_wc(addr, size)		ioremap_prot((addr), (size), PROT_NORMAL_NC)
->> +#define ioremap_np(addr, size)		ioremap_prot((addr), (size), PROT_DEVICE_nGnRnE)
-> Please avoid the overly long lines here.  Independt of that having
-> a non-trivial body on a separate line tends to generlly be a lot more
-> readable anyway.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Hi Christoph，
 
-As commit bdc48fa11e46  ("checkpatch/coding-style: deprecate 80-column 
-warning") increased
+kismet warnings: (new ones prefixed by >>)
+>> kismet: WARNING: unmet direct dependencies detected for PM_GENERIC_DOMAINS when selected by QCOM_AOSS_QMP
+   
+   WARNING: unmet direct dependencies detected for PM_GENERIC_DOMAINS
+     Depends on [n]: PM [=n]
+     Selected by [y]:
+     - QCOM_AOSS_QMP [=y] && (ARCH_QCOM || COMPILE_TEST [=y]) && MAILBOX [=y] && COMMON_CLK [=y]
 
-the limit to 100 columns，so I don't get warning when using checkpatch, 
-and it is not a hard limit,
-
-but if this is a mandatory requirement, I will resend them with break lines.
-
->> +#define ioremap_cache(addr, size) ({							\
->> +	pfn_is_map_memory(__phys_to_pfn(addr)) ?					\
->> +	(void __iomem *)__phys_to_virt(addr) : ioremap_prot(addr, size, PROT_NORMAL);	\
->> +})
-> And this really should be an inline function.
-
-We still need a define, see kernel/iomem.c,
-
-#ifndef ioremap_cache
-__weak void __iomem *ioremap_cache(resource_size_t offset, unsigned long 
-size)
-{
-         return ioremap(offset, size);
-}
-#endif
-
->
->> +int iounmap_allowed(void __iomem *addr)
->>   {
->>   	/*
->>   	 * We could get an address outside vmalloc range in case
->>   	 * of ioremap_cache() reusing a RAM mapping.
->>   	 */
->> +	return is_vmalloc_addr(addr) ? 0 : -EINVAL;
-> As the generic ioremap only returns vmalloc addresses, this check
-> really should go into common code.
-
-Good point, will move into generic ioremap, thanks.
-
-> .
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
