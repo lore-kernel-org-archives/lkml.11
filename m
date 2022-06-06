@@ -2,161 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F454C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 04:07:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4202DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 04:09:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229655AbiFFEHP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 00:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50630 "EHLO
+        id S229666AbiFFEJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 00:09:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229568AbiFFEHL (ORCPT
+        with ESMTP id S229473AbiFFEJS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 00:07:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E72126154
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 21:07:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654488427;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MuRk3Tab2Z4ZRUgMYXS0prZ+jhG+XkNVjb1ON2n0G3E=;
-        b=R0whKCNVb6pPgScWbGIzihmMJ5mZTSe0gSowNwiuBSHJGLZMI5CUE4XCof4deiKwApueQ9
-        acr5JjaNvDBQ189dgD55Jag1NP2xMZ3hov/KWpmRD8MBPGR2En7i9exrKafSbJxqJhmDMA
-        7HU8JmSn7a93PdSxcksUFaBgE769WiQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-9-f6LMyBluPuqPdnmQJ73N8A-1; Mon, 06 Jun 2022 00:06:58 -0400
-X-MC-Unique: f6LMyBluPuqPdnmQJ73N8A-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 6 Jun 2022 00:09:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F405D1B2
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 21:08:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4BADC811E83;
-        Mon,  6 Jun 2022 04:06:57 +0000 (UTC)
-Received: from localhost (ovpn-12-209.pek2.redhat.com [10.72.12.209])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6D67A40E80E0;
-        Mon,  6 Jun 2022 04:06:55 +0000 (UTC)
-Date:   Mon, 6 Jun 2022 12:06:51 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Jonathan McDowell <noodles@fb.com>, Coiby Xu <coxu@redhat.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Mimi Zohar <zohar@linux.ibm.com>,
-        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-Subject: Re: [PATCH v4] x86/kexec: Carry forward IMA measurement log on kexec
-Message-ID: <Yp19W4/ZQm/8U+BG@MiWiFi-R3L-srv>
-References: <YmKyvlF3my1yWTvK@noodles-fedora-PC23Y6EG>
- <YmgjXZphkmDKgaOA@noodles-fedora-PC23Y6EG>
- <YnuJCH75GrhVm0Tp@noodles-fedora.dhcp.thefacebook.com>
- <Yn01Cfb3Divf49g7@noodles-fedora.dhcp.thefacebook.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A86960EFE
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 04:08:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 034DDC34119;
+        Mon,  6 Jun 2022 04:08:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654488497;
+        bh=9de3ED9fTrLfeyMFgQ/+0XCc1KjJhelXy5OTncsMzU8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=nCm3rLdkUsLFugfxmgXvc10Bq0SzQQYEJBJQm9vYGd9DQOp9UebLx7YUg4O73o2v0
+         yb+JmiZroOToN0MfNSRYOe5jhfJGR5dcmyZ6342CYuC2px5j/oOKMhJuhRcxPLrfEx
+         HMwICHKQO/DSi2WFvtMkdL2DhCMnNLSa+IiN+NMo8WWXVVFw1Dn5/ksr8wcfZWU5KO
+         hSSMiPg+/eDvP452I9adhfEb65UcpU8vrP7AwlVh7gLFTzLDFTy18UFil5wazhNA5w
+         BXq4QNmKrw3ISsP8x7fxIuAsOAtbJlWQNu4ulGYmhdjjJqJlWJeV1s4qcr0ShFmowd
+         jqfcwN7tTRlJQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D8614E737F0;
+        Mon,  6 Jun 2022 04:08:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yn01Cfb3Divf49g7@noodles-fedora.dhcp.thefacebook.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] cros_ec_commands: Fix syntax errors in comments
+From:   patchwork-bot+chrome-platform@kernel.org
+Message-Id: <165448849687.12364.11116446168981626358.git-patchwork-notify@kernel.org>
+Date:   Mon, 06 Jun 2022 04:08:16 +0000
+References: <20220606022313.22912-1-wangxiang@cdjrlc.com>
+In-Reply-To: <20220606022313.22912-1-wangxiang@cdjrlc.com>
+To:     Xiang wangx <wangxiang@cdjrlc.com>
+Cc:     bleung@chromium.org, groeck@chromium.org, gustavoars@kernel.org,
+        dustin@howett.net, chrome-platform@lists.linux.dev,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/12/22 at 04:25pm, Jonathan McDowell wrote:
-> On kexec file load Integrity Measurement Architecture (IMA) subsystem
-> may verify the IMA signature of the kernel and initramfs, and measure
-> it. The command line parameters passed to the kernel in the kexec call
-> may also be measured by IMA. A remote attestation service can verify
-> a TPM quote based on the TPM event log, the IMA measurement list, and
-> the TPM PCR data. This can be achieved only if the IMA measurement log
-> is carried over from the current kernel to the next kernel across
-> the kexec call.
+Hello:
+
+This patch was applied to chrome-platform/linux.git (for-kernelci)
+by Tzung-Bi Shih <tzungbi@kernel.org>:
+
+On Mon,  6 Jun 2022 10:23:13 +0800 you wrote:
+> Delete the redundant word 'using'.
 > 
-> powerpc and ARM64 both achieve this using device tree with a
-> "linux,ima-kexec-buffer" node. x86 platforms generally don't make use of
-> device tree, so use the setup_data mechanism to pass the IMA buffer to
-> the new kernel.
-
-The entire looks good to me, other than a minor concern, please see the
-inline comment.
-
-Reviewed-by: Baoquan He <bhe@redhat.com>
-
-Hi Coiby,
-
-You can check this patch, see if you can take the same way to solve the
-LUKS-encrypted disk issue by passing the key via setup_data.
-
-> 
-> Signed-off-by: Jonathan McDowell <noodles@fb.com>
+> Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
 > ---
-......snip...
+>  include/linux/platform_data/cros_ec_commands.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-> diff --git a/arch/x86/kernel/kexec-bzimage64.c b/arch/x86/kernel/kexec-bzimage64.c
-> index 170d0fd68b1f..54bd4ce5f908 100644
-> --- a/arch/x86/kernel/kexec-bzimage64.c
-> +++ b/arch/x86/kernel/kexec-bzimage64.c
-> @@ -186,6 +186,33 @@ setup_efi_state(struct boot_params *params, unsigned long params_load_addr,
->  }
->  #endif /* CONFIG_EFI */
->  
-> +static void
-> +setup_ima_state(const struct kimage *image, struct boot_params *params,
-> +		unsigned long params_load_addr,
-> +		unsigned int ima_setup_data_offset)
-> +{
-> +#ifdef CONFIG_IMA_KEXEC
-> +	struct setup_data *sd = (void *)params + ima_setup_data_offset;
-> +	unsigned long setup_data_phys;
-> +	struct ima_setup_data *ima;
-> +
-> +	if (!image->ima_buffer_size)
-> +		return;
-> +
-> +	sd->type = SETUP_IMA;
-> +	sd->len = sizeof(*ima);
-> +
-> +	ima = (void *)sd + sizeof(struct setup_data);
-> +	ima->addr = image->ima_buffer_addr;
-> +	ima->size = image->ima_buffer_size;
-> +
-> +	/* Add setup data */
-> +	setup_data_phys = params_load_addr + ima_setup_data_offset;
-> +	sd->next = params->hdr.setup_data;
-> +	params->hdr.setup_data = setup_data_phys;
-> +#endif /* CONFIG_IMA_KEXEC */
-> +}
-> +
->  static int
->  setup_boot_parameters(struct kimage *image, struct boot_params *params,
->  		      unsigned long params_load_addr,
-> @@ -247,6 +274,13 @@ setup_boot_parameters(struct kimage *image, struct boot_params *params,
->  	setup_efi_state(params, params_load_addr, efi_map_offset, efi_map_sz,
->  			efi_setup_data_offset);
->  #endif
-> +
-> +	/* Setup IMA log buffer state */
-> +	setup_ima_state(image, params, params_load_addr,
-> +			efi_setup_data_offset +
-> +			sizeof(struct setup_data) +
-> +			sizeof(struct efi_setup_data));
+Here is the summary with links:
+  - cros_ec_commands: Fix syntax errors in comments
+    https://git.kernel.org/chrome-platform/c/8d5976089c97
 
-Is it a little better to update efi_setup_data_offset beforehand, or
-define a local variable?
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-	efi_setup_data_offset += sizeof(struct setup_data) + sizeof(struct efi_setup_data));
-	setup_ima_state(image, params, params_load_addr,
-			efi_setup_data_offset));
-
-No strong opinion. If nobody has concern about it.
-
-> +
->  	/* Setup EDD info */
->  	memcpy(params->eddbuf, boot_params.eddbuf,
->  				EDDMAXNR * sizeof(struct edd_info));
 
