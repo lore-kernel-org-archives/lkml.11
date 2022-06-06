@@ -2,113 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 122B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:10:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C627C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:10:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233808AbiFFKKA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 06:10:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46214 "EHLO
+        id S233842AbiFFKKz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 06:10:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233597AbiFFKGm (ORCPT
+        with ESMTP id S233603AbiFFKIT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 06:06:42 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D1F714641C;
-        Mon,  6 Jun 2022 03:06:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654509997; x=1686045997;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Hs7tygBksGYt2BDKZ0A+aYzoQ3gQHRqzZByxTCUZYPc=;
-  b=L4QFCKs2V3Hjw87ItBs3zuR8yjcvT87VtwlHptiH0rQDTYY3rS5Oq+5c
-   d1RTMzYtQHIYpJxcDxI8zKMHA78+uUkXSZNWsr4pK+yG7ie2VuVPn6VRQ
-   vDMlxloqv0P6+zDCug/n9g3SP09USTsp3TRdOcr9vtSvcBgoXURwm3TvP
-   idEzi/BQ/Ihm7rqKoJ9RjIDGouyh3w/UsynlbkWtxSj83xCM+CVg/+rj0
-   dW0OGU8Y/VSuK440i2Njm3355b1NllQlkZx4vTj+clzfJvyML1lugWaLc
-   PRtduJV8D/F6Z0cL5Whj1PsunihjjGmuv+H0tSJq27RbUcfCzIXe1lzIV
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="362987102"
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="362987102"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:06:37 -0700
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="635523925"
-Received: from amkossek-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.57.11])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:06:35 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 36/36] serial: 8250: Remove serial_rs485 sanitization from em485
-Date:   Mon,  6 Jun 2022 13:04:33 +0300
-Message-Id: <20220606100433.13793-37-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
-References: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
+        Mon, 6 Jun 2022 06:08:19 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 420E587210
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 03:07:24 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id v19so18083391edd.4
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 03:07:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2uwcCEtSswrsSeV8Oe+2oTvOp0hok5ZHYDzpgWGeOlQ=;
+        b=DE69h8+Q3aglb3detW4jawOS1bRNj33jBRCuZvuuZpeknccYBlvm4xRpPjZqCT6xlC
+         9tO5iUZhxoO2ZJv9IkPSVwStFjoyrmQ12dGIfOazv5x4tkDRdqtx3Odupd6yfsdLYL02
+         9ZsU3L6IE2/ZPEDo9d54IFGjZLrLbHosPGwF4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2uwcCEtSswrsSeV8Oe+2oTvOp0hok5ZHYDzpgWGeOlQ=;
+        b=aB+5skh0IUhIbSQIqzdGAHlUHYpQlKU6KmYjq20jbxbSYrBO2KpMVQBqjT3osUUFW3
+         qy0DgbtPxXpVYM5eTaAHSTh79Q6cod5owkplsiyxxrOT53O9nnbSdjAeq8QqLPK8h3pc
+         V3WM32T4AyJcvmFgzmHOUcyB1rpnxDywEjv/Xx/agPPFZRxjs52JTYP/OIPeHopJ6oWi
+         wL8edwKrp23ryfoLSTcaer4hHSmxJQ7xqkyN+RXuUZj0mg5QOvfWRlhIh8a/gpYeDfOq
+         7F4V/LZoCxDjokui0+zhrygNq4Q2KahgSMTYsqunoWLI30ewp3+7VaW8n0gM58j2z/dz
+         p/Dw==
+X-Gm-Message-State: AOAM5334QPM3Wdl54w6NYhXAIZnKjOEg0zSGrEIuj/bu6vhZgYSEHNIP
+        kuC1AKAmHlz0ASQ9oa+4T+kNIhrdP0C6zhbTL4o/GA==
+X-Google-Smtp-Source: ABdhPJw0GXg99MvbQTKVkrNI4lLKZkQooYMuZvDOZ1tfUMZGtWWH5ppQgsFJTyLOn9eTLW43RxaLMTqeNMsUuS8GDAY=
+X-Received: by 2002:aa7:c84d:0:b0:431:4226:70c9 with SMTP id
+ g13-20020aa7c84d000000b00431422670c9mr9032595edt.51.1654510043095; Mon, 06
+ Jun 2022 03:07:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220527110036.8810-1-johnson.wang@mediatek.com>
+In-Reply-To: <20220527110036.8810-1-johnson.wang@mediatek.com>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Mon, 6 Jun 2022 18:07:12 +0800
+Message-ID: <CAGXv+5FZ9DthNaZCgaO6ygO4cUD91Bw1uVYJq98SHUcoAmPoPQ@mail.gmail.com>
+Subject: Re: [PATCH v6 0/2] Introduce MediaTek CCI devfreq driver
+To:     Johnson Wang <johnson.wang@mediatek.com>, cw00.choi@samsung.com
+Cc:     krzk+dt@kernel.org, robh+dt@kernel.org, kyungmin.park@samsung.com,
+        khilman@kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, jia-wei.chang@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Serial core handles serial_rs485 sanitization.
+On Fri, May 27, 2022 at 7:01 PM Johnson Wang <johnson.wang@mediatek.com> wrote:
+>
+> The Cache Coherent Interconnect (CCI) is the management of cache
+> coherency by hardware. CCI DEVFREQ is DVFS driver for power saving by
+> scaling clock frequency and supply voltage of CCI. CCI uses the same
+> input clock source and power rail as LITTLE CPUs on Mediatek SoCs.
+>
+> This series depends on:
+> Chanwoo's repo: kernel/git/chanwoo/linux.git
+> branch: devfreq-testing
+> [1]: PM / devfreq: Export devfreq_get_freq_range symbol within devfreq
+> [2]: PM / devfreq: Add cpu based scaling support to passive governor
+> [3]: PM / devfreq: passive: Reduce duplicate code when passive_devfreq case
+> [4]: PM / devfreq: passive: Update frequency when start governor
+>
+> Changes in v6:
+> - Remove unnecessary "goto" statement.
+>
+> Changes in v5:
+> - Modify some binding description.
+> - Remove pre_voltage member.
+> - Not to enable/disable intermediate clock.
+> - Not to "put" resources that using devm_ variants.
+>
+> Resend v4:
+> - CC interconnect maintainer.
+> - Change sign-off sequence in commit message.
+>
+> Changes in v4:
+> - Add a maintainer in the binding document.
+> - Modify clock description.
+> - Add binding document into MAINTAINERS.
+> - Replace format specifier %d with %ld.
+>
+> Changes in v3:
+> - Move binding document to 'interconnect' and rename it.
+> - Add COMPILE_TEST dependence symbol.
+> - Remove need_voltage_tracking variable.
+> - Move mtk_ccifreq_voltage_tracking() code into mtk_ccifreq_set_voltage().
+> - Add an interation limit in the while() loop.
+> - Replace 'cci_dev' with 'dev'
+> - Replace old_* with pre_*
+> - Remove of_match_ptr()
+> - Use module_platform_driver()
+>
+> Changes in v2:
+> - Take MT8183 as example in binding document.
+> - Use dev_err() instead of pr_err().
+> - Use 'goto' statement to handle error case.
+> - Clean up driver code.
+>
+> Johnson Wang (2):
+>   dt-bindings: interconnect: Add MediaTek CCI dt-bindings
+>   PM / devfreq: mediatek: Introduce MediaTek CCI devfreq driver
 
-When em485 init fails, there are two possible paths of entry:
+FTR,
 
-  1) uart_rs485_config (init path) that fully clears port->rs485 on
-     error.
-
-  2) ioctl path with a pre-existing, valid port->rs485 unto which the
-     kernel falls back on error and port->rs485 should therefore be
-     kept untouched. The temporary rs485 struct is not returned to
-     userspace in case of error so its flag don't matter.
-
-...Thus SER_RS485_ENABLED clearing on error can/should be dropped.
-
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/8250/8250_port.c | 18 ++----------------
- 1 file changed, 2 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index a825fbc215a7..4998799abae2 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -675,13 +675,6 @@ int serial8250_em485_config(struct uart_port *port, struct serial_rs485 *rs485)
- 		rs485->flags &= ~SER_RS485_RTS_AFTER_SEND;
- 	}
- 
--	/* clamp the delays to [0, 100ms] */
--	rs485->delay_rts_before_send = min(rs485->delay_rts_before_send, 100U);
--	rs485->delay_rts_after_send  = min(rs485->delay_rts_after_send, 100U);
--
--	memset(rs485->padding, 0, sizeof(rs485->padding));
--	port->rs485 = *rs485;
--
- 	gpiod_set_value(port->rs485_term_gpio,
- 			rs485->flags & SER_RS485_TERMINATE_BUS);
- 
-@@ -689,15 +682,8 @@ int serial8250_em485_config(struct uart_port *port, struct serial_rs485 *rs485)
- 	 * Both serial8250_em485_init() and serial8250_em485_destroy()
- 	 * are idempotent.
- 	 */
--	if (rs485->flags & SER_RS485_ENABLED) {
--		int ret = serial8250_em485_init(up);
--
--		if (ret) {
--			rs485->flags &= ~SER_RS485_ENABLED;
--			port->rs485.flags &= ~SER_RS485_ENABLED;
--		}
--		return ret;
--	}
-+	if (rs485->flags & SER_RS485_ENABLED)
-+		return serial8250_em485_init(up);
- 
- 	serial8250_em485_destroy(up);
- 	return 0;
--- 
-2.30.2
-
+Tested-by: Chen-Yu Tsai <wenst@chromium.org>
