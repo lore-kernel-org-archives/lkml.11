@@ -2,125 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35223C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 20:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A974CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 20:59:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230050AbiFFU6y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 16:58:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44958 "EHLO
+        id S234737AbiFFU7T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 16:59:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiFFU6m (ORCPT
+        with ESMTP id S234741AbiFFU7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 16:58:42 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6099D562CC
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 13:47:38 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id u23so25202797lfc.1
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 13:47:38 -0700 (PDT)
+        Mon, 6 Jun 2022 16:59:09 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A506C56C
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 13:48:14 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so13568822pjq.2
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 13:48:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=/3H2XZ6dpXzRQfowBHHKO62pzuIO8BSQZsCXIa5yn8Y=;
-        b=p4IX49yf/tdUFVdv3V7xqUeuqoDjTqg6prRSrjMqky21BQeURVQ4dGXHZXNZ2UqWN6
-         MbRVjsVGXnmloodZODxw/1aHhS8sdGtA8xXmXxof65ZgXrGfdSP7jub4Ws0Pz3a0/EOO
-         QlBGSwnrm17a182/HyXG0VGIebPu4Za5WQLPCS7JN6wRE9iixQoZOwAXQHFJ2qK0s+nq
-         79Yl04ttCQUI5rdZrpoKW2+EYstHkAXS0wFmCDvwKeHDO7cW8mUxQ1ude95KYWyXwH6Q
-         rrhGQa6GWy1HM9Kjaj5eVtlXgUnTsUzuxB9bdJ7IZCJidF6pF1MtLvlOhh2o8bam+u5h
-         X+EA==
+        bh=AlPPNyvR7lWFI2X/TgyXlnC9vx00TL5Vm+xNvpSSNoA=;
+        b=onq/TWloM+5cXdpjwh/6inxOthaxTkEiG/j5wDpdk6g/TQkcp9a0A+cafRzZH35+AM
+         ZM78epWv+TGXUvh1aF99og/sdEOHYj9PPDmcP6q+Sk3A/vtzuJ9yJfhssR6P7u1CpRLp
+         cUMJsu8Kp0AoqeSUW1gKx0cD5FcaEVuyLAm6U2EV5DuEcbJkMPMIzCpDBo0/uw2TqMlB
+         NkFVawwE6H/O7ifHQ4ahzFWZIubIh2RrBNturvuIQ/95QzXagP5JXv3trzWsVWnGBsPi
+         AlrkyUFxg8++9C9cXcLpL4GS5GodMQGQeODET7T6YwVNABW4h9qluL7f9ni/DSuPrJzq
+         uO+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/3H2XZ6dpXzRQfowBHHKO62pzuIO8BSQZsCXIa5yn8Y=;
-        b=fyQvfJrxWrl2cMnjBxP04hO0+L4n+XFJ6MP5G5dHZ8H3DWERPhsqzTVFHg7YDTaMn/
-         0SsTHmaICzqLGBCfHHaUQCb00tyrC3D1jfrya/QblIvyfr2OG185GxU3vTfCF+dyMH+V
-         pLN1e7UUSQRAoIRQgeorU2xcIessryBGn5wr2k8sr8y+RQNEu/g3zqvkT7aYjxWJNknb
-         PHY7sxbwS60wPeceWX5GbdDldYoCPw9Pf//gauC9A5DWfELI6cx+OqMQlFJTrXNbsvm3
-         XlbLkIbmw/w03Qr+uXtZ/GrSSmReTCtWjAQq4k1fwhUdqFMITJ2eVPkyHUXuVC/E31uK
-         R/qw==
-X-Gm-Message-State: AOAM532qExs6CwSCGxjSCptAScnkI8bLISdFjv/ao1dtMDcAyiH6YWfj
-        gOoyitXq6lOx7JL8MTDhD6w=
-X-Google-Smtp-Source: ABdhPJz//47oN347Y2bRuH/pMCem/Sb/J5aclSfxWHZNiT+9OO4kKvOZbzG6t3v1mNnUfR9rCRKXUw==
-X-Received: by 2002:a05:6512:1315:b0:474:40c9:41a7 with SMTP id x21-20020a056512131500b0047440c941a7mr66846021lfu.319.1654548457291;
-        Mon, 06 Jun 2022 13:47:37 -0700 (PDT)
-Received: from pc638.lan ([155.137.26.201])
-        by smtp.gmail.com with ESMTPSA id u23-20020a05651c141700b00255a17d5bfcsm289618lje.106.2022.06.06.13.47.36
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=AlPPNyvR7lWFI2X/TgyXlnC9vx00TL5Vm+xNvpSSNoA=;
+        b=qTMBjs+ZAcu6md3tqYCTAC1o9qk13KplzDm0Mv+/0rKB/sSgLCOXJvETrO9XG0wMwk
+         V1dhj1e36gyQ2vL4tYQL+Tkm0WQVsCSr1u27KGkOHz6lWR1a+UltJnPOhb9kddB3W98H
+         X29aU1+4km2b2zBzXD50NkZNFx3/9vnpkgIprh76bUamGu7xxHILPuzUJ3re7zRwjaRi
+         S79zxxx1YfPAnHZB6ewcPHdDPY8FKsWNN1AhA4YtRioP3Q8Zjr9TRRzLE9g1zio/KS6l
+         7b9N1FtMCTM7IAPMU0BzpRMLwxjWs6ayPJdNme8nzAV73kX+haVhwK+/sRjLMkMg/GFi
+         pkUg==
+X-Gm-Message-State: AOAM532d3YdG1dwfBo6VJ4kBMyEAabvxzlwU94zXRWK+X5l6j+WuNpiO
+        v/s7f9Zi3k+Rl/Zjl8LKf1k=
+X-Google-Smtp-Source: ABdhPJxgji6mfqhBbxL3JBchT6aASnEZ9yodH/o/YTvmACsIhcerFsRvM1Xm+fzxjamxFo0x3EBZ+w==
+X-Received: by 2002:a17:90b:1b05:b0:1e2:a053:2fad with SMTP id nu5-20020a17090b1b0500b001e2a0532fadmr52776954pjb.209.1654548494401;
+        Mon, 06 Jun 2022 13:48:14 -0700 (PDT)
+Received: from google.com ([2620:15c:211:201:e75e:2c04:7854:d454])
+        by smtp.gmail.com with ESMTPSA id q3-20020a056a0002a300b0051be16492basm7119485pfs.195.2022.06.06.13.48.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 13:47:36 -0700 (PDT)
-From:   Uladzislau Rezki <urezki@gmail.com>
-X-Google-Original-From: Uladzislau Rezki <urezki@pc638.lan>
-Date:   Mon, 6 Jun 2022 22:47:35 +0200
-To:     Baoquan He <bhe@redhat.com>
-Cc:     akpm@linux-foundation.org, npiggin@gmail.com, urezki@gmail.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/5] mm/vmalloc: fix typo in local variable name
-Message-ID: <Yp5n58uecTlSro6f@pc638.lan>
-References: <20220606083909.363350-1-bhe@redhat.com>
- <20220606083909.363350-4-bhe@redhat.com>
+        Mon, 06 Jun 2022 13:48:14 -0700 (PDT)
+Sender: Minchan Kim <minchan.kim@gmail.com>
+Date:   Mon, 6 Jun 2022 13:48:12 -0700
+From:   Minchan Kim <minchan@kernel.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Jaewon Kim <jaewon31.kim@samsung.com>, ngupta@vflare.org,
+        senozhatsky@chromium.org, avromanov@sberdevices.ru,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        s.suk@samsung.com, ytk.lee@samsung.com, jaewon31.kim@gmail.com
+Subject: Re: [PATCH] zram_drv: add __GFP_NOMEMALLOC not to use
+ ALLOC_NO_WATERMARKS
+Message-ID: <Yp5oDD8mfsGtsSaB@google.com>
+References: <CGME20220603055341epcas1p2dd357326eea0cd818daf6f0db7c2aae1@epcas1p2.samsung.com>
+ <20220603055747.11694-1-jaewon31.kim@samsung.com>
+ <Yp5ZnkYEA5xrUksX@google.com>
+ <20220606125939.ae37867e43b8b8b07fa06ca7@linux-foundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220606083909.363350-4-bhe@redhat.com>
+In-Reply-To: <20220606125939.ae37867e43b8b8b07fa06ca7@linux-foundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 06, 2022 at 04:39:07PM +0800, Baoquan He wrote:
-> In __purge_vmap_area_lazy(), rename local_pure_list to local_purge_list.
+On Mon, Jun 06, 2022 at 12:59:39PM -0700, Andrew Morton wrote:
+> On Mon, 6 Jun 2022 12:46:38 -0700 Minchan Kim <minchan@kernel.org> wrote:
 > 
-> Signed-off-by: Baoquan He <bhe@redhat.com>
-> ---
->  mm/vmalloc.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
+> > On Fri, Jun 03, 2022 at 02:57:47PM +0900, Jaewon Kim wrote:
+> > > The atomic page allocation failure sometimes happened, and most of them
+> > > seem to occur during boot time.
+> > > 
+> > > <4>[   59.707645] system_server: page allocation failure: order:0, mode:0xa20(GFP_ATOMIC), nodemask=(null),cpuset=foreground-boost,mems_allowed=0
+> >
+> > ...
+> >
+> > > 
+> > > The kswapd or other reclaim contexts may not prepare enough free pages
+> > > for too many atomic allocations occurred in short time. But zram may not
+> > > be helpful for this atomic allocation even though zram is used to
+> > > reclaim.
+> > > 
+> > > To get one zs object for a specific size, zram may allocate serveral
+> > > pages. And this can be happened on different class sizes at the same
+> > > time. It means zram may consume more pages to reclaim only one page.
+> > > This inefficiency may consume all free pages below watmerk min by a
+> > > process having PF_MEMALLOC like kswapd.
+> > 
+> > However, that's how zram has worked for a long time(allocate memory
+> > under memory pressure) and many folks already have raised min_free_kbytes
+> > when they use zram as swap. If we don't allow the allocation, swap out
+> > fails easier than old, which would break existing tunes.
 > 
-> diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-> index c7e1634ff2b9..11dfc897de40 100644
-> --- a/mm/vmalloc.c
-> +++ b/mm/vmalloc.c
-> @@ -1673,32 +1673,32 @@ static void purge_fragmented_blocks_allcpus(void);
->  static bool __purge_vmap_area_lazy(unsigned long start, unsigned long end)
->  {
->  	unsigned long resched_threshold;
-> -	struct list_head local_pure_list;
-> +	struct list_head local_purge_list;
->  	struct vmap_area *va, *n_va;
->  
->  	lockdep_assert_held(&vmap_purge_lock);
->  
->  	spin_lock(&purge_vmap_area_lock);
->  	purge_vmap_area_root = RB_ROOT;
-> -	list_replace_init(&purge_vmap_area_list, &local_pure_list);
-> +	list_replace_init(&purge_vmap_area_list, &local_purge_list);
->  	spin_unlock(&purge_vmap_area_lock);
->  
-> -	if (unlikely(list_empty(&local_pure_list)))
-> +	if (unlikely(list_empty(&local_purge_list)))
->  		return false;
->  
->  	start = min(start,
-> -		list_first_entry(&local_pure_list,
-> +		list_first_entry(&local_purge_list,
->  			struct vmap_area, list)->va_start);
->  
->  	end = max(end,
-> -		list_last_entry(&local_pure_list,
-> +		list_last_entry(&local_purge_list,
->  			struct vmap_area, list)->va_end);
->  
->  	flush_tlb_kernel_range(start, end);
->  	resched_threshold = lazy_max_pages() << 1;
->  
->  	spin_lock(&free_vmap_area_lock);
-> -	list_for_each_entry_safe(va, n_va, &local_pure_list, list) {
-> +	list_for_each_entry_safe(va, n_va, &local_purge_list, list) {
->  		unsigned long nr = (va->va_end - va->va_start) >> PAGE_SHIFT;
->  		unsigned long orig_start = va->va_start;
->  		unsigned long orig_end = va->va_end;
-> -- 
-> 2.34.1
-> 
-Makes sense to me: Reviewed-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
+> So is there a better way of preventing this warning?  Just suppress it
+> with __GFP_NOWARN?
 
---
-Uladzislau Rezki
+For me, I usually tries to remove GFP_ATOMIC alllocation since the
+atomic allocation can be failed easily(zram is not only source for
+it). Otherwise, increase min_free_kbytes?
