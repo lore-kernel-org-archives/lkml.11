@@ -2,117 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67786C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 19:20:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96528C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 19:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232202AbiFFTUH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 15:20:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49476 "EHLO
+        id S232216AbiFFTUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 15:20:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229809AbiFFTT6 (ORCPT
+        with ESMTP id S231542AbiFFTT6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 6 Jun 2022 15:19:58 -0400
-Received: from hutie.ust.cz (hutie.ust.cz [185.8.165.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87BFA118027;
+Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45230115CAC;
         Mon,  6 Jun 2022 12:19:56 -0700 (PDT)
-From:   =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
-        t=1654543194; bh=QRlMmTx37FIKTUzJOBJewRJ+ymrpkMI9OoQilWk1xqQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=pCqAUtR5QapOooJvOBPYyu6davbskVeHkuQPoBRndcKKCB1ayMa43zPdunPZ8BdEz
-         hqwIFeXKXSAzIiaJloXlHVS4XBW2OiJcYOcvxEpGzXL3TILws63LPcNosFqrqNnF5h
-         BDeut6J0fhsCyD1wCOIaeQ88CR2aUEVF2Yedmjs8=
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-Cc:     =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Mark Kettenis <kettenis@openbsd.org>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>, asahi@lists.linux.dev
-Subject: [RFC PATCH v2 4/5] ASoC: Introduce 'fixup_controls' card method
-Date:   Mon,  6 Jun 2022 21:19:09 +0200
-Message-Id: <20220606191910.16580-5-povik+lin@cutebit.org>
-In-Reply-To: <20220606191910.16580-1-povik+lin@cutebit.org>
-References: <20220606191910.16580-1-povik+lin@cutebit.org>
+Received: from [192.168.192.153] (unknown [50.126.114.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 77C8F3FC00;
+        Mon,  6 Jun 2022 19:19:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1654543190;
+        bh=K+bCkP5CcB21zdaAQ4i4c8fx4eQGsa9syMHybRmRncw=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=NO6lvjkHsJwW3anrcMCW4mNeNys3WtsBz7rlOVgsQA4ZFyKB+36rBaNTU7+HZc23y
+         pLWcZmnnL6cNj8O+xLjSnuurEMMzW/OMm6Zgax/dNCWcGXZAswl6bWwrGEOLnFiJfI
+         +owdVtUN/NuwE/hrfDg0tBiQ5OAWrcUZl8d2VUplNGGYEv2oNCLr2Ykma6MlFu1Daa
+         V3mHTaoscVnfNPGLVdn0aGEasbrXu7YA/B36svTdTp8LJ2CXS6qmFaUsLofZCRp7Qf
+         xpExGR/XSB/qYnpZac7sQ+Qzc36FSpI6l73uA3XuyOi8eLnflXzYqtRp3UkVxb4oIx
+         5Haf8dQStSWIA==
+Message-ID: <266e648a-c537-66bc-455b-37105567c942@canonical.com>
+Date:   Mon, 6 Jun 2022 12:19:36 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: Linux 5.18-rc4
+Content-Language: en-US
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        James Morris <jmorris@namei.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Kees Cook <keescook@chromium.org>,
+        linux-fsdevel@vger.kernel.org, Linux-MM <linux-mm@kvack.org>,
+        gwml@vger.gnuweeb.org
+References: <CAHk-=whmtHMzjaVUF9bS+7vE_rrRctcCTvsAeB8fuLYcyYLN-g@mail.gmail.com>
+ <226cee6a-6ca1-b603-db08-8500cd8f77b7@gnuweeb.org>
+ <CAHk-=whayT+o58FrPCXVVJ3Bn-3SeoDkMA77TOd9jg4yMGNExw@mail.gmail.com>
+ <87r1414y5v.fsf@email.froward.int.ebiederm.org>
+ <CAHk-=wijAnOcC2qQEAvFtRD_xpPbG+aSUXkfM-nFTHuMmPbZGA@mail.gmail.com>
+From:   John Johansen <john.johansen@canonical.com>
+Organization: Canonical
+In-Reply-To: <CAHk-=wijAnOcC2qQEAvFtRD_xpPbG+aSUXkfM-nFTHuMmPbZGA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The new method is called just before the card is registered, providing
-an opportune time for machine-level drivers to do some final controls
-amending: deactivating individual controls or obtaining control
-references for later use.
+On 6/6/22 11:28, Linus Torvalds wrote:
+> On Mon, Jun 6, 2022 at 8:19 AM Eric W. Biederman <ebiederm@xmission.com> wrote:
+>> Has anyone looked into this lock ordering issues?
+> 
+> The deadlock is
+> 
+>>>> [78140.503821]        CPU0                    CPU1
+>>>> [78140.503823]        ----                    ----
+>>>> [78140.503824]   lock(&newf->file_lock);
+>>>> [78140.503826]                                lock(&p->alloc_lock);
+>>>> [78140.503828]                                lock(&newf->file_lock);
+>>>> [78140.503830]   lock(&ctx->lock);
+> 
+> and the alloc_lock -> file_lock on CPU1 is trivial - it's seq_show()
+> in fs/proc/fd.c:
+> 
+>         task_lock(task);
+>         files = task->files;
+>         if (files) {
+>                 unsigned int fd = proc_fd(m->private);
+> 
+>                 spin_lock(&files->file_lock);
+> 
+> and that looks all normal.
+> 
+> But the other chains look painful.
+> 
+> I do see the IPC code doing ugly things, in particular I detest this code:
+> 
+>         task_lock(current);
+>         list_add(&shp->shm_clist, &current->sysvshm.shm_clist);
+>         task_unlock(current);
+> 
+> where it is using the task lock to protect the shm_clist list. Nasty.
+> 
+> And it's doing that inside the shm_ids.rwsem lock _and_ inside the
+> shp->shm_perm.lock.
+> 
+> So the IPC code has newseg() doing
+> 
+>    shmget ->
+>     ipcget():
+>      down_write(ids->rwsem) ->
+>        newseg():
+>          ipc_addid gets perm->lock
+>          task_lock(current)
+> 
+> so you have
+> 
+>   ids->rwsem -> perm->lock -> alloc_lock
+> 
+> there.
+> 
+> So now we have that
+> 
+>    ids->rwsem -> ipcperm->lock -> alloc_lock -> file_lock
+> 
+> when you put those sequences together.
+> 
+> But I didn't figure out what the security subsystem angle is and how
+> that then apparently mixes things up with execve.
+> 
+> Yes, newseg() is doing that
+> 
+>         error = security_shm_alloc(&shp->shm_perm);
+> 
+> while holding rwsem, but I can't see how that matters. From the
+> lockdep output, rwsem doesn't actually seem to be part of the whole
+> sequence.
+> 
+> It *looks* like we have
+> 
+>    apparmour ctx->lock -->
+>       radix_tree_preloads.lock -->
+>          ipcperm->lock
+> 
+> and apparently that's called under the file_lock somewhere, completing
+> the circle.
+> 
+> I guess the execve component is that
+> 
+>   begin_new_exec ->
+>     security_bprm_committing_creds ->
+>       apparmor_bprm_committing_creds ->
+>         aa_inherit_files ->
+>           iterate_fd ->   *takes file_lock*
+>             match_file ->
+>               aa_file_perm ->
+>                 update_file_ctx *takes ctx->lock*
+> 
+> so that's how you get file_lock -> ctx->lock.
+> 
+yes
 
-Some controls can be created by DAPM after 'late_probe' has been called,
-hence the need for this new method.
+> So you have:
+> 
+>  SHMGET:
+>     ipcperm->lock -> alloc_lock
+>  /proc:
+>     alloc_lock -> file_lock
+>  apparmor_bprm_committing_creds:
+>     file_lock -> ctx->lock
+> 
+> and then all you need is ctx->lock -> ipcperm->lock but I didn't find that part.
+> 
+yeah that is the part I got stuck on, before being pulled away from this
 
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
----
- include/sound/soc-card.h | 1 +
- include/sound/soc.h      | 1 +
- sound/soc/soc-card.c     | 6 ++++++
- sound/soc/soc-core.c     | 1 +
- 4 files changed, 9 insertions(+)
+> I suspect that part is that both Apparmor and IPC use the idr local lock.
+> 
+bingo,
 
-diff --git a/include/sound/soc-card.h b/include/sound/soc-card.h
-index 4f2cc4fb56b7..fd8a6bd2bb4c 100644
---- a/include/sound/soc-card.h
-+++ b/include/sound/soc-card.h
-@@ -26,6 +26,7 @@ int snd_soc_card_resume_post(struct snd_soc_card *card);
- 
- int snd_soc_card_probe(struct snd_soc_card *card);
- int snd_soc_card_late_probe(struct snd_soc_card *card);
-+void snd_soc_card_fixup_controls(struct snd_soc_card *card);
- int snd_soc_card_remove(struct snd_soc_card *card);
- 
- int snd_soc_card_set_bias_level(struct snd_soc_card *card,
-diff --git a/include/sound/soc.h b/include/sound/soc.h
-index d3d3a26e8867..8be0258c74e9 100644
---- a/include/sound/soc.h
-+++ b/include/sound/soc.h
-@@ -895,6 +895,7 @@ struct snd_soc_card {
- 
- 	int (*probe)(struct snd_soc_card *card);
- 	int (*late_probe)(struct snd_soc_card *card);
-+	void (*fixup_controls)(struct snd_soc_card *card);
- 	int (*remove)(struct snd_soc_card *card);
- 
- 	/* the pre and post PM functions are used to do any PM work before and
-diff --git a/sound/soc/soc-card.c b/sound/soc/soc-card.c
-index 41c586b86dc3..377e4f9eda91 100644
---- a/sound/soc/soc-card.c
-+++ b/sound/soc/soc-card.c
-@@ -167,6 +167,12 @@ int snd_soc_card_late_probe(struct snd_soc_card *card)
- 	return 0;
- }
- 
-+void snd_soc_card_fixup_controls(struct snd_soc_card *card)
-+{
-+	if (card->fixup_controls)
-+		card->fixup_controls(card);
-+}
-+
- int snd_soc_card_remove(struct snd_soc_card *card)
- {
- 	int ret = 0;
-diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
-index aa687fd126db..ef4d9cb67bb2 100644
---- a/sound/soc/soc-core.c
-+++ b/sound/soc/soc-core.c
-@@ -2074,6 +2074,7 @@ static int snd_soc_bind_card(struct snd_soc_card *card)
- 		goto probe_end;
- 
- 	snd_soc_dapm_new_widgets(card);
-+	snd_soc_card_fixup_controls(card);
- 
- 	ret = snd_card_register(card->snd_card);
- 	if (ret < 0) {
--- 
-2.33.0
+apparmor moved its secids allocation from a custom radix tree to idr in
+
+  99cc45e48678 apparmor: Use an IDR to allocate apparmor secids
+
+and ipc is using the idr for its id allocation as well
+
+I can easily lift the secid() allocation out of the ctx->lock but that
+would still leave it happening under the file_lock and not fix the problem.
+I think the quick solution would be for apparmor to stop using idr, reverting
+back at least temporarily to the custom radix tree.
+
 
