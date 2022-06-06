@@ -2,173 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CF86C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 11:31:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8972BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 11:33:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235576AbiFFLbh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 07:31:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54344 "EHLO
+        id S235472AbiFFLdP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 07:33:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235560AbiFFLbb (ORCPT
+        with ESMTP id S235372AbiFFLdM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 07:31:31 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF84F200
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 04:31:30 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2568UN7W028887;
-        Mon, 6 Jun 2022 11:25:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=0iwOeAjUp9XltvnH0iDO/T6HOcuMcUf3DG95ZgtnW34=;
- b=yTmqegkiO19O97erC6Xc0emF/Fx9tSIvPhY604RJ+2+jxtEhScjKvHzNFK7RfeCpYB2V
- OSOL3M4exK4RDuwp4E7jy4O1AF7sG1LP2eDU0vWyC0jEZhIH1XS83k1OnkNphHngaLry
- Kb47yxnppdfcZejDVNZ3Dv0MVwTFDPhLuOjL57Eaz9vy3EkvLkY6fA1mlbqpYnkpKKIR
- e/7dtOjAwb+Hjdtcjra5Ot7NGfjTjrSJa9PAT0eXcxyk9+rRqudVjyBTu1KQpddMWuwN
- RImTkRehgjKJfYIA/t5iSVTdkcSGDh4o2p/gdYI3LePySBN1C5P5EH5SGNZy32cymqTQ eQ== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gfyxsawrk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 06 Jun 2022 11:25:24 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 256BGZmG006612;
-        Mon, 6 Jun 2022 11:25:23 GMT
-Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1anam02lp2043.outbound.protection.outlook.com [104.47.57.43])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gfwu7h7af-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 06 Jun 2022 11:25:22 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oXuKT0Tdge2XDdXf3Ud/o0vGgb568Gt3UdHY3WCDq0Xj/yAvc00sOvaBLJ/k34LLmXifSC5y80h46zT4wEReFYqmO7HvCbcnDSHt3kutL5xURyX0ZDXxwYTBVo7EWW/h3OwK42mruyOR6lQWSHiouGrTejyk3bOl+IUz5YWckeghxY/TPIt3uGb7b0x9vXfLMpAv+zj01hAXro7jk2iCIax/vDfTLQpO1raejJCyWbpeC93VsT08vXVrpXP7+dxdpZg7SgnQou36mYhVaGQa0JRlMw9eAGC2eXSvbfS61mVlEV3H5JDWHzPEC2HBKIEJBB0dlmo6tOv/o8ptsykYew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0iwOeAjUp9XltvnH0iDO/T6HOcuMcUf3DG95ZgtnW34=;
- b=U7sITDzha5PRmZPXy3A5W0Cr6JHwM0Y5OPxJLSPMrBFE+kg/mD3vSK8FkTEUC+4ZpFhdWFpYcgojPRXOPeYQWcNVpOdKzp4bF4DtsIV6sx4jlpHXPGYyuVY+ELyZJ6y6VGlfmOsawKR8lPR/ZHxdxOZk5XSsTZltRHtIyKyK86tCg+9BCrrKtzaAQ+yflyX7zqbZcSJCXHgw0JirFt3jChQxSqLTq/GSj8pFfPEVA+bek/jVR8gmZSTqVfi7vIrBlH5fxoP0tJOsJU5OqTAPGN0fIqAPn669uUu2MxyZMhB8Cqa19bufME1Mo6Yyy9kfb3tSTTqMYE6tzPHCzQziPA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0iwOeAjUp9XltvnH0iDO/T6HOcuMcUf3DG95ZgtnW34=;
- b=Dk8SOt/bDGB4Y0MwslmPjl2vDaTXtTInPWVUC7ppqkfKzaW7R05J8J7PKY8Y3/fQrjwDA5TD3jtXpNvGYW69DTkXgx+TIx/2RXch7xxkrjDf3SJeQQ2sRLV0KAL9llEVCH5D3xTbHaxf8QzhMioBp4UA3LC/9wHv4wLlRptNyco=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CY4PR10MB1974.namprd10.prod.outlook.com
- (2603:10b6:903:128::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.17; Mon, 6 Jun
- 2022 11:25:21 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b%6]) with mapi id 15.20.5314.019; Mon, 6 Jun 2022
- 11:25:21 +0000
-Date:   Mon, 6 Jun 2022 14:25:02 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     kbuild@lists.01.org, Hector Martin <marcan@marcan.st>,
-        lkp@intel.com, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: drivers/irqchip/irq-apple-aic.c:941 aic_of_ic_init() error:
- uninitialized symbol 'off'.
-Message-ID: <20220606112502.GN2168@kadam>
-References: <202206010439.LRgjym7t-lkp@intel.com>
- <87zgiq3uux.wl-maz@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87zgiq3uux.wl-maz@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JN2P275CA0026.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:2::14)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        Mon, 6 Jun 2022 07:33:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5593E658B;
+        Mon,  6 Jun 2022 04:33:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E631F60F68;
+        Mon,  6 Jun 2022 11:33:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57BDFC36AFF;
+        Mon,  6 Jun 2022 11:33:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654515190;
+        bh=iiHNaIjolgNWshGx0VtNmsA0HuKQk5oAzR6lMEd02pg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=tX0kNYhUWVebw7BaoCvOxIgBoVz97p9WcJSrK/rav9YCv3zXpWntNOOsD4aPV4AsR
+         92qjAyq3pGZcxplkRHVsh0AMc9nCVmdAUhTHbxFvg3XuNF04honpZzwtKT2TOVZFNU
+         MNXjTr33HLkbDvyMQu6pevt3xRo2ryuyvpDLm2FbBkzz3tvTsbp/R6zY4NxlFiaCre
+         Nj4AqVsBmT+6fpgbAwdG/f+a17owY+5HZ78NrP8uIMsQv25BGdq6wj7z0E8GtPWfs+
+         CCxwVxuRnBpLHxHIEDODfeZ7H8KZjRMTS+624eu2k1756nKil7QVf3Vuvu2gWcfaMW
+         BjwRWxE0+Pz8Q==
+Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-edeb6c3642so18785535fac.3;
+        Mon, 06 Jun 2022 04:33:10 -0700 (PDT)
+X-Gm-Message-State: AOAM533DHBMnRdJkILdThIHM0Wo6Uw8SRTWCI/iwwiQwhHbenHbvMHhg
+        qSInfVPxhXGgvFCxu2HcN6t6hvtaBp1MoWtq1ig=
+X-Google-Smtp-Source: ABdhPJxkPMRLNT+MTO3Q8aX8f+k5qyqSTig6K1iiC0fhz+UWJMNIVSQnRVFraSOL8K8EUJ9YKe2/Z8cv0K81X4PMHE0=
+X-Received: by 2002:a05:6870:eaa5:b0:da:b3f:2b45 with SMTP id
+ s37-20020a056870eaa500b000da0b3f2b45mr31497119oap.228.1654515189352; Mon, 06
+ Jun 2022 04:33:09 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 586158c1-ba5d-48e6-7aea-08da47af3dae
-X-MS-TrafficTypeDiagnostic: CY4PR10MB1974:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR10MB1974BC780B24802772D46D648EA29@CY4PR10MB1974.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 77RyqtSt7fhTmwsU+VMuaM8Unw2ZhuSV0XWEBIXhX7W/cYCR2cVoNjOVm8M7q4C2kgEBwUV7b37QmhxrwAiL2SM8ZiNlosggvPrGV1O8oroq+xwBwv7WYQoJNYnQf+cRZLq11M2fACAkzd/o/L1w2BpCfWaJVDopKP3HsPjh069pQcxatk/qR4Lmo8nhawdWAHqESTW7NGVFGDGsS0siaUdX0syIxv+p6u/aFtIQ0yJEef09+/lmakMCH1mzFe2NmsIDfRmiy735gfGjwmrr4WNHMAL0v9bgVdyQjJKHNBN0vq5XojXqFYLZy+dgHohOJY/hmLgBJ73hQJxHkS41+kOpJiV3zPeTuiBI1kPqiAJL3ZHNeXkVfSSBYQkfKuPL0WBXFM1r2NLSvYZ2LY78DOhTPeP3Eu25RH/v7V2eP3IVcH+g+akJwSLmVu+xf5bkNRm7sTXU1zt2XO3DChCnFFERARrNVYk+yc+Z+g6f12GLNLRFyPRf2X+8PoGLHryhNDudyrWdEJld6JVj/tLpiaBfY61lnVlgVDXcvzqJRs7CJ9p96Ddax8ebHIR6vmLt+NIIXfuK1l93lYgwqyf/dBC1UE88TKTHUUArXKnBQX3aqudhYshFNziMjMXfAuOQBZeKNr+RpuT0VieW9XgNeE1bdgxgsfkIea9EpVFg5IYj4R4pWLiSe/waaPUMbIuuuS2rh6ggGH72gAThbyOSq6K1Ce3xuIZiIM6JbevKuH4faFk7WQL3wRdaeMwv3s5Z
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(47660400002)(6486002)(33656002)(38350700002)(38100700002)(316002)(186003)(2906002)(33716001)(1076003)(6512007)(9686003)(6506007)(26005)(52116002)(86362001)(6666004)(6916009)(8936002)(5660300002)(66476007)(8676002)(66556008)(44832011)(508600001)(4326008)(66946007)(46800400005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ixDfjtK8CtdtjwlLUM7bREWICs/z0qLKJs1HaXk8fJWPjUAoBp9waoenw3CW?=
- =?us-ascii?Q?jSh++eiaXpQjd+GC3KhBUkkdqEt39rLADo1Nctt2VVoMTKKr2xSz7p9vJIMu?=
- =?us-ascii?Q?bGo+Rd9g9jEmdCfUEkAFuolFLsV0zPSDb4e+AUovyfsAA9wLy2cb5gKAB4b1?=
- =?us-ascii?Q?3PMors4ZKXprYpi6rZsg0ZLEZPXrzJMyIKucf/vbQozeTAe9jDkmo+eH+rjx?=
- =?us-ascii?Q?0/8ugft8LrV5fxYLEA8JbZ/Pa9rwWRjA6sxqcbuW7rDbEWSUU2deroj7baNl?=
- =?us-ascii?Q?JFURHod5AgGxNgtUYpzoLzuoDFyKi8JDNCyl8qrlzGqA1UBdopepEZp6hVD/?=
- =?us-ascii?Q?KQzC/uTdo0xuf3c4kodFjPOjSvT3OTGNwRsdGHcbJYrQXjei/1yYuu/OO5wB?=
- =?us-ascii?Q?wzcStFedskWVxQfz5hP+Zjvkll0LVFlatH6bbGV5oG++1HQTLGNKaMspx788?=
- =?us-ascii?Q?0HizYtuhOa7yGDwjteIenS6cEAsQwF3kKgiYoV/uVKBlzTcbisKTxIIAGph0?=
- =?us-ascii?Q?8oehBdIqQhAT225i9jA54ND91lsrPKbxn3kt7dCAnoGj1q9VUuD97NdDcmXE?=
- =?us-ascii?Q?Wp8JJEhMHs9ZdTYNLRSrTfhGYV7gg50yJquWQj1F29IisaVCfViMyTlsXXCC?=
- =?us-ascii?Q?1bhU5N/9LLmiijRShEz8jmQbRwfVemcjW5CagRYxkec+sZ8lzm1/88JJiZZT?=
- =?us-ascii?Q?e719q6L9I+XSNT2wIDawy5Xohn+TbA3yHoVLTfeA7PmoGsCNx59IBUKEc0+q?=
- =?us-ascii?Q?g7uZswkHqZze9mqX7mz+LiXX3LCr0rt9v6+AZ6slxuF/aMw5RwAHMbc9G88c?=
- =?us-ascii?Q?G3lUaP13xcCjH4DFFefEXHLJgGno0A7Sq11k913m7s4hVmyIz6D0DzKFMvXT?=
- =?us-ascii?Q?UDWJp824GkIUyeea6dJXA948Vdavr3WRkCYT/psIG/kh0ruQJ7OICDfHCbh1?=
- =?us-ascii?Q?meQbvOj+t9dT1FxWd/MlJzyF0cX2iKgkZy568cCRVrGaqwOt/kyLjpb/gnbp?=
- =?us-ascii?Q?gTjrn+Vm/1rI8+c4OMKHaLhDzQenxps8H0mfr/vWyDe+QjENBYXcGzUa0MoC?=
- =?us-ascii?Q?XaKkbCK20Y5zU9VP3istdfjOJ1ZBGxJm4cw7jjo48SHFxJZZ1w9g8Zz4xig8?=
- =?us-ascii?Q?wd2mpL88EV8QWAA+j22x3rESJbA+WUDJJ/Xx1cGJTnSuUADdi5SReKeAIlCI?=
- =?us-ascii?Q?uyKr+3CNzcE43wWVFv+EXzfHyqxVN7opNCgFwYBN9vUGF1g4Juom31XvUzc8?=
- =?us-ascii?Q?b92wE8stHV8JU4KIcQ22n8uPsYqb6k4dUXVt+r6/V/MEQ3l8m/qREsj55Jxk?=
- =?us-ascii?Q?eE1WYKL2eBLGvknFQr/HzsGN8IEtzpMh+CEu5NaLvHTVC1RFeHzYM1SoXBWR?=
- =?us-ascii?Q?ZHEg5x/5it3Ezwq/RyIemRr6fpjmaKMyiwONTIkNr+5vJDB/j6ygvI+AchhX?=
- =?us-ascii?Q?V7SRQH8qEQ9Nt8RHI9uiaNIWl1xOurnTkUgfLnC/7Wu7apNors/4sSGbC76u?=
- =?us-ascii?Q?aVubOmd9T8dEhg8n6/3hxAj26OC6kow1AKABKVIAdYl0Wzqa+HJVdcVrnaBf?=
- =?us-ascii?Q?/gQvZxCmSlGzc88kUY2hcQ4V5b3/Kb7tVe5WcRQzMj25NuRlUQOIwkBeu5lO?=
- =?us-ascii?Q?HEQNXaulj3r/ExzJ7oR3O2c+DBzPKjvpEokrEKM3eEEzEPXjXtDXhJ/fDGrY?=
- =?us-ascii?Q?lXGRa7dUPAcgGJkrwLG3N/tuIpYmEp7Kz39QNYUgAYvgUu8KDKi6nV2U512w?=
- =?us-ascii?Q?qyqEahfmQ4avmgeoHIO799I0DIHy0dw=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 586158c1-ba5d-48e6-7aea-08da47af3dae
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2022 11:25:21.0258
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HIZGsnRZs3dmlwQvMwcN4p1iP98lZAPDbkq/fxcSyFcNmYPfOac8kZ1kyQyTDTz5AQjA4l4oCGuDvk5AOL95/oJg9qLwts2t8rM5pNpohJs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR10MB1974
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.874
- definitions=2022-06-06_04:2022-06-02,2022-06-06 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 mlxlogscore=999
- adultscore=0 bulkscore=0 mlxscore=0 suspectscore=0 malwarescore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206060052
-X-Proofpoint-ORIG-GUID: C7YWOftWFTKvYVnFS-uY5RFqq5AUgXGU
-X-Proofpoint-GUID: C7YWOftWFTKvYVnFS-uY5RFqq5AUgXGU
+References: <20220605171539.417872-1-Jason@zx2c4.com>
+In-Reply-To: <20220605171539.417872-1-Jason@zx2c4.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Mon, 6 Jun 2022 13:32:58 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXGi+ieviFjXv9zQBSaGyyzeGW_VpMpTLJK8PJb2QHEQ-w@mail.gmail.com>
+Message-ID: <CAMj1kXGi+ieviFjXv9zQBSaGyyzeGW_VpMpTLJK8PJb2QHEQ-w@mail.gmail.com>
+Subject: Re: [PATCH] random: credit cpu and bootloader seeds by default
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Theodore Ts'o" <tytso@mit.edu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 06, 2022 at 12:16:22PM +0100, Marc Zyngier wrote:
-> > dc97fd6fec0099 Hector Martin 2022-03-10   926  	switch (irqc->info.version) {
-> > dc97fd6fec0099 Hector Martin 2022-03-10   927  	case 1: {
-> > dc97fd6fec0099 Hector Martin 2022-03-10   928  		u32 info;
-> > dc97fd6fec0099 Hector Martin 2022-03-10   929  
-> > 76cde26394114f Hector Martin 2021-01-21   930  		info = aic_ic_read(irqc, AIC_INFO);
-> > 7c841f5f6fa3f9 Hector Martin 2022-03-10   931  		irqc->nr_irq = FIELD_GET(AIC_INFO_NR_IRQ, info);
-> > dc97fd6fec0099 Hector Martin 2022-03-10   932  		irqc->max_irq = AIC_MAX_IRQ;
-> > dc97fd6fec0099 Hector Martin 2022-03-10   933  
-> > dc97fd6fec0099 Hector Martin 2022-03-10   934  		off = irqc->info.target_cpu;
-> > dc97fd6fec0099 Hector Martin 2022-03-10   935  		off += sizeof(u32) * irqc->max_irq; /* TARGET_CPU */
-> > dc97fd6fec0099 Hector Martin 2022-03-10   936  
-> > dc97fd6fec0099 Hector Martin 2022-03-10   937  		break;
-> > 
-> > "off" uninitialized if irqc->info.version != 1.
-> 
-> Which is pretty much impossible by construction, as as of this
-> particular commit, all the possible implementations have version == 1.
-> 
-> Subsequent patches do add cases where version == 2, and that gets
-> covered too.
-> 
-> So unless I'm missing something obvious, there is no bug here.
+On Sun, 5 Jun 2022 at 19:16, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> This commit changes the default Kconfig values of RANDOM_TRUST_CPU and
+> RANDOM_TRUST_BOOTLOADER to be Y by default. It does not change any
+> existing configs or change any kernel behavior. The reason for this is
+> several fold.
+>
+> As background, I recently had an email thread with the kernel
+> maintainers of Fedora/RHEL, Debian, Ubuntu, Gentoo, Arch, NixOS, Alpine,
+> SUSE, and Void as recipients. I noted that some distros trust RDRAND,
+> some trust EFI, and some trust both, and I asked why or why not. There
+> wasn't really much of a "debate" but rather an interesting discussion of
+> what the historical reasons have been for this, and it came up that some
+> distros just missed the introduction of the bootloader Kconfig knob,
+> while another didn't want to enable it until there was a boot time
+> switch to turn it off for more concerned users (which has since been
+> added). The result of the rather uneventful discussion is that every
+> major Linux distro enables these two options by default.
+>
+> While I didn't have really too strong of an opinion going into this
+> thread -- and I mostly wanted to learn what the distros' thinking was
+> one way or another -- ultimately I think their choice was a decent
+> enough one for a default option (which can be disabled at boot time).
+> I'll try to summarize the pros and cons:
+>
+> Pros:
+>
+> - The RNG machinery gets initialized super quickly, and there's no
+>   messing around with subsequent blocking behavior.
+>
+> - The bootloader mechanism is used by kexec in order for the prior
+>   kernel to initialize the RNG of the next kernel, which increases
+>   the entropy available to early boot daemons of the next kernel.
+>
+> - Previous objections related to backdoors centered around
+>   Dual_EC_DRBG-like kleptographic systems, in which observing some
+>   amount of the output stream enables an adversary holding the right key
+>   to determine the entire output stream.
+>
+>   This used to be a partially justified concern, because RDRAND output
+>   was mixed into the output stream in varying ways, some of which may
+>   have lacked pre-image resistance (e.g. XOR or an LFSR).
+>
+>   But this is no longer the case. Now, all usage of RDRAND and
+>   bootloader seeds go through a cryptographic hash function. This means
+>   that the CPU would have to compute a hash pre-image, which is not
+>   considered to be feasible (otherwise the hash function would be
+>   terribly broken).
+>
+> - More generally, if the CPU is backdoored, the RNG is probably not the
+>   realistic vector of choice for an attacker.
+>
+> - These CPU or bootloader seeds are far from being the only source of
+>   entropy. Rather, there is generally a pretty huge amount of entropy,
+>   not all of which is credited, especially on CPUs that support
+>   instructions like RDRAND. In other words, assuming RDRAND outputs all
+>   zeros, an attacker would *still* have to accurately model every single
+>   other entropy source also in use.
+>
+> - The RNG now reseeds itself quite rapidly during boot, starting at 2
+>   seconds, then 4, then 8, then 16, and so forth, so that other sources
+>   of entropy get used without much delay.
+>
+> - Paranoid users can set random.trust_{cpu,bootloader}=no in the kernel
+>   command line, and paranoid system builders can set the Kconfig options
+>   to N, so there's no reduction or restriction of optionality.
+>
+> - It's a practical default.
+>
+> - All the distros have it set this way. Microsoft and Apple trust it
+>   too. Bandwagon.
+>
+> Cons:
+>
+> - RDRAND *could* still be backdoored with something like a fixed key or
+>   limited space serial number seed or another indexable scheme like
+>   that. (However, it's hard to imagine threat models where the CPU is
+>   backdoored like this, yet people are still okay making *any*
+>   computations with it or connecting it to networks, etc.)
+>
+> - RDRAND *could* be defective, rather than backdoored, and produce
+>   garbage that is in one way or another insufficient for crypto.
+>
+> - Suggesting a *reduction* in paranoia, as this commit effectively does,
+>   may cause some to question my personal integrity as a "security
+>   person".
+>
+> - Bootloader seeds and RDRAND are generally very difficult if not all
+>   together impossible to audit.
+>
+> Keep in mind that this doesn't actually change any behavior. This
+> is just a change in the default Kconfig value. The distros already are
+> shipping kernels that set things this way.
+>
+> Cc: Theodore Ts'o <tytso@mit.edu>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-I assumed it was something like that.  The kbuild bot doesn't do cross
-function analysis.  Neither does Clang really.
+Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
 
-regards,
-dan carpenter
+We're at the mercy of firmware and micro-architecture anyway, given
+that we are also relying on it to ensure that every instruction in the
+kernel's executable image has been faithfully copied to memory, and
+that the CPU implements those instructions as documented. So I don't
+think firmware or ISA bugs related to RNGs deserve special treatment -
+if they are broken, we should quirk around them like we usually do.
+
+So enabling these by default is a step in the right direction IMHO.
+
+
+> ---
+> Ted - I'm in particular interested in your opinion here. If you feel
+> like this is much too hazmat for your tastes, I have no qualms about
+> abandoning it. -Jason
+>
+>  drivers/char/Kconfig | 50 +++++++++++++++++++++++++++-----------------
+>  1 file changed, 31 insertions(+), 19 deletions(-)
+>
+> diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
+> index 69fd31ffb847..0b6c03643ddc 100644
+> --- a/drivers/char/Kconfig
+> +++ b/drivers/char/Kconfig
+> @@ -429,28 +429,40 @@ config ADI
+>           driver include crash and makedumpfile.
+>
+>  config RANDOM_TRUST_CPU
+> -       bool "Trust the CPU manufacturer to initialize Linux's CRNG"
+> +       bool "Initialize RNG using CPU RNG instructions"
+> +       default y
+>         depends on ARCH_RANDOM
+> -       default n
+>         help
+> -       Assume that CPU manufacturer (e.g., Intel or AMD for RDSEED or
+> -       RDRAND, IBM for the S390 and Power PC architectures) is trustworthy
+> -       for the purposes of initializing Linux's CRNG.  Since this is not
+> -       something that can be independently audited, this amounts to trusting
+> -       that CPU manufacturer (perhaps with the insistence or mandate
+> -       of a Nation State's intelligence or law enforcement agencies)
+> -       has not installed a hidden back door to compromise the CPU's
+> -       random number generation facilities. This can also be configured
+> -       at boot with "random.trust_cpu=on/off".
+> +         Initialize the RNG using random numbers supplied by the CPU's
+> +         RNG instructions (e.g. RDRAND), if supported and available. These
+> +         random numbers are never used directly, but are rather hashed into
+> +         the main input pool, and this happens regardless of whether or not
+> +         this option is enabled. Instead, this option controls whether the
+> +         they are credited and hence can initialize the RNG. Additionally,
+> +         other sources of randomness are always used, regardless of this
+> +         setting.  Enabling this implies trusting that the CPU can supply high
+> +         quality and non-backdoored random numbers.
+> +
+> +         Say Y here unless you have reason to mistrust your CPU or believe
+> +         its RNG facilities may be faulty. This may also be configured at
+> +         boot time with "random.trust_cpu=on/off".
+>
+>  config RANDOM_TRUST_BOOTLOADER
+> -       bool "Trust the bootloader to initialize Linux's CRNG"
+> -       help
+> -       Some bootloaders can provide entropy to increase the kernel's initial
+> -       device randomness. Say Y here to assume the entropy provided by the
+> -       booloader is trustworthy so it will be added to the kernel's entropy
+> -       pool. Otherwise, say N here so it will be regarded as device input that
+> -       only mixes the entropy pool. This can also be configured at boot with
+> -       "random.trust_bootloader=on/off".
+> +       bool "Initialize RNG using bootloader-supplied seed"
+> +       default y
+> +       help
+> +         Initialize the RNG using a seed supplied by the bootloader or boot
+> +         environment (e.g. EFI or a bootloader-generated device tree). This
+> +         seed is not used directly, but is rather hashed into the main input
+> +         pool, and this happens regardless of whether or not this option is
+> +         enabled. Instead, this option controls whether the seed is credited
+> +         and hence can initialize the RNG. Additionally, other sources of
+> +         randomness are always used, regardless of this setting. Enabling
+> +         this implies trusting that the bootloader can supply high quality and
+> +         non-backdoored seeds.
+> +
+> +         Say Y here unless you have reason to mistrust your bootloader or
+> +         believe its RNG facilities may be faulty. This may also be configured
+> +         at boot time with "random.trust_bootloader=on/off".
+>
+>  endmenu
+> --
+> 2.35.1
+>
