@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8069CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:23:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01098C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:23:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231682AbiFFSXe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 14:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55570 "EHLO
+        id S231675AbiFFSXh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 14:23:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231576AbiFFSXW (ORCPT
+        with ESMTP id S231583AbiFFSXX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 14:23:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 483921059EB;
+        Mon, 6 Jun 2022 14:23:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001391059F8;
         Mon,  6 Jun 2022 11:23:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0CA4B81AEB;
-        Mon,  6 Jun 2022 18:23:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EBDAC3411D;
-        Mon,  6 Jun 2022 18:23:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BC0161336;
+        Mon,  6 Jun 2022 18:23:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B6CEC341C0;
+        Mon,  6 Jun 2022 18:23:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654539798;
-        bh=N4cT2SKfYSnDGxoyHnmUEPdoAtmbrJGcDlJlH2/OfOY=;
+        s=k20201202; t=1654539801;
+        bh=FuYn5OaBm/cdGtgDHAKwyk/NB5Y5Xx2dRB0uYwvqtbI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=byQbhpHN3e9Y/GWGOgpUbWD+yN8h7nuKYxgeIVGGNlhspqY11BxajycI3nF/fw2gx
-         gnOBRV2snd9eFGeOh52JoJUOt7Mog9UxiTd/BlvWENXli84MvslqSslVZb6+DBuYkt
-         C9G+FZppmX0jtdWTZSaJ8acoyIHAHItRlX4CfXYFtctTSvDRbg8v6EWr/goMSTXD/3
-         4CtZhsv14/+uZz52T7rrJH8XaH06ZeVhyO3sFPERLu2WH04ERlUcjgeOMesK2hPKOc
-         P2W98Wf+/neUZNhpHaYvPSZistrlYbWlpmoNx0trUMBWDeVnJk2oR2Mldi1E3JshPA
-         awT6y401nW6Gw==
+        b=lTHVR2x65cV9HsW/o06kyp604ujtkTQmRbApF/mteXZb9eHjqhKmnuXWcYEHlCnV0
+         uG4U1ETDaKCJWJLDC1+U6ibmwsX41DXZrlz5Ykx1WxkxFxr1mpOO0qglWWJPINaTmO
+         gCO6OF+KZfvll4FZEn4kZX2wve2tNfgC3rNmoTcpeWvPkENWytqks6ck4QbcDdjrbx
+         cB/X8Gk5dJbFUNsfW0eyVU/cF0oT39DRJruw2S1DVjbErlNXgInirmdDaxq0h4reA/
+         NjomkYMDQCaoMCoJLdc8i1TftJA6JO5BQDo+r6z8ODW3TdFJVS6hPeScHtK7dLsQPa
+         NEL/3ariFGPiA==
 From:   SeongJae Park <sj@kernel.org>
 To:     akpm@linux-foundation.org
 Cc:     corbet@lwn.net, damon@lists.linux.dev, linux-mm@kvack.org,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         SeongJae Park <sj@kernel.org>
-Subject: [PATCH 3/6] mm/damon/reclaim: deduplicate 'commit_inputs' handling
-Date:   Mon,  6 Jun 2022 18:23:07 +0000
-Message-Id: <20220606182310.48781-4-sj@kernel.org>
+Subject: [PATCH 6/6] mm/damon/reclaim: add 'damon_reclaim_' prefix to 'enabled_store()'
+Date:   Mon,  6 Jun 2022 18:23:10 +0000
+Message-Id: <20220606182310.48781-7-sj@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220606182310.48781-1-sj@kernel.org>
 References: <20220606182310.48781-1-sj@kernel.org>
@@ -49,67 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DAMON_RECLAIM's handling of 'commit_inputs' parameter is duplicated in
-'after_aggregation()' and 'after_wmarks_check()' callbacks.  This commit
-deduplicates the code for better maintenance.
+This commit adds 'damon_reclaim_' prefix to 'enabled_store()', so that
+we can distinguish it easily from the stack trace using 'faddr2line.sh'
+like tools.
 
 Signed-off-by: SeongJae Park <sj@kernel.org>
 ---
- mm/damon/reclaim.c | 27 ++++++++++++++-------------
- 1 file changed, 14 insertions(+), 13 deletions(-)
+ mm/damon/reclaim.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/mm/damon/reclaim.c b/mm/damon/reclaim.c
-index 4b07c29effe9..c2ed962db23f 100644
+index 38da28803d75..e69b807fefe4 100644
 --- a/mm/damon/reclaim.c
 +++ b/mm/damon/reclaim.c
-@@ -403,10 +403,21 @@ module_param_cb(enabled, &enabled_param_ops, &enabled, 0600);
- MODULE_PARM_DESC(enabled,
- 	"Enable or disable DAMON_RECLAIM (default: disabled)");
+@@ -371,7 +371,7 @@ static DECLARE_DELAYED_WORK(damon_reclaim_timer, damon_reclaim_timer_fn);
  
-+static int damon_reclaim_handle_commit_inputs(void)
-+{
-+	int err;
-+
-+	if (!commit_inputs)
-+		return 0;
-+
-+	err = damon_reclaim_apply_parameters();
-+	commit_inputs = false;
-+	return err;
-+}
-+
- static int damon_reclaim_after_aggregation(struct damon_ctx *c)
+ static bool damon_reclaim_initialized;
+ 
+-static int enabled_store(const char *val,
++static int damon_reclaim_enabled_store(const char *val,
+ 		const struct kernel_param *kp)
  {
- 	struct damos *s;
--	int err = 0;
- 
- 	/* update the stats parameter */
- 	damon_for_each_scheme(s, c) {
-@@ -417,22 +428,12 @@ static int damon_reclaim_after_aggregation(struct damon_ctx *c)
- 		nr_quota_exceeds = s->stat.qt_exceeds;
- 	}
- 
--	if (commit_inputs) {
--		err = damon_reclaim_apply_parameters();
--		commit_inputs = false;
--	}
--	return err;
-+	return damon_reclaim_handle_commit_inputs();
+ 	int rc = param_set_bool(val, kp);
+@@ -388,7 +388,7 @@ static int enabled_store(const char *val,
  }
  
- static int damon_reclaim_after_wmarks_check(struct damon_ctx *c)
- {
--	int err = 0;
--
--	if (commit_inputs) {
--		err = damon_reclaim_apply_parameters();
--		commit_inputs = false;
--	}
--	return err;
-+	return damon_reclaim_handle_commit_inputs();
- }
+ static const struct kernel_param_ops enabled_param_ops = {
+-	.set = enabled_store,
++	.set = damon_reclaim_enabled_store,
+ 	.get = param_get_bool,
+ };
  
- static int __init damon_reclaim_init(void)
 -- 
 2.25.1
 
