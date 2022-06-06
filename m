@@ -2,117 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C05BBC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 20:39:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95419C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 20:40:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234235AbiFFUjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 16:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55730 "EHLO
+        id S234203AbiFFUjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 16:39:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234247AbiFFUig (ORCPT
+        with ESMTP id S234063AbiFFUjW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 16:38:36 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD9AEED71E;
-        Mon,  6 Jun 2022 13:35:51 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 256KXWZ2001748;
-        Mon, 6 Jun 2022 20:35:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=esRvlA2DwbgIrqS/RPmOFaBqpqU+QnnmlLc/exg/KdE=;
- b=DY1AwUSdVgaacSUlBt1ot8VFqCWRcq3PqBPebYegrWVnnk7AsJN4XdXaS5+GwcvEJbiv
- cr1cNLT6OkQa1SrdEq/t4X2hMt9HQsQp4JCjBkufPUexLkkkEQvYDxR7KQiLjnrhIvHs
- wgV0452qBSX1nUPYvJXDzcsHcRFO0NHA4od6lc8B8w7y22bTRD+X7z3sQUO4gw95GZwX
- CbgggvwpkydSHLA1Yrw4KqRRAf6ZnSTDwdSrr8eIed050NC5gIO/qg+svJfLE7/tlKxz
- 0fYT9ECKnkXN3zPQkc24pTy/XbO0tCHVpNhcrm0ikFlUZVAqFaUCDOVWcZZOsPPPbaaR Qw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3ghqj1h8u0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 06 Jun 2022 20:35:49 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 256KXnkK003138;
-        Mon, 6 Jun 2022 20:35:48 GMT
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3ghqj1h8tt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 06 Jun 2022 20:35:48 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 256KKxrP005889;
-        Mon, 6 Jun 2022 20:35:47 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma03dal.us.ibm.com with ESMTP id 3gfy1akt5k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 06 Jun 2022 20:35:47 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 256KZkUG46596582
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 6 Jun 2022 20:35:46 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 98E8F28059;
-        Mon,  6 Jun 2022 20:35:46 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 48BF028058;
-        Mon,  6 Jun 2022 20:35:41 +0000 (GMT)
-Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.163.20.188])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon,  6 Jun 2022 20:35:40 +0000 (GMT)
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-To:     linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
-        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
-        jgg@nvidia.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: [PATCH v9 21/21] MAINTAINERS: additional files related kvm s390 pci passthrough
-Date:   Mon,  6 Jun 2022 16:33:25 -0400
-Message-Id: <20220606203325.110625-22-mjrosato@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220606203325.110625-1-mjrosato@linux.ibm.com>
-References: <20220606203325.110625-1-mjrosato@linux.ibm.com>
+        Mon, 6 Jun 2022 16:39:22 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD3D104C9A
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 13:36:07 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id u26so24397354lfd.8
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 13:36:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0RLGEEsboSLHGJxAqv9pnzJzu69ELTjI+jQtVVqn7U0=;
+        b=gt8SezvDbZycK1axO6XFjf25V2bD5/SJOfvuJWnNiZvKnsE7YZLt7D8gbHwBUHp6AP
+         KDO3PQzULFrf4XdekutMxswJNqdG6kGxDGdkGVsLwbDPH8/APGpsWx3jN8fFB9jhC+s8
+         9sK8hNtPV63/KqDI/oQhcxH7ZE8IOPo/e0BPAB+BBJECxDok/Kcs/djvC5ovNF8wVKt/
+         DuxFydk3tawgK0AkMdfB0d6VJ6s8L3ooiI0kpaAkL8khlaoCLnW8cAnrBXJhSLs6FZPb
+         oaabwQqaEm4BugV2aSey8PhCTYaes93stZqL7vWbeHlQlsocrxrSXucBYXrFUH9oycDB
+         6HQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0RLGEEsboSLHGJxAqv9pnzJzu69ELTjI+jQtVVqn7U0=;
+        b=ULfwvXqjbqYecdear00yIbOTBHuy73aNIr7PX3LlD3Q1DjYXNPHdHycoVXAP2UJSwd
+         qcnDGk3H4ByXqgW8zYdImSAa9fQy2No+G2QwrAYfcum4gWgQPb0UEcbWQkHDGXgMuriJ
+         UcniAgH5BDxVUCf2989+m4bJd6P78v0M2KMyA738wmX9OJAIaeT/CbY6oDaFrnNdk4GO
+         f/0cDG7EbA8M9Iwpbf+jRYDGAxlusvd+CfdQuc17CAd/Dcy5XqRliXwj0COryRMollxz
+         5ogaEhgwdmol36wtAoTANChkmNoiQ2VQHBc9g39+Iq6qhllb0AKftYmN5tlOJtivz+z5
+         Awzg==
+X-Gm-Message-State: AOAM5301cEK9bgb71l8lOcmrIH1hteEz9bX/dtmsnNZkfAn5FzvLGWvl
+        dTgej2Eg7AbUo5x0FRqNopY=
+X-Google-Smtp-Source: ABdhPJwwWpuKBF7Dn3+cvtdNRSjRg9kr2U1RMytMewXQnBAV4us4nr8yDCn9hH/mBKiE/Zx4j3zQCQ==
+X-Received: by 2002:ac2:5f92:0:b0:479:112e:76d7 with SMTP id r18-20020ac25f92000000b00479112e76d7mr15102887lfe.189.1654547766087;
+        Mon, 06 Jun 2022 13:36:06 -0700 (PDT)
+Received: from pc638.lan ([155.137.26.201])
+        by smtp.gmail.com with ESMTPSA id e2-20020ac24e02000000b0047900e9a9d2sm2982352lfr.266.2022.06.06.13.36.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 13:36:05 -0700 (PDT)
+From:   Uladzislau Rezki <urezki@gmail.com>
+X-Google-Original-From: Uladzislau Rezki <urezki@pc638.lan>
+Date:   Mon, 6 Jun 2022 22:36:03 +0200
+To:     Baoquan He <bhe@redhat.com>
+Cc:     akpm@linux-foundation.org, npiggin@gmail.com, urezki@gmail.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/5] mm/vmalloc: remove the unnecessary type check
+Message-ID: <Yp5lM0j1JdceUEjw@pc638.lan>
+References: <20220606083909.363350-1-bhe@redhat.com>
+ <20220606083909.363350-2-bhe@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 2RXCRsnOBjY8F7qjDU0GU-llyRgrKq8U
-X-Proofpoint-GUID: bcJb3B1EG4Eam9y5wBQ_iJRr6e95cwST
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-06_06,2022-06-03_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
- adultscore=0 suspectscore=0 mlxlogscore=905 phishscore=0 impostorscore=0
- bulkscore=0 clxscore=1015 spamscore=0 malwarescore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2206060081
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220606083909.363350-2-bhe@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add entries from the s390 kvm subdirectory related to pci passthrough.
+> In function adjust_va_to_fit_type(), it checks all values of passed
+> in fit type, including NOTHING_FIT in the else branch. In fact, it's
+> unnecessary to check NOTHING_FIT since the check has been done before
+> adjust_va_to_fit_type() is called in all call sites. So clean it up.
+> 
+> Signed-off-by: Baoquan He <bhe@redhat.com>
+> ---
+>  mm/vmalloc.c | 2 --
+>  1 file changed, 2 deletions(-)
+> 
+> diff --git a/mm/vmalloc.c b/mm/vmalloc.c
+> index 07db42455dd4..b7a138ab7b79 100644
+> --- a/mm/vmalloc.c
+> +++ b/mm/vmalloc.c
+> @@ -1418,8 +1418,6 @@ adjust_va_to_fit_type(struct vmap_area *va,
+>  		 * Shrink this VA to remaining size.
+>  		 */
+>  		va->va_start = nva_start_addr + size;
+> -	} else {
+> -		return -1;
+>  	}
+>  
+>  	if (type != FL_FIT_TYPE) {
+> -- 
+> 2.34.1
+> 
+Why not just invoke the classify_va_fit_type() inside the adjust_va_to_fit_type()?
+In this case we do not need to rely on upper-stack checks and the split logic 
+becomes fully implemented in one solid function.
 
-Acked-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a6d3bd9d2a8d..3dd8657f5482 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17454,6 +17454,7 @@ M:	Eric Farman <farman@linux.ibm.com>
- L:	linux-s390@vger.kernel.org
- L:	kvm@vger.kernel.org
- S:	Supported
-+F:	arch/s390/kvm/pci*
- F:	drivers/vfio/pci/vfio_pci_zdev.c
- F:	include/uapi/linux/vfio_zdev.h
- 
--- 
-2.27.0
-
+--
+Uladzislau Rezki
