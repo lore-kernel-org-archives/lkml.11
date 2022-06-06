@@ -2,54 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA51BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 07:04:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D57C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 07:05:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230212AbiFFHEk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 03:04:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56828 "EHLO
+        id S230424AbiFFHEu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 03:04:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230419AbiFFHE3 (ORCPT
+        with ESMTP id S230427AbiFFHEc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 03:04:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DFBC1A380;
-        Mon,  6 Jun 2022 00:04:27 -0700 (PDT)
+        Mon, 6 Jun 2022 03:04:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B4A11C901;
+        Mon,  6 Jun 2022 00:04:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DDCEFB80DEF;
-        Mon,  6 Jun 2022 07:04:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45318C385A9;
-        Mon,  6 Jun 2022 07:04:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 09E0761138;
+        Mon,  6 Jun 2022 07:04:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 150F7C385A9;
+        Mon,  6 Jun 2022 07:04:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654499064;
-        bh=aX07lM66PLDET4+8ubDyt45glNWHe5r+e47AzA7S5yw=;
+        s=korg; t=1654499070;
+        bh=sBMyC+cD0Gg0riEcn5GeANAgcLnef9LDKauAjKY7Apk=;
         h=From:To:Cc:Subject:Date:From;
-        b=Cf3BXZZHVKfkeIdCBOJaS0ijXze9cEcmW7zDA+1FSf07D+wSjnsnYzbIsKSene0nR
-         6bXRUjdjug5SI3Yoo3MHtmm9LSCfSVejvqc/AIjWQnITB8adZteKDzEzKRryF3PYV4
-         Bs+TFdbSyx63Rm/hab3i0hLaHt7W2R3qGSwAyKzI=
+        b=WPJZE8AdKYk6LN0VesSRzenBZOrUGwirwfjqJThAN1k8f54NPlcVLtdl7hK1sg7zT
+         87C85Y0AQ0sBIOB2Ie7BnQwdvSym0ZzIbnjFTRUjkbB2THi9Pr7uIRSpdllmbCSEM4
+         zaYFWsuyANLMSZJVvW+BwQwN0n0F8ILpoMMGWuDc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 4.14.282
-Date:   Mon,  6 Jun 2022 09:04:17 +0200
-Message-Id: <165449905734191@kroah.com>
+Subject: Linux 4.19.246
+Date:   Mon,  6 Jun 2022 09:04:26 +0200
+Message-Id: <165449906624716@kroah.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 4.14.282 kernel.
+I'm announcing the release of the 4.19.246 kernel.
 
-All users of the 4.14 kernel series must upgrade.
+All users of the 4.19 kernel series must upgrade.
 
-The updated 4.14.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.14.y
+The updated 4.19.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.19.y
 and can be browsed at the normal kernel.org git web browser:
 	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
 
@@ -64,8 +65,11 @@ greg k-h
  arch/x86/pci/xen.c                             |    5 +++
  block/bio.c                                    |    2 -
  drivers/acpi/sysfs.c                           |   23 +++++++++++----
+ drivers/char/tpm/tpm2-cmd.c                    |   11 ++++++-
  drivers/char/tpm/tpm_ibmvtpm.c                 |    1 
  drivers/gpu/drm/i915/intel_pm.c                |    2 -
+ drivers/hid/hid-multitouch.c                   |    3 ++
+ drivers/i2c/busses/i2c-ismt.c                  |   14 +++++++++
  drivers/i2c/busses/i2c-thunderx-pcidrv.c       |    1 
  drivers/md/dm-crypt.c                          |   14 +++++++--
  drivers/md/dm-integrity.c                      |    2 -
@@ -85,13 +89,27 @@ greg k-h
  net/ipv4/inet_hashtables.c                     |   28 ++++++++++++++----
  net/ipv6/inet6_hashtables.c                    |    4 +-
  net/key/af_key.c                               |    6 ++--
- 26 files changed, 159 insertions(+), 48 deletions(-)
+ net/wireless/core.c                            |    7 ++--
+ net/wireless/reg.c                             |    1 
+ tools/lib/traceevent/Makefile                  |    2 -
+ tools/perf/bench/bench.h                       |    4 ++
+ tools/perf/bench/futex-hash.c                  |   12 ++++----
+ tools/perf/bench/futex-lock-pi.c               |   11 +++----
+ tools/perf/tests/bp_account.c                  |    2 -
+ 36 files changed, 208 insertions(+), 66 deletions(-)
 
 Akira Yokosawa (1):
       docs: submitting-patches: Fix crossref to 'The canonical patch format'
 
 Andy Shevchenko (1):
       ACPI: sysfs: Make sparse happy about address space in use
+
+Arnaldo Carvalho de Melo (2):
+      perf bench: Share some global variables to fix build with gcc 10
+      perf tests bp_account: Make global variable static
+
+Ben Hutchings (1):
+      libtraceevent: Fix build with binutils 2.35
 
 Chuck Lever (1):
       NFSD: Fix possible sleep during nfsd4_release_lockowner()
@@ -109,7 +127,7 @@ Florian Westphal (1):
       netfilter: conntrack: re-fetch conntrack after insertion
 
 Greg Kroah-Hartman (1):
-      Linux 4.14.282
+      Linux 4.19.246
 
 Gustavo A. R. Silva (1):
       drm/i915: Fix -Wstringop-overflow warning in call to intel_read_wm_latency()
@@ -129,15 +147,27 @@ Liu Jian (1):
 Lorenzo Pieralisi (1):
       ACPI: sysfs: Fix BERT error region memory mapping
 
+Marek Maślanka (1):
+      HID: multitouch: Add support for Google Whiskers Touchpad
+
+Mika Westerberg (1):
+      i2c: ismt: Provide a DMA buffer for Interrupt Cause Logging
+
 Mikulas Patocka (2):
       dm crypt: make printing of the key constant-time
       dm stats: add cond_resched when looping over entries
+
+Miri Korenblit (1):
+      cfg80211: set custom regdomain after wiphy registration
 
 Piyush Malgujar (1):
       drivers: i2c: thunderx: Allow driver to work with ACPI defined TWSI controllers
 
 Sarthak Kukreti (1):
       dm verity: set DM_TARGET_IMMUTABLE feature flag
+
+Stefan Mahnke-Hartmann (1):
+      tpm: Fix buffer access in tpm2_get_tpm_pt()
 
 Stephen Brennan (1):
       assoc_array: Fix BUG_ON during garbage collect
