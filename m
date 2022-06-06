@@ -2,102 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF417C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 12:54:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3EECCA473
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 12:54:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237922AbiFFMyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 08:54:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53332 "EHLO
+        id S237931AbiFFMyQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 08:54:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237840AbiFFMyC (ORCPT
+        with ESMTP id S237918AbiFFMyL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 08:54:02 -0400
-Received: from mail-il1-f178.google.com (mail-il1-f178.google.com [209.85.166.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AAB02528F;
-        Mon,  6 Jun 2022 05:54:01 -0700 (PDT)
-Received: by mail-il1-f178.google.com with SMTP id f7so11846563ilr.5;
-        Mon, 06 Jun 2022 05:54:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=RgW4935QCsAGMmkhuRJMk7RJh1JHfN66O7hxz5zZQuI=;
-        b=MQ9RkyQH4F4XbqfJGKSvPTC8yewM8QJbIltZY2E4Yd/Txm1PL4PSKLFTPo4Sl+jAHY
-         /bHjZfgDteH++Z478AJrwGo5A3cZ4exh63MwNdZAiH6irEijUqTkfMdjJT4Heq8hebAA
-         Z5iucwT98ojpgGPy7YeDDuy0BWOqFFGMzUVfmenFleLaUp1f6VLxCcYD4TzevoYPEA1B
-         kCjoBUAIE1xBhgrpTikNM9wSEbAEaJQwdKVIAif3DEK9Gpuab29Z8Zg34Jl4cIJgL+zK
-         HR2GVgnAftb35aPKIuYVY7FJhrN/3D3aQAY3NfWQIBCSuS3wWT5qi7nCc5HHKsUtaRVZ
-         eswg==
-X-Gm-Message-State: AOAM530SNh8HOh0ejdlDR0Qb9mL7xSp5wivZEv67oUAs+zq0FHyu3a2V
-        vjRSJ/AfaqSeIQ1lC59eQg==
-X-Google-Smtp-Source: ABdhPJx8Ddb/0qM1ktVNbazk8LwdBo/5aLQiFZIdEU/GvqAx//WMhBNcB+l9qZAtxabGJJtIVk9sHQ==
-X-Received: by 2002:a05:6e02:1d91:b0:2d3:bef3:a073 with SMTP id h17-20020a056e021d9100b002d3bef3a073mr14231575ila.60.1654520040280;
-        Mon, 06 Jun 2022 05:54:00 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id y15-20020a92950f000000b002d3adf71893sm6194943ilh.20.2022.06.06.05.53.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 05:53:59 -0700 (PDT)
-Received: (nullmailer pid 534473 invoked by uid 1000);
-        Mon, 06 Jun 2022 12:53:53 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
-        airlied@linux.ie, linux-arm-kernel@lists.infradead.org,
-        robh+dt@kernel.org, pavel@ucw.cz, nancy.lin@mediatek.com,
-        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        krzysztof.kozlowski+dt@linaro.org, chunkuang.hu@kernel.org,
-        ck.hu@mediatek.com, matthias.bgg@gmail.com,
-        linux-kernel@vger.kernel.org,
-        angelogioacchino.delregno@collabora.com,
-        linux-mediatek@lists.infradead.org, p.zabel@pengutronix.de
-In-Reply-To: <20220606051131.14182-2-rex-bc.chen@mediatek.com>
-References: <20220606051131.14182-1-rex-bc.chen@mediatek.com> <20220606051131.14182-2-rex-bc.chen@mediatek.com>
-Subject: Re: [RESEND v4 1/3] dt-bindings: mediatek: add vdosys1 RDMA definition for mt8195
-Date:   Mon, 06 Jun 2022 07:53:53 -0500
-Message-Id: <1654520033.524963.534472.nullmailer@robh.at.kernel.org>
+        Mon, 6 Jun 2022 08:54:11 -0400
+X-Greylist: delayed 601 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Jun 2022 05:54:07 PDT
+Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DCB252B8;
+        Mon,  6 Jun 2022 05:54:07 -0700 (PDT)
+Received: from smtpauth-2019-1.uniroma2.it (smtpauth-2019-1.uniroma2.it [160.80.5.46])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 256CXgr7024134;
+        Mon, 6 Jun 2022 14:33:47 +0200
+Received: from lubuntu-18.04 (unknown [160.80.103.126])
+        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id DFA831212B4;
+        Mon,  6 Jun 2022 14:33:38 +0200 (CEST)
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
+        s=ed201904; t=1654518819; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8B6BQq7gCMMTyTKJNSZBHuMyyStdALnwUURupL2Td2o=;
+        b=X7w1dL/Qdi0cGco1mzCLqfC//5laoY1s1Mcit4m6zobej3fu2+NwBDv9UFWimW+rIlfVnu
+        oLBzbUp7cCWCJvBQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
+        t=1654518819; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8B6BQq7gCMMTyTKJNSZBHuMyyStdALnwUURupL2Td2o=;
+        b=nz5Ja2R9K87ulc+qvyWNju3i1v8S9IXm1GruSHe1XLogKTdmXH8UY3Sfs4k/t52+iDxB+c
+        wj23Fqx0P1hqsZ1l988VEenJPgrYS6dl1fBVUocxgHER8nTlfoOR52HwjapbuDDNutwSyI
+        Q7N+sm7olNFUdRjzGD8Oos6kow+yYuUSApFPJlxa/RtegzNgGvkeIsbjBZCv2a5JKBLNqY
+        +hN/mRWoa3j8e6OAIqvH/F5Z1rpPexJIbAzAVMzIN/13+EevVnb+5pPM9rBFq7QzhFRLqK
+        B73DgcDvU/UpPpAqsQrVMJ2jWs87WuBW+zTfr8eQBkMLkuUlB8NeLOHqh3PF+w==
+Date:   Mon, 6 Jun 2022 14:33:38 +0200
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     Anton Makarov <am@3a-alliance.com>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, david.lebrun@uclouvain.be,
+        regressions@lists.linux.dev, stable@vger.kernel.org,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: Re: [REGRESSION] net: SRv6 End.DT6 function is broken in VRF mode
+Message-Id: <20220606143338.91df592bbb7dc2f7db4747e6@uniroma2.it>
+In-Reply-To: <7e315ff1-e172-16c3-44b5-0c83c4c92779@3a-alliance.com>
+References: <7e315ff1-e172-16c3-44b5-0c83c4c92779@3a-alliance.com>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 06 Jun 2022 13:11:29 +0800, Bo-Chen Chen wrote:
-> From: "Nancy.Lin" <nancy.lin@mediatek.com>
+On Fri, 3 Jun 2022 15:23:26 +0300
+Anton Makarov <am@3a-alliance.com> wrote:
+
+> #regzbot introduced: b9132c32e01976686efa26252cc246944a0d2cab
 > 
-> Add vdosys1 RDMA definition.
+> Hi All!
 > 
-> Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
-> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->  .../display/mediatek/mediatek,mdp-rdma.yaml   | 88 +++++++++++++++++++
->  1 file changed, 88 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
+> Seems there is a regression of SRv6 End.DT6 function in VRF mode. In the 
+> following scenario packet is decapsulated successfully on vrf10 
+> interface but not forwarded to vrf10's slave interface:
+> 
+> ip netns exec r4 ip -6 nexthop add id 1004 encap seg6local action 
+> End.DT6 vrftable 10 dev vrf10
+> 
+> ip netns exec r4 ip -6 route add fcff:0:4:200:: nhid 1004
+> 
+> 
+> In End.DT6 legacy mode everything works good:
+> 
+> ip netns exec r4 ip -6 nexthop add id 1004 encap seg6local action 
+> End.DT6 table 10 dev vrf10
+> 
+> ip netns exec r4 ip -6 route add fcff:0:4:200:: nhid 1004
+> 
+> 
+> The issue impacts even stable v5.18.1. Please help to fix it.
+> 
+> 
+> Thanks!
+> 
+> Anton
+> 
+> 
 > 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Hi Anton,
 
-yamllint warnings/errors:
+thank you for reporting this issue. I am already working on a fix patch which I
+will send shortly.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml: properties:compatible: [{'const': 'mediatek,mt8195-vdo1-rdma'}] is not of type 'object', 'boolean'
-	from schema $id: http://json-schema.org/draft-07/schema#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml: ignoring, error in schema: properties: compatible
-Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.example.dtb:0:0: /example-0/soc/rdma@1c104000: failed to match any schema with compatible: ['mediatek,mt8195-vdo1-rdma']
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+Andrea
