@@ -2,257 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97094C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 05:28:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F12C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 05:29:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230034AbiFFF2j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 01:28:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50164 "EHLO
+        id S229745AbiFFF26 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 01:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230015AbiFFF2W (ORCPT
+        with ESMTP id S229960AbiFFF2U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 01:28:22 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96781C9EEC
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 22:12:43 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id gd1so11927805pjb.2
-        for <linux-kernel@vger.kernel.org>; Sun, 05 Jun 2022 22:12:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ozlabs-ru.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=op8id7H7tQz7uDFI1943qxMJT3tGZ4qLWFIbW7eordo=;
-        b=syxVqCWjBDcNEHo+Mj3sAZ7hY+20pUZiEZVwuDyTzlZjp3RlFmxGJmrI3l00aQZSH3
-         PuxwmJ/LuI/zvB0wuprJ9ckI0LK8bt6Pe/HU45vgqe7L6+7GQRoCItXup/TGuqjoAwZm
-         dY6n/p9ncxGx+21giddtFYQbVmPrMUd0K5mJvhfvD0FEcBn/fDfLlNrdB5z/aQeHy8ON
-         FgR1ltyAXnWjnc83QD/I8HHpWQ4SAHhiEi7mmpt1LGfWSig1fvNaMl4Q3+fJZ6cBHK9e
-         0CR5akA0MPxl8mSsjl2c9g4IWbJuR7eVoBn3GRCPJnZjZ+zrUHKZ76T42t5TUvQzOQvi
-         Z/WA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=op8id7H7tQz7uDFI1943qxMJT3tGZ4qLWFIbW7eordo=;
-        b=wo+aX2POgExxej4ZQqjrbACrWh2Y1OAWzbFzp/vODyhXbfJ4P5v6CmqRdr4o36MzGr
-         9p5wX5PDpvATyS2GTdggkjmq6YFoLRaeOkkij5ghNemXWKXdOscf3i1HG9w/tBynP9xk
-         /WPptXZdzCj2s8GWT60Fy8amqtYbbQHTXHyguv6G/OsEnBHjOYhNjkUYZO8crSJACCpJ
-         jslzW/6YWwVGJmKJsuBwNBS3C60aIzxS3rLAaFA7LK8O5R2915HZ5jzpxmoIT3w5tDfb
-         CF7Y06VluBJQG5tPKbQ2unn3sAMDLRG3AjS3WR1g3ckd5+pQ/DbKFwUyUbd9C5y8IZz0
-         9RIw==
-X-Gm-Message-State: AOAM531nINfizJo3GJnd6xP6o7p/rjNbToPCPo8O+X+OslmjeH0n37Eh
-        hAXDoRUuv5vHr7iE7RwxfBi4Ag==
-X-Google-Smtp-Source: ABdhPJwNxGaE7R67xBOKYQzm5B3m4jsUAVAnDH4JDWCTQnytZtT+xonF88NcjVRHsxJTzYIIn/T/Hw==
-X-Received: by 2002:a17:90b:350b:b0:1e8:46b9:5bc5 with SMTP id ls11-20020a17090b350b00b001e846b95bc5mr14126691pjb.100.1654492363072;
-        Sun, 05 Jun 2022 22:12:43 -0700 (PDT)
-Received: from [10.61.2.177] (110-175-254-242.static.tpgi.com.au. [110.175.254.242])
-        by smtp.gmail.com with ESMTPSA id b4-20020a1709027e0400b00164097a779fsm1873324plm.147.2022.06.05.22.12.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 05 Jun 2022 22:12:42 -0700 (PDT)
-Message-ID: <7d30583e-7e58-5184-be2d-773882dd9092@ozlabs.ru>
-Date:   Mon, 6 Jun 2022 15:12:37 +1000
+        Mon, 6 Jun 2022 01:28:20 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82F8413FD57;
+        Sun,  5 Jun 2022 22:11:39 -0700 (PDT)
+X-UUID: ed707747f42e4aa2afee77f25b9df1e3-20220606
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:2160d87d-65ce-4808-a524-8fc2a9d40391,OB:0,LO
+        B:0,IP:0,URL:25,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:20
+X-CID-META: VersionHash:2a19b09,CLOUDID:edca447e-c8dc-403a-96e8-6237210dceee,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: ed707747f42e4aa2afee77f25b9df1e3-20220606
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 947476993; Mon, 06 Jun 2022 13:11:33 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Mon, 6 Jun 2022 13:11:32 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Mon, 6 Jun 2022 13:11:32 +0800
+From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>
+CC:     <matthias.bgg@gmail.com>, <airlied@linux.ie>,
+        <angelogioacchino.delregno@collabora.com>, <pavel@ucw.cz>,
+        <nancy.lin@mediatek.com>, <ck.hu@mediatek.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Bo-Chen Chen <rex-bc.chen@mediatek.com>
+Subject: [RESEND v4 1/3] dt-bindings: mediatek: add vdosys1 RDMA definition for mt8195
+Date:   Mon, 6 Jun 2022 13:11:29 +0800
+Message-ID: <20220606051131.14182-2-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220606051131.14182-1-rex-bc.chen@mediatek.com>
+References: <20220606051131.14182-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:101.0) Gecko/20100101
- Thunderbird/101.0
-Subject: Re: [PATCH kernel v2] zstd: Fixing mixed module-builtin objects
-Content-Language: en-US
-To:     Nathan Chancellor <nathan@kernel.org>,
-        Nick Terrell <terrelln@fb.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Masahiro Yamada <masahiroy@kernel.org>
-References: <20220429053329.2278740-1-aik@ozlabs.ru>
- <YoLjpivvU7dRVTuL@dev-arch.thelio-3990X>
-From:   Alexey Kardashevskiy <aik@ozlabs.ru>
-In-Reply-To: <YoLjpivvU7dRVTuL@dev-arch.thelio-3990X>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ping?
+From: "Nancy.Lin" <nancy.lin@mediatek.com>
 
+Add vdosys1 RDMA definition.
 
-On 5/17/22 09:52, Nathan Chancellor wrote:
-> Hi Nick,
-> 
-> Did you have any thoughts on this patch? It is necessary for enabling
-> LTO with PowerPC:
-> 
-> https://lore.kernel.org/20220429064547.2334280-1-aik@ozlabs.ru/
-> 
-> If you don't have anything to send to Linus for the next cycle, perhaps
-> this patch could be carried by the PowerPC folks with your ack?
-> 
-> Cheers,
-> Nathan
-> 
-> On Fri, Apr 29, 2022 at 03:33:29PM +1000, Alexey Kardashevskiy wrote:
->> With CONFIG_ZSTD_COMPRESS=m and CONFIG_ZSTD_DECOMPRESS=y we end up in
->> a situation when files from lib/zstd/common/ are compiled once to be
->> linked later for ZSTD_DECOMPRESS (build-in) and ZSTD_COMPRESS (module)
->> even though CFLAGS are different for builtins and modules.
->> So far somehow this was not a problem but enabling LLVM LTO exposes
->> the problem as:
->>
->> ld.lld: error: linking module flags 'Code Model': IDs have conflicting values in 'lib/built-in.a(zstd_common.o at 5868)' and 'ld-temp.o'
->>
->> This particular conflict is caused by KBUILD_CFLAGS=-mcmodel=medium vs.
->> KBUILD_CFLAGS_MODULE=-mcmodel=large , modules use the large model on
->> POWERPC as explained at
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/powerpc/Makefile?h=v5.18-rc4#n127
->> but the current use of common files is wrong anyway.
->>
->> This works around the issue by introducing a zstd_common module with
->> shared code.
->>
->> Cc: Masahiro Yamada <masahiroy@kernel.org>
->> Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
->> ---
->> Changes:
->> v2:
->> * add a new module instead of inlining common bits
->>
->> ---
->>   lib/zstd/Makefile                | 18 ++++++++----------
->>   lib/zstd/common/entropy_common.c |  4 +++-
->>   lib/zstd/common/zstd_common.c    |  7 +++++++
->>   lib/Kconfig                      |  8 ++++++--
->>   4 files changed, 24 insertions(+), 13 deletions(-)
->>
->> diff --git a/lib/zstd/Makefile b/lib/zstd/Makefile
->> index fc45339fc3a3..440bd0007ae2 100644
->> --- a/lib/zstd/Makefile
->> +++ b/lib/zstd/Makefile
->> @@ -10,14 +10,10 @@
->>   # ################################################################
->>   obj-$(CONFIG_ZSTD_COMPRESS) += zstd_compress.o
->>   obj-$(CONFIG_ZSTD_DECOMPRESS) += zstd_decompress.o
->> +obj-$(CONFIG_ZSTD_COMMON) += zstd_common.o
->>   
->>   zstd_compress-y := \
->>   		zstd_compress_module.o \
->> -		common/debug.o \
->> -		common/entropy_common.o \
->> -		common/error_private.o \
->> -		common/fse_decompress.o \
->> -		common/zstd_common.o \
->>   		compress/fse_compress.o \
->>   		compress/hist.o \
->>   		compress/huf_compress.o \
->> @@ -33,12 +29,14 @@ zstd_compress-y := \
->>   
->>   zstd_decompress-y := \
->>   		zstd_decompress_module.o \
->> -		common/debug.o \
->> -		common/entropy_common.o \
->> -		common/error_private.o \
->> -		common/fse_decompress.o \
->> -		common/zstd_common.o \
->>   		decompress/huf_decompress.o \
->>   		decompress/zstd_ddict.o \
->>   		decompress/zstd_decompress.o \
->>   		decompress/zstd_decompress_block.o \
->> +
->> +zstd_common-y := \
->> +		common/debug.o \
->> +		common/entropy_common.o \
->> +		common/error_private.o \
->> +		common/fse_decompress.o \
->> +		common/zstd_common.o \
->> diff --git a/lib/zstd/common/entropy_common.c b/lib/zstd/common/entropy_common.c
->> index 53b47a2b52ff..f84612627471 100644
->> --- a/lib/zstd/common/entropy_common.c
->> +++ b/lib/zstd/common/entropy_common.c
->> @@ -15,6 +15,7 @@
->>   /* *************************************
->>   *  Dependencies
->>   ***************************************/
->> +#include <linux/module.h>
->>   #include "mem.h"
->>   #include "error_private.h"       /* ERR_*, ERROR */
->>   #define FSE_STATIC_LINKING_ONLY  /* FSE_MIN_TABLELOG */
->> @@ -239,7 +240,7 @@ size_t FSE_readNCount(
->>   {
->>       return FSE_readNCount_bmi2(normalizedCounter, maxSVPtr, tableLogPtr, headerBuffer, hbSize, /* bmi2 */ 0);
->>   }
->> -
->> +EXPORT_SYMBOL_GPL(FSE_readNCount);
->>   
->>   /*! HUF_readStats() :
->>       Read compact Huffman tree, saved by HUF_writeCTable().
->> @@ -255,6 +256,7 @@ size_t HUF_readStats(BYTE* huffWeight, size_t hwSize, U32* rankStats,
->>       U32 wksp[HUF_READ_STATS_WORKSPACE_SIZE_U32];
->>       return HUF_readStats_wksp(huffWeight, hwSize, rankStats, nbSymbolsPtr, tableLogPtr, src, srcSize, wksp, sizeof(wksp), /* bmi2 */ 0);
->>   }
->> +EXPORT_SYMBOL_GPL(HUF_readStats);
->>   
->>   FORCE_INLINE_TEMPLATE size_t
->>   HUF_readStats_body(BYTE* huffWeight, size_t hwSize, U32* rankStats,
->> diff --git a/lib/zstd/common/zstd_common.c b/lib/zstd/common/zstd_common.c
->> index 3d7e35b309b5..06f62b2026d5 100644
->> --- a/lib/zstd/common/zstd_common.c
->> +++ b/lib/zstd/common/zstd_common.c
->> @@ -13,6 +13,7 @@
->>   /*-*************************************
->>   *  Dependencies
->>   ***************************************/
->> +#include <linux/module.h>
->>   #define ZSTD_DEPS_NEED_MALLOC
->>   #include "zstd_deps.h"   /* ZSTD_malloc, ZSTD_calloc, ZSTD_free, ZSTD_memset */
->>   #include "error_private.h"
->> @@ -59,6 +60,7 @@ void* ZSTD_customMalloc(size_t size, ZSTD_customMem customMem)
->>           return customMem.customAlloc(customMem.opaque, size);
->>       return ZSTD_malloc(size);
->>   }
->> +EXPORT_SYMBOL_GPL(ZSTD_customMalloc);
->>   
->>   void* ZSTD_customCalloc(size_t size, ZSTD_customMem customMem)
->>   {
->> @@ -71,6 +73,7 @@ void* ZSTD_customCalloc(size_t size, ZSTD_customMem customMem)
->>       }
->>       return ZSTD_calloc(1, size);
->>   }
->> +EXPORT_SYMBOL_GPL(ZSTD_customCalloc);
->>   
->>   void ZSTD_customFree(void* ptr, ZSTD_customMem customMem)
->>   {
->> @@ -81,3 +84,7 @@ void ZSTD_customFree(void* ptr, ZSTD_customMem customMem)
->>               ZSTD_free(ptr);
->>       }
->>   }
->> +EXPORT_SYMBOL_GPL(ZSTD_customFree);
->> +
->> +MODULE_LICENSE("Dual BSD/GPL");
->> +MODULE_DESCRIPTION("Zstd Common");
->> diff --git a/lib/Kconfig b/lib/Kconfig
->> index 087e06b4cdfd..33f3a7054cdd 100644
->> --- a/lib/Kconfig
->> +++ b/lib/Kconfig
->> @@ -333,12 +333,16 @@ config LZ4HC_COMPRESS
->>   config LZ4_DECOMPRESS
->>   	tristate
->>   
->> +config ZSTD_COMMON
->> +	select XXHASH
->> +	tristate
->> +
->>   config ZSTD_COMPRESS
->> -	select XXHASH
->> +	select ZSTD_COMMON
->>   	tristate
->>   
->>   config ZSTD_DECOMPRESS
->> -	select XXHASH
->> +	select ZSTD_COMMON
->>   	tristate
->>   
->>   source "lib/xz/Kconfig"
->> -- 
->> 2.30.2
->>
->>
+Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
+Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ .../display/mediatek/mediatek,mdp-rdma.yaml   | 88 +++++++++++++++++++
+ 1 file changed, 88 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
 
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
+new file mode 100644
+index 000000000000..678abb321cc2
+--- /dev/null
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
+@@ -0,0 +1,88 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/display/mediatek/mediatek,mdp-rdma.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: MediaTek MDP RDMA
++
++maintainers:
++  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
++  - Philipp Zabel <p.zabel@pengutronix.de>
++
++description:
++  The MediaTek MDP RDMA stands for Read Direct Memory Access.
++  It provides real time data to the back-end panel driver, such as DSI,
++  DPI and DP_INTF.
++  It contains one line buffer to store the sufficient pixel data.
++  RDMA device node must be siblings to the central MMSYS_CONFIG node.
++  For a description of the MMSYS_CONFIG binding, see
++  Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml for details.
++
++properties:
++  compatible:
++    - const: mediatek,mt8195-vdo1-rdma
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  power-domains:
++    maxItems: 1
++
++  clocks:
++    items:
++      - description: RDMA Clock
++
++  iommus:
++    maxItems: 1
++
++  mediatek,gce-client-reg:
++    description:
++      The register of display function block to be set by gce. There are 4 arguments,
++      such as gce node, subsys id, offset and register size. The subsys id that is
++      mapping to the register of display function blocks is defined in the gce header
++      include/dt-bindings/gce/<chip>-gce.h of each chips.
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    items:
++      items:
++        - description: phandle of GCE
++        - description: GCE subsys id
++        - description: register offset
++        - description: register size
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - power-domains
++  - clocks
++  - iommus
++  - mediatek,gce-client-reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/clock/mt8195-clk.h>
++    #include <dt-bindings/power/mt8195-power.h>
++    #include <dt-bindings/gce/mt8195-gce.h>
++    #include <dt-bindings/memory/mt8195-memory-port.h>
++
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        rdma@1c104000 {
++            compatible = "mediatek,mt8195-vdo1-rdma";
++            reg = <0 0x1c104000 0 0x1000>;
++            interrupts = <GIC_SPI 495 IRQ_TYPE_LEVEL_HIGH 0>;
++            clocks = <&vdosys1 CLK_VDO1_MDP_RDMA0>;
++            power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
++            iommus = <&iommu_vdo M4U_PORT_L2_MDP_RDMA0>;
++            mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0x4000 0x1000>;
++        };
++    };
 -- 
-Alexey
+2.18.0
+
