@@ -2,63 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31FC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 09:52:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57FBCC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 09:52:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233313AbiFFJw1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 05:52:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52098 "EHLO
+        id S233116AbiFFJwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 05:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233310AbiFFJwU (ORCPT
+        with ESMTP id S233025AbiFFJwi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 05:52:20 -0400
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DE152AE3E
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 02:52:19 -0700 (PDT)
-Received: by mail-io1-f69.google.com with SMTP id l10-20020a6b3e0a000000b006694bc5a982so1156868ioa.0
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 02:52:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=sVvRetvU66viZg03zt42J481swUWQOVgkFgrLPfYY/8=;
-        b=m0ILrg3XORkWFQx3MWk/V4useGB3zYjmelGsIjNHJpssVDniD+CcEG6zOS09ife+xg
-         EYkdj/HgRMIKa4+MYgX2lsZEvfcXg9aOyjf3pMAlgGfr9AqxHaCtndahIO/O0C/VwBZt
-         fJc3ShZeHfE2rCPUJqJ5aL1xLe3BvoHyE0DOn6WGuddkif/NwG5Rpeu0kcuBnntRtP+d
-         HorJditlrl3dus8xfIanvjZkNEljhf4rquGMqyoIvlwqbtE5rHibHuKst5HAH7VABQFB
-         HDPLmWDId3jbgWBQnuLfiBImCFPM3aLTJro5eil1NYvLpwHIXrloKFQ+qUWAzRup0AFT
-         GIVA==
-X-Gm-Message-State: AOAM531vqcx9axPIuD/8RrHWu5+alrwRw7tYkhihmv8v0vT4b68nOCey
-        On7p+qfj+aEmCYG/TDD2z+NRkWSydflRkVEbPnsmJ2x81rvL
-X-Google-Smtp-Source: ABdhPJzMcfdshAMR4/41NwWk7h2niybfbLAyNCHU4y8xAGtBTFW8LLbM3njADMk5p8lwRUTkcttApy1luZYi9RizLd5I/OH1FM7L
-MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:8ae:b0:2c7:90a5:90b8 with SMTP id
- a14-20020a056e0208ae00b002c790a590b8mr13851678ilt.19.1654509138328; Mon, 06
- Jun 2022 02:52:18 -0700 (PDT)
-Date:   Mon, 06 Jun 2022 02:52:18 -0700
-In-Reply-To: <000000000000b960c00594598949@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000077c3fb05e0c46d94@google.com>
-Subject: Re: KASAN: use-after-free Read in tc_chain_fill_node
-From:   syzbot <syzbot+5f229e48cccc804062c0@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, gregkh@linuxfoundation.org, jiri@mellanox.com,
-        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
-        stable-commits@vger.kernel.org, stable@vger.kernel.org,
-        syzkaller-lts-bugs@googlegroups.com, vladbu@mellanox.com
+        Mon, 6 Jun 2022 05:52:38 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE9F1091B6;
+        Mon,  6 Jun 2022 02:52:36 -0700 (PDT)
+X-UUID: 0cb88c1cb1094b2abfed64b3a6c2c6e3-20220606
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:00dcf17f-d879-4fd0-8aae-b3de4726c5f3,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.5,REQID:00dcf17f-d879-4fd0-8aae-b3de4726c5f3,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:2a19b09,CLOUDID:a180c0ad-3171-4dd4-a2d9-73b846daf167,C
+        OID:2f8c2e4cc389,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:0,BEC:nil
+X-UUID: 0cb88c1cb1094b2abfed64b3a6c2c6e3-20220606
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <tinghan.shen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 2101235386; Mon, 06 Jun 2022 17:52:33 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Mon, 6 Jun 2022 17:52:31 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Mon, 6 Jun 2022 17:52:31 +0800
+Message-ID: <fe9fae165443f0db55f2bac2bbe214f3b018052d.camel@mediatek.com>
+Subject: Re: [PATCH v1 05/15] remoteproc: mediatek: Add SCP core 1 driver
+ for dual-core scp
+From:   Tinghan Shen <tinghan.shen@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        "Dustin L. Howett" <dustin@howett.net>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        "Brian Norris" <briannorris@chromium.org>
+CC:     <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <chrome-platform@lists.linux.dev>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <weishunc@google.com>
+Date:   Mon, 6 Jun 2022 17:52:31 +0800
+In-Reply-To: <dd12145b-bbb3-b771-b8f7-075ea20bee17@collabora.com>
+References: <20220601112201.15510-1-tinghan.shen@mediatek.com>
+         <20220601112201.15510-6-tinghan.shen@mediatek.com>
+         <dd12145b-bbb3-b771-b8f7-075ea20bee17@collabora.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This bug is marked as fixed by commit:
-net: core: netlink: add helper refcount dec and lock function
-net: sched: add helper function to take reference to Qdisc
-net: sched: extend Qdisc with rcu
-net: sched: rename qdisc_destroy() to qdisc_put()
-net: sched: use Qdisc rcu API instead of relying on rtnl lock
-But I can't find it in any tested tree for more than 90 days.
-Is it a correct commit? Please update it by replying:
-#syz fix: exact-commit-title
-Until then the bug is still considered open and
-new crashes with the same signature are ignored.
+On Mon, 2022-06-06 at 11:15 +0200, AngeloGioacchino Del Regno wrote:
+> Il 01/06/22 13:21, Tinghan Shen ha scritto:
+> > MT8195 SCP is a dual-core processor. The mtk_scp.c driver only controls
+> > SCP core 0. This patch adds a basic driver to control the another core.
+> > 
+> > Core 1 and core 0 of the SCP are housed in the same subsys.They see
+> > registers and memory in the same way.
+> > 
+> > Core 1 of the SCP features its own set of core configuration registers,
+> > interrupt controller, timers, and DMAs. The rest of the peripherals
+> > in this subsystem are shared by core 0 and core 1.
+> > 
+> > As for memory, core 1 has its own cache memory, and the SCP SRAM is shared
+> > by core 0 and core 1.
+> > 
+> 
+> Hello Tinghan,
+> 
+> checking all the patches that are introducing support for the secondary SCP core,
+> it's clear that you're practically reusing *most of* mtk_scp in mtk_scp_dual.
+> 
+> I don't think that adding a new configuration option for MTK_SCP_DUALCORE (nor a
+> new file just for that) is a good idea... the code is "short enough" so you should
+> really just add support for multi-core SCP in mtk_scp.c instead.
+> 
+> After doing so, I have a hunch that we'll be able to reduce the size of this
+> implementation even more, as I see literally too much common code :-)
+> 
+
+Hi Angelo,
+
+Thanks for your review.
+
+This series has 2 new files, mtk_scp_dual.c and mtk_scp_subdev.c.
+Is your advice to merge both files into mtk_scp.c, 
+or to merely merge mtk_scp_dual.c to mtk_scp.c?
+
+Thanks,
+TingHan
+
+
+
