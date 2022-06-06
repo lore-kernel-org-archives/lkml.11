@@ -2,90 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A038DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:57:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2CD2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:58:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240140AbiFFO5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:57:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55020 "EHLO
+        id S240155AbiFFO6T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240109AbiFFO5l (ORCPT
+        with ESMTP id S240136AbiFFO6R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:57:41 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A5F2F1F3B;
-        Mon,  6 Jun 2022 07:57:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=b4Cas22YvXWguCl9MVadBf58XqwkKGzOV9uwbfM1yR0=; b=U21+DJBV8mG13ppaokHm7Fb782
-        OisPxobgWgrV3MykMs2B+HToa2G1JM8pcAFqzM07rEr0ATq9w9Sgxa2/XMIGwX5mBViDPvpOq+KzI
-        Y4lHufHP+NFfTNoHoJEylR4cq5df1AgldeQsNDiiokFwetdgyvySGJuts+/oEnW0jn9QcN2hx2Jt7
-        c9f9VBlnPJYYenO9AqdCBxw0mumB42POg+bnjGKBJqTffldzk+2LovdMaymR4aJusfnILmUzuV393
-        BT0ZUra2b3MHizDhn5B8UK0ahq7z372i0+DghbNc+ivcsBBEEusRfRv/z2/yFcDGTRTGBC9P14xxj
-        tD0LVESQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nyEA5-005Taq-S8; Mon, 06 Jun 2022 14:56:59 +0000
-Message-ID: <8f4176e7-87b0-1cf9-bcef-6a423d17fd6a@infradead.org>
-Date:   Mon, 6 Jun 2022 07:56:51 -0700
+        Mon, 6 Jun 2022 10:58:17 -0400
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F56303884
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:58:16 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 3468BFF805;
+        Mon,  6 Jun 2022 14:58:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1654527495;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BdBrGx50GRyG3r2iXeGYuM3SEahX/F4l92MvsJio2dM=;
+        b=XjnSLokHGUTArERJGLhtnibxg1snnzGnkfsUyoYRX1v6AXZ579VkSnaJeFqbCxavsH59FE
+        hoN2tHLT15aPFGvDMKLWnq3k91TEvChLVd7n+hy+SeNhARtA12dmbQxIxroSK5xLsuEMTw
+        lRa/PLirgi5mMeMJuPpHQqKEtrpMG41QKxldxoAxxC6CbxNLDBq0tt9Hpd0UMCa/tx7hiA
+        K988esjV4EZjhGdP5b9+AKVC6+bTQFRKSi0PfEVAAxHJPZ10BSqxfgISOx6b50+LU81EA6
+        uPG6AX1icU4zK+e/4qqSJG+lNTZQFePgbjABkaZ9fmh3qkHpVCguqiaxKwRerQ==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Russell King <linux@armlinux.org.uk>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: [PATCH 1/2] ARM: at91: add sam_linux_is_in_normal_world() function
+Date:   Mon,  6 Jun 2022 16:57:00 +0200
+Message-Id: <20220606145701.185552-2-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220606145701.185552-1-clement.leger@bootlin.com>
+References: <20220606145701.185552-1-clement.leger@bootlin.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 5/5] crypto: aspeed: add HACE crypto driver
-Content-Language: en-US
-To:     Neal Liu <neal_liu@aspeedtech.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Johnny Huang <johnny_huang@aspeedtech.com>
-Cc:     linux-aspeed@lists.ozlabs.org, linux-crypto@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, BMC-SW@aspeedtech.com
-References: <20220606064935.1458903-1-neal_liu@aspeedtech.com>
- <20220606064935.1458903-6-neal_liu@aspeedtech.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220606064935.1458903-6-neal_liu@aspeedtech.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi--
+Add sam_linux_is_in_normal_world() which allows to know if Linux is
+running in the normal world or not. This function is used by code
+which needs to differentiate the world in which Linux is running.
 
-On 6/5/22 23:49, Neal Liu wrote:
-> diff --git a/drivers/crypto/aspeed/Kconfig b/drivers/crypto/aspeed/Kconfig
-> index 17b800286a51..5e4d18288bf1 100644
-> --- a/drivers/crypto/aspeed/Kconfig
-> +++ b/drivers/crypto/aspeed/Kconfig
-> @@ -20,3 +20,19 @@ config CRYPTO_DEV_ASPEED_HACE_HASH
->  	  hash driver.
->  	  Supports multiple message digest standards, including
->  	  SHA-1, SHA-224, SHA-256, SHA-384, SHA-512, and so on.
-> +
-> +config CRYPTO_DEV_ASPEED_HACE_CRYPTO
-> +        bool "Enable ASPEED Hash & Crypto Engine (HACE) crypto"
-> +        depends on CRYPTO_DEV_ASPEED
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+---
+ arch/arm/mach-at91/sam_secure.c | 6 ++++++
+ arch/arm/mach-at91/sam_secure.h | 1 +
+ 2 files changed, 7 insertions(+)
 
-The 2 lines above should be indented with one tab instead of multiple spaces.
-
-> +	select CRYPTO_AES
-> +	select CRYPTO_DES
-> +	select CRYPTO_ECB
-> +	select CRYPTO_CBC
-> +	select CRYPTO_CFB
-> +	select CRYPTO_OFB
-> +	select CRYPTO_CTR
-> +	help
-> +	  Select here to enable ASPEED Hash & Crypto Engine (HACE)
-> +	  crypto driver.
-> +	  Supports AES/DES symmetric-key encryption and decryption
-> +	  with ECB/CBC/CFB/OFB/CTR options.
-
+diff --git a/arch/arm/mach-at91/sam_secure.c b/arch/arm/mach-at91/sam_secure.c
+index 2a01f7a7d13f..1ec8c8b9d119 100644
+--- a/arch/arm/mach-at91/sam_secure.c
++++ b/arch/arm/mach-at91/sam_secure.c
+@@ -27,6 +27,12 @@ struct arm_smccc_res sam_smccc_call(u32 fn, u32 arg0, u32 arg1)
+ 	return res;
+ }
+ 
++bool sam_linux_is_in_normal_world(void)
++{
++	/* If optee has been detected, then we are running in normal world */
++	return optee_available;
++}
++
+ void __init sam_secure_init(void)
+ {
+ 	struct device_node *np;
+diff --git a/arch/arm/mach-at91/sam_secure.h b/arch/arm/mach-at91/sam_secure.h
+index 1e7d8b20ba1e..6d8c01f9c5f0 100644
+--- a/arch/arm/mach-at91/sam_secure.h
++++ b/arch/arm/mach-at91/sam_secure.h
+@@ -14,5 +14,6 @@
+ 
+ void __init sam_secure_init(void);
+ struct arm_smccc_res sam_smccc_call(u32 fn, u32 arg0, u32 arg1);
++bool sam_linux_is_in_normal_world(void);
+ 
+ #endif /* SAM_SECURE_H */
 -- 
-~Randy
+2.36.1
+
