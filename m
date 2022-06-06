@@ -2,212 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42AE1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:22:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A30C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233883AbiFFKWy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 06:22:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37158 "EHLO
+        id S233895AbiFFKXf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 06:23:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233881AbiFFKWv (ORCPT
+        with ESMTP id S233892AbiFFKXN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 06:22:51 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1639262CE
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 03:22:49 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DC7C71042;
-        Mon,  6 Jun 2022 03:22:48 -0700 (PDT)
-Received: from bogus (unknown [10.57.9.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 40B5D3F66F;
-        Mon,  6 Jun 2022 03:22:46 -0700 (PDT)
-Date:   Mon, 6 Jun 2022 11:21:59 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc:     linux-kernel@vger.kernel.org, Atish Patra <atishp@atishpatra.org>,
-        Atish Patra <atishp@rivosinc.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        Qing Wang <wangqing@vivo.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-riscv@lists.infradead.org, Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v3 15/16] arch_topology: Set cluster identifier in each
- core/thread from /cpu-map
-Message-ID: <20220606102159.dduxmvq4m2fm6gks@bogus>
-References: <20220525081416.3306043-8-sudeep.holla@arm.com>
- <20220525081416.3306043-9-sudeep.holla@arm.com>
- <20220525081416.3306043-10-sudeep.holla@arm.com>
- <20220525081416.3306043-11-sudeep.holla@arm.com>
- <20220525081416.3306043-12-sudeep.holla@arm.com>
- <20220525081416.3306043-13-sudeep.holla@arm.com>
- <20220525081416.3306043-14-sudeep.holla@arm.com>
- <20220525081416.3306043-15-sudeep.holla@arm.com>
- <20220525081416.3306043-16-sudeep.holla@arm.com>
- <947470ba-35fc-3c72-d01b-c0a7337216a2@arm.com>
+        Mon, 6 Jun 2022 06:23:13 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF60714D27
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 03:23:05 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2567q3wT012559;
+        Mon, 6 Jun 2022 10:16:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=r/7ltCWmf5+CKc8gc8bl1t4b1h7KsBC3K0+0gW7Z0lE=;
+ b=nAk+2lbNVTQW4/Yq+bZG7rmAbRE4ObGjHVHSJ/fOqyE2rAhOSI3OdLM01rE/q4Y9PoNg
+ gSMMv/wdCbYXq/GvT+HBWn6RXqhv8W32xFIQwPSugTPkGrythzT37PL14hBp6cloByiQ
+ 5/5XUi8Gq23vrj7/9G3eyAgyqLEN+HHCOXmbHBh6kKtoUk/aL0TOw2450JejvaCl33Ct
+ IEZvqFfpZ4wn9fOFqmXmleFCTZJk2JLqUXT+nK8vKLgtlNZKPuwWvEN6pqe3ZlK5oVlL
+ ahmuzBrOkqL1l4ZBt+BPQlUdpx9p/tJQBehyxZyYobIuMAWwgCy4kLi69q5iQFJv0EDJ gQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ggh6sd6da-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Jun 2022 10:16:47 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2569oWPH020869;
+        Mon, 6 Jun 2022 10:16:47 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ggh6sd6cn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Jun 2022 10:16:46 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 256A5Wks013910;
+        Mon, 6 Jun 2022 10:16:44 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma03ams.nl.ibm.com with ESMTP id 3gfy19a7g5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Jun 2022 10:16:44 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 256AGgoF22806976
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 6 Jun 2022 10:16:42 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E34F6A4051;
+        Mon,  6 Jun 2022 10:16:41 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CFAA1A404D;
+        Mon,  6 Jun 2022 10:16:37 +0000 (GMT)
+Received: from [9.43.87.254] (unknown [9.43.87.254])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  6 Jun 2022 10:16:37 +0000 (GMT)
+Message-ID: <a844c8c9-e1e1-2ccb-d58c-a5a608afabc0@linux.ibm.com>
+Date:   Mon, 6 Jun 2022 15:46:36 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <947470ba-35fc-3c72-d01b-c0a7337216a2@arm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [RFC PATCH v4 4/7] mm/demotion/dax/kmem: Set node's memory tier
+ to MEMORY_TIER_PMEM
+Content-Language: en-US
+To:     Bharata B Rao <bharata@amd.com>, linux-mm@kvack.org,
+        akpm@linux-foundation.org
+Cc:     Huang Ying <ying.huang@intel.com>,
+        Greg Thelen <gthelen@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>
+References: <CAAPL-u-dFp7PwPH6DfbYdnY8xaGsHz3tRQ0CPGVkiqURvdN8=A@mail.gmail.com>
+ <20220527122528.129445-1-aneesh.kumar@linux.ibm.com>
+ <20220527122528.129445-5-aneesh.kumar@linux.ibm.com>
+ <5706f5e9-0609-98c9-a0cd-7d96336d73dd@amd.com>
+ <8e651a1e-d189-3e8a-438f-298f21402bd2@linux.ibm.com>
+ <d45374fa-6e51-36cb-9a2c-96f85d9de528@amd.com>
+ <c98eb873-a5bb-edcc-743d-89cfffe52cd9@linux.ibm.com>
+ <d6c94fd5-053b-7e6f-dc4e-83184ecf131a@amd.com>
+From:   Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
+In-Reply-To: <d6c94fd5-053b-7e6f-dc4e-83184ecf131a@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: qyDZgh5gwRpVe2aO-bzsSTlAQrg9c9sK
+X-Proofpoint-ORIG-GUID: LD_gjvEYbJ2LODADHpKqSS83C8Epu5FQ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-06_03,2022-06-03_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
+ impostorscore=0 malwarescore=0 priorityscore=1501 mlxscore=0 phishscore=0
+ lowpriorityscore=0 mlxlogscore=999 bulkscore=0 clxscore=1015 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
+ definitions=main-2206060046
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 02:30:04PM +0200, Dietmar Eggemann wrote:
-> On 25/05/2022 10:14, Sudeep Holla wrote:
-> > Let us set the cluster identifier as parsed from the device tree
-> > cluster nodes within /cpu-map.
-> > 
-> > We don't support nesting of clusters yet as there are no real hardware
-> > to support clusters of clusters.
-> > 
-> > Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-> > ---
-> >  drivers/base/arch_topology.c | 13 ++++++++-----
-> >  1 file changed, 8 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
-> > index b8f0d72908c8..5f4f148a7769 100644
-> > --- a/drivers/base/arch_topology.c
-> > +++ b/drivers/base/arch_topology.c
-> > @@ -492,7 +492,7 @@ static int __init get_cpu_for_node(struct device_node *node)
-> >  }
-> >  
-> >  static int __init parse_core(struct device_node *core, int package_id,
-> > -			     int core_id)
-> > +			     int cluster_id, int core_id)
-> >  {
-> >  	char name[20];
-> >  	bool leaf = true;
-> > @@ -508,6 +508,7 @@ static int __init parse_core(struct device_node *core, int package_id,
-> >  			cpu = get_cpu_for_node(t);
-> >  			if (cpu >= 0) {
-> >  				cpu_topology[cpu].package_id = package_id;
-> > +				cpu_topology[cpu].cluster_id = cluster_id;
-> >  				cpu_topology[cpu].core_id = core_id;
-> >  				cpu_topology[cpu].thread_id = i;
-> >  			} else if (cpu != -ENODEV) {
-> > @@ -529,6 +530,7 @@ static int __init parse_core(struct device_node *core, int package_id,
-> >  		}
-> >  
-> >  		cpu_topology[cpu].package_id = package_id;
-> > +		cpu_topology[cpu].cluster_id = cluster_id;
+On 6/6/22 3:41 PM, Bharata B Rao wrote:
+> On 6/3/2022 2:34 PM, Aneesh Kumar K V wrote:
+>> On 6/2/22 12:06 PM, Bharata B Rao wrote:
+>>> On 6/1/2022 7:19 PM, Aneesh Kumar K V wrote:
+>>>> On 6/1/22 11:59 AM, Bharata B Rao wrote:
+>>>>> I was experimenting with this patchset and found this behaviour.
+>>>>> Here's what I did:
+>>>>>
+>>>>> Boot a KVM guest with vNVDIMM device which ends up with device_dax
+>>>>> driver by default.
+>>>>>
+>>>>> Use it as RAM by binding it to dax kmem driver. It now appears as
+>>>>> RAM with a new NUMA node that is put to memtier1 (the existing tier
+>>>>> where DRAM already exists)
+>>>>>
+>>>>
+>>>> That should have placed it in memtier2.
+>>>>
+>>>>> I can move it to memtier2 (MEMORY_RANK_PMEM) manually, but isn't
+>>>>> that expected to happen automatically when a node with dax kmem
+>>>>> device comes up?
+>>>>>
+>>>>
+>>>> This can happen if we have added the same NUMA node to memtier1 before dax kmem driver initialized the pmem memory. Can you check before the above node_set_memory_tier_rank() whether the specific NUMA node is already part of any memory tier?
+>>>
+>>> When we reach node_set_memory_tier_rank(), node1 (that has the pmem device)
+>>> is already part of memtier1 whose nodelist shows 0-1.
+>>>
+>>
+>> can you find out which code path added node1 to memtier1?
 > 
-> I'm still not convinced that this is the right thing to do. Let's take
-> the juno board as an example here. And I guess our assumption should be
-> that we want to make CONFIG_SCHED_CLUSTER a default option, like
-> CONFIG_SCHED_MC is. Simply to avoid a unmanageable zoo of config-option
-> combinations.
->
+>   node_set_memory_tier_rank+0x63/0x80
+>   migrate_on_reclaim_callback+0x40/0x4d
+>   blocking_notifier_call_chain+0x68/0x90
+>   memory_notify+0x1b/0x20
+>   online_pages+0x257/0x2f0
+>   memory_subsys_online+0x99/0x150
+>   device_online+0x65/0x90
+>   online_memory_block+0x1b/0x20
+>   walk_memory_blocks+0x85/0xc0
+>   ? generic_online_page+0x40/0x40
+>   add_memory_resource+0x1fa/0x2d0
+>   add_memory_driver_managed+0x80/0xc0
+>   dev_dax_kmem_probe+0x1af/0x250
+>   dax_bus_probe+0x6e/0xa0
+> 
+> After this the explicit call to node_set_memory_tier_rank(numa_node, MEMORY_RANK_PMEM)
+> from dev_dax_kmem_probe() finds that the memtier is already set.
+> 
+>> Do you have regular memory also appearing on node1?
+> 
+> No, regular memory is on Node0.
+> 
 
-Agreed on the config part.
+Thanks for the stack trace. I was getting the kvm setup on my laptop to 
+test this. We should move node_set_mem_tier() early. You had automatic 
+online on memory hotplug
 
-> (1) Scheduler Domains (SDs) w/o CONFIG_SCHED_CLUSTER:
->
-> MC  <-- !!!
-> DIE
->
-> (2) SDs w/ CONFIG_SCHED_CLUSTER:
->
-> CLS <-- !!!
-> DIE
->
+	/* online pages if requested */
+	if (mhp_default_online_type != MMOP_OFFLINE)
+		walk_memory_blocks(start, size, NULL, online_memory_block);
 
-Yes I have seen this.
 
-> In (2) MC gets degenerated in sd_parent_degenerate() since CLS and MC
-> cpumasks are equal and MC does not have any additional flags compared to
-> CLS.
-> I'm not convinced that we can change the degeneration rules without
-> destroying other scenarios of the scheduler so that here MC stays and
-> CLS gets removed instead.
->
+which caused memory to be onlined before we could do node_set_mem_tier. 
+That is a bug on my side. Will send you a change after testing .
 
-Why ? Are you suggesting that we shouldn't present the hardware cluster
-to the topology because of the above reason ? If so, sorry that is not a
-valid reason. We could add login to return NULL or appropriate value
-needed in cpu_clustergroup_mask id it matches MC level mask if we can't
-deal that in generic scheduler code. But the topology code can't be
-compromised for that reason as it is user visible.
+-aneesh
 
-> Even though MC and CLS are doing the same right now from the perspective
-> of the scheduler, we should also see MC and not CLS under (2). CLS only
-> makes sense longer term if the scheduler also makes use of it (next to
-> MC) in the wakeup-path for instance. Especially when this happens, a
-> platform should always construct the same scheduler domain hierarchy, no
-> matter which CONFIG_SCHED_XXX options are enabled.
->
->
-> You can see this in update_siblings_masks()
->
->     if (last_level_cache_is_shared)
->         set llc_sibling
->
->     if (cpuid_topo->package_id != cpu_topo->package_id)
->         continue
->
->     set core_sibling
->
->   If llc cache and socket boundaries are congruent, llc_sibling and
->   core_sibling are the same.
->
->     if (cpuid_topo->cluster_id != cpu_topo->cluster_id)
->         continue
->
->     set cluster_sibling
->
->   Now we potentially set clusters. Since socket=0 is by default and we
->   use the existing juno.dts, the cluster nodes end up being congruent to
->   the llc cache cpumasks as well.
->
-
-Correct and I see no problems as it matches what the hardware is. So I am
-not expecting any change in any cpumasks there as they all are aligned with
-the hardware.
-
-> The problem is that we code `llc cache` and `DT cluster nodes` as the
-> same thing in juno.dts. 
-
-Why is that a problem ? If so, blame hardware and deal with it as we have to
-😄 as usual we get all sorts of topology.
-
-> `Cluster0/1` are congruent with the llc information, although they should 
-> be actually `socket0/1` right now.
-
-That was complete non-sense and wrong. Boot and check in ACPI mode.
-
-> But we can't set-up a cpu-map with a `socketX` containing `coreY` directly.
-> And then we use llc_sibling and cluster_sibling in two different SD
-> cpumask functions (cpu_coregroup_mask() and cpu_clustergroup_mask()).
->
-
-We just need to deal with that. How is that dealt today with ACPI. My
-changes are making these aligned with ACPI. If something is broken as
-per you understanding with ACPI, then that needs fixing. The topology
-presented and parsed by ACPI is correct and we are aligning DT with that.
-There is no question on that.
-
-> Remember, CONFIG_SCHED_CLUSTER was introduced in ACPI/PPTT as a cpumask
-> which is a subset of the cpumasks of CONFIG_SCHED_MC.
->
-
-But that change also introduced cluster masks into the topology which again
-aligns with my changes.
-
-> IMHO we probably could just introduce your changes w/o setting `cpu-map
-> cluster nodes` in DT for now. We would just have to make sure that for
-> all `*.dts` affected, the `llc cache` info can take over the old role of
-> the `cluster nodes`. In this case e.g. Juno ends up with MC, DIE no
-> matter if CONFIG_SCHED_CLUSTER is set or not.
-
-Sure I can agree with that if Juno ACPI is not broken. But I am sure it is
-broken based on your argument above. If it is, that needs fixing and this
-series just gets topology parsing in both ACPI and DT aligned, nothing
-more or nothing less. In the process it may be introducing clusters, but
-if it is not dealt correctly in ACPI, then it won't be in DT too and needs
-fixing anyways.
-
---
-Regards,
-Sudeep
