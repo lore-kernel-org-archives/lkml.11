@@ -2,222 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49589C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 07:25:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B615C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 07:27:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230451AbiFFHZM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 03:25:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53374 "EHLO
+        id S230468AbiFFH1A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 03:27:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230445AbiFFHZJ (ORCPT
+        with ESMTP id S230446AbiFFH05 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 03:25:09 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 021482C13B
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 00:25:08 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id 15so12055170pfy.3
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 00:25:07 -0700 (PDT)
+        Mon, 6 Jun 2022 03:26:57 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93AD312D1E2
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 00:26:53 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id kq6so14166495ejb.11
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 00:26:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0AnhdS964ZAmAt3TlTWu07Znq5XtGyA8ySzA8lh+qAo=;
-        b=z5AuHKqozZugOWvaT1dlWA/ZeoXf2Ucp69bIGQ7a3d4C/+nENFDDHQJsy6xbnzqj2y
-         w8JTWFoxjrclRRmclnXcIphcwc/2G4borloKoYSXu7zgSZGbz555zM1JRq2ZCk34fsX2
-         7RXJt5OFgkFLW0JPEmpz/+aKnw7lMLFgEPb/0+17RNfrGMrhrmdr3Kf4Tpz7mFPd2rW6
-         7Fs12AlzEUQSpcTFBFS2IbSg8wzDprjMsZlrUqij9TfEIgUeK1QELPUVs1w8pImieHI8
-         IKrYI0kG6I6n93rM3s92uWIFjuHl+pR4oddmCjWnYpUyOxK8hp+F4TE7Y+BC1tvEZglb
-         Jrkw==
+        bh=doPwBdHFWD14a2kAbTYFYO985iNgcJ4U7efAsJ68WJg=;
+        b=e9Eet/rubQ1dAldMT20UZNWIystnpXrq8GRJof9k8RTdLUW/jUD1HGfhgGnHs8wFb6
+         6igYDyujxRcRJlFuCntlt6LFyW90aNpU5MgTf2jUnPhMUXCvNEB7vjGPA060WmEVc2ZG
+         RFCMMx0G5Jtbm5wiY4pevkJ0S0Vw27VLsB5eEt8hmtHuin/eRDB1K9qxhrqlTwWw8JQ6
+         kqWStISJcQYsPBm4bx0ziF6Xtmx5/g5h7E3PzbwH6r9zYyWBoEH1TrozbZ4YOiiC3+K2
+         gluHBMjK50vEvuW8nrFl9OTgbx07KXDG/UKG44iHxftwXkGAL+KvHW5fKdaPsKMTb1kY
+         mRzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=0AnhdS964ZAmAt3TlTWu07Znq5XtGyA8ySzA8lh+qAo=;
-        b=seTOL01tVd10gFNXRZc3szzsZ4+xKqlzoj/6cd/wYfyX6kzvT2PRKDLYEHf/FMXeeV
-         iwx/+lyFUZwC32hdW11EpaB/kmjGtgCgzFs9RE0ymV251Abhcf+6METepjvi8FNnHCdV
-         NwEoa22dwf5qhcDb1BB1+qA9es8kpHA5sE0dcb9VTovlJGCvmKkx8gGtY9Yp6N7y++73
-         FlshjB4v2l6Revq9P8OLZyYmyWdsWP/Ns3nFnMxcVlXbCy55HKTe2En/mVUjG0rBDNeX
-         04BRI3AYBiYQO7YZ/3+gTcxBg7aFMPWeB976x4/gls/2RuSw4z5c5PRPO1j6ulykg30v
-         oxaA==
-X-Gm-Message-State: AOAM533+M952u5fzCdpYfak4oa5444AgLxS12lZVNtz2TaD4m8kqj/WD
-        FrIeRRoJmDr93U+ojrvVcw0TfA==
-X-Google-Smtp-Source: ABdhPJyJbNz6BwWaufNGjpW5wGylhSJj8ejqCOVQkBGZrrv7fjiraQtaYx0X+kFfSZMM/s+yL+8bNQ==
-X-Received: by 2002:a05:6a00:889:b0:510:91e6:6463 with SMTP id q9-20020a056a00088900b0051091e66463mr23124379pfj.58.1654500307440;
-        Mon, 06 Jun 2022 00:25:07 -0700 (PDT)
-Received: from [10.76.15.169] ([61.120.150.70])
-        by smtp.gmail.com with ESMTPSA id v13-20020a17090331cd00b00163daef3dc2sm9739598ple.84.2022.06.06.00.25.04
+        bh=doPwBdHFWD14a2kAbTYFYO985iNgcJ4U7efAsJ68WJg=;
+        b=Lz2Z4UTVP7QESnWDjcMM9zDdEGBvESEKOFceD97nLwz4pNk26xZ4vgJcblxNYqQhtw
+         Fhp9W5uHP+m6qnrcmGsp6wZmeoHNSfr6IqD4XnB6VSzw9DhNTKOEPUbT3Udxv0r/njW2
+         W8qQgrxYSuNi6bMT+DEHX+Wplx/DGlL8YuueyOXGh/stTnpC4eCpBrXerqWDOZHR0fDs
+         deRwNs0JjPUy4N8kDQNAoX3/9QJkBhgUEwLJc1rVRKyJxapxGyFdQkr4yD4OGGHy70Og
+         c4aj4EfVv0pKtyVBXZPGD7c0MaZx46aDfnAZFJ0zWTaXVAVdpVGK/iOBGPVBHGsHZUxu
+         RcnQ==
+X-Gm-Message-State: AOAM532pFxWuFV/OBbKvi/S34ogSXmzBV32Z09j5GrpLFkEOTvGWOblD
+        Bk8oZmIEXZttjmtHciCxvpeuyw==
+X-Google-Smtp-Source: ABdhPJyJOokEt0kcEBw3sSkPy6hMeFJoYm8dpZ17WrM50ttC3tQnAGNRQ3bcqQ/3RbnokzCBKZFsGQ==
+X-Received: by 2002:a17:906:b18e:b0:710:26db:7a53 with SMTP id w14-20020a170906b18e00b0071026db7a53mr11557189ejy.290.1654500411748;
+        Mon, 06 Jun 2022 00:26:51 -0700 (PDT)
+Received: from [192.168.0.181] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id d7-20020a056402400700b0042e15364d14sm6332688eda.8.2022.06.06.00.26.50
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Jun 2022 00:25:06 -0700 (PDT)
-Message-ID: <3b58adbf-a8b2-8dba-71a7-123ba3850c10@bytedance.com>
-Date:   Mon, 6 Jun 2022 15:20:27 +0800
+        Mon, 06 Jun 2022 00:26:51 -0700 (PDT)
+Message-ID: <14eeab94-8344-2c8d-9437-ddc8e367cfde@linaro.org>
+Date:   Mon, 6 Jun 2022 09:26:50 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: Re: Re: [PATCH] mm/memory-failure: don't allow to unpoison hw
- corrupted page
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] dt-bindings: i2c: qcom,i2c-qup: convert to dtschema
 Content-Language: en-US
-To:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
-        <naoya.horiguchi@nec.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Wu Fengguang <fengguang.wu@intel.com>
-References: <20220604103229.3378591-1-pizhenwei@bytedance.com>
- <20220604115616.b7d5912ac5a37db608f67b78@linux-foundation.org>
- <584eedd3-9369-9df1-39e2-62e331abdcc0@bytedance.com>
- <20220606043202.GA1328953@hori.linux.bs1.fc.nec.co.jp>
-From:   zhenwei pi <pizhenwei@bytedance.com>
-In-Reply-To: <20220606043202.GA1328953@hori.linux.bs1.fc.nec.co.jp>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To:     Robert Marko <robimarko@gmail.com>, Rob Herring <robh@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        linux-i2c@vger.kernel.org,
+        Devicetree List <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220604164653.79284-1-robimarko@gmail.com>
+ <20220605140744.GA3416078-robh@kernel.org>
+ <CAOX2RU7PHpzKUNvuv=-MyqGtgcz30qKkvx2MHNV=ehtCZGBYEA@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAOX2RU7PHpzKUNvuv=-MyqGtgcz30qKkvx2MHNV=ehtCZGBYEA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 6/6/22 12:32, HORIGUCHI NAOYA(堀口 直也) wrote:
-> On Sun, Jun 05, 2022 at 12:24:24PM +0800, zhenwei pi wrote:
+On 05/06/2022 18:09, Robert Marko wrote:
+> On Sun, 5 Jun 2022 at 16:07, Rob Herring <robh@kernel.org> wrote:
 >>
->>
->> On 6/5/22 02:56, Andrew Morton wrote:
->>> On Sat,  4 Jun 2022 18:32:29 +0800 zhenwei pi <pizhenwei@bytedance.com> wrote:
+>> On Sat, Jun 04, 2022 at 06:46:53PM +0200, Robert Marko wrote:
+>>> Convert DT bindings for Qualcomm QUP I2C controller to DT schema format.
 >>>
->>>> Currently unpoison_memory(unsigned long pfn) is designed for soft
->>>> poison(hwpoison-inject) only. Unpoisoning a hardware corrupted page
->>>> puts page back buddy only, this leads BUG during accessing on the
->>>> corrupted KPTE.
-> 
-> Thank you for the patch. I think this will be helpful for integration testing.
-> 
-> You mention "hardware corrupted page" as the condition of this bug, and I
-> think that it means a real hardware error, but this BUG seems to be
-> triggered when we use mce-inject or APEI (these are also software injection
-> without corrupting the memory physically). So the actual condition is
-> "when memory_failure() is called by MCE handler"?
-> 
-
-Yes, I use QEMU to emulate a 'real hardware error' by command:
-virsh qemu-monitor-command vm --hmp mce 0 9 0xbd000000000000c0 0xd 
-0x61234000 0x8c
-
->>>>
->>>> Do not allow to unpoison hardware corrupted page in unpoison_memory()
->>>> to avoid BUG like this:
->>>>
->>>>    Unpoison: Software-unpoisoned page 0x61234
->>>>    BUG: unable to handle page fault for address: ffff888061234000
+>>> Old text bindings were missing usage of DMA so that was documented, as
+>>> well as the max clock-frequency.
 >>>
->>> Thanks.
->>>
->>>> --- a/mm/memory-failure.c
->>>> +++ b/mm/memory-failure.c
->>>> @@ -2090,6 +2090,7 @@ int unpoison_memory(unsigned long pfn)
->>>>    {
->>>>    	struct page *page;
->>>>    	struct page *p;
->>>> +	pte_t *kpte;
->>>>    	int ret = -EBUSY;
->>>>    	int freeit = 0;
->>>>    	static DEFINE_RATELIMIT_STATE(unpoison_rs, DEFAULT_RATELIMIT_INTERVAL,
->>>> @@ -2101,6 +2102,13 @@ int unpoison_memory(unsigned long pfn)
->>>>    	p = pfn_to_page(pfn);
->>>>    	page = compound_head(p);
->>>> +	kpte = virt_to_kpte((unsigned long)page_to_virt(p));
->>>> +	if (kpte && !pte_present(*kpte)) {
->>>> +		unpoison_pr_info("Unpoison: Page was hardware poisoned %#lx\n",
->>>> +				 pfn, &unpoison_rs);
+>>> Signed-off-by: Robert Marko <robimarko@gmail.com>
+>>> ---
+>>>  .../devicetree/bindings/i2c/qcom,i2c-qup.txt  | 40 ---------
+>>>  .../devicetree/bindings/i2c/qcom,i2c-qup.yaml | 83 +++++++++++++++++++
+>>>  2 files changed, 83 insertions(+), 40 deletions(-)
+>>>  delete mode 100644 Documentation/devicetree/bindings/i2c/qcom,i2c-qup.txt
+>>>  create mode 100644 Documentation/devicetree/bindings/i2c/qcom,i2c-qup.yaml
+>>
+>> This one is already done.
 > 
-> This can prevent unpoison for hwpoison on 4kB pages, but not for hugetlb pages,
-> where I see the similar BUG as follows (even with applying your patch):
-> 
->    [  917.806712] BUG: unable to handle page fault for address: ffff9f7bb3201000
->    [  917.810144] #PF: supervisor write access in kernel mode
->    [  917.812588] #PF: error_code(0x0002) - not-present page
->    [  917.815007] PGD 104801067 P4D 104801067 PUD 10006b063 PMD 1052d0063 PTE 800ffffeccdfe062
->    [  917.818768] Oops: 0002 [#1] PREEMPT SMP PTI
->    [  917.820759] CPU: 0 PID: 7774 Comm: test_alloc_gene Tainted: G   M       OE     5.18.0-v5.18-220606-0942-029-ge4dcc+ #47
->    [  917.825720] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35 04/01/2014
->    [  917.829762] RIP: 0010:clear_page_erms+0x7/0x10
->    [  917.831867] Code: 48 89 47 18 48 89 47 20 48 89 47 28 48 89 47 30 48 89 47 38 48 8d 7f 40 75 d9 90 c3 0f 1f 80 00 00 00 00 b9 00 10 00 00 31 c0 <f3> aa c3 cc cc cc cc cc cc 48 85 ff 0f 84 d3 00 00 00 0f b6 0f 4c
->    [  917.840540] RSP: 0000:ffffab49c25ebdf0 EFLAGS: 00010246
->    [  917.842839] RAX: 0000000000000000 RBX: ffffd538c4cc8000 RCX: 0000000000001000
->    [  917.845835] RDX: 0000000080000000 RSI: 00007f2aeb600000 RDI: ffff9f7bb3201000
->    [  917.848687] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
->    [  917.851377] R10: 0000000000000002 R11: ffff9f7b87e3a2a0 R12: 0000000000000000
->    [  917.854035] R13: 0000000000000001 R14: ffffd538c4cc8000 R15: ffff9f7bc002a5d8
->    [  917.856539] FS:  00007f2aebad3740(0000) GS:ffff9f7bbbc00000(0000) knlGS:0000000000000000
->    [  917.859229] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->    [  917.861149] CR2: ffff9f7bb3201000 CR3: 0000000107726003 CR4: 0000000000170ef0
->    [  917.863433] Call Trace:
->    [  917.864266]  <TASK>
->    [  917.864961]  clear_huge_page+0x147/0x270
->    [  917.866236]  hugetlb_fault+0x440/0xad0
->    [  917.867366]  handle_mm_fault+0x270/0x290
->    [  917.868532]  do_user_addr_fault+0x1c3/0x680
->    [  917.869768]  exc_page_fault+0x6c/0x160
->    [  917.870912]  ? asm_exc_page_fault+0x8/0x30
->    [  917.872082]  asm_exc_page_fault+0x1e/0x30
->    [  917.873220] RIP: 0033:0x7f2aeb8ba367
-> 
-> I don't think of a workaround for this now ...
-> 
+> Yeah, I did not check linux-next before doing the conversion.
+> Sorry for the noise.
 
-Could you please tell me how to reproduce this issue?
+Hi Robert,
 
->>>> +		return -EPERM;
-> 
-> Is -EOPNOTSUPP a better error code?
-> 
+Thanks for the patch. Several people are working on the bindings, so the
+best is to:
+1. rebase always on linux-next,
+2. check if anyone else posted the patches thus the work is in progress
+- use dfn keyword, like:
+https://lore.kernel.org/all/?q=dfn%3Aqcom%2Ci2c-qup.txt
 
-OK!
 
->>>> +	}
->>>> +
->>>>    	mutex_lock(&mf_mutex);
->>>>    	if (!PageHWPoison(p)) {
->>>
->>> I guess we don't want to let fault injection crash the kernel, so a
->>> cc:stable seems appropriate here.
->>>
->>> Can we think up a suitable Fixes: commit?  I'm suspecting this bug has
->>> been there for a long time?
->>>
->>
->> Sure!
->>
->> 2009-Dec-16, hwpoison_unpoison() was introduced into linux in commit:
->> 847ce401df392("HWPOISON: Add unpoisoning support")
->> ...
->> There is no hardware level unpoisioning, so this cannot be used for real
->> memory errors, only for software injected errors.
->> ...
->>
->> We can find that this function should be used for software level unpoisoning
->> only in both commit log and comment in source code. unfortunately there is
->> no check in function hwpoison_unpoison().
->>
->>
->> 2020-May-20, 17fae1294ad9d("x86/{mce,mm}: Unmap the entire page if the whole
->> page is affected and poisoned")
->>
->> This clears KPTE, and leads BUG(described in this patch) during unpoisoning
->> the hardware corrupted page.
->>
->>
->> Fixes: 847ce401df392("HWPOISON: Add unpoisoning support")
->> Fixes: 17fae1294ad9d("x86/{mce,mm}: Unmap the entire page if the whole page
->> is affected and poisoned")
->>
->> Cc: Wu Fengguang <fengguang.wu@intel.com>
->> Cc: Tony Luck <tony.luck@intel.com>.
-> 
-> Thanks for checking the history, I agree with sending to stable.
-> 
-> Thanks,
-> Naoya Horiguchi
-
--- 
-zhenwei pi
+Best regards,
+Krzysztof
