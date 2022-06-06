@@ -2,80 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88DEAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 17:17:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B0ABC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 17:17:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229793AbiFFRRD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 13:17:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52484 "EHLO
+        id S229828AbiFFRRh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 13:17:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231245AbiFFRQR (ORCPT
+        with ESMTP id S229886AbiFFRRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 13:16:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7232152BB4
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 10:10:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 72276B819FA
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 17:10:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48760C34115;
-        Mon,  6 Jun 2022 17:10:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654535425;
-        bh=1jBe4uELOqppK1KztJgJ6/8nhny/As1YHF1KtCMJW+Y=;
-        h=From:To:In-Reply-To:References:Subject:Date:From;
-        b=AjPRaQltb8X1eQx/xfQe+YKO7qyDjqedBtfbuYpf3+UWYNmCmy9pC3XVB2zW2s07M
-         Z9ZUzg77Wi1GoBkuSFHymLPxQce4EW7DfU0YT1o7cgTorFfOwGC60cpnY5F0SE4YuC
-         ivyD8681sy9w5rSXII4Sj8PpPLqmATGhxKCVmP5WhGVVRDrGobo7Psvs4qQ3zERkzJ
-         4PVmTB3zDhafa9A7CF6NBmCtp6x5nisrpyn5C+GtcRygot9iG1wHTegW6RmwECQoss
-         /1h6dmW3weIgDQJhbU+zY9qVVWQtxWHr/MEwBJzbaoOTQWY23kgSD+gB484Zkoh2vP
-         ZNmYZ/2hc/KuA==
-From:   Mark Brown <broonie@kernel.org>
-To:     wangxiang@cdjrlc.com, gregkh@linuxfoundation.org,
-        rafael@kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220604041603.9697-1-wangxiang@cdjrlc.com>
-References: <20220604041603.9697-1-wangxiang@cdjrlc.com>
-Subject: Re: [PATCH] regmap: cache: Fix syntax errors in comments
-Message-Id: <165453542401.2437928.12545939803420105222.b4-ty@kernel.org>
-Date:   Mon, 06 Jun 2022 18:10:24 +0100
+        Mon, 6 Jun 2022 13:17:08 -0400
+Received: from mail-io1-f47.google.com (mail-io1-f47.google.com [209.85.166.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D86B742A08;
+        Mon,  6 Jun 2022 10:13:04 -0700 (PDT)
+Received: by mail-io1-f47.google.com with SMTP id a10so12866952ioe.9;
+        Mon, 06 Jun 2022 10:13:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=T5YHzXRjPtC200vv9hoqJeGGEkRGnL+7w3QqiAQN+TM=;
+        b=r/PkSlzOFDleKY8iBXGdTPhHXApoXgdg5JBlVIhE9JCZqOA3nVMn5bhQ7AX5FvaMvX
+         w87CcWULq9WixwmB+eJ6v6tDbZPeI5WzQmQqAf/wTK673Gczw9EsxqlSFknErzm3jDx8
+         pYQQkJhAG8kNsWmW4ZO2sHCwplgwzSkMOZpz/6ZLjZyEjxrup9WKKqLSsWXe0PUTmBz4
+         UgrUFNoxUZQO0mxyTK3aMCffvga1/QOHa1BOMyGkdyjpmlCEfLodJmew0VdiuXpVjxOn
+         qVpgDLdjdCEsNadMDKySgHd2uBoiOfvvYy+VGNPVTJquMSO/OFz1Nm9JHqvdw+DrfCM3
+         +AkA==
+X-Gm-Message-State: AOAM5303xqbEP6sE0fa/vJIynT8LSbcr38r+i6qtLiFSY9yezld1Brr6
+        jatDvyjiEjWUDb8hi65qNA==
+X-Google-Smtp-Source: ABdhPJz2y+CCdx3q0SwKpY+tb7SzPRSL0+ZHCKWijihTGCxh7qxVlU0vcmJrL7FUNCRk3ErsgKwXEA==
+X-Received: by 2002:a5d:9a96:0:b0:669:50d6:815 with SMTP id c22-20020a5d9a96000000b0066950d60815mr3580524iom.110.1654535584095;
+        Mon, 06 Jun 2022 10:13:04 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id i41-20020a026029000000b0033155f242f0sm5810134jac.23.2022.06.06.10.13.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 10:13:03 -0700 (PDT)
+Received: (nullmailer pid 904364 invoked by uid 1000);
+        Mon, 06 Jun 2022 17:13:01 -0000
+Date:   Mon, 6 Jun 2022 12:13:01 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Andre Przywara <andre.przywara@arm.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: Re: [PATCH 14/23] MAINTAINERS: update arm,hdlcd.yaml reference
+Message-ID: <20220606171301.GA899329-robh@kernel.org>
+References: <cover.1654529011.git.mchehab@kernel.org>
+ <714c3b6e10736d51268b9d71b97829a224b3bae1.1654529011.git.mchehab@kernel.org>
+ <20220606163401.13e5bea3@donnerap.cambridge.arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220606163401.13e5bea3@donnerap.cambridge.arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 4 Jun 2022 12:16:03 +0800, Xiang wangx wrote:
-> Delete the redundant word 'the'.
+On Mon, Jun 06, 2022 at 04:34:01PM +0100, Andre Przywara wrote:
+> On Mon,  6 Jun 2022 16:25:36 +0100
+> Mauro Carvalho Chehab <mchehab@kernel.org> wrote:
 > 
+> Hi Mauro,
 > 
+> > Changeset 36fd2a65bcaf ("dt-bindings: display: convert Arm HDLCD to DT schema")
+> > renamed: Documentation/devicetree/bindings/display/arm,hdlcd.txt
+> > to: Documentation/devicetree/bindings/display/arm,hdlcd.yaml.
+> > 
+> > Update its cross-reference accordingly.
+> 
+> So Lukas sent the same thing already last week:
+> https://lore.kernel.org/linux-kernel/20220601041746.22986-1-lukas.bulwahn@gmail.com/
+> 
+> His patch covered all of the three ARM display updates (14, 15, 16/23
+> in this series) in one go.
+> Not sure where to go from here, or if Lukas' patch already made it
+> somewhere.
 
-Applied to
+I'll apply that one.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git for-next
-
-Thanks!
-
-[1/1] regmap: cache: Fix syntax errors in comments
-      commit: 72607f372c9c27af458e4fa1411fbd3a2a448386
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+Rob
