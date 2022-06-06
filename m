@@ -2,93 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC445C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 09:58:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23126C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:02:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233108AbiFFJ6s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 05:58:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46898 "EHLO
+        id S233360AbiFFKC5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 06:02:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233033AbiFFJ6n (ORCPT
+        with ESMTP id S233341AbiFFKCx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 05:58:43 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC1B41EC52;
-        Mon,  6 Jun 2022 02:58:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654509522; x=1686045522;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=CnqY3WLlc8HFY+CvHCMWaMsQzY4zu9VF10JrJlKu66k=;
-  b=B/7eRr3apdZjCXt2bDF5EQVi6vQy9VBT/mTbyef2//nCNEkWykDFE3Ls
-   l7gJNgfqttckiTvbO99cRXIiEroUr+s6eb/4AfQ73O72uijpfLsezWfwd
-   C6Z4FJuDj+tpKLNrE34mQ40Wloa3ottS0517ArPNk+9FvO2oUAGpscIgB
-   L22bTN/ZqVt2ebMJlIB216suSJaU4MPojnbSop3Y3pxUpLY83rO4bfXbL
-   jEV+D73TgnHkiNq/qOyeBOINmiH7RV8Y3a5fNobV3CJQo4FzBN0dtJhgt
-   imR6074x1Hb4EZ1i5E6F+RNyZPtpzjnOgspOG5f6d0JYc+rCLQ3pbVTge
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="258913612"
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="258913612"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 02:58:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="682185460"
-Received: from q.bj.intel.com ([10.238.154.102])
-  by fmsmga002.fm.intel.com with ESMTP; 06 Jun 2022 02:58:34 -0700
-From:   shaoqin.huang@intel.com
-To:     pbonzini@redhat.com
-Cc:     Shaoqin Huang <shaoqin.huang@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Ben Gardon <bgardon@google.com>,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] KVM: x86/mmu: Check every prev_roots in __kvm_mmu_free_obsolete_roots()
-Date:   Mon,  6 Jun 2022 18:59:05 -0600
-Message-Id: <20220607005905.2933378-1-shaoqin.huang@intel.com>
-X-Mailer: git-send-email 2.30.2
+        Mon, 6 Jun 2022 06:02:53 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F332E58
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 03:02:51 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7307F1596;
+        Mon,  6 Jun 2022 03:02:51 -0700 (PDT)
+Received: from e120937-lin.home (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7F1C33F66F;
+        Mon,  6 Jun 2022 03:02:49 -0700 (PDT)
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
+        Jonathan.Cameron@Huawei.com, f.fainelli@gmail.com,
+        etienne.carriere@linaro.org, vincent.guittot@linaro.org,
+        daniel.lezcano@linaro.org, tarek.el-sherbiny@arm.com,
+        adrian.slatineanu@arm.com, souvik.chakravarty@arm.com,
+        wleavitt@marvell.com, wbartczak@marvell.com,
+        Cristian Marussi <cristian.marussi@arm.com>
+Subject: [PATCH v2 0/7] SCMIv3.1 Powercap protocol and driver
+Date:   Mon,  6 Jun 2022 11:02:23 +0100
+Message-Id: <20220606100230.3465828-1-cristian.marussi@arm.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shaoqin Huang <shaoqin.huang@intel.com>
+Hi all,
 
-When freeing obsolete previous roots, check prev_roots as intended, not
-the current root.
+this short series introduces the last missing bit of SCMIv3.1, Powercap
+protocol. Along the series, there is a small refactoring around the SCMI
+FastChannels handling routines so as to reuse as much as possible the
+pre-existent (and tested) FastChannel code from the Perf protocol.
 
-Signed-off-by: Shaoqin Huang <shaoqin.huang@intel.com>
-Fixes: 527d5cd7eece ("KVM: x86/mmu: Zap only obsolete roots if a root shadow page is zapped")
----
-Changes in v2:
-  - Make the commit message more clearer.
-  - Fixed the missing idx.
+As a last step in the series an ARM SCMI based powercap driver is added,
+which takes care to expose via the Powercap framework all the SCMI Powercap
+zones that have been discovered asking the SCMI platform firmware.
 
- arch/x86/kvm/mmu/mmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Basic testing has been performed against an emulated SCMI platform
+supporting SCMIv3.1 Powercap protocol using powercap-utils, with the
+exclusion of the FCs bits whose generalization has been only tested for
+regression on a JUNO platform sporting a regular SCP/SCMI v2.10 fw.
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index f4653688fa6d..e826ee9138fa 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -5179,7 +5179,7 @@ static void __kvm_mmu_free_obsolete_roots(struct kvm *kvm, struct kvm_mmu *mmu)
- 		roots_to_free |= KVM_MMU_ROOT_CURRENT;
- 
- 	for (i = 0; i < KVM_MMU_NUM_PREV_ROOTS; i++) {
--		if (is_obsolete_root(kvm, mmu->root.hpa))
-+		if (is_obsolete_root(kvm, mmu->prev_roots[i].hpa))
- 			roots_to_free |= KVM_MMU_ROOT_PREVIOUS(i);
- 	}
- 
+The series is based on sudeep/for-next/scmi [1] on top of:
+
+commit ef189d7c6156 ("firmware: arm_scmi: Remove all the unused local variables")
+
+Thanks,
+Cristian
+
+v1 --> v2:
+- fixed measurements thresholds updates to trigger notification
+  enable update commands
+- added a bit more comments
+- usig bitfield.h macros
+- fixed sparse complaint about missing static on global
+
+[1]: https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git/log/?h=for-next/scmi
+----
+
+Cristian Marussi (7):
+  dt-bindings: firmware: arm,scmi: Add powercap protocol
+  firmware: arm_scmi: Add SCMIv3.1 Powercap protocol basic support
+  firmware: arm_scmi: Generalize FastChannel support
+  firmware: arm_scmi: Add SCMIv3.1 Powercap FastChannels support
+  firmware: arm_scmi: Make use of FastChannels configurable
+  firmware: arm_scmi: Add scmi_driver optional setup/teardown callbacks
+  powercap: arm_scmi: Add SCMI Powercap based driver
+
+ .../bindings/firmware/arm,scmi.yaml           |  10 +
+ drivers/firmware/arm_scmi/Kconfig             |  13 +
+ drivers/firmware/arm_scmi/Makefile            |   2 +-
+ drivers/firmware/arm_scmi/bus.c               |  15 +-
+ drivers/firmware/arm_scmi/driver.c            | 167 ++++
+ drivers/firmware/arm_scmi/perf.c              | 218 +----
+ drivers/firmware/arm_scmi/powercap.c          | 857 ++++++++++++++++++
+ drivers/firmware/arm_scmi/protocols.h         |  23 +
+ drivers/powercap/Kconfig                      |  13 +
+ drivers/powercap/Makefile                     |   1 +
+ drivers/powercap/arm_scmi_powercap.c          | 537 +++++++++++
+ include/linux/scmi_protocol.h                 | 129 +++
+ 12 files changed, 1810 insertions(+), 175 deletions(-)
+ create mode 100644 drivers/firmware/arm_scmi/powercap.c
+ create mode 100644 drivers/powercap/arm_scmi_powercap.c
+
 -- 
-2.30.2
+2.32.0
 
