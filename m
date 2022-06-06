@@ -2,87 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49753C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 19:01:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2400C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 19:05:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232097AbiFFTB0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 15:01:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51540 "EHLO
+        id S232083AbiFFTFE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 15:05:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232083AbiFFTBX (ORCPT
+        with ESMTP id S232031AbiFFTFB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 15:01:23 -0400
-Received: from mail-il1-f179.google.com (mail-il1-f179.google.com [209.85.166.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C8A012ABB;
-        Mon,  6 Jun 2022 12:01:22 -0700 (PDT)
-Received: by mail-il1-f179.google.com with SMTP id a15so12569054ilq.12;
-        Mon, 06 Jun 2022 12:01:22 -0700 (PDT)
+        Mon, 6 Jun 2022 15:05:01 -0400
+Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457C7A476;
+        Mon,  6 Jun 2022 12:05:00 -0700 (PDT)
+Received: by mail-io1-f54.google.com with SMTP id 134so6924919iou.12;
+        Mon, 06 Jun 2022 12:05:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=TKZQYNrDOxXCRBlNMtzBiVV2S8AIodJot0qZ8ycf9Ok=;
-        b=xMCz8rFg3RNv/j34zo4lF0rBeB0FuRISrVJPytgOOigeWBM1GnkydpRCXtP1PfqEob
-         eMQrtU0rn1dXAdzcJIueuG/Mz7rO+Ea25XbvoMSScCd3+nux5U9vMErLZKkscJxYQMni
-         xhH+u2O0Vc5it+FCkfQoWbeh2X0buBzkTYmoMBik76C5a8wStZkg4n6VbfrIGy9+anna
-         0RApmxlau6Ds49jCwUkl3b9QajC22WmNnus2+HU2RcxwvHEamympn7nuRBeJFcmOUX1D
-         v5Z5i7NuZeaRcJM0G6lHdZoQW3ZzwogutnxV4jaghCtQsu5yVaYmQWyI43J1V660Rmsg
-         avgw==
-X-Gm-Message-State: AOAM5331voJqZ6OSARpdNR6BP0V7omsx7zcx2SV6ih0HbK8xxQyyq2n6
-        t5jUGCPHiD8zNTPr8n4XXQ==
-X-Google-Smtp-Source: ABdhPJzpQz/1nOM9wT3g7ZzbcxPJegjARM+cjtT8oUV8k03IpH0rsSgzLs5/60arlMg4vsoy9b9Jwg==
-X-Received: by 2002:a05:6e02:1905:b0:2d3:d327:6c7b with SMTP id w5-20020a056e02190500b002d3d3276c7bmr14518421ilu.101.1654542081325;
-        Mon, 06 Jun 2022 12:01:21 -0700 (PDT)
+        bh=wFI0oirldONXh9sCQOu3BipVplhmcMS1DY1jebePK3s=;
+        b=0B3YdoGK4+CsvcI6uBS2YZIUC6ttxnSkcpKVF+kJPArHLfZDrhfAnDrcxbjSZHrYln
+         JiJrvFWjX96qWXOY541yP9cNh9e8huHnmFa2lp9lqfT6sQdf6H7uNXkmYHTLtMD7Ca8z
+         h2b08LP/GunIxG+/zN4NA2mD4V3gmUrGBE5a0weU8/yJ7w8k/XhTSJ4HIGwwLJRoQ3So
+         KurGQ2VFvhCAo0hnwfROxllqCGDgnjZLJEuhgEEmi05tEk2dk8XMWpo2vTXEfBhjxBph
+         gWOhXulY4jS67CCp7geyTgTC4dlpU+fgOpOMj0Ophy0fk/oqqAUV1t8P06qn8UIa6aHl
+         Cl8Q==
+X-Gm-Message-State: AOAM533SJTGfVTJHB6M9Qp5dpkMSCXlwcYOKyaWFpI9VRaHdCXGimoSC
+        8/boW/F6tLDridlxoQDACw==
+X-Google-Smtp-Source: ABdhPJxRWFIPW7RIod5NihetwQ+IN8G94Y2cNKYU2fnYdDfIrkQl366NcSIQ/u1nUxBSw9gOoqK6jA==
+X-Received: by 2002:a05:6602:2b8e:b0:5e9:74e7:6b01 with SMTP id r14-20020a0566022b8e00b005e974e76b01mr12354222iov.127.1654542299526;
+        Mon, 06 Jun 2022 12:04:59 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id a5-20020a02a005000000b0032e9bf3b973sm5926757jah.5.2022.06.06.12.01.19
+        by smtp.gmail.com with ESMTPSA id f12-20020a02a04c000000b0032e5205f4e7sm5854760jah.4.2022.06.06.12.04.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 12:01:21 -0700 (PDT)
-Received: (nullmailer pid 1083302 invoked by uid 1000);
-        Mon, 06 Jun 2022 19:01:19 -0000
-Date:   Mon, 6 Jun 2022 14:01:19 -0500
+        Mon, 06 Jun 2022 12:04:59 -0700 (PDT)
+Received: (nullmailer pid 1088702 invoked by uid 1000);
+        Mon, 06 Jun 2022 19:04:57 -0000
+Date:   Mon, 6 Jun 2022 14:04:57 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Mark Brown <broonie@kernel.org>,
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Liam Girdwood <lgirdwood@gmail.com>
-Subject: Re: [PATCH 22/23] ASoC: wm8731: update wlf,wm8731.yaml reference
-Message-ID: <20220606190119.GA1083268-robh@kernel.org>
-References: <cover.1654529011.git.mchehab@kernel.org>
- <e56e54fe0ebb1b6e8dd2e245c398190016eb0a34.1654529011.git.mchehab@kernel.org>
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Jaehoon Chung <jh80.chung@samsung.com>,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-mmc@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v2 4/4] dt-bindings: mmc: samsung,exynos-dw-mshc:
+ document Exynos5420 SMU
+Message-ID: <20220606190457.GA1088577-robh@kernel.org>
+References: <20220605163710.144210-1-krzysztof.kozlowski@linaro.org>
+ <20220605163710.144210-5-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e56e54fe0ebb1b6e8dd2e245c398190016eb0a34.1654529011.git.mchehab@kernel.org>
+In-Reply-To: <20220605163710.144210-5-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 06 Jun 2022 16:25:44 +0100, Mauro Carvalho Chehab wrote:
-> Changeset 0e336eeaf467 ("ASoC: wm8731: Convert DT bindings to YAML format")
-> renamed: Documentation/devicetree/bindings/sound/wm8731.txt
-> to: Documentation/devicetree/bindings/sound/wlf,wm8731.yaml.
+On Sun, 05 Jun 2022 18:37:10 +0200, Krzysztof Kozlowski wrote:
+> Document the compatible for Samsung Exynos5420 SoC Synopsys Designware
+> MSHC with SMU, already used in DTS and driver.
 > 
-> Update its cross-reference accordingly.
-> 
-> Fixes: 0e336eeaf467 ("ASoC: wm8731: Convert DT bindings to YAML format")
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > ---
-> 
-> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-> See [PATCH 00/23] at: https://lore.kernel.org/all/cover.1654529011.git.mchehab@kernel.org/
-> 
->  .../devicetree/bindings/sound/atmel-sam9x5-wm8731-audio.txt     | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  .../devicetree/bindings/mmc/samsung,exynos-dw-mshc.yaml          | 1 +
+>  1 file changed, 1 insertion(+)
 > 
 
-Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
