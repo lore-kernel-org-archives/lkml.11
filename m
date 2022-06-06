@@ -2,207 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3441CCA481
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:42:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73ADAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:44:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241053AbiFFPmy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:42:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49554 "EHLO
+        id S241064AbiFFPoS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 11:44:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241036AbiFFPmw (ORCPT
+        with ESMTP id S241059AbiFFPoQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 11:42:52 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048903668B
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 08:42:51 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id t2so12408107pld.4
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 08:42:50 -0700 (PDT)
+        Mon, 6 Jun 2022 11:44:16 -0400
+Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6FECC15D;
+        Mon,  6 Jun 2022 08:44:15 -0700 (PDT)
+Received: by mail-oo1-xc2d.google.com with SMTP id ay16-20020a056820151000b0041b71517844so958763oob.4;
+        Mon, 06 Jun 2022 08:44:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=adzl7J4UR1Qp4R8eggnQmmMOkmLDFtelBezSB34Z/mg=;
-        b=v+QpT4munOuJrG3ZeTIMHBfcLLEo/iJ4NRKzvu1SAnFere/qBZ7e7sHJ3BM2xs8Mwh
-         wIyGWXGAMK9BCX9kVmPRWxb+3owRG7t+oTPx64bMv+CR6cEr6OYsk59Iwh2wUPMa4fF6
-         584f3NvYZxLlPZ8ZWIJQPvlB0GCweQkNySXdVSM584JUTVoAe9Qf97+9zM+a3LZAZYeT
-         7vCp0f6vbjtIeQOsJ/Aosk/TQjJZRbLuRxUQ4/XcZBJ2BfqCP6f2w2LLleQoXD/hsnDo
-         M/3Al5hGO1eNKco8fkebegsSqsG+l+AjF4h3Rt3jbJqrl9dggLoJKKRfzHTwlt9MyW2E
-         hiqw==
+        bh=1Dyxrxglk8UzaHWlu8Ip8w2vSs7l7OGlq6jwwOsQ960=;
+        b=BwrNGtzgFqc5GBs+deBOcDtRAxLlmSKd/PBfifxCqtEON0K0Xetx9idzSHIQMwV5SA
+         9f2Lh+l8E89eWdqBoG0wndpJIL4MrXW9B2Z0988Ek2KK4sF5EGuuyAq7HZD0Ne+AbimE
+         TGNYT2BK0SktuwFMDQip7/3ArorHNXsQ8yuWySv1otJ8/qyNvpJFPgCcDTeyh864sVq2
+         pezAVQqrB9W5SXgH36eWHugxjPI8TZTv1DBDpYyrqYQtjH202Y//b+rcc6ABMSaFiOMf
+         ndiybo/ZM8ybLw47HKBm7WsJk1HwxEB1xnxOEWc3TAD7Aao8nS5QOyvldisyxMopaGZ1
+         0IUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=adzl7J4UR1Qp4R8eggnQmmMOkmLDFtelBezSB34Z/mg=;
-        b=XcnaLjJA9ymKgBK9/4/IobVtiwEf+dNi8luvBXZSVgpyScJxqr6izzHiyYPbskgoyG
-         JC0/aSjs8fg73xFNnMjwHICq/epdgW7qwadPqvThZAG08Ye90ZuH+en8FcB7h8sS3I1F
-         FXvSHIE7I9KCQnPcXnMtKkc9HkuooOezwdYE0NrD31p2PVbwh8o6u8SZcbuPP6tLsuD1
-         G7eJ9ExFlWDdMcXlzxSwG1f/gxYdL7UhKF77pdSBLySdHCEqbRxT76g6q5UDamWumPsV
-         UAyc6yj2SVpHV1+AkmMtQFak/907ThIh5Z1rKFBSMmOH+eI6GCEmto7OT5zCUT3HoRcc
-         skqQ==
-X-Gm-Message-State: AOAM5306rn2rKDrg4I0wlebH7F4Rmdo8lqEDmq6f2NLb84kpoi6ANwB0
-        M8xIYDsFIH5raPXRvZjphrwV2A==
-X-Google-Smtp-Source: ABdhPJw3QVyuVPd2L5VPyRHngIgyOPotA5dIeezuj14vpJxAS+QPxzvnRd85Ha5L27wJ9CuUu8Gtfg==
-X-Received: by 2002:a17:90b:1b05:b0:1e2:a053:2fad with SMTP id nu5-20020a17090b1b0500b001e2a0532fadmr51584255pjb.209.1654530170527;
-        Mon, 06 Jun 2022 08:42:50 -0700 (PDT)
-Received: from localhost.localdomain ([139.177.225.230])
-        by smtp.gmail.com with ESMTPSA id 19-20020a170902e9d300b00163f5028fd6sm10651952plk.5.2022.06.06.08.42.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 08:42:49 -0700 (PDT)
-From:   Qi Zheng <zhengqi.arch@bytedance.com>
-To:     hannes@cmpxchg.org, roman.gushchin@linux.dev, shakeelb@google.com,
-        songmuchun@bytedance.com, mhocko@kernel.org,
-        akpm@linux-foundation.org, corbet@lwn.net
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, Qi Zheng <zhengqi.arch@bytedance.com>,
-        Michal Hocko <mhocko@suse.com>
-Subject: [PATCH v3] mm: memcontrol: add {pgscan,pgsteal}_{kswapd,direct} items in memory.stat of cgroup v2
-Date:   Mon,  6 Jun 2022 23:40:28 +0800
-Message-Id: <20220606154028.55030-1-zhengqi.arch@bytedance.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+        bh=1Dyxrxglk8UzaHWlu8Ip8w2vSs7l7OGlq6jwwOsQ960=;
+        b=YbO5WgRttcIfuy2Bv8noKDYE6981tpEhEjrKjiFhsJMKHfhp5bq+gq/JtbzdRZjiZw
+         HRGxiD/J1MciCb3OqnRNWXFyy04cdKUOTt7H4Br7pEOVkQ730ojiqVkUWYyhlZ7ryqpj
+         jjh2+TgS+5kw6Bje0jP0Tv3afsP4PMJGQuepYkXuqEtOVIkbUqGV5ZL2cNZLrBVdNwUf
+         PcYWgXPhjSRzufdoLfSbp3oBtnMwXXMfcWUQANR4sfrTWdaGcjIw7HR6IWGDr6ES4Xkq
+         jyeIzyrf8XRrC3A2+REaANYf//VZQncdlhtlOWmjXS9FeKdsdFpOWYxDadEBtSz7QrLk
+         4ItQ==
+X-Gm-Message-State: AOAM532u87Q1gIsH0w2ZUHS8uzpWABiAKMQ/vX/uMT9KbWN1GXcPsu5L
+        58kY5pJ/3aAqyJwlsPJNXaE=
+X-Google-Smtp-Source: ABdhPJy1zCj2ZN6ndVK4A6V4NXnjLvRe27BQH9UEBJSslBjosstbd4cuAI508h2hMmqaKojcUerFng==
+X-Received: by 2002:a4a:4f16:0:b0:41b:6f0e:4acc with SMTP id c22-20020a4a4f16000000b0041b6f0e4accmr4734194oob.33.1654530254919;
+        Mon, 06 Jun 2022 08:44:14 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id m4-20020a9d6084000000b0060b1f3924c3sm8318726otj.44.2022.06.06.08.44.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jun 2022 08:44:14 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <451ad3f1-e365-e136-fa1b-c7bb0b05a15f@roeck-us.net>
+Date:   Mon, 6 Jun 2022 08:44:11 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 03/23] dt-bindings: arm: update vexpress-config.yaml
+ references
+Content-Language: en-US
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <cover.1654529011.git.mchehab@kernel.org>
+ <7020edd9e183652249fc95bf61a1055cc342a4dc.1654529011.git.mchehab@kernel.org>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <7020edd9e183652249fc95bf61a1055cc342a4dc.1654529011.git.mchehab@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are already statistics of {pgscan,pgsteal}_kswapd and
-{pgscan,pgsteal}_direct of memcg event here, but now only the
-sum of the two is displayed in memory.stat of cgroup v2.
+On 6/6/22 08:25, Mauro Carvalho Chehab wrote:
+> Changeset 7e8339b5162f ("dt-bindings: arm: convert vexpress-config to DT schema")
+> renamed: Documentation/devicetree/bindings/arm/vexpress-sysreg.txt
+> to: Documentation/devicetree/bindings/arm/vexpress-config.yaml.
+> 
+> Update the cross-references accordingly.
+> 
+> Fixes: 7e8339b5162f ("dt-bindings: arm: convert vexpress-config to DT schema")
+> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 
-In order to obtain more accurate information during monitoring
-and debugging, and to align with the display in /proc/vmstat,
-it better to display {pgscan,pgsteal}_kswapd and
-{pgscan,pgsteal}_direct separately.
+Acked-by: Guenter Roeck <linux@roeck-us.net>
 
-Also, for forward compatibility, we still display pgscan and
-pgsteal items so that it won't break existing applications.
-
-Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
-Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
-Acked-by: Muchun Song <songmuchun@bytedance.com>
-Acked-by: Shakeel Butt <shakeelb@google.com>
-Acked-by: Michal Hocko <mhocko@suse.com>
----
-Changelog in v2 -> v3:
- - add comment for memcg_vm_event_stat (suggested by Michal)
- - collect Acked-bys
-
-Changelog in v1 -> v2:
- - keep pgscan and pgsteal items for forward compatibility, thanks to Shakeel
- - update commit log
- - collect Acked-bys
-
- Documentation/admin-guide/cgroup-v2.rst | 12 ++++++
- mm/memcontrol.c                         | 55 ++++++++++++-------------
- 2 files changed, 39 insertions(+), 28 deletions(-)
-
-diff --git a/Documentation/admin-guide/cgroup-v2.rst b/Documentation/admin-guide/cgroup-v2.rst
-index 176298f2f4de..b2b55e7360d8 100644
---- a/Documentation/admin-guide/cgroup-v2.rst
-+++ b/Documentation/admin-guide/cgroup-v2.rst
-@@ -1445,9 +1445,21 @@ PAGE_SIZE multiple when read back.
- 	  pgscan (npn)
- 		Amount of scanned pages (in an inactive LRU list)
- 
-+	  pgscan_kswapd (npn)
-+		Amount of scanned pages by kswapd (in an inactive LRU list)
-+
-+	  pgscan_direct (npn)
-+		Amount of scanned pages directly  (in an inactive LRU list)
-+
- 	  pgsteal (npn)
- 		Amount of reclaimed pages
- 
-+	  pgsteal_kswapd (npn)
-+		Amount of reclaimed pages by kswapd
-+
-+	  pgsteal_direct (npn)
-+		Amount of reclaimed pages directly
-+
- 	  pgactivate (npn)
- 		Amount of pages moved to the active LRU list
- 
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 0d3fe0a0c75a..27cebaa53472 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -1460,6 +1460,29 @@ static inline unsigned long memcg_page_state_output(struct mem_cgroup *memcg,
- 	return memcg_page_state(memcg, item) * memcg_page_state_unit(item);
- }
- 
-+/* Subset of vm_event_item to report for memcg event stats */
-+static const unsigned int memcg_vm_event_stat[] = {
-+	PGSCAN_KSWAPD,
-+	PGSCAN_DIRECT,
-+	PGSTEAL_KSWAPD,
-+	PGSTEAL_DIRECT,
-+	PGFAULT,
-+	PGMAJFAULT,
-+	PGREFILL,
-+	PGACTIVATE,
-+	PGDEACTIVATE,
-+	PGLAZYFREE,
-+	PGLAZYFREED,
-+#if defined(CONFIG_MEMCG_KMEM) && defined(CONFIG_ZSWAP)
-+	ZSWPIN,
-+	ZSWPOUT,
-+#endif
-+#ifdef CONFIG_TRANSPARENT_HUGEPAGE
-+	THP_FAULT_ALLOC,
-+	THP_COLLAPSE_ALLOC,
-+#endif
-+};
-+
- static char *memory_stat_format(struct mem_cgroup *memcg)
- {
- 	struct seq_buf s;
-@@ -1495,41 +1518,17 @@ static char *memory_stat_format(struct mem_cgroup *memcg)
- 	}
- 
- 	/* Accumulated memory events */
--
--	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGFAULT),
--		       memcg_events(memcg, PGFAULT));
--	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGMAJFAULT),
--		       memcg_events(memcg, PGMAJFAULT));
--	seq_buf_printf(&s, "%s %lu\n",  vm_event_name(PGREFILL),
--		       memcg_events(memcg, PGREFILL));
- 	seq_buf_printf(&s, "pgscan %lu\n",
- 		       memcg_events(memcg, PGSCAN_KSWAPD) +
- 		       memcg_events(memcg, PGSCAN_DIRECT));
- 	seq_buf_printf(&s, "pgsteal %lu\n",
- 		       memcg_events(memcg, PGSTEAL_KSWAPD) +
- 		       memcg_events(memcg, PGSTEAL_DIRECT));
--	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGACTIVATE),
--		       memcg_events(memcg, PGACTIVATE));
--	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGDEACTIVATE),
--		       memcg_events(memcg, PGDEACTIVATE));
--	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGLAZYFREE),
--		       memcg_events(memcg, PGLAZYFREE));
--	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGLAZYFREED),
--		       memcg_events(memcg, PGLAZYFREED));
--
--#if defined(CONFIG_MEMCG_KMEM) && defined(CONFIG_ZSWAP)
--	seq_buf_printf(&s, "%s %lu\n", vm_event_name(ZSWPIN),
--		       memcg_events(memcg, ZSWPIN));
--	seq_buf_printf(&s, "%s %lu\n", vm_event_name(ZSWPOUT),
--		       memcg_events(memcg, ZSWPOUT));
--#endif
- 
--#ifdef CONFIG_TRANSPARENT_HUGEPAGE
--	seq_buf_printf(&s, "%s %lu\n", vm_event_name(THP_FAULT_ALLOC),
--		       memcg_events(memcg, THP_FAULT_ALLOC));
--	seq_buf_printf(&s, "%s %lu\n", vm_event_name(THP_COLLAPSE_ALLOC),
--		       memcg_events(memcg, THP_COLLAPSE_ALLOC));
--#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
-+	for (i = 0; i < ARRAY_SIZE(memcg_vm_event_stat); i++)
-+		seq_buf_printf(&s, "%s %lu\n",
-+			       vm_event_name(memcg_vm_event_stat[i]),
-+			       memcg_events(memcg, memcg_vm_event_stat[i]));
- 
- 	/* The above should easily fit into one page */
- 	WARN_ON_ONCE(seq_buf_has_overflowed(&s));
--- 
-2.20.1
+> ---
+> 
+> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+> See [PATCH 00/23] at: https://lore.kernel.org/all/cover.1654529011.git.mchehab@kernel.org/
+> 
+>   Documentation/devicetree/bindings/hwmon/vexpress.txt     | 2 +-
+>   Documentation/devicetree/bindings/regulator/vexpress.txt | 2 +-
+>   2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/hwmon/vexpress.txt b/Documentation/devicetree/bindings/hwmon/vexpress.txt
+> index 9c27ed694bbb..4a4df4ffc460 100644
+> --- a/Documentation/devicetree/bindings/hwmon/vexpress.txt
+> +++ b/Documentation/devicetree/bindings/hwmon/vexpress.txt
+> @@ -9,7 +9,7 @@ Requires node properties:
+>   	"arm,vexpress-power"
+>   	"arm,vexpress-energy"
+>   - "arm,vexpress-sysreg,func" when controlled via vexpress-sysreg
+> -  (see Documentation/devicetree/bindings/arm/vexpress-sysreg.txt
+> +  (see Documentation/devicetree/bindings/arm/vexpress-config.yaml
+>     for more details)
+>   
+>   Optional node properties:
+> diff --git a/Documentation/devicetree/bindings/regulator/vexpress.txt b/Documentation/devicetree/bindings/regulator/vexpress.txt
+> index d775f72487aa..1c2e92c7831e 100644
+> --- a/Documentation/devicetree/bindings/regulator/vexpress.txt
+> +++ b/Documentation/devicetree/bindings/regulator/vexpress.txt
+> @@ -4,7 +4,7 @@ Versatile Express voltage regulators
+>   Requires node properties:
+>   - "compatible" value: "arm,vexpress-volt"
+>   - "arm,vexpress-sysreg,func" when controlled via vexpress-sysreg
+> -  (see Documentation/devicetree/bindings/arm/vexpress-sysreg.txt
+> +  (see Documentation/devicetree/bindings/arm/vexpress-config.yaml
+>     for more details)
+>   
+>   Required regulator properties:
 
