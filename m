@@ -2,296 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A923DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 11:25:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CA16CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 11:26:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235390AbiFFLZj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 07:25:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53734 "EHLO
+        id S235409AbiFFL00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 07:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235315AbiFFLZ2 (ORCPT
+        with ESMTP id S235357AbiFFL0Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 07:25:28 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E28F15FF5
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 04:25:26 -0700 (PDT)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25688NR5012680;
-        Mon, 6 Jun 2022 11:19:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : content-type : mime-version; s=corp-2021-07-09;
- bh=+pO9AiclDSDE9GOG152bcMuLqlJWLBhWePDhJJM2I1M=;
- b=yIxTKsYwwNgDbhSm7Y5JEmHPJxpYleAAlRZHaLd6mloTq5W0PayDm3tqEJ1y2rN8qZez
- YRsIUqnziB/NLaRQkREuX10dBbAj4ainVvS91geH1h0l971uh5cEWcMlOEXBtnx1J/k8
- 16K4JXNz43MGqSlFxoRuicgCBVNZ+C7WMaGCVXV+5kZFx7uKqSqKTPxIQotkVf2c4/7O
- iOIQpn8YXiuvCPfgXSDo5MpLZkCO2Z45Dow/mCpnk7jTCkyMluFVvsW6cLH0ETe19Y/8
- JyQo+uyE5qUQ8BNq6dhNq8HV/K9+HsUJiRDTkhL8KePrt1WWEzni+phEwfsErcLDC/Nj 8A== 
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3ggvxms9kf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 06 Jun 2022 11:19:11 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 256BGp7g008565;
-        Mon, 6 Jun 2022 11:19:11 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2109.outbound.protection.outlook.com [104.47.70.109])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3gfwu1c42k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 06 Jun 2022 11:19:10 +0000
+        Mon, 6 Jun 2022 07:26:24 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2088.outbound.protection.outlook.com [40.107.95.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9D72123884;
+        Mon,  6 Jun 2022 04:26:22 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C9tZPz7skFbQf00sx/1y5Bi12A+09keRTPXUneEfO5qRIhVQL5DKTYNgeLECDr9b5/Msw2BroDqutkegPr16EaJHaelxSYl6Tl5W2JzgMpbMNYFFTKEWKYJizGmYpHbCVHTTfBf8qEZxRsSQKqidCUeZ/lJ3eLek3Z22F/hHXeS6zpenLgsKMbLT51e7US4niA2yEWdoJGTBSJZVrPjonp+PSVY6jAPvENdEtdqqSTHrNsjVkQeNwW7agjhqnNNnruhgn9F1oj89TXJcKNNS5YZUxMGH49vlE/OWWZysPl7d4RDbHhXrvuzVhXBUdU91T6wSPsiy6E8XJVcgcOQ1Fw==
+ b=erc0TpAEdY+FIb0aGMGfO11Ha9nVRmYpCGwICrPTT41SfTZkQW+PzJD3ED+L2lIM7AGmcrRy9dHcGODsK8u+vsu+cwcUz1V13UDtiEHdGYOhl/gY0UZPO4meA+HKjiUu1qUyqxreS29IrEnaqpOxCOi05WhVmCKwxIKOb3a0K7QnBQGiovKj+8hFgDJdd+3vXNeamHuv9DcypKYXiUHzv9jm4fcvcLHEAuqaJpgqCMBHIL6i5PBlgdmmswAAHmX4IJz28IkQndq94vL7bLaCuZ45Tqoqc+3OmpkqF6+UR7J7Y/9aw+qrWdYBb7+7ja1h38gYksugz1wPKZV2MPEtJQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+pO9AiclDSDE9GOG152bcMuLqlJWLBhWePDhJJM2I1M=;
- b=AiTx+za8A+UZa0aDwVUtKrJZtFYg6wpftPc3b4Mgkj6zB0FVlA0YQXwVdqt/A9MGNS9ZRJ4OSEV+9v5ZlyGHooaZkaD9cdHMoHF8G6nsMoOkOp7zsenrWYX+o0ba3oO1dE8LpNj+Hvnr+Q4FGJ4Be9aFcA/hMwR3deQJP7RATEQsnZXKOSWEupwNzG9ZSyEkvgj4ypaTb1tfxhLTvZZTwd4TiQkN3PZobjqsDMCVi32BGhI8sm59I+v7jW7YW8pwmOv0eBqDBFWyIe/nrE1mfJHcXw1gxcH+nNEFKHzBPXLrZcmBXmIY+4fU3Uj5hEGYP6T2CSoBfZzsLolYx/GAIQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+ bh=RQNi6+nRCuD9tAryUrXQYztjDu9fT3dlG0qO5h6x6bM=;
+ b=gadeZCpcEWNrbwUQMCYgGNVNJBtk5YDyVe3ySKQc3EY5QGvMuiyB1vJrnvga+YWjELBy+UI0ANcUom5BsJs4P8aB4bJvjKSg1HrD1ziim+Ash+6zY5LO1vCDRH0s0vOaDyg1rKUpfkwJCZKPXMgE9hUbDA4yAkGTAdyHy6NdzR9bkthhI75GwZhzEpFY5+zJxw/KsE/G8EegP8kVM0UYa+WhmVr08Bf34DBx4X7O2YvQdT/Pgj154C85RvGQlJ0QTiuUbJBAFR6JbjZVFYi1XjyJXXT/FEGLs+ol9+58to86VXf3OAeGqVDA/jdd84j+xynmb59hGkhXSUDYlw/KAw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=kernel.org smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+pO9AiclDSDE9GOG152bcMuLqlJWLBhWePDhJJM2I1M=;
- b=Ok7ruH16Pz8un4Cd5L1K/npvzOUReXJKuxg2qlhhkTP0BJWEG/uBBQlxEnkdKeqYr634emVWr0cfb6/IHWgXMsa/TAS3Nn03WQHQmgePmNCkBvZKKAqH3rBqCeG+j4ADDkJ/ef8V1JnI+JwE0HDgQFPFrajlWXlANw3YSwTNxUQ=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by BYAPR10MB2872.namprd10.prod.outlook.com
- (2603:10b6:a03:89::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12; Mon, 6 Jun
- 2022 11:19:08 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b%6]) with mapi id 15.20.5314.019; Mon, 6 Jun 2022
- 11:19:08 +0000
-Date:   Mon, 6 Jun 2022 14:18:46 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     kbuild@lists.01.org, Hector Martin <marcan@marcan.st>
-Cc:     lkp@intel.com, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Marc Zyngier <maz@kernel.org>
-Subject: drivers/irqchip/irq-apple-aic.c:980 aic_of_ic_init() error:
- uninitialized symbol 'start_off'.
-Message-ID: <202206011052.du9opGWF-lkp@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JN2P275CA0012.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:3::24)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+ bh=RQNi6+nRCuD9tAryUrXQYztjDu9fT3dlG0qO5h6x6bM=;
+ b=oE9v1ZpbXxqczKETS2WPoL9gGV85IbgApIYgM4R55tEK0i9BCr8xQBWavKB6znmuOMBz3ZhTISvk1qGAxIMk9gqneQFNRQTRi9vCzum3q9lifcyYhlf5sp8qAS6pMXrLZ4NDqm/5l0zBWSLn7/c3KAFQy39DUByQzg65UR+LqKk=
+Received: from SN4PR0801CA0016.namprd08.prod.outlook.com
+ (2603:10b6:803:29::26) by SN6PR02MB4127.namprd02.prod.outlook.com
+ (2603:10b6:805:30::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.15; Mon, 6 Jun
+ 2022 11:26:20 +0000
+Received: from SN1NAM02FT0012.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:803:29:cafe::11) by SN4PR0801CA0016.outlook.office365.com
+ (2603:10b6:803:29::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.13 via Frontend
+ Transport; Mon, 6 Jun 2022 11:26:20 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ SN1NAM02FT0012.mail.protection.outlook.com (10.97.4.93) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5314.12 via Frontend Transport; Mon, 6 Jun 2022 11:26:20 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Mon, 6 Jun 2022 04:26:19 -0700
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Mon, 6 Jun 2022 04:26:19 -0700
+Envelope-to: git@xilinx.com,
+ broonie@kernel.org,
+ p.yadav@ti.com,
+ miquel.raynal@bootlin.com,
+ richard@nod.at,
+ vigneshr@ti.com,
+ linux-spi@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org,
+ michael@walle.cc,
+ linux-mtd@lists.infradead.org
+Received: from [10.140.6.18] (port=43350 helo=xhdlakshmis40.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <amit.kumar-mahapatra@xilinx.com>)
+        id 1nyAsE-0000SR-Qt; Mon, 06 Jun 2022 04:26:19 -0700
+From:   Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
+To:     <broonie@kernel.org>, <p.yadav@ti.com>,
+        <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>
+CC:     <git@xilinx.com>, <michal.simek@xilinx.com>,
+        <linux-spi@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <michael@walle.cc>,
+        <linux-mtd@lists.infradead.org>,
+        Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
+Subject: [RFC PATCH 0/2] spi: Add support for stacked/parallel memories
+Date:   Mon, 6 Jun 2022 16:56:05 +0530
+Message-ID: <20220606112607.20800-1-amit.kumar-mahapatra@xilinx.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f24fe23c-1587-4096-7794-08da47ae5f64
-X-MS-TrafficTypeDiagnostic: BYAPR10MB2872:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR10MB2872FAA9EC199618613FC4838EA29@BYAPR10MB2872.namprd10.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 28d63e8f-bab4-46ae-9f9b-08da47af6174
+X-MS-TrafficTypeDiagnostic: SN6PR02MB4127:EE_
+X-Microsoft-Antispam-PRVS: <SN6PR02MB4127F056CFFA38DD08E6E9EEBAA29@SN6PR02MB4127.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FMMwNq2uj033maHVhVtIBkUkAa+ptncXOpSpXQjxONC2T1LHSDh8Ogy7VEUB/26buIb3NAr7OFRpuJ5Ay3pt+t2GGfgs2AyG4jifVR6yIQwPZX/yNIfg0+H6xCXB5nEYQc9fWeSqG54+RFNX9fluGdmlkQl9OYFdcbWa/FKzj+jwEfMHRyCZdze8s3nb4EZf7kcevlXtdtO0MEMs0usYXnzmQDl+MfNcSLhUb8zGJZco+2XbgN52FDThItGyH9V70BHmDbiHaIgWMj/FRUJncUfQtGgrKa8+aC+jrmIUHvTtiWUcklHfLWx3mljp5eXBpi/2uqhWzPUHpHukl0A+Il+0V1TSGE8JoPPqXbSfjRZpagkpb1IkvgASffPX7XNtfV34kUNERite/cUkmxHMIsjeeAtRhqMJf9nTOkOvXlXEyYBgT7zxRaZqAhe4gpiX6BFO+bo+HIbEo8o3jSgvP4oyUUmvlRD2VBhO26wUaQ+l0g/tT/hxw7D/DtRokeEIkLFs5X8nYaM1S977EBnSiJFswFvpKK4Qg4WcRQ3XgsSqPPPOMy+QKQOD3w2ROQk4DsJN7y2ZBNW1v4LTBp2xX4SRv6OBdWx010fe+E3D3n561ZrrU/i0tEB5V33tpMxhC7n5nrfm01F9+JndaX87wzpDh1rsYlS65aOxcnWXYH3LNcXxBYi4IDDwyotAHsR6QjzJCxgUZlfT4KJa1BvrIfuNKcDNIN+QfYReqjPq04Q6ULwws47pPBO1KAln+X+l8l5G05yPZ08By9U/JbQX3qwMmCwn9ONaDQsqW9l2pd/44Y9bQdXo5jfr66+Alo24cU3TAXgsqqfUVfuoDAbqN44FOy6O4frA1wGczADYMIo=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(47660400002)(6916009)(316002)(186003)(66476007)(8676002)(66556008)(1076003)(66946007)(2906002)(6512007)(6506007)(6666004)(9686003)(44832011)(83380400001)(36756003)(52116002)(508600001)(8936002)(5660300002)(26005)(4326008)(6486002)(966005)(38100700002)(38350700002)(86362001)(46800400005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ziqUxDjLfKTwwkLHqee0CU1RavkFgCzeEidei6XguPsiD8Y60NTagj3YQjGN?=
- =?us-ascii?Q?wJym6VGaKv3khSEGDqBmAFY9DsbqLNaP+qM829UomnWxRVjiRaynjzk8td7P?=
- =?us-ascii?Q?ovlO6tBNRpa8jGiIga7Ekh2jH4Gq/F8Emnawz50RCwm2b2bHiDtuoui0jdjw?=
- =?us-ascii?Q?7jPG57c0NySDSZEUzwZ+hxi8ECYBrfF8LNv5/Aubk5pimq0H+kPRNkfi9VZk?=
- =?us-ascii?Q?DNPoBo9w9yzraJfuNmkw+AkLpZifecfycaWZEdYerVX+ThsRFpceB+T5n49E?=
- =?us-ascii?Q?bwLnHwWxHWGW0LSdfbCviLVcpM0b8wC32vLFTLMAsdIglwm22x4wlulV2SUn?=
- =?us-ascii?Q?J3i4Y/GDhdUOb24fBN8e7dPFzj/gjNqtu0I+7FIiWrWXjZ+MSd2vCh15DmtH?=
- =?us-ascii?Q?MdLS4p6QnEBNPofbKSY0yh1BaH7+6RTnIKyp3kHgoqfrPRuXSD/5lb6ku2lQ?=
- =?us-ascii?Q?t2oTKhvxuBzAepqLDaPTOhCT9EDltDbk80kKRRrStAhRIMPJ2tWF1JVDZeAo?=
- =?us-ascii?Q?fm1NSI6GpXyjpfjkPLAznlzsS9vQ0LFoBR4T3/btyd+0LJU3jaVVA7PZTxkc?=
- =?us-ascii?Q?mJeuucz0Lmml8W5ItVdlYktK0qBetSCr/MPZxZ9VbZQ99ExR8llPu9ar97NQ?=
- =?us-ascii?Q?g3XntahDjqRrBJGatcup05TmOIzdLt3UBRore3FM5MJmj9vm7h6N9QYBmuEE?=
- =?us-ascii?Q?w0nuX3aQqsRQOK+jpGSRthBGp5JcAJMYt54ZEm2cGuYyu2FSWUC+MuHce6lt?=
- =?us-ascii?Q?USBExFgU7jsn2QHO9BzdXLn+/nUfx8wIDY0abmEw6vFjolUqqLPbX4BhTv+D?=
- =?us-ascii?Q?aqTv4MDs48paCyuv9WYw2PFFiR+2Z+e99eAKS6LUE43HvsZTOcw7vqbpCkbC?=
- =?us-ascii?Q?PqTUN3JAcQ8Q49vYKhC9SrWzu28R4ikGcRHpllLKF7oTrEaJEGxWzAtqkz8O?=
- =?us-ascii?Q?Dch8SlXHt2EoM249gj8mJ3k5R5bhLmOS3gmeLb50FETJMJZdKVsX3ysgfUli?=
- =?us-ascii?Q?BahRy/34dAs9uIt+cvbvkiUe0CbIOFOTgfKis2pPgjnedvhdA0dAYd81P9kj?=
- =?us-ascii?Q?tFhRmTUnZfLLZnW8p6xaBc4vUUXWzhHst/WB1CxmhnLWhrX5ES+vtvjDQebA?=
- =?us-ascii?Q?hGxt5TZm2lVgv59pUnRmw71tZLuhg4JYPDgxJJmbwzsqIoTGj+sprq4H+V2d?=
- =?us-ascii?Q?ve9611iFkCPz97Zk3iePoPo06pvS3vA2+Lw/06g8VVRDmap38Wvm/tiB29Ev?=
- =?us-ascii?Q?Lbg4vA+YqqxrkfkPzUEQvu0VKvWQPp/RwDtTb9fnhwgZiNpUVgGratuld6V+?=
- =?us-ascii?Q?Z217OmsGhZ2Nn264O22nJWKfzxk2IKlTnyL2hMQPL4vXr5eoup51OanhS+Xv?=
- =?us-ascii?Q?eFYUO53Nw4EDevO9oLQyfdZrzvxRtxdHic4z0sVRVJnA3YInjtiKvFZJoWL8?=
- =?us-ascii?Q?YW2BiDsfpEPaTuQas4nFs3maf8TUwvLMkgbdrUxhJRlNpAff+ulsuf7ZPd+x?=
- =?us-ascii?Q?dbTEbFs3y2jaE51wg7bH/zrFHjmTPwpumk0xJ5IilWmdJwwjboVTI/8ZkaYf?=
- =?us-ascii?Q?54VHJp2+cGOWRaB52fWixnrlfZXTl5Pyt9coVcOWL0NHqz+sYl/iTlLvMNM1?=
- =?us-ascii?Q?MHkBKINa2rhZg3jt5MKiYhzU48ZEbUVK+KhfFv+2hJTgtI3GBPjCfRD7lLKs?=
- =?us-ascii?Q?xBn/KSykO2O3xbkKEpiziFK1aeXRViPHozK7Ls81vZMNggtySFHEVscw15om?=
- =?us-ascii?Q?8DeikLDzwPJXt/kGN6Wnnfk79CkB2kE=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f24fe23c-1587-4096-7794-08da47ae5f64
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2022 11:19:08.2741
+X-Microsoft-Antispam-Message-Info: 0D/AkC3Vz8HJH3MC7+GjH1cHJ5v97vJ+Uo3AjQ4vMMNV7N8J3LyRARQBw/AoJiMV6DlIcI0rVy0gGyfsdTRGynFUX2a/LgH4b9KE7eLsdO46RVMvsd2icyUqmH+9SiMSbF/Cff6MW4eRMVcbNfEqx+Fn7rY/i3HPbTSIMTRhMACIg8on3S+EwehvUE/NCw3MSGb8WS3ir1uAKDIbr8+UO9wfew2ji+KtixiUA4/Ik2Avai/9X1ymvO6lt5WqfUyr/TIaK42nIwwo4/BVMoxoHiBmHpfw5CwYEWrgWoN/12GskaPox73KgncJdAb3l18jUahGQmDqqPflYp5mM3nkODWX9NBjE+Rr2faxx2XgPfisheP814EnPX7+GOqTQH7vmKBOuCCBItsThNxPQfJnpQ18/pcypQFqCdteyPaHqh8jVh3Wv4w8/DhHtWe3ezYDmpcpN7kLLyGOCcTjxdYL2HU//dk4kk4Vcgb7UQfoMpd7MxgQnx7+hoPQGu0O8bmvO6Gh7OSuS24MSrAHqmEdkjuOKPLoMXTy24NAhj6aULaCyV1DJgrXIqQqjk4TbSx+ofJabRNiDW9jty4U1BXEt4LCQEVQFJyKhg5soRGF83uj0UwJODbCz85K+bFCOk4oAuyR11E6HfUlEsJPedQSiJ5rVIzHgAcdel7m/TuzPYuNF5oNXoCF8zsviMt2slHLVBy8fcstGZL62QpQIO4ngA==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(36860700001)(36756003)(83380400001)(8676002)(40460700003)(70206006)(26005)(110136005)(54906003)(70586007)(9786002)(8936002)(356005)(5660300002)(7416002)(508600001)(7636003)(47076005)(426003)(336012)(4326008)(2906002)(2616005)(6666004)(82310400005)(316002)(107886003)(1076003)(7696005)(186003)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2022 11:26:20.5447
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fBL4BTGelKiUe2Bm+bf0Y2ch9QDRG/h9LbDEpOMOGRhxD0LfCynEiCTCkZYIjrnqbehuoXJTSB7dhgF7N6+FhlnSUbCy/Ibs05Ay365FM18=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB2872
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.874
- definitions=2022-06-06_04:2022-06-02,2022-06-06 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 spamscore=0
- adultscore=0 suspectscore=0 malwarescore=0 phishscore=0 bulkscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206060052
-X-Proofpoint-GUID: bAZ7rzJs4hHwiOG-AFxu94L1BIO-22Q8
-X-Proofpoint-ORIG-GUID: bAZ7rzJs4hHwiOG-AFxu94L1BIO-22Q8
+X-MS-Exchange-CrossTenant-Network-Message-Id: 28d63e8f-bab4-46ae-9f9b-08da47af6174
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0012.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR02MB4127
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   700170bf6b4d773e328fa54ebb70ba444007c702
-commit: a801f0ee563b8180caf186493806a145a75b4a3c irqchip/apple-aic: Support multiple dies
-config: arm64-randconfig-m031-20220530 (https://download.01.org/0day-ci/archive/20220601/202206011052.du9opGWF-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.3.0
+This RFC is the continuation to the discussion which happened on
+'commit f89504300e94 ("spi: Stacked/parallel memories bindings")' for
+adding dtbinding support  for stacked/parallel memories.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+The purpose of this patch series is to demonstrate the changes in spi-nor,
+spi core and ZynqMP GQSPI driver w.r.t to stacked/parallel memories
+support.Please go through the series and share you comments.
 
-New smatch warnings:
-drivers/irqchip/irq-apple-aic.c:980 aic_of_ic_init() error: uninitialized symbol 'start_off'.
+To support stacked/parallel configuration following changes are done to spi
+core and spi-nor.
 
-Old smatch warnings:
-drivers/irqchip/irq-apple-aic.c:943 aic_of_ic_init() warn: possible memory leak of 'irqc'
-drivers/irqchip/irq-apple-aic.c:965 aic_of_ic_init() error: uninitialized symbol 'off'.
-drivers/irqchip/irq-apple-aic.c:1029 aic_of_ic_init() warn: 'regs' from of_iomap() not released on lines: 937,943.
+- The chip select member (chip_select) of the spi_device structure is changed
+to an array (chip_select[2]). This array is used to store the CS values coming
+form the "reg" DT property.
 
-vim +/start_off +980 drivers/irqchip/irq-apple-aic.c
+- Added a new member (cs_index_mask) in the spi_device structure to hold the
+index information of above chip_select array. SPI-NOR is not aware of the
+chip_select values, For any incoming request SPI-NOR will decide the flash
+index with the help of individual flash size and the configuration type
+(single/stacked/parallel). SPI-NOR will pass on the flash index information
+to the SPI core by setting the appropriate bit(s) of "cs_index_mask".
+For example if nth bit of "cs_index_mask" is set then the driver would
+assert chip_slect[n].
 
-76cde26394114f Hector Martin 2021-01-21   923  static int __init aic_of_ic_init(struct device_node *node, struct device_node *parent)
-76cde26394114f Hector Martin 2021-01-21   924  {
-a801f0ee563b81 Hector Martin 2022-03-10   925  	int i, die;
-a801f0ee563b81 Hector Martin 2022-03-10   926  	u32 off, start_off;
-76cde26394114f Hector Martin 2021-01-21   927  	void __iomem *regs;
-76cde26394114f Hector Martin 2021-01-21   928  	struct aic_irq_chip *irqc;
-2cf68211664acd Hector Martin 2022-03-10   929  	const struct of_device_id *match;
-76cde26394114f Hector Martin 2021-01-21   930  
-76cde26394114f Hector Martin 2021-01-21   931  	regs = of_iomap(node, 0);
-76cde26394114f Hector Martin 2021-01-21   932  	if (WARN_ON(!regs))
-76cde26394114f Hector Martin 2021-01-21   933  		return -EIO;
-76cde26394114f Hector Martin 2021-01-21   934  
-76cde26394114f Hector Martin 2021-01-21   935  	irqc = kzalloc(sizeof(*irqc), GFP_KERNEL);
-76cde26394114f Hector Martin 2021-01-21   936  	if (!irqc)
-76cde26394114f Hector Martin 2021-01-21   937  		return -ENOMEM;
-76cde26394114f Hector Martin 2021-01-21   938  
-76cde26394114f Hector Martin 2021-01-21   939  	irqc->base = regs;
-76cde26394114f Hector Martin 2021-01-21   940  
-2cf68211664acd Hector Martin 2022-03-10   941  	match = of_match_node(aic_info_match, node);
-2cf68211664acd Hector Martin 2022-03-10   942  	if (!match)
-2cf68211664acd Hector Martin 2022-03-10   943  		return -ENODEV;
+- The flash parameter member(*params) of the spi_nor structure is changed
+to an array (*params[2]). The array is used to store the parameters of each
+flash connected in stacked/parallel configuration.
 
-ret = -ENOMEM;
-goto err_free_irqc;
+This patch series targets flashes of same make connected in stacked
+configuration and for parallel configuration both the flashes should be
+identical.
+---
+BRANCH: mtd/next
+---
+Amit Kumar Mahapatra (2):
+  spi: Add multiple CS support for a single SPI device
+  mtd: spi-nor: Add support for stacked/parallel memories
 
-2cf68211664acd Hector Martin 2022-03-10   944  
-2cf68211664acd Hector Martin 2022-03-10   945  	irqc->info = *(struct aic_info *)match->data;
-2cf68211664acd Hector Martin 2022-03-10   946  
-2cf68211664acd Hector Martin 2022-03-10   947  	aic_irqc = irqc;
-2cf68211664acd Hector Martin 2022-03-10   948  
-dc97fd6fec0099 Hector Martin 2022-03-10   949  	switch (irqc->info.version) {
-dc97fd6fec0099 Hector Martin 2022-03-10   950  	case 1: {
-dc97fd6fec0099 Hector Martin 2022-03-10   951  		u32 info;
-dc97fd6fec0099 Hector Martin 2022-03-10   952  
-76cde26394114f Hector Martin 2021-01-21   953  		info = aic_ic_read(irqc, AIC_INFO);
-7c841f5f6fa3f9 Hector Martin 2022-03-10   954  		irqc->nr_irq = FIELD_GET(AIC_INFO_NR_IRQ, info);
-dc97fd6fec0099 Hector Martin 2022-03-10   955  		irqc->max_irq = AIC_MAX_IRQ;
-a801f0ee563b81 Hector Martin 2022-03-10   956  		irqc->nr_die = irqc->max_die = 1;
-dc97fd6fec0099 Hector Martin 2022-03-10   957  
-a801f0ee563b81 Hector Martin 2022-03-10   958  		off = start_off = irqc->info.target_cpu;
-dc97fd6fec0099 Hector Martin 2022-03-10   959  		off += sizeof(u32) * irqc->max_irq; /* TARGET_CPU */
-dc97fd6fec0099 Hector Martin 2022-03-10   960  
-dc97fd6fec0099 Hector Martin 2022-03-10   961  		break;
-dc97fd6fec0099 Hector Martin 2022-03-10   962  	}
-dc97fd6fec0099 Hector Martin 2022-03-10   963  	}
-dc97fd6fec0099 Hector Martin 2022-03-10   964  
-dc97fd6fec0099 Hector Martin 2022-03-10   965  	irqc->info.sw_set = off;
-dc97fd6fec0099 Hector Martin 2022-03-10   966  	off += sizeof(u32) * (irqc->max_irq >> 5); /* SW_SET */
-dc97fd6fec0099 Hector Martin 2022-03-10   967  	irqc->info.sw_clr = off;
-dc97fd6fec0099 Hector Martin 2022-03-10   968  	off += sizeof(u32) * (irqc->max_irq >> 5); /* SW_CLR */
-dc97fd6fec0099 Hector Martin 2022-03-10   969  	irqc->info.mask_set = off;
-dc97fd6fec0099 Hector Martin 2022-03-10   970  	off += sizeof(u32) * (irqc->max_irq >> 5); /* MASK_SET */
-dc97fd6fec0099 Hector Martin 2022-03-10   971  	irqc->info.mask_clr = off;
-dc97fd6fec0099 Hector Martin 2022-03-10   972  	off += sizeof(u32) * (irqc->max_irq >> 5); /* MASK_CLR */
-dc97fd6fec0099 Hector Martin 2022-03-10   973  	off += sizeof(u32) * (irqc->max_irq >> 5); /* HW_STATE */
-76cde26394114f Hector Martin 2021-01-21   974  
-2cf68211664acd Hector Martin 2022-03-10   975  	if (irqc->info.fast_ipi)
-2cf68211664acd Hector Martin 2022-03-10   976  		static_branch_enable(&use_fast_ipi);
-2cf68211664acd Hector Martin 2022-03-10   977  	else
-2cf68211664acd Hector Martin 2022-03-10   978  		static_branch_disable(&use_fast_ipi);
-2cf68211664acd Hector Martin 2022-03-10   979  
-a801f0ee563b81 Hector Martin 2022-03-10  @980  	irqc->info.die_stride = off - start_off;
-a801f0ee563b81 Hector Martin 2022-03-10   981  
-7c841f5f6fa3f9 Hector Martin 2022-03-10   982  	irqc->hw_domain = irq_domain_create_tree(of_node_to_fwnode(node),
-76cde26394114f Hector Martin 2021-01-21   983  						 &aic_irq_domain_ops, irqc);
-76cde26394114f Hector Martin 2021-01-21   984  	if (WARN_ON(!irqc->hw_domain)) {
-76cde26394114f Hector Martin 2021-01-21   985  		iounmap(irqc->base);
-76cde26394114f Hector Martin 2021-01-21   986  		kfree(irqc);
-76cde26394114f Hector Martin 2021-01-21   987  		return -ENODEV;
+ drivers/mtd/spi-nor/core.c     | 104 +++++++++++++++++++++++++++++----
+ drivers/mtd/spi-nor/core.h     |   5 ++
+ drivers/spi/spi-zynqmp-gqspi.c |  30 ++++++++--
+ drivers/spi/spi.c              |  10 +++-
+ include/linux/mtd/spi-nor.h    |   8 ++-
+ include/linux/spi/spi.h        |  10 +++-
+ 6 files changed, 146 insertions(+), 21 deletions(-)
 
-ret = -ENODEV;
-goto err_unmap;
-
-76cde26394114f Hector Martin 2021-01-21   988  	}
-76cde26394114f Hector Martin 2021-01-21   989  
-76cde26394114f Hector Martin 2021-01-21   990  	irq_domain_update_bus_token(irqc->hw_domain, DOMAIN_BUS_WIRED);
-76cde26394114f Hector Martin 2021-01-21   991  
-76cde26394114f Hector Martin 2021-01-21   992  	if (aic_init_smp(irqc, node)) {
-76cde26394114f Hector Martin 2021-01-21   993  		irq_domain_remove(irqc->hw_domain);
-76cde26394114f Hector Martin 2021-01-21   994  		iounmap(irqc->base);
-76cde26394114f Hector Martin 2021-01-21   995  		kfree(irqc);
-76cde26394114f Hector Martin 2021-01-21   996  		return -ENODEV;
-
-ret = -ENODEV;
-goto err_remove_domain;
-
-76cde26394114f Hector Martin 2021-01-21   997  	}
-76cde26394114f Hector Martin 2021-01-21   998  
-76cde26394114f Hector Martin 2021-01-21   999  	set_handle_irq(aic_handle_irq);
-76cde26394114f Hector Martin 2021-01-21  1000  	set_handle_fiq(aic_handle_fiq);
-76cde26394114f Hector Martin 2021-01-21  1001  
-a801f0ee563b81 Hector Martin 2022-03-10  1002  	off = 0;
-a801f0ee563b81 Hector Martin 2022-03-10  1003  	for (die = 0; die < irqc->nr_die; die++) {
-7c841f5f6fa3f9 Hector Martin 2022-03-10  1004  		for (i = 0; i < BITS_TO_U32(irqc->nr_irq); i++)
-a801f0ee563b81 Hector Martin 2022-03-10  1005  			aic_ic_write(irqc, irqc->info.mask_set + off + i * 4, U32_MAX);
-7c841f5f6fa3f9 Hector Martin 2022-03-10  1006  		for (i = 0; i < BITS_TO_U32(irqc->nr_irq); i++)
-a801f0ee563b81 Hector Martin 2022-03-10  1007  			aic_ic_write(irqc, irqc->info.sw_clr + off + i * 4, U32_MAX);
-a801f0ee563b81 Hector Martin 2022-03-10  1008  		if (irqc->info.target_cpu)
-7c841f5f6fa3f9 Hector Martin 2022-03-10  1009  			for (i = 0; i < irqc->nr_irq; i++)
-a801f0ee563b81 Hector Martin 2022-03-10  1010  				aic_ic_write(irqc, irqc->info.target_cpu + off + i * 4, 1);
-a801f0ee563b81 Hector Martin 2022-03-10  1011  		off += irqc->info.die_stride;
-a801f0ee563b81 Hector Martin 2022-03-10  1012  	}
-76cde26394114f Hector Martin 2021-01-21  1013  
-76cde26394114f Hector Martin 2021-01-21  1014  	if (!is_kernel_in_hyp_mode())
-76cde26394114f Hector Martin 2021-01-21  1015  		pr_info("Kernel running in EL1, mapping interrupts");
-76cde26394114f Hector Martin 2021-01-21  1016  
-2cf68211664acd Hector Martin 2022-03-10  1017  	if (static_branch_likely(&use_fast_ipi))
-2cf68211664acd Hector Martin 2022-03-10  1018  		pr_info("Using Fast IPIs");
-2cf68211664acd Hector Martin 2022-03-10  1019  
-76cde26394114f Hector Martin 2021-01-21  1020  	cpuhp_setup_state(CPUHP_AP_IRQ_APPLE_AIC_STARTING,
-76cde26394114f Hector Martin 2021-01-21  1021  			  "irqchip/apple-aic/ipi:starting",
-76cde26394114f Hector Martin 2021-01-21  1022  			  aic_init_cpu, NULL);
-76cde26394114f Hector Martin 2021-01-21  1023  
-b6ca556c352979 Marc Zyngier  2021-02-28  1024  	vgic_set_kvm_info(&vgic_info);
-b6ca556c352979 Marc Zyngier  2021-02-28  1025  
-a801f0ee563b81 Hector Martin 2022-03-10  1026  	pr_info("Initialized with %d/%d IRQs * %d/%d die(s), %d FIQs, %d vIPIs",
-a801f0ee563b81 Hector Martin 2022-03-10  1027  		irqc->nr_irq, irqc->max_irq, irqc->nr_die, irqc->max_die, AIC_NR_FIQ, AIC_NR_SWIPI);
-76cde26394114f Hector Martin 2021-01-21  1028  
-76cde26394114f Hector Martin 2021-01-21  1029  	return 0;
-
-	return 0;
-
-err_remove_domain:
-	irq_domain_remove(irqc->hw_domain);
-err_unmap:
-	iounmap(irqc->base);
-err_free_irqc:
-	kfree(irqc);
-
-	return ret;
-
-76cde26394114f Hector Martin 2021-01-21  1030  }
-76cde26394114f Hector Martin 2021-01-21  1031  
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.17.1
 
