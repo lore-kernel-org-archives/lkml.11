@@ -2,89 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E54AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:25:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FAB1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:26:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231801AbiFFIZv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 04:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50308 "EHLO
+        id S231805AbiFFI0K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 04:26:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231710AbiFFIZo (ORCPT
+        with ESMTP id S231664AbiFFI0G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 04:25:44 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DAF97A471;
-        Mon,  6 Jun 2022 01:25:38 -0700 (PDT)
-X-UUID: fdf3a82edc2b41c5894a1353ab188293-20220606
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:b10bb8a7-f534-4e20-91d3-20e88d5a71d4,OB:-327
-        68,LOB:-32768,IP:-32768,URL:-32768,TC:-32768,Content:-32768,EDM:-32768,RT:
-        -32768,SF:-32768,FILE:-32768,RULE:Release_Ham,ACTION:release,TS:0
-X-CID-INFO: VERSION:1.1.5,REQID:b10bb8a7-f534-4e20-91d3-20e88d5a71d4,OB:-32768
-        ,LOB:-32768,IP:-32768,URL:-32768,TC:-32768,Content:-32768,EDM:-32768,RT:-3
-        2768,SF:-32768,FILE:-32768,RULE:Release_Ham,ACTION:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:nil,COID:nil,Recheck:0,SF:nil,TC:nil,C
-        ontent:nil,EDM:nil,IP:nil,URL:nil,File:nil,QS:0,BEC:nil
-X-UUID: fdf3a82edc2b41c5894a1353ab188293-20220606
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <lina.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1927022851; Mon, 06 Jun 2022 15:38:59 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 6 Jun 2022 15:38:58 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 6 Jun 2022 15:38:56 +0800
-From:   Lina Wang <lina.wang@mediatek.com>
-To:     "David S . Miller" <davem@davemloft.net>,
+        Mon, 6 Jun 2022 04:26:06 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7000D522C5;
+        Mon,  6 Jun 2022 01:26:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=qf/LAFvNlOZVyndVIbBrukqYfRWVajDnK78SGRSwEJo=; b=H2FERXgpXpa7C+nugyVBaR1JiZ
+        o3ovvx4Akac7TCMAgXrgBFFZD5S/+hPpIasexaVYhrp2D78wpUErfayQ3h58BjJ/gFvIgKwhM86z6
+        RqIj7YcqZ9uu+urk+ekmeRFuj1XnYPWzH0xIhTyF8pcReJmS++zL8HRkf6O5Y6Z527EbbyB+GTYL+
+        s2X6HtLpWIF47v0Xcs6HhmvZSFtNMzKV5haLHKFwRGcS6j46TQeoCbtwnK97OFOeE9ikSQ51JsX0H
+        7HyUxfBKjlBE9i6g08lXt67GpeOYxI+8SIO/RhlhT0Z2bI2PX5reUJAICmNCSKBRERr7gzWlwqvkK
+        tR4NiSPw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60962)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ny83e-0001c2-HH; Mon, 06 Jun 2022 09:25:54 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ny83b-00084b-DH; Mon, 06 Jun 2022 09:25:51 +0100
+Date:   Mon, 6 Jun 2022 09:25:51 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Maciej enczykowski <maze@google.com>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>
-Subject: Re: [PATCH v2] selftests net: fix bpf build error
-Date:   Mon, 6 Jun 2022 15:32:13 +0800
-Message-ID: <20220606073213.8957-1-lina.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <83d04ebf876fc2be804a6351318806cd38fba20b.camel@redhat.com>
-References: <83d04ebf876fc2be804a6351318806cd38fba20b.camel@redhat.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] net: mdio: unexport __init-annotated mdio_bus_init()
+Message-ID: <Yp26Dw3f8+XlSx2+@shell.armlinux.org.uk>
+References: <20220606045355.4160711-1-masahiroy@kernel.org>
+ <20220606045355.4160711-2-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220606045355.4160711-2-masahiroy@kernel.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-06-02 at 12:29 +0200, Paolo Abeni wrote:
-> On Wed, 2022-06-01 at 16:48 +0800, Lina Wang wrote:
-> > bpf_helpers.h has been moved to tools/lib/bpf since 5.10, so add
-> > more
-> > including path.
-> > 
-> > Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf
->  CLANG ?= clang
->  CCINCLUDE += -I../../bpf
-> -CCINCLUDE += -I../../../../lib
-> +CCINCLUDE += -I../../../lib
->  CCINCLUDE += -I../../../../../usr/include/
-> ---
+On Mon, Jun 06, 2022 at 01:53:53PM +0900, Masahiro Yamada wrote:
+> EXPORT_SYMBOL and __init is a bad combination because the .init.text
+> section is freed up after the initialization. Hence, modules cannot
+> use symbols annotated __init. The access to a freed symbol may end up
+> with kernel panic.
+> 
+> modpost used to detect it, but it has been broken for a decade.
+> 
+> Recently, I fixed modpost so it started to warn it again, then this
+> showed up in linux-next builds.
+> 
+> There are two ways to fix it:
+> 
+>   - Remove __init
+>   - Remove EXPORT_SYMBOL
+> 
+> I chose the latter for this case because the only in-tree call-site,
+> drivers/net/phy/phy_device.c is never compiled as modular.
+> (CONFIG_PHYLIB is boolean)
+> 
+> Fixes: 90eff9096c01 ("net: phy: Allow splitting MDIO bus/device support from PHYs")
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 
-Your solution is right,
-
-> (But I still hit the "overriding recipe for target 'clean'" warnings)
-
-I have fixed in v3, the warning is that tools/testing/selftests/net/bpf/Makefile has redefined "clean"
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
 Thanks!
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
