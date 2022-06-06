@@ -2,141 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7811C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 19:55:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5073BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 19:56:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232874AbiFFTzh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 15:55:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37630 "EHLO
+        id S232539AbiFFT4j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 15:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232790AbiFFTzN (ORCPT
+        with ESMTP id S233011AbiFFT4Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 15:55:13 -0400
-Received: from mail-vk1-xa41.google.com (mail-vk1-xa41.google.com [IPv6:2607:f8b0:4864:20::a41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D13FEF;
-        Mon,  6 Jun 2022 12:55:10 -0700 (PDT)
-Received: by mail-vk1-xa41.google.com with SMTP id z17so692857vkb.13;
-        Mon, 06 Jun 2022 12:55:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=ZAOjVHfWgWEtrCEowhgivo44hpW2jfshzvmdXVjn21k=;
-        b=hlrnD/oOe2EaUICZU22+CtvzqiQwTRCk1hZt5dfuUZKWQ6TnntWxIpLy3UzelFS9cM
-         JqUXuzLlQHNmUQbBq97na+4N61izImNM97gDNc2FCskjjgz32K3ULMCGs8aMi90i3BgX
-         NGicAWUt/wYwrj2Umubv6/Esa/8mctbzH1bx29u2gFPCRKV26ybyDmMYjT0kkiHBBp0p
-         NNBjjcS6+pxgvs7Vz72WrCGOC9+DJ7NMwlaDYX3T96ClSIv9MH+tIQ++FCDiu3HJyDKp
-         n2WHQTgEEuz7soyrV9UG0cOEhSqOI1BeKDboBDONuPGRxkSCKgohal7cNrEXqCsqn5b+
-         5r/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=ZAOjVHfWgWEtrCEowhgivo44hpW2jfshzvmdXVjn21k=;
-        b=LnHEWmG/0LWeq+aelYojvngJzSw9lQoKTfZtg3iYUzHA0f7WmKNbiXvV7W6viEhJIk
-         FmY12d7Cbd48XFAtrQIQQ0604HTR/EAoNao6CwbKI8XpOyS23OcsgKloVKsSrcU520gO
-         QZ9eeCIKDr7PQ49sOpZCG/261BZE90g8Bbxs7D0zRc3smuRKO9T/nViPcfpgoJ6ueYNk
-         dFdvJCtwv5MAEL5VwNeFGVDyqkIMckTBtp8ekoiB254Q3ncIoZHqzrsQm7hhz6/ALFN1
-         34JbIzVhYQvK2aJOIdS8MdtVF1wE0+36CwpVdGmbdPgCVbPU4lnT+ksnDfit3NbQPy9W
-         1H6Q==
-X-Gm-Message-State: AOAM532Yq98nsBv7NC0jkbqcyXkf16DNn/c7toV18/aEItJgp/AKeMMD
-        0baXIJwlvsFNAuK1UhV7xGa2S4hLf90=
-X-Google-Smtp-Source: ABdhPJzfmjR5YZA2kob+M1kPmdRB5UvulwQDYYgnYqd9ZjNa3CScD42fzqozyBBKtpqx9N3hIiieSA==
-X-Received: by 2002:a17:902:ec91:b0:167:6f74:ba73 with SMTP id x17-20020a170902ec9100b001676f74ba73mr10798060plg.141.1654545297849;
-        Mon, 06 Jun 2022 12:54:57 -0700 (PDT)
-Received: from localhost ([2405:201:6014:d0c0:79de:f3f4:353c:8616])
-        by smtp.gmail.com with ESMTPSA id t17-20020a170902e1d100b0015e8d4eb282sm10803800pla.204.2022.06.06.12.54.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 12:54:57 -0700 (PDT)
-Date:   Tue, 7 Jun 2022 01:24:54 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Yosry Ahmed <yosryahmed@google.com>
-Cc:     Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v1 0/5] bpf: rstat: cgroup hierarchical stats
-Message-ID: <20220606195454.byivqaarp6ra7dpc@apollo.legion>
-References: <20220520012133.1217211-1-yosryahmed@google.com>
- <20220603162247.GC16134@blackbody.suse.cz>
- <CAJD7tkbp9Tw4oGtxsnHQB+5VZHMFa4J0qvJGRyj3VuuQ4UPF=g@mail.gmail.com>
- <20220606123209.GE6928@blackbody.suse.cz>
- <CAJD7tkZeNhyEL4WtkEMOUeLsLX4x4roMuNCocEhz5yHm7=h4vw@mail.gmail.com>
+        Mon, 6 Jun 2022 15:56:25 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B7FE64F4;
+        Mon,  6 Jun 2022 12:56:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654545368; x=1686081368;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=rvMXoxpRuDnCE4wJwCq4WiYxb2zBU8ejJRlWm/twmeE=;
+  b=jd9GyOfxiBU8mylYThX3R9mwi6jyaI+SrAk/ZQVfOqSjA3QT2d4FRCoc
+   Ta6ceGHNtzCzptZ7jWo44lHsFez7afa+tjaHNHUDEJFFTe8fJmUIsFP/K
+   6TgMoqWz6Bk7li4rosMmOuU0fFW5OfIFY6BXWF35dqb5P87jPrt5040yY
+   veREIdydcyHC73exzd59v975GnlYPC7+pQcu66c+ZsYA3MalWBoICV/BL
+   NCweXZVO7nQLgmHonm9InC7u7s+UHOLBBjyronKediUkvvTbK9YTxzbDZ
+   JSbFaaKMD0vA6tUOK3FDJCEJTDwtstiEwHGd886TYsldegJxDCaoqv4O2
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="259170509"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="259170509"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 12:56:07 -0700
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="826009834"
+Received: from sarojkum-mobl.amr.corp.intel.com (HELO localhost) ([10.212.220.176])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 12:56:06 -0700
+Date:   Mon, 6 Jun 2022 12:56:05 -0700
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc:     Lukas Wunner <lukas@wunner.de>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH V8 03/10] PCI: Create PCI library functions in support of
+ DOE mailboxes.
+Message-ID: <Yp5b1TSxw28hCZ+z@iweiny-desk3>
+References: <20220414203237.2198665-1-ira.weiny@intel.com>
+ <20220414203237.2198665-4-ira.weiny@intel.com>
+ <20220530190657.GA14765@wunner.de>
+ <20220531113350.0000421e@Huawei.com>
+ <YpbWCYujYDEkMm1B@iweiny-desk3>
+ <20220601071808.GA19924@wunner.de>
+ <Ypee328j+l6ZdbUT@iweiny-desk3>
+ <20220606154646.00001663@Huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJD7tkZeNhyEL4WtkEMOUeLsLX4x4roMuNCocEhz5yHm7=h4vw@mail.gmail.com>
+In-Reply-To: <20220606154646.00001663@Huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 01:02:04AM IST, Yosry Ahmed wrote:
-> On Mon, Jun 6, 2022 at 5:32 AM Michal Koutný <mkoutny@suse.com> wrote:
-> >
-> > On Fri, Jun 03, 2022 at 12:47:19PM -0700, Yosry Ahmed <yosryahmed@google.com> wrote:
-> > > In short, think of these bpf maps as equivalents to "struct
-> > > memcg_vmstats" and "struct memcg_vmstats_percpu" in the memory
-> > > controller. They are just containers to store the stats in, they do
-> > > not have any subgraph structure and they have no use beyond storing
-> > > percpu and total stats.
-> >
-> > Thanks for the explanation.
-> >
-> > > I run small microbenchmarks that are not worth posting, they compared
-> > > the latency of bpf stats collection vs. in-kernel code that adds stats
-> > > to struct memcg_vmstats[_percpu] and flushes them accordingly, the
-> > > difference was marginal.
-> >
-> > OK, that's a reasonable comparison.
-> >
-> > > The main reason for this is to provide data in a similar fashion to
-> > > cgroupfs, in text file per-cgroup. I will include this clearly in the
-> > > next cover message.
-> >
-> > Thanks, it'd be great to have that use-case captured there.
-> >
-> > > AFAIK loading bpf programs requires a privileged user, so someone has
-> > > to approve such a program. Am I missing something?
-> >
-> > A sysctl unprivileged_bpf_disabled somehow stuck in my head. But as I
-> > wrote, this adds a way how to call cgroup_rstat_updated() directly, it's
-> > not reserved for privilged users anyhow.
->
-> I am not sure if kfuncs have different privilege requirements or if
-> there is a way to mark a kfunc as privileged. Maybe someone with more
-> bpf knowledge can help here. But I assume if unprivileged_bpf_disabled
-> is not set then there is a certain amount of risk/trust that you are
-> taking anyway?
->
+On Mon, Jun 06, 2022 at 03:46:46PM +0100, Jonathan Cameron wrote:
+> On Wed, 1 Jun 2022 10:16:15 -0700
+> Ira Weiny <ira.weiny@intel.com> wrote:
+> 
+> > On Wed, Jun 01, 2022 at 09:18:08AM +0200, Lukas Wunner wrote:
+> > > On Tue, May 31, 2022 at 07:59:21PM -0700, Ira Weiny wrote:  
+> > > > On Tue, May 31, 2022 at 11:33:50AM +0100, Jonathan Cameron wrote:  
+> > > > > On Mon, 30 May 2022 21:06:57 +0200 Lukas Wunner <lukas@wunner.de> wrote:  
+> > > > > > On Thu, Apr 14, 2022 at 01:32:30PM -0700, ira.weiny@intel.com wrote:  
+> > 
+> > > 
+> > >   
+> > > > > > > +static irqreturn_t pci_doe_irq_handler(int irq, void *data)
+> > > > > > > +{
+> > > > > > > +	struct pci_doe_mb *doe_mb = data;
+> > > > > > > +	struct pci_dev *pdev = doe_mb->pdev;
+> > > > > > > +	int offset = doe_mb->cap_offset;
+> > > > > > > +	u32 val;
+> > > > > > > +
+> > > > > > > +	pci_read_config_dword(pdev, offset + PCI_DOE_STATUS, &val);
+> > > > > > > +
+> > > > > > > +	/* Leave the error case to be handled outside IRQ */
+> > > > > > > +	if (FIELD_GET(PCI_DOE_STATUS_ERROR, val)) {
+> > > > > > > +		mod_delayed_work(system_wq, &doe_mb->statemachine, 0);
+> > > > > > > +		return IRQ_HANDLED;
+> > > > > > > +	}
+> > > > > > > +
+> > > > > > > +	if (FIELD_GET(PCI_DOE_STATUS_INT_STATUS, val)) {
+> > > > > > > +		pci_write_config_dword(pdev, offset + PCI_DOE_STATUS,
+> > > > > > > +					PCI_DOE_STATUS_INT_STATUS);
+> > > > > > > +		mod_delayed_work(system_wq, &doe_mb->statemachine, 0);
+> > > > > > > +		return IRQ_HANDLED;
+> > > > > > > +	}
+> > > > > > > +
+> > > > > > > +	return IRQ_NONE;
+> > > > > > > +}    
+> > > > > > 
+> > > > > > PCIe 6.0, table 7-316 says that an interrupt is also raised when
+> > > > > > "the DOE Busy bit has been Cleared", yet such an interrupt is
+> > > > > > not handled here.  It is incorrectly treated as a spurious
+> > > > > > interrupt by returning IRQ_NONE.  The right thing to do
+> > > > > > is probably to wake the state machine in case it's polling
+> > > > > > for the Busy flag to clear.  
+> > > > > 
+> > > > > Ah. I remember testing this via a lot of hacking on the QEMU code
+> > > > > to inject the various races that can occur (it was really ugly to do).
+> > > > > 
+> > > > > Guess we lost the handling at some point.  I think your fix
+> > > > > is the right one.  
+> > > > 
+> > > > Perhaps I am missing something but digging into this more.  I disagree
+> > > > that the handler fails to handle this case.  If I read the spec correctly
+> > > > DOE Interrupt Status must be set when an interrupt is generated.
+> > > > The handler wakes the state machine in that case.  The state machine
+> > > > then checks for busy if there is work to be done.  
+> > > 
+> > > Right, I was mistaken, sorry for the noise.  
+> > 
+> > NP I'm not always following this either.
+> > 
+> > > 
+> > >   
+> > > > Normally we would not even need to check for status error.  But that is
+> > > > special cased because clearing that status is left to the state machine.  
+> > > 
+> > > That however looks wrong because the DOE Interrupt Status bit is never
+> > > cleared after a DOE Error is signaled.  The state machine performs an
+> > > explicit abort upon an error by setting the DOE Abort bit, but that
+> > > doesn't seem to clear DOE Interrupt Status:
+> > > 
+> > > Per section 6.30.2, "At any time, the system firmware/software is
+> > > permitted to set the DOE Abort bit in the DOE Control Register,
+> > > and the DOE instance must Clear the Data Object Ready bit,
+> > > if not already Clear, and Clear the DOE Error bit, if already Set,
+> > > in the DOE Status Register, within 1 second."  
+> > 
+> > I thought that meant the hardware (the DOE instance) must clear those bits
+> > within 1 second?
+> > 
+> > > 
+> > > No mention of the DOE Interrupt Status bit, so we cannot assume that
+> > > it's cleared by a DOE Abort and we must clear it explicitly.  
+> > 
+> > Oh...  yea.  Jonathan?  We discussed this before and I was convinced it worked
+> > but I think Lukas is correct here.
+> 
+> Hmm. I thought we were good as well, but Lukas is correct in saying
+> the interrupt status bit isn't cleared (which is 'novel' give the associated
+> bit to tell you what the interrupt means will be cleared). 
+> 
+> I'm not sure I want to think around the race conditions that result...
+> 
+> > 
+> > Should we drop the special case in pci_doe_irq_handler() and just clear the
+> > status always?  Or should we wait and clear it is pci_doe_abort_start?
+> 
+> I don't think it matters.  pci_doe_irq_handler() seems a little cleaner.
 
-It requires CAP_BPF or CAP_SYS_ADMIN, see verifier.c:add_subprog_or_kfunc.
+I agree and that is what V10 does.
 
-> >
-> > > bpf_iter_run_prog() is used to run bpf iterator programs, and it grabs
-> > > rcu read lock before doing so. So AFAICT we are good on that front.
-> >
-> > Thanks for the clarification.
-> >
-> >
-> > Michal
+> 
+> I've not figured out completely if there are races however...
 
---
-Kartikeya
+This is why I reworked the handling of cur_task in those error cases.
+
+> 
+> It is set when no already set and we get transitions of any of the following:
+> - DOE error bit set (this can't happen until abort so no race here)
+> 
+> - Data Object Ready bit is set: Can this happen with the DOE error set? I don't
+>   immediately see language saying it can't. However, I don't think it can
+>   for any of the challenge response protocols yet defined (and there are other
+>   problems if anyone wants to implement unsolicited messages)
+> 
+> - DOE busy bit has cleared - can definitely happen after an abort (which is
+>   fine as nothing to do anyway, so we'll handle a pointless interrupt).
+>   Could it in theory happen when error is set? I think not but only because
+>   of the statement  "Clear this bit when it is able to receive a new data
+>   object."
+> 
+> So I think we are fine doing it preabort,
+
+That is what I though for V10 especially after reworking the cur_task locking.
+An extra interrupt would either start processing the next task or return with
+nothing to do.
+
+> but wouldn't put it past a hardware
+> designer to find some path through that which results in a bonus interrupt
+> and potentially us resetting twice.
+> 
+> If we clear it at the end of abort instead, what happens?
+> Definitely no interrupts until we clear it. As we are doing query response
+> protocols only, no new data until state machine moves on, so fine there.
+> 
+> So what about just doing it unconditionally..
+> 
+> +	case DOE_WAIT_ABORT:
+> +	case DOE_WAIT_ABORT_ON_ERR:
+> +		pci_read_config_dword(pdev, offset + PCI_DOE_STATUS, &val);
+> +
+> +		if (!FIELD_GET(PCI_DOE_STATUS_ERROR, val) &&
+> +		    !FIELD_GET(PCI_DOE_STATUS_BUSY, val)) {
+> 
+> 	here...
+> 
+> +			/* Back to normal state - carry on */
+> +			retire_cur_task(doe_mb);
+> 
+> This feels a little bit more 'standard' as we are allowing new interrupts
+> only after everything is back to a nice state.
+
+As I reworked the cur_task locking I really thought about locking cur_task
+throughout doe_statemachine_work().  It seems a lot safer for a lot of reasons.
+Doing so would make the extra work item no big deal.
+
+So I looked at this again because you got me worried.  If mod_delayed_work()
+can cause doe_statemachine_work() while another thread is in the middle of
+processing the interrupt there is a chance that signal_task_complete() is
+called a second time on a given task pointer.
+
+However, I _don't_ _think_ that can happen.  Because I don't think
+mod_delayed_work() can cause the work item to run while it is already running.
+
+So unless I misunderstand how mod_delayed_work() works we are guaranteed that
+the extra interrupt will see the correct mailbox state and do the right thing.
+
+Ira
