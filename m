@@ -2,80 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8726AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 06:50:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F951C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 06:51:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230168AbiFFGu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 02:50:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35760 "EHLO
+        id S230185AbiFFGvD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 02:51:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230062AbiFFGuq (ORCPT
+        with ESMTP id S230119AbiFFGut (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 02:50:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB58A63C4;
-        Sun,  5 Jun 2022 23:50:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 64E0F610F4;
-        Mon,  6 Jun 2022 06:50:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4269EC34119;
-        Mon,  6 Jun 2022 06:50:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654498243;
-        bh=cF0Jahiln0ierEzNlgR2FvgNfh9i11FkD6kpcLiYiZ0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YuRJA/Z+uJoUaytU5DPV377z8Y+IhZwtcrjNgryn3vW4cDfoTKhKyiodsKSpAvO5H
-         7jYbDZYSO6cpSoPaQYCQXgCPL8rtyVIOC6yK8x3t/e7PZUhwyeTMHGhb/LC4QnL7as
-         x3QFEU/xPxImrRuwKRqYssEQEpgtjClHUHGv++zYzA7D1u5sg/iXL5R1g4qs6zbQ5j
-         G3oE2uR5XcpwcA7QbFVlZ0Mgua71XWPvhKBJhOGmzC7anc8w9suwb2G9tluFexvcoI
-         8M7HnjRJ1smFTiqzqIs5kihQQtMVEhnlb6TMtlv1lUONG0uBhLnkL/HIBABchK6QUK
-         jV1Xuju/BhY3Q==
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+        Mon, 6 Jun 2022 02:50:49 -0400
+Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0FCFD7737;
+        Sun,  5 Jun 2022 23:50:47 -0700 (PDT)
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 2566YucT035313;
+        Mon, 6 Jun 2022 14:34:57 +0800 (GMT-8)
+        (envelope-from neal_liu@aspeedtech.com)
+Received: from localhost.localdomain (192.168.10.10) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 6 Jun
+ 2022 14:49:41 +0800
+From:   Neal Liu <neal_liu@aspeedtech.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
         Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/3] arm64: dts: qcom: Get rid of some warnings
-Date:   Mon,  6 Jun 2022 12:20:32 +0530
-Message-Id: <20220606065035.553533-1-vkoul@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        "Andrew Jeffery" <andrew@aj.id.au>,
+        Johnny Huang <johnny_huang@aspeedtech.com>
+CC:     <linux-aspeed@lists.ozlabs.org>, <linux-crypto@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <BMC-SW@aspeedtech.com>
+Subject: [PATCH v2 3/5] ARM: dts: aspeed: Add HACE device controller node
+Date:   Mon, 6 Jun 2022 14:49:33 +0800
+Message-ID: <20220606064935.1458903-4-neal_liu@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220606064935.1458903-1-neal_liu@aspeedtech.com>
+References: <20220606064935.1458903-1-neal_liu@aspeedtech.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.10.10]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 2566YucT035313
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This attempts to make W=1 free from warnings for all SM* dts files.
+Add hace node to device tree for AST2600.
 
-Bunch of these are releated to node not having valid unit address and being
-present under soc node. So moving it out fixed that. Interconnect node was
-simple rename to remove unit address which was not really valid for these
-nodes.
+Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+Signed-off-by: Johnny Huang <johnny_huang@aspeedtech.com>
+---
+ arch/arm/boot/dts/aspeed-g6.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-Changes in v3:
- - rebase on v5.19-rc1
-
-Changes in v2:
- - drop the sound and dsi node changes
-
-*** SUBJECT HERE ***
-
-*** BLURB HERE ***
-
-Vinod Koul (3):
-  arm64: dts: qcom: sm8450: rename interconnect nodes
-  arm64: dts: qcom: sm8350: Move qup-opp-tables out of soc node
-  arm64: dts: qcom: sm8250: Move qup-opp-table out of soc node
-
- arch/arm64/boot/dts/qcom/sm8250.dtsi | 38 +++++++-------
- arch/arm64/boot/dts/qcom/sm8350.dtsi | 76 ++++++++++++++--------------
- arch/arm64/boot/dts/qcom/sm8450.dtsi |  4 +-
- 3 files changed, 59 insertions(+), 59 deletions(-)
-
+diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
+index 3d5ce9da42c3..371d2a6b56ef 100644
+--- a/arch/arm/boot/dts/aspeed-g6.dtsi
++++ b/arch/arm/boot/dts/aspeed-g6.dtsi
+@@ -304,6 +304,14 @@ apb {
+ 			#size-cells = <1>;
+ 			ranges;
+ 
++			hace: crypto@1e6d0000 {
++				compatible = "aspeed,ast2600-hace";
++				reg = <0x1e6d0000 0x200>;
++				interrupts = <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>;
++				clocks = <&syscon ASPEED_CLK_GATE_YCLK>;
++				resets = <&syscon ASPEED_RESET_HACE>;
++			};
++
+ 			syscon: syscon@1e6e2000 {
+ 				compatible = "aspeed,ast2600-scu", "syscon", "simple-mfd";
+ 				reg = <0x1e6e2000 0x1000>;
 -- 
-2.34.1
+2.25.1
 
