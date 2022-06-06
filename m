@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCC90C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 05:29:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78AC2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 05:29:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229695AbiFFF3Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 01:29:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49960 "EHLO
+        id S229775AbiFFF3V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 01:29:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229959AbiFFF2U (ORCPT
+        with ESMTP id S229958AbiFFF2U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 6 Jun 2022 01:28:20 -0400
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8142F13FD55;
-        Sun,  5 Jun 2022 22:11:38 -0700 (PDT)
-X-UUID: c1edb732e2f24f20962da12f7ffd5b3c-20220606
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0086913FD47;
+        Sun,  5 Jun 2022 22:11:37 -0700 (PDT)
+X-UUID: b90dc76aab8445e0975b15471b83c89f-20220606
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:5b3fa15c-7dca-4fd8-b658-b1d32cbcdf32,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:5
-X-CID-META: VersionHash:2a19b09,CLOUDID:cdc6b4ad-3171-4dd4-a2d9-73b846daf167,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:0,BEC:nil
-X-UUID: c1edb732e2f24f20962da12f7ffd5b3c-20220606
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
+X-CID-O-INFO: VERSION:1.1.5,REQID:646d8357-28e2-4d69-8057-c6a9539acc69,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:47,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:42
+X-CID-INFO: VERSION:1.1.5,REQID:646d8357-28e2-4d69-8057-c6a9539acc69,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:47,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:42
+X-CID-META: VersionHash:2a19b09,CLOUDID:ecca447e-c8dc-403a-96e8-6237210dceee,C
+        OID:d1a002376914,Recheck:0,SF:28|100|17|19|48|101,TC:nil,Content:0,EDM:-3,
+        IP:nil,URL:1,File:nil,QS:0,BEC:nil
+X-UUID: b90dc76aab8445e0975b15471b83c89f-20220606
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
         (envelope-from <rex-bc.chen@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1273764278; Mon, 06 Jun 2022 13:11:33 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Mon, 6 Jun 2022 13:11:33 +0800
+        with ESMTP id 1777165115; Mon, 06 Jun 2022 13:11:34 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Mon, 6 Jun 2022 13:11:32 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
  mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Mon, 6 Jun 2022 13:11:33 +0800
+ 15.2.792.3 via Frontend Transport; Mon, 6 Jun 2022 13:11:32 +0800
 From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
 To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
         <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>
@@ -47,12 +50,10 @@ CC:     <matthias.bgg@gmail.com>, <airlied@linux.ie>,
         <linux-arm-kernel@lists.infradead.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Subject: [RESEND v4 2/3] dt-bindings: reset: mt8195: add vdosys1 reset control bit
-Date:   Mon, 6 Jun 2022 13:11:30 +0800
-Message-ID: <20220606051131.14182-3-rex-bc.chen@mediatek.com>
+Subject: [RESEND v4 0/3] MediaTek MT8195 display binding
+Date:   Mon, 6 Jun 2022 13:11:28 +0800
+Message-ID: <20220606051131.14182-1-rex-bc.chen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220606051131.14182-1-rex-bc.chen@mediatek.com>
-References: <20220606051131.14182-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK:  N
@@ -60,75 +61,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Nancy.Lin" <nancy.lin@mediatek.com>
+Add this series to present MediaTek display binding for MT8195.
+The reason I send this series is Jason and Nancy's binding patches are
+never received by devicetree mail server.
+Therefore, I help them to resend binding patches.
 
-Add vdosys1 reset control bit for MT8195 platform.
+Changes for resend v4:
+1. Rebase to v5.19-rc1 which iommu series is included.
+2. Add my signed-off.
+3. v4 is not received by devicetree mail server, add more cc and resend.
+4. This patch is from Nancy's v22 series:[2].
 
-Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
-Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- include/dt-bindings/reset/mt8195-resets.h | 45 +++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
+[2]: https://patchwork.kernel.org/project/linux-mediatek/list/?series=645240
 
-diff --git a/include/dt-bindings/reset/mt8195-resets.h b/include/dt-bindings/reset/mt8195-resets.h
-index a26bccc8b957..1ccfe2f28964 100644
---- a/include/dt-bindings/reset/mt8195-resets.h
-+++ b/include/dt-bindings/reset/mt8195-resets.h
-@@ -26,4 +26,49 @@
- 
- #define MT8195_TOPRGU_SW_RST_NUM               16
- 
-+/* VDOSYS1 */
-+#define MT8195_VDOSYS1_SW0_RST_B_SMI_LARB2                     0
-+#define MT8195_VDOSYS1_SW0_RST_B_SMI_LARB3                     1
-+#define MT8195_VDOSYS1_SW0_RST_B_GALS                          2
-+#define MT8195_VDOSYS1_SW0_RST_B_FAKE_ENG0                     3
-+#define MT8195_VDOSYS1_SW0_RST_B_FAKE_ENG1                     4
-+#define MT8195_VDOSYS1_SW0_RST_B_MDP_RDMA0                     5
-+#define MT8195_VDOSYS1_SW0_RST_B_MDP_RDMA1                     6
-+#define MT8195_VDOSYS1_SW0_RST_B_MDP_RDMA2                     7
-+#define MT8195_VDOSYS1_SW0_RST_B_MDP_RDMA3                     8
-+#define MT8195_VDOSYS1_SW0_RST_B_VPP_MERGE0                    9
-+#define MT8195_VDOSYS1_SW0_RST_B_VPP_MERGE1                    10
-+#define MT8195_VDOSYS1_SW0_RST_B_VPP_MERGE2                    11
-+#define MT8195_VDOSYS1_SW0_RST_B_VPP_MERGE3                    12
-+#define MT8195_VDOSYS1_SW0_RST_B_VPP_MERGE4                    13
-+#define MT8195_VDOSYS1_SW0_RST_B_VPP2_TO_VDO1_DL_ASYNC         14
-+#define MT8195_VDOSYS1_SW0_RST_B_VPP3_TO_VDO1_DL_ASYNC         15
-+#define MT8195_VDOSYS1_SW0_RST_B_DISP_MUTEX                    16
-+#define MT8195_VDOSYS1_SW0_RST_B_MDP_RDMA4                     17
-+#define MT8195_VDOSYS1_SW0_RST_B_MDP_RDMA5                     18
-+#define MT8195_VDOSYS1_SW0_RST_B_MDP_RDMA6                     19
-+#define MT8195_VDOSYS1_SW0_RST_B_MDP_RDMA7                     20
-+#define MT8195_VDOSYS1_SW0_RST_B_DP_INTF0                      21
-+#define MT8195_VDOSYS1_SW0_RST_B_DPI0                          22
-+#define MT8195_VDOSYS1_SW0_RST_B_DPI1                          23
-+#define MT8195_VDOSYS1_SW0_RST_B_DISP_MONITOR                  24
-+#define MT8195_VDOSYS1_SW0_RST_B_MERGE0_DL_ASYNC               25
-+#define MT8195_VDOSYS1_SW0_RST_B_MERGE1_DL_ASYNC               26
-+#define MT8195_VDOSYS1_SW0_RST_B_MERGE2_DL_ASYNC               27
-+#define MT8195_VDOSYS1_SW0_RST_B_MERGE3_DL_ASYNC               28
-+#define MT8195_VDOSYS1_SW0_RST_B_MERGE4_DL_ASYNC               29
-+#define MT8195_VDOSYS1_SW0_RST_B_VDO0_DSC_TO_VDO1_DL_ASYNC     30
-+#define MT8195_VDOSYS1_SW0_RST_B_VDO0_MERGE_TO_VDO1_DL_ASYNC   31
-+#define MT8195_VDOSYS1_SW1_RST_B_HDR_VDO_FE0                   32
-+#define MT8195_VDOSYS1_SW1_RST_B_HDR_GFX_FE0                   33
-+#define MT8195_VDOSYS1_SW1_RST_B_HDR_VDO_BE                    34
-+#define MT8195_VDOSYS1_SW1_RST_B_HDR_VDO_FE1                   48
-+#define MT8195_VDOSYS1_SW1_RST_B_HDR_GFX_FE1                   49
-+#define MT8195_VDOSYS1_SW1_RST_B_DISP_MIXER                    50
-+#define MT8195_VDOSYS1_SW1_RST_B_HDR_VDO_FE0_DL_ASYNC          51
-+#define MT8195_VDOSYS1_SW1_RST_B_HDR_VDO_FE1_DL_ASYNC          52
-+#define MT8195_VDOSYS1_SW1_RST_B_HDR_GFX_FE0_DL_ASYNC          53
-+#define MT8195_VDOSYS1_SW1_RST_B_HDR_GFX_FE1_DL_ASYNC          54
-+#define MT8195_VDOSYS1_SW1_RST_B_HDR_VDO_BE_DL_ASYNC           55
-+
- #endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT8195 */
+Changes for v3:
+1. Fix rdma and ethdr binding doc.
+2. Nancy's series: [1].
+3. This series is based on linux-next: next-20220511.
+
+Changes for v2:
+1. This patch is based on linux next-20220506.
+2. Jason's patches are accepted and I drop them.
+
+[1]: https://lore.kernel.org/all/20220512053128.31415-1-nancy.lin@mediatek.com/
+
+Nancy.Lin (3):
+  dt-bindings: mediatek: add vdosys1 RDMA definition for mt8195
+  dt-bindings: reset: mt8195: add vdosys1 reset control bit
+  dt-bindings: mediatek: add ethdr definition for mt8195
+
+ .../display/mediatek/mediatek,ethdr.yaml      | 188 ++++++++++++++++++
+ .../display/mediatek/mediatek,mdp-rdma.yaml   |  88 ++++++++
+ include/dt-bindings/reset/mt8195-resets.h     |  45 +++++
+ 3 files changed, 321 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
+ create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
+
 -- 
 2.18.0
 
