@@ -2,110 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C1A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02B77C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:20:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239755AbiFFOTb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:19:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45308 "EHLO
+        id S239759AbiFFOUh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:20:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239672AbiFFOTW (ORCPT
+        with ESMTP id S239793AbiFFOUF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:19:22 -0400
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 934B369CEC;
-        Mon,  6 Jun 2022 07:19:21 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id y69so6050400oia.7;
-        Mon, 06 Jun 2022 07:19:21 -0700 (PDT)
+        Mon, 6 Jun 2022 10:20:05 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43D43D7733
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:20:04 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id m20so29211554ejj.10
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:20:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=yxqyZ8yixmu1+DZ929D04d1QQALsRCYwyUVuVfKay8c=;
-        b=g96pMmdBLJ92I1YvWrCJUUzDj/TLj3jIshQjRbceVvTxzSE4T16TMe7lRXAdqIFPxB
-         dsHy9kXX7CKGsO7wBAaWiORozC/g7oCm1Q5p512vWZQ8sgXxkcBBRq/bo3qbLU8zHl8Z
-         DBXOgLUqNyswY644L94LqxlGXjdrI6q5FYLuQ/k3WdwRhBavpbKy3c1kXSjCyTZSbD8b
-         RVw8D2hy6zzWnByYruW3qUoEfrxYcL8tSTeI3Ya6DcW0xr0wY3meP80UD8b1oOa7sm5A
-         SX/jMibC2DLQbNLJkKHdbp8NolbDh4gLBUZKRKnY/9juZ60d8t6nQ32o1HUBTc3exyv6
-         sgKw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+zeR4exPLerrOWbFqJdvC1kGSPV0cQ3LiC/P/8HiMc8=;
+        b=PonbL/t/3A7d5fxWp714fQaE0asV5scUDmSWkPDH/8ppJ3ACkjD7EQxVjGPRTczbAV
+         +ZhuqpjDO9slqOB13l23ZRAGbkF7eFZeKZm7Cu+8FA5rhbqpcoQ+NVZTycnhk3HUoB9F
+         jmHkHnS82cP/zG/7a9T1ujSZRRldb5j5Kvc91nEc49qIKGZu5hFv7znxKPK8Xd+Ex8fg
+         kDTOkJT1V8c7b91pZjT2ER8nRbYddJvXY7rqbHYtkepKifmL3A/zeDvO0eXoF23oCIUx
+         MeD2T/s68EQSuRUjvGt5kc9ECHPodgpZAF470X92i6sC3hSVrYjROw4y0r/c65V2F5JG
+         Tc9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :mime-version:content-disposition;
-        bh=yxqyZ8yixmu1+DZ929D04d1QQALsRCYwyUVuVfKay8c=;
-        b=ZSucAk2gE7O/YRBeHK6eIY2tvW5vHCCfkAttgRXUHu9bBc7AB10uueNPyJufOOlk6D
-         9bVPF1oJOPHKuGAB6V61SYcj6ilLSk9lCLSdAtDFrs5ZBL/dJou3xAoalpwKypMlLpWs
-         /SnTKnPR/zem9Iq9DpsjFPa+Ai22VV39THT1hYvo82nCNZ72W7eAOBiDb7IBAyvK+qU8
-         oJrcC1b0xT3yPtzC09nI11J1phkL2XCzxlxZS93QPX8QeBa45YD72hguXMYD69w2cxOW
-         pRpiFMAK5vv/U/BZA3C9rOl9xUKIiIiEsrGr++z5aNnv35gDNWLRPxgpUUCEMZYgJvCr
-         Va6g==
-X-Gm-Message-State: AOAM530eYJ8m+kKOOh0EZlgDPrCYYInvt4i3dinJbt/lMBQLlgmKBXfm
-        lPem1b80BIBBTSkdZy0iljWUh7tzhgc=
-X-Google-Smtp-Source: ABdhPJzZ7NP5aaCxbfTMHn0rWYPbFnDJzmUAaoaw4M2ZgD5NhCtc+5SBzMo6Cyu19yask3Y+I/iNKA==
-X-Received: by 2002:a05:6808:18a5:b0:32e:9741:15b with SMTP id bi37-20020a05680818a500b0032e9741015bmr2655071oib.113.1654525160774;
-        Mon, 06 Jun 2022 07:19:20 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id lx15-20020a0568704b8f00b000f5e89a9c60sm6631471oab.3.2022.06.06.07.19.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 07:19:19 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Mon, 6 Jun 2022 07:19:18 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Ziyang Xuan <william.xuanziyang@huawei.com>
-Cc:     jdelvare@suse.com, eajames@linux.ibm.com, joel@jms.id.au,
-        penberg@kernel.org, akpm@linux-foundation.org,
-        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] hwmon: (occ) Delete unnecessary NULL check
-Message-ID: <20220606141918.GA3747239@roeck-us.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+zeR4exPLerrOWbFqJdvC1kGSPV0cQ3LiC/P/8HiMc8=;
+        b=qaEiHPcocXLsw8c0qs58ZE5c8ENcE75L886ceAwYWDmFB8mVlIyMhpxHOat/UkQVJF
+         4lG0HZ7fg+T2EmVtpEmXE/ET8BKIYJWHcIYAdkhwW+c6OY/cFKl8h6ZkYKQogRV/34fL
+         BjzdpYkObW4FWz2UIk5IkOrRJxNDO6d2m54iYVQH0GxY1FRSFSIiG9oGGwmPbB6rFDpi
+         AWuaQ8iW+OaP1tjxNEkBg7VW4ZSyel1IodVwT1ZS88TFNLEHTQOrHj30skwRQmqhFf76
+         /6lu3qAzEQLQtmixYiqpjtzpaLXTaOiBOhZIUL4W8zLqWKpjE3okxA72azTJnK1uAOy2
+         n78g==
+X-Gm-Message-State: AOAM530CIL2aOylWqteleo8Q8VosimnwaSWt40y/wcmlb/cwP2Tt0dXg
+        b2rDzgYg+suoJdAKcx79xtTjltR8LhrJzj/DI51YSw==
+X-Google-Smtp-Source: ABdhPJxDecYJ9aEv69zBvu7MNAmQYz5Y28J8OShJ+zypoo94WzMWVcetkjW5fUL/4qVdb/vHqRg5X8tnlC42fQjH8DA=
+X-Received: by 2002:a17:907:1c06:b0:6df:b257:cbb3 with SMTP id
+ nc6-20020a1709071c0600b006dfb257cbb3mr21651391ejc.631.1654525202555; Mon, 06
+ Jun 2022 07:20:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220606095516.938934-1-jose.exposito89@gmail.com>
+ <20220606095516.938934-2-jose.exposito89@gmail.com> <20220606134242.h6kuqn4zbpmc2rql@houat>
+ <576ed6ef-b961-9214-2c9b-56cb5b493b4e@redhat.com> <20220606135219.nwhp4fdawg2qjeam@houat>
+ <78c1eb65-ea78-8744-5382-ea86a56a66f4@redhat.com>
+In-Reply-To: <78c1eb65-ea78-8744-5382-ea86a56a66f4@redhat.com>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Mon, 6 Jun 2022 07:19:51 -0700
+Message-ID: <CAGS_qxrPKJrXufMKOCO3eCEpq-Udq6uy32x6aneSPRnm=1O4HQ@mail.gmail.com>
+Subject: Re: [PATCH 1/1] drm/format-helper: Add KUnit tests for drm_fb_xrgb8888_to_rgb332()
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Maxime Ripard <maxime@cerno.tech>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        davidgow@google.com, tzimmermann@suse.de,
+        maarten.lankhorst@linux.intel.com, airlied@linux.ie,
+        daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        kunit-dev@googlegroups.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 06, 2022 at 09:14:01PM +0800, Ziyang Xuan wrote:
-> kvfree(NULL) is safe. NULL check before kvfree() is not needed.
-> Delete them to simplify the code.
-> 
-> Generated by coccinelle script:
-> 	scripts/coccinelle/free/ifnullfree.cocci
-> 
-> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+On Mon, Jun 6, 2022 at 6:57 AM Javier Martinez Canillas
+<javierm@redhat.com> wrote:
+>
 
-Applied to hwmon-next.
+<snip>
 
-Thanks,
-Guenter
+> >>>>  $ ./tools/testing/kunit/kunit.py run --kunitconfig=drivers/gpu/drm \
+> >>>>          --kconfig_add CONFIG_VIRTIO_UML=y \
+> >>>>          --kconfig_add CONFIG_UML_PCI_OVER_VIRTIO=y
+> >>>
+> >>> It's not clear to me why you would need VIRTIO here? The Kunit config
+> >>> file should be enough to run the tests properly
+> >>>
+> >>
+> >> It's needed or otherwise KUnit will complain with:
+> >>
+> >> ./tools/testing/kunit/kunit.py run --kunitconfig=drivers/gpu/drm/.kunitconfig
+> >> [15:47:31] Configuring KUnit Kernel ...
+> >> Regenerating .config ...
+> >> Populating config with:
+> >> $ make ARCH=um O=.kunit olddefconfig
+> >> ERROR:root:Not all Kconfig options selected in kunitconfig were in the generated .config.
+> >> This is probably due to unsatisfied dependencies.
+> >> Missing: CONFIG_DRM=y, CONFIG_DRM_KUNIT_TEST=y
+> >> Note: many Kconfig options aren't available on UML. You can try running on a different architecture with something like "--arch=x86_64".
+> >>
+> >> The following works correctly but it won't use User Mode Linux:
+> >>
+> >> ./tools/testing/kunit/kunit.py run --kunitconfig=drivers/gpu/drm/.kunitconfig --arch=x86_64
+> >
+> > But then, can't we add them to .kunitconfig?
+> >
+>
+> That's what I asked in the previous RFC too. Daniel mentioned that it shouldn't
+> go there because is platform specific (AFAIU, one might want to test it on x86,
 
-> ---
->  drivers/hwmon/occ/p9_sbe.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/hwmon/occ/p9_sbe.c b/drivers/hwmon/occ/p9_sbe.c
-> index 42fc7b97bb34..01405ae2f9bd 100644
-> --- a/drivers/hwmon/occ/p9_sbe.c
-> +++ b/drivers/hwmon/occ/p9_sbe.c
-> @@ -55,8 +55,7 @@ static bool p9_sbe_occ_save_ffdc(struct p9_sbe_occ *ctx, const void *resp,
->  	mutex_lock(&ctx->sbe_error_lock);
->  	if (!ctx->sbe_error) {
->  		if (resp_len > ctx->ffdc_size) {
-> -			if (ctx->ffdc)
-> -				kvfree(ctx->ffdc);
-> +			kvfree(ctx->ffdc);
->  			ctx->ffdc = kvmalloc(resp_len, GFP_KERNEL);
->  			if (!ctx->ffdc) {
->  				ctx->ffdc_len = 0;
-> @@ -171,8 +170,7 @@ static int p9_sbe_occ_remove(struct platform_device *pdev)
->  	ctx->sbe = NULL;
->  	occ_shutdown(occ);
->  
-> -	if (ctx->ffdc)
-> -		kvfree(ctx->ffdc);
-> +	kvfree(ctx->ffdc);
->  
->  	return 0;
->  }
-> -- 
-> 2.25.1
-> 
+Slight correction, it was David who explicitly suggested it shouldn't
+go in there.
+https://lists.freedesktop.org/archives/dri-devel/2022-June/357611.html
+
+> aarch64, etc) but then I asked why we couldn't have a arch/um/.kunitconfig.
+>
+> The answer was that's not that simple and some agreement on how to do it is needed:
+
+I'm a bit more in favor of having UML-specific options in the drm
+.kunitconfig file, but I agree it's a bit unclear.
+If people want to easily run with --arch=x86_64 or others, then
+they're indeed a liability.
+
+Another option is to perhaps explicitly name the .kunitconfig file
+something like drm/uml.kunitconfig, which doesn't solve the problem
+but makes it less of a footgun.
+
+Stepping back, I feel like perhaps a cleaner answer lies in adding a
+new Kconfig option that selects CONFIG_UML_PCI_OVER_VIRTIO under UML
+and just CONFIG_PCI otherwise.
+But that's a bigger discussion still.
+
+Daniel
