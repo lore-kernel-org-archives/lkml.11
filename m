@@ -2,136 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3626CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD5AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:18:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240382AbiFFPOv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:14:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47896 "EHLO
+        id S240416AbiFFPSZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 11:18:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240345AbiFFPOn (ORCPT
+        with ESMTP id S240390AbiFFPSW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 11:14:43 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B35DEEB1;
-        Mon,  6 Jun 2022 08:14:42 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id y19so29580587ejq.6;
-        Mon, 06 Jun 2022 08:14:42 -0700 (PDT)
+        Mon, 6 Jun 2022 11:18:22 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16FF6100525
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 08:18:21 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id x17so20308834wrg.6
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 08:18:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=wdA5SSs2A+GftYSjZhbZ3WXsisBDCmDB/JAxOYIkUdU=;
-        b=Erz1QKme2uzu1CL53DykcnrB+qfgjJVnrpzSTvOrs+a/I69PggV9QsYYLXjzqxHebU
-         atO+cXtLR7n5ZB6wEgQ6IdC7lYVVlOBMbGAAUyXlYZBNl1FZgYz6TyUWfIAqXNbSXL2T
-         UG9Zo2iohTfIMSlrKX2DPboaZgVGBb57qjEyd0DhZMoYf7eWWUNrKmfleK2dDnVruHHs
-         bK7wxDw/KOtX5hkmXJrnkVW4hhXZ9DQR3zktMyBdMGmPnvC6GGaeQLXbYSn1zNDASMZK
-         hNDcpkbLwl71VmMIITEVDlEXBFz0CGCrQ9VkpyBbLzCgSGeilwXFVz9GQVUfu8L4dHTp
-         7DzQ==
+        bh=yeGsWUwpCqkjWUw73ezm6VojJaHFvekgLNZVHSqo7Vk=;
+        b=jqOsThaHylCTCcwoOhLVg1XFb7HupBei3AqE6zAsnr53Rae0pt2I2ft8PAiQF+RDFx
+         NG5eYCW+hMRDYDdAuHthvtZvb+0Sy+zkSuSlhXI4eSZpgaD5yydw5TJsK/tSdPu6UWxo
+         WWscIeUsxEbkTc4uZrJff3xTeMtdYil/Z7z7WaOX2UxGcdjMqmiPw5KUw4CT86bAo7nM
+         B4LDnMM9XcHtOIhVh9oXtZjgJeOP9/GxkUaNVRVa+c1QHaT/q+FqHE4jNsYcrh+tfYVy
+         yI/yS+NENKjrVtLoLtJDuUcgqEHar/jklU4sVotrx8dmq/SGSyC13Um2p+YmYeXhx0/X
+         1Dzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wdA5SSs2A+GftYSjZhbZ3WXsisBDCmDB/JAxOYIkUdU=;
-        b=evtPmtFBR/UiziSpdssWZnMGh9vRui6yLULDniENbx27wNsWuY8VH3SOGZOfYX7ZYX
-         Kj79dUnGrLe6P+CnBhAUrksHpCFdkQmXo2uAjCfTS1XVXFET+5Fll/2n7JmlQ0XNXiyi
-         etL/xQtVtqVn6IutL6/Bqe9pxvcL07oa5iuohZ/0GUjWvCIuoikRD0Cswg67l0nAU7vf
-         GXkCmmzKu6QDUlUSjS+GiQzBZKUIadjlLdpfhFxZIDXN+fZZi8GKrjDX7HnmHOJHq2un
-         NqgMEsNEsmAhMraFxSotgOmF7/KiN0qbX4K1shbRFLZXpp8o/XgLSqEI7CP2U4+VU24A
-         gvBA==
-X-Gm-Message-State: AOAM533PzQkzZYKftPB1zbbAe8H9Gf/NkbmrIQI4K/xSSVm/sfXFwpQF
-        YP1lp9YQvR/Z8CZBknsa6YM=
-X-Google-Smtp-Source: ABdhPJyt2liP+1F1RvMMxu7z+WgrxpjuApud9EFnbwkjgtInQOBqMpdZdFYR9tePcSfc/J8YciKCbQ==
-X-Received: by 2002:a17:906:8301:b0:6e4:896d:59b1 with SMTP id j1-20020a170906830100b006e4896d59b1mr21131479ejx.396.1654528481019;
-        Mon, 06 Jun 2022 08:14:41 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id be5-20020a0564021a2500b0042e09f44f81sm7494001edb.38.2022.06.06.08.14.39
+        bh=yeGsWUwpCqkjWUw73ezm6VojJaHFvekgLNZVHSqo7Vk=;
+        b=WNfPFWUJfuGwdShlyNgBj4G/Rfld+Jiqx3bcCsZdPRi4xJJeJDXKJi7aX8HBoQAj/y
+         Tpm4JFlKaYzqgmLa5W8k0NbciwL/p2pC5C3AV3YLiMEKJ7PUkLTzI5Eb/ZrOEiYWk5Yb
+         NGaxHqQbjKo2INgLwVxENylRl4nyibAVOMpxWBco/W8d84dNK7SksdpaTv7c4XL33JZP
+         PFcz94tFPuW4pmnEmSQ/eFpw0X76mdHojBeERDh7IXdXM7MN7ReUY5c9RhjMs29p2q59
+         TIv8Em1bGZmrHdL2M+cq+kpys2gyFsDOvnzqezG8bnAsXNkVpo+5zjNw9W0yHp1I6Zkl
+         3KMQ==
+X-Gm-Message-State: AOAM531GTRiapoEr7B73jBw26mPhM/4sPIjBwsI4v4E60mNYrP8Lt2In
+        PZaFgNBWQnVDIwNvyucIMkw=
+X-Google-Smtp-Source: ABdhPJyfdynbUbRFVUwiSWF+FSgpV5zzbCJhjuM4ntSDGcaz4MbSpwgejdAwe7ix3NmvKNWH6FhDRQ==
+X-Received: by 2002:adf:9bcd:0:b0:210:2fdc:c1f8 with SMTP id e13-20020adf9bcd000000b002102fdcc1f8mr21761855wrc.148.1654528699553;
+        Mon, 06 Jun 2022 08:18:19 -0700 (PDT)
+Received: from opensuse.localnet (host-79-13-108-3.retail.telecomitalia.it. [79.13.108.3])
+        by smtp.gmail.com with ESMTPSA id o17-20020a5d6711000000b00218453adaefsm1640899wru.101.2022.06.06.08.18.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 08:14:40 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        =?UTF-8?q?=EF=BF=BDecki?= <rafal@milecki.pl>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v5 1/3] dt-bindings: mtd: partitions: Support label only partition
-Date:   Mon,  6 Jun 2022 17:14:15 +0200
-Message-Id: <20220606151417.19227-2-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220606151417.19227-1-ansuelsmth@gmail.com>
-References: <20220606151417.19227-1-ansuelsmth@gmail.com>
+        Mon, 06 Jun 2022 08:18:18 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, Peter Robinson <pbrobinson@gmail.com>
+Subject: Re: [PATCH] staging: Also remove the Unisys visorbus.h
+Date:   Mon, 06 Jun 2022 17:18:17 +0200
+Message-ID: <5574984.DvuYhMxLoT@opensuse>
+In-Reply-To: <20220606132200.2873243-1-pbrobinson@gmail.com>
+References: <20220606132200.2873243-1-pbrobinson@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document new partition nodes that declare only the label instead of the
-reg used to provide an OF node for partition registred at runtime by
-parsers. This is required for nvmem system to declare and detect
-nvmem-cells.
+On luned=C3=AC 6 giugno 2022 15:22:00 CEST Peter Robinson wrote:
+> The commit that removed the Unisys s-Par and visorbus drivers
+> left around the include/linux/visorbus.h file mentioned in the
+> MAINTAINERS entry, we can also remove that too.
+>=20
+> Fixes: e5f45b011e4a ("staging: Remove the drivers for the Unisys s-Par")
+> Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
+> ---
+>  include/linux/visorbus.h | 344 ---------------------------------------
+>  1 file changed, 344 deletions(-)
+>  delete mode 100644 include/linux/visorbus.h
+>=20
+Good catch, I had overlooked this file.
 
-With these special partitions, the reg / offset is not required.
-The label binding is used to match the partition allocated by the
-parser at runtime and the parser will provide reg and offset of the mtd.
+Reviewed-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 
-NVMEM will use the data from the parser and provide the NVMEM cells
-declared in the DTS, "connecting" the dynamic partition with a
-static declaration of cells in them.
+Thanks,
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- .../bindings/mtd/partitions/partition.yaml       | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+=46abio
 
-diff --git a/Documentation/devicetree/bindings/mtd/partitions/partition.yaml b/Documentation/devicetree/bindings/mtd/partitions/partition.yaml
-index e1ac08064425..bff6fb980e6b 100644
---- a/Documentation/devicetree/bindings/mtd/partitions/partition.yaml
-+++ b/Documentation/devicetree/bindings/mtd/partitions/partition.yaml
-@@ -11,6 +11,13 @@ description: |
-   relative offset and size specified. Depending on partition function extra
-   properties can be used.
- 
-+  A partition may be dynamically allocated by a specific parser at runtime.
-+  In this specific case, the label is required instead of the reg.
-+  This is used to assign an OF node to the dynamiccally allocated partition
-+  so that subsystem like NVMEM can provide an OF node and declare NVMEM cells.
-+  The OF node will be assigned only if the partition label declared match the
-+  one assigned by the parser at runtime.
-+
- maintainers:
-   - Rafał Miłecki <rafal@milecki.pl>
- 
-@@ -22,6 +29,8 @@ properties:
-   label:
-     description: The label / name for this partition. If omitted, the label
-       is taken from the node name (excluding the unit address).
-+      With dynamically allocated partition the label is required and won't
-+      fallback to the node name.
- 
-   read-only:
-     description: This parameter, if present, is a hint that this partition
-@@ -41,7 +50,10 @@ properties:
-       immune to paired-pages corruptions
-     type: boolean
- 
--required:
--  - reg
-+if:
-+  not:
-+    required: [ reg ]
-+then:
-+  required: [ label ]
- 
- additionalProperties: true
--- 
-2.36.1
 
