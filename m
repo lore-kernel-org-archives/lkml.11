@@ -2,167 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51F05C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:16:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3626CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240396AbiFFPQQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:16:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56648 "EHLO
+        id S240382AbiFFPOv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 11:14:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240346AbiFFPQO (ORCPT
+        with ESMTP id S240345AbiFFPOn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 11:16:14 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4BA5655499
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 08:16:13 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 28595D6E;
-        Mon,  6 Jun 2022 08:16:13 -0700 (PDT)
-Received: from [10.57.82.168] (unknown [10.57.82.168])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 03ACB3F73B;
-        Mon,  6 Jun 2022 08:16:11 -0700 (PDT)
-Message-ID: <367f8d3d-7890-12bd-6caf-c470b0b4c614@arm.com>
-Date:   Mon, 6 Jun 2022 16:16:10 +0100
+        Mon, 6 Jun 2022 11:14:43 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B35DEEB1;
+        Mon,  6 Jun 2022 08:14:42 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id y19so29580587ejq.6;
+        Mon, 06 Jun 2022 08:14:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=wdA5SSs2A+GftYSjZhbZ3WXsisBDCmDB/JAxOYIkUdU=;
+        b=Erz1QKme2uzu1CL53DykcnrB+qfgjJVnrpzSTvOrs+a/I69PggV9QsYYLXjzqxHebU
+         atO+cXtLR7n5ZB6wEgQ6IdC7lYVVlOBMbGAAUyXlYZBNl1FZgYz6TyUWfIAqXNbSXL2T
+         UG9Zo2iohTfIMSlrKX2DPboaZgVGBb57qjEyd0DhZMoYf7eWWUNrKmfleK2dDnVruHHs
+         bK7wxDw/KOtX5hkmXJrnkVW4hhXZ9DQR3zktMyBdMGmPnvC6GGaeQLXbYSn1zNDASMZK
+         hNDcpkbLwl71VmMIITEVDlEXBFz0CGCrQ9VkpyBbLzCgSGeilwXFVz9GQVUfu8L4dHTp
+         7DzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=wdA5SSs2A+GftYSjZhbZ3WXsisBDCmDB/JAxOYIkUdU=;
+        b=evtPmtFBR/UiziSpdssWZnMGh9vRui6yLULDniENbx27wNsWuY8VH3SOGZOfYX7ZYX
+         Kj79dUnGrLe6P+CnBhAUrksHpCFdkQmXo2uAjCfTS1XVXFET+5Fll/2n7JmlQ0XNXiyi
+         etL/xQtVtqVn6IutL6/Bqe9pxvcL07oa5iuohZ/0GUjWvCIuoikRD0Cswg67l0nAU7vf
+         GXkCmmzKu6QDUlUSjS+GiQzBZKUIadjlLdpfhFxZIDXN+fZZi8GKrjDX7HnmHOJHq2un
+         NqgMEsNEsmAhMraFxSotgOmF7/KiN0qbX4K1shbRFLZXpp8o/XgLSqEI7CP2U4+VU24A
+         gvBA==
+X-Gm-Message-State: AOAM533PzQkzZYKftPB1zbbAe8H9Gf/NkbmrIQI4K/xSSVm/sfXFwpQF
+        YP1lp9YQvR/Z8CZBknsa6YM=
+X-Google-Smtp-Source: ABdhPJyt2liP+1F1RvMMxu7z+WgrxpjuApud9EFnbwkjgtInQOBqMpdZdFYR9tePcSfc/J8YciKCbQ==
+X-Received: by 2002:a17:906:8301:b0:6e4:896d:59b1 with SMTP id j1-20020a170906830100b006e4896d59b1mr21131479ejx.396.1654528481019;
+        Mon, 06 Jun 2022 08:14:41 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id be5-20020a0564021a2500b0042e09f44f81sm7494001edb.38.2022.06.06.08.14.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 08:14:40 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        =?UTF-8?q?=EF=BF=BDecki?= <rafal@milecki.pl>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v5 1/3] dt-bindings: mtd: partitions: Support label only partition
+Date:   Mon,  6 Jun 2022 17:14:15 +0200
+Message-Id: <20220606151417.19227-2-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220606151417.19227-1-ansuelsmth@gmail.com>
+References: <20220606151417.19227-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.10.0
-Subject: Re: [PATCH v6 2/2] Documentation: Add document for UltraSoc SMB
- drivers
-To:     Qi Liu <liuqi115@huawei.com>, mathieu.poirier@linaro.org,
-        mike.leach@linaro.org
-Cc:     coresight@lists.linaro.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linuxarm@huawei.com
-References: <20220606130223.57354-1-liuqi115@huawei.com>
- <20220606130223.57354-3-liuqi115@huawei.com>
-From:   Suzuki K Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <20220606130223.57354-3-liuqi115@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Qi
+Document new partition nodes that declare only the label instead of the
+reg used to provide an OF node for partition registred at runtime by
+parsers. This is required for nvmem system to declare and detect
+nvmem-cells.
 
-Please find my comments below.
+With these special partitions, the reg / offset is not required.
+The label binding is used to match the partition allocated by the
+parser at runtime and the parser will provide reg and offset of the mtd.
 
-On 06/06/2022 14:02, Qi Liu wrote:
-> This patch bring in a documentation for UltraSoc SMB drivers.
-> It simple descripts the device, sysfs interface and the
-> firmware bindings.
-> 
-> Signed-off-by: Qi Liu <liuqi115@huawei.com>
-> ---
->   .../trace/coresight/ultrasoc-smb.rst          | 80 +++++++++++++++++++
->   1 file changed, 80 insertions(+)
->   create mode 100644 Documentation/trace/coresight/ultrasoc-smb.rst
-> 
-> diff --git a/Documentation/trace/coresight/ultrasoc-smb.rst b/Documentation/trace/coresight/ultrasoc-smb.rst
-> new file mode 100644
-> index 000000000000..b4cfea82deb8
-> --- /dev/null
-> +++ b/Documentation/trace/coresight/ultrasoc-smb.rst
-> @@ -0,0 +1,80 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +
-> +======================================
-> +UltraSoc - HW Assisted Tracing on SoC
-> +======================================
-> +   :Author:   Qi Liu <liuqi115@huawei.com>
-> +   :Date:     March 2022
-> +
-> +Introduction
-> +------------
-> +
-> +UltraSoc SMB is a per SCCL(Super CPU Cluster) hardware, and it provides a way to buffer and store
+NVMEM will use the data from the parser and provide the NVMEM cells
+declared in the DTS, "connecting" the dynamic partition with a
+static declaration of cells in them.
 
-minor nit: alignment.
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+---
+ .../bindings/mtd/partitions/partition.yaml       | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-> +CPU trace messages in a region of shared system memory. SMB is plugged as
-> +a coresight sink device and the corresponding trace generators (ETM) are
-> +plugged in as source devices.
-> +
+diff --git a/Documentation/devicetree/bindings/mtd/partitions/partition.yaml b/Documentation/devicetree/bindings/mtd/partitions/partition.yaml
+index e1ac08064425..bff6fb980e6b 100644
+--- a/Documentation/devicetree/bindings/mtd/partitions/partition.yaml
++++ b/Documentation/devicetree/bindings/mtd/partitions/partition.yaml
+@@ -11,6 +11,13 @@ description: |
+   relative offset and size specified. Depending on partition function extra
+   properties can be used.
+ 
++  A partition may be dynamically allocated by a specific parser at runtime.
++  In this specific case, the label is required instead of the reg.
++  This is used to assign an OF node to the dynamiccally allocated partition
++  so that subsystem like NVMEM can provide an OF node and declare NVMEM cells.
++  The OF node will be assigned only if the partition label declared match the
++  one assigned by the parser at runtime.
++
+ maintainers:
+   - Rafał Miłecki <rafal@milecki.pl>
+ 
+@@ -22,6 +29,8 @@ properties:
+   label:
+     description: The label / name for this partition. If omitted, the label
+       is taken from the node name (excluding the unit address).
++      With dynamically allocated partition the label is required and won't
++      fallback to the node name.
+ 
+   read-only:
+     description: This parameter, if present, is a hint that this partition
+@@ -41,7 +50,10 @@ properties:
+       immune to paired-pages corruptions
+     type: boolean
+ 
+-required:
+-  - reg
++if:
++  not:
++    required: [ reg ]
++then:
++  required: [ label ]
+ 
+ additionalProperties: true
+-- 
+2.36.1
 
---8>---
-
-> +Sysfs files and directories
-> +---------------------------
-> +
-> +The SMB devices appear on the existing coresight bus alongside the other
-> +coresight devices::
-> +
-> +	$# ls /sys/bus/coresight/devices/
-> +	ultra_smb0   ultra_smb1   ultra_smb2   ultra_smb3
-> +
-> +The ``ultra_smb<N>`` named SMB associated with SCCL.::
-> +
-> +	$# ls /sys/bus/coresight/devices/ultra_smb0
-> +	enable_sink   mgmt
-> +	$# ls /sys/bus/coresight/devices/ultra_smb0/mgmt
-> +	buf_size  buf_status  read_pos  write_pos
-> +
-
-These should also be placed in, with the appropriate format.
-
-Documentation/ABI/testing/sysfs-bus-coresight-devices-ultra_smb
-
-
-
-> +*Key file items are:-*
-> +   * ``read_pos``: Shows the value held by UltraSoc SMB Read Pointer register.
-> +   * ``write_pos``: Shows the value held by UltraSoc SMB Write Pointer register.
-> +   * ``buf_status``: Shows the value held by UltraSoc SMB status register.
-> +		     BIT(0) is zero means buffer is empty.
-> +   * ``buf_size``: Shows the buffer size of each UltraSoc SMB device.
-> +
-> +Firmware Bindings
-> +---------------------------
-> +
-> +Firmware binding of SMB device describes SMB device indentifier, resource
-> +information and graph structure.
-
-Please could you mention that this is only supported with ACPI here ?
-
-> +
-> +SMB is platform device and device id is "HISI03A1", resource of device is
-> +declared using the _CRS method. Each SMB must present two base address,
-
-Simply say, the device is identified by ACPI HID "HISI03A1".
-
-> +the first one is the configuration base address of SMB device, the second
-> +one is the base address of shared system memory.
-> +
-> +examples::
-> +
-> +    Device(USMB) {                                               \
-> +      Name(_HID, "HISI03A1")                                     \
-> +      Name(_CRS, ResourceTemplate() {                            \
-> +          MEM_RESRC(0x95100000, 0x951FFFFF, 0x100000)            \
-> +          MEM_RESRC(0x50000000, 0x53FFFFFF, 0x4000000)           \
-> +      })                                                         \
-> +      Name(_DSD, Package() {                                     \
-> +        ToUUID("ab02a46b-74c7-45a2-bd68-f7d344ef2153"),          \
-> +	/* Use CoreSight Graph ACPI bindings to describe connections topology */
-> +        Package() {                                              \
-> +          0,                                                     \
-> +          1,                                                     \
-> +          Package() {                                            \
-> +            1,                                                   \
-> +            ToUUID("3ecbc8b6-1d0e-4fb3-8107-e627f805c6cd"),      \
-> +            8,                                                   \
-> +            Package() {0x8, 0, \_SB.S00.SL11.CL28.F008, 0},       \
-> +            Package() {0x9, 0, \_SB.S00.SL11.CL29.F009, 0},       \
-> +            Package() {0xa, 0, \_SB.S00.SL11.CL2A.F010, 0},       \
-> +            Package() {0xb, 0, \_SB.S00.SL11.CL2B.F011, 0},       \
-> +            Package() {0xc, 0, \_SB.S00.SL11.CL2C.F012, 0},       \
-> +            Package() {0xd, 0, \_SB.S00.SL11.CL2D.F013, 0},       \
-> +            Package() {0xe, 0, \_SB.S00.SL11.CL2E.F014, 0},       \
-> +            Package() {0xf, 0, \_SB.S00.SL11.CL2F.F015, 0},       \
-> +          }                                                      \
-> +        }                                                        \
-> +      })                                                         \
-> +    }
-
-Rest looks fine to me
-
-Suzuki
