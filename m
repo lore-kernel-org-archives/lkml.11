@@ -2,94 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64A4BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 21:18:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6662C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 21:20:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234284AbiFFVS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 17:18:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35322 "EHLO
+        id S231343AbiFFVUS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 17:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230342AbiFFVSu (ORCPT
+        with ESMTP id S231721AbiFFVUI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 17:18:50 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49EE5BA99D
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 14:18:47 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id m82so21346608oif.13
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 14:18:47 -0700 (PDT)
+        Mon, 6 Jun 2022 17:20:08 -0400
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC5962215
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 14:20:07 -0700 (PDT)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-f2cd424b9cso20724855fac.7
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 14:20:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YCcSuhuQ1vWwVJ0SW2RVYIVh/aSNB0orFLVM+U8ftCM=;
-        b=aX4csWQi3E97IZVp7kfPFWT4t/uQQ91msNCIDdET7namQno4hrb4pgmbFaFuMwHnuv
-         cXGC0QOHEtB0M57d4JOcViNU0H7E26JpSpsGUfaWgPOOG4ZdEzVhVrkzb7keqvhywz07
-         sNcXZ7jGIGSgw0YBGR5yF33qWulsfzMkje4N/Dzc3GthV6QgHzW6dTLj1UvCKURBEuN1
-         Ftl8yWjme7AaNT+w8CvIIna4/la7QBc1oZbqdgXn8RsUzfBTOtUSvlvBEAyQXL5kWxFL
-         e6VCROspeDsXUiIYU56QKDUcYYE6x9kLNhFe/qybielxQS/UxXZIA+twBUSCirrNoiYh
-         mMVg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9PcUJMsE22PYq+FyjhmAfpnSlrIsq/ysnRAwNN0aJxE=;
+        b=cFIig+iuLezd7UpzZyzFTJMfFClnhdvrZy+bypNFh4PXyrr1gsDRcuefxKgXq3e9NJ
+         0b8HdCqqgAKQkawwFKrCrUAiqW4yi+IDGbAohG78cei+TRymvdabboTzOHh7iLDXgTmV
+         W/fLZr0IYhAeYFX7hXPHRcOSNl/liIEM9qIo4qh6EUG5hwmVFExNfUcuyj4rXw44wYpy
+         maSuNlyvsiQM0CDlWDq0Bi9K0QrfOj1zkoJPjcZQ+TSKvR14s0rF/v56ZQz9emef+nyk
+         hGNtRCWsPK4X4XmZxxdM49nzhLKYuDFuQ6+E+a/amc9fW9jlTls7M6x0bE3q6RN3QqD7
+         cesw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YCcSuhuQ1vWwVJ0SW2RVYIVh/aSNB0orFLVM+U8ftCM=;
-        b=uBErJwgHDe8zAokFGzbuBurvrMEgWHp/mhCENt6cCDKts+XILWijX1kRyZBsEddkoR
-         pGM44n4qHCU3d/Vp+vdt9nrl1WQWeC+L4RJhjbXZ9vXOu0b7ayArAMT6a24Q8un70Gky
-         gEexqIvyOtFHjrdKQbYqIn8QwQ4TVgUdxLiX3uTTAYjhsJ4vXf0OrbWNDME89Kz9XaFO
-         XzGr7U/bCtBpPdezrCEFhlG6+2+UsxhvHdw6Gk3Z7VHvETlISm0lQ3eDCT+ZYgM+T4C8
-         UGUSgCPfjJpOIcE6vsltkwoLBWkfN76WMZ4GDEj0M1dEw54zgHplf67hC1w1jaZ9jJJf
-         ZiYQ==
-X-Gm-Message-State: AOAM530XDzbbwVDvF8PfBkKNdIlgNb0mIwjqHkqymAVnUIrVdt/qu6OA
-        DQ7XoCbKMa7tB2U6j3fDUkCrOA==
-X-Google-Smtp-Source: ABdhPJzO7TM8BK3G8gYvkXfPhVHXVafWnK1DvN0BUm2+eoHuppcoSnE9n+Wv7V4l1pdwHAEcaSAg9w==
-X-Received: by 2002:aca:304f:0:b0:32e:8381:fa69 with SMTP id w76-20020aca304f000000b0032e8381fa69mr5698715oiw.289.1654550326658;
-        Mon, 06 Jun 2022 14:18:46 -0700 (PDT)
-Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id e28-20020a544f1c000000b0032c18f04800sm9126744oiy.1.2022.06.06.14.18.45
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9PcUJMsE22PYq+FyjhmAfpnSlrIsq/ysnRAwNN0aJxE=;
+        b=XYZwGRTg81+cYxXtN/w8veNWPJ/d0VUOuttga+BfHPY4lyyKlFhkA/nGe9Ds1q+rXN
+         KSwuy/Ww/Ak7MQfJKNQjp6ClhEtAGnVDsr0CsUnejdZwCZQlrSSazM7BhqEi8nnnwpTt
+         4HAWKlXZpJ58LSE/UjprcxGYhz0yHZSmA8loPaV6AKut9TG7GfAMfxRqAXyw3723wmDM
+         vjBY2su17/j+tNzXJwIO2C9JaU6gtkUveSokg4MugVQqND7D1DclGuGQLIV4HdFLRYts
+         BsdOOmdW0uLbj4gdQ8dklu4AzF2O/gXtnpuSAtZhdNGFijwdn00OMUMPTGtd2N2AI5rZ
+         3HgQ==
+X-Gm-Message-State: AOAM530VP9OSzxwC5LLzXeKFAVde9X8BGJJtIjTHkQWV5vdaNX2cAKmF
+        ddqLzNE5mOfdPMNUWXLvTfXKNnTiemWE8w==
+X-Google-Smtp-Source: ABdhPJxSVw0Ka4pnnTRj95ab0a4BoYO4I+R34kBd+OcFd6uj/aq/Jl7ry5WyjAv2FpyNUdgfw/2ctQ==
+X-Received: by 2002:a05:6870:7099:b0:f1:b164:59ee with SMTP id v25-20020a056870709900b000f1b16459eemr14842915oae.21.1654550406920;
+        Mon, 06 Jun 2022 14:20:06 -0700 (PDT)
+Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id bc32-20020a05682016a000b0035eb4e5a6dasm8361956oob.48.2022.06.06.14.20.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 14:18:46 -0700 (PDT)
+        Mon, 06 Jun 2022 14:20:06 -0700 (PDT)
+Date:   Mon, 6 Jun 2022 14:22:31 -0700
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+To:     Maximilian Luz <luzmaximilian@gmail.com>
+Cc:     Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] clk: qcom: gdsc: Bump parent usage count when GDSC is found enabled
-Date:   Mon,  6 Jun 2022 14:21:12 -0700
-Message-Id: <20220606212112.3617731-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.35.1
+Subject: Re: [PATCH] drm/msm: Fix double pm_runtime_disable() call
+Message-ID: <Yp5wF2FJ0lCvkUGH@ripper>
+References: <20220606211305.189585-1-luzmaximilian@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220606211305.189585-1-luzmaximilian@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a GDSC is found to be enabled at boot the pm_runtime state will
-be unbalanced as the GDSC is later turned off. Fix this by increasing
-the usage counter on the power-domain, in line with how we handled the
-regulator state.
+On Mon 06 Jun 14:13 PDT 2022, Maximilian Luz wrote:
 
-Fixes: 1b771839de05 ("clk: qcom: gdsc: enable optional power domain support")
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
- drivers/clk/qcom/gdsc.c | 3 +++
- 1 file changed, 3 insertions(+)
+> Following commit 17e822f7591f ("drm/msm: fix unbalanced
+> pm_runtime_enable in adreno_gpu_{init, cleanup}"), any call to
+> adreno_unbind() will disable runtime PM twice, as indicated by the call
+> trees below:
+> 
+>   adreno_unbind()
+>    -> pm_runtime_force_suspend()
+>    -> pm_runtime_disable()
+> 
+>   adreno_unbind()
+>    -> gpu->funcs->destroy() [= aNxx_destroy()]
+>    -> adreno_gpu_cleanup()
+>    -> pm_runtime_disable()
+> 
+> Note that pm_runtime_force_suspend() is called right before
+> gpu->funcs->destroy() and both functions are called unconditionally.
+> 
+> With recent addition of the eDP AUX bus code, this problem manifests
+> itself when the eDP panel cannot be found yet and probing is deferred.
+> On the first probe attempt, we disable runtime PM twice as described
+> above. This then causes any later probe attempt to fail with
+> 
+>   [drm:adreno_load_gpu [msm]] *ERROR* Couldn't power up the GPU: -13
+> 
+> preventing the driver from loading.
+> 
+> As there seem to be scenarios where the aNxx_destroy() functions are not
+> called from adreno_unbind(), simply removing pm_runtime_disable() from
+> inside adreno_unbind() does not seem to be the proper fix. This is what
+> commit 17e822f7591f ("drm/msm: fix unbalanced pm_runtime_enable in
+> adreno_gpu_{init, cleanup}") intended to fix. Therefore, instead check
+> whether runtime PM is still enabled, and only disable it in that case.
+> 
+> Fixes: 17e822f7591f ("drm/msm: fix unbalanced pm_runtime_enable in adreno_gpu_{init, cleanup}")
 
-diff --git a/drivers/clk/qcom/gdsc.c b/drivers/clk/qcom/gdsc.c
-index 44520efc6c72..a1fa7c4cff60 100644
---- a/drivers/clk/qcom/gdsc.c
-+++ b/drivers/clk/qcom/gdsc.c
-@@ -420,6 +420,9 @@ static int gdsc_init(struct gdsc *sc)
- 				return ret;
- 		}
- 
-+		/* ...and the power-domain */
-+		gdsc_pm_runtime_get(sc);
-+
- 		/*
- 		 * Votable GDSCs can be ON due to Vote from other masters.
- 		 * If a Votable GDSC is ON, make sure we have a Vote.
--- 
-2.35.1
+Tested-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
+> Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
+> ---
+>  drivers/gpu/drm/msm/adreno/adreno_gpu.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+> index 4e665c806a14..f944b69e2a25 100644
+> --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+> +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+> @@ -1057,7 +1057,8 @@ void adreno_gpu_cleanup(struct adreno_gpu *adreno_gpu)
+>  	for (i = 0; i < ARRAY_SIZE(adreno_gpu->info->fw); i++)
+>  		release_firmware(adreno_gpu->fw[i]);
+>  
+> -	pm_runtime_disable(&priv->gpu_pdev->dev);
+> +	if (pm_runtime_enabled(&priv->gpu_pdev->dev))
+> +		pm_runtime_disable(&priv->gpu_pdev->dev);
+>  
+>  	msm_gpu_cleanup(&adreno_gpu->base);
+>  }
+> -- 
+> 2.36.1
+> 
