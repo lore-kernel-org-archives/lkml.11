@@ -2,116 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A771C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 17:11:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F05C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 17:13:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229563AbiFFRK4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 13:10:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40014 "EHLO
+        id S229493AbiFFRNP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 13:13:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiFFRJR (ORCPT
+        with ESMTP id S229505AbiFFRMs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 13:09:17 -0400
-X-Greylist: delayed 198 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Jun 2022 09:57:11 PDT
-Received: from condef-05.nifty.com (condef-05.nifty.com [202.248.20.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09DE0E64;
-        Mon,  6 Jun 2022 09:57:11 -0700 (PDT)
-Received: from conssluserg-06.nifty.com ([10.126.8.85])by condef-05.nifty.com with ESMTP id 256GoaT7003088;
-        Tue, 7 Jun 2022 01:50:36 +0900
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53]) (authenticated)
-        by conssluserg-06.nifty.com with ESMTP id 256Go78p015542;
-        Tue, 7 Jun 2022 01:50:07 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 256Go78p015542
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1654534207;
-        bh=JczM4pY/KqVyXbgBAdJHth13hYHYPz2AUgD+NORgP88=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=cAA51L+u6zio7BDf+AdzTL9IFahNNoK+IiMW9NRdKxUe5ulchRLVG+jZitDOo7hCF
-         sdUTF5rd30GYnQMqlnwteZvMnK/XrFclvTkM6QcStqmQK68Y5HUF3OpFB68sWa4BpB
-         ALQSELRdNsP11YD82PkkK7hzoStrvAW73FTUx0zD7fgBvgVmETvRc0CitfBaezA/r8
-         pfWFIMh7qyTRR687u78y9ER6r6FcuIwRbO4uk7DRBrpf5KTvbHJw7HpEdEBjO3HY/V
-         HhsA3iMg3t8XZm5JVkk2IUarrT2h5lIJx/j2M6StoLXlrjfkbRGh2eonb7xGSnIKrY
-         nuOqr164blPnw==
-X-Nifty-SrcIP: [209.85.216.53]
-Received: by mail-pj1-f53.google.com with SMTP id hv24-20020a17090ae41800b001e33eebdb5dso12099561pjb.0;
-        Mon, 06 Jun 2022 09:50:07 -0700 (PDT)
-X-Gm-Message-State: AOAM531dL2bC7wLFd4aneYQtoCWquitJXp10p6Hz45neUApa37+DETRS
-        YledxK2+T2Jf4sWZ3t3PiAmb5ZMk9Qf+gBfYP18=
-X-Google-Smtp-Source: ABdhPJyatm0uoax8ecbzLyDvchHcD4De61uzjEguhfJ0F6MA1SImvv9cNdnotdQnMjAPMkpOUCkaUUJZRyJxjCLVyU0=
-X-Received: by 2002:a17:902:f687:b0:167:58bb:c43f with SMTP id
- l7-20020a170902f68700b0016758bbc43fmr15048539plg.136.1654534206608; Mon, 06
- Jun 2022 09:50:06 -0700 (PDT)
+        Mon, 6 Jun 2022 13:12:48 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D0926543B;
+        Mon,  6 Jun 2022 10:01:53 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id v1so19471906ejg.13;
+        Mon, 06 Jun 2022 10:01:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=4zYRg9QIKLuP0JwfVvjlEFPmuLeyXti8yyirKy91Q1w=;
+        b=lJvGt4cT7Wc3DUsIMaQJsU+RQuEVx65ETRRSCvyxvEvxFajh86RC7k/CefpleSbE7Z
+         CJHl/5Ookhpz2/i3QdX2NFv5FHsSkeZb0+1akLAgL8edxon2E7iL5TcbJbdwKmlabZm8
+         dqdBfLGwCVDfd9si6nR8Pphnta9eMUHMkpsu9+TrvFqdvE/l7URNK6O5r0x4YVOKMGKm
+         m+Mzn3E8wh/U5G4b1elvFdtUayEL8E+3JCbWSF8b6/kTv/38HnitXj3Kmf2YWvwTmlkj
+         qpX41+bJ32sG+yCL/bnUciDsBj0HSsEI5LM0JYHD9uAxMEYFD4Mp/ax86AQ1+YAC3s3B
+         yiUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=4zYRg9QIKLuP0JwfVvjlEFPmuLeyXti8yyirKy91Q1w=;
+        b=jeqnBBjSAgOYozdonhihQAVzeG6gitdwU5t+VHBoz8ZG/hJyNHls/kqHatRZOlh262
+         /YGRf7MMr2lEURW6BBfhQUPkScyPg6bcx0hy/0rUmjTXaGZ3RoD6Pr4bN7pT51JClAQd
+         Sw+Rd+SIR+OBE5s6Eogmo3AvSGBk83ig8veXhZdR+JzyHhtFLiqyHWo/B3xnKcNsKveC
+         phuzg65wsl2RGnE1S369ILVcXz21m4KcuCcL7vJRHBEgbMgqyPIgYXeyqfHLW2lEaDCu
+         7u2Uz3kKbWQMWkWw+/M4WXed7v9Xu5wj2a7Vh3Al9SMdY8uZj+wpaVFsTvPQT3b8V93v
+         9YMQ==
+X-Gm-Message-State: AOAM531GbvcQp88LDvdsCNK1mDRaIcNFGXWzR724IENH2f6cEmkWvzWv
+        hFLakHqTzSJlKGsPRkLa87yoCz09cuUyxUzu79ZzGjuqLww=
+X-Google-Smtp-Source: ABdhPJzovU3c9OvgJvFgFzpioKQzX8EX17ry25J4mXgs9aUqi2Qyk8sPpBoEWgnTBS4jNoJCUffSCB20fcohU9dPV4M=
+X-Received: by 2002:a17:906:c7c1:b0:711:d2e9:99d0 with SMTP id
+ dc1-20020a170906c7c100b00711d2e999d0mr4128843ejb.639.1654534911686; Mon, 06
+ Jun 2022 10:01:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <165451871967.1941436.17828809503267245815.stgit@warthog.procyon.org.uk>
-In-Reply-To: <165451871967.1941436.17828809503267245815.stgit@warthog.procyon.org.uk>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 7 Jun 2022 01:49:19 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAS-0kQOvt=7TNn0osf9JO5hZhSp9PaFFBsSx++2Pevc9g@mail.gmail.com>
-Message-ID: <CAK7LNAS-0kQOvt=7TNn0osf9JO5hZhSp9PaFFBsSx++2Pevc9g@mail.gmail.com>
-Subject: Re: [PATCH] certs: Convert spaces in certs/Makefile to a tab
-To:     David Howells <dhowells@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@linux.microsoft.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>, keyrings@vger.kernel.org,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220606131124.53394-1-ilpo.jarvinen@linux.intel.com>
+ <20220606131124.53394-2-ilpo.jarvinen@linux.intel.com> <fb32bda5-ea44-da8d-493a-a043b8619022@linux.intel.com>
+ <CAHp75Ve4t1aF4wDpXPOcOX3MXbn_DaaNWG4S9Ft1jpZ0dGSXzw@mail.gmail.com> <97e83f-8011-37fb-d958-2d881fcdbd3@linux.intel.com>
+In-Reply-To: <97e83f-8011-37fb-d958-2d881fcdbd3@linux.intel.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 6 Jun 2022 19:01:15 +0200
+Message-ID: <CAHp75Vek_O9MJHGXkgJQZT1w-QbdiU0Bpc_PqcA+P6yEBJcEpA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/6] serial: 8250: Store to lsr_save_flags after lsr read
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
+        LKML <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 9:32 PM David Howells <dhowells@redhat.com> wrote:
->
-> There's a rule in certs/Makefile for which the command begins with eight
-> spaces.  This results in:
->
->         ../certs/Makefile:21: FORCE prerequisite is missing
->         ../certs/Makefile:21: *** missing separator.  Stop.
->
-> Fix this by turning the spaces into a tab.
->
-> Fixes: addf466389d9 ("certs: Check that builtin blacklist hashes are vali=
-d")
-> Signed-off-by: David Howells <dhowells@redhat.com>
-> cc: Micka=C3=ABl Sala=C3=BCn <mic@linux.microsoft.com>
-> cc: Jarkko Sakkinen <jarkko@kernel.org>
-> cc: keyrings@vger.kernel.org
+On Mon, Jun 6, 2022 at 6:54 PM Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+> On Mon, 6 Jun 2022, Andy Shevchenko wrote:
+> > On Mon, Jun 6, 2022 at 3:55 PM Ilpo J=C3=A4rvinen
+> > <ilpo.jarvinen@linux.intel.com> wrote:
 
+...
 
-Not only 8-space indentation, but also:
-
-  - config_filename does not exist
-  - $(SYSTEM_BLACKLIST_HASH_LIST_SRCPREFIX) is always empty
-  - $(SYSTEM_BLACKLIST_HASH_LIST_FILENAME) is always empty
-
-
-> ---
+> > But more importantly I do not see the reason for the Acked-by tag when
+> > SoB of the same person is present.
 >
->  certs/Makefile |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> I just repeated what Uwe gave me. Maybe he didn't notice he was already
+> there as SoB.
 >
-> diff --git a/certs/Makefile b/certs/Makefile
-> index bb904f90f139..cb1a9da3fc58 100644
-> --- a/certs/Makefile
-> +++ b/certs/Makefile
-> @@ -18,7 +18,7 @@ CFLAGS_blacklist_hashes.o +=3D -I$(srctree)
->
->  targets +=3D blacklist_hashes_checked
->  $(obj)/blacklist_hashes_checked: $(SYSTEM_BLACKLIST_HASH_LIST_SRCPREFIX)=
-$(SYSTEM_BLACKLIST_HASH_LIST_FILENAME) scripts/check-blacklist-hashes.awk F=
-ORCE
-> -       $(call if_changed,check_blacklist_hashes,$(SYSTEM_BLACKLIST_HASH_=
-LIST_SRCPREFIX)$(CONFIG_SYSTEM_BLACKLIST_HASH_LIST))
-> +       $(call if_changed,check_blacklist_hashes,$(SYSTEM_BLACKLIST_HASH_=
-LIST_SRCPREFIX)$(CONFIG_SYSTEM_BLACKLIST_HASH_LIST))
->  obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) +=3D blacklist_hashes.o
->  else
->  obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) +=3D blacklist_nohashes.o
->
->
+> This situation is anyway a bit more complex than usual. The line I took
+> was part of Uwe's much larger patch initially (which was fully reverted)
+> so his SoB was carried over to preserve the authorship. As I made a
+> non-trivial modification to his original patch by removing almost all of
+> it, I added my SoB too. Given this situation, I kind of thought he Acked
+> (approved) the post-modification version of it.
 
+I believe you haven't preserved the authorship that way (since From
+line is different), but since you have done non-trivial changes and
+Uwe is okay with them, the straightforward tag chain would be (with
+your authorship implied):
+Co-developed-by: Uwe
+SoB: Uwe
+SoB: yours
 
---
-Best Regards
-Masahiro Yamada
+--=20
+With Best Regards,
+Andy Shevchenko
