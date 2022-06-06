@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F579C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56FC0C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:07:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231235AbiFFSFl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 14:05:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56562 "EHLO
+        id S230512AbiFFSHA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 14:07:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230448AbiFFSF0 (ORCPT
+        with ESMTP id S231508AbiFFSFA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 14:05:26 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2053.outbound.protection.outlook.com [40.107.92.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245FE2632B6
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 11:05:21 -0700 (PDT)
+        Mon, 6 Jun 2022 14:05:00 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2046.outbound.protection.outlook.com [40.107.212.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DB8125D5C3
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 11:04:33 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RBZLCIhEPAdBf3eZx8bs4EhnfjNSgx+67vSHPuddMjfVxjMv/yAvm7sPKolseGiKzrkqzxcHQc1w59Z1NaMu8yJrrA56iu1pFeiBx2JKY3NIIsg8qIZnxZYW3H/L9gxlCGkmsrC6sgsWBaYOjdsWHjodDdQE2HU73+tIddKi1HhE5ET2euwbYsMNDO6X0SQMgiNXc+Cse7lDQkEExpimXw/mNprcnGr65RQYtHRjW11YokQDHW2B7Tv6Rf+cGZZKBc+iYoM1j/COS+MG8P5tDzEW+KbK6zPdUs9S1PMHiguOXvA/SmemQTH2N857/7u8BGoUlMki+t29VrbYF6E8Wg==
+ b=cohVzCuuUWfSE3k018mVDYt4cB5pLlVYR434mmeEdSYR44WMD2FTKxXPu4dgWTF6FN4MD0TbUHWAzDK11w6v5Z9lbpiKR1RlywLmbzpo8cyvTZYsecmLWRaw7h+krZm1MF/H6PXruG6gxikoX+80LxyBvRFCYabe+ZXtd35n1lkZoSMAdxqwhNeWlT489SNBx8Z3fF3szroAoNC0MXgiDPle9jBw9tkDqMZBkF2DZdZHGOgijlyOz17xaxCaZ0riysNPqNLVN6v0ch3yZBwVxzOGMfq0yuzKExaV2QDouNvd+QLhGYD24uHzwMtk2huHxd/7WQ6QQipL/i19H4jgNA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bRhwj6n7H/X0DORhfgU2ZOXBZbVhNZdUwo9iiZ7Mqf4=;
- b=My9wCfRnNgO+mpw8yquHlunTRbpk8vKDp9uzyaX4TVp8RGxze8/AmmSTLTddptLcPxB+ZWiwJT4boGK6G/HG1Gt9IykLRdqwNe+fpmL/uiSUspngIEMFrGOx84kCDVqwSTPoMF1IqPsGjkUOocTfVLs7qo2RTs+MZhJGwJVD3MB01G7qRGZd0zqDgVh9HcD1pe6lL+pKUfohDCkoZgEOfHdHxglT+Px/ZdUwOdZbPTS81l7oRYzAfTrVEgp0xdkbSoDkBMZOktCo3aWMGHT6/m9pU4p0dURc4pMFVuIRO31nP8lxgTeqOOMmrMN7ovt+JXQKUQpVohmWH82WizSl4g==
+ bh=d6ZQ4q2RRqXJvpMepNto6XwIARFnbOw06kx3d2j+Pfc=;
+ b=H8OFUgL7SnD7+Jc31Lsx+rBIkItbR8q9gDuazJQfVxQfy53fCN7P99l9SVkUKI0SenKLMfs1WYWl7EIZqutXRyMucfxjSi6o8HlVfs2KPJVCJ80/7XRmqPuMpTDxV1rHq/Xs9XlCZzHByPj+/vx/LDNvpXpEa0vP77XpSvYFu7tsRuIUOlG2Wv33BVeZmAabMQWl8axiYaZM4NgNMKDZC+I83fpq8QLVFjUs/G2wnHlvFc5kYoFLcfmYfEHrkzOhp77Bwak64UgP/ppxVQ1d3M8SrhOnyFjvxoK6rpRcC5LpC/CuBn87zCNNIsoJcfxL7IWO+OjWC5TtgfeQemnq1Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bRhwj6n7H/X0DORhfgU2ZOXBZbVhNZdUwo9iiZ7Mqf4=;
- b=dwboOlwpn/NLR3z6lT1gZ5ceUhO+UmPA/BqVMMrO+hJJTzKPAhInMSz0gIf7IAm+JXFkDe7P6pwU5JgPkRfIAM0Y5upuaPBm/21QCjM440KVdag9ZSL+3JyMkEJrObYOtGtA7o5BhXNT4OW9LaXBrnwFPmbQJi17JR3zJwb+nvQ=
-Received: from MWHPR21CA0045.namprd21.prod.outlook.com (2603:10b6:300:129::31)
- by DM6PR12MB4745.namprd12.prod.outlook.com (2603:10b6:5:7b::13) with
+ bh=d6ZQ4q2RRqXJvpMepNto6XwIARFnbOw06kx3d2j+Pfc=;
+ b=W/AsfDeiMArrvoNdf+rAXkl40bf6piv54L8ErFWgy0jsKoXYiu8yyh9JNFccGQ3bQmpuOvSqIO+6mQ8aIuQOZF9OoKEfOOpeXbIB7HnJeUZJF2g1Yd+0w8fwJaTkHfbFiMBjvL1QYGhtmoRJWkcwQ+o1cL8DGJt2x5uCMkRoZEk=
+Received: from MWHPR14CA0041.namprd14.prod.outlook.com (2603:10b6:300:12b::27)
+ by MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.13; Mon, 6 Jun
- 2022 18:05:15 +0000
-Received: from CO1NAM11FT025.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:129:cafe::52) by MWHPR21CA0045.outlook.office365.com
- (2603:10b6:300:129::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.0 via Frontend
- Transport; Mon, 6 Jun 2022 18:05:15 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12; Mon, 6 Jun
+ 2022 18:04:24 +0000
+Received: from CO1NAM11FT056.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:300:12b:cafe::7d) by MWHPR14CA0041.outlook.office365.com
+ (2603:10b6:300:12b::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12 via Frontend
+ Transport; Mon, 6 Jun 2022 18:04:24 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -47,13 +47,13 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT025.mail.protection.outlook.com (10.13.175.232) with Microsoft SMTP
+ CO1NAM11FT056.mail.protection.outlook.com (10.13.175.107) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5314.12 via Frontend Transport; Mon, 6 Jun 2022 18:05:15 +0000
+ 15.20.5314.12 via Frontend Transport; Mon, 6 Jun 2022 18:04:24 +0000
 Received: from beas.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 6 Jun
- 2022 13:05:07 -0500
+ 2022 13:04:16 -0500
 From:   Wyes Karny <wyes.karny@amd.com>
 To:     <linux-kernel@vger.kernel.org>
 CC:     <Lewis.Carroll@amd.com>, <Mario.Limonciello@amd.com>,
@@ -68,9 +68,9 @@ CC:     <Lewis.Carroll@amd.com>, <Mario.Limonciello@amd.com>,
         <rafael.j.wysocki@intel.com>, <andrew.cooper3@citrix.com>,
         <jing2.liu@intel.com>, <jmattson@google.com>,
         <pawan.kumar.gupta@linux.intel.com>
-Subject: [PATCH v5 3/3] x86: Fix comment for X86_FEATURE_ZEN
-Date:   Mon, 6 Jun 2022 23:33:36 +0530
-Message-ID: <9931b01a85120a0d1faf0f244e8de3f2190e774c.1654538381.git-series.wyes.karny@amd.com>
+Subject: [PATCH v5 1/3] x86: Handle idle=nomwait cmdline properly for x86_idle
+Date:   Mon, 6 Jun 2022 23:33:34 +0530
+Message-ID: <fdc2dc2d0a1bc21c2f53d989ea2d2ee3ccbc0dbe.1654538381.git-series.wyes.karny@amd.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <cover.12ae0052320eae3574e421a17822624143a4bc61.1654538381.git-series.wyes.karny@amd.com>
 References: <cover.12ae0052320eae3574e421a17822624143a4bc61.1654538381.git-series.wyes.karny@amd.com>
@@ -82,49 +82,107 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dd497c00-11bf-4006-b3c8-08da47e71bce
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4745:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB474538110E8FE136F7ACDD6984A29@DM6PR12MB4745.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 25ba2ee9-ffeb-41c9-707d-08da47e6fd38
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4192:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB41927A873EE4FD796487E6FD84A29@MN2PR12MB4192.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZGUkh+EBB4Q4LI+Q1DeeLxqOba5V3zVR199HZxhsYjm9xbN5e9cOWYNXpFMzlIjz0d+Gz2HC5cSvP1JXFlio2jmepAYlZit/JAGER2ah17pp26lhn+u7+qRVmuZ/n8wxuuuU52PhvsuOCvBc8yZ+MrpK0uXIjVMZYJlCwWcIAnw24PpdrLTIwXIb8iDZInPifbn9f+seNLVe2BGgAfln32+c1pF7RpR+h4ZNCAVyzeb42bk6IUjcp+PY0kNfS5LLfnTyJCm4Zt/zVGOFuITMOcYJPsEv+3QeQqXR/0HQEIIJdvWq8yo4A9Iq3aKktnnA82UZreltFy84FlV/glF1ZS2bwhkJvgWznWzJjo6lRE90itFhdAZ3We40eNAJdihQdCJZOoel7UEIR1RiNb3X1F5p4oBBoylf+nJpuWVpI5NAdr6imo23qgl+jEv2S9crK19c2Cp+uNWoEO9yk/RI3bgoifWKXGFIVaHRTL9oAWQexaLHyuSlX9GiP58zJMhI4rFy2XwnCGrPbDWMuyHPhk/7kjGwxHcjhYzYjiWp3doRfqZgyH5d6tCPUNGBgxo74p0U6ynayVxmNF/rjevwx5kLPBoeRBALTrNUp0/XZk4R35uPZs1RhW8yD129ooYnCcc6PGe4VMRfRyEg0cALhrD7ITRNyuZTTfr5NgsKA62CTcqjNZwhmFrtMdKHODGufG0A/QTh0YkMHk+x5+sZOw==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(316002)(7416002)(186003)(2906002)(2616005)(7696005)(40460700003)(81166007)(82310400005)(26005)(356005)(86362001)(36756003)(6666004)(16526019)(54906003)(6916009)(83380400001)(336012)(8936002)(5660300002)(426003)(47076005)(70586007)(8676002)(44832011)(70206006)(4326008)(508600001)(36860700001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: It0sfQob+BjvxvDvyyD8I/+8/7TiFcPfin9RukWoIOlcBMxxork5KWKJg4KfalpIWJ+ZGbdK3N+uMhQQ/becFvuoq0yXOBvAnbogARS/ADGDuXRwMNVS7UqdvNQ8VxQs90dxkCAw8SUA4vscaiVulEXJqB+JNsJP9sgccOLQ0WsJbO0InnBqWPk3iJOb8jTpd8BnJrb0PY9XR4xGZnVnYRdOblQOLfj4Fmk6mo//auKKigtCsj8CJ0mWs4FZQg3zpI/esLpm52rIn8Syr3+xaiWEXIG5eLLINMyFxk4kJ2YvnqzaM5uO3nyDBMq3WF6AhRMJWs/b+QY3ZaFLno8M/+ruSAuULgEIHM1/mlE2kLgZnJGR+8XCCcmd0f4LNvvAHstMS9qbqYWTioOxeVWBpMUgFvOFnNQonbmeDwWWdh3A3/BcGtc1ZIay83UqTr1BQywh/0wnM9ulIXhSaFYsblDCrYmkuQnqJV2Q0CZ5Bs8QD7THEenMSXS8RE6uIEVuUnpoiH9g8TamJJqkFdq1brsBgH+yYMijSynD304kOuNKyZlOVeOlfg/NF1bljsuzrhauSZdkrUsoVQ7egU8+DDQu3odSWxvdO1ZfolMmtJhY968GTNI69oDDgd+SymlaMcD2H9TDacB+uA7pD2SVLO62vwqFD+TqSTFcQB7MFpBQQDmmzYvlxaFc7A2iNmBfiTpvPLVIdeM6xupFncnx3A==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(7416002)(4326008)(8676002)(316002)(356005)(40460700003)(2906002)(36756003)(86362001)(44832011)(5660300002)(426003)(70586007)(8936002)(81166007)(70206006)(26005)(47076005)(336012)(186003)(508600001)(16526019)(7696005)(6666004)(2616005)(54906003)(82310400005)(6916009)(83380400001)(36860700001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2022 18:05:15.4176
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2022 18:04:24.0856
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd497c00-11bf-4006-b3c8-08da47e71bce
+X-MS-Exchange-CrossTenant-Network-Message-Id: 25ba2ee9-ffeb-41c9-707d-08da47e6fd38
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT025.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT056.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4745
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4192
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The feature X86_FEATURE_ZEN implies that the CPU based on Zen
-microarchitecture. Call this out explicitly in the comment.
+When kernel is booted with idle=nomwait do not use MWAIT as the
+default idle state.
+
+If the user boots the kernel with idle=nomwait, it is a clear
+direction to not use mwait as the default idle state.
+However, the current code does not take this into consideration
+while selecting the default idle state on x86.
+
+This patch fixes it by checking for the idle=nomwait boot option in
+prefer_mwait_c1_over_halt().
+
+Also update the documentation around idle=nomwait appropriately.
 
 Signed-off-by: Wyes Karny <wyes.karny@amd.com>
 Tested-by: Zhang Rui <rui.zhang@intel.com>
 ---
- arch/x86/include/asm/cpufeatures.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/admin-guide/pm/cpuidle.rst | 15 +++++++++------
+ arch/x86/kernel/process.c                |  9 ++++++---
+ 2 files changed, 15 insertions(+), 9 deletions(-)
 
-diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
-index 393f2bbb5e3a..140bc82dc9cb 100644
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -219,7 +219,7 @@
- #define X86_FEATURE_IBRS		( 7*32+25) /* Indirect Branch Restricted Speculation */
- #define X86_FEATURE_IBPB		( 7*32+26) /* Indirect Branch Prediction Barrier */
- #define X86_FEATURE_STIBP		( 7*32+27) /* Single Thread Indirect Branch Predictors */
--#define X86_FEATURE_ZEN			( 7*32+28) /* "" CPU is AMD family 0x17 or above (Zen) */
-+#define X86_FEATURE_ZEN			(7*32+28) /* "" CPU based on Zen microarchitecture */
- #define X86_FEATURE_L1TF_PTEINV		( 7*32+29) /* "" L1TF workaround PTE inversion */
- #define X86_FEATURE_IBRS_ENHANCED	( 7*32+30) /* Enhanced IBRS */
- #define X86_FEATURE_MSR_IA32_FEAT_CTL	( 7*32+31) /* "" MSR IA32_FEAT_CTL configured */
+diff --git a/Documentation/admin-guide/pm/cpuidle.rst b/Documentation/admin-guide/pm/cpuidle.rst
+index aec2cd2aaea7..19754beb5a4e 100644
+--- a/Documentation/admin-guide/pm/cpuidle.rst
++++ b/Documentation/admin-guide/pm/cpuidle.rst
+@@ -612,8 +612,8 @@ the ``menu`` governor to be used on the systems that use the ``ladder`` governor
+ by default this way, for example.
+ 
+ The other kernel command line parameters controlling CPU idle time management
+-described below are only relevant for the *x86* architecture and some of
+-them affect Intel processors only.
++described below are only relevant for the *x86* architecture and references
++to ``intel_idle`` affect Intel processors only.
+ 
+ The *x86* architecture support code recognizes three kernel command line
+ options related to CPU idle time management: ``idle=poll``, ``idle=halt``,
+@@ -635,10 +635,13 @@ idle, so it very well may hurt single-thread computations performance as well as
+ energy-efficiency.  Thus using it for performance reasons may not be a good idea
+ at all.]
+ 
+-The ``idle=nomwait`` option disables the ``intel_idle`` driver and causes
+-``acpi_idle`` to be used (as long as all of the information needed by it is
+-there in the system's ACPI tables), but it is not allowed to use the
+-``MWAIT`` instruction of the CPUs to ask the hardware to enter idle states.
++The ``idle=nomwait`` option prevents the use of ``MWAIT`` instruction of
++the CPU to enter idle states. When this option is used, the ``acpi_idle``
++driver will use the ``HLT`` instruction instead of ``MWAIT``. On systems
++running Intel processors, this option disables the ``intel_idle`` driver
++and forces the use of the ``acpi_idle`` driver instead. Note that in either
++case, ``acpi_idle`` driver will function only if all the information needed
++by it is in the system's ACPI tables.
+ 
+ In addition to the architecture-level kernel command line options affecting CPU
+ idle time management, there are parameters affecting individual ``CPUIdle``
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index 9b2772b7e1f3..5cd30eedd33c 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -821,6 +821,10 @@ static void amd_e400_idle(void)
+  */
+ static int prefer_mwait_c1_over_halt(const struct cpuinfo_x86 *c)
+ {
++	/* User has disallowed the use of MWAIT. Fallback to HALT */
++	if (boot_option_idle_override == IDLE_NOMWAIT)
++		return 0;
++
+ 	if (c->x86_vendor != X86_VENDOR_INTEL)
+ 		return 0;
+ 
+@@ -932,9 +936,8 @@ static int __init idle_setup(char *str)
+ 	} else if (!strcmp(str, "nomwait")) {
+ 		/*
+ 		 * If the boot option of "idle=nomwait" is added,
+-		 * it means that mwait will be disabled for CPU C2/C3
+-		 * states. In such case it won't touch the variable
+-		 * of boot_option_idle_override.
++		 * it means that mwait will be disabled for CPU C1/C2/C3
++		 * states.
+ 		 */
+ 		boot_option_idle_override = IDLE_NOMWAIT;
+ 	} else
 -- 
 git-series 0.9.1
