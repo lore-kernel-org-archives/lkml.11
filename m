@@ -2,69 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1155C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:33:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CCCDCCA473
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:34:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239784AbiFFOdu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:33:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53956 "EHLO
+        id S239799AbiFFOd6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:33:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239732AbiFFOds (ORCPT
+        with ESMTP id S239732AbiFFOd5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:33:48 -0400
-X-Greylist: delayed 315 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Jun 2022 07:33:47 PDT
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4157B2BE9;
-        Mon,  6 Jun 2022 07:33:46 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 8B7716601E8B;
-        Mon,  6 Jun 2022 15:28:29 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654525710;
-        bh=x7xKY5UUVqxnt5695zeWx8FCmwvNi3Mq8k7CtIwGYG0=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=m5zy97b2177AzVbPV1k8kS6LsuZ3sO1+vG5fn7qDs+VulYToDd8FeSkekArpUCKu3
-         She6nj230USZpPYifATZ45fjSvGs7qTimZwuB9cZLwhFu6uUBA/rytH7F9SVnsoc1f
-         mdXnxdcQpb42pPHOhriV/coO/XkMeGmI6kAWY4GVDkqfPHfFpv9rvhN+cOaKolFPUf
-         O9F263uN2FCDvQ0/xWQWMdGfAA6goCvc0WkhCe+cahuagJjA76uPo1RFjWHSljF1MH
-         HOD9HWuo7sZh58TeXFdw6mOCntLJXWVfi4d60TMOTaGvdTMmOaZejLZ8vJ2Gb+DPm1
-         uNp/n72zZ/bOw==
-Message-ID: <eb1c3713-b6a5-5f5a-fe22-75117b85971f@collabora.com>
-Date:   Mon, 6 Jun 2022 16:28:26 +0200
+        Mon, 6 Jun 2022 10:33:57 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D5D0D2C13F;
+        Mon,  6 Jun 2022 07:33:55 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8CACF15DB;
+        Mon,  6 Jun 2022 07:33:55 -0700 (PDT)
+Received: from [10.57.81.38] (unknown [10.57.81.38])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 555903F73B;
+        Mon,  6 Jun 2022 07:33:48 -0700 (PDT)
+Message-ID: <1e0e5403-1e65-db9a-c8e7-34e316bfda8e@arm.com>
+Date:   Mon, 6 Jun 2022 15:33:42 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 1/2] dt-bindings: pwm: mediatek: add pwm binding for
- MT8195
-Content-Language: en-US
-To:     Fabien Parent <fparent@baylibre.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 2/5] iommu: Ensure device has the same iommu_ops as the
+ domain
+Content-Language: en-GB
+To:     Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com,
+        joro@8bytes.org, will@kernel.org, marcan@marcan.st,
+        sven@svenpeter.dev, robdclark@gmail.com, m.szyprowski@samsung.com,
+        krzysztof.kozlowski@linaro.org, baolu.lu@linux.intel.com,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        matthias.bgg@gmail.com, heiko@sntech.de, orsonzhai@gmail.com,
+        baolin.wang7@gmail.com, zhang.lyra@gmail.com, wens@csie.org,
+        jernej.skrabec@gmail.com, samuel@sholland.org,
+        jean-philippe@linaro.org, alex.williamson@redhat.com
+Cc:     suravee.suthikulpanit@amd.com, alyssa@rosenzweig.io,
+        alim.akhtar@samsung.com, dwmw2@infradead.org, yong.wu@mediatek.com,
+        mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+        cohuck@redhat.com, iommu@lists.linux-foundation.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20220531114544.144785-1-fparent@baylibre.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220531114544.144785-1-fparent@baylibre.com>
+        linux-arm-msm@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org
+References: <20220606061927.26049-1-nicolinc@nvidia.com>
+ <20220606061927.26049-3-nicolinc@nvidia.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220606061927.26049-3-nicolinc@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 31/05/22 13:45, Fabien Parent ha scritto:
-> MT8195's PWM IP is compatible with the MT8183 PWM IP.
-> 
-> Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> Acked-by: Rob Herring <robh@kernel.org>
+On 2022-06-06 07:19, Nicolin Chen wrote:
+> The core code should not call an iommu driver op with a struct device
+> parameter unless it knows that the dev_iommu_priv_get() for that struct
+> device was setup by the same driver. Otherwise in a mixed driver system
+> the iommu_priv could be casted to the wrong type.
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+We don't have mixed-driver systems, and there are plenty more 
+significant problems than this one to solve before we can (but thanks 
+for pointing it out - I hadn't got as far as auditing the public 
+interfaces yet). Once domains are allocated via a particular device's 
+IOMMU instance in the first place, there will be ample opportunity for 
+the core to stash suitable identifying information in the domain for 
+itself. TBH even the current code could do it without needing the 
+weirdly invasive changes here.
+
+> Store the iommu_ops pointer in the iommu_domain and use it as a check to
+> validate that the struct device is correct before invoking any domain op
+> that accepts a struct device.
+
+In fact this even describes exactly that - "Store the iommu_ops pointer 
+in the iommu_domain", vs. the "Store the iommu_ops pointer in the 
+iommu_domain_ops" which the patch is actually doing :/
+
+[...]
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 19cf28d40ebe..8a1f437a51f2 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1963,6 +1963,10 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+>   {
+>   	int ret;
+>   
+> +	/* Ensure the device was probe'd onto the same driver as the domain */
+> +	if (dev->bus->iommu_ops != domain->ops->iommu_ops)
+
+Nope, dev_iommu_ops(dev) please. Furthermore I think the logical place 
+to put this is in iommu_group_do_attach_device(), since that's the 
+gateway for the public interfaces - we shouldn't need to second-guess 
+ourselves for internal default-domain-related calls.
+
+Thanks,
+Robin.
+
+> +		return -EMEDIUMTYPE;
+> +
+>   	if (unlikely(domain->ops->attach_dev == NULL))
+>   		return -ENODEV;
