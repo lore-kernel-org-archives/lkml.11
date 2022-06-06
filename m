@@ -2,140 +2,273 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB33C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 19:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E367FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 19:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231947AbiFFTbk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 15:31:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46540 "EHLO
+        id S229530AbiFFTc3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 15:32:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232321AbiFFTbh (ORCPT
+        with ESMTP id S232310AbiFFTcY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 15:31:37 -0400
-Received: from mailrelay2-1.pub.mailoutpod1-cph3.one.com (mailrelay2-1.pub.mailoutpod1-cph3.one.com [46.30.210.183])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 469CCC6A
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 12:31:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ravnborg.org; s=rsa1;
-        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
-         from:date:from;
-        bh=wCRPXxH3TgL7AtKRIM4kQGYE5THJ1u4cAVHFfmnp23I=;
-        b=SF0ovNOODl+ysB/CTvSKPbEriSHX/CRcfHRXG7MwzpxRCOlXVl2RHxnESjLDrzS2aGC2EVVbE3rvy
-         XZ/tqcXYkX+0ZVagpfEWkXAhjQLKX8wOsJsVUOPk8s9aRpUr/97pTCnpXLo4fpiRYe0foBikXx/6wv
-         NN2t48g57sOU2tYk0V2FI5M27BHRrdYwE5HBqO6qkmvjy8q+Gayyf2Lk8HpdH42OjJfPyAYX3E1nd4
-         H5k3a4/An1fRWJW31BA/jmYggXs4eD1ATWFbX9xTE1B/L4LYiEvY2T/pkQAvuCk82vqt3nEMKQKix0
-         tXx+TGTXm7eOjCZVneJFXhXkl5L7gLA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
-        d=ravnborg.org; s=ed1;
-        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
-         from:date:from;
-        bh=wCRPXxH3TgL7AtKRIM4kQGYE5THJ1u4cAVHFfmnp23I=;
-        b=1F+wwMxDLCppDOU47omnaGMHoNwunuSPx33O8NmEVcVnFC/y171hv+XSeRzP12e3EInOVRzuZeNRm
-         1Dgt8V3Cg==
-X-HalOne-Cookie: 2bafee458b238af5551c965e6954a36589d2a2e0
-X-HalOne-ID: 45c8e030-e5cf-11ec-a911-d0431ea8a290
-Received: from mailproxy3.cst.dirpod3-cph3.one.com (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
-        by mailrelay2.pub.mailoutpod1-cph3.one.com (Halon) with ESMTPSA
-        id 45c8e030-e5cf-11ec-a911-d0431ea8a290;
-        Mon, 06 Jun 2022 19:31:33 +0000 (UTC)
-Date:   Mon, 6 Jun 2022 21:31:32 +0200
-From:   Sam Ravnborg <sam@ravnborg.org>
-To:     Hsin-Yi Wang <hsinyi@chromium.org>
-Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org,
-        Rob Clark <robdclark@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 8/8] drm/mediatek: Config orientation property if
- panel provides it
-Message-ID: <Yp5WFA2H52nHVP3d@ravnborg.org>
-References: <20220606152431.1889185-1-hsinyi@chromium.org>
- <20220606152431.1889185-9-hsinyi@chromium.org>
+        Mon, 6 Jun 2022 15:32:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777BB1A81E;
+        Mon,  6 Jun 2022 12:32:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 01EBD6149D;
+        Mon,  6 Jun 2022 19:32:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B5CEC34119;
+        Mon,  6 Jun 2022 19:32:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654543942;
+        bh=FWYO48tZzW1QrOl5nlcwP2dPQNnXBzxB9LYsv3bKWLY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YwpVJetskC5OgVjir8JO7mJjMIZfFcjuffoAszOLlB4mIj7lbQlOt4QCBy+HlGlaV
+         RAqO0Oy6DmmIep/UbjHokCoGlyD/t9rkSiNH6b1igIxh//XC8mrRU3R1l67i1W/ARy
+         rmp0p4W3TpXAgGdYLBs85zH5IwcE2aErjv+rqjaJPG/aOhxsuzpwG2O2r6ZZiGc6L+
+         fPOjR9KCdE2iMCeupIYoW91awGzz3NDRtgugq+O70P8u+poHlNRjrTuuxeSPFWdWCy
+         8KHD6uj4jjGjv6ihS4EZBIOgyV/nTyVNyqVqrNTOjlaaRiMtGX50JzkYXcv5Ulgwu1
+         zD6BrrOVEF0CQ==
+Date:   Mon, 6 Jun 2022 12:32:20 -0700
+From:   Ben Widawsky <bwidawsk@kernel.org>
+To:     ira.weiny@intel.com
+Cc:     Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH V10 9/9] cxl/port: Parse out DSMAS data from CDAT table
+Message-ID: <20220606193220.aw7ouwtop7lo2gpc@bwidawsk-mobl5>
+References: <20220605005049.2155874-1-ira.weiny@intel.com>
+ <20220605005049.2155874-10-ira.weiny@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220606152431.1889185-9-hsinyi@chromium.org>
+In-Reply-To: <20220605005049.2155874-10-ira.weiny@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hsin-Yi,
-
-On Mon, Jun 06, 2022 at 11:24:31PM +0800, Hsin-Yi Wang wrote:
-> Panel orientation property should be set before drm_dev_register().
-> Mediatek drm driver calls drm_dev_register() in .bind(). However, most
-> panels sets orientation property relatively late, mostly in .get_modes()
-> callback, since this is when they are able to get the connector and
-> binds the orientation property to it, though the value should be known
-> when the panel is probed.
+On 22-06-04 17:50:49, ira.weiny@intel.com wrote:
+> From: Ira Weiny <ira.weiny@intel.com>
 > 
-> Let the drm driver check if the remote end point is a panel and if it
-> contains the orientation property. If it does, set it before
-> drm_dev_register() is called.
-
-I do not know the best way to do what you need to do here.
-But it seems wrong to introduce a deprecated function
-(drm_of_find_panel_or_bridge), to set the rotation property early.
-
-I think you need to find a way to do this utilising the panel_bridge or
-something.
-
-	Sam
-
+> CXL Ports with memory devices attached need the information from the
+> Device Scoped Memory Affinity Structure (DSMAS).  This information is
+> contained within the CDAT table buffer which is previously read and
+> cached in the port device.
 > 
-> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> If CDAT data is available, parse and cache DSMAS data from the table.
+> Store this data in unmarshaled struct dsmas data structures for ease of
+> use later.
+> 
+> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+> 
 > ---
->  drivers/gpu/drm/mediatek/mtk_dsi.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
+> Changes from V8
+> 	Adjust to the cdat data being in cxl_port
 > 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> index d9f10a33e6fa..c56282412bfa 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> @@ -185,6 +185,7 @@ struct mtk_dsi {
->  	struct drm_encoder encoder;
->  	struct drm_bridge bridge;
->  	struct drm_bridge *next_bridge;
-> +	struct drm_panel *panel;
->  	struct drm_connector *connector;
->  	struct phy *phy;
+> Changes from V7
+> 	Rebased on cxl-pending
+> 
+> Changes from V6
+> 	Move to port.c
+> 	It is not an error if no DSMAS data is found
+> 
+> Changes from V5
+> 	Fix up sparse warnings
+> 	Split out cdat_hdr_valid()
+> 	Update cdat_hdr_valid()
+> 		Remove revision and cs field parsing
+> 			There is no point in these
+> 		Add seq check and debug print.
+> 	From Jonathan
+> 		Add spaces around '+' and '/'
+> 		use devm_krealloc() for dmas_ary
+> ---
+>  drivers/cxl/cdat.h     | 17 +++++++++++
+>  drivers/cxl/core/pci.c | 65 ++++++++++++++++++++++++++++++++++++++++++
+>  drivers/cxl/cxl.h      |  2 ++
+>  drivers/cxl/cxlmem.h   |  4 +++
+>  drivers/cxl/cxlpci.h   |  1 +
+>  drivers/cxl/mem.c      |  1 +
+>  6 files changed, 90 insertions(+)
+> 
+> diff --git a/drivers/cxl/cdat.h b/drivers/cxl/cdat.h
+> index 3d8945612511..0a510f73fe6d 100644
+> --- a/drivers/cxl/cdat.h
+> +++ b/drivers/cxl/cdat.h
+> @@ -85,6 +85,23 @@
 >  
-> @@ -822,6 +823,12 @@ static int mtk_dsi_encoder_init(struct drm_device *drm, struct mtk_dsi *dsi)
->  		ret = PTR_ERR(dsi->connector);
->  		goto err_cleanup_encoder;
->  	}
-> +
-> +	/* Read panel orientation */
-> +	if (dsi->panel)
-> +		drm_connector_set_panel_orientation(dsi->connector,
-> +				drm_panel_get_orientation(dsi->panel));
-> +
->  	drm_connector_attach_encoder(dsi->connector, &dsi->encoder);
+>  #define CXL_DOE_PROTOCOL_TABLE_ACCESS 2
 >  
->  	return 0;
-> @@ -837,6 +844,9 @@ static int mtk_dsi_bind(struct device *dev, struct device *master, void *data)
->  	struct drm_device *drm = data;
->  	struct mtk_dsi *dsi = dev_get_drvdata(dev);
->  
-> +	/* Get panel if existed */
-> +	drm_of_find_panel_or_bridge(dev->of_node, 0, 0, &dsi->panel, NULL);
+> +/**
+> + * struct cxl_dsmas - host unmarshaled version of DSMAS data
+> + *
+> + * As defined in the Coherent Device Attribute Table (CDAT) specification this
+> + * represents a single DSMAS entry in that table.
+> + *
+> + * @dpa_base: The lowest Device Physical Address associated with this DSMAD
+> + * @length: Length in bytes of this DSMAD
+> + * @non_volatile: If set, the memory region represents Non-Volatile memory
+> + */
+> +struct cxl_dsmas {
+> +	u64 dpa_base;
+> +	u64 length;
+> +	/* Flags */
+> +	u8 non_volatile:1;
+> +};
 > +
->  	ret = mtk_dsi_encoder_init(drm, dsi);
->  	if (ret)
->  		return ret;
+>  /**
+>   * struct cxl_cdat - CXL CDAT data
+>   *
+> diff --git a/drivers/cxl/core/pci.c b/drivers/cxl/core/pci.c
+> index e68f13e66fcf..9666cc4a67aa 100644
+> --- a/drivers/cxl/core/pci.c
+> +++ b/drivers/cxl/core/pci.c
+> @@ -673,3 +673,68 @@ void read_cdat_data(struct cxl_port *port)
+>  		retries);
+>  }
+>  EXPORT_SYMBOL_NS_GPL(read_cdat_data, CXL);
+> +
+> +void parse_dsmas(struct cxl_memdev *cxlmd, struct cxl_port *port)
+> +{
+> +	struct device *dev = &port->dev;
+> +	struct cxl_dsmas *dsmas_ary = NULL;
+> +	u32 *data = port->cdat.table;
+> +	int bytes_left = port->cdat.length;
+> +	int nr_dsmas = 0;
+> +
+> +	if (!data) {
+> +		dev_info(dev, "No CDAT data available for DSMAS\n");
+> +		return;
+> +	}
+> +
+> +	/* Skip header */
+> +	data += CDAT_HEADER_LENGTH_DW;
+> +	bytes_left -= CDAT_HEADER_LENGTH_BYTES;
+> +
+> +	while (bytes_left > 0) {
+> +		u32 *cur_rec = data;
+> +		u8 type = FIELD_GET(CDAT_STRUCTURE_DW0_TYPE, cur_rec[0]);
+> +		u16 length = FIELD_GET(CDAT_STRUCTURE_DW0_LENGTH, cur_rec[0]);
+> +
+> +		if (type == CDAT_STRUCTURE_DW0_TYPE_DSMAS) {
+> +			struct cxl_dsmas *new_ary;
+> +			u8 flags;
+> +
+> +			new_ary = devm_krealloc(dev, dsmas_ary,
+> +					   sizeof(*dsmas_ary) * (nr_dsmas + 1),
+> +					   GFP_KERNEL);
+> +			if (!new_ary) {
+> +				dev_err(dev,
+> +					"Failed to allocate memory for DSMAS data (nr_dsmas %d)\n",
+> +					nr_dsmas);
+> +				return;
+> +			}
+> +			dsmas_ary = new_ary;
+
+I don't love the realloc on every loop (though I've done something similar
+before). What about allocating enough entries port->cdat.length, and then a
+single krealloc to shorten the array upon success? I think krealloc pretty much
+always succeeds when you shrink FWIW.
+
+> +
+> +			flags = FIELD_GET(CDAT_DSMAS_DW1_FLAGS, cur_rec[1]);
+
+Does it make sense to test length/bytes_left before reading cur_rec[1]?
+
+> +
+> +			dsmas_ary[nr_dsmas].dpa_base = CDAT_DSMAS_DPA_OFFSET(cur_rec);
+> +			dsmas_ary[nr_dsmas].length = CDAT_DSMAS_DPA_LEN(cur_rec);
+> +			dsmas_ary[nr_dsmas].non_volatile = CDAT_DSMAS_NON_VOLATILE(flags);
+> +
+> +			dev_dbg(dev, "DSMAS %d: %llx:%llx %s\n",
+> +				nr_dsmas,
+> +				dsmas_ary[nr_dsmas].dpa_base,
+> +				dsmas_ary[nr_dsmas].dpa_base +
+> +					dsmas_ary[nr_dsmas].length,
+> +				(dsmas_ary[nr_dsmas].non_volatile ?
+> +					"Persistent" : "Volatile")
+> +				);
+> +
+> +			nr_dsmas++;
+> +		}
+> +
+> +		data += (length / sizeof(u32));
+> +		bytes_left -= length;
+> +	}
+> +
+> +	dev_dbg(dev, "Found %d DSMAS entries\n", nr_dsmas);
+> +	cxlmd->dsmas_ary = dsmas_ary;
+> +	cxlmd->nr_dsmas = nr_dsmas;
+> +}
+> +EXPORT_SYMBOL_NS_GPL(parse_dsmas, CXL);
+> diff --git a/drivers/cxl/cxl.h b/drivers/cxl/cxl.h
+> index 531b77d296c7..4d779a8fb807 100644
+> --- a/drivers/cxl/cxl.h
+> +++ b/drivers/cxl/cxl.h
+> @@ -10,6 +10,8 @@
+>  #include <linux/io.h>
+>  #include "cdat.h"
+>  
+> +#include "cdat.h"
+> +
+>  /**
+>   * DOC: cxl objects
+>   *
+> diff --git a/drivers/cxl/cxlmem.h b/drivers/cxl/cxlmem.h
+> index 4d2764b865ab..ce5b00f3ebcb 100644
+> --- a/drivers/cxl/cxlmem.h
+> +++ b/drivers/cxl/cxlmem.h
+> @@ -36,6 +36,8 @@
+>   * @cxlds: The device state backing this device
+>   * @detach_work: active memdev lost a port in its ancestry
+>   * @id: id number of this memdev instance.
+> + * @dsmas_ary: Array of DSMAS entries as parsed from the CDAT table
+> + * @nr_dsmas: Number of entries in dsmas_ary
+
+Personally don't think it's necessary to append "_ary". Up to you.
+
+>   */
+>  struct cxl_memdev {
+>  	struct device dev;
+> @@ -43,6 +45,8 @@ struct cxl_memdev {
+>  	struct cxl_dev_state *cxlds;
+>  	struct work_struct detach_work;
+>  	int id;
+> +	struct cxl_dsmas *dsmas_ary;
+> +	int nr_dsmas;
+>  };
+>  
+>  static inline struct cxl_memdev *to_cxl_memdev(struct device *dev)
+> diff --git a/drivers/cxl/cxlpci.h b/drivers/cxl/cxlpci.h
+> index 71009a167a92..44d1c2b83aab 100644
+> --- a/drivers/cxl/cxlpci.h
+> +++ b/drivers/cxl/cxlpci.h
+> @@ -76,4 +76,5 @@ struct cxl_dev_state;
+>  int cxl_hdm_decode_init(struct cxl_dev_state *cxlds, struct cxl_hdm *cxlhdm);
+>  void cxl_cache_cdat_mb(struct cxl_port *port);
+>  void read_cdat_data(struct cxl_port *port);
+> +void parse_dsmas(struct cxl_memdev *cxlmd, struct cxl_port *port);
+>  #endif /* __CXL_PCI_H__ */
+> diff --git a/drivers/cxl/mem.c b/drivers/cxl/mem.c
+> index c310f1fd3db0..a8768df4ae38 100644
+> --- a/drivers/cxl/mem.c
+> +++ b/drivers/cxl/mem.c
+> @@ -35,6 +35,7 @@ static int create_endpoint(struct cxl_memdev *cxlmd,
+>  	if (IS_ERR(endpoint))
+>  		return PTR_ERR(endpoint);
+>  
+> +	parse_dsmas(cxlmd, endpoint);
+>  	dev_dbg(&cxlmd->dev, "add: %s\n", dev_name(&endpoint->dev));
+>  
+>  	if (!endpoint->dev.driver) {
 > -- 
-> 2.36.1.255.ge46751e96f-goog
+> 2.35.1
+> 
