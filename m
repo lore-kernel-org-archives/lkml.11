@@ -2,110 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F417C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 20:20:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E47B7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 20:22:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233714AbiFFUUo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 16:20:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54306 "EHLO
+        id S233541AbiFFUWh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 16:22:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234234AbiFFUUX (ORCPT
+        with ESMTP id S233471AbiFFUWb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 16:20:23 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A40DEDA0
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 13:20:11 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id j6so13566991pfe.13
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 13:20:11 -0700 (PDT)
+        Mon, 6 Jun 2022 16:22:31 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E61CCFD
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 13:22:28 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id h23so20050701ejj.12
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 13:22:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zICvYCx4eGxVrXk8LpGPKi4keG/OpLNxmOtIxsqErvI=;
-        b=IagWj/SYc4/Y9FtFzDCdKS0529Z4XuGo/muGY5dQdCpyLFUW4vJ6bi0MvsqL2kl5Ag
-         x6oaZvLNOMpEwbKp3Hr7hRhbVM2hoMI1eIwsPfTLGax/rgzs75IqMS0pNkoSyhk9NLZz
-         pebdYMxt0VX9bf4CyTFGLvAjhw/vC87BDFvfc=
+        d=rasmusvillemoes.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NDvZ4UleUYUTKOU5gyNsiH8SYe6dt0N9haij8gkeJuQ=;
+        b=ekAzTc3QPUODDMjzIXzdshCFY5ExrrFiCb6vYhkn4vj2sdRYhw90nR3veL6oFstY/A
+         tmN89MKgKgXHx0XHoIMIl63g+XjpSQY91V0nzIj7yxM8Xe/VBkbALH/HyM25bemP+2PX
+         LkASjRlhdMm8e69Ov6J94eQpEhZ7cO6woLOf0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zICvYCx4eGxVrXk8LpGPKi4keG/OpLNxmOtIxsqErvI=;
-        b=vVcqedDD9Xk27/0BEylKFBYVczTfHvi8BzUZENAnMOjkN+7e8NajtWCsMzpKSSsAPW
-         I4NFqDnmKBrF0jJK4mUuFnsrU8c8iGvu90dUtoJEOX/gXULlV25WPB4mwAbZxrKJ3uCE
-         f4Oh/Eu6Irz0vmkw1FdD2AuxrHyfDSzpx1tMjls0tq9CNnIlr4sbISZcMOl16LnbMu82
-         oof1PUYQ7kp2yewCSuQjAfkL+hcVsjb++0W3GPfI2ZnIttY5h6AHvUWozd+JD+LLveTD
-         J1b8l6VonDENENQukJhplxoi2x11aSdfDdnsvPzxWuVJOGGRm//giW2zIKY+jGQgVjdI
-         sa3g==
-X-Gm-Message-State: AOAM5305JY0RgyR3LIWs/yE6v0BKhp/G2SDFn5uxEZwfDgPCQoDkwXvI
-        kRc5fm9O/tWib3Ivm+JXewmqLrkMX3hDcdwR
-X-Google-Smtp-Source: ABdhPJzhSZmC7qAnR3r/4uCpN7yK371WiuxS6DFokrY0B9A6JlwUmhG3U3RSl+6CPJFBjoOq2WeGEQ==
-X-Received: by 2002:a63:2360:0:b0:3fb:ee61:82cf with SMTP id u32-20020a632360000000b003fbee6182cfmr22288194pgm.574.1654546810993;
-        Mon, 06 Jun 2022 13:20:10 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id l5-20020a170902d34500b0015ef27092aasm10883034plk.190.2022.06.06.13.20.10
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NDvZ4UleUYUTKOU5gyNsiH8SYe6dt0N9haij8gkeJuQ=;
+        b=YSEEKGo3BTyac4gm9syVClZ1Lkt4LyZcUgR3lbZfcL8E/pRZMwFhaGUotp86EwOQn5
+         UeCyoVpHMtv4Fkrok+UWngcgnknRBd1XHpDc21w/cjPkuBlI6ZQLCVbtfaF+rCessrzN
+         jmjR0zsUDZR+IayNHYNrid3ZJRerroqM8CQnmyvpaGtcu5ikhZeKFEsCQztDwY4i3A7q
+         NACyKGIKGRnYpjG58mlrFDrsjpWBAKIYnfeElRQhgowvKpYRDcvqZHU++HUsdAM7aUhl
+         ahKgfiz4nxHVvr0Lq2NOgubLZ0HX9Sz62ZyplRGqlzA6dnRznnnl4nlzQFn19U0OxCcq
+         FROQ==
+X-Gm-Message-State: AOAM530ZHqBoXepk+8J34RtQLPUPvPs6P+Dg7Jwn4hIWGkq4X4m6A2iI
+        3DHZLjKUAy4fAOVWDonQdbn6wA==
+X-Google-Smtp-Source: ABdhPJz7/yg9b/o2cR10nFFDSq2Ab2tXLzh90wmld7S+j8XDW6ylysOyvqFXG5LzqjkuOXraFTUIQA==
+X-Received: by 2002:a17:907:629c:b0:6e1:6ad:5dd8 with SMTP id nd28-20020a170907629c00b006e106ad5dd8mr23026451ejc.641.1654546947118;
+        Mon, 06 Jun 2022 13:22:27 -0700 (PDT)
+Received: from prevas-ravi.tritech.se ([80.208.64.233])
+        by smtp.gmail.com with ESMTPSA id d20-20020aa7ce14000000b0042dd4ccccf5sm9043789edv.82.2022.06.06.13.22.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 13:20:10 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     bleung@chromium.org, Prashant Malani <pmalani@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
-        Brian Norris <briannorris@chromium.org>,
-        chrome-platform@lists.linux.dev (open list:CHROME HARDWARE PLATFORM
-        SUPPORT)
-Subject: [PATCH 3/3] platform/chrome: cros_ec_proto: Update size arg types
-Date:   Mon,  6 Jun 2022 20:18:05 +0000
-Message-Id: <20220606201825.763788-4-pmalani@chromium.org>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-In-Reply-To: <20220606201825.763788-1-pmalani@chromium.org>
-References: <20220606201825.763788-1-pmalani@chromium.org>
+        Mon, 06 Jun 2022 13:22:26 -0700 (PDT)
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dan Murphy <dmurphy@ti.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/3] net: phy: dp83867: add binding and support for io_impedance_ctrl nvmem cell
+Date:   Mon,  6 Jun 2022 22:22:17 +0200
+Message-Id: <20220606202220.1670714-1-linux@rasmusvillemoes.dk>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cros_ec_cmd() takes 2 size arguments. Update them to be of the more
-appropriate type size_t.
+We have a board where measurements indicate that the current three
+options - leaving IO_IMPEDANCE_CTRL at the (factory calibrated) reset
+value or using one of the two boolean properties to set it to the
+min/max value - are too coarse.
 
-Suggested-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
----
- drivers/platform/chrome/cros_ec_proto.c     | 4 ++--
- include/linux/platform_data/cros_ec_proto.h | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+This series adds a device tree binding for an nvmem cell which can be
+populated during production with a suitable value calibrated for each
+board, and corresponding support in the driver. The second patch adds
+a trivial phy wrapper for dev_err_probe(), used in the third.
 
-diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index b6bea183ee28..cefabfe45551 100644
---- a/drivers/platform/chrome/cros_ec_proto.c
-+++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -958,9 +958,9 @@ int cros_ec_cmd(struct cros_ec_device *ec_dev,
- 		unsigned int version,
- 		int command,
- 		void *outdata,
--		int outsize,
-+		size_t outsize,
- 		void *indata,
--		int insize)
-+		size_t insize)
- {
- 	struct cros_ec_command *msg;
- 	int ret;
-diff --git a/include/linux/platform_data/cros_ec_proto.h b/include/linux/platform_data/cros_ec_proto.h
-index 816da4eef3e5..85e29300f63d 100644
---- a/include/linux/platform_data/cros_ec_proto.h
-+++ b/include/linux/platform_data/cros_ec_proto.h
-@@ -232,7 +232,7 @@ bool cros_ec_check_features(struct cros_ec_dev *ec, int feature);
- int cros_ec_get_sensor_count(struct cros_ec_dev *ec);
- 
- int cros_ec_cmd(struct cros_ec_device *ec_dev, unsigned int version, int command, void *outdata,
--		    int outsize, void *indata, int insize);
-+		    size_t outsize, void *indata, size_t insize);
- 
- /**
-  * cros_ec_get_time_ns() - Return time in ns.
+
+Rasmus Villemoes (3):
+  dt-bindings: dp83867: add binding for io_impedance_ctrl nvmem cell
+  linux/phy.h: add phydev_err_probe() wrapper for dev_err_probe()
+  net: phy: dp83867: implement support for io_impedance_ctrl nvmem cell
+
+ .../devicetree/bindings/net/ti,dp83867.yaml   | 18 +++++-
+ drivers/net/phy/dp83867.c                     | 55 +++++++++++++++++--
+ include/linux/phy.h                           |  3 +
+ 3 files changed, 67 insertions(+), 9 deletions(-)
+
 -- 
-2.36.1.255.ge46751e96f-goog
+2.31.1
 
