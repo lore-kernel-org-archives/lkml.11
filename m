@@ -2,90 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B4AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:44:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF572C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:44:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239902AbiFFOoA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:44:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47530 "EHLO
+        id S239904AbiFFOo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:44:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239836AbiFFOny (ORCPT
+        with ESMTP id S239823AbiFFOoX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:43:54 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 406F84E3B2
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:43:54 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 198711595;
-        Mon,  6 Jun 2022 07:43:54 -0700 (PDT)
-Received: from bogus (unknown [10.57.9.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 38C0F3F73B;
-        Mon,  6 Jun 2022 07:43:52 -0700 (PDT)
-Date:   Mon, 6 Jun 2022 15:43:05 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Cristian Marussi <cristian.marussi@arm.com>
-Cc:     Michael Riesch <michael.riesch@wolfvision.net>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Heiko Stuebner <heiko@sntech.de>,
-        Liang Chen <cl@rock-chips.com>,
-        Kever Yang <kever.yang@rock-chips.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Jeffy Chen <jeffy.chen@rock-chips.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        Etienne Carriere <etienne.carriere@linaro.org>
-Subject: Re: [PATCH] firmware: arm_scmi: Relax BASE protocol sanity checks on
- protocol list
-Message-ID: <20220606144305.agzzyf7c4kp2nwlw@bogus>
-References: <20220523171559.472112-1-cristian.marussi@arm.com>
- <45bf11a8-47eb-e088-ba99-30c8788c7143@wolfvision.net>
- <Yp4Br5d0jMnlF5yy@e120937-lin>
+        Mon, 6 Jun 2022 10:44:23 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CB3E4F468
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:44:22 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id e11so12873034pfj.5
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:44:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jBAA4iYHay9IQkyL5K+TapNcySE+x8r/WS3Y7D8As50=;
+        b=DbOxjk9ucf3qjonFJffz3Ct1P+0PiLR750bdqny3X2ftXXx9Vgh3gpP0dIUpm4Sw6s
+         JKrvykWkcvT6WCWSN6dMMmyT94+egxtTmmNeKpks8O8CA25IVGc/eNBphAvl3YXVWK9D
+         Osd3e6TlgUJw0rTGdBZ2xgfouqA/Tj1BAjCCQaW/OEKQPac2/WPN43cMNEH+6qi1ninw
+         qq4mBW52s0o6NrJgauJqytAI5Jk3W72OqTzreZHW61PP6Pk3ZthMPDltldQfvjt2WDKU
+         pwpsZp7gwZX3OldIAVL2IrYUU0n0THC4mUhfiNo+zu2gviOGfO9+/PJvFJLmioKd8ESK
+         pnCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jBAA4iYHay9IQkyL5K+TapNcySE+x8r/WS3Y7D8As50=;
+        b=yqhZXEGfQOFdyMfaXVOrMLyUOvU21xC28BW6HXrRQNHgPE26Y9slPbhZS7tj5q8Btt
+         aaXXU75hrdKI01KknMqXwQPyf++PRhgu2pgG98c78BQtPGQa6qTVamco8/U1+SOatjfm
+         8R3ZHzuZadm+uM+CgN9PyK4D8mj2vM9bdj/98ogM3ZzutzPCnWkXSwm/D/SO4Bbby7UD
+         qFlhMi0vzDonF54fkL+GkTAdERjqTQMLmHRaAJsUJspd09Zhs+GIe6suf0Ihu2KlFmFC
+         bI2g5zF99h8k5KMfI3W8YWpGoi6C4pa8LQEI6jSna8pYdBZXllbIikeRrpiooyAihtZn
+         eIUw==
+X-Gm-Message-State: AOAM533DLVcbrVzbwugArPh943Fz21WVapnjioGG11FKdLgFe5AM9g7G
+        4cc5nbypnpgBwGMJZ+n0hdmv/ujkYiM=
+X-Google-Smtp-Source: ABdhPJz/K8VVU6Tqrrp0ULTd4g+UcdOOIbcqLIQqotxD65cO1xU85WjDfrc/1ugghIdGDz2asCXwuQ==
+X-Received: by 2002:a63:24a:0:b0:3fc:52a9:b5d6 with SMTP id 71-20020a63024a000000b003fc52a9b5d6mr21072765pgc.132.1654526661252;
+        Mon, 06 Jun 2022 07:44:21 -0700 (PDT)
+Received: from localhost ([198.11.178.15])
+        by smtp.gmail.com with ESMTPSA id 21-20020a170902c21500b00163bfaf0b17sm8664139pll.233.2022.06.06.07.44.20
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 06 Jun 2022 07:44:20 -0700 (PDT)
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Subject: [PATCH V3 0/7] x86/entry: Convert error_entry() to C code
+Date:   Mon,  6 Jun 2022 22:45:02 +0800
+Message-Id: <20220606144509.617611-1-jiangshanlai@gmail.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yp4Br5d0jMnlF5yy@e120937-lin>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 06, 2022 at 02:31:48PM +0100, Cristian Marussi wrote:
-> On Mon, Jun 06, 2022 at 02:59:10PM +0200, Michael Riesch wrote:
-> > Hi Cristian,
-> >
-> Hi Michael,
->
-> > On 5/23/22 19:15, Cristian Marussi wrote:
-> > > Even though malformed replies from firmware must be treated carefully to
-> > > avoid memory corruption Kernel side, some out-of-spec SCMI replies can
-> > > be tolerated to avoid breaking existing deployed system, as long as they
-> > > won't cause memory issues.
-> > >
-> > > Reported-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
-> > > Cc: Etienne Carriere <etienne.carriere@linaro.org>
-> > > Cc: Sudeep Holla <sudeep.holla@arm.com>
-> > > Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
-> >
-> > Thanks a lot, without this fix the Mali G52 GPU won't probe on my RK3568
-> > EVB1 in vanilla v5.19-rc1.
-> >
->
-> Yes, the break was reported on -next and today it appeared in 5.19-rc1.
-> A proper FW fix is also up for review by Etienne but in the meantime
-> this tries to limit damages relaxing a bit the checks.
->
-> > I guess this patch should have a Fixes: tag, right?
-> >
->
-> It has not a Fixes tag because the issue was introduced in 5.19-rc1 and the
-> fix will go in with the next round of v5.19 fixes by Sudeep (AFAIU) so it
-> will be solved within the v5.19 cycle and I thought the Fixes tag was
-> not needed in this case (I could be wrong...)
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-Correct, if for some reason, we can't push this before v5.19, then fixes
-tag needs to added. I will add that then, but for now let us target getting
-it in before v5.19
+Add some C equivalent functions of the ASM macros and implement the whole
+error_entry() as C code.
 
---
-Regards,
-Sudeep
+The patches are picked and re-made from the huge patchset
+https://lore.kernel.org/lkml/20211126101209.8613-1-jiangshanlai@gmail.com/
+which converts a large chunk of ASM code to C code.
+
+The C version generally has better readability and easier to be
+updated/improved.
+
+This smaller patchset converts error_entry() only.
+The equivalent ASM macros are not removed because they are still used by
+the IST exceptions.
+
+No functional change intended and comments are also copied.
+
+The complier generates very similar code for the C code and the original
+ASM code except minor differences.
+
+The complier uses tail-call-optimization for calling sync_regs().  It
+uses "JMP sync_regs" while the ASM code uses "CALL+RET".
+
+The compiler generates "AND $0xe7,%ah" (3 bytes) for the code
+"cr3 = user_cr3 & ~PTI_USER_PGTABLE_AND_PCID_MASK" while the ASM code in
+SWITCH_TO_KERNEL_CR3() results "AND $0xffffffffffffe7ff,%rax" (6 bytes).
+
+The compiler generates lengthier code for "cr3 |= X86_CR3_PCID_NOFLUSH"
+because it uses "MOVABS+OR" (13 bytes)  rather than a single
+"BTS" (5 bytes).
+
+ALTERNATIVE and static_cpu_has() are also different which depends on
+what alternative instructions for ALTERNATIVE are.
+
+[V2]: https://lore.kernel.org/lkml/20220516131739.521817-1-jiangshanlai@gmail.com/
+[V1]: https://lore.kernel.org/lkml/20220511072747.3960-1-jiangshanlai@gmail.com/
+
+Changed from V2:
+	Fix conflict in arch/x86/include/asm/proto.h in patch7
+
+Changed from V1:
+	remove unneeded cleanup in patch2
+
+Changed from the old huge patchset:
+	squash some patches
+
+Lai Jiangshan (7):
+  x86/entry: Introduce __entry_text for entry code written in C
+  x86/entry: Move PTI_USER_* to arch/x86/include/asm/processor-flags.h
+  x86: Mark __native_read_cr3() & native_write_cr3() as __always_inline
+  x86/entry: Add arch/x86/entry/entry64.c for C entry code
+  x86/entry: Add the C verion of SWITCH_TO_KERNEL_CR3 as
+    switch_to_kernel_cr3()
+  x86/traps: Add fence_swapgs_{user,kernel}_entry() and
+    user_entry_swapgs_and_fence()
+  x86/entry: Implement the whole error_entry() as C code
+
+ arch/x86/entry/Makefile                |   3 +-
+ arch/x86/entry/calling.h               |  10 --
+ arch/x86/entry/entry64.c               | 137 +++++++++++++++++++++++++
+ arch/x86/entry/entry_64.S              |  85 +--------------
+ arch/x86/include/asm/idtentry.h        |   3 +
+ arch/x86/include/asm/processor-flags.h |  15 +++
+ arch/x86/include/asm/proto.h           |   1 +
+ arch/x86/include/asm/special_insns.h   |   4 +-
+ arch/x86/include/asm/traps.h           |   1 +
+ arch/x86/kernel/traps.c                |   2 -
+ include/linux/compiler_types.h         |   8 +-
+ 11 files changed, 169 insertions(+), 100 deletions(-)
+ create mode 100644 arch/x86/entry/entry64.c
+
+-- 
+2.19.1.6.gb485710b
+
