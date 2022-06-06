@@ -2,177 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BA48CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 12:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93C53C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 12:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237745AbiFFMsR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 08:48:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52790 "EHLO
+        id S237788AbiFFMtp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 08:49:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237718AbiFFMsO (ORCPT
+        with ESMTP id S237786AbiFFMtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 08:48:14 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B1F2228F;
-        Mon,  6 Jun 2022 05:48:13 -0700 (PDT)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2569PSDb003670;
-        Mon, 6 Jun 2022 12:39:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=mzoLE1PbtRsuOiEM9z9fQ5vpTZBc7ax0h8g634BqWUw=;
- b=qojsxE3/eqexqnP11dCmtR2McvQCDFYa9hrijZqF31Gir1vrGUG7Quz+6fLcznaFikea
- a6lRt4gsbmwnZQMfRQV6ydvFV2uvoK5v43jHpor1PkHyQ29OK8NKIhPI8lolw5wzW5ah
- q5/oi0iGU3J8FovP0DyWHPRY4gTwpb+v1O9xpd/6jnLDnIDGqGHPgHq18pkwUpZBdHys
- 1cPNYqa+1Hw7LyUrRfAqzm01wSu7XTVG6ptzeoATSyoM2pnipNTwp9P091E55YSqjfes
- pe0gwTv9Q/YEh7+I/mXzMT/WSQWIigv0TkPEtnzq7ULR/jmfZyEH82/6sA6Af2vYOiz0 NA== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3ghexe8btc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 06 Jun 2022 12:39:05 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 256CGDh5005066;
-        Mon, 6 Jun 2022 12:39:05 GMT
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2105.outbound.protection.outlook.com [104.47.55.105])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gfwu7m6tb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 06 Jun 2022 12:39:05 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R9s/uBwOHFtQhXJhjnszTSAXK+ooDS818BKEy/NJIm4H1cNJP+4QbderqCeAC7NguncE38XKTCGYxq1Vc7sIHOI747uv7rwskYdfTu9+3L5tPcuhHj7q6aJu8kqqGsJkHfoU5Nb7uYfEXA57qcAiLFmwYvTS2tGI7v0adhnhu3zA2TIOq1efwSdzJaKzT6dgOYprVEAhfsg0lqilu0lizY48DaMkP1pW8f5a2GNbzRB//ilAQ7D48M7Zwqcxpz/Bezkur490VhPIL1hvxsgo1GXXpsvsHDDbNAnDEC9NmhGIyriuDf5W6SL6jQa41YkDx1jL0Wn6lmBZIaNHvdWD8Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mzoLE1PbtRsuOiEM9z9fQ5vpTZBc7ax0h8g634BqWUw=;
- b=bw1YWi/xCMQGWqKXNpPg0b6j10ZEFS4exLSxTAmtZLDEmHN/QfhuWu5KzzHQpH5O9W7pCZqQmp1RvGeHMM52aCjuJfZAwdXrOk+yZiyAVsiyjsHkiZp56jVuATA2MIdLNk7AUeAh9H7HUGR6wT34naLUj4ny+WjZmcOc1cyOabgonBxEMxh/mDxtlgbE/20Ltuvn4BgmNlthJDllMcOcFV5z7Zb8ihVTlEFLACkYlMgnWyJ2R35VgZWh4pE8mrac17wXgDdGD0ypM2D4vl0By7KFtmxKa2a81pPrwGZsl68xDtobA4F1bXXeVMAZRAdG1HfMN7D/ML7bxxvXKal9BQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mzoLE1PbtRsuOiEM9z9fQ5vpTZBc7ax0h8g634BqWUw=;
- b=LQnna/k/X+YUSppwnuZEE9PCs0z/fJtRt8PkHLn5UFmmpA7VUtVwCI+ITXdFSZkcHEL/KzJCe+bYk8omP9ElsCJtRedBlf0AReoBIIb3Hbu9pHYM+T75Zz6Gmk9RUYL6V4TwShPaK5gCwpct12MWQXGrxB42ttR3IEGG4DWAwvU=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by BL0PR10MB2771.namprd10.prod.outlook.com
- (2603:10b6:208:7b::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.15; Mon, 6 Jun
- 2022 12:39:02 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b%6]) with mapi id 15.20.5314.019; Mon, 6 Jun 2022
- 12:39:02 +0000
-Date:   Mon, 6 Jun 2022 15:38:39 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        syzbot <syzbot+dd3c97de244683533381@syzkaller.appspotmail.com>,
-        hdanton@sina.com, lenb@kernel.org, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rafael.j.wysocki@intel.com,
-        rafael@kernel.org, rjw@rjwysocki.net,
-        syzkaller-bugs@googlegroups.com, linux-usb@vger.kernel.org
-Subject: Re: [syzbot] general protection fault in __device_attach
-Message-ID: <20220606123839.GW2146@kadam>
-References: <000000000000bb7f1c05da29b601@google.com>
- <00000000000010b7d305e08837c8@google.com>
- <YpnqpMYcokTwCB6u@smile.fi.intel.com>
- <Ypor265BTdnmgwpM@rowland.harvard.edu>
- <YpouRmanvCQeKA3S@kroah.com>
- <Ypow1LRZ3Hau36ci@rowland.harvard.edu>
- <Ypoyy/stICFdHauR@kroah.com>
- <CACT4Y+bBWrLRwiowaWk8o4+XAtCHxxJiEQfiSkgM3BDut9atAw@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACT4Y+bBWrLRwiowaWk8o4+XAtCHxxJiEQfiSkgM3BDut9atAw@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JN2P275CA0004.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:3::16)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        Mon, 6 Jun 2022 08:49:36 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C7913324C
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 05:49:33 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LGtZQ127lzjXPS;
+        Mon,  6 Jun 2022 20:48:14 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 6 Jun 2022 20:49:31 +0800
+Received: from thunder-town.china.huawei.com (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 6 Jun 2022 20:49:31 +0800
+From:   Zhen Lei <thunder.leizhen@huawei.com>
+To:     Ard Biesheuvel <ardb@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Zhen Lei <thunder.leizhen@huawei.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Nicolas Pitre <nico@fluxnic.net>
+Subject: [PATCH] ARM: Mark the FDT_FIXED sections as shareable
+Date:   Mon, 6 Jun 2022 20:48:57 +0800
+Message-ID: <20220606124858.384-1-thunder.leizhen@huawei.com>
+X-Mailer: git-send-email 2.26.0.windows.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 223c68ac-a1a6-4e45-8b37-08da47b988c7
-X-MS-TrafficTypeDiagnostic: BL0PR10MB2771:EE_
-X-Microsoft-Antispam-PRVS: <BL0PR10MB27712A01833A9A4EA08D82298EA29@BL0PR10MB2771.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kVUFdzJG21l+ndYERKoh+h+Z09O60YAcPP3IJ0Sy6ukS9URn3H4rgtv/0tSO/VeQtifzuOKklqKQXosJs3K2mX7CBfePq8qVotkUhLS7xq59AV8l4Bi2mxYSGnIk5MEJaezJ2I283Wp4C8UNPjk6iwed3rrzvMFrfansFmHGK0GrP/wO9gwDBaC06W050LUzOko2kqglFLSZKDViYK0x8/zAP+I2mDIPUaBC+6oE/c4NueGh0B7jvWeI9LsrsnqJxZSFE3/Z1FfrxjJB6aO7JANUNUvf/9e5tfKCBI72BmfDxzY14FnZw+/piBC7YWDQdWuJG7eE8CrG/oQlhXpotG2+hxYdAuDJOQ41EnDILEFX2T1cXqEOR88gnrvFWMWvOrhMEDrLsATs3f+D3F+xgpknqdxrNxOPai2l4m0M4+c8EvnNTdhKBQZ54cu+Bl6qltsG4qk2ZtPiwUm7whHaO6yMS0sev1gfPW3W9QMPy6fiCJtQZdCCKidsspyGf8fsVCN6QNDfIWdKXl/vJWl6/ExTffQLzqocGPF4qCxQmiy0zLMw8mP5SWqZc+BPCdfQ85dG8bsV2U47NOprdAUsZXXB2Jvu0hiQhtwo68UXDLY0dmgrtkkfS7UvJvfUcIji71cAuR3XohXnZTHNsiUKueoSawunK+VGIFSXjjTWd/01BKRIpCsg+QRJ8WZx2lZ1pu4VITqBnE1ynhr48J0rtZQkZyvqaCQkAf5SjpSt51XkoKR5YYJrYai8Jwu9vTS9kRx4OxKOB8wWPcKfAxUmAIQPPOSYgUIBcCvD7GajisE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(8936002)(7416002)(6506007)(66946007)(66556008)(9686003)(4744005)(186003)(38100700002)(1076003)(6666004)(508600001)(966005)(44832011)(6512007)(26005)(5660300002)(38350700002)(6486002)(4326008)(54906003)(8676002)(316002)(66476007)(2906002)(6916009)(86362001)(33656002)(52116002)(33716001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?P3E/zmTKKU61ALlh9qq53cK+KsxLXu010Jnhsc+UsFG0yzRfKidpPnGgOGYt?=
- =?us-ascii?Q?1Js0hN6euCcE7uc4uSjj2fj1c8BYkZY3Wf0r6CgQDMiyqA/0eMCNgpwPsdnR?=
- =?us-ascii?Q?l7jNZWhyLY5GBMtAEMMuY/onWXYo6zHMSkOQij7OypdWiqww8cwYSuFX1gYT?=
- =?us-ascii?Q?xAhEcA6nR+8tPvbzlXQicMtxxSezIstvRMdSMOq5qawzArepb49Y0u6zZp5Y?=
- =?us-ascii?Q?Dn7JVIj1h2sVDeLWLS/a9A2Q9c1Y7P2AIbu3ZsdhmW4VF0qwmTblION4xwoC?=
- =?us-ascii?Q?qBVed5WkVz8j6yrvEzdtiv8eaCPJTYKoWbB+PFkO/ZwgjBYAULXc1unYZILl?=
- =?us-ascii?Q?6wWRUTxQME1AB0io8M9ah7BJjsakSvBbvs+gJzOmS3I3xiAr9xYvY0nicAWK?=
- =?us-ascii?Q?PACrmdkZJTwCmEXWfe3DNRBwmLjtgBdBCGZ8rs6/YgLAQCfDIJ9P+a9I2sDp?=
- =?us-ascii?Q?fVnBqXg2Hwe45Pq/NtZkM4Tu0ojTQwuNvHDqweBtIYirQZH6UCsiDqIZbByJ?=
- =?us-ascii?Q?+G3bjEOUaPK+MhdDj6D/QZ/2scZx22s2wixRKdf6WQIuEjNO3K9WxREEKPHV?=
- =?us-ascii?Q?+FToc3j5Y/QStlsQDsU6m3IK8zyvLzWNpsw9ll7U52k/ri274j0uJQ+jb0GS?=
- =?us-ascii?Q?tXn2rE+yjvH0wLKdT+DKj0+rhOwuWiDkbpbnCDrI6ESAjNsdV1XE0HRcrg5r?=
- =?us-ascii?Q?Y3bA2aBSoDHk/l4dSaBhaXQAJBMsrmJGm0WhXDjSrxWNa6/iQ7XzAW/nSV0D?=
- =?us-ascii?Q?Q0BtW8D7K9zRdh+fKzZY+MeY9FoN2IWKv7XQJv3F3Msf7NxBmh9/AuAcbw37?=
- =?us-ascii?Q?hrOF1zIqMZQ8AWoo0JdZZK+w8NK+fTwfsef7cIvzTFYGbRTp+7kI9u4zISyr?=
- =?us-ascii?Q?H1XvbCVq8mtwHpmbLHxb8Jmx8iZu02J+K16epAOkb0wBejIin87sqlDBmsR4?=
- =?us-ascii?Q?HYAcoeFEV6jhBc/BJOcEJ8VZe66kPRX6fDKD4+NOMW67f8U8k4Km2UF6hz4b?=
- =?us-ascii?Q?pBwBavyw1BcF3jWVGNnWM1B6LijqtqK/II92AarKCz6H5UG/iO4O5vMYD7uJ?=
- =?us-ascii?Q?wHmsG/YFvBlIxYM7LnHS5aBfNnTAIUACmfIDGISNMTt2xIrfa+5J0TWAE3k6?=
- =?us-ascii?Q?/yOErUda8gE5yXaSKDg1Fy6qSAMcbQ0R4a74xxw146vroduRCBAuXwjFbNsF?=
- =?us-ascii?Q?FaynI47vap0x+xs/5Dw/t0FKpm91P92/xNADSxxNdO7vpc9JjiuyG+pQUX5+?=
- =?us-ascii?Q?Aycx9A7TRp3zOgTFRvFBWcBlBifWYnr4fBYe+53rB/S2P3gTPvgRgtHPjC/0?=
- =?us-ascii?Q?HF1H9cYIs0r86NIivUfRviUikgz3FfEaa3kE3ZFD1yZ63ICSUySnppQdm90m?=
- =?us-ascii?Q?rHdh+SYf3EuUvPGWsxdLjSUoWZnfXMeNBSzxGwmHf6WrR1aVwZN7YTcYJlJf?=
- =?us-ascii?Q?HgTTSj+jYcmvH6JVmTZdpq8P4jW9prj6bR1536jIcoy9QR2uQQdGZ5Q1c3iG?=
- =?us-ascii?Q?wQI7cc36GE1vIbQFW8xv2zGFb1AnP/htVZhrH3AAsz3OOjIr3byRcBA3xqde?=
- =?us-ascii?Q?FE7GcmFcwks1KyhdO1DF3kck59ulo6IiA45mX9RIiUlfOWe8fQEe40odb49G?=
- =?us-ascii?Q?Y/bswzfer82Qvtvdtmj0OQsR/67pE3uH6obNV+DCesrGsprVu6LI6u0iv7Ad?=
- =?us-ascii?Q?nEX1w/9wiKE91w5MhJfUbu3lH+HBNOvR058oQWgus8lpKvcEPrm+rHOJjQyL?=
- =?us-ascii?Q?ArxfHa4Hyif9TiBRlT5SxcBBWdc1Yj4=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 223c68ac-a1a6-4e45-8b37-08da47b988c7
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2022 12:39:02.5333
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BCu1+G0di9Z8Lt7xFCK5nwVyIz3D1O7uUQ7V3kDX7TEAa8eu77nadxfcxXwBZCF3JO3GB9Yu5z14IMUoFvD6Kxb/EZsUh6VIW4XM06yaVHE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR10MB2771
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.874
- definitions=2022-06-06_04:2022-06-02,2022-06-06 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 mlxlogscore=999
- adultscore=0 bulkscore=0 mlxscore=0 suspectscore=0 malwarescore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206060057
-X-Proofpoint-GUID: US79jBR1Okx6VGFzX-oFqaIeMf7ecGb1
-X-Proofpoint-ORIG-GUID: US79jBR1Okx6VGFzX-oFqaIeMf7ecGb1
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 04, 2022 at 10:32:46AM +0200, 'Dmitry Vyukov' via syzkaller-bugs wrote:
-> On Fri, 3 Jun 2022 at 18:12, Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > But again, is this a "real and able to be triggered from userspace"
-> > problem, or just fault-injection-induced?
-> 
-> Then this is something to fix in the fault injection subsystem.
-> Testing systems shouldn't be reporting false positives.
-> What allocations cannot fail in real life? Is it <=page_size?
-> 
+commit 7a1be318f579 ("ARM: 9012/1: move device tree mapping out of linear
+region") use FDT_FIXED_BASE to map the whole FDT_FIXED_SIZE memory area
+which contains fdt. But it only reserves the exact physical memory that
+fdt occupied. Unfortunately, this mapping is non-shareable. An illegal or
+speculative read access can bring the RAM content from non-fdt zone into
+cache, PIPT makes it to be hit by subsequently read access through
+shareable mapping(such as linear mapping), and the cache consistency
+between cores is lost due to non-shareable property.
 
-Apparently in 2014, anything less than *EIGHT?!!* pages succeeded!
+|<---------FDT_FIXED_SIZE------>|
+|                               |
+ -------------------------------
+| <non-fdt> | <fdt> | <non-fdt> |
+ -------------------------------
 
-https://lwn.net/Articles/627419/
+1. CoreA read <non-fdt> through MT_ROM mapping, the old data is loaded
+   into the cache.
+2. CoreB write <non-fdt> to update data through linear mapping. CoreA
+   received the notification to invalid the corresponding cachelines, but
+   the property non-shareable makes it to be ignored.
+3. CoreA read <non-fdt> through linear mapping, cache hit, the old data
+   is read.
 
-I have been on the look out since that article and never seen anyone
-mention it changing.  I think we should ignore that and say that
-anything over PAGE_SIZE can fail.  Possibly we could go smaller than
-PAGE_SIZE...
+To eliminate this risk, mark the MT_ROM sections as shareable.
 
-regards,
-dan carpenter
+The other user of MT_ROM is XIP_KERNEL. XIP allows the kernel to run from
+flash to save RAM space. Not sure if anyone is still using XIP in order to
+save a little memory and not care about performance degradation. Add a new
+memory type MT_ROM_XIP to be compatible with it.
+
+BTW: Another solution is to memblock_reserve() all the sections that fdt
+spans, but this will waste 2-4MiB memory.
+
+Here's an example:
+  list_del corruption. prev->next should be c0ecbf74, but was c08410dc
+  kernel BUG at lib/list_debug.c:53!
+  ... ...
+  PC is at __list_del_entry_valid+0x58/0x98
+  LR is at __list_del_entry_valid+0x58/0x98
+  psr: 60000093
+  sp : c0ecbf30  ip : 00000000  fp : 00000001
+  r10: c08410d0  r9 : 00000001  r8 : c0825e0c
+  r7 : 20000013  r6 : c08410d0  r5 : c0ecbf74  r4 : c0ecbf74
+  r3 : c0825d08  r2 : 00000000  r1 : df7ce6f4  r0 : 00000044
+  ... ...
+  Stack: (0xc0ecbf30 to 0xc0ecc000)
+  bf20:                                     c0ecbf74 c0164fd0 c0ecbf70 c0165170
+  bf40: c0eca000 c0840c00 c0840c00 c0824500 c0825e0c c0189bbc c088f404 60000013
+  bf60: 60000013 c0e85100 000004ec 00000000 c0ebcdc0 c0ecbf74 c0ecbf74 c0825d08
+  ... ...                                           <  next     prev  >
+  (__list_del_entry_valid) from (__list_del_entry+0xc/0x20)
+  (__list_del_entry) from (finish_swait+0x60/0x7c)
+  (finish_swait) from (rcu_gp_kthread+0x560/0xa20)
+  (rcu_gp_kthread) from (kthread+0x14c/0x15c)
+  (kthread) from (ret_from_fork+0x14/0x24)
+
+The faulty list node to be deleted is a local variable, its address is
+c0ecbf74. The dumped stack shows that 'prev' = c0ecbf74, but its value
+before lib/list_debug.c:53 is c08410dc. A large amount of printing results
+in swapping out the cacheline containing the old data(MT_ROM mapping is
+read only, so the cacheline cannot be dirty), and the subsequent dump
+operation obtains new data from the DDR.
+
+Fixes: 7a1be318f579 ("ARM: 9012/1: move device tree mapping out of linear region")
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ arch/arm/include/asm/mach/map.h | 1 +
+ arch/arm/mm/mmu.c               | 9 ++++++++-
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/include/asm/mach/map.h b/arch/arm/include/asm/mach/map.h
+index 92282558caf7cdb..0100f95c8104b3c 100644
+--- a/arch/arm/include/asm/mach/map.h
++++ b/arch/arm/include/asm/mach/map.h
+@@ -28,6 +28,7 @@ enum {
+ 	MT_MEMORY_RWX,
+ 	MT_MEMORY_RW,
+ 	MT_ROM,
++	MT_ROM_XIP,
+ 	MT_MEMORY_RWX_NONCACHED,
+ 	MT_MEMORY_RW_DTCM,
+ 	MT_MEMORY_RWX_ITCM,
+diff --git a/arch/arm/mm/mmu.c b/arch/arm/mm/mmu.c
+index 5e2be37a198e29e..a707eac189b1d6d 100644
+--- a/arch/arm/mm/mmu.c
++++ b/arch/arm/mm/mmu.c
+@@ -300,6 +300,10 @@ static struct mem_type mem_types[] __ro_after_init = {
+ 		.prot_sect = PMD_TYPE_SECT,
+ 		.domain    = DOMAIN_KERNEL,
+ 	},
++	[MT_ROM_XIP] = {
++		.prot_sect = PMD_TYPE_SECT,
++		.domain    = DOMAIN_KERNEL,
++	},
+ 	[MT_MEMORY_RWX_NONCACHED] = {
+ 		.prot_pte  = L_PTE_PRESENT | L_PTE_YOUNG | L_PTE_DIRTY |
+ 				L_PTE_MT_BUFFERABLE,
+@@ -566,6 +570,7 @@ static void __init build_mem_type_table(void)
+ 		 * from SVC mode and no access from userspace.
+ 		 */
+ 		mem_types[MT_ROM].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
++		mem_types[MT_ROM_XIP].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
+ 		mem_types[MT_MINICLEAN].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
+ 		mem_types[MT_CACHECLEAN].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
+ #endif
+@@ -590,6 +595,7 @@ static void __init build_mem_type_table(void)
+ 			mem_types[MT_MEMORY_DMA_READY].prot_pte |= L_PTE_SHARED;
+ 			mem_types[MT_MEMORY_RWX_NONCACHED].prot_sect |= PMD_SECT_S;
+ 			mem_types[MT_MEMORY_RWX_NONCACHED].prot_pte |= L_PTE_SHARED;
++			mem_types[MT_ROM].prot_sect |= PMD_SECT_S;
+ 		}
+ 	}
+ 
+@@ -650,6 +656,7 @@ static void __init build_mem_type_table(void)
+ 	mem_types[MT_MEMORY_DMA_READY].prot_pte |= kern_pgprot;
+ 	mem_types[MT_MEMORY_RWX_NONCACHED].prot_sect |= ecc_mask;
+ 	mem_types[MT_ROM].prot_sect |= cp->pmd;
++	mem_types[MT_ROM_XIP].prot_sect |= cp->pmd;
+ 
+ 	switch (cp->pmd) {
+ 	case PMD_SECT_WT:
+@@ -1372,7 +1379,7 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
+ 	map.pfn = __phys_to_pfn(CONFIG_XIP_PHYS_ADDR & SECTION_MASK);
+ 	map.virtual = MODULES_VADDR;
+ 	map.length = ((unsigned long)_exiprom - map.virtual + ~SECTION_MASK) & SECTION_MASK;
+-	map.type = MT_ROM;
++	map.type = MT_ROM_XIP;
+ 	create_mapping(&map);
+ #endif
+ 
+-- 
+2.25.1
 
