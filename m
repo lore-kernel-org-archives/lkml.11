@@ -2,64 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2108BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0F26C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:22:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239496AbiFFOVu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:21:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56392 "EHLO
+        id S239499AbiFFOWE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:22:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239416AbiFFOVr (ORCPT
+        with ESMTP id S239416AbiFFOWA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:21:47 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5158222654A
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:21:46 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id v1so18586110ejg.13
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:21:46 -0700 (PDT)
+        Mon, 6 Jun 2022 10:22:00 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AD8C22E69F
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:21:58 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id b8so2369200edj.11
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:21:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=opLWEqC00jn82y4owwASw7k3zRYvjzMou2cjWKLBV64=;
-        b=gkHpY3ulU0qVJsCW/7cg5SzAjNDdn7t3avgpO4JqTMDcqwd128gyp/ezfuttq/hmoR
-         aLEzdUBdsdu9XlKb5oqWrctb+KeObzqrZ5blifz3w5ziL2IdUk1HAwIZtGb0nj94jxEo
-         WdDsmtzzAZ//UM7RfSH9d71dAoQNSW5P6aMlc=
+        bh=Vp8NNxHI8Mr5cvDebnpWHQ0r8fITxP4wMBgbky8hlKs=;
+        b=cbfuFGvG9P3RoNLs/7komKcZAI5iYlhxO2c1PtY35nnPC3+G7B+1hWFJWkoS4PJIsj
+         12l7R0+8en8jn64ramruBDLAM4LNDxwV5QlXnXU3GiVqV+E3Gtvm4iPw/S9vicOs+MKd
+         veBzx9Qi7+Ff2iaPYmy4Uf1JlMPTfqESgCUDU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=opLWEqC00jn82y4owwASw7k3zRYvjzMou2cjWKLBV64=;
-        b=qXUqLlwIijS7vg75VcKOFTdJNFdEaj7Uoh2UNFfRBIE6ayLf85/9mdKMZiKxTFKVpG
-         sSQaDXpEwTAv4NzK0mIsGPOl5Uo8rVkxcYmZK7LFWVzRRjlnUIgg9h61xDy1MDJLJo2g
-         zSEPiZ65aDRzIAPg83i0vp6Ag2FiNUhjzQjAAuNSq29JYqY51yPiQurFRzWTfaR30A2Q
-         axrBA56JQBwz40h90QIPSTRycE47Fq1ohM50eDlpFMeqoonlRqNBhVUmzuRJlO/2/2nD
-         0E1sKG2R+vn4XO8W7+JT6Mr/Eb2lVQbr5pEcUclXXMHmzsnMe08lMoQFIH+GzDRLM7Tm
-         ztHw==
-X-Gm-Message-State: AOAM531CBnDXM08u0mahdoQFj5N5sPkEc5IS+ttQ2YB+criy1wJEFLM9
-        5urCnoszCVwNnaY6+sVl9kaDGYn50IaTuv1Z
-X-Google-Smtp-Source: ABdhPJyLKv92PcYhNBmJ97j10A1uFIPr5keVI8yOE6qBp94oVJuvqS+MWaqBbWH4WzZ0JCLj3yYCZQ==
-X-Received: by 2002:a17:907:1b09:b0:6d8:faa8:4a06 with SMTP id mp9-20020a1709071b0900b006d8faa84a06mr21403792ejc.701.1654525304650;
-        Mon, 06 Jun 2022 07:21:44 -0700 (PDT)
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com. [209.85.128.41])
-        by smtp.gmail.com with ESMTPSA id kl10-20020a170907994a00b006fec69a3978sm6396244ejc.207.2022.06.06.07.21.39
+        bh=Vp8NNxHI8Mr5cvDebnpWHQ0r8fITxP4wMBgbky8hlKs=;
+        b=UrzncEUlm/+n476p/3gtxKMkcB9/zIBA7f01wGk25QH8zEk/OXwGsCseOMdiHTw1Td
+         cnvso57zPNnNvfsjdyb5MBaxZ8k/8RacXWuW77r4QCepuLGWqI8d0sVhJXTgUGLfH9NP
+         NgLObJ33KHkGbDQ8P0f3ajH4hMvYP6w6YTWzgA9V2wKNseyaVBxe1a/H4TYECLSW3H/o
+         VS8YE1OtSvZCy3Hz/+J6JLCVu5QHAXPHt8YYftP5FlpNcf0CWBlqwwxTCSvuS3dyu6oq
+         fGhOTlBduQgFKBWKloHA1Ftlgbj/cJNmWaenPsN32NVe3Q9qI4f6DsqQEo66KES21kVL
+         CAeg==
+X-Gm-Message-State: AOAM531LM8csspYtT0hT2SaMSkMHbRMosSkGW4QQVKKhFPF1PZq4gHvn
+        +eRWmA1+afnXAqzYBHzq+tkifhD7s95iVRka
+X-Google-Smtp-Source: ABdhPJyMh5EWpCWNKPH6rM2tVxXfKdtDDpBTSg+pAF69Ey/kKnh6R5T3je6NSLkbgHuZ2gKP3nKQ/A==
+X-Received: by 2002:a05:6402:84a:b0:423:fe99:8c53 with SMTP id b10-20020a056402084a00b00423fe998c53mr26852321edz.195.1654525316984;
+        Mon, 06 Jun 2022 07:21:56 -0700 (PDT)
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
+        by smtp.gmail.com with ESMTPSA id bv3-20020a170906b1c300b006f3ef214ddesm6411388ejb.68.2022.06.06.07.21.54
         for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Jun 2022 07:21:42 -0700 (PDT)
-Received: by mail-wm1-f41.google.com with SMTP id r123-20020a1c2b81000000b0039c1439c33cso7998288wmr.5
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:21:39 -0700 (PDT)
-X-Received: by 2002:a05:600c:591:b0:39c:4544:b814 with SMTP id
- o17-20020a05600c059100b0039c4544b814mr12815954wmd.118.1654525298761; Mon, 06
- Jun 2022 07:21:38 -0700 (PDT)
+        Mon, 06 Jun 2022 07:21:55 -0700 (PDT)
+Received: by mail-wr1-f45.google.com with SMTP id q15so12041181wrc.11
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:21:54 -0700 (PDT)
+X-Received: by 2002:a05:6000:1685:b0:218:45f0:5be6 with SMTP id
+ y5-20020a056000168500b0021845f05be6mr2525253wrd.301.1654525314159; Mon, 06
+ Jun 2022 07:21:54 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220606044720.945964-1-hsinyi@chromium.org> <20220606044720.945964-2-hsinyi@chromium.org>
-In-Reply-To: <20220606044720.945964-2-hsinyi@chromium.org>
+References: <20220606044720.945964-1-hsinyi@chromium.org> <20220606044720.945964-3-hsinyi@chromium.org>
+In-Reply-To: <20220606044720.945964-3-hsinyi@chromium.org>
 From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 6 Jun 2022 07:21:26 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=V7FmkJyyXr4C6jy9-hOhnzgoo=g5tx_3z3rnCCC40Exg@mail.gmail.com>
-Message-ID: <CAD=FV=V7FmkJyyXr4C6jy9-hOhnzgoo=g5tx_3z3rnCCC40Exg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/8] drm/panel: Add an API drm_panel_get_orientation()
- to return panel orientation
+Date:   Mon, 6 Jun 2022 07:21:42 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=VYjMKN=M=PWnGny0x5TaQ5gF7b_vL4muCsCi+rH7FAbA@mail.gmail.com>
+Message-ID: <CAD=FV=VYjMKN=M=PWnGny0x5TaQ5gF7b_vL4muCsCi+rH7FAbA@mail.gmail.com>
+Subject: Re: [PATCH v3 2/8] drm/panel: boe-tv101wum-nl6: Implement
+ .get_orientation callback
 To:     Hsin-Yi Wang <hsinyi@chromium.org>
 Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         Hans de Goede <hdegoede@redhat.com>,
@@ -89,48 +89,14 @@ Hi,
 
 On Sun, Jun 5, 2022 at 9:47 PM Hsin-Yi Wang <hsinyi@chromium.org> wrote:
 >
-> Panels usually call drm_connector_set_panel_orientation(), which is
-> later than drm/kms driver calling drm_dev_register(). This leads to a
-> WARN().
+> To return the orientation property to drm/kms driver.
 >
-> The orientation property is known earlier. For example, some panels
-> parse the property through device tree during probe.
->
-> Add an API to return the property from panel to drm/kms driver, so the
-> drivers are able to call drm_connector_set_panel_orientation() before
-> drm_dev_register().
->
-> Suggested-by: Hans de Goede <hdegoede@redhat.com>
 > Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
 > Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 > ---
-> v2->v3: no change
+> v2->v3: add comments for notice.
 > ---
->  drivers/gpu/drm/drm_panel.c |  8 ++++++++
->  include/drm/drm_panel.h     | 10 ++++++++++
->  2 files changed, 18 insertions(+)
->
-> diff --git a/drivers/gpu/drm/drm_panel.c b/drivers/gpu/drm/drm_panel.c
-> index f634371c717a..4a512ca80673 100644
-> --- a/drivers/gpu/drm/drm_panel.c
-> +++ b/drivers/gpu/drm/drm_panel.c
-> @@ -223,6 +223,14 @@ int drm_panel_get_modes(struct drm_panel *panel,
->  }
->  EXPORT_SYMBOL(drm_panel_get_modes);
->
-> +enum drm_panel_orientation drm_panel_get_orientation(struct drm_panel *panel)
-> +{
-> +       if (panel && panel->funcs && panel->funcs->get_orientation)
-> +               return panel->funcs->get_orientation(panel);
-> +
-> +       return DRM_MODE_PANEL_ORIENTATION_UNKNOWN;
-> +}
-> +EXPORT_SYMBOL(drm_panel_get_orientation);
->  #ifdef CONFIG_OF
-
-nit: there used to be a blank line before the #ifdef but there no
-longer is after your patch.
-
-Other than that...
+>  drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
 
 Reviewed-by: Douglas Anderson <dianders@chromium.org>
