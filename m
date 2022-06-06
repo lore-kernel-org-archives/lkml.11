@@ -2,133 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AED19CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 21:31:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39CDECCA473
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 21:32:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234887AbiFFVb3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 17:31:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39284 "EHLO
+        id S234916AbiFFVcG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 17:32:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233477AbiFFVb2 (ORCPT
+        with ESMTP id S230108AbiFFVcE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 17:31:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C9861A394;
-        Mon,  6 Jun 2022 14:31:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF5406164F;
-        Mon,  6 Jun 2022 21:31:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E556C385A9;
-        Mon,  6 Jun 2022 21:31:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654551086;
-        bh=4Xm0R5P+VrCwOW+zqQpekghTWxOqCtFkCmzjB4kSLss=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=KWhSttqILWZQreWlBFVuXFUfmoWeA03sUhkuDma+WHXl+RsxZKH9sPKk4HER0NQpq
-         L7U5/g9NjmANfX8Qq17db5Ts3HoT/9oJ8ci1ib7MprRxMQaWHFAjAnbAtcBNLAEWeB
-         ipzIE3KsDU3rvyGKrOCIHhmT8CTGQe0Tv8f7IMN9FKTzaB70tBy2EGwDioYy58Yqs+
-         fFnKQGoZkEUWAlx0S/uP8NHqCrdpg8SDzE48vz/hS9sIxCEzzKkI4LtWcDZs407KwG
-         Qy3LGVy68t5qT23k8giQiRfzCmaf5rWUszvUtNOhpo9Od3x01SknQxu46OatVYVaJ8
-         RE+IxjFj+5Nbg==
-Date:   Mon, 6 Jun 2022 23:31:19 +0200 (CEST)
-From:   Jiri Kosina <jikos@kernel.org>
-To:     Vegard Nossum <vegard.nossum@oracle.com>
-cc:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Amit Shah <aams@amazon.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        David Woodhouse <dwmw@amazon.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Laura Abbott <labbott@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Solar Designer <solar@openwall.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Thorsten Leemhuis <linux@leemhuis.info>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>,
-        Will Deacon <will@kernel.org>, Willy Tarreau <w@1wt.eu>
-Subject: Re: [PATCH v2] Documentation/security-bugs: overhaul
-In-Reply-To: <20220606194850.26122-1-vegard.nossum@oracle.com>
-Message-ID: <nycvar.YFH.7.76.2206062326230.10851@cbobk.fhfr.pm>
-References: <20220606194850.26122-1-vegard.nossum@oracle.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        Mon, 6 Jun 2022 17:32:04 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E3AA5F8F2
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 14:32:03 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id i1so13155757plg.7
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 14:32:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=zwFgEioW6+dps+UZ8YhmtNSvhyshGyl8govd5a3fXPY=;
+        b=jqydjtFc/RmZBMb24ewb0gU1WiC+ZnxuHT3FEHsdMtskE5j4ahApOqYXpBKXXqzCOh
+         W+WDAoOfOL2+RYTx71LmIhsbRHMCezEvetTlGVgUCWzurIfYOA+rxIv8fRe9coJGq1hl
+         HY1BnJs04Edh0RxBt/4LzVg4PLgZ2bLYWUaoE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zwFgEioW6+dps+UZ8YhmtNSvhyshGyl8govd5a3fXPY=;
+        b=t2XjSuqmgVvZs+i5YgNOEiZMfkDzmBmaLfvAxMtACa2DdOjbHtYyurFMn1hjvbGf6u
+         JLeo8B6SI2zgCA0OvdUlQ2oxB9MH59JSS22T/8wdFwNxuCZYATrnJ4qaRlUgPcHZy5PD
+         yGm7NvhKM8fUkQkRZgvyJ/pDS7VrgKNwoW6M36mY40xMtcKOHM75gUq0t+1XgmDazLgU
+         t69DJX07b4WnwDeB1JcGmiOHUb680Wo9j7BHkR5kCvTJJs4pQNf9SBntS3FzU3etBrdu
+         j5PzdOen3Pzf39BwS/O9R0Ir80W5KilrfYdT06nIXIGYrlU79LEs2e9/Fhfio7Yt/sCU
+         N0NQ==
+X-Gm-Message-State: AOAM5327Apyw4+UwxRQnFXen2UKVla2xA0gUMwZcjJ5wTmR2nE/CzhIZ
+        MdZiGtCA1YrNE7Jz5RPAoD/IEQ==
+X-Google-Smtp-Source: ABdhPJzFCoz1wnK2i6ZyDNCl+1R8AH5AkRe8lRZiN2HEGNRw8Rd7b9GLNMQNG4fMTtAAJ2M5c8qZaQ==
+X-Received: by 2002:a17:90b:1a8a:b0:1e8:9388:5b5b with SMTP id ng10-20020a17090b1a8a00b001e893885b5bmr4265017pjb.50.1654551122739;
+        Mon, 06 Jun 2022 14:32:02 -0700 (PDT)
+Received: from localhost ([2620:15c:11a:202:196:a14c:7344:f6db])
+        by smtp.gmail.com with UTF8SMTPSA id i3-20020a056a00004300b0050dc76281c9sm11227962pfk.163.2022.06.06.14.32.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jun 2022 14:32:02 -0700 (PDT)
+Date:   Mon, 6 Jun 2022 14:32:01 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
+        srinivas.kandagatla@linaro.org, dianders@chromium.org,
+        swboyd@chromium.org, judyhsiao@chromium.org
+Subject: Re: [PATCH v12 00/12] Add soundcard support for sc7280 based
+ platforms.
+Message-ID: <Yp5yUSvC05wOxtei@google.com>
+References: <1653049124-24713-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1653049124-24713-1-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 6 Jun 2022, Vegard Nossum wrote:
-
-> The current instructions for reporting security vulnerabilities in the
-> kernel are not clear enough, in particular the process of disclosure
-> and requesting CVEs, and what the roles of the different lists are and
-> how exactly to report to each of them.
+On Fri, May 20, 2022 at 05:48:32PM +0530, Srinivasa Rao Mandadapu wrote:
+> This patch set is to add bolero digital macros, WCD and maxim codecs nodes
+> for audio on sc7280 based platforms.
 > 
-> Let's give this document an overhaul. Goals are stated as a comment at
-> the bottom of the document; these will not appear in the rendered HTML
-> document.
-> 
-> v2: address feedback from Willy Tarreau and Jonathan Corbet
-> 
-> Link: https://seclists.org/oss-sec/2022/q2/133
-> Cc: Amit Shah <aams@amazon.com>
-> Cc: Dave Hansen <dave.hansen@linux.intel.com>
-> Cc: David Woodhouse <dwmw@amazon.co.uk>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Gustavo A. R. Silva <gustavoars@kernel.org>
-> Cc: Jiri Kosina <jkosina@suse.cz>
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Laura Abbott <labbott@kernel.org>
-> Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: Paolo Bonzini <pbonzini@redhat.com>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Solar Designer <solar@openwall.com>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Thorsten Leemhuis <linux@leemhuis.info>
-> Cc: Tyler Hicks <tyhicks@linux.microsoft.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Willy Tarreau <w@1wt.eu>
-> Signed-off-by: Vegard Nossum <vegard.nossum@oracle.com>
-> ---
->  Documentation/admin-guide/security-bugs.rst | 252 +++++++++++++-------
->  1 file changed, 167 insertions(+), 85 deletions(-)
-> 
-> v1 thread:
-> https://lore.kernel.org/all/20220531230309.9290-1-vegard.nossum@oracle.com/T/#u
-> 
-> Updated rendered HTML:
-> https://vegard.github.io/security/Documentation/output/admin-guide/security-bugs-v2.html
-> 
-> diff --git a/Documentation/admin-guide/security-bugs.rst b/Documentation/admin-guide/security-bugs.rst
-> index 82e29837d5898..c63eeb1e89ffd 100644
-> --- a/Documentation/admin-guide/security-bugs.rst
-> +++ b/Documentation/admin-guide/security-bugs.rst
+> This patch set depends on:
+>     -- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=638776
+>     -- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=634597
+>     -- https://patchwork.kernel.org/project/linux-clk/list/?series=637999
+>     -- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=638002
 
-Thanks for investing time into fixing this aged document.
+Another dependency (at least in terms of functionality) is:
 
-Two rather minor things come to my mind, but as you are touching that 
-document anyway ...
+ASoC: qcom: soundwire: Add support for controlling audio CGCR from HLOS
+https://patchwork.kernel.org/patch/12853622/
 
-- what sense does it make to have embargoed-hardware-issues.rst and 
-  security-bugs.rst live in different Documentation/ subdirectories 
-  (admin-guide/ vs process/)? It'd seem to make sense to me to have them 
-  in one common place?
+And then there is this:
 
-- would it make sense to briefly reference embargoed-hardware-issues.rst 
-  somewhere in this text, to make the distinction as obvious as possible? 
-  It's referenced the other way around.
+arm64: dts: qcom: sc7280: Add lpasscore & lpassaudio clock controllers
+https://patchwork.kernel.org/project/linux-arm-msm/patch/20220523100058.26241-1-quic_tdas@quicinc.com/
 
-Thanks,
+A previous version (v3) of that patch already landed (9499240d15f2
+"arm64: dts: qcom: sc7280: Add lpasscore & lpassaudio clock controllers"),
+it is not clear to me why it is still evolving as if that weren't the
+case.
 
--- 
-Jiri Kosina
-SUSE Labs
-
+From the newer version of the patch at least marking the 'lpasscc' node
+as disabled is needed.
