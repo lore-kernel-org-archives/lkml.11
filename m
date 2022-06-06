@@ -2,113 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00CDAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 20:59:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CCFEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 21:00:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231741AbiFFU7Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 16:59:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48070 "EHLO
+        id S230300AbiFFVAA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 17:00:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230124AbiFFU7M (ORCPT
+        with ESMTP id S230140AbiFFU7t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 16:59:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97156E8F5
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 13:48:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 56E0EB81895
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 20:48:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1210C34119;
-        Mon,  6 Jun 2022 20:48:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654548503;
-        bh=359s1KKgDcNMt55qxeHN3UBGIN7R3YjbiDQJ1Hi2/fw=;
-        h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
-        b=LqDJK0/0onBgmRTXrQ8JwBhhvdfq7SFQuasoF4ZqCtMal2qczaZiFwpUVsOXTtEPG
-         ztivCWS2pA2nCLIoOLwj3PcfSeGcngKEHxRnQc6ORh4Rx36dXeXk3dRLrcqvEVtBgz
-         tImeQD3JdTi0Yk9CSnKhHLLoBI+iiFY0JYvAWN3sO23kQ5VGdtjYRjqG34WguJV5W4
-         sTaKUZu+X8UXZ4m6HimaDLRjL1k439WIYtBwKiHr5oxEnVO4GtemA5xIfQtkdvi34U
-         h01rvmLdnJFHuBnWC+5Hi1Vyxil5pJSLGam/5zn8vxxd62OceaseXYV5XGTFFmTUZx
-         K3p6H4OIDZ0Qg==
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailauth.nyi.internal (Postfix) with ESMTP id 8E1B527C005B;
-        Mon,  6 Jun 2022 16:48:21 -0400 (EDT)
-Received: from imap48 ([10.202.2.98])
-  by compute2.internal (MEProxy); Mon, 06 Jun 2022 16:48:21 -0400
-X-ME-Sender: <xms:FWieYl3ouK46008q9fze6jbKFCNNbL91PWwRA33jrRI_AobD0WGW9A>
-    <xme:FWieYsGZMKmFmOvc8W9TM3KUPFoV4LSmO_MFkiwE09CTGFGOMDk2rkYJJZtsHj-04
-    WDs5Ak0CWZ0NQ92h0M>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddtfedgieduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehn
-    ugihucfnuhhtohhmihhrshhkihdfuceolhhuthhosehkvghrnhgvlhdrohhrgheqnecugg
-    ftrfgrthhtvghrnhepvdfhuedvtdfhudffhfekkefftefghfeltdelgeffteehueegjeff
-    udehgfetiefhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
-    homheprghnugihodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdduudeiudek
-    heeifedvqddvieefudeiiedtkedqlhhuthhopeepkhgvrhhnvghlrdhorhhgsehlihhnuh
-    igrdhluhhtohdruhhs
-X-ME-Proxy: <xmx:FWieYl41IcegCKF5cBV5dbR_EW9zwBtUDg-FZDJjTkHVv1nadnfVqA>
-    <xmx:FWieYi2ZoZrGUx0uzZmBEoee-XTaMhGoZyuSKu_jKljLGgB67JgTKg>
-    <xmx:FWieYoFqLH6YdLgblCE92dF_CjLBrv59iW1R3mBpl7inTEXUDv_9CQ>
-    <xmx:FWieYtNS0jjRbqzwKcU4DVAr1_7jKxsK2atha-fXfwT1--vIVZTLHQ>
-Feedback-ID: ieff94742:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id EEE8531A005D; Mon,  6 Jun 2022 16:48:20 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-592-g7095c13f5a-fm-20220603.004-g7095c13f
-Mime-Version: 1.0
-Message-Id: <234e853b-0c35-45de-b40d-2058976e49e0@www.fastmail.com>
-In-Reply-To: <20220606180123.2485171-1-namit@vmware.com>
-References: <20220606180123.2485171-1-namit@vmware.com>
-Date:   Mon, 06 Jun 2022 13:48:00 -0700
-From:   "Andy Lutomirski" <luto@kernel.org>
-To:     "Nadav Amit" <nadav.amit@gmail.com>,
-        "Dave Hansen" <dave.hansen@linux.intel.com>
-Cc:     "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        "Nadav Amit" <namit@vmware.com>,
+        Mon, 6 Jun 2022 16:59:49 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CF469419D;
+        Mon,  6 Jun 2022 13:48:58 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id 68so3359620qkk.9;
+        Mon, 06 Jun 2022 13:48:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=g2dcvEx5ujIfq/vGwsQoEKMbkEYSqcC+pGjcA0dBu1c=;
+        b=f7b0v5dv8hmLnBlzL8WyYq5cOW64Y5WX7Dmpl69JKaPauL++ld78WKF8ntff7E3FD9
+         /EFPnKoGaHbNkPIgpiRh5FlgefHuwLc1yxNkOW+bHut9SVnVZCbu/JkykiPElo5zPWjp
+         nCuHLbsnuv21eFXD2iNnywm2Hbn427FK25GFy6T1JFuumczjXmgtp3nChf3HO/XhNBhM
+         NXjSU4JD0/Av3t8AAMTU1yL794U7NXS8pa6qxIcfy7ouTJCp/SF65MboQcoKMXA5+/fk
+         R0q5tIVK+/ksEV405xlxflOCs1qdnp/FFVTP6I8k8VtwErnFZfCokgUB0civbDGx+Ib2
+         7GIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=g2dcvEx5ujIfq/vGwsQoEKMbkEYSqcC+pGjcA0dBu1c=;
+        b=IT4u7CmoWi6HX3yhfCZqnTHklKmxYH70Mp+prygtX+X6iGXyqlLSeFvgwYgtWeyCIe
+         zukDYBHOhQpWQ1q4hlEkCBpFtMsevyKSdhfgx7Z+rthrdfpneV1EgNvq6t8I6Rgldw0i
+         jcclSJPD3P8m6fnA8vXzh3wBBCb1TJ6obXLFPH0KtRlEjFuc6gEJo5qI4Q0H6hCxpGTL
+         msZiPybmC9OmoG/4Ze8naFtdxZLmus0O6Ss3HsawvXDIX9t9LOKyQPjgY0S4qtLOT//E
+         cTkdZR/ZoWNoUrPTtdl0YBCwQJcifH8LmS00KuogVNBk0PGGz4c4JRxPrN6uVO7WeJus
+         b3pA==
+X-Gm-Message-State: AOAM5324/lN02Hp6ppOB50edRazNGpcO8OmeBT+t9dHI8l47wpIwyJVC
+        aez+24OtinCucnef5Re+mzw=
+X-Google-Smtp-Source: ABdhPJy6iWrSjhT1+WPfkKbI1gHvATNgUCtpwq8y3JhsiD76yT4Gvelb8RZZw4VB5N3/itiqM6ja8g==
+X-Received: by 2002:a05:620a:14ad:b0:6a6:b8ab:9c3f with SMTP id x13-20020a05620a14ad00b006a6b8ab9c3fmr5227234qkj.410.1654548537353;
+        Mon, 06 Jun 2022 13:48:57 -0700 (PDT)
+Received: from localhost ([2601:4c1:c100:1230:be9c:b2d9:3353:7a73])
+        by smtp.gmail.com with ESMTPSA id bm32-20020a05620a19a000b006a6d20386f6sm900223qkb.42.2022.06.06.13.48.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 13:48:56 -0700 (PDT)
+Date:   Mon, 6 Jun 2022 13:48:50 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Richard Henderson <rth@twiddle.net>,
+        Matt Turner <mattst88@gmail.com>,
+        Brian Cain <bcain@quicinc.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Kees Cook <keescook@chromium.org>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        "Ingo Molnar" <mingo@kernel.org>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        "the arch/x86 maintainers" <x86@kernel.org>
-Subject: Re: [PATCH v2] x86/mm/tlb: avoid reading mm_tlb_gen when possible
-Content-Type: text/plain
+        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/6] bitops: unify non-atomic bitops prototypes across
+ architectures
+Message-ID: <Yp5oMmzNlq+Ut4So@yury-laptop>
+References: <20220606114908.962562-1-alexandr.lobakin@intel.com>
+ <20220606114908.962562-5-alexandr.lobakin@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220606114908.962562-5-alexandr.lobakin@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 6, 2022, at 11:01 AM, Nadav Amit wrote:
-> From: Nadav Amit <namit@vmware.com>
->
-> On extreme TLB shootdown storms, the mm's tlb_gen cacheline is highly
-> contended and reading it should (arguably) be avoided as much as
-> possible.
->
-> Currently, flush_tlb_func() reads the mm's tlb_gen unconditionally,
-> even when it is not necessary (e.g., the mm was already switched).
-> This is wasteful.
->
-> Moreover, one of the existing optimizations is to read mm's tlb_gen to
-> see if there are additional in-flight TLB invalidations and flush the
-> entire TLB in such a case. However, if the request's tlb_gen was already
-> flushed, the benefit of checking the mm's tlb_gen is likely to be offset
-> by the overhead of the check itself.
->
-> Running will-it-scale with tlb_flush1_threads show a considerable
-> benefit on 56-core Skylake (up to +24%):
+On Mon, Jun 06, 2022 at 01:49:05PM +0200, Alexander Lobakin wrote:
+> Currently, there is a mess with the prototypes of the non-atomic
+> bitops across the different architectures:
+> 
+> ret	bool, int, unsigned long
+> nr	int, long, unsigned int, unsigned long
+> addr	volatile unsigned long *, volatile void *
+> 
+> Thankfully, it doesn't provoke any bugs, but can sometimes make
+> the compiler angry when it's not handy at all.
+> Adjust all the prototypes to the following standard:
+> 
+> ret	bool				retval can be only 0 or 1
+> nr	unsigned long			native; signed makes no sense
+> addr	volatile unsigned long *	bitmaps are arrays of ulongs
+> 
+> Finally, add some static assertions in order to prevent people from
+> making a mess in this room again.
+> I also used the %__always_inline attribute consistently they always
+> get resolved to the actual operations.
+> 
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> ---
 
-Acked-by: Andy Lutomirski <luto@kernel.org>
+Reviewed-by: Yury Norov <yury.norov@gmail.com>
 
-But...
+[...]
 
-I'm suspicious that the analysis is missing something.  Under this kind of workload, there are a whole bunch of flushes being initiated, presumably in parallel.  Each flush does an RMW on mm_tlb_gen (which will make the cacheline exclusive on the initiating CPU).  And each flush sends out an IPI, and the IPI handler reads mm_tlb_gen (which makes the cacheline shared) when it updates the local tlb_gen.  So you're doing (at least!) an E->S and S->E transition per flush.  Your patch doesn't change this.
+> diff --git a/include/linux/bitops.h b/include/linux/bitops.h
+> index 7aaed501f768..5520ac9b1c24 100644
+> --- a/include/linux/bitops.h
+> +++ b/include/linux/bitops.h
+> @@ -26,12 +26,25 @@ extern unsigned int __sw_hweight16(unsigned int w);
+>  extern unsigned int __sw_hweight32(unsigned int w);
+>  extern unsigned long __sw_hweight64(__u64 w);
+>  
+> +#include <asm-generic/bitops/generic-non-atomic.h>
+> +
+>  /*
+>   * Include this here because some architectures need generic_ffs/fls in
+>   * scope
+>   */
+>  #include <asm/bitops.h>
+>  
+> +/* Check that the bitops prototypes are sane */
+> +#define __check_bitop_pr(name)	static_assert(__same_type(name, gen_##name))
+> +__check_bitop_pr(__set_bit);
+> +__check_bitop_pr(__clear_bit);
+> +__check_bitop_pr(__change_bit);
+> +__check_bitop_pr(__test_and_set_bit);
+> +__check_bitop_pr(__test_and_clear_bit);
+> +__check_bitop_pr(__test_and_change_bit);
+> +__check_bitop_pr(test_bit);
+> +#undef __check_bitop_pr
 
-But your patch does add a whole new case in which the IPI handler simply doesn't flush!  I think it takes either quite a bit of racing or a well-timed context switch to hit that case, but, if you hit it, then you skip a flush and you skip the read of mm_tlb_gen.
+This one is amazing trick! And the series is good overall. Do you want me to
+take it in bitmap tree, when it's ready, or you'll move it somehow else?
 
-Have you tested what happens if you do something like your patch but you also make the mm_tlb_gen read unconditional?  I'm curious if there's more to the story than you're seeing.
-
-You could also contemplate a somewhat evil hack in which you don't read mm_tlb_gen even if you *do* flush and instead use f->new_tlb_gen.  That would potentially do a bit of extra flushing but would avoid the flush path causing the E->S transition.  (Which may be of dubious value for real workloads, since I don't think there's a credible way to avoid having context switches read mm_tlb_gen.)
-
---Andy
+Thanks,
+Yury
