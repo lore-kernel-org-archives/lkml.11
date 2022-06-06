@@ -2,329 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5829BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:19:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E9AECCA473
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:20:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233725AbiFFKTf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 06:19:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52954 "EHLO
+        id S233759AbiFFKT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 06:19:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233569AbiFFKTb (ORCPT
+        with ESMTP id S233619AbiFFKTv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 06:19:31 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A4111800D
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 03:19:29 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id j7so12447993pjn.4
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 03:19:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ilzd49u5Imb25kMo4f7TpcHavmNS8qqVbBDilPGPMKM=;
-        b=OkmPT0gFGDuG2TtHSxv1ZOZYfGp7a/XIVferp9yIZviREDCsjiEWjA8Tft8RElF7GO
-         jCI+CnIHGJD8tmaJsOS5DyuEXg+CheWXTIYvDpiTKcK6jKMntNPcWIGhps3q3oq0OKrV
-         ufoVvQ6BhynBK1WdvsG2fJ1yQVCoJudg4dglVAB3nIg4ojx2NHlyNq9hAxu7cRRMf6dm
-         R5ZbwW1zKLe5TMBdrrPmjECzG4vt0TOr2iqIdV1oA9WRQgRSeeBaOgV0FCPHIGOmQZ5y
-         KtLFlVgRNX3bpl9XQUGm3FFxJb2U61rYNbBcvLj1HkfP131PEFa6WPwQthMpG98r1iF2
-         fIYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Ilzd49u5Imb25kMo4f7TpcHavmNS8qqVbBDilPGPMKM=;
-        b=UyP4EIH8VyfAafIeZYQLGjwFBhxj7zvomkqueGIDkPU22L52lyktUT0hDgTMdS+d6G
-         uQdB9oDU1NlfDC1M9J5B7EYG49VS+9AxckgwiKQRp5KW4inqlBZBAStARdSOMXcz+HH8
-         1z6lcfmXDAjaCPfnrEgMALvB4zltBvxhLK9IkehdXujc0XqQsXP6cB6oO80o0+0X+SA/
-         H6/sjUcMLGJ/yoVflKPczpzMNDelFbvWK46beD7R2RlCTjiruRXmVoMmcMl2u+vhlos0
-         iTFAT1lZULdtgEAkp8CSNI67P5gqR+2HJqqsWv/tjFVT5LAuH4FDWqitTOlRlURkaU+U
-         mMtg==
-X-Gm-Message-State: AOAM532dQg1th/NiUF+F3+D5iyc6BUE0K2Ad04tx7vFVMKW0IM2MlthH
-        jQFXebW5860iEKO0tTmi2XToL6nCQd1ftA==
-X-Google-Smtp-Source: ABdhPJxqbyrdN4zJbJHMwU0ISizKFPTck6XMTtpRwPBbvJWfxvW/iI0BnIUK8OBE1toE/v+jqbqirg==
-X-Received: by 2002:a17:90a:1911:b0:1df:b08a:e252 with SMTP id 17-20020a17090a191100b001dfb08ae252mr60685864pjg.215.1654510769344;
-        Mon, 06 Jun 2022 03:19:29 -0700 (PDT)
-Received: from localhost.localdomain (ec2-13-113-80-70.ap-northeast-1.compute.amazonaws.com. [13.113.80.70])
-        by smtp.gmail.com with ESMTPSA id o13-20020a170902d4cd00b0015e8d4eb2aesm10234887plg.248.2022.06.06.03.19.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 03:19:29 -0700 (PDT)
-From:   Zhang Boyang <zhangboyang.id@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     ferdinand.blomqvist@gmail.com, tglx@linutronix.de,
-        Zhang Boyang <zhangboyang.id@gmail.com>
-Subject: [PATCH 2/2] rslib: Introduce init_rs16()
-Date:   Mon,  6 Jun 2022 18:19:01 +0800
-Message-Id: <20220606101901.83538-2-zhangboyang.id@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220606101901.83538-1-zhangboyang.id@gmail.com>
-References: <20220605073857.126497-1-zhangboyang.id@gmail.com>
- <20220606101901.83538-1-zhangboyang.id@gmail.com>
+        Mon, 6 Jun 2022 06:19:51 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC7E1760CE;
+        Mon,  6 Jun 2022 03:19:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654510789; x=1686046789;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XkXW18DsxASgWy3W6vVrSfD8C2RLZ7Hhaeol5XaMazA=;
+  b=WBTOrMNmN1vs8gNXRaRzgWQ6jzWK4S2vJSIuh5wyZ1UMoeKqg6U0IrZt
+   OXJS1NBUZvkaOCB0grovQG8H8KuU/oUenEd04cmtyEyMkay2gGLR2aNNI
+   VgLX12SmpjJ14YAY6dKZiKTxlU0EK0aFkoKzz0JhW5Gwn5I06vQ/i0IYK
+   X74V59BQ3g1fXX/zE5RwatLw0LhbOeUuvihpXHtpcqBjcTx6vsGDytGKQ
+   Dudocxg+x3OC9nrGPI+D6QIfxFAc1IWDLIZShut/2gp4sVZz4DI4pmd5X
+   16YgKuatvQXHtN8XCXdeE6xaBT4uAlzd/fD9S10xpduaKGsPv1aUj1Bp7
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="276593154"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="276593154"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:19:48 -0700
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="647476480"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:19:40 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1ny9nZ-000UYV-54;
+        Mon, 06 Jun 2022 13:17:25 +0300
+Date:   Mon, 6 Jun 2022 13:17:24 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        John Stultz <jstultz@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Android Kernel Team <kernel-team@android.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+Subject: Re: [RFC PATCH v1 2/9] pinctrl: devicetree: Delete usage of
+ driver_deferred_probe_check_state()
+Message-ID: <Yp3UNAW5Zv+RjabA@smile.fi.intel.com>
+References: <20220526081550.1089805-1-saravanak@google.com>
+ <20220526081550.1089805-3-saravanak@google.com>
+ <CAMuHMdV4Uzfg8aBY=tKnRcig=Npebd158J7UK3zg5_DtHwAR5w@mail.gmail.com>
+ <CAGETcx-=kAJp282OvG4yd830fhQowN7-yXifERqiHRi2w0bGFw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGETcx-=kAJp282OvG4yd830fhQowN7-yXifERqiHRi2w0bGFw@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch introduces init_rs16(). This function creates a RS coder for
-exactly 16 bit symbols and it provides a special parameter `bool gfswab'
-which indicates whether to treat symbols as foreign endian. If `gfswab'
-is true, the coder will act as if all reads/writes to symbols is
-byte-swapped. This is useful, for example, when a big-endian machine
-want to decode symbols generated on a little-endian machine.
+On Sat, Jun 04, 2022 at 08:41:01PM -0700, Saravana Kannan wrote:
+> On Mon, May 30, 2022 at 2:22 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > On Thu, May 26, 2022 at 10:16 AM Saravana Kannan <saravanak@google.com> wrote:
+> > > Now that fw_devlink=on by default and fw_devlink supports
+> > > "pinctrl-[0-8]" property, the execution will never get to the point
+> >
+> > 0-9?
+> >
+> > oh, it's really 0-8:
+> >
+> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl0, "pinctrl-0", NULL)
+> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl1, "pinctrl-1", NULL)
+> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl2, "pinctrl-2", NULL)
+> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl3, "pinctrl-3", NULL)
+> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl4, "pinctrl-4", NULL)
+> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl5, "pinctrl-5", NULL)
+> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl6, "pinctrl-6", NULL)
+> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl7, "pinctrl-7", NULL)
+> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl8, "pinctrl-8", NULL)
+> >
+> > Looks fragile, especially since we now have:
+> >
+> >     arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi:
+> > pinctrl-9 = <&i2cmux_9>;
+> >     arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi: pinctrl-10
+> > = <&i2cmux_10>;
+> >     arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi: pinctrl-11
+> > = <&i2cmux_11>;
+> >     arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi: pinctrl-12
+> > = <&i2cmux_pins_i>;
+> 
+> Checking for pinctrl-* and then verifying if * matches %d would be
+> more complicated and probably more expensive compared to listing
+> pinctrl-[0-8]. Especially because more than 50% of pinctrl-*
+> properties in DT files are NOT pinctrl-%d. So back when we merged
+> this, Rob and I agreed [0-8] was good enough for now and we can add
+> more if we needed to. Also, when I checked back then, all the
+> pinctrl-5+ properties ended up pointing to the same suppliers as the
+> lower numbered ones. So it didn't make a difference.
+> 
+> Ok, I just checked linux-next all the pinctrl-9+ instances and it's
+> still true that they all point to the same supplier pointed to by
+> pinctrl-[0-8].
+> 
+> So yeah, it looks fragile, 
 
-Signed-off-by: Zhang Boyang <zhangboyang.id@gmail.com>
----
- include/linux/rslib.h           | 24 +++++++++++++++++
- lib/reed_solomon/reed_solomon.c | 48 ++++++++++++++++++++++++++++-----
- lib/reed_solomon/test_rslib.c   | 31 ++++++++++++---------
- 3 files changed, 84 insertions(+), 19 deletions(-)
+And feels fragile, adds into confusion, etc.
+Please, consider redesigning this to be more robust.
 
-diff --git a/include/linux/rslib.h b/include/linux/rslib.h
-index 238bb85243d3..bd38e1285997 100644
---- a/include/linux/rslib.h
-+++ b/include/linux/rslib.h
-@@ -28,6 +28,7 @@
-  * @iprim:	prim-th root of 1, index form
-  * @gfpoly:	The primitive generator polynominal
-  * @gffunc:	Function to generate the field, if non-canonical representation
-+ * @gfswab:	Treat symbols as foreign endian, may be true only if mm = 16
-  * @users:	Users of this structure
-  * @list:	List entry for the rs codec list
- */
-@@ -43,6 +44,7 @@ struct rs_codec {
- 	int		iprim;
- 	int		gfpoly;
- 	int		(*gffunc)(int);
-+	bool		gfswab;
- 	int		users;
- 	struct list_head list;
- };
-@@ -101,6 +103,28 @@ static inline struct rs_control *init_rs(int symsize, int gfpoly, int fcr,
- 	return init_rs_gfp(symsize, gfpoly, fcr, prim, nroots, GFP_KERNEL);
- }
- 
-+struct rs_control *init_rs16_gfp(int gfpoly, bool gfswab, int fcr, int prim,
-+				 int nroots, gfp_t gfp);
-+
-+/**
-+ * init_rs16 - Allocate rs control struct for 16 bit symbols
-+ *  @gfpoly:	the extended Galois field generator polynomial coefficients,
-+ *		with the 0th coefficient in the low order bit. The polynomial
-+ *		must be primitive;
-+ *  @gfswab:	Treat symbols as foreign endian
-+ *  @fcr:	the first consecutive root of the rs code generator polynomial
-+ *		in index form
-+ *  @prim:	primitive element to generate polynomial roots
-+ *  @nroots:	RS code generator polynomial degree (number of roots)
-+ *
-+ * Allocations use GFP_KERNEL.
-+ */
-+static inline struct rs_control *init_rs16(int gfpoly, bool gfswab, int fcr,
-+					   int prim, int nroots)
-+{
-+	return init_rs16_gfp(gfpoly, gfswab, fcr, prim, nroots, GFP_KERNEL);
-+}
-+
- struct rs_control *init_rs_non_canonical(int symsize, int (*func)(int),
- 					 int fcr, int prim, int nroots);
- 
-diff --git a/lib/reed_solomon/reed_solomon.c b/lib/reed_solomon/reed_solomon.c
-index bb4f44c8edba..8f25b539e3a5 100644
---- a/lib/reed_solomon/reed_solomon.c
-+++ b/lib/reed_solomon/reed_solomon.c
-@@ -56,9 +56,10 @@ static DEFINE_MUTEX(rslistlock);
- 
- /**
-  * codec_init - Initialize a Reed-Solomon codec
-- * @symsize:	symbol size, bits (1-8)
-+ * @symsize:	the symbol size (number of bits)
-  * @gfpoly:	Field generator polynomial coefficients
-  * @gffunc:	Field generator function
-+ * @gfswab:	Treat symbols as foreign endian, may be true only if symsize=16
-  * @fcr:	first root of RS code generator polynomial, index form
-  * @prim:	primitive element to generate polynomial roots
-  * @nroots:	RS code generator polynomial degree (number of roots)
-@@ -67,7 +68,8 @@ static DEFINE_MUTEX(rslistlock);
-  * Allocate a codec structure and the polynom arrays for faster
-  * en/decoding. Fill the arrays according to the given parameters.
-  */
--static struct rs_codec *codec_init(int symsize, int gfpoly, int (*gffunc)(int),
-+static struct rs_codec *codec_init(int symsize,
-+				   int gfpoly, int (*gffunc)(int), bool gfswab,
- 				   int fcr, int prim, int nroots, gfp_t gfp)
- {
- 	int i, j, sr, root, iprim;
-@@ -86,6 +88,7 @@ static struct rs_codec *codec_init(int symsize, int gfpoly, int (*gffunc)(int),
- 	rs->nroots = nroots;
- 	rs->gfpoly = gfpoly;
- 	rs->gffunc = gffunc;
-+	rs->gfswab = gfswab;
- 
- 	/* Allocate the arrays */
- 	rs->alpha_to = kmalloc_array(rs->nn + 1, sizeof(uint16_t), gfp);
-@@ -105,13 +108,16 @@ static struct rs_codec *codec_init(int symsize, int gfpoly, int (*gffunc)(int),
- 	rs->alpha_to[rs->nn] = 0;	/* alpha**-inf = 0 */
- 	if (gfpoly) {
- 		sr = 1;
-+		sr = gfswab ? swab16(sr) : sr;
- 		for (i = 0; i < rs->nn; i++) {
- 			rs->index_of[sr] = i;
- 			rs->alpha_to[i] = sr;
-+			sr = gfswab ? swab16(sr) : sr;
- 			sr <<= 1;
- 			if (sr & (1 << symsize))
- 				sr ^= gfpoly;
- 			sr &= rs->nn;
-+			sr = gfswab ? swab16(sr) : sr;
- 		}
- 	} else {
- 		sr = gffunc(0);
-@@ -204,6 +210,7 @@ EXPORT_SYMBOL_GPL(free_rs);
-  *  @gffunc:	pointer to function to generate the next field element,
-  *		or the multiplicative identity element if given 0.  Used
-  *		instead of gfpoly if gfpoly is 0
-+ *  @gfswab:	Treat symbols as foreign endian, may be true only if symsize=16
-  *  @fcr:	the first consecutive root of the rs code generator polynomial
-  *		in index form
-  *  @prim:	primitive element to generate polynomial roots
-@@ -211,8 +218,9 @@ EXPORT_SYMBOL_GPL(free_rs);
-  *  @gfp:	GFP_ flags for allocations
-  */
- static struct rs_control *init_rs_internal(int symsize, int gfpoly,
--					   int (*gffunc)(int), int fcr,
--					   int prim, int nroots, gfp_t gfp)
-+					   int (*gffunc)(int), bool gfswab,
-+					   int fcr, int prim, int nroots,
-+					   gfp_t gfp)
- {
- 	struct list_head *tmp;
- 	struct rs_control *rs;
-@@ -227,6 +235,8 @@ static struct rs_control *init_rs_internal(int symsize, int gfpoly,
- 		return NULL;
- 	if (nroots < 0 || nroots >= (1<<symsize))
- 		return NULL;
-+	if (gfswab && symsize != 16)
-+		return NULL;
- 
- 	/*
- 	 * The decoder needs buffers in each control struct instance to
-@@ -250,6 +260,8 @@ static struct rs_control *init_rs_internal(int symsize, int gfpoly,
- 			continue;
- 		if (gffunc != cd->gffunc)
- 			continue;
-+		if (gfswab != cd->gfswab)
-+			continue;
- 		if (fcr != cd->fcr)
- 			continue;
- 		if (prim != cd->prim)
-@@ -263,7 +275,8 @@ static struct rs_control *init_rs_internal(int symsize, int gfpoly,
- 	}
- 
- 	/* Create a new one */
--	rs->codec = codec_init(symsize, gfpoly, gffunc, fcr, prim, nroots, gfp);
-+	rs->codec = codec_init(symsize, gfpoly, gffunc, gfswab,
-+			       fcr, prim, nroots, gfp);
- 	if (!rs->codec) {
- 		kfree(rs);
- 		rs = NULL;
-@@ -288,10 +301,31 @@ static struct rs_control *init_rs_internal(int symsize, int gfpoly,
- struct rs_control *init_rs_gfp(int symsize, int gfpoly, int fcr, int prim,
- 			       int nroots, gfp_t gfp)
- {
--	return init_rs_internal(symsize, gfpoly, NULL, fcr, prim, nroots, gfp);
-+	return init_rs_internal(symsize, gfpoly, NULL, false,
-+				fcr, prim, nroots, gfp);
- }
- EXPORT_SYMBOL_GPL(init_rs_gfp);
- 
-+/**
-+ * init_rs16_gfp - Allocate rs control struct for 16 bit symbols
-+ *  @gfpoly:	the extended Galois field generator polynomial coefficients,
-+ *		with the 0th coefficient in the low order bit. The polynomial
-+ *		must be primitive;
-+ *  @gfswab:	Treat symbols as foreign endian
-+ *  @fcr:	the first consecutive root of the rs code generator polynomial
-+ *		in index form
-+ *  @prim:	primitive element to generate polynomial roots
-+ *  @nroots:	RS code generator polynomial degree (number of roots)
-+ *  @gfp:	Memory allocation flags.
-+ */
-+struct rs_control *init_rs16_gfp(int gfpoly, bool gfswab, int fcr, int prim,
-+				 int nroots, gfp_t gfp)
-+{
-+	return init_rs_internal(16, gfpoly, NULL, gfswab,
-+				fcr, prim, nroots, gfp);
-+}
-+EXPORT_SYMBOL_GPL(init_rs16_gfp);
-+
- /**
-  * init_rs_non_canonical - Allocate rs control struct for fields with
-  *                         non-canonical representation
-@@ -307,7 +341,7 @@ EXPORT_SYMBOL_GPL(init_rs_gfp);
- struct rs_control *init_rs_non_canonical(int symsize, int (*gffunc)(int),
- 					 int fcr, int prim, int nroots)
- {
--	return init_rs_internal(symsize, 0, gffunc, fcr, prim, nroots,
-+	return init_rs_internal(symsize, 0, gffunc, false, fcr, prim, nroots,
- 				GFP_KERNEL);
- }
- EXPORT_SYMBOL_GPL(init_rs_non_canonical);
-diff --git a/lib/reed_solomon/test_rslib.c b/lib/reed_solomon/test_rslib.c
-index d9d1c33aebda..f1eba21ed6d8 100644
---- a/lib/reed_solomon/test_rslib.c
-+++ b/lib/reed_solomon/test_rslib.c
-@@ -36,6 +36,7 @@ __param(int, bc, 1, "Test for correct behaviour beyond error correction capacity
- struct etab {
- 	int	symsize;
- 	int	genpoly;
-+	bool	byteswap;
- 	int	fcs;
- 	int	prim;
- 	int	nroots;
-@@ -44,17 +45,18 @@ struct etab {
- 
- /* List of codes to test */
- static struct etab Tab[] = {
--	{2,	0x7,	1,	1,	1,	100000	},
--	{3,	0xb,	1,	1,	2,	100000	},
--	{3,	0xb,	1,	1,	3,	100000	},
--	{3,	0xb,	2,	1,	4,	100000	},
--	{4,	0x13,	1,	1,	4,	10000	},
--	{5,	0x25,	1,	1,	6,	1000	},
--	{6,	0x43,	3,	1,	8,	1000	},
--	{7,	0x89,	1,	1,	14,	500	},
--	{8,	0x11d,	1,	1,	30,	100	},
--	{8,	0x187,	112,	11,	32,	100	},
--	{9,	0x211,	1,	1,	33,	80	},
-+	{2,	0x7,	false,	1,	1,	1,	100000	},
-+	{3,	0xb,	false,	1,	1,	2,	100000	},
-+	{3,	0xb,	false,	1,	1,	3,	100000	},
-+	{3,	0xb,	false,	2,	1,	4,	100000	},
-+	{4,	0x13,	false,	1,	1,	4,	10000	},
-+	{5,	0x25,	false,	1,	1,	6,	1000	},
-+	{6,	0x43,	false,	3,	1,	8,	1000	},
-+	{7,	0x89,	false,	1,	1,	14,	500	},
-+	{8,	0x11d,	false,	1,	1,	30,	100	},
-+	{8,	0x187,	false,	112,	11,	32,	100	},
-+	{9,	0x211,	false,	1,	1,	33,	80	},
-+	{16,  0x1002d,	true,	1,	1,	33,	5	},
- 	{0, 0, 0, 0, 0, 0},
- };
- 
-@@ -450,7 +452,12 @@ static int run_exercise(struct etab *e)
- 	struct wspace *ws;
- 	int i;
- 
--	rsc = init_rs(e->symsize, e->genpoly, e->fcs, e->prim, e->nroots);
-+	if (e->symsize != 16)
-+		rsc = init_rs(e->symsize, e->genpoly,
-+			      e->fcs, e->prim, e->nroots);
-+	else
-+		rsc = init_rs16(e->genpoly, e->byteswap,
-+				e->fcs, e->prim, e->nroots);
- 	if (!rsc)
- 		return retval;
- 
+>	but is not broken and it's more efficient
+> than looking for pinctrl-%d or adding more pinctrl-xx entries. So,
+> let's fix it if it actually breaks? Not going to oppose a patch if
+> anyone wants to make it more complete.
+> 
+> > > where driver_deferred_probe_check_state() is called before the supplier
+> > > has probed successfully or before deferred probe timeout has expired.
+> > >
+> > > So, delete the call and replace it with -ENODEV.
+
 -- 
-2.30.2
+With Best Regards,
+Andy Shevchenko
+
 
