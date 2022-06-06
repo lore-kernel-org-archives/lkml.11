@@ -2,107 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6236C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:37:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37A5BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234101AbiFFKhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 06:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35906 "EHLO
+        id S234108AbiFFKhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 06:37:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234084AbiFFKhQ (ORCPT
+        with ESMTP id S234082AbiFFKhw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 06:37:16 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94F8B36685;
-        Mon,  6 Jun 2022 03:37:14 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id D01F01F8E0;
-        Mon,  6 Jun 2022 10:37:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1654511832;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Oh+d6xs/K5RIwfQPbMAzdhItVAYJFXKNL7LJl57ehAM=;
-        b=bPKpmiyhz5lNEZwWCzDasHkLoIUoLL62YrN/yZ34r7ZM4pf2D4HhO/xvEibPxInlEIGuh0
-        SAJQLM2tOvlPAAY7LbbAstor4eRXw5weUbAtg1DRHvnoYS/txMFv4YyhcOiNx7qpLdz5aX
-        63ikj2Mkt1jBQStstNqXYaxNRMvC7ms=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1654511832;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Oh+d6xs/K5RIwfQPbMAzdhItVAYJFXKNL7LJl57ehAM=;
-        b=IMgLerAkV7auCiJ3umE2EWX9E0t2J1XAeDV8xhe3la5pKfB0fz1f67ADla3hilkSGS7LEd
-        FoCkbsTLfIzdqhDA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8B790139F5;
-        Mon,  6 Jun 2022 10:37:12 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id MKEXIdjYnWKlGQAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Mon, 06 Jun 2022 10:37:12 +0000
-Date:   Mon, 6 Jun 2022 12:32:44 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     dsterba@suse.cz, Christoph Hellwig <hch@infradead.org>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Ira Weiny <ira.weiny@intel.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/3] btrfs: Replace kmap() with kmap_local_page()
-Message-ID: <20220606103243.GZ20633@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Christoph Hellwig <hch@infradead.org>, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>, David Sterba <dsterba@suse.com>,
-        Ira Weiny <ira.weiny@intel.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220531145335.13954-1-fmdefrancesco@gmail.com>
- <YpjVKAGz+GuI4GB0@infradead.org>
- <20220602162840.GV20633@twin.jikos.cz>
- <1793713.atdPhlSkOF@opensuse>
+        Mon, 6 Jun 2022 06:37:52 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E4B12AD5
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 03:37:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654511870; x=1686047870;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qQ/9qGTYF8uA8ohG6pw+Jukr0gB7zxV+urlvatt/wBQ=;
+  b=YCtJbTlQ24rwS39skT52geFP3fPkLQRPD/SXZ2o8FpYbd93rYyheMYBL
+   WK+uzou7aV5ggEtRar3qo1VdmvXDeilDw9qUWynNK8+9Yew+bwNVkg31A
+   xQR9x5ZI0ygCrPkmE2NlK5mnOSLQ9wwRW5DEmauhc3TLj8jNEr7RS+eks
+   XLUJNzxkF1XnjBQoTemMHptrFlPxhJBRo6SAkbVvlLIxvoTlXbhV/y8Ny
+   EqQ8SlQSQM09nZY14DMjwv+Z876kCoCJPN7UUZZXUzFF+UpxO1zUGu9eA
+   76cPYwDfwMh3FdowguFqt7pNVFpIm3lbixxuex5Jg5CCQstDff14JWh6D
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="275423164"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="275423164"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:37:48 -0700
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="532080265"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:37:45 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nyA7B-000UaB-V7;
+        Mon, 06 Jun 2022 13:37:41 +0300
+Date:   Mon, 6 Jun 2022 13:37:41 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Sander Vanheule <sander@svanheule.net>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Marco Elver <elver@google.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 4/4] cpumask: Update cpumask_next_wrap() signature
+Message-ID: <Yp3Y9YRqg7qgVSjd@smile.fi.intel.com>
+References: <cover.1654410109.git.sander@svanheule.net>
+ <52c0f58d879f9f12fc2a9230ee08da219dc5298c.1654410109.git.sander@svanheule.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1793713.atdPhlSkOF@opensuse>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <52c0f58d879f9f12fc2a9230ee08da219dc5298c.1654410109.git.sander@svanheule.net>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 05, 2022 at 05:11:48PM +0200, Fabio M. De Francesco wrote:
-> On giovedì 2 giugno 2022 18:28:40 CEST David Sterba wrote:
-> > On Thu, Jun 02, 2022 at 08:20:08AM -0700, Christoph Hellwig wrote:
-> > I've just hit the crash too, so I've removed the patches from misc-next
-> > until there's fixed version.
-> > 
-> Finally I've been able to run xfstests on a QEMU + KVM 32 bits VM. Since I 
-> have very little experience with filesystems it was a bit hard to setup and 
-> run.
+On Sun, Jun 05, 2022 at 08:22:41AM +0200, Sander Vanheule wrote:
+> The extern specifier is not needed for this declaration, so drop it. The
+> function also depends only on the input parameters, and has no side
+> effects, so it can be marked __pure like other functions in cpumask.h
+
+Missed period.
+
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+> Signed-off-by: Sander Vanheule <sander@svanheule.net>
+> ---
+>  include/linux/cpumask.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> I can confirm that the problems are only from conversions in patch 3/3. 
-
-Thanks.
-
-> Since I've been spending long time to setup xfstests and make it run, I 
-> haven't yet had time to address the issued in patch 3/3 and making the 
-> further changes I've been asked for.
+> diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
+> index 7ccddbc27ac3..f37ce00741a3 100644
+> --- a/include/linux/cpumask.h
+> +++ b/include/linux/cpumask.h
+> @@ -210,7 +210,7 @@ int cpumask_any_distribute(const struct cpumask *srcp);
+>  		(cpu) = cpumask_next_zero((cpu), (mask)),	\
+>  		(cpu) < nr_cpu_ids;)
+>  
+> -extern int cpumask_next_wrap(int n, const struct cpumask *mask, int start, bool wrap);
+> +int __pure cpumask_next_wrap(int n, const struct cpumask *mask, int start, bool wrap);
+>  
+>  /**
+>   * for_each_cpu_wrap - iterate over every cpu in a mask, starting at a specified location
+> -- 
+> 2.36.1
 > 
-> Can you please start with taking only patches 1/3 and 2/3 and dropping 3/3?
-> I'd really appreciate it because, if you can, I'll see that part of my work 
-> has already been helpful somewhat and have no need to carry those patches 
-> on to the next series :-) 
 
-Yes I can pick 1 and 2. Removing the whole series is needed in case it
-crashes tests as it affects everybody.
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
