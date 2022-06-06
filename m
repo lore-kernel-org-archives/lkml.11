@@ -2,159 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE50AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:32:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FEBAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:33:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239751AbiFFOcf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:32:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47892 "EHLO
+        id S239738AbiFFOdE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:33:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239627AbiFFOcZ (ORCPT
+        with ESMTP id S239627AbiFFOdC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:32:25 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB7619FB4;
-        Mon,  6 Jun 2022 07:32:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654525944; x=1686061944;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UxE8NFVyWkYcl6VDWo0Xc7AS/+WRnnbtxB431hbdf8E=;
-  b=BICLIJM1RRUCHuX5r1LZbr9NC+T+7i63AocrimLUDszR/dCCi89tIQkF
-   5mXYjeKhFHeEvnHqrwDg+Jp4eU/uw+qrvz0lh8zr5Vatiw+8/bWTa9B2o
-   I0bD2HMpA4B7RcvOqjq+UvXDNx3qDGBQUJK0ecrZB+g5nSpmiJfMNBYi+
-   aW22VdsYFlfiIbBlcT+K17FNEsy9E5DI0h8D2qTKDaSO6vCOl7NKQNQ6a
-   pRqjzv16kzSegYarBS+O4/A5MivnXSkE3ObHjlZ84/8eFM////8/bdiZb
-   xj4CZ8u3k8aKcMRRk+obDxVkgPJsjZht12QuKVpmUphsNBo7ZiiRTiE8S
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="276980221"
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="276980221"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 07:22:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="614371881"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga001.jf.intel.com with ESMTP; 06 Jun 2022 07:22:34 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 256EMW5u012713;
-        Mon, 6 Jun 2022 15:22:32 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Yury Norov <yury.norov@gmail.com>,
-        "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
-        Richard Henderson <rth@twiddle.net>,
-        Matt Turner <mattst88@gmail.com>,
-        Brian Cain <bcain@quicinc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "Yoshinori Sato" <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
-        Tony Luck <tony.luck@intel.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/6] bitops: always define asm-generic non-atomic bitops
-Date:   Mon,  6 Jun 2022 16:21:35 +0200
-Message-Id: <20220606142135.965134-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <Yp32xDZ/qF8hM6p0@FVFF77S0Q05N>
-References: <20220606114908.962562-1-alexandr.lobakin@intel.com> <20220606114908.962562-3-alexandr.lobakin@intel.com> <Yp32xDZ/qF8hM6p0@FVFF77S0Q05N>
+        Mon, 6 Jun 2022 10:33:02 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B7F2AC5E;
+        Mon,  6 Jun 2022 07:33:01 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id q15so12086125wrc.11;
+        Mon, 06 Jun 2022 07:33:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=T2WMsUxzc11zSP3SEaSzeZg0r4jEfgd/2nHBgyOqTNM=;
+        b=oPQMW767uSFPmkznlyNOwLkO1E+Py3pEiUAdu5aDoOx9B1P8D+xAgWXPm7Qhy7Ue1a
+         XC+0+nLLS6nWuaJ7HrmOuO2j1epyaQD/sm/m0sUNfE7NMgaGWn6RCNaJx30xgy2nWtb3
+         nik5QBQVlxZ8TdXo0cGSLZ2KstAI+3j4aNs/LI4RZd+TL5hAnOBSxcGNr3jPj8uhFujd
+         0aTha74diX4ObZ+TFbFzxjOcDtiFBKcI22AlVc2BZH5ip07FtZIena6BZLtruAxAOnio
+         Qca12p3StCU+L3hzjXUh8ORNZm3vI2TyyjfAp00x+VUF3xGUYaUfBNXZC7ZtX7kTDf2F
+         gp2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=T2WMsUxzc11zSP3SEaSzeZg0r4jEfgd/2nHBgyOqTNM=;
+        b=2cQhA72DB5+7pEdbrqmXrK3kWvccF/tGNuo+8Yz0ofUwvUeUJMTleaDH5FDamTKxWa
+         UBlSRMfI/Ep/bCGeqpKy9oQK2lLz49SUgqEXZ0rJeaNSixCyoPZKieGuKwqUgluJNHq+
+         yrwBO7drsg0fyl0hLFhnu+wPlwSRf4faes88y7I92TvjYQTVqjOZW/mQgjfczM8zQR/g
+         sL8QG0agW5irxKhT1hftRGdQKpsAPgAP6OD9pC64iP5uc1roQZj2szo8H2XSgk3DroTq
+         KpkgwM9jgjARLwMH41w6R1an0baWFBtLlIZ3CsDlaN/jr+eUfSJ7wnJcEvs3UgE2I+tz
+         e1lw==
+X-Gm-Message-State: AOAM530UPE0gUp/aDBX4hB7t8xm5npKF3NDQKyAhETP6D091byjbpozP
+        ZCTN+O7G+V1qXAXjwtGGmEDmvkXbF9M=
+X-Google-Smtp-Source: ABdhPJzqN4cWZJ6Ag/jC5Ezs4cbaqkGE6PFX1fiQ+wVAcUBIwMFyV9pdT4P/LI0Z247Z2KIkNphKhQ==
+X-Received: by 2002:a05:6000:18a4:b0:210:7e22:cd07 with SMTP id b4-20020a05600018a400b002107e22cd07mr21611412wri.703.1654525979972;
+        Mon, 06 Jun 2022 07:32:59 -0700 (PDT)
+Received: from opensuse.localnet (host-79-13-108-3.retail.telecomitalia.it. [79.13.108.3])
+        by smtp.gmail.com with ESMTPSA id t187-20020a1c46c4000000b0039c45fc58c4sm8177822wma.21.2022.06.06.07.32.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 07:32:58 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     dsterba@suse.cz, "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Ira Weiny <ira.weiny@intel.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] btrfs: Replace kmap() with kmap_local_page()
+Date:   Mon, 06 Jun 2022 16:32:57 +0200
+Message-ID: <2242021.ElGaqSPkdT@opensuse>
+In-Reply-To: <20220606103243.GZ20633@twin.jikos.cz>
+References: <20220531145335.13954-1-fmdefrancesco@gmail.com> <1793713.atdPhlSkOF@opensuse> <20220606103243.GZ20633@twin.jikos.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Rutland <mark.rutland@arm.com>
-Date: Mon, 6 Jun 2022 13:44:52 +0100
+On luned=C3=AC 6 giugno 2022 12:32:44 CEST David Sterba wrote:
+>
+> [snip]=20
+>=20
+> Yes I can pick 1 and 2. Removing the whole series is needed in case it
+> crashes tests as it affects everybody.
+>=20
+Thanks!
 
-> On Mon, Jun 06, 2022 at 01:49:03PM +0200, Alexander Lobakin wrote:
-> > Move generic non-atomic bitops from the asm-generic header which
-> > gets included only when there are no architecture-specific
-> > alternatives, to a separate independent file to make them always
-> > available.
-> > 
-> > Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > ---
-> >  .../asm-generic/bitops/generic-non-atomic.h   | 124 ++++++++++++++++++
-> >  include/asm-generic/bitops/non-atomic.h       | 109 ++-------------
-> >  2 files changed, 132 insertions(+), 101 deletions(-)
-> >  create mode 100644 include/asm-generic/bitops/generic-non-atomic.h
-> > 
-> > diff --git a/include/asm-generic/bitops/generic-non-atomic.h b/include/asm-generic/bitops/generic-non-atomic.h
-> > new file mode 100644
-> > index 000000000000..7a60adfa6e7d
-> > --- /dev/null
-> > +++ b/include/asm-generic/bitops/generic-non-atomic.h
-> > @@ -0,0 +1,124 @@
-> > +/* SPDX-License-Identifier: GPL-2.0-only */
-> > +#ifndef __ASM_GENERIC_BITOPS_GENERIC_NON_ATOMIC_H
-> > +#define __ASM_GENERIC_BITOPS_GENERIC_NON_ATOMIC_H
-> > +
-> > +#include <linux/bits.h>
-> > +
-> > +#ifndef _LINUX_BITOPS_H
-> > +#error only <linux/bitops.h> can be included directly
-> > +#endif
-> > +
-> > +/*
-> > + * Generic definitions for bit operations, should not be used in regular code
-> > + * directly.
-> > + */
-> > +
-> > +/**
-> > + * gen___set_bit - Set a bit in memory
-> > + * @nr: the bit to set
-> > + * @addr: the address to start counting from
-> > + *
-> > + * Unlike set_bit(), this function is non-atomic and may be reordered.
-> > + * If it's called on the same region of memory simultaneously, the effect
-> > + * may be that only one operation succeeds.
-> > + */
-> > +static __always_inline void
-> > +gen___set_bit(unsigned int nr, volatile unsigned long *addr)
-> 
-> Could we please use 'generic' rather than 'gen' as the prefix?
-> 
-> That'd match what we did for the generic atomic_*() and atomic64_*() functions
-> in commits
-> 
-> * f8b6455a9d381fc5 ("locking/atomic: atomic: support ARCH_ATOMIC")
-> * 1bdadf46eff6804a ("locking/atomic: atomic64: support ARCH_ATOMIC")
-> 
-> ... and it avoids any potential confusion with 'gen' meaning 'generated' or
-> similar.
+If everything goes smoothly, you will receive the remaining conversions=20
+within the next days. I still have to make several of them  (both from=20
+kmap() as well as from kmap_local()) and the ones already done and placed=20
+in my queue still need to be properly tested.
 
-Sure! Thanks for giving the hint, I do agree it would look better
-and will rename in v2.
+Again, thanks,
 
-> 
-> Thanks,
-> Mark.
-> 
-> > +{
-> > +	unsigned long mask = BIT_MASK(nr);
-> > +	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
-> > +
-> > +	*p  |= mask;
-> > +}
+=46abio
 
-[...]
 
-> > -- 
-> > 2.36.1
 
-Thanks,
-Al
