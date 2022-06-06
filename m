@@ -2,109 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3EECCA473
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 12:54:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90418C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 12:54:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237931AbiFFMyQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 08:54:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54212 "EHLO
+        id S237919AbiFFMy3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 08:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237918AbiFFMyL (ORCPT
+        with ESMTP id S237928AbiFFMy1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 08:54:11 -0400
-X-Greylist: delayed 601 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Jun 2022 05:54:07 PDT
-Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DCB252B8;
-        Mon,  6 Jun 2022 05:54:07 -0700 (PDT)
-Received: from smtpauth-2019-1.uniroma2.it (smtpauth-2019-1.uniroma2.it [160.80.5.46])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 256CXgr7024134;
-        Mon, 6 Jun 2022 14:33:47 +0200
-Received: from lubuntu-18.04 (unknown [160.80.103.126])
-        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id DFA831212B4;
-        Mon,  6 Jun 2022 14:33:38 +0200 (CEST)
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
-        s=ed201904; t=1654518819; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8B6BQq7gCMMTyTKJNSZBHuMyyStdALnwUURupL2Td2o=;
-        b=X7w1dL/Qdi0cGco1mzCLqfC//5laoY1s1Mcit4m6zobej3fu2+NwBDv9UFWimW+rIlfVnu
-        oLBzbUp7cCWCJvBQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
-        t=1654518819; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8B6BQq7gCMMTyTKJNSZBHuMyyStdALnwUURupL2Td2o=;
-        b=nz5Ja2R9K87ulc+qvyWNju3i1v8S9IXm1GruSHe1XLogKTdmXH8UY3Sfs4k/t52+iDxB+c
-        wj23Fqx0P1hqsZ1l988VEenJPgrYS6dl1fBVUocxgHER8nTlfoOR52HwjapbuDDNutwSyI
-        Q7N+sm7olNFUdRjzGD8Oos6kow+yYuUSApFPJlxa/RtegzNgGvkeIsbjBZCv2a5JKBLNqY
-        +hN/mRWoa3j8e6OAIqvH/F5Z1rpPexJIbAzAVMzIN/13+EevVnb+5pPM9rBFq7QzhFRLqK
-        B73DgcDvU/UpPpAqsQrVMJ2jWs87WuBW+zTfr8eQBkMLkuUlB8NeLOHqh3PF+w==
-Date:   Mon, 6 Jun 2022 14:33:38 +0200
-From:   Andrea Mayer <andrea.mayer@uniroma2.it>
-To:     Anton Makarov <am@3a-alliance.com>
-Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, david.lebrun@uclouvain.be,
-        regressions@lists.linux.dev, stable@vger.kernel.org,
-        Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: Re: [REGRESSION] net: SRv6 End.DT6 function is broken in VRF mode
-Message-Id: <20220606143338.91df592bbb7dc2f7db4747e6@uniroma2.it>
-In-Reply-To: <7e315ff1-e172-16c3-44b5-0c83c4c92779@3a-alliance.com>
-References: <7e315ff1-e172-16c3-44b5-0c83c4c92779@3a-alliance.com>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
+        Mon, 6 Jun 2022 08:54:27 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6579B252AB
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 05:54:24 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id me5so28254185ejb.2
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 05:54:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=zSWtlPJP36ORYOSSEGdXjiEBg41sfQK7fjIGlhhOsv4=;
+        b=ohH7X4O4gfbSAOd4Lxe/JDB2Yg4fnSaAo6bBsnNdlicr8huPh8WTvgc6hdHfL50WvH
+         wVUGSLm9xAb8s1RzQqdeyLh+0R8rCX+bNlGSEUVryCEgqwZxvpUkN/sHsZot64pVzUSr
+         +G5szJr7atoS0Z52yWU8ikh1n3KcKJvkaBbUG62CyI7NI8lOUjjI5FB6Wr9ck6d9Mv2R
+         9s3VfJN0N73dACy7RVZ807jdv67u4GczFiLGHXmxnXDn2FRXV46DsP8Z0obZWNahrKEw
+         AYP3p/d5bqKtGEANvK0DKqc8YRlwEfFqpXFqDeDDMy9YQ64CjPtfyp4myp967aj/IxBm
+         j3+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zSWtlPJP36ORYOSSEGdXjiEBg41sfQK7fjIGlhhOsv4=;
+        b=JWhvHcjXWqgA58eHH6dP3q9dL8YagCuOuiFERn5BEsNnI8r5FcYSxGGypnQDXo3Noq
+         XoWwUBQYAl+Lw5K7Z4fVxNYykdwNrW4ci5B0Lsn1l4CgHsuPMTtoqyxMtOl5M62kG4zO
+         aArMdk4ewSW5X6i8cPnWPjuS6ECfFshcT5ycXJDQHwDOrjIlleRRibga0Vsa27LKh1ew
+         M5eA2+UkPcz2xPZkgECVaWs1YVvu5yLLLWpauUVN2s/uQP9NpKFKmIgkybTsYEgyqTxi
+         8mkHODW9cFZdzC3txTgoAfG9SDP8sHB2vhPFKgLuFZM68u2cFRx3mnZQ0yZTSF0JlM5R
+         kjhw==
+X-Gm-Message-State: AOAM531CJk1TtC5mZp9tSlDxd8BW51Zqt20Nuv3CFon06y2AY/Kpq0eD
+        DolhWIGvf6sPsdVbWHQgGFuZVw==
+X-Google-Smtp-Source: ABdhPJyPPzcXaQmBcA/vX+SWRT3t+CpQ+4vwiWmzsqQBRttf3RbMfRiW4DKpHFbPTsiZVUQvVzaL4Q==
+X-Received: by 2002:a17:907:2cc4:b0:6fe:2100:de21 with SMTP id hg4-20020a1709072cc400b006fe2100de21mr21217971ejc.462.1654520062876;
+        Mon, 06 Jun 2022 05:54:22 -0700 (PDT)
+Received: from [192.168.0.181] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id h4-20020a17090791c400b007109b15c109sm3119325ejz.66.2022.06.06.05.54.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jun 2022 05:54:22 -0700 (PDT)
+Message-ID: <fc350cfd-e9c1-e29e-392b-ede4fe7fb265@linaro.org>
+Date:   Mon, 6 Jun 2022 14:54:21 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 RESEND] ARM: dts: nuvoton: wpcm450: Add missing aliases
+ for serial0/serial1
+Content-Language: en-US
+To:     =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
+        openbmc@lists.ozlabs.org
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220606123529.1738542-1-j.neuschaefer@gmx.net>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220606123529.1738542-1-j.neuschaefer@gmx.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 3 Jun 2022 15:23:26 +0300
-Anton Makarov <am@3a-alliance.com> wrote:
+On 06/06/2022 14:35, Jonathan Neuschäfer wrote:
+> Without these, /chosen/stdout-path = "serial0:115200n8", as done in
+> nuvoton-wpcm450-supermicro-x9sci-ln4f.dts, does not work.
+> 
+> Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+> ---
+> 
+> v2:
+> - mention WPCM450 in the summary
+> ---
+>  arch/arm/boot/dts/nuvoton-wpcm450.dtsi | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/nuvoton-wpcm450.dtsi b/arch/arm/boot/dts/nuvoton-wpcm450.dtsi
+> index 93595850a4c3c..57943bf5aa4a9 100644
+> --- a/arch/arm/boot/dts/nuvoton-wpcm450.dtsi
+> +++ b/arch/arm/boot/dts/nuvoton-wpcm450.dtsi
+> @@ -17,6 +17,8 @@ aliases {
+>  		gpio5 = &gpio5;
+>  		gpio6 = &gpio6;
+>  		gpio7 = &gpio7;
+> +		serial0 = &serial0;
+> +		serial1 = &serial1;
 
-> #regzbot introduced: b9132c32e01976686efa26252cc246944a0d2cab
-> 
-> Hi All!
-> 
-> Seems there is a regression of SRv6 End.DT6 function in VRF mode. In the 
-> following scenario packet is decapsulated successfully on vrf10 
-> interface but not forwarded to vrf10's slave interface:
-> 
-> ip netns exec r4 ip -6 nexthop add id 1004 encap seg6local action 
-> End.DT6 vrftable 10 dev vrf10
-> 
-> ip netns exec r4 ip -6 route add fcff:0:4:200:: nhid 1004
-> 
-> 
-> In End.DT6 legacy mode everything works good:
-> 
-> ip netns exec r4 ip -6 nexthop add id 1004 encap seg6local action 
-> End.DT6 table 10 dev vrf10
-> 
-> ip netns exec r4 ip -6 route add fcff:0:4:200:: nhid 1004
-> 
-> 
-> The issue impacts even stable v5.18.1. Please help to fix it.
-> 
-> 
-> Thanks!
-> 
-> Anton
-> 
-> 
-> 
+Serial aliases might be wired differently per board, so this should go
+to board DTS instead.
 
-Hi Anton,
 
-thank you for reporting this issue. I am already working on a fix patch which I
-will send shortly.
-
-Andrea
+Best regards,
+Krzysztof
