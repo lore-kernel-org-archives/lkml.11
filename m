@@ -2,88 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA694C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B969FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:14:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233853AbiFFKOV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 06:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51802 "EHLO
+        id S233524AbiFFKOk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 06:14:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233648AbiFFKOK (ORCPT
+        with ESMTP id S233856AbiFFKOV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 06:14:10 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0393A14916F;
-        Mon,  6 Jun 2022 03:11:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654510268; x=1686046268;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gZSzdjIX2BvSWabQuJE5Re9N3GWxjm5jrXSz5gYEGxg=;
-  b=Zwfyzh/T/yhXsyFOn6JB9NXLQAywJF5oZTITpCrfr5si3w5SVjoutPAV
-   omgXqm4l90KZw+Xe6lmeVD10up3AbTIe11Md8X12TfFztxVjC3rcW4tkc
-   cF2jaM2JoTf6DaNsZvextQiahkVJZhDQxycpPHr5nOH/m0XM9Si56Z25v
-   9W//CnTf2jhkwxJ2WdjfsU8DOwIPtfkunne8l0tUi1M+HpBlyKM5G//BK
-   EolscztBam/3HOK2RTOy2DozprCku7RQ0w6f1/kfF/a4xRb9L66zhLM8n
-   S3LFiwwrU9YsSCyHG/ZsrnVbKwIyO97dQUAFYs3k49BQxAmRR2O0iQBCH
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="276877483"
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="276877483"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:10:51 -0700
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="722737822"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:10:48 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ny9h7-000UXR-Gu;
-        Mon, 06 Jun 2022 13:10:45 +0300
-Date:   Mon, 6 Jun 2022 13:10:45 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>
-Subject: Re: [RFC PATCH v3 6/6] iio: adc: meson_saradc: Use
- regmap_read_poll_timeout() for busy wait
-Message-ID: <Yp3SpRIUFBBbNOQn@smile.fi.intel.com>
-References: <20220603100004.70336-1-andriy.shevchenko@linux.intel.com>
- <20220603100004.70336-6-andriy.shevchenko@linux.intel.com>
- <CAFBinCD1cn19uf0pyUF-Af7_thP81Ehih+X4F9+rO8tzeUm+Ow@mail.gmail.com>
+        Mon, 6 Jun 2022 06:14:21 -0400
+X-Greylist: delayed 492 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Jun 2022 03:11:42 PDT
+Received: from smtp90.ord1c.emailsrvr.com (smtp90.ord1c.emailsrvr.com [108.166.43.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C04D18145A
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 03:11:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mev.co.uk;
+        s=20190130-41we5z8j; t=1654509810;
+        bh=2DgrG36IhDguZ+hDtbMCQKf+gT03l6Kh/o4gDP6eSUg=;
+        h=Date:Subject:To:From:From;
+        b=M6czLYSMfGEt30s0ephW+6Mvo43V4C/lC5JgyGr7vR8FTVIzlRszft8bmWfs1P5Ys
+         GJs4lo02X6OJu7FIHUTzdCaTbgtdmQWug9rs50ZeDWsd+o3V0CptLYbtNE9cg6sWv4
+         zWQJ4A9tYPgI36ladLu0NLuD9vjvai9oAQuLQ0HQ=
+X-Auth-ID: abbotti@mev.co.uk
+Received: by smtp28.relay.ord1c.emailsrvr.com (Authenticated sender: abbotti-AT-mev.co.uk) with ESMTPSA id 50AA6400E8;
+        Mon,  6 Jun 2022 06:03:29 -0400 (EDT)
+Message-ID: <4d41319e-1337-5300-77ed-e9c0cc7fe478@mev.co.uk>
+Date:   Mon, 6 Jun 2022 11:03:28 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFBinCD1cn19uf0pyUF-Af7_thP81Ehih+X4F9+rO8tzeUm+Ow@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/1] comedi: ni_usb6501: fix transfer-buffer overflows
+Content-Language: en-GB
+To:     Xiaohui Zhang <ruc_zhangxiaohui@163.com>,
+        H Hartley Sweeten <hsweeten@visionengravers.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Johan Hovold <johan@kernel.org>, linux-kernel@vger.kernel.org
+References: <20220605124322.33148-1-ruc_zhangxiaohui@163.com>
+From:   Ian Abbott <abbotti@mev.co.uk>
+Organization: MEV Ltd.
+In-Reply-To: <20220605124322.33148-1-ruc_zhangxiaohui@163.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Classification-ID: f84fe9e9-2784-4821-ae60-1a381fc51a56-1-1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 05, 2022 at 11:59:53PM +0200, Martin Blumenstingl wrote:
-> On Fri, Jun 3, 2022 at 12:00 PM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> >
-> > Simplify busy wait stages by using regmap_read_poll_timeout().
-> >
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+On 05/06/2022 13:43, Xiaohui Zhang wrote:
+> From: xiaohuizhang98 <ruc_zhangxiaohui@163.com>
 > 
-> > v3: new patch, but RFC, not always the read_poll_timeout() can be used, would
-> >     be nice to have it tested.
-> and also:
-> Tested-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com> # GXM VIM2
+> We detected a suspected bug with our code clone detection tool.
+> 
+> Similar to the handling of vmk80xx_alloc_usb_buffers in commit
+> a23461c47482("comedi: vmk80xx: fix transfer-buffer overflows"),
+> we thought a patch might be needed here as well.
+> 
+> The driver uses endpoint-sized USB transfer buffers but up until
+> recently had no sanity checks on the sizes.
+> 
+> Signed-off-by: xiaohuizhang98 <ruc_zhangxiaohui@163.com>
+> ---
+>   drivers/comedi/drivers/ni_usb6501.c | 5 +++--
+>   1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/comedi/drivers/ni_usb6501.c b/drivers/comedi/drivers/ni_usb6501.c
+> index 0dd9edf7bced..3e2b9f4d840b 100644
+> --- a/drivers/comedi/drivers/ni_usb6501.c
+> +++ b/drivers/comedi/drivers/ni_usb6501.c
+> @@ -90,6 +90,7 @@
+>   #include <linux/comedi/comedi_usb.h>
+>   
+>   #define	NI6501_TIMEOUT	1000
+> +#define MIN_BUF_SIZE	64
+>   
+>   /* Port request packets */
+>   static const u8 READ_PORT_REQUEST[]	= {0x00, 0x01, 0x00, 0x10,
+> @@ -459,12 +460,12 @@ static int ni6501_alloc_usb_buffers(struct comedi_device *dev)
+>   	struct ni6501_private *devpriv = dev->private;
+>   	size_t size;
+>   
+> -	size = usb_endpoint_maxp(devpriv->ep_rx);
+> +	size = max(usb_endpoint_maxp(devpriv->ep_rx), MIN_BUF_SIZE);
+>   	devpriv->usb_rx_buf = kzalloc(size, GFP_KERNEL);
+>   	if (!devpriv->usb_rx_buf)
+>   		return -ENOMEM;
+>   
+> -	size = usb_endpoint_maxp(devpriv->ep_tx);
+> +	size = max(usb_endpoint_maxp(devpriv->ep_rx), MIN_BUF_SIZE);
+>   	devpriv->usb_tx_buf = kzalloc(size, GFP_KERNEL);
+>   	if (!devpriv->usb_tx_buf)
+>   		return -ENOMEM;
 
-Thanks for testing!
+Actually, there is a typo in the last bit of the patch that was copied 
+from the similar patch to vmk80xx.  It is using the wrong endpoint to 
+determine the size for usb_tx_buf.
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+-=( Ian Abbott <abbotti@mev.co.uk> || MEV Ltd. is a company  )=-
+-=( registered in England & Wales.  Regd. number: 02862268.  )=-
+-=( Regd. addr.: S11 & 12 Building 67, Europa Business Park, )=-
+-=( Bird Hall Lane, STOCKPORT, SK3 0XA, UK. || www.mev.co.uk )=-
