@@ -2,88 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FEBAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:33:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1155C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:33:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239738AbiFFOdE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:33:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50810 "EHLO
+        id S239784AbiFFOdu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:33:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239627AbiFFOdC (ORCPT
+        with ESMTP id S239732AbiFFOds (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:33:02 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B7F2AC5E;
-        Mon,  6 Jun 2022 07:33:01 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id q15so12086125wrc.11;
-        Mon, 06 Jun 2022 07:33:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=T2WMsUxzc11zSP3SEaSzeZg0r4jEfgd/2nHBgyOqTNM=;
-        b=oPQMW767uSFPmkznlyNOwLkO1E+Py3pEiUAdu5aDoOx9B1P8D+xAgWXPm7Qhy7Ue1a
-         XC+0+nLLS6nWuaJ7HrmOuO2j1epyaQD/sm/m0sUNfE7NMgaGWn6RCNaJx30xgy2nWtb3
-         nik5QBQVlxZ8TdXo0cGSLZ2KstAI+3j4aNs/LI4RZd+TL5hAnOBSxcGNr3jPj8uhFujd
-         0aTha74diX4ObZ+TFbFzxjOcDtiFBKcI22AlVc2BZH5ip07FtZIena6BZLtruAxAOnio
-         Qca12p3StCU+L3hzjXUh8ORNZm3vI2TyyjfAp00x+VUF3xGUYaUfBNXZC7ZtX7kTDf2F
-         gp2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=T2WMsUxzc11zSP3SEaSzeZg0r4jEfgd/2nHBgyOqTNM=;
-        b=2cQhA72DB5+7pEdbrqmXrK3kWvccF/tGNuo+8Yz0ofUwvUeUJMTleaDH5FDamTKxWa
-         UBlSRMfI/Ep/bCGeqpKy9oQK2lLz49SUgqEXZ0rJeaNSixCyoPZKieGuKwqUgluJNHq+
-         yrwBO7drsg0fyl0hLFhnu+wPlwSRf4faes88y7I92TvjYQTVqjOZW/mQgjfczM8zQR/g
-         sL8QG0agW5irxKhT1hftRGdQKpsAPgAP6OD9pC64iP5uc1roQZj2szo8H2XSgk3DroTq
-         KpkgwM9jgjARLwMH41w6R1an0baWFBtLlIZ3CsDlaN/jr+eUfSJ7wnJcEvs3UgE2I+tz
-         e1lw==
-X-Gm-Message-State: AOAM530UPE0gUp/aDBX4hB7t8xm5npKF3NDQKyAhETP6D091byjbpozP
-        ZCTN+O7G+V1qXAXjwtGGmEDmvkXbF9M=
-X-Google-Smtp-Source: ABdhPJzqN4cWZJ6Ag/jC5Ezs4cbaqkGE6PFX1fiQ+wVAcUBIwMFyV9pdT4P/LI0Z247Z2KIkNphKhQ==
-X-Received: by 2002:a05:6000:18a4:b0:210:7e22:cd07 with SMTP id b4-20020a05600018a400b002107e22cd07mr21611412wri.703.1654525979972;
-        Mon, 06 Jun 2022 07:32:59 -0700 (PDT)
-Received: from opensuse.localnet (host-79-13-108-3.retail.telecomitalia.it. [79.13.108.3])
-        by smtp.gmail.com with ESMTPSA id t187-20020a1c46c4000000b0039c45fc58c4sm8177822wma.21.2022.06.06.07.32.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 07:32:58 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     dsterba@suse.cz, "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Ira Weiny <ira.weiny@intel.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/3] btrfs: Replace kmap() with kmap_local_page()
-Date:   Mon, 06 Jun 2022 16:32:57 +0200
-Message-ID: <2242021.ElGaqSPkdT@opensuse>
-In-Reply-To: <20220606103243.GZ20633@twin.jikos.cz>
-References: <20220531145335.13954-1-fmdefrancesco@gmail.com> <1793713.atdPhlSkOF@opensuse> <20220606103243.GZ20633@twin.jikos.cz>
+        Mon, 6 Jun 2022 10:33:48 -0400
+X-Greylist: delayed 315 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Jun 2022 07:33:47 PDT
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4157B2BE9;
+        Mon,  6 Jun 2022 07:33:46 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 8B7716601E8B;
+        Mon,  6 Jun 2022 15:28:29 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1654525710;
+        bh=x7xKY5UUVqxnt5695zeWx8FCmwvNi3Mq8k7CtIwGYG0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=m5zy97b2177AzVbPV1k8kS6LsuZ3sO1+vG5fn7qDs+VulYToDd8FeSkekArpUCKu3
+         She6nj230USZpPYifATZ45fjSvGs7qTimZwuB9cZLwhFu6uUBA/rytH7F9SVnsoc1f
+         mdXnxdcQpb42pPHOhriV/coO/XkMeGmI6kAWY4GVDkqfPHfFpv9rvhN+cOaKolFPUf
+         O9F263uN2FCDvQ0/xWQWMdGfAA6goCvc0WkhCe+cahuagJjA76uPo1RFjWHSljF1MH
+         HOD9HWuo7sZh58TeXFdw6mOCntLJXWVfi4d60TMOTaGvdTMmOaZejLZ8vJ2Gb+DPm1
+         uNp/n72zZ/bOw==
+Message-ID: <eb1c3713-b6a5-5f5a-fe22-75117b85971f@collabora.com>
+Date:   Mon, 6 Jun 2022 16:28:26 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 1/2] dt-bindings: pwm: mediatek: add pwm binding for
+ MT8195
+Content-Language: en-US
+To:     Fabien Parent <fparent@baylibre.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20220531114544.144785-1-fparent@baylibre.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220531114544.144785-1-fparent@baylibre.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On luned=C3=AC 6 giugno 2022 12:32:44 CEST David Sterba wrote:
->
-> [snip]=20
->=20
-> Yes I can pick 1 and 2. Removing the whole series is needed in case it
-> crashes tests as it affects everybody.
->=20
-Thanks!
+Il 31/05/22 13:45, Fabien Parent ha scritto:
+> MT8195's PWM IP is compatible with the MT8183 PWM IP.
+> 
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> Acked-by: Rob Herring <robh@kernel.org>
 
-If everything goes smoothly, you will receive the remaining conversions=20
-within the next days. I still have to make several of them  (both from=20
-kmap() as well as from kmap_local()) and the ones already done and placed=20
-in my queue still need to be properly tested.
-
-Again, thanks,
-
-=46abio
-
-
-
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
