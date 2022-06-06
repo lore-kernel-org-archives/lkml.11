@@ -2,94 +2,517 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C25C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:46:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1748C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:46:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241121AbiFFPqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:46:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35840 "EHLO
+        id S241133AbiFFPql (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 11:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241113AbiFFPqT (ORCPT
+        with ESMTP id S241126AbiFFPqh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 11:46:19 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50F063388C
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 08:46:18 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id u12so29775271eja.8
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 08:46:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=B90rJStIwUJz/WnCT2f0wLQIie5FqhO2ey/SLUJI8AE=;
-        b=JeCTo/DqCNpM5Kv2kuBQVM+eXt0aK25d1zghGCk7hGW3gUxaGBBRUYu40pO89yucUe
-         qCNOXsLNSSkdgL+SpyKg1aT4wOP4cAVPpP3GNnj2rJPM3BxwUIGH0RkB6aH8QITPF3AR
-         2gjhvKGWwX6YDGZ/biAyOq5sj1J6w+DfAq+y1D27ZVfTGoMmBuIenqFUT+W2832G7vRg
-         JvHA2dS3Qs+5W81p1XVQ/81JNh+6kEuS5rosD1KcNenaSzVMZ5bZp4LmvM7chzy9wYkG
-         h9wMPCLzhsqIsHAwyDdKT6LGsBJMI8KiWdeAGYy30+pj5fUeZ06X0TIeKmfkaU9KumYP
-         0i2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=B90rJStIwUJz/WnCT2f0wLQIie5FqhO2ey/SLUJI8AE=;
-        b=V/ewkh9ZYcrLddLDFga0JL9LP/w4BP3JmDRziugPYLT7mvcl5FyxRExNmO/ATrCjj9
-         UaHueTjY9+B67+RVPkQ/yi3RnxDeJewGB1ht+Rx2ZNo7ZhA/vRnhUr6QZVfxnx3qSz5l
-         X8QsEZiZJpCK6WReoCVMpYAyFgTkhNAv+6XTrBOiRJO55jQDkqXnM7fjgZRtdkR8rzwa
-         vl58IKz7kcjuf6izWhiGRxHTI5NtHcbT+9sAngaLQWO+CPd631Po3d6HlKNo8WUDj5D4
-         MFJ8zqOE8MEn24LtxYE6FdKfjmFvgRTjmxyiGKhwKKmYB71te81PqSKl2HF1gyVXytBT
-         D21Q==
-X-Gm-Message-State: AOAM5324/N6o+Pklc2DQ9scM4mubsiidUA/jvfc5sjrEEiVMf8g/Tmm6
-        DD7o6Uj9g4vjZabLUAR4DMZgiYFIADxYuoCiNs3l/Q==
-X-Google-Smtp-Source: ABdhPJzB+YuQ+3M+THQnaySBs8Wz59q00TglBkIeUDsSm/E4Am0k8haXrYOXSzwG7q6V5eCxtTpVPJLmDvc8gLhkYdo=
-X-Received: by 2002:a17:907:90c8:b0:711:c8e1:7109 with SMTP id
- gk8-20020a17090790c800b00711c8e17109mr7056684ejb.492.1654530376186; Mon, 06
- Jun 2022 08:46:16 -0700 (PDT)
+        Mon, 6 Jun 2022 11:46:37 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F265340D6;
+        Mon,  6 Jun 2022 08:46:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654530395; x=1686066395;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=aPgxR8PuuaOEiWQ9S5fcdmnh5JoCAYYi2U3+b4B48Ts=;
+  b=AcVEPMluf9np8XWMyceH/7TPfnNST6zRTZB/j/XwYWBxu5OudrTctO8Z
+   FmD+tc9aPyZfu47usRgxdfJnbPnNnCQA/kRixd/6z3I6nUoOho8F4L9PI
+   knuUFcOyRVxVZUF92KtTkgk2D79NKAgXKhlPcSx42fLDi4D/Va1wzzJus
+   R/h59ZWMvOnrPIAATacTTiZsCZEnHW/egxdBQdiulw+Ix119nCI1MnR27
+   7U2V6Na5wm9vN1/xrDi0mIiQrnrfXG9WhBzZq95sPMVLvHHV11Q39vSOd
+   2sabsu+mDueCAAx0hDVyKLD3XbmxjJKY5EPgNUxTgfFVpYfzw/l3VKv5g
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="264656661"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="264656661"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 08:37:11 -0700
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="635653575"
+Received: from amkossek-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.57.11])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 08:37:06 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>, Rob Herring <robh@kernel.org>,
+        linux-kernel@vger.kernel.org
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Gilles Buloz <gilles.buloz@kontron.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH v6 1/2] tty: Implement lookahead to process XON/XOFF timely
+Date:   Mon,  6 Jun 2022 18:36:51 +0300
+Message-Id: <20220606153652.63554-2-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220606153652.63554-1-ilpo.jarvinen@linux.intel.com>
+References: <20220606153652.63554-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-References: <20220606141051.285823-1-tzungbi@kernel.org> <20220606141051.285823-6-tzungbi@kernel.org>
-In-Reply-To: <20220606141051.285823-6-tzungbi@kernel.org>
-From:   Guenter Roeck <groeck@google.com>
-Date:   Mon, 6 Jun 2022 08:46:04 -0700
-Message-ID: <CABXOdTcTjOoXp5nt7Q4Z_AXyYcxc3ZX91+KJAPoo6jOQj3z_pw@mail.gmail.com>
-Subject: Re: [PATCH 05/13] platform/chrome: cros_ec_proto: remove redundant
- NULL check
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        chrome-platform@lists.linux.dev,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 7:12 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
->
-> send_command() already checks if `ec_dev->pkt_xfer` is NULL.  Remove the
-> redundant check.
->
-> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+When tty is not read from, XON/XOFF may get stuck into an
+intermediate buffer. As those characters are there to do software
+flow-control, it is not very useful. In the case where neither end
+reads from ttys, the receiving ends might not be able receive the
+XOFF characters and just keep sending more data to the opposite
+direction. This problem is almost guaranteed to occur with DMA
+which sends data in large chunks.
 
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
+If TTY is slow to process characters, that is, eats less than given
+amount in receive_buf, invoke lookahead for the rest of the chars
+to process potential XON/XOFF characters.
 
-> ---
->  drivers/platform/chrome/cros_ec_proto.c | 3 ---
->  1 file changed, 3 deletions(-)
->
-> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-> index 629dce3e6ab3..1b851dcd20c9 100644
-> --- a/drivers/platform/chrome/cros_ec_proto.c
-> +++ b/drivers/platform/chrome/cros_ec_proto.c
-> @@ -281,9 +281,6 @@ static int cros_ec_host_command_proto_query(struct cros_ec_device *ec_dev,
->          */
->         int ret;
->
-> -       if (!ec_dev->pkt_xfer)
-> -               return -EPROTONOSUPPORT;
-> -
->         memset(msg, 0, sizeof(*msg));
->         msg->command = EC_CMD_PASSTHRU_OFFSET(devidx) | EC_CMD_GET_PROTOCOL_INFO;
->         msg->insize = sizeof(struct ec_response_get_protocol_info);
-> --
-> 2.36.1.255.ge46751e96f-goog
->
+We need to keep track of how many characters have been processed by the
+lookahead to avoid processing the flow control char again on the normal
+path. Bookkeeping occurs parallel on two layers (tty_buffer and n_tty)
+to avoid passing the lookahead_count through the whole call chain.
+
+When a flow-control char is processed, two things must occur:
+  a) it must not be treated as normal char
+  b) if not yet processed, flow-control actions need to be taken
+The return value of n_tty_receive_char_flow_ctrl() tells caller a), and
+b) is kept internal to n_tty_receive_char_flow_ctrl().
+
+If characters were previous looked ahead, __receive_buf() makes two
+calls to the appropriate n_tty_receive_buf_* function. First call is
+made with lookahead_done=true for the characters that were subject to
+lookahead earlier and then with lookahead=false for the new characters.
+Either of the calls might be skipped when it has no characters to
+handle.
+
+Reported-by: Gilles Buloz <gilles.buloz@kontron.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
+ drivers/tty/n_tty.c        | 91 +++++++++++++++++++++++++++++++-------
+ drivers/tty/tty_buffer.c   | 59 ++++++++++++++++++++----
+ drivers/tty/tty_port.c     | 21 +++++++++
+ include/linux/tty_buffer.h |  1 +
+ include/linux/tty_ldisc.h  | 14 ++++++
+ include/linux/tty_port.h   |  2 +
+ 6 files changed, 163 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 640c9e871044..8d80384df874 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -118,6 +118,9 @@ struct n_tty_data {
+ 	size_t read_tail;
+ 	size_t line_start;
+ 
++	/* # of chars looked ahead (to find software flow control chars) */
++	size_t lookahead_count;
++
+ 	/* protected by output lock */
+ 	unsigned int column;
+ 	unsigned int canon_column;
+@@ -333,6 +336,8 @@ static void reset_buffer_flags(struct n_tty_data *ldata)
+ 	ldata->erasing = 0;
+ 	bitmap_zero(ldata->read_flags, N_TTY_BUF_SIZE);
+ 	ldata->push = 0;
++
++	ldata->lookahead_count = 0;
+ }
+ 
+ static void n_tty_packet_mode_flush(struct tty_struct *tty)
+@@ -1225,12 +1230,30 @@ static bool n_tty_is_char_flow_ctrl(struct tty_struct *tty, unsigned char c)
+ 	return c == START_CHAR(tty) || c == STOP_CHAR(tty);
+ }
+ 
+-/* Returns true if c is consumed as flow-control character */
+-static bool n_tty_receive_char_flow_ctrl(struct tty_struct *tty, unsigned char c)
++/**
++ * n_tty_receive_char_flow_ctrl - receive flow control chars
++ * @tty: terminal device
++ * @c: character
++ * @lookahead_done: lookahead has processed this character already
++ *
++ * Receive and process flow control character actions.
++ *
++ * In case lookahead for flow control chars already handled the character in
++ * advance to the normal receive, the actions are skipped during normal
++ * receive.
++ *
++ * Returns true if @c is consumed as flow-control character, the character
++ * must not be treated as normal character.
++ */
++static bool n_tty_receive_char_flow_ctrl(struct tty_struct *tty, unsigned char c,
++					 bool lookahead_done)
+ {
+ 	if (!n_tty_is_char_flow_ctrl(tty, c))
+ 		return false;
+ 
++	if (lookahead_done)
++		return true;
++
+ 	if (c == START_CHAR(tty)) {
+ 		start_tty(tty);
+ 		process_echoes(tty);
+@@ -1242,11 +1265,12 @@ static bool n_tty_receive_char_flow_ctrl(struct tty_struct *tty, unsigned char c
+ 	return true;
+ }
+ 
+-static void n_tty_receive_char_special(struct tty_struct *tty, unsigned char c)
++static void n_tty_receive_char_special(struct tty_struct *tty, unsigned char c,
++				       bool lookahead_done)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 
+-	if (I_IXON(tty) && n_tty_receive_char_flow_ctrl(tty, c))
++	if (I_IXON(tty) && n_tty_receive_char_flow_ctrl(tty, c, lookahead_done))
+ 		return;
+ 
+ 	if (L_ISIG(tty)) {
+@@ -1401,7 +1425,8 @@ static void n_tty_receive_char(struct tty_struct *tty, unsigned char c)
+ 	put_tty_queue(c, ldata);
+ }
+ 
+-static void n_tty_receive_char_closing(struct tty_struct *tty, unsigned char c)
++static void n_tty_receive_char_closing(struct tty_struct *tty, unsigned char c,
++				       bool lookahead_done)
+ {
+ 	if (I_ISTRIP(tty))
+ 		c &= 0x7f;
+@@ -1409,9 +1434,12 @@ static void n_tty_receive_char_closing(struct tty_struct *tty, unsigned char c)
+ 		c = tolower(c);
+ 
+ 	if (I_IXON(tty)) {
+-		if (c == STOP_CHAR(tty))
+-			stop_tty(tty);
+-		else if (c == START_CHAR(tty) ||
++		if (c == STOP_CHAR(tty)) {
++			if (!lookahead_done)
++				stop_tty(tty);
++		} else if (c == START_CHAR(tty) && lookahead_done) {
++			return;
++		} else if (c == START_CHAR(tty) ||
+ 			 (tty->flow.stopped && !tty->flow.tco_stopped && I_IXANY(tty) &&
+ 			  c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
+ 			  c != SUSP_CHAR(tty))) {
+@@ -1457,6 +1485,27 @@ n_tty_receive_char_lnext(struct tty_struct *tty, unsigned char c, char flag)
+ 		n_tty_receive_char_flagged(tty, c, flag);
+ }
+ 
++/* Caller must ensure count > 0 */
++static void n_tty_lookahead_flow_ctrl(struct tty_struct *tty, const unsigned char *cp,
++				      const unsigned char *fp, unsigned int count)
++{
++	struct n_tty_data *ldata = tty->disc_data;
++	unsigned char flag = TTY_NORMAL;
++
++	ldata->lookahead_count += count;
++
++	if (!I_IXON(tty))
++		return;
++
++	while (count--) {
++		if (fp)
++			flag = *fp++;
++		if (likely(flag == TTY_NORMAL))
++			n_tty_receive_char_flow_ctrl(tty, *cp, false);
++		cp++;
++	}
++}
++
+ static void
+ n_tty_receive_buf_real_raw(struct tty_struct *tty, const unsigned char *cp,
+ 			   const char *fp, int count)
+@@ -1496,7 +1545,7 @@ n_tty_receive_buf_raw(struct tty_struct *tty, const unsigned char *cp,
+ 
+ static void
+ n_tty_receive_buf_closing(struct tty_struct *tty, const unsigned char *cp,
+-			  const char *fp, int count)
++			  const char *fp, int count, bool lookahead_done)
+ {
+ 	char flag = TTY_NORMAL;
+ 
+@@ -1504,12 +1553,12 @@ n_tty_receive_buf_closing(struct tty_struct *tty, const unsigned char *cp,
+ 		if (fp)
+ 			flag = *fp++;
+ 		if (likely(flag == TTY_NORMAL))
+-			n_tty_receive_char_closing(tty, *cp++);
++			n_tty_receive_char_closing(tty, *cp++, lookahead_done);
+ 	}
+ }
+ 
+ static void n_tty_receive_buf_standard(struct tty_struct *tty,
+-		const unsigned char *cp, const char *fp, int count)
++		const unsigned char *cp, const char *fp, int count, bool lookahead_done)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 	char flag = TTY_NORMAL;
+@@ -1540,7 +1589,7 @@ static void n_tty_receive_buf_standard(struct tty_struct *tty,
+ 		}
+ 
+ 		if (test_bit(c, ldata->char_map))
+-			n_tty_receive_char_special(tty, c);
++			n_tty_receive_char_special(tty, c, lookahead_done);
+ 		else
+ 			n_tty_receive_char(tty, c);
+ 	}
+@@ -1551,21 +1600,30 @@ static void __receive_buf(struct tty_struct *tty, const unsigned char *cp,
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 	bool preops = I_ISTRIP(tty) || (I_IUCLC(tty) && L_IEXTEN(tty));
++	size_t la_count = min_t(size_t, ldata->lookahead_count, count);
+ 
+ 	if (ldata->real_raw)
+ 		n_tty_receive_buf_real_raw(tty, cp, fp, count);
+ 	else if (ldata->raw || (L_EXTPROC(tty) && !preops))
+ 		n_tty_receive_buf_raw(tty, cp, fp, count);
+-	else if (tty->closing && !L_EXTPROC(tty))
+-		n_tty_receive_buf_closing(tty, cp, fp, count);
+-	else {
+-		n_tty_receive_buf_standard(tty, cp, fp, count);
++	else if (tty->closing && !L_EXTPROC(tty)) {
++		if (la_count > 0)
++			n_tty_receive_buf_closing(tty, cp, fp, la_count, true);
++		if (count > la_count)
++			n_tty_receive_buf_closing(tty, cp, fp, count - la_count, false);
++	} else {
++		if (la_count > 0)
++			n_tty_receive_buf_standard(tty, cp, fp, la_count, true);
++		if (count > la_count)
++			n_tty_receive_buf_standard(tty, cp, fp, count - la_count, false);
+ 
+ 		flush_echoes(tty);
+ 		if (tty->ops->flush_chars)
+ 			tty->ops->flush_chars(tty);
+ 	}
+ 
++	ldata->lookahead_count -= la_count;
++
+ 	if (ldata->icanon && !L_EXTPROC(tty))
+ 		return;
+ 
+@@ -2446,6 +2504,7 @@ static struct tty_ldisc_ops n_tty_ops = {
+ 	.receive_buf     = n_tty_receive_buf,
+ 	.write_wakeup    = n_tty_write_wakeup,
+ 	.receive_buf2	 = n_tty_receive_buf2,
++	.lookahead_buf	 = n_tty_lookahead_flow_ctrl,
+ };
+ 
+ /**
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index bfa431a8e690..754fa43670cc 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -5,6 +5,7 @@
+ 
+ #include <linux/types.h>
+ #include <linux/errno.h>
++#include <linux/minmax.h>
+ #include <linux/tty.h>
+ #include <linux/tty_driver.h>
+ #include <linux/tty_flip.h>
+@@ -104,6 +105,7 @@ static void tty_buffer_reset(struct tty_buffer *p, size_t size)
+ 	p->size = size;
+ 	p->next = NULL;
+ 	p->commit = 0;
++	p->lookahead = 0;
+ 	p->read = 0;
+ 	p->flags = 0;
+ }
+@@ -234,6 +236,7 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
+ 		buf->head = next;
+ 	}
+ 	buf->head->read = buf->head->commit;
++	buf->head->lookahead = buf->head->read;
+ 
+ 	if (ld && ld->ops->flush_buffer)
+ 		ld->ops->flush_buffer(tty);
+@@ -276,13 +279,15 @@ static int __tty_buffer_request_room(struct tty_port *port, size_t size,
+ 		if (n != NULL) {
+ 			n->flags = flags;
+ 			buf->tail = n;
+-			/* paired w/ acquire in flush_to_ldisc(); ensures
+-			 * flush_to_ldisc() sees buffer data.
++			/*
++			 * Paired w/ acquire in flush_to_ldisc() and lookahead_bufs()
++			 * ensures they see all buffer data.
+ 			 */
+ 			smp_store_release(&b->commit, b->used);
+-			/* paired w/ acquire in flush_to_ldisc(); ensures the
+-			 * latest commit value can be read before the head is
+-			 * advanced to the next buffer
++			/*
++			 * Paired w/ acquire in flush_to_ldisc() and lookahead_bufs()
++			 * ensures the latest commit value can be read before the head
++			 * is advanced to the next buffer.
+ 			 */
+ 			smp_store_release(&b->next, n);
+ 		} else if (change)
+@@ -459,6 +464,40 @@ int tty_ldisc_receive_buf(struct tty_ldisc *ld, const unsigned char *p,
+ }
+ EXPORT_SYMBOL_GPL(tty_ldisc_receive_buf);
+ 
++static void lookahead_bufs(struct tty_port *port, struct tty_buffer *head)
++{
++	head->lookahead = max(head->lookahead, head->read);
++
++	while (head) {
++		struct tty_buffer *next;
++		unsigned char *p, *f = NULL;
++		unsigned int count;
++
++		/*
++		 * Paired w/ release in __tty_buffer_request_room();
++		 * ensures commit value read is not stale if the head
++		 * is advancing to the next buffer.
++		 */
++		next = smp_load_acquire(&head->next);
++		/*
++		 * Paired w/ release in __tty_buffer_request_room() or in
++		 * tty_buffer_flush(); ensures we see the committed buffer data.
++		 */
++		count = smp_load_acquire(&head->commit) - head->lookahead;
++		if (!count) {
++			head = next;
++			continue;
++		}
++
++		p = char_buf_ptr(head, head->lookahead);
++		if (~head->flags & TTYB_NORMAL)
++			f = flag_buf_ptr(head, head->lookahead);
++
++		port->client_ops->lookahead_buf(port, p, f, count);
++		head->lookahead += count;
++	}
++}
++
+ static int
+ receive_buf(struct tty_port *port, struct tty_buffer *head, int count)
+ {
+@@ -496,7 +535,7 @@ static void flush_to_ldisc(struct work_struct *work)
+ 	while (1) {
+ 		struct tty_buffer *head = buf->head;
+ 		struct tty_buffer *next;
+-		int count;
++		int count, rcvd;
+ 
+ 		/* Ldisc or user is trying to gain exclusive access */
+ 		if (atomic_read(&buf->priority))
+@@ -519,10 +558,12 @@ static void flush_to_ldisc(struct work_struct *work)
+ 			continue;
+ 		}
+ 
+-		count = receive_buf(port, head, count);
+-		if (!count)
++		rcvd = receive_buf(port, head, count);
++		head->read += rcvd;
++		if (rcvd < count)
++			lookahead_bufs(port, head);
++		if (!rcvd)
+ 			break;
+-		head->read += count;
+ 
+ 		if (need_resched())
+ 			cond_resched();
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index 880608a65773..dce08a6d7b5e 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -43,6 +43,26 @@ static int tty_port_default_receive_buf(struct tty_port *port,
+ 	return ret;
+ }
+ 
++static void tty_port_default_lookahead_buf(struct tty_port *port, const unsigned char *p,
++					   const unsigned char *f, unsigned int count)
++{
++	struct tty_struct *tty;
++	struct tty_ldisc *disc;
++
++	tty = READ_ONCE(port->itty);
++	if (!tty)
++		return;
++
++	disc = tty_ldisc_ref(tty);
++	if (!disc)
++		return;
++
++	if (disc->ops->lookahead_buf)
++		disc->ops->lookahead_buf(disc->tty, p, f, count);
++
++	tty_ldisc_deref(disc);
++}
++
+ static void tty_port_default_wakeup(struct tty_port *port)
+ {
+ 	struct tty_struct *tty = tty_port_tty_get(port);
+@@ -55,6 +75,7 @@ static void tty_port_default_wakeup(struct tty_port *port)
+ 
+ const struct tty_port_client_operations tty_port_default_client_ops = {
+ 	.receive_buf = tty_port_default_receive_buf,
++	.lookahead_buf = tty_port_default_lookahead_buf,
+ 	.write_wakeup = tty_port_default_wakeup,
+ };
+ EXPORT_SYMBOL_GPL(tty_port_default_client_ops);
+diff --git a/include/linux/tty_buffer.h b/include/linux/tty_buffer.h
+index 3b9d77604291..1796648c2907 100644
+--- a/include/linux/tty_buffer.h
++++ b/include/linux/tty_buffer.h
+@@ -15,6 +15,7 @@ struct tty_buffer {
+ 	int used;
+ 	int size;
+ 	int commit;
++	int lookahead;		/* Lazy update on recv, can become less than "read" */
+ 	int read;
+ 	int flags;
+ 	/* Data points here */
+diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
+index e85002b56752..33678e1936f6 100644
+--- a/include/linux/tty_ldisc.h
++++ b/include/linux/tty_ldisc.h
+@@ -186,6 +186,18 @@ int ldsem_down_write_nested(struct ld_semaphore *sem, int subclass,
+  *	indicate all data received is %TTY_NORMAL. If assigned, prefer this
+  *	function for automatic flow control.
+  *
++ * @lookahead_buf: [DRV] ``void ()(struct tty_struct *tty,
++ *			const unsigned char *cp, const char *fp, int count)
++ *
++ *	This function is called by the low-level tty driver for characters
++ *	not eaten by ->receive_buf() or ->receive_buf2(). It is useful for
++ *	processing high-priority characters such as software flow-control
++ *	characters that could otherwise get stuck into the intermediate
++ *	buffer until tty has room to receive them. Ldisc must be able to
++ *	handle later a ->receive_buf() or ->receive_buf2() call for the
++ *	same characters (e.g. by skipping the actions for high-priority
++ *	characters already handled by ->lookahead_buf()).
++ *
+  * @owner: module containting this ldisc (for reference counting)
+  *
+  * This structure defines the interface between the tty line discipline
+@@ -229,6 +241,8 @@ struct tty_ldisc_ops {
+ 	void	(*dcd_change)(struct tty_struct *tty, unsigned int status);
+ 	int	(*receive_buf2)(struct tty_struct *tty, const unsigned char *cp,
+ 				const char *fp, int count);
++	void	(*lookahead_buf)(struct tty_struct *tty, const unsigned char *cp,
++				 const unsigned char *fp, unsigned int count);
+ 
+ 	struct  module *owner;
+ };
+diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
+index 58e9619116b7..fa3c3bdaa234 100644
+--- a/include/linux/tty_port.h
++++ b/include/linux/tty_port.h
+@@ -40,6 +40,8 @@ struct tty_port_operations {
+ 
+ struct tty_port_client_operations {
+ 	int (*receive_buf)(struct tty_port *port, const unsigned char *, const unsigned char *, size_t);
++	void (*lookahead_buf)(struct tty_port *port, const unsigned char *cp,
++			      const unsigned char *fp, unsigned int count);
+ 	void (*write_wakeup)(struct tty_port *port);
+ };
+ 
+-- 
+2.30.2
+
