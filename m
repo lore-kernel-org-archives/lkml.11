@@ -2,157 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E9AECCA473
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:20:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42AE1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:22:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233759AbiFFKT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 06:19:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54522 "EHLO
+        id S233883AbiFFKWy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 06:22:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233619AbiFFKTv (ORCPT
+        with ESMTP id S233881AbiFFKWv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 06:19:51 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC7E1760CE;
-        Mon,  6 Jun 2022 03:19:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654510789; x=1686046789;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=XkXW18DsxASgWy3W6vVrSfD8C2RLZ7Hhaeol5XaMazA=;
-  b=WBTOrMNmN1vs8gNXRaRzgWQ6jzWK4S2vJSIuh5wyZ1UMoeKqg6U0IrZt
-   OXJS1NBUZvkaOCB0grovQG8H8KuU/oUenEd04cmtyEyMkay2gGLR2aNNI
-   VgLX12SmpjJ14YAY6dKZiKTxlU0EK0aFkoKzz0JhW5Gwn5I06vQ/i0IYK
-   X74V59BQ3g1fXX/zE5RwatLw0LhbOeUuvihpXHtpcqBjcTx6vsGDytGKQ
-   Dudocxg+x3OC9nrGPI+D6QIfxFAc1IWDLIZShut/2gp4sVZz4DI4pmd5X
-   16YgKuatvQXHtN8XCXdeE6xaBT4uAlzd/fD9S10xpduaKGsPv1aUj1Bp7
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="276593154"
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="276593154"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:19:48 -0700
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="647476480"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:19:40 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ny9nZ-000UYV-54;
-        Mon, 06 Jun 2022 13:17:25 +0300
-Date:   Mon, 6 Jun 2022 13:17:24 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        John Stultz <jstultz@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Android Kernel Team <kernel-team@android.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-Subject: Re: [RFC PATCH v1 2/9] pinctrl: devicetree: Delete usage of
- driver_deferred_probe_check_state()
-Message-ID: <Yp3UNAW5Zv+RjabA@smile.fi.intel.com>
-References: <20220526081550.1089805-1-saravanak@google.com>
- <20220526081550.1089805-3-saravanak@google.com>
- <CAMuHMdV4Uzfg8aBY=tKnRcig=Npebd158J7UK3zg5_DtHwAR5w@mail.gmail.com>
- <CAGETcx-=kAJp282OvG4yd830fhQowN7-yXifERqiHRi2w0bGFw@mail.gmail.com>
+        Mon, 6 Jun 2022 06:22:51 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1639262CE
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 03:22:49 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DC7C71042;
+        Mon,  6 Jun 2022 03:22:48 -0700 (PDT)
+Received: from bogus (unknown [10.57.9.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 40B5D3F66F;
+        Mon,  6 Jun 2022 03:22:46 -0700 (PDT)
+Date:   Mon, 6 Jun 2022 11:21:59 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc:     linux-kernel@vger.kernel.org, Atish Patra <atishp@atishpatra.org>,
+        Atish Patra <atishp@rivosinc.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Morten Rasmussen <morten.rasmussen@arm.com>,
+        Qing Wang <wangqing@vivo.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-riscv@lists.infradead.org, Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v3 15/16] arch_topology: Set cluster identifier in each
+ core/thread from /cpu-map
+Message-ID: <20220606102159.dduxmvq4m2fm6gks@bogus>
+References: <20220525081416.3306043-8-sudeep.holla@arm.com>
+ <20220525081416.3306043-9-sudeep.holla@arm.com>
+ <20220525081416.3306043-10-sudeep.holla@arm.com>
+ <20220525081416.3306043-11-sudeep.holla@arm.com>
+ <20220525081416.3306043-12-sudeep.holla@arm.com>
+ <20220525081416.3306043-13-sudeep.holla@arm.com>
+ <20220525081416.3306043-14-sudeep.holla@arm.com>
+ <20220525081416.3306043-15-sudeep.holla@arm.com>
+ <20220525081416.3306043-16-sudeep.holla@arm.com>
+ <947470ba-35fc-3c72-d01b-c0a7337216a2@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAGETcx-=kAJp282OvG4yd830fhQowN7-yXifERqiHRi2w0bGFw@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <947470ba-35fc-3c72-d01b-c0a7337216a2@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 04, 2022 at 08:41:01PM -0700, Saravana Kannan wrote:
-> On Mon, May 30, 2022 at 2:22 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > On Thu, May 26, 2022 at 10:16 AM Saravana Kannan <saravanak@google.com> wrote:
-> > > Now that fw_devlink=on by default and fw_devlink supports
-> > > "pinctrl-[0-8]" property, the execution will never get to the point
-> >
-> > 0-9?
-> >
-> > oh, it's really 0-8:
-> >
-> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl0, "pinctrl-0", NULL)
-> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl1, "pinctrl-1", NULL)
-> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl2, "pinctrl-2", NULL)
-> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl3, "pinctrl-3", NULL)
-> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl4, "pinctrl-4", NULL)
-> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl5, "pinctrl-5", NULL)
-> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl6, "pinctrl-6", NULL)
-> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl7, "pinctrl-7", NULL)
-> >     drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl8, "pinctrl-8", NULL)
-> >
-> > Looks fragile, especially since we now have:
-> >
-> >     arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi:
-> > pinctrl-9 = <&i2cmux_9>;
-> >     arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi: pinctrl-10
-> > = <&i2cmux_10>;
-> >     arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi: pinctrl-11
-> > = <&i2cmux_11>;
-> >     arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi: pinctrl-12
-> > = <&i2cmux_pins_i>;
+On Fri, Jun 03, 2022 at 02:30:04PM +0200, Dietmar Eggemann wrote:
+> On 25/05/2022 10:14, Sudeep Holla wrote:
+> > Let us set the cluster identifier as parsed from the device tree
+> > cluster nodes within /cpu-map.
+> > 
+> > We don't support nesting of clusters yet as there are no real hardware
+> > to support clusters of clusters.
+> > 
+> > Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+> > ---
+> >  drivers/base/arch_topology.c | 13 ++++++++-----
+> >  1 file changed, 8 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+> > index b8f0d72908c8..5f4f148a7769 100644
+> > --- a/drivers/base/arch_topology.c
+> > +++ b/drivers/base/arch_topology.c
+> > @@ -492,7 +492,7 @@ static int __init get_cpu_for_node(struct device_node *node)
+> >  }
+> >  
+> >  static int __init parse_core(struct device_node *core, int package_id,
+> > -			     int core_id)
+> > +			     int cluster_id, int core_id)
+> >  {
+> >  	char name[20];
+> >  	bool leaf = true;
+> > @@ -508,6 +508,7 @@ static int __init parse_core(struct device_node *core, int package_id,
+> >  			cpu = get_cpu_for_node(t);
+> >  			if (cpu >= 0) {
+> >  				cpu_topology[cpu].package_id = package_id;
+> > +				cpu_topology[cpu].cluster_id = cluster_id;
+> >  				cpu_topology[cpu].core_id = core_id;
+> >  				cpu_topology[cpu].thread_id = i;
+> >  			} else if (cpu != -ENODEV) {
+> > @@ -529,6 +530,7 @@ static int __init parse_core(struct device_node *core, int package_id,
+> >  		}
+> >  
+> >  		cpu_topology[cpu].package_id = package_id;
+> > +		cpu_topology[cpu].cluster_id = cluster_id;
 > 
-> Checking for pinctrl-* and then verifying if * matches %d would be
-> more complicated and probably more expensive compared to listing
-> pinctrl-[0-8]. Especially because more than 50% of pinctrl-*
-> properties in DT files are NOT pinctrl-%d. So back when we merged
-> this, Rob and I agreed [0-8] was good enough for now and we can add
-> more if we needed to. Also, when I checked back then, all the
-> pinctrl-5+ properties ended up pointing to the same suppliers as the
-> lower numbered ones. So it didn't make a difference.
-> 
-> Ok, I just checked linux-next all the pinctrl-9+ instances and it's
-> still true that they all point to the same supplier pointed to by
-> pinctrl-[0-8].
-> 
-> So yeah, it looks fragile, 
+> I'm still not convinced that this is the right thing to do. Let's take
+> the juno board as an example here. And I guess our assumption should be
+> that we want to make CONFIG_SCHED_CLUSTER a default option, like
+> CONFIG_SCHED_MC is. Simply to avoid a unmanageable zoo of config-option
+> combinations.
+>
 
-And feels fragile, adds into confusion, etc.
-Please, consider redesigning this to be more robust.
+Agreed on the config part.
 
->	but is not broken and it's more efficient
-> than looking for pinctrl-%d or adding more pinctrl-xx entries. So,
-> let's fix it if it actually breaks? Not going to oppose a patch if
-> anyone wants to make it more complete.
-> 
-> > > where driver_deferred_probe_check_state() is called before the supplier
-> > > has probed successfully or before deferred probe timeout has expired.
-> > >
-> > > So, delete the call and replace it with -ENODEV.
+> (1) Scheduler Domains (SDs) w/o CONFIG_SCHED_CLUSTER:
+>
+> MC  <-- !!!
+> DIE
+>
+> (2) SDs w/ CONFIG_SCHED_CLUSTER:
+>
+> CLS <-- !!!
+> DIE
+>
 
--- 
-With Best Regards,
-Andy Shevchenko
+Yes I have seen this.
 
+> In (2) MC gets degenerated in sd_parent_degenerate() since CLS and MC
+> cpumasks are equal and MC does not have any additional flags compared to
+> CLS.
+> I'm not convinced that we can change the degeneration rules without
+> destroying other scenarios of the scheduler so that here MC stays and
+> CLS gets removed instead.
+>
 
+Why ? Are you suggesting that we shouldn't present the hardware cluster
+to the topology because of the above reason ? If so, sorry that is not a
+valid reason. We could add login to return NULL or appropriate value
+needed in cpu_clustergroup_mask id it matches MC level mask if we can't
+deal that in generic scheduler code. But the topology code can't be
+compromised for that reason as it is user visible.
+
+> Even though MC and CLS are doing the same right now from the perspective
+> of the scheduler, we should also see MC and not CLS under (2). CLS only
+> makes sense longer term if the scheduler also makes use of it (next to
+> MC) in the wakeup-path for instance. Especially when this happens, a
+> platform should always construct the same scheduler domain hierarchy, no
+> matter which CONFIG_SCHED_XXX options are enabled.
+>
+>
+> You can see this in update_siblings_masks()
+>
+>     if (last_level_cache_is_shared)
+>         set llc_sibling
+>
+>     if (cpuid_topo->package_id != cpu_topo->package_id)
+>         continue
+>
+>     set core_sibling
+>
+>   If llc cache and socket boundaries are congruent, llc_sibling and
+>   core_sibling are the same.
+>
+>     if (cpuid_topo->cluster_id != cpu_topo->cluster_id)
+>         continue
+>
+>     set cluster_sibling
+>
+>   Now we potentially set clusters. Since socket=0 is by default and we
+>   use the existing juno.dts, the cluster nodes end up being congruent to
+>   the llc cache cpumasks as well.
+>
+
+Correct and I see no problems as it matches what the hardware is. So I am
+not expecting any change in any cpumasks there as they all are aligned with
+the hardware.
+
+> The problem is that we code `llc cache` and `DT cluster nodes` as the
+> same thing in juno.dts. 
+
+Why is that a problem ? If so, blame hardware and deal with it as we have to
+😄 as usual we get all sorts of topology.
+
+> `Cluster0/1` are congruent with the llc information, although they should 
+> be actually `socket0/1` right now.
+
+That was complete non-sense and wrong. Boot and check in ACPI mode.
+
+> But we can't set-up a cpu-map with a `socketX` containing `coreY` directly.
+> And then we use llc_sibling and cluster_sibling in two different SD
+> cpumask functions (cpu_coregroup_mask() and cpu_clustergroup_mask()).
+>
+
+We just need to deal with that. How is that dealt today with ACPI. My
+changes are making these aligned with ACPI. If something is broken as
+per you understanding with ACPI, then that needs fixing. The topology
+presented and parsed by ACPI is correct and we are aligning DT with that.
+There is no question on that.
+
+> Remember, CONFIG_SCHED_CLUSTER was introduced in ACPI/PPTT as a cpumask
+> which is a subset of the cpumasks of CONFIG_SCHED_MC.
+>
+
+But that change also introduced cluster masks into the topology which again
+aligns with my changes.
+
+> IMHO we probably could just introduce your changes w/o setting `cpu-map
+> cluster nodes` in DT for now. We would just have to make sure that for
+> all `*.dts` affected, the `llc cache` info can take over the old role of
+> the `cluster nodes`. In this case e.g. Juno ends up with MC, DIE no
+> matter if CONFIG_SCHED_CLUSTER is set or not.
+
+Sure I can agree with that if Juno ACPI is not broken. But I am sure it is
+broken based on your argument above. If it is, that needs fixing and this
+series just gets topology parsing in both ACPI and DT aligned, nothing
+more or nothing less. In the process it may be introducing clusters, but
+if it is not dealt correctly in ACPI, then it won't be in DT too and needs
+fixing anyways.
+
+--
+Regards,
+Sudeep
