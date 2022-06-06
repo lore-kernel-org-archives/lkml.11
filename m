@@ -2,95 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EC0FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:10:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D47DFCCA482
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:10:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239585AbiFFOKs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58796 "EHLO
+        id S239602AbiFFOKz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:10:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239450AbiFFOKR (ORCPT
+        with ESMTP id S239450AbiFFOKu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:10:17 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD1325590;
-        Mon,  6 Jun 2022 07:10:15 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id fd25so19011838edb.3;
-        Mon, 06 Jun 2022 07:10:15 -0700 (PDT)
+        Mon, 6 Jun 2022 10:10:50 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F4B25EAC;
+        Mon,  6 Jun 2022 07:10:47 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id n10so29227534ejk.5;
+        Mon, 06 Jun 2022 07:10:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=FzjA3O/a7rMXwWvrBiZXtQGHAjzdhILvDzu+Ghq0zf8=;
-        b=YIXUXa1kcMVfU98TcAIoBZLwFx+/N73w0XQw5zugvA10mCe3uTwo6Pp1K5Km01k8kB
-         E3R6YM3l/5m3RJwKZ9Jqddpcg1OQkAWztgoHj1jFJetScOb9E02a8KdEypVuhv8HsZse
-         MLqesZpiGFwsgur3x/N8c1qyyshGQB71pzecbbCaDLSrmPtmT7hPNaf53MPbdLP3XTPS
-         1tOf8wZ3SMyxeWsHjNFthpQlGjwQhqEWPwvWUEQ0VTK/W960HU0695mqdQVXK0ntmSXc
-         077Q4sdNgpRoQaRUEMRSk50AJtVTsAZPx4nZzlHb8RzxcRKc88qxEZgg6iwjs3BDUtNP
-         B88A==
+        h=message-id:date:mime-version:user-agent:content-language:to:from
+         :subject:cc:content-transfer-encoding;
+        bh=zcfwBnYsaM3osnPpLQRxR1JrABrX/zB0kh++woByQVw=;
+        b=gEpMt7Yd2UxBYkCte5IR1tgFlFVQEJ5SylH2/PBFk99wiIMXMkM+sU44fPiSwHBSIa
+         IMN0bB6BoqeG1sEJlrPjvDJwshD0q/AyS0IJHSN0P9Ag849SN82OU8Ve5PJzspiKPaW1
+         ixl/BLksjnyF6+Q+zGJYXDzeZpi/LDj+JclfL1cyrON5hgnvjaUXMyC7nb1ksactUBIH
+         jb2tLQZDR3UZzGNzC9dAr2e1XwZYvkD5WfHeYwhKxD+AUN/NVrWM8f/WdIoZfPQ/vOJo
+         Hy5xj1R8bnKIgXu+lNCl9xqLdJ5CDltw8jt+jMNUJK7Q1MpOo0KjmNKdY80vONgP9gY3
+         g/vA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=FzjA3O/a7rMXwWvrBiZXtQGHAjzdhILvDzu+Ghq0zf8=;
-        b=bixi+j+klvrnXPIw9lpTP0ypb7LrChQorUqmPGWroqs1hf5Q5n4GTtov8fXpzDG6eL
-         JzxVFa24CvTfCMn42od2/LVqUyiPWiJDQzeQXgWwlPF4PaakfUCSfJzwqUTc6ZX7lgIF
-         rI9MvmDUX4LXMf0dX0EPNsl7U5fAPhnRT54B/qcDefXo9/BjOsAvNZYGlOYne+OZrpra
-         LJ5krJdz8bJ5gpOvjoR+4B0MSaDMBx8u7QgVq495h8lkFVpUo/Q9WPYQQmfUEPBym0Ps
-         7H9sR2uAzGq0Hsa1GIMREUa+Og1VDkknjzGt4JS39IGe4cL/h4iYZ6wpeRDYHHwMd8TB
-         QJ0g==
-X-Gm-Message-State: AOAM532cS40t/XXHlYo6fNIxZJxTgvCVtJPjUZSkKxZYiI9xQQ43KZdU
-        MBBZP2ouzf1W7252E3r7De5FGkxaFnf64TSf/Vg=
-X-Google-Smtp-Source: ABdhPJy/WfLBuUZM/jaM4TSbYSVcUIAsMT8S16IbN61ZKvZvl9SpTq/QCZSMUpZiOXatrQSV8GEUszaB4j3ZQIPOmeg=
-X-Received: by 2002:aa7:d481:0:b0:42d:d5fd:f963 with SMTP id
- b1-20020aa7d481000000b0042dd5fdf963mr27266018edr.209.1654524613831; Mon, 06
- Jun 2022 07:10:13 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:from:subject:cc:content-transfer-encoding;
+        bh=zcfwBnYsaM3osnPpLQRxR1JrABrX/zB0kh++woByQVw=;
+        b=ss3fQdadU5gm21exoNWt7o3haLozUczfmXkPubPJabujpQWjlH8XniKWvLOfjBxJPw
+         dhzV0q+V6v++/2qb57tbq8uOscmIZ12L8HhM3tfEQ+Qs9S7StNnw/gO+QKmKYVq1jxYy
+         0Vd2j15ZZieUrvHokggrKElPc1GuyPXHAB/gWZi8hOz7zrQKRH7iuaCfPjX/78wfg9A2
+         PAUaj8OzOv9GCR45D9vUVyk0xxZZ5BXxONJCF3jEod7R+qCJM7AvsI7y6AIDM9WlnacE
+         5pOHPDgtXI1AISGq4OFkEAvwv6OBT8Kxp4HqmJm3cYA+FIGp3/sdt1R+xdclT+FP+cwG
+         H6kA==
+X-Gm-Message-State: AOAM532d8PaRKNM0RkupMzqtzQtcQB0j0dSlYbQw7km3DXWATjhCXi/Y
+        qpHp6FpNWxC7wu3QfRO/8is=
+X-Google-Smtp-Source: ABdhPJzqBAw+J0OHGwBe1PkTWA7yEhL5aB2O9MeJxPiApU6qXMja7NqcmfnC2G25AjnP5JFxsUOEog==
+X-Received: by 2002:a17:907:16a4:b0:711:c9a7:dc75 with SMTP id hc36-20020a17090716a400b00711c9a7dc75mr6290181ejc.542.1654524645895;
+        Mon, 06 Jun 2022 07:10:45 -0700 (PDT)
+Received: from [192.168.0.210] (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.googlemail.com with ESMTPSA id e1-20020a17090618e100b006f3ef214dc3sm6357044ejf.41.2022.06.06.07.10.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jun 2022 07:10:45 -0700 (PDT)
+Message-ID: <a1aab4df-9e1c-793f-5c3d-d735e4f4fb57@gmail.com>
+Date:   Mon, 6 Jun 2022 15:10:44 +0100
 MIME-Version: 1.0
-References: <20220606131124.53394-1-ilpo.jarvinen@linux.intel.com>
- <20220606131124.53394-2-ilpo.jarvinen@linux.intel.com> <fb32bda5-ea44-da8d-493a-a043b8619022@linux.intel.com>
-In-Reply-To: <fb32bda5-ea44-da8d-493a-a043b8619022@linux.intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 6 Jun 2022 16:09:37 +0200
-Message-ID: <CAHp75Ve4t1aF4wDpXPOcOX3MXbn_DaaNWG4S9Ft1jpZ0dGSXzw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/6] serial: 8250: Store to lsr_save_flags after lsr read
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
-        LKML <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Content-Language: en-US
+To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>
+From:   "Colin King (gmail)" <colin.i.king@gmail.com>
+Subject: re: fsdax: output address in dax_iomap_pfn() and rename it
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        nvdimm@lists.linux.dev,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 3:55 PM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
-> On Mon, 6 Jun 2022, Ilpo J=C3=A4rvinen wrote:
+Hi,
 
-...
+Static analysis with clang scan-build found a potential issue with the 
+following commit in linux-next today:
 
-> > Fixes: e490c9144cfa ("tty: Add software emulated RS485 support for 8250=
-")
-> > Link: https://lore.kernel.org/all/1d6c31d-d194-9e6a-ddf9-5f29af829f3@li=
-nux.intel.com/T/#m1737eef986bd20cf19593e344cebd7b0244945fc
-> > Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-> > Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@penugtronix.de>
->
-> It seems that Uwe managed to mistype his email for the A-by which I just
-> happily copy-pasted.
->
-> Greg, please let me know if you want me to resend the series (or if you
-> will just change it on the fly while applying).
+commit 1447ac26a96463a05ad9f5cfba7eef43d52913ef
+Author: Shiyang Ruan <ruansy.fnst@fujitsu.com>
+Date:   Fri Jun 3 13:37:32 2022 +0800
 
-I believe Greg doesn't handle patches on the fly, hence resend.
-But more importantly I do not see the reason for the Acked-by tag when
-SoB of the same person is present.
+     fsdax: output address in dax_iomap_pfn() and rename it
 
 
---=20
-With Best Regards,
-Andy Shevchenko
+The analysis is as follows:
+
+
+static int dax_iomap_direct_access(const struct iomap *iomap, loff_t pos,
+                 size_t size, void **kaddr, pfn_t *pfnp)
+{
+         pgoff_t pgoff = dax_iomap_pgoff(iomap, pos);
+         int id, rc;
+         long length;
+
+         id = dax_read_lock();
+         length = dax_direct_access(iomap->dax_dev, pgoff, PHYS_PFN(size),
+                                    DAX_ACCESS, kaddr, pfnp);
+         if (length < 0) {
+                 rc = length;
+                 goto out;
+         }
+         if (!pfnp)
+                 goto out_check_addr;
+
+The above check jumps to out_check_addr, if kaddr is null then rc is not 
+set and a garbage uninitialized value for rc is returned on the out path.
+
+
+         rc = -EINVAL;
+         if (PFN_PHYS(length) < size)
+                 goto out;
+         if (pfn_t_to_pfn(*pfnp) & (PHYS_PFN(size)-1))
+                 goto out;
+         /* For larger pages we need devmap */
+         if (length > 1 && !pfn_t_devmap(*pfnp))
+                 goto out;
+         rc = 0;
+
+out_check_addr:
+         if (!kaddr)
+                 goto out;
+         if (!*kaddr)
+                 rc = -EFAULT;
+out:
+         dax_read_unlock(id);
+         return rc;
+}
+
+
+Colin
+
