@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2129C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:38:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDC9BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:38:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232142AbiFFIi2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 04:38:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35556 "EHLO
+        id S232033AbiFFIih (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 04:38:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231961AbiFFIhf (ORCPT
+        with ESMTP id S232011AbiFFIhw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 04:37:35 -0400
+        Mon, 6 Jun 2022 04:37:52 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B06911EED7
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 01:37:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 271D81EADB
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 01:37:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654504651;
+        s=mimecast20190719; t=1654504669;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=MIPJEghvUhvuoF44rpGbqQt7gL91rrVm9zcnA+rfxgQ=;
-        b=YA+8hjnjNCXUcyRl/R1NUg3hGR8KXHEluPeQgF2Mobq3X+LZqXHt1b0A/Fo6kY4CGMUK91
-        F3li6jVCUXJeJSAsRKR03qsMBX52e0SKREiHfwBA0BKOWQRMP1XxDIqOlJCTmqvzHQo7Lb
-        e2g7BgJA4jGhtNMCLDLz4QIU/g2vPl0=
+        bh=F94Tm16Pv+6X1Qxpix8Ro059dU0Hc/OW94AtIQA4pXw=;
+        b=VhD5UqjjyRxU0MQAc7g+jcmhG8ndfsvQUU5YpbWVVk4eohhFo1i0ttYSjFZc3djNTjA8U6
+        zZo+td8Hz6tl+KDNz4CsS2rF0kxubpafXZv/AsW2U8PJWGDFnKdWOqB2I8NBlC6eJwQV5o
+        hYSqpJ1r+11UqRA9gtZoPu5E8HAfwe8=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-542-l3ShSd7aN_eCFgCKqq8NFA-1; Mon, 06 Jun 2022 04:37:26 -0400
-X-MC-Unique: l3ShSd7aN_eCFgCKqq8NFA-1
+ us-mta-136-If9MSAn7MoOP_FczbaYWNQ-1; Mon, 06 Jun 2022 04:37:44 -0400
+X-MC-Unique: If9MSAn7MoOP_FczbaYWNQ-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6EFE4858EEE;
-        Mon,  6 Jun 2022 08:37:25 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CBDEC185A79C;
+        Mon,  6 Jun 2022 08:37:43 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.193.53])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 941BE1121314;
-        Mon,  6 Jun 2022 08:37:23 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F0F881121314;
+        Mon,  6 Jun 2022 08:37:41 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -48,9 +48,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Yuan Yao <yuan.yao@linux.intel.com>,
         Maxim Levitsky <mlevitsk@redhat.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v6 11/38] KVM: x86: hyper-v: Create a separate fifo for L2 TLB flush
-Date:   Mon,  6 Jun 2022 10:36:28 +0200
-Message-Id: <20220606083655.2014609-12-vkuznets@redhat.com>
+Subject: [PATCH v6 19/38] x86/hyperv: Fix 'struct hv_enlightened_vmcs' definition
+Date:   Mon,  6 Jun 2022 10:36:36 +0200
+Message-Id: <20220606083655.2014609-20-vkuznets@redhat.com>
 In-Reply-To: <20220606083655.2014609-1-vkuznets@redhat.com>
 References: <20220606083655.2014609-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -61,127 +61,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To handle L2 TLB flush requests, KVM needs to use a separate fifo from
-regular (L1) Hyper-V TLB flush requests: e.g. when a request to flush
-something in L2 is made, the target vCPU can transition from L2 to L1,
-receive a request to flush a GVA for L1 and then try to enter L2 back.
-The first request needs to be processed at this point. Similarly,
-requests to flush GVAs in L1 must wait until L2 exits to L1.
+Section 1.9 of TLFS v6.0b says:
 
-No functional change as KVM doesn't handle L2 TLB flush requests from
-L2 yet.
+"All structures are padded in such a way that fields are aligned
+naturally (that is, an 8-byte field is aligned to an offset of 8 bytes
+and so on)".
 
+'struct enlightened_vmcs' has a glitch:
+
+...
+        struct {
+                u32                nested_flush_hypercall:1; /*   836: 0  4 */
+                u32                msr_bitmap:1;         /*   836: 1  4 */
+                u32                reserved:30;          /*   836: 2  4 */
+        } hv_enlightenments_control;                     /*   836     4 */
+        u32                        hv_vp_id;             /*   840     4 */
+        u64                        hv_vm_id;             /*   844     8 */
+        u64                        partition_assist_page; /*   852     8 */
+...
+
+And the observed values in 'partition_assist_page' make no sense at
+all. Fix the layout by padding the structure properly.
+
+Fixes: 68d1eb72ee99 ("x86/hyper-v: define struct hv_enlightened_vmcs and clean field bits")
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/include/asm/kvm_host.h |  8 +++++++-
- arch/x86/kvm/hyperv.c           | 11 +++++++----
- arch/x86/kvm/hyperv.h           | 17 ++++++++++++++---
- 3 files changed, 28 insertions(+), 8 deletions(-)
+ arch/x86/include/asm/hyperv-tlfs.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index cf3748be236d..0e58ab00dff0 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -613,6 +613,12 @@ struct kvm_vcpu_hv_synic {
-  */
- #define KVM_HV_TLB_FLUSHALL_ENTRY  ((u64)-1)
+diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/hyperv-tlfs.h
+index 5225a85c08c3..e7ddae8e02c6 100644
+--- a/arch/x86/include/asm/hyperv-tlfs.h
++++ b/arch/x86/include/asm/hyperv-tlfs.h
+@@ -548,7 +548,7 @@ struct hv_enlightened_vmcs {
+ 	u64 guest_rip;
  
-+enum hv_tlb_flush_fifos {
-+	HV_L1_TLB_FLUSH_FIFO,
-+	HV_L2_TLB_FLUSH_FIFO,
-+	HV_NR_TLB_FLUSH_FIFOS,
-+};
-+
- struct kvm_vcpu_hv_tlb_flush_fifo {
- 	spinlock_t write_lock;
- 	DECLARE_KFIFO(entries, u64, KVM_HV_TLB_FLUSH_FIFO_SIZE);
-@@ -638,7 +644,7 @@ struct kvm_vcpu_hv {
- 		u32 syndbg_cap_eax; /* HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES.EAX */
- 	} cpuid_cache;
- 
--	struct kvm_vcpu_hv_tlb_flush_fifo tlb_flush_fifo;
-+	struct kvm_vcpu_hv_tlb_flush_fifo tlb_flush_fifo[HV_NR_TLB_FLUSH_FIFOS];
- };
- 
- /* Xen HVM per vcpu emulation context */
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index b347971b3924..32f223bbea6b 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -956,8 +956,10 @@ static int kvm_hv_vcpu_init(struct kvm_vcpu *vcpu)
- 
- 	hv_vcpu->vp_index = vcpu->vcpu_idx;
- 
--	INIT_KFIFO(hv_vcpu->tlb_flush_fifo.entries);
--	spin_lock_init(&hv_vcpu->tlb_flush_fifo.write_lock);
-+	for (i = 0; i < HV_NR_TLB_FLUSH_FIFOS; i++) {
-+		INIT_KFIFO(hv_vcpu->tlb_flush_fifo[i].entries);
-+		spin_lock_init(&hv_vcpu->tlb_flush_fifo[i].write_lock);
-+	}
- 
- 	return 0;
- }
-@@ -1843,7 +1845,8 @@ static void hv_tlb_flush_enqueue(struct kvm_vcpu *vcpu, u64 *entries, int count)
- 	if (!hv_vcpu)
- 		return;
- 
--	tlb_flush_fifo = &hv_vcpu->tlb_flush_fifo;
-+	/* kvm_hv_flush_tlb() is not ready to handle requests for L2s yet */
-+	tlb_flush_fifo = &hv_vcpu->tlb_flush_fifo[HV_L1_TLB_FLUSH_FIFO];
- 
- 	spin_lock_irqsave(&tlb_flush_fifo->write_lock, flags);
- 
-@@ -1880,7 +1883,7 @@ void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu)
- 		return;
- 	}
- 
--	tlb_flush_fifo = &hv_vcpu->tlb_flush_fifo;
-+	tlb_flush_fifo = kvm_hv_get_tlb_flush_fifo(vcpu);
- 
- 	count = kfifo_out(&tlb_flush_fifo->entries, entries, KVM_HV_TLB_FLUSH_FIFO_SIZE);
- 
-diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
-index e5b32266ff7d..207d24efdc5a 100644
---- a/arch/x86/kvm/hyperv.h
-+++ b/arch/x86/kvm/hyperv.h
-@@ -22,6 +22,7 @@
- #define __ARCH_X86_KVM_HYPERV_H__
- 
- #include <linux/kvm_host.h>
-+#include "x86.h"
- 
- /*
-  * The #defines related to the synthetic debugger are required by KDNet, but
-@@ -147,16 +148,26 @@ int kvm_vm_ioctl_hv_eventfd(struct kvm *kvm, struct kvm_hyperv_eventfd *args);
- int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
- 		     struct kvm_cpuid_entry2 __user *entries);
- 
-+static inline struct kvm_vcpu_hv_tlb_flush_fifo *kvm_hv_get_tlb_flush_fifo(struct kvm_vcpu *vcpu)
-+{
-+	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-+	int i = !is_guest_mode(vcpu) ? HV_L1_TLB_FLUSH_FIFO :
-+				       HV_L2_TLB_FLUSH_FIFO;
-+
-+	/* KVM does not handle L2 TLB flush requests yet */
-+	WARN_ON_ONCE(i != HV_L1_TLB_FLUSH_FIFO);
-+
-+	return &hv_vcpu->tlb_flush_fifo[i];
-+}
- 
- static inline void kvm_hv_vcpu_empty_flush_tlb(struct kvm_vcpu *vcpu)
- {
- 	struct kvm_vcpu_hv_tlb_flush_fifo *tlb_flush_fifo;
--	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
- 
--	if (!hv_vcpu || !kvm_check_request(KVM_REQ_HV_TLB_FLUSH, vcpu))
-+	if (!to_hv_vcpu(vcpu) || !kvm_check_request(KVM_REQ_HV_TLB_FLUSH, vcpu))
- 		return;
- 
--	tlb_flush_fifo = &hv_vcpu->tlb_flush_fifo;
-+	tlb_flush_fifo = kvm_hv_get_tlb_flush_fifo(vcpu);
- 
- 	kfifo_reset_out(&tlb_flush_fifo->entries);
- }
+ 	u32 hv_clean_fields;
+-	u32 hv_padding_32;
++	u32 padding32_1;
+ 	u32 hv_synthetic_controls;
+ 	struct {
+ 		u32 nested_flush_hypercall:1;
+@@ -556,7 +556,7 @@ struct hv_enlightened_vmcs {
+ 		u32 reserved:30;
+ 	}  __packed hv_enlightenments_control;
+ 	u32 hv_vp_id;
+-
++	u32 padding32_2;
+ 	u64 hv_vm_id;
+ 	u64 partition_assist_page;
+ 	u64 padding64_4[4];
 -- 
 2.35.3
 
