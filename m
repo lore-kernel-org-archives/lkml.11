@@ -2,88 +2,314 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E53A7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 20:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBE15C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 20:19:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233322AbiFFUTL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 16:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45380 "EHLO
+        id S233493AbiFFUTl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 16:19:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233891AbiFFUS6 (ORCPT
+        with ESMTP id S233911AbiFFUTZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 16:18:58 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B65BD5F
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 13:18:46 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id h1so12989598plf.11
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 13:18:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YAlsC0h5lJCHopuggZD7f+zz1bUnWsXyG9PWIkU6Y+0=;
-        b=ke+dA0R0UcPduUVRV2FXD2PjVf/XTJl1ISNU7QZSaoQ5timKMdBpps4QhF7AmOrLCl
-         AOOxm+gw+9qf/9Xinr9iE0yrg9SRY2mOA1WoSu1utrkhipzXioFCFGylTuYSTuuZr2Jm
-         13zjEnDUxP1KxrqNVTLAvehtDotVwQJ0rDbhY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YAlsC0h5lJCHopuggZD7f+zz1bUnWsXyG9PWIkU6Y+0=;
-        b=qXcA5VshZN5MEGTN8ctFhPAKshEAX9wHHa6gvFLeZ4IQ57WqqbWil7XBXdkL72rJVc
-         JmUfjdBsLKCzurX2Wy56mdb23fXsr5XHcHpxDknZ5TABtbVRGrZs0LHnZ5V7KURiLQDl
-         Vnn5eM9bPDOtvns7j2jNal1Otd2P5TUHon3hqgzEBkLFsnIxqRPj3w8rYUdXUfT8km4E
-         wKF4c/xLvURtbL3GyZx+TEryUTgvbWvrtTVAiHYHgXeMmIMyM+k6NApEArpl7X0jVCS9
-         0f9/Wsij3ScFa0XSwT+wFEVHdahCZ0CxGuhcFvM318jYiLnB1eBBKsqmGN0aH3nZH5l5
-         0jtA==
-X-Gm-Message-State: AOAM532GdXWx1uJuViOh9TUPjwz5RFRFnM/5aMsSfhBJ4mSm7S+/cDTl
-        fsAu9IZDWoFzTIjkZLhA2xwbrOUd5FQxlIJf
-X-Google-Smtp-Source: ABdhPJxfTNfRlDzcEtbKKPeM95NhovvrUH81ZWKOfqkm4zJBNTQwYGnjfGyo0SpIDvpZh2V9lfWHlg==
-X-Received: by 2002:a17:90b:5091:b0:1e8:990c:f735 with SMTP id rt17-20020a17090b509100b001e8990cf735mr2428046pjb.153.1654546725832;
-        Mon, 06 Jun 2022 13:18:45 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id l5-20020a170902d34500b0015ef27092aasm10883034plk.190.2022.06.06.13.18.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 13:18:45 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     bleung@chromium.org, Prashant Malani <pmalani@chromium.org>,
-        Brian Norris <briannorris@chromium.org>,
-        chrome-platform@lists.linux.dev (open list:CHROME HARDWARE PLATFORM
-        SUPPORT), Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Tzung-Bi Shih <tzungbi@kernel.org>
-Subject: [PATCH 0/3] platform/chrome: cros_ec_command() improvements
-Date:   Mon,  6 Jun 2022 20:17:59 +0000
-Message-Id: <20220606201825.763788-1-pmalani@chromium.org>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+        Mon, 6 Jun 2022 16:19:25 -0400
+Received: from smtp.smtpout.orange.fr (smtp01.smtpout.orange.fr [80.12.242.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 697D23206B
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 13:19:10 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id yJBgnu7iDeg3pyJBgnZwwi; Mon, 06 Jun 2022 22:19:08 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Mon, 06 Jun 2022 22:19:08 +0200
+X-ME-IP: 90.11.190.129
+Message-ID: <ef2fc6ab-e487-1f95-dceb-fd190f064ac2@wanadoo.fr>
+Date:   Mon, 6 Jun 2022 22:18:56 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 5/5] crypto: aspeed: add HACE crypto driver
+Content-Language: fr
+To:     Neal Liu <neal_liu@aspeedtech.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Johnny Huang <johnny_huang@aspeedtech.com>
+Cc:     linux-aspeed@lists.ozlabs.org, linux-crypto@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, BMC-SW@aspeedtech.com
+References: <20220606064935.1458903-1-neal_liu@aspeedtech.com>
+ <20220606064935.1458903-6-neal_liu@aspeedtech.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220606064935.1458903-6-neal_liu@aspeedtech.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a short series related to cros_ec_command(). The first patch
-updates a couple of Cros EC regulator callsites to use the common
-cros_ec_command(). The next couple of patches do a rename and argument
-type update.
+Le 06/06/2022 à 08:49, Neal Liu a écrit :
+> Add HACE crypto driver to support symmetric-key
+> encryption and decryption with multiple modes of
+> operation.
+> 
+> Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+> Signed-off-by: Johnny Huang <johnny_huang@aspeedtech.com>
+> ---
 
-Prashant Malani (3):
-  regulator: cros-ec: Use common cros_ec_command()
-  platform/chrome: cros_ec_proto: Rename cros_ec_command function
-  platform/chrome: cros_ec_proto: Update size arg types
+[...]
 
- drivers/mfd/cros_ec_dev.c                   |  4 +--
- drivers/platform/chrome/cros_ec_proto.c     | 22 ++++++------
- drivers/platform/chrome/cros_ec_typec.c     | 39 ++++++++++-----------
- drivers/platform/chrome/cros_usbpd_notify.c |  4 +--
- drivers/regulator/cros-ec-regulator.c       | 36 ++-----------------
- include/linux/platform_data/cros_ec_proto.h |  4 +--
- 6 files changed, 39 insertions(+), 70 deletions(-)
+> +static int aspeed_sk_transfer_sg(struct aspeed_hace_dev *hace_dev)
+> +{
+> +	struct aspeed_engine_crypto *crypto_engine = &hace_dev->crypto_engine;
+> +	struct device *dev = hace_dev->dev;
+> +	struct aspeed_cipher_reqctx *rctx;
+> +	struct skcipher_request *req;
+> +
+> +	CIPHER_DBG(hace_dev, "\n");
+> +
+> +	req = skcipher_request_cast(crypto_engine->areq);
+> +	rctx = skcipher_request_ctx(req);
+> +
+> +	if (req->src == req->dst) {
+> +		dma_unmap_sg(dev, req->src, rctx->src_nents, DMA_BIDIRECTIONAL);
+> +
 
--- 
-2.36.1.255.ge46751e96f-goog
+Unneeded empty line.
 
+> +	} else {
+> +		dma_unmap_sg(dev, req->src, rctx->src_nents, DMA_TO_DEVICE);
+> +		dma_unmap_sg(dev, req->dst, rctx->dst_nents, DMA_FROM_DEVICE);
+> +	}
+> +
+> +	return aspeed_sk_complete(hace_dev, 0);
+> +}
+> +
+
+[...]
+
+> +static int aspeed_sk_start_sg(struct aspeed_hace_dev *hace_dev)
+> +{
+> +	struct aspeed_engine_crypto *crypto_engine = &hace_dev->crypto_engine;
+> +	struct aspeed_sg_list *src_list, *dst_list;
+> +	dma_addr_t src_dma_addr, dst_dma_addr;
+> +	struct aspeed_cipher_reqctx *rctx;
+> +	struct skcipher_request *req;
+> +	struct scatterlist *s;
+> +	int src_sg_len;
+> +	int dst_sg_len;
+> +	int total, i;
+> +	int rc;
+> +
+> +	CIPHER_DBG(hace_dev, "\n");
+> +
+> +	req = skcipher_request_cast(crypto_engine->areq);
+> +	rctx = skcipher_request_ctx(req);
+> +
+> +	rctx->enc_cmd |= HACE_CMD_DES_SG_CTRL | HACE_CMD_SRC_SG_CTRL |
+> +			 HACE_CMD_AES_KEY_HW_EXP | HACE_CMD_MBUS_REQ_SYNC_EN;
+> +
+> +	/* BIDIRECTIONAL */
+> +	if (req->dst == req->src) {
+> +		src_sg_len = dma_map_sg(hace_dev->dev, req->src,
+> +					rctx->src_nents, DMA_BIDIRECTIONAL);
+> +		dst_sg_len = src_sg_len;
+> +		if (!src_sg_len) {
+> +			dev_warn(hace_dev->dev, "dma_map_sg() src error\n");
+> +			return -EINVAL;
+> +		}
+> +
+> +	} else {
+> +		src_sg_len = dma_map_sg(hace_dev->dev, req->src,
+> +					rctx->src_nents, DMA_TO_DEVICE);
+> +		if (!src_sg_len) {
+> +			dev_warn(hace_dev->dev, "dma_map_sg() src error\n");
+> +			return -EINVAL;
+> +		}
+> +
+> +		dst_sg_len = dma_map_sg(hace_dev->dev, req->dst,
+> +					rctx->dst_nents, DMA_FROM_DEVICE);
+> +		if (!dst_sg_len) {
+> +			dev_warn(hace_dev->dev, "dma_map_sg() dst error\n");
+> +			rc = -EINVAL;
+> +			goto free_req_src;
+
+Should we realy call dma_unmap_sg() if dma_map_sg() fails?
+
+> +		}
+> +	}
+> +
+> +	src_list = (struct aspeed_sg_list *)crypto_engine->cipher_addr;
+> +	src_dma_addr = crypto_engine->cipher_dma_addr;
+> +	total = req->cryptlen;
+> +
+> +	for_each_sg(req->src, s, src_sg_len, i) {
+> +		src_list[i].phy_addr = sg_dma_address(s);
+> +
+> +		/* last sg list */
+> +		if (sg_dma_len(s) >= total) {
+> +			src_list[i].len = total;
+> +			src_list[i].len |= BIT(31);
+> +			total = 0;
+> +			break;
+> +		}
+> +
+> +		src_list[i].len = sg_dma_len(s);
+> +		total -= src_list[i].len;
+> +	}
+> +
+> +	if (total != 0)
+> +		return -EINVAL;
+
+goto free_req_src; ?
+
+> +
+> +	if (req->dst == req->src) {
+> +		dst_list = src_list;
+> +		dst_dma_addr = src_dma_addr;
+> +
+> +	} else {
+> +		dst_list = (struct aspeed_sg_list *)crypto_engine->dst_sg_addr;
+> +		dst_dma_addr = crypto_engine->dst_sg_dma_addr;
+> +		total = req->cryptlen;
+> +
+> +		for_each_sg(req->dst, s, dst_sg_len, i) {
+> +			dst_list[i].phy_addr = sg_dma_address(s);
+> +
+> +			/* last sg list */
+> +			if (sg_dma_len(s) >= total) {
+> +				dst_list[i].len = total;
+> +				dst_list[i].len |= BIT(31);
+> +				total = 0;
+> +				break;
+> +			}
+> +
+> +			dst_list[i].len = sg_dma_len(s);
+> +			total -= dst_list[i].len;
+> +		}
+> +
+> +		dst_list[dst_sg_len].phy_addr = 0;
+> +		dst_list[dst_sg_len].len = 0;
+> +	}
+> +
+> +	if (total != 0)
+> +		return -EINVAL;
+> +
+> +	crypto_engine->resume = aspeed_sk_transfer_sg;
+> +
+> +	/* Dummy read for barriers */
+> +	readl(src_list);
+> +	readl(dst_list);
+> +
+> +	/* Trigger engines */
+> +	ast_hace_write(hace_dev, src_dma_addr, ASPEED_HACE_SRC);
+> +	ast_hace_write(hace_dev, dst_dma_addr, ASPEED_HACE_DEST);
+> +	ast_hace_write(hace_dev, req->cryptlen, ASPEED_HACE_DATA_LEN);
+> +	ast_hace_write(hace_dev, rctx->enc_cmd, ASPEED_HACE_CMD);
+> +
+> +	return -EINPROGRESS;
+> +
+> +free_req_src:
+> +	dma_unmap_sg(hace_dev->dev, req->src, rctx->src_nents, DMA_TO_DEVICE);
+> +
+> +	return rc;
+> +}
+> +
+
+[...]
+
+> +static int aspeed_aes_setkey(struct crypto_skcipher *cipher, const u8 *key,
+> +			     unsigned int keylen)
+> +{
+> +	struct aspeed_cipher_ctx *ctx = crypto_skcipher_ctx(cipher);
+> +	struct aspeed_hace_dev *hace_dev = ctx->hace_dev;
+> +	struct crypto_aes_ctx gen_aes_key;
+> +
+> +	CIPHER_DBG(hace_dev, "keylen: %d bits\n", (keylen * 8));
+> +
+> +	if (keylen != AES_KEYSIZE_128 && keylen != AES_KEYSIZE_192 &&
+> +	    keylen != AES_KEYSIZE_256)
+> +		return -EINVAL;
+> +
+> +	if (ctx->hace_dev->version == AST2500_VERSION) {
+> +		aes_expandkey(&gen_aes_key, key, keylen);
+> +		memcpy(ctx->key, gen_aes_key.key_enc, AES_MAX_KEYLENGTH);
+> +
+
+Unneeded empty line
+
+> +	} else {
+> +		memcpy(ctx->key, key, keylen);
+> +	}
+> +
+> +	ctx->key_len = keylen;
+> +
+> +	return 0;
+> +}
+> +
+
+[...]
+
+> +	crypto_engine->cipher_ctx =
+> +		dma_alloc_coherent(&pdev->dev,
+> +				   PAGE_SIZE,
+> +				   &crypto_engine->cipher_ctx_dma,
+> +				   GFP_KERNEL);
+> +	if (!crypto_engine->cipher_ctx) {
+> +		dev_err(&pdev->dev, "Failed to allocate cipher ctx dma\n");
+> +		rc = -ENOMEM;
+> +		goto free_hash_src;
+> +	}
+> +
+> +	crypto_engine->cipher_addr =
+> +		dma_alloc_coherent(&pdev->dev,
+> +				   ASPEED_CRYPTO_SRC_DMA_BUF_LEN,
+> +				   &crypto_engine->cipher_dma_addr,
+> +				   GFP_KERNEL);
+> +	if (!crypto_engine->cipher_addr) {
+> +		dev_err(&pdev->dev, "Failed to allocate cipher addr dma\n");
+> +		rc = -ENOMEM;
+> +		goto free_cipher_ctx;
+> +	}
+> +
+> +	if (hace_dev->version == AST2600_VERSION) {
+> +		crypto_engine->dst_sg_addr =
+> +			dma_alloc_coherent(&pdev->dev,
+> +					   ASPEED_CRYPTO_DST_DMA_BUF_LEN,
+> +					   &crypto_engine->dst_sg_dma_addr,
+> +					   GFP_KERNEL);
+> +		if (!crypto_engine->dst_sg_addr) {
+> +			dev_err(&pdev->dev, "Failed to allocate dst_sg dma\n");
+> +			rc = -ENOMEM;
+> +			goto free_cipher_addr;
+> +		}
+> +	}
+> +
+>   	rc = aspeed_hace_register(hace_dev);
+>   	if (rc) {
+>   		dev_err(&pdev->dev, "Failed to register algs, rc:0x%x\n", rc);
+
+I guess that the new dma_alloc_coherent() just a few lines above should 
+also be undone in error hanfling path if aspeed_hace_register() fails?
+
+> @@ -179,6 +282,18 @@ static int aspeed_hace_probe(struct platform_device *pdev)
+>   
+>   	return 0;
+>   
+> +free_cipher_addr:
+> +	dma_free_coherent(&pdev->dev, ASPEED_CRYPTO_SRC_DMA_BUF_LEN,
+> +			  crypto_engine->cipher_addr,
+> +			  crypto_engine->cipher_dma_addr);
+> +free_cipher_ctx:
+> +	dma_free_coherent(&pdev->dev, PAGE_SIZE,
+> +			  crypto_engine->cipher_ctx,
+> +			  crypto_engine->cipher_ctx_dma);
+> +free_hash_src:
+> +	dma_free_coherent(&pdev->dev, ASPEED_HASH_SRC_DMA_BUF_LEN,
+> +			  hash_engine->ahash_src_addr,
+> +			  hash_engine->ahash_src_dma_addr);
+>   end:
+>   	clk_disable_unprepare(hace_dev->clk);
+>   	return rc;
