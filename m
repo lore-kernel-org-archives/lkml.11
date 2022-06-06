@@ -2,110 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B615C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 07:27:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D7ACCA473
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 07:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230468AbiFFH1A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 03:27:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60590 "EHLO
+        id S231200AbiFFHaH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 03:30:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230446AbiFFH05 (ORCPT
+        with ESMTP id S231213AbiFFHaE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 03:26:57 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93AD312D1E2
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 00:26:53 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id kq6so14166495ejb.11
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 00:26:53 -0700 (PDT)
+        Mon, 6 Jun 2022 03:30:04 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6002BFD
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 00:30:03 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id gl15so13338967ejb.4
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 00:30:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=doPwBdHFWD14a2kAbTYFYO985iNgcJ4U7efAsJ68WJg=;
-        b=e9Eet/rubQ1dAldMT20UZNWIystnpXrq8GRJof9k8RTdLUW/jUD1HGfhgGnHs8wFb6
-         6igYDyujxRcRJlFuCntlt6LFyW90aNpU5MgTf2jUnPhMUXCvNEB7vjGPA060WmEVc2ZG
-         RFCMMx0G5Jtbm5wiY4pevkJ0S0Vw27VLsB5eEt8hmtHuin/eRDB1K9qxhrqlTwWw8JQ6
-         kqWStISJcQYsPBm4bx0ziF6Xtmx5/g5h7E3PzbwH6r9zYyWBoEH1TrozbZ4YOiiC3+K2
-         gluHBMjK50vEvuW8nrFl9OTgbx07KXDG/UKG44iHxftwXkGAL+KvHW5fKdaPsKMTb1kY
-         mRzw==
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=C20vxMWdqTwD6Z42rEEVzIJpyd097nkNjpEAy8hCZfk=;
+        b=FT0hiO/wt9Ln26hReszWV7kve6WAQ7SHRAXHuM3oRcyMcf62QkOMqSeKO7K5Q78tV5
+         jqZbs/pnJHNkKXfFb5szKb/IknvxYaw6NxhOfSQMJu39Orgpud1c0nHJEYhlJwBSG3g4
+         MmGf34twiFLhdqro9wTstyDge0JufEnO8kpC6eFUvoJMSFadTBbyjOMQe0j2P8JJ0S/D
+         iWAc3DOU0+HSvwVqGySRPfQDMJMQ+d9ne1njR2H81Dx76MXiTUbI3BF2QydGU6s0Z4OR
+         2sLoyhzZDAB6++fqC4WXdwKsoNeRFox4yH28AxiIaBKfcq7eroLmoOeZx8H74tM6VFRp
+         BpAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+         :content-language:from:to:cc:references:in-reply-to
          :content-transfer-encoding;
-        bh=doPwBdHFWD14a2kAbTYFYO985iNgcJ4U7efAsJ68WJg=;
-        b=Lz2Z4UTVP7QESnWDjcMM9zDdEGBvESEKOFceD97nLwz4pNk26xZ4vgJcblxNYqQhtw
-         Fhp9W5uHP+m6qnrcmGsp6wZmeoHNSfr6IqD4XnB6VSzw9DhNTKOEPUbT3Udxv0r/njW2
-         W8qQgrxYSuNi6bMT+DEHX+Wplx/DGlL8YuueyOXGh/stTnpC4eCpBrXerqWDOZHR0fDs
-         deRwNs0JjPUy4N8kDQNAoX3/9QJkBhgUEwLJc1rVRKyJxapxGyFdQkr4yD4OGGHy70Og
-         c4aj4EfVv0pKtyVBXZPGD7c0MaZx46aDfnAZFJ0zWTaXVAVdpVGK/iOBGPVBHGsHZUxu
-         RcnQ==
-X-Gm-Message-State: AOAM532pFxWuFV/OBbKvi/S34ogSXmzBV32Z09j5GrpLFkEOTvGWOblD
-        Bk8oZmIEXZttjmtHciCxvpeuyw==
-X-Google-Smtp-Source: ABdhPJyJOokEt0kcEBw3sSkPy6hMeFJoYm8dpZ17WrM50ttC3tQnAGNRQ3bcqQ/3RbnokzCBKZFsGQ==
-X-Received: by 2002:a17:906:b18e:b0:710:26db:7a53 with SMTP id w14-20020a170906b18e00b0071026db7a53mr11557189ejy.290.1654500411748;
-        Mon, 06 Jun 2022 00:26:51 -0700 (PDT)
+        bh=C20vxMWdqTwD6Z42rEEVzIJpyd097nkNjpEAy8hCZfk=;
+        b=T5k3fV8iSbeLe3++0bf/lp5QjN/yjZBOB1pVpK0bSz7pdWVe4ciG+Zu7XfsSzUVjSD
+         4SXnFrW8F0Ui45AU7I+sZ6/bv0Rf41d8mO+MYFmsBqSoQ+Yov2vRsNmkmcC+X8QMMOTh
+         usHWKWUImbP5nrVLgYkb4TL8biI1BxOMHEdMZyB6y/Mn45uPh/QoEI5UFE/s6kdeU9yj
+         4p+kSvoHSpBO0iWU0lFGmYqXOubxpJBcBaX16Cy2zsC1mvn7ASNGGjEgn4bgnv2Ztq/E
+         zCvkvarKA3P8l81Q6br/xHEq39je7PFfL6s5HCXW6rj/xGVciYGVEExQaWFo5ueVspP5
+         wUjQ==
+X-Gm-Message-State: AOAM532M0Vur5cbRr4FtempXKRf6xvYimQzI3OW8TMIuggK/3Dfu6kmD
+        O/g+OhpvXDtE00FmFbvJpb5PHQ==
+X-Google-Smtp-Source: ABdhPJwDrG9m7vAQS+VF/GQXXz1IT+Mgco25TxBuVlJNzEy+22mr0JP9+ZK6aVbHXdWQQHWMrTExsA==
+X-Received: by 2002:a17:907:3daa:b0:6fe:88ab:fe8c with SMTP id he42-20020a1709073daa00b006fe88abfe8cmr20075363ejc.575.1654500601591;
+        Mon, 06 Jun 2022 00:30:01 -0700 (PDT)
 Received: from [192.168.0.181] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id d7-20020a056402400700b0042e15364d14sm6332688eda.8.2022.06.06.00.26.50
+        by smtp.gmail.com with ESMTPSA id t11-20020a17090605cb00b00706c1327f4bsm5994755ejt.23.2022.06.06.00.30.00
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Jun 2022 00:26:51 -0700 (PDT)
-Message-ID: <14eeab94-8344-2c8d-9437-ddc8e367cfde@linaro.org>
-Date:   Mon, 6 Jun 2022 09:26:50 +0200
+        Mon, 06 Jun 2022 00:30:01 -0700 (PDT)
+Message-ID: <8e81de5f-dfb7-e34f-ff5f-44b52421fa24@linaro.org>
+Date:   Mon, 6 Jun 2022 09:29:59 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH] dt-bindings: i2c: qcom,i2c-qup: convert to dtschema
+Subject: Re: [RFC v2 1/2] clk: hisilicon: add CRG driver Hi3521a SoC
 Content-Language: en-US
-To:     Robert Marko <robimarko@gmail.com>, Rob Herring <robh@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-i2c@vger.kernel.org,
-        Devicetree List <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220604164653.79284-1-robimarko@gmail.com>
- <20220605140744.GA3416078-robh@kernel.org>
- <CAOX2RU7PHpzKUNvuv=-MyqGtgcz30qKkvx2MHNV=ehtCZGBYEA@mail.gmail.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAOX2RU7PHpzKUNvuv=-MyqGtgcz30qKkvx2MHNV=ehtCZGBYEA@mail.gmail.com>
+To:     "Marty E. Plummer" <hanetzer@startmail.com>
+Cc:     arnd@arndb.de, cai.huoqing@linux.dev, christian.koenig@amd.com,
+        devicetree@vger.kernel.org, gengdongjiu@huawei.com,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux@armlinux.org.uk, michael@walle.cc, miquel.raynal@bootlin.com,
+        mturquette@baylibre.com, novikov@ispras.ru, olof@lixom.net,
+        p.yadav@ti.com, rdunlap@infradead.org, richard@nod.at,
+        robh+dt@kernel.org, sboyd@kernel.org, soc@kernel.org,
+        sumit.semwal@linaro.org, tudor.ambarus@microchip.com,
+        vigneshr@ti.com, xuwei5@hisilicon.com
+References: <20220501054440.2434247-1-hanetzer@startmail.com>
+ <20220501173423.2473093-1-hanetzer@startmail.com>
+ <20220501173423.2473093-2-hanetzer@startmail.com>
+ <f42cb4d0-7133-eea5-b456-b5169bebfad1@linaro.org>
+ <20220601105846.7hriawg3stxb657f@proprietary-killer>
+ <630b0d13-6778-2508-6a34-9daa0358047d@linaro.org>
+ <20220601110616.xmxih663kxgupszv@proprietary-killer>
+ <a2a98c6d-2ff7-89f6-0711-c8f8b99e85c2@linaro.org>
+ <20220601182418.okoofgannw6vbcxo@proprietary-killer>
+ <b1b87be5-a048-b713-c9f2-84b948aa6718@linaro.org>
+ <20220603112227.hmzwy7xxl6ddezqh@proprietary-killer>
+ <34e6715e-795c-3d64-1341-31da9bd27563@linaro.org>
+In-Reply-To: <34e6715e-795c-3d64-1341-31da9bd27563@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/06/2022 18:09, Robert Marko wrote:
-> On Sun, 5 Jun 2022 at 16:07, Rob Herring <robh@kernel.org> wrote:
->>
->> On Sat, Jun 04, 2022 at 06:46:53PM +0200, Robert Marko wrote:
->>> Convert DT bindings for Qualcomm QUP I2C controller to DT schema format.
+On 05/06/2022 16:54, Krzysztof Kozlowski wrote:
+> On 03/06/2022 13:22, Marty E. Plummer wrote:
+>> On Thu, Jun 02, 2022 at 08:37:43AM +0200, Krzysztof Kozlowski wrote:
+>>> On 01/06/2022 20:24, Marty E. Plummer wrote:
 >>>
->>> Old text bindings were missing usage of DMA so that was documented, as
->>> well as the max clock-frequency.
+>>>>>> Either or. Whatever makes the workload easier is what I'm looking for.
+>>>>>
+>>>>> Sorry, you need to be more specific. Apply is not a job for you, for the
+>>>>> patch submitter.
+>>>>>
+>>>>> Then you miss here important piece - which is the first patch. DTS goes
+>>>>> always via separate branch (or even tree) from driver changes. That's
+>>>>> why bindings are always separate first patches.
+>>>>>
+>>>> So, add a 4: arch/arm/boot/dts/soc.dtsi and 5: arch/arm/boot/dts/board.dts
+>>>> to the above list, or should those be the same patch as well?
 >>>
->>> Signed-off-by: Robert Marko <robimarko@gmail.com>
->>> ---
->>>  .../devicetree/bindings/i2c/qcom,i2c-qup.txt  | 40 ---------
->>>  .../devicetree/bindings/i2c/qcom,i2c-qup.yaml | 83 +++++++++++++++++++
->>>  2 files changed, 83 insertions(+), 40 deletions(-)
->>>  delete mode 100644 Documentation/devicetree/bindings/i2c/qcom,i2c-qup.txt
->>>  create mode 100644 Documentation/devicetree/bindings/i2c/qcom,i2c-qup.yaml
->>
->> This one is already done.
+>>> For me does not matter, sub architecture maintainer might have preference.
+>>>
+>> Fair enough. That being said, for the dt-bindings patch, is it
+>> permissible to include #define CLOCK_FOO 1337 and so on for clocks which
+>> haven't been wired up in the driver yet? As in, you know they're there,
+>> and are important enough to model, but you haven't gotten to that point
+>> yet?
 > 
-> Yeah, I did not check linux-next before doing the conversion.
-> Sorry for the noise.
+> What would be the benefit to include them now? I imagine that if you
+> plan to add such clocks to the driver in next week or something, and you
+> need to use them in DTS, then it's fine. If that's not the case,
+> probably there is little sense in defining them upfront...
 
-Hi Robert,
+Actually I see one more benefit - since IDs should be incremented by
+one, you can define all of them upfront thus having some
+logical/alphabetical order/grouping. If you extend the bindings header
+with new IDs later, they must go to the end of the list, thus maybe
+ordering will not be that nice.
 
-Thanks for the patch. Several people are working on the bindings, so the
-best is to:
-1. rebase always on linux-next,
-2. check if anyone else posted the patches thus the work is in progress
-- use dfn keyword, like:
-https://lore.kernel.org/all/?q=dfn%3Aqcom%2Ci2c-qup.txt
-
+If you want, go ahead with all IDs. Just remeber that these must be IDs,
+not register values or some programming offsets.
 
 Best regards,
 Krzysztof
