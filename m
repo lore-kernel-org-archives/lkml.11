@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB8A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:23:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8069CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:23:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230295AbiFFSX3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 14:23:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55442 "EHLO
+        id S231682AbiFFSXe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 14:23:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231548AbiFFSXU (ORCPT
+        with ESMTP id S231576AbiFFSXW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 14:23:20 -0400
+        Mon, 6 Jun 2022 14:23:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A27D410634C;
-        Mon,  6 Jun 2022 11:23:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 483921059EB;
+        Mon,  6 Jun 2022 11:23:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65A6AB81AE6;
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0CA4B81AEB;
+        Mon,  6 Jun 2022 18:23:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EBDAC3411D;
         Mon,  6 Jun 2022 18:23:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 893D2C3411E;
-        Mon,  6 Jun 2022 18:23:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654539797;
-        bh=r7qsMO+KaTvKmkx5mx/GJ+zu6Ys/r3ohlnLftZkA8x0=;
+        s=k20201202; t=1654539798;
+        bh=N4cT2SKfYSnDGxoyHnmUEPdoAtmbrJGcDlJlH2/OfOY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j8JnNnOJIAvqeARo2dlT4UcQMZ8rJ//iqmHsfN9M4cIEZNdeAnbFB8CmnMAfD9pFX
-         UiNfXHQmu7cthP9LIT7NVUgYTjwxh/t1hCj4FGG40mXLXdsEZKL/tG0IDH3DTABqP9
-         CShyDuo9w395PBZ9kKneAsphx18R3r5xsL7Hz3jYc/+c3HPRj/ZDn4Qwz2F1SGZdmJ
-         gXzn9ShGWt/0FcDEfnrA+8yjck9sc+THOzP/B3pPNFpv6TjA2w2poz0JKvp/zbN4ma
-         hiDHiL0i65m5+wH4OQR1HgiqbAYaMe2pVD5/GLouer+Z4FjGo3NJNAhsc5AEAY1nRT
-         M1uHWvuJ1/n6g==
+        b=byQbhpHN3e9Y/GWGOgpUbWD+yN8h7nuKYxgeIVGGNlhspqY11BxajycI3nF/fw2gx
+         gnOBRV2snd9eFGeOh52JoJUOt7Mog9UxiTd/BlvWENXli84MvslqSslVZb6+DBuYkt
+         C9G+FZppmX0jtdWTZSaJ8acoyIHAHItRlX4CfXYFtctTSvDRbg8v6EWr/goMSTXD/3
+         4CtZhsv14/+uZz52T7rrJH8XaH06ZeVhyO3sFPERLu2WH04ERlUcjgeOMesK2hPKOc
+         P2W98Wf+/neUZNhpHaYvPSZistrlYbWlpmoNx0trUMBWDeVnJk2oR2Mldi1E3JshPA
+         awT6y401nW6Gw==
 From:   SeongJae Park <sj@kernel.org>
 To:     akpm@linux-foundation.org
 Cc:     corbet@lwn.net, damon@lists.linux.dev, linux-mm@kvack.org,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         SeongJae Park <sj@kernel.org>
-Subject: [PATCH 1/6] Docs/admin-guide/damon/reclaim: remove a paragraph that been obsolete due to online tuning support
-Date:   Mon,  6 Jun 2022 18:23:05 +0000
-Message-Id: <20220606182310.48781-2-sj@kernel.org>
+Subject: [PATCH 3/6] mm/damon/reclaim: deduplicate 'commit_inputs' handling
+Date:   Mon,  6 Jun 2022 18:23:07 +0000
+Message-Id: <20220606182310.48781-4-sj@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220606182310.48781-1-sj@kernel.org>
 References: <20220606182310.48781-1-sj@kernel.org>
@@ -49,35 +49,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 81a84182c343 ("Docs/admin-guide/mm/damon/reclaim: document
-'commit_inputs' parameter") has documented the 'commit_inputs' parameter
-which allows online parameter update, but it didn't remove a paragraph
-saying the online parameter update is impossible.  This commit removes
-the obsolete paragraph.
+DAMON_RECLAIM's handling of 'commit_inputs' parameter is duplicated in
+'after_aggregation()' and 'after_wmarks_check()' callbacks.  This commit
+deduplicates the code for better maintenance.
 
-Fixes: 81a84182c343 ("Docs/admin-guide/mm/damon/reclaim: document 'commit_inputs' parameter")
 Signed-off-by: SeongJae Park <sj@kernel.org>
 ---
- Documentation/admin-guide/mm/damon/reclaim.rst | 6 ------
- 1 file changed, 6 deletions(-)
+ mm/damon/reclaim.c | 27 ++++++++++++++-------------
+ 1 file changed, 14 insertions(+), 13 deletions(-)
 
-diff --git a/Documentation/admin-guide/mm/damon/reclaim.rst b/Documentation/admin-guide/mm/damon/reclaim.rst
-index 46306f1f34b1..6510baa91109 100644
---- a/Documentation/admin-guide/mm/damon/reclaim.rst
-+++ b/Documentation/admin-guide/mm/damon/reclaim.rst
-@@ -48,12 +48,6 @@ DAMON_RECLAIM utilizes module parameters.  That is, you can put
- ``damon_reclaim.<parameter>=<value>`` on the kernel boot command line or write
- proper values to ``/sys/modules/damon_reclaim/parameters/<parameter>`` files.
+diff --git a/mm/damon/reclaim.c b/mm/damon/reclaim.c
+index 4b07c29effe9..c2ed962db23f 100644
+--- a/mm/damon/reclaim.c
++++ b/mm/damon/reclaim.c
+@@ -403,10 +403,21 @@ module_param_cb(enabled, &enabled_param_ops, &enabled, 0600);
+ MODULE_PARM_DESC(enabled,
+ 	"Enable or disable DAMON_RECLAIM (default: disabled)");
  
--Note that the parameter values except ``enabled`` are applied only when
--DAMON_RECLAIM starts.  Therefore, if you want to apply new parameter values in
--runtime and DAMON_RECLAIM is already enabled, you should disable and re-enable
--it via ``enabled`` parameter file.  Writing of the new values to proper
--parameter values should be done before the re-enablement.
++static int damon_reclaim_handle_commit_inputs(void)
++{
++	int err;
++
++	if (!commit_inputs)
++		return 0;
++
++	err = damon_reclaim_apply_parameters();
++	commit_inputs = false;
++	return err;
++}
++
+ static int damon_reclaim_after_aggregation(struct damon_ctx *c)
+ {
+ 	struct damos *s;
+-	int err = 0;
+ 
+ 	/* update the stats parameter */
+ 	damon_for_each_scheme(s, c) {
+@@ -417,22 +428,12 @@ static int damon_reclaim_after_aggregation(struct damon_ctx *c)
+ 		nr_quota_exceeds = s->stat.qt_exceeds;
+ 	}
+ 
+-	if (commit_inputs) {
+-		err = damon_reclaim_apply_parameters();
+-		commit_inputs = false;
+-	}
+-	return err;
++	return damon_reclaim_handle_commit_inputs();
+ }
+ 
+ static int damon_reclaim_after_wmarks_check(struct damon_ctx *c)
+ {
+-	int err = 0;
 -
- Below are the description of each parameter.
+-	if (commit_inputs) {
+-		err = damon_reclaim_apply_parameters();
+-		commit_inputs = false;
+-	}
+-	return err;
++	return damon_reclaim_handle_commit_inputs();
+ }
  
- enabled
+ static int __init damon_reclaim_init(void)
 -- 
 2.25.1
 
