@@ -2,99 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 169F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:23:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E54AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:25:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231706AbiFFIXW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 04:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40988 "EHLO
+        id S231801AbiFFIZv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 04:25:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231653AbiFFIXS (ORCPT
+        with ESMTP id S231710AbiFFIZo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 04:23:18 -0400
-Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E6110C8
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 01:23:15 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VFUVkL4_1654503791;
-Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VFUVkL4_1654503791)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 06 Jun 2022 16:23:12 +0800
-From:   Xianting Tian <xianting.tian@linux.alibaba.com>
-To:     paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, wangkefeng.wang@huawei.com,
-        philipp.tomsich@vrull.eu, ebiederm@xmission.com, heiko@sntech.de,
-        vitaly.wool@konsulko.com, tongtiangen@huawei.com, guoren@kernel.org
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Xianting Tian <xianting.tian@linux.alibaba.com>
-Subject: [RESEND PATCH v2] RISC-V: Add fast call path of crash_kexec()
-Date:   Mon,  6 Jun 2022 16:23:08 +0800
-Message-Id: <20220606082308.2883458-1-xianting.tian@linux.alibaba.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 6 Jun 2022 04:25:44 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DAF97A471;
+        Mon,  6 Jun 2022 01:25:38 -0700 (PDT)
+X-UUID: fdf3a82edc2b41c5894a1353ab188293-20220606
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:b10bb8a7-f534-4e20-91d3-20e88d5a71d4,OB:-327
+        68,LOB:-32768,IP:-32768,URL:-32768,TC:-32768,Content:-32768,EDM:-32768,RT:
+        -32768,SF:-32768,FILE:-32768,RULE:Release_Ham,ACTION:release,TS:0
+X-CID-INFO: VERSION:1.1.5,REQID:b10bb8a7-f534-4e20-91d3-20e88d5a71d4,OB:-32768
+        ,LOB:-32768,IP:-32768,URL:-32768,TC:-32768,Content:-32768,EDM:-32768,RT:-3
+        2768,SF:-32768,FILE:-32768,RULE:Release_Ham,ACTION:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:nil,COID:nil,Recheck:0,SF:nil,TC:nil,C
+        ontent:nil,EDM:nil,IP:nil,URL:nil,File:nil,QS:0,BEC:nil
+X-UUID: fdf3a82edc2b41c5894a1353ab188293-20220606
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <lina.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1927022851; Mon, 06 Jun 2022 15:38:59 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 6 Jun 2022 15:38:58 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 6 Jun 2022 15:38:56 +0800
+From:   Lina Wang <lina.wang@mediatek.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Maciej enczykowski <maze@google.com>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>
+Subject: Re: [PATCH v2] selftests net: fix bpf build error
+Date:   Mon, 6 Jun 2022 15:32:13 +0800
+Message-ID: <20220606073213.8957-1-lina.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <83d04ebf876fc2be804a6351318806cd38fba20b.camel@redhat.com>
+References: <83d04ebf876fc2be804a6351318806cd38fba20b.camel@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, almost all archs (x86, arm64, mips...) support fast call
-of crash_kexec() when "regs && kexec_should_crash()" is true. But
-RISC-V not, it can only enter crash system via panic(). However panic()
-doesn't pass the regs of the real accident scene to crash_kexec(),
-it caused we can't get accurate backtrace via gdb,
-	$ riscv64-linux-gnu-gdb vmlinux vmcore
-	Reading symbols from vmlinux...
-	[New LWP 95]
-	#0  console_unlock () at kernel/printk/printk.c:2557
-	2557                    if (do_cond_resched)
-	(gdb) bt
-	#0  console_unlock () at kernel/printk/printk.c:2557
-	#1  0x0000000000000000 in ?? ()
+On Thu, 2022-06-02 at 12:29 +0200, Paolo Abeni wrote:
+> On Wed, 2022-06-01 at 16:48 +0800, Lina Wang wrote:
+> > bpf_helpers.h has been moved to tools/lib/bpf since 5.10, so add
+> > more
+> > including path.
+> > 
+> > Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf
+>  CLANG ?= clang
+>  CCINCLUDE += -I../../bpf
+> -CCINCLUDE += -I../../../../lib
+> +CCINCLUDE += -I../../../lib
+>  CCINCLUDE += -I../../../../../usr/include/
+> ---
 
-With the patch we can get the accurate backtrace,
-	$ riscv64-linux-gnu-gdb vmlinux vmcore
-	Reading symbols from vmlinux...
-	[New LWP 95]
-	#0  0xffffffe00063a4e0 in test_thread (data=<optimized out>) at drivers/test_crash.c:81
-	81             *(int *)p = 0xdead;
-	(gdb)
-	(gdb) bt
-	#0  0xffffffe00064d5c0 in test_thread (data=<optimized out>) at drivers/test_crash.c:81
-	#1  0x0000000000000000 in ?? ()
+Your solution is right,
 
-Test code to produce NULL address dereference in test_crash.c,
-	void *p = NULL;
-	*(int *)p = 0xdead;
+> (But I still hit the "overriding recipe for target 'clean'" warnings)
 
-Reviewed-by: Guo Ren <guoren@kernel.org>
-Tested-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
----
-Changes from v1:
-- simplify the commit message
----
- arch/riscv/kernel/traps.c | 4 ++++
- 1 file changed, 4 insertions(+)
+I have fixed in v3, the warning is that tools/testing/selftests/net/bpf/Makefile has redefined "clean"
 
-diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
-index fe92e119e6a3..e666ebfa2a64 100644
---- a/arch/riscv/kernel/traps.c
-+++ b/arch/riscv/kernel/traps.c
-@@ -16,6 +16,7 @@
- #include <linux/mm.h>
- #include <linux/module.h>
- #include <linux/irq.h>
-+#include <linux/kexec.h>
- 
- #include <asm/asm-prototypes.h>
- #include <asm/bug.h>
-@@ -44,6 +45,9 @@ void die(struct pt_regs *regs, const char *str)
- 
- 	ret = notify_die(DIE_OOPS, str, regs, 0, regs->cause, SIGSEGV);
- 
-+	if (regs && kexec_should_crash(current))
-+		crash_kexec(regs);
-+
- 	bust_spinlocks(0);
- 	add_taint(TAINT_DIE, LOCKDEP_NOW_UNRELIABLE);
- 	spin_unlock_irq(&die_lock);
--- 
-2.17.1
-
+Thanks!
