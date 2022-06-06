@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4490EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:44:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA4DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:44:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239906AbiFFOoi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:44:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50750 "EHLO
+        id S239967AbiFFOoo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:44:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239823AbiFFOo3 (ORCPT
+        with ESMTP id S239938AbiFFOok (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:44:29 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC235000A
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:44:28 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id w13-20020a17090a780d00b001e8961b355dso853770pjk.5
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:44:28 -0700 (PDT)
+        Mon, 6 Jun 2022 10:44:40 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B5D5007C
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:44:38 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id gc3-20020a17090b310300b001e33092c737so12731150pjb.3
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:44:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=J0AjupS423IcVxPOF8+Ias71Zs7GJnxkL456RKcGoI4=;
-        b=N96+7PHU+aEx81sVHh6CFec/XmlIA4EYXB8GPuNvzQ3gFS/MAzcwvGBdtU9oazZzf1
-         lccNpukP/evxop0gpJssxdVvPC9+FW3LTlYWGsH0ZPzP4xGQiXDrpiLlqt5sZPtK9mJk
-         r+w//DfnS8SM51tMbLkhxRwk8EhRSh+VRG1O9xhKZTW9x2qn94N0BV6ITq9sez5z/lXi
-         D/HPH7EYhHxDwrEJKezy3M74vUGaidaXI2jrhgRQsnCcYLYG9riapBkGIOY7vVb5R2t1
-         zDeszG5J/d4BvkgNfviauw+gb5lqRwwimAwuG3WEpYeNHRVmitVkhiurdWJbqqmemRRw
-         utcQ==
+        bh=QPVmCWUy/pAelwn42xkgA5+/zRNQTu28RGMt2EDlrN0=;
+        b=EzHN8U2F/StCuXhufFA3sJ4pReqdTjATzKpSNQpYATgle7+Xx5SwhvaduKMju9mWbW
+         Q2rrzMoiOmo5KAkaW9v2Ci3cFVvNopWOcGj1FSWcw3prj7l9T5cD3y7uoFAdIRlBJhFZ
+         hB3Tjj6Xgo9KDIRlYoW5torY4HWJLyeOVpmm7U89YGMleBnndBjZ9bZwpPGbF6N7MMhX
+         fqkOpA7bJfIpHitAcQ6cQbGpSgddMTjJCeUgr61gipobhiH4d7gMlJMYfDi/PhDv1VYY
+         GQ769Wj5w1zo5sMC5xqy/sIrFyLGIoTXAYvf+nt+Il+uS0frxrJJhv4hMaBzjZrTQFbK
+         GoPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=J0AjupS423IcVxPOF8+Ias71Zs7GJnxkL456RKcGoI4=;
-        b=T3qd5RkctF9zHaRVjrvThSOkmqRfRTJJ7l+DLDAPcIu6p/jDFgNGbX/KYt+QucBG7z
-         Q6MNHxkR5ZJiWWqWQOWRBqMdKWGBi0c6hXc7EoF4JmpchYii/LKggYOIZKrdz/HYA8Zf
-         qtuc0+5bCCaQe8bL5ohsOYSWmM1JcGPQlulypvtmUEwXy6JG0tTHghTXM2QQ+a1lYJcV
-         WQZ9iYcbcYHu/aT5VCyXjESNqNwZGfYc7mdW4jz9AT3J7pKayTjZbxqsgX2aigwWM7Pa
-         Cf68GH0ssJhrFQzaq85BP6BUJ8Q9wdN4EoF3LGA+nGwgPlc5KLCmmd2ToZ+Q0Q7ClmcD
-         Wbvg==
-X-Gm-Message-State: AOAM530rWY/BYPCYq8JZlpIJUnfACmXG4iBaVoZVjKML2POBzeIlLngA
-        eaLLIqEIc2WP0XJlgMpEdWKvqVHe3Pw=
-X-Google-Smtp-Source: ABdhPJz/kDVaaM5WXkqM1kL/NfpKznIoYnd07CGUfIgO5QKGW1t3iSzuXEPbI6rpwgXQTiSC4PlQ/A==
-X-Received: by 2002:a17:90a:9f04:b0:1e3:2d77:3eae with SMTP id n4-20020a17090a9f0400b001e32d773eaemr38454049pjp.243.1654526667932;
-        Mon, 06 Jun 2022 07:44:27 -0700 (PDT)
+        bh=QPVmCWUy/pAelwn42xkgA5+/zRNQTu28RGMt2EDlrN0=;
+        b=JpFm9Yxrg8eBvkAyD2nZfXkTkjR0gwUKkLufs9/7GzFqkaq2e3J7cIMgQoAoF+JWJ5
+         OKxlAPEe02vT/om5SOgeAhmnnN54iQUKdQ1iXqHkOyEXwE0slKPYnHf49Gf//W5S/SRE
+         qyBOXo2nxbBgKGQ/sfRUHN//qsbz7CIiIibOpgawgiLQFWH2n/Ug5DiR5PNdv97LvY8+
+         cJgtsJ11xIPe8xqyJAg+dpNhqSa22YYdVSQ+qh/Fnt0Y4UJ8hul17Yu7NFVfxI4Ql4D8
+         os4TgYahyzl27kKgeLSjuR8eCP2sIJkeuJWRAC6GV2/f5j+thTnDBZ+TGCH9s+jJF8dT
+         nBuw==
+X-Gm-Message-State: AOAM5330/kiaX/wPBXKT4lTXjM6WCbIj3RWrPZNOrIjx4h56uFVG0iVJ
+        ynMYkdevFM+543kUq4h9HO/jMBbr/UU=
+X-Google-Smtp-Source: ABdhPJxqzFYGQCX5s0AGPOo9uaQDZnY9Ixd1ApPz41KU0QnpUFmS5yShfSvUde4QtlcWBdxbi9a+sg==
+X-Received: by 2002:a17:90b:947:b0:1e8:9bd0:5420 with SMTP id dw7-20020a17090b094700b001e89bd05420mr217080pjb.32.1654526678292;
+        Mon, 06 Jun 2022 07:44:38 -0700 (PDT)
 Received: from localhost ([198.11.178.15])
-        by smtp.gmail.com with ESMTPSA id q14-20020a170902eb8e00b001615f64aaabsm6200271plg.244.2022.06.06.07.44.26
+        by smtp.gmail.com with ESMTPSA id iy9-20020a170903130900b0015e8d4eb243sm7228775plb.141.2022.06.06.07.44.37
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 06 Jun 2022 07:44:27 -0700 (PDT)
+        Mon, 06 Jun 2022 07:44:37 -0700 (PDT)
 From:   Lai Jiangshan <jiangshanlai@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Borislav Petkov <bp@alien8.de>,
@@ -59,20 +59,11 @@ Cc:     Borislav Petkov <bp@alien8.de>,
         Ingo Molnar <mingo@redhat.com>,
         Dave Hansen <dave.hansen@linux.intel.com>,
         "H. Peter Anvin" <hpa@zytor.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Joerg Roedel <jroedel@suse.de>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
         Kees Cook <keescook@chromium.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Marco Elver <elver@google.com>, Hao Luo <haoluo@google.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: [PATCH V3 1/7] x86/entry: Introduce __entry_text for entry code written in C
-Date:   Mon,  6 Jun 2022 22:45:03 +0800
-Message-Id: <20220606144509.617611-2-jiangshanlai@gmail.com>
+        Brian Gerst <brgerst@gmail.com>
+Subject: [PATCH V3 3/7] x86: Mark __native_read_cr3() & native_write_cr3() as __always_inline
+Date:   Mon,  6 Jun 2022 22:45:05 +0800
+Message-Id: <20220606144509.617611-4-jiangshanlai@gmail.com>
 X-Mailer: git-send-email 2.19.1.6.gb485710b
 In-Reply-To: <20220606144509.617611-1-jiangshanlai@gmail.com>
 References: <20220606144509.617611-1-jiangshanlai@gmail.com>
@@ -84,62 +75,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-Some entry code will be implemented in C files.
-Introduce __entry_text to set them in .entry.text section.
+Mark __native_read_cr3() & native_write_cr3() as __always_inline to
+ensure they are not instrumentable and in the .entry.text section if
+the caller is not instrumentable and in the .entry.text section.
 
-The new __entry_text disables instrumentation like noinstr, so
-__noinstr_section() is added for noinstr and the new __entry_text.
+It prepares for __native_read_cr3() and native_write_cr3() to be used
+in the C entry code for handling KPTI.
 
-Note, entry code can not access to %gs before the %gs base is switched
-to kernel %gs base, so stack protector can not be used on the C entry
-code.  But __entry_text doesn't disable stack protector since some
-compilers might not support function level granular attribute to
-disable stack protector.  It will be disabled in C file level.
-
-Cc: Borislav Petkov <bp@alien8.de>
-Reviewed-by: Miguel Ojeda <ojeda@kernel.org>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
 Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 ---
- arch/x86/include/asm/idtentry.h | 3 +++
- include/linux/compiler_types.h  | 8 +++++---
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ arch/x86/include/asm/special_insns.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/idtentry.h b/arch/x86/include/asm/idtentry.h
-index 72184b0b2219..acc4c99f801c 100644
---- a/arch/x86/include/asm/idtentry.h
-+++ b/arch/x86/include/asm/idtentry.h
-@@ -13,6 +13,9 @@
+diff --git a/arch/x86/include/asm/special_insns.h b/arch/x86/include/asm/special_insns.h
+index 45b18eb94fa1..dbaee50abb3c 100644
+--- a/arch/x86/include/asm/special_insns.h
++++ b/arch/x86/include/asm/special_insns.h
+@@ -42,14 +42,14 @@ static __always_inline void native_write_cr2(unsigned long val)
+ 	asm volatile("mov %0,%%cr2": : "r" (val) : "memory");
+ }
  
- #include <asm/irq_stack.h>
+-static inline unsigned long __native_read_cr3(void)
++static __always_inline unsigned long __native_read_cr3(void)
+ {
+ 	unsigned long val;
+ 	asm volatile("mov %%cr3,%0\n\t" : "=r" (val) : __FORCE_ORDER);
+ 	return val;
+ }
  
-+/* Entry code written in C. */
-+#define __entry_text __noinstr_section(".entry.text")
-+
- /**
-  * DECLARE_IDTENTRY - Declare functions for simple IDT entry points
-  *		      No error code pushed by hardware
-diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-index d08dfcb0ac68..bd9d9d19dc9b 100644
---- a/include/linux/compiler_types.h
-+++ b/include/linux/compiler_types.h
-@@ -225,9 +225,11 @@ struct ftrace_likely_data {
- #endif
- 
- /* Section for code which can't be instrumented at all */
--#define noinstr								\
--	noinline notrace __attribute((__section__(".noinstr.text")))	\
--	__no_kcsan __no_sanitize_address __no_profile __no_sanitize_coverage
-+#define __noinstr_section(section)				\
-+	noinline notrace __section(section) __no_kcsan		\
-+	__no_sanitize_address __no_profile __no_sanitize_coverage
-+
-+#define noinstr __noinstr_section(".noinstr.text")
- 
- #endif /* __KERNEL__ */
- 
+-static inline void native_write_cr3(unsigned long val)
++static __always_inline void native_write_cr3(unsigned long val)
+ {
+ 	asm volatile("mov %0,%%cr3": : "r" (val) : "memory");
+ }
 -- 
 2.19.1.6.gb485710b
 
