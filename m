@@ -2,107 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CCCDCCA473
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:34:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 226D9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:34:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239799AbiFFOd6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:33:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54452 "EHLO
+        id S239802AbiFFOeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:34:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239732AbiFFOd5 (ORCPT
+        with ESMTP id S239732AbiFFOeM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:33:57 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D5D0D2C13F;
-        Mon,  6 Jun 2022 07:33:55 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8CACF15DB;
-        Mon,  6 Jun 2022 07:33:55 -0700 (PDT)
-Received: from [10.57.81.38] (unknown [10.57.81.38])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 555903F73B;
-        Mon,  6 Jun 2022 07:33:48 -0700 (PDT)
-Message-ID: <1e0e5403-1e65-db9a-c8e7-34e316bfda8e@arm.com>
-Date:   Mon, 6 Jun 2022 15:33:42 +0100
+        Mon, 6 Jun 2022 10:34:12 -0400
+Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DDC42D1FE
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:34:10 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:34356)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nyDo0-00D2LX-5K; Mon, 06 Jun 2022 08:34:08 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:60040 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nyDny-007IX0-Uu; Mon, 06 Jun 2022 08:34:07 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Hao Wu <guoyuanchao1202@gmail.com>
+Cc:     brauner@kernel.org, keescook@chromium.org, axboe@kernel.dk,
+        peterz@infradead.org, elver@google.com, tglx@linutronix.de,
+        legion@kernel.org, linux-kernel@vger.kernel.org
+References: <20220223133540.24230-1-guoyuanchao1202@gmail.com>
+Date:   Mon, 06 Jun 2022 09:33:17 -0500
+In-Reply-To: <20220223133540.24230-1-guoyuanchao1202@gmail.com> (Hao Wu's
+        message of "Wed, 23 Feb 2022 21:35:40 +0800")
+Message-ID: <878rq96evm.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 2/5] iommu: Ensure device has the same iommu_ops as the
- domain
-Content-Language: en-GB
-To:     Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com,
-        joro@8bytes.org, will@kernel.org, marcan@marcan.st,
-        sven@svenpeter.dev, robdclark@gmail.com, m.szyprowski@samsung.com,
-        krzysztof.kozlowski@linaro.org, baolu.lu@linux.intel.com,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        matthias.bgg@gmail.com, heiko@sntech.de, orsonzhai@gmail.com,
-        baolin.wang7@gmail.com, zhang.lyra@gmail.com, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org,
-        jean-philippe@linaro.org, alex.williamson@redhat.com
-Cc:     suravee.suthikulpanit@amd.com, alyssa@rosenzweig.io,
-        alim.akhtar@samsung.com, dwmw2@infradead.org, yong.wu@mediatek.com,
-        mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
-        cohuck@redhat.com, iommu@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org
-References: <20220606061927.26049-1-nicolinc@nvidia.com>
- <20220606061927.26049-3-nicolinc@nvidia.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220606061927.26049-3-nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-XM-SPF: eid=1nyDny-007IX0-Uu;;;mid=<878rq96evm.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1/tCTIH6sFgbMpYmO8+BYSCq+lVTT7M1/Q=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH v1] signal.c: repeatedly set the TIF_SIGPENDING flag
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-06-06 07:19, Nicolin Chen wrote:
-> The core code should not call an iommu driver op with a struct device
-> parameter unless it knows that the dev_iommu_priv_get() for that struct
-> device was setup by the same driver. Otherwise in a mixed driver system
-> the iommu_priv could be casted to the wrong type.
+Hao Wu <guoyuanchao1202@gmail.com> writes:
 
-We don't have mixed-driver systems, and there are plenty more 
-significant problems than this one to solve before we can (but thanks 
-for pointing it out - I hadn't got as far as auditing the public 
-interfaces yet). Once domains are allocated via a particular device's 
-IOMMU instance in the first place, there will be ample opportunity for 
-the core to stash suitable identifying information in the domain for 
-itself. TBH even the current code could do it without needing the 
-weirdly invasive changes here.
+> The recalc_sigpending_and_wake() function calls recalc_sigpending_tsk() and signal_wake_up(),
+> both of which set the TIF_SIGPENDING flag, so when recalc_sigpending_tsk() returns true,
+> the TIF_SIGPENDING flag will be set twice.
+>
+> Maybe we can take away the set TIF_SIGPENDING logic from recalc_sigpending_tsk(),
+> so that recalc_sigpending_tsk() just determines whether the TIF_SIGPENDING flag needs to be set,
+> and the actual set TIF_SIGPENDING flag logic is executed outside.
+>
+> kernel/signal.c:175: recalc_sigpending_and_wake()
+> kernel/signal.c:154: recalc_sigpending_tsk()
 
-> Store the iommu_ops pointer in the iommu_domain and use it as a check to
-> validate that the struct device is correct before invoking any domain op
-> that accepts a struct device.
+I just saw this.
 
-In fact this even describes exactly that - "Store the iommu_ops pointer 
-in the iommu_domain", vs. the "Store the iommu_ops pointer in the 
-iommu_domain_ops" which the patch is actually doing :/
+I agree that it is unfortunate that recalc_sigpending_and_wake sets
+TIF_SIGPENDING twice.
 
-[...]
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 19cf28d40ebe..8a1f437a51f2 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1963,6 +1963,10 @@ static int __iommu_attach_device(struct iommu_domain *domain,
->   {
->   	int ret;
->   
-> +	/* Ensure the device was probe'd onto the same driver as the domain */
-> +	if (dev->bus->iommu_ops != domain->ops->iommu_ops)
+Looking at the code only force_sig_info_to_task calls
+recalc_sigpending_and_wake.  I have some work underway that removes the
+need to call recalc_sigpending in force_sig_info_to_task so I believe
+that will resolve the matter.
 
-Nope, dev_iommu_ops(dev) please. Furthermore I think the logical place 
-to put this is in iommu_group_do_attach_device(), since that's the 
-gateway for the public interfaces - we shouldn't need to second-guess 
-ourselves for internal default-domain-related calls.
+Regardless of changes I have planned force_sig_info_to_task appears to
+be the proper place to resolve this issue.  It looks like
+complete_signal called from __send_signal_locked called from
+send_signal_locked called from force_sig_info_to_task calls
+signal_wake_up if that is needed at all.  So I believe the issue you are
+seeing could be solved be simply replacing recalc_sigpending_and_wake
+with recalc_sigpending_tsk.
 
-Thanks,
-Robin.
+Some more analysis might reveal and even nicer clean up.  If
+sending the signal is always going to call signal_wake_up calling
+recalc_sigpending_tsk might not even be necessary.
 
-> +		return -EMEDIUMTYPE;
-> +
->   	if (unlikely(domain->ops->attach_dev == NULL))
->   		return -ENODEV;
+Good spotting of a rough spot in the code.  I don't think your proposed
+change is the way we should go about fixing it.
+
+Eric
+>
+> Signed-off-by: Hao Wu <guoyuanchao1202@gmail.com>
+> ---
+>  kernel/signal.c | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+>
+> diff --git a/kernel/signal.c b/kernel/signal.c
+> index 9b04631acde8..6c5a00cd7e9a 100644
+> --- a/kernel/signal.c
+> +++ b/kernel/signal.c
+> @@ -157,7 +157,6 @@ static bool recalc_sigpending_tsk(struct task_struct *t)
+>  	    PENDING(&t->pending, &t->blocked) ||
+>  	    PENDING(&t->signal->shared_pending, &t->blocked) ||
+>  	    cgroup_task_frozen(t)) {
+> -		set_tsk_thread_flag(t, TIF_SIGPENDING);
+>  		return true;
+>  	}
+> @@ -181,8 +180,11 @@ void recalc_sigpending_and_wake(struct task_struct *t)
+>  void recalc_sigpending(void)
+>  {
+> -	if (!recalc_sigpending_tsk(current) && !freezing(current))
+> +	if (recalc_sigpending_tsk(current)) {
+> +		set_tsk_thread_flag(t, TIF_SIGPENDING);
+> +	} else if (!freezing(current)) {
+>  		clear_thread_flag(TIF_SIGPENDING);
+> +	}
+>  }
+>  EXPORT_SYMBOL(recalc_sigpending);
+> @@ -2325,7 +2327,9 @@ static void ptrace_stop(int exit_code, int why, int clear_code, kernel_siginfo_t
+>  	 * So check for any that we should take before resuming user mode.
+>  	 * This sets TIF_SIGPENDING, but never clears it.
+>  	 */
+> -	recalc_sigpending_tsk(current);
+> +	if (recalc_sigpending_tsk(current)) {
+> +		set_tsk_thread_flag(t, TIF_SIGPENDING);
+> +	}
+>  }
+>  static void ptrace_do_notify(int signr, int exit_code, int why)
+> 2.32.0
