@@ -2,108 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5958C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 09:21:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F857C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 09:22:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232662AbiFFJVS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 05:21:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40214 "EHLO
+        id S232546AbiFFJWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 05:22:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232453AbiFFJVQ (ORCPT
+        with ESMTP id S232417AbiFFJWc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 05:21:16 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2942C5DE4A;
-        Mon,  6 Jun 2022 02:21:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654507275; x=1686043275;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bEVeaOzrfOnpRZjPjSs9cctKDIyELz/CmrZQIO+7XcE=;
-  b=Kt/T/ZKiDLBLT3tKA5u4QzYe5w3pkW+vk9Pg0xO/CoiOo9BHcJhNE8qD
-   BhmmBb5OGc2TY80VJux99dQfrL5Ila6Uc9dm3Qz8xpBnrbPGsn2fC+/MZ
-   LlJad+50I+VcOStEbSeTz9owodZ2ldMhZzNrPGkRClxj2Nhdu8gADFM/b
-   HJiFA/3G/Vy0MJ+TCRSFKHX2eYQMDIEiEJvd80pmt0rmIxQUiKqeM+ul9
-   Vb1fXLBvqaLHwsL7dwugezVZBPItCaYCATHHcGUZmNhAm1vV4WDsePpFm
-   tIZHPZZdzwtj8dNgyfwv8vGwFyyje8pwrRzt9lkZetMqHVL9tEQEIxxZ8
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="362984293"
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="362984293"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 02:21:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="669395514"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 06 Jun 2022 02:21:12 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ny8v9-000Cdd-SR;
-        Mon, 06 Jun 2022 09:21:11 +0000
-Date:   Mon, 6 Jun 2022 17:20:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>, pavel@ucw.cz,
-        krzk+dt@kernel.org
-Cc:     kbuild-all@lists.01.org, robh+dt@kernel.org,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-Subject: Re: [PATCH v2 2/3] leds: Add driver for the TLC5925 LED controller
-Message-ID: <202206061749.4bLA99z3-lkp@intel.com>
-References: <20220603155332.112272-3-jjhiblot@traphandler.com>
+        Mon, 6 Jun 2022 05:22:32 -0400
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FBD56599
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 02:22:30 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 93D2132002FB;
+        Mon,  6 Jun 2022 05:22:28 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Mon, 06 Jun 2022 05:22:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1654507348; x=1654593748; bh=Xw4lnTY/et
+        JsJAGDFGc3jcxrakgTZHGFztPy9C0RzDM=; b=qxiiLfWULeAPQo8wYKlgqESjFG
+        6TGaZfecQYvAdffjoLWu9YG0TrJovLyO7ylqUihe6F61QahAqc0BAVqRy4Ucxxy4
+        DrxmKAJLMzMOgbfXVoP+AHuvh6QztQtYmBw4ibyH0LST0wlJmazaMMxuzMvSoMta
+        s3YBZb5JA644H4gnTon7TvG0pEfMZV9xrjpkm9Fh5FlMYGpn3gpkemo5Yyq+KG2a
+        LlhxrUovfCmLEph0pA7McLE9e/u+JYiDvoyXB723FRFYjBvXw6hEHQpzrDaGkgeo
+        kittXLPBx1KAA5i5K9YN2Y0eVrcEGROCfDa21n8f+jMnK1plVMDohSYuZlDw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; t=1654507348; x=1654593748; bh=Xw4lnTY/etJsJAGDFGc3jcxrakgT
+        ZHGFztPy9C0RzDM=; b=PEwqST23OMlAUNHFqMxHnAJfKU40BvEfscyGrQViseSX
+        px/VVlVaH+85i1wn8bN9DA7pxQX5/Rxm5Zmo/ntfQmPFTukTpi+NRnAX23o72TF7
+        V5KBmBp5lnVpSAoYMAIQP4CCa0XL9IhN2Sg5yPHxMzUheZ50BpYNaZwKXLw3TRaY
+        TatwtKg9n/tMw8K4WTrtjSx4mQPhRPBSpekrPd+o9PdJ31SSjUsTWQQAn34Wq4Fg
+        3ph9Q0957ns9Xr+D4pChkbEj8qG/pzqR8cC4c4tuZpOy9lGyxyjLnLIQKjlfA86L
+        xz32lzWRe/283rcsK4w7GAZCkCsNYQ1UvgN0yUkovA==
+X-ME-Sender: <xms:U8edYg2cRD82UHQxi1oxy42mFBVxzggZweD4Nwu3WAAIGVxZDDk4dQ>
+    <xme:U8edYrE7XP7dBoaKUXxX-NGMjWuj3IvRvSuBjLHp7VkS6IB6S_Jx1TqjU0a0A6t8x
+    PfYVE0mSmsk6TPrQCk>
+X-ME-Received: <xmr:U8edYo7IcqcQ_YmKavdRNLFx3FiGjQf09ogJ_6Q8UX9yCopdZPW4avJhuyJQuJy7Bcjqz-_p53wK5pjg2dshDTVfA7tk8pRTitZScAE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddtvddgudegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtjeenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeejgeeiveevvdfgffeftdevuefhheduveejieefgeejveeuhfetkeelgfev
+    teefffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:U8edYp1k2rdN6LO_i3E36JF8vVN-xX-clV_1IrYu677gipX0WUG4dA>
+    <xmx:U8edYjGpYaHBOxOiONoCqdCg9oObmTyUyKXtkVsge35Si535KTsYBA>
+    <xmx:U8edYi-sqWw1vD9L4j8_KtpIJF59CU6yj1bz7VspQPAy4co9HE1VKA>
+    <xmx:VMedYr_puFd5iP3itjaz9la2pq6V6Vbt4L3B8XB-XInrG1Gjccl17g>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 6 Jun 2022 05:22:26 -0400 (EDT)
+Date:   Mon, 6 Jun 2022 11:22:25 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Roman Stratiienko <r.stratiienko@gmail.com>
+Cc:     Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>,
+        wens@csie.org, airlied@linux.ie, Daniel Vetter <daniel@ffwll.ch>,
+        Samuel Holland <samuel@sholland.org>,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, megi@xff.cz,
+        Roman Stratiienko <roman.o.stratiienko@globallogic.com>
+Subject: Re: [PATCH] drm/sun4i: sun8i: Add support for pixel blend mode
+ property
+Message-ID: <20220606092225.yxyw77mtuqpbmd35@houat>
+References: <20220605154731.17362-1-roman.o.stratiienko@globallogic.com>
+ <4714286.GXAFRqVoOG@jernej-laptop>
+ <CAGphcdniPFdqgLcpUc88ak9GzNaCvmj_TDVYTOe2bXto-Y12FQ@mail.gmail.com>
+ <20220606092006.4bgxibmayv44juox@houat>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ycmmdvpgrnhgi2cu"
 Content-Disposition: inline
-In-Reply-To: <20220603155332.112272-3-jjhiblot@traphandler.com>
+In-Reply-To: <20220606092006.4bgxibmayv44juox@houat>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jean-Jacques,
 
-Thank you for the patch! Perhaps something to improve:
+--ycmmdvpgrnhgi2cu
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-[auto build test WARNING on pavel-leds/for-next]
-[also build test WARNING on v5.18 next-20220603]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+On Mon, Jun 06, 2022 at 11:20:06AM +0200, Maxime Ripard wrote:
+> On Mon, Jun 06, 2022 at 11:17:20AM +0300, Roman Stratiienko wrote:
+> > Hello Jernej,
+> >=20
+> > Thank you for having a look.
+> >=20
+> > =D0=B2=D1=81, 5 =D0=B8=D1=8E=D0=BD. 2022 =D0=B3. =D0=B2 23:37, Jernej =
+=C5=A0krabec <jernej.skrabec@gmail.com>:
+> > >
+> > > Dne nedelja, 05. junij 2022 ob 17:47:31 CEST je Roman Stratiienko nap=
+isal(a):
+> > > > Allwinner DE2 and DE3 hardware support 3 pixel blend modes:
+> > > > "None", "Pre-multiplied", "Coverage"
+> > > >
+> > > > Add the blend mode property and route it to the appropriate registe=
+rs.
+> > > >
+> > > > Note:
+> > > > "force_premulti" parameter was added to handle multi-overlay channel
+> > > > cases in future changes. It must be set to true for cases when more
+> > > > than 1 overlay layer is used within a channel and at least one of t=
+he
+> > > > overlay layers within a group uses premultiplied blending mode.
+> > >
+> > > Please remove this parameter. It's nothing special, so it can be easi=
+ly added
+> > > once it's actually needed. For now, it only complicates code.
+> >=20
+> > I would prefer keeping it if you do not have any strong opinion against=
+ it.
+> >=20
+> > I am working now on exposing all overlays, so it will be needed soon an=
+yway.
+>=20
+> KMS assumes pre-multiplied alpha anyway, so we shouldn't need a
+> parameter to force it: we're always going to force it.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jean-Jacques-Hiblot/Add-support-for-the-TLC5925/20220605-235250
-base:   git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git for-next
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220606/202206061749.4bLA99z3-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/e8ae916efd705311a0bdeb2a8f9a1649174867be
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jean-Jacques-Hiblot/Add-support-for-the-TLC5925/20220605-235250
-        git checkout e8ae916efd705311a0bdeb2a8f9a1649174867be
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/leds/
+My bad, I got confused with your other patch.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Still, I agree with Jernej, if it's not needed it only complicates the
+code for no particular reason. If you need it at some point in the
+future, add it then. Otherwise, it's hard to reason about, since we
+don't know what are the expectations that those future patches will
+bring.
 
-All warnings (new ones prefixed by >>):
+Maxime
 
->> drivers/leds/leds-tlc5925.c:144:35: warning: 'tlc5925_id' defined but not used [-Wunused-const-variable=]
-     144 | static const struct spi_device_id tlc5925_id[] = {
-         |                                   ^~~~~~~~~~
+--ycmmdvpgrnhgi2cu
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-vim +/tlc5925_id +144 drivers/leds/leds-tlc5925.c
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYp3HUQAKCRDj7w1vZxhR
+xQ7JAPwOH2WywNctfCg4rbYtCxC02Owlfgb33BXYypx4Py8rtQEAp7OVVf9HelNl
+uO4X3n7onqZVEW/knsWlXLnynOLuLgo=
+=oSp3
+-----END PGP SIGNATURE-----
 
-   143	
- > 144	static const struct spi_device_id tlc5925_id[] = {
-   145		{"tlc5925", 0},
-   146		{}
-   147	};
-   148	MODULE_DEVICE_TABLE(spi, tlc5925_id);
-   149	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--ycmmdvpgrnhgi2cu--
