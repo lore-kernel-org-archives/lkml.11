@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DA63C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F69C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:53:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376908AbiFGUxS (ORCPT
+        id S1376945AbiFGUxZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:53:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50018 "EHLO
+        Tue, 7 Jun 2022 16:53:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358630AbiFGTwr (ORCPT
+        with ESMTP id S1358631AbiFGTwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 15:52:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B0E34B88;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80B834B9F;
         Tue,  7 Jun 2022 11:21:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6307AB82239;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B9A560DDA;
+        Tue,  7 Jun 2022 18:21:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7654CC385A5;
         Tue,  7 Jun 2022 18:21:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACF31C385A2;
-        Tue,  7 Jun 2022 18:21:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626099;
-        bh=ctIJdYl0vlNt157giC31wNXX7wsg81SlduRBQ1uUmGs=;
+        s=korg; t=1654626101;
+        bh=Q2EBRsgfT+PTS/7GnCfPNIMf+eKY8QMFmv+If5+/aew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S0gJn3NOcA4CfLawRSehqC6RJM9pezC6o+aj4DnbXlxYy9L+fUlV89DlG+aYVKs6m
-         4o6mkHVkiXz3HWv9QZb90kGdPWl7Bbicf42vFpQfL9K0MDCcAvDwncW7/vucbUUYsL
-         mMjJEVZicH6Ck3m0y/XaMBxI9NZsiO0Pzr7fwLWg=
+        b=IXGz2lWpYDnchshIw2GuWbJn7zq29u8sggbTqgnNQyuuCmblulZD5CubRNCe3XuEd
+         J8OGSS+L0vrseXoHVQ2TnQ5byFvlhlVHZsiPe3TfKQzpUp+YRHRVew/suUrctUCxwU
+         +z/lRMmfOKIWpHGIj1gFaRpsmm5H1N2TiimWAGgI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 216/772] powerpc/xics: fix refcount leak in icp_opal_init()
-Date:   Tue,  7 Jun 2022 18:56:48 +0200
-Message-Id: <20220607164955.399195185@linuxfoundation.org>
+Subject: [PATCH 5.17 207/772] PCI: microchip: Add missing chained_irq_enter()/exit() calls
+Date:   Tue,  7 Jun 2022 18:56:39 +0200
+Message-Id: <20220607164955.133073038@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,34 +50,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Conor Dooley <conor.dooley@microchip.com>
 
-[ Upstream commit 5dd9e27ea4a39f7edd4bf81e9e70208e7ac0b7c9 ]
+[ Upstream commit 30097efa334a706f9021b9aee6efcddcfa44a78a ]
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, use of_node_put() on it when done.
+Two of the chained IRQ handlers miss their
+chained_irq_enter()/chained_irq_exit() calls, so add them in to avoid
+potentially lost interrupts.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220402013419.2410298-1-lv.ruyi@zte.com.cn
+Reported by: Bjorn Helgaas <bhelgaas@google.com>
+Link: https://lore.kernel.org/linux-pci/87h76b8nxc.wl-maz@kernel.org
+Link: https://lore.kernel.org/r/20220511095504.2273799-1-conor.dooley@microchip.com
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/xics/icp-opal.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pci/controller/pcie-microchip-host.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/arch/powerpc/sysdev/xics/icp-opal.c b/arch/powerpc/sysdev/xics/icp-opal.c
-index bda4c32582d9..4dae624b9f2f 100644
---- a/arch/powerpc/sysdev/xics/icp-opal.c
-+++ b/arch/powerpc/sysdev/xics/icp-opal.c
-@@ -196,6 +196,7 @@ int __init icp_opal_init(void)
+diff --git a/drivers/pci/controller/pcie-microchip-host.c b/drivers/pci/controller/pcie-microchip-host.c
+index 29d8e81e4181..8175abed0f05 100644
+--- a/drivers/pci/controller/pcie-microchip-host.c
++++ b/drivers/pci/controller/pcie-microchip-host.c
+@@ -406,6 +406,7 @@ static void mc_pcie_enable_msi(struct mc_pcie *port, void __iomem *base)
+ static void mc_handle_msi(struct irq_desc *desc)
+ {
+ 	struct mc_pcie *port = irq_desc_get_handler_data(desc);
++	struct irq_chip *chip = irq_desc_get_chip(desc);
+ 	struct device *dev = port->dev;
+ 	struct mc_msi *msi = &port->msi;
+ 	void __iomem *bridge_base_addr =
+@@ -414,6 +415,8 @@ static void mc_handle_msi(struct irq_desc *desc)
+ 	u32 bit;
+ 	int ret;
  
- 	printk("XICS: Using OPAL ICP fallbacks\n");
- 
-+	of_node_put(np);
- 	return 0;
++	chained_irq_enter(chip, desc);
++
+ 	status = readl_relaxed(bridge_base_addr + ISTATUS_LOCAL);
+ 	if (status & PM_MSI_INT_MSI_MASK) {
+ 		status = readl_relaxed(bridge_base_addr + ISTATUS_MSI);
+@@ -424,6 +427,8 @@ static void mc_handle_msi(struct irq_desc *desc)
+ 						    bit);
+ 		}
+ 	}
++
++	chained_irq_exit(chip, desc);
  }
  
+ static void mc_msi_bottom_irq_ack(struct irq_data *data)
+@@ -563,6 +568,7 @@ static int mc_allocate_msi_domains(struct mc_pcie *port)
+ static void mc_handle_intx(struct irq_desc *desc)
+ {
+ 	struct mc_pcie *port = irq_desc_get_handler_data(desc);
++	struct irq_chip *chip = irq_desc_get_chip(desc);
+ 	struct device *dev = port->dev;
+ 	void __iomem *bridge_base_addr =
+ 		port->axi_base_addr + MC_PCIE_BRIDGE_ADDR;
+@@ -570,6 +576,8 @@ static void mc_handle_intx(struct irq_desc *desc)
+ 	u32 bit;
+ 	int ret;
+ 
++	chained_irq_enter(chip, desc);
++
+ 	status = readl_relaxed(bridge_base_addr + ISTATUS_LOCAL);
+ 	if (status & PM_MSI_INT_INTX_MASK) {
+ 		status &= PM_MSI_INT_INTX_MASK;
+@@ -581,6 +589,8 @@ static void mc_handle_intx(struct irq_desc *desc)
+ 						    bit);
+ 		}
+ 	}
++
++	chained_irq_exit(chip, desc);
+ }
+ 
+ static void mc_ack_intx_irq(struct irq_data *data)
 -- 
 2.35.1
 
