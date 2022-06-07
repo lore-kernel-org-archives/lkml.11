@@ -2,149 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE464C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC895CCA48B
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380628AbiFGVfq (ORCPT
+        id S1380765AbiFGVf4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:35:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55006 "EHLO
+        Tue, 7 Jun 2022 17:35:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377391AbiFGUmG (ORCPT
+        with ESMTP id S1376619AbiFGU1E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:42:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293531F0FDA;
-        Tue,  7 Jun 2022 11:38:43 -0700 (PDT)
+        Tue, 7 Jun 2022 16:27:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C791D8705
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:32:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55B20612EC;
-        Tue,  7 Jun 2022 18:38:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 651B0C385A2;
-        Tue,  7 Jun 2022 18:38:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627099;
-        bh=CILQ1YVuKBFuBbXAYQz0i+aRPj9Cf6NaxvMtdI7muXE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kPqrPX2Z+kbolPPjhbffy+GWsZNg4G/7dN/0MxnuOG9aVUfB/FDmSW/VQFy+p0L3A
-         sarmo1UBO5Yha4TEOeGK1bcs2jRwz8q9yuJKGdrOYLh7NhScBh3vFlvpiryJkzXy+c
-         sUn42e9fpUy/EjNH8TVgSTBVqXoYmhpj15D/ZMNI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.17 618/772] objtool: Fix objtool regression on x32 systems
-Date:   Tue,  7 Jun 2022 19:03:30 +0200
-Message-Id: <20220607165007.148168205@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7C5B612F2
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:32:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23F75C385A5;
+        Tue,  7 Jun 2022 18:32:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1654626778;
+        bh=6EWeMUW4V3uJswyhJrlu4wS327ebt1gLFVtjQxZ6kwc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Pl0ITDp9k28djGN0qnztfygHz/ItO1iNYIxf2ZyNiMyFwJ2nWuUlWCIy6OpRtHl+d
+         C1/GjByo284UIQ7QGt6iyzD0bB23lhLejK9IXqu3J8LrAVWvuU+fbuCAxL0wXRTrKC
+         B5EmdlY3zLwNP+mHzd8A3GT74eASErBQfosc3fg0=
+Date:   Tue, 7 Jun 2022 11:32:57 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        Joao Martins <joao.m.martins@oracle.com>
+Subject: Re: [PATCH] mm/page_alloc: make calling prep_compound_head more
+ reliable
+Message-Id: <20220607113257.84b1bdd993f19be26b8c4944@linux-foundation.org>
+In-Reply-To: <20220607144157.36411-1-linmiaohe@huawei.com>
+References: <20220607144157.36411-1-linmiaohe@huawei.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit 22682a07acc308ef78681572e19502ce8893c4d4 upstream.
+Let's cc Joao.
 
-Commit c087c6e7b551 ("objtool: Fix type of reloc::addend") failed to
-appreciate cross building from ILP32 hosts, where 'int' == 'long' and
-the issue persists.
+On Tue, 7 Jun 2022 22:41:57 +0800 Miaohe Lin <linmiaohe@huawei.com> wrote:
 
-As such, use s64/int64_t/Elf64_Sxword for this field and suffer the
-pain that is ISO C99 printf formats for it.
+> compound_pincount_ptr is stored at first tail page instead of second tail
+> page now.
 
-Fixes: c087c6e7b551 ("objtool: Fix type of reloc::addend")
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-[peterz: reword changelog, s/long long/s64/]
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: <stable@vger.kernel.org>
-Link: https://lkml.kernel.org/r/alpine.LRH.2.02.2205161041260.11556@file01.intranet.prod.int.rdu2.redhat.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- tools/objtool/check.c               |    9 +++++----
- tools/objtool/elf.c                 |    2 +-
- tools/objtool/include/objtool/elf.h |    4 ++--
- 3 files changed, 8 insertions(+), 7 deletions(-)
+"now"?  Some identifiable commit did this?
 
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -5,6 +5,7 @@
- 
- #include <string.h>
- #include <stdlib.h>
-+#include <inttypes.h>
- #include <sys/mman.h>
- 
- #include <arch/elf.h>
-@@ -546,12 +547,12 @@ static int add_dead_ends(struct objtool_
- 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
- 			insn = find_last_insn(file, reloc->sym->sec);
- 			if (!insn) {
--				WARN("can't find unreachable insn at %s+0x%lx",
-+				WARN("can't find unreachable insn at %s+0x%" PRIx64,
- 				     reloc->sym->sec->name, reloc->addend);
- 				return -1;
- 			}
- 		} else {
--			WARN("can't find unreachable insn at %s+0x%lx",
-+			WARN("can't find unreachable insn at %s+0x%" PRIx64,
- 			     reloc->sym->sec->name, reloc->addend);
- 			return -1;
- 		}
-@@ -581,12 +582,12 @@ reachable:
- 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
- 			insn = find_last_insn(file, reloc->sym->sec);
- 			if (!insn) {
--				WARN("can't find reachable insn at %s+0x%lx",
-+				WARN("can't find reachable insn at %s+0x%" PRIx64,
- 				     reloc->sym->sec->name, reloc->addend);
- 				return -1;
- 			}
- 		} else {
--			WARN("can't find reachable insn at %s+0x%lx",
-+			WARN("can't find reachable insn at %s+0x%" PRIx64,
- 			     reloc->sym->sec->name, reloc->addend);
- 			return -1;
- 		}
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -486,7 +486,7 @@ static struct section *elf_create_reloc_
- 						int reltype);
- 
- int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
--		  unsigned int type, struct symbol *sym, long addend)
-+		  unsigned int type, struct symbol *sym, s64 addend)
- {
- 	struct reloc *reloc;
- 
---- a/tools/objtool/include/objtool/elf.h
-+++ b/tools/objtool/include/objtool/elf.h
-@@ -73,7 +73,7 @@ struct reloc {
- 	struct symbol *sym;
- 	unsigned long offset;
- 	unsigned int type;
--	long addend;
-+	s64 addend;
- 	int idx;
- 	bool jump_table_start;
- };
-@@ -135,7 +135,7 @@ struct elf *elf_open_read(const char *na
- struct section *elf_create_section(struct elf *elf, const char *name, unsigned int sh_flags, size_t entsize, int nr);
- 
- int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
--		  unsigned int type, struct symbol *sym, long addend);
-+		  unsigned int type, struct symbol *sym, s64 addend);
- int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
- 			  unsigned long offset, unsigned int type,
- 			  struct section *insn_sec, unsigned long insn_off);
-
+> And if it or some other field changes again in the future, data
+> overwritten might happen. Calling prep_compound_head() outside the loop
+> to prevent such possible issue. No functional change intended.
+> 
+> ...
+>
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -6772,17 +6772,8 @@ static void __ref memmap_init_compound(struct page *head,
+>  		__init_zone_device_page(page, pfn, zone_idx, nid, pgmap);
+>  		prep_compound_tail(head, pfn - head_pfn);
+>  		set_page_count(page, 0);
+> -
+> -		/*
+> -		 * The first tail page stores compound_mapcount_ptr() and
+> -		 * compound_order() and the second tail page stores
+> -		 * compound_pincount_ptr(). Call prep_compound_head() after
+> -		 * the first and second tail pages have been initialized to
+> -		 * not have the data overwritten.
+> -		 */
+> -		if (pfn == head_pfn + 2)
+> -			prep_compound_head(head, order);
+>  	}
+> +	prep_compound_head(head, order);
+>  }
+>  
+>  void __ref memmap_init_zone_device(struct zone *zone,
 
