@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B61B8CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6485CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377476AbiFGUmV (ORCPT
+        id S1377535AbiFGUmX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:42:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47498 "EHLO
+        Tue, 7 Jun 2022 16:42:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357895AbiFGTmb (ORCPT
+        with ESMTP id S1357713AbiFGTmR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:42:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8093FB49D;
-        Tue,  7 Jun 2022 11:17:01 -0700 (PDT)
+        Tue, 7 Jun 2022 15:42:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F00BB1B6FD8;
+        Tue,  7 Jun 2022 11:15:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EE80B8237D;
-        Tue,  7 Jun 2022 18:17:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DCA5C385A2;
-        Tue,  7 Jun 2022 18:16:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B2C160C1A;
+        Tue,  7 Jun 2022 18:15:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F089C385A2;
+        Tue,  7 Jun 2022 18:15:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625818;
-        bh=hk/LZA8R2rcBod9i/CJn+hXleVVKtoDUUNZhS9Bq5Y4=;
+        s=korg; t=1654625757;
+        bh=ANvR0+X6vi8dluHkHYvQMoS88/nWD+GMOygl+QCxWBo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EoxQl6+4wHON+W/F53uBZgR1Ic0h01yBmeZT3XaChvyp4g6/7M1iHIHa5Qea7iqD0
-         WDFoBjSSFrThwNDiIIodN9/KuY+K3f/cJ+1r9CdXj3Zd84JCOwRzyqE0KnxKB6Co3G
-         LqETu8ZxzGSd9o9/uTadCAEZnx8Fjt2lRtSPgJ0Y=
+        b=m/o0fLbgwU5jZjvSHdKfqRQ+ayiD8Psbnl90St1ct4wgc6Gm6eQ++bwvVgRcERJeN
+         0D3Y0dSxnGEpaoMNQNkte+Kj/HBvnJp0gEn3CfBNZpwvxMnhdVsDpDlf5OgZAjQ5zD
+         DD4wK6UW+cFhEbd3qnHwdotX1LL//rzXWDd54Z9A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sathishkumar S <sathishkumar.sundararaju@amd.com>,
-        Lijo Lazar <lijo.lazar@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Joe Wiese <jwiese@rackspace.com>,
+        Corey Minyard <cminyard@mvista.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 154/772] drm/amd/pm: update smartshift powerboost calc for smu12
-Date:   Tue,  7 Jun 2022 18:55:46 +0200
-Message-Id: <20220607164953.582296908@linuxfoundation.org>
+Subject: [PATCH 5.17 134/772] ipmi: Add an intializer for ipmi_smi_msg struct
+Date:   Tue,  7 Jun 2022 18:55:26 +0200
+Message-Id: <20220607164952.992981677@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,111 +50,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sathishkumar S <sathishkumar.sundararaju@amd.com>
+From: Corey Minyard <cminyard@mvista.com>
 
-[ Upstream commit 138292f1dc00e7e0724f44769f9da39cf2f3bf0b ]
+[ Upstream commit 9824117dd964ecebf5d81990dbf21dfb56445049 ]
 
-smartshift apu and dgpu power boost are reported as percentage with
-respect to their power limits. This value[0-100] reflects the boost
-for the respective device.
+There was a "type" element added to this structure, but some static
+values were missed.  The default value will be zero, which is correct,
+but create an initializer for the type and initialize the type properly
+in the initializer to avoid future issues.
 
-Signed-off-by: Sathishkumar S <sathishkumar.sundararaju@amd.com>
-Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Reported-by: Joe Wiese <jwiese@rackspace.com>
+Signed-off-by: Corey Minyard <cminyard@mvista.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c   | 60 ++++++++++++++-----
- 1 file changed, 44 insertions(+), 16 deletions(-)
+ drivers/char/ipmi/ipmi_poweroff.c |  4 +---
+ drivers/char/ipmi/ipmi_watchdog.c | 14 +++++---------
+ include/linux/ipmi_smi.h          |  6 ++++++
+ 3 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c
-index 25c4b135f830..5e7c9e6d8125 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c
-@@ -1119,6 +1119,39 @@ static int renoir_get_power_profile_mode(struct smu_context *smu,
- 	return size;
+diff --git a/drivers/char/ipmi/ipmi_poweroff.c b/drivers/char/ipmi/ipmi_poweroff.c
+index bc3a18daf97a..62e71c46ac5f 100644
+--- a/drivers/char/ipmi/ipmi_poweroff.c
++++ b/drivers/char/ipmi/ipmi_poweroff.c
+@@ -94,9 +94,7 @@ static void dummy_recv_free(struct ipmi_recv_msg *msg)
+ {
+ 	atomic_dec(&dummy_count);
+ }
+-static struct ipmi_smi_msg halt_smi_msg = {
+-	.done = dummy_smi_free
+-};
++static struct ipmi_smi_msg halt_smi_msg = INIT_IPMI_SMI_MSG(dummy_smi_free);
+ static struct ipmi_recv_msg halt_recv_msg = {
+ 	.done = dummy_recv_free
+ };
+diff --git a/drivers/char/ipmi/ipmi_watchdog.c b/drivers/char/ipmi/ipmi_watchdog.c
+index 883b4a341012..8e536ce0a5d2 100644
+--- a/drivers/char/ipmi/ipmi_watchdog.c
++++ b/drivers/char/ipmi/ipmi_watchdog.c
+@@ -354,9 +354,7 @@ static void msg_free_recv(struct ipmi_recv_msg *msg)
+ 			complete(&msg_wait);
+ 	}
+ }
+-static struct ipmi_smi_msg smi_msg = {
+-	.done = msg_free_smi
+-};
++static struct ipmi_smi_msg smi_msg = INIT_IPMI_SMI_MSG(msg_free_smi);
+ static struct ipmi_recv_msg recv_msg = {
+ 	.done = msg_free_recv
+ };
+@@ -475,9 +473,8 @@ static void panic_recv_free(struct ipmi_recv_msg *msg)
+ 	atomic_dec(&panic_done_count);
  }
  
-+static void renoir_get_ss_power_percent(SmuMetrics_t *metrics,
-+					uint32_t *apu_percent, uint32_t *dgpu_percent)
-+{
-+	uint32_t apu_boost = 0;
-+	uint32_t dgpu_boost = 0;
-+	uint16_t apu_limit = 0;
-+	uint16_t dgpu_limit = 0;
-+	uint16_t apu_power = 0;
-+	uint16_t dgpu_power = 0;
-+
-+	apu_power = metrics->ApuPower;
-+	apu_limit = metrics->StapmOriginalLimit;
-+	if (apu_power > apu_limit && apu_limit != 0)
-+		apu_boost =  ((apu_power - apu_limit) * 100) / apu_limit;
-+	apu_boost = (apu_boost > 100) ? 100 : apu_boost;
-+
-+	dgpu_power = metrics->dGpuPower;
-+	if (metrics->StapmCurrentLimit > metrics->StapmOriginalLimit)
-+		dgpu_limit = metrics->StapmCurrentLimit - metrics->StapmOriginalLimit;
-+	if (dgpu_power > dgpu_limit && dgpu_limit != 0)
-+		dgpu_boost = ((dgpu_power - dgpu_limit) * 100) / dgpu_limit;
-+	dgpu_boost = (dgpu_boost > 100) ? 100 : dgpu_boost;
-+
-+	if (dgpu_boost >= apu_boost)
-+		apu_boost = 0;
-+	else
-+		dgpu_boost = 0;
-+
-+	*apu_percent = apu_boost;
-+	*dgpu_percent = dgpu_boost;
+-static struct ipmi_smi_msg panic_halt_heartbeat_smi_msg = {
+-	.done = panic_smi_free
+-};
++static struct ipmi_smi_msg panic_halt_heartbeat_smi_msg =
++	INIT_IPMI_SMI_MSG(panic_smi_free);
+ static struct ipmi_recv_msg panic_halt_heartbeat_recv_msg = {
+ 	.done = panic_recv_free
+ };
+@@ -516,9 +513,8 @@ static void panic_halt_ipmi_heartbeat(void)
+ 		atomic_sub(2, &panic_done_count);
+ }
+ 
+-static struct ipmi_smi_msg panic_halt_smi_msg = {
+-	.done = panic_smi_free
+-};
++static struct ipmi_smi_msg panic_halt_smi_msg =
++	INIT_IPMI_SMI_MSG(panic_smi_free);
+ static struct ipmi_recv_msg panic_halt_recv_msg = {
+ 	.done = panic_recv_free
+ };
+diff --git a/include/linux/ipmi_smi.h b/include/linux/ipmi_smi.h
+index 9277d21c2690..5d69820d8b02 100644
+--- a/include/linux/ipmi_smi.h
++++ b/include/linux/ipmi_smi.h
+@@ -125,6 +125,12 @@ struct ipmi_smi_msg {
+ 	void (*done)(struct ipmi_smi_msg *msg);
+ };
+ 
++#define INIT_IPMI_SMI_MSG(done_handler) \
++{						\
++	.done = done_handler,			\
++	.type = IPMI_SMI_MSG_TYPE_NORMAL	\
 +}
 +
-+
- static int renoir_get_smu_metrics_data(struct smu_context *smu,
- 				       MetricsMember_t member,
- 				       uint32_t *value)
-@@ -1127,6 +1160,9 @@ static int renoir_get_smu_metrics_data(struct smu_context *smu,
+ struct ipmi_smi_handlers {
+ 	struct module *owner;
  
- 	SmuMetrics_t *metrics = (SmuMetrics_t *)smu_table->metrics_table;
- 	int ret = 0;
-+	uint32_t apu_percent = 0;
-+	uint32_t dgpu_percent = 0;
-+
- 
- 	mutex_lock(&smu->metrics_lock);
- 
-@@ -1175,26 +1211,18 @@ static int renoir_get_smu_metrics_data(struct smu_context *smu,
- 		*value = metrics->Voltage[1];
- 		break;
- 	case METRICS_SS_APU_SHARE:
--		/* return the percentage of APU power with respect to APU's power limit.
--		 * percentage is reported, this isn't boost value. Smartshift power
--		 * boost/shift is only when the percentage is more than 100.
-+		/* return the percentage of APU power boost
-+		 * with respect to APU's power limit.
- 		 */
--		if (metrics->StapmOriginalLimit > 0)
--			*value =  (metrics->ApuPower * 100) / metrics->StapmOriginalLimit;
--		else
--			*value = 0;
-+		renoir_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
-+		*value = apu_percent;
- 		break;
- 	case METRICS_SS_DGPU_SHARE:
--		/* return the percentage of dGPU power with respect to dGPU's power limit.
--		 * percentage is reported, this isn't boost value. Smartshift power
--		 * boost/shift is only when the percentage is more than 100.
-+		/* return the percentage of dGPU power boost
-+		 * with respect to dGPU's power limit.
- 		 */
--		if ((metrics->dGpuPower > 0) &&
--		    (metrics->StapmCurrentLimit > metrics->StapmOriginalLimit))
--			*value = (metrics->dGpuPower * 100) /
--				  (metrics->StapmCurrentLimit - metrics->StapmOriginalLimit);
--		else
--			*value = 0;
-+		renoir_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
-+		*value = dgpu_percent;
- 		break;
- 	default:
- 		*value = UINT_MAX;
 -- 
 2.35.1
 
