@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A943C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:44:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97172C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:44:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357884AbiFGUoA (ORCPT
+        id S1359837AbiFGUoV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:44:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48076 "EHLO
+        Tue, 7 Jun 2022 16:44:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357265AbiFGTli (ORCPT
+        with ESMTP id S1357937AbiFGTmf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:41:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B6E51B1CE9;
-        Tue,  7 Jun 2022 11:14:54 -0700 (PDT)
+        Tue, 7 Jun 2022 15:42:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A7F7DFE5;
+        Tue,  7 Jun 2022 11:17:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3A4B60B16;
-        Tue,  7 Jun 2022 18:14:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D305FC3411C;
-        Tue,  7 Jun 2022 18:14:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24A76B82368;
+        Tue,  7 Jun 2022 18:17:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94F45C385A2;
+        Tue,  7 Jun 2022 18:17:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625692;
-        bh=a6ZbcZ0pyviOct835Ub4+gXpK5eWBK1Jv1/OF+CY8kE=;
+        s=korg; t=1654625840;
+        bh=q4P0TgG5luIpHJz6sITHcKcCqK92PH1Nr8Ym2LquE5M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RDavsxgfhSfUY08bIpJJTMDfKnSXyqX7ZgPwFk8A+YvblBBvYkyFZWPrK+XVc8j5C
-         DF2RcrpswEoXxJR7b4Nqa51eNct9U2BZzraz0X9C37GmxYhYxdfyfd58e+6KoC89LJ
-         T/fzAFr1YNB/oxjKh8SuHA49hLAowh2HRTM7Y9Ps=
+        b=T9wpVXBgz6RrPUGvXGT8gas2gdpAvjxFK2yt6jMiKhH3jnU18o1w+TQRE76TqlhG6
+         /m3gG2Nnsg0dJY+kppRud0Gx6rjG/KAkDsEHYj4gIb5paTKq8cIp/XXCjUMSvOXJQ0
+         9sEkrO0vqnc2L0G/z4iq0XFHcIqZOoOQrDWwpg7o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wen Gong <quic_wgong@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 108/772] ath11k: fix warning of not found station for bssid in message
-Date:   Tue,  7 Jun 2022 18:55:00 +0200
-Message-Id: <20220607164952.229417340@linuxfoundation.org>
+        stable@vger.kernel.org, Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 161/772] rtw89: cfo: check mac_id to avoid out-of-bounds
+Date:   Tue,  7 Jun 2022 18:55:53 +0200
+Message-Id: <20220607164953.784714247@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,98 +49,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wen Gong <quic_wgong@quicinc.com>
+From: Ping-Ke Shih <pkshih@realtek.com>
 
-[ Upstream commit 7330e1ec9748948177830c6e1a13379835d577f9 ]
+[ Upstream commit 97df85871a5b187609d30fca6d85b912d9e02f29 ]
 
-When test connect/disconnect to an AP frequently with WCN6855, sometimes
-it show below log.
+Somehow, hardware reports incorrect mac_id and pollute memory. Check index
+before we access the array.
 
-[  277.040121] wls1: deauthenticating from 8c:21:0a:b3:5a:64 by local choice (Reason: 3=DEAUTH_LEAVING)
-[  277.050906] ath11k_pci 0000:05:00.0: wmi stats vdev id 0 mac 00:03:7f:29:61:11
-[  277.050944] ath11k_pci 0000:05:00.0: wmi stats bssid 8c:21:0a:b3:5a:64 vif         pK-error
-[  277.050954] ath11k_pci 0000:05:00.0: not found station for bssid 8c:21:0a:b3:5a:64
-[  277.050961] ath11k_pci 0000:05:00.0: failed to parse rssi chain -71
-[  277.050967] ath11k_pci 0000:05:00.0: failed to pull fw stats: -71
-[  277.050976] ath11k_pci 0000:05:00.0: wmi stats vdev id 0 mac 00:03:7f:29:61:11
-[  277.050983] ath11k_pci 0000:05:00.0: wmi stats bssid 8c:21:0a:b3:5a:64 vif         pK-error
-[  277.050989] ath11k_pci 0000:05:00.0: not found station for bssid 8c:21:0a:b3:5a:64
-[  277.050995] ath11k_pci 0000:05:00.0: failed to parse rssi chain -71
-[  277.051000] ath11k_pci 0000:05:00.0: failed to pull fw stats: -71
-[  278.064050] ath11k_pci 0000:05:00.0: failed to request fw stats: -110
+  UBSAN: array-index-out-of-bounds in rtw89/phy.c:2517:23
+  index 188 is out of range for type 's32 [64]'
+  CPU: 1 PID: 51550 Comm: irq/35-rtw89_pc Tainted: G           OE
+  Call Trace:
+   <IRQ>
+   show_stack+0x52/0x58
+   dump_stack_lvl+0x4c/0x63
+   dump_stack+0x10/0x12
+   ubsan_epilogue+0x9/0x45
+   __ubsan_handle_out_of_bounds.cold+0x44/0x49
+   ? __alloc_skb+0x92/0x1d0
+   rtw89_phy_cfo_parse+0x44/0x7f [rtw89_core]
+   rtw89_core_rx+0x261/0x871 [rtw89_core]
+   ? __alloc_skb+0xee/0x1d0
+   rtw89_pci_napi_poll+0x3fa/0x4ea [rtw89_pci]
+   __napi_poll+0x33/0x1a0
+   net_rx_action+0x126/0x260
+   ? __queue_work+0x217/0x4c0
+   __do_softirq+0xd9/0x315
+   ? disable_irq_nosync+0x10/0x10
+   do_softirq.part.0+0x6d/0x90
+   </IRQ>
+   <TASK>
+   __local_bh_enable_ip+0x62/0x70
+   rtw89_pci_interrupt_threadfn+0x182/0x1a6 [rtw89_pci]
+   irq_thread_fn+0x28/0x60
+   irq_thread+0xc8/0x190
+   ? irq_thread_fn+0x60/0x60
+   kthread+0x16b/0x190
+   ? irq_thread_check_affinity+0xe0/0xe0
+   ? set_kthread_struct+0x50/0x50
+   ret_from_fork+0x22/0x30
+   </TASK>
 
-Reason is:
-When running disconnect operation, sta_info removed from local->sta_hash
-by __sta_info_destroy_part1() from __sta_info_flush(), after this,
-ieee80211_find_sta_by_ifaddr() which called by
-ath11k_wmi_tlv_fw_stats_data_parse() and ath11k_wmi_tlv_rssi_chain_parse()
-cannot find this station, then failed log printed.
-
-steps are like this:
-1. when disconnect from AP, __sta_info_destroy() called __sta_info_destroy_part1()
-and __sta_info_destroy_part2().
-
-2. in __sta_info_destroy_part1(),  it has "sta_info_hash_del(local, sta)"
-and "list_del_rcu(&sta->list)", it will remove the ieee80211_sta from the
-list of ieee80211_hw.
-
-3. in __sta_info_destroy_part2(), it called drv_sta_state()->ath11k_mac_op_sta_state(),
-then peer->sta is clear at this moment.
-
-4. in __sta_info_destroy_part2(), it then called sta_set_sinfo()->drv_sta_statistics()
-->ath11k_mac_op_sta_statistics(), then WMI_REQUEST_STATS_CMDID sent to firmware.
-
-5. WMI_UPDATE_STATS_EVENTID reported from firmware, at this moment, the
-ieee80211_sta can not be found again because it has remove from list in
-step2 and also peer->sta is clear in step3.
-
-6. in __sta_info_destroy_part2(), it then called cleanup_single_sta()->
-sta_info_free()->kfree(sta), at this moment, the ieee80211_sta is freed
-in memory, then the failed log will not happen because function
-ath11k_mac_op_sta_state() will not be called.
-
-Actually this print log is not a real error, it is only to skip parse the
-info, so change to skip print by default debug setting.
-
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3
-
-Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220428022426.2927-1-quic_wgong@quicinc.com
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220516005215.5878-4-pkshih@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/wmi.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/net/wireless/realtek/rtw89/phy.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index 22921673e956..4ad3fe7d7d1f 100644
---- a/drivers/net/wireless/ath/ath11k/wmi.c
-+++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -5616,9 +5616,9 @@ static int ath11k_wmi_tlv_rssi_chain_parse(struct ath11k_base *ab,
- 					   arvif->bssid,
- 					   NULL);
- 	if (!sta) {
--		ath11k_warn(ab, "not found station for bssid %pM\n",
--			    arvif->bssid);
--		ret = -EPROTO;
-+		ath11k_dbg(ab, ATH11K_DBG_WMI,
-+			   "not found station of bssid %pM for rssi chain\n",
-+			   arvif->bssid);
- 		goto exit;
- 	}
+diff --git a/drivers/net/wireless/realtek/rtw89/phy.c b/drivers/net/wireless/realtek/rtw89/phy.c
+index 147009888de0..777ad4e8f45f 100644
+--- a/drivers/net/wireless/realtek/rtw89/phy.c
++++ b/drivers/net/wireless/realtek/rtw89/phy.c
+@@ -1872,6 +1872,11 @@ void rtw89_phy_cfo_parse(struct rtw89_dev *rtwdev, s16 cfo_val,
+ 	struct rtw89_cfo_tracking_info *cfo = &rtwdev->cfo_tracking;
+ 	u8 macid = phy_ppdu->mac_id;
  
-@@ -5716,8 +5716,9 @@ static int ath11k_wmi_tlv_fw_stats_data_parse(struct ath11k_base *ab,
- 					   "wmi stats vdev id %d snr %d\n",
- 					   src->vdev_id, src->beacon_snr);
- 			} else {
--				ath11k_warn(ab, "not found station for bssid %pM\n",
--					    arvif->bssid);
-+				ath11k_dbg(ab, ATH11K_DBG_WMI,
-+					   "not found station of bssid %pM for vdev stat\n",
-+					   arvif->bssid);
- 			}
- 		}
- 
++	if (macid >= CFO_TRACK_MAX_USER) {
++		rtw89_warn(rtwdev, "mac_id %d is out of range\n", macid);
++		return;
++	}
++
+ 	cfo->cfo_tail[macid] += cfo_val;
+ 	cfo->cfo_cnt[macid]++;
+ 	cfo->packet_count++;
 -- 
 2.35.1
 
