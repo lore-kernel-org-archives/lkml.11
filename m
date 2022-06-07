@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEBD6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:13:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D8FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:13:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345581AbiFGSNh (ORCPT
+        id S1350727AbiFGSNk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:13:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47426 "EHLO
+        Tue, 7 Jun 2022 14:13:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350134AbiFGRvy (ORCPT
+        with ESMTP id S1348959AbiFGRuX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:51:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C9F140842;
-        Tue,  7 Jun 2022 10:39:33 -0700 (PDT)
+        Tue, 7 Jun 2022 13:50:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B07E2DE99;
+        Tue,  7 Jun 2022 10:37:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD66C6137B;
-        Tue,  7 Jun 2022 17:38:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBE0EC385A5;
-        Tue,  7 Jun 2022 17:38:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D705BB822B3;
+        Tue,  7 Jun 2022 17:37:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37F15C385A5;
+        Tue,  7 Jun 2022 17:37:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623535;
-        bh=S7uKAmP/+PNLArLh5VL0b5w5QReWlFwAZEUTq6J66eE=;
+        s=korg; t=1654623442;
+        bh=rcBjoiXgO+z+OvXdXoESTU8m02RbV16e9JWR3eqW3Y8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aS2BBO1kr9ZqrKVV1Fp1/GTg/NkbSAieE5ks7iKkFiCD+771TalcjLfDqZomS/kpr
-         sFdUyewkATyLuhwVD3QHJC5bevu7TH53q5QDe4bZ0SKd+bpqrhAN33EpDi22nOX+7+
-         kAoNfExWM3uxkNOOqAbPNoA0190O8EupsAlxrfyo=
+        b=NCsTPYAHI/QpEeEvN/4JeXkHvXW9bLPup+9WfmXZd1D3azVRKRhYpXLbJG44nDWz3
+         0uqQFke2WCEkrB1xfdxDHat9UeKtJ5q7oXNKLVg7FpXYYW9ZTIHaRK6aUp9MraQ1Ru
+         7VrOD7oU2vXzIi/NZSRKMe/BbNwsQxZUywmakbdw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>, Coly Li <colyli@suse.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 452/452] md: bcache: check the return value of kzalloc() in detached_dev_do_request()
-Date:   Tue,  7 Jun 2022 19:05:09 +0200
-Message-Id: <20220607164922.040566998@linuxfoundation.org>
+        stable@vger.kernel.org, Kathiravan T <quic_kathirav@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 5.10 417/452] arm64: dts: qcom: ipq8074: fix the sleep clock frequency
+Date:   Tue,  7 Jun 2022 19:04:34 +0200
+Message-Id: <20220607164920.981750578@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,38 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Kathiravan T <quic_kathirav@quicinc.com>
 
-commit 40f567bbb3b0639d2ec7d1c6ad4b1b018f80cf19 upstream.
+commit f607dd767f5d6800ffbdce5b99ba81763b023781 upstream.
 
-The function kzalloc() in detached_dev_do_request() can fail, so its
-return value should be checked.
+Sleep clock frequency should be 32768Hz. Lets fix it.
 
-Fixes: bc082a55d25c ("bcache: fix inaccurate io state for detached bcache devices")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: Coly Li <colyli@suse.de>
-Link: https://lore.kernel.org/r/20220527152818.27545-4-colyli@suse.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Cc: stable@vger.kernel.org
+Fixes: 41dac73e243d ("arm64: dts: Add ipq8074 SoC and HK01 board support")
+Link: https://lore.kernel.org/all/e2a447f8-6024-0369-f698-2027b6edcf9e@codeaurora.org/
+Signed-off-by: Kathiravan T <quic_kathirav@quicinc.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/1644581655-11568-1-git-send-email-quic_kathirav@quicinc.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/bcache/request.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/md/bcache/request.c
-+++ b/drivers/md/bcache/request.c
-@@ -1109,6 +1109,12 @@ static void detached_dev_do_request(stru
- 	 * which would call closure_get(&dc->disk.cl)
- 	 */
- 	ddip = kzalloc(sizeof(struct detached_dev_io_private), GFP_NOIO);
-+	if (!ddip) {
-+		bio->bi_status = BLK_STS_RESOURCE;
-+		bio->bi_end_io(bio);
-+		return;
-+	}
-+
- 	ddip->d = d;
- 	/* Count on the bcache device */
- 	ddip->start_time = part_start_io_acct(d->disk, &ddip->part, bio);
+--- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+@@ -13,7 +13,7 @@
+ 	clocks {
+ 		sleep_clk: sleep_clk {
+ 			compatible = "fixed-clock";
+-			clock-frequency = <32000>;
++			clock-frequency = <32768>;
+ 			#clock-cells = <0>;
+ 		};
+ 
 
 
