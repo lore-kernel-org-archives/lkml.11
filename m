@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DFF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:42:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4957AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:43:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353500AbiFGSmt (ORCPT
+        id S1350410AbiFGSm7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:42:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51474 "EHLO
+        Tue, 7 Jun 2022 14:42:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350410AbiFGSNH (ORCPT
+        with ESMTP id S1349725AbiFGSNa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:13:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F728158976;
-        Tue,  7 Jun 2022 10:48:58 -0700 (PDT)
+        Tue, 7 Jun 2022 14:13:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06296159045;
+        Tue,  7 Jun 2022 10:49:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3BB8B82343;
-        Tue,  7 Jun 2022 17:48:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43FB4C385A5;
-        Tue,  7 Jun 2022 17:48:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 375246174D;
+        Tue,  7 Jun 2022 17:48:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40ACFC385A5;
+        Tue,  7 Jun 2022 17:48:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624098;
-        bh=SfL4ZS5ZSKLeYfug2c1BNi01hwrXoCpz82t+YI/bsI8=;
+        s=korg; t=1654624120;
+        bh=F0A7Mei65SjzfGTW7VaoiqeahFKopUN+Ep+hIZ0R9ks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=isW8myvP8ve5X8f9/5ftgGYS/W//EjMEVn5JaA0BkgmoEV4KF7bWRFweydYR5fleC
-         pxwSuXZmoWA1BWk0eogsCq4uLNqssQiINiAvykiK4P20o81NzX95jOJ6fBT3anxXIw
-         OFgk24UcPkLa2JnEPa7BSY1xFwNC6394froqgizw=
+        b=hveC7wSEXDFVl9SvWr0P1SPCDDloFQjypgMwUvGci0MmzOGJkxx3ueZYn6wnfHULe
+         qL1Ij2/9z0fkBny7bNJ8XxmD1uVgsqTemMQRuvV7PsWrjkqpXC7Tn8bbHlmjn1V/EF
+         fw+t3Uucn+ayOda917ivZOqYemMwzvPf7UjQjKek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 203/667] libbpf: Dont error out on CO-RE relos for overriden weak subprogs
-Date:   Tue,  7 Jun 2022 18:57:48 +0200
-Message-Id: <20220607164940.888535931@linuxfoundation.org>
+Subject: [PATCH 5.15 211/667] net: dsa: mt7530: 1G can also support 1000BASE-X link mode
+Date:   Tue,  7 Jun 2022 18:57:56 +0200
+Message-Id: <20220607164941.125976406@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,56 +52,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-[ Upstream commit e89d57d938c8fa80c457982154ed6110804814fe ]
+[ Upstream commit 66f862563ed68717dfd84e808ca12705ed275ced ]
 
-During BPF static linking, all the ELF relocations and .BTF.ext
-information (including CO-RE relocations) are preserved for __weak
-subprograms that were logically overriden by either previous weak
-subprogram instance or by corresponding "strong" (non-weak) subprogram.
-This is just how native user-space linkers work, nothing new.
+When using an external PHY connected using RGMII to mt7531 port 5, the
+PHY can be used to used support 1000BASE-X connections. Moreover, if
+1000BASE-T is supported, then we should allow 1000BASE-X as well, since
+which are supported is a property of the PHY.
 
-But libbpf is over-zealous when processing CO-RE relocation to error out
-when CO-RE relocation belonging to such eliminated weak subprogram is
-encountered. Instead of erroring out on this expected situation, log
-debug-level message and skip the relocation.
+Therefore, it makes no sense to exclude this from the linkmodes when
+1000BASE-T is supported.
 
-Fixes: db2b8b06423c ("libbpf: Support CO-RE relocations for multi-prog sections")
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220408181425.2287230-2-andrii@kernel.org
+Fixes: c288575f7810 ("net: dsa: mt7530: Add the support of MT7531 switch")
+Tested-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/net/dsa/mt7530.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 693e14799fb9..5612d0938fc9 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -5238,10 +5238,17 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
- 			insn_idx = rec->insn_off / BPF_INSN_SZ;
- 			prog = find_prog_by_sec_insn(obj, sec_idx, insn_idx);
- 			if (!prog) {
--				pr_warn("sec '%s': failed to find program at insn #%d for CO-RE offset relocation #%d\n",
--					sec_name, insn_idx, i);
--				err = -EINVAL;
--				goto out;
-+				/* When __weak subprog is "overridden" by another instance
-+				 * of the subprog from a different object file, linker still
-+				 * appends all the .BTF.ext info that used to belong to that
-+				 * eliminated subprogram.
-+				 * This is similar to what x86-64 linker does for relocations.
-+				 * So just ignore such relocations just like we ignore
-+				 * subprog instructions when discovering subprograms.
-+				 */
-+				pr_debug("sec '%s': skipping CO-RE relocation #%d for insn #%d belonging to eliminated weak subprogram\n",
-+					 sec_name, i, insn_idx);
-+				continue;
- 			}
- 			/* no need to apply CO-RE relocation if the program is
- 			 * not going to be loaded
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index ca9e171cb2bb..be5c9cca8084 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -2527,13 +2527,7 @@ static void mt7531_sgmii_validate(struct mt7530_priv *priv, int port,
+ 	/* Port5 supports ethier RGMII or SGMII.
+ 	 * Port6 supports SGMII only.
+ 	 */
+-	switch (port) {
+-	case 5:
+-		if (mt7531_is_rgmii_port(priv, port))
+-			break;
+-		fallthrough;
+-	case 6:
+-		phylink_set(supported, 1000baseX_Full);
++	if (port == 6) {
+ 		phylink_set(supported, 2500baseX_Full);
+ 		phylink_set(supported, 2500baseT_Full);
+ 	}
+@@ -2901,8 +2895,6 @@ static void
+ mt7530_mac_port_validate(struct dsa_switch *ds, int port,
+ 			 unsigned long *supported)
+ {
+-	if (port == 5)
+-		phylink_set(supported, 1000baseX_Full);
+ }
+ 
+ static void mt7531_mac_port_validate(struct dsa_switch *ds, int port,
+@@ -2939,8 +2931,10 @@ mt753x_phylink_validate(struct dsa_switch *ds, int port,
+ 	}
+ 
+ 	/* This switch only supports 1G full-duplex. */
+-	if (state->interface != PHY_INTERFACE_MODE_MII)
++	if (state->interface != PHY_INTERFACE_MODE_MII) {
+ 		phylink_set(mask, 1000baseT_Full);
++		phylink_set(mask, 1000baseX_Full);
++	}
+ 
+ 	priv->info->mac_port_validate(ds, port, mask);
+ 
 -- 
 2.35.1
 
