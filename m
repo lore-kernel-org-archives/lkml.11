@@ -2,79 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A09E7CCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:22:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B39CCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234306AbiFHCWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:22:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37354 "EHLO
+        id S231438AbiFHCVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444727AbiFHCLR (ORCPT
+        with ESMTP id S1444718AbiFHCLR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 22:11:17 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE90E254441
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:18:24 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id k5-20020a17090a404500b001e8875e6242so5513134pjg.5
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:18:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0EImpbXnAApSc8BvVL56qbdQpeRig2mR5AXQClUMyjc=;
-        b=D+sDw6OfB5boDSeDNM9bqFr0F+tvRj6Ohj2Z1YTWNs+0xdYLLaOMK5kJXF2k+FXvoN
-         S1Jx/D6ktM3EJjcmR6k7X2cXEptshfJtA4Ojr3XNwEKFX52bC4dCEHTSLs803Od905Qd
-         +7X+bRiPsgncXxvXODceVFz4G8VDzZDv6yt5U=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0EImpbXnAApSc8BvVL56qbdQpeRig2mR5AXQClUMyjc=;
-        b=EvYE+aSovY4SvTLrh/9juYR1fzOne4YvUUmTweG9cMHpcyKoigxXmYl+KzxUwOImGO
-         /L3HyNG/YF7em/7vOLvq6kixNsNYzUaabzPCuwKOOUB+DnTiv0C++Qy5xJgGaeSOi8mX
-         EYQAmHdm4wmSUZdUH3oKxAzg8ChePhfsMsD4qEteO2K8XD62AuVgZllnBuVNWBhTLBpw
-         uViCZU5S5QQP+peqr7NQbz8jFidNvDiSEOodenbTAK8YwCDWAjhJNS20DU3POy07NR3B
-         TFexyy0fPLJIn7YI4WFbHUHcdWxRcUtRlIZlJRw6h8O/Qh1OJ6Ol04RFqiAPsJSoJ66I
-         00BQ==
-X-Gm-Message-State: AOAM532/zPeHpZHXg7s+VWPBntVU/EIDukG8WBJ7vDDi712w3t+j0PhR
-        Kf0M1oYbCym5+eo4fZeX/IrxpQ==
-X-Google-Smtp-Source: ABdhPJyBmgCZaEYkm6poadEXRpVAz2i5/BGDgN9MhkPQ/Q6rYJplJtUTI/mP0HwnvEwNnezRL45GYQ==
-X-Received: by 2002:a17:903:240c:b0:153:c452:f282 with SMTP id e12-20020a170903240c00b00153c452f282mr29733430plo.88.1654629502873;
-        Tue, 07 Jun 2022 12:18:22 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id q3-20020a056a0002a300b0051be16492basm9177167pfs.195.2022.06.07.12.18.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 12:18:22 -0700 (PDT)
-Date:   Tue, 7 Jun 2022 12:18:21 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     "GONG, Ruiqi" <gongruiqi1@huawei.com>
-Cc:     Casey Schaufler <casey@schaufler-ca.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Wang Weiyang <wangweiyang2@huawei.com>,
-        Xiu Jianfeng <xiujianfeng@huawei.com>
-Subject: Re: [RESEND PATCH] smack: Replace kzalloc + strncpy with kstrndup
-Message-ID: <202206071218.D281DE50@keescook>
-References: <20220607093649.928131-1-gongruiqi1@huawei.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5433136E;
+        Tue,  7 Jun 2022 12:17:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DEFB617DA;
+        Tue,  7 Jun 2022 19:17:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78FA2C385A2;
+        Tue,  7 Jun 2022 19:17:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629474;
+        bh=uArzcxqUV8GLzK+qoWCXmfnm+uEKmlPLgDMglSchw54=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wxR92QsKvApEk4bW945iGY0whnTtizCRju4fOGnWaPUUzKzHLHMqJ+v7cpsO1JpNR
+         V474AmY2wtwZVXayF1QddBXiA25dg041OVmph8JhvgZ+LXa5YvXpJ3ARKPwtGS/l4D
+         msUkcXDokG2BrX63OxViJ1Tfc107SgVoel9zxzHE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Juri Lelli <juri.lelli@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 703/879] tracing/timerlat: Notify IRQ new max latency only if stop tracing is set
+Date:   Tue,  7 Jun 2022 19:03:41 +0200
+Message-Id: <20220607165023.252366174@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607093649.928131-1-gongruiqi1@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 05:36:49PM +0800, GONG, Ruiqi wrote:
-> Simplify the code by using kstrndup instead of kzalloc and strncpy in
-> smk_parse_smack(), which meanwhile remove strncpy as [1] suggests.
-> 
-> [1]: https://github.com/KSPP/linux/issues/90
-> 
-> Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
+From: Daniel Bristot de Oliveira <bristot@kernel.org>
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+[ Upstream commit aa748949b4e665f473bc5abdc5f66029cb5f5522 ]
 
+Currently, the notification of a new max latency is sent from
+timerlat's IRQ handler anytime a new max latency is found.
+
+While this behavior is not wrong, the send IPI overhead itself
+will increase the thread latency and that is not the desired
+effect (tracing overhead).
+
+Moreover, the thread will notify a new max latency again because
+the thread latency as it is always higher than the IRQ latency
+that woke it up.
+
+The only case in which it is helpful to notify a new max latency
+from IRQ is when stop tracing (for the IRQ) is set, as in this
+case, the thread will not be dispatched.
+
+Notify a new max latency from the IRQ handler only if stop tracing is
+set for the IRQ handler.
+
+Link: https://lkml.kernel.org/r/2c2d9a56c0886c8402ba320de32856cbbb10c2bb.1652175637.git.bristot@kernel.org
+
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Reported-by: Clark Williams <williams@redhat.com>
+Fixes: a955d7eac177 ("trace: Add timerlat tracer")
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ kernel/trace/trace_osnoise.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
+index afb92e2f0aea..d8e8167a079f 100644
+--- a/kernel/trace/trace_osnoise.c
++++ b/kernel/trace/trace_osnoise.c
+@@ -1578,11 +1578,12 @@ static enum hrtimer_restart timerlat_irq(struct hrtimer *timer)
+ 
+ 	trace_timerlat_sample(&s);
+ 
+-	notify_new_max_latency(diff);
+-
+-	if (osnoise_data.stop_tracing)
+-		if (time_to_us(diff) >= osnoise_data.stop_tracing)
++	if (osnoise_data.stop_tracing) {
++		if (time_to_us(diff) >= osnoise_data.stop_tracing) {
+ 			osnoise_stop_tracing();
++			notify_new_max_latency(diff);
++		}
++	}
+ 
+ 	wake_up_process(tlat->kthread);
+ 
 -- 
-Kees Cook
+2.35.1
+
+
+
