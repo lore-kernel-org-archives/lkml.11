@@ -2,171 +2,347 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05653CCA483
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:47:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD3CCCA485
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387523AbiFHApb (ORCPT
+        id S1387298AbiFHApU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:45:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51950 "EHLO
+        Tue, 7 Jun 2022 20:45:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452815AbiFGXOg (ORCPT
+        with ESMTP id S1573494AbiFGXYJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:14:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A5D310EA51
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:02:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654635722;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DmWx/HtcjqYi7JTMOK9VA2Mvf2gZ14LWzJ8rqY3sV7Y=;
-        b=cVCGFu1KO3xFXjvbm+LEp8rE33mnFpHVVs8RV3Zp98FiLDD0n+pTOX6WdhIsk+Ic9dF0eR
-        Dozg79zKJcqyxJkFKCwrls1DjLwWcbo2sfV2atnKtt3bO3QYidTWWEyJVoyxL4EoVVRano
-        XssJQQe8U7e7FJWyH8HJnZRGyPg/V+A=
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
- [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-576-bkyCK4D8PxCXloTZQJCCRQ-1; Tue, 07 Jun 2022 17:01:54 -0400
-X-MC-Unique: bkyCK4D8PxCXloTZQJCCRQ-1
-Received: by mail-il1-f197.google.com with SMTP id i16-20020a056e021d1000b002d3bbe39232so14508688ila.20
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:01:54 -0700 (PDT)
+        Tue, 7 Jun 2022 19:24:09 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744163F5E8D
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:33:31 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id p129so20982842oig.3
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:33:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=0EMEuXe2bFv1nWekL5gPPGv78CrzJb59de7wtB/druw=;
+        b=O61ZZ23oMgF8Rk4tvRaD5FDkWU+7qDmfArLDH74ldQcxcNKZ4fZlNIgdTnShnp/JWY
+         fSZsDpDZBUZI7+E1MsIXpUdQWZvRzgSV/IdAoW8tfRZBbhyw3gsbNm+oKxed526frHyn
+         5Q2iq3xu3VuKrz85u5uv4n1rrWtCjDU/qqBsf/mR8EYnyaoXGjSWsWXaevwVtyBK0VVH
+         Ev/T7QcibjWcJF4n6QgtcR7LxXgOyUA6TSGKdm27h8weKJ6yqXj/EtykWB4r6WZC2Hby
+         pmuU1/cJloQIZKtItwpn0mJsYZtqGvWFdD4s8IV/lKHnZdk5TdzURyY0Ys0UrwvgDNgl
+         7fHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=DmWx/HtcjqYi7JTMOK9VA2Mvf2gZ14LWzJ8rqY3sV7Y=;
-        b=5r+Uht7mxw88e+i/Ol9yX6YLbWsLusNr1DG2SUfsT2VIWmQlLhHGOQn9/NQ+9ct/6a
-         4Xpc5y+Trr7+2zqLjW7jSKd/kJCsvwjlGBbnp2MpN5BthYDJBNuZWhy29GF5rJHTz8Ks
-         N9mpeHRfaL6HUGn2SVFnA0Mpy6/FjCiSQ9VUYchQP9d+M/gJ1AsTG4xRd3F0W9sC5XhX
-         /CEGlqXz4TP9JhOyJiRGTAFKDMp26xJHGknANLzFvzj4Yd/vTfb87sIHieZccOEi/plm
-         wgEhfZG2p4+EOHDpCmVsjjaIBGvxO0DRY1+YqDBJFvul3POR8cl9oRR35BBk9sSiNx4O
-         R3Xw==
-X-Gm-Message-State: AOAM533NJ3T0nwzc1ORdX5DPrGzeeEyCMn9rH8BRM4lwNPvsTILhBHI4
-        613o6tV9iK2Zax0UbFrJOuDwjN6FI81/rCz8bx8HTKoA20NugOEbHopvp2CU02uXziiTZ9sHash
-        hSfNyIT4+EYf1c6EYWkiGcWib
-X-Received: by 2002:a05:6638:2404:b0:331:48f:bac0 with SMTP id z4-20020a056638240400b00331048fbac0mr15750898jat.306.1654635713365;
-        Tue, 07 Jun 2022 14:01:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzz8j3m6BGhMI89N/Xkj0XEQSk7cnDz7RN7p+Q2qYByc9Z8m7/k4hnjD+DhU7yc8TOyDhvgxg==
-X-Received: by 2002:a05:6638:2404:b0:331:48f:bac0 with SMTP id z4-20020a056638240400b00331048fbac0mr15750891jat.306.1654635713144;
-        Tue, 07 Jun 2022 14:01:53 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id b38-20020a0295a9000000b0032e271a558csm7025990jai.168.2022.06.07.14.01.52
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=0EMEuXe2bFv1nWekL5gPPGv78CrzJb59de7wtB/druw=;
+        b=qOmLHpjMThTypokcme/41ymODOTYUd7KUa6XfejwbL7Egtj9z165MVPEkbPkTV50gr
+         USezg7Hn1JfUkBy+PCjXEhd8FrTk83RFupRlftx8uCf9emvAM6cDKTVvW7wPg5Miwp0g
+         f/5gzd5JA7xLJQ5VDQZgNU7RJlTU6097TGFRvEMVtWCkT9RMTEwbw9EpK2rvf/ZGENVy
+         0N4G05Ranp38DyrNnc0He0d4lNhynrjFzyyThlGWr0soHCi+4qWno4jMsoizbGNLRVbd
+         2et9KcSWpdTYGE0pA6CGef2kR2DYgNTPHPFOL4f1HEtHfMWF4wfkd8nVMYfAuwjHTVaf
+         F6CA==
+X-Gm-Message-State: AOAM532/aKW1EHKBYy6iZwRjcDcH06EyfGhNdd3288CT0AUW4Z89b4p3
+        WBHEypZfKphlKYa3c+FOpLzQRw==
+X-Google-Smtp-Source: ABdhPJwWFXvpHwdi31PSSCdT9sHj5n4uy+MYipLMjs/0G7hSrHeRm6MwOXeZqRvInF0IeyVqHBfZOw==
+X-Received: by 2002:a05:6808:170b:b0:2fa:729a:a42e with SMTP id bc11-20020a056808170b00b002fa729aa42emr594902oib.0.1654637605417;
+        Tue, 07 Jun 2022 14:33:25 -0700 (PDT)
+Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id cd24-20020a056808319800b0032e7205619asm4966031oib.15.2022.06.07.14.33.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 14:01:52 -0700 (PDT)
-Date:   Tue, 7 Jun 2022 15:01:51 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
-        kvm@vger.kernel.org, Laszlo Ersek <lersek@redhat.com>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] Improve vfio-pci primary GPU assignment behavior
-Message-ID: <20220607150151.11c7d2f6.alex.williamson@redhat.com>
-In-Reply-To: <badc8e91-f843-2c96-9c02-4fbb59accdc4@redhat.com>
-References: <165453797543.3592816.6381793341352595461.stgit@omen>
-        <badc8e91-f843-2c96-9c02-4fbb59accdc4@redhat.com>
-Organization: Red Hat
+        Tue, 07 Jun 2022 14:33:24 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Manu Gautam <mgautam@codeaurora.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 5/5] phy: qcom-qmp: Add sc8280xp USB/DP combo phys
+Date:   Tue,  7 Jun 2022 14:35:43 -0700
+Message-Id: <20220607213543.4057620-6-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607213543.4057620-1-bjorn.andersson@linaro.org>
+References: <20220607213543.4057620-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 7 Jun 2022 19:40:40 +0200
-Javier Martinez Canillas <javierm@redhat.com> wrote:
+The SC8280P has two copies of an USB/DP compbo PHY, add support for this
+to the Qualcomm QMP PHY driver.
 
-> Hello Alex,
-> 
-> On 6/6/22 19:53, Alex Williamson wrote:
-> > Users attempting to enable vfio PCI device assignment with a GPU will
-> > often block the default PCI driver from the device to avoid conflicts
-> > with the device initialization or release path.  This means that
-> > vfio-pci is sometimes the first PCI driver to bind to the device.  In 
-> > the case of assigning the primary graphics device, low-level console
-> > drivers may still generate resource conflicts.  Users often employ
-> > kernel command line arguments to disable conflicting drivers or
-> > perform unbinding in userspace to avoid this, but the actual solution
-> > is often distribution/kernel config specific based on the included
-> > drivers.
-> > 
-> > We can instead allow vfio-pci to copy the behavior of
-> > drm_aperture_remove_conflicting_pci_framebuffers() in order to remove
-> > these low-level drivers with conflicting resources.  vfio-pci is not
-> > however a DRM driver, nor does vfio-pci depend on DRM config options,
-> > thus we split out and export the necessary DRM apterture support and
-> > mirror the framebuffer and VGA support.
-> > 
-> > I'd be happy to pull this series in through the vfio branch if
-> > approved by the DRM maintainers.  Thanks,
-> >  
-> 
-> I understand your issue but I really don't think that using this helper
-> is the correct thing to do. We already have some races with the current
-> aperture infrastructure As an example you can look at [0].
-> 
-> The agreement on the mentioned thread is that we want to unify the fbdev
-> and DRM drivers apertures into a single list, and ideally moving all to
-> the Linux device model to handle the removal of conflicting devices.
-> 
-> That's why I don't feel that leaking the DRM aperture helper to another
-> is desirable since it would make even harder to cleanup this later.
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+---
 
-OTOH, this doesn't really make the problem worse and it identifies
-another stakeholder to a full solution.
+Changes since v1:
+- New patch
+
+ drivers/phy/qualcomm/phy-qcom-qmp-combo.c | 205 ++++++++++++++++++++++
+ drivers/phy/qualcomm/phy-qcom-qmp.h       |  13 ++
+ 2 files changed, 218 insertions(+)
+
+diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
+index 893b5a4bb554..c18cd3b93c30 100644
+--- a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
++++ b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
+@@ -23,6 +23,7 @@
+ #include <dt-bindings/phy/phy.h>
  
-> But also, this issue isn't something that only affects graphic devices,
-> right? AFAIU from [1] and [2], the same issue happens if a PCI device
-> has to be bound to vfio-pci but already was bound to a host driver.
-
-When we're shuffling between PCI drivers, we expect the unbind of the
-previous driver to have released all the claimed resources.  If there
-were a previously attached PCI graphics driver, then the code added in
-patch 2/ is simply redundant since that PCI graphics driver must have
-already performed similar actions.  The primary use case of this series
-is where there is no previous PCI graphics driver and we have no
-visibility to platform drivers carving chunks of the PCI resources into
-different subsystems.  AFAIK, this is unique to graphics devices.
-
-> The fact that DRM happens to have some infrastructure to remove devices
-> that conflict with an aperture is just a coincidence. Since this is used
-> to remove devices bound to drivers that make use of the firmware-provided
-> system framebuffer.
-
-It seems not so much a coincidence as an artifact of the exact problem
-both PCI graphics drivers and now vfio-pci face.  We've created
-platform devices to manage sub-ranges of resources, where the actual
-parent of those resources is only discovered later and we don't
-automatically resolve the resource conflict between that parent device
-and these platform devices when binding the parent driver.
+ #include "phy-qcom-qmp.h"
++#include "phy-qcom-usb4-5nm-qmp-combo.h"
  
-> The series [0] mentioned above, adds a sysfb_disable() that disables the
-> Generic System Framebuffer logic that is what registers the framebuffer
-> devices that are bound to these generic video drivers. On disable, the
-> devices registered by sysfb are also unregistered.
-> 
-> Would be enough for your use case to use that helper function if it lands
-> or do you really need to look at the apertures? That is, do you want to
-> remove the {vesa,efi,simple}fb and simpledrm drivers or is there a need
-> to also remove real fbdev and DRM drivers?
-
-It's not clear to me how this helps.  I infer that sysfb_disable() is
-intended to be used by, for example, a PCI console driver which would be
-taking over the console and can therefore make a clear decision to end
-sysfb support.  The vfio-pci driver is not a console driver so we can't
-make any sort of blind assertion regarding sysfb.  We might be binding
-to a secondary graphics card which has no sysfb drivers attached.  I'm
-a lot more comfortable wielding an interface that intends to disable
-drivers/devices relative to the resources of a given device rather than
-a blanket means to disable a subsystem.
-
-I wonder if the race issues aren't better solved by avoiding to create
-platform devices exposing resource conflicts with known devices,
-especially when those existing devices have drivers attached.  Thanks,
-
-Alex
+ /* QPHY_SW_RESET bit */
+ #define SW_RESET				BIT(0)
+@@ -604,6 +605,134 @@ static const struct qmp_phy_init_tbl qmp_v4_dp_tx_tbl[] = {
+ 	QMP_PHY_INIT_CFG(QSERDES_V4_TX_TX_EMP_POST1_LVL, 0x20),
+ };
+ 
++static const struct qmp_phy_init_tbl qmp_v420_5nm_dp_tx_tbl[] = {
++	QMP_PHY_INIT_CFG(QSERDES_V4_20_5NM_DP_VMODE_CTRL1, 0x40),
++	QMP_PHY_INIT_CFG(QSERDES_V4_20_5NM_TXn_PRE_STALL_LDO_BOOST_EN, 0x30),
++	QMP_PHY_INIT_CFG(QSERDES_V4_20_5NM_TXn_INTERFACE_SELECT, 0x3b),
++	QMP_PHY_INIT_CFG(QSERDES_V4_20_5NM_TXn_CLKBUF_ENABLE, 0x0f),
++	QMP_PHY_INIT_CFG(QSERDES_V4_20_5NM_TXn_RESET_TSYNC_EN, 0x03),
++	QMP_PHY_INIT_CFG(QSERDES_V4_20_5NM_DP_TRAN_DRVR_EMP_EN, 0xf),
++	QMP_PHY_INIT_CFG(QSERDES_V4_20_5NM_TXn_PARRATE_REC_DETECT_IDLE_EN, 0x00),
++	QMP_PHY_INIT_CFG(QSERDES_V4_20_5NM_DP_TX_INTERFACE_MODE, 0x00),
++	QMP_PHY_INIT_CFG(QSERDES_V4_20_5NM_TXn_RES_CODE_LANE_OFFSET_TX, 0x0a),
++	QMP_PHY_INIT_CFG(QSERDES_V4_20_5NM_TXn_RES_CODE_LANE_OFFSET_RX, 0x11),
++	QMP_PHY_INIT_CFG(QSERDES_V4_20_5NM_TXn_TX_BAND, 0x04),
++};
++
++static const struct qmp_phy_init_tbl sc8280xp_usb43dp_serdes_tbl[] = {
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_SSC_EN_CENTER, 0x01),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_SSC_PER1, 0x31),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_SSC_PER2, 0x01),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_SSC_STEP_SIZE1_MODE0, 0xfd),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_SSC_STEP_SIZE2_MODE0, 0x0d),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_SSC_STEP_SIZE1_MODE1, 0xfd),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_SSC_STEP_SIZE2_MODE1, 0x0d),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_SYSCLK_BUF_ENABLE, 0x0a),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_CP_CTRL_MODE0, 0x02),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_CP_CTRL_MODE1, 0x02),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_PLL_RCTRL_MODE0, 0x16),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_PLL_RCTRL_MODE1, 0x16),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_PLL_CCTRL_MODE0, 0x36),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_PLL_CCTRL_MODE1, 0x36),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_SYSCLK_EN_SEL, 0x1a),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_LOCK_CMP_EN, 0x04),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_LOCK_CMP1_MODE0, 0x14),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_LOCK_CMP2_MODE0, 0x34),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_LOCK_CMP1_MODE1, 0x34),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_LOCK_CMP2_MODE1, 0x82),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_DEC_START_MODE0, 0x04),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_DEC_START_MSB_MODE0, 0x01),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_DEC_START_MODE1, 0x04),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_DEC_START_MSB_MODE1, 0x01),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_DIV_FRAC_START1_MODE0, 0x55),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_DIV_FRAC_START2_MODE0, 0xd5),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_DIV_FRAC_START3_MODE0, 0x05),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_DIV_FRAC_START1_MODE1, 0x55),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_DIV_FRAC_START2_MODE1, 0xd5),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_DIV_FRAC_START3_MODE1, 0x05),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_VCO_TUNE_MAP, 0x02),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_VCO_TUNE1_MODE0, 0xd4),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_VCO_TUNE2_MODE0, 0x00),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_VCO_TUNE1_MODE1, 0xd4),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_VCO_TUNE2_MODE1, 0x00),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_HSCLK_SEL, 0x13),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_HSCLK_HS_SWITCH_SEL, 0x00),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_CORECLK_DIV_MODE0, 0x0a),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_CORECLK_DIV_MODE1, 0x04),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_CORE_CLK_EN, 0x60),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_CMN_CONFIG, 0x76),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_PLL_IVCO, 0xff),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_INTEGLOOP_GAIN0_MODE0, 0x20),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_INTEGLOOP_GAIN0_MODE1, 0x20),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_VCO_TUNE_INITVAL2, 0x00),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_VCO_TUNE_MAXVAL2, 0x01),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_QSERDES_PLL_SVS_MODE_CLK_SEL, 0x0a),
++};
++
++static const struct qmp_phy_init_tbl sc8280xp_usb43dp_tx_tbl[] = {
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_TXA_LANE_MODE_1, 0x05),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_TXA_LANE_MODE_2, 0xc2),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_TXA_LANE_MODE_3, 0x10),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_TXA_RES_CODE_LANE_OFFSET_TX, 0x1f),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_TXA_RES_CODE_LANE_OFFSET_RX, 0x0a),
++};
++
++static const struct qmp_phy_init_tbl sc8280xp_usb43dp_rx_tbl[] = {
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_SIGDET_CNTRL, 0x04),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_SIGDET_DEGLITCH_CNTRL, 0x0e),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_SIGDET_ENABLES, 0x00),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_MODE_RATE_0_1_B0, 0xd2),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_MODE_RATE_0_1_B1, 0xd2),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_MODE_RATE_0_1_B2, 0xdb),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_MODE_RATE_0_1_B3, 0x21),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_MODE_RATE_0_1_B4, 0x3f),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_MODE_RATE_0_1_B5, 0x80),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_MODE_RATE_0_1_B6, 0x45),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_MODE_RATE_0_1_B7, 0x00),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_MODE_RATE2_B0, 0x6b),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_MODE_RATE2_B1, 0x63),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_MODE_RATE2_B2, 0xb6),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_MODE_RATE2_B3, 0x23),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_MODE_RATE2_B4, 0x35),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_MODE_RATE2_B5, 0x30),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_MODE_RATE2_B6, 0x8e),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_MODE_RATE2_B7, 0x00),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_IVCM_CAL_CODE_OVERRIDE, 0x00),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_IVCM_CAL_CTRL2, 0x80),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_SUMMER_CAL_SPD_MODE, 0x1b),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_DFE_CTLE_POST_CAL_OFFSET, 0x38),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_UCDR_PI_CONTROLS, 0x15),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_UCDR_SB2_GAIN2_RATE2, 0x0a),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_RX_IVCM_POSTCAL_OFFSET, 0x7c),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_VGA_CAL_CNTRL1, 0x00),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_VGA_CAL_MAN_VAL, 0x0d),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_DFE_DAC_ENABLE1, 0x00),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_DFE_3, 0x45),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_GM_CAL, 0x09),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_UCDR_FO_GAIN_RATE2, 0x09),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_UCDR_SO_GAIN_RATE2, 0x05),
++	QMP_PHY_INIT_CFG(USB43DP_V5_5NM_QSERDES_RXA_Q_PI_INTRINSIC_BIAS_RATE32, 0x3f),
++};
++
++static const struct qmp_phy_init_tbl sc8280xp_usb43dp_pcs_tbl[] = {
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_PCS_RCVR_DTCT_DLY_P1U2_L, 0xe7),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_PCS_RCVR_DTCT_DLY_P1U2_H, 0x03),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_PCS_LOCK_DETECT_CONFIG1, 0xd0),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_PCS_LOCK_DETECT_CONFIG2, 0x07),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_PCS_LOCK_DETECT_CONFIG3, 0x20),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_PCS_LOCK_DETECT_CONFIG6, 0x13),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_PCS_REFGEN_REQ_CONFIG1, 0x21),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_PCS_RX_SIGDET_LVL, 0xaa),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_PCS_RX_CONFIG, 0x0a),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_PCS_ALIGN_DETECT_CONFIG1, 0x88),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_PCS_ALIGN_DETECT_CONFIG2, 0x13),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_PCS_PCS_TX_RX_CONFIG, 0x0c),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_PCS_EQ_CONFIG1, 0x4b),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_PCS_EQ_CONFIG5, 0x10),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_PCS_USB3_LFPS_DET_HIGH_COUNT_VAL, 0xf8),
++	QMP_PHY_INIT_CFG(USB3_V5_5NM_PCS_USB3_RXEQTRAINING_DFE_TIME_S2, 0x07),
++};
++
+ struct qmp_phy;
+ 
+ /* struct qmp_phy_cfg - per-PHY initialization config */
+@@ -959,6 +1088,78 @@ static const struct qmp_phy_combo_cfg sc8180x_usb3dpphy_cfg = {
+ 	.dp_cfg			= &sc8180x_dpphy_cfg,
+ };
+ 
++static const struct qmp_phy_cfg sc8280xp_usb43dp_usb_cfg = {
++	.type			= PHY_TYPE_USB3,
++	.nlanes			= 1,
++
++	.serdes_tbl		= sc8280xp_usb43dp_serdes_tbl,
++	.serdes_tbl_num		= ARRAY_SIZE(sc8280xp_usb43dp_serdes_tbl),
++	.tx_tbl			= sc8280xp_usb43dp_tx_tbl,
++	.tx_tbl_num		= ARRAY_SIZE(sc8280xp_usb43dp_tx_tbl),
++	.rx_tbl			= sc8280xp_usb43dp_rx_tbl,
++	.rx_tbl_num		= ARRAY_SIZE(sc8280xp_usb43dp_rx_tbl),
++	.pcs_tbl		= sc8280xp_usb43dp_pcs_tbl,
++	.pcs_tbl_num		= ARRAY_SIZE(sc8280xp_usb43dp_pcs_tbl),
++	.clk_list		= qmp_v4_phy_clk_l,
++	.num_clks		= ARRAY_SIZE(qmp_v4_phy_clk_l),
++	.reset_list		= msm8996_usb3phy_reset_l,
++	.num_resets		= ARRAY_SIZE(msm8996_usb3phy_reset_l),
++	.vreg_list		= qmp_phy_vreg_l,
++	.num_vregs		= ARRAY_SIZE(qmp_phy_vreg_l),
++	.regs			= qmp_v4_usb3phy_regs_layout,
++
++	.start_ctrl		= SERDES_START | PCS_START,
++	.pwrdn_ctrl		= SW_PWRDN,
++	.phy_status		= PHYSTATUS,
++
++	.has_pwrdn_delay	= true,
++	.pwrdn_delay_min	= POWER_DOWN_DELAY_US_MIN,
++	.pwrdn_delay_max	= POWER_DOWN_DELAY_US_MAX,
++
++	.has_phy_dp_com_ctrl	= true,
++	.is_dual_lane_phy	= true,
++};
++
++static const struct qmp_phy_cfg sc8280xp_usb43dp_dp_cfg = {
++	.type			= PHY_TYPE_DP,
++	.nlanes			= 1,
++
++	.serdes_tbl		= qmp_v4_dp_serdes_tbl,
++	.serdes_tbl_num		= ARRAY_SIZE(qmp_v4_dp_serdes_tbl),
++	.tx_tbl			= qmp_v420_5nm_dp_tx_tbl,
++	.tx_tbl_num		= ARRAY_SIZE(qmp_v420_5nm_dp_tx_tbl),
++
++	.serdes_tbl_rbr		= qmp_v4_dp_serdes_tbl_rbr,
++	.serdes_tbl_rbr_num	= ARRAY_SIZE(qmp_v4_dp_serdes_tbl_rbr),
++	.serdes_tbl_hbr		= qmp_v4_dp_serdes_tbl_hbr,
++	.serdes_tbl_hbr_num	= ARRAY_SIZE(qmp_v4_dp_serdes_tbl_hbr),
++	.serdes_tbl_hbr2	= qmp_v4_dp_serdes_tbl_hbr2,
++	.serdes_tbl_hbr2_num	= ARRAY_SIZE(qmp_v4_dp_serdes_tbl_hbr2),
++	.serdes_tbl_hbr3	= qmp_v4_dp_serdes_tbl_hbr3,
++	.serdes_tbl_hbr3_num	= ARRAY_SIZE(qmp_v4_dp_serdes_tbl_hbr3),
++
++	.clk_list		= qmp_v4_phy_clk_l,
++	.num_clks		= ARRAY_SIZE(qmp_v4_phy_clk_l),
++	.reset_list		= msm8996_usb3phy_reset_l,
++	.num_resets		= ARRAY_SIZE(msm8996_usb3phy_reset_l),
++	.vreg_list		= qmp_phy_vreg_l,
++	.num_vregs		= ARRAY_SIZE(qmp_phy_vreg_l),
++	.regs			= qmp_v4_usb3phy_regs_layout,
++
++	.has_phy_dp_com_ctrl	= true,
++	.is_dual_lane_phy	= true,
++
++	.dp_aux_init = qcom_qmp_v4_phy_dp_aux_init,
++	.configure_dp_tx = qcom_qmp_v4_phy_configure_dp_tx,
++	.configure_dp_phy = qcom_qmp_v4_phy_configure_dp_phy,
++	.calibrate_dp_phy = qcom_qmp_v4_dp_phy_calibrate,
++};
++
++static const struct qmp_phy_combo_cfg sc8280xp_usb43dpphy_combo_cfg = {
++	.usb_cfg		= &sc8280xp_usb43dp_usb_cfg,
++	.dp_cfg			= &sc8280xp_usb43dp_dp_cfg,
++};
++
+ static const struct qmp_phy_cfg sm8250_usb3phy_cfg = {
+ 	.type			= PHY_TYPE_USB3,
+ 	.nlanes			= 1,
+@@ -2407,6 +2608,10 @@ static const struct of_device_id qcom_qmp_combo_phy_of_match_table[] = {
+ 		.compatible = "qcom,sc8180x-qmp-usb3-dp-phy",
+ 		.data = &sc8180x_usb3dpphy_cfg,
+ 	},
++	{
++		.compatible = "qcom,sc8280xp-qmp-usb43dp-phy",
++		.data = &sc8280xp_usb43dpphy_combo_cfg,
++	},
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, qcom_qmp_combo_phy_of_match_table);
+diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.h b/drivers/phy/qualcomm/phy-qcom-qmp.h
+index 06b2556ed93a..eb5705d1e32c 100644
+--- a/drivers/phy/qualcomm/phy-qcom-qmp.h
++++ b/drivers/phy/qualcomm/phy-qcom-qmp.h
+@@ -652,6 +652,19 @@
+ #define QSERDES_V4_20_TX_VMODE_CTRL1			0xc4
+ #define QSERDES_V4_20_TX_PI_QEC_CTRL			0xe0
+ 
++/* Only for QMP v4_20 5nm DP PHY - TX registers */
++#define QSERDES_V4_20_5NM_TXn_TX_BAND			0x24
++#define QSERDES_V4_20_5NM_TXn_CLKBUF_ENABLE		0x08
++#define QSERDES_V4_20_5NM_TXn_RESET_TSYNC_EN		0x1c
++#define QSERDES_V4_20_5NM_TXn_INTERFACE_SELECT		0x2c
++#define QSERDES_V4_20_5NM_DP_TRAN_DRVR_EMP_EN		0xc0
++#define QSERDES_V4_20_5NM_DP_TX_INTERFACE_MODE		0xc4
++#define QSERDES_V4_20_5NM_DP_VMODE_CTRL1		0xc8
++#define QSERDES_V4_20_5NM_TXn_PRE_STALL_LDO_BOOST_EN	0x20
++#define QSERDES_V4_20_5NM_TXn_RES_CODE_LANE_OFFSET_RX	0x3c
++#define QSERDES_V4_20_5NM_TXn_RES_CODE_LANE_OFFSET_TX	0x40
++#define QSERDES_V4_20_5NM_TXn_PARRATE_REC_DETECT_IDLE_EN	0x60
++
+ /* Only for QMP V4 PHY - RX registers */
+ #define QSERDES_V4_RX_UCDR_FO_GAIN			0x008
+ #define QSERDES_V4_RX_UCDR_SO_GAIN			0x014
+-- 
+2.35.1
 
