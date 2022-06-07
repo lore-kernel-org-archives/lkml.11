@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7634CCCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:23:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C226C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:23:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383155AbiFGWXA (ORCPT
+        id S1383400AbiFGWXG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:23:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53588 "EHLO
+        Tue, 7 Jun 2022 18:23:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380734AbiFGVQz (ORCPT
+        with ESMTP id S1380737AbiFGVQz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:16:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9894F21F9E5;
-        Tue,  7 Jun 2022 11:56:51 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 829D1147829;
+        Tue,  7 Jun 2022 11:56:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32A996159D;
-        Tue,  7 Jun 2022 18:56:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CBFFC385A2;
-        Tue,  7 Jun 2022 18:56:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3873DB822C0;
+        Tue,  7 Jun 2022 18:56:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2E2BC385A2;
+        Tue,  7 Jun 2022 18:56:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628210;
-        bh=SIzEPNmhi3uXel6os5Hdua5jcjP8PY79NTHws9hQrjE=;
+        s=korg; t=1654628216;
+        bh=sCtI21mHmu6eCFDwJDJ9ANTa+yy3I1+xzGJmloI8pJ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mqk1TUdoZ7J+8mXE4el3hPxTlf2y+vSj1UquQxHEsnFfEH3yEfixmx3LtnOGCP4zX
-         1lEhvILx4dDvjCZY/eBbHpzi60bpEGeof6h4bZTc0Dxg3dfofwP9T+ElinPvtxtpEx
-         Y7R+vB2nVVWu+vovtimifZc9gLs+oNWkhgPw2yEw=
+        b=c5wLjeb3RPGOmKv3e2nv6AqIV3v/n2bGu7gav7QZ4CExuyg7jklcBDZnNVJa1bFgk
+         CB9/4VH/fOKaIOMw9hOqjjEWV9H95ZKNSTPebnENN5YS0kYsEKZiLRPEigxsPOad0D
+         Z6S227laD8izi9PKXZY4Bbusug0+nt6QlnLaWQhw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
-        Fabiano Rosas <farosas@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Ronnie Sahlberg <lsahlber@redhat.com>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 239/879] KVM: PPC: Book3S HV Nested: L2 LPCR should inherit L1 LPES setting
-Date:   Tue,  7 Jun 2022 18:55:57 +0200
-Message-Id: <20220607165009.790152442@linuxfoundation.org>
+Subject: [PATCH 5.18 249/879] smb3: check for null tcon
+Date:   Tue,  7 Jun 2022 18:56:07 +0200
+Message-Id: <20220607165010.078321192@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,58 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Piggin <npiggin@gmail.com>
+From: Steve French <stfrench@microsoft.com>
 
-[ Upstream commit 2852ebfa10afdcefff35ec72c8da97141df9845c ]
+[ Upstream commit bbdf6cf56c88845fb0b713cbf5c6623c53fe40d8 ]
 
-The L1 should not be able to adjust LPES mode for the L2. Setting LPES
-if the L0 needs it clear would cause external interrupts to be sent to
-L2 and missed by the L0.
+Although unlikely to be null, it is confusing to use a pointer
+before checking for it to be null so move the use down after
+null check.
 
-Clearing LPES when it may be set, as typically happens with XIVE enabled
-could cause a performance issue despite having no native XIVE support in
-the guest, because it will cause mediated interrupts for the L2 to be
-taken in HV mode, which then have to be injected.
-
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-Reviewed-by: Fabiano Rosas <farosas@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220303053315.1056880-7-npiggin@gmail.com
+Addresses-Coverity: 1517586 ("Null pointer dereferences  (REVERSE_INULL)")
+Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kvm/book3s_hv.c        | 4 ++++
- arch/powerpc/kvm/book3s_hv_nested.c | 3 +--
- 2 files changed, 5 insertions(+), 2 deletions(-)
+ fs/cifs/smb2ops.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
-index 6fa518f6501d..43af871383c2 100644
---- a/arch/powerpc/kvm/book3s_hv.c
-+++ b/arch/powerpc/kvm/book3s_hv.c
-@@ -5283,6 +5283,10 @@ static int kvmppc_core_init_vm_hv(struct kvm *kvm)
- 		kvm->arch.host_lpcr = lpcr = mfspr(SPRN_LPCR);
- 		lpcr &= LPCR_PECE | LPCR_LPES;
- 	} else {
-+		/*
-+		 * The L2 LPES mode will be set by the L0 according to whether
-+		 * or not it needs to take external interrupts in HV mode.
-+		 */
- 		lpcr = 0;
- 	}
- 	lpcr |= (4UL << LPCR_DPFD_SH) | LPCR_HDICE |
-diff --git a/arch/powerpc/kvm/book3s_hv_nested.c b/arch/powerpc/kvm/book3s_hv_nested.c
-index c943a051c6e7..265bb30a0af2 100644
---- a/arch/powerpc/kvm/book3s_hv_nested.c
-+++ b/arch/powerpc/kvm/book3s_hv_nested.c
-@@ -261,8 +261,7 @@ static void load_l2_hv_regs(struct kvm_vcpu *vcpu,
- 	/*
- 	 * Don't let L1 change LPCR bits for the L2 except these:
- 	 */
--	mask = LPCR_DPFD | LPCR_ILE | LPCR_TC | LPCR_AIL | LPCR_LD |
--		LPCR_LPES | LPCR_MER;
-+	mask = LPCR_DPFD | LPCR_ILE | LPCR_TC | LPCR_AIL | LPCR_LD | LPCR_MER;
+diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+index 2df9aab12db7..861291662c95 100644
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -760,8 +760,8 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
+ 		struct cifs_sb_info *cifs_sb,
+ 		struct cached_fid **cfid)
+ {
+-	struct cifs_ses *ses = tcon->ses;
+-	struct TCP_Server_Info *server = ses->server;
++	struct cifs_ses *ses;
++	struct TCP_Server_Info *server;
+ 	struct cifs_open_parms oparms;
+ 	struct smb2_create_rsp *o_rsp = NULL;
+ 	struct smb2_query_info_rsp *qi_rsp = NULL;
+@@ -779,6 +779,9 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
+ 	if (tcon->nohandlecache)
+ 		return -ENOTSUPP;
  
- 	/*
- 	 * Additional filtering is required depending on hardware
++	ses = tcon->ses;
++	server = ses->server;
++
+ 	if (cifs_sb->root == NULL)
+ 		return -ENOENT;
+ 
 -- 
 2.35.1
 
