@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C6A6CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE33CCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380581AbiFGVfi (ORCPT
+        id S1380603AbiFGVfk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:35:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33268 "EHLO
+        Tue, 7 Jun 2022 17:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376696AbiFGU1c (ORCPT
+        with ESMTP id S1376630AbiFGU1F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:27:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 928961D8711;
-        Tue,  7 Jun 2022 11:33:05 -0700 (PDT)
+        Tue, 7 Jun 2022 16:27:05 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC1FB32EEB;
+        Tue,  7 Jun 2022 11:33:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8AD50B82340;
-        Tue,  7 Jun 2022 18:33:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAC2CC385A2;
-        Tue,  7 Jun 2022 18:33:01 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 60F70CE240B;
+        Tue,  7 Jun 2022 18:32:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D1ECC3411C;
+        Tue,  7 Jun 2022 18:32:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626782;
-        bh=1rY7bqasLjyT2TBe+kiOEacP0hDZYUDWD+Gxh39GZZ4=;
+        s=korg; t=1654626776;
+        bh=bvLMl4oc4CmowC0jo7HxPPsbIvcD3IDxy/Ab5Uayt4M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uQ+adMForTeRKqfSVlLv/S2kLS31d1V4JF2s2M1vf8acTRHPbd4F1LOWWz4cD1bv7
-         ldSbm9VxzDHQnUqgiz798b9iH69oVM/EP4i4cAeEWX+jzAc9cJ7C6Uz2bjxGluOA0T
-         4ixii6W8ab3Hzg5cNXTro0S6R0+kgLOL+MWkEuu8=
+        b=qvjHBQrZ/BUy9yefrJrUPK+WPzSNVjifhAI6/k0RXVcbat6mtCTyLJWNx7VjSGf+K
+         Bcn7HwHBFKyOb8EdhZrNUXJXBX7WMkckGsYO2nSeMmMB2fk6xiJ+26pHB0HNCrIYOh
+         xE+saIvq5/wt1f0/tE0Rx322gw75wS0WwSyqLAfE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
+        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 501/772] nvdimm: Fix firmware activation deadlock scenarios
-Date:   Tue,  7 Jun 2022 19:01:33 +0200
-Message-Id: <20220607165003.744230226@linuxfoundation.org>
+Subject: [PATCH 5.17 499/772] ASoC: sh: rz-ssi: Release the DMA channels in rz_ssi_probe() error path
+Date:   Tue,  7 Jun 2022 19:01:31 +0200
+Message-Id: <20220607165003.686169970@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,110 +51,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-[ Upstream commit e6829d1bd3c4b58296ee9e412f7ed4d6cb390192 ]
+[ Upstream commit 767e6f26204d3f5406630e86b720d01818b8616d ]
 
-Lockdep reports the following deadlock scenarios for CXL root device
-power-management, device_prepare(), operations, and device_shutdown()
-operations for 'nd_region' devices:
+DMA channels requested by rz_ssi_dma_request() in rz_ssi_probe() were
+never released in the error path apart from one place. This patch fixes
+this issue by calling rz_ssi_release_dma_channels() in the error path.
 
- Chain exists of:
-   &nvdimm_region_key --> &nvdimm_bus->reconfig_mutex --> system_transition_mutex
-
-  Possible unsafe locking scenario:
-
-        CPU0                    CPU1
-        ----                    ----
-   lock(system_transition_mutex);
-                                lock(&nvdimm_bus->reconfig_mutex);
-                                lock(system_transition_mutex);
-   lock(&nvdimm_region_key);
-
- Chain exists of:
-   &cxl_nvdimm_bridge_key --> acpi_scan_lock --> &cxl_root_key
-
-  Possible unsafe locking scenario:
-
-        CPU0                    CPU1
-        ----                    ----
-   lock(&cxl_root_key);
-                                lock(acpi_scan_lock);
-                                lock(&cxl_root_key);
-   lock(&cxl_nvdimm_bridge_key);
-
-These stem from holding nvdimm_bus_lock() over hibernate_quiet_exec()
-which walks the entire system device topology taking device_lock() along
-the way. The nvdimm_bus_lock() is protecting against unregistration,
-multiple simultaneous ops callers, and preventing activate_show() from
-racing activate_store(). For the first 2, the lock is redundant.
-Unregistration already flushes all ops users, and sysfs already prevents
-multiple threads to be active in an ops handler at the same time. For
-the last userspace should already be waiting for its last
-activate_store() to complete, and does not need activate_show() to flush
-the write side, so this lock usage can be deleted in these attributes.
-
-Fixes: 48001ea50d17 ("PM, libnvdimm: Add runtime firmware activation support")
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-Link: https://lore.kernel.org/r/165074883800.4116052.10737040861825806582.stgit@dwillia2-desk3.amr.corp.intel.com
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Fixes: 26ac471c5354 ("ASoC: sh: rz-ssi: Add SSI DMAC support")
+Reported-by: Pavel Machek <pavel@denx.de>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Link: https://lore.kernel.org/r/20220426074922.13319-4-prabhakar.mahadev-lad.rj@bp.renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvdimm/core.c | 9 ---------
- 1 file changed, 9 deletions(-)
+ sound/soc/sh/rz-ssi.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/nvdimm/core.c b/drivers/nvdimm/core.c
-index 69a03358817f..681cc28703a3 100644
---- a/drivers/nvdimm/core.c
-+++ b/drivers/nvdimm/core.c
-@@ -368,9 +368,7 @@ static ssize_t capability_show(struct device *dev,
- 	if (!nd_desc->fw_ops)
- 		return -EOPNOTSUPP;
+diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
+index 3b55444a1b58..6d794eaaf4c3 100644
+--- a/sound/soc/sh/rz-ssi.c
++++ b/sound/soc/sh/rz-ssi.c
+@@ -982,14 +982,18 @@ static int rz_ssi_probe(struct platform_device *pdev)
  
--	nvdimm_bus_lock(dev);
- 	cap = nd_desc->fw_ops->capability(nd_desc);
--	nvdimm_bus_unlock(dev);
+ 	/* Error Interrupt */
+ 	ssi->irq_int = platform_get_irq_byname(pdev, "int_req");
+-	if (ssi->irq_int < 0)
++	if (ssi->irq_int < 0) {
++		rz_ssi_release_dma_channels(ssi);
+ 		return ssi->irq_int;
++	}
  
- 	switch (cap) {
- 	case NVDIMM_FWA_CAP_QUIESCE:
-@@ -395,10 +393,8 @@ static ssize_t activate_show(struct device *dev,
- 	if (!nd_desc->fw_ops)
- 		return -EOPNOTSUPP;
+ 	ret = devm_request_irq(&pdev->dev, ssi->irq_int, &rz_ssi_interrupt,
+ 			       0, dev_name(&pdev->dev), ssi);
+-	if (ret < 0)
++	if (ret < 0) {
++		rz_ssi_release_dma_channels(ssi);
+ 		return dev_err_probe(&pdev->dev, ret,
+ 				     "irq request error (int_req)\n");
++	}
  
--	nvdimm_bus_lock(dev);
- 	cap = nd_desc->fw_ops->capability(nd_desc);
- 	state = nd_desc->fw_ops->activate_state(nd_desc);
--	nvdimm_bus_unlock(dev);
- 
- 	if (cap < NVDIMM_FWA_CAP_QUIESCE)
- 		return -EOPNOTSUPP;
-@@ -443,7 +439,6 @@ static ssize_t activate_store(struct device *dev,
- 	else
- 		return -EINVAL;
- 
--	nvdimm_bus_lock(dev);
- 	state = nd_desc->fw_ops->activate_state(nd_desc);
- 
- 	switch (state) {
-@@ -461,7 +456,6 @@ static ssize_t activate_store(struct device *dev,
- 	default:
- 		rc = -ENXIO;
+ 	if (!rz_ssi_is_dma_enabled(ssi)) {
+ 		/* Tx and Rx interrupts (pio only) */
+@@ -1017,13 +1021,16 @@ static int rz_ssi_probe(struct platform_device *pdev)
  	}
--	nvdimm_bus_unlock(dev);
  
- 	if (rc == 0)
- 		rc = len;
-@@ -484,10 +478,7 @@ static umode_t nvdimm_bus_firmware_visible(struct kobject *kobj, struct attribut
- 	if (!nd_desc->fw_ops)
- 		return 0;
+ 	ssi->rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
+-	if (IS_ERR(ssi->rstc))
++	if (IS_ERR(ssi->rstc)) {
++		rz_ssi_release_dma_channels(ssi);
+ 		return PTR_ERR(ssi->rstc);
++	}
  
--	nvdimm_bus_lock(dev);
- 	cap = nd_desc->fw_ops->capability(nd_desc);
--	nvdimm_bus_unlock(dev);
--
- 	if (cap < NVDIMM_FWA_CAP_QUIESCE)
- 		return 0;
- 
+ 	reset_control_deassert(ssi->rstc);
+ 	pm_runtime_enable(&pdev->dev);
+ 	ret = pm_runtime_resume_and_get(&pdev->dev);
+ 	if (ret < 0) {
++		rz_ssi_release_dma_channels(ssi);
+ 		pm_runtime_disable(ssi->dev);
+ 		reset_control_assert(ssi->rstc);
+ 		return dev_err_probe(ssi->dev, ret, "pm_runtime_resume_and_get failed\n");
 -- 
 2.35.1
 
