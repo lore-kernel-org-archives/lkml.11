@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA223C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:08:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF021C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:08:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359078AbiFGUIE (ORCPT
+        id S1359098AbiFGUIK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:08:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42808 "EHLO
+        Tue, 7 Jun 2022 16:08:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354965AbiFGTL4 (ORCPT
+        with ESMTP id S1354874AbiFGTNm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:11:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D89EAAE5E;
-        Tue,  7 Jun 2022 11:07:11 -0700 (PDT)
+        Tue, 7 Jun 2022 15:13:42 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E3D41CB36;
+        Tue,  7 Jun 2022 11:07:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BDEC617B4;
-        Tue,  7 Jun 2022 18:07:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3162AC385A5;
-        Tue,  7 Jun 2022 18:07:10 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D3405CE2427;
+        Tue,  7 Jun 2022 18:07:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1E83C34115;
+        Tue,  7 Jun 2022 18:07:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625230;
-        bh=Xj4t98qVdkLPZQTS7OXQAoSx8M/pu0ePvUGCBZ8pXgU=;
+        s=korg; t=1654625236;
+        bh=YIivGeXXRfB6Sue+gelH2WioHvR7o0hxg8DWNPtEYV4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hDbfrtwUheLwm2zJzHTQSg8QWlV7Ur7sjjtvD84OOh6pARzwEdEp7qFbh3i40QdNH
-         0qL8RYU1UiuqSg1RQAFswPUhuZb1I8RFxjW5xP6PK5GIwk7dmSA1EYYeD+jdddMkb7
-         JmvEFnAqgjw5AOsWOdVKl7zKPfWbN9zjOMzXQqKE=
+        b=BXY3k5lZlHniP/Ape95liqlv3fWbP99ohfX3twf2wW6AsC/7gCpAf8dvqRW9Rn16g
+         hd5CTruifsIVT/DXiftjMmu8WRnVdeL49giQOHRXlYnxfN198BdpATcMofBF6/UaVH
+         3DROswt8gAMYzRs5pqvqGG7Cm2tpKqeygt29CtSU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.15 572/667] samples/landlock: Add clang-format exceptions
-Date:   Tue,  7 Jun 2022 19:03:57 +0200
-Message-Id: <20220607164951.849348590@linuxfoundation.org>
+Subject: [PATCH 5.15 574/667] landlock: Fix landlock_add_rule(2) documentation
+Date:   Tue,  7 Jun 2022 19:03:59 +0200
+Message-Id: <20220607164951.909584843@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,56 +51,53 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mickaël Salaün <mic@digikod.net>
 
-commit 9805a722db071e1772b80e6e0ff33f35355639ac upstream.
+commit a13e248ff90e81e9322406c0e618cf2168702f4e upstream.
 
-In preparation to a following commit, add clang-format on and
-clang-format off stanzas around constant definitions.  This enables to
-keep aligned values, which is much more readable than packed
-definitions.
+It is not mandatory to pass a file descriptor obtained with the O_PATH
+flag.  Also, replace rule's accesses with ruleset's accesses.
 
-Link: https://lore.kernel.org/r/20220506160513.523257-7-mic@digikod.net
+Link: https://lore.kernel.org/r/20220506160820.524344-2-mic@digikod.net
 Cc: stable@vger.kernel.org
 Signed-off-by: Mickaël Salaün <mic@digikod.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- samples/landlock/sandboxer.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ include/uapi/linux/landlock.h |    5 +++--
+ security/landlock/syscalls.c  |    7 +++----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
---- a/samples/landlock/sandboxer.c
-+++ b/samples/landlock/sandboxer.c
-@@ -70,11 +70,15 @@ static int parse_path(char *env_path, co
- 	return num_paths;
- }
- 
-+/* clang-format off */
-+
- #define ACCESS_FILE ( \
- 	LANDLOCK_ACCESS_FS_EXECUTE | \
- 	LANDLOCK_ACCESS_FS_WRITE_FILE | \
- 	LANDLOCK_ACCESS_FS_READ_FILE)
- 
-+/* clang-format on */
-+
- static int populate_ruleset(
- 		const char *const env_var, const int ruleset_fd,
- 		const __u64 allowed_access)
-@@ -139,6 +143,8 @@ out_free_name:
- 	return ret;
- }
- 
-+/* clang-format off */
-+
- #define ACCESS_FS_ROUGHLY_READ ( \
- 	LANDLOCK_ACCESS_FS_EXECUTE | \
- 	LANDLOCK_ACCESS_FS_READ_FILE | \
-@@ -156,6 +162,8 @@ out_free_name:
- 	LANDLOCK_ACCESS_FS_MAKE_BLOCK | \
- 	LANDLOCK_ACCESS_FS_MAKE_SYM)
- 
-+/* clang-format on */
-+
- int main(const int argc, char *const argv[], char *const *const envp)
- {
- 	const char *cmd_path;
+--- a/include/uapi/linux/landlock.h
++++ b/include/uapi/linux/landlock.h
+@@ -62,8 +62,9 @@ struct landlock_path_beneath_attr {
+ 	 */
+ 	__u64 allowed_access;
+ 	/**
+-	 * @parent_fd: File descriptor, open with ``O_PATH``, which identifies
+-	 * the parent directory of a file hierarchy, or just a file.
++	 * @parent_fd: File descriptor, preferably opened with ``O_PATH``,
++	 * which identifies the parent directory of a file hierarchy, or just a
++	 * file.
+ 	 */
+ 	__s32 parent_fd;
+ 	/*
+--- a/security/landlock/syscalls.c
++++ b/security/landlock/syscalls.c
+@@ -292,14 +292,13 @@ out_fdput:
+  *
+  * - EOPNOTSUPP: Landlock is supported by the kernel but disabled at boot time;
+  * - EINVAL: @flags is not 0, or inconsistent access in the rule (i.e.
+- *   &landlock_path_beneath_attr.allowed_access is not a subset of the rule's
+- *   accesses);
++ *   &landlock_path_beneath_attr.allowed_access is not a subset of the
++ *   ruleset handled accesses);
+  * - ENOMSG: Empty accesses (e.g. &landlock_path_beneath_attr.allowed_access);
+  * - EBADF: @ruleset_fd is not a file descriptor for the current thread, or a
+  *   member of @rule_attr is not a file descriptor as expected;
+  * - EBADFD: @ruleset_fd is not a ruleset file descriptor, or a member of
+- *   @rule_attr is not the expected file descriptor type (e.g. file open
+- *   without O_PATH);
++ *   @rule_attr is not the expected file descriptor type;
+  * - EPERM: @ruleset_fd has no write access to the underlying ruleset;
+  * - EFAULT: @rule_attr inconsistency.
+  */
 
 
