@@ -2,87 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A17EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:49:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC4A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:49:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357009AbiFGTtO (ORCPT
+        id S1356555AbiFGTtT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57872 "EHLO
+        Tue, 7 Jun 2022 15:49:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354547AbiFGSrH (ORCPT
+        with ESMTP id S1354557AbiFGSrI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EDE5B0D09;
-        Tue,  7 Jun 2022 11:02:03 -0700 (PDT)
+        Tue, 7 Jun 2022 14:47:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3EF5A150;
+        Tue,  7 Jun 2022 11:02:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC61A617B4;
-        Tue,  7 Jun 2022 18:02:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A310EC385A5;
-        Tue,  7 Jun 2022 18:02:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624922;
-        bh=erIyMVOhyoEFSBOTr7ERMzU5x1lpDP/dtyEg2fpINQ8=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8237DB82343;
+        Tue,  7 Jun 2022 18:02:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2841C34115;
+        Tue,  7 Jun 2022 18:02:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624928;
+        bh=4JI497rn1w5jLXa3fsVUm1N8VcEniotvqADpCf5bPZE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GWx7AipIgJA64n22T2GM8apJGdXiv6Xb6TPcUo9JHL5e3o3OIJOJL7ZyMwdz2O53x
-         PSWRYwofwousHuyqDYQWJNJ0oRj4ReGIUkmffCjZip78wnCnQXLX+0AX5tqpqNPmdq
-         Mg24E6xv8MC808FGizmr1KzdGCyZIOWrUXdW27s55Ukk9SKpy1+QZ6Pb8JiWflh2TL
-         rIQvH1GzUUtrMbI29+m96uYeEd64mU+190Kt1OZDniwP4fxUgr4AX9geQaVKzgaeh8
-         OEfXPl/ESBGDVs69bip3sDyLjPAKAPtZIsEV4S+0un2709gFarwb2IUg6X6SRd2VOr
-         VthSX8H+cfZsA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 12/27] misc: rtsx: set NULL intfdata when probe fails
-Date:   Tue,  7 Jun 2022 14:01:16 -0400
-Message-Id: <20220607180133.481701-12-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180133.481701-1-sashal@kernel.org>
-References: <20220607180133.481701-1-sashal@kernel.org>
+        b=ZUdihUSYYKT7dqHON1NFeC4ffp73jywxPbv/wLc84bPzk4iWTclhlqR5m152RSXbk
+         iCSC055P7VwKV/VI7lkmb/e7FMeejyauemYB7goRceCkQOwMaN2IKJRexFmD+mY0B4
+         bC9FtOpZJCxr12I/YEHM8aCnfxabisQJNnzZog9Y=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tali Perry <tali.perry1@gmail.com>,
+        Tyrone Ting <kfting@nuvoton.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 504/667] i2c: npcm: Fix timeout calculation
+Date:   Tue,  7 Jun 2022 19:02:49 +0200
+Message-Id: <20220607164949.818395418@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuah Khan <skhan@linuxfoundation.org>
+From: Tali Perry <tali.perry1@gmail.com>
 
-[ Upstream commit f861d36e021e1ac4a0a2a1f6411d623809975d63 ]
+[ Upstream commit 288b204492fddf28889cea6dc95a23976632c7a0 ]
 
-rtsx_usb_probe() doesn't call usb_set_intfdata() to null out the
-interface pointer when probe fails. This leaves a stale pointer.
-Noticed the missing usb_set_intfdata() while debugging an unrelated
-invalid DMA mapping problem.
+Use adap.timeout for timeout calculation instead of hard-coded
+value of 35ms.
 
-Fix it with a call to usb_set_intfdata(..., NULL).
-
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20220429210913.46804-1-skhan@linuxfoundation.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
+Signed-off-by: Tali Perry <tali.perry1@gmail.com>
+Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/cardreader/rtsx_usb.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/i2c/busses/i2c-npcm7xx.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/misc/cardreader/rtsx_usb.c b/drivers/misc/cardreader/rtsx_usb.c
-index b97903ff1a72..869c176d48cc 100644
---- a/drivers/misc/cardreader/rtsx_usb.c
-+++ b/drivers/misc/cardreader/rtsx_usb.c
-@@ -678,6 +678,7 @@ static int rtsx_usb_probe(struct usb_interface *intf,
- 	return 0;
+diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
+index 2ad166355ec9..92fd88a3f415 100644
+--- a/drivers/i2c/busses/i2c-npcm7xx.c
++++ b/drivers/i2c/busses/i2c-npcm7xx.c
+@@ -2047,7 +2047,7 @@ static int npcm_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
+ 	u16 nwrite, nread;
+ 	u8 *write_data, *read_data;
+ 	u8 slave_addr;
+-	int timeout;
++	unsigned long timeout;
+ 	int ret = 0;
+ 	bool read_block = false;
+ 	bool read_PEC = false;
+@@ -2099,13 +2099,13 @@ static int npcm_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
+ 	 * 9: bits per transaction (including the ack/nack)
+ 	 */
+ 	timeout_usec = (2 * 9 * USEC_PER_SEC / bus->bus_freq) * (2 + nread + nwrite);
+-	timeout = max(msecs_to_jiffies(35), usecs_to_jiffies(timeout_usec));
++	timeout = max_t(unsigned long, bus->adap.timeout, usecs_to_jiffies(timeout_usec));
+ 	if (nwrite >= 32 * 1024 || nread >= 32 * 1024) {
+ 		dev_err(bus->dev, "i2c%d buffer too big\n", bus->num);
+ 		return -EINVAL;
+ 	}
  
- out_init_fail:
-+	usb_set_intfdata(ucr->pusb_intf, NULL);
- 	usb_free_coherent(ucr->pusb_dev, IOBUF_SIZE, ucr->iobuf,
- 			ucr->iobuf_dma);
- 	return ret;
+-	time_left = jiffies + msecs_to_jiffies(DEFAULT_STALL_COUNT) + 1;
++	time_left = jiffies + timeout + 1;
+ 	do {
+ 		/*
+ 		 * we must clear slave address immediately when the bus is not
+@@ -2269,7 +2269,7 @@ static int npcm_i2c_probe_bus(struct platform_device *pdev)
+ 	adap = &bus->adap;
+ 	adap->owner = THIS_MODULE;
+ 	adap->retries = 3;
+-	adap->timeout = HZ;
++	adap->timeout = msecs_to_jiffies(35);
+ 	adap->algo = &npcm_i2c_algo;
+ 	adap->quirks = &npcm_i2c_quirks;
+ 	adap->algo_data = bus;
 -- 
 2.35.1
+
+
 
