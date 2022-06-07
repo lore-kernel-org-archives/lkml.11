@@ -2,112 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EADB7CCA499
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9873DCCA495
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442333AbiFHCAS (ORCPT
+        id S1442213AbiFHB7v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:00:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33074 "EHLO
+        Tue, 7 Jun 2022 21:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1837409AbiFGX77 (ORCPT
+        with ESMTP id S1835814AbiFGX5C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:59:59 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33CEE280B19
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 15:35:05 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id a2so24338531lfg.5
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 15:35:05 -0700 (PDT)
+        Tue, 7 Jun 2022 19:57:02 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB6677B9E1
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:23:56 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id lk16-20020a17090b33d000b001e68a9ac3a1so10017351pjb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 16:23:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=qoW1gmVljAUL2+6Knzn6x1gPtTMWpq+iXyTdn9hlFNI=;
-        b=AxPXfe8Xqon4nlX+FDGyThgVp0Nb8SmKaPWlg+LsEItxm+v26x/Q/zKjDd9PdWlC0o
-         Rkyh1ZjBkn+P2P0RRC6C6NFdXQeLsxI2Yo985tlacocLxk7Obpyoa173oDBH/yIjPW/o
-         WkSvmlIfAQRMvMSG0gF3+POYP/X1/SbeVtj6VGXakmpPNElBmtlfytt+9VCHX9ukcGCa
-         42OVURr34xEWPmvTIQ1J6Dn7qsNBN9AnI0lAMKqagsEuxZOXBZscPl3fWji8hXzn1x72
-         TzqIuYdHEWuK+L9AzgIBL2YuI/C1Kzd+W5zOkCny2v9CTz1HR1joCZotKiHQDm7JNeQC
-         pGUw==
+        d=google.com; s=20210112;
+        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
+        bh=bo5BCelcXXt3fHu9uBgQz0Xkxt3J+8ZEKQKzX+su88Q=;
+        b=AiWxLo79QymuoxjFrVU0MccHOPdDVerKMgDPDOQLVx7/paevTTfLP5MwnqRr0H2DQ1
+         uWS0vJOABqTtIaXzHaSqXGOrcdd9nuhFb7ZbsL0rf6NF5PwgMuLZ2wl0J5PVJlVuqWZj
+         npkbf1QsdROJjca6fCWGfw3CI5Uzx9EyRv+7Lbe9Q3fYDnyxqsi9wUDqJJBSxKS5Z2KK
+         BTO5PvSVRPL8Y295Rirvtu71qnFQSp+pCXjEKkb7t53+qd6RV5MdPRnGzkbHNdBrosdp
+         W9ML1PpUppa5yLI+rn8oRKOfmaKPLjGfhIXb2LVFqVLE/6cOBADFiTsySyENVhxwwRGR
+         NRNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=qoW1gmVljAUL2+6Knzn6x1gPtTMWpq+iXyTdn9hlFNI=;
-        b=DC4+lq/eb/j1nw0RaeMKsgIenluOar0B23xD/dePJhAYZFjHs4bimaR9ncMg1ohCvl
-         ftT9oPtADnd9LcY3FPlqQ008qJe3fCMJQh4lCkKTNBY1dShDHXKFfY0hsmTSXpDx0UA/
-         NNoJ+gt2NZxqnd8P+i0PC5sq5H7pUgWeh/oYjwILDUFqK9Lg1p0gCr0kJkgSsQPGyKFc
-         1DvdtkpcvFBg/48NxJawLsQj/Af5C6ctHJ89tRlgHBqSYJ9bzRDv8+YUYuqIPmhD5ibD
-         zqHw62RHrdEZ5mnsG+tQtIKU8ta+gN3AhDQZuzNmb1nuQpsSY63jc/X8PadFmHk13I2q
-         /OIw==
-X-Gm-Message-State: AOAM53264LXrNC5KqKWoPlPeyi1H+LGbgWg985esFdee2GG6UaprGr7R
-        jse+QGBpPrEnARDvCJI0cJrTRg==
-X-Google-Smtp-Source: ABdhPJzCfE5fl1O6+eZqnTJpd4HzsWT6PV949KVeMp1srMc//o0rggoboGViIvouXtvg2Af4hURThg==
-X-Received: by 2002:a05:6512:545:b0:479:b15:6671 with SMTP id h5-20020a056512054500b004790b156671mr19852457lfl.579.1654641295093;
-        Tue, 07 Jun 2022 15:34:55 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id p4-20020a056512312400b0047255d211f7sm3418559lfd.294.2022.06.07.15.34.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 15:34:54 -0700 (PDT)
-Message-ID: <9077f91b-0e1d-25bc-56a9-66a500e16ff4@linaro.org>
-Date:   Wed, 8 Jun 2022 01:34:54 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2 0/5] phy: qcom: Add SC8280XP UNI and COMBO USB phys
-Content-Language: en-GB
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Manu Gautam <mgautam@codeaurora.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220607213543.4057620-1-bjorn.andersson@linaro.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220607213543.4057620-1-bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
+         :from:to:cc;
+        bh=bo5BCelcXXt3fHu9uBgQz0Xkxt3J+8ZEKQKzX+su88Q=;
+        b=Q8dw0z3Iv2UMvfWpwyui5FoHBRy0g+v2brIkddWLJw5rV6UdtpZ8LpfQbZaq6QXtap
+         O6lGkavLkBP8n6KH7i+Ga9GBmNzYKA7RKgAqqAtuc+IzELFKSWjhN/NJ12xd4ZU6qsvx
+         8Q7stQds0W0gGoQF1XhxTp3F/Lv+2VDhe569+4AbAUvBgycCEmtfv7C3Q3JeAKeahgdU
+         m55U2t4e0YJ7TaczlCvD6T3/aMNwl6dbep9e39Y8OJ97wruSHbTsjXAutOFVQ+3sjUeN
+         O4jmPdd1tQWyEbBXctUBxjTGMT2vOMDFgVTMQU7KJho9cL/XbWhTh+uS88vdEV8tdJb4
+         hTPQ==
+X-Gm-Message-State: AOAM530vuha1I4tco62Mn937a0Ti1DibtUMUv2IKixOuHAx3FPG1NSNQ
+        QWfYh110IXs7zNN1pyJrXJgWjzNKGbA=
+X-Google-Smtp-Source: ABdhPJyWjszfOTBfQZ2L5GPUQD53SR9MIfNT6OkCd2LGRz0f74hUIQI6IopOkm2dZFMlwhpBGzb0jy7Rp8c=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:807:b0:51b:f4b5:db82 with SMTP id
+ m7-20020a056a00080700b0051bf4b5db82mr19693888pfk.57.1654644236226; Tue, 07
+ Jun 2022 16:23:56 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Tue,  7 Jun 2022 23:23:50 +0000
+Message-Id: <20220607232353.3375324-1-seanjc@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH 0/3] KVM: VMX: Let userspace set IA32_FEAT_CTL at will
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/06/2022 00:35, Bjorn Andersson wrote:
-> The Qualcomm SC8280XP has two pairs of USB phys; a pair of combo phys and a
-> pair of uni phys. Introduce support for these.
-> 
-> This is based ontop of Dmitry's refactoring of the QMP driver:
-> https://lore.kernel.org/all/20220602070909.1666068-1-dmitry.baryshkov@linaro.org/
-> 
-> A first version of this series was posted with only the UNI phy, this fixes a
-> few comments and add the combo phy as well.
-> 
-> Bjorn Andersson (5):
->    dt-bindings: phy: qcom,qmp: Add compatible for SC8280XP USB phys
->    phy: qcom-qmp: Add USB3 5NM QMP UNI registers
->    phy: qcom-qmp: Add USB4 5NM QMP combo PHY registers
+Fix a bug where KVM requires userspace to set the guest CPUID model
+in order to enable features via IA32_FEAT_CTL.
 
-I've noted, which symbols look close enough to be folded into existing 
-namespaces. Could you please doublecheck my analysis and merge the tables?
+Note, the selftest builds on the vmx_msrs_test from the VMX MSRs series[*],
+i.e. it won't apply cleanly on kvm/queue.  
 
->    phy: qcom-qmp: Add SC8280XP USB3 UNI phy
->    phy: qcom-qmp: Add sc8280xp USB/DP combo phys
-> 
->   .../devicetree/bindings/phy/qcom,qmp-phy.yaml |    2 +
->   .../bindings/phy/qcom,qmp-usb3-dp-phy.yaml    |    1 +
->   drivers/phy/qualcomm/phy-qcom-qmp-combo.c     |  205 +++
->   drivers/phy/qualcomm/phy-qcom-qmp-usb.c       |  138 ++
->   drivers/phy/qualcomm/phy-qcom-qmp.h           |   13 +
->   .../phy/qualcomm/phy-qcom-usb3-5nm-qmp-uni.h  |  617 +++++++
->   .../qualcomm/phy-qcom-usb4-5nm-qmp-combo.h    | 1547 +++++++++++++++++
->   7 files changed, 2523 insertions(+)
->   create mode 100644 drivers/phy/qualcomm/phy-qcom-usb3-5nm-qmp-uni.h
->   create mode 100644 drivers/phy/qualcomm/phy-qcom-usb4-5nm-qmp-combo.h
-> 
+[*] https://lkml.kernel.org/r/20220607213604.3346000-1-seanjc@google.com
+
+Sean Christopherson (3):
+  KVM: VMX: Allow userspace to set all supported FEATURE_CONTROL bits
+  KVM: VMX: Move MSR_IA32_FEAT_CTL.LOCKED check into "is valid" helper
+  KVM: selftests: Verify userspace can stuff IA32_FEATURE_CONTROL at
+    will
+
+ arch/x86/kvm/vmx/vmx.c                        | 43 ++++++++++++++---
+ .../selftests/kvm/include/x86_64/processor.h  |  2 +
+ .../selftests/kvm/x86_64/vmx_msrs_test.c      | 47 +++++++++++++++++++
+ 3 files changed, 85 insertions(+), 7 deletions(-)
 
 
+base-commit: 838fd3e5a7208ee3b95bf73898c135a44a0c589d
 -- 
-With best wishes
-Dmitry
+2.36.1.255.ge46751e96f-goog
+
