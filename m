@@ -2,198 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 341E4C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 432DAC433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:30:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387673AbiFHB1a (ORCPT
+        id S1389207AbiFHB2X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:27:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55622 "EHLO
+        Tue, 7 Jun 2022 21:28:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453564AbiFGXPi (ORCPT
+        with ESMTP id S1381966AbiFGVpy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:15:38 -0400
-Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75743248561
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:07:43 -0700 (PDT)
-Received: by mail-vs1-xe34.google.com with SMTP id e11so3345652vsh.13
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:07:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BgxQ0h6I958Y2GI2JoqVGW/OESE9fxrXKfh9ZN0Zq08=;
-        b=oKoX3EKP+If3Pg3CSsiIzp7MdgwGoVt1eWuoV8GtnXDvuCJWY+M7wmLS8sygJpkjaK
-         iOAb0QC3WVE1pARsV9XTNGUaZNsCEia7M1Y1OMdqEzCr2DXhR1x2R0fjgls2GHghq0DJ
-         kmV9VrpihV+4mk7fDF1AIBg06e8OMvXc5a6mzwLGlAFIx2PS+fPJA4xnLb/RNoCfe/qz
-         5sLk3qDe0vNhpDymnq40eNUHcQXuLAYm2G/O3hH9F58tM1JmX/d7h9aWfcX3LmHxBJIg
-         ulq8z9he5xJHfSCzWyqQiUlWhK6wtsKlDnmt21fI11y8OSoQVCEq2KhLU5sFa9gV6pa0
-         7+zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BgxQ0h6I958Y2GI2JoqVGW/OESE9fxrXKfh9ZN0Zq08=;
-        b=4TsVOPqGZ66Ay0eKJwnanJlUPjdoFI2EBZdQ3mjbzh6Mdr4uQnbqEdHlXqm7RZFYFa
-         6iUs9bKWYY7vsEcvO7+x50OxvT/akLVScknQDUzElFRpHvrpc+mJhGe5rlzsydLzd7+h
-         zzvZT3We6/aRTXhoCmPD8tP61atelWAOX5AsoFGStPFoyEtrSpWNzWRYxBgS8Bx8sRj8
-         cALbbpVzaVHxtJZt+7ulvDMU59FPd/pqbLvlnij+XrSqxgUsmDTOpI+vmkTuddFnV8fk
-         YlwRGt8WkSpYkrK5lkFfV0WEex2512rj62OKDaOkd3LzE8/4xSi9vBQuyXW0gIg6IUh1
-         V6pw==
-X-Gm-Message-State: AOAM530MRNIij+91BnEuBjNA5XILAvVReLMkQ4myD1nzfDi448FT3dUa
-        KrDCGqEckVo78JkEregbzPYnylZkk1FXimFoISCtHg==
-X-Google-Smtp-Source: ABdhPJyjqcySNrRwXkeaEuBGNMG5NFNqHbpYoFwoZhrkb2oGCeTEFoqKeluO9Bya5UCEshSWAgyv3unWIgN/r4anB6o=
-X-Received: by 2002:a67:f3d0:0:b0:34b:b52d:d676 with SMTP id
- j16-20020a67f3d0000000b0034bb52dd676mr6635528vsn.6.1654636053943; Tue, 07 Jun
- 2022 14:07:33 -0700 (PDT)
+        Tue, 7 Jun 2022 17:45:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98B5723524B;
+        Tue,  7 Jun 2022 12:07:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A675BB823AE;
+        Tue,  7 Jun 2022 19:07:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19ECAC385A2;
+        Tue,  7 Jun 2022 19:07:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628852;
+        bh=4LbOCf92jl4mfacrch4WyVDplyojpAhQ5IeBDU0OlTs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=luqYirGMxIhzwWLb9aTS8DZbjDvpmZkBNEhnUdsREqODuMXYP8b48XQKtZKNk8S4/
+         lmj5zYN9Jezg0DWygtwy24AgA14OH8Bs6z96nzfhalSxa6hq1Hxs2J4Fkimk3knSjQ
+         GALCixUi4Tr7SD0BzRhpGQNruBjTO6ipx18xRFSo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Wolfgang Bumiller <w.bumiller@proxmox.com>,
+        Tejun Heo <tj@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 479/879] blk-cgroup: always terminate io.stat lines
+Date:   Tue,  7 Jun 2022 18:59:57 +0200
+Message-Id: <20220607165016.781356822@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220518014632.922072-1-yuzhao@google.com> <20220518014632.922072-8-yuzhao@google.com>
- <CAGsJ_4yboZEY9OfyujPxBa_AEuGM3OAq5y_L9gvzSMUv70BxeQ@mail.gmail.com>
- <CAGsJ_4w3S_8Kaw2GyB3hg7b4N_D+6yBO7D6qmgxD9Fqz3_dhAg@mail.gmail.com>
- <20220607102135.GA32448@willie-the-truck> <CAGsJ_4zGEdHDv0ObZ-5y8sFKLO7Y6ZjTsZFs0KvdLwA_-iGJ5A@mail.gmail.com>
- <20220607104358.GA32583@willie-the-truck>
-In-Reply-To: <20220607104358.GA32583@willie-the-truck>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Tue, 7 Jun 2022 15:06:57 -0600
-Message-ID: <CAOUHufZh46A2hh_fn-8vVBDi_621rgbZq64_afDt8VxrzqJz1g@mail.gmail.com>
-Subject: Re: [PATCH v11 07/14] mm: multi-gen LRU: exploit locality in rmap
-To:     Will Deacon <will@kernel.org>
-Cc:     Barry Song <21cnbao@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Tejun Heo <tj@kernel.org>, Vlastimil Babka <vbabka@suse.cz>,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, x86 <x86@kernel.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>, huzhanyuan@oppo.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 4:44 AM Will Deacon <will@kernel.org> wrote:
->
-> On Tue, Jun 07, 2022 at 10:37:46AM +1200, Barry Song wrote:
-> > On Tue, Jun 7, 2022 at 10:21 PM Will Deacon <will@kernel.org> wrote:
-> > > On Tue, Jun 07, 2022 at 07:37:10PM +1200, Barry Song wrote:
-> > > > I can't really explain why we are getting a random app/java vm crash in monkey
-> > > > test by using ptep_test_and_clear_young() only in lru_gen_look_around() on an
-> > > > armv8-a machine without hardware PTE young support.
-> > > >
-> > > > Moving to  ptep_clear_flush_young() in look_around can make the random
-> > > > hang disappear according to zhanyuan(Cc-ed).
-> > > >
-> > > > On x86, ptep_clear_flush_young() is exactly ptep_test_and_clear_young()
-> > > > after
-> > > >  'commit b13b1d2d8692 ("x86/mm: In the PTE swapout page reclaim case clear
-> > > > the accessed bit instead of flushing the TLB")'
-> > > >
-> > > > But on arm64, they are different. according to Will's comments in this
-> > > > thread which
-> > > > tried to make arm64 same with x86,
-> > > > https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1793881.html
-> > > >
-> > > > "
-> > > > This is blindly copied from x86 and isn't true for us: we don't invalidate
-> > > > the TLB on context switch. That means our window for keeping the stale
-> > > > entries around is potentially much bigger and might not be a great idea.
-> > > >
-> > > > If we roll a TLB invalidation routine without the trailing DSB, what sort of
-> > > > performance does that get you?
-> > > > "
-> > > > We shouldn't think ptep_clear_flush_young() is safe enough in LRU to
-> > > > clear PTE young? Any comments from Will?
-> > >
-> > > Given that this issue is specific to the multi-gen LRU work, I think Yu is
-> > > the best person to comment. However, looking quickly at your analysis above,
-> > > I wonder if the code is relying on this sequence:
-> > >
-> > >
-> > >         ptep_test_and_clear_young(vma, address, ptep);
-> > >         ptep_clear_flush_young(vma, address, ptep);
-> > >
-> > >
-> > > to invalidate the TLB. On arm64, that won't be the case, as the invalidation
-> > > in ptep_clear_flush_young() is predicated on the pte being young (and this
-> > > patches the generic implementation in mm/pgtable-generic.c. In fact, that
-> > > second function call is always going to be a no-op unless the pte became
-> > > young again in the middle.
-> >
-> > thanks for your reply, sorry for failing to let you understand my question.
-> > my question is actually as below,
-> > right now  lru_gen_look_around() is using ptep_test_and_clear_young()
-> > only without flush to clear pte for a couple of pages including the specific
-> > address:
-> > void lru_gen_look_around(struct page_vma_mapped_walk *pvmw)
-> > {
-> >        ...
-> >
-> >        for (i = 0, addr = start; addr != end; i++, addr += PAGE_SIZE) {
-> >                ...
-> >
-> >                if (!ptep_test_and_clear_young(pvmw->vma, addr, pte + i))
-> >                        continue;
-> >
-> >                ...
-> > }
-> >
-> > I wonder if it is safe to arm64. Do we need to move to ptep_clear_flush_young()
-> > in the loop?
->
-> I don't know what this code is doing, so Yu is the best person to answer
-> that. There's nothing inherently dangerous about eliding the TLB
-> maintenance; it really depends on the guarantees needed by the caller.
+From: Wolfgang Bumiller <w.bumiller@proxmox.com>
 
-Ack.
+[ Upstream commit 3607849df47822151b05df440759e2dc70160755 ]
 
-> However, the snippet you posted from folio_referenced_one():
->
->  |                  if (pvmw.pte) {
->  |  +                       if (lru_gen_enabled() && pte_young(*pvmw.pte) &&
->  |  +                           !(vma->vm_flags & (VM_SEQ_READ | VM_RAND_READ))) {
->  |  +                               lru_gen_look_around(&pvmw);
->  |  +                               referenced++;
->  |  +                       }
->  |  +
->  |                          if (ptep_clear_flush_young_notify(vma, address,
->
->
-> Does seem to call lru_gen_look_around() *and*
-> ptep_clear_flush_young_notify(), which is what prompted my question as it
-> looks pretty suspicious to me.
+With the removal of seq_get_buf in blkcg_print_one_stat, we
+cannot make adding the newline conditional on there being
+relevant stats because the name was already written out
+unconditionally.
+Otherwise we may end up with multiple device names in one
+line which is confusing and doesn't follow the nested-keyed
+file format.
 
-The _notify varint reaches into the MMU notifier --
-lru_gen_look_around() doesn't do that because GPA space generally has
-no locality. I hope this explains why both.
+Signed-off-by: Wolfgang Bumiller <w.bumiller@proxmox.com>
+Fixes: 252c651a4c85 ("blk-cgroup: stop using seq_get_buf")
+Acked-by: Tejun Heo <tj@kernel.org>
+Link: https://lore.kernel.org/r/20220111083159.42340-1-w.bumiller@proxmox.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ block/blk-cgroup.c    | 9 ++-------
+ block/blk-cgroup.h    | 2 +-
+ block/blk-iocost.c    | 5 ++---
+ block/blk-iolatency.c | 8 +++-----
+ 4 files changed, 8 insertions(+), 16 deletions(-)
 
-As to why the code is organized this way -- it depends on the point of
-view. Mine is that lru_gen_look_around() is an add-on, since its logic
-is independent/separable from ptep_clear_flush_young_notify(). We can
-make lru_gen_look_around() include ptep_clear_flush_young_notify(),
-but that would make the code functionally interwinted, which is bad
-for my taste.
+diff --git a/block/blk-cgroup.c b/block/blk-cgroup.c
+index 8dfe62786cd5..6f9aeb6a337d 100644
+--- a/block/blk-cgroup.c
++++ b/block/blk-cgroup.c
+@@ -905,7 +905,6 @@ static void blkcg_print_one_stat(struct blkcg_gq *blkg, struct seq_file *s)
+ {
+ 	struct blkg_iostat_set *bis = &blkg->iostat;
+ 	u64 rbytes, wbytes, rios, wios, dbytes, dios;
+-	bool has_stats = false;
+ 	const char *dname;
+ 	unsigned seq;
+ 	int i;
+@@ -931,14 +930,12 @@ static void blkcg_print_one_stat(struct blkcg_gq *blkg, struct seq_file *s)
+ 	} while (u64_stats_fetch_retry(&bis->sync, seq));
+ 
+ 	if (rbytes || wbytes || rios || wios) {
+-		has_stats = true;
+ 		seq_printf(s, "rbytes=%llu wbytes=%llu rios=%llu wios=%llu dbytes=%llu dios=%llu",
+ 			rbytes, wbytes, rios, wios,
+ 			dbytes, dios);
+ 	}
+ 
+ 	if (blkcg_debug_stats && atomic_read(&blkg->use_delay)) {
+-		has_stats = true;
+ 		seq_printf(s, " use_delay=%d delay_nsec=%llu",
+ 			atomic_read(&blkg->use_delay),
+ 			atomic64_read(&blkg->delay_nsec));
+@@ -950,12 +947,10 @@ static void blkcg_print_one_stat(struct blkcg_gq *blkg, struct seq_file *s)
+ 		if (!blkg->pd[i] || !pol->pd_stat_fn)
+ 			continue;
+ 
+-		if (pol->pd_stat_fn(blkg->pd[i], s))
+-			has_stats = true;
++		pol->pd_stat_fn(blkg->pd[i], s);
+ 	}
+ 
+-	if (has_stats)
+-		seq_printf(s, "\n");
++	seq_puts(s, "\n");
+ }
+ 
+ static int blkcg_print_stat(struct seq_file *sf, void *v)
+diff --git a/block/blk-cgroup.h b/block/blk-cgroup.h
+index 47e1e38390c9..b56ba16fb6c5 100644
+--- a/block/blk-cgroup.h
++++ b/block/blk-cgroup.h
+@@ -63,7 +63,7 @@ typedef void (blkcg_pol_online_pd_fn)(struct blkg_policy_data *pd);
+ typedef void (blkcg_pol_offline_pd_fn)(struct blkg_policy_data *pd);
+ typedef void (blkcg_pol_free_pd_fn)(struct blkg_policy_data *pd);
+ typedef void (blkcg_pol_reset_pd_stats_fn)(struct blkg_policy_data *pd);
+-typedef bool (blkcg_pol_stat_pd_fn)(struct blkg_policy_data *pd,
++typedef void (blkcg_pol_stat_pd_fn)(struct blkg_policy_data *pd,
+ 				struct seq_file *s);
+ 
+ struct blkcg_policy {
+diff --git a/block/blk-iocost.c b/block/blk-iocost.c
+index 9bd670999d0a..16705fbd0699 100644
+--- a/block/blk-iocost.c
++++ b/block/blk-iocost.c
+@@ -3005,13 +3005,13 @@ static void ioc_pd_free(struct blkg_policy_data *pd)
+ 	kfree(iocg);
+ }
+ 
+-static bool ioc_pd_stat(struct blkg_policy_data *pd, struct seq_file *s)
++static void ioc_pd_stat(struct blkg_policy_data *pd, struct seq_file *s)
+ {
+ 	struct ioc_gq *iocg = pd_to_iocg(pd);
+ 	struct ioc *ioc = iocg->ioc;
+ 
+ 	if (!ioc->enabled)
+-		return false;
++		return;
+ 
+ 	if (iocg->level == 0) {
+ 		unsigned vp10k = DIV64_U64_ROUND_CLOSEST(
+@@ -3027,7 +3027,6 @@ static bool ioc_pd_stat(struct blkg_policy_data *pd, struct seq_file *s)
+ 			iocg->last_stat.wait_us,
+ 			iocg->last_stat.indebt_us,
+ 			iocg->last_stat.indelay_us);
+-	return true;
+ }
+ 
+ static u64 ioc_weight_prfill(struct seq_file *sf, struct blkg_policy_data *pd,
+diff --git a/block/blk-iolatency.c b/block/blk-iolatency.c
+index 2f33932e72e3..5b676c7cf2b6 100644
+--- a/block/blk-iolatency.c
++++ b/block/blk-iolatency.c
+@@ -891,7 +891,7 @@ static int iolatency_print_limit(struct seq_file *sf, void *v)
+ 	return 0;
+ }
+ 
+-static bool iolatency_ssd_stat(struct iolatency_grp *iolat, struct seq_file *s)
++static void iolatency_ssd_stat(struct iolatency_grp *iolat, struct seq_file *s)
+ {
+ 	struct latency_stat stat;
+ 	int cpu;
+@@ -914,17 +914,16 @@ static bool iolatency_ssd_stat(struct iolatency_grp *iolat, struct seq_file *s)
+ 			(unsigned long long)stat.ps.missed,
+ 			(unsigned long long)stat.ps.total,
+ 			iolat->rq_depth.max_depth);
+-	return true;
+ }
+ 
+-static bool iolatency_pd_stat(struct blkg_policy_data *pd, struct seq_file *s)
++static void iolatency_pd_stat(struct blkg_policy_data *pd, struct seq_file *s)
+ {
+ 	struct iolatency_grp *iolat = pd_to_lat(pd);
+ 	unsigned long long avg_lat;
+ 	unsigned long long cur_win;
+ 
+ 	if (!blkcg_debug_stats)
+-		return false;
++		return;
+ 
+ 	if (iolat->ssd)
+ 		return iolatency_ssd_stat(iolat, s);
+@@ -937,7 +936,6 @@ static bool iolatency_pd_stat(struct blkg_policy_data *pd, struct seq_file *s)
+ 	else
+ 		seq_printf(s, " depth=%u avg_lat=%llu win=%llu",
+ 			iolat->rq_depth.max_depth, avg_lat, cur_win);
+-	return true;
+ }
+ 
+ static struct blkg_policy_data *iolatency_pd_alloc(gfp_t gfp,
+-- 
+2.35.1
+
+
+
