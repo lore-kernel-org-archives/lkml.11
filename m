@@ -2,113 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CB7BCCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46A36CCA488
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356255AbiFGT1H (ORCPT
+        id S1356409AbiFGT1m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
+        Tue, 7 Jun 2022 15:27:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349645AbiFGSd3 (ORCPT
+        with ESMTP id S1352498AbiFGSer (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:33:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C424517EF69;
-        Tue,  7 Jun 2022 10:57:31 -0700 (PDT)
+        Tue, 7 Jun 2022 14:34:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A771115;
+        Tue,  7 Jun 2022 10:57:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5068D618A8;
-        Tue,  7 Jun 2022 17:57:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACE69C341C4;
-        Tue,  7 Jun 2022 17:57:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624650;
-        bh=0nJFzgcaJaJjHa1EQMZdGiu4tL4BUXk5ZBpuvTlFthw=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 152E7617A7;
+        Tue,  7 Jun 2022 17:57:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22299C34115;
+        Tue,  7 Jun 2022 17:57:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624662;
+        bh=E/YtM1QEvoFa47vJQc7J+m3/JvtSD7J53XHh40VCSew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NCfKvFaDhOS10hez+4Po1axVvjsdmMzS8tBWPpJx5OFG96TPCAsC12uXogngGHr7v
-         iL4O0yPzOrDSvTXWO+u6vIGgnzOJ6EHbp2Mmq2S2AKkk6QjCr1OBY0eaW6oE0bQt1J
-         K8YGICjpPvrPoO74jznVhXZt/Yum8Hn9iMUSKhRbwmj5aSO0c0wexXIi12c/ZxTWnM
-         RK+XyKBHAy8tuHVV2B7GrnzWXhE/VArZGuWR5a6Uyw8+hNihR6X/5BWpLnQxqa29G6
-         CD+RJAPBiuXN2tCYv6Bwa44zCo1YId1hOkI8r3tn+5zEPfR81jzfF4FCwpz0Zo7TCe
-         OlQaY4DstN0mQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
-        Donald Buczek <buczek@molgen.mpg.de>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        linux-raid@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 32/51] md: protect md_unregister_thread from reentrancy
-Date:   Tue,  7 Jun 2022 13:55:31 -0400
-Message-Id: <20220607175552.479948-32-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
-References: <20220607175552.479948-1-sashal@kernel.org>
+        b=tqGOYdhFVldCMifaO8nAj+KbWao+I4mfmfzLFLrBqw00EMS96nhHora4oML7SZqUF
+         rdOx47haOEe6d5M/zbgL/FAK73wSZc40BvAgYniPJsi3TGbDRutIy/5bzS32zcuvro
+         VZYFfwLFyVza6JZbdGgeDZfKx6U2OH6tcJKl4lZk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 409/667] ARM: dts: bcm2837-rpi-3-b-plus: Fix GPIO line name of power LED
+Date:   Tue,  7 Jun 2022 19:01:14 +0200
+Message-Id: <20220607164947.008740669@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
+From: Phil Elwell <phil@raspberrypi.com>
 
-[ Upstream commit 1e267742283a4b5a8ca65755c44166be27e9aa0f ]
+[ Upstream commit 57f718aa4b93392fb1a8c0a874ab882b9e18136a ]
 
-Generally, the md_unregister_thread is called with reconfig_mutex, but
-raid_message in dm-raid doesn't hold reconfig_mutex to unregister thread,
-so md_unregister_thread can be called simulitaneously from two call sites
-in theory.
+The red LED on the Raspberry Pi 3 B Plus is the power LED.
+So fix the GPIO line name accordingly.
 
-Then after previous commit which remove the protection of reconfig_mutex
-for md_unregister_thread completely, the potential issue could be worse
-than before.
-
-Let's take pers_lock at the beginning of function to ensure reentrancy.
-
-Reported-by: Donald Buczek <buczek@molgen.mpg.de>
-Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
-Signed-off-by: Song Liu <song@kernel.org>
+Fixes: 71c0cd2283f2 ("ARM: dts: bcm2837: Add Raspberry Pi 3 B+")
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/md.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/md/md.c b/drivers/md/md.c
-index 8d569db21b1a..96c688b8a0fc 100644
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -7944,17 +7944,22 @@ EXPORT_SYMBOL(md_register_thread);
- 
- void md_unregister_thread(struct md_thread **threadp)
- {
--	struct md_thread *thread = *threadp;
--	if (!thread)
--		return;
--	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
--	/* Locking ensures that mddev_unlock does not wake_up a
-+	struct md_thread *thread;
-+
-+	/*
-+	 * Locking ensures that mddev_unlock does not wake_up a
- 	 * non-existent thread
- 	 */
- 	spin_lock(&pers_lock);
-+	thread = *threadp;
-+	if (!thread) {
-+		spin_unlock(&pers_lock);
-+		return;
-+	}
- 	*threadp = NULL;
- 	spin_unlock(&pers_lock);
- 
-+	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
- 	kthread_stop(thread->tsk);
- 	kfree(thread);
- }
+diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
+index 61010266ca9a..90472e76a313 100644
+--- a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
++++ b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
+@@ -45,7 +45,7 @@
+ 		#gpio-cells = <2>;
+ 		gpio-line-names = "BT_ON",
+ 				  "WL_ON",
+-				  "STATUS_LED_R",
++				  "PWR_LED_R",
+ 				  "LAN_RUN",
+ 				  "",
+ 				  "CAM_GPIO0",
 -- 
 2.35.1
+
+
 
