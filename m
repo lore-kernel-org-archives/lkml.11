@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0064CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24732C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381318AbiFGVnA (ORCPT
+        id S1381327AbiFGVnK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:43:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48924 "EHLO
+        Tue, 7 Jun 2022 17:43:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378773AbiFGUwb (ORCPT
+        with ESMTP id S1378817AbiFGUwe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:52:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA019B20;
-        Tue,  7 Jun 2022 11:43:05 -0700 (PDT)
+        Tue, 7 Jun 2022 16:52:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EDBD1057B;
+        Tue,  7 Jun 2022 11:43:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C337615CE;
-        Tue,  7 Jun 2022 18:43:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A765C385A5;
-        Tue,  7 Jun 2022 18:43:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EDCDD6169F;
+        Tue,  7 Jun 2022 18:43:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DF70C385A2;
+        Tue,  7 Jun 2022 18:43:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627383;
-        bh=FyY2iXn1IBDKbl79VCV0eA+IspKDZLXesy8c0fH05HE=;
+        s=korg; t=1654627389;
+        bh=p6AyCMNuodEwCOkW6r5sEFSQXrSzPjcthGFZPDEb/Xg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ciL83mXcSa71jsOqBg78zjMdbBrNlXCXhLyOq82AbiYMI+0Vi6vW02cjXeq+PY/+M
-         9csc2y7+G6fipu/r679VBimucTL+oKHUoQe8cT83RE+P9YTnzE0+oniwfWs678AyJZ
-         aitBSKzyPKEa2KBKZsZFkf44BctjxtNeUnGjGdBM=
+        b=I/4IzPnM6QEd5U6THkPyc7/RE/G9iXLH1rbx/pmOunImiLe2aD5yQOoJtAIdqDe5L
+         lpEYh7/CedW5NUIG+pehfXqQDjRZypIO42lIUaqG5MXFJMiMMPHdmrNR0Z/fAirkPL
+         U5frNQ1mRnXcBwi56x+hr4k3h1y5DCHIpWQejeho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Song Liu <song@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.17 719/772] ftrace: Clean up hash direct_functions on register failures
-Date:   Tue,  7 Jun 2022 19:05:11 +0200
-Message-Id: <20220607165010.230249552@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Joerg Roedel <jroedel@suse.de>
+Subject: [PATCH 5.17 721/772] iommu/msm: Fix an incorrect NULL check on list iterator
+Date:   Tue,  7 Jun 2022 19:05:13 +0200
+Message-Id: <20220607165010.287116485@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,106 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Song Liu <song@kernel.org>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 7d54c15cb89a29a5f59e5ffc9ee62e6591769ef1 upstream.
+commit 8b9ad480bd1dd25f4ff4854af5685fa334a2f57a upstream.
 
-We see the following GPF when register_ftrace_direct fails:
+The bug is here:
+	if (!iommu || iommu->dev->of_node != spec->np) {
 
-[ ] general protection fault, probably for non-canonical address \
-  0x200000000000010: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC PTI
-[...]
-[ ] RIP: 0010:ftrace_find_rec_direct+0x53/0x70
-[ ] Code: 48 c1 e0 03 48 03 42 08 48 8b 10 31 c0 48 85 d2 74 [...]
-[ ] RSP: 0018:ffffc9000138bc10 EFLAGS: 00010206
-[ ] RAX: 0000000000000000 RBX: ffffffff813e0df0 RCX: 000000000000003b
-[ ] RDX: 0200000000000000 RSI: 000000000000000c RDI: ffffffff813e0df0
-[ ] RBP: ffffffffa00a3000 R08: ffffffff81180ce0 R09: 0000000000000001
-[ ] R10: ffffc9000138bc18 R11: 0000000000000001 R12: ffffffff813e0df0
-[ ] R13: ffffffff813e0df0 R14: ffff888171b56400 R15: 0000000000000000
-[ ] FS:  00007fa9420c7780(0000) GS:ffff888ff6a00000(0000) knlGS:000000000
-[ ] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ ] CR2: 000000000770d000 CR3: 0000000107d50003 CR4: 0000000000370ee0
-[ ] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[ ] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[ ] Call Trace:
-[ ]  <TASK>
-[ ]  register_ftrace_direct+0x54/0x290
-[ ]  ? render_sigset_t+0xa0/0xa0
-[ ]  bpf_trampoline_update+0x3f5/0x4a0
-[ ]  ? 0xffffffffa00a3000
-[ ]  bpf_trampoline_link_prog+0xa9/0x140
-[ ]  bpf_tracing_prog_attach+0x1dc/0x450
-[ ]  bpf_raw_tracepoint_open+0x9a/0x1e0
-[ ]  ? find_held_lock+0x2d/0x90
-[ ]  ? lock_release+0x150/0x430
-[ ]  __sys_bpf+0xbd6/0x2700
-[ ]  ? lock_is_held_type+0xd8/0x130
-[ ]  __x64_sys_bpf+0x1c/0x20
-[ ]  do_syscall_64+0x3a/0x80
-[ ]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[ ] RIP: 0033:0x7fa9421defa9
-[ ] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 9 f8 [...]
-[ ] RSP: 002b:00007ffed743bd78 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-[ ] RAX: ffffffffffffffda RBX: 00000000069d2480 RCX: 00007fa9421defa9
-[ ] RDX: 0000000000000078 RSI: 00007ffed743bd80 RDI: 0000000000000011
-[ ] RBP: 00007ffed743be00 R08: 0000000000bb7270 R09: 0000000000000000
-[ ] R10: 00000000069da210 R11: 0000000000000246 R12: 0000000000000001
-[ ] R13: 00007ffed743c4b0 R14: 00000000069d2480 R15: 0000000000000001
-[ ]  </TASK>
-[ ] Modules linked in: klp_vm(OK)
-[ ] ---[ end trace 0000000000000000 ]---
+The list iterator value 'iommu' will *always* be set and non-NULL by
+list_for_each_entry(), so it is incorrect to assume that the iterator
+value will be NULL if the list is empty or no element is found (in fact,
+it will point to a invalid structure object containing HEAD).
 
-One way to trigger this is:
-  1. load a livepatch that patches kernel function xxx;
-  2. run bpftrace -e 'kfunc:xxx {}', this will fail (expected for now);
-  3. repeat #2 => gpf.
-
-This is because the entry is added to direct_functions, but not removed.
-Fix this by remove the entry from direct_functions when
-register_ftrace_direct fails.
-
-Also remove the last trailing space from ftrace.c, so we don't have to
-worry about it anymore.
-
-Link: https://lkml.kernel.org/r/20220524170839.900849-1-song@kernel.org
+To fix the bug, use a new value 'iter' as the list iterator, while use
+the old value 'iommu' as a dedicated variable to point to the found one,
+and remove the unneeded check for 'iommu->dev->of_node != spec->np'
+outside the loop.
 
 Cc: stable@vger.kernel.org
-Fixes: 763e34e74bb7 ("ftrace: Add register_ftrace_direct()")
-Signed-off-by: Song Liu <song@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: f78ebca8ff3d6 ("iommu/msm: Add support for generic master bindings")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220501132823.12714-1-xiam0nd.tong@gmail.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/ftrace.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/iommu/msm_iommu.c |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -4448,7 +4448,7 @@ int ftrace_func_mapper_add_ip(struct ftr
-  * @ip: The instruction pointer address to remove the data from
-  *
-  * Returns the data if it is found, otherwise NULL.
-- * Note, if the data pointer is used as the data itself, (see 
-+ * Note, if the data pointer is used as the data itself, (see
-  * ftrace_func_mapper_find_ip(), then the return value may be meaningless,
-  * if the data pointer was set to zero.
-  */
-@@ -5151,8 +5151,6 @@ int register_ftrace_direct(unsigned long
- 		goto out_unlock;
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -615,16 +615,19 @@ static void insert_iommu_master(struct d
+ static int qcom_iommu_of_xlate(struct device *dev,
+ 			       struct of_phandle_args *spec)
+ {
+-	struct msm_iommu_dev *iommu;
++	struct msm_iommu_dev *iommu = NULL, *iter;
+ 	unsigned long flags;
+ 	int ret = 0;
  
- 	ret = ftrace_set_filter_ip(&direct_ops, ip, 0, 0);
--	if (ret)
--		remove_hash_entry(direct_functions, entry);
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+-	list_for_each_entry(iommu, &qcom_iommu_devices, dev_node)
+-		if (iommu->dev->of_node == spec->np)
++	list_for_each_entry(iter, &qcom_iommu_devices, dev_node) {
++		if (iter->dev->of_node == spec->np) {
++			iommu = iter;
+ 			break;
++		}
++	}
  
- 	if (!ret && !(direct_ops.flags & FTRACE_OPS_FL_ENABLED)) {
- 		ret = register_ftrace_function(&direct_ops);
-@@ -5161,6 +5159,7 @@ int register_ftrace_direct(unsigned long
+-	if (!iommu || iommu->dev->of_node != spec->np) {
++	if (!iommu) {
+ 		ret = -ENODEV;
+ 		goto fail;
  	}
- 
- 	if (ret) {
-+		remove_hash_entry(direct_functions, entry);
- 		kfree(entry);
- 		if (!direct->count) {
- 			list_del_rcu(&direct->next);
 
 
