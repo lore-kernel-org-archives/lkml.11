@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACD9EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:14:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:14:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384254AbiFGWOV (ORCPT
+        id S1379058AbiFGWO1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34212 "EHLO
+        Tue, 7 Jun 2022 18:14:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379986AbiFGVLW (ORCPT
+        with ESMTP id S1380017AbiFGVLX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:11:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B26131F17;
-        Tue,  7 Jun 2022 11:52:44 -0700 (PDT)
+        Tue, 7 Jun 2022 17:11:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C39D9131F19;
+        Tue,  7 Jun 2022 11:52:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A6E4B81F6D;
-        Tue,  7 Jun 2022 18:52:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38863C385A2;
-        Tue,  7 Jun 2022 18:52:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 291D3B82182;
+        Tue,  7 Jun 2022 18:52:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82772C385A5;
+        Tue,  7 Jun 2022 18:52:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627962;
-        bh=2u3HzTx97D8KukJGqGjYi4/l3+1TkIRnHr/uNhU+Aow=;
+        s=korg; t=1654627972;
+        bh=edmrEx74CLJEL2ZSmVTR+lC6JWHI26Po+D1lAUpwoPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qesJY5Upl78/YcXh7FYhI20WSCEPDqagh8gvEhEoUTT0sdrRqfFaLIq0ZfvfO30si
-         FELmgivSaC3mc8BdtTr8d9/b7HHrB+9Kw3DlD51duUTgbC2cg8vnkWcwUyDXjwoa+m
-         qkDZpr6RCUqrdrYKr1GZUeq0NLkS3fYHgOtC/XRI=
+        b=j4Q55Z7L8Tw3J/7qB58IA4eiMBgcgrUKZOowfNQr0hyWpydyceiA/q5cB6ZG+91tA
+         YJhET7idukzVIQRbJRX+vMJWAkqXY1C4KRiXL2Ul85jeJT/ywQvutO9tYwQPBQA3s0
+         M2jEgyU/sWdyg6Egxvj9CMekeNhNJz/FRRcCMwPw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steven Price <steven.price@arm.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 115/879] drm/plane: Move range check for format_count earlier
-Date:   Tue,  7 Jun 2022 18:53:53 +0200
-Message-Id: <20220607165006.039995895@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Thibaut=20VAR=C3=88NE?= <hacks+kernel@slashdirt.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 161/879] mt76: fix encap offload ethernet type check
+Date:   Tue,  7 Jun 2022 18:54:39 +0200
+Message-Id: <20220607165007.379568253@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,57 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Price <steven.price@arm.com>
+From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit 4b674dd69701c2e22e8e7770c1706a69f3b17269 ]
+[ Upstream commit bc98e7fdd80d215b4b55eea001023231eb8ce12e ]
 
-While the check for format_count > 64 in __drm_universal_plane_init()
-shouldn't be hit (it's a WARN_ON), in its current position it will then
-leak the plane->format_types array and fail to call
-drm_mode_object_unregister() leaking the modeset identifier. Move it to
-the start of the function to avoid allocating those resources in the
-first place.
+The driver needs to check if the format is 802.2 vs 802.3 in order to set
+a tx descriptor flag. skb->protocol can't be used, since it may not be properly
+initialized for packets coming in from a packet socket.
+Fix misdetection by checking the ethertype from the skb data instead
 
-Signed-off-by: Steven Price <steven.price@arm.com>
-Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
-Link: https://lore.kernel.org/dri-devel/20211203102815.38624-1-steven.price@arm.com/
+Reported-by: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_plane.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 4 +++-
+ drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 4 +++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_plane.c b/drivers/gpu/drm/drm_plane.c
-index bf0daa8d9bbd..726f2f163c26 100644
---- a/drivers/gpu/drm/drm_plane.c
-+++ b/drivers/gpu/drm/drm_plane.c
-@@ -247,6 +247,13 @@ static int __drm_universal_plane_init(struct drm_device *dev,
- 	if (WARN_ON(config->num_total_plane >= 32))
- 		return -EINVAL;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+index a8df65cc115f..eaa31f5e0b00 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+@@ -1017,6 +1017,7 @@ mt7915_mac_write_txwi_8023(struct mt7915_dev *dev, __le32 *txwi,
  
-+	/*
-+	 * First driver to need more than 64 formats needs to fix this. Each
-+	 * format is encoded as a bit and the current code only supports a u64.
-+	 */
-+	if (WARN_ON(format_count > 64))
-+		return -EINVAL;
-+
- 	WARN_ON(drm_drv_uses_atomic_modeset(dev) &&
- 		(!funcs->atomic_destroy_state ||
- 		 !funcs->atomic_duplicate_state));
-@@ -268,13 +275,6 @@ static int __drm_universal_plane_init(struct drm_device *dev,
- 		return -ENOMEM;
- 	}
+ 	u8 tid = skb->priority & IEEE80211_QOS_CTL_TID_MASK;
+ 	u8 fc_type, fc_stype;
++	u16 ethertype;
+ 	bool wmm = false;
+ 	u32 val;
  
--	/*
--	 * First driver to need more than 64 formats needs to fix this. Each
--	 * format is encoded as a bit and the current code only supports a u64.
--	 */
--	if (WARN_ON(format_count > 64))
--		return -EINVAL;
--
- 	if (format_modifiers) {
- 		const uint64_t *temp_modifiers = format_modifiers;
+@@ -1030,7 +1031,8 @@ mt7915_mac_write_txwi_8023(struct mt7915_dev *dev, __le32 *txwi,
+ 	val = FIELD_PREP(MT_TXD1_HDR_FORMAT, MT_HDR_FORMAT_802_3) |
+ 	      FIELD_PREP(MT_TXD1_TID, tid);
  
+-	if (be16_to_cpu(skb->protocol) >= ETH_P_802_3_MIN)
++	ethertype = get_unaligned_be16(&skb->data[12]);
++	if (ethertype >= ETH_P_802_3_MIN)
+ 		val |= MT_TXD1_ETH_802_3;
+ 
+ 	txwi[1] |= cpu_to_le32(val);
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
+index f34070ca7bbe..c5350e7a11e6 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
+@@ -814,6 +814,7 @@ mt7921_mac_write_txwi_8023(struct mt7921_dev *dev, __le32 *txwi,
+ {
+ 	u8 tid = skb->priority & IEEE80211_QOS_CTL_TID_MASK;
+ 	u8 fc_type, fc_stype;
++	u16 ethertype;
+ 	bool wmm = false;
+ 	u32 val;
+ 
+@@ -827,7 +828,8 @@ mt7921_mac_write_txwi_8023(struct mt7921_dev *dev, __le32 *txwi,
+ 	val = FIELD_PREP(MT_TXD1_HDR_FORMAT, MT_HDR_FORMAT_802_3) |
+ 	      FIELD_PREP(MT_TXD1_TID, tid);
+ 
+-	if (be16_to_cpu(skb->protocol) >= ETH_P_802_3_MIN)
++	ethertype = get_unaligned_be16(&skb->data[12]);
++	if (ethertype >= ETH_P_802_3_MIN)
+ 		val |= MT_TXD1_ETH_802_3;
+ 
+ 	txwi[1] |= cpu_to_le32(val);
 -- 
 2.35.1
 
