@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8D0DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:07:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 439BFCCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382518AbiFGWG7 (ORCPT
+        id S1382579AbiFGWHJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:06:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50242 "EHLO
+        Tue, 7 Jun 2022 18:07:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379841AbiFGVGa (ORCPT
+        with ESMTP id S1378838AbiFGVEc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:06:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCEF4211AB3;
-        Tue,  7 Jun 2022 11:50:27 -0700 (PDT)
+        Tue, 7 Jun 2022 17:04:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C7BB2EAB;
+        Tue,  7 Jun 2022 11:48:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0343061777;
-        Tue,  7 Jun 2022 18:50:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10219C385A2;
-        Tue,  7 Jun 2022 18:50:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CA916156D;
+        Tue,  7 Jun 2022 18:48:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 142C4C36B0C;
+        Tue,  7 Jun 2022 18:48:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627824;
-        bh=dnVq8A+QaRcFBuWkdXsDnNqK0ZQ2F6cv/bJXs+evh2Y=;
+        s=korg; t=1654627738;
+        bh=cz7EaM8E2HHkUwPlijx0Xy7QFc9ala/dWiZQqSjozhk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S/HSI+I1TTmPGI7RFwuQj00kTe0GX8TEwKk428x3cFOf/kL+3S2uzDHO/xNoGpt0I
-         fJ2TKxNIG5+eoHQA+PpSyuTdf09Se2+oHSXUPIQ/QpMVXOcHzNAm/hzKgcvhseV4AP
-         CAirht/cVRug5i2C9g/I0H4sfTgnJuhq9f4Lok74=
+        b=R0hYTOhIkPRpolN+KjXM/JowZCtGVpu9vam4TcjRAnsMLXUYW3UhSk2k4GiE2onPJ
+         CM1/xjri7hrGi87tzk4G5UJGPfIFpC3MWG62Ds2I3PCPwigaZxLR/ofWZKJMlRvtjr
+         3nxEEgxX1LqRsGNCYRWy6QUZzF0ih8sHUn+z13BI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Eric Yang <Eric.Yang2@amd.com>,
+        Pavle Kotarac <Pavle.Kotarac@amd.com>,
+        Saaem Rizvi <syerizvi@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 104/879] media: pci: cx23885: Fix the error handling in cx23885_initdev()
-Date:   Tue,  7 Jun 2022 18:53:42 +0200
-Message-Id: <20220607165005.713750327@linuxfoundation.org>
+Subject: [PATCH 5.18 076/879] drm/amd/display: Disabling Z10 on DCN31
+Date:   Tue,  7 Jun 2022 18:53:14 +0200
+Message-Id: <20220607165004.896958794@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,64 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Saaem Rizvi <syerizvi@amd.com>
 
-[ Upstream commit e8123311cf06d7dae71e8c5fe78e0510d20cd30b ]
+[ Upstream commit 5d5af34072c8b11f60960c3bea57ff9de5877791 ]
 
-When the driver fails to call the dma_set_mask(), the driver will get
-the following splat:
+[WHY]
+Z10 is should not be enabled by default on DCN31.
 
-[   55.853884] BUG: KASAN: use-after-free in __process_removed_driver+0x3c/0x240
-[   55.854486] Read of size 8 at addr ffff88810de60408 by task modprobe/590
-[   55.856822] Call Trace:
-[   55.860327]  __process_removed_driver+0x3c/0x240
-[   55.861347]  bus_for_each_dev+0x102/0x160
-[   55.861681]  i2c_del_driver+0x2f/0x50
+[HOW]
+Using DC debug flags to disable Z10 by default on DCN31.
 
-This is because the driver has initialized the i2c related resources
-in cx23885_dev_setup() but not released them in error handling, fix this
-bug by modifying the error path that jumps after failing to call the
-dma_set_mask().
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Reviewed-by: Eric Yang <Eric.Yang2@amd.com>
+Acked-by: Pavle Kotarac <Pavle.Kotarac@amd.com>
+Signed-off-by: Saaem Rizvi <syerizvi@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/cx23885/cx23885-core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/pci/cx23885/cx23885-core.c b/drivers/media/pci/cx23885/cx23885-core.c
-index f8f2ff3b00c3..a07b18f2034e 100644
---- a/drivers/media/pci/cx23885/cx23885-core.c
-+++ b/drivers/media/pci/cx23885/cx23885-core.c
-@@ -2165,7 +2165,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 	err = dma_set_mask(&pci_dev->dev, 0xffffffff);
- 	if (err) {
- 		pr_err("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
--		goto fail_ctrl;
-+		goto fail_dma_set_mask;
- 	}
- 
- 	err = request_irq(pci_dev->irq, cx23885_irq,
-@@ -2173,7 +2173,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 	if (err < 0) {
- 		pr_err("%s: can't get IRQ %d\n",
- 		       dev->name, pci_dev->irq);
--		goto fail_irq;
-+		goto fail_dma_set_mask;
- 	}
- 
- 	switch (dev->board) {
-@@ -2195,7 +2195,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 
- 	return 0;
- 
--fail_irq:
-+fail_dma_set_mask:
- 	cx23885_dev_unregister(dev);
- fail_ctrl:
- 	v4l2_ctrl_handler_free(hdl);
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
+index 63934ecf6be8..d71e625cc476 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
+@@ -1030,6 +1030,7 @@ static const struct dc_debug_options debug_defaults_drv = {
+ 			.afmt = true,
+ 		}
+ 	},
++	.disable_z10 = true,
+ 	.optimize_edp_link_rate = true,
+ 	.enable_sw_cntl_psr = true,
+ 	.apply_vendor_specific_lttpr_wa = true,
 -- 
 2.35.1
 
