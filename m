@@ -2,87 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4A34C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:01:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9B9BCCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:01:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352966AbiFGTAB (ORCPT
+        id S1353637AbiFGTA1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:00:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43794 "EHLO
+        Tue, 7 Jun 2022 15:00:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352539AbiFGSVO (ORCPT
+        with ESMTP id S1352229AbiFGSQ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:21:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61C2944A15;
-        Tue,  7 Jun 2022 10:53:57 -0700 (PDT)
+        Tue, 7 Jun 2022 14:16:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96491837A;
+        Tue,  7 Jun 2022 10:51:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 20FB86159C;
-        Tue,  7 Jun 2022 17:53:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC2B6C341CB;
-        Tue,  7 Jun 2022 17:53:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624436;
-        bh=uR7CQe4V55FxsHzDZ0qleDY1nvIx7lIoX7D3hsclkWQ=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9279AB82340;
+        Tue,  7 Jun 2022 17:51:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EE3BC34115;
+        Tue,  7 Jun 2022 17:51:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624269;
+        bh=KMr9qbwkA8fYAqb2hOPdq0teI7fY3uvBUGHNV7CPuCo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CnywQ6UNYlsQ+nw2zz1M/+p6wL8ZUmsjQMeyU5q4dG8fiLJftKdI0iMAX2q0qAXCz
-         n6TtCUAnCHoMU+B1e5NVuTp3DGePsCf6BPhQmnqsr2DdoIYHd/p0xs/qpCDiA6qWmU
-         KAHqzidGXALaGCYLvuNGP2Q+o/NesYBHq3orx+8v3WftiAJGW/NBRB3Bd2iOb4zNw4
-         XQGZX4f8bjLZHcN5zAOKXqtQL9KiRiARqBwEXNHTy/7lZU7rFjONQGHu3q97U/Jnt+
-         hzfmaut+XrF6/oZEgp60WPN69J1RfHxNxOqg0AKll4m7KNW/52I/VnK1JaOYFJkWCY
-         QLFka9mG38zRw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        b=sfKOUu0VWCDZyb+MDiH5YoFw4qaJks9WvyWP3hM2NyVp9iib7suFHfltGbXhqDRh4
+         ZqFKgXi5mEg2DWMEh/MhZ6P2zVH36kGqWegxAoDYcex/YSFRIOM1OfZnvsoy400inI
+         CxzYhfHh3nOwyFcRNE2RdxEa2elgxISJReCIKklE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.17 21/60] misc: rtsx: set NULL intfdata when probe fails
-Date:   Tue,  7 Jun 2022 13:52:18 -0400
-Message-Id: <20220607175259.478835-21-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
+Subject: [PATCH 5.15 225/667] drm/mediatek: dpi: Use mt8183 output formats for mt8192
+Date:   Tue,  7 Jun 2022 18:58:10 +0200
+Message-Id: <20220607164941.538752347@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuah Khan <skhan@linuxfoundation.org>
+From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-[ Upstream commit f861d36e021e1ac4a0a2a1f6411d623809975d63 ]
+[ Upstream commit 7112e0b0a58be8575547eba6596c42710922674f ]
 
-rtsx_usb_probe() doesn't call usb_set_intfdata() to null out the
-interface pointer when probe fails. This leaves a stale pointer.
-Noticed the missing usb_set_intfdata() while debugging an unrelated
-invalid DMA mapping problem.
+The configuration for mt8192 was incorrectly using the output formats
+from mt8173. Since the output formats for mt8192 are instead the same
+ones as for mt8183, which require two bus samples per pixel, the
+pixelclock and DDR edge setting were misconfigured. This made external
+displays unable to show the image.
 
-Fix it with a call to usb_set_intfdata(..., NULL).
+Fix the issue by correcting the output format for mt8192 to be the same
+as for mt8183, fixing the usage of external displays for mt8192.
 
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20220429210913.46804-1-skhan@linuxfoundation.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220408013950.674477-1-nfraprado@collabora.com/
+Fixes: be63f6e8601f ("drm/mediatek: dpi: Add output bus formats to driver data")
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/cardreader/rtsx_usb.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/mediatek/mtk_dpi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/misc/cardreader/rtsx_usb.c b/drivers/misc/cardreader/rtsx_usb.c
-index 59eda55d92a3..1ef9b61077c4 100644
---- a/drivers/misc/cardreader/rtsx_usb.c
-+++ b/drivers/misc/cardreader/rtsx_usb.c
-@@ -667,6 +667,7 @@ static int rtsx_usb_probe(struct usb_interface *intf,
- 	return 0;
+diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
+index 4554e2de1430..e61cd67b978f 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dpi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+@@ -819,8 +819,8 @@ static const struct mtk_dpi_conf mt8192_conf = {
+ 	.cal_factor = mt8183_calculate_factor,
+ 	.reg_h_fre_con = 0xe0,
+ 	.max_clock_khz = 150000,
+-	.output_fmts = mt8173_output_fmts,
+-	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
++	.output_fmts = mt8183_output_fmts,
++	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
+ };
  
- out_init_fail:
-+	usb_set_intfdata(ucr->pusb_intf, NULL);
- 	usb_free_coherent(ucr->pusb_dev, IOBUF_SIZE, ucr->iobuf,
- 			ucr->iobuf_dma);
- 	return ret;
+ static int mtk_dpi_probe(struct platform_device *pdev)
 -- 
 2.35.1
+
+
 
