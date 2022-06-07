@@ -2,128 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EEC5C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:28:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDD99C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:28:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346729AbiFGR2r (ORCPT
+        id S1346719AbiFGR2x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:28:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45908 "EHLO
+        Tue, 7 Jun 2022 13:28:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346378AbiFGRYS (ORCPT
+        with ESMTP id S1346393AbiFGRYl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:24:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 699CD62131;
-        Tue,  7 Jun 2022 10:22:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 7 Jun 2022 13:24:41 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FDC1CA3CA;
+        Tue,  7 Jun 2022 10:22:40 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D81E060907;
-        Tue,  7 Jun 2022 17:22:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC8FBC385A5;
-        Tue,  7 Jun 2022 17:22:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622553;
-        bh=WIOXHLNIFDMvUetSEsytBG8WZAnvNXhK5lXNEpIS/Bs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rliZafPXRDFM5wL+CCzTdLPRPHQDm2Zz4udB23zYK1HVQbYZAMxxOeV8ZNhtzmlYH
-         X9eQPPFl3JmvniZLbkzgNG8jo7T+fMreCKKtsZYKU3a/NCFoWJoNlErkobHbr8WrBV
-         Z9/eg4VEmVkeSH/ECtDd4S2KejMiwgWywZL9iFYo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
-        Jonathan Bakker <xc-racer2@live.ca>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 099/452] ARM: dts: s5pv210: align DMA channels with dtschema
-Date:   Tue,  7 Jun 2022 18:59:16 +0200
-Message-Id: <20220607164911.506611789@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
-References: <20220607164908.521895282@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by smtp-out2.suse.de (Postfix) with ESMTPS id F2F271F9C5;
+        Tue,  7 Jun 2022 17:22:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1654622559; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uqrHo72t/egh4eNcpx8eoTFgHBdSO5h/73dIvIbUMoc=;
+        b=i31KyvkjR3ttXiDZKKYNnfh7FMxbcNejOIkF2dskvohB7fOjjF6KD3Z7ILHJVnDLoCem5R
+        F4A4LoqqV2jbiXNFzkAU7NShq64dkkv8TQ0GxqAjAifXWYPm4jcIVTlx5/C7Jm3zzXTFNF
+        2+W3Wpm2xzma+DeB3Ue1kx55XnWNZ0Y=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1654622559;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uqrHo72t/egh4eNcpx8eoTFgHBdSO5h/73dIvIbUMoc=;
+        b=LTSsckAlefo3halfg034rdzHNz567wacaNmmndzCRH8VGBHFPJbOdRLeLNqDBv+NxkDV5/
+        V+XCH1MOG7BRgCCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C055013A88;
+        Tue,  7 Jun 2022 17:22:38 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Y2u+LV6Jn2LqEAAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Tue, 07 Jun 2022 17:22:38 +0000
+Message-ID: <26a6ed05-264a-eef6-a0ee-527d6968f8a8@suse.de>
+Date:   Tue, 7 Jun 2022 19:22:38 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 1/2] drm: Add DRM_GEM_FOPS
+Content-Language: en-US
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     Rob Clark <robdclark@chromium.org>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        freedreno <freedreno@lists.freedesktop.org>
+References: <20220606195432.1888346-1-robdclark@gmail.com>
+ <34aacfa3-9eb9-d3d5-07b7-805fd1408bb7@suse.de>
+ <CAF6AEGuikc8Qh2ixEvJoeN0hQ+VLJNk_jBQm8fqYQAJ=ihpo1g@mail.gmail.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <CAF6AEGuikc8Qh2ixEvJoeN0hQ+VLJNk_jBQm8fqYQAJ=ihpo1g@mail.gmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------89GWd80acGp6EW6OVodnIp0z"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzk@kernel.org>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------89GWd80acGp6EW6OVodnIp0z
+Content-Type: multipart/mixed; boundary="------------5RHAoO43WMHEge7jXP9WGHn3";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Rob Clark <robdclark@gmail.com>
+Cc: Rob Clark <robdclark@chromium.org>,
+ Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+ David Airlie <airlied@linux.ie>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ dri-devel <dri-devel@lists.freedesktop.org>,
+ freedreno <freedreno@lists.freedesktop.org>
+Message-ID: <26a6ed05-264a-eef6-a0ee-527d6968f8a8@suse.de>
+Subject: Re: [PATCH v2 1/2] drm: Add DRM_GEM_FOPS
+References: <20220606195432.1888346-1-robdclark@gmail.com>
+ <34aacfa3-9eb9-d3d5-07b7-805fd1408bb7@suse.de>
+ <CAF6AEGuikc8Qh2ixEvJoeN0hQ+VLJNk_jBQm8fqYQAJ=ihpo1g@mail.gmail.com>
+In-Reply-To: <CAF6AEGuikc8Qh2ixEvJoeN0hQ+VLJNk_jBQm8fqYQAJ=ihpo1g@mail.gmail.com>
 
-[ Upstream commit 9e916fb9bc3d16066286f19fc9c51d26a6aec6bd ]
+--------------5RHAoO43WMHEge7jXP9WGHn3
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-dtschema expects DMA channels in specific order (tx, rx and tx-sec).
-The order actually should not matter because dma-names is used however
-let's make it aligned with dtschema to suppress warnings like:
+SGkNCg0KQW0gMDcuMDYuMjIgdW0gMTY6NTggc2NocmllYiBSb2IgQ2xhcms6DQo+IE9uIE1v
+biwgSnVuIDYsIDIwMjIgYXQgMTE6NTYgUE0gVGhvbWFzIFppbW1lcm1hbm4gPHR6aW1tZXJt
+YW5uQHN1c2UuZGU+IHdyb3RlOg0KPj4NCj4+IEhpDQo+Pg0KPj4gQW0gMDYuMDYuMjIgdW0g
+MjE6NTQgc2NocmllYiBSb2IgQ2xhcms6DQo+Pj4gRnJvbTogUm9iIENsYXJrIDxyb2JkY2xh
+cmtAY2hyb21pdW0ub3JnPg0KPj4+DQo+Pj4gVGhlIERFRklORV9EUk1fR0VNX0ZPUFMoKSBo
+ZWxwZXIgaXMgYSBiaXQgbGltaXRpbmcgaWYgYSBkcml2ZXIgd2FudHMgdG8NCj4+PiBwcm92
+aWRlIGFkZGl0aW9uYWwgZmlsZSBvcHMsIGxpa2Ugc2hvd19mZGluZm8oKS4NCj4+Pg0KPj4+
+IFNpZ25lZC1vZmYtYnk6IFJvYiBDbGFyayA8cm9iZGNsYXJrQGNocm9taXVtLm9yZz4NCj4+
+PiAtLS0NCj4+PiAgICBpbmNsdWRlL2RybS9kcm1fZ2VtLmggfCAyNiArKysrKysrKysrKysr
+KysrKystLS0tLS0tLQ0KPj4+ICAgIDEgZmlsZSBjaGFuZ2VkLCAxOCBpbnNlcnRpb25zKCsp
+LCA4IGRlbGV0aW9ucygtKQ0KPj4+DQo+Pj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvZHJtL2Ry
+bV9nZW0uaCBiL2luY2x1ZGUvZHJtL2RybV9nZW0uaA0KPj4+IGluZGV4IDlkN2M2MWExMjJk
+Yy4uZGM4OGQ0YTJjZGY2IDEwMDY0NA0KPj4+IC0tLSBhL2luY2x1ZGUvZHJtL2RybV9nZW0u
+aA0KPj4+ICsrKyBiL2luY2x1ZGUvZHJtL2RybV9nZW0uaA0KPj4+IEBAIC0zMTQsNiArMzE0
+LDIzIEBAIHN0cnVjdCBkcm1fZ2VtX29iamVjdCB7DQo+Pj4gICAgICAgIGNvbnN0IHN0cnVj
+dCBkcm1fZ2VtX29iamVjdF9mdW5jcyAqZnVuY3M7DQo+Pj4gICAgfTsNCj4+Pg0KPj4+ICsv
+KioNCj4+PiArICogRFJNX0dFTV9GT1BTIC0gRGVmYXVsdCBkcm0gR0VNIGZpbGUgb3BlcmF0
+aW9ucw0KPj4+ICsgKg0KPj4+ICsgKiBUaGlzIG1hY3JvIHByb3ZpZGVzIGEgc2hvcnRoYW5k
+IGZvciBzZXR0aW5nIHRoZSBHRU0gZmlsZSBvcHMgaW4gdGhlDQo+Pj4gKyAqICZmaWxlX29w
+ZXJhdGlvbnMgc3RydWN0dXJlLg0KPj4NCj4+IEkgd291bGQgYXBwcmVjaWF0ZSBhIHJlZmVy
+ZW5jZSB0byBERUZJTkVfRFJNX0dFTV9GT1BTLiBTb21ldGhpbmcgYWxvbmcNCj4+IHRoZSBs
+aW5lcyBvZiAnaWYgYWxsIHlvdSBuZWVkIGFyZSB0aGUgZGVmYXVsdCBvcHMsIHVzZSBERUZJ
+TkVfRFJNX0dFTV9GT1BTJy4NCj4+DQo+Pj4gKyAqLw0KPj4+ICsjZGVmaW5lIERSTV9HRU1f
+Rk9QUyBcDQo+Pj4gKyAgICAgLm9wZW4gICAgICAgICAgID0gZHJtX29wZW4sXA0KPj4+ICsg
+ICAgIC5yZWxlYXNlICAgICAgICA9IGRybV9yZWxlYXNlLFwNCj4+PiArICAgICAudW5sb2Nr
+ZWRfaW9jdGwgPSBkcm1faW9jdGwsXA0KPj4+ICsgICAgIC5jb21wYXRfaW9jdGwgICA9IGRy
+bV9jb21wYXRfaW9jdGwsXA0KPj4+ICsgICAgIC5wb2xsICAgICAgICAgICA9IGRybV9wb2xs
+LFwNCj4+PiArICAgICAucmVhZCAgICAgICAgICAgPSBkcm1fcmVhZCxcDQo+Pj4gKyAgICAg
+Lmxsc2VlayAgICAgICAgID0gbm9vcF9sbHNlZWssXA0KPj4+ICsgICAgIC5tbWFwICAgICAg
+ICAgICA9IGRybV9nZW1fbW1hcA0KPj4+ICsNCj4+PiArDQo+Pg0KPj4gT25seSBvbmUgZW1w
+dHkgbGluZSBwbGVhc2UuDQo+Pg0KPj4+ICAgIC8qKg0KPj4+ICAgICAqIERFRklORV9EUk1f
+R0VNX0ZPUFMoKSAtIG1hY3JvIHRvIGdlbmVyYXRlIGZpbGUgb3BlcmF0aW9ucyBmb3IgR0VN
+IGRyaXZlcnMNCj4+PiAgICAgKiBAbmFtZTogbmFtZSBmb3IgdGhlIGdlbmVyYXRlZCBzdHJ1
+Y3R1cmUNCj4+PiBAQCAtMzMwLDE0ICszNDcsNyBAQCBzdHJ1Y3QgZHJtX2dlbV9vYmplY3Qg
+ew0KPj4+ICAgICNkZWZpbmUgREVGSU5FX0RSTV9HRU1fRk9QUyhuYW1lKSBcDQo+Pj4gICAg
+ICAgIHN0YXRpYyBjb25zdCBzdHJ1Y3QgZmlsZV9vcGVyYXRpb25zIG5hbWUgPSB7XA0KPj4+
+ICAgICAgICAgICAgICAgIC5vd25lciAgICAgICAgICA9IFRISVNfTU9EVUxFLFwNCj4+DQo+
+PiBJcyB0aGVyZSBhIHNwZWNpZmljIHJlYXNvbiB3aHkgLm93bmVyIGlzIHN0aWxsIHNldCBo
+ZXJlPyBJIHN1c3BlY3QgdGhhdA0KPj4gRFJNX0dFTV9GT1BTIGlzIHN0cmljdGx5IGZvciBj
+YWxsYmFjayBmdW5jdGlvbnM/DQo+IA0KPiBJIHdhcyBvbiB0aGUgZmVuY2UgYWJvdXQgdGhh
+dCBvbmUsIGJ1dCBpdCBzZWVtZWQgYmV0dGVyIHRvIG5vdCBtaXgNCj4gIm1hZ2ljIiBhbmQg
+dGhlIGNhbGxiYWNrcy4uIGJ1dCBJIGNvdWxkIGJlIGNvbnZpbmNlZCBpbiBlaXRoZXINCj4g
+ZGlyZWN0aW9uDQoNCkkgdGhpbmsgeW91IG1hZGUgdGhlIHJpZ2h0IGNob2ljZS4gSXQncyBj
+bGVhbmVyIGFuZCBtb3N0IGRyaXZlcnMgd2lsbCANCndhbnQgdG8gdXNlIERFRklORV9EUk1f
+R0VNX0ZPUFMsIHdoaWNoIGluY2x1ZGVzIHRoZSBtYWdpYy4NCg0KQmVzdCByZWdhcmRzDQpU
+aG9tYXMNCg0KPiANCj4+IEluIGFueSBjYXNlDQo+Pg0KPj4gQWNrZWQtYnk6IFRob21hcyBa
+aW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPg0KPiANCj4gdGh4LCBJJ2xsIGZpeHVw
+IHRoZSBvdGhlciBuaXRzIGluIHYzLg0KPiANCj4+DQo+PiBCZXN0IHJlZ2FyZHMNCj4+IFRo
+b21hcw0KPj4NCj4+PiAtICAgICAgICAgICAgIC5vcGVuICAgICAgICAgICA9IGRybV9vcGVu
+LFwNCj4+PiAtICAgICAgICAgICAgIC5yZWxlYXNlICAgICAgICA9IGRybV9yZWxlYXNlLFwN
+Cj4+PiAtICAgICAgICAgICAgIC51bmxvY2tlZF9pb2N0bCA9IGRybV9pb2N0bCxcDQo+Pj4g
+LSAgICAgICAgICAgICAuY29tcGF0X2lvY3RsICAgPSBkcm1fY29tcGF0X2lvY3RsLFwNCj4+
+PiAtICAgICAgICAgICAgIC5wb2xsICAgICAgICAgICA9IGRybV9wb2xsLFwNCj4+PiAtICAg
+ICAgICAgICAgIC5yZWFkICAgICAgICAgICA9IGRybV9yZWFkLFwNCj4+PiAtICAgICAgICAg
+ICAgIC5sbHNlZWsgICAgICAgICA9IG5vb3BfbGxzZWVrLFwNCj4+PiAtICAgICAgICAgICAg
+IC5tbWFwICAgICAgICAgICA9IGRybV9nZW1fbW1hcCxcDQo+Pj4gKyAgICAgICAgICAgICBE
+Uk1fR0VNX0ZPUFMsXA0KPj4+ICAgICAgICB9DQo+Pj4NCj4+PiAgICB2b2lkIGRybV9nZW1f
+b2JqZWN0X3JlbGVhc2Uoc3RydWN0IGRybV9nZW1fb2JqZWN0ICpvYmopOw0KPj4NCj4+IC0t
+DQo+PiBUaG9tYXMgWmltbWVybWFubg0KPj4gR3JhcGhpY3MgRHJpdmVyIERldmVsb3Blcg0K
+Pj4gU1VTRSBTb2Z0d2FyZSBTb2x1dGlvbnMgR2VybWFueSBHbWJIDQo+PiBNYXhmZWxkc3Ry
+LiA1LCA5MDQwOSBOw7xybmJlcmcsIEdlcm1hbnkNCj4+IChIUkIgMzY4MDksIEFHIE7DvHJu
+YmVyZykNCj4+IEdlc2Now6RmdHNmw7xocmVyOiBJdm8gVG90ZXYNCg0KLS0gDQpUaG9tYXMg
+WmltbWVybWFubg0KR3JhcGhpY3MgRHJpdmVyIERldmVsb3Blcg0KU1VTRSBTb2Z0d2FyZSBT
+b2x1dGlvbnMgR2VybWFueSBHbWJIDQpNYXhmZWxkc3RyLiA1LCA5MDQwOSBOw7xybmJlcmcs
+IEdlcm1hbnkNCihIUkIgMzY4MDksIEFHIE7DvHJuYmVyZykNCkdlc2Now6RmdHNmw7xocmVy
+OiBJdm8gVG90ZXYNCg==
 
-  i2s@eee30000: dma-names: ['rx', 'tx', 'tx-sec'] is not valid under any of the given schemas
+--------------5RHAoO43WMHEge7jXP9WGHn3--
 
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-Co-developed-by: Jonathan Bakker <xc-racer2@live.ca>
-Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
-Link: https://lore.kernel.org/r/CY4PR04MB056779A9C50DC95987C5272ACB1C9@CY4PR04MB0567.namprd04.prod.outlook.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm/boot/dts/s5pv210-aries.dtsi |  2 +-
- arch/arm/boot/dts/s5pv210.dtsi       | 12 ++++++------
- 2 files changed, 7 insertions(+), 7 deletions(-)
+--------------89GWd80acGp6EW6OVodnIp0z
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-diff --git a/arch/arm/boot/dts/s5pv210-aries.dtsi b/arch/arm/boot/dts/s5pv210-aries.dtsi
-index 986fa0b1a877..d9b4c51a00d9 100644
---- a/arch/arm/boot/dts/s5pv210-aries.dtsi
-+++ b/arch/arm/boot/dts/s5pv210-aries.dtsi
-@@ -637,7 +637,7 @@
- };
- 
- &i2s0 {
--	dmas = <&pdma0 9>, <&pdma0 10>, <&pdma0 11>;
-+	dmas = <&pdma0 10>, <&pdma0 9>, <&pdma0 11>;
- 	status = "okay";
- };
- 
-diff --git a/arch/arm/boot/dts/s5pv210.dtsi b/arch/arm/boot/dts/s5pv210.dtsi
-index 2871351ab907..eb7e3660ada7 100644
---- a/arch/arm/boot/dts/s5pv210.dtsi
-+++ b/arch/arm/boot/dts/s5pv210.dtsi
-@@ -240,8 +240,8 @@
- 			reg = <0xeee30000 0x1000>;
- 			interrupt-parent = <&vic2>;
- 			interrupts = <16>;
--			dma-names = "rx", "tx", "tx-sec";
--			dmas = <&pdma1 9>, <&pdma1 10>, <&pdma1 11>;
-+			dma-names = "tx", "rx", "tx-sec";
-+			dmas = <&pdma1 10>, <&pdma1 9>, <&pdma1 11>;
- 			clock-names = "iis",
- 				      "i2s_opclk0",
- 				      "i2s_opclk1";
-@@ -260,8 +260,8 @@
- 			reg = <0xe2100000 0x1000>;
- 			interrupt-parent = <&vic2>;
- 			interrupts = <17>;
--			dma-names = "rx", "tx";
--			dmas = <&pdma1 12>, <&pdma1 13>;
-+			dma-names = "tx", "rx";
-+			dmas = <&pdma1 13>, <&pdma1 12>;
- 			clock-names = "iis", "i2s_opclk0";
- 			clocks = <&clocks CLK_I2S1>, <&clocks SCLK_AUDIO1>;
- 			pinctrl-names = "default";
-@@ -275,8 +275,8 @@
- 			reg = <0xe2a00000 0x1000>;
- 			interrupt-parent = <&vic2>;
- 			interrupts = <18>;
--			dma-names = "rx", "tx";
--			dmas = <&pdma1 14>, <&pdma1 15>;
-+			dma-names = "tx", "rx";
-+			dmas = <&pdma1 15>, <&pdma1 14>;
- 			clock-names = "iis", "i2s_opclk0";
- 			clocks = <&clocks CLK_I2S2>, <&clocks SCLK_AUDIO2>;
- 			pinctrl-names = "default";
--- 
-2.35.1
+-----BEGIN PGP SIGNATURE-----
 
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmKfiV4FAwAAAAAACgkQlh/E3EQov+DQ
+uQ/+KnvET6HMvJUhfdKhlai2pSkrzSbKSF2Pb+b1D3obDj4/rK/d2B+cC/pl+fqz8bu0ViMTnRQL
+IKKuUABF02sxx1VdHHvFxXZKlk7Nw2CzW7PFd2uoPMpY50gboPp8bR8mOMVqhHsZhOHAVacOtZsB
+YmVClM+TODlUgzky+wC5/sQtULVNgOdmZHn1M5EpxTAvThMPotan+BTJF5JgO39TQG13REF5g+Y6
+J/KWvQlYWjN4YZBDsCLFlC7sqHJLDFtAsdCPsOH86Wqx3w9z9UGVH4D5eDbMmNftbY5lR4aBnVaw
+46nfs/Z6shV07FmZwTduGDNRLGyjDnR+2OoDVVp6jl89+W3/HGZEqkmhQHRHljo+3LrClRECSoPk
+YR5IaXgud6ANeiuRWPI1W4ogxrhlZNjDNiJ8wBlQQjQ4llBm3YvVFjBDP+CzkdCVDuhACQd338DW
+71lvJaWeuoWlms97Saolua/DED2AnC5nH83gC2so+vxyC6a+IvuRiegKW3XrLRKN1fUdIjCiZYSO
+OHlsV9HLvGKuMcZrfe1KY4NrTM5YKkXvt5Ng1lUgKRxrjIeukOuHaxJWgtVSzZObIFxgRlcM0SO9
+CWiCI4BnT/e6lZDNtExIvobeAofZLUBsvUzDYjO3z4bxVqXJIcpmO/2zMBcpCdhTBTTMfuKKG7GH
+DJM=
+=5OZi
+-----END PGP SIGNATURE-----
 
-
+--------------89GWd80acGp6EW6OVodnIp0z--
