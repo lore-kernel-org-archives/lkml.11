@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F5D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:20:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6DEC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:20:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387866AbiFHBTm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:19:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45968 "EHLO
+        id S233258AbiFHBUL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:20:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383376AbiFGVxI (ORCPT
+        with ESMTP id S1382057AbiFGW3A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:53:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C52391F61F;
-        Tue,  7 Jun 2022 12:11:38 -0700 (PDT)
+        Tue, 7 Jun 2022 18:29:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C84274B5F;
+        Tue,  7 Jun 2022 12:23:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E66C1612EC;
-        Tue,  7 Jun 2022 19:11:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE27FC341C0;
-        Tue,  7 Jun 2022 19:11:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 613D860B14;
+        Tue,  7 Jun 2022 19:23:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72BADC385A2;
+        Tue,  7 Jun 2022 19:23:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629097;
-        bh=ubdgmShlCAdXqWClDZ6Hb0uAyoLVgtwPZpi13NuRjMs=;
+        s=korg; t=1654629824;
+        bh=cJcaACk93XZiwSdeQhL4bIIlasHe+pa17GOztwySCbM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ks2Db3BEx40hEI5vHiZtxTDtGbB7U8GDN1fkJEJ7j/52+fbL9ErvA7nDuBoFBPghb
-         Cg+lOGaTZzEOaq6UFgi9GhzfEiMeSLpIEoon40P11osd9SpVxDERCo/MHMfzEY7PLO
-         2t378zmvna5OrCQqlEfUPwwgaUx0+FHcHWY3+iZo=
+        b=ySKyICo/Kt3rxDR/7q/6u4r5NbisQRSwmANpuQrr26jdkzemLDG9qt/Nb/AOgfeWB
+         imZrjGieUBCWyCEMVj9euQYhSLLhQcPYFAvCnrqaXUY5TSSc9Q5JQpvUWzrQ2kWiUe
+         QnjUTnAdwpnBqh/xZ6ONVsOMGp6A0DHA0ksINfmA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 568/879] ARM: dts: bcm2837-rpi-3-b-plus: Fix GPIO line name of power LED
-Date:   Tue,  7 Jun 2022 19:01:26 +0200
-Message-Id: <20220607165019.346592633@linuxfoundation.org>
+        stable@vger.kernel.org, Mel Gorman <mgorman@techsingularity.net>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Dave Chinner <dchinner@redhat.com>, Jan Kara <jack@suse.cz>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.18 830/879] mm/page_alloc: always attempt to allocate at least one page during bulk allocation
+Date:   Tue,  7 Jun 2022 19:05:48 +0200
+Message-Id: <20220607165026.946543643@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,37 +53,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Elwell <phil@raspberrypi.com>
+From: Mel Gorman <mgorman@techsingularity.net>
 
-[ Upstream commit 57f718aa4b93392fb1a8c0a874ab882b9e18136a ]
+commit c572e4888ad1be123c1516ec577ad30a700bbec4 upstream.
 
-The red LED on the Raspberry Pi 3 B Plus is the power LED.
-So fix the GPIO line name accordingly.
+Peter Pavlisko reported the following problem on kernel bugzilla 216007.
 
-Fixes: 71c0cd2283f2 ("ARM: dts: bcm2837: Add Raspberry Pi 3 B+")
-Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+	When I try to extract an uncompressed tar archive (2.6 milion
+	files, 760.3 GiB in size) on newly created (empty) XFS file system,
+	after first low tens of gigabytes extracted the process hangs in
+	iowait indefinitely. One CPU core is 100% occupied with iowait,
+	the other CPU core is idle (on 2-core Intel Celeron G1610T).
+
+It was bisected to c9fa563072e1 ("xfs: use alloc_pages_bulk_array() for
+buffers") but XFS is only the messenger.  The problem is that nothing is
+waking kswapd to reclaim some pages at a time the PCP lists cannot be
+refilled until some reclaim happens.  The bulk allocator checks that there
+are some pages in the array and the original intent was that a bulk
+allocator did not necessarily need all the requested pages and it was best
+to return as quickly as possible.
+
+This was fine for the first user of the API but both NFS and XFS require
+the requested number of pages be available before making progress.  Both
+could be adjusted to call the page allocator directly if a bulk allocation
+fails but it puts a burden on users of the API.  Adjust the semantics to
+attempt at least one allocation via __alloc_pages() before returning so
+kswapd is woken if necessary.
+
+It was reported via bugzilla that the patch addressed the problem and that
+the tar extraction completed successfully.  This may also address bug
+215975 but has yet to be confirmed.
+
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216007
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215975
+Link: https://lkml.kernel.org/r/20220526091210.GC3441@techsingularity.net
+Fixes: 387ba26fb1cb ("mm/page_alloc: add a bulk page allocator")
+Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+Cc: "Darrick J. Wong" <djwong@kernel.org>
+Cc: Dave Chinner <dchinner@redhat.com>
+Cc: Jan Kara <jack@suse.cz>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+Cc: Chuck Lever <chuck.lever@oracle.com>
+Cc: <stable@vger.kernel.org>	[5.13+]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/page_alloc.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
-index e12938baaf12..c263f5b48b96 100644
---- a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
-+++ b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
-@@ -45,7 +45,7 @@
- 		#gpio-cells = <2>;
- 		gpio-line-names = "BT_ON",
- 				  "WL_ON",
--				  "STATUS_LED_R",
-+				  "PWR_LED_R",
- 				  "LAN_RUN",
- 				  "",
- 				  "CAM_GPIO0",
--- 
-2.35.1
-
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -5324,8 +5324,8 @@ unsigned long __alloc_pages_bulk(gfp_t g
+ 		page = __rmqueue_pcplist(zone, 0, ac.migratetype, alloc_flags,
+ 								pcp, pcp_list);
+ 		if (unlikely(!page)) {
+-			/* Try and get at least one page */
+-			if (!nr_populated)
++			/* Try and allocate at least one page */
++			if (!nr_account)
+ 				goto failed_irq;
+ 			break;
+ 		}
 
 
