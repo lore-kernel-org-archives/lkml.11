@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26B6DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:28:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 048E6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:28:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346569AbiFGR2e (ORCPT
+        id S1346758AbiFGR2i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:28:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45960 "EHLO
+        Tue, 7 Jun 2022 13:28:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346263AbiFGRYN (ORCPT
+        with ESMTP id S1346277AbiFGRYN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:24:13 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FEA760E9;
-        Tue,  7 Jun 2022 10:22:11 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA6B91EC63;
+        Tue,  7 Jun 2022 10:22:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D59DECE2015;
-        Tue,  7 Jun 2022 17:22:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEADCC34115;
-        Tue,  7 Jun 2022 17:22:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 350EE60BC9;
+        Tue,  7 Jun 2022 17:22:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FCAFC385A5;
+        Tue,  7 Jun 2022 17:22:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622528;
-        bh=y268Ia38mDcy8oVClEGS/uTeQtbK8P1DKzIAcwjQsRk=;
+        s=korg; t=1654622536;
+        bh=t7o3dVSPbYAXzDXsGXvIxTwGgdjNZH7ytre5uqNhv44=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2qqYt5rIxB8zewUv6ceMpto59NW7v6+VbrO8IVW/bpOwHlMDNlZBc2Ncdojl7BHt1
-         LpZWLbKGT3CvaHDlYKmqAKT+vRP7DAsktFP+L8J4xKlUS6Nh+GwKdPZ/rYAWxVg7Le
-         C6v4iWKsyZ6POMBP0J6/Fb6jQ4gRe88Rqq52nUu8=
+        b=lWF/3oROEhTdrSZT42qKjWm59IvZyvQvkp/6a7xT/s/84BvZG1maBQUvHCH0Wa8as
+         46olfDQmKbKumfVKVd3Sq1u+LSyM8+G4gcwALlylQ8tKcf17awGECJMbB9VB5TYtfJ
+         ep2y+wqQd8vMpYM06QMvMu09yfQmDy3nRg6lzjCo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michael Schmitz <schmitzmic@gmail.com>,
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 091/452] m68k: atari: Make Atari ROM port I/O write macros return void
-Date:   Tue,  7 Jun 2022 18:59:08 +0200
-Message-Id: <20220607164911.270481433@linuxfoundation.org>
+Subject: [PATCH 5.10 094/452] eth: tg3: silence the GCC 12 array-bounds warning
+Date:   Tue,  7 Jun 2022 18:59:11 +0200
+Message-Id: <20220607164911.360854879@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -52,54 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 30b5e6ef4a32ea4985b99200e06d6660a69f9246 ]
+[ Upstream commit 9dec850fd7c210a04b4707df8e6c95bfafdd6a4b ]
 
-The macros implementing Atari ROM port I/O writes do not cast away their
-output, unlike similar implementations for other I/O buses.
-When they are combined using conditional expressions in the definitions of
-outb() and friends, this triggers sparse warnings like:
+GCC 12 currently generates a rather inconsistent warning:
 
-    drivers/net/appletalk/cops.c:382:17: error: incompatible types in conditional expression (different base types):
-    drivers/net/appletalk/cops.c:382:17:    unsigned char
-    drivers/net/appletalk/cops.c:382:17:    void
+drivers/net/ethernet/broadcom/tg3.c:17795:51: warning: array subscript 5 is above array bounds of ‘struct tg3_napi[5]’ [-Warray-bounds]
+17795 |                 struct tg3_napi *tnapi = &tp->napi[i];
+      |                                           ~~~~~~~~^~~
 
-Fix this by adding casts to "void".
+i is guaranteed < tp->irq_max which in turn is either 1 or 5.
+There are more loops like this one in the driver, but strangely
+GCC 12 dislikes only this single one.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Michael Schmitz <schmitzmic@gmail.com>
-Link: https://lore.kernel.org/r/c15bedc83d90a14fffcd5b1b6bfb32b8a80282c5.1653057096.git.geert@linux-m68k.org
+Silence this silliness for now.
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/m68k/include/asm/raw_io.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/broadcom/Makefile | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/m68k/include/asm/raw_io.h b/arch/m68k/include/asm/raw_io.h
-index 80eb2396d01e..3ba40bc1dfaa 100644
---- a/arch/m68k/include/asm/raw_io.h
-+++ b/arch/m68k/include/asm/raw_io.h
-@@ -80,14 +80,14 @@
- 	({ u16 __v = le16_to_cpu(*(__force volatile u16 *) (addr)); __v; })
- 
- #define rom_out_8(addr, b)	\
--	({u8 __maybe_unused __w, __v = (b);  u32 _addr = ((u32) (addr)); \
-+	(void)({u8 __maybe_unused __w, __v = (b);  u32 _addr = ((u32) (addr)); \
- 	__w = ((*(__force volatile u8 *)  ((_addr | 0x10000) + (__v<<1)))); })
- #define rom_out_be16(addr, w)	\
--	({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
-+	(void)({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
- 	__w = ((*(__force volatile u16 *) ((_addr & 0xFFFF0000UL) + ((__v & 0xFF)<<1)))); \
- 	__w = ((*(__force volatile u16 *) ((_addr | 0x10000) + ((__v >> 8)<<1)))); })
- #define rom_out_le16(addr, w)	\
--	({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
-+	(void)({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
- 	__w = ((*(__force volatile u16 *) ((_addr & 0xFFFF0000UL) + ((__v >> 8)<<1)))); \
- 	__w = ((*(__force volatile u16 *) ((_addr | 0x10000) + ((__v & 0xFF)<<1)))); })
- 
+diff --git a/drivers/net/ethernet/broadcom/Makefile b/drivers/net/ethernet/broadcom/Makefile
+index 7046ad6d3d0e..ac50da49ca77 100644
+--- a/drivers/net/ethernet/broadcom/Makefile
++++ b/drivers/net/ethernet/broadcom/Makefile
+@@ -16,3 +16,8 @@ obj-$(CONFIG_BGMAC_BCMA) += bgmac-bcma.o bgmac-bcma-mdio.o
+ obj-$(CONFIG_BGMAC_PLATFORM) += bgmac-platform.o
+ obj-$(CONFIG_SYSTEMPORT) += bcmsysport.o
+ obj-$(CONFIG_BNXT) += bnxt/
++
++# FIXME: temporarily silence -Warray-bounds on non W=1+ builds
++ifndef KBUILD_EXTRA_WARN
++CFLAGS_tg3.o += -Wno-array-bounds
++endif
 -- 
 2.35.1
 
