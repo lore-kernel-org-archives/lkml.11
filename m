@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9ACDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:56:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C66AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377736AbiFGUy5 (ORCPT
+        id S1377922AbiFGUzQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:54:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50042 "EHLO
+        Tue, 7 Jun 2022 16:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358843AbiFGTxR (ORCPT
+        with ESMTP id S1358864AbiFGTxS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:53:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD20E1B7812;
-        Tue,  7 Jun 2022 11:22:40 -0700 (PDT)
+        Tue, 7 Jun 2022 15:53:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C2CF25C59;
+        Tue,  7 Jun 2022 11:22:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B5C4B8233E;
-        Tue,  7 Jun 2022 18:22:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05B31C385A5;
-        Tue,  7 Jun 2022 18:22:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCD296006F;
+        Tue,  7 Jun 2022 18:22:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD482C34115;
+        Tue,  7 Jun 2022 18:22:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626157;
-        bh=MmpBioifs0BNQI5G7S95OQb3TvJ6CY1hahXbcEzOFWw=;
+        s=korg; t=1654626173;
+        bh=1uaTTfwT9pRZAFyjX8pnO9QKdbRItDK/BYxL3WuGbZA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ink6A3DJ5RKGK38HmazNFyoqNPDmaW7UMJgE3/NOUwLuyBPhGk0paeIHGm1v/Xnbj
-         E95BbAyRKDJiWp27jDpFQH/nIp8CahdvG/4sERxgl1KVQNIbeZBKv0wEwVf5ye+APy
-         iBnHyA1OuQiMguSBj+zd9IwimEgNAdqm0S/g99To=
+        b=e53pWkPMz7NOfVF8FTf1KxaRPk69NRIJG+PHYv8TCp81kZjKR8cECAukwwybQ5o2j
+         jktQgHHze+2lbTp+9ZmhPm+1d3Ixyz3ybNEZvrrwNmbapgGeW5VUv+BDNRj/j603ax
+         JNHnbbzpbIwDUcyuOtHfMC3S8JEgrsAu3LG7ji8M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Ben Segall <bsegall@google.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 278/772] sched/fair: Fix cfs_rq_clock_pelt() for throttled cfs_rq
-Date:   Tue,  7 Jun 2022 18:57:50 +0200
-Message-Id: <20220607164957.217172204@linuxfoundation.org>
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        John Ogness <john.ogness@linutronix.de>,
+        Petr Mladek <pmladek@suse.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 282/772] printk: use atomic updates for klogd work
+Date:   Tue,  7 Jun 2022 18:57:54 +0200
+Message-Id: <20220607164957.335498853@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,93 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengming Zhou <zhouchengming@bytedance.com>
+From: John Ogness <john.ogness@linutronix.de>
 
-[ Upstream commit 64eaf50731ac0a8c76ce2fedd50ef6652aabc5ff ]
+[ Upstream commit 2ba3673d70178bf07fb75ff25c54bc478add4021 ]
 
-Since commit 23127296889f ("sched/fair: Update scale invariance of PELT")
-change to use rq_clock_pelt() instead of rq_clock_task(), we should also
-use rq_clock_pelt() for throttled_clock_task_time and throttled_clock_task
-accounting to get correct cfs_rq_clock_pelt() of throttled cfs_rq. And
-rename throttled_clock_task(_time) to be clock_pelt rather than clock_task.
+The per-cpu @printk_pending variable can be updated from
+sleepable contexts, such as:
 
-Fixes: 23127296889f ("sched/fair: Update scale invariance of PELT")
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Ben Segall <bsegall@google.com>
-Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
-Link: https://lore.kernel.org/r/20220408115309.81603-1-zhouchengming@bytedance.com
+  get_random_bytes()
+    warn_unseeded_randomness()
+      printk_deferred()
+        defer_console_output()
+
+and can be updated from interrupt contexts, such as:
+
+  handle_irq_event_percpu()
+    __irq_wake_thread()
+      wake_up_process()
+        try_to_wake_up()
+          select_task_rq()
+            select_fallback_rq()
+              printk_deferred()
+                defer_console_output()
+
+and can be updated from NMI contexts, such as:
+
+  vprintk()
+    if (in_nmi()) defer_console_output()
+
+Therefore the atomic variant of the updating functions must be used.
+
+Replace __this_cpu_xchg() with this_cpu_xchg().
+Replace __this_cpu_or() with this_cpu_or().
+
+Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/87iltld4ue.fsf@jogness.linutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/fair.c  | 8 ++++----
- kernel/sched/pelt.h  | 4 ++--
- kernel/sched/sched.h | 4 ++--
- 3 files changed, 8 insertions(+), 8 deletions(-)
+ kernel/printk/printk.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 2f461f059278..95bcf0a8767f 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -4793,8 +4793,8 @@ static int tg_unthrottle_up(struct task_group *tg, void *data)
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 833e407545b8..74c92dd70c80 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3230,7 +3230,7 @@ static DEFINE_PER_CPU(int, printk_pending);
  
- 	cfs_rq->throttle_count--;
- 	if (!cfs_rq->throttle_count) {
--		cfs_rq->throttled_clock_task_time += rq_clock_task(rq) -
--					     cfs_rq->throttled_clock_task;
-+		cfs_rq->throttled_clock_pelt_time += rq_clock_pelt(rq) -
-+					     cfs_rq->throttled_clock_pelt;
- 
- 		/* Add cfs_rq with load or one or more already running entities to the list */
- 		if (!cfs_rq_is_decayed(cfs_rq) || cfs_rq->nr_running)
-@@ -4811,7 +4811,7 @@ static int tg_throttle_down(struct task_group *tg, void *data)
- 
- 	/* group is entering throttled state, stop time */
- 	if (!cfs_rq->throttle_count) {
--		cfs_rq->throttled_clock_task = rq_clock_task(rq);
-+		cfs_rq->throttled_clock_pelt = rq_clock_pelt(rq);
- 		list_del_leaf_cfs_rq(cfs_rq);
- 	}
- 	cfs_rq->throttle_count++;
-@@ -5255,7 +5255,7 @@ static void sync_throttle(struct task_group *tg, int cpu)
- 	pcfs_rq = tg->parent->cfs_rq[cpu];
- 
- 	cfs_rq->throttle_count = pcfs_rq->throttle_count;
--	cfs_rq->throttled_clock_task = rq_clock_task(cpu_rq(cpu));
-+	cfs_rq->throttled_clock_pelt = rq_clock_pelt(cpu_rq(cpu));
- }
- 
- /* conditionally throttle active cfs_rq's from put_prev_entity() */
-diff --git a/kernel/sched/pelt.h b/kernel/sched/pelt.h
-index c336f5f481bc..4ff2ed4f8fa1 100644
---- a/kernel/sched/pelt.h
-+++ b/kernel/sched/pelt.h
-@@ -145,9 +145,9 @@ static inline u64 rq_clock_pelt(struct rq *rq)
- static inline u64 cfs_rq_clock_pelt(struct cfs_rq *cfs_rq)
+ static void wake_up_klogd_work_func(struct irq_work *irq_work)
  {
- 	if (unlikely(cfs_rq->throttle_count))
--		return cfs_rq->throttled_clock_task - cfs_rq->throttled_clock_task_time;
-+		return cfs_rq->throttled_clock_pelt - cfs_rq->throttled_clock_pelt_time;
+-	int pending = __this_cpu_xchg(printk_pending, 0);
++	int pending = this_cpu_xchg(printk_pending, 0);
  
--	return rq_clock_pelt(rq_of(cfs_rq)) - cfs_rq->throttled_clock_task_time;
-+	return rq_clock_pelt(rq_of(cfs_rq)) - cfs_rq->throttled_clock_pelt_time;
+ 	if (pending & PRINTK_PENDING_OUTPUT) {
+ 		/* If trylock fails, someone else is doing the printing */
+@@ -3264,7 +3264,7 @@ void defer_console_output(void)
+ 		return;
+ 
+ 	preempt_disable();
+-	__this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
++	this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
+ 	irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
+ 	preempt_enable();
  }
- #else
- static inline u64 cfs_rq_clock_pelt(struct cfs_rq *cfs_rq)
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 3887f4aea160..8c0dfeadef70 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -618,8 +618,8 @@ struct cfs_rq {
- 	s64			runtime_remaining;
- 
- 	u64			throttled_clock;
--	u64			throttled_clock_task;
--	u64			throttled_clock_task_time;
-+	u64			throttled_clock_pelt;
-+	u64			throttled_clock_pelt_time;
- 	int			throttled;
- 	int			throttle_count;
- 	struct list_head	throttled_list;
 -- 
 2.35.1
 
