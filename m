@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04ED9C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CDD8CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:02:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382680AbiFGWAB (ORCPT
+        id S1382785AbiFGWAU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:00:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50194 "EHLO
+        Tue, 7 Jun 2022 18:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379275AbiFGVCS (ORCPT
+        with ESMTP id S1379253AbiFGVCO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:02:18 -0400
+        Tue, 7 Jun 2022 17:02:14 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2544F5DA3D;
-        Tue,  7 Jun 2022 11:47:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C21252BB;
+        Tue,  7 Jun 2022 11:47:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6306B8237F;
-        Tue,  7 Jun 2022 18:47:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36747C385A5;
-        Tue,  7 Jun 2022 18:47:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48899B8220B;
+        Tue,  7 Jun 2022 18:47:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA0C4C385A2;
+        Tue,  7 Jun 2022 18:47:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627641;
-        bh=/CyJwoKVuBaWLWd1+cNI4FVcV/PQuwuPI5jlFRzY3CE=;
+        s=korg; t=1654627627;
+        bh=4JWxKeMCzS1I9F8T8lOqSs2eeTmYuFxzWuEf3D1lwX4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RQYfiCFUBeGW6XLQtf7KQbxWa8iqZBlx9Wg06CgJKHnEHXmwN2zhqBN0rAS6tR0AA
-         p8VT78dzRJd8khO2jCGSAbYOs3AWjhwtt0hwlclEOnGztq23vCh7e5zOv1Y7Sq+gsN
-         SqtyywSDbI0RjAtJhLkqe492/8srBFBClLoHZRkM=
+        b=Hero6S28mIn+sjbHJN1t4SyiS4dMBG/F9WHfCpxITsYuc1bGQn4FiURzNcP+B3mZf
+         2sn5CfDnEpFFcf91QoamzzvoDz/hydCyXWQbtuGuYKwLJ3+biyaY61V/del7M59cuw
+         rrgNMVLwudFM7kPma5JpFDmtOCW5rbapsJQ/A4gk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Subject: [PATCH 5.18 040/879] x86/sgx: Set active memcg prior to shmem allocation
-Date:   Tue,  7 Jun 2022 18:52:38 +0200
-Message-Id: <20220607165003.842906959@linuxfoundation.org>
+        =?UTF-8?q?Michael=20Niew=C3=B6hner?= <linux@mniewoehner.de>,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH 5.18 036/879] platform/x86: intel-hid: fix _DSM function index handling
+Date:   Tue,  7 Jun 2022 18:52:34 +0200
+Message-Id: <20220607165003.725103749@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,237 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kristen Carlson Accardi <kristen@linux.intel.com>
+From: Michael Niewöhner <linux@mniewoehner.de>
 
-commit 0c9782e204d3cc5625b9e8bf4e8625d38dfe0139 upstream.
+commit 1620c80bba53af8c547bab34a1d3bc58319fe608 upstream.
 
-When the system runs out of enclave memory, SGX can reclaim EPC pages
-by swapping to normal RAM. These backing pages are allocated via a
-per-enclave shared memory area. Since SGX allows unlimited over
-commit on EPC memory, the reclaimer thread can allocate a large
-number of backing RAM pages in response to EPC memory pressure.
+intel_hid_dsm_fn_mask is a bit mask containing one bit for each function
+index. Fix the function index check in intel_hid_evaluate_method
+accordingly, which was missed in commit 97ab4516205e ("platform/x86:
+intel-hid: fix _DSM function index handling").
 
-When the shared memory backing RAM allocation occurs during
-the reclaimer thread context, the shared memory is charged to
-the root memory control group, and the shmem usage of the enclave
-is not properly accounted for, making cgroups ineffective at
-limiting the amount of RAM an enclave can consume.
-
-For example, when using a cgroup to launch a set of test
-enclaves, the kernel does not properly account for 50% - 75% of
-shmem page allocations on average. In the worst case, when
-nearly all allocations occur during the reclaimer thread, the
-kernel accounts less than a percent of the amount of shmem used
-by the enclave's cgroup to the correct cgroup.
-
-SGX stores a list of mm_structs that are associated with
-an enclave. Pick one of them during reclaim and charge that
-mm's memcg with the shmem allocation. The one that gets picked
-is arbitrary, but this list almost always only has one mm. The
-cases where there is more than one mm with different memcg's
-are not worth considering.
-
-Create a new function - sgx_encl_alloc_backing(). This function
-is used whenever a new backing storage page needs to be
-allocated. Previously the same function was used for page
-allocation as well as retrieving a previously allocated page.
-Prior to backing page allocation, if there is a mm_struct associated
-with the enclave that is requesting the allocation, it is set
-as the active memory control group.
-
-[ dhansen: - fix merge conflict with ELDU fixes
-           - check against actual ksgxd_tsk, not ->mm ]
-
+Fixes: 97ab4516205e ("platform/x86: intel-hid: fix _DSM function index handling")
 Cc: stable@vger.kernel.org
-Signed-off-by: Kristen Carlson Accardi <kristen@linux.intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
-Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
-Link: https://lkml.kernel.org/r/20220520174248.4918-1-kristen@linux.intel.com
+Signed-off-by: Michael Niewöhner <linux@mniewoehner.de>
+Link: https://lore.kernel.org/r/66f813f5bcc724a0f6dd5adefe6a9728dbe509e3.camel@mniewoehner.de
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/sgx/encl.c |  105 ++++++++++++++++++++++++++++++++++++++++-
- arch/x86/kernel/cpu/sgx/encl.h |    7 +-
- arch/x86/kernel/cpu/sgx/main.c |    9 ++-
- 3 files changed, 115 insertions(+), 6 deletions(-)
+ drivers/platform/x86/intel/hid.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/kernel/cpu/sgx/encl.c
-+++ b/arch/x86/kernel/cpu/sgx/encl.c
-@@ -152,7 +152,7 @@ static int __sgx_encl_eldu(struct sgx_en
+--- a/drivers/platform/x86/intel/hid.c
++++ b/drivers/platform/x86/intel/hid.c
+@@ -238,7 +238,7 @@ static bool intel_hid_evaluate_method(ac
  
- 	page_pcmd_off = sgx_encl_get_backing_page_pcmd_offset(encl, page_index);
+ 	method_name = (char *)intel_hid_dsm_fn_to_method[fn_index];
  
--	ret = sgx_encl_get_backing(encl, page_index, &b);
-+	ret = sgx_encl_lookup_backing(encl, page_index, &b);
- 	if (ret)
- 		return ret;
+-	if (!(intel_hid_dsm_fn_mask & fn_index))
++	if (!(intel_hid_dsm_fn_mask & BIT(fn_index)))
+ 		goto skip_dsm_eval;
  
-@@ -718,7 +718,7 @@ static struct page *sgx_encl_get_backing
-  *   0 on success,
-  *   -errno otherwise.
-  */
--int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
-+static int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
- 			 struct sgx_backing *backing)
- {
- 	pgoff_t page_pcmd_off = sgx_encl_get_backing_page_pcmd_offset(encl, page_index);
-@@ -743,6 +743,107 @@ int sgx_encl_get_backing(struct sgx_encl
- 	return 0;
- }
- 
-+/*
-+ * When called from ksgxd, returns the mem_cgroup of a struct mm stored
-+ * in the enclave's mm_list. When not called from ksgxd, just returns
-+ * the mem_cgroup of the current task.
-+ */
-+static struct mem_cgroup *sgx_encl_get_mem_cgroup(struct sgx_encl *encl)
-+{
-+	struct mem_cgroup *memcg = NULL;
-+	struct sgx_encl_mm *encl_mm;
-+	int idx;
-+
-+	/*
-+	 * If called from normal task context, return the mem_cgroup
-+	 * of the current task's mm. The remainder of the handling is for
-+	 * ksgxd.
-+	 */
-+	if (!current_is_ksgxd())
-+		return get_mem_cgroup_from_mm(current->mm);
-+
-+	/*
-+	 * Search the enclave's mm_list to find an mm associated with
-+	 * this enclave to charge the allocation to.
-+	 */
-+	idx = srcu_read_lock(&encl->srcu);
-+
-+	list_for_each_entry_rcu(encl_mm, &encl->mm_list, list) {
-+		if (!mmget_not_zero(encl_mm->mm))
-+			continue;
-+
-+		memcg = get_mem_cgroup_from_mm(encl_mm->mm);
-+
-+		mmput_async(encl_mm->mm);
-+
-+		break;
-+	}
-+
-+	srcu_read_unlock(&encl->srcu, idx);
-+
-+	/*
-+	 * In the rare case that there isn't an mm associated with
-+	 * the enclave, set memcg to the current active mem_cgroup.
-+	 * This will be the root mem_cgroup if there is no active
-+	 * mem_cgroup.
-+	 */
-+	if (!memcg)
-+		return get_mem_cgroup_from_mm(NULL);
-+
-+	return memcg;
-+}
-+
-+/**
-+ * sgx_encl_alloc_backing() - allocate a new backing storage page
-+ * @encl:	an enclave pointer
-+ * @page_index:	enclave page index
-+ * @backing:	data for accessing backing storage for the page
-+ *
-+ * When called from ksgxd, sets the active memcg from one of the
-+ * mms in the enclave's mm_list prior to any backing page allocation,
-+ * in order to ensure that shmem page allocations are charged to the
-+ * enclave.
-+ *
-+ * Return:
-+ *   0 on success,
-+ *   -errno otherwise.
-+ */
-+int sgx_encl_alloc_backing(struct sgx_encl *encl, unsigned long page_index,
-+			   struct sgx_backing *backing)
-+{
-+	struct mem_cgroup *encl_memcg = sgx_encl_get_mem_cgroup(encl);
-+	struct mem_cgroup *memcg = set_active_memcg(encl_memcg);
-+	int ret;
-+
-+	ret = sgx_encl_get_backing(encl, page_index, backing);
-+
-+	set_active_memcg(memcg);
-+	mem_cgroup_put(encl_memcg);
-+
-+	return ret;
-+}
-+
-+/**
-+ * sgx_encl_lookup_backing() - retrieve an existing backing storage page
-+ * @encl:	an enclave pointer
-+ * @page_index:	enclave page index
-+ * @backing:	data for accessing backing storage for the page
-+ *
-+ * Retrieve a backing page for loading data back into an EPC page with ELDU.
-+ * It is the caller's responsibility to ensure that it is appropriate to use
-+ * sgx_encl_lookup_backing() rather than sgx_encl_alloc_backing(). If lookup is
-+ * not used correctly, this will cause an allocation which is not accounted for.
-+ *
-+ * Return:
-+ *   0 on success,
-+ *   -errno otherwise.
-+ */
-+int sgx_encl_lookup_backing(struct sgx_encl *encl, unsigned long page_index,
-+			   struct sgx_backing *backing)
-+{
-+	return sgx_encl_get_backing(encl, page_index, backing);
-+}
-+
- /**
-  * sgx_encl_put_backing() - Unpin the backing storage
-  * @backing:	data for accessing backing storage for the page
---- a/arch/x86/kernel/cpu/sgx/encl.h
-+++ b/arch/x86/kernel/cpu/sgx/encl.h
-@@ -103,10 +103,13 @@ static inline int sgx_encl_find(struct m
- int sgx_encl_may_map(struct sgx_encl *encl, unsigned long start,
- 		     unsigned long end, unsigned long vm_flags);
- 
-+bool current_is_ksgxd(void);
- void sgx_encl_release(struct kref *ref);
- int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm);
--int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
--			 struct sgx_backing *backing);
-+int sgx_encl_lookup_backing(struct sgx_encl *encl, unsigned long page_index,
-+			    struct sgx_backing *backing);
-+int sgx_encl_alloc_backing(struct sgx_encl *encl, unsigned long page_index,
-+			   struct sgx_backing *backing);
- void sgx_encl_put_backing(struct sgx_backing *backing);
- int sgx_encl_test_and_clear_young(struct mm_struct *mm,
- 				  struct sgx_encl_page *page);
---- a/arch/x86/kernel/cpu/sgx/main.c
-+++ b/arch/x86/kernel/cpu/sgx/main.c
-@@ -313,7 +313,7 @@ static void sgx_reclaimer_write(struct s
- 	sgx_encl_put_backing(backing);
- 
- 	if (!encl->secs_child_cnt && test_bit(SGX_ENCL_INITIALIZED, &encl->flags)) {
--		ret = sgx_encl_get_backing(encl, PFN_DOWN(encl->size),
-+		ret = sgx_encl_alloc_backing(encl, PFN_DOWN(encl->size),
- 					   &secs_backing);
- 		if (ret)
- 			goto out;
-@@ -384,7 +384,7 @@ static void sgx_reclaim_pages(void)
- 		page_index = PFN_DOWN(encl_page->desc - encl_page->encl->base);
- 
- 		mutex_lock(&encl_page->encl->lock);
--		ret = sgx_encl_get_backing(encl_page->encl, page_index, &backing[i]);
-+		ret = sgx_encl_alloc_backing(encl_page->encl, page_index, &backing[i]);
- 		if (ret) {
- 			mutex_unlock(&encl_page->encl->lock);
- 			goto skip;
-@@ -475,6 +475,11 @@ static bool __init sgx_page_reclaimer_in
- 	return true;
- }
- 
-+bool current_is_ksgxd(void)
-+{
-+	return current == ksgxd_tsk;
-+}
-+
- static struct sgx_epc_page *__sgx_alloc_epc_page_from_node(int nid)
- {
- 	struct sgx_numa_node *node = &sgx_numa_nodes[nid];
+ 	obj = acpi_evaluate_dsm_typed(handle, &intel_dsm_guid,
 
 
