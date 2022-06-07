@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6DEC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:20:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 938E3C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233258AbiFHBUL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:20:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34236 "EHLO
+        id S245702AbiFHBUX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:20:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382057AbiFGW3A (ORCPT
+        with ESMTP id S1381963AbiFGVsr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:29:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C84274B5F;
-        Tue,  7 Jun 2022 12:23:46 -0700 (PDT)
+        Tue, 7 Jun 2022 17:48:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53FFE23A036;
+        Tue,  7 Jun 2022 12:08:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 613D860B14;
-        Tue,  7 Jun 2022 19:23:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72BADC385A2;
-        Tue,  7 Jun 2022 19:23:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9418861768;
+        Tue,  7 Jun 2022 19:08:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F6CAC385A2;
+        Tue,  7 Jun 2022 19:08:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629824;
-        bh=cJcaACk93XZiwSdeQhL4bIIlasHe+pa17GOztwySCbM=;
+        s=korg; t=1654628899;
+        bh=Sk12M91EVRp7tlIarBFvOZaVVXpRGE4yVctE0sx5rMM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ySKyICo/Kt3rxDR/7q/6u4r5NbisQRSwmANpuQrr26jdkzemLDG9qt/Nb/AOgfeWB
-         imZrjGieUBCWyCEMVj9euQYhSLLhQcPYFAvCnrqaXUY5TSSc9Q5JQpvUWzrQ2kWiUe
-         QnjUTnAdwpnBqh/xZ6ONVsOMGp6A0DHA0ksINfmA=
+        b=PAxsoOEiBrSfGKi9Eq7n/HkvFAryBg812oYCHLw1D4SrVU0zR1630i8RrozufHD1t
+         2tnYvmYFDrsEloP/C/i3vp01vcC/7kQO2fTIVaCdOJjlLpdBCDmnSpmPJURCi5jgn/
+         W3aw2j3KruJ2MMd/uGCAc0Jcr5OcCVUc11+Jr+s0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mel Gorman <mgorman@techsingularity.net>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Dave Chinner <dchinner@redhat.com>, Jan Kara <jack@suse.cz>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.18 830/879] mm/page_alloc: always attempt to allocate at least one page during bulk allocation
-Date:   Tue,  7 Jun 2022 19:05:48 +0200
-Message-Id: <20220607165026.946543643@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 495/879] bfq: Relax waker detection for shared queues
+Date:   Tue,  7 Jun 2022 19:00:13 +0200
+Message-Id: <20220607165017.240154140@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,67 +48,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mel Gorman <mgorman@techsingularity.net>
+From: Jan Kara <jack@suse.cz>
 
-commit c572e4888ad1be123c1516ec577ad30a700bbec4 upstream.
+[ Upstream commit f950667356ce90a41b446b726d4595a10cb65415 ]
 
-Peter Pavlisko reported the following problem on kernel bugzilla 216007.
+Currently we look for waker only if current queue has no requests. This
+makes sense for bfq queues with a single process however for shared
+queues when there is a larger number of processes the condition that
+queue has no requests is difficult to meet because often at least one
+process has some request in flight although all the others are waiting
+for the waker to do the work and this harms throughput. Relax the "no
+queued request for bfq queue" condition to "the current task has no
+queued requests yet". For this, we also need to start tracking number of
+requests in flight for each task.
 
-	When I try to extract an uncompressed tar archive (2.6 milion
-	files, 760.3 GiB in size) on newly created (empty) XFS file system,
-	after first low tens of gigabytes extracted the process hangs in
-	iowait indefinitely. One CPU core is 100% occupied with iowait,
-	the other CPU core is idle (on 2-core Intel Celeron G1610T).
+This patch (together with the following one) restores the performance
+for dbench with 128 clients that regressed with commit c65e6fd460b4
+("bfq: Do not let waker requests skip proper accounting") because
+this commit makes requests of wakers properly enter BFQ queues and thus
+these queues become ineligible for the old waker detection logic.
+Dbench results:
 
-It was bisected to c9fa563072e1 ("xfs: use alloc_pages_bulk_array() for
-buffers") but XFS is only the messenger.  The problem is that nothing is
-waking kswapd to reclaim some pages at a time the PCP lists cannot be
-refilled until some reclaim happens.  The bulk allocator checks that there
-are some pages in the array and the original intent was that a bulk
-allocator did not necessarily need all the requested pages and it was best
-to return as quickly as possible.
+         Vanilla 5.18-rc3        5.18-rc3 + revert      5.18-rc3 patched
+Mean     1237.36 (   0.00%)      950.16 *  23.21%*      988.35 *  20.12%*
 
-This was fine for the first user of the API but both NFS and XFS require
-the requested number of pages be available before making progress.  Both
-could be adjusted to call the page allocator directly if a bulk allocation
-fails but it puts a burden on users of the API.  Adjust the semantics to
-attempt at least one allocation via __alloc_pages() before returning so
-kswapd is woken if necessary.
+Numbers are time to complete workload so lower is better.
 
-It was reported via bugzilla that the patch addressed the problem and that
-the tar extraction completed successfully.  This may also address bug
-215975 but has yet to be confirmed.
-
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216007
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215975
-Link: https://lkml.kernel.org/r/20220526091210.GC3441@techsingularity.net
-Fixes: 387ba26fb1cb ("mm/page_alloc: add a bulk page allocator")
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-Cc: "Darrick J. Wong" <djwong@kernel.org>
-Cc: Dave Chinner <dchinner@redhat.com>
-Cc: Jan Kara <jack@suse.cz>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-Cc: Chuck Lever <chuck.lever@oracle.com>
-Cc: <stable@vger.kernel.org>	[5.13+]
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c65e6fd460b4 ("bfq: Do not let waker requests skip proper accounting")
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220519105235.31397-1-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/page_alloc.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ block/bfq-iosched.c | 5 +++--
+ block/bfq-iosched.h | 1 +
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -5324,8 +5324,8 @@ unsigned long __alloc_pages_bulk(gfp_t g
- 		page = __rmqueue_pcplist(zone, 0, ac.migratetype, alloc_flags,
- 								pcp, pcp_list);
- 		if (unlikely(!page)) {
--			/* Try and get at least one page */
--			if (!nr_populated)
-+			/* Try and allocate at least one page */
-+			if (!nr_account)
- 				goto failed_irq;
- 			break;
- 		}
+diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
+index 1f62dbdc521f..e1c86f66400e 100644
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -2133,7 +2133,6 @@ static void bfq_check_waker(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ 	if (!bfqd->last_completed_rq_bfqq ||
+ 	    bfqd->last_completed_rq_bfqq == bfqq ||
+ 	    bfq_bfqq_has_short_ttime(bfqq) ||
+-	    bfqq->dispatched > 0 ||
+ 	    now_ns - bfqd->last_completion >= 4 * NSEC_PER_MSEC ||
+ 	    bfqd->last_completed_rq_bfqq == bfqq->waker_bfqq)
+ 		return;
+@@ -2210,7 +2209,7 @@ static void bfq_add_request(struct request *rq)
+ 	bfqq->queued[rq_is_sync(rq)]++;
+ 	bfqd->queued++;
+ 
+-	if (RB_EMPTY_ROOT(&bfqq->sort_list) && bfq_bfqq_sync(bfqq)) {
++	if (bfq_bfqq_sync(bfqq) && RQ_BIC(rq)->requests <= 1) {
+ 		bfq_check_waker(bfqd, bfqq, now_ns);
+ 
+ 		/*
+@@ -6563,6 +6562,7 @@ static void bfq_finish_requeue_request(struct request *rq)
+ 		bfq_completed_request(bfqq, bfqd);
+ 	}
+ 	bfq_finish_requeue_request_body(bfqq);
++	RQ_BIC(rq)->requests--;
+ 	spin_unlock_irqrestore(&bfqd->lock, flags);
+ 
+ 	/*
+@@ -6796,6 +6796,7 @@ static struct bfq_queue *bfq_init_rq(struct request *rq)
+ 
+ 	bfqq_request_allocated(bfqq);
+ 	bfqq->ref++;
++	bic->requests++;
+ 	bfq_log_bfqq(bfqd, bfqq, "get_request %p: bfqq %p, %d",
+ 		     rq, bfqq, bfqq->ref);
+ 
+diff --git a/block/bfq-iosched.h b/block/bfq-iosched.h
+index 3b83e3d1c2e5..25fada961bc9 100644
+--- a/block/bfq-iosched.h
++++ b/block/bfq-iosched.h
+@@ -468,6 +468,7 @@ struct bfq_io_cq {
+ 	struct bfq_queue *stable_merge_bfqq;
+ 
+ 	bool stably_merged;	/* non splittable if true */
++	unsigned int requests;	/* Number of requests this process has in flight */
+ };
+ 
+ /**
+-- 
+2.35.1
+
 
 
