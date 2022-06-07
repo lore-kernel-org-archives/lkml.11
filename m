@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13960CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 424DBCCA48B
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:51:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354262AbiFGSue (ORCPT
+        id S1354417AbiFGSus (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:50:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40054 "EHLO
+        Tue, 7 Jun 2022 14:50:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352855AbiFGSRi (ORCPT
+        with ESMTP id S1352186AbiFGSQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4737211A3C;
-        Tue,  7 Jun 2022 10:52:47 -0700 (PDT)
+        Tue, 7 Jun 2022 14:16:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D67613E81;
+        Tue,  7 Jun 2022 10:51:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2194BB82367;
-        Tue,  7 Jun 2022 17:52:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B25AC34119;
-        Tue,  7 Jun 2022 17:52:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 388536170B;
+        Tue,  7 Jun 2022 17:51:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BF55C34119;
+        Tue,  7 Jun 2022 17:50:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624363;
-        bh=vhFQJOuDoweg0cmkJ2+dd/wYe49J1ZAW4hcLiGdLY9g=;
+        s=k20201202; t=1654624260;
+        bh=B/xC2ZPee+hMAMN2oJ8YGxZA69mypRtl3601KeUmka0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wot1LJhMtiAaLhtXn82f+oOMlyPkrCSqPjO9biCTWr1H8Kcdi0VVPPU7X1NyPbkfu
-         couMZVMw05sBRxuT8sSf6bZyLTocH+ZTmjex6tQdifLK09laPAoJSeSRAqYnmjjDcb
-         H3xs2i4/a0H9YRLgiUGuBOMRzfla4sEhT3Bep9wk6wqKvjbUOgFpFM5f9Fhx+98d6t
-         K1oHyKg/MsNu4poP98/M2BTfUugWHFgBv1kskJ46zoooUuqXNFaQNDB2DmkLudFUmQ
-         wXuaFywtQNZXMMJnzQF5MvCPVYuPKK49ESd27KB75lFs2mM+31N+LZxCTbsmwq+Wdj
-         BsIElR4vI3vcw==
+        b=IQ3nTy9Jt7VfEVLD99kS8jmhDsxicgkUk8psydoRs2dxolo42DtJ8Q3ay3ehbDN9Q
+         oe1DCbDy6DUjlqFY/sXRtbkV9GMwApsmoSOPxasr/SQ9uVYDWEbyhkRiXf1+drja2+
+         RY1NR+uXyAjBfGDkR/nzojJz+PSo6/b7uuLTHV6YpYYS0h47zZrA4avOs1+MRVSslX
+         lO+jAKsXEPol34HkiMz+2e48mFgmN+R+VTGR+Hu/i31LR2n8qJzUyRtQQvfAoFj/+3
+         gsBfGJxEAGpyBhfmF1OJHe4AlCV1x40TQLgSWKsnCyN503svmyms7l/CqxUxqxlfj6
+         1oU7caTtn1CdA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>, frankja@linux.ibm.com,
-        gor@linux.ibm.com, kvm@vger.kernel.org, linux-s390@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 65/68] s390/gmap: voluntarily schedule during key setting
-Date:   Tue,  7 Jun 2022 13:48:31 -0400
-Message-Id: <20220607174846.477972-65-sashal@kernel.org>
+Cc:     Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
+        Donald Buczek <buczek@molgen.mpg.de>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        linux-raid@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 36/68] md: protect md_unregister_thread from reentrancy
+Date:   Tue,  7 Jun 2022 13:48:02 -0400
+Message-Id: <20220607174846.477972-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
 References: <20220607174846.477972-1-sashal@kernel.org>
@@ -55,84 +54,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Borntraeger <borntraeger@linux.ibm.com>
+From: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
 
-[ Upstream commit 6d5946274df1fff539a7eece458a43be733d1db8 ]
+[ Upstream commit 1e267742283a4b5a8ca65755c44166be27e9aa0f ]
 
-With large and many guest with storage keys it is possible to create
-large latencies or stalls during initial key setting:
+Generally, the md_unregister_thread is called with reconfig_mutex, but
+raid_message in dm-raid doesn't hold reconfig_mutex to unregister thread,
+so md_unregister_thread can be called simulitaneously from two call sites
+in theory.
 
-rcu: INFO: rcu_sched self-detected stall on CPU
-rcu:   18-....: (2099 ticks this GP) idle=54e/1/0x4000000000000002 softirq=35598716/35598716 fqs=998
-       (t=2100 jiffies g=155867385 q=20879)
-Task dump for CPU 18:
-CPU 1/KVM       R  running task        0 1030947 256019 0x06000004
-Call Trace:
-sched_show_task
-rcu_dump_cpu_stacks
-rcu_sched_clock_irq
-update_process_times
-tick_sched_handle
-tick_sched_timer
-__hrtimer_run_queues
-hrtimer_interrupt
-do_IRQ
-ext_int_handler
-ptep_zap_key
+Then after previous commit which remove the protection of reconfig_mutex
+for md_unregister_thread completely, the potential issue could be worse
+than before.
 
-The mmap lock is held during the page walking but since this is a
-semaphore scheduling is still possible. Same for the kvm srcu.
-To minimize overhead do this on every segment table entry or large page.
+Let's take pers_lock at the beginning of function to ensure reentrancy.
 
-Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Reviewed-by: Alexander Gordeev <agordeev@linux.ibm.com>
-Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220530092706.11637-2-borntraeger@linux.ibm.com
-Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Reported-by: Donald Buczek <buczek@molgen.mpg.de>
+Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/mm/gmap.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/md/md.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/arch/s390/mm/gmap.c b/arch/s390/mm/gmap.c
-index 1ac73917a8d3..b8ae4a4aa2ba 100644
---- a/arch/s390/mm/gmap.c
-+++ b/arch/s390/mm/gmap.c
-@@ -2608,6 +2608,18 @@ static int __s390_enable_skey_pte(pte_t *pte, unsigned long addr,
- 	return 0;
- }
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index e3c1450b9e69..e1d763e969fe 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -7962,17 +7962,22 @@ EXPORT_SYMBOL(md_register_thread);
  
-+/*
-+ * Give a chance to schedule after setting a key to 256 pages.
-+ * We only hold the mm lock, which is a rwsem and the kvm srcu.
-+ * Both can sleep.
-+ */
-+static int __s390_enable_skey_pmd(pmd_t *pmd, unsigned long addr,
-+				  unsigned long next, struct mm_walk *walk)
-+{
-+	cond_resched();
-+	return 0;
-+}
+ void md_unregister_thread(struct md_thread **threadp)
+ {
+-	struct md_thread *thread = *threadp;
+-	if (!thread)
+-		return;
+-	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+-	/* Locking ensures that mddev_unlock does not wake_up a
++	struct md_thread *thread;
 +
- static int __s390_enable_skey_hugetlb(pte_t *pte, unsigned long addr,
- 				      unsigned long hmask, unsigned long next,
- 				      struct mm_walk *walk)
-@@ -2630,12 +2642,14 @@ static int __s390_enable_skey_hugetlb(pte_t *pte, unsigned long addr,
- 	end = start + HPAGE_SIZE - 1;
- 	__storage_key_init_range(start, end);
- 	set_bit(PG_arch_1, &page->flags);
-+	cond_resched();
- 	return 0;
++	/*
++	 * Locking ensures that mddev_unlock does not wake_up a
+ 	 * non-existent thread
+ 	 */
+ 	spin_lock(&pers_lock);
++	thread = *threadp;
++	if (!thread) {
++		spin_unlock(&pers_lock);
++		return;
++	}
+ 	*threadp = NULL;
+ 	spin_unlock(&pers_lock);
+ 
++	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+ 	kthread_stop(thread->tsk);
+ 	kfree(thread);
  }
- 
- static const struct mm_walk_ops enable_skey_walk_ops = {
- 	.hugetlb_entry		= __s390_enable_skey_hugetlb,
- 	.pte_entry		= __s390_enable_skey_pte,
-+	.pmd_entry		= __s390_enable_skey_pmd,
- };
- 
- int s390_enable_skey(void)
 -- 
 2.35.1
 
