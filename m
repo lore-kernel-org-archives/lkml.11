@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EADBBCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:46:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7C2DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:47:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376691AbiFGUqx (ORCPT
+        id S1376776AbiFGUq7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:46:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55370 "EHLO
+        Tue, 7 Jun 2022 16:46:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356757AbiFGTn1 (ORCPT
+        with ESMTP id S1356898AbiFGTnt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:43:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A1255360;
-        Tue,  7 Jun 2022 11:18:15 -0700 (PDT)
+        Tue, 7 Jun 2022 15:43:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F0EE5AEE3;
+        Tue,  7 Jun 2022 11:18:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A00CB8237C;
-        Tue,  7 Jun 2022 18:18:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6DDDC385A2;
-        Tue,  7 Jun 2022 18:18:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 81CDE60C1C;
+        Tue,  7 Jun 2022 18:18:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DC57C385A2;
+        Tue,  7 Jun 2022 18:18:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625893;
-        bh=4c4aEuU/cvjom0M16ArwJiuqMUd3ut2aEY2KHB7piac=;
+        s=korg; t=1654625903;
+        bh=dDQBw/jW4HnJXnRCLxGt4OkKA7zSd9joddnpvBMiXL0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QEjmt5JFzaawMzDGL2J9bQ8Fu/Pu09tHF9uTmt8cIMNK4CWc2DI2AfgRYV8sovqFa
-         U+K4AhR0pMyRh0uY0QGALlLnf8HItun9dz8Pf8j8dhkCWg2iv+u0eKNxEBoo2X9N2x
-         BYAR1VrZ5SM9UX7rp3ZaNeNmjgXzLNRufXkuJyUk=
+        b=Pz0WjrucZr4PlAHK5ZLdtWBtHYbnzLrKlfuLD2kGU6TDL720SLvhzRlUjLPi00Xsj
+         SCy6adhlgYS/Ytn231StlhDr39B2WOVQ8XtGeGuvOVczyOznP/ZjNxYH3yCjYobyZK
+         D326T8F4Ftc03NlJkieoaP3xcMW5S3lzlI8GuZwU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <yujie.liu@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
+        Jonathan Bakker <xc-racer2@live.ca>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 165/772] ASoC: rt1015p: remove dependency on GPIOLIB
-Date:   Tue,  7 Jun 2022 18:55:57 +0200
-Message-Id: <20220607164953.902807910@linuxfoundation.org>
+Subject: [PATCH 5.17 186/772] ARM: dts: s5pv210: align DMA channels with dtschema
+Date:   Tue,  7 Jun 2022 18:56:18 +0200
+Message-Id: <20220607164954.517468933@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,54 +51,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
 
-[ Upstream commit b390c25c6757b9d56cecdfbf6d55f15fc89a6386 ]
+[ Upstream commit 9e916fb9bc3d16066286f19fc9c51d26a6aec6bd ]
 
-commit dcc2c012c7691 ("ASoC: Fix gpiolib dependencies") removed a
-series of unnecessary dependencies on GPIOLIB when the gpio was
-optional.
+dtschema expects DMA channels in specific order (tx, rx and tx-sec).
+The order actually should not matter because dma-names is used however
+let's make it aligned with dtschema to suppress warnings like:
 
-A similar simplification seems valid for rt1015p, so remove the
-dependency as well. This will avoid the following warning
+  i2s@eee30000: dma-names: ['rx', 'tx', 'tx-sec'] is not valid under any of the given schemas
 
-  WARNING: unmet direct dependencies detected for SND_SOC_RT1015P
-
-     Depends on [n]: SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] &&
-     GPIOLIB [=n]
-
-     Selected by [y]:
-
-     - SND_SOC_INTEL_SOF_RT5682_MACH [=y] && SOUND [=y] && !UML && SND
-       [=y] && SND_SOC [=y] && SND_SOC_INTEL_MACH [=y] &&
-       (SND_SOC_SOF_HDA_LINK [=y] || SND_SOC_SOF_BAYTRAIL [=n]) && I2C
-       [=y] && ACPI [=y] && (SND_HDA_CODEC_HDMI [=y] &&
-       SND_SOC_SOF_HDA_AUDIO_CODEC [=y] && (MFD_INTEL_LPSS [=y] ||
-       COMPILE_TEST [=y]) || SND_SOC_SOF_BAYTRAIL [=n] &&
-       (X86_INTEL_LPSS [=n] || COMPILE_TEST [=y]))
-
-Reported-by: kernel test robot <yujie.liu@intel.com>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220517172647.468244-3-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+Co-developed-by: Jonathan Bakker <xc-racer2@live.ca>
+Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
+Link: https://lore.kernel.org/r/CY4PR04MB056779A9C50DC95987C5272ACB1C9@CY4PR04MB0567.namprd04.prod.outlook.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm/boot/dts/s5pv210-aries.dtsi |  2 +-
+ arch/arm/boot/dts/s5pv210.dtsi       | 12 ++++++------
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
-index a8c6c2bfd5a7..3496403004ac 100644
---- a/sound/soc/codecs/Kconfig
-+++ b/sound/soc/codecs/Kconfig
-@@ -1202,7 +1202,6 @@ config SND_SOC_RT1015
+diff --git a/arch/arm/boot/dts/s5pv210-aries.dtsi b/arch/arm/boot/dts/s5pv210-aries.dtsi
+index 2f57100a011a..9b7da2bc3a06 100644
+--- a/arch/arm/boot/dts/s5pv210-aries.dtsi
++++ b/arch/arm/boot/dts/s5pv210-aries.dtsi
+@@ -636,7 +636,7 @@
+ };
  
- config SND_SOC_RT1015P
- 	tristate
--	depends on GPIOLIB
+ &i2s0 {
+-	dmas = <&pdma0 9>, <&pdma0 10>, <&pdma0 11>;
++	dmas = <&pdma0 10>, <&pdma0 9>, <&pdma0 11>;
+ 	status = "okay";
+ };
  
- config SND_SOC_RT1019
- 	tristate
+diff --git a/arch/arm/boot/dts/s5pv210.dtsi b/arch/arm/boot/dts/s5pv210.dtsi
+index 353ba7b09a0c..c5265f3ae31d 100644
+--- a/arch/arm/boot/dts/s5pv210.dtsi
++++ b/arch/arm/boot/dts/s5pv210.dtsi
+@@ -239,8 +239,8 @@
+ 			reg = <0xeee30000 0x1000>;
+ 			interrupt-parent = <&vic2>;
+ 			interrupts = <16>;
+-			dma-names = "rx", "tx", "tx-sec";
+-			dmas = <&pdma1 9>, <&pdma1 10>, <&pdma1 11>;
++			dma-names = "tx", "rx", "tx-sec";
++			dmas = <&pdma1 10>, <&pdma1 9>, <&pdma1 11>;
+ 			clock-names = "iis",
+ 				      "i2s_opclk0",
+ 				      "i2s_opclk1";
+@@ -259,8 +259,8 @@
+ 			reg = <0xe2100000 0x1000>;
+ 			interrupt-parent = <&vic2>;
+ 			interrupts = <17>;
+-			dma-names = "rx", "tx";
+-			dmas = <&pdma1 12>, <&pdma1 13>;
++			dma-names = "tx", "rx";
++			dmas = <&pdma1 13>, <&pdma1 12>;
+ 			clock-names = "iis", "i2s_opclk0";
+ 			clocks = <&clocks CLK_I2S1>, <&clocks SCLK_AUDIO1>;
+ 			pinctrl-names = "default";
+@@ -274,8 +274,8 @@
+ 			reg = <0xe2a00000 0x1000>;
+ 			interrupt-parent = <&vic2>;
+ 			interrupts = <18>;
+-			dma-names = "rx", "tx";
+-			dmas = <&pdma1 14>, <&pdma1 15>;
++			dma-names = "tx", "rx";
++			dmas = <&pdma1 15>, <&pdma1 14>;
+ 			clock-names = "iis", "i2s_opclk0";
+ 			clocks = <&clocks CLK_I2S2>, <&clocks SCLK_AUDIO2>;
+ 			pinctrl-names = "default";
 -- 
 2.35.1
 
