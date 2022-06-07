@@ -2,106 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F624C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:24:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71325C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:24:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354915AbiFGTYa (ORCPT
+        id S1355222AbiFGTYk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:24:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36888 "EHLO
+        Tue, 7 Jun 2022 15:24:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352897AbiFGSbV (ORCPT
+        with ESMTP id S1353078AbiFGSbm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:31:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2F6A14674D;
-        Tue,  7 Jun 2022 10:56:38 -0700 (PDT)
+        Tue, 7 Jun 2022 14:31:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF85217CC83;
+        Tue,  7 Jun 2022 10:56:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1204B617E1;
-        Tue,  7 Jun 2022 17:56:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDBDAC385A5;
-        Tue,  7 Jun 2022 17:56:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624597;
-        bh=P+KSU0/Dydie7KSyFd85wn9GdvZpaFqkdJJLPXKHi84=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2835B82374;
+        Tue,  7 Jun 2022 17:56:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33DD9C34115;
+        Tue,  7 Jun 2022 17:56:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624604;
+        bh=mbM4lFYWufa3Mlp5ZMoSuDYbE+24tQdhs04k3HMjwxU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZHjnaU1qEvOi40KEPYE0F71i9/T8+ujEB377HHBk9BsOJweMQ7YMzxtvOv783Nqpt
-         KMZR3J/NtCipBRXlHfkum+RdlPmwE043hIfGocPQtpfM7LEDbpieFLtLxv38gSln/E
-         ApnPLIyEO6rRzrEQahY7tr99319/X9cSKwU4Enf2xpw4P1vMZfx35AJ7betxek2puk
-         +1Yrd2nbppEQCO96bF0WhW+vNMWKbCuNEtrfZTJewNKFL8Am3Slmuo3islSvZFHMS4
-         oOHedkojYCBQanhG3q4tPbpRYQhyHkGszL7p6RUqc1/VfGjBYZLXCMvtZDdhqTzA25
-         KMsuyF+QZk7wQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, baihaowen@meizu.com,
-        dan.carpenter@oracle.com, edumazet@google.com,
-        paskripkin@gmail.com, yangyingliang@huawei.com, wjsota@gmail.com,
-        len.baker@gmx.com, dave@stgolabs.net, linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 11/51] drivers: staging: rtl8192e: Fix deadlock in rtllib_beacons_stop()
-Date:   Tue,  7 Jun 2022 13:55:10 -0400
-Message-Id: <20220607175552.479948-11-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
-References: <20220607175552.479948-1-sashal@kernel.org>
+        b=Zy9iVEmDTwztjQZCG3C5nIJTeBspZs5UjHhxfR8TCC9ALIbJWn7i9jmQzzZlEGCeA
+         HPnJhec/EPtbJYNYPpkDORQhxh23vu9jOVgxQ0FUsU/JUoxkkFbZJIhSONzFLwyOQp
+         sGdyg4MzOAZF1bbpLF9jkJ6sviwaok89WCgSSONE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 386/667] ARM: dts: BCM5301X: Update pin controller node name
+Date:   Tue,  7 Jun 2022 19:00:51 +0200
+Message-Id: <20220607164946.324831466@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Rafał Miłecki <rafal@milecki.pl>
 
-[ Upstream commit 9b6bdbd9337de3917945847bde262a34a87a6303 ]
+[ Upstream commit 130b5e32ba9d2d2313e39cf3f6d0729bff02b76a ]
 
-There is a deadlock in rtllib_beacons_stop(), which is shown
-below:
+This fixes:
+arch/arm/boot/dts/bcm4708-asus-rt-ac56u.dtb: cru-bus@100: 'pin-controller@1c0' does not match any of the regexes: '^clock-controller@[a-f0-9]+$', '^phy@[a-f0-9]+$', '^pinctrl@[a-f0-9]+$', '^syscon@[a-f0-9]+$', '^thermal@[a-f0-9]+$'
+        From schema: Documentation/devicetree/bindings/mfd/brcm,cru.yaml
+arch/arm/boot/dts/bcm4708-asus-rt-ac56u.dtb: pin-controller@1c0: $nodename:0: 'pin-controller@1c0' does not match '^(pinctrl|pinmux)(@[0-9a-f]+)?$'
+        From schema: Documentation/devicetree/bindings/pinctrl/brcm,ns-pinmux.yaml
 
-   (Thread 1)              |      (Thread 2)
-                           | rtllib_send_beacon()
-rtllib_beacons_stop()      |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | rtllib_send_beacon_cb()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
-
-We hold ieee->beacon_lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need ieee->beacon_lock in position (2) of thread 2.
-As a result, rtllib_beacons_stop() will block forever.
-
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417141641.124388-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Ref: e7391b021e3f ("dt-bindings: mfd: brcm,cru: Rename pinctrl node")
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8192e/rtllib_softmac.c | 2 +-
+ arch/arm/boot/dts/bcm5301x.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
-index 503d33be71d9..ea8bc27fce49 100644
---- a/drivers/staging/rtl8192e/rtllib_softmac.c
-+++ b/drivers/staging/rtl8192e/rtllib_softmac.c
-@@ -651,9 +651,9 @@ static void rtllib_beacons_stop(struct rtllib_device *ieee)
- 	spin_lock_irqsave(&ieee->beacon_lock, flags);
+diff --git a/arch/arm/boot/dts/bcm5301x.dtsi b/arch/arm/boot/dts/bcm5301x.dtsi
+index db8c3f684786..30217948ef82 100644
+--- a/arch/arm/boot/dts/bcm5301x.dtsi
++++ b/arch/arm/boot/dts/bcm5301x.dtsi
+@@ -455,7 +455,7 @@
+ 				reg = <0x180 0x4>;
+ 			};
  
- 	ieee->beacon_txing = 0;
--	del_timer_sync(&ieee->beacon_timer);
- 
- 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
-+	del_timer_sync(&ieee->beacon_timer);
- 
- }
- 
+-			pinctrl: pin-controller@1c0 {
++			pinctrl: pinctrl@1c0 {
+ 				compatible = "brcm,bcm4708-pinmux";
+ 				reg = <0x1c0 0x24>;
+ 				reg-names = "cru_gpio_control";
 -- 
 2.35.1
+
+
 
