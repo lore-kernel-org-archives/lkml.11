@@ -2,86 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95EADCCA497
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B971ACCA499
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389211AbiFHAfZ (ORCPT
+        id S1389339AbiFHAfk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49884 "EHLO
+        Tue, 7 Jun 2022 20:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382104AbiFGWVt (ORCPT
+        with ESMTP id S1574455AbiFGXZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:21:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD79C26ACAF;
-        Tue,  7 Jun 2022 12:22:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ABE5660906;
-        Tue,  7 Jun 2022 19:22:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2ED3C385A2;
-        Tue,  7 Jun 2022 19:22:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629725;
-        bh=wROjKPocEJBbittAMQhxhJUUWC4+PmUgeUKiA0tkmOE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t0w4zFangu9AY/4utoyv1AKEx/QgHTAlCKYxUqX+Vxyiz7iOOMPQCJEdutYrux/Dh
-         nBtP857psSbBgHUtKx2taykubmg98WmT5wQjsQ42DURH8Bhw9PVORNH1h7WCVSzlQW
-         +yancJFOZMQlYu8sKl1zHFSW11v5BRHywLyJcjp8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
-Subject: [PATCH 5.18 793/879] drm/etnaviv: check for reaped mapping in etnaviv_iommu_unmap_gem
-Date:   Tue,  7 Jun 2022 19:05:11 +0200
-Message-Id: <20220607165025.881262493@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 7 Jun 2022 19:25:45 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40EBD22DFB5
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:22 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id h190-20020a636cc7000000b003fd5d5452cfso4768609pgc.8
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=Y68XIZUJ1GQ/ObMpbiUUdrzn6qb8lkahi8a44hfFrNA=;
+        b=jQ95zgp7qVJDyz/rhBbnbzbFaPXyqDEzj8zrULA0JTAxn1ujGCUU4KkH2I2nb7lyN1
+         BgyIKJWUQMaXAbdAtXG12SiP3C1YPVlMBEjCPZZjMLxyqrLf05ilwaPOGFqn5UDHWtN2
+         VOGq4vG+livVzLe0sI1eqlvSg/ho1RMSvot8fBuX/peS59R2BwmmovC4CMmGmAkvKeOq
+         Nif/YKDQfkwW8ztwDY1E4vNh2+DeObMVSnh3J+n3VpTrqqW/kbUe9OUBIEd2YYAnQRLx
+         GVlH6v0JEVKur9tlG4S+AuaTKJXe5K+9BUqQkLjD1C28qEfDCivr45t0uzgm5G2Hw+Sj
+         ZS/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=Y68XIZUJ1GQ/ObMpbiUUdrzn6qb8lkahi8a44hfFrNA=;
+        b=FKbnGDRa3l6RBAo9tEmHke0y7+GT/corjKjbNIm8rZL8zrzs4L8KDvmBU71CxX36l3
+         qtC5ScakjagbySdxHt0K4Wg9r2N4cx1CZ83pfp782O+NRdeoIQFiY2imARZPepvfcEjJ
+         hSDnTX2i12tgHor8IlfenSBED7brClok0SaiywMcp6+bfZZcg9NAH8vz78x32DyrE5Kq
+         gMAPQao8upozjo6VKlgCgKWyJbM9uBMEEStlzRO/pc5f2Axg+J5E3TXZlGj+bih0q7zi
+         cSNUCSP0aMvgUC0pKfJyU38Lt+TvhuPvDEmr7MyWiu6NQ3b96LMM9Wv8YbO5nmgMJVAY
+         enqw==
+X-Gm-Message-State: AOAM531OTpFjTtjC9qlvij7yBkkB5kfkqu1x80Rys+rmIuAp4/9SpO4V
+        qHKwnOo9vhuYelbr7/vo6vGyrcKgJgU=
+X-Google-Smtp-Source: ABdhPJxB3VYaQ3PQ1Ta72PzTm03vXyJkriBqEkaiWnpRhP0oEWKbD0KEj038iaragoTuunxOvzLdz2r/Ra8=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a17:90a:c981:b0:1e6:75f0:d4ea with SMTP id
+ w1-20020a17090ac98100b001e675f0d4eamr35605587pjt.37.1654637781774; Tue, 07
+ Jun 2022 14:36:21 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Tue,  7 Jun 2022 21:35:51 +0000
+In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
+Message-Id: <20220607213604.3346000-3-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220607213604.3346000-1-seanjc@google.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH v5 02/15] KVM: nVMX: Account for KVM reserved CR4 bits in
+ consistency checks
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
+        David Matlack <dmatlack@google.com>,
+        Oliver Upton <oupton@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Stach <l.stach@pengutronix.de>
+Check that the guest (L2) and host (L1) CR4 values that would be loaded
+by nested VM-Enter and VM-Exit respectively are valid with respect to
+KVM's (L0 host) allowed CR4 bits.  Failure to check KVM reserved bits
+would allow L1 to load an illegal CR4 (or trigger hardware VM-Fail or
+failed VM-Entry) by massaging guest CPUID to allow features that are not
+supported by KVM.  Amusingly, KVM itself is an accomplice in its doom, as
+KVM adjusts L1's MSR_IA32_VMX_CR4_FIXED1 to allow L1 to enable bits for
+L2 based on L1's CPUID model.
 
-commit e168c25526cd0368af098095c2ded4a008007e1b upstream.
+Note, although nested_{guest,host}_cr4_valid() are _currently_ used if
+and only if the vCPU is post-VMXON (nested.vmxon == true), that may not
+be true in the future, e.g. emulating VMXON has a bug where it doesn't
+check the allowed/required CR0/CR4 bits.
 
-When the mapping is already reaped the unmap must be a no-op, as we
-would otherwise try to remove the mapping twice, corrupting the involved
-data structures.
-
-Cc: stable@vger.kernel.org # 5.4
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
-Tested-by: Guido Günther <agx@sigxcpu.org>
-Acked-by: Guido Günther <agx@sigxcpu.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: stable@vger.kernel.org
+Fixes: 3899152ccbf4 ("KVM: nVMX: fix checks on CR{0,4} during virtual VMX operation")
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- drivers/gpu/drm/etnaviv/etnaviv_mmu.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/x86/kvm/vmx/nested.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/etnaviv/etnaviv_mmu.c
-+++ b/drivers/gpu/drm/etnaviv/etnaviv_mmu.c
-@@ -286,6 +286,12 @@ void etnaviv_iommu_unmap_gem(struct etna
+diff --git a/arch/x86/kvm/vmx/nested.h b/arch/x86/kvm/vmx/nested.h
+index c92cea0b8ccc..129ae4e01f7c 100644
+--- a/arch/x86/kvm/vmx/nested.h
++++ b/arch/x86/kvm/vmx/nested.h
+@@ -281,7 +281,8 @@ static inline bool nested_cr4_valid(struct kvm_vcpu *vcpu, unsigned long val)
+ 	u64 fixed0 = to_vmx(vcpu)->nested.msrs.cr4_fixed0;
+ 	u64 fixed1 = to_vmx(vcpu)->nested.msrs.cr4_fixed1;
  
- 	mutex_lock(&context->lock);
+-	return fixed_bits_valid(val, fixed0, fixed1);
++	return fixed_bits_valid(val, fixed0, fixed1) &&
++	       __kvm_is_valid_cr4(vcpu, val);
+ }
  
-+	/* Bail if the mapping has been reaped by another thread */
-+	if (!mapping->context) {
-+		mutex_unlock(&context->lock);
-+		return;
-+	}
-+
- 	/* If the vram node is on the mm, unmap and remove the node */
- 	if (mapping->vram_node.mm == &context->mm)
- 		etnaviv_iommu_remove_mapping(context, mapping);
-
+ /* No difference in the restrictions on guest and host CR4 in VMX operation. */
+-- 
+2.36.1.255.ge46751e96f-goog
 
