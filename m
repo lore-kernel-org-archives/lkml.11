@@ -2,153 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A2B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08022C04E83
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442519AbiFHAyk (ORCPT
+        id S1442174AbiFHAzQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:54:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58548 "EHLO
+        Tue, 7 Jun 2022 20:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455449AbiFGXSl (ORCPT
+        with ESMTP id S1383971AbiFGWJg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:18:41 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C68CB21C612
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:15:48 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id n8so15908499plh.1
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:15:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jT8DLfbyhUAC8YupnNkx7/WPeiPnBTRo6q4n9p3S9IY=;
-        b=VlUgXcU9owX1EBIje6hBA2fwQ9kjFpI9bPxIwfz3BBF+P0QwC14EOuzXoFF8wDys4m
-         LvFexAAmIgm9t44ySB3iZn4tl5NRcrd+xFuGu0qVyxf3w/br+VLAlQmjgGoWKBREO2gT
-         mBi4xnNl9LeVoaIH1Mm5CLnk7Jt6LFoQ9GNFo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jT8DLfbyhUAC8YupnNkx7/WPeiPnBTRo6q4n9p3S9IY=;
-        b=yBXlPYXrPXOPXfsJpjeu7NA7wVZv1l7nAt0GoFfNKUtpZIKtD1RpL/qTbXKANu5l9w
-         0HygvSEhGTbng7awSI596Fmbk23hk22pcPx8WigQYWI/lWO/E8F+9ip77z6Z260dyMmU
-         DqYZBRYRpJIMtyoLgYhhyt5ylOIr6LNdljKPFQO7DvZ3FNb9+4io1EGKVv1Uiu125phV
-         x/nb4ogXqj6a0fWHqtOuJREZh1wPPcah1ZxZoDjLX9Wf/AZ5JLVHNTJR2NoL3CVRIWLM
-         8tsWqGN3mqOYRDBYnETBmDk8I5JmSGvgKK2+mEALzbkhy5oxYwozM4hsWOI/LDP4F+A5
-         bBEg==
-X-Gm-Message-State: AOAM5301IVm5SAA2JCdKl5cdUYVww3xtHl/fb09OB2rVWkOXcZxueNBc
-        iU2AQOF6mI3ceesDjzahX4Xoaw==
-X-Google-Smtp-Source: ABdhPJxhFzWqzH75FBiSKGcGqopAKv26dB/QVu2+AEpLNrGFVc0gxO7a4bpodDrd1FVbJmDNPWR2Tg==
-X-Received: by 2002:a17:903:110e:b0:167:8847:5d9d with SMTP id n14-20020a170903110e00b0016788475d9dmr8945619plh.3.1654636548284;
-        Tue, 07 Jun 2022 14:15:48 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:b689:cc5b:e6ad:930e])
-        by smtp.gmail.com with UTF8SMTPSA id g7-20020a636b07000000b003fd3a3db089sm8589907pgc.11.2022.06.07.14.15.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 14:15:47 -0700 (PDT)
-From:   Brian Norris <briannorris@chromium.org>
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Sebastian Fricke <sebastian.fricke@collabora.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Brian Norris <briannorris@chromium.org>, stable@vger.kernel.org
-Subject: [PATCH] arm64: dts: rockchip: Assign RK3399 VDU clock rate
-Date:   Tue,  7 Jun 2022 14:15:36 -0700
-Message-Id: <20220607141535.1.Idafe043ffc94756a69426ec68872db0645c5d6e2@changeid>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+        Tue, 7 Jun 2022 18:09:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFDD258DE9;
+        Tue,  7 Jun 2022 12:18:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90C96B8237B;
+        Tue,  7 Jun 2022 19:18:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7547C385A2;
+        Tue,  7 Jun 2022 19:18:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629524;
+        bh=w4J3lZlhPnZx1YGLY7PoiF1tfVbazPE3XFhfXp2RXdQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TMXB0oeVNNEInxqiEXUi3CKhXuPGOm10CD09fub8fA4V0uTXiBZ598cnTEw098gU+
+         fqgA7JLRvdn6MzOoAzXYafcu3DPqLL0xJdUSYWvffJrgVxSL1kE206+mmg2JEzCWNR
+         B7G/6m4c//reVnj+EwM0gKKbc7GAz5kW+7nREL+0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Olga Kornievskaia <aglo@umich.edu>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 681/879] NFSv4/pNFS: Do not fail I/O when we fail to allocate the pNFS layout
+Date:   Tue,  7 Jun 2022 19:03:19 +0200
+Message-Id: <20220607165022.614133384@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Before commit 9998943f6dfc ("media: rkvdec: Stop overclocking the
-decoder"), the rkvdec driver was forcing the VDU clock rate. After that
-commit, we rely on the default clock rate. That rate works OK on many
-boards, with the default PLL settings (CPLL is 800MHz, VDU dividers
-leave it at 400MHz); but some boards change PLL settings.
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-Assign the expected default clock rate explicitly, so that the rate is
-consistent, regardless of PLL configuration.
+[ Upstream commit 3764a17e31d579cf9b4bd0a69894b577e8d75702 ]
 
-This was particularly broken on RK3399 Gru Scarlet systems, where the
-rk3399-gru-scarlet.dtsi assigns PLL_CPLL to 1.6 GHz, and so the VDU
-clock ends up at 800 MHz (twice the expected rate), and causes video
-artifacts and other issues.
+Commit 587f03deb69b caused pnfs_update_layout() to stop returning ENOMEM
+when the memory allocation fails, and hence causes it to fall back to
+trying to do I/O through the MDS. There is no guarantee that this will
+fare any better. If we're failing the pNFS layout allocation, then we
+should just redirty the page and retry later.
 
-Note: I assign the clock rate in the clock controller instead of the
-vdec node, because there are multiple nodes that use this clock, and per
-the clock.yaml specification:
-
-  Configuring a clock's parent and rate through the device node that
-  consumes the clock can be done only for clocks that have a single
-  user. Specifying conflicting parent or rate configuration in multiple
-  consumer nodes for a shared clock is forbidden.
-
-  Configuration of common clocks, which affect multiple consumer devices
-  can be similarly specified in the clock provider node.
-
-Fixes: 9998943f6dfc ("media: rkvdec: Stop overclocking the decoder")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reported-by: Olga Kornievskaia <aglo@umich.edu>
+Fixes: 587f03deb69b ("pnfs: refactor send_layoutget")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-This is a candidate for 5.19 IMO, since commit 9998943f6dfc landed in
-5.19-rc1 and is being queued up for -stable as we speak.
+ fs/nfs/pnfs.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
- arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi | 4 +++-
- arch/arm64/boot/dts/rockchip/rk3399.dtsi             | 6 ++++--
- 2 files changed, 7 insertions(+), 3 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi
-index 913d845eb51a..1977103a5ef4 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi
-@@ -376,7 +376,8 @@ &cru {
- 		<&cru ACLK_VIO>,
- 		<&cru ACLK_GIC_PRE>,
- 		<&cru PCLK_DDR>,
--		<&cru ACLK_HDCP>;
-+		<&cru ACLK_HDCP>,
-+		<&cru ACLK_VDU>;
- 	assigned-clock-rates =
- 		<600000000>, <1600000000>,
- 		<1000000000>,
-@@ -388,6 +389,7 @@ &cru {
- 		<400000000>,
- 		<200000000>,
- 		<200000000>,
-+		<400000000>,
- 		<400000000>;
- };
+diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
+index 856c962273c7..68a87be3e6f9 100644
+--- a/fs/nfs/pnfs.c
++++ b/fs/nfs/pnfs.c
+@@ -2000,6 +2000,7 @@ pnfs_update_layout(struct inode *ino,
+ 	lo = pnfs_find_alloc_layout(ino, ctx, gfp_flags);
+ 	if (lo == NULL) {
+ 		spin_unlock(&ino->i_lock);
++		lseg = ERR_PTR(-ENOMEM);
+ 		trace_pnfs_update_layout(ino, pos, count, iomode, lo, lseg,
+ 				 PNFS_UPDATE_LAYOUT_NOMEM);
+ 		goto out;
+@@ -2128,6 +2129,7 @@ pnfs_update_layout(struct inode *ino,
  
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index fbd0346624e6..9d5b0e8c9cca 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1462,7 +1462,8 @@ cru: clock-controller@ff760000 {
- 			<&cru HCLK_PERILP1>, <&cru PCLK_PERILP1>,
- 			<&cru ACLK_VIO>, <&cru ACLK_HDCP>,
- 			<&cru ACLK_GIC_PRE>,
--			<&cru PCLK_DDR>;
-+			<&cru PCLK_DDR>,
-+			<&cru ACLK_VDU>;
- 		assigned-clock-rates =
- 			 <594000000>,  <800000000>,
- 			<1000000000>,
-@@ -1473,7 +1474,8 @@ cru: clock-controller@ff760000 {
- 			 <100000000>,   <50000000>,
- 			 <400000000>, <400000000>,
- 			 <200000000>,
--			 <200000000>;
-+			 <200000000>,
-+			 <400000000>;
- 	};
- 
- 	grf: syscon@ff770000 {
+ 	lgp = pnfs_alloc_init_layoutget_args(ino, ctx, &stateid, &arg, gfp_flags);
+ 	if (!lgp) {
++		lseg = ERR_PTR(-ENOMEM);
+ 		trace_pnfs_update_layout(ino, pos, count, iomode, lo, NULL,
+ 					 PNFS_UPDATE_LAYOUT_NOMEM);
+ 		nfs_layoutget_end(lo);
 -- 
-2.36.1.255.ge46751e96f-goog
+2.35.1
+
+
 
