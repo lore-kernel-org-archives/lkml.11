@@ -2,115 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFFEACCA48C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B6A4C04E85
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442898AbiFHCBV (ORCPT
+        id S1443047AbiFHCBo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:01:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48048 "EHLO
+        Tue, 7 Jun 2022 22:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1840083AbiFHAEX (ORCPT
+        with ESMTP id S1840559AbiFHAFY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:04:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5655A6FA33;
-        Tue,  7 Jun 2022 12:18:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 7 Jun 2022 20:05:24 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3102C2FFD8;
+        Tue,  7 Jun 2022 16:53:50 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1327B618EC;
-        Tue,  7 Jun 2022 19:18:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23B53C385A5;
-        Tue,  7 Jun 2022 19:18:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629488;
-        bh=nq6ivhsF8LEWQhXdFUAKW1Cj0mLljzuni6/4am2Ui/Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SGMyMz/SUZnEpvbnvEKsHm8zlXkBvyuBv9zc3rEWZCBOl5gtjogSOBVPxnTtIKIYe
-         lSPOdY+HzVOkLpWXdU3lKInaiqgNPmKW/R+PHy/cyqWdxCSUi8SET3nbW3w9anq3/U
-         h0Rw6LB0mdImEcBFk84uW0M9eXdC0M/oNJR9In4s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
-        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.18 708/879] f2fs: fix to avoid f2fs_bug_on() in dec_valid_node_count()
-Date:   Tue,  7 Jun 2022 19:03:46 +0200
-Message-Id: <20220607165023.405500059@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LHnHt1kmlz4xD0;
+        Wed,  8 Jun 2022 09:53:45 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1654646027;
+        bh=CMoIYQyB2XCl8XOq/AHSIFF64iEb3UrjYX3oNA8db2g=;
+        h=Date:From:To:Cc:Subject:From;
+        b=q3L3251TRZfjSMWWSxhL3d3KStRWQsN0+2GHtWdbGiuLe8vd6AY9tRyqIHtPDWjsM
+         wdsDgu5TUQpanKc5oFqt+zOnmk+nV8FZs1Df/iJtyHFddzaMfy6VD6FvvjRrD8pjQS
+         WK0Vy1Hd6XGhfiCT0m5XYb0zjJkgE75cUOXeBPKj4VPjjQNGN+L5YOYqWMqngagYwL
+         HSU+frgduNoDCdaY8Dtf5hKTL+1r/FfkJmprfLAdjfUNNGIi/EbJkwkxNsUxRn+9MG
+         mqMJ1+/fQZThvVFHkm4MSIUyYPm5w3GJaHHB5AD0VmoXQkwb8WwzbdeGBNz4APSiW+
+         7Ll313gochhkA==
+Date:   Wed, 8 Jun 2022 09:53:43 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>
+Cc:     Intel Graphics <intel-gfx@lists.freedesktop.org>,
+        DRI <dri-devel@lists.freedesktop.org>,
+        Anusha Srivatsa <anusha.srivatsa@intel.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Lucas De Marchi <lucas.demarchi@intel.com>
+Subject: linux-next: manual merge of the drm-intel tree with Linus' tree
+Message-ID: <20220608095343.7196dedf@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/G6Mo72/2g.zbh2P=VlJh1mA";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+--Sig_/G6Mo72/2g.zbh2P=VlJh1mA
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-commit 4d17e6fe9293d57081ffdc11e1cf313e25e8fd9e upstream.
+Hi all,
 
-As Yanming reported in bugzilla:
+Today's linux-next merge of the drm-intel tree got a conflict in:
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215897
+  drivers/gpu/drm/i915/display/intel_dmc_regs.h
 
-I have encountered a bug in F2FS file system in kernel v5.17.
+between commit:
 
-The kernel should enable CONFIG_KASAN=y and CONFIG_KASAN_INLINE=y. You can
-reproduce the bug by running the following commands:
+  2518f226c60d ("Merge tag 'drm-next-2022-05-25' of git://anongit.freedeskt=
+op.org/drm/drm")
 
-The kernel message is shown below:
+from Linus' tree and commit:
 
-kernel BUG at fs/f2fs/f2fs.h:2511!
-Call Trace:
- f2fs_remove_inode_page+0x2a2/0x830
- f2fs_evict_inode+0x9b7/0x1510
- evict+0x282/0x4e0
- do_unlinkat+0x33a/0x540
- __x64_sys_unlinkat+0x8e/0xd0
- do_syscall_64+0x3b/0x90
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+  21c47196aec3 ("drm/i915/dmc: Add MMIO range restrictions")
 
-The root cause is: .total_valid_block_count or .total_valid_node_count
-could fuzzed to zero, then once dec_valid_node_count() was called, it
-will cause BUG_ON(), this patch fixes to print warning info and set
-SBI_NEED_FSCK into CP instead of panic.
+from the drm-intel tree.
 
-Cc: stable@vger.kernel.org
-Reported-by: Ming Yan <yanming@tju.edu.cn>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/f2fs/f2fs.h |   14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+I fixed it up (these were only white space differences, so I just used
+the version from Linus' tree) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
 
---- a/fs/f2fs/f2fs.h
-+++ b/fs/f2fs/f2fs.h
-@@ -2605,11 +2605,17 @@ static inline void dec_valid_node_count(
- {
- 	spin_lock(&sbi->stat_lock);
- 
--	f2fs_bug_on(sbi, !sbi->total_valid_block_count);
--	f2fs_bug_on(sbi, !sbi->total_valid_node_count);
-+	if (unlikely(!sbi->total_valid_block_count ||
-+			!sbi->total_valid_node_count)) {
-+		f2fs_warn(sbi, "dec_valid_node_count: inconsistent block counts, total_valid_block:%u, total_valid_node:%u",
-+			  sbi->total_valid_block_count,
-+			  sbi->total_valid_node_count);
-+		set_sbi_flag(sbi, SBI_NEED_FSCK);
-+	} else {
-+		sbi->total_valid_block_count--;
-+		sbi->total_valid_node_count--;
-+	}
- 
--	sbi->total_valid_node_count--;
--	sbi->total_valid_block_count--;
- 	if (sbi->reserved_blocks &&
- 		sbi->current_reserved_blocks < sbi->reserved_blocks)
- 		sbi->current_reserved_blocks++;
+--=20
+Cheers,
+Stephen Rothwell
 
+--Sig_/G6Mo72/2g.zbh2P=VlJh1mA
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKf5QcACgkQAVBC80lX
+0Gye+ggAjx6eChYTEh0PeTJ+FoHjOkUp57S6hFI5UMhIStDBHq7bzjz9FYM7KUb9
+btdnRs2IQAdr53YBtKSHxV7PWQmAEAKn5fH/UQSD5ahP836KsEm/gZvxhu/Ntz72
+YEw8eA34NvycenM3EaUSUf2k2onmqzZNh1YgmPC9j+vRyH6fvOEwyZIq1oAn95ES
+pgt+5CcFWswo5qkYpPHeHx7rRK+A/TZvMjGxYiyccQOkj9XebeH4vjomelrrB5sU
+CCOPyEIsy45pdC7EO2Az1wXiWrWKuVRbU+QqTBAvOGcfhju1JrCMJt0qFvFt/jeB
+7EV200qI6Kkzrl4o852GyvXMHnQNtA==
+=l25w
+-----END PGP SIGNATURE-----
+
+--Sig_/G6Mo72/2g.zbh2P=VlJh1mA--
