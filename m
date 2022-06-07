@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C68FCC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:04:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8573ACCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:04:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378928AbiFGVEP (ORCPT
+        id S1378859AbiFGVE0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:04:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34952 "EHLO
+        Tue, 7 Jun 2022 17:04:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357841AbiFGUCk (ORCPT
+        with ESMTP id S1358028AbiFGUCr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:02:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 454BF1C14F3;
-        Tue,  7 Jun 2022 11:25:26 -0700 (PDT)
+        Tue, 7 Jun 2022 16:02:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 942F71C204B;
+        Tue,  7 Jun 2022 11:25:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A1B4B82386;
-        Tue,  7 Jun 2022 18:24:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 700BDC385A2;
-        Tue,  7 Jun 2022 18:24:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 744C8B82368;
+        Tue,  7 Jun 2022 18:24:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8C1FC385A5;
+        Tue,  7 Jun 2022 18:24:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626292;
-        bh=w3e8wwqSf2IJK2TlKn/ftOI+LXVaqh+1NGePEZ9+3fM=;
+        s=korg; t=1654626290;
+        bh=4crKvbaRKfRDh58CHafqCLlcae/1alFJ2GNdRhB1c08=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kto9WCfIrzDdJdWOVVzEoPQDtAHCFjUe6koWcG9CYW+2zr5BZkeBjUzEc7KYH0kjG
-         hDea3ud0BMRSgBULfj/u+DFA9Gi1qbq9+swUz3fV4TMcq8GuoIumFX1Pji1jm/MYhD
-         VI69NbEzruriv16vUWRHiPczA5m+9ZkwhoFqEzJk=
+        b=I3uA4uLg6WKAXEGKZTU52+p94jOBozQe2UZW/v+qryH6azvRwdRytR95aOOEv5ldy
+         onRR56Ro4LsQ816cBrioYuN7nxHZDY0m6Xog7XINg/85l6tW6Fzhvp95SIKG9PGO3K
+         G2BWsXQ3Kjzaps6Mua+gfdoVr50bXo5aXXeSYUP0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org, Daniel Latypov <dlatypov@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 325/772] drm/rockchip: vop: fix possible null-ptr-deref in vop_bind()
-Date:   Tue,  7 Jun 2022 18:58:37 +0200
-Message-Id: <20220607164958.598351070@linuxfoundation.org>
+Subject: [PATCH 5.17 324/772] kunit: fix debugfs code to use enum kunit_status, not bool
+Date:   Tue,  7 Jun 2022 18:58:36 +0200
+Message-Id: <20220607164958.568925875@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,39 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Daniel Latypov <dlatypov@google.com>
 
-[ Upstream commit f8c242908ad15bbd604d3bcb54961b7d454c43f8 ]
+[ Upstream commit 38289a26e1b8a37755f3e07056ca416c1ee2a2e8 ]
 
-It will cause null-ptr-deref in resource_size(), if platform_get_resource()
-returns NULL, move calling resource_size() after devm_ioremap_resource() that
-will check 'res' to avoid null-ptr-deref.
+Commit 6d2426b2f258 ("kunit: Support skipped tests") switched to using
+`enum kunit_status` to track the result of running a test/suite since we
+now have more than just pass/fail.
 
-Fixes: 2048e3286f34 ("drm: rockchip: Add basic drm driver")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220422032854.2995175-1-yangyingliang@huawei.com
+This callsite wasn't updated, silently converting to enum to a bool and
+then back.
+
+Fixes: 6d2426b2f258 ("kunit: Support skipped tests")
+Signed-off-by: Daniel Latypov <dlatypov@google.com>
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/rockchip/rockchip_drm_vop.c | 2 +-
+ lib/kunit/debugfs.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-index 3e8d9e2d1b67..d53037531f40 100644
---- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-+++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-@@ -2118,10 +2118,10 @@ static int vop_bind(struct device *dev, struct device *master, void *data)
- 	vop_win_init(vop);
+diff --git a/lib/kunit/debugfs.c b/lib/kunit/debugfs.c
+index b71db0abc12b..1048ef1b8d6e 100644
+--- a/lib/kunit/debugfs.c
++++ b/lib/kunit/debugfs.c
+@@ -52,7 +52,7 @@ static void debugfs_print_result(struct seq_file *seq,
+ static int debugfs_print_results(struct seq_file *seq, void *v)
+ {
+ 	struct kunit_suite *suite = (struct kunit_suite *)seq->private;
+-	bool success = kunit_suite_has_succeeded(suite);
++	enum kunit_status success = kunit_suite_has_succeeded(suite);
+ 	struct kunit_case *test_case;
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	vop->len = resource_size(res);
- 	vop->regs = devm_ioremap_resource(dev, res);
- 	if (IS_ERR(vop->regs))
- 		return PTR_ERR(vop->regs);
-+	vop->len = resource_size(res);
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
- 	if (res) {
+ 	if (!suite || !suite->log)
 -- 
 2.35.1
 
