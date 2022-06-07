@@ -2,147 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C488CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 702E2CCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378179AbiFGUzk (ORCPT
+        id S1378282AbiFGU4C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:55:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49948 "EHLO
+        Tue, 7 Jun 2022 16:56:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358884AbiFGTxU (ORCPT
+        with ESMTP id S1358950AbiFGTxY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:53:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EADA5DD13;
-        Tue,  7 Jun 2022 11:22:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 323B1B82368;
-        Tue,  7 Jun 2022 18:22:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86057C34115;
-        Tue,  7 Jun 2022 18:22:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626175;
-        bh=5wTe8xp3bPphxbab5SuvbWv/JTwQZ9BIaBxc4S8Z9iI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rQ6tVTMClGc3WOSKAibyAdx62FW6hjVYiFZyRVPuyxgF+Bj8ju9OdQd3VUdJrFLvG
-         NfImwX0uExke0j/KabRR6SMVb9gpbqQOhq9mWEcwW/9fizNw4+JDu9bhE+N692WUIu
-         MTj5fAXUIV4p5RuliLlcKheIr22dJAbb3WdB8Ihc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Ogness <john.ogness@linutronix.de>,
-        Petr Mladek <pmladek@suse.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 283/772] printk: add missing memory barrier to wake_up_klogd()
-Date:   Tue,  7 Jun 2022 18:57:55 +0200
-Message-Id: <20220607164957.364764600@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 15:53:24 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B18E99FE7;
+        Tue,  7 Jun 2022 11:23:08 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 06FE95C0194;
+        Tue,  7 Jun 2022 14:23:06 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Tue, 07 Jun 2022 14:23:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1654626186; x=
+        1654712586; bh=A2Qz84RTtLj12xCCvGD9YEnpJpWvd/IEQH37atiAywk=; b=X
+        tbU6xTVF1e6z2o3FN1AzPdanm+UDnIeBx7vn1QLtuWEnbnGiMPgdhWtP/c1fmgpK
+        004ApcGLooLI7mD6nopG4fsyDdxSMu/4g1FO0ByLyHWwL+634Cpd1HHaWCOlzpk6
+        kmERRs1qNXZcpYE0PH9+DOwWH1+wPWrLXv8Jfc4mB+1fERLqt21U5d2klW9Y3kGz
+        A8p6VcLtarAYnWppvzlEPbwJZSIiU7gX2ha12zYRRds/sxtFtIT+fYGtPL38PRP4
+        0SxTMCuauskKc7TGZBeIBLIIpg3dObujvsbbmrY3XiGCvr5BbtoSoX0OzSMaRLAc
+        DXsCOR7MLfymF1nrGTHCQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1654626186; x=
+        1654712586; bh=A2Qz84RTtLj12xCCvGD9YEnpJpWvd/IEQH37atiAywk=; b=g
+        fLKM3cRy6/bvh/Dqt1bbAAlSs0ZatAyOwikb2xZZ4Ue2wY5QtTG5rH6HBi0hgRIJ
+        23F3e7NWnjtASVeAJrGVjWrd90ZnVPTiRVOQ2KpQIttfyfSKHDUM0OhD1QddWcMB
+        0ckGVBdGdD4dYl2l9zjo67PoPF+gmPIy3wqm0MpBgx1HRe6d5+L9SwlkEdbHrrUb
+        W/RDqcd+fZWSi142cWIXuaHOXWqGDH6QV4Dy/yQ39kGY2abytrMWw0RCdRc1kCcC
+        mDsg8sAu9W7zY7acv1+BEEi3DGhVwjZIkqIv/VAI9bbtmXZppstjlS+qnx9d6XuY
+        ZtElA3ttKP4Veyp7aP7WA==
+X-ME-Sender: <xms:iZefYt_QKzDJuI_H55srUQAfZGO8B0M0Z1VLadyQlULjsW-RehIHnA>
+    <xme:iZefYhtl2he6-5PYj6hWXsVcjwV7Ir9FIoNeJQbMohf6m4oOz9VvW1jOAvPTUeXCu
+    Apn6hhEftboVnbnkqQ>
+X-ME-Received: <xmr:iZefYrCmF_VHwHeTDqLYqPdV6cwmkoVT_8V6BjolPePgMF_SrCqhcw5tktIJjNxd3I_F36lMQJWdL23VD5DeKjcyUZ-wHR27mCkGNV2mUjI>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddvgecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefkffggfgfuvfevfhfhjggtgfesthekredttdefjeenucfhrhhomheplfhi
+    rgiguhhnucgjrghnghcuoehjihgrgihunhdrhigrnhhgsehflhihghhorghtrdgtohhmqe
+    enucggtffrrghtthgvrhhnpeduhfekvedvtdeukeeffefgteelgfeugeeuledttdeijeeg
+    ieehvefghefgvdefgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehjihgrgihunhdrhigrnhhgsehflhihghhorghtrdgtohhm
+X-ME-Proxy: <xmx:iZefYheF9ykhy5_RZ6_CqR_rdhJTRuFslz0YfXy6CyBzWnAJEY7JQQ>
+    <xmx:iZefYiMZbh-Ls7dCaRNDExiQOVcEkqWfjPEPSEeutBgAJVpRXWa5ig>
+    <xmx:iZefYjnCoFPlabAcaI_-FgTQ7mlDPdkAOhRKO9dc6ps1XCweHByBeg>
+    <xmx:ipefYpmvM1CzWnBpEp_HBfSJX55iED9u7NTjrtpS52HzqlZqYmwJRQ>
+Feedback-ID: ifd894703:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 7 Jun 2022 14:23:03 -0400 (EDT)
+Message-ID: <0a5dd632-0607-dab6-4de7-1ea248490863@flygoat.com>
+Date:   Tue, 7 Jun 2022 19:23:02 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 06/12] irqchip: mips-gic: Multi-cluster support
+Content-Language: en-GB
+To:     Marc Zyngier <maz@kernel.org>,
+        Dragan Mladjenovic <Dragan.Mladjenovic@syrmia.com>
+Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Chao-ying Fu <cfu@wavecomp.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Ungerer <gerg@kernel.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        Paul Burton <paulburton@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>
+References: <20220525121030.16054-1-Dragan.Mladjenovic@syrmia.com>
+ <20220525121030.16054-7-Dragan.Mladjenovic@syrmia.com>
+ <87wndu3tff.wl-maz@kernel.org>
+From:   Jiaxun Yang <jiaxun.yang@flygoat.com>
+In-Reply-To: <87wndu3tff.wl-maz@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Ogness <john.ogness@linutronix.de>
-
-[ Upstream commit 1f5d783094cf28b4905f51cad846eb5d1db6673e ]
-
-It is important that any new records are visible to preparing
-waiters before the waker checks if the wait queue is empty.
-Otherwise it is possible that:
-
-- there are new records available
-- the waker sees an empty wait queue and does not wake
-- the preparing waiter sees no new records and begins to wait
-
-This is exactly the problem that the function description of
-waitqueue_active() warns about.
-
-Use wq_has_sleeper() instead of waitqueue_active() because it
-includes the necessary full memory barrier.
-
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Link: https://lore.kernel.org/r/20220421212250.565456-4-john.ogness@linutronix.de
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/printk/printk.c | 39 ++++++++++++++++++++++++++++++++++++---
- 1 file changed, 36 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 74c92dd70c80..8964b1db2745 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -735,8 +735,19 @@ static ssize_t devkmsg_read(struct file *file, char __user *buf,
- 			goto out;
- 		}
- 
-+		/*
-+		 * Guarantee this task is visible on the waitqueue before
-+		 * checking the wake condition.
-+		 *
-+		 * The full memory barrier within set_current_state() of
-+		 * prepare_to_wait_event() pairs with the full memory barrier
-+		 * within wq_has_sleeper().
-+		 *
-+		 * This pairs with wake_up_klogd:A.
-+		 */
- 		ret = wait_event_interruptible(log_wait,
--				prb_read_valid(prb, atomic64_read(&user->seq), r));
-+				prb_read_valid(prb,
-+					atomic64_read(&user->seq), r)); /* LMM(devkmsg_read:A) */
- 		if (ret)
- 			goto out;
- 	}
-@@ -1502,7 +1513,18 @@ static int syslog_print(char __user *buf, int size)
- 		seq = syslog_seq;
- 
- 		mutex_unlock(&syslog_lock);
--		len = wait_event_interruptible(log_wait, prb_read_valid(prb, seq, NULL));
-+		/*
-+		 * Guarantee this task is visible on the waitqueue before
-+		 * checking the wake condition.
-+		 *
-+		 * The full memory barrier within set_current_state() of
-+		 * prepare_to_wait_event() pairs with the full memory barrier
-+		 * within wq_has_sleeper().
-+		 *
-+		 * This pairs with wake_up_klogd:A.
-+		 */
-+		len = wait_event_interruptible(log_wait,
-+				prb_read_valid(prb, seq, NULL)); /* LMM(syslog_print:A) */
- 		mutex_lock(&syslog_lock);
- 
- 		if (len)
-@@ -3251,7 +3273,18 @@ void wake_up_klogd(void)
- 		return;
- 
- 	preempt_disable();
--	if (waitqueue_active(&log_wait)) {
-+	/*
-+	 * Guarantee any new records can be seen by tasks preparing to wait
-+	 * before this context checks if the wait queue is empty.
-+	 *
-+	 * The full memory barrier within wq_has_sleeper() pairs with the full
-+	 * memory barrier within set_current_state() of
-+	 * prepare_to_wait_event(), which is called after ___wait_event() adds
-+	 * the waiter but before it has checked the wait condition.
-+	 *
-+	 * This pairs with devkmsg_read:A and syslog_print:A.
-+	 */
-+	if (wq_has_sleeper(&log_wait)) { /* LMM(wake_up_klogd:A) */
- 		this_cpu_or(printk_pending, PRINTK_PENDING_WAKEUP);
- 		irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
- 	}
--- 
-2.35.1
 
 
+在 2022/6/6 12:47, Marc Zyngier 写道:
+> On Wed, 25 May 2022 13:10:24 +0100,
+> Dragan Mladjenovic <Dragan.Mladjenovic@syrmia.com> wrote:
+>> From: Paul Burton <paulburton@kernel.org>
+>>
+>> The MIPS I6500 CPU & CM (Coherence Manager) 3.5 introduce the concept of
+>> multiple clusters to the system. In these systems each cluster contains
+>> its own GIC, so the GIC isn't truly global any longer. We do have the
+>> ability to access registers in the GICs of remote clusters using a
+>> redirect register block much like the redirect register blocks provided
+>> by the CM & CPC, and configured through the same GCR_REDIRECT register
+>> that we our mips_cm_lock_other() abstraction builds upon.
+>>
+>> It is expected that external interrupts are connected identically to all
+>> clusters. That is, if we have a device providing an interrupt connected
+>> to GIC interrupt pin 0 then it should be connected to pin 0 of every GIC
+>> in the system. This simplifies things somewhat by allowing us for the
+>> most part to treat the GIC as though it is still truly global, so long
+>> as we take care to configure interrupts in the cluster that we want them
+>> affine to.
+> I can see how this can work for level interrupts, but how does this
+> work for edge interrupts? Is there any guarantee that the interrupt
+> will be discarded if routed to a cluster where it isn't configured?
+It is supposed to mask the interrupt out on the GIC which belongs to the
+cluster that the interrupt is not routed to.
+
+When it's masked out GIC simply won't sense any level change.
+
+I guess it's sort of guarantee?
+
+Thanks
+- Jiaxun
+
+>
+> Otherwise, I can imagine plenty of spurious interrupts on affinity
+> change.
+>
+> Thanks,
+>
+> 	M.
+>
 
