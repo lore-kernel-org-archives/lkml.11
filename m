@@ -2,87 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 822B6CCA495
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFDAFCCA48E
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389136AbiFHAfT (ORCPT
+        id S1353882AbiFHAeE convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:35:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45972 "EHLO
+        Tue, 7 Jun 2022 20:34:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383759AbiFGVxm (ORCPT
+        with ESMTP id S1445942AbiFGXEa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:53:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F1D2244F51;
-        Tue,  7 Jun 2022 12:12:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE54A618EC;
-        Tue,  7 Jun 2022 19:12:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC880C385A2;
-        Tue,  7 Jun 2022 19:12:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629136;
-        bh=AI3ZPRVKoLMW8n1kDaiCEYvP2yicAHgSGb0ItYrciIk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Syk7hU4WugJTINhhd7BzMrzSael9AJsdof0ej3DRPel5CiEfKTaQJd9ETXHJ/S6Xg
-         7goxANYlVCKVGRKDiEZ5t2u2wOEGtwc8LPaZnJ8ohEAqAnnnou/sYgx9wXYmo7xd/F
-         jAiTjrMkByxPtNkinqLzRNZX4ZPc2RFUdQME+UHI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 581/879] arm64: dts: qcom: qrb5165-rb5: Fix can-clock node name
-Date:   Tue,  7 Jun 2022 19:01:39 +0200
-Message-Id: <20220607165019.718514227@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 19:04:30 -0400
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDDF135D46C
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 13:23:56 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 7957D61B8B69;
+        Tue,  7 Jun 2022 22:23:13 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id 9QQEM-g-k7R7; Tue,  7 Jun 2022 22:23:12 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id D08F7608110A;
+        Tue,  7 Jun 2022 22:23:12 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 7tquQMvYHDkA; Tue,  7 Jun 2022 22:23:12 +0200 (CEST)
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 9CD0D61B8B5A;
+        Tue,  7 Jun 2022 22:23:12 +0200 (CEST)
+Date:   Tue, 7 Jun 2022 22:23:12 +0200 (CEST)
+From:   Richard Weinberger <richard@nod.at>
+To:     =?utf-8?B?TWljaGHFgiBLxJlwaWXFhA==?= <kernel@kempniu.pl>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-mtd <linux-mtd@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Message-ID: <1710081060.147491.1654633392520.JavaMail.zimbra@nod.at>
+In-Reply-To: <20220516070601.11428-2-kernel@kempniu.pl>
+References: <20220516070601.11428-1-kernel@kempniu.pl> <20220516070601.11428-2-kernel@kempniu.pl>
+Subject: Re: [PATCH 1/2] mtdchar: prevent integer overflow in a safety check
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [195.201.40.130]
+X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
+Thread-Topic: mtdchar: prevent integer overflow in a safety check
+Thread-Index: JX134mBLLXSr5mg7slOI+t/fmFEWJA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vinod Koul <vkoul@kernel.org>
+----- Ursprüngliche Mail -----
+> Von: "Michał Kępień" <kernel@kempniu.pl>
+> An: "Miquel Raynal" <miquel.raynal@bootlin.com>, "richard" <richard@nod.at>, "Vignesh Raghavendra" <vigneshr@ti.com>
+> CC: "linux-mtd" <linux-mtd@lists.infradead.org>, "linux-kernel" <linux-kernel@vger.kernel.org>
+> Gesendet: Montag, 16. Mai 2022 09:06:00
+> Betreff: [PATCH 1/2] mtdchar: prevent integer overflow in a safety check
 
-[ Upstream commit 1eae95fb1d696968ca72be3ac8e0d62bb4d8da42 ]
+> Commit 6420ac0af95d ("mtdchar: prevent unbounded allocation in MEMWRITE
+> ioctl") added a safety check to mtdchar_write_ioctl() which attempts to
+> ensure that the write request sent by user space does not extend beyond
+> the MTD device's size.  However, that check contains an addition of two
+> struct mtd_write_req fields, 'start' and 'len', both of which are u64
+> variables.  The result of that addition can overflow, allowing the
+> safety check to be bypassed.
+> 
+> The arguably simplest fix - changing the data types of the relevant
+> struct mtd_write_req fields - is not feasible as it would break user
+> space.
+> 
+> Fix by making mtdchar_write_ioctl() truncate the value provided by user
+> space in the 'len' field of struct mtd_write_req, so that only the lower
+> 32 bits of that field are used, preventing the overflow.
+> 
+> While the 'ooblen' field of struct mtd_write_req is not currently used
+> in any similarly flawed safety check, also truncate it to 32 bits, for
+> consistency with the 'len' field and with other MTD routines handling
+> OOB data.
+> 
+> Update include/uapi/mtd/mtd-abi.h accordingly.
+> 
+> Suggested-by: Richard Weinberger <richard@nod.at>
+> Signed-off-by: Michał Kępień <kernel@kempniu.pl>
+> ---
+> drivers/mtd/mtdchar.c      | 3 +++
+> include/uapi/mtd/mtd-abi.h | 4 ++--
+> 2 files changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/mtd/mtdchar.c b/drivers/mtd/mtdchar.c
+> index d0f9c4b0285c..b2700f8467ff 100644
+> --- a/drivers/mtd/mtdchar.c
+> +++ b/drivers/mtd/mtdchar.c
+> @@ -615,6 +615,9 @@ static int mtdchar_write_ioctl(struct mtd_info *mtd,
+> 	if (!usr_oob)
+> 		req.ooblen = 0;
+> 
+> +	req.len &= 0xffffffff;
+> +	req.ooblen &= 0xffffffff;
+> +
 
-Per DT spec node names should not have underscores (_) in them, so
-change can_clock to can-clock.
+Yeah, I think it is reasonable to limit write requests to 4GiB.
 
-Fixes: 5c44c564e449 ("arm64: dts: qcom: qrb5165-rb5: Add support for MCP2518FD")
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220421073502.1824089-1-vkoul@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm64/boot/dts/qcom/qrb5165-rb5.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts b/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
-index 845eb7a6bf92..0e63f707b911 100644
---- a/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
-+++ b/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
-@@ -29,7 +29,7 @@
- 	};
- 
- 	/* Fixed crystal oscillator dedicated to MCP2518FD */
--	clk40M: can_clock {
-+	clk40M: can-clock {
- 		compatible = "fixed-clock";
- 		#clock-cells = <0>;
- 		clock-frequency = <40000000>;
--- 
-2.35.1
-
-
-
+Thanks,
+//richard
