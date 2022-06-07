@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D825BCCA491
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9254CCA48F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347702AbiFGRfo (ORCPT
+        id S1347577AbiFGRfZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:35:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39816 "EHLO
+        Tue, 7 Jun 2022 13:35:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346514AbiFGR2U (ORCPT
+        with ESMTP id S1346728AbiFGR2T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:28:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094A71157CB;
-        Tue,  7 Jun 2022 10:24:25 -0700 (PDT)
+        Tue, 7 Jun 2022 13:28:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B91C61146B6;
+        Tue,  7 Jun 2022 10:24:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1D9D60906;
-        Tue,  7 Jun 2022 17:24:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC335C385A5;
-        Tue,  7 Jun 2022 17:24:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69BF3B8220B;
+        Tue,  7 Jun 2022 17:24:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2096C3411F;
+        Tue,  7 Jun 2022 17:24:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622664;
-        bh=1vuZle/aJdf8IXFfMGotKYrT8HQrM8syeDFZeWAjPJM=;
+        s=korg; t=1654622661;
+        bh=GLDAKbEa053lI4HJOxqF2OP2qasoTwIbfzJ5kXxgezQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eGu+foy4QfitlcHvl1N2W/rMnJk1x6L1xYtvmLlW9sqR+8sr562glPGpFomofbDbx
-         ltjZ1rk6USCE1D/Ik0d+g+0lik8fXqzs4uxdRlEldICWp1wipE0scKofLbmovCSRrT
-         pFP01huG+Onn/s5ZxZgNBaDDcgXitDOrY31MeyPo=
+        b=rizUv7b6ZSyeNASV8waN2DVToZBcYHyU3mwrATo40dJTDgCkT+pUUjTfrNx4tkzqU
+         J7H/okqVJL/CoAM9vJPX6p9U0a29N1TpcT7r0tol9yD5mgCAbGUnR92E+EVuiOwBZN
+         6HMAQNB0W1y5DAFtJJLDUAAzapHP7gdF3FpkCREw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Brian Starkey <brian.starkey@arm.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 140/452] spi: spi-ti-qspi: Fix return value handling of wait_for_completion_timeout
-Date:   Tue,  7 Jun 2022 18:59:57 +0200
-Message-Id: <20220607164912.731402210@linuxfoundation.org>
+Subject: [PATCH 5.10 139/452] drm: mali-dp: potential dereference of null pointer
+Date:   Tue,  7 Jun 2022 18:59:56 +0200
+Message-Id: <20220607164912.701018307@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,48 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 8b1ea69a63eb62f97cef63e6d816b64ed84e8760 ]
+[ Upstream commit 73c3ed7495c67b8fbdc31cf58e6ca8757df31a33 ]
 
-wait_for_completion_timeout() returns unsigned long not int.
-It returns 0 if timed out, and positive if completed.
-The check for <= 0 is ambiguous and should be == 0 here
-indicating timeout which is the only error case.
+The return value of kzalloc() needs to be checked.
+To avoid use of null pointer '&state->base' in case of the
+failure of alloc.
 
-Fixes: 5720ec0a6d26 ("spi: spi-ti-qspi: Add DMA support for QSPI mmap read")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220411111034.24447-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 99665d072183 ("drm: mali-dp: add malidp_crtc_state struct")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Brian Starkey <brian.starkey@arm.com>
+Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211214100837.46912-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-ti-qspi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/arm/malidp_crtc.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-ti-qspi.c b/drivers/spi/spi-ti-qspi.c
-index e06aafe169e0..081da1fd3fd7 100644
---- a/drivers/spi/spi-ti-qspi.c
-+++ b/drivers/spi/spi-ti-qspi.c
-@@ -448,6 +448,7 @@ static int ti_qspi_dma_xfer(struct ti_qspi *qspi, dma_addr_t dma_dst,
- 	enum dma_ctrl_flags flags = DMA_CTRL_ACK | DMA_PREP_INTERRUPT;
- 	struct dma_async_tx_descriptor *tx;
- 	int ret;
-+	unsigned long time_left;
+diff --git a/drivers/gpu/drm/arm/malidp_crtc.c b/drivers/gpu/drm/arm/malidp_crtc.c
+index 587d94798f5c..af729094260c 100644
+--- a/drivers/gpu/drm/arm/malidp_crtc.c
++++ b/drivers/gpu/drm/arm/malidp_crtc.c
+@@ -483,7 +483,10 @@ static void malidp_crtc_reset(struct drm_crtc *crtc)
+ 	if (crtc->state)
+ 		malidp_crtc_destroy_state(crtc, crtc->state);
  
- 	tx = dmaengine_prep_dma_memcpy(chan, dma_dst, dma_src, len, flags);
- 	if (!tx) {
-@@ -467,9 +468,9 @@ static int ti_qspi_dma_xfer(struct ti_qspi *qspi, dma_addr_t dma_dst,
- 	}
+-	__drm_atomic_helper_crtc_reset(crtc, &state->base);
++	if (state)
++		__drm_atomic_helper_crtc_reset(crtc, &state->base);
++	else
++		__drm_atomic_helper_crtc_reset(crtc, NULL);
+ }
  
- 	dma_async_issue_pending(chan);
--	ret = wait_for_completion_timeout(&qspi->transfer_complete,
-+	time_left = wait_for_completion_timeout(&qspi->transfer_complete,
- 					  msecs_to_jiffies(len));
--	if (ret <= 0) {
-+	if (time_left == 0) {
- 		dmaengine_terminate_sync(chan);
- 		dev_err(qspi->dev, "DMA wait_for_completion_timeout\n");
- 		return -ETIMEDOUT;
+ static int malidp_crtc_enable_vblank(struct drm_crtc *crtc)
 -- 
 2.35.1
 
