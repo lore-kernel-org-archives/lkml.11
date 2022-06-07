@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30EAAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:53:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D384CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:53:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348587AbiFGRxI (ORCPT
+        id S1348691AbiFGRxP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:53:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36034 "EHLO
+        Tue, 7 Jun 2022 13:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347806AbiFGRfs (ORCPT
+        with ESMTP id S1347840AbiFGRfu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:35:48 -0400
+        Tue, 7 Jun 2022 13:35:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B80A410A605;
-        Tue,  7 Jun 2022 10:31:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB9E61109A4;
+        Tue,  7 Jun 2022 10:31:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56ADC60C7C;
-        Tue,  7 Jun 2022 17:31:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68F32C385A5;
-        Tue,  7 Jun 2022 17:31:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7895160BC6;
+        Tue,  7 Jun 2022 17:31:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A673C385A5;
+        Tue,  7 Jun 2022 17:31:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623091;
-        bh=d5f3waSstqFwsHwR92Wq26SEDDhS6+RyUHdRiynwipA=;
+        s=korg; t=1654623113;
+        bh=5CuX/ei8b4cxz24Mq7CNcRfJL2EU52AZFJwy/q9jzl8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I4oumvtJ/Zw+J4gniIhXwUOfQe2JkxRcEvbpxNZXdhoK7VMGz05bM2mPB7HAz0gFH
-         X8ceJ/N7tiaayJp0c8c2K4ZHBgBPlTH8Bf5z2bXEN33ZKICC/BhiOeS5jEXbkezRv9
-         d/BIQ5m5K7frtwucWAIeezcqB2NQ5fdAh4gXxMp8=
+        b=Ut6U4ypraZec/ea2txDGIjpW5GorjYHcWLNBf67kaTJTgRTVg8uLE8df/5WzxIFzC
+         nsem2ONEy8uXLRuipNyjXe/WUqK8d/8k23b34SMhZIUmGQEFh8f0SCzUfvWcYdxmzn
+         6NnFVzVSqyPcno3J0r+5bdMxelYanhF+L9X0Gtv4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        David Howells <dhowells@redhat.com>,
+        Manfred Spraul <manfred@colorfullife.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 251/452] rxrpc: Dont try to resend the request if were receiving the reply
-Date:   Tue,  7 Jun 2022 19:01:48 +0200
-Message-Id: <20220607164916.038411271@linuxfoundation.org>
+Subject: [PATCH 5.10 301/452] ipc/mqueue: use get_tree_nodev() in mqueue_get_tree()
+Date:   Tue,  7 Jun 2022 19:02:38 +0200
+Message-Id: <20220607164917.528739203@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,43 +54,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Waiman Long <longman@redhat.com>
 
-[ Upstream commit 114af61f88fbe34d641b13922d098ffec4c1be1b ]
+[ Upstream commit d60c4d01a98bc1942dba6e3adc02031f5519f94b ]
 
-rxrpc has a timer to trigger resending of unacked data packets in a call.
-This is not cancelled when a client call switches to the receive phase on
-the basis that most calls don't last long enough for it to ever expire.
-However, if it *does* expire after we've started to receive the reply, we
-shouldn't then go into trying to retransmit or pinging the server to find
-out if an ack got lost.
+When running the stress-ng clone benchmark with multiple testing threads,
+it was found that there were significant spinlock contention in sget_fc().
+The contended spinlock was the sb_lock.  It is under heavy contention
+because the following code in the critcal section of sget_fc():
 
-Fix this by skipping the resend code if we're into receiving the reply to a
-client call.
+  hlist_for_each_entry(old, &fc->fs_type->fs_supers, s_instances) {
+      if (test(old, fc))
+          goto share_extant_sb;
+  }
 
-Fixes: 17926a79320a ("[AF_RXRPC]: Provide secure RxRPC sockets for use by userspace and kernel both")
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: linux-afs@lists.infradead.org
-Signed-off-by: David S. Miller <davem@davemloft.net>
+After testing with added instrumentation code, it was found that the
+benchmark could generate thousands of ipc namespaces with the
+corresponding number of entries in the mqueue's fs_supers list where the
+namespaces are the key for the search.  This leads to excessive time in
+scanning the list for a match.
+
+Looking back at the mqueue calling sequence leading to sget_fc():
+
+  mq_init_ns()
+  => mq_create_mount()
+  => fc_mount()
+  => vfs_get_tree()
+  => mqueue_get_tree()
+  => get_tree_keyed()
+  => vfs_get_super()
+  => sget_fc()
+
+Currently, mq_init_ns() is the only mqueue function that will indirectly
+call mqueue_get_tree() with a newly allocated ipc namespace as the key for
+searching.  As a result, there will never be a match with the exising ipc
+namespaces stored in the mqueue's fs_supers list.
+
+So using get_tree_keyed() to do an existing ipc namespace search is just a
+waste of time.  Instead, we could use get_tree_nodev() to eliminate the
+useless search.  By doing so, we can greatly reduce the sb_lock hold time
+and avoid the spinlock contention problem in case a large number of ipc
+namespaces are present.
+
+Of course, if the code is modified in the future to allow
+mqueue_get_tree() to be called with an existing ipc namespace instead of a
+new one, we will have to use get_tree_keyed() in this case.
+
+The following stress-ng clone benchmark command was run on a 2-socket
+48-core Intel system:
+
+./stress-ng --clone 32 --verbose --oomable --metrics-brief -t 20
+
+The "bogo ops/s" increased from 5948.45 before patch to 9137.06 after
+patch. This is an increase of 54% in performance.
+
+Link: https://lkml.kernel.org/r/20220121172315.19652-1-longman@redhat.com
+Fixes: 935c6912b198 ("ipc: Convert mqueue fs to fs_context")
+Signed-off-by: Waiman Long <longman@redhat.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: David Howells <dhowells@redhat.com>
+Cc: Manfred Spraul <manfred@colorfullife.com>
+Cc: Davidlohr Bueso <dave@stgolabs.net>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/call_event.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ ipc/mqueue.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
-index e426f6831aab..f8ecad2b730e 100644
---- a/net/rxrpc/call_event.c
-+++ b/net/rxrpc/call_event.c
-@@ -406,7 +406,8 @@ void rxrpc_process_call(struct work_struct *work)
- 		goto recheck_state;
- 	}
+diff --git a/ipc/mqueue.c b/ipc/mqueue.c
+index 05d2176cc471..86969de17084 100644
+--- a/ipc/mqueue.c
++++ b/ipc/mqueue.c
+@@ -45,6 +45,7 @@
  
--	if (test_and_clear_bit(RXRPC_CALL_EV_RESEND, &call->events)) {
-+	if (test_and_clear_bit(RXRPC_CALL_EV_RESEND, &call->events) &&
-+	    call->state != RXRPC_CALL_CLIENT_RECV_REPLY) {
- 		rxrpc_resend(call, now);
- 		goto recheck_state;
- 	}
+ struct mqueue_fs_context {
+ 	struct ipc_namespace	*ipc_ns;
++	bool			 newns;	/* Set if newly created ipc namespace */
+ };
+ 
+ #define MQUEUE_MAGIC	0x19800202
+@@ -424,6 +425,14 @@ static int mqueue_get_tree(struct fs_context *fc)
+ {
+ 	struct mqueue_fs_context *ctx = fc->fs_private;
+ 
++	/*
++	 * With a newly created ipc namespace, we don't need to do a search
++	 * for an ipc namespace match, but we still need to set s_fs_info.
++	 */
++	if (ctx->newns) {
++		fc->s_fs_info = ctx->ipc_ns;
++		return get_tree_nodev(fc, mqueue_fill_super);
++	}
+ 	return get_tree_keyed(fc, mqueue_fill_super, ctx->ipc_ns);
+ }
+ 
+@@ -451,6 +460,10 @@ static int mqueue_init_fs_context(struct fs_context *fc)
+ 	return 0;
+ }
+ 
++/*
++ * mq_init_ns() is currently the only caller of mq_create_mount().
++ * So the ns parameter is always a newly created ipc namespace.
++ */
+ static struct vfsmount *mq_create_mount(struct ipc_namespace *ns)
+ {
+ 	struct mqueue_fs_context *ctx;
+@@ -462,6 +475,7 @@ static struct vfsmount *mq_create_mount(struct ipc_namespace *ns)
+ 		return ERR_CAST(fc);
+ 
+ 	ctx = fc->fs_private;
++	ctx->newns = true;
+ 	put_ipc_ns(ctx->ipc_ns);
+ 	ctx->ipc_ns = get_ipc_ns(ns);
+ 	put_user_ns(fc->user_ns);
 -- 
 2.35.1
 
