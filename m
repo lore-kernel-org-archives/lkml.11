@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0679FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B7CCCCA483
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350373AbiFHBOC (ORCPT
+        id S1380187AbiFHBOj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:14:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38214 "EHLO
+        Tue, 7 Jun 2022 21:14:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383063AbiFGWFK (ORCPT
+        with ESMTP id S1383461AbiFGWF0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:05:10 -0400
+        Tue, 7 Jun 2022 18:05:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E366195943;
-        Tue,  7 Jun 2022 12:16:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA180195927;
+        Tue,  7 Jun 2022 12:16:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF7A7618EC;
-        Tue,  7 Jun 2022 19:16:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CED0DC385A2;
-        Tue,  7 Jun 2022 19:16:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47DC661922;
+        Tue,  7 Jun 2022 19:16:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7023C385A2;
+        Tue,  7 Jun 2022 19:16:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629383;
-        bh=ezIWh8hccCcDbpXP8PsD5HOqPX41+iBX/icva8GXBPA=;
+        s=korg; t=1654629367;
+        bh=mphYbO6srjaRUuII25UtY+REzhdTdTHmRYtjyLnsmX8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dTd6y6/DSFku9vWyIZMwpKTdSWuaaccyB6YV2+v510G/FrbeV1JKT4En/6lVy7ttg
-         sYhdaFpPcIO1NAZhLTHQy6oiRjsy7YlFgElG6pePYUPdD7gtNzqXFQGcpBey5vYxbc
-         4+5mN2S4ain2hPHXoELEkWIoclP7MHjNPikUNaEg=
+        b=iqZsAR3/wcVBKNjbqtkU4tGRoHg3P2EY1ZUWUm/aHh67UXD5NOSaGYD4xYA5rCueu
+         MO+KzQiA0PATRXAw2eMacDzdfJn5vxtmLQ+raPKOQeoOGPBMV7u9dBEnvfpqcaG1Dh
+         zgzQvZ28ZmtEYbQ9CwwC2HUtUACu8JK3cYECq1qU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 634/879] hwrng: omap3-rom - fix using wrong clk_disable() in omap_rom_rng_runtime_resume()
-Date:   Tue,  7 Jun 2022 19:02:32 +0200
-Message-Id: <20220607165021.250193926@linuxfoundation.org>
+        stable@vger.kernel.org, Yong Wu <yong.wu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 665/879] iommu/mediatek: Add list_del in mtk_iommu_remove
+Date:   Tue,  7 Jun 2022 19:03:03 +0200
+Message-Id: <20220607165022.148272854@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,34 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Yong Wu <yong.wu@mediatek.com>
 
-[ Upstream commit e4e62bbc6aba49a5edb3156ec65f6698ff37d228 ]
+[ Upstream commit ee55f75e4bcade81d253163641b63bef3e76cac4 ]
 
-'ddata->clk' is enabled by clk_prepare_enable(), it should be disabled
-by clk_disable_unprepare().
+Lack the list_del in the mtk_iommu_remove, and remove
+bus_set_iommu(*, NULL) since there may be several iommu HWs.
+we can not bus_set_iommu null when one iommu driver unbind.
 
-Fixes: 8d9d4bdc495f ("hwrng: omap3-rom - Use runtime PM instead of custom functions")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+This could be a fix for mt2712 which support 2 M4U HW and list them.
+
+Fixes: 7c3a2ec02806 ("iommu/mediatek: Merge 2 M4U HWs into one iommu domain")
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Link: https://lore.kernel.org/r/20220503071427.2285-6-yong.wu@mediatek.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/hw_random/omap3-rom-rng.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/mtk_iommu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/char/hw_random/omap3-rom-rng.c b/drivers/char/hw_random/omap3-rom-rng.c
-index e0d77fa048fb..f06e4f95114f 100644
---- a/drivers/char/hw_random/omap3-rom-rng.c
-+++ b/drivers/char/hw_random/omap3-rom-rng.c
-@@ -92,7 +92,7 @@ static int __maybe_unused omap_rom_rng_runtime_resume(struct device *dev)
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 95c82b8bcc35..e4b4ebbcb73f 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -955,8 +955,7 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+ 	iommu_device_sysfs_remove(&data->iommu);
+ 	iommu_device_unregister(&data->iommu);
  
- 	r = ddata->rom_rng_call(0, 0, RNG_GEN_PRNG_HW_INIT);
- 	if (r != 0) {
--		clk_disable(ddata->clk);
-+		clk_disable_unprepare(ddata->clk);
- 		dev_err(dev, "HW init failed: %d\n", r);
+-	if (iommu_present(&platform_bus_type))
+-		bus_set_iommu(&platform_bus_type, NULL);
++	list_del(&data->list);
  
- 		return -EIO;
+ 	clk_disable_unprepare(data->bclk);
+ 	device_link_remove(data->smicomm_dev, &pdev->dev);
 -- 
 2.35.1
 
