@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCDADC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:33:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6BECC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:33:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379725AbiFGVdG (ORCPT
+        id S1379806AbiFGVdO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:33:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46118 "EHLO
+        Tue, 7 Jun 2022 17:33:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377805AbiFGUeG (ORCPT
+        with ESMTP id S1377585AbiFGUdt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:06 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7560117F82A;
-        Tue,  7 Jun 2022 11:36:05 -0700 (PDT)
+        Tue, 7 Jun 2022 16:33:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6318C1E5611;
+        Tue,  7 Jun 2022 11:35:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 496FACE2461;
-        Tue,  7 Jun 2022 18:36:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D437C385A2;
-        Tue,  7 Jun 2022 18:36:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 21AE4612EC;
+        Tue,  7 Jun 2022 18:35:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0888DC385A5;
+        Tue,  7 Jun 2022 18:35:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626961;
-        bh=HLX7pPoGn8AZ3p6Ae+pqSRxqIuL7yut+DcoPlzH7TiM=;
+        s=korg; t=1654626928;
+        bh=BoCwaUwe0tzXJQx2T6vSAyNpEwsx4tVKbe48hAydr+A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S3wjzrUaq+C88n3ZbIbdyZFDtfxKXYkjTyAJZKZv1fPsUl8+miG/PkbiudiB9YX6y
-         azSapi/Md201e5wjcBVTp+MoeYnrAgCqWIQ7yqpYX5R/4NGTzhwm1WY7n1RgaUMM5u
-         FufEfXsSOGpWbmMKjrIeqnM60nX/YMpSbJm+dnlo=
+        b=DjJHvbTzsGiFEhcyWZ/x9lp5bwUeryoGH6/ef/eGjef27sERGEFOZ4VPyC0iaeDKf
+         jGPxwkUXR5EG6Fr21o+zUS1GuQ0gAZqJ2yRus4VWsrWxqY2tS2wTsEbvGVxHkbSbB4
+         pZdhzU0JMlEgrm7FJrUKgHNez4jgGvvBEVlKZdYY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yong Wu <yong.wu@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 568/772] iommu/mediatek: Fix 2 HW sharing pgtable issue
-Date:   Tue,  7 Jun 2022 19:02:40 +0200
-Message-Id: <20220607165005.691533132@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 553/772] powerpc/fsl_rio: Fix refcount leak in fsl_rio_setup
+Date:   Tue,  7 Jun 2022 19:02:25 +0200
+Message-Id: <20220607165005.256784199@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,53 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yong Wu <yong.wu@mediatek.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 645b87c190c959e9bb4f216b8c4add4ee880451a ]
+[ Upstream commit fcee96924ba1596ca80a6770b2567ca546f9a482 ]
 
-In the commit 4f956c97d26b ("iommu/mediatek: Move domain_finalise into
-attach_device"), I overlooked the sharing pgtable case.
-After that commit, the "data" in the mtk_iommu_domain_finalise always is
-the data of the current IOMMU HW. Fix this for the sharing pgtable case.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Only affect mt2712 which is the only SoC that share pgtable currently.
-
-Fixes: 4f956c97d26b ("iommu/mediatek: Move domain_finalise into attach_device")
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Link: https://lore.kernel.org/r/20220503071427.2285-5-yong.wu@mediatek.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Fixes: abc3aeae3aaa ("fsl-rio: Add two ports and rapidio message units support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220512123724.62931-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/mtk_iommu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ arch/powerpc/sysdev/fsl_rio.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 5971a1168666..cf4e33db6a2d 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -451,7 +451,7 @@ static void mtk_iommu_domain_free(struct iommu_domain *domain)
- static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 				   struct device *dev)
- {
--	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
-+	struct mtk_iommu_data *data = dev_iommu_priv_get(dev), *frstdata;
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
- 	struct device *m4udev = data->dev;
- 	int ret, domid;
-@@ -461,7 +461,10 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 		return domid;
- 
- 	if (!dom->data) {
--		if (mtk_iommu_domain_finalise(dom, data, domid))
-+		/* Data is in the frstdata in sharing pgtable case. */
-+		frstdata = mtk_iommu_get_m4u_data();
-+
-+		if (mtk_iommu_domain_finalise(dom, frstdata, domid))
- 			return -ENODEV;
- 		dom->data = data;
+diff --git a/arch/powerpc/sysdev/fsl_rio.c b/arch/powerpc/sysdev/fsl_rio.c
+index ff7906b48ca1..1bfc9afa8a1a 100644
+--- a/arch/powerpc/sysdev/fsl_rio.c
++++ b/arch/powerpc/sysdev/fsl_rio.c
+@@ -505,8 +505,10 @@ int fsl_rio_setup(struct platform_device *dev)
+ 	if (rc) {
+ 		dev_err(&dev->dev, "Can't get %pOF property 'reg'\n",
+ 				rmu_node);
++		of_node_put(rmu_node);
+ 		goto err_rmu;
  	}
++	of_node_put(rmu_node);
+ 	rmu_regs_win = ioremap(rmu_regs.start, resource_size(&rmu_regs));
+ 	if (!rmu_regs_win) {
+ 		dev_err(&dev->dev, "Unable to map rmu register window\n");
 -- 
 2.35.1
 
