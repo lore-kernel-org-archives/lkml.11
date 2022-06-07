@@ -2,107 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FBE4CCA482
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40AE2CCA494
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442692AbiFHCA5 (ORCPT
+        id S1443504AbiFHCCh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32942 "EHLO
+        Tue, 7 Jun 2022 22:02:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1838769AbiFHACJ (ORCPT
+        with ESMTP id S1842144AbiFHAIt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:02:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F61E2BB28;
-        Tue,  7 Jun 2022 12:18:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E210561931;
-        Tue,  7 Jun 2022 19:18:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDAB1C385A2;
-        Tue,  7 Jun 2022 19:17:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629480;
-        bh=aGyWqYvWyjA/1VAtWXlscfe1t8nAwgekUlQyFJv6zs0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pmGiBPpsUUksReR9sJ5CeNBmhOtZHY0Yaf0NoYTgbL7BvNQFZl/eyA48TbBWo5nuC
-         gSQxf1tsM/4o/pd7HRfRlvHrDAaTyR5IuitAAsbledtOjCDO42PMAn2TD3F7ETdeSA
-         ejUn6eHPCHk+NtDXl76iKWEOZVLYqTXC16ZAyRN4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pascal Ernster <dri-devel@hardfalcon.net>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 705/879] video: fbdev: vesafb: Fix a use-after-free due early fb_info cleanup
-Date:   Tue,  7 Jun 2022 19:03:43 +0200
-Message-Id: <20220607165023.310688894@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 20:08:49 -0400
+Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [85.215.255.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6909FA3383;
+        Tue,  7 Jun 2022 13:13:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1654632773;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=Gst6T9vPJJaniT6EGkMvyNGdNEUusbhezNnjdPnMqmg=;
+    b=g1VjUKQATbB0IZd8VWSCRFshb/yOD6xJfQE3NXB3Kvi9R5u8sXOCG7AdarC/E98UbS
+    DyZnu8VuR99GNxcC41Vj0cOXlAY5TBGuf2ku4hohnvaBEisgrl9MWu9X5apaRMTJE44o
+    O1XxKUWDosL4oaUljokmeqTrUzGv3uknTdGPiM5Gfr/Yty1MJpmrL2bYyVj2xD6vRZA/
+    n9833TLOjV7jJBAEer8V08fv0kRqZxuBhyCXtEGmsllyPR/rhXbDbKMi2zIQpucu+Mg5
+    WHl0DydCzu6DUXkISNhP/8R1rMNhf+3YTdmHG2L8HwX1HywbhecMalmBW9y7GVXI1sZW
+    BlHw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1q3DbdV+Ofo7wY7W6Qxgy"
+X-RZG-CLASS-ID: mo00
+Received: from [172.20.10.8]
+    by smtp.strato.de (RZmta 47.45.0 DYNA|AUTH)
+    with ESMTPSA id R0691fy57KCq8b5
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 7 Jun 2022 22:12:52 +0200 (CEST)
+Subject: Re: [PATCH v5 0/7] can: refactoring of can-dev module and of Kbuild
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can <linux-can@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Max Staudt <max@enpas.org>, netdev <netdev@vger.kernel.org>
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
+ <2e8666f3-1bd9-8610-6b72-e56e669d3484@hartkopp.net>
+ <CAMZ6RqKWUyf6dZmxG809-yvjg5wbLwPSLtEfv-MgPpJ5ra=iGQ@mail.gmail.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <f161fdd0-415a-8ea1-0aad-3a3a19f1bfa8@hartkopp.net>
+Date:   Tue, 7 Jun 2022 22:12:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAMZ6RqKWUyf6dZmxG809-yvjg5wbLwPSLtEfv-MgPpJ5ra=iGQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Javier Martinez Canillas <javierm@redhat.com>
+Hi Vincent,
 
-[ Upstream commit acde4003efc16480375543638484d8f13f2e99a3 ]
+On 07.06.22 04:49, Vincent MAILHOL wrote:
+> On Tue. 7 Jun. 2022 at 04:43, Oliver Hartkopp <socketcan@hartkopp.net> wrote:
+>>
 
-Commit b3c9a924aab6 ("fbdev: vesafb: Cleanup fb_info in .fb_destroy rather
-than .remove") fixed a use-after-free error due the vesafb driver freeing
-the fb_info in the .remove handler instead of doing it in .fb_destroy.
+>>>             |
+>>>             +-> All other CAN devices not relying on RX offload
+>>>             |
+>>>             +-> CAN rx offload
+>>>                 symbol: CONFIG_CAN_RX_OFFLOAD
+>>
+>> Is this still true in patch series 5?
+>>
+>> If I understood it correctly CONFIG_CAN_BITTIMING and
+>> CONFIG_CAN_RX_OFFLOAD can be enabled by the user and
+>> (alternatively/additionally) the selection of "flexcan, m_can, mcp251xfd
+>> and ti_hecc" enables CONFIG_CAN_RX_OFFLOAD too.
+>>
+>> Right?
+> 
+> Yes, this is correct. Maybe what troubles you is the meaning of the
+> "x --> y" arrow in the graph. I said it denotes that "y depends on x".
+> Here "depends on" has a loose meaning. It translates to either:
+>    * Feature Y is encapsulated in Kbuild by some "if X/endif" and won't
+> show up unless X is selected.
+>    * Feature Y has a "selects X" tag and will forcibly enable X if selected.
+> 
+> CONFIG_CAN_*CALC*_BITTIMING is on the left side of an arrow starting
+> from CONFIG_CAN_NETLINK so it "depends" on CONFIG_CAN_NETLINK. On the
+> other hand, CONFIG_CAN_*CALC*_BITTIMING does not have any arrow
+> starting from it so indeed, it can be enabled by the user
+> independently of the other features as long as CONFIG_CAN_NETLINK is
+> selected.
 
-This can happen if the .fb_destroy callback is executed after the .remove
-callback, since the former tries to access a pointer freed by the latter.
+Ok.
 
-But that change didn't take into account that another possible scenario is
-that .fb_destroy is called before the .remove callback. For example, if no
-process has the fbdev chardev opened by the time the driver is removed.
+> CONFIG_CAN_RX_OFFLOAD is also on the left side of an arrow starting
+> from CONFIG_CAN_NETLINK. Furthermore, there is an arrow starting from
+> CONFIG_CAN_RX_OFFLOAD going to the "rx offload drivers". So those
+> drivers need CONFIG_CAN_RX_OFFLOAD (which is implemented using the
+> "selects CONFIG_CAN_RX_OFFLOAD"). However, CONFIG_CAN_RX_OFFLOAD can
+> be selected independently of the "rx offload drivers" as long as its
+> CONFIG_CAN_NETLINK dependency is met.
+> 
+> So I think that the diagram is correct. Maybe rephrasing the cover
+> letter as below would address your concerns?
+I applied your series and played with the options and it works like 
+charm - and as expected.
 
-If that's the case, fb_info will be freed when unregister_framebuffer() is
-called, making the fb_info pointer accessed in vesafb_remove() after that
-to no longer be valid.
+But the point remains that from your figure I would still assume that 
+the M_CAN driver would only show up when CONFIG_CAN_RX_OFFLOAD was 
+selected by the user.
 
-To prevent that, move the expression containing the info->par to happen
-before the unregister_framebuffer() function call.
+But the current (good) implementation shows *all* drivers and selects 
+CONFIG_CAN_RX_OFFLOAD when e.g. M_CAN is selected.
 
-Fixes: b3c9a924aab6 ("fbdev: vesafb: Cleanup fb_info in .fb_destroy rather than .remove")
-Reported-by: Pascal Ernster <dri-devel@hardfalcon.net>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Tested-by: Pascal Ernster <dri-devel@hardfalcon.net>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/video/fbdev/vesafb.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+So what about:
 
-diff --git a/drivers/video/fbdev/vesafb.c b/drivers/video/fbdev/vesafb.c
-index e25e8de5ff67..929d4775cb4b 100644
---- a/drivers/video/fbdev/vesafb.c
-+++ b/drivers/video/fbdev/vesafb.c
-@@ -490,11 +490,12 @@ static int vesafb_remove(struct platform_device *pdev)
- {
- 	struct fb_info *info = platform_get_drvdata(pdev);
- 
--	/* vesafb_destroy takes care of info cleanup */
--	unregister_framebuffer(info);
- 	if (((struct vesafb_par *)(info->par))->region)
- 		release_region(0x3c0, 32);
- 
-+	/* vesafb_destroy takes care of info cleanup */
-+	unregister_framebuffer(info);
-+
- 	return 0;
- }
- 
--- 
-2.35.1
+   symbol: CONFIG_NETDEVICES
+   |
+   +-> CAN Device Drivers
+       symbol: CONFIG_CAN_DEV
+       |
+       +-> software/virtual CAN device drivers
+       |   (at time of writing: slcan, vcan, vxcan)
+       |
+       +-> hardware CAN device drivers with Netlink support
+           symbol: CONFIG_CAN_NETLINK (matches previous CONFIG_CAN_DEV)
+           |
+           +-> CAN bit-timing calculation (optional for all drivers)
+           |   symbol: CONFIG_CAN_BITTIMING
+           |
+           +-> CAN rx offload (optional but selected by some drivers)
+           |   symbol: CONFIG_CAN_RX_OFFLOAD
+           |
+           +-> CAN devices drivers
+               (some may select CONFIG_CAN_RX_OFFLOAD)
 
+(I also added 'hardware' to CAN device drivers with Netlink support) to 
+have a distinction to 'software/virtual' CAN device drivers)
 
+At least this would help me to understand the new configuration setup.
 
+Best regards,
+Oliver
