@@ -2,137 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F7A2CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:15:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EAB5CCA483
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:15:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239123AbiFGJPk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:15:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39746 "EHLO
+        id S239144AbiFGJPp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:15:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239076AbiFGJPc (ORCPT
+        with ESMTP id S239072AbiFGJPc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 05:15:32 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB36387A2F
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 500AA6CAA9
         for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:15:29 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id j6so14974622pfe.13
+Received: by mail-wr1-x42a.google.com with SMTP id k19so23206743wrd.8
         for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 02:15:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3Mo+/PN3jA6jIMUCrvxiVoi6NMY2+U7ufggGeRcQuNE=;
-        b=j95jxpRYhrHsRyrn92h3BAYJLk+yfHZ2fRLu0GR4JcefGv/EwLDj4AS99PRrxTx35W
-         QGsoXEtd0jEvyKJWWyBhUzVYkjyQVvTKbsqMgyrecEFp94MWtxxEnyyawDs7PVCdStUm
-         hnSgAdGF3IbTEgSa6qJqNCRQVbeEpn4Px9MkN6SiL2bTqdavSbZtYzgHftUc7aFno3t8
-         ieoUVHQemPYB3jOXqWf7cH7CKvQTaMabdDj/vGFEh5PjgI3uI9we25l/M2rQPL7C02U2
-         H1cgVYV+2pq+uresKx2w5AVaGpoLGhNOr67Nga+blzUEqs8qF9NssOs6fh7YJ22CUyhZ
-         V9yg==
+        d=raspberrypi.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=s+usQNQe61fUNXtftBnDDPOoqNzLMBH21NqyRZq7YLo=;
+        b=QcJFOZkr6N0djzaiBVtwqiI34B4U1YPZDK+qqBxhWRvksqYGTnrdJ2l7ks6TzStesp
+         CLefRAOdeVlWHQFXzog5tGhwMpXNRIK8rxeKr1KewPQnqDMI/TEosM2Oyidtx2FgNDkv
+         heHtFS1yJhRiiNE1d2ZfRmVJmmpFVWPWDGsMQ8KTW/BxHe6NXSsxnEnkGR9y2I+xCAN/
+         lYcVSSYtJoV2uSRZHEGaN8h+805AB5fGDQUfR352OQi25LWIjK+XwZ9DoHNTGmMZxafM
+         rpdEA4LHFHBvqNW58ewZc2pwQN0+fcihCYVyXmOThiBzZpJGeS04EYqcHU9AEy3Vk76M
+         fiZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3Mo+/PN3jA6jIMUCrvxiVoi6NMY2+U7ufggGeRcQuNE=;
-        b=2lBUrNJiEUKYv0xqG/E+qGW0eiXFzdXKYIl79bM5UeUvi/tLBFszjW09BoRmDlq3eM
-         m2ccxkbWz3tbHSru381nhP56VDElsxzAEWyuHOKPhV1b1LUcbcADSQ1rvcz2xpVT2+Aw
-         CjVHc0y0OfWQ2WThvd8bIFg2vhwZKY3ZIEDLPZkXSc0BkOee9ajwHdZrtyheoQ6SPXOf
-         TX1jj4U7avnzV8MdxDszhYzySM90i7B949k3vlQyI4i/XaTtTv69P/Bc74qnF5AAuF5i
-         KkPq0Ju91NPT7TQEBVwvo3KmSJd133lIdKjYugr+lYvsMtR71SqsDdsQzZVFbGmQvtUt
-         P/Pg==
-X-Gm-Message-State: AOAM531U0gywAHhEj2USXxzY/35jFOKgZngG1APTAX/8C2JSjol2WjaQ
-        2ldfAKfQ9uA+9cZ49cjujJw=
-X-Google-Smtp-Source: ABdhPJzGfNlMQQYJ+Sqz0TKIkUqKBUiP/oOGgm0p8pv20fC0j3zjQ+BfWZ06O7gmSkxSD552hoqxNg==
-X-Received: by 2002:aa7:88cb:0:b0:51c:2627:2c03 with SMTP id k11-20020aa788cb000000b0051c26272c03mr7799782pff.63.1654593329400;
-        Tue, 07 Jun 2022 02:15:29 -0700 (PDT)
-Received: from ubuntu20.hobot.cc ([39.170.101.209])
-        by smtp.gmail.com with ESMTPSA id p3-20020a625b03000000b0051c2fc79aa8sm1877775pfb.91.2022.06.07.02.15.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 02:15:28 -0700 (PDT)
-From:   Zhipeng Shi <zhipeng.shi0@gmail.com>
-To:     peterz@infradead.org, mingo@redhat.comb, will@kernel.org,
-        longman@redhat.com, boqun.feng@gmail.com
-Cc:     tglx@linutronix.de, bigeasy@linutronix.de, schspa@gmail.com,
-        shengjian.xu@horizon.ai, linux-kernel@vger.kernel.org,
-        Zhipeng Shi <zhipeng.shi0@gmail.com>
-Subject: [PATCH] locking/rtmutex: Provide proper spin_is_contended
-Date:   Tue,  7 Jun 2022 17:15:14 +0800
-Message-Id: <20220607091514.897833-1-zhipeng.shi0@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=s+usQNQe61fUNXtftBnDDPOoqNzLMBH21NqyRZq7YLo=;
+        b=xJkD+70L8lGetxUOIz5gJ5cXheJ24hjYHrvsvMw36tMfJvzMDSZI8/NfHYKwkjI23S
+         OiLxR/EV+nNi8O9YhCOgB5JaQI1OZ17CuIetcxiU+Kq4dV3XsN4pTgQ8UCVrxdQODUso
+         Waxa0gv/uUchoTan6/BYK65/Lg6qfceBYR1MzsYr8MEmlfQFyvvfJbwFkbKLUJIwt6cz
+         VatF9mjnnowSLNstF9prayZJMAzpL1Zaj8UU0x5lNIwdH8L0zxE+XVSG0mY9rQTaXgMD
+         eESvNRUiv0EYKncIZ/qHc60emmV2nUSjiHXsbsiAT5zWRHrmb5PH+IvQ5LQG0UTP8Zsb
+         fQIg==
+X-Gm-Message-State: AOAM53087U3cpCJtH5nFIkqXDi5X6Jh+vbC8KlAaJ9GM9XkBuH/Ohz7l
+        TDZP/ajYd1gsWW4T2aZqGwCvZw==
+X-Google-Smtp-Source: ABdhPJxHljRDXDB6metlo+Ntzo/NbEmYZujGJW4daxhb1Oxt07a0tqGsmnY141RzHKXAo+xezbaUFw==
+X-Received: by 2002:adf:fe0c:0:b0:218:4312:1230 with SMTP id n12-20020adffe0c000000b0021843121230mr7830352wrr.223.1654593327814;
+        Tue, 07 Jun 2022 02:15:27 -0700 (PDT)
+Received: from ?IPV6:2a00:1098:3142:14:901f:dbcb:c1e4:e4b8? ([2a00:1098:3142:14:901f:dbcb:c1e4:e4b8])
+        by smtp.gmail.com with ESMTPSA id n5-20020a05600c3b8500b0039c4e2ff7cfsm6411598wms.43.2022.06.07.02.15.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 02:15:27 -0700 (PDT)
+Message-ID: <8c3fe744-0181-043a-3af9-dd00165a6356@raspberrypi.com>
+Date:   Tue, 7 Jun 2022 10:15:27 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2] ARM: initialize jump labels before setup_machine_fdt()
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        stable <stable@vger.kernel.org>
+References: <8cc7ebe4-442b-a24b-9bb0-fce6e0425ee6@raspberrypi.com>
+ <CAHmME9o6R2RRdwzB9f+464xH+Aw-9wx2dm=ZsQYFbTk_-66yJw@mail.gmail.com>
+From:   Phil Elwell <phil@raspberrypi.com>
+In-Reply-To: <CAHmME9o6R2RRdwzB9f+464xH+Aw-9wx2dm=ZsQYFbTk_-66yJw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit d89c70356acf ("locking/core: Remove break_lock field when
-CONFIG_GENERIC_LOCKBREAK=y") removed GENERIC_LOCKBREAK, which caused
-spin_is_contended depend on the implementation of arch_spin_is_contended.
-But now in rt-spinlock, spin_is_contended returns 0 directly.
+On 07/06/2022 09:43, Jason A. Donenfeld wrote:
+> Hi Phil,
+> 
+> On Tue, Jun 7, 2022 at 10:29 AM Phil Elwell <phil@raspberrypi.com> wrote:
+>>
+>> This patch is fatal for me in the downstream Raspberry Pi kernel - it locks up
+>> on boot even before the earlycon output is available. Hacking jump_label_init to
+>> skip the jump_entry for "crng_is_ready" allows it to boot, but is likely to have
+>> consequences further down the line.
+> 
+> Also, reading this a few times, I'm not 100% sure I understand what
+> you did to hack around this and why that works. Think you could paste
+> your hackpatch just out of interest to the discussion (but obviously
+> not to be applied)?
 
-This causes cond_resched_lock to fail to correctly detect lock contention
-in RT-linux. In some scenarios (such as __purge_vmap_area_lazy in vmalloc),
-this will cause a large latency.
+This is the minimal version of my workaround patch that at least allows the 
+board to boot. Bear in mind that it was written with no previous knowledge of 
+jump labels and was arrived at by iteratively bisecting the list of jump_labels 
+until the first dangerous one was found, then later working out that there was 
+only one.
 
-This patch provides the implementation of spin_is_contended for
-rt-spinlock.
+diff --git a/kernel/jump_label.c b/kernel/jump_label.c
+index b156e152d6b48..7b053521f7216 100644
+--- a/kernel/jump_label.c
++++ b/kernel/jump_label.c
+@@ -466,6 +466,7 @@ void __init jump_label_init(void)
+         struct jump_entry *iter_stop = __stop___jump_table;
+         struct static_key *key = NULL;
+         struct jump_entry *iter;
++       int iter_count = 0;
 
-Signed-off-by: Zhipeng Shi <zhipeng.shi0@gmail.com>
----
- include/linux/rtmutex.h         |  2 ++
- include/linux/spinlock_rt.h     | 13 ++++++++++++-
- kernel/locking/rtmutex_common.h |  2 --
- 3 files changed, 14 insertions(+), 3 deletions(-)
+         /*
+          * Since we are initializing the static_key.enabled field with
+@@ -499,7 +500,9 @@ void __init jump_label_init(void)
+                         continue;
 
-diff --git a/include/linux/rtmutex.h b/include/linux/rtmutex.h
-index 7d049883a08a..cd7ac1785c6a 100644
---- a/include/linux/rtmutex.h
-+++ b/include/linux/rtmutex.h
-@@ -70,6 +70,8 @@ extern void rt_mutex_debug_task_free(struct task_struct *tsk);
- static inline void rt_mutex_debug_task_free(struct task_struct *tsk) { }
- #endif
- 
-+#define RT_MUTEX_HAS_WAITERS	1UL
-+
- #define rt_mutex_init(mutex) \
- do { \
- 	static struct lock_class_key __key; \
-diff --git a/include/linux/spinlock_rt.h b/include/linux/spinlock_rt.h
-index 835aedaf68ac..54abf2b50494 100644
---- a/include/linux/spinlock_rt.h
-+++ b/include/linux/spinlock_rt.h
-@@ -145,7 +145,18 @@ static __always_inline void spin_unlock_irqrestore(spinlock_t *lock,
- #define spin_trylock_irqsave(lock, flags)		\
- 	__cond_lock(lock, __spin_trylock_irqsave(lock, flags))
- 
--#define spin_is_contended(lock)		(((void)(lock), 0))
-+/**
-+ * spin_is_contended - check if the lock is contended
-+ * @lock : Pointer to spinlock structure
-+ *
-+ * Return: 1 if lock is contended, 0 otherwise
-+ */
-+static inline int spin_is_contended(spinlock_t *lock)
-+{
-+	unsigned long *p = (unsigned long *) &lock->lock.owner;
-+
-+	return (READ_ONCE(*p) & RT_MUTEX_HAS_WAITERS);
-+}
- 
- static inline int spin_is_locked(spinlock_t *lock)
- {
-diff --git a/kernel/locking/rtmutex_common.h b/kernel/locking/rtmutex_common.h
-index c47e8361bfb5..70c765a26163 100644
---- a/kernel/locking/rtmutex_common.h
-+++ b/kernel/locking/rtmutex_common.h
-@@ -131,8 +131,6 @@ static inline struct rt_mutex_waiter *task_top_pi_waiter(struct task_struct *p)
- 			pi_tree_entry);
- }
- 
--#define RT_MUTEX_HAS_WAITERS	1UL
--
- static inline struct task_struct *rt_mutex_owner(struct rt_mutex_base *lock)
- {
- 	unsigned long owner = (unsigned long) READ_ONCE(lock->owner);
--- 
-2.25.1
+                 key = iterk;
+-               static_key_set_entries(key, iter);
++               iter_count++;
++               if (iter_count != 1083)
++                       static_key_set_entries(key, iter);
+         }
+         static_key_initialized = true;
+         jump_label_unlock();
 
+I'm sure this could be rewritten in a less fragile manner making reference to 
+crng_is_ready directly, but this is where I got to yesterday.
+
+Ha! I just proved the patch's fragility by switching from a Pi 2 to a Pi 4,
+so the saner version is:
+
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index ca17a658c2147..ca7c8a67b8314 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -79,7 +79,7 @@ static enum {
+         CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
+         CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
+  } crng_init __read_mostly = CRNG_EMPTY;
+-static DEFINE_STATIC_KEY_FALSE(crng_is_ready);
++DEFINE_STATIC_KEY_FALSE(crng_is_ready);
+  #define crng_ready() (static_branch_likely(&crng_is_ready) || crng_init >= 
+CRNG_READY)
+  /* Various types of waiters for crng_init->CRNG_READY transition. */
+  static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
+
+
+diff --git a/kernel/jump_label.c b/kernel/jump_label.c
+index b156e152d6b48..b79de9da036fd 100644
+--- a/kernel/jump_label.c
++++ b/kernel/jump_label.c
+@@ -484,6 +484,7 @@ void __init jump_label_init(void)
+         jump_label_sort_entries(iter_start, iter_stop);
+
+         for (iter = iter_start; iter < iter_stop; iter++) {
++               extern struct static_key_false crng_is_ready;
+                 struct static_key *iterk;
+                 bool in_init;
+
+@@ -499,7 +500,8 @@ void __init jump_label_init(void)
+                         continue;
+
+                 key = iterk;
+-               static_key_set_entries(key, iter);
++               if (key != &crng_is_ready.key)
++                       static_key_set_entries(key, iter);
+         }
+         static_key_initialized = true;
+         jump_label_unlock();
+
+And to answer your questions from the other thread:
+
+* Without any fixing patches we see the warning messages because we are using 
+rng-seed in DT.
+
+* I've seen the problem on a Pi 2 and a Pi 4 running 32-bit kernels.
+
+Phil
