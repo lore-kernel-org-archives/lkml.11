@@ -2,89 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76100CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60E8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355602AbiFGW1W (ORCPT
+        id S1380338AbiFGW1b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54690 "EHLO
+        Tue, 7 Jun 2022 18:27:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381552AbiFGVRv (ORCPT
+        with ESMTP id S1381575AbiFGVRw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:17:51 -0400
-X-Greylist: delayed 1803 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 11:59:13 PDT
-Received: from 3.mo550.mail-out.ovh.net (3.mo550.mail-out.ovh.net [46.105.60.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F00F223BCB
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:59:12 -0700 (PDT)
-Received: from player728.ha.ovh.net (unknown [10.110.103.121])
-        by mo550.mail-out.ovh.net (Postfix) with ESMTP id 766B0247EF
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:21:03 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player728.ha.ovh.net (Postfix) with ESMTPSA id B1FF62B3FFB41;
-        Tue,  7 Jun 2022 18:20:55 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-103G0056567a39d-9727-4b83-b825-c40a253e5342,
-                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH 1/3] drm/panel: Use backlight helper
-Date:   Tue,  7 Jun 2022 20:20:24 +0200
-Message-Id: <20220607182026.1121992-2-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220607182026.1121992-1-steve@sk2.org>
-References: <20220607182026.1121992-1-steve@sk2.org>
+        Tue, 7 Jun 2022 17:17:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6FD223BDD;
+        Tue,  7 Jun 2022 11:59:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B25ACB82391;
+        Tue,  7 Jun 2022 18:59:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18D7BC341C0;
+        Tue,  7 Jun 2022 18:59:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628344;
+        bh=OfpDucA+meciRfZXXHe2/e6CRQkH5VCUTVwXmkHiZOA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zxbi0i3pqCuLvv7abc3rl2FAKGj0F2bZIa+lIZChPHWUOFereUtGoaTvLtV5rdaEE
+         mjbMGQaUhI0N7/7T59o98u6ltiTLidhKDz2Lzys+879Zd/Zvly81WbSWXPdqfRRLvC
+         LXnoiHwtTXVd7ils7GIAbqomen2rbKBNIta0o+iM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 296/879] x86/PCI: Fix ALi M1487 (IBC) PIRQ router link value interpretation
+Date:   Tue,  7 Jun 2022 18:56:54 +0200
+Message-Id: <20220607165011.438931944@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 10884918828013553286
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddvgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejvdekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheehtd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of retrieving the backlight brightness in struct
-backlight_properties manually, and then checking whether the backlight
-should be on at all, use backlight_get_brightness() which does all
-this and insulates this from future changes.
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: dri-devel@lists.freedesktop.org
+[ Upstream commit 4969e223b109754c2340a26bba9b1cf44f0cba9b ]
+
+Fix an issue with commit 1ce849c75534 ("x86/PCI: Add support for the ALi
+M1487 (IBC) PIRQ router") and correct ALi M1487 (IBC) PIRQ router link
+value (`pirq' cookie) interpretation according to findings in the BIOS.
+
+Credit to Nikolai Zhubr for the detective work as to the bit layout.
+
+Fixes: 1ce849c75534 ("x86/PCI: Add support for the ALi M1487 (IBC) PIRQ router")
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2203310013270.44113@angie.orcam.me.uk
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panel/panel-asus-z00t-tm5p5-n35596.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ arch/x86/pci/irq.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/panel/panel-asus-z00t-tm5p5-n35596.c b/drivers/gpu/drm/panel/panel-asus-z00t-tm5p5-n35596.c
-index 44674ebedf59..174ff434bd71 100644
---- a/drivers/gpu/drm/panel/panel-asus-z00t-tm5p5-n35596.c
-+++ b/drivers/gpu/drm/panel/panel-asus-z00t-tm5p5-n35596.c
-@@ -215,14 +215,9 @@ static const struct drm_panel_funcs tm5p5_nt35596_panel_funcs = {
- static int tm5p5_nt35596_bl_update_status(struct backlight_device *bl)
+diff --git a/arch/x86/pci/irq.c b/arch/x86/pci/irq.c
+index 97b63e35e152..21c4bc41741f 100644
+--- a/arch/x86/pci/irq.c
++++ b/arch/x86/pci/irq.c
+@@ -253,6 +253,15 @@ static void write_pc_conf_nybble(u8 base, u8 index, u8 val)
+ 	pc_conf_set(reg, x);
+ }
+ 
++/*
++ * FinALi pirq rules are as follows:
++ *
++ * - bit 0 selects between INTx Routing Table Mapping Registers,
++ *
++ * - bit 3 selects the nibble within the INTx Routing Table Mapping Register,
++ *
++ * - bits 7:4 map to bits 3:0 of the PCI INTx Sensitivity Register.
++ */
+ static int pirq_finali_get(struct pci_dev *router, struct pci_dev *dev,
+ 			   int pirq)
  {
- 	struct mipi_dsi_device *dsi = bl_get_data(bl);
--	u16 brightness = bl->props.brightness;
-+	u16 brightness = backlight_get_brightness(bl);
- 	int ret;
+@@ -260,11 +269,13 @@ static int pirq_finali_get(struct pci_dev *router, struct pci_dev *dev,
+ 		0, 9, 3, 10, 4, 5, 7, 6, 0, 11, 0, 12, 0, 14, 0, 15
+ 	};
+ 	unsigned long flags;
++	u8 index;
+ 	u8 x;
  
--	if (bl->props.power != FB_BLANK_UNBLANK ||
--	    bl->props.fb_blank != FB_BLANK_UNBLANK ||
--	    bl->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK))
--		brightness = 0;
--
- 	dsi->mode_flags &= ~MIPI_DSI_MODE_LPM;
++	index = (pirq & 1) << 1 | (pirq & 8) >> 3;
+ 	raw_spin_lock_irqsave(&pc_conf_lock, flags);
+ 	pc_conf_set(PC_CONF_FINALI_LOCK, PC_CONF_FINALI_LOCK_KEY);
+-	x = irqmap[read_pc_conf_nybble(PC_CONF_FINALI_PCI_INTX_RT1, pirq - 1)];
++	x = irqmap[read_pc_conf_nybble(PC_CONF_FINALI_PCI_INTX_RT1, index)];
+ 	pc_conf_set(PC_CONF_FINALI_LOCK, 0);
+ 	raw_spin_unlock_irqrestore(&pc_conf_lock, flags);
+ 	return x;
+@@ -278,13 +289,15 @@ static int pirq_finali_set(struct pci_dev *router, struct pci_dev *dev,
+ 	};
+ 	u8 val = irqmap[irq];
+ 	unsigned long flags;
++	u8 index;
  
- 	ret = mipi_dsi_dcs_set_display_brightness(dsi, brightness);
+ 	if (!val)
+ 		return 0;
+ 
++	index = (pirq & 1) << 1 | (pirq & 8) >> 3;
+ 	raw_spin_lock_irqsave(&pc_conf_lock, flags);
+ 	pc_conf_set(PC_CONF_FINALI_LOCK, PC_CONF_FINALI_LOCK_KEY);
+-	write_pc_conf_nybble(PC_CONF_FINALI_PCI_INTX_RT1, pirq - 1, val);
++	write_pc_conf_nybble(PC_CONF_FINALI_PCI_INTX_RT1, index, val);
+ 	pc_conf_set(PC_CONF_FINALI_LOCK, 0);
+ 	raw_spin_unlock_irqrestore(&pc_conf_lock, flags);
+ 	return 1;
+@@ -293,7 +306,7 @@ static int pirq_finali_set(struct pci_dev *router, struct pci_dev *dev,
+ static int pirq_finali_lvl(struct pci_dev *router, struct pci_dev *dev,
+ 			   int pirq, int irq)
+ {
+-	u8 mask = ~(1u << (pirq - 1));
++	u8 mask = ~((pirq & 0xf0u) >> 4);
+ 	unsigned long flags;
+ 	u8 trig;
+ 
 -- 
-2.30.2
+2.35.1
+
+
 
