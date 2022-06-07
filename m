@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70BC6CCA488
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F5F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385654AbiFGWl6 (ORCPT
+        id S1379424AbiFGWmq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:41:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58110 "EHLO
+        Tue, 7 Jun 2022 18:42:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380536AbiFGVa6 (ORCPT
+        with ESMTP id S1380772AbiFGVbQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:30:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3883151FDA;
-        Tue,  7 Jun 2022 12:03:01 -0700 (PDT)
+        Tue, 7 Jun 2022 17:31:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCACAEE04;
+        Tue,  7 Jun 2022 12:03:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FE0C61807;
-        Tue,  7 Jun 2022 19:03:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B6B1C385A2;
-        Tue,  7 Jun 2022 19:03:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C881F61807;
+        Tue,  7 Jun 2022 19:03:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFBCBC385A5;
+        Tue,  7 Jun 2022 19:03:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628580;
-        bh=BFZKz5xscFkMcMKHrpURvUb4ugumPfNKU9oSRL3Q35Y=;
+        s=korg; t=1654628606;
+        bh=xJEmcH7BdIMe2MshrxICDjoyR5Wr/24nzN4gOgNNMsA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LmpQr728yhxvf4kKeugcuJz89Z3Xu8E/zm2GqSboLlPQHVVWwByXW2H+MwVK83INJ
-         t/wSIr7eriAQllsyqVqrrRgMW1z7nEpT7D/NVsDgdEf1+Qz5qgmK5kNcJ+aIoDZ1Iz
-         iDX6HCHJ0mH+MLO7Ztxtc8+nRuhwMOONSclhWye4=
+        b=pJ0YfWJ14BCUfUrmag1tEJcSM2dutWdPlXR2TzxnpV+T3vLAXwSr1Kh743QpvIBuk
+         9s62XYy09n+j1wcrYBMYym1g8UZP6y6c3VWf0L56EsjQwkKj3deN+8QoJBe2bNLLnI
+         64nHzJcbOuyJ7H9MAiiNPRU50SfF1ghsBSksSOeU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
-        Ian Abbott <abbotti@mev.co.uk>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 382/879] spi: cadence-quadspi: fix Direct Access Mode disable for SoCFPGA
-Date:   Tue,  7 Jun 2022 18:58:20 +0200
-Message-Id: <20220607165013.955885929@linuxfoundation.org>
+        stable@vger.kernel.org, Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 390/879] x86/mm: Cleanup the control_va_addr_alignment() __setup handler
+Date:   Tue,  7 Jun 2022 18:58:28 +0200
+Message-Id: <20220607165014.185340434@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,41 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ian Abbott <abbotti@mev.co.uk>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit f724c296f2f2cc3f9342b0fc26239635cbed856e ]
+[ Upstream commit 1ef64b1e89e6d4018da46e08ffc32779a31160c7 ]
 
-The Cadence QSPI compatible string required for the SoCFPGA platform
-changed from the default "cdns,qspi-nor" to "intel,socfpga-qspi" with
-the introduction of an additional quirk in
-commit 98d948eb8331 ("spi: cadence-quadspi: fix write completion support").
-However, that change did not preserve the previously used
-quirk for this platform.  Reinstate the `CQSPI_DISABLE_DAC_MODE` quirk
-for the SoCFPGA platform.
+Clean up control_va_addr_alignment():
 
-Fixes: 98d948eb8331 ("spi: cadence-quadspi: fix write completion support")
-Cc: Dinh Nguyen <dinguyen@kernel.org>
-Signed-off-by: Ian Abbott <abbotti@mev.co.uk>
-Link: https://lore.kernel.org/r/20220427153446.10113-1-abbotti@mev.co.uk
-Signed-off-by: Mark Brown <broonie@kernel.org>
+a. Make '=' required instead of optional (as documented).
+b. Print a warning if an invalid option value is used.
+c. Return 1 from the __setup handler when an invalid option value is
+   used. This prevents the kernel from polluting init's (limited)
+   environment space with the entire string.
+
+Fixes: dfb09f9b7ab0 ("x86, amd: Avoid cache aliasing penalties on AMD family 15h")
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Link: https://lore.kernel.org/r/20220315001045.7680-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-cadence-quadspi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kernel/sys_x86_64.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/spi/spi-cadence-quadspi.c b/drivers/spi/spi-cadence-quadspi.c
-index 19686fb47bb3..ec53b807909e 100644
---- a/drivers/spi/spi-cadence-quadspi.c
-+++ b/drivers/spi/spi-cadence-quadspi.c
-@@ -1865,7 +1865,7 @@ static const struct cqspi_driver_platdata intel_lgm_qspi = {
- };
+diff --git a/arch/x86/kernel/sys_x86_64.c b/arch/x86/kernel/sys_x86_64.c
+index 660b78827638..8cc653ffdccd 100644
+--- a/arch/x86/kernel/sys_x86_64.c
++++ b/arch/x86/kernel/sys_x86_64.c
+@@ -68,9 +68,6 @@ static int __init control_va_addr_alignment(char *str)
+ 	if (*str == 0)
+ 		return 1;
  
- static const struct cqspi_driver_platdata socfpga_qspi = {
--	.quirks = CQSPI_NO_SUPPORT_WR_COMPLETION,
-+	.quirks = CQSPI_DISABLE_DAC_MODE | CQSPI_NO_SUPPORT_WR_COMPLETION,
- };
+-	if (*str == '=')
+-		str++;
+-
+ 	if (!strcmp(str, "32"))
+ 		va_align.flags = ALIGN_VA_32;
+ 	else if (!strcmp(str, "64"))
+@@ -80,11 +77,11 @@ static int __init control_va_addr_alignment(char *str)
+ 	else if (!strcmp(str, "on"))
+ 		va_align.flags = ALIGN_VA_32 | ALIGN_VA_64;
+ 	else
+-		return 0;
++		pr_warn("invalid option value: 'align_va_addr=%s'\n", str);
  
- static const struct cqspi_driver_platdata versal_ospi = {
+ 	return 1;
+ }
+-__setup("align_va_addr", control_va_addr_alignment);
++__setup("align_va_addr=", control_va_addr_alignment);
+ 
+ SYSCALL_DEFINE6(mmap, unsigned long, addr, unsigned long, len,
+ 		unsigned long, prot, unsigned long, flags,
 -- 
 2.35.1
 
