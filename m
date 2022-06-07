@@ -2,86 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58EF0CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 773E1CCA485
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357722AbiFGTuq (ORCPT
+        id S1357767AbiFGTuu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:50:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49966 "EHLO
+        Tue, 7 Jun 2022 15:50:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354513AbiFGSrG (ORCPT
+        with ESMTP id S1354518AbiFGSrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:47:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 874ED81484;
-        Tue,  7 Jun 2022 11:01:41 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813DF7B9DE;
+        Tue,  7 Jun 2022 11:01:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 44357B82368;
-        Tue,  7 Jun 2022 18:01:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2652CC3411F;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 337A9B82349;
         Tue,  7 Jun 2022 18:01:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624899;
-        bh=hRGWsqzjKnMuK3JfTJG3FS+Mpovkt+WKMV9fQyy9qCc=;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BDEAC34119;
+        Tue,  7 Jun 2022 18:01:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624898;
+        bh=W+7OA4ML0uSPtiBU2Ktbpw1dToWXDBw/qv2qjE5Ek+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gPrP+JBJ/1vRNZLuGrvd9YQAWUWY0Kubv6z98CqHyGXFUqRY9H7TKU6A0zwvJuYzK
-         oxFiEbD0Udk5FyA3KwPb4hPCJxmoMeiEjGiHIGp38nTVdUJSLSTZ8gxxKhUGMUc+a3
-         mKPMHvkeqrIdnD7KoZVXuWkDVOk02TAXc+SzQn3L6d84bPkFG+i9RfbV52nrWAnyTV
-         glfsnUsdSP2mVOzi/KqznincFUxZRgW9d8UKUZgLrpFDgtH1Rcy3qtUecJCvQMnQA0
-         SD+6qKjpc4OTaKqNaOysfO958TMFeixyJ6zBbfB0BZYN5usdoh+B6kjPXOhKzBvgOP
-         5cNV39U1E9wIg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Huang Guobin <huangguobin4@huawei.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 04/27] tty: Fix a possible resource leak in icom_probe
-Date:   Tue,  7 Jun 2022 14:01:08 -0400
-Message-Id: <20220607180133.481701-4-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180133.481701-1-sashal@kernel.org>
-References: <20220607180133.481701-1-sashal@kernel.org>
+        b=kKVw6IqVD78fTjorHkFu7wogy2EXuue7PRfAPfxWcwX/MtVqBFwKWheupIsHjFF/K
+         1UcpTQa5jv602u7nEuiD2CE6URhsDxEpceY7pNZZtL1PUByQxFHDSm1tciNLemZN+y
+         WC1jIULwzRd6gJCNsON2KOt1CbilAdvn9fNAZuOg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 494/667] NFS: fsync() should report filesystem errors over EINTR/ERESTARTSYS
+Date:   Tue,  7 Jun 2022 19:02:39 +0200
+Message-Id: <20220607164949.514509369@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Huang Guobin <huangguobin4@huawei.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
+[ Upstream commit 9641d9bc9b75f11f70646f5c6ee9f5f519a1012e ]
 
-When pci_read_config_dword failed, call pci_release_regions() and
-pci_disable_device() to recycle the resource previously allocated.
+If the commit to disk is interrupted, we should still first check for
+filesystem errors so that we can report them in preference to the error
+due to the signal.
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
-Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 2197e9b06c22 ("NFS: Fix up fsync() when the server rebooted")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/icom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfs/file.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index ad374f7c476d..cb950c78d66d 100644
---- a/drivers/tty/serial/icom.c
-+++ b/drivers/tty/serial/icom.c
-@@ -1501,7 +1501,7 @@ static int icom_probe(struct pci_dev *dev,
- 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
- 	if (retval) {
- 		dev_err(&dev->dev, "PCI Config read FAILED\n");
--		return retval;
-+		goto probe_exit0;
- 	}
+diff --git a/fs/nfs/file.c b/fs/nfs/file.c
+index 42a16993913a..018d29a79e73 100644
+--- a/fs/nfs/file.c
++++ b/fs/nfs/file.c
+@@ -208,15 +208,16 @@ static int
+ nfs_file_fsync_commit(struct file *file, int datasync)
+ {
+ 	struct inode *inode = file_inode(file);
+-	int ret;
++	int ret, ret2;
  
- 	pci_write_config_dword(dev, PCI_COMMAND,
+ 	dprintk("NFS: fsync file(%pD2) datasync %d\n", file, datasync);
+ 
+ 	nfs_inc_stats(inode, NFSIOS_VFSFSYNC);
+ 	ret = nfs_commit_inode(inode, FLUSH_SYNC);
+-	if (ret < 0)
+-		return ret;
+-	return file_check_and_advance_wb_err(file);
++	ret2 = file_check_and_advance_wb_err(file);
++	if (ret2 < 0)
++		return ret2;
++	return ret;
+ }
+ 
+ int
 -- 
 2.35.1
+
+
 
