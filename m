@@ -2,119 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4E54CCA498
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5904CCCA496
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:54:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384353AbiFGVy3 (ORCPT
+        id S1384205AbiFGVyQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:54:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39414 "EHLO
+        Tue, 7 Jun 2022 17:54:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379118AbiFGVCF (ORCPT
+        with ESMTP id S1379078AbiFGVCB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:02:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16206188E7A;
-        Tue,  7 Jun 2022 11:46:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB3F2B81FE1;
-        Tue,  7 Jun 2022 18:46:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E37CDC385A2;
-        Tue,  7 Jun 2022 18:46:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627593;
-        bh=xkQiGxoMysz9EE4tGtqoiVDGv52Ju5dOkOMx/O/9Vvk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OOlrj9e67+eHThCmrlPx+pbVn0iBPU3baudMdGGl1utXKAAOEnR90oxFc594BiGWA
-         ktgrSnxLlOMQDqS14bu1W2pWPddJYe+QtA+syE6NLf3AfWhX3IkhSSuAxNj9d83++E
-         rsdgoy4GmcR/pO8viOiBNnIehRDzc0+q11kijZOk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Huaming Jiang <jianghuaming.jhm@alibaba-inc.com>,
-        Guo Ren <guoren@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
-        Xianting Tian <xianting.tian@linux.alibaba.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Nick Kossifidis <mick@ics.forth.gr>
-Subject: [PATCH 5.18 006/879] RISC-V: Mark IORESOURCE_EXCLUSIVE for reserved mem instead of IORESOURCE_BUSY
-Date:   Tue,  7 Jun 2022 18:52:04 +0200
-Message-Id: <20220607165002.856696509@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:02:01 -0400
+Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 194E711CB68
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:46:25 -0700 (PDT)
+X-ASG-Debug-ID: 1654627583-1cf43917f3396720001-xx1T2L
+Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with ESMTP id OBWPxyFZLrQFHE0J; Tue, 07 Jun 2022 14:46:23 -0400 (EDT)
+X-Barracuda-Envelope-From: tonyb@cybernetics.com
+X-ASG-Whitelist: Client
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=cybernetics.com; s=mail;
+        bh=vcQ5hy/KPkqucbXNbQAJCyvSrO4lyJAHF32hpadfWSw=;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:Cc:To:From:
+        Content-Language:Subject:MIME-Version:Date:Message-ID; b=FibAY+bNXDPJpThVea4/
+        cKatgfJ/9zkZVzgmJpUaNWz4GlH3d1tP684DpenycawhOTl2oXD9dhnIwNmsEm1uhbqoud6Yi7oNt
+        VP+IFIP5LnFsThvuOOC5tFSnFAO0UGzS6gbIQCs6YkRXa4wDmtwWjguWZhXVGIhkw5eOeUBHVQ=
+Received: from [10.157.2.224] (HELO [192.168.200.1])
+  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
+  with ESMTPS id 11859479; Tue, 07 Jun 2022 14:46:23 -0400
+Message-ID: <6a4fb3c3-e627-6266-7c49-322253abefb9@cybernetics.com>
+Date:   Tue, 7 Jun 2022 14:46:23 -0400
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: [PATCH v6 10/11] dmapool: improve scalability of dma_pool_alloc
+Content-Language: en-US
+X-ASG-Orig-Subj: [PATCH v6 10/11] dmapool: improve scalability of dma_pool_alloc
+From:   Tony Battersby <tonyb@cybernetics.com>
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc:     iommu@lists.linux-foundation.org, kernel-team@fb.com,
+        Matthew Wilcox <willy@infradead.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Tony Lindgren <tony@atomide.com>
+References: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
+In-Reply-To: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Barracuda-Connect: UNKNOWN[10.10.4.126]
+X-Barracuda-Start-Time: 1654627583
+X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
+X-Barracuda-BRTS-Status: 1
+X-Virus-Scanned: by bsmtpd at cybernetics.com
+X-Barracuda-Scan-Msg-Size: 3491
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xianting Tian <xianting.tian@linux.alibaba.com>
+dma_pool_alloc() scales poorly when allocating a large number of pages
+because it does a linear scan of all previously-allocated pages before
+allocating a new one.  Improve its scalability by maintaining a separate
+list of pages that have free blocks ready to (re)allocate.  In big O
+notation, this improves the algorithm from O(n) to O(1).
 
-commit e61bf5c071148c80d091f8e7220b3b9130780ae3 upstream.
-
-Commit 00ab027a3b82 ("RISC-V: Add kernel image sections to the resource tree")
-marked IORESOURCE_BUSY for reserved memory, which caused resource map
-failed in subsequent operations of related driver, so remove the
-IORESOURCE_BUSY flag. In order to prohibit userland mapping reserved
-memory, mark IORESOURCE_EXCLUSIVE for it.
-
-The code to reproduce the issue,
-dts:
-        mem0: memory@a0000000 {
-                reg = <0x0 0xa0000000 0 0x1000000>;
-                no-map;
-        };
-
-        &test {
-                status = "okay";
-                memory-region = <&mem0>;
-        };
-
-code:
-        np = of_parse_phandle(pdev->dev.of_node, "memory-region", 0);
-        ret = of_address_to_resource(np, 0, &r);
-        base = devm_ioremap_resource(&pdev->dev, &r);
-        // base = -EBUSY
-
-Fixes: 00ab027a3b82 ("RISC-V: Add kernel image sections to the resource tree")
-Reported-by: Huaming Jiang <jianghuaming.jhm@alibaba-inc.com>
-Reviewed-by: Guo Ren <guoren@kernel.org>
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-Tested-by: Heiko Stuebner <heiko@sntech.de>
-Co-developed-by: Nick Kossifidis <mick@ics.forth.gr>
-Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20220518013428.1338983-1-xianting.tian@linux.alibaba.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
 ---
- arch/riscv/kernel/setup.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/riscv/kernel/setup.c
-+++ b/arch/riscv/kernel/setup.c
-@@ -189,7 +189,7 @@ static void __init init_resources(void)
- 		res = &mem_res[res_idx--];
- 
- 		res->name = "Reserved";
--		res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
-+		res->flags = IORESOURCE_MEM | IORESOURCE_EXCLUSIVE;
- 		res->start = __pfn_to_phys(memblock_region_reserved_base_pfn(region));
- 		res->end = __pfn_to_phys(memblock_region_reserved_end_pfn(region)) - 1;
- 
-@@ -214,7 +214,7 @@ static void __init init_resources(void)
- 
- 		if (unlikely(memblock_is_nomap(region))) {
- 			res->name = "Reserved";
--			res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
-+			res->flags = IORESOURCE_MEM | IORESOURCE_EXCLUSIVE;
- 		} else {
- 			res->name = "System RAM";
- 			res->flags = IORESOURCE_SYSTEM_RAM | IORESOURCE_BUSY;
+Changes since v5:
+pool_free_page() no longer exists.
+Updated big O usage in description.
 
+ mm/dmapool.c | 26 ++++++++++++++++++++++----
+ 1 file changed, 22 insertions(+), 4 deletions(-)
+
+diff --git a/mm/dmapool.c b/mm/dmapool.c
+index 4e075feb038f..fc9ae0683c20 100644
+--- a/mm/dmapool.c
++++ b/mm/dmapool.c
+@@ -17,6 +17,10 @@
+  * least 'size' bytes.  Free blocks are tracked in an unsorted singly-linked
+  * list of free blocks within the page.  Used blocks aren't tracked, but we
+  * keep a count of how many are currently allocated from each page.
++ *
++ * The avail_page_list keeps track of pages that have one or more free blocks
++ * available to (re)allocate.  Pages are moved in and out of avail_page_list
++ * as their blocks are allocated and freed.
+  */
+ 
+ #include <linux/device.h>
+@@ -42,6 +46,7 @@
+ 
+ struct dma_pool {		/* the pool */
+ 	struct list_head page_list;
++	struct list_head avail_page_list;
+ 	spinlock_t lock;
+ 	struct device *dev;
+ 	unsigned int size;
+@@ -54,6 +59,7 @@ struct dma_pool {		/* the pool */
+ 
+ struct dma_page {		/* cacheable header for 'allocation' bytes */
+ 	struct list_head page_list;
++	struct list_head avail_page_link;
+ 	void *vaddr;
+ 	dma_addr_t dma;
+ 	unsigned int in_use;
+@@ -155,6 +161,7 @@ struct dma_pool *dma_pool_create(const char *name, struct device *dev,
+ 	retval->dev = dev;
+ 
+ 	INIT_LIST_HEAD(&retval->page_list);
++	INIT_LIST_HEAD(&retval->avail_page_list);
+ 	spin_lock_init(&retval->lock);
+ 	retval->size = size;
+ 	retval->boundary = boundary;
+@@ -311,10 +318,11 @@ void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
+ 	might_alloc(mem_flags);
+ 
+ 	spin_lock_irqsave(&pool->lock, flags);
+-	list_for_each_entry(page, &pool->page_list, page_list) {
+-		if (page->offset < pool->allocation)
+-			goto ready;
+-	}
++	page = list_first_entry_or_null(&pool->avail_page_list,
++					struct dma_page,
++					avail_page_link);
++	if (page)
++		goto ready;
+ 
+ 	/* pool_alloc_page() might sleep, so temporarily drop &pool->lock */
+ 	spin_unlock_irqrestore(&pool->lock, flags);
+@@ -326,10 +334,13 @@ void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
+ 	spin_lock_irqsave(&pool->lock, flags);
+ 
+ 	list_add(&page->page_list, &pool->page_list);
++	list_add(&page->avail_page_link, &pool->avail_page_list);
+  ready:
+ 	page->in_use++;
+ 	offset = page->offset;
+ 	page->offset = *(int *)(page->vaddr + offset);
++	if (page->offset >= pool->allocation)
++		list_del_init(&page->avail_page_link);
+ 	retval = offset + page->vaddr;
+ 	*handle = offset + page->dma;
+ #ifdef	DMAPOOL_DEBUG
+@@ -451,6 +462,13 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
+ 		memset(vaddr, 0, pool->size);
+ #endif
+ 
++	/*
++	 * list_empty() on the page tests if the page is already linked into
++	 * avail_page_list to avoid adding it more than once.
++	 */
++	if (list_empty(&page->avail_page_link))
++		list_add(&page->avail_page_link, &pool->avail_page_list);
++
+ 	page->in_use--;
+ 	*(int *)vaddr = page->offset;
+ 	page->offset = offset;
+-- 
+2.25.1
 
