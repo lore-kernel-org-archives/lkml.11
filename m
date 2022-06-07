@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7885BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:08:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28706C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378991AbiFGVIR (ORCPT
+        id S1378593AbiFGVIU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
+        Tue, 7 Jun 2022 17:08:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359124AbiFGUJh (ORCPT
+        with ESMTP id S1359206AbiFGUJj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:09:37 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60DBC1C4F07;
-        Tue,  7 Jun 2022 11:26:50 -0700 (PDT)
+        Tue, 7 Jun 2022 16:09:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87F6916ABC9;
+        Tue,  7 Jun 2022 11:27:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AF9D5CE2453;
-        Tue,  7 Jun 2022 18:26:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEDE6C385A5;
-        Tue,  7 Jun 2022 18:26:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4EDE8B82367;
+        Tue,  7 Jun 2022 18:27:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BD3DC385A5;
+        Tue,  7 Jun 2022 18:27:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626407;
-        bh=sQXuJwoXwKhHrCNYb8Yinm9Ja3LysUM379OcmxSH9k8=;
+        s=korg; t=1654626421;
+        bh=kxJo4mL558H5JGkgGUuEbvjo9SuUGP3ePttDj3kdMFs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cx0wqHyOpBX8hJL7gLcqznHjNSYFvqYpPafn868bhbcIoUT/qbutiAQhXs2wzhfPl
-         WvhVBjzpONrJOQi7a3uNxRO2SIjs9ildMN7kRbdcXMj1sNQ5Ia0jBPjDlKJkxVeX/F
-         iwnpjuZBnPYJpiEW0X3nqg+NBrj/OIFRIe02laNE=
+        b=lizKcrJY8Jp9gFZHAYhAmRLCzXImUOR3olo0obyVF9TcTvGCTK2wt1mJ5aOsnPB09
+         g1nyixDF5cIg5BIOR1ed0eHYZRNUi8e1SeSEVhx7l0w270NRpTbf62mZi64Uu3p6Wo
+         zLn7fNo+8hztzDzxTUphhpbiM61qD1BiX3odHJBc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 367/772] media: exynos4-is: Fix PM disable depth imbalance in fimc_is_probe
-Date:   Tue,  7 Jun 2022 18:59:19 +0200
-Message-Id: <20220607164959.830674206@linuxfoundation.org>
+        stable@vger.kernel.org, ThinerLogoer <logoerthiner1@163.com>,
+        Deren Wu <deren.wu@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 371/772] mt76: mt7921: fix kernel crash at mt7921_pci_remove
+Date:   Tue,  7 Jun 2022 18:59:23 +0200
+Message-Id: <20220607164959.946984989@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,46 +51,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Sean Wang <sean.wang@mediatek.com>
 
-[ Upstream commit 5c0db68ce0faeb000c3540d095eb272d671a6e03 ]
+[ Upstream commit ad483ed9dd5193a54293269c852a29051813b7bd ]
 
-If probe fails then we need to call pm_runtime_disable() to balance
-out the previous pm_runtime_enable() call.
+The crash log shown it is possible that mt7921_irq_handler is called while
+devm_free_irq is being handled so mt76_free_device need to be postponed
+until devm_free_irq is completed to solve the crash we free the mt76 device
+too early.
 
-Fixes: 9a761e436843 ("[media] exynos4-is: Add Exynos4x12 FIMC-IS driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+[ 9299.339655] BUG: kernel NULL pointer dereference, address: 0000000000000008
+[ 9299.339705] #PF: supervisor read access in kernel mode
+[ 9299.339735] #PF: error_code(0x0000) - not-present page
+[ 9299.339768] PGD 0 P4D 0
+[ 9299.339786] Oops: 0000 [#1] SMP PTI
+[ 9299.339812] CPU: 1 PID: 1624 Comm: prepare-suspend Not tainted 5.15.14-1.fc32.qubes.x86_64 #1
+[ 9299.339863] Hardware name: Xen HVM domU, BIOS 4.14.3 01/20/2022
+[ 9299.339901] RIP: 0010:mt7921_irq_handler+0x1e/0x70 [mt7921e]
+[ 9299.340048] RSP: 0018:ffffa81b80c27cb0 EFLAGS: 00010082
+[ 9299.340081] RAX: 0000000000000000 RBX: ffff98a4cb752020 RCX: ffffffffa96211c5
+[ 9299.340123] RDX: 0000000000000000 RSI: 00000000000d4204 RDI: ffff98a4cb752020
+[ 9299.340165] RBP: ffff98a4c28a62a4 R08: ffff98a4c37a96c0 R09: 0000000080150011
+[ 9299.340207] R10: 0000000040000000 R11: 0000000000000000 R12: ffff98a4c4eaa080
+[ 9299.340249] R13: ffff98a4c28a6360 R14: ffff98a4cb752020 R15: ffff98a4c28a6228
+[ 9299.340297] FS: 00007260840d3740(0000) GS:ffff98a4ef700000(0000) knlGS:0000000000000000
+[ 9299.340345] CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 9299.340383] CR2: 0000000000000008 CR3: 0000000004c56001 CR4: 0000000000770ee0
+[ 9299.340432] PKRU: 55555554
+[ 9299.340449] Call Trace:
+[ 9299.340467] <TASK>
+[ 9299.340485] __free_irq+0x221/0x350
+[ 9299.340527] free_irq+0x30/0x70
+[ 9299.340553] devm_free_irq+0x55/0x80
+[ 9299.340579] mt7921_pci_remove+0x2f/0x40 [mt7921e]
+[ 9299.340616] pci_device_remove+0x3b/0xa0
+[ 9299.340651] __device_release_driver+0x17a/0x240
+[ 9299.340686] device_driver_detach+0x3c/0xa0
+[ 9299.340714] unbind_store+0x113/0x130
+[ 9299.340740] kernfs_fop_write_iter+0x124/0x1b0
+[ 9299.340775] new_sync_write+0x15c/0x1f0
+[ 9299.340806] vfs_write+0x1d2/0x270
+[ 9299.340831] ksys_write+0x67/0xe0
+[ 9299.340857] do_syscall_64+0x3b/0x90
+[ 9299.340887] entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: 5c14a5f944b9 ("mt76: mt7921: introduce mt7921e support")
+Reported-by: ThinerLogoer <logoerthiner1@163.com>
+Signed-off-by: Deren Wu <deren.wu@mediatek.com>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/exynos4-is/fimc-is.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/exynos4-is/fimc-is.c b/drivers/media/platform/exynos4-is/fimc-is.c
-index e55e411038f4..81b290dace3a 100644
---- a/drivers/media/platform/exynos4-is/fimc-is.c
-+++ b/drivers/media/platform/exynos4-is/fimc-is.c
-@@ -830,7 +830,7 @@ static int fimc_is_probe(struct platform_device *pdev)
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+index 18c8f5cbd96c..2dec9750c6aa 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+@@ -118,7 +118,6 @@ static void mt7921e_unregister_device(struct mt7921_dev *dev)
+ 	mt7921_mcu_exit(dev);
  
- 	ret = pm_runtime_resume_and_get(dev);
- 	if (ret < 0)
--		goto err_irq;
-+		goto err_pm_disable;
+ 	tasklet_disable(&dev->irq_tasklet);
+-	mt76_free_device(&dev->mt76);
+ }
  
- 	vb2_dma_contig_set_max_seg_size(dev, DMA_BIT_MASK(32));
+ static u32 __mt7921_reg_addr(struct mt7921_dev *dev, u32 addr)
+@@ -354,6 +353,7 @@ static void mt7921_pci_remove(struct pci_dev *pdev)
  
-@@ -864,6 +864,8 @@ static int fimc_is_probe(struct platform_device *pdev)
- 	pm_runtime_put_noidle(dev);
- 	if (!pm_runtime_enabled(dev))
- 		fimc_is_runtime_suspend(dev);
-+err_pm_disable:
-+	pm_runtime_disable(dev);
- err_irq:
- 	free_irq(is->irq, is);
- err_clk:
+ 	mt7921e_unregister_device(dev);
+ 	devm_free_irq(&pdev->dev, pdev->irq, dev);
++	mt76_free_device(&dev->mt76);
+ 	pci_free_irq_vectors(pdev);
+ }
+ 
 -- 
 2.35.1
 
