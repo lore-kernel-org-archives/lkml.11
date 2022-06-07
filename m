@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57D83CCA48B
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:06:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26D07CCA491
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350059AbiFGSFU (ORCPT
+        id S1350234AbiFGSFg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:05:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58800 "EHLO
+        Tue, 7 Jun 2022 14:05:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349034AbiFGRqn (ORCPT
+        with ESMTP id S1349054AbiFGRqo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:46:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09EDC2BD;
-        Tue,  7 Jun 2022 10:36:09 -0700 (PDT)
+        Tue, 7 Jun 2022 13:46:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657512728;
+        Tue,  7 Jun 2022 10:36:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF9D8614D8;
-        Tue,  7 Jun 2022 17:36:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE4F7C385A5;
-        Tue,  7 Jun 2022 17:36:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1BAEB822B3;
+        Tue,  7 Jun 2022 17:36:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4863DC385A5;
+        Tue,  7 Jun 2022 17:36:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623368;
-        bh=ZsBH+abYMj2l1STkIQRTzR0SQKeKcobrxNXlw/MWR3g=;
+        s=korg; t=1654623376;
+        bh=Z2Rg58H6WDvcZdH9B/nMDIno5SexIFF77zf26ZQUojA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U0TmU5k6UpxTW8fGczsqT81tVPo9CdmtgAI0gjlUgg5SX1NdcG/+4ijXgVt7W7yQg
-         HBNoVIoa/X8Zh9O5YXREPsng2EcRdachLg5+mx8UbrN156MMoTaPQDIDv6zIXMRBSA
-         ldz3TN2HJnMWGb0NonvP5Rgc+fOmwfGZMwJfSqfU=
+        b=A83+bTD/eM+ZSKSuDde7k2z0P4UCBg0e0Ax7n52zcNOP7m2gctSgz18MS/T7fjcsZ
+         sXRuAlK7Cn9qnkTdTg6ppL1JgUp7tMdj/WsIHkLIOk2KV2YUnT/ZIVHeVXTVaTwpl9
+         aRYPsvRl9xSJ3WS1UhPHgQEbJVMiY4zaja4BbC5k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
-        Guo Ren <guoren@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [PATCH 5.10 393/452] csky: patch_text: Fixup last cpu should be master
-Date:   Tue,  7 Jun 2022 19:04:10 +0200
-Message-Id: <20220607164920.274774457@linuxfoundation.org>
+        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH 5.10 395/452] irqchip: irq-xtensa-mx: fix initial IRQ affinity
+Date:   Tue,  7 Jun 2022 19:04:12 +0200
+Message-Id: <20220607164920.333045886@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,37 +48,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+From: Max Filippov <jcmvbkbc@gmail.com>
 
-commit 8c4d16471e2babe9bdfe41d6ef724526629696cb upstream.
+commit a255ee29252066d621df5d6b420bf534c6ba5bc0 upstream.
 
-These patch_text implementations are using stop_machine_cpuslocked
-infrastructure with atomic cpu_count. The original idea: When the
-master CPU patch_text, the others should wait for it. But current
-implementation is using the first CPU as master, which couldn't
-guarantee the remaining CPUs are waiting. This patch changes the
-last CPU as the master to solve the potential risk.
+When irq-xtensa-mx chip is used in non-SMP configuration its
+irq_set_affinity callback is not called leaving IRQ affinity set empty.
+As a result IRQ delivery does not work in that configuration.
+Initialize IRQ affinity of the xtensa MX interrupt distributor to CPU 0
+for all external IRQ lines.
 
-Fixes: 33e53ae1ce41 ("csky: Add kprobes supported")
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: <stable@vger.kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/csky/kernel/probes/kprobes.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/irqchip/irq-xtensa-mx.c |   18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
---- a/arch/csky/kernel/probes/kprobes.c
-+++ b/arch/csky/kernel/probes/kprobes.c
-@@ -28,7 +28,7 @@ static int __kprobes patch_text_cb(void
- 	struct csky_insn_patch *param = priv;
- 	unsigned int addr = (unsigned int)param->addr;
+--- a/drivers/irqchip/irq-xtensa-mx.c
++++ b/drivers/irqchip/irq-xtensa-mx.c
+@@ -151,14 +151,25 @@ static struct irq_chip xtensa_mx_irq_chi
+ 	.irq_set_affinity = xtensa_mx_irq_set_affinity,
+ };
  
--	if (atomic_inc_return(&param->cpu_count) == 1) {
-+	if (atomic_inc_return(&param->cpu_count) == num_online_cpus()) {
- 		*(u16 *) addr = cpu_to_le16(param->opcode);
- 		dcache_wb_range(addr, addr + 2);
- 		atomic_inc(&param->cpu_count);
++static void __init xtensa_mx_init_common(struct irq_domain *root_domain)
++{
++	unsigned int i;
++
++	irq_set_default_host(root_domain);
++	secondary_init_irq();
++
++	/* Initialize default IRQ routing to CPU 0 */
++	for (i = 0; i < XCHAL_NUM_EXTINTERRUPTS; ++i)
++		set_er(1, MIROUT(i));
++}
++
+ int __init xtensa_mx_init_legacy(struct device_node *interrupt_parent)
+ {
+ 	struct irq_domain *root_domain =
+ 		irq_domain_add_legacy(NULL, NR_IRQS - 1, 1, 0,
+ 				&xtensa_mx_irq_domain_ops,
+ 				&xtensa_mx_irq_chip);
+-	irq_set_default_host(root_domain);
+-	secondary_init_irq();
++	xtensa_mx_init_common(root_domain);
+ 	return 0;
+ }
+ 
+@@ -168,8 +179,7 @@ static int __init xtensa_mx_init(struct
+ 	struct irq_domain *root_domain =
+ 		irq_domain_add_linear(np, NR_IRQS, &xtensa_mx_irq_domain_ops,
+ 				&xtensa_mx_irq_chip);
+-	irq_set_default_host(root_domain);
+-	secondary_init_irq();
++	xtensa_mx_init_common(root_domain);
+ 	return 0;
+ }
+ IRQCHIP_DECLARE(xtensa_mx_irq_chip, "cdns,xtensa-mx", xtensa_mx_init);
 
 
