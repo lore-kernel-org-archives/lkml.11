@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE33CCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE464C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380603AbiFGVfk (ORCPT
+        id S1380628AbiFGVfq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:35:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56448 "EHLO
+        Tue, 7 Jun 2022 17:35:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376630AbiFGU1F (ORCPT
+        with ESMTP id S1377391AbiFGUmG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:27:05 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC1FB32EEB;
-        Tue,  7 Jun 2022 11:33:00 -0700 (PDT)
+        Tue, 7 Jun 2022 16:42:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293531F0FDA;
+        Tue,  7 Jun 2022 11:38:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 60F70CE240B;
-        Tue,  7 Jun 2022 18:32:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D1ECC3411C;
-        Tue,  7 Jun 2022 18:32:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55B20612EC;
+        Tue,  7 Jun 2022 18:38:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 651B0C385A2;
+        Tue,  7 Jun 2022 18:38:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626776;
-        bh=bvLMl4oc4CmowC0jo7HxPPsbIvcD3IDxy/Ab5Uayt4M=;
+        s=korg; t=1654627099;
+        bh=CILQ1YVuKBFuBbXAYQz0i+aRPj9Cf6NaxvMtdI7muXE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qvjHBQrZ/BUy9yefrJrUPK+WPzSNVjifhAI6/k0RXVcbat6mtCTyLJWNx7VjSGf+K
-         Bcn7HwHBFKyOb8EdhZrNUXJXBX7WMkckGsYO2nSeMmMB2fk6xiJ+26pHB0HNCrIYOh
-         xE+saIvq5/wt1f0/tE0Rx322gw75wS0WwSyqLAfE=
+        b=kPqrPX2Z+kbolPPjhbffy+GWsZNg4G/7dN/0MxnuOG9aVUfB/FDmSW/VQFy+p0L3A
+         sarmo1UBO5Yha4TEOeGK1bcs2jRwz8q9yuJKGdrOYLh7NhScBh3vFlvpiryJkzXy+c
+         sUn42e9fpUy/EjNH8TVgSTBVqXoYmhpj15D/ZMNI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 499/772] ASoC: sh: rz-ssi: Release the DMA channels in rz_ssi_probe() error path
-Date:   Tue,  7 Jun 2022 19:01:31 +0200
-Message-Id: <20220607165003.686169970@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.17 618/772] objtool: Fix objtool regression on x32 systems
+Date:   Tue,  7 Jun 2022 19:03:30 +0200
+Message-Id: <20220607165007.148168205@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,69 +50,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-[ Upstream commit 767e6f26204d3f5406630e86b720d01818b8616d ]
+commit 22682a07acc308ef78681572e19502ce8893c4d4 upstream.
 
-DMA channels requested by rz_ssi_dma_request() in rz_ssi_probe() were
-never released in the error path apart from one place. This patch fixes
-this issue by calling rz_ssi_release_dma_channels() in the error path.
+Commit c087c6e7b551 ("objtool: Fix type of reloc::addend") failed to
+appreciate cross building from ILP32 hosts, where 'int' == 'long' and
+the issue persists.
 
-Fixes: 26ac471c5354 ("ASoC: sh: rz-ssi: Add SSI DMAC support")
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Link: https://lore.kernel.org/r/20220426074922.13319-4-prabhakar.mahadev-lad.rj@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+As such, use s64/int64_t/Elf64_Sxword for this field and suffer the
+pain that is ISO C99 printf formats for it.
+
+Fixes: c087c6e7b551 ("objtool: Fix type of reloc::addend")
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+[peterz: reword changelog, s/long long/s64/]
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org>
+Link: https://lkml.kernel.org/r/alpine.LRH.2.02.2205161041260.11556@file01.intranet.prod.int.rdu2.redhat.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/sh/rz-ssi.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ tools/objtool/check.c               |    9 +++++----
+ tools/objtool/elf.c                 |    2 +-
+ tools/objtool/include/objtool/elf.h |    4 ++--
+ 3 files changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
-index 3b55444a1b58..6d794eaaf4c3 100644
---- a/sound/soc/sh/rz-ssi.c
-+++ b/sound/soc/sh/rz-ssi.c
-@@ -982,14 +982,18 @@ static int rz_ssi_probe(struct platform_device *pdev)
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -5,6 +5,7 @@
  
- 	/* Error Interrupt */
- 	ssi->irq_int = platform_get_irq_byname(pdev, "int_req");
--	if (ssi->irq_int < 0)
-+	if (ssi->irq_int < 0) {
-+		rz_ssi_release_dma_channels(ssi);
- 		return ssi->irq_int;
-+	}
+ #include <string.h>
+ #include <stdlib.h>
++#include <inttypes.h>
+ #include <sys/mman.h>
  
- 	ret = devm_request_irq(&pdev->dev, ssi->irq_int, &rz_ssi_interrupt,
- 			       0, dev_name(&pdev->dev), ssi);
--	if (ret < 0)
-+	if (ret < 0) {
-+		rz_ssi_release_dma_channels(ssi);
- 		return dev_err_probe(&pdev->dev, ret,
- 				     "irq request error (int_req)\n");
-+	}
+ #include <arch/elf.h>
+@@ -546,12 +547,12 @@ static int add_dead_ends(struct objtool_
+ 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
+ 			insn = find_last_insn(file, reloc->sym->sec);
+ 			if (!insn) {
+-				WARN("can't find unreachable insn at %s+0x%lx",
++				WARN("can't find unreachable insn at %s+0x%" PRIx64,
+ 				     reloc->sym->sec->name, reloc->addend);
+ 				return -1;
+ 			}
+ 		} else {
+-			WARN("can't find unreachable insn at %s+0x%lx",
++			WARN("can't find unreachable insn at %s+0x%" PRIx64,
+ 			     reloc->sym->sec->name, reloc->addend);
+ 			return -1;
+ 		}
+@@ -581,12 +582,12 @@ reachable:
+ 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
+ 			insn = find_last_insn(file, reloc->sym->sec);
+ 			if (!insn) {
+-				WARN("can't find reachable insn at %s+0x%lx",
++				WARN("can't find reachable insn at %s+0x%" PRIx64,
+ 				     reloc->sym->sec->name, reloc->addend);
+ 				return -1;
+ 			}
+ 		} else {
+-			WARN("can't find reachable insn at %s+0x%lx",
++			WARN("can't find reachable insn at %s+0x%" PRIx64,
+ 			     reloc->sym->sec->name, reloc->addend);
+ 			return -1;
+ 		}
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -486,7 +486,7 @@ static struct section *elf_create_reloc_
+ 						int reltype);
  
- 	if (!rz_ssi_is_dma_enabled(ssi)) {
- 		/* Tx and Rx interrupts (pio only) */
-@@ -1017,13 +1021,16 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 	}
+ int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+-		  unsigned int type, struct symbol *sym, long addend)
++		  unsigned int type, struct symbol *sym, s64 addend)
+ {
+ 	struct reloc *reloc;
  
- 	ssi->rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
--	if (IS_ERR(ssi->rstc))
-+	if (IS_ERR(ssi->rstc)) {
-+		rz_ssi_release_dma_channels(ssi);
- 		return PTR_ERR(ssi->rstc);
-+	}
+--- a/tools/objtool/include/objtool/elf.h
++++ b/tools/objtool/include/objtool/elf.h
+@@ -73,7 +73,7 @@ struct reloc {
+ 	struct symbol *sym;
+ 	unsigned long offset;
+ 	unsigned int type;
+-	long addend;
++	s64 addend;
+ 	int idx;
+ 	bool jump_table_start;
+ };
+@@ -135,7 +135,7 @@ struct elf *elf_open_read(const char *na
+ struct section *elf_create_section(struct elf *elf, const char *name, unsigned int sh_flags, size_t entsize, int nr);
  
- 	reset_control_deassert(ssi->rstc);
- 	pm_runtime_enable(&pdev->dev);
- 	ret = pm_runtime_resume_and_get(&pdev->dev);
- 	if (ret < 0) {
-+		rz_ssi_release_dma_channels(ssi);
- 		pm_runtime_disable(ssi->dev);
- 		reset_control_assert(ssi->rstc);
- 		return dev_err_probe(ssi->dev, ret, "pm_runtime_resume_and_get failed\n");
--- 
-2.35.1
-
+ int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+-		  unsigned int type, struct symbol *sym, long addend);
++		  unsigned int type, struct symbol *sym, s64 addend);
+ int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
+ 			  unsigned long offset, unsigned int type,
+ 			  struct section *insn_sec, unsigned long insn_off);
 
 
