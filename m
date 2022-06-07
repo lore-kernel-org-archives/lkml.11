@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA02CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83ADFCCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382285AbiFGVuo (ORCPT
+        id S1382343AbiFGVvE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:50:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51722 "EHLO
+        Tue, 7 Jun 2022 17:51:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377170AbiFGUuR (ORCPT
+        with ESMTP id S239238AbiFGUuK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:50:17 -0400
+        Tue, 7 Jun 2022 16:50:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018581F7D81;
-        Tue,  7 Jun 2022 11:39:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0931F77C9;
+        Tue,  7 Jun 2022 11:39:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32A806157E;
-        Tue,  7 Jun 2022 18:39:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E2E1C385A5;
-        Tue,  7 Jun 2022 18:39:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4208F6160D;
+        Tue,  7 Jun 2022 18:39:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B666C385A5;
+        Tue,  7 Jun 2022 18:39:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627198;
-        bh=zcz4MXC05t6lKEeUKiRDVQcjac26JfMYOebzlgasOfw=;
+        s=korg; t=1654627162;
+        bh=Y7bGGQGgAnOtggXaJ/RbS4mp+x0NVOu+MyhGWKdtdRc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lhIn15k1hLtVx1Js8aUhTbPgTWh6mtBZ1xd067k96gMO50L8QUfB1H2gjRqFS6Rxq
-         VkUW4DRy6saEenpEwoP8uMCm0zNsceNOEt4eL5Ndp8r/dlOL6chICg1X0q735pxpIk
-         ISDRmeKwb2nsKvSPUOMY8c6GWiyJlXkYrIQGWJZE=
+        b=foO/Oge4/UPCRB6xpJQ/orMViCCvCnVDthuabE6SbYWo25mSlzOK/flb5s9pkgzG1
+         vBKhMAEPISHAAQR52OfkUhYyldhJ9ffdP76PpoA2acdKAaZfDAK8Axzz+UO6Yf6l3j
+         bZdRYcDFUoXa5EWhism1OK5f1cn0uMvS+b/g1QcI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH 5.17 654/772] PCI: qcom: Fix runtime PM imbalance on probe errors
-Date:   Tue,  7 Jun 2022 19:04:06 +0200
-Message-Id: <20220607165008.335034882@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.17 639/772] ext4: fix race condition between ext4_write and ext4_convert_inline_data
+Date:   Tue,  7 Jun 2022 19:03:51 +0200
+Message-Id: <20220607165007.890812659@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,48 +50,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+From: Baokun Li <libaokun1@huawei.com>
 
-commit 87d83b96c8d6c6c2d2096bd0bdba73bcf42b8ef0 upstream.
+commit f87c7a4b084afc13190cbb263538e444cb2b392a upstream.
 
-Drop the leftover pm_runtime_disable() calls from the late probe error
-paths that would, for example, prevent runtime PM from being reenabled
-after a probe deferral.
+Hulk Robot reported a BUG_ON:
+ ==================================================================
+ EXT4-fs error (device loop3): ext4_mb_generate_buddy:805: group 0,
+ block bitmap and bg descriptor inconsistent: 25 vs 31513 free clusters
+ kernel BUG at fs/ext4/ext4_jbd2.c:53!
+ invalid opcode: 0000 [#1] SMP KASAN PTI
+ CPU: 0 PID: 25371 Comm: syz-executor.3 Not tainted 5.10.0+ #1
+ RIP: 0010:ext4_put_nojournal fs/ext4/ext4_jbd2.c:53 [inline]
+ RIP: 0010:__ext4_journal_stop+0x10e/0x110 fs/ext4/ext4_jbd2.c:116
+ [...]
+ Call Trace:
+  ext4_write_inline_data_end+0x59a/0x730 fs/ext4/inline.c:795
+  generic_perform_write+0x279/0x3c0 mm/filemap.c:3344
+  ext4_buffered_write_iter+0x2e3/0x3d0 fs/ext4/file.c:270
+  ext4_file_write_iter+0x30a/0x11c0 fs/ext4/file.c:520
+  do_iter_readv_writev+0x339/0x3c0 fs/read_write.c:732
+  do_iter_write+0x107/0x430 fs/read_write.c:861
+  vfs_writev fs/read_write.c:934 [inline]
+  do_pwritev+0x1e5/0x380 fs/read_write.c:1031
+ [...]
+ ==================================================================
 
-Link: https://lore.kernel.org/r/20220401133854.10421-2-johan+linaro@kernel.org
-Fixes: 6e5da6f7d824 ("PCI: qcom: Fix error handling in runtime PM support")
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Acked-by: Stanimir Varbanov <svarbanov@mm-sol.com>
-Cc: stable@vger.kernel.org      # 4.20
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Above issue may happen as follows:
+           cpu1                     cpu2
+__________________________|__________________________
+do_pwritev
+ vfs_writev
+  do_iter_write
+   ext4_file_write_iter
+    ext4_buffered_write_iter
+     generic_perform_write
+      ext4_da_write_begin
+                           vfs_fallocate
+                            ext4_fallocate
+                             ext4_convert_inline_data
+                              ext4_convert_inline_data_nolock
+                               ext4_destroy_inline_data_nolock
+                                clear EXT4_STATE_MAY_INLINE_DATA
+                               ext4_map_blocks
+                                ext4_ext_map_blocks
+                                 ext4_mb_new_blocks
+                                  ext4_mb_regular_allocator
+                                   ext4_mb_good_group_nolock
+                                    ext4_mb_init_group
+                                     ext4_mb_init_cache
+                                      ext4_mb_generate_buddy  --> error
+       ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
+                                ext4_restore_inline_data
+                                 set EXT4_STATE_MAY_INLINE_DATA
+       ext4_block_write_begin
+      ext4_da_write_end
+       ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
+       ext4_write_inline_data_end
+        handle=NULL
+        ext4_journal_stop(handle)
+         __ext4_journal_stop
+          ext4_put_nojournal(handle)
+           ref_cnt = (unsigned long)handle
+           BUG_ON(ref_cnt == 0)  ---> BUG_ON
+
+The lock held by ext4_convert_inline_data is xattr_sem, but the lock
+held by generic_perform_write is i_rwsem. Therefore, the two locks can
+be concurrent.
+
+To solve above issue, we add inode_lock() for ext4_convert_inline_data().
+At the same time, move ext4_convert_inline_data() in front of
+ext4_punch_hole(), remove similar handling from ext4_punch_hole().
+
+Fixes: 0c8d414f163f ("ext4: let fallocate handle inline data correctly")
+Cc: stable@vger.kernel.org
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220428134031.4153381-1-libaokun1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/dwc/pcie-qcom.c |    5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ fs/ext4/extents.c |   10 ++++++----
+ fs/ext4/inode.c   |    9 ---------
+ 2 files changed, 6 insertions(+), 13 deletions(-)
 
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -1593,17 +1593,14 @@ static int qcom_pcie_probe(struct platfo
- 	pp->ops = &qcom_pcie_dw_ops;
+--- a/fs/ext4/extents.c
++++ b/fs/ext4/extents.c
+@@ -4694,15 +4694,17 @@ long ext4_fallocate(struct file *file, i
+ 		     FALLOC_FL_INSERT_RANGE))
+ 		return -EOPNOTSUPP;
  
- 	ret = phy_init(pcie->phy);
--	if (ret) {
--		pm_runtime_disable(&pdev->dev);
++	inode_lock(inode);
++	ret = ext4_convert_inline_data(inode);
++	inode_unlock(inode);
 +	if (ret)
- 		goto err_pm_runtime_put;
--	}
- 
- 	platform_set_drvdata(pdev, pcie);
- 
- 	ret = dw_pcie_host_init(pp);
- 	if (ret) {
- 		dev_err(dev, "cannot initialize host\n");
--		pm_runtime_disable(&pdev->dev);
- 		goto err_pm_runtime_put;
++		goto exit;
++
+ 	if (mode & FALLOC_FL_PUNCH_HOLE) {
+ 		ret = ext4_punch_hole(file, offset, len);
+ 		goto exit;
  	}
  
+-	ret = ext4_convert_inline_data(inode);
+-	if (ret)
+-		goto exit;
+-
+ 	if (mode & FALLOC_FL_COLLAPSE_RANGE) {
+ 		ret = ext4_collapse_range(file, offset, len);
+ 		goto exit;
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -3958,15 +3958,6 @@ int ext4_punch_hole(struct file *file, l
+ 
+ 	trace_ext4_punch_hole(inode, offset, length, 0);
+ 
+-	ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
+-	if (ext4_has_inline_data(inode)) {
+-		filemap_invalidate_lock(mapping);
+-		ret = ext4_convert_inline_data(inode);
+-		filemap_invalidate_unlock(mapping);
+-		if (ret)
+-			return ret;
+-	}
+-
+ 	/*
+ 	 * Write out all dirty pages to avoid race conditions
+ 	 * Then release them.
 
 
