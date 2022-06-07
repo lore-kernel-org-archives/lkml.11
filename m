@@ -2,86 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3AB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:34:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6389EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:34:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355303AbiFGTeH (ORCPT
+        id S1355568AbiFGTeO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:34:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36264 "EHLO
+        Tue, 7 Jun 2022 15:34:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353340AbiFGSmF (ORCPT
+        with ESMTP id S1353442AbiFGSmU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:42:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2102B187047;
-        Tue,  7 Jun 2022 10:59:00 -0700 (PDT)
+        Tue, 7 Jun 2022 14:42:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2BE187040;
+        Tue,  7 Jun 2022 10:58:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 79A7F61680;
-        Tue,  7 Jun 2022 17:58:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B5DAC34119;
-        Tue,  7 Jun 2022 17:58:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624738;
-        bh=c1AB+XbePk8ulWNOw7j8RQe1KAN3ETCnKQhtQ248d0w=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id BADCBB82239;
+        Tue,  7 Jun 2022 17:58:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0907C341C7;
+        Tue,  7 Jun 2022 17:58:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624736;
+        bh=sWn2KXKLVPyfsa6n0Io+GouTN/mpcv2HYJkzwIRKHSY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WDd1I+Qb+WAnVhYRWf709n1KGiyMnuSHfQCTtXnWgLMjAZIhui4jl7k4E1AI/CvKE
-         +pF4MpQ1YNB0imKT0d1QceG1FPfbkhdtB1DHqGqBPJ3JYnw9R+XN/15yBmvdxrc9Cx
-         yr+p8LQTwgjOOWDZF3JNVbI74e5mq5sI9LRkwBSSL5fvWg7d9PPCOKywANzPVwnYZY
-         RAeePMKy1Plg1dgdrnrKmYhSmkp1kSHHWwxzEmZ8SHyesX8dsJB1aUO+GrC1atFeWY
-         rQWHRnzMLGTNPAHEcjkBpHBgL9Sb/ue9qySJ3IRAWeUDrsHYhegMymMlsANFT/bTiw
-         Z7Ds+Sun50fUw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Huang Guobin <huangguobin4@huawei.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 06/38] tty: Fix a possible resource leak in icom_probe
-Date:   Tue,  7 Jun 2022 13:58:01 -0400
-Message-Id: <20220607175835.480735-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
-References: <20220607175835.480735-1-sashal@kernel.org>
+        b=V6TFFM41Vc5olMda2zkOD9lKC6oFG0sBbvtU+ZdG+bLiCl8o+wWFFd2IDCRxHZfBK
+         WuJ7vticG4FdxWXhcEXMwbrTJy8xZnsMbTQjjiVmA4FB2iPWRbwBRFNnQpI6gp89Zj
+         EBzcmx3pIQ1AVYh5r35OhHwqzuB4ykj55RlhjK9g=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Alistair Popple <apopple@nvidia.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Ross Zwisler <zwisler@kernel.org>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Yang Shi <shy828301@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 433/667] dax: fix cache flush on PMD-mapped pages
+Date:   Tue,  7 Jun 2022 19:01:38 +0200
+Message-Id: <20220607164947.712787509@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Huang Guobin <huangguobin4@huawei.com>
+From: Muchun Song <songmuchun@bytedance.com>
 
-[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
+[ Upstream commit e583b5c472bd23d450e06f148dc1f37be74f7666 ]
 
-When pci_read_config_dword failed, call pci_release_regions() and
-pci_disable_device() to recycle the resource previously allocated.
+The flush_cache_page() only remove a PAGE_SIZE sized range from the cache.
+However, it does not cover the full pages in a THP except a head page.
+Replace it with flush_cache_range() to fix this issue.  This is just a
+documentation issue with the respect to properly documenting the expected
+usage of cache flushing before modifying the pmd.  However, in practice
+this is not a problem due to the fact that DAX is not available on
+architectures with virtually indexed caches per:
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
-Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  commit d92576f1167c ("dax: does not work correctly with virtual aliasing caches")
+
+Link: https://lkml.kernel.org/r/20220403053957.10770-3-songmuchun@bytedance.com
+Fixes: f729c8c9b24f ("dax: wrprotect pmd_t in dax_mapping_entry_mkclean")
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Cc: Alistair Popple <apopple@nvidia.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Jan Kara <jack@suse.cz>
+Cc: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Ralph Campbell <rcampbell@nvidia.com>
+Cc: Ross Zwisler <zwisler@kernel.org>
+Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
+Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Cc: Yang Shi <shy828301@gmail.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/icom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/dax.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index 94c8281ddb5f..74b325c344da 100644
---- a/drivers/tty/serial/icom.c
-+++ b/drivers/tty/serial/icom.c
-@@ -1503,7 +1503,7 @@ static int icom_probe(struct pci_dev *dev,
- 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
- 	if (retval) {
- 		dev_err(&dev->dev, "PCI Config read FAILED\n");
--		return retval;
-+		goto probe_exit0;
- 	}
+diff --git a/fs/dax.c b/fs/dax.c
+index 4e3e5a283a91..1d0658cf9dcf 100644
+--- a/fs/dax.c
++++ b/fs/dax.c
+@@ -846,7 +846,8 @@ static void dax_entry_mkclean(struct address_space *mapping, pgoff_t index,
+ 			if (!pmd_dirty(*pmdp) && !pmd_write(*pmdp))
+ 				goto unlock_pmd;
  
- 	pci_write_config_dword(dev, PCI_COMMAND,
+-			flush_cache_page(vma, address, pfn);
++			flush_cache_range(vma, address,
++					  address + HPAGE_PMD_SIZE);
+ 			pmd = pmdp_invalidate(vma, address, pmdp);
+ 			pmd = pmd_wrprotect(pmd);
+ 			pmd = pmd_mkclean(pmd);
 -- 
 2.35.1
+
+
 
