@@ -2,84 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B5FDCCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BE7CC433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:09:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444645AbiFHBHv (ORCPT
+        id S1391076AbiFHBGW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:07:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43624 "EHLO
+        Tue, 7 Jun 2022 21:06:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385655AbiFGWbp (ORCPT
+        with ESMTP id S1382306AbiFGXjF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:31:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7003C27B9A1;
-        Tue,  7 Jun 2022 12:25:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C159609D0;
-        Tue,  7 Jun 2022 19:25:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F770C385A2;
-        Tue,  7 Jun 2022 19:25:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629913;
-        bh=WzfUMMZDGJGJSNtqrDv32v58DBuYIdaIuwsPM1Gnm3Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G64+gvlabjOFLG26rxEoSzplc+DmipXXvkUf/evn9GRB0RtmQ4GV9JxQqN8suSUEP
-         oB0CBFvXkWzkoocMjtx0kuOeIVcuex7pp/l1ik79Mup43KFPZ7+2BagM4QCCttIfQt
-         7zqzjAeke5TUf5zAu29cy0Piw+xE0IFO7aiMxmBA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Young <sean@mess.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.18 863/879] media: lirc: add missing exceptions for lirc uapi header file
-Date:   Tue,  7 Jun 2022 19:06:21 +0200
-Message-Id: <20220607165027.904324404@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 7 Jun 2022 19:39:05 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F66A1737D3
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:30 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id 15-20020a63020f000000b003fca9ebc5cbso8958038pgc.22
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=GmS2Zfk79J/Sy/RToehyTdCO4x0cZbdTb+j/zQ23WRQ=;
+        b=bdzmq7UnnPvyPEMgI3dsae1dM+24A3NDnSWf4gIbLMniZ2r+Aq4+nRpXJeZPPB9xL8
+         PK2dP2sPhxm42na7Jm0Eep0e+8o5d5QH9UDPqbjcsE/VWDdOrTWQ2asiqtAsh3BmYVBz
+         HFXIyvQgt7roQVy8YOrqw6ZqEAfovWah6OHIiWgSxODHxPCKVHdzC9QY9emiU80JH6c6
+         Pf9AY6vbYJZsdWVbS8Utv1IcJ6z3SCEdzpio9yHXPzxLYiTu0UudYuPUblOSgy2Kr46l
+         fLzlCtqxY70zJB5zQcWyWFB+McvkwFLgrM4/v7DiqHrbVt1Y1Bqq3nqDXxLf26xzQ9Mh
+         90rA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=GmS2Zfk79J/Sy/RToehyTdCO4x0cZbdTb+j/zQ23WRQ=;
+        b=wKk5d0/nLHTRFEi6bM9TwPC4ufW96fEkYnZ9Und7+7mtNpYJrnv8PUsw7bP8+81ImH
+         JQQeQ/RgVIhGS1BHtQ+cqW5M+ny2WSHyM9G+IMn+E1ycsasaizM/SekqZsae9FYm+aly
+         uSB1jVxTuQpvSWfeewP3S+aXbZvDg49e/cOjHGSpj85FG8RfJ96Q0LP+bp9HVI4eMbZE
+         Ur3FjMt1Qf5vnsUT/yEBKbsu2LcZUXn+FVsk2qHFih+6kUJIQfjrTbdIr3TPYyB+HlwL
+         cz7PYJh05UprG7/n5KQNIoaA9F3rBBiL59B5zzaWtepPQUbeHT+N8MBaFCxIECIOvFL8
+         CqUQ==
+X-Gm-Message-State: AOAM531yotaXfwdlel39k1ovR7XhoXvfCBy0+vhH5zD2kXkoDpkiCOrj
+        xAqPqJ8is8JVUnvC1unc4zs3SpqHMTo=
+X-Google-Smtp-Source: ABdhPJzLtIwGn7tXr8E4ox73+ncuEOoNaH720aApuV9kLjNuT2EKO4l6xAlZFYo1g5kpgraplK4mzENO8E8=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a17:903:2d0:b0:14d:8a8d:cb1 with SMTP id
+ s16-20020a17090302d000b0014d8a8d0cb1mr30934054plk.50.1654637789914; Tue, 07
+ Jun 2022 14:36:29 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Tue,  7 Jun 2022 21:35:56 +0000
+In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
+Message-Id: <20220607213604.3346000-8-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220607213604.3346000-1-seanjc@google.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH v5 07/15] KVM: VMX: Add helper to check if the guest PMU has PERF_GLOBAL_CTRL
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
+        David Matlack <dmatlack@google.com>,
+        Oliver Upton <oupton@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Young <sean@mess.org>
+Add a helper to check of the guest PMU has PERF_GLOBAL_CTRL, which is
+unintuitive _and_ diverges from Intel's architecturally defined behavior.
+Even worse, KVM currently implements the check using two different, but
+equivalent checksand , _and_ there has been at least one attempt to add a
+_third_ flavor.
 
-commit b1c8312c6bd70e2c41f96183936fdb6f4f07cc0e upstream.
-
-Commit e5499dd7253c ("media: lirc: revert removal of unused feature
-flags") reintroduced unused feature flags in the lirc uapi header, but
-failed to reintroduce the necessary exceptions for the docs.
-
-Fixes: e5499dd7253c ("media: lirc: revert removal of unused feature flags")
-Signed-off-by: Sean Young <sean@mess.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/all/Yk4ugOETeo%2FqDRbW@google.com
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- Documentation/userspace-api/media/lirc.h.rst.exceptions | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/x86/kvm/vmx/pmu_intel.c |  4 ++--
+ arch/x86/kvm/vmx/vmx.h       | 12 ++++++++++++
+ 2 files changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/userspace-api/media/lirc.h.rst.exceptions b/Documentation/userspace-api/media/lirc.h.rst.exceptions
-index 913d17b49831..1aeb7d7afe13 100644
---- a/Documentation/userspace-api/media/lirc.h.rst.exceptions
-+++ b/Documentation/userspace-api/media/lirc.h.rst.exceptions
-@@ -30,6 +30,8 @@ ignore define LIRC_CAN_REC
+diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+index 5b85320fc9f1..6ce3b066f7d9 100644
+--- a/arch/x86/kvm/vmx/pmu_intel.c
++++ b/arch/x86/kvm/vmx/pmu_intel.c
+@@ -111,7 +111,7 @@ static bool intel_pmc_is_enabled(struct kvm_pmc *pmc)
+ {
+ 	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
  
- ignore define LIRC_CAN_SEND_MASK
- ignore define LIRC_CAN_REC_MASK
-+ignore define LIRC_CAN_SET_REC_FILTER
-+ignore define LIRC_CAN_NOTIFY_DECODE
+-	if (pmu->version < 2)
++	if (!intel_pmu_has_perf_global_ctrl(pmu))
+ 		return true;
  
- # Obsolete ioctls
+ 	return test_bit(pmc->idx, (unsigned long *)&pmu->global_ctrl);
+@@ -208,7 +208,7 @@ static bool intel_is_valid_msr(struct kvm_vcpu *vcpu, u32 msr, bool host_initiat
+ 	case MSR_CORE_PERF_GLOBAL_OVF_CTRL:
+ 		if (host_initiated)
+ 			return true;
+-		return pmu->version > 1;
++		return intel_pmu_has_perf_global_ctrl(pmu);
+ 		break;
+ 	case MSR_IA32_PEBS_ENABLE:
+ 		if (host_initiated)
+diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
+index 576fed7e33de..215f17eb6732 100644
+--- a/arch/x86/kvm/vmx/vmx.h
++++ b/arch/x86/kvm/vmx/vmx.h
+@@ -91,6 +91,18 @@ union vmx_exit_reason {
+ 	u32 full;
+ };
+ 
++static inline bool intel_pmu_has_perf_global_ctrl(struct kvm_pmu *pmu)
++{
++	/*
++	 * Architecturally, Intel's SDM states that IA32_PERF_GLOBAL_CTRL is
++	 * supported if "CPUID.0AH: EAX[7:0] > 0", i.e. if the PMU version is
++	 * greater than zero.  However, KVM only exposes and emulates the MSR
++	 * to/for the guest if the guest PMU supports at least "Architectural
++	 * Performance Monitoring Version 2".
++	 */
++	return pmu->version > 1;
++}
++
+ #define vcpu_to_lbr_desc(vcpu) (&to_vmx(vcpu)->lbr_desc)
+ #define vcpu_to_lbr_records(vcpu) (&to_vmx(vcpu)->lbr_desc.records)
  
 -- 
-2.36.1
-
-
+2.36.1.255.ge46751e96f-goog
 
