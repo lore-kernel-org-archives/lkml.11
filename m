@@ -2,212 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D89C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF5D3CCA48F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378951AbiFGVB4 (ORCPT
+        id S1378520AbiFGVB2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:01:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35000 "EHLO
+        Tue, 7 Jun 2022 17:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356962AbiFGT6i (ORCPT
+        with ESMTP id S1357627AbiFGT6Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:58:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93E451B9F95;
-        Tue,  7 Jun 2022 11:24:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 264AE61269;
-        Tue,  7 Jun 2022 18:24:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 387CEC341C0;
-        Tue,  7 Jun 2022 18:24:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626240;
-        bh=S1lgrw7es+1iaSG8sPE+ps5nYfaUYVrwLHDTd6hP3e4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F2n5b+hc17Mv/YCkilfoSAjuWr/yZYlNalRE/RSd9SHMf/CFur7o/YLWxPL39IN8S
-         Ja1tlmkru985XeYHo63uRAj43trQXsTjGldljqGc1NDhLgajY/tyc1D/wVJlOBohUa
-         eT+Z7yixl/wQXfHAvaZfSGiS2OsAhuaNnhN6U/RA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        Tue, 7 Jun 2022 15:58:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74C63186B8B
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:24:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654626230;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=K5asxgZuJ1ujMS5G/D+zRXTIuzzJ85zczcuYLGDdaiU=;
+        b=cGYAoH002C/veCQ1RcFlwj4sigjUWwGjbgrBqaT1QM1EjhMrb434QM6blHzZk3BBUeMm8i
+        3DpvPhnK2lGvUXerHEAB9ynref4SiOnkPKAeHE+GlqOWAaN3EMxrImen1UabZsKHf70Zm0
+        ruznY/e3UE7+IVz8zWbqd9ZEbsmJm4Q=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-157-b1kb1bawN9S1NnpusBYh2Q-1; Tue, 07 Jun 2022 14:23:47 -0400
+X-MC-Unique: b1kb1bawN9S1NnpusBYh2Q-1
+Received: by mail-wm1-f72.google.com with SMTP id be12-20020a05600c1e8c00b0039c506b52a4so1920239wmb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:23:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=K5asxgZuJ1ujMS5G/D+zRXTIuzzJ85zczcuYLGDdaiU=;
+        b=YG9PZG1zE9mQQyCjGvOK5Sxk8AMV0jv3VgAlyLYLRInwCpkJS1kweLX/l8VnAlpoJb
+         ZHfhIQpBglBfxRdv/4gRg7AfNyyMPnFMhaBVU8tpz1kt1bF4TbRVHqROg/5+PuuWYabp
+         Jk1j2gmHLqbuRqSaZwuVaFtA1JKW60djA0ocJs9gWUG8/X6E3jXcLL+1H5Ze26emG/6E
+         MBQ0Ix1gnCtbnc217eWw81QNIrs3dgJaJkEDIk0nN3TFk6/tjh8iw9EJbIYcvFYzo1bq
+         5vSCxPK8aAiOUtazPF0L2Ax0HVMyOfW/xUlk+pUn8pSDKUUtM8FKH7gJbQcUI7SR+Ei0
+         fJew==
+X-Gm-Message-State: AOAM530FqvSZpeOyPjBS5W7Hmwyy1vihwh+ZYfvRG6Rsjd7BA1Pdq4XR
+        P6UijC4cH1X3Yle9dH7vbjNGoxOqFgtpTQIY4Fx9whRBA+vSQUOo9LmaF04CK+tUleogqEpCwCo
+        pqH7rAu/AyelMeK2Ojj7eJF6dRNGMV+UKPSuA7ZFEPFlRlAot472qHkusIBO+wtAk7ss8tgeTLW
+        o=
+X-Received: by 2002:a5d:6085:0:b0:213:b9b5:d985 with SMTP id w5-20020a5d6085000000b00213b9b5d985mr25936183wrt.113.1654626226058;
+        Tue, 07 Jun 2022 11:23:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJygUAWU18BEnEUrIRuTGd/XPIJF8uGKTTIOeWs5V/3pu465g0xtNSzJBp6qYlJzCjICEjYCLA==
+X-Received: by 2002:a5d:6085:0:b0:213:b9b5:d985 with SMTP id w5-20020a5d6085000000b00213b9b5d985mr25936143wrt.113.1654626225695;
+        Tue, 07 Jun 2022 11:23:45 -0700 (PDT)
+Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id m8-20020a05600c4f4800b003942a244f51sm28267502wmq.42.2022.06.07.11.23.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 11:23:45 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Borislav Petkov <bp@suse.de>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 308/772] x86/pm: Fix false positive kmemleak report in msr_build_context()
-Date:   Tue,  7 Jun 2022 18:58:20 +0200
-Message-Id: <20220607164958.101558918@linuxfoundation.org>
+Cc:     dri-devel@lists.freedesktop.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Laszlo Ersek <lersek@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Gerd Hoffmann <kraxel@redhat.com>, kvm@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>
+Subject: [PATCH v6 1/5] firmware: sysfb: Make sysfb_create_simplefb() return a pdev pointer
+Date:   Tue,  7 Jun 2022 20:23:34 +0200
+Message-Id: <20220607182338.344270-2-javierm@redhat.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220607182338.344270-1-javierm@redhat.com>
+References: <20220607182338.344270-1-javierm@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthieu Baerts <matthieu.baerts@tessares.net>
+This function just returned 0 on success or an errno code on error, but it
+could be useful for sysfb_init() callers to have a pointer to the device.
 
-[ Upstream commit b0b592cf08367719e1d1ef07c9f136e8c17f7ec3 ]
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
 
-Since
-
-  e2a1256b17b1 ("x86/speculation: Restore speculation related MSRs during S3 resume")
-
-kmemleak reports this issue:
-
-  unreferenced object 0xffff888009cedc00 (size 256):
-    comm "swapper/0", pid 1, jiffies 4294693823 (age 73.764s)
-    hex dump (first 32 bytes):
-      00 00 00 00 00 00 00 00 48 00 00 00 00 00 00 00  ........H.......
-      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    backtrace:
-      msr_build_context (include/linux/slab.h:621)
-      pm_check_save_msr (arch/x86/power/cpu.c:520)
-      do_one_initcall (init/main.c:1298)
-      kernel_init_freeable (init/main.c:1370)
-      kernel_init (init/main.c:1504)
-      ret_from_fork (arch/x86/entry/entry_64.S:304)
-
-Reproducer:
-
-  - boot the VM with a debug kernel config (see
-    https://github.com/multipath-tcp/mptcp_net-next/issues/268)
-  - wait ~1 minute
-  - start a kmemleak scan
-
-The root cause here is alignment within the packed struct saved_context
-(from suspend_64.h). Kmemleak only searches for pointers that are
-aligned (see how pointers are scanned in kmemleak.c), but pahole shows
-that the saved_msrs struct member and all members after it in the
-structure are unaligned:
-
-  struct saved_context {
-    struct pt_regs             regs;                 /*     0   168 */
-    /* --- cacheline 2 boundary (128 bytes) was 40 bytes ago --- */
-    u16                        ds;                   /*   168     2 */
-
-    ...
-
-    u64                        misc_enable;          /*   232     8 */
-    bool                       misc_enable_saved;    /*   240     1 */
-
-   /* Note below odd offset values for the remainder of this struct */
-
-    struct saved_msrs          saved_msrs;           /*   241    16 */
-    /* --- cacheline 4 boundary (256 bytes) was 1 bytes ago --- */
-    long unsigned int          efer;                 /*   257     8 */
-    u16                        gdt_pad;              /*   265     2 */
-    struct desc_ptr            gdt_desc;             /*   267    10 */
-    u16                        idt_pad;              /*   277     2 */
-    struct desc_ptr            idt;                  /*   279    10 */
-    u16                        ldt;                  /*   289     2 */
-    u16                        tss;                  /*   291     2 */
-    long unsigned int          tr;                   /*   293     8 */
-    long unsigned int          safety;               /*   301     8 */
-    long unsigned int          return_address;       /*   309     8 */
-
-    /* size: 317, cachelines: 5, members: 25 */
-    /* last cacheline: 61 bytes */
-  } __attribute__((__packed__));
-
-Move misc_enable_saved to the end of the struct declaration so that
-saved_msrs fits in before the cacheline 4 boundary.
-
-The comment above the saved_context declaration says to fix wakeup_64.S
-file and __save/__restore_processor_state() if the struct is modified:
-it looks like all the accesses in wakeup_64.S are done through offsets
-which are computed at build-time. Update that comment accordingly.
-
-At the end, the false positive kmemleak report is due to a limitation
-from kmemleak but it is always good to avoid unaligned members for
-optimisation purposes.
-
-Please note that it looks like this issue is not new, e.g.
-
-  https://lore.kernel.org/all/9f1bb619-c4ee-21c4-a251-870bd4db04fa@lwfinger.net/
-  https://lore.kernel.org/all/94e48fcd-1dbd-ebd2-4c91-f39941735909@molgen.mpg.de/
-
-  [ bp: Massage + cleanup commit message. ]
-
-Fixes: 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume")
-Suggested-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Link: https://lore.kernel.org/r/20220426202138.498310-1-matthieu.baerts@tessares.net
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/suspend_32.h |  2 +-
- arch/x86/include/asm/suspend_64.h | 12 ++++++++----
- 2 files changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/include/asm/suspend_32.h b/arch/x86/include/asm/suspend_32.h
-index 7b132d0312eb..a800abb1a992 100644
---- a/arch/x86/include/asm/suspend_32.h
-+++ b/arch/x86/include/asm/suspend_32.h
-@@ -19,7 +19,6 @@ struct saved_context {
- 	u16 gs;
- 	unsigned long cr0, cr2, cr3, cr4;
- 	u64 misc_enable;
--	bool misc_enable_saved;
- 	struct saved_msrs saved_msrs;
- 	struct desc_ptr gdt_desc;
- 	struct desc_ptr idt;
-@@ -28,6 +27,7 @@ struct saved_context {
- 	unsigned long tr;
- 	unsigned long safety;
- 	unsigned long return_address;
-+	bool misc_enable_saved;
- } __attribute__((packed));
+(no changes since v3)
+
+Changes in v3:
+- Add Thomas Zimmermann's Reviewed-by tag to patch #1.
+
+Changes in v2:
+- Rebase on top of latest drm-misc-next and fix conflicts (Daniel Vetter).
+
+ drivers/firmware/sysfb.c          |  4 ++--
+ drivers/firmware/sysfb_simplefb.c | 16 ++++++++--------
+ include/linux/sysfb.h             | 10 +++++-----
+ 3 files changed, 15 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/firmware/sysfb.c b/drivers/firmware/sysfb.c
+index 2bfbb05f7d89..b032f40a92de 100644
+--- a/drivers/firmware/sysfb.c
++++ b/drivers/firmware/sysfb.c
+@@ -46,8 +46,8 @@ static __init int sysfb_init(void)
+ 	/* try to create a simple-framebuffer device */
+ 	compatible = sysfb_parse_mode(si, &mode);
+ 	if (compatible) {
+-		ret = sysfb_create_simplefb(si, &mode);
+-		if (!ret)
++		pd = sysfb_create_simplefb(si, &mode);
++		if (!IS_ERR(pd))
+ 			return 0;
+ 	}
  
- /* routines for saving/restoring kernel state */
-diff --git a/arch/x86/include/asm/suspend_64.h b/arch/x86/include/asm/suspend_64.h
-index 35bb35d28733..54df06687d83 100644
---- a/arch/x86/include/asm/suspend_64.h
-+++ b/arch/x86/include/asm/suspend_64.h
-@@ -14,9 +14,13 @@
-  * Image of the saved processor state, used by the low level ACPI suspend to
-  * RAM code and by the low level hibernation code.
-  *
-- * If you modify it, fix arch/x86/kernel/acpi/wakeup_64.S and make sure that
-- * __save/__restore_processor_state(), defined in arch/x86/kernel/suspend_64.c,
-- * still work as required.
-+ * If you modify it, check how it is used in arch/x86/kernel/acpi/wakeup_64.S
-+ * and make sure that __save/__restore_processor_state(), defined in
-+ * arch/x86/power/cpu.c, still work as required.
-+ *
-+ * Because the structure is packed, make sure to avoid unaligned members. For
-+ * optimisation purposes but also because tools like kmemleak only search for
-+ * pointers that are aligned.
-  */
- struct saved_context {
- 	struct pt_regs regs;
-@@ -36,7 +40,6 @@ struct saved_context {
+diff --git a/drivers/firmware/sysfb_simplefb.c b/drivers/firmware/sysfb_simplefb.c
+index bda8712bfd8c..a353e27f83f5 100644
+--- a/drivers/firmware/sysfb_simplefb.c
++++ b/drivers/firmware/sysfb_simplefb.c
+@@ -57,8 +57,8 @@ __init bool sysfb_parse_mode(const struct screen_info *si,
+ 	return false;
+ }
  
- 	unsigned long cr0, cr2, cr3, cr4;
- 	u64 misc_enable;
--	bool misc_enable_saved;
- 	struct saved_msrs saved_msrs;
- 	unsigned long efer;
- 	u16 gdt_pad; /* Unused */
-@@ -48,6 +51,7 @@ struct saved_context {
- 	unsigned long tr;
- 	unsigned long safety;
- 	unsigned long return_address;
-+	bool misc_enable_saved;
- } __attribute__((packed));
+-__init int sysfb_create_simplefb(const struct screen_info *si,
+-				 const struct simplefb_platform_data *mode)
++__init struct platform_device *sysfb_create_simplefb(const struct screen_info *si,
++						     const struct simplefb_platform_data *mode)
+ {
+ 	struct platform_device *pd;
+ 	struct resource res;
+@@ -76,7 +76,7 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
+ 		base |= (u64)si->ext_lfb_base << 32;
+ 	if (!base || (u64)(resource_size_t)base != base) {
+ 		printk(KERN_DEBUG "sysfb: inaccessible VRAM base\n");
+-		return -EINVAL;
++		return ERR_PTR(-EINVAL);
+ 	}
  
- #define loaddebug(thread,register) \
+ 	/*
+@@ -93,7 +93,7 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
+ 	length = mode->height * mode->stride;
+ 	if (length > size) {
+ 		printk(KERN_WARNING "sysfb: VRAM smaller than advertised\n");
+-		return -EINVAL;
++		return ERR_PTR(-EINVAL);
+ 	}
+ 	length = PAGE_ALIGN(length);
+ 
+@@ -104,11 +104,11 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
+ 	res.start = base;
+ 	res.end = res.start + length - 1;
+ 	if (res.end <= res.start)
+-		return -EINVAL;
++		return ERR_PTR(-EINVAL);
+ 
+ 	pd = platform_device_alloc("simple-framebuffer", 0);
+ 	if (!pd)
+-		return -ENOMEM;
++		return ERR_PTR(-ENOMEM);
+ 
+ 	sysfb_apply_efi_quirks(pd);
+ 
+@@ -124,10 +124,10 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
+ 	if (ret)
+ 		goto err_put_device;
+ 
+-	return 0;
++	return pd;
+ 
+ err_put_device:
+ 	platform_device_put(pd);
+ 
+-	return ret;
++	return ERR_PTR(ret);
+ }
+diff --git a/include/linux/sysfb.h b/include/linux/sysfb.h
+index b0dcfa26d07b..708152e9037b 100644
+--- a/include/linux/sysfb.h
++++ b/include/linux/sysfb.h
+@@ -72,8 +72,8 @@ static inline void sysfb_apply_efi_quirks(struct platform_device *pd)
+ 
+ bool sysfb_parse_mode(const struct screen_info *si,
+ 		      struct simplefb_platform_data *mode);
+-int sysfb_create_simplefb(const struct screen_info *si,
+-			  const struct simplefb_platform_data *mode);
++struct platform_device *sysfb_create_simplefb(const struct screen_info *si,
++					      const struct simplefb_platform_data *mode);
+ 
+ #else /* CONFIG_SYSFB_SIMPLE */
+ 
+@@ -83,10 +83,10 @@ static inline bool sysfb_parse_mode(const struct screen_info *si,
+ 	return false;
+ }
+ 
+-static inline int sysfb_create_simplefb(const struct screen_info *si,
+-					 const struct simplefb_platform_data *mode)
++static inline struct platform_device *sysfb_create_simplefb(const struct screen_info *si,
++							    const struct simplefb_platform_data *mode)
+ {
+-	return -EINVAL;
++	return ERR_PTR(-EINVAL);
+ }
+ 
+ #endif /* CONFIG_SYSFB_SIMPLE */
 -- 
-2.35.1
-
-
+2.36.1
 
