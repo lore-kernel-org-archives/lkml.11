@@ -2,157 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E73CCA486
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B84E9CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386013AbiFGWrp (ORCPT
+        id S1383870AbiFGWos (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:47:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36004 "EHLO
+        Tue, 7 Jun 2022 18:44:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380750AbiFGVif (ORCPT
+        with ESMTP id S1380806AbiFGVbT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:38:35 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9713FC047E
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:05:33 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id 187so16302273pfu.9
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:05:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zrwToAbRm/8o4mYKXHsvwuZsdzi56cDWjWGCsMFQCq4=;
-        b=IJmEKjbu0NsIQ2TIKKHgQBPdu95rE+fxg/uNfUr8lhMeiyM3S3ZNsC45sqxk/R9FaT
-         /r8eY4OIvLSDUSY2xX5aGB0rM79qaZ0k5s1ANX+OWkeNYD2rYOnI8ALWyLGqAVuXsJB6
-         i/HNUOWDOs5Bk+bD/8AV47NIeWcKF4/IUypi8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zrwToAbRm/8o4mYKXHsvwuZsdzi56cDWjWGCsMFQCq4=;
-        b=77E3pC4FdmQZYF2FLNULXeBhxlIZu4vBLiiROm8NVageP1DJ6G/pTDKqCvKIVZ4VQV
-         RUDZQa5XI88nWHFoUJn+POsF4WH5VQO6110kZeYoM9zDHtXmxTlgAhr20JkzN6Qo0lrM
-         TbgL3tDHlc6k75m11bU4Kdzpo3oGD/k6C6Lq/hXCz+OlFZ1wMVL6aqYl08Bz9+EIFEdO
-         OHfW0A0/38IXlPdWYcjpkkcIBj9ZvyPgM/7jemHAgM2b5vFAaw6JPZN9Jn0ErDxwPblC
-         L1U9PAupPBZEnKepYmzYpcDS6x/qQCVjrL3P3IQYlOveUTNe016aZy4shVa+2+B8Pyg9
-         5kNw==
-X-Gm-Message-State: AOAM531iM305ykfAYoi9XhZ1qFv3mxS6PnUE0qxkLV2tJC0GLRbYFcR0
-        84ZyrNCjJ99Lc1zVbksQcd5KLL+AstbxDw==
-X-Google-Smtp-Source: ABdhPJyUhy7+cJfaDKfU+dlJllV7FTT99DCfwfNrat7f5aIWF9lfM1q5wj8dxgFa13yBRD3PkrsPDQ==
-X-Received: by 2002:a63:8841:0:b0:3fc:704c:24ff with SMTP id l62-20020a638841000000b003fc704c24ffmr26783832pgd.116.1654628732819;
-        Tue, 07 Jun 2022 12:05:32 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id g29-20020aa79ddd000000b0050dc762819esm13236084pfq.120.2022.06.07.12.05.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 12:05:32 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     bleung@chromium.org, swboyd@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Tzung-Bi Shih <tzungbi@google.com>,
-        Xin Ji <xji@analogixsemi.com>
-Subject: [PATCH 2/7] usb: typec: mux: Add CONFIG guards for functions
-Date:   Tue,  7 Jun 2022 19:00:20 +0000
-Message-Id: <20220607190131.1647511-3-pmalani@chromium.org>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-In-Reply-To: <20220607190131.1647511-1-pmalani@chromium.org>
-References: <20220607190131.1647511-1-pmalani@chromium.org>
+        Tue, 7 Jun 2022 17:31:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A4A22AE6D;
+        Tue,  7 Jun 2022 12:03:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E199617CC;
+        Tue,  7 Jun 2022 19:03:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F5F5C385A2;
+        Tue,  7 Jun 2022 19:03:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628608;
+        bh=n7mdJGl0agHnUCSyXIFfvAF7u5JxOgJlNavYdXtgUdg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zl2x56pAyqpcOi5S9SW+s87jA5mMl0Jmpk1VPUKriPHxrCctVnXDV/NUPh6i+5LfO
+         LJCqGk8Gx4pDMzOVG8/W6y8BUTMbIZOf0QTEdiY9zAxa1H9I0/HaCfS1NCA8b449RU
+         0m/MDRGyFdBed4uNT4WyWCgSdVmQFrqqIFFDix/4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tong Tiangen <tongtiangen@huawei.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 391/879] arm64: fix types in copy_highpage()
+Date:   Tue,  7 Jun 2022 18:58:29 +0200
+Message-Id: <20220607165014.214376232@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are some drivers that can use the Type C mux API, but don't have
-to. Introduce CONFIG guards for the mux functions so that drivers can
-include the header file and not run into compilation errors on systems
-which don't have CONFIG_TYPEC enabled. When CONFIG_TYPEC is not enabled,
-the Type C mux functions will be stub versions of the original calls.
+From: Tong Tiangen <tongtiangen@huawei.com>
 
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
+[ Upstream commit 921d161f15d6b090599f6a8c23f131969edbd1fa ]
+
+In copy_highpage() the `kto` and `kfrom` local variables are pointers to
+struct page, but these are used to hold arbitrary pointers to kernel memory
+. Each call to page_address() returns a void pointer to memory associated
+with the relevant page, and copy_page() expects void pointers to this
+memory.
+
+This inconsistency was introduced in commit 2563776b41c3 ("arm64: mte:
+Tags-aware copy_{user_,}highpage() implementations") and while this
+doesn't appear to be harmful in practice it is clearly wrong.
+
+Correct this by making `kto` and `kfrom` void pointers.
+
+Fixes: 2563776b41c3 ("arm64: mte: Tags-aware copy_{user_,}highpage() implementations")
+Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+Acked-by: Mark Rutland <mark.rutland@arm.com>
+Reviewed-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Link: https://lore.kernel.org/r/20220420030418.3189040-3-tongtiangen@huawei.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/usb/typec_mux.h | 38 +++++++++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ arch/arm64/mm/copypage.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/usb/typec_mux.h b/include/linux/usb/typec_mux.h
-index ee57781dcf28..758d34ced1f8 100644
---- a/include/linux/usb/typec_mux.h
-+++ b/include/linux/usb/typec_mux.h
-@@ -58,6 +58,8 @@ struct typec_mux_desc {
- 	void *drvdata;
- };
+diff --git a/arch/arm64/mm/copypage.c b/arch/arm64/mm/copypage.c
+index b5447e53cd73..0dea80bf6de4 100644
+--- a/arch/arm64/mm/copypage.c
++++ b/arch/arm64/mm/copypage.c
+@@ -16,8 +16,8 @@
  
-+#if IS_ENABLED(CONFIG_TYPEC) || IS_MODULE(CONFIG_TYPEC)
-+
- struct typec_mux *fwnode_typec_mux_get(struct fwnode_handle *fwnode,
- 				       const struct typec_altmode_desc *desc);
- void typec_mux_put(struct typec_mux *mux);
-@@ -76,4 +78,40 @@ void typec_mux_unregister(struct typec_mux_dev *mux);
- void typec_mux_set_drvdata(struct typec_mux_dev *mux, void *data);
- void *typec_mux_get_drvdata(struct typec_mux_dev *mux);
+ void copy_highpage(struct page *to, struct page *from)
+ {
+-	struct page *kto = page_address(to);
+-	struct page *kfrom = page_address(from);
++	void *kto = page_address(to);
++	void *kfrom = page_address(from);
  
-+#else
-+
-+struct typec_mux *fwnode_typec_mux_get(struct fwnode_handle *fwnode,
-+				       const struct typec_altmode_desc *desc)
-+{
-+	return ERR_PTR(-EOPNOTSUPP);
-+}
-+
-+void typec_mux_put(struct typec_mux *mux) {}
-+
-+int typec_mux_set(struct typec_mux *mux, struct typec_mux_state *state)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static inline struct typec_mux *
-+typec_mux_get(struct device *dev, const struct typec_altmode_desc *desc)
-+{
-+	return ERR_PTR(-EOPNOTSUPP);
-+}
-+
-+struct typec_mux *
-+typec_mux_register(struct device *parent, const struct typec_mux_desc *desc)
-+{
-+	return ERR_PTR(-EOPNOTSUPP);
-+}
-+void typec_mux_unregister(struct typec_mux *mux) {}
-+
-+void typec_mux_set_drvdata(struct typec_mux *mux, void *data) {}
-+void *typec_mux_get_drvdata(struct typec_mux *mux)
-+{
-+	return ERR_PTR(-EOPNOTSUPP);
-+}
-+
-+#endif /* CONFIG_TYPEC */
-+
- #endif /* __USB_TYPEC_MUX */
+ 	copy_page(kto, kfrom);
+ 
 -- 
-2.36.1.255.ge46751e96f-goog
+2.35.1
+
+
 
