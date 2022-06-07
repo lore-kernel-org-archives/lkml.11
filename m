@@ -2,120 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9EA5CCA487
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:46:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89EFDCCA489
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:46:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357565AbiFGTpv (ORCPT
+        id S1357613AbiFGTqA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:45:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
+        Tue, 7 Jun 2022 15:46:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352082AbiFGSrd (ORCPT
+        with ESMTP id S1353475AbiFGSrj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B6F633B8;
-        Tue,  7 Jun 2022 11:02:47 -0700 (PDT)
+        Tue, 7 Jun 2022 14:47:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F8AB6E;
+        Tue,  7 Jun 2022 11:02:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B06C618E2;
-        Tue,  7 Jun 2022 18:02:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 572A6C341C4;
-        Tue,  7 Jun 2022 18:02:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624966;
-        bh=xG5UT33xYf+4Qyt4vCNy+naMLbjA1+soN+YweZdk1HA=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC8E1B82371;
+        Tue,  7 Jun 2022 18:02:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D70BC385A5;
+        Tue,  7 Jun 2022 18:02:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624974;
+        bh=Wk2SiS2mceLsePYCLyZsYF5/o+rOjRU/tSOFOuEtzhI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h4ibgprK2zkxtUnMrXWSGvcrBx34g+3bRk9WGnio+/KUmnkzHqdr3gwM65+XEQasf
-         SWF1cob9MGBrUeh8FreC9iIKKtpjiQufHX/vqnoD/iUekPG7iPtHfQV17SqVa7mJbc
-         k9rOH6YX+w4wt0v8tUQz0MPZmNtgnJZcxeeCIGI0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
-        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.15 517/667] f2fs: fix to do sanity check on block address in f2fs_do_zero_range()
-Date:   Tue,  7 Jun 2022 19:03:02 +0200
-Message-Id: <20220607164950.209865463@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=UzJ6DhelbMsMEGHp5Cg/7zWLhh0u5M/JDsOdzfcLbmkmhcmbx15XH5Eu6PrHqO5UX
+         RRgHMf9rzYLakiuWCs2fGSZ7CUbJm15U+QYkGR0Hl89k1vgWu/wl5Mt+BWGlzlRB0J
+         0AycIBhiw5ag8Z4IpJP38hIZDY8WYdXgqhWy8xq/UQGMvyrwEN+NTb4toR4+R32q4r
+         MGOCEXuc/3bKSoLucsKU0YCs+ZKfA+Bco43wn6BM6qN9S0gHQx0wOIrca7PWo7ncTL
+         T7pJHZaZ/3kQ1Op+xG25AG/Xtgry8swDhByCJOYiDfsh63FttGJafYISbqvUAebfZi
+         6XCse4Ucrk7sg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Andre Przywara <andre.przywara@arm.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de
+Subject: [PATCH AUTOSEL 4.14 13/25] clocksource/drivers/sp804: Avoid error on multiple instances
+Date:   Tue,  7 Jun 2022 14:02:14 -0400
+Message-Id: <20220607180229.482040-13-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180229.482040-1-sashal@kernel.org>
+References: <20220607180229.482040-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Andre Przywara <andre.przywara@arm.com>
 
-commit 25f8236213a91efdf708b9d77e9e51b6fc3e141c upstream.
+[ Upstream commit a98399cbc1e05f7b977419f03905501d566cf54e ]
 
-As Yanming reported in bugzilla:
+When a machine sports more than one SP804 timer instance, we only bring
+up the first one, since multiple timers of the same kind are not useful
+to Linux. As this is intentional behaviour, we should not return an
+error message, as we do today:
+===============
+[    0.000800] Failed to initialize '/bus@8000000/motherboard-bus@8000000/iofpga-bus@300000000/timer@120000': -22
+===============
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215894
+Replace the -EINVAL return with a debug message and return 0 instead.
 
-I have encountered a bug in F2FS file system in kernel v5.17.
+Also we do not reach the init function anymore if the DT node is
+disabled (as this is now handled by OF_DECLARE), so remove the explicit
+check for that case.
 
-I have uploaded the system call sequence as case.c, and a fuzzed image can
-be found in google net disk
+This fixes a long standing bogus error when booting ARM's fastmodels.
 
-The kernel should enable CONFIG_KASAN=y and CONFIG_KASAN_INLINE=y. You can
-reproduce the bug by running the following commands:
-
-kernel BUG at fs/f2fs/segment.c:2291!
-Call Trace:
- f2fs_invalidate_blocks+0x193/0x2d0
- f2fs_fallocate+0x2593/0x4a70
- vfs_fallocate+0x2a5/0xac0
- ksys_fallocate+0x35/0x70
- __x64_sys_fallocate+0x8e/0xf0
- do_syscall_64+0x3b/0x90
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The root cause is, after image was fuzzed, block mapping info in inode
-will be inconsistent with SIT table, so in f2fs_fallocate(), it will cause
-panic when updating SIT with invalid blkaddr.
-
-Let's fix the issue by adding sanity check on block address before updating
-SIT table with it.
-
-Cc: stable@vger.kernel.org
-Reported-by: Ming Yan <yanming@tju.edu.cn>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Link: https://lore.kernel.org/r/20220506162522.3675399-1-andre.przywara@arm.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/file.c |   16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/clocksource/timer-sp804.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -1436,11 +1436,19 @@ static int f2fs_do_zero_range(struct dno
- 			ret = -ENOSPC;
- 			break;
- 		}
--		if (dn->data_blkaddr != NEW_ADDR) {
--			f2fs_invalidate_blocks(sbi, dn->data_blkaddr);
--			dn->data_blkaddr = NEW_ADDR;
--			f2fs_set_data_blkaddr(dn);
-+
-+		if (dn->data_blkaddr == NEW_ADDR)
-+			continue;
-+
-+		if (!f2fs_is_valid_blkaddr(sbi, dn->data_blkaddr,
-+					DATA_GENERIC_ENHANCE)) {
-+			ret = -EFSCORRUPTED;
-+			break;
- 		}
-+
-+		f2fs_invalidate_blocks(sbi, dn->data_blkaddr);
-+		dn->data_blkaddr = NEW_ADDR;
-+		f2fs_set_data_blkaddr(dn);
- 	}
+diff --git a/drivers/clocksource/timer-sp804.c b/drivers/clocksource/timer-sp804.c
+index 3ac9dec9a038..42cac9262630 100644
+--- a/drivers/clocksource/timer-sp804.c
++++ b/drivers/clocksource/timer-sp804.c
+@@ -227,6 +227,11 @@ static int __init sp804_of_init(struct device_node *np)
+ 	struct clk *clk1, *clk2;
+ 	const char *name = of_get_property(np, "compatible", NULL);
  
- 	f2fs_update_extent_cache_range(dn, start, 0, index - start);
-
++	if (initialized) {
++		pr_debug("%pOF: skipping further SP804 timer device\n", np);
++		return 0;
++	}
++
+ 	base = of_iomap(np, 0);
+ 	if (!base)
+ 		return -ENXIO;
+@@ -235,11 +240,6 @@ static int __init sp804_of_init(struct device_node *np)
+ 	writel(0, base + TIMER_CTRL);
+ 	writel(0, base + TIMER_2_BASE + TIMER_CTRL);
+ 
+-	if (initialized || !of_device_is_available(np)) {
+-		ret = -EINVAL;
+-		goto err;
+-	}
+-
+ 	clk1 = of_clk_get(np, 0);
+ 	if (IS_ERR(clk1))
+ 		clk1 = NULL;
+-- 
+2.35.1
 
