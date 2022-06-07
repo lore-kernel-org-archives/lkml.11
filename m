@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61FFBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:41:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C275C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:41:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347424AbiFGRlk (ORCPT
+        id S1347600AbiFGRlq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:41:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39718 "EHLO
+        Tue, 7 Jun 2022 13:41:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347608AbiFGRax (ORCPT
+        with ESMTP id S1347697AbiFGRa6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:30:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CCD610173A;
-        Tue,  7 Jun 2022 10:27:41 -0700 (PDT)
+        Tue, 7 Jun 2022 13:30:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 919E411AFCB;
+        Tue,  7 Jun 2022 10:28:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B0A06137B;
-        Tue,  7 Jun 2022 17:27:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B9B7C34119;
-        Tue,  7 Jun 2022 17:27:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34B53B8220B;
+        Tue,  7 Jun 2022 17:28:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 988A8C385A5;
+        Tue,  7 Jun 2022 17:27:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622860;
-        bh=VQNA4yHBmdMMVoQvvLliaYr67nNPoMKd062v5H5NFWs=;
+        s=korg; t=1654622880;
+        bh=K0QWiNF3r/Zjfy7ARiaA4el2hHfsXadyhFLa3hz1gMM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PKoVqTO3uEtlsrJrq+sukYh2Q7dpyJ0ExaQzrca49ns2UI2x9uBMRTVl2CTWTFmGr
-         F8HRwX2cTxtl2Cl92EnMRjtUxGuHt34q9YB/I3JDMkXs2CMpaazAQPYXmJC48QLasc
-         Ti/DKW+TpNawA/SqXoqKA1uC9GbuM0XXEU7SLx4U=
+        b=EprLPHjK/DGRp48Yem/6XXKYStpQlQsaAVDyOueRdChj8YcanYtivEd5i7nK5VU5G
+         JBIYmfFaoVGdfZe9iA2B4+AETjQtF35Hf1cJpeO9TaaIgIlMzUg39WSkphVs84AbbW
+         HPXrMGiY8heOmellHngAnGuCnAigSbtdMC+4QAVM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 210/452] media: exynos4-is: Fix PM disable depth imbalance in fimc_is_probe
-Date:   Tue,  7 Jun 2022 19:01:07 +0200
-Message-Id: <20220607164914.820739773@linuxfoundation.org>
+Subject: [PATCH 5.10 217/452] Bluetooth: L2CAP: Rudimentary typo fixes
+Date:   Tue,  7 Jun 2022 19:01:14 +0200
+Message-Id: <20220607164915.027409327@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -53,46 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Bhaskar Chowdhury <unixbhaskar@gmail.com>
 
-[ Upstream commit 5c0db68ce0faeb000c3540d095eb272d671a6e03 ]
+[ Upstream commit 5153ceb9e622f4e27de461404edc73324da70f8c ]
 
-If probe fails then we need to call pm_runtime_disable() to balance
-out the previous pm_runtime_enable() call.
+s/minium/minimum/
+s/procdure/procedure/
 
-Fixes: 9a761e436843 ("[media] exynos4-is: Add Exynos4x12 FIMC-IS driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/exynos4-is/fimc-is.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/bluetooth/l2cap_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/platform/exynos4-is/fimc-is.c b/drivers/media/platform/exynos4-is/fimc-is.c
-index d26fa5967d82..d4b31b3c9282 100644
---- a/drivers/media/platform/exynos4-is/fimc-is.c
-+++ b/drivers/media/platform/exynos4-is/fimc-is.c
-@@ -830,7 +830,7 @@ static int fimc_is_probe(struct platform_device *pdev)
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 012c1a0abda8..ad33c592cde4 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -1689,7 +1689,7 @@ static void l2cap_le_conn_ready(struct l2cap_conn *conn)
+ 		smp_conn_security(hcon, hcon->pending_sec_level);
  
- 	ret = pm_runtime_resume_and_get(dev);
- 	if (ret < 0)
--		goto err_irq;
-+		goto err_pm_disable;
+ 	/* For LE slave connections, make sure the connection interval
+-	 * is in the range of the minium and maximum interval that has
++	 * is in the range of the minimum and maximum interval that has
+ 	 * been configured for this connection. If not, then trigger
+ 	 * the connection update procedure.
+ 	 */
+@@ -7540,7 +7540,7 @@ static void l2cap_data_channel(struct l2cap_conn *conn, u16 cid,
+ 	BT_DBG("chan %p, len %d", chan, skb->len);
  
- 	vb2_dma_contig_set_max_seg_size(dev, DMA_BIT_MASK(32));
- 
-@@ -864,6 +864,8 @@ static int fimc_is_probe(struct platform_device *pdev)
- 	pm_runtime_put_noidle(dev);
- 	if (!pm_runtime_enabled(dev))
- 		fimc_is_runtime_suspend(dev);
-+err_pm_disable:
-+	pm_runtime_disable(dev);
- err_irq:
- 	free_irq(is->irq, is);
- err_clk:
+ 	/* If we receive data on a fixed channel before the info req/rsp
+-	 * procdure is done simply assume that the channel is supported
++	 * procedure is done simply assume that the channel is supported
+ 	 * and mark it as ready.
+ 	 */
+ 	if (chan->chan_type == L2CAP_CHAN_FIXED)
 -- 
 2.35.1
 
