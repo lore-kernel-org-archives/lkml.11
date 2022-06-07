@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14789C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19116CCA495
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347918AbiFGRfx (ORCPT
+        id S1348443AbiFGRgW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:35:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39748 "EHLO
+        Tue, 7 Jun 2022 13:36:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346702AbiFGR2i (ORCPT
+        with ESMTP id S1346972AbiFGR3z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:28:38 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E35FA115CAD;
-        Tue,  7 Jun 2022 10:24:35 -0700 (PDT)
+        Tue, 7 Jun 2022 13:29:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C32FE39BA5;
+        Tue,  7 Jun 2022 10:25:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1DA92CE2010;
-        Tue,  7 Jun 2022 17:24:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22518C385A5;
-        Tue,  7 Jun 2022 17:24:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 285F760C7C;
+        Tue,  7 Jun 2022 17:25:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C4E0C385A5;
+        Tue,  7 Jun 2022 17:25:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622672;
-        bh=U+x5TZWNbv03DPm0IM26sxFNwql3Md+baw7T59Dj4ow=;
+        s=korg; t=1654622716;
+        bh=JBjv+jQepLBvTIwwa1vHNKEFcQiAbDMaYsOBLB880d4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XX6IDM9HvTWcWWYVZFvf68o1FroEFgR7HSIX7AQJzs4jYuVOA5qJk73WrONHIAWJB
-         LPi22O7+IWxE7jOyMSCrTy7MeoHnvXel6N1Vqu7nnxlLx/etABhEmo1INKRSzBIZ/2
-         9fdL8skuLp23fd4MmoJsEaE6cQw5OfwDPZ4tBnk0=
+        b=cb4Z1Fg7DumhOJB42r9fdH5fVBMsJfDK9mu5gRxGe7UXras/H6ZjY6p+SkZ+UOumb
+         lc+qA4zT0RefwnK60EfZPIbuz00wf8PjBtkEvxbbIkZ3nSG1L/DD4eKX/EbTckwFvM
+         iZFI2+leeuZkqk93Eb9aIl5f2oQ8eORnHtfkwb/A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Finn Thain <fthain@linux-m68k.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 142/452] net: dsa: mt7530: 1G can also support 1000BASE-X link mode
-Date:   Tue,  7 Jun 2022 18:59:59 +0200
-Message-Id: <20220607164912.791607050@linuxfoundation.org>
+Subject: [PATCH 5.10 117/452] macintosh/via-pmu: Fix build failure when CONFIG_INPUT is disabled
+Date:   Tue,  7 Jun 2022 18:59:34 +0200
+Message-Id: <20220607164912.045380871@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -52,67 +53,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+From: Finn Thain <fthain@linux-m68k.org>
 
-[ Upstream commit 66f862563ed68717dfd84e808ca12705ed275ced ]
+[ Upstream commit 86ce436e30d86327c9f5260f718104ae7b21f506 ]
 
-When using an external PHY connected using RGMII to mt7531 port 5, the
-PHY can be used to used support 1000BASE-X connections. Moreover, if
-1000BASE-T is supported, then we should allow 1000BASE-X as well, since
-which are supported is a property of the PHY.
+drivers/macintosh/via-pmu-event.o: In function `via_pmu_event':
+via-pmu-event.c:(.text+0x44): undefined reference to `input_event'
+via-pmu-event.c:(.text+0x68): undefined reference to `input_event'
+via-pmu-event.c:(.text+0x94): undefined reference to `input_event'
+via-pmu-event.c:(.text+0xb8): undefined reference to `input_event'
+drivers/macintosh/via-pmu-event.o: In function `via_pmu_event_init':
+via-pmu-event.c:(.init.text+0x20): undefined reference to `input_allocate_device'
+via-pmu-event.c:(.init.text+0xc4): undefined reference to `input_register_device'
+via-pmu-event.c:(.init.text+0xd4): undefined reference to `input_free_device'
+make[1]: *** [Makefile:1155: vmlinux] Error 1
+make: *** [Makefile:350: __build_one_by_one] Error 2
 
-Therefore, it makes no sense to exclude this from the linkmodes when
-1000BASE-T is supported.
+Don't call into the input subsystem unless CONFIG_INPUT is built-in.
 
-Fixes: c288575f7810 ("net: dsa: mt7530: Add the support of MT7531 switch")
-Tested-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Finn Thain <fthain@linux-m68k.org>
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/5edbe76ce68227f71e09af4614cc4c1bd61c7ec8.1649326292.git.fthain@linux-m68k.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/mt7530.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ drivers/macintosh/Kconfig   | 4 ++++
+ drivers/macintosh/Makefile  | 3 ++-
+ drivers/macintosh/via-pmu.c | 2 +-
+ 3 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index c355824ddb81..265620a81f9f 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -1952,13 +1952,7 @@ static void mt7531_sgmii_validate(struct mt7530_priv *priv, int port,
- 	/* Port5 supports ethier RGMII or SGMII.
- 	 * Port6 supports SGMII only.
- 	 */
--	switch (port) {
--	case 5:
--		if (mt7531_is_rgmii_port(priv, port))
--			break;
--		fallthrough;
--	case 6:
--		phylink_set(supported, 1000baseX_Full);
-+	if (port == 6) {
- 		phylink_set(supported, 2500baseX_Full);
- 		phylink_set(supported, 2500baseT_Full);
- 	}
-@@ -2315,8 +2309,6 @@ static void
- mt7530_mac_port_validate(struct dsa_switch *ds, int port,
- 			 unsigned long *supported)
- {
--	if (port == 5)
--		phylink_set(supported, 1000baseX_Full);
- }
+diff --git a/drivers/macintosh/Kconfig b/drivers/macintosh/Kconfig
+index 5cdc361da37c..3942db15a2b8 100644
+--- a/drivers/macintosh/Kconfig
++++ b/drivers/macintosh/Kconfig
+@@ -67,6 +67,10 @@ config ADB_PMU
+ 	  this device; you should do so if your machine is one of those
+ 	  mentioned above.
  
- static void mt7531_mac_port_validate(struct dsa_switch *ds, int port,
-@@ -2353,8 +2345,10 @@ mt753x_phylink_validate(struct dsa_switch *ds, int port,
- 	}
++config ADB_PMU_EVENT
++	def_bool y
++	depends on ADB_PMU && INPUT=y
++
+ config ADB_PMU_LED
+ 	bool "Support for the Power/iBook front LED"
+ 	depends on PPC_PMAC && ADB_PMU
+diff --git a/drivers/macintosh/Makefile b/drivers/macintosh/Makefile
+index 49819b1b6f20..712edcb3e0b0 100644
+--- a/drivers/macintosh/Makefile
++++ b/drivers/macintosh/Makefile
+@@ -12,7 +12,8 @@ obj-$(CONFIG_MAC_EMUMOUSEBTN)	+= mac_hid.o
+ obj-$(CONFIG_INPUT_ADBHID)	+= adbhid.o
+ obj-$(CONFIG_ANSLCD)		+= ans-lcd.o
  
- 	/* This switch only supports 1G full-duplex. */
--	if (state->interface != PHY_INTERFACE_MODE_MII)
-+	if (state->interface != PHY_INTERFACE_MODE_MII) {
- 		phylink_set(mask, 1000baseT_Full);
-+		phylink_set(mask, 1000baseX_Full);
-+	}
- 
- 	priv->info->mac_port_validate(ds, port, mask);
- 
+-obj-$(CONFIG_ADB_PMU)		+= via-pmu.o via-pmu-event.o
++obj-$(CONFIG_ADB_PMU)		+= via-pmu.o
++obj-$(CONFIG_ADB_PMU_EVENT)	+= via-pmu-event.o
+ obj-$(CONFIG_ADB_PMU_LED)	+= via-pmu-led.o
+ obj-$(CONFIG_PMAC_BACKLIGHT)	+= via-pmu-backlight.o
+ obj-$(CONFIG_ADB_CUDA)		+= via-cuda.o
+diff --git a/drivers/macintosh/via-pmu.c b/drivers/macintosh/via-pmu.c
+index 73e6ae88fafd..aae6328b2429 100644
+--- a/drivers/macintosh/via-pmu.c
++++ b/drivers/macintosh/via-pmu.c
+@@ -1460,7 +1460,7 @@ pmu_handle_data(unsigned char *data, int len)
+ 		pmu_pass_intr(data, len);
+ 		/* len == 6 is probably a bad check. But how do I
+ 		 * know what PMU versions send what events here? */
+-		if (len == 6) {
++		if (IS_ENABLED(CONFIG_ADB_PMU_EVENT) && len == 6) {
+ 			via_pmu_event(PMU_EVT_POWER, !!(data[1]&8));
+ 			via_pmu_event(PMU_EVT_LID, data[1]&1);
+ 		}
 -- 
 2.35.1
 
