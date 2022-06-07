@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B011CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:21:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC2EFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:21:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379948AbiFGVUr (ORCPT
+        id S1380004AbiFGVUw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:20:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44006 "EHLO
+        Tue, 7 Jun 2022 17:20:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359485AbiFGUW4 (ORCPT
+        with ESMTP id S1359578AbiFGUXD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:22:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBA101D503A;
-        Tue,  7 Jun 2022 11:32:02 -0700 (PDT)
+        Tue, 7 Jun 2022 16:23:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4928113D0F;
+        Tue,  7 Jun 2022 11:32:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B269761295;
-        Tue,  7 Jun 2022 18:32:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAFF0C385A2;
-        Tue,  7 Jun 2022 18:32:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2EDBB82239;
+        Tue,  7 Jun 2022 18:32:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30A78C385A2;
+        Tue,  7 Jun 2022 18:32:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626721;
-        bh=BVS30Ri3Nw0GyaQoY80jOTh/+gVIBSzugnPkzKzAh24=;
+        s=korg; t=1654626729;
+        bh=X2ui7TYzHuY8jWMYRvjVJF4NqQtBD9L+/RpYLL9Y9cg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lkmpbNJUXtdCkSiJZjyR5PhL+vXmt4y5tBByPUvULo6fwCrMiW4z7BdM6U2t6QJ6U
-         fhAljiDMbxc1w49qMtly3OSaPrzNWeT6iY/t2GNZvzfHf3CBV2Wo3SjeVEI8IWs24W
-         cLBUuabDII80rm3nbqmH4rqbWKj/C2h2wuhhx2dA=
+        b=tEpzDDMbRB0pXOCQdH90vazhwLLHL9tJx+SlRRzqk9wgkHHxMksIs/kJ7LaZQa//l
+         phZjrKUGoHzZviEr24NnJ9qn4iWYOVmUA+63P07Z+KufTxRggnJKDRYRJzI4Xzyul1
+         +zS5nmKgtng3H0V8F9xgmlE149j46QPo5AGw9uQ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladis Dronov <vdronov@redhat.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 481/772] hwrng: cn10k - Optimize cn10k_rng_read()
-Date:   Tue,  7 Jun 2022 19:01:13 +0200
-Message-Id: <20220607165003.164126671@linuxfoundation.org>
+Subject: [PATCH 5.17 484/772] gpiolib: of: Introduce hook for missing gpio-ranges
+Date:   Tue,  7 Jun 2022 19:01:16 +0200
+Message-Id: <20220607165003.249211689@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,63 +52,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladis Dronov <vdronov@redhat.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
 
-[ Upstream commit 753d6770879894de10d74b437ab99ea380f1cad7 ]
+[ Upstream commit 3550bba25d5587a701e6edf20e20984d2ee72c78 ]
 
-This function assumes that sizeof(void) is 1 and arithmetic works for
-void pointers. This is a GNU C extention and may not work with other
-compilers. Change this by using an u8 pointer.
+Since commit 2ab73c6d8323 ("gpio: Support GPIO controllers without pin-ranges")
+the device tree nodes of GPIO controller need the gpio-ranges property to
+handle gpio-hogs. Unfortunately it's impossible to guarantee that every new
+kernel is shipped with an updated device tree binary.
 
-Also move cn10k_read_trng() out of a loop thus saving some cycles.
+In order to provide backward compatibility with those older DTB, we need a
+callback within of_gpiochip_add_pin_range() so the relevant platform driver
+can handle this case.
 
-Fixes: 38e9791a0209 ("hwrng: cn10k - Add random number generator support")
-Signed-off-by: Vladis Dronov <vdronov@redhat.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: 2ab73c6d8323 ("gpio: Support GPIO controllers without pin-ranges")
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+Acked-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Link: https://lore.kernel.org/r/20220409095129.45786-2-stefan.wahren@i2se.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/hw_random/cn10k-rng.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ drivers/gpio/gpiolib-of.c   |  5 +++++
+ include/linux/gpio/driver.h | 12 ++++++++++++
+ 2 files changed, 17 insertions(+)
 
-diff --git a/drivers/char/hw_random/cn10k-rng.c b/drivers/char/hw_random/cn10k-rng.c
-index 35001c63648b..dd226630b67d 100644
---- a/drivers/char/hw_random/cn10k-rng.c
-+++ b/drivers/char/hw_random/cn10k-rng.c
-@@ -90,6 +90,7 @@ static int cn10k_rng_read(struct hwrng *hwrng, void *data,
- {
- 	struct cn10k_rng *rng = (struct cn10k_rng *)hwrng->priv;
- 	unsigned int size;
-+	u8 *pos = data;
- 	int err = 0;
- 	u64 value;
+diff --git a/drivers/gpio/gpiolib-of.c b/drivers/gpio/gpiolib-of.c
+index 775a7dadf9a3..1fcb759062c4 100644
+--- a/drivers/gpio/gpiolib-of.c
++++ b/drivers/gpio/gpiolib-of.c
+@@ -933,6 +933,11 @@ static int of_gpiochip_add_pin_range(struct gpio_chip *chip)
+ 	if (!np)
+ 		return 0;
  
-@@ -102,17 +103,20 @@ static int cn10k_rng_read(struct hwrng *hwrng, void *data,
- 	while (size >= 8) {
- 		cn10k_read_trng(rng, &value);
++	if (!of_property_read_bool(np, "gpio-ranges") &&
++	    chip->of_gpio_ranges_fallback) {
++		return chip->of_gpio_ranges_fallback(chip, np);
++	}
++
+ 	group_names = of_find_property(np, group_names_propname, NULL);
  
--		*((u64 *)data) = (u64)value;
-+		*((u64 *)pos) = value;
- 		size -= 8;
--		data += 8;
-+		pos += 8;
- 	}
+ 	for (;; index++) {
+diff --git a/include/linux/gpio/driver.h b/include/linux/gpio/driver.h
+index f8996b46f430..9f0408222f40 100644
+--- a/include/linux/gpio/driver.h
++++ b/include/linux/gpio/driver.h
+@@ -498,6 +498,18 @@ struct gpio_chip {
+ 	 */
+ 	int (*of_xlate)(struct gpio_chip *gc,
+ 			const struct of_phandle_args *gpiospec, u32 *flags);
++
++	/**
++	 * @of_gpio_ranges_fallback:
++	 *
++	 * Optional hook for the case that no gpio-ranges property is defined
++	 * within the device tree node "np" (usually DT before introduction
++	 * of gpio-ranges). So this callback is helpful to provide the
++	 * necessary backward compatibility for the pin ranges.
++	 */
++	int (*of_gpio_ranges_fallback)(struct gpio_chip *gc,
++				       struct device_node *np);
++
+ #endif /* CONFIG_OF_GPIO */
+ };
  
--	while (size > 0) {
-+	if (size > 0) {
- 		cn10k_read_trng(rng, &value);
- 
--		*((u8 *)data) = (u8)value;
--		size--;
--		data++;
-+		while (size > 0) {
-+			*pos = (u8)value;
-+			value >>= 8;
-+			size--;
-+			pos++;
-+		}
- 	}
- 
- 	return max - size;
 -- 
 2.35.1
 
