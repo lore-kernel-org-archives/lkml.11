@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91970C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:58:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E798CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:59:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240698AbiFGR64 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:58:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45600 "EHLO
+        id S237736AbiFGR7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 13:59:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347574AbiFGRjl (ORCPT
+        with ESMTP id S1347663AbiFGRjw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:39:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DD2E3DA6B;
-        Tue,  7 Jun 2022 10:33:31 -0700 (PDT)
+        Tue, 7 Jun 2022 13:39:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C2D9443F4;
+        Tue,  7 Jun 2022 10:33:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8053B820C3;
-        Tue,  7 Jun 2022 17:32:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C8CDC385A5;
-        Tue,  7 Jun 2022 17:32:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6973B614BC;
+        Tue,  7 Jun 2022 17:32:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A6CBC34115;
+        Tue,  7 Jun 2022 17:32:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623169;
-        bh=803noPpmdd8jcZeDK1neNJXSR//7indM5D5x87bTTiQ=;
+        s=korg; t=1654623177;
+        bh=qY7uHp6Fsuyx7mTXhwX2aF+FGARITpLrjQfpYtpCVS0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y96/sb43bLojXtogTkp3nvQqm/pF1saeiaI2ikEmkAklJgeOJTOzrLn/5uY7gjyF9
-         BSaH/LHHZYT8NlW66m+wstbP+mh4ubOHcVyG7qwYD4ToDcVZ00uMkOUCXwTiv5gnvG
-         g+0xGp/6xPHUsVy/IYsEYYLoJPHCwzxxwCEt4BNk=
+        b=seftsJQ6XCCLvmuE0yOQJHp8mITkLrRDc2YpI0JzaBCMJP2dQl3ONB3U4J9ycbhEV
+         sjzW20SmkD464z3/+rxbhc8lDe+L4u14v2S11Uhxa85Acb9C015Ww6yCYtTmywNV3z
+         dwGKJViBuwrBmGooTIsiXbYc2PEnysSS1VxoZebQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org, Qinglang Miao <miaoqinglang@huawei.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 319/452] f2fs: fix dereference of stale list iterator after loop body
-Date:   Tue,  7 Jun 2022 19:02:56 +0200
-Message-Id: <20220607164918.063298905@linuxfoundation.org>
+Subject: [PATCH 5.10 322/452] cpufreq: mediatek: add missing platform_driver_unregister() on error in mtk_cpufreq_driver_init
+Date:   Tue,  7 Jun 2022 19:02:59 +0200
+Message-Id: <20220607164918.153169155@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,59 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: Qinglang Miao <miaoqinglang@huawei.com>
 
-[ Upstream commit 2aaf51dd39afb6d01d13f1e6fe20b684733b37d5 ]
+[ Upstream commit 2f05c19d9ef4f5a42634f83bdb0db596ffc0dd30 ]
 
-The list iterator variable will be a bogus pointer if no break was hit.
-Dereferencing it (cur->page in this case) could load an out-of-bounds/undefined
-value making it unsafe to use that in the comparision to determine if the
-specific element was found.
+Add the missing platform_driver_unregister() before return from
+mtk_cpufreq_driver_init in the error handling case when failed
+to register mtk-cpufreq platform device
 
-Since 'cur->page' *can* be out-ouf-bounds it cannot be guaranteed that
-by chance (or intention of an attacker) it matches the value of 'page'
-even though the correct element was not found.
-
-This is fixed by using a separate list iterator variable for the loop
-and only setting the original variable if a suitable element was found.
-Then determing if the element was found is simply checking if the
-variable is set.
-
-Fixes: 8c242db9b8c0 ("f2fs: fix stale ATOMIC_WRITTEN_PAGE private pointer")
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Qinglang Miao <miaoqinglang@huawei.com>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/segment.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/cpufreq/mediatek-cpufreq.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-index 49f5cb532738..736fb57423a6 100644
---- a/fs/f2fs/segment.c
-+++ b/fs/f2fs/segment.c
-@@ -356,16 +356,19 @@ void f2fs_drop_inmem_page(struct inode *inode, struct page *page)
- 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
- 	struct list_head *head = &fi->inmem_pages;
- 	struct inmem_pages *cur = NULL;
-+	struct inmem_pages *tmp;
- 
- 	f2fs_bug_on(sbi, !IS_ATOMIC_WRITTEN_PAGE(page));
- 
- 	mutex_lock(&fi->inmem_lock);
--	list_for_each_entry(cur, head, list) {
--		if (cur->page == page)
-+	list_for_each_entry(tmp, head, list) {
-+		if (tmp->page == page) {
-+			cur = tmp;
- 			break;
-+		}
+diff --git a/drivers/cpufreq/mediatek-cpufreq.c b/drivers/cpufreq/mediatek-cpufreq.c
+index a310372dc53e..f2e5ba3c539b 100644
+--- a/drivers/cpufreq/mediatek-cpufreq.c
++++ b/drivers/cpufreq/mediatek-cpufreq.c
+@@ -573,6 +573,7 @@ static int __init mtk_cpufreq_driver_init(void)
+ 	pdev = platform_device_register_simple("mtk-cpufreq", -1, NULL, 0);
+ 	if (IS_ERR(pdev)) {
+ 		pr_err("failed to register mtk-cpufreq platform device\n");
++		platform_driver_unregister(&mtk_cpufreq_platdrv);
+ 		return PTR_ERR(pdev);
  	}
- 
--	f2fs_bug_on(sbi, list_empty(head) || cur->page != page);
-+	f2fs_bug_on(sbi, !cur);
- 	list_del(&cur->list);
- 	mutex_unlock(&fi->inmem_lock);
  
 -- 
 2.35.1
