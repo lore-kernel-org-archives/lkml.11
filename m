@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC667CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F05CCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:07:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379639AbiFGVGK (ORCPT
+        id S1379938AbiFGVGh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:06:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54496 "EHLO
+        Tue, 7 Jun 2022 17:06:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359080AbiFGUIK (ORCPT
+        with ESMTP id S1359155AbiFGUJC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:08:10 -0400
+        Tue, 7 Jun 2022 16:09:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB09F1C4B28;
-        Tue,  7 Jun 2022 11:26:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BEFED8D9;
+        Tue,  7 Jun 2022 11:26:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B4D961295;
-        Tue,  7 Jun 2022 18:26:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69899C385A2;
-        Tue,  7 Jun 2022 18:26:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17C2E611B9;
+        Tue,  7 Jun 2022 18:26:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27C82C385A2;
+        Tue,  7 Jun 2022 18:26:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626367;
-        bh=voKeWoxAo4WPTzbvPo2ODXGQq48NrtB6KBr1akkVLNQ=;
+        s=korg; t=1654626382;
+        bh=ocfS7A3RXskJpAaCX74xsV9vLCUzdp7U0CdD+K9j1Jc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l5RayMQfdakeSq8RRFWqR/XhIISyG/kJqtk7APeY3X56zZXymeBvv9gPymbxae6Jm
-         zWVqL6sJjfz1T/pwM/UpvcG4Bv26t+cGb4zzdUDtgU9Z7Umuo0druH9jm8dZQCTPJN
-         ADManghmSnlITZ+F8yNXhjqotv1Ii4UeQtDR+t88=
+        b=SZCr3i6usJGzqLbyHQTiP5omH1V+zarg5GBpoBq71WZcd3I7BYjuzxk7ySI3Sz1Ku
+         P/nuXSA/bxsRRrX0T07+WIz7pADhgsI8xxXSHVI7JeIqZSm+wrOBFo/TEAAvb9Lx6e
+         DQ+yJPA3nw2FUiTmhm74ToCuS4CteHlkNEFlogKo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 354/772] HID: amd_sfh: Modify the bus name
-Date:   Tue,  7 Jun 2022 18:59:06 +0200
-Message-Id: <20220607164959.450926813@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 358/772] ASoC: mxs-saif: Fix refcount leak in mxs_saif_probe
+Date:   Tue,  7 Jun 2022 18:59:10 +0200
+Message-Id: <20220607164959.567561093@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,48 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 206c3c2d85de8847fb732a5fb71443bacd287216 ]
+[ Upstream commit 2be84f73785fa9ed6443e3c5b158730266f1c2ee ]
 
-Modifying the amd-sfh bus name to meaningful name.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
 
-Fixes: 4b2c53d93a4b ("SFH:Transport Driver to add support of AMD Sensor Fusion Hub (SFH)")
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Fixes: 08641c7c74dd ("ASoC: mxs: add device tree support for mxs-saif")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220511133725.39039-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/amd-sfh-hid/amd_sfh_hid.c | 2 +-
- drivers/hid/amd-sfh-hid/amd_sfh_hid.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/mxs/mxs-saif.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_hid.c b/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
-index 2bf97b6ac973..6e487e41f4dd 100644
---- a/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
-+++ b/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
-@@ -141,7 +141,7 @@ int amdtp_hid_probe(u32 cur_hid_dev, struct amdtp_cl_data *cli_data)
- 
- 	hid->driver_data = hid_data;
- 	cli_data->hid_sensor_hubs[cur_hid_dev] = hid;
--	hid->bus = BUS_AMD_AMDTP;
-+	hid->bus = BUS_AMD_SFH;
- 	hid->vendor = AMD_SFH_HID_VENDOR;
- 	hid->product = AMD_SFH_HID_PRODUCT;
- 	snprintf(hid->name, sizeof(hid->name), "%s %04X:%04X", "hid-amdtp",
-diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_hid.h b/drivers/hid/amd-sfh-hid/amd_sfh_hid.h
-index c60abd38054c..cb04f47c8648 100644
---- a/drivers/hid/amd-sfh-hid/amd_sfh_hid.h
-+++ b/drivers/hid/amd-sfh-hid/amd_sfh_hid.h
-@@ -12,7 +12,7 @@
- #define AMDSFH_HID_H
- 
- #define MAX_HID_DEVICES		5
--#define BUS_AMD_AMDTP		0x20
-+#define BUS_AMD_SFH		0x20
- #define AMD_SFH_HID_VENDOR	0x1022
- #define AMD_SFH_HID_PRODUCT	0x0001
- 
+diff --git a/sound/soc/mxs/mxs-saif.c b/sound/soc/mxs/mxs-saif.c
+index 879c1221a809..7afe1a1acc56 100644
+--- a/sound/soc/mxs/mxs-saif.c
++++ b/sound/soc/mxs/mxs-saif.c
+@@ -754,6 +754,7 @@ static int mxs_saif_probe(struct platform_device *pdev)
+ 		saif->master_id = saif->id;
+ 	} else {
+ 		ret = of_alias_get_id(master, "saif");
++		of_node_put(master);
+ 		if (ret < 0)
+ 			return ret;
+ 		else
 -- 
 2.35.1
 
