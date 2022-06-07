@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04367C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C10C43334
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389719AbiFHAgA (ORCPT
+        id S1389779AbiFHAgF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:36:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49800 "EHLO
+        Tue, 7 Jun 2022 20:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384899AbiFGWUs (ORCPT
+        with ESMTP id S1382740AbiFGVvv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:20:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C08263289;
-        Tue,  7 Jun 2022 12:20:44 -0700 (PDT)
+        Tue, 7 Jun 2022 17:51:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB14227CFF;
+        Tue,  7 Jun 2022 12:09:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D41B600E1;
-        Tue,  7 Jun 2022 19:20:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45728C385A2;
-        Tue,  7 Jun 2022 19:20:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B8D3B82182;
+        Tue,  7 Jun 2022 19:09:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C71B2C34115;
+        Tue,  7 Jun 2022 19:09:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629632;
-        bh=Rf2BtKigmj85vqHrqvMHp6RrUnAF/AVzeXa9HlfYhMA=;
+        s=korg; t=1654628959;
+        bh=fZ092IcvSUIN4gS+C79ycWxMkz1HT7br/u2yNYt1EfM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nwwPregZygrhB0sws5UDJ0+FPTVv6btwxsKiOlZw0upx63W7yXTSw3iwM3AiZH0B8
-         KgFL5l+FpqbRrcAmLQlHk+u+RN9WwMfdtOgwjwg1GVcw9KSXqEd432TvUz+N/+QzPP
-         17CcVGuVPR2d0eFYEdsBFP0BhXqWw8d5CBuR0ki8=
+        b=ihuZSHlkEEWyTUtD5b6NFqjvdLhSApoXjfurQ1LhIEDsTNjiNMjmQz8Ry7oMouGKk
+         swAUmBFtfIMApZQK8HCgwYszSa+b/AkSMnFUkuIEJ5r8wqGen3MTljHxbJDkHRYnLe
+         scCP5vftus8fxBGaOIq8DeN0AB8uD+DGp32CdqLE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.18 759/879] block: Fix potential deadlock in blk_ia_range_sysfs_show()
-Date:   Tue,  7 Jun 2022 19:04:37 +0200
-Message-Id: <20220607165024.895162554@linuxfoundation.org>
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 501/879] platform/x86: intel_cht_int33fe: Set driver data
+Date:   Tue,  7 Jun 2022 19:00:19 +0200
+Message-Id: <20220607165017.416217287@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,58 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-commit 41e46b3c2aa24f755b2ae9ec4ce931ba5f0d8532 upstream.
+[ Upstream commit 3ce827bf9cfecaf2cbfd9a9d44f0db9f40882780 ]
 
-When being read, a sysfs attribute is already protected against removal
-with the kobject node active reference counter. As a result, in
-blk_ia_range_sysfs_show(), there is no need to take the queue sysfs
-lock when reading the value of a range attribute. Using the queue sysfs
-lock in this function creates a potential deadlock situation with the
-disk removal, something that a lockdep signals with a splat when the
-device is removed:
+Module removal fails because cht_int33fe_typec_remove()
+tries to access driver data that does not exist. Fixing by
+assigning the data at the end of probe.
 
-[  760.703551]  Possible unsafe locking scenario:
-[  760.703551]
-[  760.703554]        CPU0                    CPU1
-[  760.703556]        ----                    ----
-[  760.703558]   lock(&q->sysfs_lock);
-[  760.703565]                                lock(kn->active#385);
-[  760.703573]                                lock(&q->sysfs_lock);
-[  760.703579]   lock(kn->active#385);
-[  760.703587]
-[  760.703587]  *** DEADLOCK ***
-
-Solve this by removing the mutex_lock()/mutex_unlock() calls from
-blk_ia_range_sysfs_show().
-
-Fixes: a2247f19ee1c ("block: Add independent access ranges support")
-Cc: stable@vger.kernel.org
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Link: https://lore.kernel.org/r/20220603021905.1441419-1-damien.lemoal@opensource.wdc.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 915623a80b5a ("platform/x86: intel_cht_int33fe: Switch to DMI modalias based loading")
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Link: https://lore.kernel.org/r/20220519122103.78546-1-heikki.krogerus@linux.intel.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-ia-ranges.c |    7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/platform/x86/intel/chtwc_int33fe.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/block/blk-ia-ranges.c
-+++ b/block/blk-ia-ranges.c
-@@ -54,13 +54,8 @@ static ssize_t blk_ia_range_sysfs_show(s
- 		container_of(attr, struct blk_ia_range_sysfs_entry, attr);
- 	struct blk_independent_access_range *iar =
- 		container_of(kobj, struct blk_independent_access_range, kobj);
--	ssize_t ret;
+diff --git a/drivers/platform/x86/intel/chtwc_int33fe.c b/drivers/platform/x86/intel/chtwc_int33fe.c
+index 0de509fbf020..c52ac23e2331 100644
+--- a/drivers/platform/x86/intel/chtwc_int33fe.c
++++ b/drivers/platform/x86/intel/chtwc_int33fe.c
+@@ -389,6 +389,8 @@ static int cht_int33fe_typec_probe(struct platform_device *pdev)
+ 		goto out_unregister_fusb302;
+ 	}
  
--	mutex_lock(&iar->queue->sysfs_lock);
--	ret = entry->show(iar, buf);
--	mutex_unlock(&iar->queue->sysfs_lock);
--
--	return ret;
-+	return entry->show(iar, buf);
- }
++	platform_set_drvdata(pdev, data);
++
+ 	return 0;
  
- static const struct sysfs_ops blk_ia_range_sysfs_ops = {
+ out_unregister_fusb302:
+-- 
+2.35.1
+
 
 
