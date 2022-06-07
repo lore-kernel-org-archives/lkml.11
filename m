@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5295C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:58:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A57F4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:58:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349007AbiFGR6S (ORCPT
+        id S1347414AbiFGR62 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:58:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33250 "EHLO
+        Tue, 7 Jun 2022 13:58:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347263AbiFGRie (ORCPT
+        with ESMTP id S1347508AbiFGRif (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:38:34 -0400
+        Tue, 7 Jun 2022 13:38:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B622C103;
-        Tue,  7 Jun 2022 10:33:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D09C62F037;
+        Tue,  7 Jun 2022 10:33:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A7F41614D8;
-        Tue,  7 Jun 2022 17:32:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4E57C3411C;
-        Tue,  7 Jun 2022 17:32:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F61661521;
+        Tue,  7 Jun 2022 17:33:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D683C385A5;
+        Tue,  7 Jun 2022 17:33:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623175;
-        bh=zPLuZ3eZPROFo6QNQ3r/yJVnSCX7Z7vFZYB6P26u/xc=;
+        s=korg; t=1654623180;
+        bh=7S0X/2rDjYasBRbm7ISB6YfywzqMXtHO4NIuDKhaBGo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X9+no6RokkrmFUtW7kzaDu5a/xKx1xoNBAbdKos67PSZyQpeUo1JUi+GQ+sQBlr+m
-         EDGdWy5GV1TpZStPGTPkXa1JkclE+YCnu7nXJLu1T9evwvn2hgySuObi1EOcEiw5x1
-         dfG8m2WhUr1pvBF//HsBQOrGMKE63eI4thVlfQl8=
+        b=topulX2guEeITxqF8OEUqqxEu1/ZVPWaw/y5W8ZMY78KLGui7yr/jssRev4xTnvvl
+         2yiSRR8b/3kq6uVEHpFkhD+J6LWTELIetrPt6N4K2BV2aLE6+hT4EPPnexfXkU8is8
+         SevhnNlmgojpJx/1ZkIRCCc86oDVSfaffOxW93JE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 321/452] i2c: at91: use dma safe buffers
-Date:   Tue,  7 Jun 2022 19:02:58 +0200
-Message-Id: <20220607164918.123146999@linuxfoundation.org>
+        stable@vger.kernel.org, Jia-Wei Chang <jia-wei.chang@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 323/452] cpufreq: mediatek: Use module_init and add module_exit
+Date:   Tue,  7 Jun 2022 19:03:00 +0200
+Message-Id: <20220607164918.182807424@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,56 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
 
-[ Upstream commit 03fbb903c8bf7e53e101e8d9a7b261264317c411 ]
+[ Upstream commit b7070187c81cb90549d7561c0e750d7c7eb751f4 ]
 
-The supplied buffer might be on the stack and we get the following error
-message:
-[    3.312058] at91_i2c e0070600.i2c: rejecting DMA map of vmalloc memory
+- Use module_init instead of device_initcall.
+- Add a function for module_exit to unregister driver.
 
-Use i2c_{get,put}_dma_safe_msg_buf() to get a DMA-able memory region if
-necessary.
-
-Fixes: 60937b2cdbf9 ("i2c: at91: add dma support")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-at91-master.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/cpufreq/mediatek-cpufreq.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/i2c-at91-master.c b/drivers/i2c/busses/i2c-at91-master.c
-index 66864f9cf7ac..974225faaf96 100644
---- a/drivers/i2c/busses/i2c-at91-master.c
-+++ b/drivers/i2c/busses/i2c-at91-master.c
-@@ -657,6 +657,7 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
- 	unsigned int_addr_flag = 0;
- 	struct i2c_msg *m_start = msg;
- 	bool is_read;
-+	u8 *dma_buf;
+diff --git a/drivers/cpufreq/mediatek-cpufreq.c b/drivers/cpufreq/mediatek-cpufreq.c
+index f2e5ba3c539b..07ba238a0e0e 100644
+--- a/drivers/cpufreq/mediatek-cpufreq.c
++++ b/drivers/cpufreq/mediatek-cpufreq.c
+@@ -579,7 +579,13 @@ static int __init mtk_cpufreq_driver_init(void)
  
- 	dev_dbg(&adap->dev, "at91_xfer: processing %d messages:\n", num);
- 
-@@ -704,7 +705,17 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
- 	dev->msg = m_start;
- 	dev->recv_len_abort = false;
- 
-+	if (dev->use_dma) {
-+		dma_buf = i2c_get_dma_safe_msg_buf(m_start, 1);
-+		if (!dma_buf) {
-+			ret = -ENOMEM;
-+			goto out;
-+		}
-+		dev->buf = dma_buf;
-+	}
+ 	return 0;
+ }
+-device_initcall(mtk_cpufreq_driver_init);
++module_init(mtk_cpufreq_driver_init)
 +
- 	ret = at91_do_twi_transfer(dev);
-+	i2c_put_dma_safe_msg_buf(dma_buf, m_start, !ret);
++static void __exit mtk_cpufreq_driver_exit(void)
++{
++	platform_driver_unregister(&mtk_cpufreq_platdrv);
++}
++module_exit(mtk_cpufreq_driver_exit)
  
- 	ret = (ret < 0) ? ret : num;
- out:
+ MODULE_DESCRIPTION("MediaTek CPUFreq driver");
+ MODULE_AUTHOR("Pi-Cheng Chen <pi-cheng.chen@linaro.org>");
 -- 
 2.35.1
 
