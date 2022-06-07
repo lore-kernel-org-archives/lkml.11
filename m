@@ -2,107 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0850C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 08:45:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69CEDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 08:45:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238406AbiFGIpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 04:45:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59880 "EHLO
+        id S238423AbiFGIpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 04:45:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232116AbiFGIpk (ORCPT
+        with ESMTP id S232116AbiFGIpq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 04:45:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 559E1D4100
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 01:45:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654591533;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gw6n8kcnDAqzzZl0t5SzEkY3u1ygu5PNN0SfRbosyDU=;
-        b=E9KRSuxvmCf6bJlJKN4zQMFdt7AmfxKphVC8uNifL86j9j5XWBGWI1cgdOKDBdnYHYSohj
-        zQbLhIChWv7Ch8XfrOlR8ZxRt+gu6J8kbTomYOfw/XSkpdg0XAgHk+AQEnQGMMsXZZV0Ub
-        m21HRqeC/HSPedVMQ1xDwmVBegcfPYw=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-529-4-bMjQGLOOu6-Ef1xwe_Wg-1; Tue, 07 Jun 2022 04:45:32 -0400
-X-MC-Unique: 4-bMjQGLOOu6-Ef1xwe_Wg-1
-Received: by mail-ej1-f70.google.com with SMTP id n2-20020a170906724200b006fed87ccbb8so7441517ejk.7
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 01:45:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gw6n8kcnDAqzzZl0t5SzEkY3u1ygu5PNN0SfRbosyDU=;
-        b=4P1pVHi2OgATj9clNeLH+svVrafFkDldSGYf+AgY5WcMELy9tQDx67/69QbOPqTKiS
-         h/v/UN3WO/zHwcFKcCdtFJUE6276zhEWJsVsZT/JSGpplPTH5AkNI7lKprsE8qXLXhqV
-         J6so2qn1XQLz310FpsMTpkF99kjTmX42U1Q49HHtdW6O50lgYHnXV/+cvuRiMBzN81Mw
-         IvizszP5ZD5nTEiHD8eO4KFDkHkeyBV9g6U872fP/GSap7bQXiSLqONc8tgljk/cnytm
-         bb9KL1MLRCeIbAOjFpc7tMeIykb/CEtdVk+fGINbvlXjo3t8STlx/0IXhRXXkFJHhpIz
-         XPRA==
-X-Gm-Message-State: AOAM532Ixqn18jmzItwDv12AsLxs0yT+y94L6FWTBEGXdUz8cKYfif1b
-        h35MeXyLMFvGMRi3D5QHE/f28DQ2eJChFDDxilIONutRdyNjKzHcyBxsh4PhPbjMrvmEilRCI4Y
-        nAx77A27H5KIrovNjlcS6GXf1
-X-Received: by 2002:a17:907:2daa:b0:6fe:b449:6a8f with SMTP id gt42-20020a1709072daa00b006feb4496a8fmr25098967ejc.318.1654591531151;
-        Tue, 07 Jun 2022 01:45:31 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyjr+mGRtNi/fkJf8ZvakUYRPS13AOp0TlU6j86OW8mrDlsW0ssNpowuYW6Cm2YKDaEb5wqdw==
-X-Received: by 2002:a17:907:2daa:b0:6fe:b449:6a8f with SMTP id gt42-20020a1709072daa00b006feb4496a8fmr25098945ejc.318.1654591530888;
-        Tue, 07 Jun 2022 01:45:30 -0700 (PDT)
-Received: from [192.168.0.198] (host-95-248-229-226.retail.telecomitalia.it. [95.248.229.226])
-        by smtp.gmail.com with ESMTPSA id w2-20020a056402268200b0042ddd08d5f8sm10457417edd.2.2022.06.07.01.45.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 01:45:30 -0700 (PDT)
-Message-ID: <f24a539c-f6bf-5e5f-c98f-b31d6a5c1564@redhat.com>
-Date:   Tue, 7 Jun 2022 10:45:29 +0200
+        Tue, 7 Jun 2022 04:45:46 -0400
+Received: from EX-PRD-EDGE01.vmware.com (EX-PRD-EDGE01.vmware.com [208.91.3.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74AE4D318B;
+        Tue,  7 Jun 2022 01:45:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+    s=s1024; d=vmware.com;
+    h=from:to:cc:subject:date:message-id:mime-version:content-type;
+    bh=wGijIMulAHxI4h54ClE3an450MCt5XVCSijsm04ypDw=;
+    b=CurniBesHq5gxRyv/mfnKhCGrFUPVuGw/0s1LKPvhANmWfep04ltCpRIkc40Ux
+      GlCZR+R9FyajFZq1UZgGcUn+vBDHqIEyuIH5iUP1LtNGkFQqNzIbxjJHgnQiiD
+      O29UUCZosOfTlP1A2AsuhtbQxH5gadofJN410+NPR2hSPMk=
+Received: from sc9-mailhost3.vmware.com (10.113.161.73) by
+ EX-PRD-EDGE01.vmware.com (10.188.245.6) with Microsoft SMTP Server id
+ 15.1.2308.20; Tue, 7 Jun 2022 01:45:18 -0700
+Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
+        by sc9-mailhost3.vmware.com (Postfix) with ESMTP id 026B4201E6;
+        Tue,  7 Jun 2022 01:45:33 -0700 (PDT)
+Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
+        id EFBBEAA2B0; Tue,  7 Jun 2022 01:45:32 -0700 (PDT)
+From:   Ronak Doshi <doshir@vmware.com>
+To:     <netdev@vger.kernel.org>
+CC:     Ronak Doshi <doshir@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 net-next 0/8] vmxnet3: upgrade to version 7
+Date:   Tue, 7 Jun 2022 01:45:10 -0700
+Message-ID: <20220607084518.30316-1-doshir@vmware.com>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] sched/deadline: Use proc_douintvec_minmax() limit minimum
- value
-Content-Language: en-US
-To:     Yajun Deng <yajun.deng@linux.dev>
-Cc:     linux-kernel@vger.kernel.org, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        dietmar.eggemann@arm.com, bsegall@google.com, vschneid@redhat.com,
-        rostedt@goodmis.org, mgorman@suse.de, vincent.guittot@linaro.org
-References: <46b7ca44-a338-e1c1-e005-326e89576211@redhat.com>
- <20220513024109.648471-1-yajun.deng@linux.dev>
- <9150a4ffa0ff94ab4697d615c60ed9b4@linux.dev>
-From:   Daniel Bristot de Oliveira <bristot@redhat.com>
-In-Reply-To: <9150a4ffa0ff94ab4697d615c60ed9b4@linux.dev>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+Received-SPF: None (EX-PRD-EDGE01.vmware.com: doshir@vmware.com does not
+ designate permitted sender hosts)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/7/22 10:35, Yajun Deng wrote:
-> June 7, 2022 3:55 PM, "Daniel Bristot de Oliveira" <bristot@redhat.com> wrote:
-> 
->> Hi Yajun
->>
->> On 5/13/22 04:41, Yajun Deng wrote:
->>
->>> proc_dointvec() is not applicable for unsigned integer, use
->>> proc_douintvec_minmax() limit minimum value.
->> I understand your patch, but your log message is somehow incomplete.
->>
->> Could you expand on that, showing the problem using an example, and then how you
->> see it fixed?
->>
-> This patch isn't a fix. It's just an optimization for match data and proc_handler in struct ctl_table.
-> 
->> Also, could you please add the Fixes: tag so this patch can land on stable trees?
->>
-> This statement 'if (period < min || period > max)' in __checkparam_dl() will work fine even if there hasn't this patch.
-> So this patch may not need land on stable trees.
-> 
+vmxnet3 emulation has recently added several new features including
+support for uniform passthrough(UPT). To make UPT work vmxnet3 has
+to be enhanced as per the new specification. This patch series
+extends the vmxnet3 driver to leverage these new features.
 
-Good, so you already know how to improve your log message.
+Compatibility is maintained using existing vmxnet3 versioning mechanism as
+follows:
+ - new features added to vmxnet3 emulation are associated with new vmxnet3
+   version viz. vmxnet3 version 7.
+ - emulation advertises all the versions it supports to the driver.
+ - during initialization, vmxnet3 driver picks the highest version number
+ supported by both the emulation and the driver and configures emulation
+ to run at that version.
 
--- Daniel
+In particular, following changes are introduced:
+
+Patch 1:
+  This patch introduces utility macros for vmxnet3 version 7 comparison
+  and updates Copyright information.
+
+Patch 2:
+  This patch adds new capability registers to fine control enablement of
+  individual features based on emulation and passthrough.
+
+Patch 3:
+  This patch adds support for large passthrough BAR register.
+
+Patch 4:
+  This patch adds support for out of order rx completion processing.
+
+Patch 5:
+  This patch introduces new command to set ring buffer sizes to pass this
+  information to the hardware.
+
+Patch 6:
+  For better performance, hardware has a requirement to limit number of TSO
+  descriptors. This patch adds that support.
+
+Patch 7:
+  With vmxnet3 version 7, new descriptor fields are used to indicate
+  encapsulation offload.
+
+Patch 8:
+  With all vmxnet3 version 7 changes incorporated in the vmxnet3 driver,
+  with this patch, the driver can configure emulation to run at vmxnet3
+  version 7.
+
+Changes in v2:
+ - use local rss_fields variable for the rss capability checks in patch 2
+
+Ronak Doshi (8):
+  vmxnet3: prepare for version 7 changes
+  vmxnet3: add support for capability registers
+  vmxnet3: add support for large passthrough BAR register
+  vmxnet3: add support for out of order rx completion
+  vmxnet3: add command to set ring buffer sizes
+  vmxnet3: limit number of TXDs used for TSO packet
+  vmxnet3: use ext1 field to indicate encapsulated packet
+  vmxnet3: update to version 7
+
+ drivers/net/vmxnet3/Makefile          |   2 +-
+ drivers/net/vmxnet3/upt1_defs.h       |   2 +-
+ drivers/net/vmxnet3/vmxnet3_defs.h    |  80 ++++++++--
+ drivers/net/vmxnet3/vmxnet3_drv.c     | 291 ++++++++++++++++++++++++++++++----
+ drivers/net/vmxnet3/vmxnet3_ethtool.c | 116 ++++++++++++--
+ drivers/net/vmxnet3/vmxnet3_int.h     |  24 ++-
+ 6 files changed, 457 insertions(+), 58 deletions(-)
+
+-- 
+2.11.0
 
