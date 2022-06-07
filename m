@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37878CCA492
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:32:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F32CCA483
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:32:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382250AbiFGWb6 (ORCPT
+        id S1352974AbiFGWcK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:31:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53256 "EHLO
+        Tue, 7 Jun 2022 18:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380641AbiFGVQi (ORCPT
+        with ESMTP id S1380616AbiFGVQf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:16:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2686C21E33B;
-        Tue,  7 Jun 2022 11:55:48 -0700 (PDT)
+        Tue, 7 Jun 2022 17:16:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274A321E320;
+        Tue,  7 Jun 2022 11:55:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0D6E61277;
-        Tue,  7 Jun 2022 18:55:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC8C2C385A2;
-        Tue,  7 Jun 2022 18:55:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B63CDB8220B;
+        Tue,  7 Jun 2022 18:55:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20042C385A2;
+        Tue,  7 Jun 2022 18:55:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628147;
-        bh=FsnhM5PT/E5Fpk+dkdwL4mlsa9gXKVZzJ8yZXv4wNXk=;
+        s=korg; t=1654628135;
+        bh=etlSzNB3grrboXbbp7K/HPtPiQ3/vS9tQOuqaVtCEwM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wWe9UrGmQtnl0J26HkbOLDdSnMEO1HjsHPD9NsgGiM27ZbHJE6+ru8rFqMBVTVdTx
-         h7rhRPDk/yBUaPe5iXc3CUEHDoBCWRGzD0BRgKEk1J6uLIAputT2CJY2BPF31QpYSG
-         RwUoaWKfGsR0ltr670P3QKD73bymjtO5AiYuQj1g=
+        b=j9p03+Txtx5dYwz4YRWmVLTumSRQPf8r16ZTj4WkYIJWC0Zb9FwsgbOEJcX8A1+8C
+         LJo3oSxdapE0PM79lPtTc8azCPlPNd0nNpqCb2Aw0imkneib6yrotRTkU0tr0j26Fq
+         YSMMMm2qAx5znGYCXeitvI7USMXcQjY8PrqBeFuA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        stable@vger.kernel.org,
+        Marco Chiappero <marco.chiappero@intel.com>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 223/879] ALSA: usb-audio: Add quirk bits for enabling/disabling generic implicit fb
-Date:   Tue,  7 Jun 2022 18:55:41 +0200
-Message-Id: <20220607165009.326406828@linuxfoundation.org>
+Subject: [PATCH 5.18 219/879] crypto: qat - fix off-by-one error in PFVF debug print
+Date:   Tue,  7 Jun 2022 18:55:37 +0200
+Message-Id: <20220607165009.211537519@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,93 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Marco Chiappero <marco.chiappero@intel.com>
 
-[ Upstream commit 0f1f7a6661394fe4a53db254c346d6aa2dd64397 ]
+[ Upstream commit dd3d081b7ea6754913222ed0313fcf644edcc7e6 ]
 
-For making easier to test, add the new quirk_flags bits 17 and 18 to
-enable and disable the generic implicit feedback mode.  The bit 17 is
-equivalent with implicit_fb=1 option, applying the generic implicit
-feedback sync mode.  OTOH, the bit 18 disables the implicit fb mode
-forcibly.
+PFVF Block Message requests for CRC use 0-based values to indicate
+amounts, which have to be remapped to 1-based values on the receiving
+side.
 
-Link: https://lore.kernel.org/r/20220421064101.12456-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+This patch fixes one debug print which was however using the wire value.
+
+Signed-off-by: Marco Chiappero <marco.chiappero@intel.com>
+Reviewed-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/sound/alsa-configuration.rst | 4 +++-
- sound/usb/implicit.c                       | 5 ++++-
- sound/usb/usbaudio.h                       | 6 ++++++
- 3 files changed, 13 insertions(+), 2 deletions(-)
+ drivers/crypto/qat/qat_common/adf_pfvf_pf_proto.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/sound/alsa-configuration.rst b/Documentation/sound/alsa-configuration.rst
-index 34888d4fc4a8..21ab5e6f7062 100644
---- a/Documentation/sound/alsa-configuration.rst
-+++ b/Documentation/sound/alsa-configuration.rst
-@@ -2246,7 +2246,7 @@ implicit_fb
-     Apply the generic implicit feedback sync mode.  When this is set
-     and the playback stream sync mode is ASYNC, the driver tries to
-     tie an adjacent ASYNC capture stream as the implicit feedback
--    source.
-+    source.  This is equivalent with quirk_flags bit 17.
- use_vmalloc
-     Use vmalloc() for allocations of the PCM buffers (default: yes).
-     For architectures with non-coherent memory like ARM or MIPS, the
-@@ -2288,6 +2288,8 @@ quirk_flags
-         * bit 14: Ignore errors for mixer access
-         * bit 15: Support generic DSD raw U32_BE format
-         * bit 16: Set up the interface at first like UAC1
-+        * bit 17: Apply the generic implicit feedback sync mode
-+        * bit 18: Don't apply implicit feedback sync mode
+diff --git a/drivers/crypto/qat/qat_common/adf_pfvf_pf_proto.c b/drivers/crypto/qat/qat_common/adf_pfvf_pf_proto.c
+index 588352de1ef0..d17318d3f63a 100644
+--- a/drivers/crypto/qat/qat_common/adf_pfvf_pf_proto.c
++++ b/drivers/crypto/qat/qat_common/adf_pfvf_pf_proto.c
+@@ -154,7 +154,7 @@ static struct pfvf_message handle_blkmsg_req(struct adf_accel_vf_info *vf_info,
+ 	if (FIELD_GET(ADF_VF2PF_BLOCK_CRC_REQ_MASK, req.data)) {
+ 		dev_dbg(&GET_DEV(vf_info->accel_dev),
+ 			"BlockMsg of type %d for CRC over %d bytes received from VF%d\n",
+-			blk_type, blk_byte, vf_info->vf_nr);
++			blk_type, blk_byte + 1, vf_info->vf_nr);
  
- This module supports multiple devices, autoprobe and hotplugging.
- 
-diff --git a/sound/usb/implicit.c b/sound/usb/implicit.c
-index 2d444ec74202..1fd087128538 100644
---- a/sound/usb/implicit.c
-+++ b/sound/usb/implicit.c
-@@ -350,7 +350,8 @@ static int audioformat_implicit_fb_quirk(struct snd_usb_audio *chip,
- 	}
- 
- 	/* Try the generic implicit fb if available */
--	if (chip->generic_implicit_fb)
-+	if (chip->generic_implicit_fb ||
-+	    (chip->quirk_flags & QUIRK_FLAG_GENERIC_IMPLICIT_FB))
- 		return add_generic_implicit_fb(chip, fmt, alts);
- 
- 	/* No quirk */
-@@ -387,6 +388,8 @@ int snd_usb_parse_implicit_fb_quirk(struct snd_usb_audio *chip,
- 				    struct audioformat *fmt,
- 				    struct usb_host_interface *alts)
- {
-+	if (chip->quirk_flags & QUIRK_FLAG_SKIP_IMPLICIT_FB)
-+		return 0;
- 	if (fmt->endpoint & USB_DIR_IN)
- 		return audioformat_capture_quirk(chip, fmt, alts);
- 	else
-diff --git a/sound/usb/usbaudio.h b/sound/usb/usbaudio.h
-index b8359a0aa008..044cd7ab27cb 100644
---- a/sound/usb/usbaudio.h
-+++ b/sound/usb/usbaudio.h
-@@ -164,6 +164,10 @@ extern bool snd_usb_skip_validation;
-  *  Support generic DSD raw U32_BE format
-  * QUIRK_FLAG_SET_IFACE_FIRST:
-  *  Set up the interface at first like UAC1
-+ * QUIRK_FLAG_GENERIC_IMPLICIT_FB
-+ *  Apply the generic implicit feedback sync mode (same as implicit_fb=1 option)
-+ * QUIRK_FLAG_SKIP_IMPLICIT_FB
-+ *  Don't apply implicit feedback sync mode
-  */
- 
- #define QUIRK_FLAG_GET_SAMPLE_RATE	(1U << 0)
-@@ -183,5 +187,7 @@ extern bool snd_usb_skip_validation;
- #define QUIRK_FLAG_IGNORE_CTL_ERROR	(1U << 14)
- #define QUIRK_FLAG_DSD_RAW		(1U << 15)
- #define QUIRK_FLAG_SET_IFACE_FIRST	(1U << 16)
-+#define QUIRK_FLAG_GENERIC_IMPLICIT_FB	(1U << 17)
-+#define QUIRK_FLAG_SKIP_IMPLICIT_FB	(1U << 18)
- 
- #endif /* __USBAUDIO_H */
+ 		if (!adf_pf2vf_blkmsg_get_data(vf_info, blk_type, blk_byte,
+ 					       byte_max, &resp_data,
 -- 
 2.35.1
 
