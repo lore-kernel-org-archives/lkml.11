@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C12CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:32:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77152CCA483
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346886AbiFGRcI (ORCPT
+        id S1346934AbiFGRcO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:32:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45242 "EHLO
+        Tue, 7 Jun 2022 13:32:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346725AbiFGRZ0 (ORCPT
+        with ESMTP id S1346638AbiFGRZR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:25:26 -0400
+        Tue, 7 Jun 2022 13:25:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA2D11045B;
-        Tue,  7 Jun 2022 10:23:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2F410F352;
+        Tue,  7 Jun 2022 10:22:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D511E60DB7;
-        Tue,  7 Jun 2022 17:23:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBB69C385A5;
-        Tue,  7 Jun 2022 17:23:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 135E660BC6;
+        Tue,  7 Jun 2022 17:22:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2160EC385A5;
+        Tue,  7 Jun 2022 17:22:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622581;
-        bh=MzavRj9nrP27S+bq6CPB0yuwsmyvhj3CJKBoxHtwgwM=;
+        s=korg; t=1654622578;
+        bh=3FPA6W0YX8gMmTOgnl0wXduDgQyNdTuUPQL0t4gvEnk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EcnQdV9y5NG/fhGgQXpn08vYyfZ+VEsAn8576xcznV/qHVOypI4XO3F2nMTIJVEsc
-         evlyjpxHrx+BnjidCScpN/nWnIrJimnnIpIuMpMV6IBqEIqUmzGrmBRkUPfXkjlmq5
-         yOjomhkLc60MgCICfUqavxfNq7SayBNXhfz/uJzc=
+        b=YVBky1hjG2F0vPysA3l9vSGj6AoGCnmEzBWdG7MeUMgwSZ11bF2VSAmZ+yPXjGYd+
+         OeGDT+IQ/JyBtQaMgbWg85zzDCGpSA9/sBy4unH4k12+fdSFd3G9eGnhXdBlCJbnJO
+         8w2fgaH6rXDG9KFR/dnQK0l2Y9ViCBJn2M0xpJfY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 108/452] pinctrl: renesas: rzn1: Fix possible null-ptr-deref in sh_pfc_map_resources()
-Date:   Tue,  7 Jun 2022 18:59:25 +0200
-Message-Id: <20220607164911.775015279@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 072/452] dma-debug: change allocation mode from GFP_NOWAIT to GFP_ATIOMIC
+Date:   Tue,  7 Jun 2022 18:58:49 +0200
+Message-Id: <20220607164910.698043988@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,49 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-[ Upstream commit 2f661477c2bb8068194dbba9738d05219f111c6e ]
+[ Upstream commit 84bc4f1dbbbb5f8aa68706a96711dccb28b518e5 ]
 
-It will cause null-ptr-deref when using 'res', if platform_get_resource()
-returns NULL, so move using 'res' after devm_ioremap_resource() that
-will check it to avoid null-ptr-deref.
-And use devm_platform_get_and_ioremap_resource() to simplify code.
+We observed the error "cacheline tracking ENOMEM, dma-debug disabled"
+during a light system load (copying some files). The reason for this error
+is that the dma_active_cacheline radix tree uses GFP_NOWAIT allocation -
+so it can't access the emergency memory reserves and it fails as soon as
+anybody reaches the watermark.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220429082637.1308182-2-yangyingliang@huawei.com
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+This patch changes GFP_NOWAIT to GFP_ATOMIC, so that it can access the
+emergency memory reserves.
+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/renesas/pinctrl-rzn1.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ kernel/dma/debug.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pinctrl/renesas/pinctrl-rzn1.c b/drivers/pinctrl/renesas/pinctrl-rzn1.c
-index ef5fb25b6016..849d091205d4 100644
---- a/drivers/pinctrl/renesas/pinctrl-rzn1.c
-+++ b/drivers/pinctrl/renesas/pinctrl-rzn1.c
-@@ -865,17 +865,15 @@ static int rzn1_pinctrl_probe(struct platform_device *pdev)
- 	ipctl->mdio_func[0] = -1;
- 	ipctl->mdio_func[1] = -1;
- 
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	ipctl->lev1_protect_phys = (u32)res->start + 0x400;
--	ipctl->lev1 = devm_ioremap_resource(&pdev->dev, res);
-+	ipctl->lev1 = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
- 	if (IS_ERR(ipctl->lev1))
- 		return PTR_ERR(ipctl->lev1);
-+	ipctl->lev1_protect_phys = (u32)res->start + 0x400;
- 
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
--	ipctl->lev2_protect_phys = (u32)res->start + 0x400;
--	ipctl->lev2 = devm_ioremap_resource(&pdev->dev, res);
-+	ipctl->lev2 = devm_platform_get_and_ioremap_resource(pdev, 1, &res);
- 	if (IS_ERR(ipctl->lev2))
- 		return PTR_ERR(ipctl->lev2);
-+	ipctl->lev2_protect_phys = (u32)res->start + 0x400;
- 
- 	ipctl->clk = devm_clk_get(&pdev->dev, NULL);
- 	if (IS_ERR(ipctl->clk))
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index f8ae54679865..ee7da1f2462f 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -448,7 +448,7 @@ void debug_dma_dump_mappings(struct device *dev)
+  * other hand, consumes a single dma_debug_entry, but inserts 'nents'
+  * entries into the tree.
+  */
+-static RADIX_TREE(dma_active_cacheline, GFP_NOWAIT);
++static RADIX_TREE(dma_active_cacheline, GFP_ATOMIC);
+ static DEFINE_SPINLOCK(radix_lock);
+ #define ACTIVE_CACHELINE_MAX_OVERLAP ((1 << RADIX_TREE_MAX_TAGS) - 1)
+ #define CACHELINE_PER_PAGE_SHIFT (PAGE_SHIFT - L1_CACHE_SHIFT)
 -- 
 2.35.1
 
