@@ -2,173 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27BB0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:33:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5D53C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237542AbiFHBdi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:33:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60128 "EHLO
+        id S1346279AbiFHBeA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381413AbiFGXjD (ORCPT
+        with ESMTP id S1385572AbiFGWbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:39:03 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE2EA22DFB9
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:28 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id d125-20020a636883000000b003db5e24db27so9166919pgc.13
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=QDhCTBvKksOgW3yltrev1z9m075RHWrH68Rp9z9odIU=;
-        b=eHTU7XIQc58CpLgbBEygq7L2SQypYU0MagyyVlUopG1gE8AJx0F+aZHvE2r/hK415I
-         qjsF+JPz+x6DvnKHVEuc1z7WLvdvsp6CDXL9dK+ZA48Sv6mIak40kdM5QBe/K5hKO1GD
-         TtdcZCGYCBp3P2992BGn3vfIpsKsvWzkEsiB5RcuttYS2oMjNrwYhJE2nn2HWYxmrMoi
-         WB4R3K4sNeo4D5O286ILY17iJm1pEQKGPNnTUga8shI3bUNo0fWv2M7ZhkP+oAhm1yEz
-         rK4eyhIlwxNnitq/y5Xu32ygJuUgOVbbtmQi8YE2Xu3vm2Tl/FsWOJ9KVXoxWg8Ftidp
-         58AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=QDhCTBvKksOgW3yltrev1z9m075RHWrH68Rp9z9odIU=;
-        b=gF/KUOTXHb4rRsF7MYu4Nhv7ePt3CcJHPXUzoWwli2ZpzMU/C6TQY9DHtzU7Za2oqo
-         MdkBK/g7+4v0pNjyJFc/3ldIFGbbTFoc4Cjpjmdt0fZrry+ogMbMgbZSB9P3d8QwQrdG
-         0xX7QJNG0aS9Q6H8ggZsnDZh59X9cKDFeoyKtPNv2+DpB4d4wU9TcyH9dDjQG3kkLPTs
-         mrrG5KPHHC0z+Ce0I9b2jRPmo/4dVxXcOYlviLeGF+0la8DBzLccMIvDRJ3zUidt2R44
-         RdlL5mq2AysNP1MF5+V0uR7YfM5LTi2bZ34auzelFsZzWzaWefZvzWGRLeyuVHdjwAIT
-         mkWg==
-X-Gm-Message-State: AOAM533yX47uiotAS25we6tqTmYr2bDSLTnlT08p3I2w5yLNwU1S6Xy3
-        z9dc5OvGSYc/AGPdkJooMIAXm26JmIk=
-X-Google-Smtp-Source: ABdhPJx/KMFWqCTxyQ9O6UQQqXbMKyHRzRmss/NznagKocVXY9AyFHedpTFWR5JWygryIHwK8G21Q8StQbs=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:df14:b0:1e3:33ba:a94 with SMTP id
- gp20-20020a17090adf1400b001e333ba0a94mr33864474pjb.83.1654637788240; Tue, 07
- Jun 2022 14:36:28 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue,  7 Jun 2022 21:35:55 +0000
-In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
-Message-Id: <20220607213604.3346000-7-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220607213604.3346000-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v5 06/15] KVM: nVMX: Keep KVM updates to BNDCFGS ctrl bits
- across MSR write
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
-        David Matlack <dmatlack@google.com>,
-        Oliver Upton <oupton@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 7 Jun 2022 18:31:38 -0400
+X-Greylist: delayed 891 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 12:24:50 PDT
+Received: from 16.mo550.mail-out.ovh.net (16.mo550.mail-out.ovh.net [178.33.104.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522E7279E54
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:24:50 -0700 (PDT)
+Received: from player698.ha.ovh.net (unknown [10.109.156.73])
+        by mo550.mail-out.ovh.net (Postfix) with ESMTP id C38C321165
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:24:48 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player698.ha.ovh.net (Postfix) with ESMTPSA id 7CF082B4804EA;
+        Tue,  7 Jun 2022 19:24:38 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-110S0043757001c-4f3a-4d1c-ba12-6ec75814bbad,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Antonino Daplas <adaplas@gmail.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Helge Deller <deller@gmx.de>, Paul Mackerras <paulus@samba.org>
+Cc:     linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>, linux-omap@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH 6/7] fbdev: omapfb: panel-dsi-cm: Use backlight helper
+Date:   Tue,  7 Jun 2022 21:23:34 +0200
+Message-Id: <20220607192335.1137249-7-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220607192335.1137249-1-steve@sk2.org>
+References: <20220607192335.1137249-1-steve@sk2.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11961560612720903913
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudefjecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheehtd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Upton <oupton@google.com>
+Instead of retrieving the backlight brightness in struct
+backlight_properties manually, and then checking whether the backlight
+should be on at all, use backlight_get_brightness() which does all
+this and insulates this from future changes.
 
-Since commit 5f76f6f5ff96 ("KVM: nVMX: Do not expose MPX VMX controls
-when guest MPX disabled"), KVM has taken ownership of the "load
-IA32_BNDCFGS" and "clear IA32_BNDCFGS" VMX entry/exit controls. The ABI
-is that these bits must be set in the IA32_VMX_TRUE_{ENTRY,EXIT}_CTLS
-MSRs if the guest's CPUID supports MPX, and clear otherwise.
-
-However, commit aedbaf4f6afd ("KVM: x86: Extract
-kvm_update_cpuid_runtime() from kvm_update_cpuid()") partially broke KVM
-ownership of the aforementioned bits. Before, kvm_update_cpuid() was
-exercised frequently when running a guest and constantly applied its own
-changes to the BNDCFGS bits. Now, the BNDCFGS bits are only ever
-updated after a KVM_SET_CPUID/KVM_SET_CPUID2 ioctl, meaning that a
-subsequent MSR write from userspace will clobber these values.
-
-Uphold the old ABI by reapplying KVM's tweaks to the BNDCFGS bits after
-an MSR write from userspace.
-
-Note, the old ABI that is being preserved is a KVM hack to workaround a
-userspace bug; see commit 5f76f6f5ff96 ("KVM: nVMX: Do not expose MPX VMX
-controls when guest MPX disabled").  VMCS controls are not tied to CPUID,
-i.e. KVM should not be mucking with unrelated things.  The argument that
-it's KVM's responsibility to propagate CPUID state to VMX MSRs doesn't
-hold water, as the MPX shenanigans are an exception, not the norm, e.g.
-KVM doesn't perform the following adjustments (and this is but a subset
-of all possible tweaks):
-
-  X86_FEATURE_LM => VM_EXIT_HOST_ADDR_SPACE_SIZE, VM_ENTRY_IA32E_MODE,
-                    VMX_MISC_SAVE_EFER_LMA
-
-  X86_FEATURE_TSC => CPU_BASED_RDTSC_EXITING, CPU_BASED_USE_TSC_OFFSETTING,
-                     SECONDARY_EXEC_TSC_SCALING
-
-  X86_FEATURE_INVPCID_SINGLE => SECONDARY_EXEC_ENABLE_INVPCID
-
-  X86_FEATURE_MWAIT => CPU_BASED_MONITOR_EXITING, CPU_BASED_MWAIT_EXITING
-
-  X86_FEATURE_INTEL_PT => SECONDARY_EXEC_PT_CONCEAL_VMX, SECONDARY_EXEC_PT_USE_GPA,
-                          VM_EXIT_CLEAR_IA32_RTIT_CTL, VM_ENTRY_LOAD_IA32_RTIT_CTL
-
-  X86_FEATURE_XSAVES => SECONDARY_EXEC_XSAVES
-
-Fixes: aedbaf4f6afd ("KVM: x86: Extract kvm_update_cpuid_runtime() from kvm_update_cpuid()")
-Signed-off-by: Oliver Upton <oupton@google.com>
-[sean: explicitly document the original KVM hack]
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Cc: Helge Deller <deller@gmx.de>
+Cc: linux-omap@vger.kernel.org
+Cc: linux-fbdev@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
 ---
- arch/x86/kvm/vmx/nested.c | 9 +++++++++
- arch/x86/kvm/vmx/vmx.c    | 2 +-
- arch/x86/kvm/vmx/vmx.h    | 2 ++
- 3 files changed, 12 insertions(+), 1 deletion(-)
+ drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index fca30e79b3a0..d1c21d387716 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -1296,6 +1296,15 @@ vmx_restore_control_msr(struct vcpu_vmx *vmx, u32 msr_index, u64 data)
- 	vmx_get_control_msr(&vmx->nested.msrs, msr_index, &lowp, &highp);
- 	*lowp = data;
- 	*highp = data >> 32;
-+
-+	/*
-+	 * To preserve an old, kludgy ABI, ensure KVM fiddling with the "true"
-+	 * entry/exit controls MSRs is preserved after userspace modifications.
-+	 */
-+	if (msr_index == MSR_IA32_VMX_TRUE_ENTRY_CTLS ||
-+	    msr_index == MSR_IA32_VMX_TRUE_EXIT_CTLS)
-+		nested_vmx_entry_exit_ctls_update(&vmx->vcpu);
-+
- 	return 0;
- }
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+index a2c7c5cb1523..236430b5dc52 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+@@ -331,13 +331,7 @@ static int dsicm_bl_update_status(struct backlight_device *dev)
+ 	struct panel_drv_data *ddata = dev_get_drvdata(&dev->dev);
+ 	struct omap_dss_device *in = ddata->in;
+ 	int r;
+-	int level;
+-
+-	if (dev->props.fb_blank == FB_BLANK_UNBLANK &&
+-			dev->props.power == FB_BLANK_UNBLANK)
+-		level = dev->props.brightness;
+-	else
+-		level = 0;
++	int level = backlight_get_brightness(dev);
  
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 57df799ffa29..3f1671d7cbe4 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -7398,7 +7398,7 @@ static void nested_vmx_cr_fixed1_bits_update(struct kvm_vcpu *vcpu)
- #undef cr4_fixed1_update
- }
+ 	dev_dbg(&ddata->pdev->dev, "update brightness to %d\n", level);
  
--static void nested_vmx_entry_exit_ctls_update(struct kvm_vcpu *vcpu)
-+void nested_vmx_entry_exit_ctls_update(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_vmx *vmx = to_vmx(vcpu);
- 
-diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
-index 71bcb486e73f..576fed7e33de 100644
---- a/arch/x86/kvm/vmx/vmx.h
-+++ b/arch/x86/kvm/vmx/vmx.h
-@@ -425,6 +425,8 @@ static inline void vmx_set_intercept_for_msr(struct kvm_vcpu *vcpu, u32 msr,
- 
- void vmx_update_cpu_dirty_logging(struct kvm_vcpu *vcpu);
- 
-+void nested_vmx_entry_exit_ctls_update(struct kvm_vcpu *vcpu);
-+
- /*
-  * Note, early Intel manuals have the write-low and read-high bitmap offsets
-  * the wrong way round.  The bitmaps control MSRs 0x00000000-0x00001fff and
 -- 
-2.36.1.255.ge46751e96f-goog
+2.30.2
 
