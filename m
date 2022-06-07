@@ -2,137 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E88EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:23:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10678C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:25:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240938AbiFGKXd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:23:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39446 "EHLO
+        id S240942AbiFGKZP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:25:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240914AbiFGKX2 (ORCPT
+        with ESMTP id S240996AbiFGKZH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:23:28 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509AF52B32;
-        Tue,  7 Jun 2022 03:23:27 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id m20so34167539ejj.10;
-        Tue, 07 Jun 2022 03:23:27 -0700 (PDT)
+        Tue, 7 Jun 2022 06:25:07 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23405DA5A
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 03:25:06 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id a30so11620897ybj.3
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 03:25:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=OukCrFCJWq9SsUmHm9/OILUsFtIRnUo2aSEz9DprVgw=;
-        b=AtgqPcm8kAiaknV8i+YKMCjp6/4+RDOT9zF+4AcqbyVIuNs0/eD+1rC19j2Nx08Uvh
-         t3/y08Mofm2FfgVMLmysPvpS5AqGE+A+UOCufdC6PFhLwBmx2rrVe8DN8Jr9HvkJgxdF
-         0cj7aJHdRuBWVDvUNXgWAExZZPd9cVBaOQ16EoWfpW72fXfQopCC1cKjLcyx55RjhoCw
-         1wK+Sr8pwCa0OaUf15NuJ4sB4HR7Irq3GpdfYSvGVDDdWQzQHiRpAJ/zrozPbuj0m7pN
-         LbI0zoAdBZEKZtZSztO+N1SHbqvhyrXCHv2+FdsyWD+nFXl/iv3TmDUP750mMCNmoJd/
-         0qVQ==
+         :cc;
+        bh=ZHsUvtPKP5XpLfzstYmPmoxmFK2aDYzyw6bVJWhp+7I=;
+        b=w00SDC/3MJW646GYiEMN9IkHITmHZKkhfjcuLzDzYEZbzPMK6bPAuyYvOK4Eh0t6Xo
+         qFMKSzl934/XIWwvjx2IsSQfToG4b1iob1y8e98deJB7d4a7NTKuIeoLh/T9pi4RAIPc
+         bpsYSzHzw4586HhlAGyTFP78ZNLJxpacYevbzEL/2XNetpLNOXkn9/UEJ5HopIhlcoMO
+         Ii0R0+4T3UKM711c3WKc9LY/30oFRtN3nSKTHnWiK/cNU02P3784L4ahBHvkKybzW6+8
+         +9vaUdei41JrR5RojV7opdw0ckmmIaWXkRgHRjWxhmOvIS90dWu/z37e+ighdkB2u8S3
+         lXPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=OukCrFCJWq9SsUmHm9/OILUsFtIRnUo2aSEz9DprVgw=;
-        b=uayppVbnbpYgD8c4hHsHNB4d5+AvjppMf4X7nLeQRqGn29PwDnSnw3Lp7l2tSdoRLf
-         ErvtjaE5F18ElpCmfwEbJfXcmt9LtfQUH931BOIbU3nnGOsV2FC9GVsueVD4uC7tlYQe
-         bYOzm2Aa2wG6cAOI3oCWUN60JxuXIOAO4HFr28PqTTOfOVnfELTnsEp2sHYa4D9hfPVz
-         nITUGmzmprNC4ocO5a0ZnBzytHcWuTt+5udIOBY9i0K54cYcKKIR6E4vDtlHBy/uyFTF
-         FiuiVIhb8Ke8w2VbJQVfyujiWAQMDzT09uww3RpsOt1ywbJIjJ+zrDddYEnHCH/G5mpf
-         6m1A==
-X-Gm-Message-State: AOAM530No8yjhtRXXmMRMvnroNvzocYUKfZ5yIDOhPZP3ZqsCOb7tzgP
-        yFPkUOF1zSDaut753GWncUJ8IPSrdzybqIxaLzlRfQu37usyGQ==
-X-Google-Smtp-Source: ABdhPJydW7GF6K0z85km7pWjsn//lCcEbNe6RTaKvs4doPsBXgA/hZ865RbeQF5H/M8ogZSSTMR0VHtN68EW/0MBphU=
-X-Received: by 2002:a17:906:1193:b0:70d:cf39:a4db with SMTP id
- n19-20020a170906119300b0070dcf39a4dbmr20407572eja.44.1654597405812; Tue, 07
- Jun 2022 03:23:25 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=ZHsUvtPKP5XpLfzstYmPmoxmFK2aDYzyw6bVJWhp+7I=;
+        b=j8XtNjd1zQPFmTe+eCU41m6QAm2AV8+3BYy5StSydsg+8ndyIZARODDsUOiVv/W70N
+         aJnP4dT10+qwkNTei/SfmufzpRlkMj87Vpm8+Vx+RfJy1mdMyf8lZADLBWgEpBYHsKGs
+         2HcDuFrjJiXNSty8GOh1Ukw+30UnbseEB8puvLOTE/qmrjraOyjutGbMuzEn0lvcaHGE
+         3RXMD/N1BPhYx1pfOdZFaf358KhxCoCDtD/SHzlM1yHcmZFWT9+FuSAZNHYmWC8KgDnH
+         ZRajc7EwsRgX3JPLiJhOFnajNPaAB7ZUFmmG0qxrZvxa6jli3+g18y/GX4y/mpiwAhZC
+         btbg==
+X-Gm-Message-State: AOAM53060fki+o/iH582c2Lj/kEUprt6kWetudoQC2c4d/mlsioUqxCE
+        t+8gi052MX6cyiYrgfiIdvVJ+pDVPYcqcuiiFou5Dg==
+X-Google-Smtp-Source: ABdhPJyo75CgyMDf7Lpz7KKoFjzw977s4SnCfOO4oMpGAtz6y9q4YDvsHC9fiBLOfY9uG51R2fxL62X0UT3AYw+KmX0=
+X-Received: by 2002:a25:4f03:0:b0:663:dd99:b7d2 with SMTP id
+ d3-20020a254f03000000b00663dd99b7d2mr2545119ybb.490.1654597505724; Tue, 07
+ Jun 2022 03:25:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220607082934.7242-1-ilpo.jarvinen@linux.intel.com> <20220607082934.7242-5-ilpo.jarvinen@linux.intel.com>
-In-Reply-To: <20220607082934.7242-5-ilpo.jarvinen@linux.intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 7 Jun 2022 12:22:49 +0200
-Message-ID: <CAHp75VfK4v15HrBwwD9b7q6EYdcp3VnP5RGKVuPeSWk4TSyq+w@mail.gmail.com>
-Subject: Re: [PATCH v3 4/6] serial: 8250: Adjust misleading LSR related comment
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <CA+G9fYv7fESqpGoeKmHoJsst6wfRNMi2wQLGm+PsjbLDuDjdMQ@mail.gmail.com>
+ <CA+G9fYsJThWFAxXTbAcJmjshx+oYxVVd+gMM680hS0X1z37+FQ@mail.gmail.com> <20220607162504.7fd5a92a@canb.auug.org.au>
+In-Reply-To: <20220607162504.7fd5a92a@canb.auug.org.au>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 7 Jun 2022 15:54:53 +0530
+Message-ID: <CA+G9fYtA3EahEGePq4nQopDvRp9LwgF93HjXSvqC94KjZmhgzA@mail.gmail.com>
+Subject: Re: [next] arm64: boot failed - next-20220606
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        regressions@lists.linux.dev, lkft-triage@lists.linaro.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-mm <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Raghuram Thammiraju <raghuram.thammiraju@arm.com>,
+        Mark Brown <broonie@kernel.org>, Will Deacon <will@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Vasily Averin <vvs@openvz.org>,
+        Qian Cai <quic_qiancai@quicinc.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 11:16 AM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
+Hi Stephen,
+
+On Tue, 7 Jun 2022 at 11:55, Stephen Rothwell <sfr@canb.auug.org.au> wrote:
 >
-> serial8250_rx_chars() has max_count based character limit. If it
-> triggers, the function returns old LSR value (and it has never returned
-
-the old
-
-> only flags which were not handled). Adjust the comment to match
-> behavior and warn about which flags can be depended on.
+> Hi Naresh,
 >
-> While I'd have moved LSR read before LSR read and used serial_lsr_in()
-> also here but I came across this old discussion about the topic:
+> On Tue, 7 Jun 2022 11:00:39 +0530 Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
+> >
+> > On Mon, 6 Jun 2022 at 17:16, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
+> > >
+> > > Linux next-20220606 arm64 boot failed. The kernel boot log is empty.
+> > > I am bisecting this problem.
 
->   https://www.spinics.net/lists/linux-serial/msg20555.html
+The bisection found the first bad commit as,
 
-Can it be transformed to lore.kernel.org link? and maybe even moved as
-BugLink tag?
-
-> ...so I left it as it is (it works as long as the callers only use
-> a subset of the LSR flags which holds true today).
-
-With comments addressed,
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-
-> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->  drivers/tty/serial/8250/8250_port.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
-0/8250_port.c
-> index a0ea048eb2ad..686891f1b2ca 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -1782,9 +1782,12 @@ void serial8250_read_char(struct uart_8250_port *u=
-p, unsigned char lsr)
->  EXPORT_SYMBOL_GPL(serial8250_read_char);
->
->  /*
-> - * serial8250_rx_chars: processes according to the passed in LSR
-> - * value, and returns the remaining LSR bits not handled
-> - * by this Rx routine.
-> + * serial8250_rx_chars: Read characters. The first LSR value must be pas=
-sed
-> + * in.
-
-While at it, I would do the following:
-1) keep on one line;
-2) replace : with -.
-
-The idea behind is to easily convert to kernel doc in the future if
-needed, or at least be consistent with kernel doc format.
-
-> + *
-> + * Returns LSR bits. The caller should rely only non-rx related LSR bits
-
-rely only on
-
-non-Rx
-
-> + * (such as THRE) because the LSR value might come from an already consu=
-med
-> + * character.
->   */
+19ee3818b7c6 ("net: set proper memcg for net_init hooks allocations")
 
 
---=20
-With Best Regards,
-Andy Shevchenko
+After reverting this single commit I am able to boot arm64 successfully.
+
+- Naresh
