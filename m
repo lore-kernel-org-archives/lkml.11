@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2A89CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC8EECCA488
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441939AbiFHAx3 (ORCPT
+        id S1441885AbiFHAxU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:53:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57420 "EHLO
+        Tue, 7 Jun 2022 20:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354515AbiFGWCX (ORCPT
+        with ESMTP id S1357930AbiFGWVv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:02:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C183424E1CB;
-        Tue,  7 Jun 2022 12:14:25 -0700 (PDT)
+        Tue, 7 Jun 2022 18:21:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 943D226D274;
+        Tue,  7 Jun 2022 12:22:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58EB061917;
-        Tue,  7 Jun 2022 19:14:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BCE1C385A2;
-        Tue,  7 Jun 2022 19:14:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C31BC60A21;
+        Tue,  7 Jun 2022 19:22:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB389C385A2;
+        Tue,  7 Jun 2022 19:22:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629252;
-        bh=ucIaXTRbVB/oL/7bl68xYrtIpt1U6H0UrivdO4ahS1Q=;
+        s=korg; t=1654629750;
+        bh=zNeRIJjkEW1zo9LCtloBDr6hePcLyXcetBHHajv3tZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j8LYjj+I5mrX0ynIRqh8vWCV7awnFk6LGj8CN3j10HcEJUMXwVa8EoeiklpcA7CPB
-         yjNobT6srLlc+BgtsGttNb0lZ0n4DEPyZM/gG+zrJTh/dYh3R0sAG1HLINXinH0VxY
-         si96CXhbgZ9VzKF9hNlfp9BV/SsWKup5HzvYQ588=
+        b=jT9S7nCIF3Wh7AZBBslurwyJ/z0jeXzawlMYhuZ1/ipg6o3xbp3tOnvTCpA0sils+
+         1g1NRMNg6uJQ6H0FxAvaj2SK+xp0pKDsanBSasG1ESBJJt+ClB2e+r6mz2W67W9Cu+
+         inm9D0hmTVr1/MD5M40Cw70gKvEeD/f2T/v80prs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 623/879] crypto: cryptd - Protect per-CPU resource by disabling BH.
-Date:   Tue,  7 Jun 2022 19:02:21 +0200
-Message-Id: <20220607165020.935015007@linuxfoundation.org>
+        stable@vger.kernel.org, Tokunori Ikegami <ikegami.t@gmail.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 5.18 801/879] mtd: cfi_cmdset_0002: Use chip_ready() for write on S29GL064N
+Date:   Tue,  7 Jun 2022 19:05:19 +0200
+Message-Id: <20220607165026.108653744@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,101 +50,143 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Tokunori Ikegami <ikegami.t@gmail.com>
 
-[ Upstream commit 91e8bcd7b4da182e09ea19a2c73167345fe14c98 ]
+commit 0a8e98305f63deaf0a799d5cf5532cc83af035d1 upstream.
 
-The access to cryptd_queue::cpu_queue is synchronized by disabling
-preemption in cryptd_enqueue_request() and disabling BH in
-cryptd_queue_worker(). This implies that access is allowed from BH.
+Since commit dfeae1073583("mtd: cfi_cmdset_0002: Change write buffer to
+check correct value") buffered writes fail on S29GL064N. This is
+because, on S29GL064N, reads return 0xFF at the end of DQ polling for
+write completion, where as, chip_good() check expects actual data
+written to the last location to be returned post DQ polling completion.
+Fix is to revert to using chip_good() for S29GL064N which only checks
+for DQ lines to settle down to determine write completion.
 
-If cryptd_enqueue_request() is invoked from preemptible context _and_
-soft interrupt then this can lead to list corruption since
-cryptd_enqueue_request() is not protected against access from
-soft interrupt.
-
-Replace get_cpu() in cryptd_enqueue_request() with local_bh_disable()
-to ensure BH is always disabled.
-Remove preempt_disable() from cryptd_queue_worker() since it is not
-needed because local_bh_disable() ensures synchronisation.
-
-Fixes: 254eff771441 ("crypto: cryptd - Per-CPU thread implementation...")
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/b687c259-6413-26c9-d4c9-b3afa69ea124@pengutronix.de/
+Fixes: dfeae1073583("mtd: cfi_cmdset_0002: Change write buffer to check correct value")
+Cc: stable@vger.kernel.org
+Signed-off-by: Tokunori Ikegami <ikegami.t@gmail.com>
+Acked-by: Vignesh Raghavendra <vigneshr@ti.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220323170458.5608-3-ikegami.t@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/cryptd.c | 23 +++++++++++------------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+ drivers/mtd/chips/cfi_cmdset_0002.c |   42 +++++++++++++++++++++++++++++-------
+ include/linux/mtd/cfi.h             |    1 
+ 2 files changed, 35 insertions(+), 8 deletions(-)
 
-diff --git a/crypto/cryptd.c b/crypto/cryptd.c
-index a1bea0f4baa8..668095eca0fa 100644
---- a/crypto/cryptd.c
-+++ b/crypto/cryptd.c
-@@ -39,6 +39,10 @@ struct cryptd_cpu_queue {
- };
+--- a/drivers/mtd/chips/cfi_cmdset_0002.c
++++ b/drivers/mtd/chips/cfi_cmdset_0002.c
+@@ -59,6 +59,10 @@
+ #define CFI_SR_WBASB		BIT(3)
+ #define CFI_SR_SLSB		BIT(1)
  
- struct cryptd_queue {
-+	/*
-+	 * Protected by disabling BH to allow enqueueing from softinterrupt and
-+	 * dequeuing from kworker (cryptd_queue_worker()).
-+	 */
- 	struct cryptd_cpu_queue __percpu *cpu_queue;
- };
- 
-@@ -125,28 +129,28 @@ static void cryptd_fini_queue(struct cryptd_queue *queue)
- static int cryptd_enqueue_request(struct cryptd_queue *queue,
- 				  struct crypto_async_request *request)
- {
--	int cpu, err;
-+	int err;
- 	struct cryptd_cpu_queue *cpu_queue;
- 	refcount_t *refcnt;
- 
--	cpu = get_cpu();
-+	local_bh_disable();
- 	cpu_queue = this_cpu_ptr(queue->cpu_queue);
- 	err = crypto_enqueue_request(&cpu_queue->queue, request);
- 
- 	refcnt = crypto_tfm_ctx(request->tfm);
- 
- 	if (err == -ENOSPC)
--		goto out_put_cpu;
-+		goto out;
- 
--	queue_work_on(cpu, cryptd_wq, &cpu_queue->work);
-+	queue_work_on(smp_processor_id(), cryptd_wq, &cpu_queue->work);
- 
- 	if (!refcount_read(refcnt))
--		goto out_put_cpu;
-+		goto out;
- 
- 	refcount_inc(refcnt);
- 
--out_put_cpu:
--	put_cpu();
-+out:
-+	local_bh_enable();
- 
- 	return err;
++enum cfi_quirks {
++	CFI_QUIRK_DQ_TRUE_DATA = BIT(0),
++};
++
+ static int cfi_amdstd_read (struct mtd_info *, loff_t, size_t, size_t *, u_char *);
+ static int cfi_amdstd_write_words(struct mtd_info *, loff_t, size_t, size_t *, const u_char *);
+ #if !FORCE_WORD_WRITE
+@@ -436,6 +440,15 @@ static void fixup_s29ns512p_sectors(stru
+ 		mtd->name);
  }
-@@ -162,15 +166,10 @@ static void cryptd_queue_worker(struct work_struct *work)
- 	cpu_queue = container_of(work, struct cryptd_cpu_queue, work);
- 	/*
- 	 * Only handle one request at a time to avoid hogging crypto workqueue.
--	 * preempt_disable/enable is used to prevent being preempted by
--	 * cryptd_enqueue_request(). local_bh_disable/enable is used to prevent
--	 * cryptd_enqueue_request() being accessed from software interrupts.
- 	 */
- 	local_bh_disable();
--	preempt_disable();
- 	backlog = crypto_get_backlog(&cpu_queue->queue);
- 	req = crypto_dequeue_request(&cpu_queue->queue);
--	preempt_enable();
- 	local_bh_enable();
  
- 	if (!req)
--- 
-2.35.1
-
++static void fixup_quirks(struct mtd_info *mtd)
++{
++	struct map_info *map = mtd->priv;
++	struct cfi_private *cfi = map->fldrv_priv;
++
++	if (cfi->mfr == CFI_MFR_AMD && cfi->id == 0x0c01)
++		cfi->quirks |= CFI_QUIRK_DQ_TRUE_DATA;
++}
++
+ /* Used to fix CFI-Tables of chips without Extended Query Tables */
+ static struct cfi_fixup cfi_nopri_fixup_table[] = {
+ 	{ CFI_MFR_SST, 0x234a, fixup_sst39vf }, /* SST39VF1602 */
+@@ -474,6 +487,7 @@ static struct cfi_fixup cfi_fixup_table[
+ #if !FORCE_WORD_WRITE
+ 	{ CFI_MFR_ANY, CFI_ID_ANY, fixup_use_write_buffers },
+ #endif
++	{ CFI_MFR_ANY, CFI_ID_ANY, fixup_quirks },
+ 	{ 0, 0, NULL }
+ };
+ static struct cfi_fixup jedec_fixup_table[] = {
+@@ -846,6 +860,18 @@ static int __xipram chip_ready(struct ma
+ 	return map_word_equal(map, t, *expected);
+ }
+ 
++static int __xipram chip_good(struct map_info *map, struct flchip *chip,
++			      unsigned long addr, map_word *expected)
++{
++	struct cfi_private *cfi = map->fldrv_priv;
++	map_word *datum = expected;
++
++	if (cfi->quirks & CFI_QUIRK_DQ_TRUE_DATA)
++		datum = NULL;
++
++	return chip_ready(map, chip, addr, datum);
++}
++
+ static int get_chip(struct map_info *map, struct flchip *chip, unsigned long adr, int mode)
+ {
+ 	DECLARE_WAITQUEUE(wait, current);
+@@ -1662,11 +1688,11 @@ static int __xipram do_write_oneword_onc
+ 		}
+ 
+ 		/*
+-		 * We check "time_after" and "!chip_ready" before checking
+-		 * "chip_ready" to avoid the failure due to scheduling.
++		 * We check "time_after" and "!chip_good" before checking
++		 * "chip_good" to avoid the failure due to scheduling.
+ 		 */
+ 		if (time_after(jiffies, timeo) &&
+-		    !chip_ready(map, chip, adr, &datum)) {
++		    !chip_good(map, chip, adr, &datum)) {
+ 			xip_enable(map, chip, adr);
+ 			printk(KERN_WARNING "MTD %s(): software timeout\n", __func__);
+ 			xip_disable(map, chip, adr);
+@@ -1674,7 +1700,7 @@ static int __xipram do_write_oneword_onc
+ 			break;
+ 		}
+ 
+-		if (chip_ready(map, chip, adr, &datum)) {
++		if (chip_good(map, chip, adr, &datum)) {
+ 			if (cfi_check_err_status(map, chip, adr))
+ 				ret = -EIO;
+ 			break;
+@@ -1942,18 +1968,18 @@ static int __xipram do_write_buffer_wait
+ 		}
+ 
+ 		/*
+-		 * We check "time_after" and "!chip_ready" before checking
+-		 * "chip_ready" to avoid the failure due to scheduling.
++		 * We check "time_after" and "!chip_good" before checking
++		 * "chip_good" to avoid the failure due to scheduling.
+ 		 */
+ 		if (time_after(jiffies, timeo) &&
+-		    !chip_ready(map, chip, adr, &datum)) {
++		    !chip_good(map, chip, adr, &datum)) {
+ 			pr_err("MTD %s(): software timeout, address:0x%.8lx.\n",
+ 			       __func__, adr);
+ 			ret = -EIO;
+ 			break;
+ 		}
+ 
+-		if (chip_ready(map, chip, adr, &datum)) {
++		if (chip_good(map, chip, adr, &datum)) {
+ 			if (cfi_check_err_status(map, chip, adr))
+ 				ret = -EIO;
+ 			break;
+--- a/include/linux/mtd/cfi.h
++++ b/include/linux/mtd/cfi.h
+@@ -286,6 +286,7 @@ struct cfi_private {
+ 	map_word sector_erase_cmd;
+ 	unsigned long chipshift; /* Because they're of the same type */
+ 	const char *im_name;	 /* inter_module name for cmdset_setup */
++	unsigned long quirks;
+ 	struct flchip chips[];  /* per-chip data structure for each chip */
+ };
+ 
 
 
