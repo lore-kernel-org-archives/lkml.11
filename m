@@ -2,136 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B482AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:32:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D926CCA485
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383182AbiFGWan (ORCPT
+        id S1383859AbiFGWbA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
+        Tue, 7 Jun 2022 18:31:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380807AbiFGVQ7 (ORCPT
+        with ESMTP id S1380741AbiFGVQz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:16:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738981CFF9;
-        Tue,  7 Jun 2022 11:57:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E57E6176D;
-        Tue,  7 Jun 2022 18:57:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17A41C34115;
-        Tue,  7 Jun 2022 18:57:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628259;
-        bh=5x9rPzB2VVz92YlALq//O6CF/mu6mIhkuZuW8AeZanY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M1EQ+6DNZDpd6mArIc4lyfhVmCb+KjQra5NnoljBuvL4bGOFjrbE911LJUY4VToSk
-         BJ05b3LKMBv/racdkcCwa68QxlFbshbSWwJs0rJIu2+qRHuP2peMvCTgwh6z7B9mVI
-         huUzLRzmh20t0QeGuhTSk3MVoR10y4CNk0zfZgx8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 264/879] drm/ssd130x: Fix rectangle updates
-Date:   Tue,  7 Jun 2022 18:56:22 +0200
-Message-Id: <20220607165010.513065628@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:16:55 -0400
+Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42AF721F9E6
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:57:05 -0700 (PDT)
+X-ASG-Debug-ID: 1654627115-1cf43917f3396470001-xx1T2L
+Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with ESMTP id utCa0jEuR0ydfBDR; Tue, 07 Jun 2022 14:38:35 -0400 (EDT)
+X-Barracuda-Envelope-From: tonyb@cybernetics.com
+X-ASG-Whitelist: Client
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=cybernetics.com; s=mail;
+        bh=3YvRZ5FOVwCVa3SqPpM62f1HUDXg7koMQw6UwikSy60=;
+        h=Content-Transfer-Encoding:Content-Type:Subject:From:Cc:To:Content-Language:
+        MIME-Version:Date:Message-ID; b=HWP6kvkGh9cacYSZPz+DzDEx8wo/oHQo8T6bny2R8X0wg
+        NDKyaYMuP833zSg3fJzE0aawJ8vBp3xI1k1sCKlxf393i4KfBWzVGQWBeei0Ls0m5zBJEh0fusLPR
+        L4zDDqhVYBe1NHAC0s6k/rSu2pmptHitdw4iy92t5hCYv0Vto=
+Received: from [10.157.2.224] (HELO [192.168.200.1])
+  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
+  with ESMTPS id 11859378; Tue, 07 Jun 2022 14:38:34 -0400
+Message-ID: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
+Date:   Tue, 7 Jun 2022 14:38:34 -0400
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Content-Language: en-US
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc:     iommu@lists.linux-foundation.org, kernel-team@fb.com,
+        Matthew Wilcox <willy@infradead.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Tony Lindgren <tony@atomide.com>
+From:   Tony Battersby <tonyb@cybernetics.com>
+Subject: [PATCH v6 00/11] mpt3sas and dmapool scalability
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-ASG-Orig-Subj: [PATCH v6 00/11] mpt3sas and dmapool scalability
+Content-Transfer-Encoding: 7bit
+X-Barracuda-Connect: UNKNOWN[10.10.4.126]
+X-Barracuda-Start-Time: 1654627115
+X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
+X-Barracuda-BRTS-Status: 1
+X-Virus-Scanned: by bsmtpd at cybernetics.com
+X-Barracuda-Scan-Msg-Size: 3193
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+This patch series improves dmapool scalability by replacing linear scans
+with red-black trees.
 
-[ Upstream commit a97e753fd358e23155ae42c61292dfd57eb54c4a ]
+Note that Keith Busch is also working on improving dmapool scalability,
+so for now I would recommend not merging my scalability patches until
+Keith's approach can be evaluated.  In the meantime, my patches can
+serve as a benchmark comparison.  I also have a number of cleanup
+patches in my series that could be useful on their own.
 
-The rectangle update functions ssd130x_fb_blit_rect() and
-ssd130x_update_rect() do not behave correctly when x1 != 0 or y1 !=
-0, or when y1 or y2 are not aligned to display page boundaries.
-E.g. when used as a text console, only the first line of text is shown
-on the display.
+Changes since v5:
+1. inline pool_free_page() into dma_pool_destroy() to avoid adding
+   unused code
+2. convert scnprintf() to sysfs_emit()
+3. avoid adding a hole in struct dma_pool
+4. fix big O usage in description
 
-  1. The buffer passed by ssd130x_fb_blit_rect() points to the first
-     byte of monochrome bitmap data, and thus has its origin at (x1,
-     y1), while ssd130x_update_rect() assumes it is at (0, 0).
-     Fix ssd130x_update_rect() by changing the vertical and horizontal
-     loop ranges, and adding the offsets only when needed.
+References:
 
-  2. In ssd130x_fb_blit_rect(), align y1 and y2 to the display page
-     boundaries before doing the color conversion, so the full page
-     is converted and updated.
-     Remove the correction for an unaligned y1 from
-     ssd130x_update_rect(), and add a check to make sure y1 is aligned.
+v5
+https://lore.kernel.org/linux-mm/9b08ab7c-b80b-527d-9adf-7716b0868fbc@cybernetics.com/
 
-Fixes: a61732e808672cfa ("drm: Add driver for Solomon SSD130x OLED displays")
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Acked-by: Javier Martinez Canillas <javierm@redhat.com>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220317081830.1211400-4-geert@linux-m68k.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/solomon/ssd130x.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+Keith Busch's dmapool performance enhancements
+https://lore.kernel.org/linux-mm/20220428202714.17630-1-kbusch@kernel.org/
 
-diff --git a/drivers/gpu/drm/solomon/ssd130x.c b/drivers/gpu/drm/solomon/ssd130x.c
-index caee851efd57..7c99af4ce9dd 100644
---- a/drivers/gpu/drm/solomon/ssd130x.c
-+++ b/drivers/gpu/drm/solomon/ssd130x.c
-@@ -355,11 +355,14 @@ static int ssd130x_update_rect(struct ssd130x_device *ssd130x, u8 *buf,
- 	unsigned int width = drm_rect_width(rect);
- 	unsigned int height = drm_rect_height(rect);
- 	unsigned int line_length = DIV_ROUND_UP(width, 8);
--	unsigned int pages = DIV_ROUND_UP(y % 8 + height, 8);
-+	unsigned int pages = DIV_ROUND_UP(height, 8);
-+	struct drm_device *drm = &ssd130x->drm;
- 	u32 array_idx = 0;
- 	int ret, i, j, k;
- 	u8 *data_array = NULL;
- 
-+	drm_WARN_ONCE(drm, y % 8 != 0, "y must be aligned to screen page\n");
-+
- 	data_array = kcalloc(width, pages, GFP_KERNEL);
- 	if (!data_array)
- 		return -ENOMEM;
-@@ -401,13 +404,13 @@ static int ssd130x_update_rect(struct ssd130x_device *ssd130x, u8 *buf,
- 	if (ret < 0)
- 		goto out_free;
- 
--	for (i = y / 8; i < y / 8 + pages; i++) {
-+	for (i = 0; i < pages; i++) {
- 		int m = 8;
- 
- 		/* Last page may be partial */
--		if (8 * (i + 1) > ssd130x->height)
-+		if (8 * (y / 8 + i + 1) > ssd130x->height)
- 			m = ssd130x->height % 8;
--		for (j = x; j < x + width; j++) {
-+		for (j = 0; j < width; j++) {
- 			u8 data = 0;
- 
- 			for (k = 0; k < m; k++) {
-@@ -454,6 +457,10 @@ static int ssd130x_fb_blit_rect(struct drm_framebuffer *fb, const struct iosys_m
- 	int ret = 0;
- 	u8 *buf = NULL;
- 
-+	/* Align y to display page boundaries */
-+	rect->y1 = round_down(rect->y1, 8);
-+	rect->y2 = min_t(unsigned int, round_up(rect->y2, 8), ssd130x->height);
-+
- 	buf = kcalloc(fb->width, fb->height, GFP_KERNEL);
- 	if (!buf)
- 		return -ENOMEM;
--- 
-2.35.1
+Below is my original description of the motivation for these patches.
 
+drivers/scsi/mpt3sas is running into a scalability problem with the
+kernel's DMA pool implementation.  With a LSI/Broadcom SAS 9300-8i
+12Gb/s HBA and max_sgl_entries=256, during modprobe, mpt3sas does the
+equivalent of:
+
+chain_dma_pool = dma_pool_create(size = 128);
+for (i = 0; i < 373959; i++)
+    {
+    dma_addr[i] = dma_pool_alloc(chain_dma_pool);
+    }
+
+And at rmmod, system shutdown, or system reboot, mpt3sas does the
+equivalent of:
+
+for (i = 0; i < 373959; i++)
+    {
+    dma_pool_free(chain_dma_pool, dma_addr[i]);
+    }
+dma_pool_destroy(chain_dma_pool);
+
+With this usage, both dma_pool_alloc() and dma_pool_free() exhibit
+O(n) complexity, although dma_pool_free() is much worse due to
+implementation details.  On my system, the dma_pool_free() loop above
+takes about 9 seconds to run.  Note that the problem was even worse
+before commit 74522a92bbf0 ("scsi: mpt3sas: Optimize I/O memory
+consumption in driver."), where the dma_pool_free() loop could take ~30
+seconds.
+
+mpt3sas also has some other DMA pools, but chain_dma_pool is the only
+one with so many allocations:
+
+cat /sys/devices/pci0000:80/0000:80:07.0/0000:85:00.0/pools
+(manually cleaned up column alignment)
+poolinfo - 0.1
+reply_post_free_array pool  1      21     192     1
+reply_free pool             1      1      41728   1
+reply pool                  1      1      1335296 1
+sense pool                  1      1      970272  1
+chain pool                  373959 386048 128     12064
+reply_post_free pool        12     12     166528  12
+
+The patches in this series improve the scalability of the DMA pool
+implementation, which significantly reduces the running time of the
+DMA alloc/free loops.  With the patches applied, "modprobe mpt3sas",
+"rmmod mpt3sas", and system shutdown/reboot with mpt3sas loaded are
+significantly faster.  Here are some benchmarks (of DMA alloc/free
+only, not the entire modprobe/rmmod):
+
+dma_pool_create() + dma_pool_alloc() loop, size = 128, count = 373959
+  original:        350 ms ( 1x)
+  dmapool patches:  18 ms (19x)
+
+dma_pool_free() loop + dma_pool_destroy(), size = 128, count = 373959
+  original:        8901 ms (   1x)
+  dmapool patches:   19 ms ( 477x)
 
 
