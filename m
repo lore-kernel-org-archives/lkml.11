@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CED9CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:29:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8467C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:29:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378849AbiFGV3Q (ORCPT
+        id S1379871AbiFGV3Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:29:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45188 "EHLO
+        Tue, 7 Jun 2022 17:29:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377909AbiFGUej (ORCPT
+        with ESMTP id S1377911AbiFGUej (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:34:39 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D60E136420;
-        Tue,  7 Jun 2022 11:36:43 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B51FA31357;
+        Tue,  7 Jun 2022 11:36:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BAC9ACE2461;
-        Tue,  7 Jun 2022 18:36:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAC8CC385A5;
-        Tue,  7 Jun 2022 18:36:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B4D960B3D;
+        Tue,  7 Jun 2022 18:36:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ACD8C385A2;
+        Tue,  7 Jun 2022 18:36:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627000;
-        bh=TFlFG1TxST65rzWu8o+ql5jezpasEcSRnZQBFqoJotI=;
+        s=korg; t=1654627005;
+        bh=Isrj50lc5Yauj65VBJPnPgB3lYaeuB5jS9/qIuUOzVY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gm1sXPaB7XYg+22u6snKz0omvxx6lg5miKni6lNzVsestnda6j6v5tqFtTZySOrwn
-         xG2yvmpKcVZqqTe/d4t8yBUoHhPoZjG7ZUY0bWBc4n7/8RVwYFE7sX3Is+2VXbjqZs
-         1cXxqAUyHaWYG6fGDIPNBapPjJZg1XZbDEozFyAM=
+        b=xXp+pUcs6dD4uwlqG1Eldq009M6UPOo0kX360AlEXYLdYhNEP3rp0ZXhMygsAiU7H
+         Wbb9MVpF3i8uNQac/ufZFORM7agyv/Q3uCjZkf/OmqTUOPP6NXm1+qRWvNT60TB/uX
+         wQpMjRX/X8Z0rs7fB3ItA7fwHBreE08QfAdA6308=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Trond Myklebust <trond.myklebust@hammerspace.com>,
         Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 581/772] NFS: fsync() should report filesystem errors over EINTR/ERESTARTSYS
-Date:   Tue,  7 Jun 2022 19:02:53 +0200
-Message-Id: <20220607165006.069302431@linuxfoundation.org>
+Subject: [PATCH 5.17 583/772] NFS: Do not report flush errors in nfs_write_end()
+Date:   Tue,  7 Jun 2022 19:02:55 +0200
+Message-Id: <20220607165006.127442996@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,45 +53,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 9641d9bc9b75f11f70646f5c6ee9f5f519a1012e ]
+[ Upstream commit d95b26650e86175e4a97698d89bc1626cd1df0c6 ]
 
-If the commit to disk is interrupted, we should still first check for
-filesystem errors so that we can report them in preference to the error
-due to the signal.
+If we do flush cached writebacks in nfs_write_end() due to the imminent
+expiration of an RPCSEC_GSS session, then we should defer reporting any
+resulting errors until the calls to file_check_and_advance_wb_err() in
+nfs_file_write() and nfs_file_fsync().
 
-Fixes: 2197e9b06c22 ("NFS: Fix up fsync() when the server rebooted")
+Fixes: 6fbda89b257f ("NFS: Replace custom error reporting mechanism with generic one")
 Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/file.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ fs/nfs/file.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
 diff --git a/fs/nfs/file.c b/fs/nfs/file.c
-index d8583f57ff99..ce761c88d260 100644
+index 7e0ce50e04f6..832a97ed2165 100644
 --- a/fs/nfs/file.c
 +++ b/fs/nfs/file.c
-@@ -209,15 +209,16 @@ static int
- nfs_file_fsync_commit(struct file *file, int datasync)
- {
- 	struct inode *inode = file_inode(file);
--	int ret;
-+	int ret, ret2;
+@@ -391,11 +391,8 @@ static int nfs_write_end(struct file *file, struct address_space *mapping,
+ 		return status;
+ 	NFS_I(mapping->host)->write_io += copied;
  
- 	dprintk("NFS: fsync file(%pD2) datasync %d\n", file, datasync);
+-	if (nfs_ctx_key_to_expire(ctx, mapping->host)) {
+-		status = nfs_wb_all(mapping->host);
+-		if (status < 0)
+-			return status;
+-	}
++	if (nfs_ctx_key_to_expire(ctx, mapping->host))
++		nfs_wb_all(mapping->host);
  
- 	nfs_inc_stats(inode, NFSIOS_VFSFSYNC);
- 	ret = nfs_commit_inode(inode, FLUSH_SYNC);
--	if (ret < 0)
--		return ret;
--	return file_check_and_advance_wb_err(file);
-+	ret2 = file_check_and_advance_wb_err(file);
-+	if (ret2 < 0)
-+		return ret2;
-+	return ret;
+ 	return copied;
  }
- 
- int
 -- 
 2.35.1
 
