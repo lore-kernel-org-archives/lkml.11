@@ -2,47 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58EDDCCA48B
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D95B9CCA487
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359767AbiFGUQK (ORCPT
+        id S1359638AbiFGUPx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:16:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45808 "EHLO
+        Tue, 7 Jun 2022 16:15:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355548AbiFGTZX (ORCPT
+        with ESMTP id S1354908AbiFGTXl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:25:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50E019D609;
-        Tue,  7 Jun 2022 11:09:25 -0700 (PDT)
+        Tue, 7 Jun 2022 15:23:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D99F201A9;
+        Tue,  7 Jun 2022 11:09:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5E8061927;
-        Tue,  7 Jun 2022 18:09:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88BF6C385A2;
-        Tue,  7 Jun 2022 18:09:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0895B82348;
+        Tue,  7 Jun 2022 18:09:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67C47C385A2;
+        Tue,  7 Jun 2022 18:09:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625364;
-        bh=yI9kI2cUy2EEHoPBVfyPg7NWlnZiJY+u04TNrxOuZLo=;
+        s=korg; t=1654625349;
+        bh=4y7Ck14Sih/73YdOVk/1vvtwXXSAQU9vHJEbfiUYQ5Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vDA1zE2Q0k+FiaYOgXcGeUxGsYejTl7acnLeThJsKS2SkEs2wip3xhLraPCimZMfc
-         ofsAt51xDvnwlWj+w9dDorbcJGuLTrdf8Byf8991dFobIuEGqTLxevdFawcStfC0GF
-         kg5Oy5ENTiz3EYVKbl0XwTsHczV1kvYuVonBJ9lM=
+        b=nPfe6O4SiLbNrszfRF7WTDgv/bATh0DApO705y31kzbOvc530NxByRGSRxG4UI7y7
+         7sHQRhO5iu9fnkIygiLqYc0AdiQeB3GGBKrJpgFQQoafNm0Y9rVXvvkD+iVbTJ0yPL
+         YejJdlf0yjkTTRkR0Rq0h2BjvpLrzyK5xKBxAYXw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dong Aisheng <aisheng.dong@nxp.com>,
-        Minchan Kim <minchan@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Lecopzer Chen <lecopzer.chen@mediatek.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.15 619/667] Revert "mm/cma.c: remove redundant cma_mutex lock"
-Date:   Tue,  7 Jun 2022 19:04:44 +0200
-Message-Id: <20220607164953.235548518@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.15 653/667] Revert "random: use static branch for crng_ready()"
+Date:   Tue,  7 Jun 2022 19:05:18 +0200
+Message-Id: <20220607164954.235158198@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -54,97 +48,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dong Aisheng <aisheng.dong@nxp.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 60a60e32cf91169840abcb4a80f0b0df31708ba7 upstream.
+This reverts upstream commit f5bda35fba615ace70a656d4700423fa6c9bebee
+from stable. It's not essential and will take some time during 5.19 to
+work out properly.
 
-This reverts commit a4efc174b382fcdb which introduced a regression issue
-that when there're multiple processes allocating dma memory in parallel by
-calling dma_alloc_coherent(), it may fail sometimes as follows:
-
-Error log:
-cma: cma_alloc: linux,cma: alloc failed, req-size: 148 pages, ret: -16
-cma: number of available pages:
-3@125+20@172+12@236+4@380+32@736+17@2287+23@2473+20@36076+99@40477+108@40852+44@41108+20@41196+108@41364+108@41620+
-108@42900+108@43156+483@44061+1763@45341+1440@47712+20@49324+20@49388+5076@49452+2304@55040+35@58141+20@58220+20@58284+
-7188@58348+84@66220+7276@66452+227@74525+6371@75549=> 33161 free of 81920 total pages
-
-When issue happened, we saw there were still 33161 pages (129M) free CMA
-memory and a lot available free slots for 148 pages in CMA bitmap that we
-want to allocate.
-
-When dumping memory info, we found that there was also ~342M normal
-memory, but only 1352K CMA memory left in buddy system while a lot of
-pageblocks were isolated.
-
-Memory info log:
-Normal free:351096kB min:30000kB low:37500kB high:45000kB reserved_highatomic:0KB
-	    active_anon:98060kB inactive_anon:98948kB active_file:60864kB inactive_file:31776kB
-	    unevictable:0kB writepending:0kB present:1048576kB managed:1018328kB mlocked:0kB
-	    bounce:0kB free_pcp:220kB local_pcp:192kB free_cma:1352kB lowmem_reserve[]: 0 0 0
-Normal: 78*4kB (UECI) 1772*8kB (UMECI) 1335*16kB (UMECI) 360*32kB (UMECI) 65*64kB (UMCI)
-	36*128kB (UMECI) 16*256kB (UMCI) 6*512kB (EI) 8*1024kB (UEI) 4*2048kB (MI) 8*4096kB (EI)
-	8*8192kB (UI) 3*16384kB (EI) 8*32768kB (M) = 489288kB
-
-The root cause of this issue is that since commit a4efc174b382 ("mm/cma.c:
-remove redundant cma_mutex lock"), CMA supports concurrent memory
-allocation.  It's possible that the memory range process A trying to alloc
-has already been isolated by the allocation of process B during memory
-migration.
-
-The problem here is that the memory range isolated during one allocation
-by start_isolate_page_range() could be much bigger than the real size we
-want to alloc due to the range is aligned to MAX_ORDER_NR_PAGES.
-
-Taking an ARMv7 platform with 1G memory as an example, when
-MAX_ORDER_NR_PAGES is big (e.g.  32M with max_order 14) and CMA memory is
-relatively small (e.g.  128M), there're only 4 MAX_ORDER slot, then it's
-very easy that all CMA memory may have already been isolated by other
-processes when one trying to allocate memory using dma_alloc_coherent().
-Since current CMA code will only scan one time of whole available CMA
-memory, then dma_alloc_coherent() may easy fail due to contention with
-other processes.
-
-This patch simply falls back to the original method that using cma_mutex
-to make alloc_contig_range() run sequentially to avoid the issue.
-
-Link: https://lkml.kernel.org/r/20220509094551.3596244-1-aisheng.dong@nxp.com
-Link: https://lore.kernel.org/all/20220315144521.3810298-2-aisheng.dong@nxp.com/
-Fixes: a4efc174b382 ("mm/cma.c: remove redundant cma_mutex lock")
-Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
-Acked-by: Minchan Kim <minchan@kernel.org>
-Acked-by: David Hildenbrand <david@redhat.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Lecopzer Chen <lecopzer.chen@mediatek.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: <stable@vger.kernel.org>	[5.11+]
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- mm/cma.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/char/random.c |   12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
 
---- a/mm/cma.c
-+++ b/mm/cma.c
-@@ -37,6 +37,7 @@
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -79,8 +79,7 @@ static enum {
+ 	CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
+ 	CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
+ } crng_init __read_mostly = CRNG_EMPTY;
+-static DEFINE_STATIC_KEY_FALSE(crng_is_ready);
+-#define crng_ready() (static_branch_likely(&crng_is_ready) || crng_init >= CRNG_READY)
++#define crng_ready() (likely(crng_init >= CRNG_READY))
+ /* Various types of waiters for crng_init->CRNG_READY transition. */
+ static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
+ static struct fasync_struct *fasync;
+@@ -110,11 +109,6 @@ bool rng_is_initialized(void)
+ }
+ EXPORT_SYMBOL(rng_is_initialized);
  
- struct cma cma_areas[MAX_CMA_AREAS];
- unsigned cma_area_count;
-+static DEFINE_MUTEX(cma_mutex);
- 
- phys_addr_t cma_get_base(const struct cma *cma)
- {
-@@ -471,9 +472,10 @@ struct page *cma_alloc(struct cma *cma,
- 		spin_unlock_irq(&cma->lock);
- 
- 		pfn = cma->base_pfn + (bitmap_no << cma->order_per_bit);
-+		mutex_lock(&cma_mutex);
- 		ret = alloc_contig_range(pfn, pfn + count, MIGRATE_CMA,
- 				     GFP_KERNEL | (no_warn ? __GFP_NOWARN : 0));
+-static void __cold crng_set_ready(struct work_struct *work)
+-{
+-	static_branch_enable(&crng_is_ready);
+-}
 -
-+		mutex_unlock(&cma_mutex);
- 		if (ret == 0) {
- 			page = pfn_to_page(pfn);
- 			break;
+ /* Used by wait_for_random_bytes(), and considered an entropy collector, below. */
+ static void try_to_generate_entropy(void);
+ 
+@@ -268,7 +262,7 @@ static void crng_reseed(void)
+ 		++next_gen;
+ 	WRITE_ONCE(base_crng.generation, next_gen);
+ 	WRITE_ONCE(base_crng.birth, jiffies);
+-	if (!static_branch_likely(&crng_is_ready))
++	if (!crng_ready())
+ 		crng_init = CRNG_READY;
+ 	spin_unlock_irqrestore(&base_crng.lock, flags);
+ 	memzero_explicit(key, sizeof(key));
+@@ -711,7 +705,6 @@ static void extract_entropy(void *buf, s
+ 
+ static void __cold _credit_init_bits(size_t bits)
+ {
+-	static struct execute_work set_ready;
+ 	unsigned int new, orig, add;
+ 	unsigned long flags;
+ 
+@@ -727,7 +720,6 @@ static void __cold _credit_init_bits(siz
+ 
+ 	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
+ 		crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
+-		execute_in_process_context(crng_set_ready, &set_ready);
+ 		process_random_ready_list();
+ 		wake_up_interruptible(&crng_init_wait);
+ 		kill_fasync(&fasync, SIGIO, POLL_IN);
 
 
