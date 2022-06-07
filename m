@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 556A8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:12:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF4D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:12:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349724AbiFGSMR (ORCPT
+        id S1349777AbiFGSM3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48588 "EHLO
+        Tue, 7 Jun 2022 14:12:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349846AbiFGRvi (ORCPT
+        with ESMTP id S1349826AbiFGRvi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:51:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6693325C60;
-        Tue,  7 Jun 2022 10:39:02 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEBAC252A6;
+        Tue,  7 Jun 2022 10:39:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A034BB82285;
-        Tue,  7 Jun 2022 17:33:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F167C385A5;
-        Tue,  7 Jun 2022 17:33:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BC2A615B1;
+        Tue,  7 Jun 2022 17:38:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A938AC385A5;
+        Tue,  7 Jun 2022 17:38:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623211;
-        bh=q2WfSuGehAysC4oWHH5FcLye7l4l9jfwd2iIF05nmrM=;
+        s=korg; t=1654623514;
+        bh=sgoGiyinGfGFOR0BlmGTWzl4IdhgAVwAoae3GDkUjaA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U9pEyBJZjM6OhAi9GrlApsOHEARr0ne+wA1JnVHEhuFDlIgnx4EnERg+ePZ4q3Er6
-         cpoyzRqsIrRl05i/HM6xmfsp16Z1//pdbg/pJzA7RHVNLBMX4JrOEwO08plJQ4c2nC
-         X+SF9ZP7VpUhza5y35WAdRVkn5bHUDlJLh1iXkP0=
+        b=xufLw3XO2GXjwTMwpz8F8b0A0fohZ9pmnLrOhKnPpCYrnB5pj7odbY9mCcZtBdtRa
+         VYs3xnvq2PAZSQdC6w0UZxfzyyU44Z9VJl1HHPIg6YNCLWpaChjQLbSCJA9saR5VZZ
+         g4+EbivJdmXTJNJAtbMy6uNDUnSTGZvpNN8wucKY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 294/452] powerpc/8xx: export cpm_setbrg for modules
-Date:   Tue,  7 Jun 2022 19:02:31 +0200
-Message-Id: <20220607164917.315546257@linuxfoundation.org>
+        "yukuai (C)" <yukuai3@huawei.com>, Jan Kara <jack@suse.cz>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 445/452] bfq: Make sure bfqg for which we are queueing requests is online
+Date:   Tue,  7 Jun 2022 19:05:02 +0200
+Message-Id: <20220607164921.830400796@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -52,40 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit 22f8e625ebabd7ed3185b82b44b4f12fc0402113 ]
+commit 075a53b78b815301f8d3dd1ee2cd99554e34f0dd upstream.
 
-Fix missing export for a loadable module build:
+Bios queued into BFQ IO scheduler can be associated with a cgroup that
+was already offlined. This may then cause insertion of this bfq_group
+into a service tree. But this bfq_group will get freed as soon as last
+bio associated with it is completed leading to use after free issues for
+service tree users. Fix the problem by making sure we always operate on
+online bfq_group. If the bfq_group associated with the bio is not
+online, we pick the first online parent.
 
-ERROR: modpost: "cpm_setbrg" [drivers/tty/serial/cpm_uart/cpm_uart.ko] undefined!
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-[chleroy: Changed Fixes: tag]
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20210122010819.30986-1-rdunlap@infradead.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+CC: stable@vger.kernel.org
+Fixes: e21b7a0b9887 ("block, bfq: add full hierarchical scheduling and cgroups support")
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-9-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/platforms/8xx/cpm1.c | 1 +
- 1 file changed, 1 insertion(+)
+ block/bfq-cgroup.c |   15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/platforms/8xx/cpm1.c b/arch/powerpc/platforms/8xx/cpm1.c
-index c58b6f1c40e3..3ef5e9fd3a9b 100644
---- a/arch/powerpc/platforms/8xx/cpm1.c
-+++ b/arch/powerpc/platforms/8xx/cpm1.c
-@@ -280,6 +280,7 @@ cpm_setbrg(uint brg, uint rate)
- 		out_be32(bp, (((BRG_UART_CLK_DIV16 / rate) - 1) << 1) |
- 			      CPM_BRG_EN | CPM_BRG_DIV16);
- }
-+EXPORT_SYMBOL(cpm_setbrg);
+--- a/block/bfq-cgroup.c
++++ b/block/bfq-cgroup.c
+@@ -608,10 +608,19 @@ static void bfq_link_bfqg(struct bfq_dat
+ struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
+ {
+ 	struct blkcg_gq *blkg = bio->bi_blkg;
++	struct bfq_group *bfqg;
  
- struct cpm_ioport16 {
- 	__be16 dir, par, odr_sor, dat, intr;
--- 
-2.35.1
-
+-	if (!blkg)
+-		return bfqd->root_group;
+-	return blkg_to_bfqg(blkg);
++	while (blkg) {
++		bfqg = blkg_to_bfqg(blkg);
++		if (bfqg->online) {
++			bio_associate_blkg_from_css(bio, &blkg->blkcg->css);
++			return bfqg;
++		}
++		blkg = blkg->parent;
++	}
++	bio_associate_blkg_from_css(bio,
++				&bfqg_to_blkg(bfqd->root_group)->blkcg->css);
++	return bfqd->root_group;
+ }
+ 
+ /**
 
 
