@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4842CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:28:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FDBFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:28:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379793AbiFGV2a (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:28:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42678 "EHLO
+        id S231852AbiFGV2k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 17:28:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377786AbiFGUeF (ORCPT
+        with ESMTP id S1377824AbiFGUeI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:05 -0400
+        Tue, 7 Jun 2022 16:34:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A35B1E73DE;
-        Tue,  7 Jun 2022 11:35:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D95A1E7ACB;
+        Tue,  7 Jun 2022 11:36:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65D3DB8237B;
-        Tue,  7 Jun 2022 18:35:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0D2FC385A2;
-        Tue,  7 Jun 2022 18:35:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5AA3DB82349;
+        Tue,  7 Jun 2022 18:36:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C01B0C34115;
+        Tue,  7 Jun 2022 18:36:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626956;
-        bh=MU2+vNNvD/C4Et7c0mjGwxnPA8RogRxCydOV6Jl+oY8=;
+        s=korg; t=1654626967;
+        bh=orotY9yh0VRi6pSD8OAtOrzD0+p/UEIglTPufgVHd1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CzWgxKGChLMGJu3K3KCSgxdPwcCj86nbPlKNcxQCBcHTW88lhD/O8mgy9+Sxc1IrG
-         NCLIf1XRFqj4ynQmY+l0BqJA3+wxE+xvxqYK8p3zTUUtt5f4AsobZnqNkqHyi6OAO3
-         L1Nu/Xmk6MC36nWf4oidvvFPhwhHGGeRnLIyAtpc=
+        b=A0tsjxBvQ/CJVYhV92V4G5ysNxaDmzUo9w6gmOXF5F3hvS0iwL0VE+Lez7FAo9rfo
+         RsE0jqpPoFeAV4DP5pDSFkJkZxrZ95lRHrwYQlRdOLUnLz8EgqTXQLG9IkURPOiIpG
+         cJbMKvxo8h2AqQXBwuso+OioNam96zqUYr1/WTAE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Bj=C3=B6rn=20Ard=C3=B6?= <bjorn.ardo@axis.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 558/772] mailbox: forward the hrtimer if not queued and under a lock
-Date:   Tue,  7 Jun 2022 19:02:30 +0200
-Message-Id: <20220607165005.402323026@linuxfoundation.org>
+        stable@vger.kernel.org, Hsin-Yi Wang <hsinyi@chromium.org>,
+        Yong Wu <yong.wu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 570/772] iommu/mediatek: Remove clk_disable in mtk_iommu_remove
+Date:   Tue,  7 Jun 2022 19:02:42 +0200
+Message-Id: <20220607165005.749717566@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,107 +52,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Björn Ardö <bjorn.ardo@axis.com>
+From: Yong Wu <yong.wu@mediatek.com>
 
-[ Upstream commit bca1a1004615efe141fd78f360ecc48c60bc4ad5 ]
+[ Upstream commit 98df772bdd1c4ce717a26289efea15cbbe4b64ed ]
 
-This reverts commit c7dacf5b0f32957b24ef29df1207dc2cd8307743,
-"mailbox: avoid timer start from callback"
+After the commit b34ea31fe013 ("iommu/mediatek: Always enable the clk on
+resume"), the iommu clock is controlled by the runtime callback.
+thus remove the clk control in the mtk_iommu_remove.
 
-The previous commit was reverted since it lead to a race that
-caused the hrtimer to not be started at all. The check for
-hrtimer_active() in msg_submit() will return true if the
-callback function txdone_hrtimer() is currently running. This
-function could return HRTIMER_NORESTART and then the timer
-will not be restarted, and also msg_submit() will not start
-the timer. This will lead to a message actually being submitted
-but no timer will start to check for its compleation.
+Otherwise, it will warning like:
 
-The original fix that added checking hrtimer_active() was added to
-avoid a warning with hrtimer_forward. Looking in the kernel
-another solution to avoid this warning is to check hrtimer_is_queued()
-before calling hrtimer_forward_now() instead. This however requires a
-lock so the timer is not started by msg_submit() inbetween this check
-and the hrtimer_forward() call.
+echo 14018000.iommu > /sys/bus/platform/drivers/mtk-iommu/unbind
 
-Fixes: c7dacf5b0f32 ("mailbox: avoid timer start from callback")
-Signed-off-by: Björn Ardö <bjorn.ardo@axis.com>
-Signed-off-by: Jassi Brar <jaswinder.singh@linaro.org>
+[   51.413044] ------------[ cut here ]------------
+[   51.413648] vpp0_smi_iommu already disabled
+[   51.414233] WARNING: CPU: 2 PID: 157 at */v5.15-rc1/kernel/mediatek/
+                          drivers/clk/clk.c:952 clk_core_disable+0xb0/0xb8
+[   51.417174] Hardware name: MT8195V/C(ENG) (DT)
+[   51.418635] pc : clk_core_disable+0xb0/0xb8
+[   51.419177] lr : clk_core_disable+0xb0/0xb8
+...
+[   51.429375] Call trace:
+[   51.429694]  clk_core_disable+0xb0/0xb8
+[   51.430193]  clk_core_disable_lock+0x24/0x40
+[   51.430745]  clk_disable+0x20/0x30
+[   51.431189]  mtk_iommu_remove+0x58/0x118
+[   51.431705]  platform_remove+0x28/0x60
+[   51.432197]  device_release_driver_internal+0x110/0x1f0
+[   51.432873]  device_driver_detach+0x18/0x28
+[   51.433418]  unbind_store+0xd4/0x108
+[   51.433886]  drv_attr_store+0x24/0x38
+[   51.434363]  sysfs_kf_write+0x40/0x58
+[   51.434843]  kernfs_fop_write_iter+0x164/0x1e0
+
+Fixes: b34ea31fe013 ("iommu/mediatek: Always enable the clk on resume")
+Reported-by: Hsin-Yi Wang <hsinyi@chromium.org>
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Link: https://lore.kernel.org/r/20220503071427.2285-7-yong.wu@mediatek.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mailbox/mailbox.c          | 19 +++++++++++++------
- include/linux/mailbox_controller.h |  1 +
- 2 files changed, 14 insertions(+), 6 deletions(-)
+ drivers/iommu/mtk_iommu.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/mailbox/mailbox.c b/drivers/mailbox/mailbox.c
-index 3e7d4b20ab34..4229b9b5da98 100644
---- a/drivers/mailbox/mailbox.c
-+++ b/drivers/mailbox/mailbox.c
-@@ -82,11 +82,11 @@ static void msg_submit(struct mbox_chan *chan)
- exit:
- 	spin_unlock_irqrestore(&chan->lock, flags);
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 2285507d3354..b9d690327eae 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -956,7 +956,6 @@ static int mtk_iommu_remove(struct platform_device *pdev)
  
--	/* kick start the timer immediately to avoid delays */
- 	if (!err && (chan->txdone_method & TXDONE_BY_POLL)) {
--		/* but only if not already active */
--		if (!hrtimer_active(&chan->mbox->poll_hrt))
--			hrtimer_start(&chan->mbox->poll_hrt, 0, HRTIMER_MODE_REL);
-+		/* kick start the timer immediately to avoid delays */
-+		spin_lock_irqsave(&chan->mbox->poll_hrt_lock, flags);
-+		hrtimer_start(&chan->mbox->poll_hrt, 0, HRTIMER_MODE_REL);
-+		spin_unlock_irqrestore(&chan->mbox->poll_hrt_lock, flags);
- 	}
- }
+ 	list_del(&data->list);
  
-@@ -120,20 +120,26 @@ static enum hrtimer_restart txdone_hrtimer(struct hrtimer *hrtimer)
- 		container_of(hrtimer, struct mbox_controller, poll_hrt);
- 	bool txdone, resched = false;
- 	int i;
-+	unsigned long flags;
- 
- 	for (i = 0; i < mbox->num_chans; i++) {
- 		struct mbox_chan *chan = &mbox->chans[i];
- 
- 		if (chan->active_req && chan->cl) {
--			resched = true;
- 			txdone = chan->mbox->ops->last_tx_done(chan);
- 			if (txdone)
- 				tx_tick(chan, 0);
-+			else
-+				resched = true;
- 		}
- 	}
- 
- 	if (resched) {
--		hrtimer_forward_now(hrtimer, ms_to_ktime(mbox->txpoll_period));
-+		spin_lock_irqsave(&mbox->poll_hrt_lock, flags);
-+		if (!hrtimer_is_queued(hrtimer))
-+			hrtimer_forward_now(hrtimer, ms_to_ktime(mbox->txpoll_period));
-+		spin_unlock_irqrestore(&mbox->poll_hrt_lock, flags);
-+
- 		return HRTIMER_RESTART;
- 	}
- 	return HRTIMER_NORESTART;
-@@ -500,6 +506,7 @@ int mbox_controller_register(struct mbox_controller *mbox)
- 		hrtimer_init(&mbox->poll_hrt, CLOCK_MONOTONIC,
- 			     HRTIMER_MODE_REL);
- 		mbox->poll_hrt.function = txdone_hrtimer;
-+		spin_lock_init(&mbox->poll_hrt_lock);
- 	}
- 
- 	for (i = 0; i < mbox->num_chans; i++) {
-diff --git a/include/linux/mailbox_controller.h b/include/linux/mailbox_controller.h
-index 36d6ce673503..6fee33cb52f5 100644
---- a/include/linux/mailbox_controller.h
-+++ b/include/linux/mailbox_controller.h
-@@ -83,6 +83,7 @@ struct mbox_controller {
- 				      const struct of_phandle_args *sp);
- 	/* Internal to API */
- 	struct hrtimer poll_hrt;
-+	spinlock_t poll_hrt_lock;
- 	struct list_head node;
- };
- 
+-	clk_disable_unprepare(data->bclk);
+ 	device_link_remove(data->smicomm_dev, &pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
+ 	devm_free_irq(&pdev->dev, data->irq, data);
 -- 
 2.35.1
 
