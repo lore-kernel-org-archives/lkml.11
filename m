@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED6DCCA49A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E0FFCCA49B
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349328AbiFGUwt (ORCPT
+        id S1377088AbiFGUuE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:52:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50190 "EHLO
+        Tue, 7 Jun 2022 16:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358431AbiFGTw3 (ORCPT
+        with ESMTP id S1358011AbiFGTv1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:52:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 946FDEFF17;
-        Tue,  7 Jun 2022 11:20:27 -0700 (PDT)
+        Tue, 7 Jun 2022 15:51:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E53938AE72;
+        Tue,  7 Jun 2022 11:19:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DDC0B82239;
-        Tue,  7 Jun 2022 18:20:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6ED47C385A2;
-        Tue,  7 Jun 2022 18:20:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9396E60920;
+        Tue,  7 Jun 2022 18:19:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A182EC385A2;
+        Tue,  7 Jun 2022 18:19:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626024;
-        bh=B7+TLIpamswXZAjKolO5qXIuezHKavchvj0PzWpvahY=;
+        s=korg; t=1654625986;
+        bh=y5FpsC0QGeen2RQowSl2Y0D8H3xk4G0Akqg3acr5AMs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rCWZ54sh8U6nwKr7j55cfTgfxQj/6OBK5b5Ux2fHyw0x24kgjjjoeyiUEBz4C2IXv
-         exNhCakPVzATPHhrDatyRTHsv6zq8J6PAZGSKKahoR3C/hIAtED2SxmCQdffXzWWeW
-         FKe3Oqb0rQ+nb92ogqMya+6jFZ8r9eni5vjks01o=
+        b=qkG8LivUtwv6PsCp0tave26p+hj1CqK4vrPeK3KMcHKq2xJCkM7bWzLAG4ltAzCps
+         phfkP8PkTLLALDoS5QuhFGRbOR5gQSLg5LsTdP2y2/6KUebJwPsgF5yM/pcydUlqY8
+         YTV6x2rIvClPxqDGMnffmg5vERJEN52JFuZib7ew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 230/772] ath11k: acquire ab->base_lock in unassign when finding the peer by addr
-Date:   Tue,  7 Jun 2022 18:57:02 +0200
-Message-Id: <20220607164955.809651781@linuxfoundation.org>
+Subject: [PATCH 5.17 217/772] powerpc/powernv: fix missing of_node_put in uv_init()
+Date:   Tue,  7 Jun 2022 18:56:49 +0200
+Message-Id: <20220607164955.428436033@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,61 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 2db80f93869d491be57cbc2b36f30d0d3a0e5bde ]
+[ Upstream commit 3ffa9fd471f57f365bc54fc87824c530422f64a5 ]
 
-ath11k_peer_find_by_addr states via lockdep that ab->base_lock must be
-held when calling that function in order to protect the list. All
-callers except ath11k_mac_op_unassign_vif_chanctx have that lock
-acquired when calling ath11k_peer_find_by_addr. That lock is also not
-transitively held by a path towards ath11k_mac_op_unassign_vif_chanctx.
-The solution is to acquire the lock when calling
-ath11k_peer_find_by_addr inside ath11k_mac_op_unassign_vif_chanctx.
+of_find_compatible_node() returns node pointer with refcount incremented,
+use of_node_put() on it when done.
 
-I am currently working on a static analyser to detect missing locks and
-this was a reported case. I manually verified the report by looking at
-the code, but I do not have real hardware so this is compile tested
-only.
-
-Fixes: 701e48a43e15 ("ath11k: add packet log support for QCA6390")
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220314215253.92658-1-dossche.niels@gmail.com
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220407090043.2491854-1-lv.ruyi@zte.com.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/mac.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ arch/powerpc/platforms/powernv/ultravisor.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index b2dac859dfe1..16b45b742f9d 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -7068,6 +7068,7 @@ ath11k_mac_op_unassign_vif_chanctx(struct ieee80211_hw *hw,
- 	struct ath11k *ar = hw->priv;
- 	struct ath11k_base *ab = ar->ab;
- 	struct ath11k_vif *arvif = (void *)vif->drv_priv;
-+	struct ath11k_peer *peer;
- 	int ret;
+diff --git a/arch/powerpc/platforms/powernv/ultravisor.c b/arch/powerpc/platforms/powernv/ultravisor.c
+index e4a00ad06f9d..67c8c4b2d8b1 100644
+--- a/arch/powerpc/platforms/powernv/ultravisor.c
++++ b/arch/powerpc/platforms/powernv/ultravisor.c
+@@ -55,6 +55,7 @@ static int __init uv_init(void)
+ 		return -ENODEV;
  
- 	mutex_lock(&ar->conf_mutex);
-@@ -7079,9 +7080,13 @@ ath11k_mac_op_unassign_vif_chanctx(struct ieee80211_hw *hw,
- 	WARN_ON(!arvif->is_started);
+ 	uv_memcons = memcons_init(node, "memcons");
++	of_node_put(node);
+ 	if (!uv_memcons)
+ 		return -ENOENT;
  
- 	if (ab->hw_params.vdev_start_delay &&
--	    arvif->vdev_type == WMI_VDEV_TYPE_MONITOR &&
--	    ath11k_peer_find_by_addr(ab, ar->mac_addr))
--		ath11k_peer_delete(ar, arvif->vdev_id, ar->mac_addr);
-+	    arvif->vdev_type == WMI_VDEV_TYPE_MONITOR) {
-+		spin_lock_bh(&ab->base_lock);
-+		peer = ath11k_peer_find_by_addr(ab, ar->mac_addr);
-+		spin_unlock_bh(&ab->base_lock);
-+		if (peer)
-+			ath11k_peer_delete(ar, arvif->vdev_id, ar->mac_addr);
-+	}
- 
- 	if (arvif->vdev_type == WMI_VDEV_TYPE_MONITOR) {
- 		ret = ath11k_mac_monitor_stop(ar);
 -- 
 2.35.1
 
