@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B15C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:43:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CCCDC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:43:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350861AbiFHBnY (ORCPT
+        id S1354418AbiFHBnb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:43:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45912 "EHLO
+        Tue, 7 Jun 2022 21:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383644AbiFGVxX (ORCPT
+        with ESMTP id S1383774AbiFGWGV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:53:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477782453B5;
-        Tue,  7 Jun 2022 12:12:03 -0700 (PDT)
+        Tue, 7 Jun 2022 18:06:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E1C187C04;
+        Tue,  7 Jun 2022 12:17:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 563FF618EC;
-        Tue,  7 Jun 2022 19:11:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67A97C385A2;
-        Tue,  7 Jun 2022 19:11:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87F97B8237B;
+        Tue,  7 Jun 2022 19:17:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F32EDC385A2;
+        Tue,  7 Jun 2022 19:17:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629113;
-        bh=yCzJMVCUlRwnYxLiqzwsBgrMgG0o7TJdZI532aPA9YI=;
+        s=korg; t=1654629447;
+        bh=1ccXHXOLc5bkJrMUGd4dBgKunxzafld5r3Mry26Bbio=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NDc2UfhdZd44JJXxR8tghzUQ1YxxN4JUkelML7gFBP3mW/QmehUFWZQk0nMQoN5DI
-         KoRwiK501k809m48VjY7pLkzCw0T3oqrHOHBPXe8zbxkpzwEzi41bQqeKabTRwGbcE
-         fc2RZw2kx/op0+Pd7jAfjUUqP5iMB+v2Fyl8eFio=
+        b=rIq8Pt1R86TwpdAbB0GJSm5h1biTrSZ/9UQaRoImR4vAUhiezB3BskOpeq3nDqAz3
+         UTvEd9r3T/M2xpiIqz1VMyhpXbQVvq0cFmH/Im7szLVQDzHKu+qQlDKA07SimdlfMk
+         yvektF9SykHNAwshFz53q2aZXrAQGIeQtOQpNQAU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Guo Ren <guoren@kernel.org>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 573/879] crypto: marvell/cesa - ECB does not IV
-Date:   Tue,  7 Jun 2022 19:01:31 +0200
-Message-Id: <20220607165019.487265247@linuxfoundation.org>
+Subject: [PATCH 5.18 694/879] RISC-V: Fix the XIP build
+Date:   Tue,  7 Jun 2022 19:03:32 +0200
+Message-Id: <20220607165022.991461845@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,32 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin Labbe <clabbe@baylibre.com>
+From: Palmer Dabbelt <palmer@rivosinc.com>
 
-[ Upstream commit 4ffa1763622ae5752961499588f3f8874315f974 ]
+[ Upstream commit d9e418d0ca1c464fe361468b772d4aa870d54e63 ]
 
-The DES3 ECB has an IV size set but ECB does not need one.
+A handful of functions unused functions were enabled during XIP builds,
+which themselves didn't build correctly.  This just disables the
+functions entirely.
 
-Fixes: 4ada483978237 ("crypto: marvell/cesa - add Triple-DES support")
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: e8a62cc26ddf ("riscv: Implement sv48 support")
+Reviewed-by: Guo Ren <guoren@kernel.org>
+Link: https://lore.kernel.org/r/20220420184056.7886-5-palmer@rivosinc.com
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/marvell/cesa/cipher.c | 1 -
- 1 file changed, 1 deletion(-)
+ arch/riscv/mm/init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/marvell/cesa/cipher.c b/drivers/crypto/marvell/cesa/cipher.c
-index b739d3b873dc..c6f2fa753b7c 100644
---- a/drivers/crypto/marvell/cesa/cipher.c
-+++ b/drivers/crypto/marvell/cesa/cipher.c
-@@ -624,7 +624,6 @@ struct skcipher_alg mv_cesa_ecb_des3_ede_alg = {
- 	.decrypt = mv_cesa_ecb_des3_ede_decrypt,
- 	.min_keysize = DES3_EDE_KEY_SIZE,
- 	.max_keysize = DES3_EDE_KEY_SIZE,
--	.ivsize = DES3_EDE_BLOCK_SIZE,
- 	.base = {
- 		.cra_name = "ecb(des3_ede)",
- 		.cra_driver_name = "mv-ecb-des3-ede",
+diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
+index 05ed641a1134..39e2e1d0e94f 100644
+--- a/arch/riscv/mm/init.c
++++ b/arch/riscv/mm/init.c
+@@ -677,7 +677,7 @@ static __init pgprot_t pgprot_from_va(uintptr_t va)
+ }
+ #endif /* CONFIG_STRICT_KERNEL_RWX */
+ 
+-#ifdef CONFIG_64BIT
++#if defined(CONFIG_64BIT) && !defined(CONFIG_XIP_KERNEL)
+ static void __init disable_pgtable_l5(void)
+ {
+ 	pgtable_l5_enabled = false;
 -- 
 2.35.1
 
