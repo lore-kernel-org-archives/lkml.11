@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC96CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:19:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E4F2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:19:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377969AbiFGVTm (ORCPT
+        id S1377742AbiFGVTt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:19:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47456 "EHLO
+        Tue, 7 Jun 2022 17:19:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359269AbiFGUWw (ORCPT
+        with ESMTP id S1359435AbiFGUWj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:22:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FC117CCA5;
-        Tue,  7 Jun 2022 11:31:54 -0700 (PDT)
+        Tue, 7 Jun 2022 16:22:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CDE17C6BC;
+        Tue,  7 Jun 2022 11:31:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 774BD61553;
-        Tue,  7 Jun 2022 18:31:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 858BAC341CA;
-        Tue,  7 Jun 2022 18:31:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C00D161509;
+        Tue,  7 Jun 2022 18:31:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6077C341C7;
+        Tue,  7 Jun 2022 18:31:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626712;
-        bh=THnhl6EqQFhS3geuRLyG54hpkwuwb34QL3RX6SGZLlM=;
+        s=korg; t=1654626710;
+        bh=03TV2QLK5fgpBzpNu/fIRw/Z9gJqYgWGIcOPN0CR1B4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XZcq+gm2NlmZ0Kmj4zThaUFpWA0NUWje8kWR1RMhYBhNyWQzQGEsHkmdOj2yQ72Fu
-         KHNzIlqhkzjR97Z+d+38XrBTHlONWRqvck+GYV2sNE7HrNGAf5tJrnnAuw3LWzTORj
-         hxkD702eLXyjhZUefeWWkveVTRPYY1bIYhf6Imy0=
+        b=M3Rm6a0g+k+mQ0ri0KE4SxfwXFavK8/QKnBMP3qpa2PKIHpW6zmVg+RLwUHDR8TI2
+         vPuc5uOEhIiP4uXIGZh4OoL8xgmjIqShks39mEtiYZAjlLnK4gYkJYSYHugHRll4f4
+         zfyY2OrLuNl9ayzbxn+OtO+DjYzXO9MRxzqYUflw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Harini Katakam <harini.katakam@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 470/772] ARM: dts: imx6dl-colibri: Fix I2C pinmuxing
-Date:   Tue,  7 Jun 2022 19:01:02 +0200
-Message-Id: <20220607165002.847331484@linuxfoundation.org>
+Subject: [PATCH 5.17 426/772] net: macb: Fix PTP one step sync support
+Date:   Tue,  7 Jun 2022 19:00:18 +0200
+Message-Id: <20220607165001.556582327@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,51 +52,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Krummenacher <max.krummenacher@toradex.com>
+From: Harini Katakam <harini.katakam@xilinx.com>
 
-[ Upstream commit 5f5c579a34a87117c20b411df583ae816c1ec84f ]
+[ Upstream commit 5cebb40bc9554aafcc492431181f43c6231b0459 ]
 
-Fix names of extra pingroup node and property for gpio bus recovery.
-Without the change i2c2 is not functional.
+PTP one step sync packets cannot have CSUM padding and insertion in
+SW since time stamp is inserted on the fly by HW.
+In addition, ptp4l version 3.0 and above report an error when skb
+timestamps are reported for packets that not processed for TX TS
+after transmission.
+Add a helper to identify PTP one step sync and fix the above two
+errors. Add a common mask for PTP header flag field "twoStepflag".
+Also reset ptp OSS bit when one step is not selected.
 
-Fixes: 56f0df6b6b58 ("ARM: dts: imx*(colibri|apalis): add missing recovery modes to i2c")
-Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: ab91f0a9b5f4 ("net: macb: Add hardware PTP support")
+Fixes: 653e92a9175e ("net: macb: add support for padding and fcs computation")
+Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
+Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220518170756.7752-1-harini.katakam@xilinx.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6qdl-colibri.dtsi | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 40 +++++++++++++++++++++---
+ drivers/net/ethernet/cadence/macb_ptp.c  |  4 ++-
+ include/linux/ptp_classify.h             |  3 ++
+ 3 files changed, 42 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-colibri.dtsi b/arch/arm/boot/dts/imx6qdl-colibri.dtsi
-index 4e2a309c93fa..1e86b3814708 100644
---- a/arch/arm/boot/dts/imx6qdl-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-colibri.dtsi
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0+ OR MIT
- /*
-- * Copyright 2014-2020 Toradex
-+ * Copyright 2014-2022 Toradex
-  * Copyright 2012 Freescale Semiconductor, Inc.
-  * Copyright 2011 Linaro Ltd.
-  */
-@@ -132,7 +132,7 @@
- 	clock-frequency = <100000>;
- 	pinctrl-names = "default", "gpio";
- 	pinctrl-0 = <&pinctrl_i2c2>;
--	pinctrl-0 = <&pinctrl_i2c2_gpio>;
-+	pinctrl-1 = <&pinctrl_i2c2_gpio>;
- 	scl-gpios = <&gpio2 30 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
- 	sda-gpios = <&gpio3 16 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
- 	status = "okay";
-@@ -488,7 +488,7 @@
- 		>;
- 	};
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index c1100af5666b..52ee4a825c25 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -35,6 +35,7 @@
+ #include <linux/tcp.h>
+ #include <linux/iopoll.h>
+ #include <linux/pm_runtime.h>
++#include <linux/ptp_classify.h>
+ #include "macb.h"
  
--	pinctrl_i2c2_gpio: i2c2grp {
-+	pinctrl_i2c2_gpio: i2c2gpiogrp {
- 		fsl,pins = <
- 			MX6QDL_PAD_EIM_EB2__GPIO2_IO30 0x4001b8b1
- 			MX6QDL_PAD_EIM_D16__GPIO3_IO16 0x4001b8b1
+ /* This structure is only used for MACB on SiFive FU540 devices */
+@@ -1122,6 +1123,36 @@ static void macb_tx_error_task(struct work_struct *work)
+ 	spin_unlock_irqrestore(&bp->lock, flags);
+ }
+ 
++static bool ptp_one_step_sync(struct sk_buff *skb)
++{
++	struct ptp_header *hdr;
++	unsigned int ptp_class;
++	u8 msgtype;
++
++	/* No need to parse packet if PTP TS is not involved */
++	if (likely(!(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)))
++		goto not_oss;
++
++	/* Identify and return whether PTP one step sync is being processed */
++	ptp_class = ptp_classify_raw(skb);
++	if (ptp_class == PTP_CLASS_NONE)
++		goto not_oss;
++
++	hdr = ptp_parse_header(skb, ptp_class);
++	if (!hdr)
++		goto not_oss;
++
++	if (hdr->flag_field[0] & PTP_FLAG_TWOSTEP)
++		goto not_oss;
++
++	msgtype = ptp_get_msgtype(hdr, ptp_class);
++	if (msgtype == PTP_MSGTYPE_SYNC)
++		return true;
++
++not_oss:
++	return false;
++}
++
+ static void macb_tx_interrupt(struct macb_queue *queue)
+ {
+ 	unsigned int tail;
+@@ -1166,8 +1197,8 @@ static void macb_tx_interrupt(struct macb_queue *queue)
+ 
+ 			/* First, update TX stats if needed */
+ 			if (skb) {
+-				if (unlikely(skb_shinfo(skb)->tx_flags &
+-					     SKBTX_HW_TSTAMP) &&
++				if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
++				    !ptp_one_step_sync(skb) &&
+ 				    gem_ptp_do_txstamp(queue, skb, desc) == 0) {
+ 					/* skb now belongs to timestamp buffer
+ 					 * and will be removed later
+@@ -1997,7 +2028,8 @@ static unsigned int macb_tx_map(struct macb *bp,
+ 			ctrl |= MACB_BF(TX_LSO, lso_ctrl);
+ 			ctrl |= MACB_BF(TX_TCP_SEQ_SRC, seq_ctrl);
+ 			if ((bp->dev->features & NETIF_F_HW_CSUM) &&
+-			    skb->ip_summed != CHECKSUM_PARTIAL && !lso_ctrl)
++			    skb->ip_summed != CHECKSUM_PARTIAL && !lso_ctrl &&
++			    !ptp_one_step_sync(skb))
+ 				ctrl |= MACB_BIT(TX_NOCRC);
+ 		} else
+ 			/* Only set MSS/MFS on payload descriptors
+@@ -2095,7 +2127,7 @@ static int macb_pad_and_fcs(struct sk_buff **skb, struct net_device *ndev)
+ 
+ 	if (!(ndev->features & NETIF_F_HW_CSUM) ||
+ 	    !((*skb)->ip_summed != CHECKSUM_PARTIAL) ||
+-	    skb_shinfo(*skb)->gso_size)	/* Not available for GSO */
++	    skb_shinfo(*skb)->gso_size || ptp_one_step_sync(*skb))
+ 		return 0;
+ 
+ 	if (padlen <= 0) {
+diff --git a/drivers/net/ethernet/cadence/macb_ptp.c b/drivers/net/ethernet/cadence/macb_ptp.c
+index fb6b27f46b15..9559c16078f9 100644
+--- a/drivers/net/ethernet/cadence/macb_ptp.c
++++ b/drivers/net/ethernet/cadence/macb_ptp.c
+@@ -470,8 +470,10 @@ int gem_set_hwtst(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 	case HWTSTAMP_TX_ONESTEP_SYNC:
+ 		if (gem_ptp_set_one_step_sync(bp, 1) != 0)
+ 			return -ERANGE;
+-		fallthrough;
++		tx_bd_control = TSTAMP_ALL_FRAMES;
++		break;
+ 	case HWTSTAMP_TX_ON:
++		gem_ptp_set_one_step_sync(bp, 0);
+ 		tx_bd_control = TSTAMP_ALL_FRAMES;
+ 		break;
+ 	default:
+diff --git a/include/linux/ptp_classify.h b/include/linux/ptp_classify.h
+index 9afd34a2d36c..b760373524fe 100644
+--- a/include/linux/ptp_classify.h
++++ b/include/linux/ptp_classify.h
+@@ -43,6 +43,9 @@
+ #define OFF_PTP_SOURCE_UUID	22 /* PTPv1 only */
+ #define OFF_PTP_SEQUENCE_ID	30
+ 
++/* PTP header flag fields */
++#define PTP_FLAG_TWOSTEP	BIT(1)
++
+ /* Below defines should actually be removed at some point in time. */
+ #define IP6_HLEN	40
+ #define UDP_HLEN	8
 -- 
 2.35.1
 
