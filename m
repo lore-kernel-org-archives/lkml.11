@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA4EFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6C64C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351393AbiFGSSu (ORCPT
+        id S1351454AbiFGSTK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:18:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59970 "EHLO
+        Tue, 7 Jun 2022 14:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349001AbiFGR6R (ORCPT
+        with ESMTP id S243651AbiFGR57 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:58:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 713A062107;
-        Tue,  7 Jun 2022 10:41:16 -0700 (PDT)
+        Tue, 7 Jun 2022 13:57:59 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B109442A3A;
+        Tue,  7 Jun 2022 10:40:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03556B822BF;
-        Tue,  7 Jun 2022 17:41:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55630C385A5;
-        Tue,  7 Jun 2022 17:41:13 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1E6FDCE1D50;
+        Tue,  7 Jun 2022 17:40:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC500C385A5;
+        Tue,  7 Jun 2022 17:40:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623673;
-        bh=gam7VJRU5tQrQ47mhnmERO7Bdx+TDXwHG5e3vtQwqLQ=;
+        s=korg; t=1654623654;
+        bh=XYvzDQSro47q34wmugnuYCrxRYaXOTvHwRemBSiXqeM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yhf2seSHhr7x1/5vOnjGcCewTY/4VOjIVS5F6TRHmmod9+RGGbtA3HNj7367ckBPu
-         UG7PCcpNJbGXMl0SOsqnoMYXB3PTaT5P/Fd5PCeF+v1WBW5cT0ynWbk9ixTHNjMr0o
-         tJQ7bYuWgfl9EUqu7C7EmvEEcLrgH836ie38fHAI=
+        b=xa90Plit1Mzy32A4ZrEkCihibPQ0Ysl9nMVJbQQvFz7mjmHv2bG36neM7C3jHE6UX
+         ZRgRK8AuPaFArktSsW9aXsTePfmfhygdRNzFeqdujRpwcuVLMzahPMs7lVMLjYyOvi
+         rS5NscmKTRCBaeU34sttMGzKUZ7w6orgpN0zbSTM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 051/667] ipw2x00: Fix potential NULL dereference in libipw_xmit()
-Date:   Tue,  7 Jun 2022 18:55:16 +0200
-Message-Id: <20220607164936.339477303@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.15 006/667] riscv: Initialize thread pointer before calling C functions
+Date:   Tue,  7 Jun 2022 18:54:31 +0200
+Message-Id: <20220607164934.970498954@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,36 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haowen Bai <baihaowen@meizu.com>
+From: Alexandre Ghiti <alexandre.ghiti@canonical.com>
 
-[ Upstream commit e8366bbabe1d207cf7c5b11ae50e223ae6fc278b ]
+commit 35d33c76d68dfacc330a8eb477b51cc647c5a847 upstream.
 
-crypt and crypt->ops could be null, so we need to checking null
-before dereference
+Because of the stack canary feature that reads from the current task
+structure the stack canary value, the thread pointer register "tp" must
+be set before calling any C function from head.S: by chance, setup_vm
+and all the functions that it calls does not seem to be part of the
+functions where the canary check is done, but in the following commits,
+some functions will.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/1648797055-25730-1-git-send-email-baihaowen@meizu.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: f2c9699f65557a31 ("riscv: Add STACKPROTECTOR supported")
+Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/ipw2x00/libipw_tx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/riscv/kernel/head.S |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/intel/ipw2x00/libipw_tx.c b/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
-index 36d1e6b2568d..4aec1fce1ae2 100644
---- a/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
-+++ b/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
-@@ -383,7 +383,7 @@ netdev_tx_t libipw_xmit(struct sk_buff *skb, struct net_device *dev)
+--- a/arch/riscv/kernel/head.S
++++ b/arch/riscv/kernel/head.S
+@@ -301,6 +301,7 @@ clear_bss_done:
+ 	REG_S a0, (a2)
  
- 		/* Each fragment may need to have room for encryption
- 		 * pre/postfix */
--		if (host_encrypt)
-+		if (host_encrypt && crypt && crypt->ops)
- 			bytes_per_frag -= crypt->ops->extra_mpdu_prefix_len +
- 			    crypt->ops->extra_mpdu_postfix_len;
- 
--- 
-2.35.1
-
+ 	/* Initialize page tables and relocate to virtual addresses */
++	la tp, init_task
+ 	la sp, init_thread_union + THREAD_SIZE
+ 	XIP_FIXUP_OFFSET sp
+ #ifdef CONFIG_BUILTIN_DTB
 
 
