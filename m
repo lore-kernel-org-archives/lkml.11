@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB385CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 971FECCA47F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384580AbiFGWPd (ORCPT
+        id S1384550AbiFGWPW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:15:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33210 "EHLO
+        Tue, 7 Jun 2022 18:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378843AbiFGVJj (ORCPT
+        with ESMTP id S1380160AbiFGVLf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:09:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68BFA21482E;
-        Tue,  7 Jun 2022 11:51:33 -0700 (PDT)
+        Tue, 7 Jun 2022 17:11:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 948D9149A8C;
+        Tue,  7 Jun 2022 11:53:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD086B822C0;
-        Tue,  7 Jun 2022 18:51:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25BEAC385A2;
-        Tue,  7 Jun 2022 18:51:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AEDDF616C2;
+        Tue,  7 Jun 2022 18:53:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8A6AC36AFE;
+        Tue,  7 Jun 2022 18:53:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627890;
-        bh=4XChG8Mn9Ckp+o5xpIAJPICimju0Ixs9wovnr8tIqy0=;
+        s=korg; t=1654628000;
+        bh=++FBKUrUNdenNgdg9O0dxiFbOQonQ6ctCVrjU7cnTw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=axPHdCgNYHPF7fvsbCbrIWJ51IRFFxtsZaIbza19QIE9J1RAsKTxb7RPOsGTr7JB/
-         qsR1G9Ht2QCPdnWWJAXX+AWZCBCCOtDlhMLEMQTa7inTLHxGJHmVAkWTxBS6Rkd5RO
-         BZKSNUSRQtIVTItaPjYggSQwey6GBKtIXEMQD0Nc=
+        b=JSnTpldIPLH5+RXLMmk3lNyHpzIkK/rhyGJG77lD+9Uh7bVyAA8xubky911k50ECI
+         0Z0ADLN7gQD0xrhHS1VTD89/LrSHlxjcXGtWd86LswSvdcwRXzEY59GiH0it8W19HI
+         rrrhPFRDOfP8TEVwIJhI9wzTko7P/0cJXm638Hgo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maksym Yaremchuk <maksymy@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Jian-Hong Pan <jhp@endlessos.org>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 130/879] mlxsw: spectrum_dcb: Do not warn about priority changes
-Date:   Tue,  7 Jun 2022 18:54:08 +0200
-Message-Id: <20220607165006.475914338@linuxfoundation.org>
+Subject: [PATCH 5.18 153/879] ACPI: PM: Block ASUS B1400CEAE from suspend to idle by default
+Date:   Tue,  7 Jun 2022 18:54:31 +0200
+Message-Id: <20220607165007.147422801@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,82 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit b6b584562cbe7dc357083459d6dd5b171e12cadb ]
+[ Upstream commit d52848620de00cde4a3a5df908e231b8c8868250 ]
 
-The idea behind the warnings is that the user would get warned in case when
-more than one priority is configured for a given DSCP value on a netdevice.
+ASUS B1400CEAE fails to resume from suspend to idle by default.  This was
+bisected back to commit df4f9bc4fb9c ("nvme-pci: add support for ACPI
+StorageD3Enable property") but this is a red herring to the problem.
 
-The warning is currently wrong, because dcb_ieee_getapp_mask() returns
-the first matching entry, not all of them, and the warning will then claim
-that some priority is "current", when in fact it is not.
+Before this commit the system wasn't getting into deepest sleep state.
+Presumably this commit is allowing entry into deepest sleep state as
+advertised by firmware, but there are some other problems related to
+the wakeup.
 
-But more importantly, the warning is misleading in general. Consider the
-following commands:
+As it is confirmed the system works properly with S3, set the default for
+this system to S3.
 
- # dcb app flush dev swp19 dscp-prio
- # dcb app add dev swp19 dscp-prio 24:3
- # dcb app replace dev swp19 dscp-prio 24:2
-
-The last command will issue the following warning:
-
- mlxsw_spectrum3 0000:07:00.0 swp19: Ignoring new priority 2 for DSCP 24 in favor of current value of 3
-
-The reason is that the "replace" command works by first adding the new
-value, and then removing all old values. This is the only way to make the
-replacement without causing the traffic to be prioritized to whatever the
-chip defaults to. The warning is issued in response to adding the new
-priority, and then no warning is shown when the old priority is removed.
-The upshot is that the canonical way to change traffic prioritization
-always produces a warning about ignoring the new priority, but what gets
-configured is in fact what the user intended.
-
-An option to just emit warning every time that the prioritization changes
-just to make it clear that it happened is obviously unsatisfactory.
-
-Therefore, in this patch, remove the warnings.
-
-Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: Jian-Hong Pan <jhp@endlessos.org>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215742
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Tested-by: Jian-Hong Pan <jhp@endlessos.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c | 13 -------------
- 1 file changed, 13 deletions(-)
+ drivers/acpi/sleep.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
-index 5f92b1691360..aff6d4f35cd2 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
-@@ -168,8 +168,6 @@ static int mlxsw_sp_dcbnl_ieee_setets(struct net_device *dev,
- static int mlxsw_sp_dcbnl_app_validate(struct net_device *dev,
- 				       struct dcb_app *app)
- {
--	int prio;
--
- 	if (app->priority >= IEEE_8021QAZ_MAX_TCS) {
- 		netdev_err(dev, "APP entry with priority value %u is invalid\n",
- 			   app->priority);
-@@ -183,17 +181,6 @@ static int mlxsw_sp_dcbnl_app_validate(struct net_device *dev,
- 				   app->protocol);
- 			return -EINVAL;
- 		}
--
--		/* Warn about any DSCP APP entries with the same PID. */
--		prio = fls(dcb_ieee_getapp_mask(dev, app));
--		if (prio--) {
--			if (prio < app->priority)
--				netdev_warn(dev, "Choosing priority %d for DSCP %d in favor of previously-active value of %d\n",
--					    app->priority, app->protocol, prio);
--			else if (prio > app->priority)
--				netdev_warn(dev, "Ignoring new priority %d for DSCP %d in favor of current value of %d\n",
--					    app->priority, app->protocol, prio);
--		}
- 		break;
+diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
+index c992e57b2c79..3147702710af 100644
+--- a/drivers/acpi/sleep.c
++++ b/drivers/acpi/sleep.c
+@@ -373,6 +373,18 @@ static const struct dmi_system_id acpisleep_dmi_table[] __initconst = {
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "20GGA00L00"),
+ 		},
+ 	},
++	/*
++	 * ASUS B1400CEAE hangs on resume from suspend (see
++	 * https://bugzilla.kernel.org/show_bug.cgi?id=215742).
++	 */
++	{
++	.callback = init_default_s3,
++	.ident = "ASUS B1400CEAE",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
++		DMI_MATCH(DMI_PRODUCT_NAME, "ASUS EXPERTBOOK B1400CEAE"),
++		},
++	},
+ 	{},
+ };
  
- 	case IEEE_8021QAZ_APP_SEL_ETHERTYPE:
 -- 
 2.35.1
 
