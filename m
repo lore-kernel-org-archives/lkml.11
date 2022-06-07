@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F44CCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:35:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22C38C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:35:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347942AbiFGUfY (ORCPT
+        id S1359396AbiFGUfc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:35:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54808 "EHLO
+        Tue, 7 Jun 2022 16:35:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357647AbiFGTmL (ORCPT
+        with ESMTP id S1357678AbiFGTmP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:42:11 -0400
+        Tue, 7 Jun 2022 15:42:15 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D06D1B605B;
-        Tue,  7 Jun 2022 11:15:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E4DA1B6074;
+        Tue,  7 Jun 2022 11:15:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E14236062B;
-        Tue,  7 Jun 2022 18:15:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECC7BC385A2;
-        Tue,  7 Jun 2022 18:15:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F3EB760907;
+        Tue,  7 Jun 2022 18:15:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 128FEC385A2;
+        Tue,  7 Jun 2022 18:15:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625736;
-        bh=e4rQjDbcX7pYuLi/MagzF5WQm9G9+qVy7DrNZMANN00=;
+        s=korg; t=1654625744;
+        bh=Xrh9+IX1jDtfZYsCVm1bWZVVFlKh6NLJ2whgIr5FrpM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2JrWGzxFe9t5qJMI/J+bYICut9OloE1KrF+D2j/biIXL7uY7h/Fs3BYvI7VOEBcgS
-         +4YGWXKlef6+WjCdO2X3VF25owS50rmbpS8Ugu54omlpsngeVx//ypHpRaSDDB7y/Q
-         0neb+m5P+RLoO7fihooZoJ6g+HWhudHULpV23WbQ=
+        b=XOcszUgyiSexvgHtlt9qKKIWpttIhTyeeIhYIWDzbiBHNyKcLbZYfbv8I6HCP4wFE
+         i6uShZ5kw16CkRRAdtO0xDU/I6mGNtHUs9k7v9D1Qyvh1LWuxplK9c2NC1SAZU6gtt
+         1fSRkvUTVD738W9l/f1LW+b6ujtauqLqOQJsWx+k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        stable@vger.kernel.org,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 084/772] ASoC: rsnd: care default case on rsnd_ssiu_busif_err_status_clear()
-Date:   Tue,  7 Jun 2022 18:54:36 +0200
-Message-Id: <20220607164951.517513634@linuxfoundation.org>
+Subject: [PATCH 5.17 121/772] ASoC: tscs454: Add endianness flag in snd_soc_component_driver
+Date:   Tue,  7 Jun 2022 18:55:13 +0200
+Message-Id: <20220607164952.613766251@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,54 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit b1384d4c95088d01f4266237faabf165d3d605fc ]
+[ Upstream commit ff69ec96b87dccb3a29edef8cec5d4fefbbc2055 ]
 
-commit cfb7b8bf1e2d66 ("ASoC: rsnd: tidyup
-rsnd_ssiu_busif_err_status_clear()") merged duplicate code, but it didn't
-care about default case, and causes smatch warnings.
+The endianness flag is used on the CODEC side to specify an
+ambivalence to endian, typically because it is lost over the hardware
+link. This device receives audio over an I2S DAI and as such should
+have endianness applied.
 
-smatch warnings:
-sound/soc/sh/rcar/ssiu.c:112 rsnd_ssiu_busif_err_status_clear() \
-	error: uninitialized symbol 'offset'.
-sound/soc/sh/rcar/ssiu.c:114 rsnd_ssiu_busif_err_status_clear() \
-	error: uninitialized symbol 'shift'.
+A fixup is also required to use the width directly rather than relying
+on the format in hw_params, now both little and big endian would be
+supported. It is worth noting this changes the behaviour of S24_LE to
+use a word length of 24 rather than 32. This would appear to be a
+correction since the fact S24_LE is stored as 32 bits should not be
+presented over the bus.
 
-This patch cares it.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Link: https://lore.kernel.org/r/87r15rgn6p.wl-kuninori.morimoto.gx@renesas.com
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220504170905.332415-26-ckeepax@opensource.cirrus.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sh/rcar/ssiu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ sound/soc/codecs/tscs454.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/sound/soc/sh/rcar/ssiu.c b/sound/soc/sh/rcar/ssiu.c
-index 0d8f97633dd2..138f95dd9f4a 100644
---- a/sound/soc/sh/rcar/ssiu.c
-+++ b/sound/soc/sh/rcar/ssiu.c
-@@ -102,6 +102,8 @@ bool rsnd_ssiu_busif_err_status_clear(struct rsnd_mod *mod)
- 		shift  = 1;
- 		offset = 1;
+diff --git a/sound/soc/codecs/tscs454.c b/sound/soc/codecs/tscs454.c
+index 43220bb36701..c27ca9a273e1 100644
+--- a/sound/soc/codecs/tscs454.c
++++ b/sound/soc/codecs/tscs454.c
+@@ -3120,18 +3120,17 @@ static int set_aif_sample_format(struct snd_soc_component *component,
+ 	unsigned int width;
+ 	int ret;
+ 
+-	switch (format) {
+-	case SNDRV_PCM_FORMAT_S16_LE:
++	switch (snd_pcm_format_width(format)) {
++	case 16:
+ 		width = FV_WL_16;
  		break;
-+	default:
-+		goto out;
- 	}
+-	case SNDRV_PCM_FORMAT_S20_3LE:
++	case 20:
+ 		width = FV_WL_20;
+ 		break;
+-	case SNDRV_PCM_FORMAT_S24_3LE:
++	case 24:
+ 		width = FV_WL_24;
+ 		break;
+-	case SNDRV_PCM_FORMAT_S24_LE:
+-	case SNDRV_PCM_FORMAT_S32_LE:
++	case 32:
+ 		width = FV_WL_32;
+ 		break;
+ 	default:
+@@ -3326,6 +3325,7 @@ static const struct snd_soc_component_driver soc_component_dev_tscs454 = {
+ 	.num_dapm_routes = ARRAY_SIZE(tscs454_intercon),
+ 	.controls =	tscs454_snd_controls,
+ 	.num_controls = ARRAY_SIZE(tscs454_snd_controls),
++	.endianness = 1,
+ };
  
- 	for (i = 0; i < 4; i++) {
-@@ -120,7 +122,7 @@ bool rsnd_ssiu_busif_err_status_clear(struct rsnd_mod *mod)
- 		}
- 		rsnd_mod_write(mod, reg, val);
- 	}
--
-+out:
- 	return error;
- }
- 
+ #define TSCS454_RATES SNDRV_PCM_RATE_8000_96000
 -- 
 2.35.1
 
