@@ -2,46 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80F56CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D5BCCA488
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379596AbiFGVZw (ORCPT
+        id S1379771AbiFGV0D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57356 "EHLO
+        Tue, 7 Jun 2022 17:26:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376901AbiFGU2R (ORCPT
+        with ESMTP id S1376822AbiFGU2K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:28:17 -0400
+        Tue, 7 Jun 2022 16:28:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69581D9B5F;
-        Tue,  7 Jun 2022 11:33:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EBAD1D92E7;
+        Tue,  7 Jun 2022 11:33:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 95E4F612F2;
-        Tue,  7 Jun 2022 18:33:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6ABFC385A2;
-        Tue,  7 Jun 2022 18:33:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4188E612F2;
+        Tue,  7 Jun 2022 18:33:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20D63C385A2;
+        Tue,  7 Jun 2022 18:33:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626805;
-        bh=tXpFV1oq8s2qSwjMPFj5GjP5i35kucSjkrQzFXm++X0=;
+        s=korg; t=1654626796;
+        bh=qV2DruYLPwyZRDN9vck8Ib0tA9uqVGuc67Tk42gUhNY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c14bZEZssliO7nBl8U1pdQvCrHsKggBaR962NbKgsY10Sgxd2fs1MxIplkzx8boHI
-         AfP0DLTpi/EkGxJXELRTYj4rNVHeDB7iQzC/VyO7iCi+iKfXDrlhJfXdVI9IQNlq6R
-         inD7AQkReu+WLNyB/vqJPQOGyLNO1kC+B8ocl650=
+        b=fl8g7sEGGtOG/u/ftXW9ipOoqA8vTi5cHfxxEXLQfWP3kKbxUhDEZNxi5NUlzXj1G
+         M/k9fbGe+PmfrxSnfVJGD2divbTJ6nzp4TMU7K2rE5dCdrR7OSYwhA0o5OqdC8WBZY
+         yucfGVnPEn0BUvhwvXTyz+DMfzJ0l2Db6jJp4a/M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Patrick Delaunay <patrick.delaunay@foss.st.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
+        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Alistair Popple <apopple@nvidia.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Ross Zwisler <zwisler@kernel.org>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Yang Shi <shy828301@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 473/772] ARM: dts: stm32: Fix PHY post-reset delay on Avenger96
-Date:   Tue,  7 Jun 2022 19:01:05 +0200
-Message-Id: <20220607165002.934367219@linuxfoundation.org>
+Subject: [PATCH 5.17 506/772] dax: fix cache flush on PMD-mapped pages
+Date:   Tue,  7 Jun 2022 19:01:38 +0200
+Message-Id: <20220607165003.889379506@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,41 +62,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Muchun Song <songmuchun@bytedance.com>
 
-[ Upstream commit ef2d90708883f4025a801feb0ba8411a7a4387e1 ]
+[ Upstream commit e583b5c472bd23d450e06f148dc1f37be74f7666 ]
 
-Per KSZ9031RNX PHY datasheet FIGURE 7-5: POWER-UP/POWER-DOWN/RESET TIMING
-Note 2: After the de-assertion of reset, wait a minimum of 100 μs before
-starting programming on the MIIM (MDC/MDIO) interface.
+The flush_cache_page() only remove a PAGE_SIZE sized range from the cache.
+However, it does not cover the full pages in a THP except a head page.
+Replace it with flush_cache_range() to fix this issue.  This is just a
+documentation issue with the respect to properly documenting the expected
+usage of cache flushing before modifying the pmd.  However, in practice
+this is not a problem due to the fact that DAX is not available on
+architectures with virtually indexed caches per:
 
-Add 1ms post-reset delay to guarantee this figure.
+  commit d92576f1167c ("dax: does not work correctly with virtual aliasing caches")
 
-Fixes: 010ca9fe500bf ("ARM: dts: stm32: Add missing ethernet PHY reset on AV96")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Patrice Chotard <patrice.chotard@foss.st.com>
-Cc: Patrick Delaunay <patrick.delaunay@foss.st.com>
-Cc: linux-stm32@st-md-mailman.stormreply.com
-To: linux-arm-kernel@lists.infradead.org
-Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Link: https://lkml.kernel.org/r/20220403053957.10770-3-songmuchun@bytedance.com
+Fixes: f729c8c9b24f ("dax: wrprotect pmd_t in dax_mapping_entry_mkclean")
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Cc: Alistair Popple <apopple@nvidia.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Jan Kara <jack@suse.cz>
+Cc: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Ralph Campbell <rcampbell@nvidia.com>
+Cc: Ross Zwisler <zwisler@kernel.org>
+Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
+Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Cc: Yang Shi <shy828301@gmail.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ fs/dax.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi b/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
-index 6885948f3024..8eb51d84b698 100644
---- a/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
-+++ b/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
-@@ -141,6 +141,7 @@
- 		compatible = "snps,dwmac-mdio";
- 		reset-gpios = <&gpioz 2 GPIO_ACTIVE_LOW>;
- 		reset-delay-us = <1000>;
-+		reset-post-delay-us = <1000>;
+diff --git a/fs/dax.c b/fs/dax.c
+index cd03485867a7..411ea6a0fe57 100644
+--- a/fs/dax.c
++++ b/fs/dax.c
+@@ -846,7 +846,8 @@ static void dax_entry_mkclean(struct address_space *mapping, pgoff_t index,
+ 			if (!pmd_dirty(*pmdp) && !pmd_write(*pmdp))
+ 				goto unlock_pmd;
  
- 		phy0: ethernet-phy@7 {
- 			reg = <7>;
+-			flush_cache_page(vma, address, pfn);
++			flush_cache_range(vma, address,
++					  address + HPAGE_PMD_SIZE);
+ 			pmd = pmdp_invalidate(vma, address, pmdp);
+ 			pmd = pmd_wrprotect(pmd);
+ 			pmd = pmd_mkclean(pmd);
 -- 
 2.35.1
 
