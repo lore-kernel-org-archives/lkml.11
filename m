@@ -2,87 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C1A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FBE4CCA482
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443279AbiFHCCJ (ORCPT
+        id S1442692AbiFHCA5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:02:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49756 "EHLO
+        Tue, 7 Jun 2022 22:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588708AbiFGXy6 (ORCPT
+        with ESMTP id S1838769AbiFHACJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:54:58 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9C41C4230
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:38:53 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id j6so16813064pfe.13
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 16:38:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=NUegXqW9LzmkBfY7DxTxhaAQ1AhdKbFukAoFdwvxQCA=;
-        b=jPvQidTu5+raLDu+v304vNocGEp644rFe99IjU8FwjuyWQmAVP7dqExs4/o0n61Gee
-         mVlDg24zvBuQ0aq1eNRGWRBDbRA0t88AQsPigABCJwVQBN7BQDMQiZY4+SWFItPL7bnx
-         c8XcftWfQWOwDPuGujynski1qxt0w6FlSaiBXZfyidSZ5YG9JXN7cfwtkneKj87q2Bxn
-         LxoZv2xH3ZL/zKMDoeP/o/WmG/39hKVjjipuyTOpWT/Q8ub1oAtXWFsoTP4qcm45k293
-         +fTjWdLhTzPXqg+uKxqUsq6qcPHYYKLihWJFTO3Nefov4WELS3vYBtY0h1G9qQBRYfU4
-         AjHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=NUegXqW9LzmkBfY7DxTxhaAQ1AhdKbFukAoFdwvxQCA=;
-        b=WDXWLFnPWbIhIpOM6GWyrgA3cJv1QtepEib/xzbPtJbX+fPLtAzd7Sx0aBCHD4KUya
-         gA8SB/5sIeHf0LHZLQz9ag31T4fZjD1OoDT6LuFYUsspecmtDVyLLAbkiW11kJ2S1d9r
-         CCynOYq2CgJMAwi6zuNy5/17iI/QPKgCMH5/CTrx7HAtcoHk6EijZHYlIWO1Ls/k2sOb
-         ysOCqENDdXmGuWMSo5mEwHIZ9VPJChcPY4rfj02srUNDAqgOOLXYLKqULol6ZYqZDSbD
-         n4yAIFQA10+tRB3hHzeK5Fv9q4p3oOKcGhe9DwN6wYbqo5Rb00bFbuK4n4/x2HcP7S9K
-         9QWA==
-X-Gm-Message-State: AOAM532K5qdoKBxo7iE3zJsfg7Ispk7h+NStvKb7Sk4IOFTHKW7KKCrb
-        6E2yPE+HDF8D7ez9rzpx4uq86dGovnQOvg==
-X-Google-Smtp-Source: ABdhPJzXCWVCiCTCSz598flQCNLPk337229bVblysUjn6w1K4m4Oppv8XJDTTL+6nU8pj/acNT/3zw==
-X-Received: by 2002:a63:1e49:0:b0:3fd:cf48:3694 with SMTP id p9-20020a631e49000000b003fdcf483694mr9997920pgm.275.1654645132460;
-        Tue, 07 Jun 2022 16:38:52 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id s18-20020aa78d52000000b0050dc76281fdsm13366276pfe.215.2022.06.07.16.38.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 16:38:52 -0700 (PDT)
-Date:   Tue, 7 Jun 2022 23:38:48 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Yuan Yao <yuan.yao@linux.intel.com>
-Cc:     Yuan Yao <yuan.yao@intel.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, Kai Huang <kai.huang@intel.com>
-Subject: Re: [PATCH 1/1] KVM: MMU: Fix VM entry failure and OOPS for shdaow
- page table
-Message-ID: <Yp/hiOxrOhEuIWj6@google.com>
-References: <20220607074034.7109-1-yuan.yao@intel.com>
- <Yp9nsbNzoIEyJeDv@google.com>
- <20220607233045.a3sz7v2u6cdeg3sb@yy-desk-7060>
+        Tue, 7 Jun 2022 20:02:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F61E2BB28;
+        Tue,  7 Jun 2022 12:18:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E210561931;
+        Tue,  7 Jun 2022 19:18:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDAB1C385A2;
+        Tue,  7 Jun 2022 19:17:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629480;
+        bh=aGyWqYvWyjA/1VAtWXlscfe1t8nAwgekUlQyFJv6zs0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pmGiBPpsUUksReR9sJ5CeNBmhOtZHY0Yaf0NoYTgbL7BvNQFZl/eyA48TbBWo5nuC
+         gSQxf1tsM/4o/pd7HRfRlvHrDAaTyR5IuitAAsbledtOjCDO42PMAn2TD3F7ETdeSA
+         ejUn6eHPCHk+NtDXl76iKWEOZVLYqTXC16ZAyRN4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Pascal Ernster <dri-devel@hardfalcon.net>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 705/879] video: fbdev: vesafb: Fix a use-after-free due early fb_info cleanup
+Date:   Tue,  7 Jun 2022 19:03:43 +0200
+Message-Id: <20220607165023.310688894@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607233045.a3sz7v2u6cdeg3sb@yy-desk-7060>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022, Yuan Yao wrote:
-> On Tue, Jun 07, 2022 at 02:58:57PM +0000, Sean Christopherson wrote:
-> > Everything below here can be dropped as it's not relevant to the original bug.
-> >
-> > E.g. the entire trace can be trimmed to:
-> 
-> Ah, I thought that the original trace carries most information
-> which maybe useful to other people. Let me trim them as you
-> suggested in V2, thanks.
+From: Javier Martinez Canillas <javierm@redhat.com>
 
-For bug reports, it's helpful to have the raw trace as the context is useful for
-debug.  But for changelogs, the goal is only to document the failure signature,
-e.g. so that reviewers understand what broke, users that encounter a similar splat
-can find a possible fix, etc...
+[ Upstream commit acde4003efc16480375543638484d8f13f2e99a3 ]
+
+Commit b3c9a924aab6 ("fbdev: vesafb: Cleanup fb_info in .fb_destroy rather
+than .remove") fixed a use-after-free error due the vesafb driver freeing
+the fb_info in the .remove handler instead of doing it in .fb_destroy.
+
+This can happen if the .fb_destroy callback is executed after the .remove
+callback, since the former tries to access a pointer freed by the latter.
+
+But that change didn't take into account that another possible scenario is
+that .fb_destroy is called before the .remove callback. For example, if no
+process has the fbdev chardev opened by the time the driver is removed.
+
+If that's the case, fb_info will be freed when unregister_framebuffer() is
+called, making the fb_info pointer accessed in vesafb_remove() after that
+to no longer be valid.
+
+To prevent that, move the expression containing the info->par to happen
+before the unregister_framebuffer() function call.
+
+Fixes: b3c9a924aab6 ("fbdev: vesafb: Cleanup fb_info in .fb_destroy rather than .remove")
+Reported-by: Pascal Ernster <dri-devel@hardfalcon.net>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Tested-by: Pascal Ernster <dri-devel@hardfalcon.net>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/video/fbdev/vesafb.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/video/fbdev/vesafb.c b/drivers/video/fbdev/vesafb.c
+index e25e8de5ff67..929d4775cb4b 100644
+--- a/drivers/video/fbdev/vesafb.c
++++ b/drivers/video/fbdev/vesafb.c
+@@ -490,11 +490,12 @@ static int vesafb_remove(struct platform_device *pdev)
+ {
+ 	struct fb_info *info = platform_get_drvdata(pdev);
+ 
+-	/* vesafb_destroy takes care of info cleanup */
+-	unregister_framebuffer(info);
+ 	if (((struct vesafb_par *)(info->par))->region)
+ 		release_region(0x3c0, 32);
+ 
++	/* vesafb_destroy takes care of info cleanup */
++	unregister_framebuffer(info);
++
+ 	return 0;
+ }
+ 
+-- 
+2.35.1
+
+
+
