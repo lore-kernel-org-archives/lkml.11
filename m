@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11000CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:33:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 753D4CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:33:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379877AbiFGVd0 (ORCPT
+        id S1379964AbiFGVdd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:33:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46204 "EHLO
+        Tue, 7 Jun 2022 17:33:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377545AbiFGUdo (ORCPT
+        with ESMTP id S1377498AbiFGUd2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:33:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D731E4BD6;
-        Tue,  7 Jun 2022 11:35:22 -0700 (PDT)
+        Tue, 7 Jun 2022 16:33:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75AA1E4B6D;
+        Tue,  7 Jun 2022 11:35:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AA0361564;
-        Tue,  7 Jun 2022 18:35:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20FE1C385A2;
-        Tue,  7 Jun 2022 18:35:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EA50612EC;
+        Tue,  7 Jun 2022 18:35:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AEB1C385A2;
+        Tue,  7 Jun 2022 18:35:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626920;
-        bh=DQbIueL18va2zuS1vVdIlSrZFWRd4l681P+YldGzJqE=;
+        s=korg; t=1654626914;
+        bh=p/mEEgaVRxduYfIb8Rfiqp4KRdQAhjYDhovJPQu9nWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Am2M7WSodnoSZ8jgoEEgCrlNzFHCRnCBGf6U7WCEKngXU9nR7IofU3zBWIPmPMK4k
-         +tAV0SNKykU2cdppG4RNpbqk9gAi/MsnDqnn1y1GDRqnuFtPYUHmpT8LDZy/qyKeiN
-         oIBhqIIHhZEHigl5wgQ/8cVjcxTdA5J8CdHWlTSI=
+        b=lQc1BnhH/tROXVeZE1zjL4qZ1bflBW007gFBeFO4JHntL+UJIBQaHCgXAmao1E6JN
+         oghKK0kNjK9cCcUr6XxgPzKvm4m9QbEvoW0+btjE5AGVrqfWKIenrgISyEcDpgW93N
+         NT+9GKbJsWUZNcW4nfQoHYlWV6CWmYI5BedQiG1E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>,
+        stable@vger.kernel.org, Kajol Jain <kjain@linux.ibm.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 551/772] powerpc/xive: Add some error handling code to xive_spapr_init()
-Date:   Tue,  7 Jun 2022 19:02:23 +0200
-Message-Id: <20220607165005.199648017@linuxfoundation.org>
+Subject: [PATCH 5.17 549/772] powerpc/perf: Fix the threshold compare group constraint for power9
+Date:   Tue,  7 Jun 2022 19:02:21 +0200
+Message-Id: <20220607165005.139776414@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,107 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Kajol Jain <kjain@linux.ibm.com>
 
-[ Upstream commit e414e2938ee26e734f19e92a60cd090ebaff37e6 ]
+[ Upstream commit ab0cc6bbf0c812731c703ec757fcc3fc3a457a34 ]
 
-'xive_irq_bitmap_add()' can return -ENOMEM.
-In this case, we should free the memory already allocated and return
-'false' to the caller.
+Thresh compare bits for a event is used to program thresh compare
+field in Monitor Mode Control Register A (MMCRA: 9-18 bits for power9).
+When scheduling events as a group, all events in that group should
+match value in threshold bits (like thresh compare, thresh control,
+thresh select). Otherwise event open for the sibling events should fail.
+But in the current code, incase thresh compare bits are not valid,
+we are not failing in group_constraint function which can result
+in invalid group schduling.
 
-Also add an error path which undoes the 'tima = ioremap(...)'
+Fix the issue by returning -1 incase event is threshold and threshold
+compare value is not valid.
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Cédric Le Goater <clg@kaod.org>
+Thresh control bits in the event code is used to program thresh_ctl
+field in Monitor Mode Control Register A (MMCRA: 48-55). In below example,
+the scheduling of group events PM_MRK_INST_CMPL (873534401e0) and
+PM_THRESH_MET (8734340101ec) is expected to fail as both event
+request different thresh control bits and invalid thresh compare value.
+
+Result before the patch changes:
+
+[command]# perf stat -e "{r8735340401e0,r8734340101ec}" sleep 1
+
+ Performance counter stats for 'sleep 1':
+
+            11,048      r8735340401e0
+             1,967      r8734340101ec
+
+       1.001354036 seconds time elapsed
+
+       0.001421000 seconds user
+       0.000000000 seconds sys
+
+Result after the patch changes:
+
+[command]# perf stat -e "{r8735340401e0,r8734340101ec}" sleep 1
+Error:
+The sys_perf_event_open() syscall returned with 22 (Invalid argument)
+for event (r8735340401e0).
+/bin/dmesg | grep -i perf may provide additional information.
+
+Fixes: 78a16d9fc1206 ("powerpc/perf: Avoid FAB_*_MATCH checks for power9")
+Signed-off-by: Kajol Jain <kjain@linux.ibm.com>
+Reviewed-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/564998101804886b151235c8a9f93020923bfd2c.1643718324.git.christophe.jaillet@wanadoo.fr
+Link: https://lore.kernel.org/r/20220506061015.43916-2-kjain@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/xive/spapr.c | 36 +++++++++++++++++++++++++-------
- 1 file changed, 28 insertions(+), 8 deletions(-)
+ arch/powerpc/perf/isa207-common.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/sysdev/xive/spapr.c b/arch/powerpc/sysdev/xive/spapr.c
-index 928f95004501..29456c255f9f 100644
---- a/arch/powerpc/sysdev/xive/spapr.c
-+++ b/arch/powerpc/sysdev/xive/spapr.c
-@@ -67,6 +67,17 @@ static int __init xive_irq_bitmap_add(int base, int count)
- 	return 0;
- }
- 
-+static void xive_irq_bitmap_remove_all(void)
-+{
-+	struct xive_irq_bitmap *xibm, *tmp;
-+
-+	list_for_each_entry_safe(xibm, tmp, &xive_irq_bitmaps, list) {
-+		list_del(&xibm->list);
-+		kfree(xibm->bitmap);
-+		kfree(xibm);
-+	}
-+}
-+
- static int __xive_irq_bitmap_alloc(struct xive_irq_bitmap *xibm)
- {
- 	int irq;
-@@ -803,7 +814,7 @@ bool __init xive_spapr_init(void)
- 	u32 val;
- 	u32 len;
- 	const __be32 *reg;
--	int i;
-+	int i, err;
- 
- 	if (xive_spapr_disabled())
- 		return false;
-@@ -828,23 +839,26 @@ bool __init xive_spapr_init(void)
- 	}
- 
- 	if (!xive_get_max_prio(&max_prio))
--		return false;
-+		goto err_unmap;
- 
- 	/* Feed the IRQ number allocator with the ranges given in the DT */
- 	reg = of_get_property(np, "ibm,xive-lisn-ranges", &len);
- 	if (!reg) {
- 		pr_err("Failed to read 'ibm,xive-lisn-ranges' property\n");
--		return false;
-+		goto err_unmap;
- 	}
- 
- 	if (len % (2 * sizeof(u32)) != 0) {
- 		pr_err("invalid 'ibm,xive-lisn-ranges' property\n");
--		return false;
-+		goto err_unmap;
- 	}
- 
--	for (i = 0; i < len / (2 * sizeof(u32)); i++, reg += 2)
--		xive_irq_bitmap_add(be32_to_cpu(reg[0]),
--				    be32_to_cpu(reg[1]));
-+	for (i = 0; i < len / (2 * sizeof(u32)); i++, reg += 2) {
-+		err = xive_irq_bitmap_add(be32_to_cpu(reg[0]),
-+					  be32_to_cpu(reg[1]));
-+		if (err < 0)
-+			goto err_mem_free;
-+	}
- 
- 	/* Iterate the EQ sizes and pick one */
- 	of_property_for_each_u32(np, "ibm,xive-eq-sizes", prop, reg, val) {
-@@ -855,10 +869,16 @@ bool __init xive_spapr_init(void)
- 
- 	/* Initialize XIVE core with our backend */
- 	if (!xive_core_init(np, &xive_spapr_ops, tima, TM_QW1_OS, max_prio))
--		return false;
-+		goto err_mem_free;
- 
- 	pr_info("Using %dkB queues\n", 1 << (xive_queue_shift - 10));
- 	return true;
-+
-+err_mem_free:
-+	xive_irq_bitmap_remove_all();
-+err_unmap:
-+	iounmap(tima);
-+	return false;
- }
- 
- machine_arch_initcall(pseries, xive_core_debug_init);
+diff --git a/arch/powerpc/perf/isa207-common.c b/arch/powerpc/perf/isa207-common.c
+index 8f0ecf99c96e..abc4c5187dbc 100644
+--- a/arch/powerpc/perf/isa207-common.c
++++ b/arch/powerpc/perf/isa207-common.c
+@@ -508,7 +508,8 @@ int isa207_get_constraint(u64 event, unsigned long *maskp, unsigned long *valp,
+ 		if (event_is_threshold(event) && is_thresh_cmp_valid(event)) {
+ 			mask  |= CNST_THRESH_MASK;
+ 			value |= CNST_THRESH_VAL(event >> EVENT_THRESH_SHIFT);
+-		}
++		} else if (event_is_threshold(event))
++			return -1;
+ 	} else {
+ 		/*
+ 		 * Special case for PM_MRK_FAB_RSP_MATCH and PM_MRK_FAB_RSP_MATCH_CYC,
 -- 
 2.35.1
 
