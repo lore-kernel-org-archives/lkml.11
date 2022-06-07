@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA6CCCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:02:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 231A1C3F2D4
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:02:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383190AbiFGWB0 (ORCPT
+        id S1383307AbiFGWBj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:01:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49796 "EHLO
+        Tue, 7 Jun 2022 18:01:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379179AbiFGVCJ (ORCPT
+        with ESMTP id S1379119AbiFGVCF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:02:09 -0400
+        Tue, 7 Jun 2022 17:02:05 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C73CF188EBD;
-        Tue,  7 Jun 2022 11:46:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2411B188E7D;
+        Tue,  7 Jun 2022 11:46:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6522B6160D;
-        Tue,  7 Jun 2022 18:46:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7030FC385A5;
-        Tue,  7 Jun 2022 18:46:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B3B27612F2;
+        Tue,  7 Jun 2022 18:46:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2514C385A2;
+        Tue,  7 Jun 2022 18:46:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627607;
-        bh=UkTbKdloFik5b/VHaRD1dza9i2d0N/klIUWUZfxdVnw=;
+        s=korg; t=1654627596;
+        bh=+X1/Aj4S764+n4uxy2PfC01XzrJFcJkGE0j/wvJKRxw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e1YTQwRO9vzpSHy3Pz9EIh64CmWtnFXpb+joWZn3l8sEgFz5aH56oOlINglb21/6q
-         rs1KKtFSanDrgEynvSujsvonVUIF6y9bVlijZ3Fjllu203MWMe1GsLwLGzs9e+ysFh
-         n0vTIVyr99ErDjavaRSYwwAjLK1CvAKFng4Ag6nI=
+        b=mMW2n5Lq2V352TsRIWgYfGst8R95k5VI7NjoIynsIEist+nXpr9CBM53g6XzwTqwK
+         4pgtrpuyLoy3Kf3P8sRa4MT2nd+7wtdENtD0VhGiziY8PnGaTSeC/rlVDcPktyXF93
+         tk58VTMZvlMCrMCigdJBZ3Ts/sxXLVkq72JQOaJs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Luis=20Lara=20Carrascal?= 
-        <manualinux@yahoo.es>, Mikulas Patocka <mpatocka@redhat.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Subject: [PATCH 5.18 021/879] fs/ntfs3: provide block_invalidate_folio to fix memory leak
-Date:   Tue,  7 Jun 2022 18:52:19 +0200
-Message-Id: <20220607165003.290298143@linuxfoundation.org>
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.18 007/879] riscv: Initialize thread pointer before calling C functions
+Date:   Tue,  7 Jun 2022 18:52:05 +0200
+Message-Id: <20220607165002.885131751@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,35 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Alexandre Ghiti <alexandre.ghiti@canonical.com>
 
-commit 724bbe49c5e427cb077357d72d240a649f2e4054 upstream.
+commit 35d33c76d68dfacc330a8eb477b51cc647c5a847 upstream.
 
-The ntfs3 filesystem lacks the 'invalidate_folio' method and it causes
-memory leak. If you write to the filesystem and then unmount it, the
-cached written data are not freed and they are permanently leaked.
-Fixes: 7ba13abbd31e ("fs: Turn block_invalidatepage into block_invalidate_folio")
+Because of the stack canary feature that reads from the current task
+structure the stack canary value, the thread pointer register "tp" must
+be set before calling any C function from head.S: by chance, setup_vm
+and all the functions that it calls does not seem to be part of the
+functions where the canary check is done, but in the following commits,
+some functions will.
 
-Reported-by: José Luis Lara Carrascal <manualinux@yahoo.es>
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Acked-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Reviewed-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Cc: stable@vger.kernel.org  # v5.18
+Fixes: f2c9699f65557a31 ("riscv: Add STACKPROTECTOR supported")
+Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs3/inode.c |    1 +
+ arch/riscv/kernel/head.S |    1 +
  1 file changed, 1 insertion(+)
 
---- a/fs/ntfs3/inode.c
-+++ b/fs/ntfs3/inode.c
-@@ -1951,6 +1951,7 @@ const struct address_space_operations nt
- 	.direct_IO	= ntfs_direct_IO,
- 	.bmap		= ntfs_bmap,
- 	.dirty_folio	= block_dirty_folio,
-+	.invalidate_folio = block_invalidate_folio,
- };
+--- a/arch/riscv/kernel/head.S
++++ b/arch/riscv/kernel/head.S
+@@ -297,6 +297,7 @@ clear_bss_done:
+ 	REG_S a0, (a2)
  
- const struct address_space_operations ntfs_aops_cmpr = {
+ 	/* Initialize page tables and relocate to virtual addresses */
++	la tp, init_task
+ 	la sp, init_thread_union + THREAD_SIZE
+ 	XIP_FIXUP_OFFSET sp
+ #ifdef CONFIG_BUILTIN_DTB
 
 
