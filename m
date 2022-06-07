@@ -2,141 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D926CCA485
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:32:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2BB0CCA483
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:32:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383859AbiFGWbA (ORCPT
+        id S1383402AbiFGWa5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
+        Tue, 7 Jun 2022 18:30:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380741AbiFGVQz (ORCPT
+        with ESMTP id S1380738AbiFGVQz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:16:55 -0400
-Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42AF721F9E6
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:57:05 -0700 (PDT)
-X-ASG-Debug-ID: 1654627115-1cf43917f3396470001-xx1T2L
-Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with ESMTP id utCa0jEuR0ydfBDR; Tue, 07 Jun 2022 14:38:35 -0400 (EDT)
-X-Barracuda-Envelope-From: tonyb@cybernetics.com
-X-ASG-Whitelist: Client
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=cybernetics.com; s=mail;
-        bh=3YvRZ5FOVwCVa3SqPpM62f1HUDXg7koMQw6UwikSy60=;
-        h=Content-Transfer-Encoding:Content-Type:Subject:From:Cc:To:Content-Language:
-        MIME-Version:Date:Message-ID; b=HWP6kvkGh9cacYSZPz+DzDEx8wo/oHQo8T6bny2R8X0wg
-        NDKyaYMuP833zSg3fJzE0aawJ8vBp3xI1k1sCKlxf393i4KfBWzVGQWBeei0Ls0m5zBJEh0fusLPR
-        L4zDDqhVYBe1NHAC0s6k/rSu2pmptHitdw4iy92t5hCYv0Vto=
-Received: from [10.157.2.224] (HELO [192.168.200.1])
-  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
-  with ESMTPS id 11859378; Tue, 07 Jun 2022 14:38:34 -0400
-Message-ID: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
-Date:   Tue, 7 Jun 2022 14:38:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50FD521F9E7;
+        Tue,  7 Jun 2022 11:57:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2EC96156D;
+        Tue,  7 Jun 2022 18:57:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0EE4C385A5;
+        Tue,  7 Jun 2022 18:57:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628224;
+        bh=a3fmYRNmxmmGtW2qncH+A1b8hXxAu7cfiYtmX5DV0eM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=VXm+srs7teZa7Sh+6Ckd0jXH/7JLnobRv7PR+RmZGOXDqTCkT19UvetpAE8qB09Up
+         3FO7CRN354WVqOqAgCYFIkVxhL/qhiremV9ZynJUo4mUkLk0twSjdOwVGfhCVmEZz0
+         NVnPy+FdzSwF9eX1EvXoDQcLkz4uhiKiFhiDhBMY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 252/879] Input: gpio-keys - cancel delayed work only in case of GPIO
+Date:   Tue,  7 Jun 2022 18:56:10 +0200
+Message-Id: <20220607165010.163719386@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Content-Language: en-US
-To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc:     iommu@lists.linux-foundation.org, kernel-team@fb.com,
-        Matthew Wilcox <willy@infradead.org>,
-        Keith Busch <kbusch@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Tony Lindgren <tony@atomide.com>
-From:   Tony Battersby <tonyb@cybernetics.com>
-Subject: [PATCH v6 00/11] mpt3sas and dmapool scalability
 Content-Type: text/plain; charset=UTF-8
-X-ASG-Orig-Subj: [PATCH v6 00/11] mpt3sas and dmapool scalability
-Content-Transfer-Encoding: 7bit
-X-Barracuda-Connect: UNKNOWN[10.10.4.126]
-X-Barracuda-Start-Time: 1654627115
-X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
-X-Barracuda-BRTS-Status: 1
-X-Virus-Scanned: by bsmtpd at cybernetics.com
-X-Barracuda-Scan-Msg-Size: 3193
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series improves dmapool scalability by replacing linear scans
-with red-black trees.
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Note that Keith Busch is also working on improving dmapool scalability,
-so for now I would recommend not merging my scalability patches until
-Keith's approach can be evaluated.  In the meantime, my patches can
-serve as a benchmark comparison.  I also have a number of cleanup
-patches in my series that could be useful on their own.
+[ Upstream commit cee409bbba0d1bd3fb73064fb480ff365f453b5d ]
 
-Changes since v5:
-1. inline pool_free_page() into dma_pool_destroy() to avoid adding
-   unused code
-2. convert scnprintf() to sysfs_emit()
-3. avoid adding a hole in struct dma_pool
-4. fix big O usage in description
+gpio_keys module can either accept gpios or interrupts. The module
+initializes delayed work in case of gpios only and is only used if
+debounce timer is not used, so make sure cancel_delayed_work_sync()
+is called only when its gpio-backed and debounce_use_hrtimer is false.
 
-References:
+This fixes the issue seen below when the gpio_keys module is unloaded and
+an interrupt pin is used instead of GPIO:
 
-v5
-https://lore.kernel.org/linux-mm/9b08ab7c-b80b-527d-9adf-7716b0868fbc@cybernetics.com/
+[  360.297569] ------------[ cut here ]------------
+[  360.302303] WARNING: CPU: 0 PID: 237 at kernel/workqueue.c:3066 __flush_work+0x414/0x470
+[  360.310531] Modules linked in: gpio_keys(-)
+[  360.314797] CPU: 0 PID: 237 Comm: rmmod Not tainted 5.18.0-rc5-arm64-renesas-00116-g73636105874d-dirty #166
+[  360.324662] Hardware name: Renesas SMARC EVK based on r9a07g054l2 (DT)
+[  360.331270] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[  360.338318] pc : __flush_work+0x414/0x470
+[  360.342385] lr : __cancel_work_timer+0x140/0x1b0
+[  360.347065] sp : ffff80000a7fba00
+[  360.350423] x29: ffff80000a7fba00 x28: ffff000012b9c5c0 x27: 0000000000000000
+[  360.357664] x26: ffff80000a7fbb80 x25: ffff80000954d0a8 x24: 0000000000000001
+[  360.364904] x23: ffff800009757000 x22: 0000000000000000 x21: ffff80000919b000
+[  360.372143] x20: ffff00000f5974e0 x19: ffff00000f5974e0 x18: ffff8000097fcf48
+[  360.379382] x17: 0000000000000000 x16: 0000000000000000 x15: 0000000000053f40
+[  360.386622] x14: ffff800009850e88 x13: 0000000000000002 x12: 000000000000a60c
+[  360.393861] x11: 000000000000a610 x10: 0000000000000000 x9 : 0000000000000008
+[  360.401100] x8 : 0101010101010101 x7 : 00000000a473c394 x6 : 0080808080808080
+[  360.408339] x5 : 0000000000000001 x4 : 0000000000000000 x3 : ffff80000919b458
+[  360.415578] x2 : ffff8000097577f0 x1 : 0000000000000001 x0 : 0000000000000000
+[  360.422818] Call trace:
+[  360.425299]  __flush_work+0x414/0x470
+[  360.429012]  __cancel_work_timer+0x140/0x1b0
+[  360.433340]  cancel_delayed_work_sync+0x10/0x18
+[  360.437931]  gpio_keys_quiesce_key+0x28/0x58 [gpio_keys]
+[  360.443327]  devm_action_release+0x10/0x18
+[  360.447481]  release_nodes+0x8c/0x1a0
+[  360.451194]  devres_release_all+0x90/0x100
+[  360.455346]  device_unbind_cleanup+0x14/0x60
+[  360.459677]  device_release_driver_internal+0xe8/0x168
+[  360.464883]  driver_detach+0x4c/0x90
+[  360.468509]  bus_remove_driver+0x54/0xb0
+[  360.472485]  driver_unregister+0x2c/0x58
+[  360.476462]  platform_driver_unregister+0x10/0x18
+[  360.481230]  gpio_keys_exit+0x14/0x828 [gpio_keys]
+[  360.486088]  __arm64_sys_delete_module+0x1e0/0x270
+[  360.490945]  invoke_syscall+0x40/0xf8
+[  360.494661]  el0_svc_common.constprop.3+0xf0/0x110
+[  360.499515]  do_el0_svc+0x20/0x78
+[  360.502877]  el0_svc+0x48/0xf8
+[  360.505977]  el0t_64_sync_handler+0x88/0xb0
+[  360.510216]  el0t_64_sync+0x148/0x14c
+[  360.513930] irq event stamp: 4306
+[  360.517288] hardirqs last  enabled at (4305): [<ffff8000080b0300>] __cancel_work_timer+0x130/0x1b0
+[  360.526359] hardirqs last disabled at (4306): [<ffff800008d194fc>] el1_dbg+0x24/0x88
+[  360.534204] softirqs last  enabled at (4278): [<ffff8000080104a0>] _stext+0x4a0/0x5e0
+[  360.542133] softirqs last disabled at (4267): [<ffff8000080932ac>] irq_exit_rcu+0x18c/0x1b0
+[  360.550591] ---[ end trace 0000000000000000 ]---
 
-Keith Busch's dmapool performance enhancements
-https://lore.kernel.org/linux-mm/20220428202714.17630-1-kbusch@kernel.org/
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Link: https://lore.kernel.org/r/20220524135822.14764-1-prabhakar.mahadev-lad.rj@bp.renesas.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/input/keyboard/gpio_keys.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Below is my original description of the motivation for these patches.
+diff --git a/drivers/input/keyboard/gpio_keys.c b/drivers/input/keyboard/gpio_keys.c
+index d75a8b179a8a..a5dc4ab87fa1 100644
+--- a/drivers/input/keyboard/gpio_keys.c
++++ b/drivers/input/keyboard/gpio_keys.c
+@@ -131,7 +131,7 @@ static void gpio_keys_quiesce_key(void *data)
+ 
+ 	if (!bdata->gpiod)
+ 		hrtimer_cancel(&bdata->release_timer);
+-	if (bdata->debounce_use_hrtimer)
++	else if (bdata->debounce_use_hrtimer)
+ 		hrtimer_cancel(&bdata->debounce_timer);
+ 	else
+ 		cancel_delayed_work_sync(&bdata->work);
+-- 
+2.35.1
 
-drivers/scsi/mpt3sas is running into a scalability problem with the
-kernel's DMA pool implementation.  With a LSI/Broadcom SAS 9300-8i
-12Gb/s HBA and max_sgl_entries=256, during modprobe, mpt3sas does the
-equivalent of:
-
-chain_dma_pool = dma_pool_create(size = 128);
-for (i = 0; i < 373959; i++)
-    {
-    dma_addr[i] = dma_pool_alloc(chain_dma_pool);
-    }
-
-And at rmmod, system shutdown, or system reboot, mpt3sas does the
-equivalent of:
-
-for (i = 0; i < 373959; i++)
-    {
-    dma_pool_free(chain_dma_pool, dma_addr[i]);
-    }
-dma_pool_destroy(chain_dma_pool);
-
-With this usage, both dma_pool_alloc() and dma_pool_free() exhibit
-O(n) complexity, although dma_pool_free() is much worse due to
-implementation details.  On my system, the dma_pool_free() loop above
-takes about 9 seconds to run.  Note that the problem was even worse
-before commit 74522a92bbf0 ("scsi: mpt3sas: Optimize I/O memory
-consumption in driver."), where the dma_pool_free() loop could take ~30
-seconds.
-
-mpt3sas also has some other DMA pools, but chain_dma_pool is the only
-one with so many allocations:
-
-cat /sys/devices/pci0000:80/0000:80:07.0/0000:85:00.0/pools
-(manually cleaned up column alignment)
-poolinfo - 0.1
-reply_post_free_array pool  1      21     192     1
-reply_free pool             1      1      41728   1
-reply pool                  1      1      1335296 1
-sense pool                  1      1      970272  1
-chain pool                  373959 386048 128     12064
-reply_post_free pool        12     12     166528  12
-
-The patches in this series improve the scalability of the DMA pool
-implementation, which significantly reduces the running time of the
-DMA alloc/free loops.  With the patches applied, "modprobe mpt3sas",
-"rmmod mpt3sas", and system shutdown/reboot with mpt3sas loaded are
-significantly faster.  Here are some benchmarks (of DMA alloc/free
-only, not the entire modprobe/rmmod):
-
-dma_pool_create() + dma_pool_alloc() loop, size = 128, count = 373959
-  original:        350 ms ( 1x)
-  dmapool patches:  18 ms (19x)
-
-dma_pool_free() loop + dma_pool_destroy(), size = 128, count = 373959
-  original:        8901 ms (   1x)
-  dmapool patches:   19 ms ( 477x)
 
 
