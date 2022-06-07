@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08BB8CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99222CCA490
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352888AbiFGSRk (ORCPT
+        id S1352209AbiFGSQ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:17:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36770 "EHLO
+        Tue, 7 Jun 2022 14:16:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348979AbiFGR5i (ORCPT
+        with ESMTP id S1348485AbiFGR5e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:57:38 -0400
+        Tue, 7 Jun 2022 13:57:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D73403D4;
-        Tue,  7 Jun 2022 10:40:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CAE23139D;
+        Tue,  7 Jun 2022 10:40:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 493566137B;
-        Tue,  7 Jun 2022 17:40:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5431FC385A5;
-        Tue,  7 Jun 2022 17:40:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 360376146F;
+        Tue,  7 Jun 2022 17:40:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45429C385A5;
+        Tue,  7 Jun 2022 17:40:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623637;
-        bh=ITUahHDwW1gTaJlV8oHzxviHbnKXY4XzaJ5No6iHqSQ=;
+        s=korg; t=1654623626;
+        bh=U6/EdSuc+660T/vtz96Q2XA9sTuGkSssNogEEj+9RrM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RcKXqVhgi4I76MNFK9UgFE3m8e3FwS9Zay6p95caw9Qzmorf14RcwnzKrjnOdYJd6
-         1JEeqkqk1VNjSA4ZnIIOOflbGKYEuoJvkInIFEBpOF8bXfL8hMb9FomHindZaPdwx6
-         nDIXb4iXzyx6XnoIUuARWp8Nat+popoe1jq3rueQ=
+        b=qV5oOCP62re1cFkge9HwwcpsupilpkentZyhGcrRPKfLOKzffWNmpIJ+g5C1BcDPS
+         z1uN1Tfhus45kXKD47syfDRMAF7Dbmxrn7X7M/ADQFYzIDI5YDez0iKBpON8O5dgi+
+         qWM9tsXSDMHGjDE7upT67lKC65mxd3wp6WkLpKW8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes@sipsolutions.net>,
-        Kees Cook <keescook@chromium.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.15 036/667] ptrace/um: Replace PT_DTRACE with TIF_SINGLESTEP
-Date:   Tue,  7 Jun 2022 18:55:01 +0200
-Message-Id: <20220607164935.880810460@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Yazen Ghannam <yazen.ghannam@amd.com>,
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.15 032/667] x86/MCE/AMD: Fix memory leak when threshold_create_bank() fails
+Date:   Tue,  7 Jun 2022 18:54:57 +0200
+Message-Id: <20220607164935.759519492@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,140 +52,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 
-commit c200e4bb44e80b343c09841e7caaaca0aac5e5fa upstream.
+commit e5f28623ceb103e13fc3d7bd45edf9818b227fd0 upstream.
 
-User mode linux is the last user of the PT_DTRACE flag.  Using the flag to indicate
-single stepping is a little confusing and worse changing tsk->ptrace without locking
-could potentionally cause problems.
+In mce_threshold_create_device(), if threshold_create_bank() fails, the
+previously allocated threshold banks array @bp will be leaked because
+the call to mce_threshold_remove_device() will not free it.
 
-So use a thread info flag with a better name instead of flag in tsk->ptrace.
+This happens because mce_threshold_remove_device() fetches the pointer
+through the threshold_banks per-CPU variable but bp is written there
+only after the bank creation is successful, and not before, when
+threshold_create_bank() fails.
 
-Remove the definition PT_DTRACE as uml is the last user.
+Add a helper which unwinds all the bank creation work previously done
+and pass into it the previously allocated threshold banks array for
+freeing.
 
-Cc: stable@vger.kernel.org
-Acked-by: Johannes Berg <johannes@sipsolutions.net>
-Tested-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Oleg Nesterov <oleg@redhat.com>
-Link: https://lkml.kernel.org/r/20220505182645.497868-3-ebiederm@xmission.com
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+  [ bp: Massage. ]
+
+Fixes: 6458de97fc15 ("x86/mce/amd: Straighten CPU hotplug path")
+Co-developed-by: Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+Signed-off-by: Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+Co-developed-by: Yazen Ghannam <yazen.ghannam@amd.com>
+Signed-off-by: Yazen Ghannam <yazen.ghannam@amd.com>
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220329104705.65256-3-ammarfaizi2@gnuweeb.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/um/include/asm/thread_info.h |    2 ++
- arch/um/kernel/exec.c             |    2 +-
- arch/um/kernel/process.c          |    2 +-
- arch/um/kernel/ptrace.c           |    8 ++++----
- arch/um/kernel/signal.c           |    4 ++--
- include/linux/ptrace.h            |    1 -
- 6 files changed, 10 insertions(+), 9 deletions(-)
+ arch/x86/kernel/cpu/mce/amd.c |   32 +++++++++++++++++++-------------
+ 1 file changed, 19 insertions(+), 13 deletions(-)
 
---- a/arch/um/include/asm/thread_info.h
-+++ b/arch/um/include/asm/thread_info.h
-@@ -64,6 +64,7 @@ static inline struct thread_info *curren
- #define TIF_RESTORE_SIGMASK	7
- #define TIF_NOTIFY_RESUME	8
- #define TIF_SECCOMP		9	/* secure computing */
-+#define TIF_SINGLESTEP		10	/* single stepping userspace */
- 
- #define _TIF_SYSCALL_TRACE	(1 << TIF_SYSCALL_TRACE)
- #define _TIF_SIGPENDING		(1 << TIF_SIGPENDING)
-@@ -72,5 +73,6 @@ static inline struct thread_info *curren
- #define _TIF_MEMDIE		(1 << TIF_MEMDIE)
- #define _TIF_SYSCALL_AUDIT	(1 << TIF_SYSCALL_AUDIT)
- #define _TIF_SECCOMP		(1 << TIF_SECCOMP)
-+#define _TIF_SINGLESTEP		(1 << TIF_SINGLESTEP)
- 
- #endif
---- a/arch/um/kernel/exec.c
-+++ b/arch/um/kernel/exec.c
-@@ -42,7 +42,7 @@ void start_thread(struct pt_regs *regs,
- {
- 	PT_REGS_IP(regs) = eip;
- 	PT_REGS_SP(regs) = esp;
--	current->ptrace &= ~PT_DTRACE;
-+	clear_thread_flag(TIF_SINGLESTEP);
- #ifdef SUBARCH_EXECVE1
- 	SUBARCH_EXECVE1(regs->regs);
- #endif
---- a/arch/um/kernel/process.c
-+++ b/arch/um/kernel/process.c
-@@ -339,7 +339,7 @@ int singlestepping(void * t)
- {
- 	struct task_struct *task = t ? t : current;
- 
--	if (!(task->ptrace & PT_DTRACE))
-+	if (!test_thread_flag(TIF_SINGLESTEP))
- 		return 0;
- 
- 	if (task->thread.singlestep_syscall)
---- a/arch/um/kernel/ptrace.c
-+++ b/arch/um/kernel/ptrace.c
-@@ -12,7 +12,7 @@
- 
- void user_enable_single_step(struct task_struct *child)
- {
--	child->ptrace |= PT_DTRACE;
-+	set_tsk_thread_flag(child, TIF_SINGLESTEP);
- 	child->thread.singlestep_syscall = 0;
- 
- #ifdef SUBARCH_SET_SINGLESTEPPING
-@@ -22,7 +22,7 @@ void user_enable_single_step(struct task
- 
- void user_disable_single_step(struct task_struct *child)
- {
--	child->ptrace &= ~PT_DTRACE;
-+	clear_tsk_thread_flag(child, TIF_SINGLESTEP);
- 	child->thread.singlestep_syscall = 0;
- 
- #ifdef SUBARCH_SET_SINGLESTEPPING
-@@ -121,7 +121,7 @@ static void send_sigtrap(struct uml_pt_r
+--- a/arch/x86/kernel/cpu/mce/amd.c
++++ b/arch/x86/kernel/cpu/mce/amd.c
+@@ -1470,10 +1470,23 @@ out_free:
+ 	kfree(bank);
  }
  
- /*
-- * XXX Check PT_DTRACE vs TIF_SINGLESTEP for singlestepping check and
-+ * XXX Check TIF_SINGLESTEP for singlestepping check and
-  * PT_PTRACED vs TIF_SYSCALL_TRACE for syscall tracing check
-  */
- int syscall_trace_enter(struct pt_regs *regs)
-@@ -145,7 +145,7 @@ void syscall_trace_leave(struct pt_regs
- 	audit_syscall_exit(regs);
++static void __threshold_remove_device(struct threshold_bank **bp)
++{
++	unsigned int bank, numbanks = this_cpu_read(mce_num_banks);
++
++	for (bank = 0; bank < numbanks; bank++) {
++		if (!bp[bank])
++			continue;
++
++		threshold_remove_bank(bp[bank]);
++		bp[bank] = NULL;
++	}
++	kfree(bp);
++}
++
+ int mce_threshold_remove_device(unsigned int cpu)
+ {
+ 	struct threshold_bank **bp = this_cpu_read(threshold_banks);
+-	unsigned int bank, numbanks = this_cpu_read(mce_num_banks);
  
- 	/* Fake a debug trap */
--	if (ptraced & PT_DTRACE)
-+	if (test_thread_flag(TIF_SINGLESTEP))
- 		send_sigtrap(&regs->regs, 0);
- 
- 	if (!test_thread_flag(TIF_SYSCALL_TRACE))
---- a/arch/um/kernel/signal.c
-+++ b/arch/um/kernel/signal.c
-@@ -53,7 +53,7 @@ static void handle_signal(struct ksignal
- 	unsigned long sp;
- 	int err;
- 
--	if ((current->ptrace & PT_DTRACE) && (current->ptrace & PT_PTRACED))
-+	if (test_thread_flag(TIF_SINGLESTEP) && (current->ptrace & PT_PTRACED))
- 		singlestep = 1;
- 
- 	/* Did we come from a system call? */
-@@ -128,7 +128,7 @@ void do_signal(struct pt_regs *regs)
- 	 * on the host.  The tracing thread will check this flag and
- 	 * PTRACE_SYSCALL if necessary.
+ 	if (!bp)
+ 		return 0;
+@@ -1484,13 +1497,7 @@ int mce_threshold_remove_device(unsigned
  	 */
--	if (current->ptrace & PT_DTRACE)
-+	if (test_thread_flag(TIF_SINGLESTEP))
- 		current->thread.singlestep_syscall =
- 			is_syscall(PT_REGS_IP(&current->thread.regs));
+ 	this_cpu_write(threshold_banks, NULL);
  
---- a/include/linux/ptrace.h
-+++ b/include/linux/ptrace.h
-@@ -30,7 +30,6 @@ extern int ptrace_access_vm(struct task_
+-	for (bank = 0; bank < numbanks; bank++) {
+-		if (bp[bank]) {
+-			threshold_remove_bank(bp[bank]);
+-			bp[bank] = NULL;
+-		}
+-	}
+-	kfree(bp);
++	__threshold_remove_device(bp);
+ 	return 0;
+ }
  
- #define PT_SEIZED	0x00010000	/* SEIZE used, enable new behavior */
- #define PT_PTRACED	0x00000001
--#define PT_DTRACE	0x00000002	/* delayed trace (used on m68k, i386) */
+@@ -1527,15 +1534,14 @@ int mce_threshold_create_device(unsigned
+ 		if (!(this_cpu_read(bank_map) & (1 << bank)))
+ 			continue;
+ 		err = threshold_create_bank(bp, cpu, bank);
+-		if (err)
+-			goto out_err;
++		if (err) {
++			__threshold_remove_device(bp);
++			return err;
++		}
+ 	}
+ 	this_cpu_write(threshold_banks, bp);
  
- #define PT_OPT_FLAG_SHIFT	3
- /* PT_TRACE_* event enable flags */
+ 	if (thresholding_irq_en)
+ 		mce_threshold_vector = amd_threshold_interrupt;
+ 	return 0;
+-out_err:
+-	mce_threshold_remove_device(cpu);
+-	return err;
+ }
 
 
