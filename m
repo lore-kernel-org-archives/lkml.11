@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7815C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:03:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2155CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:03:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357995AbiFGUDU (ORCPT
+        id S1358039AbiFGUDZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:03:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57676 "EHLO
+        Tue, 7 Jun 2022 16:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352875AbiFGTD0 (ORCPT
+        with ESMTP id S1353270AbiFGTDo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:03:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F90E15877E;
-        Tue,  7 Jun 2022 11:05:16 -0700 (PDT)
+        Tue, 7 Jun 2022 15:03:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F03FA157EA0;
+        Tue,  7 Jun 2022 11:05:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 35E7761883;
-        Tue,  7 Jun 2022 18:05:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40406C385A5;
-        Tue,  7 Jun 2022 18:05:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1BED617B4;
+        Tue,  7 Jun 2022 18:05:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1BC3C385A5;
+        Tue,  7 Jun 2022 18:05:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625114;
-        bh=J6+5wNIGk5VQH6bbzau39NXxNcohMGEmwwQLsllSQM8=;
+        s=korg; t=1654625120;
+        bh=CWpacpZV+I6h3XbEbMIyLimtNJRi0jOE44ohDqfFBnw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E3N9dj91YDgYe65K0KBNPdc9z/gn0qKw2tMp1ZCEc7NavajRrXwAcWLOCP+Vnnn8Y
-         Y6OY/XOrOHs5cq3aBJWqSzlrPHFrFMCzXl00qxieMBSS/rDpE6jqFre9FL4npNoG6B
-         ob1alXbdVLHfrCCBrr6Nlew9iXsOCRtfBT1uSMuA=
+        b=W9pxmpKOP5O4PgGqFU6sQtEJarx9E6BPKO6pF38q4rn5TqtPYGWkFJfvmg6KO/BG9
+         5gu4UE00F+TrDezpV0UOCJNKlYBnB3wgrf79N6l72TGyp6A5eY+UPAeahKWZYRvf0E
+         99OpTTgCNfGRmM83ooe/5ysTN2nhPR07IQ6KEJW8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aditya Garg <gargaditya08@live.com>,
-        Mimi Zohar <zohar@linux.ibm.com>
-Subject: [PATCH 5.15 530/667] efi: Do not import certificates from UEFI Secure Boot for T2 Macs
-Date:   Tue,  7 Jun 2022 19:03:15 +0200
-Message-Id: <20220607164950.599331902@linuxfoundation.org>
+        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 532/667] bfq: Avoid merging queues with different parents
+Date:   Tue,  7 Jun 2022 19:03:17 +0200
+Message-Id: <20220607164950.657788528@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,133 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aditya Garg <gargaditya08@live.com>
+From: Jan Kara <jack@suse.cz>
 
-commit 155ca952c7ca19aa32ecfb7373a32bbc2e1ec6eb upstream.
+commit c1cee4ab36acef271be9101590756ed0c0c374d9 upstream.
 
-On Apple T2 Macs, when Linux attempts to read the db and dbx efi variables
-at early boot to load UEFI Secure Boot certificates, a page fault occurs
-in Apple firmware code and EFI runtime services are disabled with the
-following logs:
+It can happen that the parent of a bfqq changes between the moment we
+decide two queues are worth to merge (and set bic->stable_merge_bfqq)
+and the moment bfq_setup_merge() is called. This can happen e.g. because
+the process submitted IO for a different cgroup and thus bfqq got
+reparented. It can even happen that the bfqq we are merging with has
+parent cgroup that is already offline and going to be destroyed in which
+case the merge can lead to use-after-free issues such as:
 
-[Firmware Bug]: Page fault caused by firmware at PA: 0xffffb1edc0068000
-WARNING: CPU: 3 PID: 104 at arch/x86/platform/efi/quirks.c:735 efi_crash_gracefully_on_page_fault+0x50/0xf0
-(Removed some logs from here)
+BUG: KASAN: use-after-free in __bfq_deactivate_entity+0x9cb/0xa50
+Read of size 8 at addr ffff88800693c0c0 by task runc:[2:INIT]/10544
+
+CPU: 0 PID: 10544 Comm: runc:[2:INIT] Tainted: G            E     5.15.2-0.g5fb85fd-default #1 openSUSE Tumbleweed (unreleased) f1f3b891c72369aebecd2e43e4641a6358867c70
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a-rebuilt.opensuse.org 04/01/2014
 Call Trace:
- <TASK>
- page_fault_oops+0x4f/0x2c0
- ? search_bpf_extables+0x6b/0x80
- ? search_module_extables+0x50/0x80
- ? search_exception_tables+0x5b/0x60
- kernelmode_fixup_or_oops+0x9e/0x110
- __bad_area_nosemaphore+0x155/0x190
- bad_area_nosemaphore+0x16/0x20
- do_kern_addr_fault+0x8c/0xa0
- exc_page_fault+0xd8/0x180
- asm_exc_page_fault+0x1e/0x30
-(Removed some logs from here)
- ? __efi_call+0x28/0x30
- ? switch_mm+0x20/0x30
- ? efi_call_rts+0x19a/0x8e0
- ? process_one_work+0x222/0x3f0
- ? worker_thread+0x4a/0x3d0
- ? kthread+0x17a/0x1a0
- ? process_one_work+0x3f0/0x3f0
- ? set_kthread_struct+0x40/0x40
- ? ret_from_fork+0x22/0x30
- </TASK>
----[ end trace 1f82023595a5927f ]---
-efi: Froze efi_rts_wq and disabled EFI Runtime Services
-integrity: Couldn't get size: 0x8000000000000015
-integrity: MODSIGN: Couldn't get UEFI db list
-efi: EFI Runtime Services are disabled!
-integrity: Couldn't get size: 0x8000000000000015
-integrity: Couldn't get UEFI dbx list
-integrity: Couldn't get size: 0x8000000000000015
-integrity: Couldn't get mokx list
-integrity: Couldn't get size: 0x80000000
+ <IRQ>
+ dump_stack_lvl+0x46/0x5a
+ print_address_description.constprop.0+0x1f/0x140
+ ? __bfq_deactivate_entity+0x9cb/0xa50
+ kasan_report.cold+0x7f/0x11b
+ ? __bfq_deactivate_entity+0x9cb/0xa50
+ __bfq_deactivate_entity+0x9cb/0xa50
+ ? update_curr+0x32f/0x5d0
+ bfq_deactivate_entity+0xa0/0x1d0
+ bfq_del_bfqq_busy+0x28a/0x420
+ ? resched_curr+0x116/0x1d0
+ ? bfq_requeue_bfqq+0x70/0x70
+ ? check_preempt_wakeup+0x52b/0xbc0
+ __bfq_bfqq_expire+0x1a2/0x270
+ bfq_bfqq_expire+0xd16/0x2160
+ ? try_to_wake_up+0x4ee/0x1260
+ ? bfq_end_wr_async_queues+0xe0/0xe0
+ ? _raw_write_unlock_bh+0x60/0x60
+ ? _raw_spin_lock_irq+0x81/0xe0
+ bfq_idle_slice_timer+0x109/0x280
+ ? bfq_dispatch_request+0x4870/0x4870
+ __hrtimer_run_queues+0x37d/0x700
+ ? enqueue_hrtimer+0x1b0/0x1b0
+ ? kvm_clock_get_cycles+0xd/0x10
+ ? ktime_get_update_offsets_now+0x6f/0x280
+ hrtimer_interrupt+0x2c8/0x740
 
-So we avoid reading these UEFI variables and thus prevent the crash.
+Fix the problem by checking that the parent of the two bfqqs we are
+merging in bfq_setup_merge() is the same.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Aditya Garg <gargaditya08@live.com>
-Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Link: https://lore.kernel.org/linux-block/20211125172809.GC19572@quack2.suse.cz/
+CC: stable@vger.kernel.org
+Fixes: 430a67f9d616 ("block, bfq: merge bursts of newly-created queues")
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-2-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/integrity/platform_certs/keyring_handler.h |    8 ++++
- security/integrity/platform_certs/load_uefi.c       |   33 ++++++++++++++++++++
- 2 files changed, 41 insertions(+)
+ block/bfq-iosched.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/security/integrity/platform_certs/keyring_handler.h
-+++ b/security/integrity/platform_certs/keyring_handler.h
-@@ -30,3 +30,11 @@ efi_element_handler_t get_handler_for_db
- efi_element_handler_t get_handler_for_dbx(const efi_guid_t *sig_type);
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -2636,6 +2636,14 @@ bfq_setup_merge(struct bfq_queue *bfqq,
+ 	if (process_refs == 0 || new_process_refs == 0)
+ 		return NULL;
  
- #endif
++	/*
++	 * Make sure merged queues belong to the same parent. Parents could
++	 * have changed since the time we decided the two queues are suitable
++	 * for merging.
++	 */
++	if (new_bfqq->entity.parent != bfqq->entity.parent)
++		return NULL;
 +
-+#ifndef UEFI_QUIRK_SKIP_CERT
-+#define UEFI_QUIRK_SKIP_CERT(vendor, product) \
-+		 .matches = { \
-+			DMI_MATCH(DMI_BOARD_VENDOR, vendor), \
-+			DMI_MATCH(DMI_PRODUCT_NAME, product), \
-+		},
-+#endif
---- a/security/integrity/platform_certs/load_uefi.c
-+++ b/security/integrity/platform_certs/load_uefi.c
-@@ -3,6 +3,7 @@
- #include <linux/kernel.h>
- #include <linux/sched.h>
- #include <linux/cred.h>
-+#include <linux/dmi.h>
- #include <linux/err.h>
- #include <linux/efi.h>
- #include <linux/slab.h>
-@@ -12,6 +13,31 @@
- #include "keyring_handler.h"
+ 	bfq_log_bfqq(bfqq->bfqd, bfqq, "scheduling merge with queue %d",
+ 		new_bfqq->pid);
  
- /*
-+ * On T2 Macs reading the db and dbx efi variables to load UEFI Secure Boot
-+ * certificates causes occurrence of a page fault in Apple's firmware and
-+ * a crash disabling EFI runtime services. The following quirk skips reading
-+ * these variables.
-+ */
-+static const struct dmi_system_id uefi_skip_cert[] = {
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,2") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,3") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,4") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,2") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,3") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,4") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,2") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir9,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacMini8,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacPro7,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,2") },
-+	{ }
-+};
-+
-+/*
-  * Look to see if a UEFI variable called MokIgnoreDB exists and return true if
-  * it does.
-  *
-@@ -137,6 +163,13 @@ static int __init load_uefi_certs(void)
- 	unsigned long dbsize = 0, dbxsize = 0, mokxsize = 0;
- 	efi_status_t status;
- 	int rc = 0;
-+	const struct dmi_system_id *dmi_id;
-+
-+	dmi_id = dmi_first_match(uefi_skip_cert);
-+	if (dmi_id) {
-+		pr_err("Reading UEFI Secure Boot Certs is not supported on T2 Macs.\n");
-+		return false;
-+	}
- 
- 	if (!efi_rt_services_supported(EFI_RT_SUPPORTED_GET_VARIABLE))
- 		return false;
 
 
