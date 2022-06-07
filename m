@@ -2,141 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DED78CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDDD6CCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:37:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356402AbiFGTgZ (ORCPT
+        id S1356445AbiFGTg2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:36:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
+        Tue, 7 Jun 2022 15:36:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353883AbiFGSqO (ORCPT
+        with ESMTP id S1353879AbiFGSqO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:46:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 659B618AD83;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC7818C078;
         Tue,  7 Jun 2022 10:59:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5637BB82182;
-        Tue,  7 Jun 2022 17:59:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94298C3411C;
-        Tue,  7 Jun 2022 17:59:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624777;
-        bh=umZimJsbPiaFCLx43rWgYrP/wkynzXdkVAJcXZZE4T8=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19226B82375;
+        Tue,  7 Jun 2022 17:59:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80012C341C0;
+        Tue,  7 Jun 2022 17:59:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624777;
+        bh=htkbwkPIRIy5SN5SxyQMMjOYd5cT/CIrw8TOhfxFuBI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jygiKtgxLnmYoamoy4hLcy8G/IvUY8WR3Q8nKRUWZFPoT2VpXIpCr8ECJXl994Ov8
-         Me6PXZQY3SOqMUcrdD1tnskf6W7xMIwtclfuTZfIItlHOK4W8W4joNXB9h83UrlevU
-         9nTbmw26Szsl5Uu/HP2oo/mEseU9CFwxzcvzEFYpFP0e+fXtSy2aOOuPyJ9BjdDEhv
-         Am1Il/gNIU57a21neH5hJhK072bARWP7JcCKxi3CZu5IoQCw8sNHF0vGRJZXzH4nY6
-         5o2YH2cpENBwat8fMtTJagEjf8gaRO6XaB06LRMsURuY6uo8LiaBk/uhLCKn0urm/f
-         EF911wqmbK1tQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wang Cheng <wanngchenng@gmail.com>,
-        syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, Larry.Finger@lwfinger.net,
-        florian.c.schilhabel@googlemail.com, paskripkin@gmail.com,
-        fmdefrancesco@gmail.com, kuba@kernel.org, skumark1902@gmail.com,
-        xkernel.wang@foxmail.com, linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.10 19/38] staging: rtl8712: fix uninit-value in r871xu_drv_init()
-Date:   Tue,  7 Jun 2022 13:58:14 -0400
-Message-Id: <20220607175835.480735-19-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
-References: <20220607175835.480735-1-sashal@kernel.org>
+        b=TZMG/905MLvhNjGskUBAk6YH6Z/7hUB+Wi5kNpdKadc/ZQ5j4rp9fuPBaQURpFq4w
+         hMgsQhkdpTTNVc0PkP1w7q3GExmrkrmbuXPDdWa6EkBx/05RPPqbfhWPqvZFQ6XVLn
+         kLj0r/D0QdZzUrCCukvt29/BoLofHEVc1H11i4IE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        David Howells <dhowells@redhat.com>,
+        Manfred Spraul <manfred@colorfullife.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 451/667] ipc/mqueue: use get_tree_nodev() in mqueue_get_tree()
+Date:   Tue,  7 Jun 2022 19:01:56 +0200
+Message-Id: <20220607164948.242607633@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Cheng <wanngchenng@gmail.com>
+From: Waiman Long <longman@redhat.com>
 
-[ Upstream commit 0458e5428e5e959d201a40ffe71d762a79ecedc4 ]
+[ Upstream commit d60c4d01a98bc1942dba6e3adc02031f5519f94b ]
 
-When 'tmpU1b' returns from r8712_read8(padapter, EE_9346CR) is 0,
-'mac[6]' will not be initialized.
+When running the stress-ng clone benchmark with multiple testing threads,
+it was found that there were significant spinlock contention in sget_fc().
+The contended spinlock was the sb_lock.  It is under heavy contention
+because the following code in the critcal section of sget_fc():
 
-BUG: KMSAN: uninit-value in r871xu_drv_init+0x2d54/0x3070 drivers/staging/rtl8712/usb_intf.c:541
- r871xu_drv_init+0x2d54/0x3070 drivers/staging/rtl8712/usb_intf.c:541
- usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
- really_probe+0x653/0x14b0 drivers/base/dd.c:596
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
- driver_probe_device drivers/base/dd.c:782 [inline]
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
- bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:970
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
- device_add+0x1fff/0x26e0 drivers/base/core.c:3405
- usb_set_configuration+0x37e9/0x3ed0 drivers/usb/core/message.c:2170
- usb_generic_driver_probe+0x13c/0x300 drivers/usb/core/generic.c:238
- usb_probe_device+0x309/0x570 drivers/usb/core/driver.c:293
- really_probe+0x653/0x14b0 drivers/base/dd.c:596
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
- driver_probe_device drivers/base/dd.c:782 [inline]
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
- bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:970
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
- device_add+0x1fff/0x26e0 drivers/base/core.c:3405
- usb_new_device+0x1b8e/0x2950 drivers/usb/core/hub.c:2566
- hub_port_connect drivers/usb/core/hub.c:5358 [inline]
- hub_port_connect_change drivers/usb/core/hub.c:5502 [inline]
- port_event drivers/usb/core/hub.c:5660 [inline]
- hub_event+0x58e3/0x89e0 drivers/usb/core/hub.c:5742
- process_one_work+0xdb6/0x1820 kernel/workqueue.c:2307
- worker_thread+0x10b3/0x21e0 kernel/workqueue.c:2454
- kthread+0x3c7/0x500 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30
+  hlist_for_each_entry(old, &fc->fs_type->fs_supers, s_instances) {
+      if (test(old, fc))
+          goto share_extant_sb;
+  }
 
-Local variable mac created at:
- r871xu_drv_init+0x1771/0x3070 drivers/staging/rtl8712/usb_intf.c:394
- usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
+After testing with added instrumentation code, it was found that the
+benchmark could generate thousands of ipc namespaces with the
+corresponding number of entries in the mqueue's fs_supers list where the
+namespaces are the key for the search.  This leads to excessive time in
+scanning the list for a match.
 
-KMSAN: uninit-value in r871xu_drv_init
-https://syzkaller.appspot.com/bug?id=3cd92b1d85428b128503bfa7a250294c9ae00bd8
+Looking back at the mqueue calling sequence leading to sget_fc():
 
-Reported-by: <syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com>
-Tested-by: <syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com>
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Wang Cheng <wanngchenng@gmail.com>
-Link: https://lore.kernel.org/r/14c3886173dfa4597f0704547c414cfdbcd11d16.1652618244.git.wanngchenng@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  mq_init_ns()
+  => mq_create_mount()
+  => fc_mount()
+  => vfs_get_tree()
+  => mqueue_get_tree()
+  => get_tree_keyed()
+  => vfs_get_super()
+  => sget_fc()
+
+Currently, mq_init_ns() is the only mqueue function that will indirectly
+call mqueue_get_tree() with a newly allocated ipc namespace as the key for
+searching.  As a result, there will never be a match with the exising ipc
+namespaces stored in the mqueue's fs_supers list.
+
+So using get_tree_keyed() to do an existing ipc namespace search is just a
+waste of time.  Instead, we could use get_tree_nodev() to eliminate the
+useless search.  By doing so, we can greatly reduce the sb_lock hold time
+and avoid the spinlock contention problem in case a large number of ipc
+namespaces are present.
+
+Of course, if the code is modified in the future to allow
+mqueue_get_tree() to be called with an existing ipc namespace instead of a
+new one, we will have to use get_tree_keyed() in this case.
+
+The following stress-ng clone benchmark command was run on a 2-socket
+48-core Intel system:
+
+./stress-ng --clone 32 --verbose --oomable --metrics-brief -t 20
+
+The "bogo ops/s" increased from 5948.45 before patch to 9137.06 after
+patch. This is an increase of 54% in performance.
+
+Link: https://lkml.kernel.org/r/20220121172315.19652-1-longman@redhat.com
+Fixes: 935c6912b198 ("ipc: Convert mqueue fs to fs_context")
+Signed-off-by: Waiman Long <longman@redhat.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: David Howells <dhowells@redhat.com>
+Cc: Manfred Spraul <manfred@colorfullife.com>
+Cc: Davidlohr Bueso <dave@stgolabs.net>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8712/usb_intf.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ ipc/mqueue.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/staging/rtl8712/usb_intf.c b/drivers/staging/rtl8712/usb_intf.c
-index 77f090bdd36e..68d66c3ce2c8 100644
---- a/drivers/staging/rtl8712/usb_intf.c
-+++ b/drivers/staging/rtl8712/usb_intf.c
-@@ -539,13 +539,13 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
- 		} else {
- 			AutoloadFail = false;
- 		}
--		if (((mac[0] == 0xff) && (mac[1] == 0xff) &&
-+		if ((!AutoloadFail) ||
-+		    ((mac[0] == 0xff) && (mac[1] == 0xff) &&
- 		     (mac[2] == 0xff) && (mac[3] == 0xff) &&
- 		     (mac[4] == 0xff) && (mac[5] == 0xff)) ||
- 		    ((mac[0] == 0x00) && (mac[1] == 0x00) &&
- 		     (mac[2] == 0x00) && (mac[3] == 0x00) &&
--		     (mac[4] == 0x00) && (mac[5] == 0x00)) ||
--		     (!AutoloadFail)) {
-+		     (mac[4] == 0x00) && (mac[5] == 0x00))) {
- 			mac[0] = 0x00;
- 			mac[1] = 0xe0;
- 			mac[2] = 0x4c;
+diff --git a/ipc/mqueue.c b/ipc/mqueue.c
+index 5becca9be867..089c34d0732c 100644
+--- a/ipc/mqueue.c
++++ b/ipc/mqueue.c
+@@ -45,6 +45,7 @@
+ 
+ struct mqueue_fs_context {
+ 	struct ipc_namespace	*ipc_ns;
++	bool			 newns;	/* Set if newly created ipc namespace */
+ };
+ 
+ #define MQUEUE_MAGIC	0x19800202
+@@ -427,6 +428,14 @@ static int mqueue_get_tree(struct fs_context *fc)
+ {
+ 	struct mqueue_fs_context *ctx = fc->fs_private;
+ 
++	/*
++	 * With a newly created ipc namespace, we don't need to do a search
++	 * for an ipc namespace match, but we still need to set s_fs_info.
++	 */
++	if (ctx->newns) {
++		fc->s_fs_info = ctx->ipc_ns;
++		return get_tree_nodev(fc, mqueue_fill_super);
++	}
+ 	return get_tree_keyed(fc, mqueue_fill_super, ctx->ipc_ns);
+ }
+ 
+@@ -454,6 +463,10 @@ static int mqueue_init_fs_context(struct fs_context *fc)
+ 	return 0;
+ }
+ 
++/*
++ * mq_init_ns() is currently the only caller of mq_create_mount().
++ * So the ns parameter is always a newly created ipc namespace.
++ */
+ static struct vfsmount *mq_create_mount(struct ipc_namespace *ns)
+ {
+ 	struct mqueue_fs_context *ctx;
+@@ -465,6 +478,7 @@ static struct vfsmount *mq_create_mount(struct ipc_namespace *ns)
+ 		return ERR_CAST(fc);
+ 
+ 	ctx = fc->fs_private;
++	ctx->newns = true;
+ 	put_ipc_ns(ctx->ipc_ns);
+ 	ctx->ipc_ns = get_ipc_ns(ns);
+ 	put_user_ns(fc->user_ns);
 -- 
 2.35.1
+
+
 
