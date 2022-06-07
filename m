@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23893C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:52:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25FF8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:52:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348673AbiFGRt7 (ORCPT
+        id S1348735AbiFGRuD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:49:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39734 "EHLO
+        Tue, 7 Jun 2022 13:50:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346849AbiFGR3x (ORCPT
+        with ESMTP id S1346743AbiFGR3s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:29:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F089660E9;
-        Tue,  7 Jun 2022 10:25:09 -0700 (PDT)
+        Tue, 7 Jun 2022 13:29:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E435119901;
+        Tue,  7 Jun 2022 10:25:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8704960906;
-        Tue,  7 Jun 2022 17:25:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A152C385A5;
-        Tue,  7 Jun 2022 17:25:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C4DFEB81F38;
+        Tue,  7 Jun 2022 17:25:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31BEEC385A5;
+        Tue,  7 Jun 2022 17:25:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622709;
-        bh=6WufMX3W+3Mz4YL4KNh5xMOCfFOf8Su4lg0ID/P/nmY=;
+        s=korg; t=1654622700;
+        bh=0944yUGQ3gyh8LgxQgruBWjnc/ggCPNvZO7sNZn8mHo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=an7TzVJ9ff5KRKdAKIp5sBd6eeAaO1qZNBh8ySFRnuE6WVhr8jwuspCxqLsum3RaL
-         u4F/xCaIqgAWvRqlpQWtpvomHu382hdaikeNtXUZSJsRmnsnmkSRLxisvaUWZ8/JO+
-         90WKAkmWLY3VOZhUDI9lJqieFC5nCPWBwfv3YotI=
+        b=LH4RE+uo5fNsGWZFhG2319gWfo90wWCD51vYQYhlQMVMU3JYEWTCdk7YZ4kOQI71+
+         dZSsX1U0WCMfg6kJBW+az/5p6x4UmdvJsUXJcLl6Y8GRfI4+SOzopKEf9NaJILkVCm
+         ouNfibzQsNvDBgcGvE7haNK4vI4YTWIXilF9rqy4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 154/452] cpufreq: Fix possible race in cpufreq online error path
-Date:   Tue,  7 Jun 2022 19:00:11 +0200
-Message-Id: <20220607164913.148292956@linuxfoundation.org>
+Subject: [PATCH 5.10 151/452] drm/bridge: Fix error handling in analogix_dp_probe
+Date:   Tue,  7 Jun 2022 19:00:08 +0200
+Message-Id: <20220607164913.057979759@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,89 +50,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Schspa Shi <schspa@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit f346e96267cd76175d6c201b40f770c0116a8a04 ]
+[ Upstream commit 9f15930bb2ef9f031d62ffc49629cbae89137733 ]
 
-When cpufreq online fails, the policy->cpus mask is not cleared and
-policy->rwsem is released too early, so the driver can be invoked
-via the cpuinfo_cur_freq sysfs attribute while its ->offline() or
-->exit() callbacks are being run.
+In the error handling path, the clk_prepare_enable() function
+call should be balanced by a corresponding 'clk_disable_unprepare()'
+call, as already done in the remove function.
 
-Take policy->clk as an example:
-
-static int cpufreq_online(unsigned int cpu)
-{
-  ...
-  // policy->cpus != 0 at this time
-  down_write(&policy->rwsem);
-  ret = cpufreq_add_dev_interface(policy);
-  up_write(&policy->rwsem);
-
-  return 0;
-
-out_destroy_policy:
-	for_each_cpu(j, policy->real_cpus)
-		remove_cpu_dev_symlink(policy, get_cpu_device(j));
-    up_write(&policy->rwsem);
-...
-out_exit_policy:
-  if (cpufreq_driver->exit)
-    cpufreq_driver->exit(policy);
-      clk_put(policy->clk);
-      // policy->clk is a wild pointer
-...
-                                    ^
-                                    |
-                            Another process access
-                            __cpufreq_get
-                              cpufreq_verify_current_freq
-                                cpufreq_generic_get
-                                  // acces wild pointer of policy->clk;
-                                    |
-                                    |
-out_offline_policy:                 |
-  cpufreq_policy_free(policy);      |
-    // deleted here, and will wait for no body reference
-    cpufreq_policy_put_kobj(policy);
-}
-
-Address this by modifying cpufreq_online() to release policy->rwsem
-in the error path after the driver callbacks have run and to clear
-policy->cpus before releasing the semaphore.
-
-Fixes: 7106e02baed4 ("cpufreq: release policy->rwsem on error")
-Signed-off-by: Schspa Shi <schspa@gmail.com>
-[ rjw: Subject and changelog edits ]
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 3424e3a4f844 ("drm: bridge: analogix/dp: split exynos dp driver to bridge directory")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220420011644.25730-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/cpufreq.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ .../gpu/drm/bridge/analogix/analogix_dp_core.c | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-index 30dafe8fc505..3540ea93b6f1 100644
---- a/drivers/cpufreq/cpufreq.c
-+++ b/drivers/cpufreq/cpufreq.c
-@@ -1515,8 +1515,6 @@ static int cpufreq_online(unsigned int cpu)
- 	for_each_cpu(j, policy->real_cpus)
- 		remove_cpu_dev_symlink(policy, get_cpu_device(j));
+diff --git a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
+index aa1bb86293fd..31b4ff60a010 100644
+--- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
++++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
+@@ -1705,8 +1705,10 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
  
--	up_write(&policy->rwsem);
--
- out_offline_policy:
- 	if (cpufreq_driver->offline)
- 		cpufreq_driver->offline(policy);
-@@ -1525,6 +1523,9 @@ static int cpufreq_online(unsigned int cpu)
- 	if (cpufreq_driver->exit)
- 		cpufreq_driver->exit(policy);
+ 	dp->reg_base = devm_ioremap_resource(&pdev->dev, res);
+-	if (IS_ERR(dp->reg_base))
+-		return ERR_CAST(dp->reg_base);
++	if (IS_ERR(dp->reg_base)) {
++		ret = PTR_ERR(dp->reg_base);
++		goto err_disable_clk;
++	}
  
-+	cpumask_clear(policy->cpus);
-+	up_write(&policy->rwsem);
+ 	dp->force_hpd = of_property_read_bool(dev->of_node, "force-hpd");
+ 
+@@ -1718,7 +1720,8 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
+ 	if (IS_ERR(dp->hpd_gpiod)) {
+ 		dev_err(dev, "error getting HDP GPIO: %ld\n",
+ 			PTR_ERR(dp->hpd_gpiod));
+-		return ERR_CAST(dp->hpd_gpiod);
++		ret = PTR_ERR(dp->hpd_gpiod);
++		goto err_disable_clk;
+ 	}
+ 
+ 	if (dp->hpd_gpiod) {
+@@ -1738,7 +1741,8 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
+ 
+ 	if (dp->irq == -ENXIO) {
+ 		dev_err(&pdev->dev, "failed to get irq\n");
+-		return ERR_PTR(-ENODEV);
++		ret = -ENODEV;
++		goto err_disable_clk;
+ 	}
+ 
+ 	ret = devm_request_threaded_irq(&pdev->dev, dp->irq,
+@@ -1747,11 +1751,15 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
+ 					irq_flags, "analogix-dp", dp);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "failed to request irq\n");
+-		return ERR_PTR(ret);
++		goto err_disable_clk;
+ 	}
+ 	disable_irq(dp->irq);
+ 
+ 	return dp;
 +
- out_free_policy:
- 	cpufreq_policy_free(policy);
- 	return ret;
++err_disable_clk:
++	clk_disable_unprepare(dp->clock);
++	return ERR_PTR(ret);
+ }
+ EXPORT_SYMBOL_GPL(analogix_dp_probe);
+ 
 -- 
 2.35.1
 
