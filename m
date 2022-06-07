@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87B77C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:37:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3BDAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:37:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379451AbiFGVhQ (ORCPT
+        id S1380015AbiFGVhV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:37:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33848 "EHLO
+        Tue, 7 Jun 2022 17:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377730AbiFGUnC (ORCPT
+        with ESMTP id S1357691AbiFGUnE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:43:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E1C1F231A;
-        Tue,  7 Jun 2022 11:38:53 -0700 (PDT)
+        Tue, 7 Jun 2022 16:43:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDE61F2329;
+        Tue,  7 Jun 2022 11:38:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 33F0BB8237C;
-        Tue,  7 Jun 2022 18:38:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98428C385A2;
-        Tue,  7 Jun 2022 18:38:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E15D7B82395;
+        Tue,  7 Jun 2022 18:38:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 434EAC385A5;
+        Tue,  7 Jun 2022 18:38:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627130;
-        bh=e5wNp0liSpCAzGIDVPX0YO5ZBqBeAMUgByib04aqO7g=;
+        s=korg; t=1654627102;
+        bh=3TG3itixh7NWTFK2FgObI3xmM6oohVm5wjgoSYCYlZk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R5oJfAbcQ9oTXSlmkFZDOsjX3uyks9oHT7N/8CbK7xSaycCQDuod7y7yx1FCNhyV8
-         tbdHB3/1veLuRYYBH47qglF+Hm1ngrQFOM/WniMkQp7yb7CUZXn92XwUmMlu9sU6dM
-         6xSuo6S3TmIT/ES2huSSiduEJ/OhooIBOpMQhAe8=
+        b=Xl/PmUsKwPUNcEV+lx4yYKZn2pI3fKhLnJeD5g/7F8Q0/v/y1VpUAHm8FZaX4yAQb
+         E1wegPWVwEybuLgfplz2wIZhE8OUge8WOhFlXkjhOZAUrB20+cYBdAFRiKk4FiOhvn
+         M+oXSOaT9g/SEsmLQMSayjAY7lxrDZJQk56IUrgw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 628/772] bfq: Avoid merging queues with different parents
-Date:   Tue,  7 Jun 2022 19:03:40 +0200
-Message-Id: <20220607165007.441905588@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>
+Subject: [PATCH 5.17 619/772] objtool: Fix symbol creation
+Date:   Tue,  7 Jun 2022 19:03:31 +0200
+Message-Id: <20220607165007.176569427@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,83 +51,348 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit c1cee4ab36acef271be9101590756ed0c0c374d9 upstream.
+commit ead165fa1042247b033afad7be4be9b815d04ade upstream.
 
-It can happen that the parent of a bfqq changes between the moment we
-decide two queues are worth to merge (and set bic->stable_merge_bfqq)
-and the moment bfq_setup_merge() is called. This can happen e.g. because
-the process submitted IO for a different cgroup and thus bfqq got
-reparented. It can even happen that the bfqq we are merging with has
-parent cgroup that is already offline and going to be destroyed in which
-case the merge can lead to use-after-free issues such as:
+Nathan reported objtool failing with the following messages:
 
-BUG: KASAN: use-after-free in __bfq_deactivate_entity+0x9cb/0xa50
-Read of size 8 at addr ffff88800693c0c0 by task runc:[2:INIT]/10544
+  warning: objtool: no non-local symbols !?
+  warning: objtool: gelf_update_symshndx: invalid section index
 
-CPU: 0 PID: 10544 Comm: runc:[2:INIT] Tainted: G            E     5.15.2-0.g5fb85fd-default #1 openSUSE Tumbleweed (unreleased) f1f3b891c72369aebecd2e43e4641a6358867c70
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a-rebuilt.opensuse.org 04/01/2014
-Call Trace:
- <IRQ>
- dump_stack_lvl+0x46/0x5a
- print_address_description.constprop.0+0x1f/0x140
- ? __bfq_deactivate_entity+0x9cb/0xa50
- kasan_report.cold+0x7f/0x11b
- ? __bfq_deactivate_entity+0x9cb/0xa50
- __bfq_deactivate_entity+0x9cb/0xa50
- ? update_curr+0x32f/0x5d0
- bfq_deactivate_entity+0xa0/0x1d0
- bfq_del_bfqq_busy+0x28a/0x420
- ? resched_curr+0x116/0x1d0
- ? bfq_requeue_bfqq+0x70/0x70
- ? check_preempt_wakeup+0x52b/0xbc0
- __bfq_bfqq_expire+0x1a2/0x270
- bfq_bfqq_expire+0xd16/0x2160
- ? try_to_wake_up+0x4ee/0x1260
- ? bfq_end_wr_async_queues+0xe0/0xe0
- ? _raw_write_unlock_bh+0x60/0x60
- ? _raw_spin_lock_irq+0x81/0xe0
- bfq_idle_slice_timer+0x109/0x280
- ? bfq_dispatch_request+0x4870/0x4870
- __hrtimer_run_queues+0x37d/0x700
- ? enqueue_hrtimer+0x1b0/0x1b0
- ? kvm_clock_get_cycles+0xd/0x10
- ? ktime_get_update_offsets_now+0x6f/0x280
- hrtimer_interrupt+0x2c8/0x740
+The problem is due to commit 4abff6d48dbc ("objtool: Fix code relocs
+vs weak symbols") failing to consider the case where an object would
+have no non-local symbols.
 
-Fix the problem by checking that the parent of the two bfqqs we are
-merging in bfq_setup_merge() is the same.
+The problem that commit tries to address is adding a STB_LOCAL symbol
+to the symbol table in light of the ELF spec's requirement that:
 
-Link: https://lore.kernel.org/linux-block/20211125172809.GC19572@quack2.suse.cz/
-CC: stable@vger.kernel.org
-Fixes: 430a67f9d616 ("block, bfq: merge bursts of newly-created queues")
-Tested-by: "yukuai (C)" <yukuai3@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220401102752.8599-2-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+  In each symbol table, all symbols with STB_LOCAL binding preced the
+  weak and global symbols.  As ``Sections'' above describes, a symbol
+  table section's sh_info section header member holds the symbol table
+  index for the first non-local symbol.
+
+The approach taken is to find this first non-local symbol, move that
+to the end and then re-use the freed spot to insert a new local symbol
+and increment sh_info.
+
+Except it never considered the case of object files without global
+symbols and got a whole bunch of details wrong -- so many in fact that
+it is a wonder it ever worked :/
+
+Specifically:
+
+ - It failed to re-hash the symbol on the new index, so a subsequent
+   find_symbol_by_index() would not find it at the new location and a
+   query for the old location would now return a non-deterministic
+   choice between the old and new symbol.
+
+ - It failed to appreciate that the GElf wrappers are not a valid disk
+   format (it works because GElf is basically Elf64 and we only
+   support x86_64 atm.)
+
+ - It failed to fully appreciate how horrible the libelf API really is
+   and got the gelf_update_symshndx() call pretty much completely
+   wrong; with the direct consequence that if inserting a second
+   STB_LOCAL symbol would require moving the same STB_GLOBAL symbol
+   again it would completely come unstuck.
+
+Write a new elf_update_symbol() function that wraps all the magic
+required to update or create a new symbol at a given index.
+
+Specifically, gelf_update_sym*() require an @ndx argument that is
+relative to the @data argument; this means you have to manually
+iterate the section data descriptor list and update @ndx.
+
+Fixes: 4abff6d48dbc ("objtool: Fix code relocs vs weak symbols")
+Reported-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Tested-by: Nathan Chancellor <nathan@kernel.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lkml.kernel.org/r/YoPCTEYjoPqE4ZxB@hirez.programming.kicks-ass.net
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/bfq-iosched.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ tools/objtool/elf.c |  198 +++++++++++++++++++++++++++++++++-------------------
+ 1 file changed, 129 insertions(+), 69 deletions(-)
 
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -2762,6 +2762,14 @@ bfq_setup_merge(struct bfq_queue *bfqq,
- 	if (process_refs == 0 || new_process_refs == 0)
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -314,6 +314,9 @@ static void elf_add_symbol(struct elf *e
+ 	struct list_head *entry;
+ 	struct rb_node *pnode;
+ 
++	INIT_LIST_HEAD(&sym->pv_target);
++	sym->alias = sym;
++
+ 	sym->type = GELF_ST_TYPE(sym->sym.st_info);
+ 	sym->bind = GELF_ST_BIND(sym->sym.st_info);
+ 
+@@ -375,8 +378,6 @@ static int read_symbols(struct elf *elf)
+ 			return -1;
+ 		}
+ 		memset(sym, 0, sizeof(*sym));
+-		INIT_LIST_HEAD(&sym->pv_target);
+-		sym->alias = sym;
+ 
+ 		sym->idx = i;
+ 
+@@ -540,24 +541,21 @@ static void elf_dirty_reloc_sym(struct e
+ }
+ 
+ /*
+- * Move the first global symbol, as per sh_info, into a new, higher symbol
+- * index. This fees up the shndx for a new local symbol.
++ * The libelf API is terrible; gelf_update_sym*() takes a data block relative
++ * index value, *NOT* the symbol index. As such, iterate the data blocks and
++ * adjust index until it fits.
++ *
++ * If no data block is found, allow adding a new data block provided the index
++ * is only one past the end.
+  */
+-static int elf_move_global_symbol(struct elf *elf, struct section *symtab,
+-				  struct section *symtab_shndx)
++static int elf_update_symbol(struct elf *elf, struct section *symtab,
++			     struct section *symtab_shndx, struct symbol *sym)
+ {
+-	Elf_Data *data, *shndx_data = NULL;
+-	Elf32_Word first_non_local;
+-	struct symbol *sym;
+-	Elf_Scn *s;
+-
+-	first_non_local = symtab->sh.sh_info;
+-
+-	sym = find_symbol_by_index(elf, first_non_local);
+-	if (!sym) {
+-		WARN("no non-local symbols !?");
+-		return first_non_local;
+-	}
++	Elf32_Word shndx = sym->sec ? sym->sec->idx : SHN_UNDEF;
++	Elf_Data *symtab_data = NULL, *shndx_data = NULL;
++	Elf64_Xword entsize = symtab->sh.sh_entsize;
++	int max_idx, idx = sym->idx;
++	Elf_Scn *s, *t = NULL;
+ 
+ 	s = elf_getscn(elf->elf, symtab->idx);
+ 	if (!s) {
+@@ -565,79 +563,124 @@ static int elf_move_global_symbol(struct
+ 		return -1;
+ 	}
+ 
+-	data = elf_newdata(s);
+-	if (!data) {
+-		WARN_ELF("elf_newdata");
+-		return -1;
++	if (symtab_shndx) {
++		t = elf_getscn(elf->elf, symtab_shndx->idx);
++		if (!t) {
++			WARN_ELF("elf_getscn");
++			return -1;
++		}
+ 	}
+ 
+-	data->d_buf = &sym->sym;
+-	data->d_size = sizeof(sym->sym);
+-	data->d_align = 1;
+-	data->d_type = ELF_T_SYM;
++	for (;;) {
++		/* get next data descriptor for the relevant sections */
++		symtab_data = elf_getdata(s, symtab_data);
++		if (t)
++			shndx_data = elf_getdata(t, shndx_data);
++
++		/* end-of-list */
++		if (!symtab_data) {
++			void *buf;
++
++			if (idx) {
++				/* we don't do holes in symbol tables */
++				WARN("index out of range");
++				return -1;
++			}
+ 
+-	sym->idx = symtab->sh.sh_size / sizeof(sym->sym);
+-	elf_dirty_reloc_sym(elf, sym);
++			/* if @idx == 0, it's the next contiguous entry, create it */
++			symtab_data = elf_newdata(s);
++			if (t)
++				shndx_data = elf_newdata(t);
++
++			buf = calloc(1, entsize);
++			if (!buf) {
++				WARN("malloc");
++				return -1;
++			}
+ 
+-	symtab->sh.sh_info += 1;
+-	symtab->sh.sh_size += data->d_size;
+-	symtab->changed = true;
++			symtab_data->d_buf = buf;
++			symtab_data->d_size = entsize;
++			symtab_data->d_align = 1;
++			symtab_data->d_type = ELF_T_SYM;
++
++			symtab->sh.sh_size += entsize;
++			symtab->changed = true;
++
++			if (t) {
++				shndx_data->d_buf = &sym->sec->idx;
++				shndx_data->d_size = sizeof(Elf32_Word);
++				shndx_data->d_align = sizeof(Elf32_Word);
++				shndx_data->d_type = ELF_T_WORD;
+ 
+-	if (symtab_shndx) {
+-		s = elf_getscn(elf->elf, symtab_shndx->idx);
+-		if (!s) {
+-			WARN_ELF("elf_getscn");
++				symtab_shndx->sh.sh_size += sizeof(Elf32_Word);
++				symtab_shndx->changed = true;
++			}
++
++			break;
++		}
++
++		/* empty blocks should not happen */
++		if (!symtab_data->d_size) {
++			WARN("zero size data");
+ 			return -1;
+ 		}
+ 
+-		shndx_data = elf_newdata(s);
++		/* is this the right block? */
++		max_idx = symtab_data->d_size / entsize;
++		if (idx < max_idx)
++			break;
++
++		/* adjust index and try again */
++		idx -= max_idx;
++	}
++
++	/* something went side-ways */
++	if (idx < 0) {
++		WARN("negative index");
++		return -1;
++	}
++
++	/* setup extended section index magic and write the symbol */
++	if (shndx >= SHN_UNDEF && shndx < SHN_LORESERVE) {
++		sym->sym.st_shndx = shndx;
++		if (!shndx_data)
++			shndx = 0;
++	} else {
++		sym->sym.st_shndx = SHN_XINDEX;
+ 		if (!shndx_data) {
+-			WARN_ELF("elf_newshndx_data");
++			WARN("no .symtab_shndx");
+ 			return -1;
+ 		}
++	}
+ 
+-		shndx_data->d_buf = &sym->sec->idx;
+-		shndx_data->d_size = sizeof(Elf32_Word);
+-		shndx_data->d_align = 4;
+-		shndx_data->d_type = ELF_T_WORD;
+-
+-		symtab_shndx->sh.sh_size += 4;
+-		symtab_shndx->changed = true;
++	if (!gelf_update_symshndx(symtab_data, shndx_data, idx, &sym->sym, shndx)) {
++		WARN_ELF("gelf_update_symshndx");
++		return -1;
+ 	}
+ 
+-	return first_non_local;
++	return 0;
+ }
+ 
+ static struct symbol *
+ elf_create_section_symbol(struct elf *elf, struct section *sec)
+ {
+ 	struct section *symtab, *symtab_shndx;
+-	Elf_Data *shndx_data = NULL;
+-	struct symbol *sym;
+-	Elf32_Word shndx;
++	Elf32_Word first_non_local, new_idx;
++	struct symbol *sym, *old;
+ 
+ 	symtab = find_section_by_name(elf, ".symtab");
+ 	if (symtab) {
+ 		symtab_shndx = find_section_by_name(elf, ".symtab_shndx");
+-		if (symtab_shndx)
+-			shndx_data = symtab_shndx->data;
+ 	} else {
+ 		WARN("no .symtab");
  		return NULL;
+ 	}
+ 
+-	sym = malloc(sizeof(*sym));
++	sym = calloc(1, sizeof(*sym));
+ 	if (!sym) {
+ 		perror("malloc");
+ 		return NULL;
+ 	}
+-	memset(sym, 0, sizeof(*sym));
+-
+-	sym->idx = elf_move_global_symbol(elf, symtab, symtab_shndx);
+-	if (sym->idx < 0) {
+-		WARN("elf_move_global_symbol");
+-		return NULL;
+-	}
+ 
+ 	sym->name = sec->name;
+ 	sym->sec = sec;
+@@ -647,24 +690,41 @@ elf_create_section_symbol(struct elf *el
+ 	// st_other 0
+ 	// st_value 0
+ 	// st_size 0
+-	shndx = sec->idx;
+-	if (shndx >= SHN_UNDEF && shndx < SHN_LORESERVE) {
+-		sym->sym.st_shndx = shndx;
+-		if (!shndx_data)
+-			shndx = 0;
+-	} else {
+-		sym->sym.st_shndx = SHN_XINDEX;
+-		if (!shndx_data) {
+-			WARN("no .symtab_shndx");
++
++	/*
++	 * Move the first global symbol, as per sh_info, into a new, higher
++	 * symbol index. This fees up a spot for a new local symbol.
++	 */
++	first_non_local = symtab->sh.sh_info;
++	new_idx = symtab->sh.sh_size / symtab->sh.sh_entsize;
++	old = find_symbol_by_index(elf, first_non_local);
++	if (old) {
++		old->idx = new_idx;
++
++		hlist_del(&old->hash);
++		elf_hash_add(symbol, &old->hash, old->idx);
++
++		elf_dirty_reloc_sym(elf, old);
++
++		if (elf_update_symbol(elf, symtab, symtab_shndx, old)) {
++			WARN("elf_update_symbol move");
+ 			return NULL;
+ 		}
++
++		new_idx = first_non_local;
+ 	}
+ 
+-	if (!gelf_update_symshndx(symtab->data, shndx_data, sym->idx, &sym->sym, shndx)) {
+-		WARN_ELF("gelf_update_symshndx");
++	sym->idx = new_idx;
++	if (elf_update_symbol(elf, symtab, symtab_shndx, sym)) {
++		WARN("elf_update_symbol");
+ 		return NULL;
+ 	}
  
 +	/*
-+	 * Make sure merged queues belong to the same parent. Parents could
-+	 * have changed since the time we decided the two queues are suitable
-+	 * for merging.
++	 * Either way, we added a LOCAL symbol.
 +	 */
-+	if (new_bfqq->entity.parent != bfqq->entity.parent)
-+		return NULL;
++	symtab->sh.sh_info += 1;
 +
- 	bfq_log_bfqq(bfqq->bfqd, bfqq, "scheduling merge with queue %d",
- 		new_bfqq->pid);
+ 	elf_add_symbol(elf, sym);
  
+ 	return sym;
 
 
