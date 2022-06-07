@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4009BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:48:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2733CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:48:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356197AbiFGTsJ (ORCPT
+        id S1356870AbiFGTsP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:48:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
+        Tue, 7 Jun 2022 15:48:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347427AbiFGStJ (ORCPT
+        with ESMTP id S1353702AbiFGSrp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:49:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D95419034;
-        Tue,  7 Jun 2022 11:03:08 -0700 (PDT)
+        Tue, 7 Jun 2022 14:47:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E37ADE64E6;
+        Tue,  7 Jun 2022 11:03:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8DD7BB82182;
-        Tue,  7 Jun 2022 18:03:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD784C34115;
-        Tue,  7 Jun 2022 18:03:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DAE28618DF;
+        Tue,  7 Jun 2022 18:03:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E74F6C36B06;
+        Tue,  7 Jun 2022 18:03:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624986;
-        bh=1fnCYEHFdDXiebIMF3JIQlXednadZc3hyC/x3Lsi5wA=;
+        s=korg; t=1654624983;
+        bh=VkynZOA0h323SuSUYQNwDkvDWJx5DvoY1YLda+2W2KE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1DZI2QnCiQ0W34YoiTQT4xDeWfqYIxtmJHJGMKFwSCXUL10DcwOuotwbLmRkrIsIx
-         70pD2fyRhCasoMzJaZE0rmW+AiK9lxpKm1z17/j4iUypgbJbiqNq7djg9r95BBFZHk
-         LA82sTFc/rjL46x/SUSukJRMPonmSrK8tTQ0LPfs=
+        b=e1GQSPLtn1vZs71wirpGVBiCvvU3C1PLBl2VaLBYtgyObSHBECXPnPdE5JW46y1vZ
+         YwMyxWDJlCjFYXieCtzr4QF91kYn2LpgMj1U6vEulUs0HBDUgEOb09YVYiO9055SOC
+         GkkY8CFhFYf5Uwo95rzlfX1vTe5NKldRGYxqZp8I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yunfei Wang <yf.wang@mediatek.com>,
-        Yong Wu <yong.wu@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 484/667] iommu/mediatek: Add mutex for m4u_group and m4u_dom in data
-Date:   Tue,  7 Jun 2022 19:02:29 +0200
-Message-Id: <20220607164949.217726478@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Gabriel Krisman Bertazi <krisman@collabora.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.15 522/667] f2fs: dont use casefolded comparison for "." and ".."
+Date:   Tue,  7 Jun 2022 19:03:07 +0200
+Message-Id: <20220607164950.358800824@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -53,105 +50,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yong Wu <yong.wu@mediatek.com>
+From: Eric Biggers <ebiggers@google.com>
 
-[ Upstream commit 0e5a3f2e630b28e88e018655548212ef8eb4dfcb ]
+commit b5639bb4313b9d455fc9fc4768d23a5e4ca8cb9d upstream.
 
-Add a mutex to protect the data in the structure mtk_iommu_data,
-like ->"m4u_group" ->"m4u_dom". For the internal data, we should
-protect it in ourselves driver. Add a mutex for this.
-This could be a fix for the multi-groups support.
+Tryng to rename a directory that has all following properties fails with
+EINVAL and triggers the 'WARN_ON_ONCE(!fscrypt_has_encryption_key(dir))'
+in f2fs_match_ci_name():
 
-Fixes: c3045f39244e ("iommu/mediatek: Support for multi domains")
-Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Link: https://lore.kernel.org/r/20220503071427.2285-8-yong.wu@mediatek.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+    - The directory is casefolded
+    - The directory is encrypted
+    - The directory's encryption key is not yet set up
+    - The parent directory is *not* encrypted
+
+The problem is incorrect handling of the lookup of ".." to get the
+parent reference to update.  fscrypt_setup_filename() treats ".." (and
+".") specially, as it's never encrypted.  It's passed through as-is, and
+setting up the directory's key is not attempted.  As the name isn't a
+no-key name, f2fs treats it as a "normal" name and attempts a casefolded
+comparison.  That breaks the assumption of the WARN_ON_ONCE() in
+f2fs_match_ci_name() which assumes that for encrypted directories,
+casefolded comparisons only happen when the directory's key is set up.
+
+We could just remove this WARN_ON_ONCE().  However, since casefolding is
+always a no-op on "." and ".." anyway, let's instead just not casefold
+these names.  This results in the standard bytewise comparison.
+
+Fixes: 7ad08a58bf67 ("f2fs: Handle casefolding with Encryption")
+Cc: <stable@vger.kernel.org> # v5.11+
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Gabriel Krisman Bertazi <krisman@collabora.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/mtk_iommu.c | 13 +++++++++++--
- drivers/iommu/mtk_iommu.h |  2 ++
- 2 files changed, 13 insertions(+), 2 deletions(-)
+ fs/f2fs/dir.c  |    3 ++-
+ fs/f2fs/f2fs.h |   10 +++++-----
+ fs/f2fs/hash.c |   11 ++++++-----
+ 3 files changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index b9d690327eae..9b3ded518f83 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -469,15 +469,16 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 		dom->data = data;
- 	}
+--- a/fs/f2fs/dir.c
++++ b/fs/f2fs/dir.c
+@@ -82,7 +82,8 @@ int f2fs_init_casefolded_name(const stru
+ #ifdef CONFIG_UNICODE
+ 	struct super_block *sb = dir->i_sb;
  
-+	mutex_lock(&data->mutex);
- 	if (!data->m4u_dom) { /* Initialize the M4U HW */
- 		ret = pm_runtime_resume_and_get(m4udev);
- 		if (ret < 0)
--			return ret;
-+			goto err_unlock;
- 
- 		ret = mtk_iommu_hw_init(data);
- 		if (ret) {
- 			pm_runtime_put(m4udev);
--			return ret;
-+			goto err_unlock;
- 		}
- 		data->m4u_dom = dom;
- 		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
-@@ -485,9 +486,14 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 
- 		pm_runtime_put(m4udev);
- 	}
-+	mutex_unlock(&data->mutex);
- 
- 	mtk_iommu_config(data, dev, true, domid);
- 	return 0;
-+
-+err_unlock:
-+	mutex_unlock(&data->mutex);
-+	return ret;
- }
- 
- static void mtk_iommu_detach_device(struct iommu_domain *domain,
-@@ -627,6 +633,7 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
- 	if (domid < 0)
- 		return ERR_PTR(domid);
- 
-+	mutex_lock(&data->mutex);
- 	group = data->m4u_group[domid];
- 	if (!group) {
- 		group = iommu_group_alloc();
-@@ -635,6 +642,7 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
- 	} else {
- 		iommu_group_ref_get(group);
- 	}
-+	mutex_unlock(&data->mutex);
- 	return group;
- }
- 
-@@ -909,6 +917,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	}
- 
- 	platform_set_drvdata(pdev, data);
-+	mutex_init(&data->mutex);
- 
- 	ret = iommu_device_sysfs_add(&data->iommu, dev, NULL,
- 				     "mtk-iommu.%pa", &ioaddr);
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index f81fa8862ed0..f413546ac6e5 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -80,6 +80,8 @@ struct mtk_iommu_data {
- 
- 	struct dma_iommu_mapping	*mapping; /* For mtk_iommu_v1.c */
- 
-+	struct mutex			mutex; /* Protect m4u_group/m4u_dom above */
-+
- 	struct list_head		list;
- 	struct mtk_smi_larb_iommu	larb_imu[MTK_LARB_NR_MAX];
- };
--- 
-2.35.1
-
+-	if (IS_CASEFOLDED(dir)) {
++	if (IS_CASEFOLDED(dir) &&
++	    !is_dot_dotdot(fname->usr_fname->name, fname->usr_fname->len)) {
+ 		fname->cf_name.name = f2fs_kmem_cache_alloc(f2fs_cf_name_slab,
+ 					GFP_NOFS, false, F2FS_SB(sb));
+ 		if (!fname->cf_name.name)
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -488,11 +488,11 @@ struct f2fs_filename {
+ #ifdef CONFIG_UNICODE
+ 	/*
+ 	 * For casefolded directories: the casefolded name, but it's left NULL
+-	 * if the original name is not valid Unicode, if the directory is both
+-	 * casefolded and encrypted and its encryption key is unavailable, or if
+-	 * the filesystem is doing an internal operation where usr_fname is also
+-	 * NULL.  In all these cases we fall back to treating the name as an
+-	 * opaque byte sequence.
++	 * if the original name is not valid Unicode, if the original name is
++	 * "." or "..", if the directory is both casefolded and encrypted and
++	 * its encryption key is unavailable, or if the filesystem is doing an
++	 * internal operation where usr_fname is also NULL.  In all these cases
++	 * we fall back to treating the name as an opaque byte sequence.
+ 	 */
+ 	struct fscrypt_str cf_name;
+ #endif
+--- a/fs/f2fs/hash.c
++++ b/fs/f2fs/hash.c
+@@ -91,7 +91,7 @@ static u32 TEA_hash_name(const u8 *p, si
+ /*
+  * Compute @fname->hash.  For all directories, @fname->disk_name must be set.
+  * For casefolded directories, @fname->usr_fname must be set, and also
+- * @fname->cf_name if the filename is valid Unicode.
++ * @fname->cf_name if the filename is valid Unicode and is not "." or "..".
+  */
+ void f2fs_hash_filename(const struct inode *dir, struct f2fs_filename *fname)
+ {
+@@ -110,10 +110,11 @@ void f2fs_hash_filename(const struct ino
+ 		/*
+ 		 * If the casefolded name is provided, hash it instead of the
+ 		 * on-disk name.  If the casefolded name is *not* provided, that
+-		 * should only be because the name wasn't valid Unicode, so fall
+-		 * back to treating the name as an opaque byte sequence.  Note
+-		 * that to handle encrypted directories, the fallback must use
+-		 * usr_fname (plaintext) rather than disk_name (ciphertext).
++		 * should only be because the name wasn't valid Unicode or was
++		 * "." or "..", so fall back to treating the name as an opaque
++		 * byte sequence.  Note that to handle encrypted directories,
++		 * the fallback must use usr_fname (plaintext) rather than
++		 * disk_name (ciphertext).
+ 		 */
+ 		WARN_ON_ONCE(!fname->usr_fname->name);
+ 		if (fname->cf_name.name) {
 
 
