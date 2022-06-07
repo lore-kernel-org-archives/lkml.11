@@ -2,102 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F3ADCCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A48E3CCA481
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:02:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358176AbiFGUAC (ORCPT
+        id S1358225AbiFGUAT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:00:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51038 "EHLO
+        Tue, 7 Jun 2022 16:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353329AbiFGSx6 (ORCPT
+        with ESMTP id S1353407AbiFGSx7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:53:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A8224D60C;
-        Tue,  7 Jun 2022 11:03:45 -0700 (PDT)
+        Tue, 7 Jun 2022 14:53:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F5514ACB5;
+        Tue,  7 Jun 2022 11:03:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B36E6B81F38;
-        Tue,  7 Jun 2022 18:03:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 265D1C34115;
-        Tue,  7 Jun 2022 18:03:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625022;
-        bh=m8YR4hs10GdxwJtjOEPjX1uSm/XaYofzI1chRuCRg+0=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 956E66171C;
+        Tue,  7 Jun 2022 18:03:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1E4BC36AFF;
+        Tue,  7 Jun 2022 18:03:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654625029;
+        bh=vdHmBAw1oESu3mBgdYJHfUNiSBmK3oQCUHtDEM6Fx5M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B+ilj6fKLIJfuI4TMHYp/Q49ovLeKk5RN5Riq67iEI1emyXG/ImnBUtV1FFipshdH
-         gilE7bG4vZD19mOVJfHBQSiCE/kSoCHJgrNw1+qeMmjQmFnSaN28xFid91f7ebN23b
-         ag25snWzMYxnyF8zny03RtjjScEm6nJmSjcerLQM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 539/667] bfq: Make sure bfqg for which we are queueing requests is online
-Date:   Tue,  7 Jun 2022 19:03:24 +0200
-Message-Id: <20220607164950.866371326@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=B8ueaBSdT9bbfvyBl6w0cUKikOjz8aomfpOUfWBZT5I4a4uHzb56K73H/AMseEeUS
+         Y+Y4O8seQA0PemojvQcyR1PhABPRTdZwgH20ZhAZXgH1Fa5ED6S6skDfjgMYNcBebQ
+         PtuV2hd4U9TALkI79Wa6T/6HYmUjxUfcOyPvjmbd4aSDe18pGrhMs9R9HCy+Wq4U9o
+         sq1lapWPPDIKlIcukwCALJR+ukV685yqlK4nflNC9S3nPm+82P7JwZ+2mmPG5Ppqc4
+         ULaKoO1leaLmSbuabDScO/DaecgLo0Zr9Lc7l8V01jIAqB02ZEhdolZ/AVdE0BDXTW
+         6o9ypRCiaFb1A==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        bjorn.andersson@linaro.org, jirislaby@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 14/19] serial: msm_serial: disable interrupts in __msm_console_write()
+Date:   Tue,  7 Jun 2022 14:03:09 -0400
+Message-Id: <20220607180317.482354-14-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180317.482354-1-sashal@kernel.org>
+References: <20220607180317.482354-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: John Ogness <john.ogness@linutronix.de>
 
-commit 075a53b78b815301f8d3dd1ee2cd99554e34f0dd upstream.
+[ Upstream commit aabdbb1b7a5819e18c403334a31fb0cc2c06ad41 ]
 
-Bios queued into BFQ IO scheduler can be associated with a cgroup that
-was already offlined. This may then cause insertion of this bfq_group
-into a service tree. But this bfq_group will get freed as soon as last
-bio associated with it is completed leading to use after free issues for
-service tree users. Fix the problem by making sure we always operate on
-online bfq_group. If the bfq_group associated with the bio is not
-online, we pick the first online parent.
+__msm_console_write() assumes that interrupts are disabled, but
+with threaded console printers it is possible that the write()
+callback of the console is called with interrupts enabled.
 
-CC: stable@vger.kernel.org
-Fixes: e21b7a0b9887 ("block, bfq: add full hierarchical scheduling and cgroups support")
-Tested-by: "yukuai (C)" <yukuai3@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220401102752.8599-9-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Explicitly disable interrupts using local_irq_save() to preserve
+the assumed context.
+
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20220506213324.470461-1-john.ogness@linutronix.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bfq-cgroup.c |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/tty/serial/msm_serial.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/block/bfq-cgroup.c
-+++ b/block/bfq-cgroup.c
-@@ -610,10 +610,19 @@ static void bfq_link_bfqg(struct bfq_dat
- struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index c284e61ed4fc..33d035f9fded 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -1578,6 +1578,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
+ static void __msm_console_write(struct uart_port *port, const char *s,
+ 				unsigned int count, bool is_uartdm)
  {
- 	struct blkcg_gq *blkg = bio->bi_blkg;
-+	struct bfq_group *bfqg;
++	unsigned long flags;
+ 	int i;
+ 	int num_newlines = 0;
+ 	bool replaced = false;
+@@ -1595,6 +1596,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+ 			num_newlines++;
+ 	count += num_newlines;
  
--	if (!blkg)
--		return bfqd->root_group;
--	return blkg_to_bfqg(blkg);
-+	while (blkg) {
-+		bfqg = blkg_to_bfqg(blkg);
-+		if (bfqg->online) {
-+			bio_associate_blkg_from_css(bio, &blkg->blkcg->css);
-+			return bfqg;
-+		}
-+		blkg = blkg->parent;
-+	}
-+	bio_associate_blkg_from_css(bio,
-+				&bfqg_to_blkg(bfqd->root_group)->blkcg->css);
-+	return bfqd->root_group;
++	local_irq_save(flags);
++
+ 	if (port->sysrq)
+ 		locked = 0;
+ 	else if (oops_in_progress)
+@@ -1640,6 +1643,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+ 
+ 	if (locked)
+ 		spin_unlock(&port->lock);
++
++	local_irq_restore(flags);
  }
  
- /**
-
+ static void msm_console_write(struct console *co, const char *s,
+-- 
+2.35.1
 
