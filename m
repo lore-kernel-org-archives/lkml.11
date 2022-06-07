@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBE42C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F02DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:14:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384065AbiFGWOl (ORCPT
+        id S1384487AbiFGWOp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:14:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44070 "EHLO
+        Tue, 7 Jun 2022 18:14:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380067AbiFGVL1 (ORCPT
+        with ESMTP id S1380083AbiFGVL2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:11:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EBCE217616;
-        Tue,  7 Jun 2022 11:53:03 -0700 (PDT)
+        Tue, 7 Jun 2022 17:11:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408F621761E;
+        Tue,  7 Jun 2022 11:53:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 451D2B81F6D;
-        Tue,  7 Jun 2022 18:53:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD92CC385A2;
-        Tue,  7 Jun 2022 18:53:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FFBE6156D;
+        Tue,  7 Jun 2022 18:53:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 622B5C385A2;
+        Tue,  7 Jun 2022 18:53:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627981;
-        bh=1IhMAlmpFLnSmrF7JaiDJvASdMM846kQitQkMmoRy58=;
+        s=korg; t=1654627983;
+        bh=iKlBYoUEHHSKLj/FQ6yF2o4GA7+S+LJ6Nw0AmRb3NAI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F3FlgPSGG6bobwbWIxy0HVcYfBehF2X5sN3XcgILnml8+Ciqcw6Qj2AhWYZFJtlDy
-         xObOPMzfi1YDxlMPOzjQIJxV5RQthFFx/C5YJpy9wwV8DHauwLFqho6ML+w2WEnqQS
-         qS5r5k+kvldUGWZs6i2cMpUYgy/pdamj0z9ZWyeE=
+        b=ERuyAXOkq3tLSqDl7WOzpH515lSIcCOJ4aA3U7ijzCGT9WkndADUpkPkdB8r3bLBz
+         7L2zOlflLPU/Xt7A3BbY+RdRThD5oUaE+6Jn6i75HQTwBW9yNCMrfjEUPirSirBVFA
+         F2nDo+/j/VienaKkixB8+KRSaPvrTFPEU5uRRPf4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        stable@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 164/879] media: hantro: HEVC: unconditionnaly set pps_{cb/cr}_qp_offset values
-Date:   Tue,  7 Jun 2022 18:54:42 +0200
-Message-Id: <20220607165007.466874994@linuxfoundation.org>
+Subject: [PATCH 5.18 165/879] media: ccs-core.c: fix failure to call clk_disable_unprepare
+Date:   Tue,  7 Jun 2022 18:54:43 +0200
+Message-Id: <20220607165007.498129095@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,47 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
-[ Upstream commit 46c836569196f377f87a3657b330cffaf94bd727 ]
+[ Upstream commit eca89cf60b040ee2cae693ea72a0364284f3084c ]
 
-Always set pps_cb_qp_offset and pps_cr_qp_offset values in Hantro/G2
-register whatever is V4L2_HEVC_PPS_FLAG_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT
-flag value.
-The vendor code does the same to set these values.
-This fixes conformance test CAINIT_G_SHARP_3.
+Fixes smatch warning:
 
-Fluster HEVC score is increase by one with this patch.
+drivers/media/i2c/ccs/ccs-core.c:1676 ccs_power_on() warn: 'sensor->ext_clk' from clk_prepare_enable() not released on lines: 1606.
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Acked-by: Sakari Ailus <sakari.ailus@linux.intel.com>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+ drivers/media/i2c/ccs/ccs-core.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-index c524af41baf5..2e7eec0372cd 100644
---- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-+++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-@@ -180,13 +180,8 @@ static void set_params(struct hantro_ctx *ctx)
- 		hantro_reg_write(vpu, &g2_max_cu_qpd_depth, 0);
+diff --git a/drivers/media/i2c/ccs/ccs-core.c b/drivers/media/i2c/ccs/ccs-core.c
+index 03e841b8443f..7ae469caf990 100644
+--- a/drivers/media/i2c/ccs/ccs-core.c
++++ b/drivers/media/i2c/ccs/ccs-core.c
+@@ -1602,8 +1602,11 @@ static int ccs_power_on(struct device *dev)
+ 			usleep_range(1000, 2000);
+ 		} while (--retry);
+ 
+-		if (!reset)
+-			return -EIO;
++		if (!reset) {
++			dev_err(dev, "software reset failed\n");
++			rval = -EIO;
++			goto out_cci_addr_fail;
++		}
  	}
  
--	if (pps->flags & V4L2_HEVC_PPS_FLAG_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT) {
--		hantro_reg_write(vpu, &g2_cb_qp_offset, pps->pps_cb_qp_offset);
--		hantro_reg_write(vpu, &g2_cr_qp_offset, pps->pps_cr_qp_offset);
--	} else {
--		hantro_reg_write(vpu, &g2_cb_qp_offset, 0);
--		hantro_reg_write(vpu, &g2_cr_qp_offset, 0);
--	}
-+	hantro_reg_write(vpu, &g2_cb_qp_offset, pps->pps_cb_qp_offset);
-+	hantro_reg_write(vpu, &g2_cr_qp_offset, pps->pps_cr_qp_offset);
- 
- 	hantro_reg_write(vpu, &g2_filt_offset_beta, pps->pps_beta_offset_div2);
- 	hantro_reg_write(vpu, &g2_filt_offset_tc, pps->pps_tc_offset_div2);
+ 	if (sensor->hwcfg.i2c_addr_alt) {
 -- 
 2.35.1
 
