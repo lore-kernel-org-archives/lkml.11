@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99910C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:59:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E2EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:59:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349455AbiFGU73 (ORCPT
+        id S1377427AbiFGU7h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:59:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48996 "EHLO
+        Tue, 7 Jun 2022 16:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356251AbiFGTx0 (ORCPT
+        with ESMTP id S1356533AbiFGTx0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 15:53:26 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E5DDEBF;
-        Tue,  7 Jun 2022 11:23:14 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A2B64D632;
+        Tue,  7 Jun 2022 11:23:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D9938CE1D6F;
-        Tue,  7 Jun 2022 18:23:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB50EC385A5;
-        Tue,  7 Jun 2022 18:23:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A4716127C;
+        Tue,  7 Jun 2022 18:23:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57D7CC385A5;
+        Tue,  7 Jun 2022 18:23:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626191;
-        bh=46Qb66EYmPaNXD+6g4oh6ss9dBX6I8aVHOvFe4cJatA=;
+        s=korg; t=1654626196;
+        bh=+hczqrVV9QRUroM1CK7I7IRBPGHFmeEUds3FThURv7A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wx6eemUNNerWK+XrqUFkTSfm8bFxpKJm4MBF8lYX8xqVvixlK9LVEHRnEk0R4Fg4E
-         r/PX3WPvcIndl3SdZ7arr1VOT3BOzLmbugWZUvAcCkdOUnpfuqipZ/fh29zKTtMFqu
-         uXjMvEnihaVZ8/ZECByJHCOtwN9SuYL/5sAy6UtE=
+        b=qtZawPJUPfCcWLB2Fu/jlRpf26PXuiqFASeuRcGI1tcsMUQgX11CD7hsCdf33M88w
+         e6i2pZS55KfJTijKzATy6Cf/5bjA/fKHK6IfqQR7lUZqiDJ9T0u7b4Pezi3Z5Uv5JZ
+         zIAkmZAfUmTDwCds+fHLG3wQHfvftXK9QOkIb1ms=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 288/772] media: hantro: Empty encoder capture buffers by default
-Date:   Tue,  7 Jun 2022 18:58:00 +0200
-Message-Id: <20220607164957.511639142@linuxfoundation.org>
+        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 290/772] ALSA: pcm: Check for null pointer of pointer substream before dereferencing it
+Date:   Tue,  7 Jun 2022 18:58:02 +0200
+Message-Id: <20220607164957.570471703@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,50 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+From: Colin Ian King <colin.i.king@gmail.com>
 
-[ Upstream commit 309373a3571ef7175bd9da0c9b13476a718e8478 ]
+[ Upstream commit 011b559be832194f992f73d6c0d5485f5925a10b ]
 
-The payload size for encoder capture buffers is set by the driver upon
-finishing encoding each frame, based on the encoded length returned from
-hardware, and whatever header and padding length used. Setting a
-non-zero default serves no real purpose, and also causes issues if the
-capture buffer is returned to userspace unused, confusing the
-application.
+Pointer substream is being dereferenced on the assignment of pointer card
+before substream is being null checked with the macro PCM_RUNTIME_CHECK.
+Although PCM_RUNTIME_CHECK calls BUG_ON, it still is useful to perform the
+the pointer check before card is assigned.
 
-Instead, always set the payload size to 0 for encoder capture buffers
-when preparing them.
-
-Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
-Fixes: 082aaecff35f ("media: hantro: Fix .buf_prepare")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: d4cfb30fce03 ("ALSA: pcm: Set per-card upper limit of PCM buffer allocations")
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Link: https://lore.kernel.org/r/20220424205945.1372247-1-colin.i.king@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/hantro/hantro_v4l2.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ sound/core/pcm_memory.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging/media/hantro/hantro_v4l2.c
-index e595905b3bd7..3067d76f7638 100644
---- a/drivers/staging/media/hantro/hantro_v4l2.c
-+++ b/drivers/staging/media/hantro/hantro_v4l2.c
-@@ -656,8 +656,12 @@ static int hantro_buf_prepare(struct vb2_buffer *vb)
- 	 * (for OUTPUT buffers, if userspace passes 0 bytesused, v4l2-core sets
- 	 * it to buffer length).
- 	 */
--	if (V4L2_TYPE_IS_CAPTURE(vq->type))
--		vb2_set_plane_payload(vb, 0, pix_fmt->plane_fmt[0].sizeimage);
-+	if (V4L2_TYPE_IS_CAPTURE(vq->type)) {
-+		if (ctx->is_encoder)
-+			vb2_set_plane_payload(vb, 0, 0);
-+		else
-+			vb2_set_plane_payload(vb, 0, pix_fmt->plane_fmt[0].sizeimage);
-+	}
+diff --git a/sound/core/pcm_memory.c b/sound/core/pcm_memory.c
+index 8848d2f3160d..b8296b6eb2c1 100644
+--- a/sound/core/pcm_memory.c
++++ b/sound/core/pcm_memory.c
+@@ -453,7 +453,6 @@ EXPORT_SYMBOL(snd_pcm_lib_malloc_pages);
+  */
+ int snd_pcm_lib_free_pages(struct snd_pcm_substream *substream)
+ {
+-	struct snd_card *card = substream->pcm->card;
+ 	struct snd_pcm_runtime *runtime;
  
- 	return 0;
- }
+ 	if (PCM_RUNTIME_CHECK(substream))
+@@ -462,6 +461,8 @@ int snd_pcm_lib_free_pages(struct snd_pcm_substream *substream)
+ 	if (runtime->dma_area == NULL)
+ 		return 0;
+ 	if (runtime->dma_buffer_p != &substream->dma_buffer) {
++		struct snd_card *card = substream->pcm->card;
++
+ 		/* it's a newly allocated buffer.  release it now. */
+ 		do_free_pages(card, runtime->dma_buffer_p);
+ 		kfree(runtime->dma_buffer_p);
 -- 
 2.35.1
 
