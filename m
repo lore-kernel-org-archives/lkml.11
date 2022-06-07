@@ -2,158 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21EE9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:56:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 282C5CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:57:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240364AbiFGJ44 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:56:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40084 "EHLO
+        id S235947AbiFGJ5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:57:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240360AbiFGJ4R (ORCPT
+        with ESMTP id S240522AbiFGJ4y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:56:17 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD48E732A
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:56:16 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id q15so15345675wrc.11
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 02:56:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=V78a4T+XxMalGYKe1sIzEqFdtRWisjMfkHNLxFh+Xuk=;
-        b=UeqdQBIqsmTGRwOHQ4Jr2DMdLBVll20hUXUFdLGxWG8ra3rbSiXdwhwfvcxi6jxztV
-         i6aqJsZzUxEreUYZeNgxdd9YOhQoRteN02H7LBm6qjZ6BQjJwadXjKxxOaxnaraVVy7a
-         ZFizSjhfoJIV63U9vkDwaZqYwzOR5lOMPm4KM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=V78a4T+XxMalGYKe1sIzEqFdtRWisjMfkHNLxFh+Xuk=;
-        b=4VMWWkXz/OHhdkF6z1uojfZ174U0Vmy/nSJvvM5ulIvsztsHKmS1Hf+IESws9V2Bup
-         y/G/rHDL8XNKRfICeteysK04IeKdaDnp/f6SDDgGkITTmXccq1Xtr36x012/PWUtCPFH
-         53gJ1k8iz+4JMDr6PjPqZULkXeVg3vMITj/QStxp/e0igO2j9SuBvEp891k9bqs12pmE
-         QtenqLXa7Ugt+uJ8r5PI5VZ/ZWvxhcDO8kbtLHBLu7UZTfQMXC6VCix4ETHDesyuAXbU
-         JfAPcTE8A0XAnbjUieJ+DQ8qOwpp3Ze9v3ltSYsgkJ5eJ4b4z2fieRPtwM5+LJGsoU5Q
-         U+/g==
-X-Gm-Message-State: AOAM530IlkPemP9LOxn6HzZcaahOak3nkS8hdPToctJuQmxeAjo+sE4+
-        z72RS75f5b9vklyVbYINJP8mPXTZKz9j+Q==
-X-Google-Smtp-Source: ABdhPJwO+kWU+IzHL+lVRnPc+GnslQ5Ytmdq6j80L4b6d7DcHQa4us1UTPukfkGA9lvUlLytgMQwgg==
-X-Received: by 2002:adf:ecc9:0:b0:210:28d4:96a0 with SMTP id s9-20020adfecc9000000b0021028d496a0mr26093257wro.380.1654595774560;
-        Tue, 07 Jun 2022 02:56:14 -0700 (PDT)
-Received: from dario-ThinkPad-T14s-Gen-2i.pdxnet.pdxeng.ch (mob-5-90-137-51.net.vodafone.it. [5.90.137.51])
-        by smtp.gmail.com with ESMTPSA id b12-20020a5d4b8c000000b0020feb9c44c2sm17693546wrt.20.2022.06.07.02.56.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 02:56:14 -0700 (PDT)
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        Oliver Graute <oliver.graute@kococonnector.com>,
-        linux-input@vger.kernel.org
-Subject: [RESEND PATCH v4 6/6] Input: edt-ft5x06 - show crc and header errors by sysfs
-Date:   Tue,  7 Jun 2022 11:55:56 +0200
-Message-Id: <20220607095556.1034338-7-dario.binacchi@amarulasolutions.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220607095556.1034338-1-dario.binacchi@amarulasolutions.com>
-References: <20220607095556.1034338-1-dario.binacchi@amarulasolutions.com>
+        Tue, 7 Jun 2022 05:56:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806F2EABA8;
+        Tue,  7 Jun 2022 02:56:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F15A96131B;
+        Tue,  7 Jun 2022 09:56:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B2CBC34115;
+        Tue,  7 Jun 2022 09:56:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654595791;
+        bh=6spgyTbpIii4gmYFhWPeNPPcXX7gAjBVMayOdvFKAN4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gp7ykAPcCpfdf7Z8jBK5QW+wQQmC4l7nqKVgRzepadB/UkhwdPcwwgWINrCoRRVgD
+         T8qUzZQzQJFdtRxGOmEIhsU1MkDenbVEGnMS1GXxzVJ+KJyZrema/ZrXBgpM7feP/s
+         A+X+ZJbWE8WFS1GHtopU4qa/OMnCTT4Hynk8pWyA=
+Date:   Tue, 7 Jun 2022 11:56:25 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        patches@lists.linux.dev, Alex Elder <elder@linaro.org>,
+        Georgi Djakov <djakov@kernel.org>
+Subject: Re: [PATCH 5.15 0/2] Fix suspend on qcom sc7180 SoCs
+Message-ID: <Yp8gycx3v2S6drG4@kroah.com>
+References: <20220606235155.2437168-1-swboyd@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220606235155.2437168-1-swboyd@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-M06 sends packets with header and crc for data verification. Now you can
-check at runtime how many packets have been dropped.
+On Mon, Jun 06, 2022 at 04:51:53PM -0700, Stephen Boyd wrote:
+> These two patches fix suspend on sc7180 boards, i.e. Trogdor, on 5.15
+> stable kernels. Without these two patches the IP0 interconnect is kept
+> on forever, and suspend fails because XO shutdown can't be achieved.
+> 
+> Mike Tipton (1):
+>   interconnect: qcom: icc-rpmh: Add BCMs to commit list in pre_aggregate
+> 
+> Stephen Boyd (1):
+>   interconnect: qcom: sc7180: Drop IP0 interconnects
+> 
+>  drivers/interconnect/qcom/icc-rpmh.c | 10 +++++-----
+>  drivers/interconnect/qcom/sc7180.c   | 21 ---------------------
+>  drivers/interconnect/qcom/sm8150.c   |  1 -
+>  drivers/interconnect/qcom/sm8250.c   |  1 -
+>  drivers/interconnect/qcom/sm8350.c   |  1 -
+>  5 files changed, 5 insertions(+), 29 deletions(-)
+> 
+> -- 
+> https://chromeos.dev
+>
 
-Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
-Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Both now queued up, thanks.
 
----
-
-(no changes since v2)
-
-Changes in v2:
-- Add Oliver Graute's 'Acked-by' tag to:
-  * Input: edt-ft5x06 - show model name by sysfs
-  * Input: edt-ft5x06 - show firmware version by sysfs
-- Fix yaml file. Tested with `make DT_CHECKER_FLAGS=-m dt_binding_check'.
-
- drivers/input/touchscreen/edt-ft5x06.c | 30 ++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
-
-diff --git a/drivers/input/touchscreen/edt-ft5x06.c b/drivers/input/touchscreen/edt-ft5x06.c
-index bab92344b2ea..3deb66d67469 100644
---- a/drivers/input/touchscreen/edt-ft5x06.c
-+++ b/drivers/input/touchscreen/edt-ft5x06.c
-@@ -133,6 +133,8 @@ struct edt_ft5x06_ts_data {
- 
- 	struct edt_reg_addr reg_addr;
- 	enum edt_ver version;
-+	unsigned int crc_errors;
-+	unsigned int header_errors;
- };
- 
- struct edt_i2c_chip_data {
-@@ -181,6 +183,7 @@ static bool edt_ft5x06_ts_check_crc(struct edt_ft5x06_ts_data *tsdata,
- 		crc ^= buf[i];
- 
- 	if (crc != buf[buflen-1]) {
-+		tsdata->crc_errors++;
- 		dev_err_ratelimited(&tsdata->client->dev,
- 				    "crc error: 0x%02x expected, got 0x%02x\n",
- 				    crc, buf[buflen-1]);
-@@ -238,6 +241,7 @@ static irqreturn_t edt_ft5x06_ts_isr(int irq, void *dev_id)
- 	if (tsdata->version == EDT_M06) {
- 		if (rdbuf[0] != 0xaa || rdbuf[1] != 0xaa ||
- 			rdbuf[2] != datalen) {
-+			tsdata->header_errors++;
- 			dev_err_ratelimited(dev,
- 					"Unexpected header: %02x%02x%02x!\n",
- 					rdbuf[0], rdbuf[1], rdbuf[2]);
-@@ -552,6 +556,30 @@ static ssize_t fw_version_show(struct device *dev,
- 
- static DEVICE_ATTR_RO(fw_version);
- 
-+/* m06 only */
-+static ssize_t header_errors_show(struct device *dev,
-+				  struct device_attribute *attr, char *buf)
-+{
-+	struct i2c_client *client = to_i2c_client(dev);
-+	struct edt_ft5x06_ts_data *tsdata = i2c_get_clientdata(client);
-+
-+	return scnprintf(buf, PAGE_SIZE, "%d\n", tsdata->header_errors);
-+}
-+
-+static DEVICE_ATTR_RO(header_errors);
-+
-+/* m06 only */
-+static ssize_t crc_errors_show(struct device *dev,
-+			       struct device_attribute *attr, char *buf)
-+{
-+	struct i2c_client *client = to_i2c_client(dev);
-+	struct edt_ft5x06_ts_data *tsdata = i2c_get_clientdata(client);
-+
-+	return scnprintf(buf, PAGE_SIZE, "%d\n", tsdata->crc_errors);
-+}
-+
-+static DEVICE_ATTR_RO(crc_errors);
-+
- static struct attribute *edt_ft5x06_attrs[] = {
- 	&edt_ft5x06_attr_gain.dattr.attr,
- 	&edt_ft5x06_attr_offset.dattr.attr,
-@@ -561,6 +589,8 @@ static struct attribute *edt_ft5x06_attrs[] = {
- 	&edt_ft5x06_attr_report_rate.dattr.attr,
- 	&dev_attr_model.attr,
- 	&dev_attr_fw_version.attr,
-+	&dev_attr_header_errors.attr,
-+	&dev_attr_crc_errors.attr,
- 	NULL
- };
- 
--- 
-2.32.0
-
+greg k-h
