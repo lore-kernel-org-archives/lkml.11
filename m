@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89BA9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:13:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9276CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:13:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379895AbiFGVNG (ORCPT
+        id S1379911AbiFGVNK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:13:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38370 "EHLO
+        Tue, 7 Jun 2022 17:13:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376409AbiFGUQp (ORCPT
+        with ESMTP id S1376520AbiFGUQw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:16:45 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D78C417127C;
-        Tue,  7 Jun 2022 11:29:08 -0700 (PDT)
+        Tue, 7 Jun 2022 16:16:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1435F1CF147;
+        Tue,  7 Jun 2022 11:29:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 88DCCCE242B;
-        Tue,  7 Jun 2022 18:29:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FCB1C385A5;
-        Tue,  7 Jun 2022 18:29:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CDA6C61435;
+        Tue,  7 Jun 2022 18:29:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF232C36B00;
+        Tue,  7 Jun 2022 18:29:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626542;
-        bh=pME/9UQHe+QAFwlt/SzPbrnSs38uv9TTgrsu9n13kA0=;
+        s=korg; t=1654626562;
+        bh=1IX2p0Xpxv3WHP262mcruEcmeQciyNI1BS36P/9r2Oo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ink60jSc8z+7pQRqMyBd/lqcbueR1E0igzZ2nRmKFU+QVXMgpwt6vnSZ2ipb7cuh9
-         IDVOXDb6jdb6lD12dTNF+yQ1WHXOzPoJrmpTsAnLaO5iP72giQf3Sh6ZNCDaouGSMR
-         srFGWSMZ3BuhGN5pKBegDUCuD3+307OOobV3EwTU=
+        b=K52RZWGzd1hQIRli81cH6E9SxaVODtZiqEAY06Cbz5+/06QD7uDQ3ZhbnJeUdw0c7
+         UR9jvy1txFAfkPwMYIKrhPeNPry5e8d0vuQST+PcvlAA4puFExjahwy6IO1PMklVUU
+         vVr9knHB4YS5ebdGKVfXKdGUfuMoi4DeiFsKwucM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 415/772] selftests/bpf: Add missed ima_setup.sh in Makefile
-Date:   Tue,  7 Jun 2022 19:00:07 +0200
-Message-Id: <20220607165001.236067864@linuxfoundation.org>
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 386/772] Bluetooth: protect le accept and resolv lists with hdev->lock
+Date:   Tue,  7 Jun 2022 18:59:38 +0200
+Message-Id: <20220607165000.388874720@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,42 +50,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 70a1b25326dd77e145157ccf1a31c1948032eec4 ]
+[ Upstream commit 5e2b6064cbc5fd582396768c5f9583f65085e368 ]
 
-When build bpf test and install it to another folder, e.g.
+Concurrent operations from events on le_{accept,resolv}_list are
+currently unprotected by hdev->lock.
+Most existing code do already protect the lists with that lock.
+This can be observed in hci_debugfs and hci_sync.
+Add the protection for these events too.
 
-  make -j10 install -C tools/testing/selftests/ TARGETS="bpf" \
-	SKIP_TARGETS="" INSTALL_PATH=/tmp/kselftests
-
-The ima_setup.sh is missed in target folder, which makes test_ima failed.
-
-Fix it by adding ima_setup.sh to TEST_PROGS_EXTENDED.
-
-Fixes: 34b82d3ac105 ("bpf: Add a selftest for bpf_ima_inode_hash")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20220516040020.653291-1-liuhangbin@gmail.com
+Fixes: b950aa88638c ("Bluetooth: Add definitions and track LE resolve list modification")
+Fixes: 0f36b589e4ee ("Bluetooth: Track LE white list modification via HCI commands")
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/bluetooth/hci_event.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index dbd95de87e88..eb2da63fa39b 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -75,7 +75,7 @@ TEST_PROGS := test_kmod.sh \
- 	test_xsk.sh
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 75bad1781983..4002a47832bc 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -1835,7 +1835,9 @@ static u8 hci_cc_le_clear_accept_list(struct hci_dev *hdev, void *data,
+ 	if (rp->status)
+ 		return rp->status;
  
- TEST_PROGS_EXTENDED := with_addr.sh \
--	with_tunnels.sh \
-+	with_tunnels.sh ima_setup.sh \
- 	test_xdp_vlan.sh test_bpftool.py
++	hci_dev_lock(hdev);
+ 	hci_bdaddr_list_clear(&hdev->le_accept_list);
++	hci_dev_unlock(hdev);
  
- # Compile but not part of 'make run_tests'
+ 	return rp->status;
+ }
+@@ -1855,8 +1857,10 @@ static u8 hci_cc_le_add_to_accept_list(struct hci_dev *hdev, void *data,
+ 	if (!sent)
+ 		return rp->status;
+ 
++	hci_dev_lock(hdev);
+ 	hci_bdaddr_list_add(&hdev->le_accept_list, &sent->bdaddr,
+ 			    sent->bdaddr_type);
++	hci_dev_unlock(hdev);
+ 
+ 	return rp->status;
+ }
+@@ -1876,8 +1880,10 @@ static u8 hci_cc_le_del_from_accept_list(struct hci_dev *hdev, void *data,
+ 	if (!sent)
+ 		return rp->status;
+ 
++	hci_dev_lock(hdev);
+ 	hci_bdaddr_list_del(&hdev->le_accept_list, &sent->bdaddr,
+ 			    sent->bdaddr_type);
++	hci_dev_unlock(hdev);
+ 
+ 	return rp->status;
+ }
+@@ -1949,9 +1955,11 @@ static u8 hci_cc_le_add_to_resolv_list(struct hci_dev *hdev, void *data,
+ 	if (!sent)
+ 		return rp->status;
+ 
++	hci_dev_lock(hdev);
+ 	hci_bdaddr_list_add_with_irk(&hdev->le_resolv_list, &sent->bdaddr,
+ 				sent->bdaddr_type, sent->peer_irk,
+ 				sent->local_irk);
++	hci_dev_unlock(hdev);
+ 
+ 	return rp->status;
+ }
+@@ -1971,8 +1979,10 @@ static u8 hci_cc_le_del_from_resolv_list(struct hci_dev *hdev, void *data,
+ 	if (!sent)
+ 		return rp->status;
+ 
++	hci_dev_lock(hdev);
+ 	hci_bdaddr_list_del_with_irk(&hdev->le_resolv_list, &sent->bdaddr,
+ 			    sent->bdaddr_type);
++	hci_dev_unlock(hdev);
+ 
+ 	return rp->status;
+ }
+@@ -1987,7 +1997,9 @@ static u8 hci_cc_le_clear_resolv_list(struct hci_dev *hdev, void *data,
+ 	if (rp->status)
+ 		return rp->status;
+ 
++	hci_dev_lock(hdev);
+ 	hci_bdaddr_list_clear(&hdev->le_resolv_list);
++	hci_dev_unlock(hdev);
+ 
+ 	return rp->status;
+ }
 -- 
 2.35.1
 
