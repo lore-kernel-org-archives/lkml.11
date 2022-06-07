@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B3F4CCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B080DCCA48F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:52:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350158AbiFGRvz (ORCPT
+        id S1350203AbiFGRv6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:51:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35824 "EHLO
+        Tue, 7 Jun 2022 13:51:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347611AbiFGRf1 (ORCPT
+        with ESMTP id S1347584AbiFGRf0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:35:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870C315FCD;
-        Tue,  7 Jun 2022 10:30:59 -0700 (PDT)
+        Tue, 7 Jun 2022 13:35:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A5AD189;
+        Tue,  7 Jun 2022 10:30:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF24760C7C;
-        Tue,  7 Jun 2022 17:30:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF400C385A5;
-        Tue,  7 Jun 2022 17:30:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F068B822B4;
+        Tue,  7 Jun 2022 17:30:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 698C7C385A5;
+        Tue,  7 Jun 2022 17:30:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623044;
-        bh=HGid1XrBFiuEU2dfBMmkMybhN0uqevvKAEF3rJBDG4k=;
+        s=korg; t=1654623038;
+        bh=QKHbAsvs05ymoaBVxoMJKqmHZ8l5en3w076iT945xkM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=08CAwF3iT8d5sIeLvMhMm7b/2fJWnE/WsPo4wrMztF6GnLvNY7xAy4fBQuDl1gJ5+
-         /eKUSMkLYigxGy4PUkjsC9cY2goOJCGGIMO1KwF1+FbCDErPsoAC8sBC/4d6q3JKEi
-         +kIFFG9hwIBll6of2rqApUd+4ZamuLt0szp4rbRg=
+        b=iWaRnVCRxoLTKfCBZlk3LbrPjHfyJiITIBI+yr1f01ONy+F//jPwqngN4PU01r73a
+         jFacV2BFwDPAasD0I9v7cPe/TflzUb+hP5ownL9D1xq/c8r+BtGI46ayE3U2Oryk82
+         8FZl/EZlbFt3ZlvEv4UIcewdgnURwPVRHAv2gOhI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Patrick Delaunay <patrick.delaunay@foss.st.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
+        stable@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 274/452] ARM: dts: stm32: Fix PHY post-reset delay on Avenger96
-Date:   Tue,  7 Jun 2022 19:02:11 +0200
-Message-Id: <20220607164916.715597691@linuxfoundation.org>
+Subject: [PATCH 5.10 246/452] ASoC: max98090: Move check for invalid values before casting in max98090_put_enab_tlv()
+Date:   Tue,  7 Jun 2022 19:01:43 +0200
+Message-Id: <20220607164915.889662759@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -53,41 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
 
-[ Upstream commit ef2d90708883f4025a801feb0ba8411a7a4387e1 ]
+[ Upstream commit f7a344468105ef8c54086dfdc800e6f5a8417d3e ]
 
-Per KSZ9031RNX PHY datasheet FIGURE 7-5: POWER-UP/POWER-DOWN/RESET TIMING
-Note 2: After the de-assertion of reset, wait a minimum of 100 μs before
-starting programming on the MIIM (MDC/MDIO) interface.
+Validation of signed input should be done before casting to unsigned int.
 
-Add 1ms post-reset delay to guarantee this figure.
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-Fixes: 010ca9fe500bf ("ARM: dts: stm32: Add missing ethernet PHY reset on AV96")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Patrice Chotard <patrice.chotard@foss.st.com>
-Cc: Patrick Delaunay <patrick.delaunay@foss.st.com>
-Cc: linux-stm32@st-md-mailman.stormreply.com
-To: linux-arm-kernel@lists.infradead.org
-Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Suggested-by: Mark Brown <broonie@kernel.org>
+Fixes: 2fbe467bcbfc ("ASoC: max98090: Reject invalid values in custom control put()")
+Link: https://lore.kernel.org/r/1652999486-29653-1-git-send-email-khoroshilov@ispras.ru
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/codecs/max98090.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi b/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
-index 944d38b85eef..f3e0c790a4b1 100644
---- a/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
-+++ b/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
-@@ -141,6 +141,7 @@
- 		compatible = "snps,dwmac-mdio";
- 		reset-gpios = <&gpioz 2 GPIO_ACTIVE_LOW>;
- 		reset-delay-us = <1000>;
-+		reset-post-delay-us = <1000>;
+diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
+index 5b6405392f08..0c73979cad4a 100644
+--- a/sound/soc/codecs/max98090.c
++++ b/sound/soc/codecs/max98090.c
+@@ -393,7 +393,8 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+ 	struct soc_mixer_control *mc =
+ 		(struct soc_mixer_control *)kcontrol->private_value;
+ 	unsigned int mask = (1 << fls(mc->max)) - 1;
+-	unsigned int sel = ucontrol->value.integer.value[0];
++	int sel_unchecked = ucontrol->value.integer.value[0];
++	unsigned int sel;
+ 	unsigned int val = snd_soc_component_read(component, mc->reg);
+ 	unsigned int *select;
  
- 		phy0: ethernet-phy@7 {
- 			reg = <7>;
+@@ -413,8 +414,9 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+ 
+ 	val = (val >> mc->shift) & mask;
+ 
+-	if (sel < 0 || sel > mc->max)
++	if (sel_unchecked < 0 || sel_unchecked > mc->max)
+ 		return -EINVAL;
++	sel = sel_unchecked;
+ 
+ 	*select = sel;
+ 
 -- 
 2.35.1
 
