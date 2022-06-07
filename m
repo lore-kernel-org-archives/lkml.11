@@ -2,143 +2,318 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E08F7CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF6FCCCA489
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:27:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446655AbiFHCZR (ORCPT
+        id S1446739AbiFHCZc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:25:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49690 "EHLO
+        Tue, 7 Jun 2022 22:25:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445059AbiFHCLu (ORCPT
+        with ESMTP id S1445103AbiFHCLy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:11:50 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63608B58;
-        Tue,  7 Jun 2022 17:11:33 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id m20so38216959ejj.10;
-        Tue, 07 Jun 2022 17:11:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6ar1MDgtA0wB8Ds/6E+9yGeeWGB8hd9IIOZtnBP3qtQ=;
-        b=IM1XkXyqw7gnD/Ee2HrDRknwqvnksbwocKVipuKtHHy7V9A7QvPfIZ0SdUBxhAsjiA
-         2BXgxrF+ABiZacrrEk7rf5Jmn6J56FT0/j2EH3nvI+LTdS5KOCGUAz+t5KinebT+0bBz
-         wjF2JVvw1/fEjKL9G1z7s58dQZzhGIBq7uKK6v8uic/rNEmvW+vLPK6QfjJaxjLPhNh/
-         7XSQzjJFcXkUepwkB0wQ0LJITyMSYPE8yNV6S2LPIK6U1Xs37gkKQe/mJfbL3vx5tafE
-         LLoCPYhAw2FuN9cXol7v380sGD2OdKGqAE78H7J5dSxF6i0HzseJC77uHcDnuw/QkHv/
-         TnTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6ar1MDgtA0wB8Ds/6E+9yGeeWGB8hd9IIOZtnBP3qtQ=;
-        b=Bj1ztGO2xLarav4m7mCsHXuAvrxZ0NkN4WEbu1sckPZfkG2VW3mmk1E4z/LmugDeNG
-         lgvc0jaKkWFCvvpQzKETkP9UGAr+MbPsMRqAFp0cxbb97mEja2ktM5oDVzN813E86+7a
-         rZFMHBh4Ud+Jx6vGmjuGRzdErnvDkvAWpksXotqSTL1ge6TiDRoGvVmE8xyWPwxYj2Uz
-         7mp0ZFeEVk6+vYIpxcwR8oPaYRq8TDtvT57W7DWj7x3I2HG9PJxfOmwilWA6z4OcA0gr
-         r0yZJxwNOL1ghTpfeOa77ZSMJbPJSWHlDM3cmjGTlqOhnMcNK4URVAAYjApX5Bzo0kxH
-         0k5A==
-X-Gm-Message-State: AOAM53021JadDckoCBZbDtlPO/zadqLG8N6YmqOJNehwbQLKbpoerD6a
-        SJ9eyncyFuNBoCdoOyAClEI=
-X-Google-Smtp-Source: ABdhPJx0X5+zVB5NX0PKmpIScjirJeMXRAiXjVqt/5EDlTUmwRA+OrHGmIWDdCPgNj58WTScuMxtfw==
-X-Received: by 2002:a17:906:449:b0:711:c975:cfb8 with SMTP id e9-20020a170906044900b00711c975cfb8mr14330370eja.58.1654647091688;
-        Tue, 07 Jun 2022 17:11:31 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id o19-20020a1709061b1300b006fed85c1a8fsm8434947ejg.202.2022.06.07.17.11.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 17:11:31 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Manivannan Sadhasivam <mani@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-mtd@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [PATCH v5 0/3] Add support for unprotected spare data page
-Date:   Wed,  8 Jun 2022 02:10:27 +0200
-Message-Id: <20220608001030.18813-1-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 7 Jun 2022 22:11:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C64552B2BA2
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:40:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654630798;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dn1ww0KfMFOGUbZ1NH8nrMAwiHe2/j0lpu+3L3aq8vo=;
+        b=hJqZnnTpdHxsooTpiPhkm5sSIRBRG9hEBkZ6DxdRhJhm0xbi7eH4DpnUT4jMyfxD1IpZYv
+        HKhOMNQQVeMHJQ52gKIxiw/+6H4UxuHgbxhWGZP5peYxx3Ud3fyTTRb795ZYdgiw8O0qX5
+        ZoH8O3mfchFyxrF9EBNjQZO32U/1H3I=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-15-XAZTDBmQMQKyEJbWJei65A-1; Tue, 07 Jun 2022 15:39:47 -0400
+X-MC-Unique: XAZTDBmQMQKyEJbWJei65A-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B78A618A653E;
+        Tue,  7 Jun 2022 19:36:29 +0000 (UTC)
+Received: from emerald.redhat.com (unknown [10.22.9.252])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 07BBE2BB8DE3;
+        Tue,  7 Jun 2022 19:35:35 +0000 (UTC)
+From:   Lyude Paul <lyude@redhat.com>
+To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org
+Cc:     Wayne Lin <Wayne.Lin@amd.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Imre Deak <imre.deak@intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sean Paul <sean@poorly.run>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Roman Li <Roman.Li@amd.com>, Jude Shih <shenshih@amd.com>,
+        Simon Ser <contact@emersion.fr>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
+        Uma Shankar <uma.shankar@intel.com>,
+        Manasi Navare <manasi.d.navare@intel.com>,
+        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
+        Sean Paul <seanpaul@chromium.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Luo Jiaxing <luojiaxing@huawei.com>,
+        Fernando Ramos <greenfoo@u92.eu>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org (open list),
+        intel-gfx@lists.freedesktop.org (open list:INTEL DRM DRIVERS)
+Subject: [RESEND RFC 13/18] drm/display/dp_mst: Add helpers for serializing SST <-> MST transitions
+Date:   Tue,  7 Jun 2022 15:29:28 -0400
+Message-Id: <20220607192933.1333228-14-lyude@redhat.com>
+In-Reply-To: <20220607192933.1333228-1-lyude@redhat.com>
+References: <20220607192933.1333228-1-lyude@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some background about this.
-On original qsdk ipq8064 based firmware there was a big separation from
-boot partition and user partition. With boot partition we refer to
-partition used to init the router (bootloader, spm firmware and other
-internal stuff) With user partition we refer to linux partition and data
-partition not used to init the router.
-When someone had to write to these boot partition a special mode was
-needed, to switch the nand driver to this special configuration.
+There's another kind of situation where we could potentially race with
+nonblocking modesets and MST, especially if we were to only use the locking
+provided by atomic modesetting:
 
-Upstream version of the nandc driver totally dropped this and the result
-is that if someone try to read data from these partition a CRC warning
-is printed and if someone try to write that (if for example someone
-wants to replace the bootloader) result is a broken system as the data
-is badly written.
+* Display 1 begins as enabled on DP-1 in SST mode
+* Display 1 switches to MST mode, exposes one sink in MST mode
+* Userspace does non-blocking modeset to disable the SST display
+* Userspace does non-blocking modeset to enable the MST display with a
+  different CRTC, but the SST display hasn't been fully taken down yet
+* Execution order between the last two commits isn't guaranteed since they
+  share no drm resources
 
-This series comes to fix this.
+We can fix this however, by ensuring that we always pull in the atomic
+topology state whenever a connector capable of driving an MST display
+performs its atomic check - and then tracking CRTC commits happening on the
+SST connector in the MST topology state. So, let's add some simple helpers
+for doing that and hook them up in various drivers.
 
-A user can declare offset and size of these special partition using the
-qcom,boot-pages binding.
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Cc: Wayne Lin <Wayne.Lin@amd.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Imre Deak <imre.deak@intel.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Sean Paul <sean@poorly.run>
+---
+ .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |  7 +++
+ drivers/gpu/drm/display/drm_dp_mst_topology.c | 59 +++++++++++++++++++
+ drivers/gpu/drm/i915/display/intel_dp.c       |  9 +++
+ drivers/gpu/drm/nouveau/dispnv50/disp.c       |  2 +-
+ drivers/gpu/drm/nouveau/dispnv50/disp.h       |  2 +
+ drivers/gpu/drm/nouveau/nouveau_connector.c   | 14 +++++
+ include/drm/display/drm_dp_mst_helper.h       |  2 +
+ 7 files changed, 94 insertions(+), 1 deletion(-)
 
-An initial implementation of this assumed that the boot-pages started
-from the start of the nand but we discover that some device have backup
-of these special partition and we can have situation where we have this
-partition scheme
-- APPSBL (require special mode)
-- APPSBLENV (doesn't require special mode)
-- ART
-- APPSBLBK (back of APPSBL require special mode)
-- APPSBLENVBK (back of APPSBLENV doesn't require special mode)
-With this configuration we need to declare sparse boot page and we can't
-assume boot-pages always starts from the start of the nand.
-
-A user can use this form to declare sparse boot pages
-qcom,boot-pages = <0x0 0x0c80000 0x0c80000 0x0500000>;
-
-The driver internally will parse this array, convert it to nand pages
-and check internally on every read/write if this special configuration
-should used for that page or the normal one.
-
-The reason for all of this is that qcom FOR SOME REASON, disable ECC for
-spare data only for these boot partition and we need to reflect this
-special configuration to mute these warning and to permit actually
-writing to these pages.
-
-v5:
-- Rename boot-pages to boot-partitions
-- Add additional check to parsing function
-- Rename unprotect_spare_data to codeword_fixup
-- Add additional info from Manivannan
-- Add patch to remove holes in qcom_nand_host struct
-v4:
-- Fix wrong compatible set for boot-pages (ipq8074 instead of ipq806x)
-v3:
-- Fix typo in Docmunetation commit desription
-- Add items description for uint32-matrix
-v2:
-- Add fixes from Krzysztof in Documentation
-
-Ansuel Smith (3):
-  mtd: nand: raw: qcom_nandc: add support for unprotected spare data
-    pages
-  dt-bindings: mtd: qcom_nandc: document qcom,boot-partitions binding
-  mtd: nand: raw: qcom_nandc: reorder qcom_nand_host struct
-
- .../devicetree/bindings/mtd/qcom,nandc.yaml   |  26 +++
- drivers/mtd/nand/raw/qcom_nandc.c             | 179 +++++++++++++++++-
- 2 files changed, 198 insertions(+), 7 deletions(-)
-
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index d9c7393ef151..ac8648e3c1c9 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -7177,10 +7177,17 @@ amdgpu_dm_connector_atomic_check(struct drm_connector *conn,
+ 		drm_atomic_get_old_connector_state(state, conn);
+ 	struct drm_crtc *crtc = new_con_state->crtc;
+ 	struct drm_crtc_state *new_crtc_state;
++	struct amdgpu_dm_connector *aconn = to_amdgpu_dm_connector(conn);
+ 	int ret;
+ 
+ 	trace_amdgpu_dm_connector_atomic_check(new_con_state);
+ 
++	if (conn->connector_type == DRM_MODE_CONNECTOR_DisplayPort) {
++		ret = drm_dp_mst_root_conn_atomic_check(new_con_state, &aconn->mst_mgr);
++		if (ret < 0)
++			return ret;
++	}
++
+ 	if (!crtc)
+ 		return 0;
+ 
+diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+index c5edcf2a26c8..a775f9437868 100644
+--- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
++++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+@@ -4608,6 +4608,65 @@ void drm_dp_mst_atomic_wait_for_dependencies(struct drm_atomic_state *state)
+ }
+ EXPORT_SYMBOL(drm_dp_mst_atomic_wait_for_dependencies);
+ 
++/**
++ * drm_dp_mst_root_conn_atomic_check() - Serialize CRTC commits on MST-capable connectors operating
++ * in SST mode
++ * @new_conn_state: The new connector state of the &drm_connector
++ * @mgr: The MST topology manager for the &drm_connector
++ *
++ * Since MST uses fake &drm_encoder structs, the generic atomic modesetting code isn't able to
++ * serialize non-blocking commits happening on the real DP connector of an MST topology switching
++ * into/away from MST mode - as the CRTC on the real DP connector and the CRTCs on the connector's
++ * MST topology will never share the same &drm_encoder.
++ *
++ * This function takes care of this serialization issue, by checking a root MST connector's atomic
++ * state to determine if it is about to have a modeset - and then pulling in the MST topology state
++ * if so, along with adding any relevant CRTCs to &drm_dp_mst_topology_state.pending_crtc_mask.
++ *
++ * Drivers implementing MST must call this function from the
++ * &drm_connector_helper_funcs.atomic_check hook of any physical DP &drm_connector capable of
++ * driving MST sinks.
++ *
++ * Returns:
++ * 0 on success, negative error code otherwise
++ */
++int drm_dp_mst_root_conn_atomic_check(struct drm_connector_state *new_conn_state,
++				      struct drm_dp_mst_topology_mgr *mgr)
++{
++	struct drm_atomic_state *state = new_conn_state->state;
++	struct drm_connector_state *old_conn_state =
++		drm_atomic_get_old_connector_state(state, new_conn_state->connector);
++	struct drm_crtc_state *crtc_state;
++	struct drm_dp_mst_topology_state *mst_state = NULL;
++
++	if (new_conn_state->crtc) {
++		crtc_state = drm_atomic_get_new_crtc_state(state, new_conn_state->crtc);
++		if (crtc_state && drm_atomic_crtc_needs_modeset(crtc_state)) {
++			mst_state = drm_atomic_get_mst_topology_state(state, mgr);
++			if (IS_ERR(mst_state))
++				return PTR_ERR(mst_state);
++
++			mst_state->pending_crtc_mask |= drm_crtc_mask(new_conn_state->crtc);
++		}
++	}
++
++	if (old_conn_state->crtc) {
++		crtc_state = drm_atomic_get_new_crtc_state(state, old_conn_state->crtc);
++		if (crtc_state && drm_atomic_crtc_needs_modeset(crtc_state)) {
++			if (!mst_state) {
++				mst_state = drm_atomic_get_mst_topology_state(state, mgr);
++				if (IS_ERR(mst_state))
++					return PTR_ERR(mst_state);
++			}
++
++			mst_state->pending_crtc_mask |= drm_crtc_mask(old_conn_state->crtc);
++		}
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL(drm_dp_mst_root_conn_atomic_check);
++
+ /**
+  * drm_dp_mst_update_slots() - updates the slot info depending on the DP ecoding format
+  * @mst_state: mst_state to update
+diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
+index b8e2d3cd4d68..943b7c0acc04 100644
+--- a/drivers/gpu/drm/i915/display/intel_dp.c
++++ b/drivers/gpu/drm/i915/display/intel_dp.c
+@@ -4954,12 +4954,21 @@ static int intel_dp_connector_atomic_check(struct drm_connector *conn,
+ {
+ 	struct drm_i915_private *dev_priv = to_i915(conn->dev);
+ 	struct intel_atomic_state *state = to_intel_atomic_state(_state);
++	struct drm_connector_state *conn_state = drm_atomic_get_new_connector_state(_state, conn);
++	struct intel_connector *intel_conn = to_intel_connector(conn);
++	struct intel_dp *intel_dp = enc_to_intel_dp(intel_conn->encoder);
+ 	int ret;
+ 
+ 	ret = intel_digital_connector_atomic_check(conn, &state->base);
+ 	if (ret)
+ 		return ret;
+ 
++	if (HAS_DP_MST(dev_priv) && !intel_dp_is_edp(intel_dp)) {
++		ret = drm_dp_mst_root_conn_atomic_check(conn_state, &intel_dp->mst_mgr);
++		if (ret)
++			return ret;
++	}
++
+ 	/*
+ 	 * We don't enable port sync on BDW due to missing w/as and
+ 	 * due to not having adjusted the modeset sequence appropriately.
+diff --git a/drivers/gpu/drm/nouveau/dispnv50/disp.c b/drivers/gpu/drm/nouveau/dispnv50/disp.c
+index 834a5c5b77d5..57f74cfcdebf 100644
+--- a/drivers/gpu/drm/nouveau/dispnv50/disp.c
++++ b/drivers/gpu/drm/nouveau/dispnv50/disp.c
+@@ -1815,7 +1815,7 @@ nv50_sor_func = {
+ 	.destroy = nv50_sor_destroy,
+ };
+ 
+-static bool nv50_has_mst(struct nouveau_drm *drm)
++bool nv50_has_mst(struct nouveau_drm *drm)
+ {
+ 	struct nvkm_bios *bios = nvxx_bios(&drm->client.device);
+ 	u32 data;
+diff --git a/drivers/gpu/drm/nouveau/dispnv50/disp.h b/drivers/gpu/drm/nouveau/dispnv50/disp.h
+index 38dec11e7dda..9d66c9c726c3 100644
+--- a/drivers/gpu/drm/nouveau/dispnv50/disp.h
++++ b/drivers/gpu/drm/nouveau/dispnv50/disp.h
+@@ -106,6 +106,8 @@ void nv50_dmac_destroy(struct nv50_dmac *);
+  */
+ struct nouveau_encoder *nv50_real_outp(struct drm_encoder *encoder);
+ 
++bool nv50_has_mst(struct nouveau_drm *drm);
++
+ u32 *evo_wait(struct nv50_dmac *, int nr);
+ void evo_kick(u32 *, struct nv50_dmac *);
+ 
+diff --git a/drivers/gpu/drm/nouveau/nouveau_connector.c b/drivers/gpu/drm/nouveau/nouveau_connector.c
+index ffbd8a9cf2af..1c8235f97737 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_connector.c
++++ b/drivers/gpu/drm/nouveau/nouveau_connector.c
+@@ -1104,11 +1104,25 @@ nouveau_connector_best_encoder(struct drm_connector *connector)
+ 	return NULL;
+ }
+ 
++static int
++nouveau_connector_atomic_check(struct drm_connector *connector, struct drm_atomic_state *state)
++{
++	struct nouveau_connector *nv_conn = nouveau_connector(connector);
++	struct drm_connector_state *conn_state =
++		drm_atomic_get_new_connector_state(state, connector);
++
++	if (!nv_conn->dp_encoder || !nv50_has_mst(nouveau_drm(connector->dev)))
++		return 0;
++
++	return drm_dp_mst_root_conn_atomic_check(conn_state, &nv_conn->dp_encoder->dp.mstm->mgr);
++}
++
+ static const struct drm_connector_helper_funcs
+ nouveau_connector_helper_funcs = {
+ 	.get_modes = nouveau_connector_get_modes,
+ 	.mode_valid = nouveau_connector_mode_valid,
+ 	.best_encoder = nouveau_connector_best_encoder,
++	.atomic_check = nouveau_connector_atomic_check,
+ };
+ 
+ static const struct drm_connector_funcs
+diff --git a/include/drm/display/drm_dp_mst_helper.h b/include/drm/display/drm_dp_mst_helper.h
+index dd74afcee888..690ebcabb51f 100644
+--- a/include/drm/display/drm_dp_mst_helper.h
++++ b/include/drm/display/drm_dp_mst_helper.h
+@@ -906,6 +906,8 @@ int drm_dp_send_query_stream_enc_status(struct drm_dp_mst_topology_mgr *mgr,
+ 		struct drm_dp_mst_port *port,
+ 		struct drm_dp_query_stream_enc_status_ack_reply *status);
+ int __must_check drm_dp_mst_atomic_check(struct drm_atomic_state *state);
++int __must_check drm_dp_mst_root_conn_atomic_check(struct drm_connector_state *new_conn_state,
++						   struct drm_dp_mst_topology_mgr *mgr);
+ 
+ void drm_dp_mst_get_port_malloc(struct drm_dp_mst_port *port);
+ void drm_dp_mst_put_port_malloc(struct drm_dp_mst_port *port);
 -- 
-2.36.1
+2.35.3
 
