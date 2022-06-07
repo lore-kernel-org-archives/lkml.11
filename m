@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26AC9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:32:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BFDECCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:32:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382738AbiFGWaY (ORCPT
+        id S1382949AbiFGWad (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:30:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55316 "EHLO
+        Tue, 7 Jun 2022 18:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380798AbiFGVQ7 (ORCPT
+        with ESMTP id S1380800AbiFGVQ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:16:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A82BF527D2;
-        Tue,  7 Jun 2022 11:57:29 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99FDA1A9;
+        Tue,  7 Jun 2022 11:57:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BFD76159D;
-        Tue,  7 Jun 2022 18:57:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3849CC385A2;
-        Tue,  7 Jun 2022 18:57:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8921CB822C0;
+        Tue,  7 Jun 2022 18:57:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7182C385A2;
+        Tue,  7 Jun 2022 18:57:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628248;
-        bh=Iv21szQQ0IsjJwXsnfNc9wifZ6YaVnjO+Lc5Z9nTGic=;
+        s=korg; t=1654628251;
+        bh=VMBQ25Si+CvDpexTdClyp2NZuPRPUCh8Jw3Nk8iusDw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vkheCahfwoxuZXc4vxF3HAVyh8H63n31pvgKLIXTojg5YzU2WggWT/y1E75DhSYf1
-         kl9dwuKGICI+H8gFq/LtMeVsQexksdnuT1NMMhcWz0yVjCFaprAIaZ3oiRSyWY1N3+
-         24rMjErX8VaWS8BOtiVSLa6fswAR2m26Ot6J2PyA=
+        b=MFiOnok2CweQF9lTocIG30TWCb9eSbtBktWPlJmONYTo9GIiUi3s1bITz6h91sQ1/
+         nfctQOyuJdXpuirZaOBIXMV/YKvhI3AtYCeNNkHt6TptSX4w2j2lrN+ymuUX2HkAfE
+         42Ny4Y1E4vTgUAgxHOc2PFwTS0n/c4Ba3NSXKfHE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>,
+        stable@vger.kernel.org, YueHaibing <yuehaibing@huawei.com>,
         Javier Martinez Canillas <javierm@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 260/879] drm: ssd130x: Always apply segment remap setting
-Date:   Tue,  7 Jun 2022 18:56:18 +0200
-Message-Id: <20220607165010.397560644@linuxfoundation.org>
+Subject: [PATCH 5.18 261/879] drm/solomon: Make DRM_SSD130X depends on MMU
+Date:   Tue,  7 Jun 2022 18:56:19 +0200
+Message-Id: <20220607165010.426578702@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,81 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wens@csie.org>
+From: YueHaibing <yuehaibing@huawei.com>
 
-[ Upstream commit a134109c301736ea2ac5054ba3c29c30c87f6ba7 ]
+[ Upstream commit 47042e0ddd218f100292cebc5208cb1eff7473b6 ]
 
-Currently the ssd130x driver only sets the segment remap setting when
-the device tree requests it; it however does not clear the setting if
-it is not requested. This leads to the setting incorrectly persisting
-if the hardware is always on and has no reset GPIO wired. This might
-happen when a developer is trying to find the correct settings for an
-unknown module, and cause the developer to get confused because the
-settings from the device tree are not consistently applied.
+WARNING: unmet direct dependencies detected for DRM_GEM_SHMEM_HELPER
+  Depends on [n]: HAS_IOMEM [=y] && DRM [=m] && MMU [=n]
+  Selected by [m]:
+  - DRM_SSD130X [=m] && HAS_IOMEM [=y] && DRM [=m]
 
-Make the driver apply the segment remap setting consistently, setting
-the value correctly based on the device tree setting. This also makes
-this setting's behavior consistent with the other settings, which are
-always applied.
+DRM_GEM_SHMEM_HELPER depends on MMU, DRM_SSD130X should also depends on MMU.
 
 Fixes: a61732e80867 ("drm: Add driver for Solomon SSD130x OLED displays")
-Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 Acked-by: Javier Martinez Canillas <javierm@redhat.com>
 Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220308160758.26060-2-wens@kernel.org
+Link: https://patchwork.freedesktop.org/patch/msgid/20220312063437.19160-1-yuehaibing@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/solomon/ssd130x.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/solomon/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/solomon/ssd130x.c b/drivers/gpu/drm/solomon/ssd130x.c
-index ccd378135589..d08d86ef07bc 100644
---- a/drivers/gpu/drm/solomon/ssd130x.c
-+++ b/drivers/gpu/drm/solomon/ssd130x.c
-@@ -48,7 +48,7 @@
- #define SSD130X_CONTRAST			0x81
- #define SSD130X_SET_LOOKUP_TABLE		0x91
- #define SSD130X_CHARGE_PUMP			0x8d
--#define SSD130X_SEG_REMAP_ON			0xa1
-+#define SSD130X_SET_SEG_REMAP			0xa0
- #define SSD130X_DISPLAY_OFF			0xae
- #define SSD130X_SET_MULTIPLEX_RATIO		0xa8
- #define SSD130X_DISPLAY_ON			0xaf
-@@ -61,6 +61,8 @@
- #define SSD130X_SET_COM_PINS_CONFIG		0xda
- #define SSD130X_SET_VCOMH			0xdb
- 
-+#define SSD130X_SET_SEG_REMAP_MASK		GENMASK(0, 0)
-+#define SSD130X_SET_SEG_REMAP_SET(val)		FIELD_PREP(SSD130X_SET_SEG_REMAP_MASK, (val))
- #define SSD130X_SET_COM_SCAN_DIR_MASK		GENMASK(3, 3)
- #define SSD130X_SET_COM_SCAN_DIR_SET(val)	FIELD_PREP(SSD130X_SET_COM_SCAN_DIR_MASK, (val))
- #define SSD130X_SET_CLOCK_DIV_MASK		GENMASK(3, 0)
-@@ -235,7 +237,7 @@ static void ssd130x_power_off(struct ssd130x_device *ssd130x)
- 
- static int ssd130x_init(struct ssd130x_device *ssd130x)
- {
--	u32 precharge, dclk, com_invdir, compins, chargepump;
-+	u32 precharge, dclk, com_invdir, compins, chargepump, seg_remap;
- 	int ret;
- 
- 	/* Set initial contrast */
-@@ -244,11 +246,11 @@ static int ssd130x_init(struct ssd130x_device *ssd130x)
- 		return ret;
- 
- 	/* Set segment re-map */
--	if (ssd130x->seg_remap) {
--		ret = ssd130x_write_cmd(ssd130x, 1, SSD130X_SEG_REMAP_ON);
--		if (ret < 0)
--			return ret;
--	}
-+	seg_remap = (SSD130X_SET_SEG_REMAP |
-+		     SSD130X_SET_SEG_REMAP_SET(ssd130x->seg_remap));
-+	ret = ssd130x_write_cmd(ssd130x, 1, seg_remap);
-+	if (ret < 0)
-+		return ret;
- 
- 	/* Set COM direction */
- 	com_invdir = (SSD130X_SET_COM_SCAN_DIR |
+diff --git a/drivers/gpu/drm/solomon/Kconfig b/drivers/gpu/drm/solomon/Kconfig
+index 5861c3ab7c45..6230369505c9 100644
+--- a/drivers/gpu/drm/solomon/Kconfig
++++ b/drivers/gpu/drm/solomon/Kconfig
+@@ -1,6 +1,6 @@
+ config DRM_SSD130X
+ 	tristate "DRM support for Solomon SSD130x OLED displays"
+-	depends on DRM
++	depends on DRM && MMU
+ 	select BACKLIGHT_CLASS_DEVICE
+ 	select DRM_GEM_SHMEM_HELPER
+ 	select DRM_KMS_HELPER
 -- 
 2.35.1
 
