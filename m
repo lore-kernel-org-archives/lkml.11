@@ -2,116 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D16F8CCA492
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1730ACCA485
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348261AbiFGRgK (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:36:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45004 "EHLO
+        id S243399AbiFGRgr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 13:36:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346757AbiFGR2i (ORCPT
+        with ESMTP id S1347116AbiFGRaE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:28:38 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7157B115CA2
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:24:34 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id c30so3403198ljr.9
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:24:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WGXDbLLtqPgbZ/3WaqTn0w4G97KhWPUzyJUyHiAl65c=;
-        b=fXcRlI2bJl9PYMBbbXYz5hPVac9Q75B5BigJvoztYYM/pVGzLkBAOAilWRze4d2fcW
-         rFJNGasK2WrVTwzztCCogHov0MUhSjZOalC1T3G/O40MKOiJpHmp2kL4C+8U1FeabOFK
-         2sMuoLNSnITfk1n8NZpfORm0Lmgl8pG8furTP91T9b+w5xow9FxFbueWE6KOeeA+Onb7
-         RRBfeaUQ6e3NR2lT8g4nQEMkRn9uGcqMpRgKcv9Ai6wZQ+OqTgDkPvwrEKXOqMTZJaZn
-         a6D4k2GdYxEoTIs2uJERv1QWHVkYumcq9CU1sqa8TWf7bqaCHMHc9v8vCdJQxCkrXqr6
-         E2Uw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WGXDbLLtqPgbZ/3WaqTn0w4G97KhWPUzyJUyHiAl65c=;
-        b=5Wo/aOARm3TBATgcJBrViKntLEybxgopkforQ3VQeQ3Z2RH14/KeMVKWkTTjJ/Ch7C
-         CEY2H2LFTaIoq8xXdw+wmkc2q+0ZUHqO2xujLbmBJriOjxiaqgxQOp7b/LPLikheidcJ
-         aPZwzdrpRpNXFYVkb6zG0ud7SsisIsPJeQYhZ0C+HPYZ6Ya79Ob6vwo5GyVbNoyM09Nr
-         vvp9coCULlGzknx2sjG0mQEm8MiuHit3C29oIV6Jfi4Yl0m7z7NkXPaouYG87eIpOCyU
-         iRXE5MqAcc6PvauuioDP3UU0PosqcDeV0ClD3AZ7AmpGCVSBPu/+iJ8Zht8aqLsC6V6Z
-         J6lw==
-X-Gm-Message-State: AOAM531KPcnDpsQYVzMkfcayexg5so5DHBMm7YXm9Ssml1rcxKiXIMeY
-        IVW9B6PIYiRCq7PE6y/3zBZztlHb2MXpmAJa9X9a0Q==
-X-Google-Smtp-Source: ABdhPJzZdGRm7zcejXzLCc1zvFixbWQgiEqigChk9f/02vn2hn+b1/g4LqMUsjcR0t4jXmGw+tReeOy+II+7fLstzEg=
-X-Received: by 2002:a2e:8715:0:b0:255:a7e5:d50d with SMTP id
- m21-20020a2e8715000000b00255a7e5d50dmr3573997lji.26.1654622671928; Tue, 07
- Jun 2022 10:24:31 -0700 (PDT)
+        Tue, 7 Jun 2022 13:30:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2178D104C8F;
+        Tue,  7 Jun 2022 10:25:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CAB6CB81F38;
+        Tue,  7 Jun 2022 17:25:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C4B6C385A5;
+        Tue,  7 Jun 2022 17:25:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654622743;
+        bh=z730l/hM8SDXiaGceR/3433bWesNUKQQorlQzL8FC/4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=VKd/tHdIBrHR3dKuEtIa9XWUl2jLdVUKDq2yHw1iJCcsseoIcCOTlIbakngsXjm6Y
+         DVugRvuoYW7Fw7hyWk8kHcN38PbJUo9dTm3tzzPpYTXZqj3YVAOeJH6dJWbPiAzAi8
+         7xvLspOKg5k9OLRUe6OAF4fOzS8LvucfXnr+/t+s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Borislav Petkov <bp@suse.de>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 168/452] x86/pm: Fix false positive kmemleak report in msr_build_context()
+Date:   Tue,  7 Jun 2022 19:00:25 +0200
+Message-Id: <20220607164913.570471703@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
+References: <20220607164908.521895282@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220607164000.447941-1-masahiroy@kernel.org>
-In-Reply-To: <20220607164000.447941-1-masahiroy@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 7 Jun 2022 10:24:20 -0700
-Message-ID: <CAKwvOdk5ZrcSmQSPrFzreZ-z_Hpi4Lc-D-Y4NDuHPiUWpXdwzA@mail.gmail.com>
-Subject: Re: [PATCH v2] scripts/check-local-export: avoid 'wait $!' for
- process substitution
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Wang Yugui <wangyugui@e16-tech.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Tom Rix <trix@redhat.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 9:41 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> Bash>=4.4 supports 'wait $!' to check the exit status of a process
-> substitution, but some people using older bash versions reported an
-> error like this:
->
-> Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> Reported-by: Michael Ellerman <mpe@ellerman.id.au>
-> Reported-by: Wang Yugui <wangyugui@e16-tech.com>
-> Tested-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> Tested-by: Jon Hunter <jonathanh@nvidia.com>
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+From: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-Acked-by: Nick Desaulniers <ndesaulniers@google.com>
+[ Upstream commit b0b592cf08367719e1d1ef07c9f136e8c17f7ec3 ]
 
-Some comments below.
+Since
 
-> diff --git a/Documentation/process/changes.rst b/Documentation/process/changes.rst
-> index 34415ae1af1b..19c286c23786 100644
-> --- a/Documentation/process/changes.rst
-> +++ b/Documentation/process/changes.rst
-> @@ -32,6 +32,7 @@ you probably needn't concern yourself with pcmciautils.
->  GNU C                  5.1              gcc --version
->  Clang/LLVM (optional)  11.0.0           clang --version
->  GNU make               3.81             make --version
-> +bash                   4.2              bash --version
+  e2a1256b17b1 ("x86/speculation: Restore speculation related MSRs during S3 resume")
 
-/usr/bin/env bash
-and definitely /bin/bash
-both show up a lot in kernel sources. At this point, I think bash is a
-requirement at this point, so it's good to document it finally.
+kmemleak reports this issue:
 
-> +# If there is no symbol in the object, ${NM} (both GNU nm and llvm-nm) shows
-> +# 'no symbols' diagnostic (but exits with 0). It is harmless and hidden by
-> +# '2>/dev/null'. However, it suppresses real error messages as well. Add a
-> +# hand-crafted error message here.
-> +#
-> +# Use --quiet instead of 2>/dev/null when we upgrade the minimum version of
-> +# binutils to 2.37, llvm to 13.0.0.
+  unreferenced object 0xffff888009cedc00 (size 256):
+    comm "swapper/0", pid 1, jiffies 4294693823 (age 73.764s)
+    hex dump (first 32 bytes):
+      00 00 00 00 00 00 00 00 48 00 00 00 00 00 00 00  ........H.......
+      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    backtrace:
+      msr_build_context (include/linux/slab.h:621)
+      pm_check_save_msr (arch/x86/power/cpu.c:520)
+      do_one_initcall (init/main.c:1298)
+      kernel_init_freeable (init/main.c:1370)
+      kernel_init (init/main.c:1504)
+      ret_from_fork (arch/x86/entry/entry_64.S:304)
 
-Might be nice to include `TODO:` in the comment block. Vim will
-highlight these in comments.
+Reproducer:
 
+  - boot the VM with a debug kernel config (see
+    https://github.com/multipath-tcp/mptcp_net-next/issues/268)
+  - wait ~1 minute
+  - start a kmemleak scan
+
+The root cause here is alignment within the packed struct saved_context
+(from suspend_64.h). Kmemleak only searches for pointers that are
+aligned (see how pointers are scanned in kmemleak.c), but pahole shows
+that the saved_msrs struct member and all members after it in the
+structure are unaligned:
+
+  struct saved_context {
+    struct pt_regs             regs;                 /*     0   168 */
+    /* --- cacheline 2 boundary (128 bytes) was 40 bytes ago --- */
+    u16                        ds;                   /*   168     2 */
+
+    ...
+
+    u64                        misc_enable;          /*   232     8 */
+    bool                       misc_enable_saved;    /*   240     1 */
+
+   /* Note below odd offset values for the remainder of this struct */
+
+    struct saved_msrs          saved_msrs;           /*   241    16 */
+    /* --- cacheline 4 boundary (256 bytes) was 1 bytes ago --- */
+    long unsigned int          efer;                 /*   257     8 */
+    u16                        gdt_pad;              /*   265     2 */
+    struct desc_ptr            gdt_desc;             /*   267    10 */
+    u16                        idt_pad;              /*   277     2 */
+    struct desc_ptr            idt;                  /*   279    10 */
+    u16                        ldt;                  /*   289     2 */
+    u16                        tss;                  /*   291     2 */
+    long unsigned int          tr;                   /*   293     8 */
+    long unsigned int          safety;               /*   301     8 */
+    long unsigned int          return_address;       /*   309     8 */
+
+    /* size: 317, cachelines: 5, members: 25 */
+    /* last cacheline: 61 bytes */
+  } __attribute__((__packed__));
+
+Move misc_enable_saved to the end of the struct declaration so that
+saved_msrs fits in before the cacheline 4 boundary.
+
+The comment above the saved_context declaration says to fix wakeup_64.S
+file and __save/__restore_processor_state() if the struct is modified:
+it looks like all the accesses in wakeup_64.S are done through offsets
+which are computed at build-time. Update that comment accordingly.
+
+At the end, the false positive kmemleak report is due to a limitation
+from kmemleak but it is always good to avoid unaligned members for
+optimisation purposes.
+
+Please note that it looks like this issue is not new, e.g.
+
+  https://lore.kernel.org/all/9f1bb619-c4ee-21c4-a251-870bd4db04fa@lwfinger.net/
+  https://lore.kernel.org/all/94e48fcd-1dbd-ebd2-4c91-f39941735909@molgen.mpg.de/
+
+  [ bp: Massage + cleanup commit message. ]
+
+Fixes: 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume")
+Suggested-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Link: https://lore.kernel.org/r/20220426202138.498310-1-matthieu.baerts@tessares.net
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/include/asm/suspend_32.h |  2 +-
+ arch/x86/include/asm/suspend_64.h | 12 ++++++++----
+ 2 files changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/arch/x86/include/asm/suspend_32.h b/arch/x86/include/asm/suspend_32.h
+index fdbd9d7b7bca..3b97aa921543 100644
+--- a/arch/x86/include/asm/suspend_32.h
++++ b/arch/x86/include/asm/suspend_32.h
+@@ -21,7 +21,6 @@ struct saved_context {
+ #endif
+ 	unsigned long cr0, cr2, cr3, cr4;
+ 	u64 misc_enable;
+-	bool misc_enable_saved;
+ 	struct saved_msrs saved_msrs;
+ 	struct desc_ptr gdt_desc;
+ 	struct desc_ptr idt;
+@@ -30,6 +29,7 @@ struct saved_context {
+ 	unsigned long tr;
+ 	unsigned long safety;
+ 	unsigned long return_address;
++	bool misc_enable_saved;
+ } __attribute__((packed));
+ 
+ /* routines for saving/restoring kernel state */
+diff --git a/arch/x86/include/asm/suspend_64.h b/arch/x86/include/asm/suspend_64.h
+index 35bb35d28733..54df06687d83 100644
+--- a/arch/x86/include/asm/suspend_64.h
++++ b/arch/x86/include/asm/suspend_64.h
+@@ -14,9 +14,13 @@
+  * Image of the saved processor state, used by the low level ACPI suspend to
+  * RAM code and by the low level hibernation code.
+  *
+- * If you modify it, fix arch/x86/kernel/acpi/wakeup_64.S and make sure that
+- * __save/__restore_processor_state(), defined in arch/x86/kernel/suspend_64.c,
+- * still work as required.
++ * If you modify it, check how it is used in arch/x86/kernel/acpi/wakeup_64.S
++ * and make sure that __save/__restore_processor_state(), defined in
++ * arch/x86/power/cpu.c, still work as required.
++ *
++ * Because the structure is packed, make sure to avoid unaligned members. For
++ * optimisation purposes but also because tools like kmemleak only search for
++ * pointers that are aligned.
+  */
+ struct saved_context {
+ 	struct pt_regs regs;
+@@ -36,7 +40,6 @@ struct saved_context {
+ 
+ 	unsigned long cr0, cr2, cr3, cr4;
+ 	u64 misc_enable;
+-	bool misc_enable_saved;
+ 	struct saved_msrs saved_msrs;
+ 	unsigned long efer;
+ 	u16 gdt_pad; /* Unused */
+@@ -48,6 +51,7 @@ struct saved_context {
+ 	unsigned long tr;
+ 	unsigned long safety;
+ 	unsigned long return_address;
++	bool misc_enable_saved;
+ } __attribute__((packed));
+ 
+ #define loaddebug(thread,register) \
 -- 
-Thanks,
-~Nick Desaulniers
+2.35.1
+
+
+
