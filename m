@@ -2,92 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 521EAC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:27:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F850C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:28:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237309AbiFHC1t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45670 "EHLO
+        id S241420AbiFHC16 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:27:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446703AbiFHCVh (ORCPT
+        with ESMTP id S1446938AbiFHC1A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:21:37 -0400
+        Tue, 7 Jun 2022 22:27:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49BB010D5FA;
-        Tue,  7 Jun 2022 17:14:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72DB262ADB;
+        Tue,  7 Jun 2022 12:20:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD90CB82474;
-        Wed,  8 Jun 2022 00:14:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6543CC34114;
-        Wed,  8 Jun 2022 00:14:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654647296;
-        bh=NXXoRp3O0lf2L8bwbUT1SM463oYDoMSvjZr5C8vGoKI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NRdbU3ay3EiyLv2foPiwz+TygNsWU7MyKzHKlESvJxuAb7eR63u681318bdo/MAXq
-         FfjMqnCKgC6Ff50dOEsigEc6ZoyaRWfSYIpIwNZM6Fdo/dyrEvguprqmZgcXZAK3cb
-         I7TZVDZxfHxjPR02m5i60tesHyvlqrPCTHr8jnJBG0e8lcMB6Z756AGB48/GfkpidO
-         2vbw8fevrDY2WVHgsIDrup82xjHl7nAnDu6HFmBIHdQPBPrVV7UGdMJQIESxOTbJ/M
-         sJWGckCAEi5HSFl34k0Db1SqRUb3K9PgViCcOAbyzPgTcyUjHnqiZmmi9kNzp7I4yM
-         6EM1z0/POLoKw==
-Date:   Tue, 7 Jun 2022 17:14:55 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Max Staudt <max@enpas.org>
-Cc:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH v5 4/7] can: Kconfig: add CONFIG_CAN_RX_OFFLOAD
-Message-ID: <20220607171455.0a75020c@kernel.org>
-In-Reply-To: <20220608014248.6e0045ae.max@enpas.org>
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
-        <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
-        <20220604163000.211077-5-mailhol.vincent@wanadoo.fr>
-        <CAMuHMdXkq7+yvD=ju-LY14yOPkiiHwL6H+9G-4KgX=GJjX=h9g@mail.gmail.com>
-        <CAMZ6RqLEEHOZjrMH+-GLC--jjfOaWYOPLf+PpefHwy=cLpWTYg@mail.gmail.com>
-        <20220607182216.5fb1084e.max@enpas.org>
-        <20220607150614.6248c504@kernel.org>
-        <20220608014248.6e0045ae.max@enpas.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24221B823CA;
+        Tue,  7 Jun 2022 19:20:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B394C385A2;
+        Tue,  7 Jun 2022 19:20:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629629;
+        bh=ZDnKYPmPQjxcm4FY6FcGynN3YmPDyHlU/dvI+MVgxa8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=znMTv+aEldDwRuBF8lEna0JBeuWnt0vJ5MSKDD60ZEUtPspqnv26ub13jooCCSd/g
+         wfgQmYbFt+Mof7Q3tLUMDVrcgI7ZY2UZfmQI6RSlNQP+5MIG8EpnMjvKSl3FD4YbDq
+         v7G/DNjz1z7EBM5iLocs4XUKFHOpuO4n5E6hUi1Q=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Denis Efremov <denis.e.efremov@oracle.com>
+Subject: [PATCH 5.18 758/879] staging: r8188eu: prevent ->Ssid overflow in rtw_wx_set_scan()
+Date:   Tue,  7 Jun 2022 19:04:36 +0200
+Message-Id: <20220607165024.865883010@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 8 Jun 2022 01:43:54 +0200 Max Staudt wrote:
-> It seems strange to me to magically build some extra features into
-> can_dev.ko, depending on whether some other .ko files are built in that
-> very same moment, or not. By "magically", I mean an invisible Kconfig
-> option. This is why I think Vincent's approach is best here, by making
-> the drivers a clearly visible subset of the RX_OFFLOAD option in
-> Kconfig, and RX_OFFLOAD user-selectable.
+From: Denis Efremov <denis.e.efremov@oracle.com>
 
-Sorry for a chunked response, vger becoming unresponsive the week after
-the merge window seems to become a tradition :/
+commit bc10916e890948d8927a5c8c40fb5dc44be5e1b8 upstream.
 
-We have a ton of "magical" / hidden Kconfigs in networking, take a look
-at net/Kconfig. Quick grep, likely not very accurate but FWIW:
+This code has a check to prevent read overflow but it needs another
+check to prevent writing beyond the end of the ->Ssid[] array.
 
-# not-hidden
-$ git grep -c -E '(bool|tristate)..' net/Kconfig
-net/Kconfig:23
+Fixes: 2b42bd58b321 ("staging: r8188eu: introduce new os_dep dir for RTL8188eu driver")
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Denis Efremov <denis.e.efremov@oracle.com>
+Link: https://lore.kernel.org/r/20220518070052.108287-1-denis.e.efremov@oracle.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/staging/r8188eu/os_dep/ioctl_linux.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-# hidden
-$ git grep -c -E '(bool|tristate)$' net/Kconfig
-net/Kconfig:20
+--- a/drivers/staging/r8188eu/os_dep/ioctl_linux.c
++++ b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
+@@ -1131,9 +1131,11 @@ static int rtw_wx_set_scan(struct net_de
+ 						break;
+ 					}
+ 					sec_len = *(pos++); len -= 1;
+-					if (sec_len > 0 && sec_len <= len) {
++					if (sec_len > 0 &&
++					    sec_len <= len &&
++					    sec_len <= 32) {
+ 						ssid[ssid_index].SsidLength = sec_len;
+-						memcpy(ssid[ssid_index].Ssid, pos, ssid[ssid_index].SsidLength);
++						memcpy(ssid[ssid_index].Ssid, pos, sec_len);
+ 						ssid_index++;
+ 					}
+ 					pos += sec_len;
 
-> How about making RX_OFFLOAD a separate .ko file, so we don't have
-> various possible versions of can_dev.ko?
-> 
-> @Vincent, I think you suggested that some time ago, IIRC?
-> 
-> (I know, I was against a ton of little modules, but I'm changing my
-> ways here now since it seems to help...)
 
-A separate module wouldn't help with my objections, I don't think.
