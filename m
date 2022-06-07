@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11041C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20831CCA47E
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:41:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353080AbiFGSkB (ORCPT
+        id S1353155AbiFGSkF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:40:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47624 "EHLO
+        Tue, 7 Jun 2022 14:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349411AbiFGSLg (ORCPT
+        with ESMTP id S1349761AbiFGSLg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:11:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0640111B8E;
-        Tue,  7 Jun 2022 10:48:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF21613275D;
+        Tue,  7 Jun 2022 10:48:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC7B96171C;
-        Tue,  7 Jun 2022 17:48:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 096EDC385A5;
-        Tue,  7 Jun 2022 17:48:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4E4161739;
+        Tue,  7 Jun 2022 17:48:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8845C385A5;
+        Tue,  7 Jun 2022 17:48:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624087;
-        bh=Fip7iQDSr+SZ/arPL1+2akkIFJzGJcippf1XA2GNJk8=;
+        s=korg; t=1654624090;
+        bh=h6OqCUeDOUqyQBLL56rhlWhklL1em65k+Cw8UX3FKp4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hnF/RbGqt2s+tIai2lEn8jiaPGJ77VhsMRrfcV7b4ORqnSk5v+8HPwgVobZug27ec
-         /+lyAMgS4j0FtT2+fJMgsAWuqoMYR7fKfqCLuKZbgzCv7wq0R/Zy/rChBUiFN2Hd5Z
-         6CiRfkupkPjaMkp2FPbU2PTTfl525msKGc98eqTY=
+        b=sYBEdabLyjLX6e1CQ2pz8P7n10uR1S0kBHugufLc6vMnGHnREsENJl9BBAQEQ1jcr
+         z2x9uFfOEmKK8zbUNjqUnCPs69+RYhJypawt0zd0uzJdwPBbGc5mIvkOo3aOlwgIa4
+         c6SVnZb5wZjiqNltErMftETBfo2SlxbocIS28krI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
         Thomas Zimmermann <tzimmermann@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 200/667] drm/vc4: hvs: Reset muxes at probe time
-Date:   Tue,  7 Jun 2022 18:57:45 +0200
-Message-Id: <20220607164940.798855017@linuxfoundation.org>
+Subject: [PATCH 5.15 201/667] drm/vc4: txp: Dont set TXP_VSTART_AT_EOF
+Date:   Tue,  7 Jun 2022 18:57:46 +0200
+Message-Id: <20220607164940.829073079@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,85 +52,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 8514e6b1f40319e31ac4aa3fbf606796786366c9 ]
+[ Upstream commit 234998df929f14d00cbf2f1e81a7facb69fd9266 ]
 
-By default, the HVS driver will force the HVS output 3 to be muxed to
-the HVS channel 2. However, the Transposer can only be assigned to the
-HVS channel 2, so whenever we try to use the writeback connector, we'll
-mux its associated output (Output 2) to the channel 2.
+The TXP_VSTART_AT_EOF will generate a second VSTART signal to the HVS.
+However, the HVS waits for VSTART to enable the FIFO and will thus start
+filling the FIFO before the start of the frame.
 
-This leads to both the output 2 and 3 feeding from the same channel,
-which is explicitly discouraged in the documentation.
+This leads to corruption at the beginning of the first frame, and
+content from the previous frame at the beginning of the next frames.
 
-In order to avoid this, let's reset all the output muxes to their reset
-value.
+Since one VSTART is enough, let's get rid of it.
 
-Fixes: 87ebcd42fb7b ("drm/vc4: crtc: Assign output to channel automatically")
+Fixes: 008095e065a8 ("drm/vc4: Add support for the transposer block")
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://lore.kernel.org/r/20220328153659.2382206-2-maxime@cerno.tech
+Link: https://lore.kernel.org/r/20220328153659.2382206-3-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_hvs.c | 26 +++++++++++++++++++++-----
- 1 file changed, 21 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/vc4/vc4_txp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hvs.c b/drivers/gpu/drm/vc4/vc4_hvs.c
-index c8cae10500b9..9d88bfb50c9b 100644
---- a/drivers/gpu/drm/vc4/vc4_hvs.c
-+++ b/drivers/gpu/drm/vc4/vc4_hvs.c
-@@ -605,6 +605,7 @@ static int vc4_hvs_bind(struct device *dev, struct device *master, void *data)
- 	struct vc4_hvs *hvs = NULL;
- 	int ret;
- 	u32 dispctrl;
-+	u32 reg;
+diff --git a/drivers/gpu/drm/vc4/vc4_txp.c b/drivers/gpu/drm/vc4/vc4_txp.c
+index 9809ca3e2945..ace2d03649ba 100644
+--- a/drivers/gpu/drm/vc4/vc4_txp.c
++++ b/drivers/gpu/drm/vc4/vc4_txp.c
+@@ -298,7 +298,7 @@ static void vc4_txp_connector_atomic_commit(struct drm_connector *conn,
+ 	if (WARN_ON(i == ARRAY_SIZE(drm_fmts)))
+ 		return;
  
- 	hvs = devm_kzalloc(&pdev->dev, sizeof(*hvs), GFP_KERNEL);
- 	if (!hvs)
-@@ -676,6 +677,26 @@ static int vc4_hvs_bind(struct device *dev, struct device *master, void *data)
- 
- 	vc4->hvs = hvs;
- 
-+	reg = HVS_READ(SCALER_DISPECTRL);
-+	reg &= ~SCALER_DISPECTRL_DSP2_MUX_MASK;
-+	HVS_WRITE(SCALER_DISPECTRL,
-+		  reg | VC4_SET_FIELD(0, SCALER_DISPECTRL_DSP2_MUX));
-+
-+	reg = HVS_READ(SCALER_DISPCTRL);
-+	reg &= ~SCALER_DISPCTRL_DSP3_MUX_MASK;
-+	HVS_WRITE(SCALER_DISPCTRL,
-+		  reg | VC4_SET_FIELD(3, SCALER_DISPCTRL_DSP3_MUX));
-+
-+	reg = HVS_READ(SCALER_DISPEOLN);
-+	reg &= ~SCALER_DISPEOLN_DSP4_MUX_MASK;
-+	HVS_WRITE(SCALER_DISPEOLN,
-+		  reg | VC4_SET_FIELD(3, SCALER_DISPEOLN_DSP4_MUX));
-+
-+	reg = HVS_READ(SCALER_DISPDITHER);
-+	reg &= ~SCALER_DISPDITHER_DSP5_MUX_MASK;
-+	HVS_WRITE(SCALER_DISPDITHER,
-+		  reg | VC4_SET_FIELD(3, SCALER_DISPDITHER_DSP5_MUX));
-+
- 	dispctrl = HVS_READ(SCALER_DISPCTRL);
- 
- 	dispctrl |= SCALER_DISPCTRL_ENABLE;
-@@ -683,10 +704,6 @@ static int vc4_hvs_bind(struct device *dev, struct device *master, void *data)
- 		    SCALER_DISPCTRL_DISPEIRQ(1) |
- 		    SCALER_DISPCTRL_DISPEIRQ(2);
- 
--	/* Set DSP3 (PV1) to use HVS channel 2, which would otherwise
--	 * be unused.
--	 */
--	dispctrl &= ~SCALER_DISPCTRL_DSP3_MUX_MASK;
- 	dispctrl &= ~(SCALER_DISPCTRL_DMAEIRQ |
- 		      SCALER_DISPCTRL_SLVWREIRQ |
- 		      SCALER_DISPCTRL_SLVRDEIRQ |
-@@ -700,7 +717,6 @@ static int vc4_hvs_bind(struct device *dev, struct device *master, void *data)
- 		      SCALER_DISPCTRL_DSPEISLUR(1) |
- 		      SCALER_DISPCTRL_DSPEISLUR(2) |
- 		      SCALER_DISPCTRL_SCLEIRQ);
--	dispctrl |= VC4_SET_FIELD(2, SCALER_DISPCTRL_DSP3_MUX);
- 
- 	HVS_WRITE(SCALER_DISPCTRL, dispctrl);
+-	ctrl = TXP_GO | TXP_VSTART_AT_EOF | TXP_EI |
++	ctrl = TXP_GO | TXP_EI |
+ 	       VC4_SET_FIELD(0xf, TXP_BYTE_ENABLE) |
+ 	       VC4_SET_FIELD(txp_fmts[i], TXP_FORMAT);
  
 -- 
 2.35.1
