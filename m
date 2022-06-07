@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5156BCCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 628B0CCA48D
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352572AbiFGSbH (ORCPT
+        id S1352688AbiFGSbM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35326 "EHLO
+        Tue, 7 Jun 2022 14:31:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352011AbiFGSCe (ORCPT
+        with ESMTP id S1352060AbiFGSCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:02:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB19A222B2;
-        Tue,  7 Jun 2022 10:46:46 -0700 (PDT)
+        Tue, 7 Jun 2022 14:02:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B756B655;
+        Tue,  7 Jun 2022 10:46:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A0629B81F38;
-        Tue,  7 Jun 2022 17:46:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 129ACC385A5;
-        Tue,  7 Jun 2022 17:46:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 71C53616B6;
+        Tue,  7 Jun 2022 17:46:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D8B1C34115;
+        Tue,  7 Jun 2022 17:46:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624004;
-        bh=rwAcKcC1TTyoUSUWY4uS7Xn/Go0skmGw/R7r7MS/DDM=;
+        s=korg; t=1654624012;
+        bh=Z8axk3wY4vH8/Dseo94rtU2nY3WpgHiZ0Yz2/nELLWk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aERrTFKYA/VxQutNIqMiEpfwpIRHKT475s6p8d0ewbuYZTw5XUP9PotVGbdFtZ/sc
-         hL7mX+7yHk1YoacL8BHF04GY52h2PzVR3eo6JsHW8Ftuzu3hdVllJHKwrNhGdkETB9
-         3ivSDrt8T9z7GQvI6VBftGG0yUu5J83Ico7/Gz8Y=
+        b=oeUTkZn6+U3Y3Ifr5RPPALo4EyuxZ8MSwpoIgZ49FRW7+/ONWjrN2AIMwYcLsIROY
+         Su6d1p0y2u5DYJS7arfu7HuGHHI/xAq1QcMrVEfGx3QGagS1MEAW91bZrJO3wH51WW
+         U8GVMFeA55oN7apIOLkSK1UZpeTDh9+itusb6G6w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Jia-wei Chang <jia-wei.chang@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
+        Fabiano Rosas <farosas@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 168/667] cpufreq: Avoid unnecessary frequency updates due to mismatch
-Date:   Tue,  7 Jun 2022 18:57:13 +0200
-Message-Id: <20220607164939.852322666@linuxfoundation.org>
+Subject: [PATCH 5.15 171/667] KVM: PPC: Book3S HV Nested: L2 LPCR should inherit L1 LPES setting
+Date:   Tue,  7 Jun 2022 18:57:16 +0200
+Message-Id: <20220607164939.941318184@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -53,60 +51,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Viresh Kumar <viresh.kumar@linaro.org>
+From: Nicholas Piggin <npiggin@gmail.com>
 
-[ Upstream commit f55ae08c89873e140c7cac2a7fa161d31a0d60cf ]
+[ Upstream commit 2852ebfa10afdcefff35ec72c8da97141df9845c ]
 
-For some platforms, the frequency returned by hardware may be slightly
-different from what is provided in the frequency table. For example,
-hardware may return 499 MHz instead of 500 MHz. In such cases it is
-better to avoid getting into unnecessary frequency updates, as we may
-end up switching policy->cur between the two and sending unnecessary
-pre/post update notifications, etc.
+The L1 should not be able to adjust LPES mode for the L2. Setting LPES
+if the L0 needs it clear would cause external interrupts to be sent to
+L2 and missed by the L0.
 
-This patch has chosen allows the hardware frequency and table frequency
-to deviate by 1 MHz for now, we may want to increase it a bit later on
-if someone still complains.
+Clearing LPES when it may be set, as typically happens with XIVE enabled
+could cause a performance issue despite having no native XIVE support in
+the guest, because it will cause mediated interrupts for the L2 to be
+taken in HV mode, which then have to be injected.
 
-Reported-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-Tested-by: Jia-wei Chang <jia-wei.chang@mediatek.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Reviewed-by: Fabiano Rosas <farosas@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220303053315.1056880-7-npiggin@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/cpufreq.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ arch/powerpc/kvm/book3s_hv.c        | 4 ++++
+ arch/powerpc/kvm/book3s_hv_nested.c | 3 +--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-index eeac6d809229..cddf7e13c232 100644
---- a/drivers/cpufreq/cpufreq.c
-+++ b/drivers/cpufreq/cpufreq.c
-@@ -28,6 +28,7 @@
- #include <linux/suspend.h>
- #include <linux/syscore_ops.h>
- #include <linux/tick.h>
-+#include <linux/units.h>
- #include <trace/events/power.h>
- 
- static LIST_HEAD(cpufreq_policy_list);
-@@ -1701,6 +1702,16 @@ static unsigned int cpufreq_verify_current_freq(struct cpufreq_policy *policy, b
- 		return new_freq;
- 
- 	if (policy->cur != new_freq) {
+diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
+index 7fa685711669..eba77096c443 100644
+--- a/arch/powerpc/kvm/book3s_hv.c
++++ b/arch/powerpc/kvm/book3s_hv.c
+@@ -5235,6 +5235,10 @@ static int kvmppc_core_init_vm_hv(struct kvm *kvm)
+ 		kvm->arch.host_lpcr = lpcr = mfspr(SPRN_LPCR);
+ 		lpcr &= LPCR_PECE | LPCR_LPES;
+ 	} else {
 +		/*
-+		 * For some platforms, the frequency returned by hardware may be
-+		 * slightly different from what is provided in the frequency
-+		 * table, for example hardware may return 499 MHz instead of 500
-+		 * MHz. In such cases it is better to avoid getting into
-+		 * unnecessary frequency updates.
++		 * The L2 LPES mode will be set by the L0 according to whether
++		 * or not it needs to take external interrupts in HV mode.
 +		 */
-+		if (abs(policy->cur - new_freq) < HZ_PER_MHZ)
-+			return policy->cur;
-+
- 		cpufreq_out_of_sync(policy, new_freq);
- 		if (update)
- 			schedule_work(&policy->update);
+ 		lpcr = 0;
+ 	}
+ 	lpcr |= (4UL << LPCR_DPFD_SH) | LPCR_HDICE |
+diff --git a/arch/powerpc/kvm/book3s_hv_nested.c b/arch/powerpc/kvm/book3s_hv_nested.c
+index 6c4e0e93105f..ddea14e5cb5e 100644
+--- a/arch/powerpc/kvm/book3s_hv_nested.c
++++ b/arch/powerpc/kvm/book3s_hv_nested.c
+@@ -261,8 +261,7 @@ static void load_l2_hv_regs(struct kvm_vcpu *vcpu,
+ 	/*
+ 	 * Don't let L1 change LPCR bits for the L2 except these:
+ 	 */
+-	mask = LPCR_DPFD | LPCR_ILE | LPCR_TC | LPCR_AIL | LPCR_LD |
+-		LPCR_LPES | LPCR_MER;
++	mask = LPCR_DPFD | LPCR_ILE | LPCR_TC | LPCR_AIL | LPCR_LD | LPCR_MER;
+ 
+ 	/*
+ 	 * Additional filtering is required depending on hardware
 -- 
 2.35.1
 
