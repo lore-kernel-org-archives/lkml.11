@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 900BCCCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80F56CCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379650AbiFGVZz (ORCPT
+        id S1379596AbiFGVZw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:25:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57368 "EHLO
+        Tue, 7 Jun 2022 17:25:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376877AbiFGU2P (ORCPT
+        with ESMTP id S1376901AbiFGU2R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:28:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D8A01D9B47;
-        Tue,  7 Jun 2022 11:33:23 -0700 (PDT)
+        Tue, 7 Jun 2022 16:28:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69581D9B5F;
+        Tue,  7 Jun 2022 11:33:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D8A55612EC;
-        Tue,  7 Jun 2022 18:33:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2D0FC385A5;
-        Tue,  7 Jun 2022 18:33:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95E4F612F2;
+        Tue,  7 Jun 2022 18:33:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6ABFC385A2;
+        Tue,  7 Jun 2022 18:33:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626802;
-        bh=7xMcwb9TiKoQhDGVCSyKHR4w3KZW+4Mbltbx2mEeF3k=;
+        s=korg; t=1654626805;
+        bh=tXpFV1oq8s2qSwjMPFj5GjP5i35kucSjkrQzFXm++X0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NTgH8x7jF4Ac4qMsa6Ctvzh+NUotLyVjXz7R+eaq5VdA3y4xz08mdtAStciazRG9B
-         MGphp1BYGNT9E1D4qLU2qZir9bqXuy7i+/cLOPOtnIJtzuyJvZiXUP2xalua77MasF
-         ROPYIKJ4hT8u7SRfKT9nCSJrfIOcIicZ6V/pnod8=
+        b=c14bZEZssliO7nBl8U1pdQvCrHsKggBaR962NbKgsY10Sgxd2fs1MxIplkzx8boHI
+         AfP0DLTpi/EkGxJXELRTYj4rNVHeDB7iQzC/VyO7iCi+iKfXDrlhJfXdVI9IQNlq6R
+         inD7AQkReu+WLNyB/vqJPQOGyLNO1kC+B8ocl650=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Arunachalam Ganapathy <arunachalam.ganapathy@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Patrick Delaunay <patrick.delaunay@foss.st.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 508/772] firmware: arm_ffa: Fix uuid parameter to ffa_partition_probe
-Date:   Tue,  7 Jun 2022 19:01:40 +0200
-Message-Id: <20220607165003.947845590@linuxfoundation.org>
+Subject: [PATCH 5.17 473/772] ARM: dts: stm32: Fix PHY post-reset delay on Avenger96
+Date:   Tue,  7 Jun 2022 19:01:05 +0200
+Message-Id: <20220607165002.934367219@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,40 +53,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sudeep Holla <sudeep.holla@arm.com>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit f3c45c045e25ed52461829d2ce07954f72b6ad15 ]
+[ Upstream commit ef2d90708883f4025a801feb0ba8411a7a4387e1 ]
 
-While we pass uuid_null intentionally to ffa_partition_probe in
-ffa_setup_partitions to get the count of the partitions, it must not be
-uuid_null in ffa_partition_info_get which is used by the ffa_drivers
-to fetch the specific partition info passing the UUID of the partition.
+Per KSZ9031RNX PHY datasheet FIGURE 7-5: POWER-UP/POWER-DOWN/RESET TIMING
+Note 2: After the de-assertion of reset, wait a minimum of 100 μs before
+starting programming on the MIIM (MDC/MDIO) interface.
 
-Fix ffa_partition_info_get by passing the received uuid down to
-ffa_partition_probe so that the correct partition information is fetched.
+Add 1ms post-reset delay to guarantee this figure.
 
-Link: https://lore.kernel.org/r/20220429113946.2087145-1-sudeep.holla@arm.com
-Fixes: d0c0bce83122 ("firmware: arm_ffa: Setup in-kernel users of FFA partitions")
-Reported-by: Arunachalam Ganapathy <arunachalam.ganapathy@arm.com>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Fixes: 010ca9fe500bf ("ARM: dts: stm32: Add missing ethernet PHY reset on AV96")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: Patrice Chotard <patrice.chotard@foss.st.com>
+Cc: Patrick Delaunay <patrick.delaunay@foss.st.com>
+Cc: linux-stm32@st-md-mailman.stormreply.com
+To: linux-arm-kernel@lists.infradead.org
+Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/arm_ffa/driver.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/firmware/arm_ffa/driver.c b/drivers/firmware/arm_ffa/driver.c
-index 14f900047ac0..8fa1785afd42 100644
---- a/drivers/firmware/arm_ffa/driver.c
-+++ b/drivers/firmware/arm_ffa/driver.c
-@@ -582,7 +582,7 @@ static int ffa_partition_info_get(const char *uuid_str,
- 		return -ENODEV;
- 	}
+diff --git a/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi b/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
+index 6885948f3024..8eb51d84b698 100644
+--- a/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
++++ b/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
+@@ -141,6 +141,7 @@
+ 		compatible = "snps,dwmac-mdio";
+ 		reset-gpios = <&gpioz 2 GPIO_ACTIVE_LOW>;
+ 		reset-delay-us = <1000>;
++		reset-post-delay-us = <1000>;
  
--	count = ffa_partition_probe(&uuid_null, &pbuf);
-+	count = ffa_partition_probe(&uuid, &pbuf);
- 	if (count <= 0)
- 		return -ENOENT;
- 
+ 		phy0: ethernet-phy@7 {
+ 			reg = <7>;
 -- 
 2.35.1
 
