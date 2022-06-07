@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56498CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA72DCCA485
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384767AbiFHAUU (ORCPT
+        id S1384889AbiFHAUj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37846 "EHLO
+        Tue, 7 Jun 2022 20:20:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384729AbiFGWQF (ORCPT
+        with ESMTP id S1382210AbiFGWMp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:16:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7922E261291;
-        Tue,  7 Jun 2022 12:19:59 -0700 (PDT)
+        Tue, 7 Jun 2022 18:12:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F090225BC21;
+        Tue,  7 Jun 2022 12:19:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 965CE61947;
-        Tue,  7 Jun 2022 19:19:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F650C385A2;
-        Tue,  7 Jun 2022 19:19:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1F78B823CC;
+        Tue,  7 Jun 2022 19:19:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AC26C385A2;
+        Tue,  7 Jun 2022 19:19:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629574;
-        bh=pKVlFhLgmigks0sdxgvJsyHBb00uGTtfbtvTCkZePqk=;
+        s=korg; t=1654629554;
+        bh=en8hNGfUSc9zRqvaL+iKZSJUvg3jICe8mOKD3yOmTqw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JXO5qqej5EyrLesh8WCrfMwEpEHvCfMSMXCwHCjpQkba597j1FyY87Z+4tt3FFrXE
-         azugKFPOkGQAHXzdMt2v1DIBi/45r4EgkDgkoNriVTDFR+bHwR9vDLXkyR7RTZw335
-         XFjHqsVwtkN3gkneCHMNTkvcEPh4HuLajpHUU6Do=
+        b=iMJ/KyJBnXGPOlHwXG1Xu2UGWMpX1oMtr9QgYPArzN+5CvvGUqhxbO9V+vLHY333V
+         t5NkTuEWD7A1/3+0+LuaSaj8rB7QtBERvtpazuevuNxWcdoClilum61c/9mxAQgCi9
+         M3nG/ZxOFdii2hQwGnhOfHB+EnHg6ibESACnpXM0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 5.18 740/879] ext4: fix warning in ext4_handle_inode_extension
-Date:   Tue,  7 Jun 2022 19:04:18 +0200
-Message-Id: <20220607165024.336913476@linuxfoundation.org>
+        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.18 734/879] bfq: Get rid of __bio_blkcg() usage
+Date:   Tue,  7 Jun 2022 19:04:12 +0200
+Message-Id: <20220607165024.162469192@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,107 +50,197 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Jan Kara <jack@suse.cz>
 
-commit f4534c9fc94d22383f187b9409abb3f9df2e3db3 upstream.
+commit 4e54a2493e582361adc3bfbf06c7d50d19d18837 upstream.
 
-We got issue as follows:
-EXT4-fs error (device loop0) in ext4_reserve_inode_write:5741: Out of memory
-EXT4-fs error (device loop0): ext4_setattr:5462: inode #13: comm syz-executor.0: mark_inode_dirty error
-EXT4-fs error (device loop0) in ext4_setattr:5519: Out of memory
-EXT4-fs error (device loop0): ext4_ind_map_blocks:595: inode #13: comm syz-executor.0: Can't allocate blocks for non-extent mapped inodes with bigalloc
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 4361 at fs/ext4/file.c:301 ext4_file_write_iter+0x11c9/0x1220
-Modules linked in:
-CPU: 1 PID: 4361 Comm: syz-executor.0 Not tainted 5.10.0+ #1
-RIP: 0010:ext4_file_write_iter+0x11c9/0x1220
-RSP: 0018:ffff924d80b27c00 EFLAGS: 00010282
-RAX: ffffffff815a3379 RBX: 0000000000000000 RCX: 000000003b000000
-RDX: ffff924d81601000 RSI: 00000000000009cc RDI: 00000000000009cd
-RBP: 000000000000000d R08: ffffffffbc5a2c6b R09: 0000902e0e52a96f
-R10: ffff902e2b7c1b40 R11: ffff902e2b7c1b40 R12: 000000000000000a
-R13: 0000000000000001 R14: ffff902e0e52aa10 R15: ffffffffffffff8b
-FS:  00007f81a7f65700(0000) GS:ffff902e3bc80000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffffffff600400 CR3: 000000012db88001 CR4: 00000000003706e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- do_iter_readv_writev+0x2e5/0x360
- do_iter_write+0x112/0x4c0
- do_pwritev+0x1e5/0x390
- __x64_sys_pwritev2+0x7e/0xa0
- do_syscall_64+0x37/0x50
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+BFQ usage of __bio_blkcg() is a relict from the past. Furthermore if bio
+would not be associated with any blkcg, the usage of __bio_blkcg() in
+BFQ is prone to races with the task being migrated between cgroups as
+__bio_blkcg() calls at different places could return different blkcgs.
 
-Above issue may happen as follows:
-Assume
-inode.i_size=4096
-EXT4_I(inode)->i_disksize=4096
+Convert BFQ to the new situation where bio->bi_blkg is initialized in
+bio_set_dev() and thus practically always valid. This allows us to save
+blkcg_gq lookup and noticeably simplify the code.
 
-step 1: set inode->i_isize = 8192
-ext4_setattr
-  if (attr->ia_size != inode->i_size)
-    EXT4_I(inode)->i_disksize = attr->ia_size;
-    rc = ext4_mark_inode_dirty
-       ext4_reserve_inode_write
-          ext4_get_inode_loc
-            __ext4_get_inode_loc
-              sb_getblk --> return -ENOMEM
-   ...
-   if (!error)  ->will not update i_size
-     i_size_write(inode, attr->ia_size);
-Now:
-inode.i_size=4096
-EXT4_I(inode)->i_disksize=8192
-
-step 2: Direct write 4096 bytes
-ext4_file_write_iter
- ext4_dio_write_iter
-   iomap_dio_rw ->return error
- if (extend)
-   ext4_handle_inode_extension
-     WARN_ON_ONCE(i_size_read(inode) < EXT4_I(inode)->i_disksize);
-->Then trigger warning.
-
-To solve above issue, if mark inode dirty failed in ext4_setattr just
-set 'EXT4_I(inode)->i_disksize' with old value.
-
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Link: https://lore.kernel.org/r/20220326065351.761952-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
+CC: stable@vger.kernel.org
+Fixes: 0fe061b9f03c ("blkcg: fix ref count issue with bio_blkcg() using task_css")
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-8-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/inode.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ block/bfq-cgroup.c  |   63 ++++++++++++++++++----------------------------------
+ block/bfq-iosched.c |   11 ---------
+ block/bfq-iosched.h |    3 --
+ 3 files changed, 25 insertions(+), 52 deletions(-)
 
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -5389,6 +5389,7 @@ int ext4_setattr(struct user_namespace *
- 	if (attr->ia_valid & ATTR_SIZE) {
- 		handle_t *handle;
- 		loff_t oldsize = inode->i_size;
-+		loff_t old_disksize;
- 		int shrink = (attr->ia_size < inode->i_size);
+--- a/block/bfq-cgroup.c
++++ b/block/bfq-cgroup.c
+@@ -586,27 +586,11 @@ static void bfq_group_set_parent(struct
+ 	entity->sched_data = &parent->sched_data;
+ }
  
- 		if (!(ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS))) {
-@@ -5460,6 +5461,7 @@ int ext4_setattr(struct user_namespace *
- 					inode->i_sb->s_blocksize_bits);
+-static struct bfq_group *bfq_lookup_bfqg(struct bfq_data *bfqd,
+-					 struct blkcg *blkcg)
++static void bfq_link_bfqg(struct bfq_data *bfqd, struct bfq_group *bfqg)
+ {
+-	struct blkcg_gq *blkg;
+-
+-	blkg = blkg_lookup(blkcg, bfqd->queue);
+-	if (likely(blkg))
+-		return blkg_to_bfqg(blkg);
+-	return NULL;
+-}
+-
+-struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd,
+-				     struct blkcg *blkcg)
+-{
+-	struct bfq_group *bfqg, *parent;
++	struct bfq_group *parent;
+ 	struct bfq_entity *entity;
  
- 			down_write(&EXT4_I(inode)->i_data_sem);
-+			old_disksize = EXT4_I(inode)->i_disksize;
- 			EXT4_I(inode)->i_disksize = attr->ia_size;
- 			rc = ext4_mark_inode_dirty(handle, inode);
- 			if (!error)
-@@ -5471,6 +5473,8 @@ int ext4_setattr(struct user_namespace *
- 			 */
- 			if (!error)
- 				i_size_write(inode, attr->ia_size);
-+			else
-+				EXT4_I(inode)->i_disksize = old_disksize;
- 			up_write(&EXT4_I(inode)->i_data_sem);
- 			ext4_journal_stop(handle);
- 			if (error)
+-	bfqg = bfq_lookup_bfqg(bfqd, blkcg);
+-	if (unlikely(!bfqg))
+-		return NULL;
+-
+ 	/*
+ 	 * Update chain of bfq_groups as we might be handling a leaf group
+ 	 * which, along with some of its relatives, has not been hooked yet
+@@ -623,8 +607,15 @@ struct bfq_group *bfq_find_set_group(str
+ 			bfq_group_set_parent(curr_bfqg, parent);
+ 		}
+ 	}
++}
+ 
+-	return bfqg;
++struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
++{
++	struct blkcg_gq *blkg = bio->bi_blkg;
++
++	if (!blkg)
++		return bfqd->root_group;
++	return blkg_to_bfqg(blkg);
+ }
+ 
+ /**
+@@ -714,25 +705,15 @@ void bfq_bfqq_move(struct bfq_data *bfqd
+  * Move bic to blkcg, assuming that bfqd->lock is held; which makes
+  * sure that the reference to cgroup is valid across the call (see
+  * comments in bfq_bic_update_cgroup on this issue)
+- *
+- * NOTE: an alternative approach might have been to store the current
+- * cgroup in bfqq and getting a reference to it, reducing the lookup
+- * time here, at the price of slightly more complex code.
+  */
+-static struct bfq_group *__bfq_bic_change_cgroup(struct bfq_data *bfqd,
+-						struct bfq_io_cq *bic,
+-						struct blkcg *blkcg)
++static void *__bfq_bic_change_cgroup(struct bfq_data *bfqd,
++				     struct bfq_io_cq *bic,
++				     struct bfq_group *bfqg)
+ {
+ 	struct bfq_queue *async_bfqq = bic_to_bfqq(bic, 0);
+ 	struct bfq_queue *sync_bfqq = bic_to_bfqq(bic, 1);
+-	struct bfq_group *bfqg;
+ 	struct bfq_entity *entity;
+ 
+-	bfqg = bfq_find_set_group(bfqd, blkcg);
+-
+-	if (unlikely(!bfqg))
+-		bfqg = bfqd->root_group;
+-
+ 	if (async_bfqq) {
+ 		entity = &async_bfqq->entity;
+ 
+@@ -784,20 +765,24 @@ static struct bfq_group *__bfq_bic_chang
+ void bfq_bic_update_cgroup(struct bfq_io_cq *bic, struct bio *bio)
+ {
+ 	struct bfq_data *bfqd = bic_to_bfqd(bic);
+-	struct bfq_group *bfqg = NULL;
++	struct bfq_group *bfqg = bfq_bio_bfqg(bfqd, bio);
+ 	uint64_t serial_nr;
+ 
+-	rcu_read_lock();
+-	serial_nr = __bio_blkcg(bio)->css.serial_nr;
++	serial_nr = bfqg_to_blkg(bfqg)->blkcg->css.serial_nr;
+ 
+ 	/*
+ 	 * Check whether blkcg has changed.  The condition may trigger
+ 	 * spuriously on a newly created cic but there's no harm.
+ 	 */
+ 	if (unlikely(!bfqd) || likely(bic->blkcg_serial_nr == serial_nr))
+-		goto out;
++		return;
+ 
+-	bfqg = __bfq_bic_change_cgroup(bfqd, bic, __bio_blkcg(bio));
++	/*
++	 * New cgroup for this process. Make sure it is linked to bfq internal
++	 * cgroup hierarchy.
++	 */
++	bfq_link_bfqg(bfqd, bfqg);
++	__bfq_bic_change_cgroup(bfqd, bic, bfqg);
+ 	/*
+ 	 * Update blkg_path for bfq_log_* functions. We cache this
+ 	 * path, and update it here, for the following
+@@ -850,8 +835,6 @@ void bfq_bic_update_cgroup(struct bfq_io
+ 	 */
+ 	blkg_path(bfqg_to_blkg(bfqg), bfqg->blkg_path, sizeof(bfqg->blkg_path));
+ 	bic->blkcg_serial_nr = serial_nr;
+-out:
+-	rcu_read_unlock();
+ }
+ 
+ /**
+@@ -1469,7 +1452,7 @@ void bfq_end_wr_async(struct bfq_data *b
+ 	bfq_end_wr_async_queues(bfqd, bfqd->root_group);
+ }
+ 
+-struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd, struct blkcg *blkcg)
++struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
+ {
+ 	return bfqd->root_group;
+ }
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -5730,14 +5730,7 @@ static struct bfq_queue *bfq_get_queue(s
+ 	struct bfq_queue *bfqq;
+ 	struct bfq_group *bfqg;
+ 
+-	rcu_read_lock();
+-
+-	bfqg = bfq_find_set_group(bfqd, __bio_blkcg(bio));
+-	if (!bfqg) {
+-		bfqq = &bfqd->oom_bfqq;
+-		goto out;
+-	}
+-
++	bfqg = bfq_bio_bfqg(bfqd, bio);
+ 	if (!is_sync) {
+ 		async_bfqq = bfq_async_queue_prio(bfqd, bfqg, ioprio_class,
+ 						  ioprio);
+@@ -5783,8 +5776,6 @@ out:
+ 
+ 	if (bfqq != &bfqd->oom_bfqq && is_sync && !respawn)
+ 		bfqq = bfq_do_or_sched_stable_merge(bfqd, bfqq, bic);
+-
+-	rcu_read_unlock();
+ 	return bfqq;
+ }
+ 
+--- a/block/bfq-iosched.h
++++ b/block/bfq-iosched.h
+@@ -1010,8 +1010,7 @@ void bfq_bfqq_move(struct bfq_data *bfqd
+ void bfq_init_entity(struct bfq_entity *entity, struct bfq_group *bfqg);
+ void bfq_bic_update_cgroup(struct bfq_io_cq *bic, struct bio *bio);
+ void bfq_end_wr_async(struct bfq_data *bfqd);
+-struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd,
+-				     struct blkcg *blkcg);
++struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio);
+ struct blkcg_gq *bfqg_to_blkg(struct bfq_group *bfqg);
+ struct bfq_group *bfqq_group(struct bfq_queue *bfqq);
+ struct bfq_group *bfq_create_group_hierarchy(struct bfq_data *bfqd, int node);
 
 
