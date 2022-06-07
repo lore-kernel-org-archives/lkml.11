@@ -2,78 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3326FCCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AE1BCCA485
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:16:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446549AbiFHCP3 (ORCPT
+        id S1446534AbiFHCPR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:15:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34400 "EHLO
+        Tue, 7 Jun 2022 22:15:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386485AbiFHB0b (ORCPT
+        with ESMTP id S1346973AbiFHBYP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 21:26:31 -0400
-X-Greylist: delayed 599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 12:43:18 PDT
-Received: from 2.mo584.mail-out.ovh.net (2.mo584.mail-out.ovh.net [46.105.72.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A29B71B6FF0
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:43:17 -0700 (PDT)
-Received: from player698.ha.ovh.net (unknown [10.110.115.143])
-        by mo584.mail-out.ovh.net (Postfix) with ESMTP id 4689C23ACB
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:23:52 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player698.ha.ovh.net (Postfix) with ESMTPSA id 6FA302B48041C;
-        Tue,  7 Jun 2022 19:23:45 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-110S00469d172a2-4b38-4c8e-95e7-ea9a2b73ce1c,
-                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Antonino Daplas <adaplas@gmail.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Helge Deller <deller@gmx.de>, Paul Mackerras <paulus@samba.org>
-Cc:     linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH 0/7] fbdev: Use backlight helpers
-Date:   Tue,  7 Jun 2022 21:23:28 +0200
-Message-Id: <20220607192335.1137249-1-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
+        Tue, 7 Jun 2022 21:24:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A3A19EC11;
+        Tue,  7 Jun 2022 12:26:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62515B8237B;
+        Tue,  7 Jun 2022 19:26:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9D83C385A2;
+        Tue,  7 Jun 2022 19:26:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629982;
+        bh=0uxE18e2AfanWQQDQShi5sm63VVmRKaaDhXCasV9Sko=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=K6zbQPewaYi0+QnD1xnfRzQ3x7ZgjeZooTygp4NrO84mTo93R5jThop7YqhD+EKHn
+         mNPHpMT1DwvGngwQtNF8qGLqCeZqBblTdaG2TTEYHCFzD2quEjLDMxP5VFIjRQ6ez8
+         L/8FF/CZBmVRpJ95JS0jqyI4LGJF+NbfnC/7LCoA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>,
+        Thierry Reding <treding@nvidia.com>
+Subject: [PATCH 5.18 848/879] clk: tegra: Add missing reset deassertion
+Date:   Tue,  7 Jun 2022 19:06:06 +0200
+Message-Id: <20220607165027.465901379@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 11945798012241282694
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudefiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekge
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-backlight_properties.fb_blank is deprecated. The states it represents
-are handled by other properties; but instead of accessing those
-properties directly, drivers should use the helpers provided by
-backlight.h, even in cases where fb_blank isn't involved.
+From: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
 
-This will ultimately allow fb_blank to be removed.
+commit 23a43cc437e747473d5f8f98b4fe189fb5c433b7 upstream.
 
-Stephen Kitt (7):
-  fbdev: aty128fb: Use backlight helper
-  fbdev: atyfb: Use backlight helper
-  fbdev: radeon: Use backlight helper
-  fbdev: mx3fb: Use backlight helper
-  fbdev: nvidia: Use backlight helper
-  fbdev: omapfb: panel-dsi-cm: Use backlight helper
-  fbdev: riva: Use backlight helper
+Commit 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling
+clocks") removed deassertion of reset lines when enabling peripheral
+clocks. This breaks the initialization of the DFLL driver which relied
+on this behaviour.
 
- drivers/video/fbdev/aty/aty128fb.c                       | 6 ++----
- drivers/video/fbdev/aty/atyfb_base.c                     | 8 +-------
- drivers/video/fbdev/aty/radeon_backlight.c               | 6 +-----
- drivers/video/fbdev/mx3fb.c                              | 7 +------
- drivers/video/fbdev/nvidia/nv_backlight.c                | 8 +-------
- drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 +-------
- drivers/video/fbdev/riva/fbdev.c                         | 8 +-------
- 7 files changed, 8 insertions(+), 43 deletions(-)
+Fix this problem by adding explicit deassert/assert requests to the
+driver. Tested on Google Pixel C.
 
+Cc: stable@vger.kernel.org
+Fixes: 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling clocks")
+Signed-off-by: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/clk/tegra/clk-dfll.c |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
--- 
-2.30.2
+--- a/drivers/clk/tegra/clk-dfll.c
++++ b/drivers/clk/tegra/clk-dfll.c
+@@ -271,6 +271,7 @@ struct tegra_dfll {
+ 	struct clk			*ref_clk;
+ 	struct clk			*i2c_clk;
+ 	struct clk			*dfll_clk;
++	struct reset_control		*dfll_rst;
+ 	struct reset_control		*dvco_rst;
+ 	unsigned long			ref_rate;
+ 	unsigned long			i2c_clk_rate;
+@@ -1464,6 +1465,7 @@ static int dfll_init(struct tegra_dfll *
+ 		return -EINVAL;
+ 	}
+ 
++	reset_control_deassert(td->dfll_rst);
+ 	reset_control_deassert(td->dvco_rst);
+ 
+ 	ret = clk_prepare(td->ref_clk);
+@@ -1509,6 +1511,7 @@ di_err1:
+ 	clk_unprepare(td->ref_clk);
+ 
+ 	reset_control_assert(td->dvco_rst);
++	reset_control_assert(td->dfll_rst);
+ 
+ 	return ret;
+ }
+@@ -1530,6 +1533,7 @@ int tegra_dfll_suspend(struct device *de
+ 	}
+ 
+ 	reset_control_assert(td->dvco_rst);
++	reset_control_assert(td->dfll_rst);
+ 
+ 	return 0;
+ }
+@@ -1548,6 +1552,7 @@ int tegra_dfll_resume(struct device *dev
+ {
+ 	struct tegra_dfll *td = dev_get_drvdata(dev);
+ 
++	reset_control_deassert(td->dfll_rst);
+ 	reset_control_deassert(td->dvco_rst);
+ 
+ 	pm_runtime_get_sync(td->dev);
+@@ -1951,6 +1956,12 @@ int tegra_dfll_register(struct platform_
+ 
+ 	td->soc = soc;
+ 
++	td->dfll_rst = devm_reset_control_get_optional(td->dev, "dfll");
++	if (IS_ERR(td->dfll_rst)) {
++		dev_err(td->dev, "couldn't get dfll reset\n");
++		return PTR_ERR(td->dfll_rst);
++	}
++
+ 	td->dvco_rst = devm_reset_control_get(td->dev, "dvco");
+ 	if (IS_ERR(td->dvco_rst)) {
+ 		dev_err(td->dev, "couldn't get dvco reset\n");
+@@ -2087,6 +2098,7 @@ struct tegra_dfll_soc_data *tegra_dfll_u
+ 	clk_unprepare(td->i2c_clk);
+ 
+ 	reset_control_assert(td->dvco_rst);
++	reset_control_assert(td->dfll_rst);
+ 
+ 	return td->soc;
+ }
+
 
