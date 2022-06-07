@@ -2,149 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5D77CCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B6ACCA48B
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389850AbiFHBqY (ORCPT
+        id S1389480AbiFHBqK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:46:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37866 "EHLO
+        Tue, 7 Jun 2022 21:46:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384731AbiFGWQF (ORCPT
+        with ESMTP id S1381367AbiFGWmt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:16:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB6322612BA;
-        Tue,  7 Jun 2022 12:20:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B49D36193E;
-        Tue,  7 Jun 2022 19:19:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3837C385A2;
-        Tue,  7 Jun 2022 19:19:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629560;
-        bh=uDFJt36J43JNrQpnP2g5KapftTC+j4X2m4rJ87PLIAI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pWTiAM3bB7BjY7Bs3jCMoXBJixbsNaXqJ8SvVD7dgCUmonWebji2ybSySWCZizsmm
-         J2JIPuiGlTz41RZpWwo8tfxwfzzSs/l3vG/3MbOrREewHjUMIXO7a6XWaW7dOjNK06
-         cmebVmF57lPysuqRdWn4YUPP1qDvkrqm/IkoiI5o=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 5.18 736/879] ext4: mark group as trimmed only if it was fully scanned
-Date:   Tue,  7 Jun 2022 19:04:14 +0200
-Message-Id: <20220607165024.220534344@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 18:42:49 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684791A8E38
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:34:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654630464; x=1686166464;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=nMwIYlHjiSDXJfavSznI1rVa27YLpTBuPQ+gIwdpgew=;
+  b=fNF3q5BS0Jfy/plPnCCOEywQ3oF5CXTMWGYRPj/W6QMU98NdkeqqytA8
+   UIpXRZXWyDbdAwaPsGGQlsyoglHeUFpuk8+ZkuPwvqDMxUdv06rqNS3fW
+   9nE6ZRCPDhnEjKic/njDBPzsGTns02UXDWqWqL5f6LVaxjHeKJNGqSDlt
+   SFCvkDM2p/B9a4E4ONjI9FK2oNk6PfyCVjIIbWg8dPno/t9PMwyt29JEB
+   Z6cO9oSPfhr8Jy5JCL8UFx7T8i7GitJjuosW2/WF7kdw2EC4PNNU/AJHU
+   8GkSrc6qwe9zhnlhz/rYDVu0RlF4q2Eh//gGfjDvl4yyCD2DWLYgSjOqE
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="275515315"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="275515315"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 12:34:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="532755934"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 07 Jun 2022 12:34:02 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nyexm-000DtB-1D;
+        Tue, 07 Jun 2022 19:34:02 +0000
+Date:   Wed, 8 Jun 2022 03:33:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: arch/m68k/coldfire/m523x.c:31:19: sparse: sparse: symbol
+ 'm523x_clk_lookup' was not declared. Should it be static?
+Message-ID: <202206080316.wGYMA1Sk-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   e71e60cd74df9386c3f684c54888f2367050b831
+commit: 63aadb77669a6856b26d73da85b4f788731524a3 m68k: coldfire: use clkdev_lookup on most coldfire
+date:   12 months ago
+config: m68k-randconfig-s031-20220607 (https://download.01.org/0day-ci/archive/20220608/202206080316.wGYMA1Sk-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.3.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-26-gb3cf30ba-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=63aadb77669a6856b26d73da85b4f788731524a3
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 63aadb77669a6856b26d73da85b4f788731524a3
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=m68k SHELL=/bin/bash arch/m68k/coldfire/ fs/
 
-commit d63c00ea435a5352f486c259665a4ced60399421 upstream.
-
-Otherwise nonaligned fstrim calls will works inconveniently for iterative
-scanners, for example:
-
-// trim [0,16MB] for group-1, but mark full group as trimmed
-fstrim  -o $((1024*1024*128)) -l $((1024*1024*16)) ./m
-// handle [16MB,16MB] for group-1, do nothing because group already has the flag.
-fstrim  -o $((1024*1024*144)) -l $((1024*1024*16)) ./m
-
-[ Update function documentation for ext4_trim_all_free -- TYT ]
-
-Signed-off-by: Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
-Link: https://lore.kernel.org/r/1650214995-860245-1-git-send-email-dmtrmonakhov@yandex-team.ru
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/ext4/mballoc.c |   18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
-
---- a/fs/ext4/mballoc.c
-+++ b/fs/ext4/mballoc.c
-@@ -6398,6 +6398,7 @@ __releases(ext4_group_lock_ptr(sb, e4b->
-  * @start:		first group block to examine
-  * @max:		last group block to examine
-  * @minblocks:		minimum extent block count
-+ * @set_trimmed:	set the trimmed flag if at least one block is trimmed
-  *
-  * ext4_trim_all_free walks through group's block bitmap searching for free
-  * extents. When the free extent is found, mark it as used in group buddy
-@@ -6407,7 +6408,7 @@ __releases(ext4_group_lock_ptr(sb, e4b->
- static ext4_grpblk_t
- ext4_trim_all_free(struct super_block *sb, ext4_group_t group,
- 		   ext4_grpblk_t start, ext4_grpblk_t max,
--		   ext4_grpblk_t minblocks)
-+		   ext4_grpblk_t minblocks, bool set_trimmed)
- {
- 	struct ext4_buddy e4b;
- 	int ret;
-@@ -6426,7 +6427,7 @@ ext4_trim_all_free(struct super_block *s
- 	if (!EXT4_MB_GRP_WAS_TRIMMED(e4b.bd_info) ||
- 	    minblocks < EXT4_SB(sb)->s_last_trim_minblks) {
- 		ret = ext4_try_to_trim_range(sb, &e4b, start, max, minblocks);
--		if (ret >= 0)
-+		if (ret >= 0 && set_trimmed)
- 			EXT4_MB_GRP_SET_TRIMMED(e4b.bd_info);
- 	} else {
- 		ret = 0;
-@@ -6463,6 +6464,7 @@ int ext4_trim_fs(struct super_block *sb,
- 	ext4_fsblk_t first_data_blk =
- 			le32_to_cpu(EXT4_SB(sb)->s_es->s_first_data_block);
- 	ext4_fsblk_t max_blks = ext4_blocks_count(EXT4_SB(sb)->s_es);
-+	bool whole_group, eof = false;
- 	int ret = 0;
- 
- 	start = range->start >> sb->s_blocksize_bits;
-@@ -6481,8 +6483,10 @@ int ext4_trim_fs(struct super_block *sb,
- 		if (minlen > EXT4_CLUSTERS_PER_GROUP(sb))
- 			goto out;
- 	}
--	if (end >= max_blks)
-+	if (end >= max_blks - 1) {
- 		end = max_blks - 1;
-+		eof = true;
-+	}
- 	if (end <= first_data_blk)
- 		goto out;
- 	if (start < first_data_blk)
-@@ -6496,6 +6500,7 @@ int ext4_trim_fs(struct super_block *sb,
- 
- 	/* end now represents the last cluster to discard in this group */
- 	end = EXT4_CLUSTERS_PER_GROUP(sb) - 1;
-+	whole_group = true;
- 
- 	for (group = first_group; group <= last_group; group++) {
- 		grp = ext4_get_group_info(sb, group);
-@@ -6512,12 +6517,13 @@ int ext4_trim_fs(struct super_block *sb,
- 		 * change it for the last group, note that last_cluster is
- 		 * already computed earlier by ext4_get_group_no_and_offset()
- 		 */
--		if (group == last_group)
-+		if (group == last_group) {
- 			end = last_cluster;
--
-+			whole_group = eof ? true : end == EXT4_CLUSTERS_PER_GROUP(sb) - 1;
-+		}
- 		if (grp->bb_free >= minlen) {
- 			cnt = ext4_trim_all_free(sb, group, first_cluster,
--						end, minlen);
-+						 end, minlen, whole_group);
- 			if (cnt < 0) {
- 				ret = cnt;
- 				break;
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
 
+sparse warnings: (new ones prefixed by >>)
+>> arch/m68k/coldfire/m523x.c:31:19: sparse: sparse: symbol 'm523x_clk_lookup' was not declared. Should it be static?
+
+vim +/m523x_clk_lookup +31 arch/m68k/coldfire/m523x.c
+
+    30	
+  > 31	struct clk_lookup m523x_clk_lookup[] = {
+    32		CLKDEV_INIT(NULL, "pll.0", &clk_pll),
+    33		CLKDEV_INIT(NULL, "sys.0", &clk_sys),
+    34		CLKDEV_INIT("mcfpit.0", NULL, &clk_pll),
+    35		CLKDEV_INIT("mcfpit.1", NULL, &clk_pll),
+    36		CLKDEV_INIT("mcfpit.2", NULL, &clk_pll),
+    37		CLKDEV_INIT("mcfpit.3", NULL, &clk_pll),
+    38		CLKDEV_INIT("mcfuart.0", NULL, &clk_sys),
+    39		CLKDEV_INIT("mcfuart.1", NULL, &clk_sys),
+    40		CLKDEV_INIT("mcfuart.2", NULL, &clk_sys),
+    41		CLKDEV_INIT("mcfqspi.0", NULL, &clk_sys),
+    42		CLKDEV_INIT("fec.0", NULL, &clk_sys),
+    43		CLKDEV_INIT("imx1-i2c.0", NULL, &clk_sys),
+    44	};
+    45	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
