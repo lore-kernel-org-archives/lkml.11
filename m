@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD3CCCCA492
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:47:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 890E9CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391952AbiFHArE (ORCPT
+        id S1392011AbiFHArK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:47:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
+        Tue, 7 Jun 2022 20:47:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383766AbiFGVxn (ORCPT
+        with ESMTP id S1358975AbiFGW1X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:53:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70922462F0;
-        Tue,  7 Jun 2022 12:12:23 -0700 (PDT)
+        Tue, 7 Jun 2022 18:27:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CEC72722B8;
+        Tue,  7 Jun 2022 12:23:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 42EDF61846;
-        Tue,  7 Jun 2022 19:12:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48702C385A5;
-        Tue,  7 Jun 2022 19:12:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A873DB823CC;
+        Tue,  7 Jun 2022 19:23:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3F8BC385A5;
+        Tue,  7 Jun 2022 19:23:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629130;
-        bh=uXJgK6BeOyXr2XjfeVN6/zQWCm/h0aea7IH3uCLbEeU=;
+        s=korg; t=1654629805;
+        bh=/dvj1yLBraTRfb7jibzxDZgOea9b9knsNdoqbo1WkrI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w1IIZO5FjDs/PnqBRxYJHeSYgDLjt4ggU/mmQ0X1BgiMxjUfQZiSxUukeOreiP87l
-         H13qi8UHe7YbYBvM0SXe2Eji4+BUo62xiO5bggojzycLF5+7SIVpas88ENqhSVDyGJ
-         HM9tljUMAZIgUbpWKjjLYmcJzKwlH+Pp+ZYCO+LA=
+        b=qfQdgLrfyeBrs/hHPpT8K5SYuApW5xjR/zgzbnl+3cpxRcDotUGgrQaVXEGRnarlg
+         addFCpK7cr9wZd+dMIV8YnKUiCmLUdctYStaY7THD2OV+6PhFbbuzeW8Tbtb6ZRxIi
+         0vqHAl8ZCtPwQCEDWJ/lqt5DIOHI3gYCxQl3c/YY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Caleb Connolly <kc@postmarketos.org>,
+        stable@vger.kernel.org, Puyou Lu <puyou.lu@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
         Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 579/879] pinctrl/rockchip: support deferring other gpio params
-Date:   Tue,  7 Jun 2022 19:01:37 +0200
-Message-Id: <20220607165019.660801561@linuxfoundation.org>
+        Tejun Heo <tj@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.18 806/879] lib/string_helpers: fix not adding strarray to devices resource list
+Date:   Tue,  7 Jun 2022 19:05:24 +0200
+Message-Id: <20220607165026.253151949@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,215 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Caleb Connolly <kc@postmarketos.org>
+From: Puyou Lu <puyou.lu@gmail.com>
 
-[ Upstream commit 8ce5ef64546850294b021497046588a7abcebe96 ]
+commit cd290a9839cee2f6641558877e707bd373c8f6f1 upstream.
 
-Add support for deferring other params like PIN_CONFIG_INPUT_ENABLE.
-This will be used to add support for PIN_CONFIG_INPUT_ENABLE to the
-driver.
+Add allocated strarray to device's resource list. This is a must to
+automatically release strarray when the device disappears.
 
-Fixes: e7165b1dff06 ("pinctrl/rockchip: add a queue for deferred pin output settings on probe")
-Fixes: 59dd178e1d7c ("gpio/rockchip: fetch deferred output settings on probe")
-Signed-off-by: Caleb Connolly <kc@postmarketos.org>
-Link: https://lore.kernel.org/r/20220328005005.72492-2-kc@postmarketos.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Without this fix we have a memory leak in the few drivers which use
+devm_kasprintf_strarray().
+
+Link: https://lkml.kernel.org/r/20220506044409.30066-1-puyou.lu@gmail.com
+Link: https://lkml.kernel.org/r/20220506073623.2679-1-puyou.lu@gmail.com
+Fixes: acdb89b6c87a ("lib/string_helpers: Introduce managed variant of kasprintf_strarray()")
+Signed-off-by: Puyou Lu <puyou.lu@gmail.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Cc: Tejun Heo <tj@kernel.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpio/gpio-rockchip.c       | 24 ++++++++-----
- drivers/pinctrl/pinctrl-rockchip.c | 54 ++++++++++++++++--------------
- drivers/pinctrl/pinctrl-rockchip.h |  7 ++--
- 3 files changed, 50 insertions(+), 35 deletions(-)
+ lib/string_helpers.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpio/gpio-rockchip.c b/drivers/gpio/gpio-rockchip.c
-index 099e358d2491..bcf5214e3586 100644
---- a/drivers/gpio/gpio-rockchip.c
-+++ b/drivers/gpio/gpio-rockchip.c
-@@ -19,6 +19,7 @@
- #include <linux/of_address.h>
- #include <linux/of_device.h>
- #include <linux/of_irq.h>
-+#include <linux/pinctrl/pinconf-generic.h>
- #include <linux/regmap.h>
- 
- #include "../pinctrl/core.h"
-@@ -706,7 +707,7 @@ static int rockchip_gpio_probe(struct platform_device *pdev)
- 	struct device_node *pctlnp = of_get_parent(np);
- 	struct pinctrl_dev *pctldev = NULL;
- 	struct rockchip_pin_bank *bank = NULL;
--	struct rockchip_pin_output_deferred *cfg;
-+	struct rockchip_pin_deferred *cfg;
- 	static int gpio;
- 	int id, ret;
- 
-@@ -747,15 +748,22 @@ static int rockchip_gpio_probe(struct platform_device *pdev)
- 		return ret;
+--- a/lib/string_helpers.c
++++ b/lib/string_helpers.c
+@@ -757,6 +757,9 @@ char **devm_kasprintf_strarray(struct de
+ 		return ERR_PTR(-ENOMEM);
  	}
  
--	while (!list_empty(&bank->deferred_output)) {
--		cfg = list_first_entry(&bank->deferred_output,
--				       struct rockchip_pin_output_deferred, head);
-+	while (!list_empty(&bank->deferred_pins)) {
-+		cfg = list_first_entry(&bank->deferred_pins,
-+				       struct rockchip_pin_deferred, head);
- 		list_del(&cfg->head);
- 
--		ret = rockchip_gpio_direction_output(&bank->gpio_chip, cfg->pin, cfg->arg);
--		if (ret)
--			dev_warn(dev, "setting output pin %u to %u failed\n", cfg->pin, cfg->arg);
--
-+		switch (cfg->param) {
-+		case PIN_CONFIG_OUTPUT:
-+			ret = rockchip_gpio_direction_output(&bank->gpio_chip, cfg->pin, cfg->arg);
-+			if (ret)
-+				dev_warn(dev, "setting output pin %u to %u failed\n", cfg->pin,
-+					 cfg->arg);
-+			break;
-+		default:
-+			dev_warn(dev, "unknown deferred config param %d\n", cfg->param);
-+			break;
-+		}
- 		kfree(cfg);
- 	}
- 
-diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
-index 2cb79e649fcf..bb0783fb86d5 100644
---- a/drivers/pinctrl/pinctrl-rockchip.c
-+++ b/drivers/pinctrl/pinctrl-rockchip.c
-@@ -2110,19 +2110,20 @@ static bool rockchip_pinconf_pull_valid(struct rockchip_pin_ctrl *ctrl,
- 	return false;
++	ptr->n = n;
++	devres_add(dev, ptr);
++
+ 	return ptr->array;
  }
- 
--static int rockchip_pinconf_defer_output(struct rockchip_pin_bank *bank,
--					 unsigned int pin, u32 arg)
-+static int rockchip_pinconf_defer_pin(struct rockchip_pin_bank *bank,
-+					 unsigned int pin, u32 param, u32 arg)
- {
--	struct rockchip_pin_output_deferred *cfg;
-+	struct rockchip_pin_deferred *cfg;
- 
- 	cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
- 	if (!cfg)
- 		return -ENOMEM;
- 
- 	cfg->pin = pin;
-+	cfg->param = param;
- 	cfg->arg = arg;
- 
--	list_add_tail(&cfg->head, &bank->deferred_output);
-+	list_add_tail(&cfg->head, &bank->deferred_pins);
- 
- 	return 0;
- }
-@@ -2143,6 +2144,25 @@ static int rockchip_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
- 		param = pinconf_to_config_param(configs[i]);
- 		arg = pinconf_to_config_argument(configs[i]);
- 
-+		if (param == (PIN_CONFIG_OUTPUT | PIN_CONFIG_INPUT_ENABLE)) {
-+			/*
-+			 * Check for gpio driver not being probed yet.
-+			 * The lock makes sure that either gpio-probe has completed
-+			 * or the gpio driver hasn't probed yet.
-+			 */
-+			mutex_lock(&bank->deferred_lock);
-+			if (!gpio || !gpio->direction_output) {
-+				rc = rockchip_pinconf_defer_pin(bank, pin - bank->pin_base, param,
-+								arg);
-+				mutex_unlock(&bank->deferred_lock);
-+				if (rc)
-+					return rc;
-+
-+				break;
-+			}
-+			mutex_unlock(&bank->deferred_lock);
-+		}
-+
- 		switch (param) {
- 		case PIN_CONFIG_BIAS_DISABLE:
- 			rc =  rockchip_set_pull(bank, pin - bank->pin_base,
-@@ -2171,22 +2191,6 @@ static int rockchip_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
- 			if (rc != RK_FUNC_GPIO)
- 				return -EINVAL;
- 
--			/*
--			 * Check for gpio driver not being probed yet.
--			 * The lock makes sure that either gpio-probe has completed
--			 * or the gpio driver hasn't probed yet.
--			 */
--			mutex_lock(&bank->deferred_lock);
--			if (!gpio || !gpio->direction_output) {
--				rc = rockchip_pinconf_defer_output(bank, pin - bank->pin_base, arg);
--				mutex_unlock(&bank->deferred_lock);
--				if (rc)
--					return rc;
--
--				break;
--			}
--			mutex_unlock(&bank->deferred_lock);
--
- 			rc = gpio->direction_output(gpio, pin - bank->pin_base,
- 						    arg);
- 			if (rc)
-@@ -2500,7 +2504,7 @@ static int rockchip_pinctrl_register(struct platform_device *pdev,
- 			pdesc++;
- 		}
- 
--		INIT_LIST_HEAD(&pin_bank->deferred_output);
-+		INIT_LIST_HEAD(&pin_bank->deferred_pins);
- 		mutex_init(&pin_bank->deferred_lock);
- 	}
- 
-@@ -2763,7 +2767,7 @@ static int rockchip_pinctrl_remove(struct platform_device *pdev)
- {
- 	struct rockchip_pinctrl *info = platform_get_drvdata(pdev);
- 	struct rockchip_pin_bank *bank;
--	struct rockchip_pin_output_deferred *cfg;
-+	struct rockchip_pin_deferred *cfg;
- 	int i;
- 
- 	of_platform_depopulate(&pdev->dev);
-@@ -2772,9 +2776,9 @@ static int rockchip_pinctrl_remove(struct platform_device *pdev)
- 		bank = &info->ctrl->pin_banks[i];
- 
- 		mutex_lock(&bank->deferred_lock);
--		while (!list_empty(&bank->deferred_output)) {
--			cfg = list_first_entry(&bank->deferred_output,
--					       struct rockchip_pin_output_deferred, head);
-+		while (!list_empty(&bank->deferred_pins)) {
-+			cfg = list_first_entry(&bank->deferred_pins,
-+					       struct rockchip_pin_deferred, head);
- 			list_del(&cfg->head);
- 			kfree(cfg);
- 		}
-diff --git a/drivers/pinctrl/pinctrl-rockchip.h b/drivers/pinctrl/pinctrl-rockchip.h
-index 91f10279d084..98a01a616da6 100644
---- a/drivers/pinctrl/pinctrl-rockchip.h
-+++ b/drivers/pinctrl/pinctrl-rockchip.h
-@@ -171,7 +171,7 @@ struct rockchip_pin_bank {
- 	u32				toggle_edge_mode;
- 	u32				recalced_mask;
- 	u32				route_mask;
--	struct list_head		deferred_output;
-+	struct list_head		deferred_pins;
- 	struct mutex			deferred_lock;
- };
- 
-@@ -247,9 +247,12 @@ struct rockchip_pin_config {
- 	unsigned int		nconfigs;
- };
- 
--struct rockchip_pin_output_deferred {
-+enum pin_config_param;
-+
-+struct rockchip_pin_deferred {
- 	struct list_head head;
- 	unsigned int pin;
-+	enum pin_config_param param;
- 	u32 arg;
- };
- 
--- 
-2.35.1
-
+ EXPORT_SYMBOL_GPL(devm_kasprintf_strarray);
 
 
