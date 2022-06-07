@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F5F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16240C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379424AbiFGWmq (ORCPT
+        id S1380510AbiFGWm6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:42:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48330 "EHLO
+        Tue, 7 Jun 2022 18:42:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380772AbiFGVbQ (ORCPT
+        with ESMTP id S1380857AbiFGVbZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:31:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCACAEE04;
-        Tue,  7 Jun 2022 12:03:27 -0700 (PDT)
+        Tue, 7 Jun 2022 17:31:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C1B322BAE9;
+        Tue,  7 Jun 2022 12:03:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C881F61807;
-        Tue,  7 Jun 2022 19:03:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFBCBC385A5;
-        Tue,  7 Jun 2022 19:03:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 265756159D;
+        Tue,  7 Jun 2022 19:03:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AA9DC385A5;
+        Tue,  7 Jun 2022 19:03:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628606;
-        bh=xJEmcH7BdIMe2MshrxICDjoyR5Wr/24nzN4gOgNNMsA=;
+        s=korg; t=1654628611;
+        bh=ccEUHQQy2f2V9AzPwFK1n2OW3NKEul9X0Jjqw9iaasc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pJ0YfWJ14BCUfUrmag1tEJcSM2dutWdPlXR2TzxnpV+T3vLAXwSr1Kh743QpvIBuk
-         9s62XYy09n+j1wcrYBMYym1g8UZP6y6c3VWf0L56EsjQwkKj3deN+8QoJBe2bNLLnI
-         64nHzJcbOuyJ7H9MAiiNPRU50SfF1ghsBSksSOeU=
+        b=rBe/bxuLKvu1TFLkSQzFUoN9ub1Rb4iSzOfoi1fRuGIe724lBcoJFumTw1Xb7PEOU
+         4QKoo84HSNCW346V3/Xl7rtJudCGVnzfqAmruzFWuGyFQ3NX6GGFsDMUhnIeaWoRua
+         wVO73FladzqKLdPhm8p+smofQyDh8CtgJy7m3Qzs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 390/879] x86/mm: Cleanup the control_va_addr_alignment() __setup handler
-Date:   Tue,  7 Jun 2022 18:58:28 +0200
-Message-Id: <20220607165014.185340434@linuxfoundation.org>
+        stable@vger.kernel.org, Zev Weiss <zev@bewilderbeest.net>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 392/879] regulator: core: Fix enable_count imbalance with EXCLUSIVE_GET
+Date:   Tue,  7 Jun 2022 18:58:30 +0200
+Message-Id: <20220607165014.243054831@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,57 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Zev Weiss <zev@bewilderbeest.net>
 
-[ Upstream commit 1ef64b1e89e6d4018da46e08ffc32779a31160c7 ]
+[ Upstream commit c3e3ca05dae37f8f74bb80358efd540911cbc2c8 ]
 
-Clean up control_va_addr_alignment():
+Since the introduction of regulator->enable_count, a driver that did
+an exclusive get on an already-enabled regulator would end up with
+enable_count initialized to 0 but rdev->use_count initialized to 1.
+With that starting point the regulator is effectively stuck enabled,
+because if the driver attempted to disable it it would fail the
+enable_count underflow check in _regulator_handle_consumer_disable().
 
-a. Make '=' required instead of optional (as documented).
-b. Print a warning if an invalid option value is used.
-c. Return 1 from the __setup handler when an invalid option value is
-   used. This prevents the kernel from polluting init's (limited)
-   environment space with the entire string.
+The EXCLUSIVE_GET path in _regulator_get() now initializes
+enable_count along with rdev->use_count so that the regulator can be
+disabled without underflowing the former.
 
-Fixes: dfb09f9b7ab0 ("x86, amd: Avoid cache aliasing penalties on AMD family 15h")
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Link: https://lore.kernel.org/r/20220315001045.7680-1-rdunlap@infradead.org
+Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+Fixes: 5451781dadf85 ("regulator: core: Only count load for enabled consumers")
+Link: https://lore.kernel.org/r/20220505043152.12933-1-zev@bewilderbeest.net
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/sys_x86_64.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/regulator/core.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kernel/sys_x86_64.c b/arch/x86/kernel/sys_x86_64.c
-index 660b78827638..8cc653ffdccd 100644
---- a/arch/x86/kernel/sys_x86_64.c
-+++ b/arch/x86/kernel/sys_x86_64.c
-@@ -68,9 +68,6 @@ static int __init control_va_addr_alignment(char *str)
- 	if (*str == 0)
- 		return 1;
+diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
+index d2553970a67b..c4d844ffad7a 100644
+--- a/drivers/regulator/core.c
++++ b/drivers/regulator/core.c
+@@ -2133,10 +2133,13 @@ struct regulator *_regulator_get(struct device *dev, const char *id,
+ 		rdev->exclusive = 1;
  
--	if (*str == '=')
--		str++;
--
- 	if (!strcmp(str, "32"))
- 		va_align.flags = ALIGN_VA_32;
- 	else if (!strcmp(str, "64"))
-@@ -80,11 +77,11 @@ static int __init control_va_addr_alignment(char *str)
- 	else if (!strcmp(str, "on"))
- 		va_align.flags = ALIGN_VA_32 | ALIGN_VA_64;
- 	else
--		return 0;
-+		pr_warn("invalid option value: 'align_va_addr=%s'\n", str);
+ 		ret = _regulator_is_enabled(rdev);
+-		if (ret > 0)
++		if (ret > 0) {
+ 			rdev->use_count = 1;
+-		else
++			regulator->enable_count = 1;
++		} else {
+ 			rdev->use_count = 0;
++			regulator->enable_count = 0;
++		}
+ 	}
  
- 	return 1;
- }
--__setup("align_va_addr", control_va_addr_alignment);
-+__setup("align_va_addr=", control_va_addr_alignment);
- 
- SYSCALL_DEFINE6(mmap, unsigned long, addr, unsigned long, len,
- 		unsigned long, prot, unsigned long, flags,
+ 	link = device_link_add(dev, &rdev->dev, DL_FLAG_STATELESS);
 -- 
 2.35.1
 
