@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE7EACCA481
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA63CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355877AbiFGTRn (ORCPT
+        id S1355964AbiFGTRs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:17:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38766 "EHLO
+        Tue, 7 Jun 2022 15:17:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351519AbiFGS3c (ORCPT
+        with ESMTP id S1351351AbiFGS3y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:29:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CB2179956;
-        Tue,  7 Jun 2022 10:55:22 -0700 (PDT)
+        Tue, 7 Jun 2022 14:29:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15E1717A8AC;
+        Tue,  7 Jun 2022 10:55:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B410BCE2428;
-        Tue,  7 Jun 2022 17:55:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5107DC385A5;
-        Tue,  7 Jun 2022 17:55:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7CF38B80B66;
+        Tue,  7 Jun 2022 17:55:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8454C3411F;
+        Tue,  7 Jun 2022 17:55:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624520;
-        bh=j3uNHWslQx2TMq4plPlTP9lh0uFCqJRr0z3ou4Fl1Z8=;
+        s=k20201202; t=1654624528;
+        bh=NdoOI/mdof+A4Uy4fR9Q85uef2kWgrggo63N4r2XOrk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=el26cOOw3fGyGlTUHplxBoQ5CJdP4VGSmMnY8Q564MyiR28bX+peQjqSUsaOqKcrc
-         hrnDgikzTS70VXmnT1FQ/t6hipz70veTyRMWL8ELKK/Xx2TVdmzflF7AgO6Tl33DK2
-         sgEcSElN1r3PQAwlqQOSxL6UENslWZEm0gMQxFreKLsv7KWOE8Ea9JlnvQhAhUdgNl
-         ce8NHViqYXF1xzz+UmL8q1AOs2D2aacsXUsBwGmxf9HpX/rY4HwHkJIeR3g/0//TMq
-         vt+wwusopvPv/vfVvw6ktpLiDZ1xpvsgU1WA53G8T5aVp5OFOASDqq/EZe1XGEOs5/
-         sYsC3o+od7KXw==
+        b=r39StodENTXD35iy2E6BGty78H2Rhud9HR2nG9vm5aaBvf1+unVowt4OIFgEpB/1c
+         mvsd11uLKh0ZmpxuwuAs0HwqOicsnnutN2CfsNj9aGrXVcpt4AMmBQpDdDSl9KZq2h
+         no8gwujAhiuaLFN6uF16NkdI8fhNXhwqy/u2jQpW4lTp6tmV7ugD07/a20DFGI5XjE
+         PklRz51K0XzVT3mwM2OLR2Nzu7i/yhSLQE8lgsOdAIzOpEpaKY6BEsOJZwb52rJZg7
+         5qSsUZozpqc1dMW2MNie1Q27Sz1xcMWDXbWe3XWaKHZwsJhv5EvS8pt+c+lH3/xHWW
+         xov8ERjYIU8dA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yu Kuai <yukuai3@huawei.com>, Hou Tao <houtao1@huawei.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        linux-block@vger.kernel.org, nbd@other.debian.org
-Subject: [PATCH AUTOSEL 5.17 49/60] nbd: call genl_unregister_family() first in nbd_cleanup()
-Date:   Tue,  7 Jun 2022 13:52:46 -0400
-Message-Id: <20220607175259.478835-49-sashal@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Cyril Brulebois <kibi@debian.org>,
+        Sasha Levin <sashal@kernel.org>, nsaenz@kernel.org,
+        jim2101024@gmail.com, f.fainelli@gmail.com, lpieralisi@kernel.org,
+        p.zabel@pengutronix.de, linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 53/60] Revert "PCI: brcmstb: Do not turn off WOL regulators on suspend"
+Date:   Tue,  7 Jun 2022 13:52:50 -0400
+Message-Id: <20220607175259.478835-53-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
 References: <20220607175259.478835-1-sashal@kernel.org>
@@ -53,71 +55,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-[ Upstream commit 06c4da89c24e7023ea448cadf8e9daf06a0aae6e ]
+[ Upstream commit 7894025c783ca36394d3afe49c8cfb4c830b82fe ]
 
-Otherwise there may be race between module removal and the handling of
-netlink command, which can lead to the oops as shown below:
+This reverts commit 11ed8b8624b8085f706864b4addcd304b1e4fc38.
 
-  BUG: kernel NULL pointer dereference, address: 0000000000000098
-  Oops: 0002 [#1] SMP PTI
-  CPU: 1 PID: 31299 Comm: nbd-client Tainted: G            E     5.14.0-rc4
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
-  RIP: 0010:down_write+0x1a/0x50
-  Call Trace:
-   start_creating+0x89/0x130
-   debugfs_create_dir+0x1b/0x130
-   nbd_start_device+0x13d/0x390 [nbd]
-   nbd_genl_connect+0x42f/0x748 [nbd]
-   genl_family_rcv_msg_doit.isra.0+0xec/0x150
-   genl_rcv_msg+0xe5/0x1e0
-   netlink_rcv_skb+0x55/0x100
-   genl_rcv+0x29/0x40
-   netlink_unicast+0x1a8/0x250
-   netlink_sendmsg+0x21b/0x430
-   ____sys_sendmsg+0x2a4/0x2d0
-   ___sys_sendmsg+0x81/0xc0
-   __sys_sendmsg+0x62/0xb0
-   __x64_sys_sendmsg+0x1f/0x30
-   do_syscall_64+0x3b/0xc0
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
-  Modules linked in: nbd(E-)
+This is part of a revert of the following commits:
 
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Link: https://lore.kernel.org/r/20220521073749.3146892-2-yukuai3@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+  11ed8b8624b8 ("PCI: brcmstb: Do not turn off WOL regulators on suspend")
+  93e41f3fca3d ("PCI: brcmstb: Add control of subdevice voltage regulators")
+  67211aadcb4b ("PCI: brcmstb: Add mechanism to turn on subdev regulators")
+  830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup() into two funcs")
+
+Cyril reported that 830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup()
+into two funcs"), which appeared in v5.17-rc1, broke booting on the
+Raspberry Pi Compute Module 4.  Apparently 830aa6f29f07 panics with an
+Asynchronous SError Interrupt, and after further commits here is a black
+screen on HDMI and no output on the serial console.
+
+This does not seem to affect the Raspberry Pi 4 B.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215925
+Link: https://lore.kernel.org/r/20220511201856.808690-2-helgaas@kernel.org
+Reported-by: Cyril Brulebois <kibi@debian.org>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/nbd.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/pci/controller/pcie-brcmstb.c | 53 +++++----------------------
+ 1 file changed, 9 insertions(+), 44 deletions(-)
 
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index 5a1f98494ddd..9dc27f9e9ddc 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -2529,6 +2529,12 @@ static void __exit nbd_cleanup(void)
- 	struct nbd_device *nbd;
- 	LIST_HEAD(del_list);
+diff --git a/drivers/pci/controller/pcie-brcmstb.c b/drivers/pci/controller/pcie-brcmstb.c
+index 375c0c40bbf8..3edd63735948 100644
+--- a/drivers/pci/controller/pcie-brcmstb.c
++++ b/drivers/pci/controller/pcie-brcmstb.c
+@@ -333,7 +333,6 @@ struct brcm_pcie {
+ 	void			(*bridge_sw_init_set)(struct brcm_pcie *pcie, u32 val);
+ 	bool			refusal_mode;
+ 	struct subdev_regulators *sr;
+-	bool			ep_wakeup_capable;
+ };
  
-+	/*
-+	 * Unregister netlink interface prior to waiting
-+	 * for the completion of netlink commands.
-+	 */
-+	genl_unregister_family(&nbd_genl_family);
-+
- 	nbd_dbg_close();
- 
- 	mutex_lock(&nbd_index_mutex);
-@@ -2547,7 +2553,6 @@ static void __exit nbd_cleanup(void)
- 	destroy_workqueue(nbd_del_wq);
- 
- 	idr_destroy(&nbd_index_idr);
--	genl_unregister_family(&nbd_genl_family);
- 	unregister_blkdev(NBD_MAJOR, "nbd");
+ static inline bool is_bmips(const struct brcm_pcie *pcie)
+@@ -1351,21 +1350,9 @@ static void brcm_pcie_turn_off(struct brcm_pcie *pcie)
+ 	pcie->bridge_sw_init_set(pcie, 1);
  }
+ 
+-static int pci_dev_may_wakeup(struct pci_dev *dev, void *data)
+-{
+-	bool *ret = data;
+-
+-	if (device_may_wakeup(&dev->dev)) {
+-		*ret = true;
+-		dev_info(&dev->dev, "disable cancelled for wake-up device\n");
+-	}
+-	return (int) *ret;
+-}
+-
+ static int brcm_pcie_suspend(struct device *dev)
+ {
+ 	struct brcm_pcie *pcie = dev_get_drvdata(dev);
+-	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(pcie);
+ 	int ret;
+ 
+ 	brcm_pcie_turn_off(pcie);
+@@ -1384,22 +1371,11 @@ static int brcm_pcie_suspend(struct device *dev)
+ 	}
+ 
+ 	if (pcie->sr) {
+-		/*
+-		 * Now turn off the regulators, but if at least one
+-		 * downstream device is enabled as a wake-up source, do not
+-		 * turn off regulators.
+-		 */
+-		pcie->ep_wakeup_capable = false;
+-		pci_walk_bus(bridge->bus, pci_dev_may_wakeup,
+-			     &pcie->ep_wakeup_capable);
+-		if (!pcie->ep_wakeup_capable) {
+-			ret = regulator_bulk_disable(pcie->sr->num_supplies,
+-						     pcie->sr->supplies);
+-			if (ret) {
+-				dev_err(dev, "Could not turn off regulators\n");
+-				reset_control_reset(pcie->rescal);
+-				return ret;
+-			}
++		ret = regulator_bulk_disable(pcie->sr->num_supplies, pcie->sr->supplies);
++		if (ret) {
++			dev_err(dev, "Could not turn off regulators\n");
++			reset_control_reset(pcie->rescal);
++			return ret;
+ 		}
+ 	}
+ 	clk_disable_unprepare(pcie->clk);
+@@ -1420,21 +1396,10 @@ static int brcm_pcie_resume(struct device *dev)
+ 		return ret;
+ 
+ 	if (pcie->sr) {
+-		if (pcie->ep_wakeup_capable) {
+-			/*
+-			 * We are resuming from a suspend.  In the suspend we
+-			 * did not disable the power supplies, so there is
+-			 * no need to enable them (and falsely increase their
+-			 * usage count).
+-			 */
+-			pcie->ep_wakeup_capable = false;
+-		} else {
+-			ret = regulator_bulk_enable(pcie->sr->num_supplies,
+-						    pcie->sr->supplies);
+-			if (ret) {
+-				dev_err(dev, "Could not turn on regulators\n");
+-				goto err_disable_clk;
+-			}
++		ret = regulator_bulk_enable(pcie->sr->num_supplies, pcie->sr->supplies);
++		if (ret) {
++			dev_err(dev, "Could not turn on regulators\n");
++			goto err_disable_clk;
+ 		}
+ 	}
  
 -- 
 2.35.1
