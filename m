@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1B5ACCA494
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9286CCA490
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348207AbiFGRgI (ORCPT
+        id S1347772AbiFGRfs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:36:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45092 "EHLO
+        Tue, 7 Jun 2022 13:35:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346817AbiFGR3R (ORCPT
+        with ESMTP id S1346413AbiFGR2W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:29:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5068811766F;
-        Tue,  7 Jun 2022 10:24:39 -0700 (PDT)
+        Tue, 7 Jun 2022 13:28:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2B11157F9;
+        Tue,  7 Jun 2022 10:24:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D20B660DE0;
-        Tue,  7 Jun 2022 17:24:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0EF7C36AFE;
-        Tue,  7 Jun 2022 17:24:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8191060C7C;
+        Tue,  7 Jun 2022 17:24:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8680AC34119;
+        Tue,  7 Jun 2022 17:24:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622678;
-        bh=QmMY1WF8DIykV1Y9DmMwnVkZaeSg56Oo/WUN8GgpU4E=;
+        s=korg; t=1654622666;
+        bh=iYB6LJ0axj8BzdWtlbpeeA22i2OHpc068qkkxc4c3f8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BRwQOEL/RWa237D22XRGsINkyhMg4vAfxQMctA3nBvV/XmZoQgsguevpsR+HpIE5U
-         8PU0ETcbvNYW6bjrXdRJ3gCSMFVtBJdgJEDmeaHcm5UYE6EZoBbVJwMlaPw0nfQA+M
-         fTm+hBq8eorGdz04THpsDeMRrnjAgN73KzW/FbHk=
+        b=PLLL/WVZtDQxRYZ04ScKIMmJKCXmRztgVeYeOrvaNeRcjKxplUfoHsrIwwHDNL/vQ
+         UOG5DI8OQO7XtIj0LGt14pn5fV0y4fXziJa3+OMhyvtFLCEDlM9xqyfDYwJYx9ccST
+         9xFgW5CZDHMd3lFXwd2XvfkseUaZ7nr1LHxikw5c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kiszka <jan.kiszka@siemens.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        Haren Myneni <haren@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 144/452] efi: Add missing prototype for efi_capsule_setup_info
-Date:   Tue,  7 Jun 2022 19:00:01 +0200
-Message-Id: <20220607164912.851846901@linuxfoundation.org>
+Subject: [PATCH 5.10 114/452] powerpc/powernv/vas: Assign real address to rx_fifo in vas_rx_win_attr
+Date:   Tue,  7 Jun 2022 18:59:31 +0200
+Message-Id: <20220607164911.952863316@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,35 +50,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Haren Myneni <haren@linux.ibm.com>
 
-[ Upstream commit aa480379d8bdb33920d68acfd90f823c8af32578 ]
+[ Upstream commit c127d130f6d59fa81701f6b04023cf7cd1972fb3 ]
 
-Fixes "no previous declaration for 'efi_capsule_setup_info'" warnings
-under W=1.
+In init_winctx_regs(), __pa() is called on winctx->rx_fifo and this
+function is called to initialize registers for receive and fault
+windows. But the real address is passed in winctx->rx_fifo for
+receive windows and the virtual address for fault windows which
+causes errors with DEBUG_VIRTUAL enabled. Fixes this issue by
+assigning only real address to rx_fifo in vas_rx_win_attr struct
+for both receive and fault windows.
 
-Fixes: 2959c95d510c ("efi/capsule: Add support for Quark security header")
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-Link: https://lore.kernel.org/r/c28d3f86-dd72-27d1-e2c2-40971b8da6bd@siemens.com
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Reported-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Haren Myneni <haren@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/338e958c7ab8f3b266fa794a1f80f99b9671829e.camel@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/efi.h | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/powerpc/include/asm/vas.h              | 2 +-
+ arch/powerpc/platforms/powernv/vas-fault.c  | 2 +-
+ arch/powerpc/platforms/powernv/vas-window.c | 4 ++--
+ arch/powerpc/platforms/powernv/vas.h        | 2 +-
+ drivers/crypto/nx/nx-common-powernv.c       | 2 +-
+ 5 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/efi.h b/include/linux/efi.h
-index e17cd4c44f93..3bac68fb7ff1 100644
---- a/include/linux/efi.h
-+++ b/include/linux/efi.h
-@@ -167,6 +167,8 @@ struct capsule_info {
- 	size_t			page_bytes_remain;
- };
+diff --git a/arch/powerpc/include/asm/vas.h b/arch/powerpc/include/asm/vas.h
+index e33f80b0ea81..47062b457049 100644
+--- a/arch/powerpc/include/asm/vas.h
++++ b/arch/powerpc/include/asm/vas.h
+@@ -52,7 +52,7 @@ enum vas_cop_type {
+  * Receive window attributes specified by the (in-kernel) owner of window.
+  */
+ struct vas_rx_win_attr {
+-	void *rx_fifo;
++	u64 rx_fifo;
+ 	int rx_fifo_size;
+ 	int wcreds_max;
  
-+int efi_capsule_setup_info(struct capsule_info *cap_info, void *kbuff,
-+                           size_t hdr_bytes);
- int __efi_capsule_setup_info(struct capsule_info *cap_info);
+diff --git a/arch/powerpc/platforms/powernv/vas-fault.c b/arch/powerpc/platforms/powernv/vas-fault.c
+index 3d21fce254b7..dd9c23c09781 100644
+--- a/arch/powerpc/platforms/powernv/vas-fault.c
++++ b/arch/powerpc/platforms/powernv/vas-fault.c
+@@ -352,7 +352,7 @@ int vas_setup_fault_window(struct vas_instance *vinst)
+ 	vas_init_rx_win_attr(&attr, VAS_COP_TYPE_FAULT);
  
- typedef int (*efi_freemem_callback_t) (u64 start, u64 end, void *arg);
+ 	attr.rx_fifo_size = vinst->fault_fifo_size;
+-	attr.rx_fifo = vinst->fault_fifo;
++	attr.rx_fifo = __pa(vinst->fault_fifo);
+ 
+ 	/*
+ 	 * Max creds is based on number of CRBs can fit in the FIFO.
+diff --git a/arch/powerpc/platforms/powernv/vas-window.c b/arch/powerpc/platforms/powernv/vas-window.c
+index 7ba0840fc3b5..3a86cdd5ae6c 100644
+--- a/arch/powerpc/platforms/powernv/vas-window.c
++++ b/arch/powerpc/platforms/powernv/vas-window.c
+@@ -403,7 +403,7 @@ static void init_winctx_regs(struct vas_window *window,
+ 	 *
+ 	 * See also: Design note in function header.
+ 	 */
+-	val = __pa(winctx->rx_fifo);
++	val = winctx->rx_fifo;
+ 	val = SET_FIELD(VAS_PAGE_MIGRATION_SELECT, val, 0);
+ 	write_hvwc_reg(window, VREG(LFIFO_BAR), val);
+ 
+@@ -737,7 +737,7 @@ static void init_winctx_for_rxwin(struct vas_window *rxwin,
+ 		 */
+ 		winctx->fifo_disable = true;
+ 		winctx->intr_disable = true;
+-		winctx->rx_fifo = NULL;
++		winctx->rx_fifo = 0;
+ 	}
+ 
+ 	winctx->lnotify_lpid = rxattr->lnotify_lpid;
+diff --git a/arch/powerpc/platforms/powernv/vas.h b/arch/powerpc/platforms/powernv/vas.h
+index 70f793e8f6cc..1f6e73809205 100644
+--- a/arch/powerpc/platforms/powernv/vas.h
++++ b/arch/powerpc/platforms/powernv/vas.h
+@@ -383,7 +383,7 @@ struct vas_window {
+  * is a container for the register fields in the window context.
+  */
+ struct vas_winctx {
+-	void *rx_fifo;
++	u64 rx_fifo;
+ 	int rx_fifo_size;
+ 	int wcreds_max;
+ 	int rsvd_txbuf_count;
+diff --git a/drivers/crypto/nx/nx-common-powernv.c b/drivers/crypto/nx/nx-common-powernv.c
+index 13c65deda8e9..8a4f10bb3fcd 100644
+--- a/drivers/crypto/nx/nx-common-powernv.c
++++ b/drivers/crypto/nx/nx-common-powernv.c
+@@ -827,7 +827,7 @@ static int __init vas_cfg_coproc_info(struct device_node *dn, int chip_id,
+ 		goto err_out;
+ 
+ 	vas_init_rx_win_attr(&rxattr, coproc->ct);
+-	rxattr.rx_fifo = (void *)rx_fifo;
++	rxattr.rx_fifo = rx_fifo;
+ 	rxattr.rx_fifo_size = fifo_size;
+ 	rxattr.lnotify_lpid = lpid;
+ 	rxattr.lnotify_pid = pid;
 -- 
 2.35.1
 
