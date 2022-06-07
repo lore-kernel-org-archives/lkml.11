@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94F2CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:23:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C8EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:23:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346066AbiFGRXs (ORCPT
+        id S1344364AbiFGRXx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:23:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41998 "EHLO
+        Tue, 7 Jun 2022 13:23:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345883AbiFGRTt (ORCPT
+        with ESMTP id S1345747AbiFGRTt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:19:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B033F106349;
-        Tue,  7 Jun 2022 10:19:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5AD0106375;
+        Tue,  7 Jun 2022 10:19:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4106A618D3;
-        Tue,  7 Jun 2022 17:19:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A5B2C385A5;
-        Tue,  7 Jun 2022 17:19:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17CBC617C0;
+        Tue,  7 Jun 2022 17:19:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 228DAC385A5;
+        Tue,  7 Jun 2022 17:19:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622374;
-        bh=0MZAfUeexvwHR11fTrdUlvUKXzZ4lP1jZX1ZpbIxp1g=;
+        s=korg; t=1654622377;
+        bh=0OlY5D9ye+XxIn+0T1FIRSEBJPKi2aO9hFT5ddJDyz8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bw12LOd5f6YhcGrkTTxGqw7jkvpB8P024XzL0ebPcjXBTK5k/Za7WJt2+H/XTt0oc
-         acRPXcBz9WQNzckF/2bXgcjseyMDsJ/eSdf/PhWXkuPO9I5SXV3UWNkAG8+p9AXo8h
-         LV15aemyVXmUT62Uc0pnH8QIrM0Hc1NQO1PWPSD0=
+        b=ytsq7qqyXGj+Az7xyd97OmZ5/1SCfyL9u1scYLwNW0u8qc0coNktTM5436aeKjmXU
+         r9bJ96epXpX3ojuuEwgrVxZpES6vIhIJMAuUX/ZU1zHLehlF4hKjlBID8CVTbsJ00i
+         Rn+fdRpBsO2TJdyOjImLKXYRRDpHNWdfN/Scbv1U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
+        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 037/452] rcu: Make TASKS_RUDE_RCU select IRQ_WORK
-Date:   Tue,  7 Jun 2022 18:58:14 +0200
-Message-Id: <20220607164909.653420103@linuxfoundation.org>
+Subject: [PATCH 5.10 038/452] sfc: ef10: Fix assigning negative value to unsigned variable
+Date:   Tue,  7 Jun 2022 18:58:15 +0200
+Message-Id: <20220607164909.683080473@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,33 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul E. McKenney <paulmck@kernel.org>
+From: Haowen Bai <baihaowen@meizu.com>
 
-[ Upstream commit 46e861be589881e0905b9ade3d8439883858721c ]
+[ Upstream commit b8ff3395fbdf3b79a99d0ef410fc34c51044121e ]
 
-The TASKS_RUDE_RCU does not select IRQ_WORK, which can result in build
-failures for kernels that do not otherwise select IRQ_WORK.  This commit
-therefore causes the TASKS_RUDE_RCU Kconfig option to select IRQ_WORK.
+fix warning reported by smatch:
+251 drivers/net/ethernet/sfc/ef10.c:2259 efx_ef10_tx_tso_desc()
+warn: assigning (-208) to unsigned variable 'ip_tot_len'
 
-Reported-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Acked-by: Edward Cree <ecree.xilinx@gmail.com>
+Link: https://lore.kernel.org/r/1649640757-30041-1-git-send-email-baihaowen@meizu.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/rcu/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/sfc/ef10.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
-index b71e21f73c40..cd6e11403f1b 100644
---- a/kernel/rcu/Kconfig
-+++ b/kernel/rcu/Kconfig
-@@ -86,6 +86,7 @@ config TASKS_RCU
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index 6f950979d25e..fa1a872c4bc8 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -2240,7 +2240,7 @@ int efx_ef10_tx_tso_desc(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
+ 	 * guaranteed to satisfy the second as we only attempt TSO if
+ 	 * inner_network_header <= 208.
+ 	 */
+-	ip_tot_len = -EFX_TSO2_MAX_HDRLEN;
++	ip_tot_len = 0x10000 - EFX_TSO2_MAX_HDRLEN;
+ 	EFX_WARN_ON_ONCE_PARANOID(mss + EFX_TSO2_MAX_HDRLEN +
+ 				  (tcp->doff << 2u) > ip_tot_len);
  
- config TASKS_RUDE_RCU
- 	def_bool 0
-+	select IRQ_WORK
- 	help
- 	  This option enables a task-based RCU implementation that uses
- 	  only context switch (including preemption) and user-mode
 -- 
 2.35.1
 
