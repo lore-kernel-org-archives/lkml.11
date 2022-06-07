@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D047CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12097CCA47C
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388651AbiFHAcj (ORCPT
+        id S1388588AbiFHAca (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57296 "EHLO
+        Tue, 7 Jun 2022 20:32:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382451AbiFGV6s (ORCPT
+        with ESMTP id S1385597AbiFGWbj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:58:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A81DA1C93A;
-        Tue,  7 Jun 2022 12:14:08 -0700 (PDT)
+        Tue, 7 Jun 2022 18:31:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A4A279E64;
+        Tue,  7 Jun 2022 12:24:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C3E9B8237B;
-        Tue,  7 Jun 2022 19:13:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 765F7C385A2;
-        Tue,  7 Jun 2022 19:13:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B60360B01;
+        Tue,  7 Jun 2022 19:24:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D8E7C385A5;
+        Tue,  7 Jun 2022 19:24:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629227;
-        bh=g9VhsKXrQN/jX3DPUybyMswcmuRgsxa1Z38Jhy2E7qA=;
+        s=korg; t=1654629890;
+        bh=AHNEXZwikHidMQUXxHOeTmmZF/1ZRuNnStOSrm8aeiQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hDJAhm3g6AdUEkC3Ccpv0yVgC0yNnzPPUPvIuf+C+uhIJNcOwrQz28qz6MhbH+yPE
-         EfSs7LKksFGkzAWu7Zgd4UG6UkjZ2KjgC6lLNNiUSxnafVTlN2C1x8wlAkKVDVv+F2
-         DNoN3uPRAmk4nswbf6v4hE3tGttwxd34MeMlKZjY=
+        b=G9cNoLdKDqrRuhKvd8QoAk1Nt/tjhiR+P/4SM6fge2S9HsPO69vX5kAAOqULHBb1K
+         zXDwuvUX0mSei5eMvJpDQxhsPFNy7fgdmE/Rr9QuqO4r+oHWWPvt/fuOuFdzHkysWx
+         ju10leeebG+6CswMRnEFNtPWsEQUrK+lLK6FN7Sw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        David Howells <dhowells@redhat.com>,
-        Manfred Spraul <manfred@colorfullife.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 615/879] ipc/mqueue: use get_tree_nodev() in mqueue_get_tree()
-Date:   Tue,  7 Jun 2022 19:02:13 +0200
-Message-Id: <20220607165020.700622910@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>
+Subject: [PATCH 5.18 813/879] mt76: fix use-after-free by removing a non-RCU wcid pointer
+Date:   Tue,  7 Jun 2022 19:05:31 +0200
+Message-Id: <20220607165026.456558699@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -54,121 +49,250 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Waiman Long <longman@redhat.com>
+From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit d60c4d01a98bc1942dba6e3adc02031f5519f94b ]
+commit 51fb1278aa57ae0fc54adaa786e1965362bed4fb upstream.
 
-When running the stress-ng clone benchmark with multiple testing threads,
-it was found that there were significant spinlock contention in sget_fc().
-The contended spinlock was the sb_lock.  It is under heavy contention
-because the following code in the critcal section of sget_fc():
+Fixes an issue caught by KASAN about use-after-free in mt76_txq_schedule
+by protecting mtxq->wcid with rcu_lock between mt76_txq_schedule and
+sta_info_[alloc, free].
 
-  hlist_for_each_entry(old, &fc->fs_type->fs_supers, s_instances) {
-      if (test(old, fc))
-          goto share_extant_sb;
-  }
+[18853.876689] ==================================================================
+[18853.876751] BUG: KASAN: use-after-free in mt76_txq_schedule+0x204/0xaf8 [mt76]
+[18853.876773] Read of size 8 at addr ffffffaf989a2138 by task mt76-tx phy0/883
+[18853.876786]
+[18853.876810] CPU: 5 PID: 883 Comm: mt76-tx phy0 Not tainted 5.10.100-fix-510-56778d365941-kasan #5 0b01fbbcf41a530f52043508fec2e31a4215
 
-After testing with added instrumentation code, it was found that the
-benchmark could generate thousands of ipc namespaces with the
-corresponding number of entries in the mqueue's fs_supers list where the
-namespaces are the key for the search.  This leads to excessive time in
-scanning the list for a match.
+[18853.876840] Call trace:
+[18853.876861]  dump_backtrace+0x0/0x3ec
+[18853.876878]  show_stack+0x20/0x2c
+[18853.876899]  dump_stack+0x11c/0x1ac
+[18853.876918]  print_address_description+0x74/0x514
+[18853.876934]  kasan_report+0x134/0x174
+[18853.876948]  __asan_report_load8_noabort+0x44/0x50
+[18853.876976]  mt76_txq_schedule+0x204/0xaf8 [mt76 074e03e4640e97fe7405ee1fab547b81c4fa45d2]
+[18853.877002]  mt76_txq_schedule_all+0x2c/0x48 [mt76 074e03e4640e97fe7405ee1fab547b81c4fa45d2]
+[18853.877030]  mt7921_tx_worker+0xa0/0x1cc [mt7921_common f0875ebac9d7b4754e1010549e7db50fbd90a047]
+[18853.877054]  __mt76_worker_fn+0x190/0x22c [mt76 074e03e4640e97fe7405ee1fab547b81c4fa45d2]
+[18853.877071]  kthread+0x2f8/0x3b8
+[18853.877087]  ret_from_fork+0x10/0x30
+[18853.877098]
+[18853.877112] Allocated by task 941:
+[18853.877131]  kasan_save_stack+0x38/0x68
+[18853.877147]  __kasan_kmalloc+0xd4/0xfc
+[18853.877163]  kasan_kmalloc+0x10/0x1c
+[18853.877177]  __kmalloc+0x264/0x3c4
+[18853.877294]  sta_info_alloc+0x460/0xf88 [mac80211]
+[18853.877410]  ieee80211_prep_connection+0x204/0x1ee0 [mac80211]
+[18853.877523]  ieee80211_mgd_auth+0x6c4/0xa4c [mac80211]
+[18853.877635]  ieee80211_auth+0x20/0x2c [mac80211]
+[18853.877733]  rdev_auth+0x7c/0x438 [cfg80211]
+[18853.877826]  cfg80211_mlme_auth+0x26c/0x390 [cfg80211]
+[18853.877919]  nl80211_authenticate+0x6d4/0x904 [cfg80211]
+[18853.877938]  genl_rcv_msg+0x748/0x93c
+[18853.877954]  netlink_rcv_skb+0x160/0x2a8
+[18853.877969]  genl_rcv+0x3c/0x54
+[18853.877985]  netlink_unicast_kernel+0x104/0x1ec
+[18853.877999]  netlink_unicast+0x178/0x268
+[18853.878015]  netlink_sendmsg+0x3cc/0x5f0
+[18853.878030]  sock_sendmsg+0xb4/0xd8
+[18853.878043]  ____sys_sendmsg+0x2f8/0x53c
+[18853.878058]  ___sys_sendmsg+0xe8/0x150
+[18853.878071]  __sys_sendmsg+0xc4/0x1f4
+[18853.878087]  __arm64_compat_sys_sendmsg+0x88/0x9c
+[18853.878101]  el0_svc_common+0x1b4/0x390
+[18853.878115]  do_el0_svc_compat+0x8c/0xdc
+[18853.878131]  el0_svc_compat+0x10/0x1c
+[18853.878146]  el0_sync_compat_handler+0xa8/0xcc
+[18853.878161]  el0_sync_compat+0x188/0x1c0
+[18853.878171]
+[18853.878183] Freed by task 10927:
+[18853.878200]  kasan_save_stack+0x38/0x68
+[18853.878215]  kasan_set_track+0x28/0x3c
+[18853.878228]  kasan_set_free_info+0x24/0x48
+[18853.878244]  __kasan_slab_free+0x11c/0x154
+[18853.878259]  kasan_slab_free+0x14/0x24
+[18853.878273]  slab_free_freelist_hook+0xac/0x1b0
+[18853.878287]  kfree+0x104/0x390
+[18853.878402]  sta_info_free+0x198/0x210 [mac80211]
+[18853.878515]  __sta_info_destroy_part2+0x230/0x2d4 [mac80211]
+[18853.878628]  __sta_info_flush+0x300/0x37c [mac80211]
+[18853.878740]  ieee80211_set_disassoc+0x2cc/0xa7c [mac80211]
+[18853.878851]  ieee80211_mgd_deauth+0x4a4/0x10a0 [mac80211]
+[18853.878962]  ieee80211_deauth+0x20/0x2c [mac80211]
+[18853.879057]  rdev_deauth+0x7c/0x438 [cfg80211]
+[18853.879150]  cfg80211_mlme_deauth+0x274/0x414 [cfg80211]
+[18853.879243]  cfg80211_mlme_down+0xe4/0x118 [cfg80211]
+[18853.879335]  cfg80211_disconnect+0x218/0x2d8 [cfg80211]
+[18853.879427]  __cfg80211_leave+0x17c/0x240 [cfg80211]
+[18853.879519]  cfg80211_leave+0x3c/0x58 [cfg80211]
+[18853.879611]  wiphy_suspend+0xdc/0x200 [cfg80211]
+[18853.879628]  dpm_run_callback+0x58/0x408
+[18853.879642]  __device_suspend+0x4cc/0x864
+[18853.879658]  async_suspend+0x34/0xf4
+[18853.879673]  async_run_entry_fn+0xe0/0x37c
+[18853.879689]  process_one_work+0x508/0xb98
+[18853.879702]  worker_thread+0x7f4/0xcd4
+[18853.879717]  kthread+0x2f8/0x3b8
+[18853.879731]  ret_from_fork+0x10/0x30
+[18853.879741]
+[18853.879757] The buggy address belongs to the object at ffffffaf989a2000
+[18853.879757]  which belongs to the cache kmalloc-8k of size 8192
+[18853.879774] The buggy address is located 312 bytes inside of
+[18853.879774]  8192-byte region [ffffffaf989a2000, ffffffaf989a4000)
+[18853.879787] The buggy address belongs to the page:
+[18853.879807] page:000000004bda2a59 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1d89a0
+[18853.879823] head:000000004bda2a59 order:3 compound_mapcount:0 compound_pincount:0
+[18853.879839] flags: 0x8000000000010200(slab|head)
+[18853.879857] raw: 8000000000010200 ffffffffbc89e208 ffffffffb7fb5208 ffffffaec000cc80
+[18853.879873] raw: 0000000000000000 0000000000010001 00000001ffffffff 0000000000000000
+[18853.879885] page dumped because: kasan: bad access detected
+[18853.879896]
+[18853.879907] Memory state around the buggy address:
+[18853.879922]  ffffffaf989a2000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[18853.879935]  ffffffaf989a2080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[18853.879948] >ffffffaf989a2100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[18853.879961]                                         ^
+[18853.879973]  ffffffaf989a2180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[18853.879986]  ffffffaf989a2200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[18853.879998] ==================================================================
 
-Looking back at the mqueue calling sequence leading to sget_fc():
-
-  mq_init_ns()
-  => mq_create_mount()
-  => fc_mount()
-  => vfs_get_tree()
-  => mqueue_get_tree()
-  => get_tree_keyed()
-  => vfs_get_super()
-  => sget_fc()
-
-Currently, mq_init_ns() is the only mqueue function that will indirectly
-call mqueue_get_tree() with a newly allocated ipc namespace as the key for
-searching.  As a result, there will never be a match with the exising ipc
-namespaces stored in the mqueue's fs_supers list.
-
-So using get_tree_keyed() to do an existing ipc namespace search is just a
-waste of time.  Instead, we could use get_tree_nodev() to eliminate the
-useless search.  By doing so, we can greatly reduce the sb_lock hold time
-and avoid the spinlock contention problem in case a large number of ipc
-namespaces are present.
-
-Of course, if the code is modified in the future to allow
-mqueue_get_tree() to be called with an existing ipc namespace instead of a
-new one, we will have to use get_tree_keyed() in this case.
-
-The following stress-ng clone benchmark command was run on a 2-socket
-48-core Intel system:
-
-./stress-ng --clone 32 --verbose --oomable --metrics-brief -t 20
-
-The "bogo ops/s" increased from 5948.45 before patch to 9137.06 after
-patch. This is an increase of 54% in performance.
-
-Link: https://lkml.kernel.org/r/20220121172315.19652-1-longman@redhat.com
-Fixes: 935c6912b198 ("ipc: Convert mqueue fs to fs_context")
-Signed-off-by: Waiman Long <longman@redhat.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: David Howells <dhowells@redhat.com>
-Cc: Manfred Spraul <manfred@colorfullife.com>
-Cc: Davidlohr Bueso <dave@stgolabs.net>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Reported-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- ipc/mqueue.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/net/wireless/mediatek/mt76/mac80211.c     |    2 +-
+ drivers/net/wireless/mediatek/mt76/mt76.h         |    2 +-
+ drivers/net/wireless/mediatek/mt76/mt7603/main.c  |    2 +-
+ drivers/net/wireless/mediatek/mt76/mt7615/main.c  |    2 +-
+ drivers/net/wireless/mediatek/mt76/mt76x02_util.c |    4 +++-
+ drivers/net/wireless/mediatek/mt76/mt7915/main.c  |    2 +-
+ drivers/net/wireless/mediatek/mt76/mt7921/main.c  |    2 +-
+ drivers/net/wireless/mediatek/mt76/tx.c           |    9 ++++-----
+ 8 files changed, 13 insertions(+), 12 deletions(-)
 
-diff --git a/ipc/mqueue.c b/ipc/mqueue.c
-index 7c08eb3c258d..54cb6264f8cf 100644
---- a/ipc/mqueue.c
-+++ b/ipc/mqueue.c
-@@ -45,6 +45,7 @@
+--- a/drivers/net/wireless/mediatek/mt76/mac80211.c
++++ b/drivers/net/wireless/mediatek/mt76/mac80211.c
+@@ -1303,7 +1303,7 @@ mt76_sta_add(struct mt76_dev *dev, struc
+ 			continue;
  
- struct mqueue_fs_context {
- 	struct ipc_namespace	*ipc_ns;
-+	bool			 newns;	/* Set if newly created ipc namespace */
+ 		mtxq = (struct mt76_txq *)sta->txq[i]->drv_priv;
+-		mtxq->wcid = wcid;
++		mtxq->wcid = wcid->idx;
+ 	}
+ 
+ 	ewma_signal_init(&wcid->rssi);
+--- a/drivers/net/wireless/mediatek/mt76/mt76.h
++++ b/drivers/net/wireless/mediatek/mt76/mt76.h
+@@ -275,7 +275,7 @@ struct mt76_wcid {
  };
  
- #define MQUEUE_MAGIC	0x19800202
-@@ -427,6 +428,14 @@ static int mqueue_get_tree(struct fs_context *fc)
- {
- 	struct mqueue_fs_context *ctx = fc->fs_private;
+ struct mt76_txq {
+-	struct mt76_wcid *wcid;
++	u16 wcid;
  
-+	/*
-+	 * With a newly created ipc namespace, we don't need to do a search
-+	 * for an ipc namespace match, but we still need to set s_fs_info.
-+	 */
-+	if (ctx->newns) {
-+		fc->s_fs_info = ctx->ipc_ns;
-+		return get_tree_nodev(fc, mqueue_fill_super);
-+	}
- 	return get_tree_keyed(fc, mqueue_fill_super, ctx->ipc_ns);
+ 	u16 agg_ssn;
+ 	bool send_bar;
+--- a/drivers/net/wireless/mediatek/mt76/mt7603/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7603/main.c
+@@ -75,7 +75,7 @@ mt7603_add_interface(struct ieee80211_hw
+ 	mt7603_wtbl_init(dev, idx, mvif->idx, bc_addr);
+ 
+ 	mtxq = (struct mt76_txq *)vif->txq->drv_priv;
+-	mtxq->wcid = &mvif->sta.wcid;
++	mtxq->wcid = idx;
+ 	rcu_assign_pointer(dev->mt76.wcid[idx], &mvif->sta.wcid);
+ 
+ out:
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
+@@ -234,7 +234,7 @@ static int mt7615_add_interface(struct i
+ 	rcu_assign_pointer(dev->mt76.wcid[idx], &mvif->sta.wcid);
+ 	if (vif->txq) {
+ 		mtxq = (struct mt76_txq *)vif->txq->drv_priv;
+-		mtxq->wcid = &mvif->sta.wcid;
++		mtxq->wcid = idx;
+ 	}
+ 
+ 	ret = mt7615_mcu_add_dev_info(phy, vif, true);
+--- a/drivers/net/wireless/mediatek/mt76/mt76x02_util.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76x02_util.c
+@@ -292,7 +292,8 @@ mt76x02_vif_init(struct mt76x02_dev *dev
+ 	mt76_packet_id_init(&mvif->group_wcid);
+ 
+ 	mtxq = (struct mt76_txq *)vif->txq->drv_priv;
+-	mtxq->wcid = &mvif->group_wcid;
++	rcu_assign_pointer(dev->mt76.wcid[MT_VIF_WCID(idx)], &mvif->group_wcid);
++	mtxq->wcid = MT_VIF_WCID(idx);
  }
  
-@@ -454,6 +463,10 @@ static int mqueue_init_fs_context(struct fs_context *fc)
- 	return 0;
+ int
+@@ -345,6 +346,7 @@ void mt76x02_remove_interface(struct iee
+ 	struct mt76x02_vif *mvif = (struct mt76x02_vif *)vif->drv_priv;
+ 
+ 	dev->mt76.vif_mask &= ~BIT(mvif->idx);
++	rcu_assign_pointer(dev->mt76.wcid[mvif->group_wcid.idx], NULL);
+ 	mt76_packet_id_flush(&dev->mt76, &mvif->group_wcid);
  }
+ EXPORT_SYMBOL_GPL(mt76x02_remove_interface);
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/main.c
+@@ -246,7 +246,7 @@ static int mt7915_add_interface(struct i
+ 	rcu_assign_pointer(dev->mt76.wcid[idx], &mvif->sta.wcid);
+ 	if (vif->txq) {
+ 		mtxq = (struct mt76_txq *)vif->txq->drv_priv;
+-		mtxq->wcid = &mvif->sta.wcid;
++		mtxq->wcid = idx;
+ 	}
  
-+/*
-+ * mq_init_ns() is currently the only caller of mq_create_mount().
-+ * So the ns parameter is always a newly created ipc namespace.
-+ */
- static struct vfsmount *mq_create_mount(struct ipc_namespace *ns)
+ 	if (vif->type != NL80211_IFTYPE_AP &&
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+@@ -330,7 +330,7 @@ static int mt7921_add_interface(struct i
+ 	rcu_assign_pointer(dev->mt76.wcid[idx], &mvif->sta.wcid);
+ 	if (vif->txq) {
+ 		mtxq = (struct mt76_txq *)vif->txq->drv_priv;
+-		mtxq->wcid = &mvif->sta.wcid;
++		mtxq->wcid = idx;
+ 	}
+ 
+ out:
+--- a/drivers/net/wireless/mediatek/mt76/tx.c
++++ b/drivers/net/wireless/mediatek/mt76/tx.c
+@@ -436,12 +436,11 @@ mt76_txq_stopped(struct mt76_queue *q)
+ 
+ static int
+ mt76_txq_send_burst(struct mt76_phy *phy, struct mt76_queue *q,
+-		    struct mt76_txq *mtxq)
++		    struct mt76_txq *mtxq, struct mt76_wcid *wcid)
  {
- 	struct mqueue_fs_context *ctx;
-@@ -465,6 +478,7 @@ static struct vfsmount *mq_create_mount(struct ipc_namespace *ns)
- 		return ERR_CAST(fc);
+ 	struct mt76_dev *dev = phy->dev;
+ 	struct ieee80211_txq *txq = mtxq_to_txq(mtxq);
+ 	enum mt76_txq_id qid = mt76_txq_get_qid(txq);
+-	struct mt76_wcid *wcid = mtxq->wcid;
+ 	struct ieee80211_tx_info *info;
+ 	struct sk_buff *skb;
+ 	int n_frames = 1;
+@@ -521,8 +520,8 @@ mt76_txq_schedule_list(struct mt76_phy *
+ 			break;
  
- 	ctx = fc->fs_private;
-+	ctx->newns = true;
- 	put_ipc_ns(ctx->ipc_ns);
- 	ctx->ipc_ns = get_ipc_ns(ns);
- 	put_user_ns(fc->user_ns);
--- 
-2.35.1
-
+ 		mtxq = (struct mt76_txq *)txq->drv_priv;
+-		wcid = mtxq->wcid;
+-		if (wcid && test_bit(MT_WCID_FLAG_PS, &wcid->flags))
++		wcid = rcu_dereference(dev->wcid[mtxq->wcid]);
++		if (!wcid || test_bit(MT_WCID_FLAG_PS, &wcid->flags))
+ 			continue;
+ 
+ 		spin_lock_bh(&q->lock);
+@@ -541,7 +540,7 @@ mt76_txq_schedule_list(struct mt76_phy *
+ 		}
+ 
+ 		if (!mt76_txq_stopped(q))
+-			n_frames = mt76_txq_send_burst(phy, q, mtxq);
++			n_frames = mt76_txq_send_burst(phy, q, mtxq, wcid);
+ 
+ 		spin_unlock_bh(&q->lock);
+ 
 
 
