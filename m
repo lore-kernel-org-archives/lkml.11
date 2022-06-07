@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EC7CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA1DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354223AbiFGTxd (ORCPT
+        id S1347933AbiFGTxt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:53:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57804 "EHLO
+        Tue, 7 Jun 2022 15:53:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354180AbiFGSqm (ORCPT
+        with ESMTP id S1354132AbiFGSqg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612901216C4;
-        Tue,  7 Jun 2022 11:00:15 -0700 (PDT)
+        Tue, 7 Jun 2022 14:46:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C550D1208AE;
+        Tue,  7 Jun 2022 11:00:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C84C6617B0;
-        Tue,  7 Jun 2022 18:00:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D93E8C34115;
-        Tue,  7 Jun 2022 18:00:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99CF3618DE;
+        Tue,  7 Jun 2022 18:00:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6340C385A5;
+        Tue,  7 Jun 2022 18:00:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624814;
-        bh=2clv+eIChWCU75Deg8PZdCXvoxeLsnNaYAdk+/FkBa4=;
+        s=korg; t=1654624811;
+        bh=ezIWh8hccCcDbpXP8PsD5HOqPX41+iBX/icva8GXBPA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=11A+NfzfppR6ASPLyycQe40iaY2YZ3UG2LJiQhIYKnwUbXac4I2uK9V82rjTxKcGt
-         pE2COZVyKXH9cl8jzWA9Mj8yQ0NMwxtx+DRyF7PrxxBoQUMuRINZzu7lSQSkI4L/86
-         V2vRpoPfZqwzEbSOhZcMYKdY/5/m0B92jFJ+oJC8=
+        b=DHw4OmfBli4eUjSNe1g2MRUruafS5ntcbh6Jdc3tuYE8Pu/C6Rl36AcOaEN4NzKkF
+         k+LvAOYWt5GtifIauiQq4COtxsnMCUti3iyBO6RAy2HiJD4tM9YHRuIjTS6UN+6F43
+         kIqGbw9h3VJm71ufv6RjIgjiNWqlHquDJWL5O4fs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 463/667] powerpc/64: Only WARN if __pa()/__va() called with bad addresses
-Date:   Tue,  7 Jun 2022 19:02:08 +0200
-Message-Id: <20220607164948.596305360@linuxfoundation.org>
+Subject: [PATCH 5.15 462/667] hwrng: omap3-rom - fix using wrong clk_disable() in omap_rom_rng_runtime_resume()
+Date:   Tue,  7 Jun 2022 19:02:07 +0200
+Message-Id: <20220607164948.565816520@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,54 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit c4bce84d0bd3f396f702d69be2e92bbd8af97583 ]
+[ Upstream commit e4e62bbc6aba49a5edb3156ec65f6698ff37d228 ]
 
-We added checks to __pa() / __va() to ensure they're only called with
-appropriate addresses. But using BUG_ON() is too strong, it means
-virt_addr_valid() will BUG when DEBUG_VIRTUAL is enabled.
+'ddata->clk' is enabled by clk_prepare_enable(), it should be disabled
+by clk_disable_unprepare().
 
-Instead switch them to warnings, arm64 does the same.
-
-Fixes: 4dd7554a6456 ("powerpc/64: Add VIRTUAL_BUG_ON checks for __va and __pa addresses")
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220406145802.538416-5-mpe@ellerman.id.au
+Fixes: 8d9d4bdc495f ("hwrng: omap3-rom - Use runtime PM instead of custom functions")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/include/asm/page.h | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/char/hw_random/omap3-rom-rng.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/include/asm/page.h b/arch/powerpc/include/asm/page.h
-index f2c5c26869f1..03ae544eb6cc 100644
---- a/arch/powerpc/include/asm/page.h
-+++ b/arch/powerpc/include/asm/page.h
-@@ -216,6 +216,9 @@ static inline bool pfn_valid(unsigned long pfn)
- #define __pa(x) ((phys_addr_t)(unsigned long)(x) - VIRT_PHYS_OFFSET)
- #else
- #ifdef CONFIG_PPC64
-+
-+#define VIRTUAL_WARN_ON(x)	WARN_ON(IS_ENABLED(CONFIG_DEBUG_VIRTUAL) && (x))
-+
- /*
-  * gcc miscompiles (unsigned long)(&static_var) - PAGE_OFFSET
-  * with -mcmodel=medium, so we use & and | instead of - and + on 64-bit.
-@@ -223,13 +226,13 @@ static inline bool pfn_valid(unsigned long pfn)
-  */
- #define __va(x)								\
- ({									\
--	VIRTUAL_BUG_ON((unsigned long)(x) >= PAGE_OFFSET);		\
-+	VIRTUAL_WARN_ON((unsigned long)(x) >= PAGE_OFFSET);		\
- 	(void *)(unsigned long)((phys_addr_t)(x) | PAGE_OFFSET);	\
- })
+diff --git a/drivers/char/hw_random/omap3-rom-rng.c b/drivers/char/hw_random/omap3-rom-rng.c
+index e0d77fa048fb..f06e4f95114f 100644
+--- a/drivers/char/hw_random/omap3-rom-rng.c
++++ b/drivers/char/hw_random/omap3-rom-rng.c
+@@ -92,7 +92,7 @@ static int __maybe_unused omap_rom_rng_runtime_resume(struct device *dev)
  
- #define __pa(x)								\
- ({									\
--	VIRTUAL_BUG_ON((unsigned long)(x) < PAGE_OFFSET);		\
-+	VIRTUAL_WARN_ON((unsigned long)(x) < PAGE_OFFSET);		\
- 	(unsigned long)(x) & 0x0fffffffffffffffUL;			\
- })
+ 	r = ddata->rom_rng_call(0, 0, RNG_GEN_PRNG_HW_INIT);
+ 	if (r != 0) {
+-		clk_disable(ddata->clk);
++		clk_disable_unprepare(ddata->clk);
+ 		dev_err(dev, "HW init failed: %d\n", r);
  
+ 		return -EIO;
 -- 
 2.35.1
 
