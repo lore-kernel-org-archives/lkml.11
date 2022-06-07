@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C99C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:18:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3D86C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:18:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381153AbiFGVRW (ORCPT
+        id S1381487AbiFGVRr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:17:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47344 "EHLO
+        Tue, 7 Jun 2022 17:17:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359850AbiFGUVV (ORCPT
+        with ESMTP id S1376283AbiFGUVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:21:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E61178553;
-        Tue,  7 Jun 2022 11:30:50 -0700 (PDT)
+        Tue, 7 Jun 2022 16:21:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B0F11D5004;
+        Tue,  7 Jun 2022 11:31:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2AB29611B9;
-        Tue,  7 Jun 2022 18:30:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 325D0C385A2;
-        Tue,  7 Jun 2022 18:30:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB203612EC;
+        Tue,  7 Jun 2022 18:31:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A048C34115;
+        Tue,  7 Jun 2022 18:30:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626649;
-        bh=DHhMOTAVSHSY0j7O0/1UO25k14ku7/TFOBskDOIVeLg=;
+        s=korg; t=1654626660;
+        bh=u9c66hxd3Gms4SPDAZa/wUClxIpzgAWDdqlqJK5JUd0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mMbe5ukG6dDxT82kP09/tH5clSh6TrkNfdU9c9ZUcsSMqgv42gbxmsYJZNU5S88IY
-         rLbPUUJ+s4MgISLsk482uOIKdpPI3HZ0QIooBbKUsPqsV7bfx9qrkzLRQB1EpyDVNm
-         4n5ohoaXVTDGBrDSBiiqeE91NgRceXuvEh9w5ImA=
+        b=g1qr0wmI2qTDoGaOL4WcVjlbx2wGsaxAk8J0JKW0Xttpll4rnkY8R+ImeIV6Wj1Vm
+         4y3dj35ArXRSITfIcaoY75xcOhrHzmAB6HQ60MhQf8z4lVvw6batGICS/Bk4HQGwOB
+         nVRKRcfuylEYcIKy3LTgT9lZJEmTNZSQhbQBvbeE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 454/772] memory: samsung: exynos5422-dmc: Avoid some over memory allocation
-Date:   Tue,  7 Jun 2022 19:00:46 +0200
-Message-Id: <20220607165002.381237755@linuxfoundation.org>
+Subject: [PATCH 5.17 457/772] soc: qcom: smp2p: Fix missing of_node_put() in smp2p_parse_ipc
+Date:   Tue,  7 Jun 2022 19:00:49 +0200
+Message-Id: <20220607165002.469105754@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,50 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 56653827f0d7bc7c2d8bac0e119fd1521fa9990a ]
+[ Upstream commit 8fd3f18ea31a398ecce4a6d3804433658678b0a3 ]
 
-'dmc->counter' is a 'struct devfreq_event_dev **', so there is some
-over memory allocation. 'counters_size' should be computed with
-'sizeof(struct devfreq_event_dev *)'.
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-Use 'sizeof(*dmc->counter)' instead to fix it.
-
-While at it, use devm_kcalloc() instead of devm_kzalloc()+open coded
-multiplication.
-
-Fixes: 6e7674c3c6df ("memory: Add DMC driver for Exynos5422")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/69d7e69346986e2fdb994d4382954c932f9f0993.1647760213.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Fixes: 50e99641413e ("soc: qcom: smp2p: Qualcomm Shared Memory Point to Point")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220308071942.22942-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memory/samsung/exynos5422-dmc.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/soc/qcom/smp2p.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/memory/samsung/exynos5422-dmc.c b/drivers/memory/samsung/exynos5422-dmc.c
-index 9c8318923ed0..4733e7898ffe 100644
---- a/drivers/memory/samsung/exynos5422-dmc.c
-+++ b/drivers/memory/samsung/exynos5422-dmc.c
-@@ -1322,7 +1322,6 @@ static int exynos5_dmc_init_clks(struct exynos5_dmc *dmc)
-  */
- static int exynos5_performance_counters_init(struct exynos5_dmc *dmc)
- {
--	int counters_size;
- 	int ret, i;
- 
- 	dmc->num_counters = devfreq_event_get_edev_count(dmc->dev,
-@@ -1332,8 +1331,8 @@ static int exynos5_performance_counters_init(struct exynos5_dmc *dmc)
- 		return dmc->num_counters;
+diff --git a/drivers/soc/qcom/smp2p.c b/drivers/soc/qcom/smp2p.c
+index 4a157240f419..59dbf4b61e6c 100644
+--- a/drivers/soc/qcom/smp2p.c
++++ b/drivers/soc/qcom/smp2p.c
+@@ -493,6 +493,7 @@ static int smp2p_parse_ipc(struct qcom_smp2p *smp2p)
  	}
  
--	counters_size = sizeof(struct devfreq_event_dev) * dmc->num_counters;
--	dmc->counter = devm_kzalloc(dmc->dev, counters_size, GFP_KERNEL);
-+	dmc->counter = devm_kcalloc(dmc->dev, dmc->num_counters,
-+				    sizeof(*dmc->counter), GFP_KERNEL);
- 	if (!dmc->counter)
- 		return -ENOMEM;
+ 	smp2p->ipc_regmap = syscon_node_to_regmap(syscon);
++	of_node_put(syscon);
+ 	if (IS_ERR(smp2p->ipc_regmap))
+ 		return PTR_ERR(smp2p->ipc_regmap);
  
 -- 
 2.35.1
