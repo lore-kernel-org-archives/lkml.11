@@ -2,94 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B920DCCA490
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6DC4CCA492
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357253AbiFGTla (ORCPT
+        id S1357289AbiFGTlo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
+        Tue, 7 Jun 2022 15:41:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354424AbiFGSrB (ORCPT
+        with ESMTP id S1354489AbiFGSrE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8806403E4;
-        Tue,  7 Jun 2022 11:01:10 -0700 (PDT)
+        Tue, 7 Jun 2022 14:47:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0486D85C;
+        Tue,  7 Jun 2022 11:01:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B602618E1;
-        Tue,  7 Jun 2022 18:01:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68FACC3411F;
-        Tue,  7 Jun 2022 18:01:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624869;
-        bh=wHYFN9MuumJK9P6jgiI8aiyR/phLTziKEKbXcop84ZI=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51F3DB82354;
+        Tue,  7 Jun 2022 18:01:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EDE9C341C0;
+        Tue,  7 Jun 2022 18:01:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624889;
+        bh=8XodZh5sCr/MfT0L5lf3vACVky82khXDRn8yFleVMQg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mv7mbl3Ym+RbMiqi3lnHpwcTlfA4TXgX4EZ3H8pi5sX1aQS45ta2AxkhOdBWeOKGn
-         LoAMpEduztCgwyfPDBz1DBArC8W6w/HqibTYWKoGxP5hZy24ZepnKjijxv8l2yHYQj
-         QOrKIWZs2Zh847+qOgMxg0S+WqImqGeSEVD4mo1U=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 442/667] pinctrl: renesas: core: Fix possible null-ptr-deref in sh_pfc_map_resources()
-Date:   Tue,  7 Jun 2022 19:01:47 +0200
-Message-Id: <20220607164947.976980687@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=OD3o1WcN1UvUCdrLdvPpqdONNURHqUPs51AvHuA75WnwfugfPDD5M4Mtwj1zfC3DC
+         GkOAiFWm+Dox2UxiAbQmHtUCKUUFy0QVirV3CerBhQZ06G9VnFxPk9trG5e5E9G7Sk
+         FLrPzkgspY3T8groDOBUNyUO7edF7wlTDGl5VDv9qk2pB1oB6GIRijkwrwK2fzrVL3
+         peJhKH2/qLhP3muZf6c041ZFVX71DYBEfQL1ySG+3POPM58BUrzIWwHwgyqlO3GPKH
+         uByRdBTM1ai+zdeuz/T9MdTgXLO24egXNxk2SK5KoTIxMt8xPwqrGA3ZlXaq2dACM7
+         rV72Hq6m9aOcA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Steve French <stfrench@microsoft.com>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
+Subject: [PATCH AUTOSEL 5.4 33/34] cifs: version operations for smb20 unneeded when legacy support disabled
+Date:   Tue,  7 Jun 2022 14:00:08 -0400
+Message-Id: <20220607180011.481266-33-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
+References: <20220607180011.481266-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Steve French <stfrench@microsoft.com>
 
-[ Upstream commit 5376e3d904532e657fd7ca1a9b1ff3d351527b90 ]
+[ Upstream commit 7ef93ffccd55fb0ba000ed16ef6a81cd7dee07b5 ]
 
-It will cause null-ptr-deref when using 'res', if platform_get_resource()
-returns NULL, so move using 'res' after devm_ioremap_resource() that
-will check it to avoid null-ptr-deref.
-And use devm_platform_get_and_ioremap_resource() to simplify code.
+We should not be including unused smb20 specific code when legacy
+support is disabled (CONFIG_CIFS_ALLOW_INSECURE_LEGACY turned
+off).  For example smb2_operations and smb2_values aren't used
+in that case.  Over time we can move more and more SMB1/CIFS and SMB2.0
+code into the insecure legacy ifdefs
 
-Fixes: c7977ec4a336 ("pinctrl: sh-pfc: Convert to platform_get_*()")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220429082637.1308182-1-yangyingliang@huawei.com
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/renesas/core.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ fs/cifs/cifsglob.h | 4 +++-
+ fs/cifs/smb2ops.c  | 7 ++++++-
+ 2 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pinctrl/renesas/core.c b/drivers/pinctrl/renesas/core.c
-index bc17f3131de5..75fc420b6bdf 100644
---- a/drivers/pinctrl/renesas/core.c
-+++ b/drivers/pinctrl/renesas/core.c
-@@ -71,12 +71,11 @@ static int sh_pfc_map_resources(struct sh_pfc *pfc,
+diff --git a/fs/cifs/cifsglob.h b/fs/cifs/cifsglob.h
+index 9c0e348cb00f..414936989255 100644
+--- a/fs/cifs/cifsglob.h
++++ b/fs/cifs/cifsglob.h
+@@ -1930,11 +1930,13 @@ extern mempool_t *cifs_mid_poolp;
  
- 	/* Fill them. */
- 	for (i = 0; i < num_windows; i++) {
--		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
--		windows->phys = res->start;
--		windows->size = resource_size(res);
--		windows->virt = devm_ioremap_resource(pfc->dev, res);
-+		windows->virt = devm_platform_get_and_ioremap_resource(pdev, i, &res);
- 		if (IS_ERR(windows->virt))
- 			return -ENOMEM;
-+		windows->phys = res->start;
-+		windows->size = resource_size(res);
- 		windows++;
+ /* Operations for different SMB versions */
+ #define SMB1_VERSION_STRING	"1.0"
++#define SMB20_VERSION_STRING    "2.0"
++#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
+ extern struct smb_version_operations smb1_operations;
+ extern struct smb_version_values smb1_values;
+-#define SMB20_VERSION_STRING	"2.0"
+ extern struct smb_version_operations smb20_operations;
+ extern struct smb_version_values smb20_values;
++#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+ #define SMB21_VERSION_STRING	"2.1"
+ extern struct smb_version_operations smb21_operations;
+ extern struct smb_version_values smb21_values;
+diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+index 7985fe25850b..57164563eec6 100644
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -3487,11 +3487,13 @@ smb3_set_oplock_level(struct cifsInodeInfo *cinode, __u32 oplock,
  	}
- 	for (i = 0; i < num_irqs; i++)
+ }
+ 
++#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
+ static bool
+ smb2_is_read_op(__u32 oplock)
+ {
+ 	return oplock == SMB2_OPLOCK_LEVEL_II;
+ }
++#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+ 
+ static bool
+ smb21_is_read_op(__u32 oplock)
+@@ -4573,7 +4575,7 @@ smb2_make_node(unsigned int xid, struct inode *inode,
+ 	return rc;
+ }
+ 
+-
++#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
+ struct smb_version_operations smb20_operations = {
+ 	.compare_fids = smb2_compare_fids,
+ 	.setup_request = smb2_setup_request,
+@@ -4670,6 +4672,7 @@ struct smb_version_operations smb20_operations = {
+ 	.fiemap = smb3_fiemap,
+ 	.llseek = smb3_llseek,
+ };
++#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+ 
+ struct smb_version_operations smb21_operations = {
+ 	.compare_fids = smb2_compare_fids,
+@@ -4987,6 +4990,7 @@ struct smb_version_operations smb311_operations = {
+ 	.llseek = smb3_llseek,
+ };
+ 
++#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
+ struct smb_version_values smb20_values = {
+ 	.version_string = SMB20_VERSION_STRING,
+ 	.protocol_id = SMB20_PROT_ID,
+@@ -5007,6 +5011,7 @@ struct smb_version_values smb20_values = {
+ 	.signing_required = SMB2_NEGOTIATE_SIGNING_REQUIRED,
+ 	.create_lease_size = sizeof(struct create_lease),
+ };
++#endif /* ALLOW_INSECURE_LEGACY */
+ 
+ struct smb_version_values smb21_values = {
+ 	.version_string = SMB21_VERSION_STRING,
 -- 
 2.35.1
-
-
 
