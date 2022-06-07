@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F6E3CCA498
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4732CCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353072AbiFGSSO (ORCPT
+        id S1351822AbiFGSQp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:18:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41124 "EHLO
+        Tue, 7 Jun 2022 14:16:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349093AbiFGR6Q (ORCPT
+        with ESMTP id S1348897AbiFGR4i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:58:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 201935D5CB;
-        Tue,  7 Jun 2022 10:41:05 -0700 (PDT)
+        Tue, 7 Jun 2022 13:56:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11631483E4;
+        Tue,  7 Jun 2022 10:40:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB423B80B66;
-        Tue,  7 Jun 2022 17:41:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13E40C385A5;
-        Tue,  7 Jun 2022 17:41:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4CC96165B;
+        Tue,  7 Jun 2022 17:40:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7779C3411C;
+        Tue,  7 Jun 2022 17:40:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623662;
-        bh=KidPKL7CSKLt/gRwD34Zy5/VxtuEN1OY6TljW2bDPrg=;
+        s=korg; t=1654623618;
+        bh=OQNA3pbhO751SWW63OLtmzQBzHLEIHa7GSdyG62NU3k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v7MEC18iYTV/ZL0f3kBD16y5aGuK4yE3EEs7dCZBto7WJWPxBzYdaAKHhhrAxPvkD
-         4RMoM4L8DGWG8YDdPXainUsZCxIAAS4qeQLYQ+oMzQfz+7YirAY0/hrQ11SVqy67OI
-         tbcPPm5sHQkJ8nEJ4OvyRE5riTyEns5slT9xTTY4=
+        b=TzAh+EAsrm0zJVdKf1fx0CtaXIO1WobJbVXuon0PST03BpH4nSpuV0bP7z/HpHewE
+         AtCAIKkUC5BIyKF+BsxKb151PDV4A95pczipnTYorFkDmxT83THBn+YI7zdR21ceR4
+         GrggCn+ccW/ma81KhIUs8BYWwdeiTL17nzV2iDv4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.15 009/667] riscv: Move alternative length validation into subsection
-Date:   Tue,  7 Jun 2022 18:54:34 +0200
-Message-Id: <20220607164935.064151961@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.15 003/667] parisc/stifb: Implement fb_is_primary_device()
+Date:   Tue,  7 Jun 2022 18:54:28 +0200
+Message-Id: <20220607164934.878895962@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,92 +48,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Helge Deller <deller@gmx.de>
 
-commit 61114e734ccb804bc12561ab4020745e02c468c2 upstream.
+commit cf936af790a3ef5f41ff687ec91bfbffee141278 upstream.
 
-After commit 49b290e430d3 ("riscv: prevent compressed instructions in
-alternatives"), builds with LLVM's integrated assembler fail:
+Implement fb_is_primary_device() function, so that fbcon detects if this
+framebuffer belongs to the default graphics card which was used to start
+the system.
 
-  In file included from arch/riscv/mm/init.c:10:
-  In file included from ./include/linux/mm.h:29:
-  In file included from ./include/linux/pgtable.h:6:
-  In file included from ./arch/riscv/include/asm/pgtable.h:108:
-  ./arch/riscv/include/asm/tlbflush.h:23:2: error: expected assembly-time absolute expression
-          ALT_FLUSH_TLB_PAGE(__asm__ __volatile__ ("sfence.vma %0" : : "r" (addr) : "memory"));
-          ^
-  ./arch/riscv/include/asm/errata_list.h:33:5: note: expanded from macro 'ALT_FLUSH_TLB_PAGE'
-  asm(ALTERNATIVE("sfence.vma %0", "sfence.vma", SIFIVE_VENDOR_ID,        \
-      ^
-  ./arch/riscv/include/asm/alternative-macros.h:187:2: note: expanded from macro 'ALTERNATIVE'
-          _ALTERNATIVE_CFG(old_content, new_content, vendor_id, errata_id, CONFIG_k)
-          ^
-  ./arch/riscv/include/asm/alternative-macros.h:113:2: note: expanded from macro '_ALTERNATIVE_CFG'
-          __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, IS_ENABLED(CONFIG_k))
-          ^
-  ./arch/riscv/include/asm/alternative-macros.h:110:2: note: expanded from macro '__ALTERNATIVE_CFG'
-          ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c)
-          ^
-  ./arch/riscv/include/asm/alternative-macros.h:99:3: note: expanded from macro 'ALT_NEW_CONTENT'
-          ".org   . - (889b - 888b) + (887b - 886b)\n"                    \
-           ^
-  <inline asm>:26:6: note: instantiated into assembly here
-  .org    . - (889b - 888b) + (887b - 886b)
-          ^
-
-This error happens because LLVM's integrated assembler has a one-pass
-design, which means it cannot figure out the instruction lengths when
-the .org directive is outside of the subsection that contains the
-instructions, which was changed by the .option directives added by the
-above change.
-
-Move the .org directives before the .previous directive so that these
-directives are always within the same subsection, which resolves the
-failures and does not introduce any new issues with GNU as. This was
-done for arm64 in commit 966a0acce2fc ("arm64/alternatives: move length
-validation inside the subsection") and commit 22315a2296f4 ("arm64:
-alternatives: Move length validation in alternative_{insn, endif}").
-
-While there is no error from the assembly versions of the macro, they
-appear to have the same problem so just make the same change there as
-well so that there are no problems in the future.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1640
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-Tested-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://lore.kernel.org/r/20220516214520.3252074-1-nathan@kernel.org
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: stable@vger.kernel.org   # v5.10+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/include/asm/alternative-macros.h |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/parisc/include/asm/fb.h    |    4 ++++
+ drivers/video/console/sticore.c |   17 +++++++++++++++++
+ drivers/video/fbdev/stifb.c     |    4 ++--
+ 3 files changed, 23 insertions(+), 2 deletions(-)
 
---- a/arch/riscv/include/asm/alternative-macros.h
-+++ b/arch/riscv/include/asm/alternative-macros.h
-@@ -23,9 +23,9 @@
- 888 :
- 	\new_c
- 889 :
--	.previous
- 	.org    . - (889b - 888b) + (887b - 886b)
- 	.org    . - (887b - 886b) + (889b - 888b)
-+	.previous
- 	.endif
- .endm
+--- a/arch/parisc/include/asm/fb.h
++++ b/arch/parisc/include/asm/fb.h
+@@ -12,9 +12,13 @@ static inline void fb_pgprotect(struct f
+ 	pgprot_val(vma->vm_page_prot) |= _PAGE_NO_CACHE;
+ }
  
-@@ -60,9 +60,9 @@
- 	"888 :\n"							\
- 	new_c "\n"							\
- 	"889 :\n"							\
--	".previous\n"							\
- 	".org	. - (887b - 886b) + (889b - 888b)\n"			\
- 	".org	. - (889b - 888b) + (887b - 886b)\n"			\
-+	".previous\n"							\
- 	".endif\n"
++#if defined(CONFIG_STI_CONSOLE) || defined(CONFIG_FB_STI)
++int fb_is_primary_device(struct fb_info *info);
++#else
+ static inline int fb_is_primary_device(struct fb_info *info)
+ {
+ 	return 0;
+ }
++#endif
  
- #define __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, enable) \
+ #endif /* _ASM_FB_H_ */
+--- a/drivers/video/console/sticore.c
++++ b/drivers/video/console/sticore.c
+@@ -30,6 +30,7 @@
+ #include <asm/pdc.h>
+ #include <asm/cacheflush.h>
+ #include <asm/grfioctl.h>
++#include <asm/fb.h>
+ 
+ #include "../fbdev/sticore.h"
+ 
+@@ -1127,6 +1128,22 @@ int sti_call(const struct sti_struct *st
+ 	return ret;
+ }
+ 
++/* check if given fb_info is the primary device */
++int fb_is_primary_device(struct fb_info *info)
++{
++	struct sti_struct *sti;
++
++	sti = sti_get_rom(0);
++
++	/* if no built-in graphics card found, allow any fb driver as default */
++	if (!sti)
++		return true;
++
++	/* return true if it's the default built-in framebuffer driver */
++	return (sti->info == info);
++}
++EXPORT_SYMBOL(fb_is_primary_device);
++
+ MODULE_AUTHOR("Philipp Rumpf, Helge Deller, Thomas Bogendoerfer");
+ MODULE_DESCRIPTION("Core STI driver for HP's NGLE series graphics cards in HP PARISC machines");
+ MODULE_LICENSE("GPL v2");
+--- a/drivers/video/fbdev/stifb.c
++++ b/drivers/video/fbdev/stifb.c
+@@ -1317,11 +1317,11 @@ static int __init stifb_init_fb(struct s
+ 		goto out_err3;
+ 	}
+ 
++	/* save for primary gfx device detection & unregister_framebuffer() */
++	sti->info = info;
+ 	if (register_framebuffer(&fb->info) < 0)
+ 		goto out_err4;
+ 
+-	sti->info = info; /* save for unregister_framebuffer() */
+-
+ 	fb_info(&fb->info, "%s %dx%d-%d frame buffer device, %s, id: %04x, mmio: 0x%04lx\n",
+ 		fix->id,
+ 		var->xres, 
 
 
