@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D209CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CD5DCCA482
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388320AbiFHAlA (ORCPT
+        id S1349480AbiFHAjM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:41:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46048 "EHLO
+        Tue, 7 Jun 2022 20:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383301AbiFGVxC (ORCPT
+        with ESMTP id S1382245AbiFGVuZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:53:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90FA4FF0;
-        Tue,  7 Jun 2022 12:11:10 -0700 (PDT)
+        Tue, 7 Jun 2022 17:50:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D306F190D37;
+        Tue,  7 Jun 2022 12:08:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 20629617D0;
-        Tue,  7 Jun 2022 19:11:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CF21C385A2;
-        Tue,  7 Jun 2022 19:11:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD382618D5;
+        Tue,  7 Jun 2022 19:08:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF89CC385A5;
+        Tue,  7 Jun 2022 19:08:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629069;
-        bh=/SXHeppL4FHWK2iK+Q7roRMlKdDXea05upheVTxrlhc=;
+        s=korg; t=1654628918;
+        bh=48mLBrfjhKNdMqxK+VO5NBG7tpqLhjZ89rygkSAQFXQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jCJVKoqPxk9Yxs9XdmOpR2z0Sc/YgNqBt1msenKlvp9ePlYUUtpmXcTYyVtI2s7m7
-         7HdsUiOjmD7dxUaTWEmVTm0ek5oP4ho9hDhkvo4cYesTpd2SES7YtWIqnn2vxHeeFr
-         OHxF69RUx03DPA8fH2GI46BiE4j70lv/xDQBM/h4=
+        b=DRYx9dtnRH42SoeADzGkr+9GUwXzFzsuJO3+6OAmPPxdndtHk0sS6Ovar5TVJT32f
+         Y+1AamKPV3In/bvbHoKPItSB6GzFjOOjN40tX8ZkU3XA2QakEMVc50UvxX2dYN1SR/
+         DcJrMxgUr3bXZ4slwWhAxPDb4PaLxyeUl7B40VYo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daisuke Nojiri <dnojiri@chromium.org>,
-        Rob Barnes <robbarnes@google.com>,
-        Rajat Jain <rajatja@google.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Parth Malkan <parthmalkan@google.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
+        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will.deacon@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 559/879] platform/chrome: Re-introduce cros_ec_cmd_xfer and use it for ioctls
-Date:   Tue,  7 Jun 2022 19:01:17 +0200
-Message-Id: <20220607165019.089075278@linuxfoundation.org>
+Subject: [PATCH 5.18 463/879] irqchip/gic-v3: Refactor ISB + EOIR at ack time
+Date:   Tue,  7 Jun 2022 18:59:41 +0200
+Message-Id: <20220607165016.313615146@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -55,142 +52,186 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Mark Rutland <mark.rutland@arm.com>
 
-[ Upstream commit 57b888ca2541785de2fcb90575b378921919b6c0 ]
+[ Upstream commit 6efb50923771f392122f5ce69dfc43b08f16e449 ]
 
-Commit 413dda8f2c6f ("platform/chrome: cros_ec_chardev: Use
-cros_ec_cmd_xfer_status helper") inadvertendly changed the userspace ABI.
-Previously, cros_ec ioctls would only report errors if the EC communication
-failed, and otherwise return success and the result of the EC
-communication. An EC command execution failure was reported in the EC
-response field. The above mentioned commit changed this behavior, and the
-ioctl itself would fail. This breaks userspace commands trying to analyze
-the EC command execution error since the actual EC command response is no
-longer reported to userspace.
+There are cases where a context synchronization event is necessary
+between an IRQ being raised and being handled, and there are races such
+that we cannot rely upon the exception entry being subsequent to the
+interrupt being raised. To fix this, we place an ISB between a read of
+IAR and the subsequent invocation of an IRQ handler.
 
-Fix the problem by re-introducing the cros_ec_cmd_xfer() helper, and use it
-to handle ioctl messages.
+When EOI mode 1 is in use, we need to EOI an interrupt prior to invoking
+its handler, and we have a write to EOIR for this. As this write to EOIR
+requires an ISB, and this is provided by the gic_write_eoir() helper, we
+omit the usual ISB in this case, with the logic being:
 
-Fixes: 413dda8f2c6f ("platform/chrome: cros_ec_chardev: Use cros_ec_cmd_xfer_status helper")
-Cc: Daisuke Nojiri <dnojiri@chromium.org>
-Cc: Rob Barnes <robbarnes@google.com>
-Cc: Rajat Jain <rajatja@google.com>
-Cc: Brian Norris <briannorris@chromium.org>
-Cc: Parth Malkan <parthmalkan@google.com>
-Reviewed-by: Daisuke Nojiri <dnojiri@chromium.org>
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+|	if (static_branch_likely(&supports_deactivate_key))
+|		gic_write_eoir(irqnr);
+|	else
+|		isb();
+
+This is somewhat opaque, and it would be a little clearer if there were
+an unconditional ISB, with only the write to EOIR being conditional,
+e.g.
+
+|	if (static_branch_likely(&supports_deactivate_key))
+|		write_gicreg(irqnr, ICC_EOIR1_EL1);
+|
+|	isb();
+
+This patch rewrites the code that way, with this logic factored into a
+new helper function with comments explaining what the ISB is for, as
+were originally laid out in commit:
+
+  39a06b67c2c1256b ("irqchip/gic: Ensure we have an ISB between ack and ->handle_irq")
+
+Note that since then, we removed the IAR polling in commit:
+
+  342677d70ab92142 ("irqchip/gic-v3: Remove acknowledge loop")
+
+... which removed one of the two race conditions.
+
+For consistency, other portions of the driver are made to manipulate
+EOIR using write_gicreg() and explcit ISBs, and the gic_write_eoir()
+helper function is removed.
+
+There should be no functional change as a result of this patch.
+
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Will Deacon <will.deacon@arm.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220513133038.226182-3-mark.rutland@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/chrome/cros_ec_chardev.c   |  2 +-
- drivers/platform/chrome/cros_ec_proto.c     | 50 +++++++++++++++++----
- include/linux/platform_data/cros_ec_proto.h |  3 ++
- 3 files changed, 45 insertions(+), 10 deletions(-)
+ arch/arm/include/asm/arch_gicv3.h   |  7 +----
+ arch/arm64/include/asm/arch_gicv3.h |  6 ----
+ drivers/irqchip/irq-gic-v3.c        | 43 ++++++++++++++++++++++-------
+ 3 files changed, 34 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/platform/chrome/cros_ec_chardev.c b/drivers/platform/chrome/cros_ec_chardev.c
-index e0bce869c49a..fd33de546aee 100644
---- a/drivers/platform/chrome/cros_ec_chardev.c
-+++ b/drivers/platform/chrome/cros_ec_chardev.c
-@@ -301,7 +301,7 @@ static long cros_ec_chardev_ioctl_xcmd(struct cros_ec_dev *ec, void __user *arg)
+diff --git a/arch/arm/include/asm/arch_gicv3.h b/arch/arm/include/asm/arch_gicv3.h
+index 413abfb42989..f82a819eb0db 100644
+--- a/arch/arm/include/asm/arch_gicv3.h
++++ b/arch/arm/include/asm/arch_gicv3.h
+@@ -48,6 +48,7 @@ static inline u32 read_ ## a64(void)		\
+ 	return read_sysreg(a32); 		\
+ }						\
+ 
++CPUIF_MAP(ICC_EOIR1, ICC_EOIR1_EL1)
+ CPUIF_MAP(ICC_PMR, ICC_PMR_EL1)
+ CPUIF_MAP(ICC_AP0R0, ICC_AP0R0_EL1)
+ CPUIF_MAP(ICC_AP0R1, ICC_AP0R1_EL1)
+@@ -63,12 +64,6 @@ CPUIF_MAP(ICC_AP1R3, ICC_AP1R3_EL1)
+ 
+ /* Low-level accessors */
+ 
+-static inline void gic_write_eoir(u32 irq)
+-{
+-	write_sysreg(irq, ICC_EOIR1);
+-	isb();
+-}
+-
+ static inline void gic_write_dir(u32 val)
+ {
+ 	write_sysreg(val, ICC_DIR);
+diff --git a/arch/arm64/include/asm/arch_gicv3.h b/arch/arm64/include/asm/arch_gicv3.h
+index 8bd5afc7b692..48d4473e8eee 100644
+--- a/arch/arm64/include/asm/arch_gicv3.h
++++ b/arch/arm64/include/asm/arch_gicv3.h
+@@ -26,12 +26,6 @@
+  * sets the GP register's most significant bits to 0 with an explicit cast.
+  */
+ 
+-static inline void gic_write_eoir(u32 irq)
+-{
+-	write_sysreg_s(irq, SYS_ICC_EOIR1_EL1);
+-	isb();
+-}
+-
+ static __always_inline void gic_write_dir(u32 irq)
+ {
+ 	write_sysreg_s(irq, SYS_ICC_DIR_EL1);
+diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index 7305d84f2df5..0cbc4e25c48d 100644
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -556,7 +556,8 @@ static void gic_irq_nmi_teardown(struct irq_data *d)
+ 
+ static void gic_eoi_irq(struct irq_data *d)
+ {
+-	gic_write_eoir(gic_irq(d));
++	write_gicreg(gic_irq(d), ICC_EOIR1_EL1);
++	isb();
+ }
+ 
+ static void gic_eoimode1_eoi_irq(struct irq_data *d)
+@@ -640,10 +641,38 @@ static void gic_deactivate_unhandled(u32 irqnr)
+ 		if (irqnr < 8192)
+ 			gic_write_dir(irqnr);
+ 	} else {
+-		gic_write_eoir(irqnr);
++		write_gicreg(irqnr, ICC_EOIR1_EL1);
++		isb();
+ 	}
+ }
+ 
++/*
++ * Follow a read of the IAR with any HW maintenance that needs to happen prior
++ * to invoking the relevant IRQ handler. We must do two things:
++ *
++ * (1) Ensure instruction ordering between a read of IAR and subsequent
++ *     instructions in the IRQ handler using an ISB.
++ *
++ *     It is possible for the IAR to report an IRQ which was signalled *after*
++ *     the CPU took an IRQ exception as multiple interrupts can race to be
++ *     recognized by the GIC, earlier interrupts could be withdrawn, and/or
++ *     later interrupts could be prioritized by the GIC.
++ *
++ *     For devices which are tightly coupled to the CPU, such as PMUs, a
++ *     context synchronization event is necessary to ensure that system
++ *     register state is not stale, as these may have been indirectly written
++ *     *after* exception entry.
++ *
++ * (2) Deactivate the interrupt when EOI mode 1 is in use.
++ */
++static inline void gic_complete_ack(u32 irqnr)
++{
++	if (static_branch_likely(&supports_deactivate_key))
++		write_gicreg(irqnr, ICC_EOIR1_EL1);
++
++	isb();
++}
++
+ static inline void gic_handle_nmi(u32 irqnr, struct pt_regs *regs)
+ {
+ 	bool irqs_enabled = interrupts_enabled(regs);
+@@ -652,10 +681,7 @@ static inline void gic_handle_nmi(u32 irqnr, struct pt_regs *regs)
+ 	if (irqs_enabled)
+ 		nmi_enter();
+ 
+-	if (static_branch_likely(&supports_deactivate_key))
+-		gic_write_eoir(irqnr);
+-	else
+-		isb()
++	gic_complete_ack(irqnr);
+ 
+ 	/*
+ 	 * Leave the PSR.I bit set to prevent other NMIs to be
+@@ -726,10 +752,7 @@ static asmlinkage void __exception_irq_entry gic_handle_irq(struct pt_regs *regs
+ 		gic_arch_enable_irqs();
  	}
  
- 	s_cmd->command += ec->cmd_offset;
--	ret = cros_ec_cmd_xfer_status(ec->ec_dev, s_cmd);
-+	ret = cros_ec_cmd_xfer(ec->ec_dev, s_cmd);
- 	/* Only copy data to userland if data was received. */
- 	if (ret < 0)
- 		goto exit;
-diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index c4caf2e2de82..ac1419881ff3 100644
---- a/drivers/platform/chrome/cros_ec_proto.c
-+++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -560,22 +560,28 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
- EXPORT_SYMBOL(cros_ec_query_all);
+-	if (static_branch_likely(&supports_deactivate_key))
+-		gic_write_eoir(irqnr);
+-	else
+-		isb();
++	gic_complete_ack(irqnr);
  
- /**
-- * cros_ec_cmd_xfer_status() - Send a command to the ChromeOS EC.
-+ * cros_ec_cmd_xfer() - Send a command to the ChromeOS EC.
-  * @ec_dev: EC device.
-  * @msg: Message to write.
-  *
-- * Call this to send a command to the ChromeOS EC. This should be used instead of calling the EC's
-- * cmd_xfer() callback directly. It returns success status only if both the command was transmitted
-- * successfully and the EC replied with success status.
-+ * Call this to send a command to the ChromeOS EC. This should be used instead
-+ * of calling the EC's cmd_xfer() callback directly. This function does not
-+ * convert EC command execution error codes to Linux error codes. Most
-+ * in-kernel users will want to use cros_ec_cmd_xfer_status() instead since
-+ * that function implements the conversion.
-  *
-  * Return:
-- * >=0 - The number of bytes transferred
-- * <0 - Linux error code
-+ * >0 - EC command was executed successfully. The return value is the number
-+ *      of bytes returned by the EC (excluding the header).
-+ * =0 - EC communication was successful. EC command execution results are
-+ *      reported in msg->result. The result will be EC_RES_SUCCESS if the
-+ *      command was executed successfully or report an EC command execution
-+ *      error.
-+ * <0 - EC communication error. Return value is the Linux error code.
-  */
--int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
--			    struct cros_ec_command *msg)
-+int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
- {
--	int ret, mapped;
-+	int ret;
- 
- 	mutex_lock(&ec_dev->lock);
- 	if (ec_dev->proto_version == EC_PROTO_VERSION_UNKNOWN) {
-@@ -616,6 +622,32 @@ int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
- 	ret = send_command(ec_dev, msg);
- 	mutex_unlock(&ec_dev->lock);
- 
-+	return ret;
-+}
-+EXPORT_SYMBOL(cros_ec_cmd_xfer);
-+
-+/**
-+ * cros_ec_cmd_xfer_status() - Send a command to the ChromeOS EC.
-+ * @ec_dev: EC device.
-+ * @msg: Message to write.
-+ *
-+ * Call this to send a command to the ChromeOS EC. This should be used instead of calling the EC's
-+ * cmd_xfer() callback directly. It returns success status only if both the command was transmitted
-+ * successfully and the EC replied with success status.
-+ *
-+ * Return:
-+ * >=0 - The number of bytes transferred.
-+ * <0 - Linux error code
-+ */
-+int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
-+			    struct cros_ec_command *msg)
-+{
-+	int ret, mapped;
-+
-+	ret = cros_ec_cmd_xfer(ec_dev, msg);
-+	if (ret < 0)
-+		return ret;
-+
- 	mapped = cros_ec_map_error(msg->result);
- 	if (mapped) {
- 		dev_dbg(ec_dev->dev, "Command result (err: %d [%d])\n",
-diff --git a/include/linux/platform_data/cros_ec_proto.h b/include/linux/platform_data/cros_ec_proto.h
-index df3c78c92ca2..16931569adce 100644
---- a/include/linux/platform_data/cros_ec_proto.h
-+++ b/include/linux/platform_data/cros_ec_proto.h
-@@ -216,6 +216,9 @@ int cros_ec_prepare_tx(struct cros_ec_device *ec_dev,
- int cros_ec_check_result(struct cros_ec_device *ec_dev,
- 			 struct cros_ec_command *msg);
- 
-+int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev,
-+		     struct cros_ec_command *msg);
-+
- int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
- 			    struct cros_ec_command *msg);
- 
+ 	if (generic_handle_domain_irq(gic_data.domain, irqnr)) {
+ 		WARN_ONCE(true, "Unexpected interrupt received!\n");
 -- 
 2.35.1
 
