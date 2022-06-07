@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BA4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:21:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 175FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:21:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355819AbiFGTVa (ORCPT
+        id S1355894AbiFGTVf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38892 "EHLO
+        Tue, 7 Jun 2022 15:21:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352548AbiFGSbE (ORCPT
+        with ESMTP id S1352495AbiFGSbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:31:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E678A146432;
-        Tue,  7 Jun 2022 10:56:29 -0700 (PDT)
+        Tue, 7 Jun 2022 14:31:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 596C117B87F;
+        Tue,  7 Jun 2022 10:56:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F87A61882;
-        Tue,  7 Jun 2022 17:56:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A974FC34115;
-        Tue,  7 Jun 2022 17:56:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EBB72B82372;
+        Tue,  7 Jun 2022 17:56:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45647C385A5;
+        Tue,  7 Jun 2022 17:56:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624588;
-        bh=O5JT5+VvzEisjjF0FEtEb5N0G8F6D2H0gpnUHuMuMkU=;
+        s=korg; t=1654624579;
+        bh=HQLfXi5VClokbUvWbIwBneJQw4BcuwFWA1nTon43szk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JwdGA1HPSzRNvE8irfs71tnidbDrHJ/UehwrsUKLgqNR6Qw0f4S+SQ4l8ATAKgAQD
-         e8H9AH0UNs67HFn63QPFShvoYMdMmQTZiG3+pQbxkbHhW5W0jzE/aG5FRVj93q2zvU
-         JgCbji3jxt99DV1CgP7frljZYX/KaXbSBRpTiFmw=
+        b=HgxocYdUJpHWAf1RiiVXL7SBrbXy7/HmnIev+kIAjXslIDCtiCdmUT3s1ynUAxx2Y
+         7AAkxe+CvTm0mkv/Fa2tvKr7Rf01DIevB94ZPDh7LnD8pMsTQiY3rGTEwK9AHXpk/u
+         BttGSRCcw+9LStClyl4Ny90NYMiNiOzuiV4QHrKw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        David Rientjes <rientjes@google.com>,
+        stable@vger.kernel.org, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Stephen Boyd <swboyd@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 380/667] dma-direct: dont over-decrypt memory
-Date:   Tue,  7 Jun 2022 19:00:45 +0200
-Message-Id: <20220607164946.146389737@linuxfoundation.org>
+Subject: [PATCH 5.15 351/667] drm/msm/dpu: handle pm_runtime_get_sync() errors in bind path
+Date:   Tue,  7 Jun 2022 19:00:16 +0200
+Message-Id: <20220607164945.285394943@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,54 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Abhinav Kumar <quic_abhinavk@quicinc.com>
 
-[ Upstream commit 4a37f3dd9a83186cb88d44808ab35b78375082c9 ]
+[ Upstream commit 64b22a0da12adb571c01edd671ee43634ebd7e41 ]
 
-The original x86 sev_alloc() only called set_memory_decrypted() on
-memory returned by alloc_pages_node(), so the page order calculation
-fell out of that logic. However, the common dma-direct code has several
-potential allocators, not all of which are guaranteed to round up the
-underlying allocation to a power-of-two size, so carrying over that
-calculation for the encryption/decryption size was a mistake. Fix it by
-rounding to a *number* of pages, rather than an order.
+If there are errors while trying to enable the pm in the
+bind path, it will lead to unclocked access of hw revision
+register thereby crashing the device.
 
-Until recently there was an even worse interaction with DMA_DIRECT_REMAP
-where we could have ended up decrypting part of the next adjacent
-vmalloc area, only averted by no architecture actually supporting both
-configs at once. Don't ask how I found that one out...
+This will not address why the pm_runtime_get_sync() fails
+but at the very least we should be able to prevent the
+crash by handling the error and bailing out earlier.
 
-Fixes: c10f07aa27da ("dma/direct: Handle force decryption for DMA coherent buffers in common code")
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Acked-by: David Rientjes <rientjes@google.com>
+changes in v2:
+	- use pm_runtime_resume_and_get() instead of
+	  pm_runtime_get_sync()
+
+Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
+Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Reviewed-by: Rob Clark <robdclark@gmail.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Patchwork: https://patchwork.freedesktop.org/patch/486721/
+Link: https://lore.kernel.org/r/20220518223407.26147-1-quic_abhinavk@quicinc.com
+Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/direct.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 8e24455dd236..854d6df969de 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -79,7 +79,7 @@ static int dma_set_decrypted(struct device *dev, void *vaddr, size_t size)
- {
- 	if (!force_dma_unencrypted(dev))
- 		return 0;
--	return set_memory_decrypted((unsigned long)vaddr, 1 << get_order(size));
-+	return set_memory_decrypted((unsigned long)vaddr, PFN_UP(size));
- }
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+index 33ce6720dfae..2870b0ffe1eb 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+@@ -1001,7 +1001,9 @@ static int dpu_kms_hw_init(struct msm_kms *kms)
  
- static int dma_set_encrypted(struct device *dev, void *vaddr, size_t size)
-@@ -88,7 +88,7 @@ static int dma_set_encrypted(struct device *dev, void *vaddr, size_t size)
+ 	dpu_kms_parse_data_bus_icc_path(dpu_kms);
  
- 	if (!force_dma_unencrypted(dev))
- 		return 0;
--	ret = set_memory_encrypted((unsigned long)vaddr, 1 << get_order(size));
-+	ret = set_memory_encrypted((unsigned long)vaddr, PFN_UP(size));
- 	if (ret)
- 		pr_warn_ratelimited("leaking DMA memory that can't be re-encrypted\n");
- 	return ret;
+-	pm_runtime_get_sync(&dpu_kms->pdev->dev);
++	rc = pm_runtime_resume_and_get(&dpu_kms->pdev->dev);
++	if (rc < 0)
++		goto error;
+ 
+ 	dpu_kms->core_rev = readl_relaxed(dpu_kms->mmio + 0x0);
+ 
 -- 
 2.35.1
 
