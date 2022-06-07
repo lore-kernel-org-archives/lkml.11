@@ -2,213 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62014CCA499
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34F36CCA498
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379102AbiFGVCE (ORCPT
+        id S1378705AbiFGVBq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:02:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56954 "EHLO
+        Tue, 7 Jun 2022 17:01:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357468AbiFGT7B (ORCPT
+        with ESMTP id S1357020AbiFGT6h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:59:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D291BAEA4;
-        Tue,  7 Jun 2022 11:24:25 -0700 (PDT)
+        Tue, 7 Jun 2022 15:58:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00AEA4B84C
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:24:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F7EF612D6;
-        Tue,  7 Jun 2022 18:24:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CCFCC385A2;
-        Tue,  7 Jun 2022 18:24:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626262;
-        bh=GCh6kT3IGDooRp7qaYGIFhVHbIrElAMWzQRP3wplR4Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=afZODg0gNUgumCTZvJqF+G6thF0+JfypVMcaZxl4M+lte1Tsroy5ghxQwAuT+UvAQ
-         ep2TeNu8lWsSgb0p+T+/X6sZ5+Sq9n2aFvRCLLLUg8J0bBx7FIKR57ykKbarIZJR7E
-         SHc0lMpIfpKCajhLqvJcfdRXinuXq2hgxmTeXolY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 315/772] drm/msm/dp: stop event kernel thread when DP unbind
-Date:   Tue,  7 Jun 2022 18:58:27 +0200
-Message-Id: <20220607164958.309529455@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        by ams.source.kernel.org (Postfix) with ESMTPS id 436CDB82380
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:24:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE8D3C385A2;
+        Tue,  7 Jun 2022 18:24:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1654626258;
+        bh=WQze2jI4iLnLMMFgWUExS0e2SHPtgx75puArLYQyzlY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=yNSqos55DIOrQcDPFBGRPyBCr/BoKJ6v2elSgDa9VbxpUZXDxHDJcfc7OVVYp7dyF
+         bnVDWVaOXXUxUBpoikT79XhshrnvuF5VRvM6hOZLCK89Nt7J+njfb2Q0U/q2/8ulwl
+         zjBNPDzDoryS04iD9Nd7dG+GfVOJJCzmCkHtAAg8=
+Date:   Tue, 7 Jun 2022 11:24:17 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Charan Teja Kalla <quic_charante@quicinc.com>
+Cc:     <willy@infradead.org>, <markhemm@googlemail.com>,
+        <hughd@google.com>, <rientjes@google.com>, <surenb@google.com>,
+        <shakeelb@google.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH RESEND V5,2/2] mm: shmem: implement
+ POSIX_FADV_[WILL|DONT]NEED for shmem
+Message-Id: <20220607112417.5b47a5f55f20fe1f6cfb14e6@linux-foundation.org>
+In-Reply-To: <7584364f-3aaf-282a-0a67-d8329a3415dc@quicinc.com>
+References: <cover.1648706231.git.quic_charante@quicinc.com>
+        <c2f7242faffd41f46120f82079256ece26b92bf0.1648706231.git.quic_charante@quicinc.com>
+        <20220531142135.666b1fcf506e4a327af98ff9@linux-foundation.org>
+        <7584364f-3aaf-282a-0a67-d8329a3415dc@quicinc.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+On Tue, 7 Jun 2022 20:22:34 +0530 Charan Teja Kalla <quic_charante@quicinc.com> wrote:
 
-[ Upstream commit 570d3e5d28db7a94557fa179167a9fb8642fb8a1 ]
+> > Is there an actual userspace/driver combination which will use this? 
+> > Has the new feature been tested in such an arrangement?  And if so,
+> > which driver(s)?
+> > 
+> 
+> Currently my organization is using this setup where it does makes use of
+> the shmem infrastructure to allocate the pages and its fd is passed to
+> the user. The user is now deciding on when to reclaim these pages to
+> free up the memory through already presented vfs_fadvise(DONTNEED)
+> system call and bringing back them through vfs_fadvise(WILLNEED), when
 
-Current DP driver implementation, event thread is kept running
-after DP display is unbind. This patch fix this problem by disabling
-DP irq and stop event thread to exit gracefully at dp_display_unbind().
+OK, thanks.  Please capture all these thoughts in the [0/n] changelog,
+leave it a few days for reviewer input then resend and I'll take a
+closer look.
 
-Changes in v2:
--- start event thread at dp_display_bind()
-
-Changes in v3:
--- disable all HDP interrupts at unbind
--- replace dp_hpd_event_setup() with dp_hpd_event_thread_start()
--- replace dp_hpd_event_stop() with dp_hpd_event_thread_stop()
--- move init_waitqueue_head(&dp->event_q) to probe()
--- move spin_lock_init(&dp->event_lock) to probe()
-
-Changes in v4:
--- relocate both dp_display_bind() and dp_display_unbind() to bottom of file
-
-Changes in v5:
--- cancel relocation of both dp_display_bind() and dp_display_unbind()
-
-Changes in v6:
--- move empty event q to dp_event_thread_start()
-
-Changes in v7:
--- call ktheread_stop() directly instead of dp_hpd_event_thread_stop() function
-
-Changes in v8:
--- return error immediately if audio registration failed.
-
-Changes in v9:
--- return error immediately if event thread create failed.
-
-Changes in v10:
--- delete extra  DRM_ERROR("failed to create DP event thread\n");
-
-Fixes: 8ede2ecc3e5e ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/482399/
-Link: https://lore.kernel.org/r/1650318988-17580-1-git-send-email-quic_khsieh@quicinc.com
-[DB: fixed Fixes tag]
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/msm/dp/dp_display.c | 39 +++++++++++++++++++++++------
- 1 file changed, 31 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 1d7f82e6eafe..229c699f6227 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -113,6 +113,7 @@ struct dp_display_private {
- 	u32 hpd_state;
- 	u32 event_pndx;
- 	u32 event_gndx;
-+	struct task_struct *ev_tsk;
- 	struct dp_event event_list[DP_EVENT_Q_MAX];
- 	spinlock_t event_lock;
- 
-@@ -230,6 +231,8 @@ void dp_display_signal_audio_complete(struct msm_dp *dp_display)
- 	complete_all(&dp->audio_comp);
- }
- 
-+static int dp_hpd_event_thread_start(struct dp_display_private *dp_priv);
-+
- static int dp_display_bind(struct device *dev, struct device *master,
- 			   void *data)
- {
-@@ -263,9 +266,18 @@ static int dp_display_bind(struct device *dev, struct device *master,
- 	}
- 
- 	rc = dp_register_audio_driver(dev, dp->audio);
--	if (rc)
-+	if (rc) {
- 		DRM_ERROR("Audio registration Dp failed\n");
-+		goto end;
-+	}
- 
-+	rc = dp_hpd_event_thread_start(dp);
-+	if (rc) {
-+		DRM_ERROR("Event thread create failed\n");
-+		goto end;
-+	}
-+
-+	return 0;
- end:
- 	return rc;
- }
-@@ -276,6 +288,11 @@ static void dp_display_unbind(struct device *dev, struct device *master,
- 	struct dp_display_private *dp = dev_get_dp_display_private(dev);
- 	struct msm_drm_private *priv = dev_get_drvdata(master);
- 
-+	/* disable all HPD interrupts */
-+	dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_INT_MASK, false);
-+
-+	kthread_stop(dp->ev_tsk);
-+
- 	dp_power_client_deinit(dp->power);
- 	dp_aux_unregister(dp->aux);
- 	priv->dp[dp->id] = NULL;
-@@ -1048,7 +1065,7 @@ static int hpd_event_thread(void *data)
- 
- 	dp_priv = (struct dp_display_private *)data;
- 
--	while (1) {
-+	while (!kthread_should_stop()) {
- 		if (timeout_mode) {
- 			wait_event_timeout(dp_priv->event_q,
- 				(dp_priv->event_pndx == dp_priv->event_gndx),
-@@ -1126,12 +1143,17 @@ static int hpd_event_thread(void *data)
- 	return 0;
- }
- 
--static void dp_hpd_event_setup(struct dp_display_private *dp_priv)
-+static int dp_hpd_event_thread_start(struct dp_display_private *dp_priv)
- {
--	init_waitqueue_head(&dp_priv->event_q);
--	spin_lock_init(&dp_priv->event_lock);
-+	/* set event q to empty */
-+	dp_priv->event_gndx = 0;
-+	dp_priv->event_pndx = 0;
- 
--	kthread_run(hpd_event_thread, dp_priv, "dp_hpd_handler");
-+	dp_priv->ev_tsk = kthread_run(hpd_event_thread, dp_priv, "dp_hpd_handler");
-+	if (IS_ERR(dp_priv->ev_tsk))
-+		return PTR_ERR(dp_priv->ev_tsk);
-+
-+	return 0;
- }
- 
- static irqreturn_t dp_display_irq_handler(int irq, void *dev_id)
-@@ -1260,7 +1282,10 @@ static int dp_display_probe(struct platform_device *pdev)
- 		return -EPROBE_DEFER;
- 	}
- 
-+	/* setup event q */
- 	mutex_init(&dp->event_mutex);
-+	init_waitqueue_head(&dp->event_q);
-+	spin_lock_init(&dp->event_lock);
- 
- 	/* Store DP audio handle inside DP display */
- 	dp->dp_display.dp_audio = dp->audio;
-@@ -1435,8 +1460,6 @@ void msm_dp_irq_postinstall(struct msm_dp *dp_display)
- 
- 	dp = container_of(dp_display, struct dp_display_private, dp_display);
- 
--	dp_hpd_event_setup(dp);
--
- 	dp_add_event(dp, EV_HPD_INIT_SETUP, 0, 100);
- }
- 
--- 
-2.35.1
-
-
-
+The patches don't seem to be getting a lot of traction.
