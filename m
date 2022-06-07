@@ -2,34 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F017C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:57:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39B2AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:57:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348822AbiFGR5h (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35728 "EHLO
+        id S236606AbiFGR5m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 13:57:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347589AbiFGRf1 (ORCPT
+        with ESMTP id S1347533AbiFGRfU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:35:27 -0400
+        Tue, 7 Jun 2022 13:35:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5A5D8C;
-        Tue,  7 Jun 2022 10:30:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A53B6110478;
+        Tue,  7 Jun 2022 10:30:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E845614B5;
-        Tue,  7 Jun 2022 17:30:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15669C385A5;
-        Tue,  7 Jun 2022 17:30:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 598CD614B2;
+        Tue,  7 Jun 2022 17:30:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DA90C385A5;
+        Tue,  7 Jun 2022 17:30:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623055;
-        bh=QkOH8aBw7HbsAVaM5zKar+EG2d5a++2v14+Ybugj7nQ=;
+        s=korg; t=1654623049;
+        bh=EFmUdl9NrFEx7bbsKO6ZCv5QzcIZLGeHdaaADbLR9TU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qn9GOwKP2nqA+Sk4ZNdsOjwC25vjBtA40hq45zdqmYZaGimMwws+CBYm8rqk5P0jn
-         s8b977YjS2G7BtpAcMPh202Yiaw8EVweonWFWpW65Zdk2t51vNhYei2LDQIvL8Cu59
-         z0m0Gudhz9bx/arZ1dt5kXk8saMXvpJbTruWbzmc=
+        b=E94cVvFVBLfAJceg7hQGBZIYqh9GX+psnkF8kh4zDW9H871WguYtScNnsJTLNgW/3
+         gIb/OfIbCyd3wd4F+xEmKm8fCI43rmcs3JNbTCgLoKSjUsEqN1CeGF4XPWE0LiDghP
+         iw+tjUJ4PnJQa1ESnf5d5AVeAHHI2h/vlYViX4FY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Stefan Wahren <stefan.wahren@i2se.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 278/452] ARM: dts: bcm2835-rpi-b: Fix GPIO line names
-Date:   Tue,  7 Jun 2022 19:02:15 +0200
-Message-Id: <20220607164916.834300719@linuxfoundation.org>
+Subject: [PATCH 5.10 276/452] ARM: dts: bcm2837-rpi-cm3-io3: Fix GPIO line names for SMPS I2C
+Date:   Tue,  7 Jun 2022 19:02:13 +0200
+Message-Id: <20220607164916.774976870@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,50 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Wahren <stefan.wahren@i2se.com>
+From: Phil Elwell <phil@raspberrypi.com>
 
-[ Upstream commit 97bd8659c1c46c23e4daea7e040befca30939950 ]
+[ Upstream commit 9fd26fd02749ec964eb0d588a3bab9e09bf77927 ]
 
-Recently this has been fixed in the vendor tree, so upstream this.
+The GPIOs 46 & 47 are already used for a I2C interface to a SMPS.
+So fix the GPIO line names accordingly.
 
-Fixes: 731b26a6ac17 ("ARM: bcm2835: Add names for the Raspberry Pi GPIO lines")
+Fixes: a54fe8a6cf66 ("ARM: dts: add Raspberry Pi Compute Module 3 and IO board")
 Signed-off-by: Phil Elwell <phil@raspberrypi.com>
 Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/bcm2835-rpi-b.dts | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/bcm2835-rpi-b.dts b/arch/arm/boot/dts/bcm2835-rpi-b.dts
-index 1b63d6b19750..25d87212cefd 100644
---- a/arch/arm/boot/dts/bcm2835-rpi-b.dts
-+++ b/arch/arm/boot/dts/bcm2835-rpi-b.dts
-@@ -53,18 +53,17 @@
- 			  "GPIO18",
- 			  "NC", /* GPIO19 */
- 			  "NC", /* GPIO20 */
--			  "GPIO21",
-+			  "CAM_GPIO0",
- 			  "GPIO22",
- 			  "GPIO23",
- 			  "GPIO24",
- 			  "GPIO25",
- 			  "NC", /* GPIO26 */
--			  "CAM_GPIO0",
--			  /* Binary number representing build/revision */
--			  "CONFIG0",
--			  "CONFIG1",
--			  "CONFIG2",
--			  "CONFIG3",
-+			  "GPIO27",
-+			  "GPIO28",
-+			  "GPIO29",
-+			  "GPIO30",
-+			  "GPIO31",
- 			  "NC", /* GPIO32 */
- 			  "NC", /* GPIO33 */
- 			  "NC", /* GPIO34 */
+diff --git a/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts b/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
+index 588d9411ceb6..3dfce4312dfc 100644
+--- a/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
++++ b/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
+@@ -63,8 +63,8 @@
+ 			  "GPIO43",
+ 			  "GPIO44",
+ 			  "GPIO45",
+-			  "GPIO46",
+-			  "GPIO47",
++			  "SMPS_SCL",
++			  "SMPS_SDA",
+ 			  /* Used by eMMC */
+ 			  "SD_CLK_R",
+ 			  "SD_CMD_R",
 -- 
 2.35.1
 
