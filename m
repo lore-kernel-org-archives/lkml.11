@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89F09C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:43:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91DD6C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376767AbiFGWn3 (ORCPT
+        id S1385219AbiFGWpl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:43:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51148 "EHLO
+        Tue, 7 Jun 2022 18:45:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380962AbiFGVb3 (ORCPT
+        with ESMTP id S1379510AbiFGVcq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:31:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E9022C48A;
-        Tue,  7 Jun 2022 12:03:46 -0700 (PDT)
+        Tue, 7 Jun 2022 17:32:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4E114AF57;
+        Tue,  7 Jun 2022 12:04:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 511E561787;
-        Tue,  7 Jun 2022 19:03:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B518C385A5;
-        Tue,  7 Jun 2022 19:03:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09887B823B0;
+        Tue,  7 Jun 2022 19:04:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FDFAC385A2;
+        Tue,  7 Jun 2022 19:04:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628625;
-        bh=zSnVlhW/14uuf00xfXho1fmtRW66XvmRpAvec8GzY9k=;
+        s=korg; t=1654628650;
+        bh=h52zxNpYYU8WCZXmj5zjTKIXV+j+MQqMSEZmLGWkZrc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZfceRaW/6ZLtbjvtITPUg1VVEPJkC1UQ1oxKPz3U+soI01hmZD5HH+Mt5UneXQgoB
-         I46rsJhtGnrUB/OkZ58tkCG5mQ0j1cn+iIDLQ52mu5dqL/aRW94RlFbyehaiJRmIgf
-         Xq+8zDwXicHlu1UJIE4XmTfBg/PJRBouk1vlG2JQ=
+        b=Lh5f4Uyqf4nbNK5iv7MifFpdpysdAHkf4XbMEyxkckEr87kLJPqxK60e981OViGrk
+         zLhja9qrAkkvW8baV4FU1bY7lnElJkkonV6548mzq2Uh8HxISSTNBusW+z3GbWMB9M
+         nJhP/viaCjk70LIxClO8+dSZZN53KSoka6sIuMw8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 397/879] drm/msm/dsi: fix address for second DSI PHY on SDM660
-Date:   Tue,  7 Jun 2022 18:58:35 +0200
-Message-Id: <20220607165014.388329954@linuxfoundation.org>
+Subject: [PATCH 5.18 405/879] spi: spi-fsl-qspi: check return value after calling platform_get_resource_byname()
+Date:   Tue,  7 Jun 2022 18:58:43 +0200
+Message-Id: <20220607165014.618258607@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,39 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 9208c707650354dff5b164b586837454f7285124 ]
+[ Upstream commit a2b331ac11e1cac56f5b7d367e9f3c5796deaaed ]
 
-Correct a typo in the address of the second DSI PHY in the SDM660 device
-config.
+It will cause null-ptr-deref if platform_get_resource_byname() returns NULL,
+we need check the return value.
 
-Fixes: 694dd304cc29 ("drm/msm/dsi: Add phy configuration for SDM630/636/660")
-Cc: Konrad Dybcio <konrad.dybcio@somainline.org>
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Patchwork: https://patchwork.freedesktop.org/patch/484697/
-Link: https://lore.kernel.org/r/20220503204340.935532-1-dmitry.baryshkov@linaro.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fixes: 858e26a515c2 ("spi: spi-fsl-qspi: Reduce devm_ioremap size to 4 times AHB buffer size")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220505093954.1285615-1-yangyingliang@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/spi/spi-fsl-qspi.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c
-index 75557ac99adf..8199c53567f4 100644
---- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c
-+++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c
-@@ -1062,7 +1062,7 @@ const struct msm_dsi_phy_cfg dsi_phy_14nm_660_cfgs = {
- 	},
- 	.min_pll_rate = VCO_MIN_RATE,
- 	.max_pll_rate = VCO_MAX_RATE,
--	.io_start = { 0xc994400, 0xc996000 },
-+	.io_start = { 0xc994400, 0xc996400 },
- 	.num_dsi_phy = 2,
- };
+diff --git a/drivers/spi/spi-fsl-qspi.c b/drivers/spi/spi-fsl-qspi.c
+index 9851551ebbe0..46ae46a944c5 100644
+--- a/drivers/spi/spi-fsl-qspi.c
++++ b/drivers/spi/spi-fsl-qspi.c
+@@ -876,6 +876,10 @@ static int fsl_qspi_probe(struct platform_device *pdev)
  
+ 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
+ 					"QuadSPI-memory");
++	if (!res) {
++		ret = -EINVAL;
++		goto err_put_ctrl;
++	}
+ 	q->memmap_phy = res->start;
+ 	/* Since there are 4 cs, map size required is 4 times ahb_buf_size */
+ 	q->ahb_addr = devm_ioremap(dev, q->memmap_phy,
 -- 
 2.35.1
 
