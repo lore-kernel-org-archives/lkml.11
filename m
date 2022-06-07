@@ -2,87 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAADFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:33:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3112CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:35:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243761AbiFGMdV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:33:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45024 "EHLO
+        id S243787AbiFGMfS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242695AbiFGMdS (ORCPT
+        with ESMTP id S242695AbiFGMfP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:33:18 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65E2C6D198;
-        Tue,  7 Jun 2022 05:33:17 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Tue, 7 Jun 2022 08:35:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886BDB0A44
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:35:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 0B8A71F968;
-        Tue,  7 Jun 2022 12:33:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1654605196; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=uf7X1P+eft8n9oLVYCmNH8QJXSIXiGGa7r7u8nKCitc=;
-        b=EMI1NXVUQfGwxPLsSKYWQMJ5ZCBqj7rJKlkmNJDrH7q0XIOuz9UKMSDkxLwjm7nbDL8JBK
-        HHTyLMF42yzpuX9ExVXtnN+tSWGFrsXK5bBTlzOZkwLdwoXoQOqTNKiV1c0rWWcAlsTZRN
-        9zZQcFTsZK2KglSQ+5TW+6bMYb1vFXg=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C18F513A88;
-        Tue,  7 Jun 2022 12:33:15 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id cxjULYtFn2LPDAAAMHmgww
-        (envelope-from <jgross@suse.com>); Tue, 07 Jun 2022 12:33:15 +0000
-From:   Juergen Gross <jgross@suse.com>
-To:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>
-Subject: [PATCH] s390/kvm: avoid hypfs error message
-Date:   Tue,  7 Jun 2022 14:33:14 +0200
-Message-Id: <20220607123314.10255-1-jgross@suse.com>
-X-Mailer: git-send-email 2.35.3
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A0DE6062B
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:35:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB273C34115;
+        Tue,  7 Jun 2022 12:35:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654605311;
+        bh=YTReIKFapkRU/vz0TQ4ZybHkAiDZOqBVEplw3ml6HGY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eDjt13GG68qEmMTz09aQ0LrFH3FHYIRRjlbWRXxgUKadxTHsXEWn4uD0HSVF1Lfvv
+         CGeDiWJP6+avear1/tbhZwahJS8sjkEXpN/sLsJnpXnCgvK9PUoZ0P0awhrqpYQbTW
+         pveJl9BpbJo6IOv+iWGioH2FOsvb+Gzo1Xe0MU0j1huXRh4tN4hY63oQuTzCvT5E9m
+         zBIfEghcalLJ+2M/a/sqk+UhmdiagifNTCDIvr2ZHhdEIuxgEOLfNATwfCuLNQZqTw
+         4mlGtycCQDQcYqHDyekatgxa2ckU8knGJs6GdfPCrqnBRQVW7C311JaavpURXj85WY
+         anXcmVZaVM7Nw==
+Date:   Tue, 7 Jun 2022 13:35:06 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Lukasz Majewski <lukma@denx.de>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>, linux-kernel@vger.kernel.org,
+        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
+        Takashi Iwai <tiwai@suse.com>, Jaroslav Kysela <perex@perex.cz>
+Subject: Re: [PATCH 1/3] ASoC: wm8940: Remove warning when no plat data
+Message-ID: <Yp9F+r1WryNFzyrM@sirena.org.uk>
+References: <20220606154441.20848-1-lukma@denx.de>
+ <Yp4iGvGFD9jo4WUP@sirena.org.uk>
+ <20220606181731.04b6f771@ktm>
+ <Yp4wzS0aLEo5werI@sirena.org.uk>
+ <20220607143039.01cdff80@ktm>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="VwEHQR+T8zP616/F"
+Content-Disposition: inline
+In-Reply-To: <20220607143039.01cdff80@ktm>
+X-Cookie: Where's SANDY DUNCAN?
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When booting under KVM the following error messages are issued:
 
-hypfs.7f5705: The hardware system does not support hypfs
-hypfs.7a79f0: Initialization of hypfs failed with rc=-61
+--VwEHQR+T8zP616/F
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-While being documented, they can easily be avoided by bailing out of
-hypfs_init() early in case of running as a KVM guest.
+On Tue, Jun 07, 2022 at 02:30:39PM +0200, Lukasz Majewski wrote:
+> > On Mon, Jun 06, 2022 at 06:17:31PM +0200, Lukasz Majewski wrote:
+> > > > On Mon, Jun 06, 2022 at 05:44:39PM +0200, Lukasz Majewski wrote: =
+=20
 
-Signed-off-by: Juergen Gross <jgross@suse.com>
----
- arch/s390/hypfs/inode.c | 3 +++
- 1 file changed, 3 insertions(+)
+> > > My point is that - similar codec - wm8974 don't display such
+> > > warnings. (this code was not updated/refactored for a quite long
+> > > time). =20
 
-diff --git a/arch/s390/hypfs/inode.c b/arch/s390/hypfs/inode.c
-index 5c97f48cea91..bdf078f3c641 100644
---- a/arch/s390/hypfs/inode.c
-+++ b/arch/s390/hypfs/inode.c
-@@ -464,6 +464,9 @@ static int __init hypfs_init(void)
- {
- 	int rc;
- 
-+	if (MACHINE_IS_KVM)
-+		return -ENODATA;
-+
- 	hypfs_dbfs_init();
- 
- 	if (hypfs_diag_init()) {
--- 
-2.35.3
+> > Perhaps those drivers are buggy, or those devices lack this specific
+> > configuration that's being adjusted?  The changelog should at least
+> > address why the driver was warning about configuration being required
+> > but it's safe to ignore that.
 
+> With v4.4 from which I forward port those changes only the PXA
+> 'stargate2' mach is using this codec.
+
+> In this version there is no reference to 'vroi'.
+
+That's equivalent to setting a value of 0 given the way platform data
+works.
+
+> I guess that one can provide the 'vroi' information via DTS nowadays if
+> required.
+
+Yes, that's what I'd expect.
+
+--VwEHQR+T8zP616/F
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKfRfkACgkQJNaLcl1U
+h9C+VQf/a2Lo4791u9dihgpYWy514oujclrH2q6cIYgSRs9nrNvyOBW46Lzfk6to
+Bju+dCExmD48HfkH0jLbHI18b+nrtmH2NU6AD5qe9AFlGk/lVtEnECpV+bZBHpKu
+DTEuq94BC1cMe6KWPapmGuoPLmzDw3PTbUu3hGIHm17hHpHzMIzHmOPpNdopO4Sx
+YLRktN3V5F3T55l3KlGTsQKu46ddvNtWKzcBdZCu8APIHZtn9dQnTtdBcD0gtDQz
+FYuiYZfbyIiVbmKdaU3P1Wqb1QN4wXCme7GXyJ5jrEqlNrMzTdcAkgfvkGu66hnf
+EVNDP8a39faQa6wbv1xUu/AcvEDGUA==
+=MyNE
+-----END PGP SIGNATURE-----
+
+--VwEHQR+T8zP616/F--
