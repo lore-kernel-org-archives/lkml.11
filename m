@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 365ABCCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:18:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E090CCA482
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:18:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382998AbiFHBPP (ORCPT
+        id S1384169AbiFHBPV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:15:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38594 "EHLO
+        Tue, 7 Jun 2022 21:15:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382649AbiFGVvm (ORCPT
+        with ESMTP id S1385533AbiFGWbf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:51:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A39F923D5D4;
-        Tue,  7 Jun 2022 12:09:09 -0700 (PDT)
+        Tue, 7 Jun 2022 18:31:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F21279378;
+        Tue,  7 Jun 2022 12:24:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6C906188D;
-        Tue,  7 Jun 2022 19:09:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5AEDC385A2;
-        Tue,  7 Jun 2022 19:09:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B69F06077B;
+        Tue,  7 Jun 2022 19:24:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C547CC385A2;
+        Tue,  7 Jun 2022 19:24:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628948;
-        bh=cNOrBeipYs4+o24KDc75FBnvoDRrZfjh1pCMj8Jy9TM=;
+        s=korg; t=1654629885;
+        bh=Z2Rg58H6WDvcZdH9B/nMDIno5SexIFF77zf26ZQUojA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cK24aMgqOPccQErEIgfbvid26hd1GbU1RciCC6o4YSYJhAXs9Me95Gg/jlSOGYw+z
-         XuEnx4lmklZojWT/pn1Iy0zHMqr93AfkFqw6eA/ONFQIgDJqZvcR8Ob5DMlGNEb1Su
-         kusQU8TSnR5MlgpfMjBAPPkLzNEyl6Zv7l3f5CB0=
+        b=ONtncR4ABwL7YI7uVlIOz1E6PfjlNr8MDHbERrp8rskP2mAYb8vezY5wVl/W4QPdu
+         EKlm1Vd6E01EOBU+N1Vc/xy+QnsorokEyunCkl9I3PV0a0OkBIlLZZ/fym0lr6N/T+
+         iM5Ci64CF+xw9CP5cGRmTHarNbetW0RGbRdmW6OA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adam Wujek <dev_public@wujek.eu>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 515/879] hwmon: (pmbus) Check PEC support before reading other registers
-Date:   Tue,  7 Jun 2022 19:00:33 +0200
-Message-Id: <20220607165017.825232303@linuxfoundation.org>
+        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH 5.18 811/879] irqchip: irq-xtensa-mx: fix initial IRQ affinity
+Date:   Tue,  7 Jun 2022 19:05:29 +0200
+Message-Id: <20220607165026.397816882@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,82 +48,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Wujek <dev_public@wujek.eu>
+From: Max Filippov <jcmvbkbc@gmail.com>
 
-[ Upstream commit d1baf7a3a3177d46a7149858beddb88a9eca7a54 ]
+commit a255ee29252066d621df5d6b420bf534c6ba5bc0 upstream.
 
-Make sure that the support of PEC is determined before the read of other
-registers. Otherwise the validation of PEC can trigger an error on the read
-of STATUS_BYTE or STATUS_WORD registers.
+When irq-xtensa-mx chip is used in non-SMP configuration its
+irq_set_affinity callback is not called leaving IRQ affinity set empty.
+As a result IRQ delivery does not work in that configuration.
+Initialize IRQ affinity of the xtensa MX interrupt distributor to CPU 0
+for all external IRQ lines.
 
-The problematic scenario is the following. A device with enabled PEC
-support is up and running and a kernel driver is loaded.
-Then the driver is unloaded (or device unbound), the HW device
-is reconfigured externally (e.g. by i2cset) to advertise itself as not
-supporting PEC. Without the move of the code, at the second load of
-the driver (or bind) the STATUS_BYTE or STATUS_WORD register is always
-read with PEC enabled, which is likely to cause a read error resulting
-with fail of a driver load (or bind).
-
-Signed-off-by: Adam Wujek <dev_public@wujek.eu>
-Link: https://lore.kernel.org/r/20220519233334.438621-1-dev_public@wujek.eu
-Fixes: 75d2b2b06bd84 ("hwmon: (pmbus) disable PEC if not enabled")
-Fixes: 4e5418f787ec5 ("hwmon: (pmbus_core) Check adapter PEC support")
-[groeck: Added Fixes: tags, dropped continuation line]
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/pmbus/pmbus_core.c | 28 +++++++++++++++-------------
- 1 file changed, 15 insertions(+), 13 deletions(-)
+ drivers/irqchip/irq-xtensa-mx.c |   18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
-index 5a1796650f5b..86429bfa4847 100644
---- a/drivers/hwmon/pmbus/pmbus_core.c
-+++ b/drivers/hwmon/pmbus/pmbus_core.c
-@@ -2308,6 +2308,21 @@ static int pmbus_init_common(struct i2c_client *client, struct pmbus_data *data,
- 	struct device *dev = &client->dev;
- 	int page, ret;
+--- a/drivers/irqchip/irq-xtensa-mx.c
++++ b/drivers/irqchip/irq-xtensa-mx.c
+@@ -151,14 +151,25 @@ static struct irq_chip xtensa_mx_irq_chi
+ 	.irq_set_affinity = xtensa_mx_irq_set_affinity,
+ };
  
-+	/*
-+	 * Figure out if PEC is enabled before accessing any other register.
-+	 * Make sure PEC is disabled, will be enabled later if needed.
-+	 */
-+	client->flags &= ~I2C_CLIENT_PEC;
++static void __init xtensa_mx_init_common(struct irq_domain *root_domain)
++{
++	unsigned int i;
 +
-+	/* Enable PEC if the controller and bus supports it */
-+	if (!(data->flags & PMBUS_NO_CAPABILITY)) {
-+		ret = i2c_smbus_read_byte_data(client, PMBUS_CAPABILITY);
-+		if (ret >= 0 && (ret & PB_CAPABILITY_ERROR_CHECK)) {
-+			if (i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_PEC))
-+				client->flags |= I2C_CLIENT_PEC;
-+		}
-+	}
++	irq_set_default_host(root_domain);
++	secondary_init_irq();
 +
- 	/*
- 	 * Some PMBus chips don't support PMBUS_STATUS_WORD, so try
- 	 * to use PMBUS_STATUS_BYTE instead if that is the case.
-@@ -2326,19 +2341,6 @@ static int pmbus_init_common(struct i2c_client *client, struct pmbus_data *data,
- 		data->has_status_word = true;
- 	}
++	/* Initialize default IRQ routing to CPU 0 */
++	for (i = 0; i < XCHAL_NUM_EXTINTERRUPTS; ++i)
++		set_er(1, MIROUT(i));
++}
++
+ int __init xtensa_mx_init_legacy(struct device_node *interrupt_parent)
+ {
+ 	struct irq_domain *root_domain =
+ 		irq_domain_add_legacy(NULL, NR_IRQS - 1, 1, 0,
+ 				&xtensa_mx_irq_domain_ops,
+ 				&xtensa_mx_irq_chip);
+-	irq_set_default_host(root_domain);
+-	secondary_init_irq();
++	xtensa_mx_init_common(root_domain);
+ 	return 0;
+ }
  
--	/* Make sure PEC is disabled, will be enabled later if needed */
--	client->flags &= ~I2C_CLIENT_PEC;
--
--	/* Enable PEC if the controller and bus supports it */
--	if (!(data->flags & PMBUS_NO_CAPABILITY)) {
--		ret = i2c_smbus_read_byte_data(client, PMBUS_CAPABILITY);
--		if (ret >= 0 && (ret & PB_CAPABILITY_ERROR_CHECK)) {
--			if (i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_PEC)) {
--				client->flags |= I2C_CLIENT_PEC;
--			}
--		}
--	}
--
- 	/*
- 	 * Check if the chip is write protected. If it is, we can not clear
- 	 * faults, and we should not try it. Also, in that case, writes into
--- 
-2.35.1
-
+@@ -168,8 +179,7 @@ static int __init xtensa_mx_init(struct
+ 	struct irq_domain *root_domain =
+ 		irq_domain_add_linear(np, NR_IRQS, &xtensa_mx_irq_domain_ops,
+ 				&xtensa_mx_irq_chip);
+-	irq_set_default_host(root_domain);
+-	secondary_init_irq();
++	xtensa_mx_init_common(root_domain);
+ 	return 0;
+ }
+ IRQCHIP_DECLARE(xtensa_mx_irq_chip, "cdns,xtensa-mx", xtensa_mx_init);
 
 
