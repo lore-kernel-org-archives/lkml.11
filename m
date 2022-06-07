@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99A60C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:32:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 794AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:32:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353459AbiFGTct (ORCPT
+        id S1355518AbiFGTcy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:32:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34786 "EHLO
+        Tue, 7 Jun 2022 15:32:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353453AbiFGSlX (ORCPT
+        with ESMTP id S1353204AbiFGSkO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:41:23 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB6EB15A3D9;
-        Tue,  7 Jun 2022 10:58:44 -0700 (PDT)
+        Tue, 7 Jun 2022 14:40:14 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 962E8185CAB;
+        Tue,  7 Jun 2022 10:58:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 15CD3CE243A;
-        Tue,  7 Jun 2022 17:58:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DAB5C3411C;
-        Tue,  7 Jun 2022 17:58:33 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1C1FBCE2425;
+        Tue,  7 Jun 2022 17:58:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3204BC34115;
+        Tue,  7 Jun 2022 17:58:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624714;
-        bh=Wb4wHBnIxsErUFrT9wcDvns8Nnx/YuBz7eUmKYwzkC4=;
+        s=korg; t=1654624703;
+        bh=uGOW+8+MHh3rmVPSMEwKqXlHKgl6LqpDJPKFDcluQmg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gqbkRhfLksVHQ3pARwqrF9Z2p4VEUW4U/UwC69C4NOOJWGyyJe7SbYO26nWT8/0qs
-         vX/8PIrEdDLuImWFIlKgp94Y0qhOFG1YPyWCuZdU8XVSqb/803UVr7IVkksHE7Zp+k
-         uSvqbNvIvS8GpUM9CeAubHXRSoy0591ZVu/9zH48=
+        b=at/clX21cE6mTGPG086ro4V8Nz0NbrO5fLLSRUd+wq9Larvdp91pbX48QtpmSaEHt
+         E42ie2fPQ1/S/nAtO+5s5gouFUtPnUb0PDV3AKfkxnABDcxthTQAFxoxJUwsKXlD+G
+         VaeedjdoPWAzJLWjF7hK13QdGRLGnkpmNMv4xM1U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Mark Brown <broonie@kernel.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 426/667] ASoC: sh: rz-ssi: Propagate error codes returned from platform_get_irq_byname()
-Date:   Tue,  7 Jun 2022 19:01:31 +0200
-Message-Id: <20220607164947.505839518@linuxfoundation.org>
+Subject: [PATCH 5.15 422/667] scsi: fcoe: Fix Wstringop-overflow warnings in fcoe_wwn_from_mac()
+Date:   Tue,  7 Jun 2022 19:01:27 +0200
+Message-Id: <20220607164947.389969588@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,59 +50,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-[ Upstream commit 91686a3984f34df0ab844cdbaa7e4d9621129f5d ]
+[ Upstream commit 54db804d5d7d36709d1ce70bde3b9a6c61b290b6 ]
 
-Propagate error codes returned from platform_get_irq_byname() instead of
-returning -ENODEV. platform_get_irq_byname() may return -EPROBE_DEFER, to
-handle such cases propagate the error codes.
+Fix the following Wstringop-overflow warnings when building with GCC-11:
 
-While at it drop the dev_err_probe() messages as platform_get_irq_byname()
-already does this for us in case of error.
+drivers/scsi/fcoe/fcoe.c: In function ‘fcoe_netdev_config’:
+drivers/scsi/fcoe/fcoe.c:744:32: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
+  744 |                         wwnn = fcoe_wwn_from_mac(ctlr->ctl_src_addr, 1, 0);
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/scsi/fcoe/fcoe.c:744:32: note: referencing argument 1 of type ‘unsigned char *’
+In file included from drivers/scsi/fcoe/fcoe.c:36:
+./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
+  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
+      |     ^~~~~~~~~~~~~~~~~
+drivers/scsi/fcoe/fcoe.c:747:32: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
+  747 |                         wwpn = fcoe_wwn_from_mac(ctlr->ctl_src_addr,
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  748 |                                                  2, 0);
+      |                                                  ~~~~~
+drivers/scsi/fcoe/fcoe.c:747:32: note: referencing argument 1 of type ‘unsigned char *’
+In file included from drivers/scsi/fcoe/fcoe.c:36:
+./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
+  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
+      |     ^~~~~~~~~~~~~~~~~
+  CC      drivers/scsi/bnx2fc/bnx2fc_io.o
+In function ‘bnx2fc_net_config’,
+    inlined from ‘bnx2fc_if_create’ at drivers/scsi/bnx2fc/bnx2fc_fcoe.c:1543:7:
+drivers/scsi/bnx2fc/bnx2fc_fcoe.c:833:32: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
+  833 |                         wwnn = fcoe_wwn_from_mac(ctlr->ctl_src_addr,
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  834 |                                                  1, 0);
+      |                                                  ~~~~~
+drivers/scsi/bnx2fc/bnx2fc_fcoe.c: In function ‘bnx2fc_if_create’:
+drivers/scsi/bnx2fc/bnx2fc_fcoe.c:833:32: note: referencing argument 1 of type ‘unsigned char *’
+In file included from drivers/scsi/bnx2fc/bnx2fc.h:53,
+                 from drivers/scsi/bnx2fc/bnx2fc_fcoe.c:17:
+./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
+  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
+      |     ^~~~~~~~~~~~~~~~~
+In function ‘bnx2fc_net_config’,
+    inlined from ‘bnx2fc_if_create’ at drivers/scsi/bnx2fc/bnx2fc_fcoe.c:1543:7:
+drivers/scsi/bnx2fc/bnx2fc_fcoe.c:839:32: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
+  839 |                         wwpn = fcoe_wwn_from_mac(ctlr->ctl_src_addr,
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  840 |                                                  2, 0);
+      |                                                  ~~~~~
+drivers/scsi/bnx2fc/bnx2fc_fcoe.c: In function ‘bnx2fc_if_create’:
+drivers/scsi/bnx2fc/bnx2fc_fcoe.c:839:32: note: referencing argument 1 of type ‘unsigned char *’
+In file included from drivers/scsi/bnx2fc/bnx2fc.h:53,
+                 from drivers/scsi/bnx2fc/bnx2fc_fcoe.c:17:
+./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
+  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
+      |     ^~~~~~~~~~~~~~~~~
+drivers/scsi/qedf/qedf_main.c: In function ‘__qedf_probe’:
+drivers/scsi/qedf/qedf_main.c:3520:30: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
+ 3520 |                 qedf->wwnn = fcoe_wwn_from_mac(qedf->mac, 1, 0);
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/scsi/qedf/qedf_main.c:3520:30: note: referencing argument 1 of type ‘unsigned char *’
+In file included from drivers/scsi/qedf/qedf.h:9,
+                 from drivers/scsi/qedf/qedf_main.c:23:
+./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
+  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
+      |     ^~~~~~~~~~~~~~~~~
+drivers/scsi/qedf/qedf_main.c:3521:30: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
+ 3521 |                 qedf->wwpn = fcoe_wwn_from_mac(qedf->mac, 2, 0);
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/scsi/qedf/qedf_main.c:3521:30: note: referencing argument 1 of type ‘unsigned char *’
+In file included from drivers/scsi/qedf/qedf.h:9,
+                 from drivers/scsi/qedf/qedf_main.c:23:
+./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
+  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
+      |     ^~~~~~~~~~~~~~~~~
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Link: https://lore.kernel.org/r/20220426074922.13319-3-prabhakar.mahadev-lad.rj@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+by changing the array size to the correct value of ETH_ALEN in the
+argument declaration.
+
+Also, fix a couple of checkpatch warnings:
+WARNING: function definition argument 'unsigned int' should also have an identifier name
+
+This helps with the ongoing efforts to globally enable
+-Wstringop-overflow.
+
+Link: https://github.com/KSPP/linux/issues/181
+Fixes: 85b4aa4926a5 ("[SCSI] fcoe: Fibre Channel over Ethernet")
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sh/rz-ssi.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/scsi/fcoe/fcoe_ctlr.c | 2 +-
+ include/scsi/libfcoe.h        | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
-index 7379b1489e35..3b55444a1b58 100644
---- a/sound/soc/sh/rz-ssi.c
-+++ b/sound/soc/sh/rz-ssi.c
-@@ -983,8 +983,7 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 	/* Error Interrupt */
- 	ssi->irq_int = platform_get_irq_byname(pdev, "int_req");
- 	if (ssi->irq_int < 0)
--		return dev_err_probe(&pdev->dev, -ENODEV,
--				     "Unable to get SSI int_req IRQ\n");
-+		return ssi->irq_int;
+diff --git a/drivers/scsi/fcoe/fcoe_ctlr.c b/drivers/scsi/fcoe/fcoe_ctlr.c
+index 1756a0ac6f08..558f3f4e1859 100644
+--- a/drivers/scsi/fcoe/fcoe_ctlr.c
++++ b/drivers/scsi/fcoe/fcoe_ctlr.c
+@@ -1969,7 +1969,7 @@ EXPORT_SYMBOL(fcoe_ctlr_recv_flogi);
+  *
+  * Returns: u64 fc world wide name
+  */
+-u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN],
++u64 fcoe_wwn_from_mac(unsigned char mac[ETH_ALEN],
+ 		      unsigned int scheme, unsigned int port)
+ {
+ 	u64 wwn;
+diff --git a/include/scsi/libfcoe.h b/include/scsi/libfcoe.h
+index fac8e89aed81..310e0dbffda9 100644
+--- a/include/scsi/libfcoe.h
++++ b/include/scsi/libfcoe.h
+@@ -249,7 +249,8 @@ int fcoe_ctlr_recv_flogi(struct fcoe_ctlr *, struct fc_lport *,
+ 			 struct fc_frame *);
  
- 	ret = devm_request_irq(&pdev->dev, ssi->irq_int, &rz_ssi_interrupt,
- 			       0, dev_name(&pdev->dev), ssi);
-@@ -996,8 +995,7 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 		/* Tx and Rx interrupts (pio only) */
- 		ssi->irq_tx = platform_get_irq_byname(pdev, "dma_tx");
- 		if (ssi->irq_tx < 0)
--			return dev_err_probe(&pdev->dev, -ENODEV,
--					     "Unable to get SSI dma_tx IRQ\n");
-+			return ssi->irq_tx;
- 
- 		ret = devm_request_irq(&pdev->dev, ssi->irq_tx,
- 				       &rz_ssi_interrupt, 0,
-@@ -1008,8 +1006,7 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 
- 		ssi->irq_rx = platform_get_irq_byname(pdev, "dma_rx");
- 		if (ssi->irq_rx < 0)
--			return dev_err_probe(&pdev->dev, -ENODEV,
--					     "Unable to get SSI dma_rx IRQ\n");
-+			return ssi->irq_rx;
- 
- 		ret = devm_request_irq(&pdev->dev, ssi->irq_rx,
- 				       &rz_ssi_interrupt, 0,
+ /* libfcoe funcs */
+-u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
++u64 fcoe_wwn_from_mac(unsigned char mac[ETH_ALEN], unsigned int scheme,
++		      unsigned int port);
+ int fcoe_libfc_config(struct fc_lport *, struct fcoe_ctlr *,
+ 		      const struct libfc_function_template *, int init_fcp);
+ u32 fcoe_fc_crc(struct fc_frame *fp);
 -- 
 2.35.1
 
