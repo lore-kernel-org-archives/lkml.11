@@ -2,154 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A67C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 03:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3497C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 03:21:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231929AbiFHDSx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 23:18:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33108 "EHLO
+        id S229652AbiFHDVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 23:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239811AbiFHDNg (ORCPT
+        with ESMTP id S231867AbiFHDVJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 23:13:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06278261459;
-        Tue,  7 Jun 2022 12:20:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1904B823CC;
-        Tue,  7 Jun 2022 19:19:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58949C385A2;
-        Tue,  7 Jun 2022 19:19:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629579;
-        bh=9+QnkXRRZzVvsY0NGZ3srNE+JQrSn6L0tCzzSNkv4MU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h/vgi+M7FN3N+9DDeuWsR0QH1fAwWvucGrwxgjfpsRvzqhNNrgcs3IM7N/2UIPnH8
-         iNmua2C532UsLO4NOM16o1hkc7srIcxHh66os+zMNUIaG+Ty8OYGvjxfznsgWGg5XQ
-         uFjyvVs6k9ljLYLOI+Mtf6SA828zHpiRH5EVz6ek=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Ye Bin <yebin10@huawei.com>, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.18 742/879] ext4: fix bug_on in ext4_writepages
-Date:   Tue,  7 Jun 2022 19:04:20 +0200
-Message-Id: <20220607165024.396007902@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 23:21:09 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA2826130
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 13:53:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654635181; x=1686171181;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=GF8W8B32JQSitdmtnoiXM24ZrzD0GHTMXBlcbGBZU5A=;
+  b=MOyU6ZjUDhogRM7rZ17sGxSCvEVWpWbLOJBPU0mQ9kRDDhsJkPbDrcNE
+   2YknNtTY1lmImCkriwK8XDf5gvylUfRsOUJV69QwQNw8bWAoF2NbhwtrI
+   2p+YZoZIjyPaoir6UvzRDHYMoOeN7pt0KOkBoNXdQQw+oMGLnumXQyzqA
+   SoA7Z/5NF9KR4nbbbVvrnO8Qw0Huoe0w56CyVRk24G0aBYIMRn6WMsH2V
+   Vh/dst5jKlBusb5TC/uaFXgnv6z2QfjWpzcKdY11u+txVlr144MkXBb5u
+   c9273rAHKDeqyd3YmXNOoPe5Es915mgxy45bbxv50mfv5IdXFna3aTdPQ
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="265383564"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="265383564"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 13:44:34 -0700
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="636329123"
+Received: from fyu1.sc.intel.com ([172.25.103.126])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 13:44:33 -0700
+Date:   Tue, 7 Jun 2022 13:44:56 -0700
+From:   Fenghua Yu <fenghua.yu@intel.com>
+To:     James Morse <james.morse@arm.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        H Peter Anvin <hpa@zytor.com>,
+        Babu Moger <Babu.Moger@amd.com>,
+        shameerali.kolothum.thodi@huawei.com,
+        D Scott Phillips OS <scott@os.amperecomputing.com>,
+        lcherian@marvell.com, bobo.shaobowang@huawei.com,
+        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
+        baolin.wang@linux.alibaba.com
+Subject: Re: [PATCH v4 15/21] x86/resctrl: Abstract __rmid_read()
+Message-ID: <Yp+4yIvRgghnmmz/@fyu1.sc.intel.com>
+References: <20220412124419.30689-1-james.morse@arm.com>
+ <20220412124419.30689-16-james.morse@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220412124419.30689-16-james.morse@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+Hi, James,
 
-commit ef09ed5d37b84d18562b30cf7253e57062d0db05 upstream.
+On Tue, Apr 12, 2022 at 12:44:13PM +0000, James Morse wrote:
+> diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
+> index 71a13c04a846..20c54cbadc0c 100644
+> --- a/arch/x86/kernel/cpu/resctrl/monitor.c
+> +++ b/arch/x86/kernel/cpu/resctrl/monitor.c
+> @@ -167,9 +167,9 @@ void resctrl_arch_reset_rmid(struct rdt_resource *r, struct rdt_domain *d,
+>  		memset(am, 0, sizeof(*am));
+>  }
+>  
+> -static u64 __rmid_read(u32 rmid, enum resctrl_event_id eventid)
+> +int resctrl_arch_rmid_read(u32 rmid, enum resctrl_event_id eventid, u64 *val)
+>  {
+> -	u64 val;
+> +	u64 msr_val;
+>  
+>  	/*
+>  	 * As per the SDM, when IA32_QM_EVTSEL.EvtID (bits 7:0) is configured
+> @@ -180,14 +180,24 @@ static u64 __rmid_read(u32 rmid, enum resctrl_event_id eventid)
+>  	 * are error bits.
+>  	 */
+>  	wrmsr(MSR_IA32_QM_EVTSEL, eventid, rmid);
+> -	rdmsrl(MSR_IA32_QM_CTR, val);
+> +	rdmsrl(MSR_IA32_QM_CTR, msr_val);
+>  
+> -	return val;
+> +	if (msr_val & RMID_VAL_ERROR)
+> +		return -EIO;
+> +	if (msr_val & RMID_VAL_UNAVAIL)
+> +		return -EINVAL;
+> +
+> +	*val = msr_val;
+> +
+> +	return 0;
+>  }
+>  
+>  static bool rmid_dirty(struct rmid_entry *entry)
+>  {
+> -	u64 val = __rmid_read(entry->rmid, QOS_L3_OCCUP_EVENT_ID);
+> +	u64 val = 0;
+> +
+> +	if (resctrl_arch_rmid_read(entry->rmid, QOS_L3_OCCUP_EVENT_ID, &val))
+> +		return true;
+>  
+>  	return val >= resctrl_cqm_threshold;
+>  }
+> @@ -259,8 +269,8 @@ static void add_rmid_to_limbo(struct rmid_entry *entry)
+>  {
+>  	struct rdt_resource *r;
+>  	struct rdt_domain *d;
+> -	int cpu;
+> -	u64 val;
+> +	int cpu, err;
+> +	u64 val = 0;
+>  
+>  	r = &rdt_resources_all[RDT_RESOURCE_L3].r_resctrl;
+>  
+> @@ -268,8 +278,10 @@ static void add_rmid_to_limbo(struct rmid_entry *entry)
+>  	cpu = get_cpu();
+>  	list_for_each_entry(d, &r->domains, list) {
+>  		if (cpumask_test_cpu(cpu, &d->cpu_mask)) {
+> -			val = __rmid_read(entry->rmid, QOS_L3_OCCUP_EVENT_ID);
+> -			if (val <= resctrl_cqm_threshold)
+> +			err = resctrl_arch_rmid_read(entry->rmid,
+> +						     QOS_L3_OCCUP_EVENT_ID,
+> +						     &val);
+> +			if (err || val <= resctrl_cqm_threshold)
+>  				continue;
+>  		}
+>  
+> @@ -315,19 +327,19 @@ static u64 mbm_overflow_count(u64 prev_msr, u64 cur_msr, unsigned int width)
+>  	return chunks >> shift;
+>  }
+>  
+> -static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
+> +static int __mon_event_count(u32 rmid, struct rmid_read *rr)
+>  {
+>  	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(rr->r);
+>  	struct mbm_state *m;
+> -	u64 chunks, tval;
+> +	u64 chunks, tval = 0;
+>  
+>  	if (rr->first)
+>  		resctrl_arch_reset_rmid(rr->r, rr->d, rmid, rr->evtid);
+>  
+> -	tval = __rmid_read(rmid, rr->evtid);
+> -	if (tval & (RMID_VAL_ERROR | RMID_VAL_UNAVAIL)) {
+> -		return tval;
+> -	}
+> +	rr->err = resctrl_arch_rmid_read(rmid, rr->evtid, &tval);
+> +	if (rr->err)
+> +		return rr->err;
+> +
+>  	switch (rr->evtid) {
+>  	case QOS_L3_OCCUP_EVENT_ID:
+>  		rr->val += tval;
+> @@ -343,7 +355,7 @@ static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
+>  		 * Code would never reach here because an invalid
+>  		 * event id would fail the __rmid_read.
+>  		 */
+> -		return RMID_VAL_ERROR;
+> +		return -EINVAL;
+>  	}
+>  
+>  	if (rr->first) {
+> @@ -399,7 +411,7 @@ void mon_event_count(void *info)
+>  	struct rdtgroup *rdtgrp, *entry;
+>  	struct rmid_read *rr = info;
+>  	struct list_head *head;
+> -	u64 ret_val;
+> +	int ret_val;
 
-we got issue as follows:
-EXT4-fs error (device loop0): ext4_mb_generate_buddy:1141: group 0, block bitmap and bg descriptor inconsistent: 25 vs 31513 free cls
-------------[ cut here ]------------
-kernel BUG at fs/ext4/inode.c:2708!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
-CPU: 2 PID: 2147 Comm: rep Not tainted 5.18.0-rc2-next-20220413+ #155
-RIP: 0010:ext4_writepages+0x1977/0x1c10
-RSP: 0018:ffff88811d3e7880 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffff88811c098000
-RDX: 0000000000000000 RSI: ffff88811c098000 RDI: 0000000000000002
-RBP: ffff888128140f50 R08: ffffffffb1ff6387 R09: 0000000000000000
-R10: 0000000000000007 R11: ffffed10250281ea R12: 0000000000000001
-R13: 00000000000000a4 R14: ffff88811d3e7bb8 R15: ffff888128141028
-FS:  00007f443aed9740(0000) GS:ffff8883aef00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020007200 CR3: 000000011c2a4000 CR4: 00000000000006e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- do_writepages+0x130/0x3a0
- filemap_fdatawrite_wbc+0x83/0xa0
- filemap_flush+0xab/0xe0
- ext4_alloc_da_blocks+0x51/0x120
- __ext4_ioctl+0x1534/0x3210
- __x64_sys_ioctl+0x12c/0x170
- do_syscall_64+0x3b/0x90
+Now ret_val's meaning is changed from rmid value to error value.
+I would suggest to name it as "ret" to avoid confusion that this is still a
+returned rmid value.
 
-It may happen as follows:
-1. write inline_data inode
-vfs_write
-  new_sync_write
-    ext4_file_write_iter
-      ext4_buffered_write_iter
-        generic_perform_write
-          ext4_da_write_begin
-            ext4_da_write_inline_data_begin -> If inline data size too
-            small will allocate block to write, then mapping will has
-            dirty page
-                ext4_da_convert_inline_data_to_extent ->clear EXT4_STATE_MAY_INLINE_DATA
-2. fallocate
-do_vfs_ioctl
-  ioctl_preallocate
-    vfs_fallocate
-      ext4_fallocate
-        ext4_convert_inline_data
-          ext4_convert_inline_data_nolock
-            ext4_map_blocks -> fail will goto restore data
-            ext4_restore_inline_data
-              ext4_create_inline_data
-              ext4_write_inline_data
-              ext4_set_inode_state -> set inode EXT4_STATE_MAY_INLINE_DATA
-3. writepages
-__ext4_ioctl
-  ext4_alloc_da_blocks
-    filemap_flush
-      filemap_fdatawrite_wbc
-        do_writepages
-          ext4_writepages
-            if (ext4_has_inline_data(inode))
-              BUG_ON(ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA))
+>  
+>  	rdtgrp = rr->rgrp;
+>  
+> @@ -419,9 +431,13 @@ void mon_event_count(void *info)
+>  		}
+>  	}
+>  
+> -	/* Report error if none of rmid_reads are successful */
+> -	if (ret_val)
+> -		rr->val = ret_val;
+> +	/*
+> +	 * __mon_event_count() calls for newly created monitor groups may
+> +	 * report -EINVAL/Unavailable if the monitor hasn't seen any traffic.
+> +	 * Discard error if any of the monitor event reads succeeded.
+> +	 */
+> +	if (ret_val == 0)
+> +		rr->err = 0;
+>  }
+>  
 
-The root cause of this issue is we destory inline data until call
-ext4_writepages under delay allocation mode.  But there maybe already
-convert from inline to extent.  To solve this issue, we call
-filemap_flush first..
+Thanks.
 
-Cc: stable@kernel.org
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220516122634.1690462-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/ext4/inline.c |   12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
---- a/fs/ext4/inline.c
-+++ b/fs/ext4/inline.c
-@@ -2005,6 +2005,18 @@ int ext4_convert_inline_data(struct inod
- 	if (!ext4_has_inline_data(inode)) {
- 		ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
- 		return 0;
-+	} else if (!ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)) {
-+		/*
-+		 * Inode has inline data but EXT4_STATE_MAY_INLINE_DATA is
-+		 * cleared. This means we are in the middle of moving of
-+		 * inline data to delay allocated block. Just force writeout
-+		 * here to finish conversion.
-+		 */
-+		error = filemap_flush(inode->i_mapping);
-+		if (error)
-+			return error;
-+		if (!ext4_has_inline_data(inode))
-+			return 0;
- 	}
- 
- 	needed_blocks = ext4_writepage_trans_blocks(inode);
-
-
+-Fenghua
