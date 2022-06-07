@@ -2,83 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DDFDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:08:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CF67C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:08:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383902AbiFGWIU (ORCPT
+        id S1382365AbiFGWIc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:08:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50202 "EHLO
+        Tue, 7 Jun 2022 18:08:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379915AbiFGVGg (ORCPT
+        with ESMTP id S1379813AbiFGVG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:06:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB6842122BC;
-        Tue,  7 Jun 2022 11:50:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E154EB81FE1;
-        Tue,  7 Jun 2022 18:50:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AAAAC385A2;
-        Tue,  7 Jun 2022 18:50:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627821;
-        bh=gam7VJRU5tQrQ47mhnmERO7Bdx+TDXwHG5e3vtQwqLQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f5L5RdUwRWmhPS89uRl14+v8OOU/2ia8UCONp81jln4Luys/+/qEA9zy3oHF7zJzE
-         vLJSSXS3x9Mzp3oz1HOuuo0n7iTtnnOJt9cdvSnpQMvYRsfntj8pYo1uSAJk5OgFT2
-         GkUE5uQ2MTPJwApGxTgCFV11a7qGBgXDlEXWFNbQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 068/879] ipw2x00: Fix potential NULL dereference in libipw_xmit()
-Date:   Tue,  7 Jun 2022 18:53:06 +0200
-Message-Id: <20220607165004.666232980@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:06:29 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F2321110F
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:50:23 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id bg6so17196790ejb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:50:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lxgwqXrTE5CS81OOTZfgrmr4rRv5j2bUa4aaRbpCvDQ=;
+        b=UIn4bvZhXW7AF2rT52jP/vHIPjI8XyKoA3dn2Q+Bi0s2HH11YyOvGVEVe86JVSoGKI
+         BaaWsQh6OrE4aTrQmY6fkIGKtAYybadmY8CgsBkfKkdrn9/E2Hw2YgipoxbbIFvguJ8i
+         wugGZSlCqni+gcqC9Yso1tIQl10wVmmIOsHm0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lxgwqXrTE5CS81OOTZfgrmr4rRv5j2bUa4aaRbpCvDQ=;
+        b=08u5zEVxSIYwFNoAdPnywnEzHOLG0uSLi1hg7XS/yQ7HkA6KBSUzde6CirNDF/Mx7K
+         aEy7toveV/lDYaveBaZYHbFDwSZ+55zGA4/n5nM2uJ/XIM3/Mio3kAnJ7ksqIe7i2vnd
+         bGVTEi1OGQgq+SJZlOmykx+Oxzw//TdlDNRfI71QpVf4xHXAyIsfC0hWq7Qh/zWoCAyl
+         MpNqHNm3pJ5eLilJqK/IC00Ne+hsduALAu8WU/oK7H0bqaKdzvUQvXgCjNbJ3duTEJAh
+         +h+32RuzOrS+KIE6WvzZQD5E+4O/O1Jm5/PFeaegt/GhKyTZkb6D2suNyGe0JYsyhs5Q
+         dzSw==
+X-Gm-Message-State: AOAM533ROkZhzIn1V9v3E1EHvzmgX9EtF4xon/Dx+obI5xZESYWvlqKv
+        D3w/NLD+Ua45umk4hrF0Zg6xGkcuwZgC3hDSHUI=
+X-Google-Smtp-Source: ABdhPJwCpSrPk7PXgXlO65PYgzwn0dW99k0EymupWGqkCJbmkBpFx02J5QdaEkeko+YGoY2vtwNeWQ==
+X-Received: by 2002:a17:906:9751:b0:711:e80e:fcb with SMTP id o17-20020a170906975100b00711e80e0fcbmr2994093ejy.74.1654627815733;
+        Tue, 07 Jun 2022 11:50:15 -0700 (PDT)
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com. [209.85.221.44])
+        by smtp.gmail.com with ESMTPSA id z3-20020a170906270300b00704a5c530ccsm8140850ejc.162.2022.06.07.11.50.13
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 11:50:14 -0700 (PDT)
+Received: by mail-wr1-f44.google.com with SMTP id u8so21038247wrm.13
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:50:13 -0700 (PDT)
+X-Received: by 2002:a05:6000:1b0f:b0:210:313a:ef2a with SMTP id
+ f15-20020a0560001b0f00b00210313aef2amr28815309wrz.281.1654627813569; Tue, 07
+ Jun 2022 11:50:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220605162537.1604762-1-yury.norov@gmail.com>
+ <CAHk-=whqgEA=OOPQs7JF=xps3VxjJ5uUnfXgzTv4gqTDhraZFA@mail.gmail.com>
+ <CAHk-=wib4F=71sXhamdPzLEZ9S4Lw4Dv3N2jLxv6-i8fHfMeDQ@mail.gmail.com>
+ <CAHk-=wicWxvuaL7GCj+1uEvpvpntdcB=AHot_h3j4wpenwyZ2Q@mail.gmail.com> <CABBYNZJfqAU-o7f9HhLCgTmL46WfwNQbM5NsCACsVVDLACMLYw@mail.gmail.com>
+In-Reply-To: <CABBYNZJfqAU-o7f9HhLCgTmL46WfwNQbM5NsCACsVVDLACMLYw@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 7 Jun 2022 11:49:57 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whcV=BE6bkyd50eZZnggaczKdpU_PevFRWw_hjJS72UPw@mail.gmail.com>
+Message-ID: <CAHk-=whcV=BE6bkyd50eZZnggaczKdpU_PevFRWw_hjJS72UPw@mail.gmail.com>
+Subject: Re: [PATCH] net/bluetooth: fix erroneous use of bitmap_from_u64()
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Yury Norov <yury.norov@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Guo Ren <guoren@kernel.org>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-csky@vger.kernel.org,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haowen Bai <baihaowen@meizu.com>
+On Mon, Jun 6, 2022 at 11:00 PM Luiz Augusto von Dentz
+<luiz.dentz@gmail.com> wrote:
+>
+> Right, thanks for fixing it. About some of the changes perhaps we
+> should use BIT when declaring values in enum hci_conn_flags?
 
-[ Upstream commit e8366bbabe1d207cf7c5b11ae50e223ae6fc278b ]
+That sounds sane, although with just two flag values I'm not sure it matters.
 
-crypt and crypt->ops could be null, so we need to checking null
-before dereference
+But I guess it would document the fact that it's a bitmask, not an
+ordinal value, and it looks like that header is already using BIT()
+elsewhere so there are no new header file dependencies..
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/1648797055-25730-1-git-send-email-baihaowen@meizu.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/intel/ipw2x00/libipw_tx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/intel/ipw2x00/libipw_tx.c b/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
-index 36d1e6b2568d..4aec1fce1ae2 100644
---- a/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
-+++ b/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
-@@ -383,7 +383,7 @@ netdev_tx_t libipw_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 		/* Each fragment may need to have room for encryption
- 		 * pre/postfix */
--		if (host_encrypt)
-+		if (host_encrypt && crypt && crypt->ops)
- 			bytes_per_frag -= crypt->ops->extra_mpdu_prefix_len +
- 			    crypt->ops->extra_mpdu_postfix_len;
- 
--- 
-2.35.1
-
-
-
+              Linus
