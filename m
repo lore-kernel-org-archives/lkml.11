@@ -2,173 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24A40C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 07:31:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFAF8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 07:35:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237687AbiFGHbI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 03:31:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59520 "EHLO
+        id S231723AbiFGHfZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 03:35:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237672AbiFGHau (ORCPT
+        with ESMTP id S230134AbiFGHfW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 03:30:50 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6304253B5B
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 00:30:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654587048; x=1686123048;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=J4H+DmmV0Sf36iZKzFCffzDyO5WW16VgPNs6mbiVKxE=;
-  b=Rx/RSZo6pZAoJjqszK03DV+9X3bjx+gmBNgNyyjO09QhmLHXk+igCaoD
-   hKH3bNOd01GhdBi6RK2xOlN5zNCFGDPee+tsfb0IPagWfiShSB2rWKmxD
-   CBPd674/bB0uzc9me/zYJ4AgToE8xy8ISR3jKbKPiGuPfJ475oBvHgzqs
-   +LSeR9TMWefGcq5kb8t8p+0ffu9ngD1BrTDXsA73yAj5E+NH0NcRLMzOV
-   xmtx5Ii9qm9AhFldAYJ6gib6wVAa76twDsAxKzyJPvPoEwZ+8OoMiYEoJ
-   CFFbd1zs0pk3KH98cklaaiYu06gQd2qTZ8tm5cp8Q4+pt3yM3a/2rfHT5
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="256547746"
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="256547746"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 00:30:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="826238528"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 07 Jun 2022 00:30:46 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nyTfq-000DTZ-2z;
-        Tue, 07 Jun 2022 07:30:46 +0000
-Date:   Tue, 7 Jun 2022 15:29:59 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Frederic Weisbecker <frederic@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [frederic-dynticks:rcu/context-tracking-v4 16/20]
- kernel/context_tracking.c:124:39: sparse: sparse: incorrect type in
- initializer (different address spaces)
-Message-ID: <202206071536.jNspPAFL-lkp@intel.com>
+        Tue, 7 Jun 2022 03:35:22 -0400
+Received: from p3plwbeout15-03.prod.phx3.secureserver.net (p3plsmtp15-03-2.prod.phx3.secureserver.net [173.201.193.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3253160BBB
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 00:35:18 -0700 (PDT)
+Received: from mailex.mailcore.me ([94.136.40.145])
+        by :WBEOUT: with ESMTP
+        id yTkDnHTqFg7ZlyTkEnGQxR; Tue, 07 Jun 2022 00:35:18 -0700
+X-CMAE-Analysis: v=2.4 cv=a//1SWeF c=1 sm=1 tr=0 ts=629effb6
+ a=7e6w4QD8YWtpVJ/7+iiidw==:117 a=84ok6UeoqCVsigPHarzEiQ==:17
+ a=ggZhUymU-5wA:10 a=IkcTkHD0fZMA:10 a=JPEYwPQDsx4A:10 a=JfrnYn6hAAAA:8
+ a=cm27Pg_UAAAA:8 a=FXvPX3liAAAA:8 a=t7CeM3EgAAAA:8 a=VwQbUJbxAAAA:8
+ a=gozxAr8Rxt5D4kyEU7QA:9 a=QEXdDO2ut3YA:10 a=1CNFftbPRP8L7MoqJWF3:22
+ a=xmb-EsYY8bH0VWELuYED:22 a=UObqyxdv-6Yh2QiB9mM_:22 a=FdTzh2GWekK77mhwV6Dw:22
+ a=AjGcO6oz07-iQ99wixmX:22
+X-SECURESERVER-ACCT: phillip@squashfs.org.uk  
+X-SID:  yTkDnHTqFg7Zl
+Received: from 82-69-79-175.dsl.in-addr.zen.co.uk ([82.69.79.175] helo=[192.168.178.33])
+        by smtp01.mailcore.me with esmtpa (Exim 4.94.2)
+        (envelope-from <phillip@squashfs.org.uk>)
+        id 1nyTk9-0003Xi-M1; Tue, 07 Jun 2022 08:35:17 +0100
+Message-ID: <31ed17e7-29d1-55e8-cb09-a750ab80da15@squashfs.org.uk>
+Date:   Tue, 7 Jun 2022 08:35:10 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v4 3/3] squashfs: implement readahead
+To:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Xiongwei Song <Xiongwei.Song@windriver.com>
+Cc:     Zheng Liang <zhengliang6@huawei.com>,
+        Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
+        Miao Xie <miaoxie@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "linux-mm @ kvack . org" <linux-mm@kvack.org>,
+        "squashfs-devel @ lists . sourceforge . net" 
+        <squashfs-devel@lists.sourceforge.net>,
+        linux-kernel@vger.kernel.org
+References: <20220601103922.1338320-1-hsinyi@chromium.org>
+ <20220601103922.1338320-4-hsinyi@chromium.org>
+ <CGME20220603125421eucas1p17da286a3e7f2d4759aa4c7639dd62f75@eucas1p1.samsung.com>
+ <c017d992-2746-045b-47c8-c5b9c3025f1a@samsung.com>
+From:   Phillip Lougher <phillip@squashfs.org.uk>
+In-Reply-To: <c017d992-2746-045b-47c8-c5b9c3025f1a@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Mailcore-Auth: 439999529
+X-Mailcore-Domain: 1394945
+X-123-reg-Authenticated:  phillip@squashfs.org.uk  
+X-Originating-IP: 82.69.79.175
+X-CMAE-Envelope: MS4xfGwJrZcAmJiVw4SQzSorIGvTYoP8Ng9Fc8C1qZ2c8WCA3wTTufIq7AJ/RgsZsYtTkp1IQcjWai8uLQ6QN2hl8W9A0G6fVGElhMR9biqCLE7RpiyW8O2/
+ 9usqtE3vi7Wkae2oI213/1X6Hw1phrrvXXbGPACw54Yp+gBZBOaAyRXpfcEEHr2FhLmN0VKqY3sAz5U4fpiatTZKV2+uQZe4vlo=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git rcu/context-tracking-v4
-head:   43ac8196f06d6abb21f28143f62d879546ad262c
-commit: ab8851bd9c0f3773a18a2c950047d02ec908e03c [16/20] rcu/context-tracking: Move RCU-dynticks internal functions to context_tracking
-config: x86_64-randconfig-s021 (https://download.01.org/0day-ci/archive/20220607/202206071536.jNspPAFL-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-18-g56afb504-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git/commit/?id=ab8851bd9c0f3773a18a2c950047d02ec908e03c
-        git remote add frederic-dynticks https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git
-        git fetch --no-tags frederic-dynticks rcu/context-tracking-v4
-        git checkout ab8851bd9c0f3773a18a2c950047d02ec908e03c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On 03/06/2022 13:54, Marek Szyprowski wrote:
+> Hi,
+> 
+> On 01.06.2022 12:39, Hsin-Yi Wang wrote:
+>> Implement readahead callback for squashfs. It will read datablocks
+>> which cover pages in readahead request. For a few cases it will
+>> not mark page as uptodate, including:
+>> - file end is 0.
+>> - zero filled blocks.
+>> - current batch of pages isn't in the same datablock or not enough in a
+>>     datablock.
+>> - decompressor error.
+>> Otherwise pages will be marked as uptodate. The unhandled pages will be
+>> updated by readpage later.
+>>
+>> Suggested-by: Matthew Wilcox <willy@infradead.org>
+>> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+>> Reported-by: Matthew Wilcox <willy@infradead.org>
+>> Reported-by: Phillip Lougher <phillip@squashfs.org.uk>
+>> Reported-by: Xiongwei Song <Xiongwei.Song@windriver.com>
+>> ---
+> 
+> This patch landed recently in linux-next as commit 95f7a26191de
+> ("squashfs: implement readahead"). I've noticed that it causes serious
+> issues on my test systems (various ARM 32bit and 64bit based boards).
+> The easiest way to observe is udev timeout 'waiting for /dev to be fully
+> populated' and prolonged booting time. I'm using squashfs for deploying
+> kernel modules via initrd. Reverting aeefca9dfae7 & 95f7a26191deon on
+> top of the next-20220603 fixes the issue.
+> 
+> Let me know how I can help debugging this issue. There is no hurry
+> though, because the next week I will be on holidays.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Hi Marek,
 
+Can you supply an example Squashfs filesystem and script that
+reproduces the slow-down?  Failing that, can you supply a copy
+of your initrd/root-filesystem that can be run under emulation
+to reproduce the issue? (I don't have any modern ARM embedded
+systems).
 
-sparse warnings: (new ones prefixed by >>)
->> kernel/context_tracking.c:124:39: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got struct context_tracking * @@
-   kernel/context_tracking.c:124:39: sparse:     expected void const [noderef] __percpu *__vpp_verify
-   kernel/context_tracking.c:124:39: sparse:     got struct context_tracking *
-   kernel/context_tracking.c:163:39: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got struct context_tracking * @@
-   kernel/context_tracking.c:163:39: sparse:     expected void const [noderef] __percpu *__vpp_verify
-   kernel/context_tracking.c:163:39: sparse:     got struct context_tracking *
-   kernel/context_tracking.c:204:39: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got struct context_tracking * @@
-   kernel/context_tracking.c:204:39: sparse:     expected void const [noderef] __percpu *__vpp_verify
-   kernel/context_tracking.c:204:39: sparse:     got struct context_tracking *
-   kernel/context_tracking.c:259:39: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got struct context_tracking * @@
-   kernel/context_tracking.c:259:39: sparse:     expected void const [noderef] __percpu *__vpp_verify
-   kernel/context_tracking.c:259:39: sparse:     got struct context_tracking *
-   kernel/context_tracking.c:490:21: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got int * @@
-   kernel/context_tracking.c:490:21: sparse:     expected void const [noderef] __percpu *__vpp_verify
-   kernel/context_tracking.c:490:21: sparse:     got int *
-   kernel/context_tracking.c:495:9: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got int * @@
-   kernel/context_tracking.c:495:9: sparse:     expected void const [noderef] __percpu *__vpp_verify
-   kernel/context_tracking.c:495:9: sparse:     got int *
-   kernel/context_tracking.c:524:14: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got int enum ctx_state * @@
-   kernel/context_tracking.c:524:14: sparse:     expected void const [noderef] __percpu *__vpp_verify
-   kernel/context_tracking.c:524:14: sparse:     got int enum ctx_state *
-   kernel/context_tracking.c:525:21: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got bool * @@
-   kernel/context_tracking.c:525:21: sparse:     expected void const [noderef] __percpu *__vpp_verify
-   kernel/context_tracking.c:525:21: sparse:     got bool *
-   kernel/context_tracking.c:560:17: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got int enum ctx_state * @@
-   kernel/context_tracking.c:560:17: sparse:     expected void const [noderef] __percpu *__vpp_verify
-   kernel/context_tracking.c:560:17: sparse:     got int enum ctx_state *
-   kernel/context_tracking.c:624:13: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got int enum ctx_state * @@
-   kernel/context_tracking.c:624:13: sparse:     expected void const [noderef] __percpu *__vpp_verify
-   kernel/context_tracking.c:624:13: sparse:     got int enum ctx_state *
-   kernel/context_tracking.c:625:21: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got bool * @@
-   kernel/context_tracking.c:625:21: sparse:     expected void const [noderef] __percpu *__vpp_verify
-   kernel/context_tracking.c:625:21: sparse:     got bool *
-   kernel/context_tracking.c:638:17: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got int enum ctx_state * @@
-   kernel/context_tracking.c:638:17: sparse:     expected void const [noderef] __percpu *__vpp_verify
-   kernel/context_tracking.c:638:17: sparse:     got int enum ctx_state *
-   kernel/context_tracking.c:681:14: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got bool * @@
-   kernel/context_tracking.c:681:14: sparse:     expected void const [noderef] __percpu *__vpp_verify
-   kernel/context_tracking.c:681:14: sparse:     got bool *
-   kernel/context_tracking.c:682:17: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got bool * @@
-   kernel/context_tracking.c:682:17: sparse:     expected void const [noderef] __percpu *__vpp_verify
-   kernel/context_tracking.c:682:17: sparse:     got bool *
-   kernel/context_tracking.c:502:9: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got int * @@
-   kernel/context_tracking.c:502:9: sparse:     expected void const [noderef] __percpu *__vpp_verify
-   kernel/context_tracking.c:502:9: sparse:     got int *
-   kernel/context_tracking.c:502:9: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got int * @@
-   kernel/context_tracking.c:502:9: sparse:     expected void const [noderef] __percpu *__vpp_verify
-   kernel/context_tracking.c:502:9: sparse:     got int *
+Again failing that, are you happy to test some debug code?
 
-vim +124 kernel/context_tracking.c
+Thanks
 
-   113	
-   114	/*
-   115	 * Enter an RCU extended quiescent state, which can be either the
-   116	 * idle loop or adaptive-tickless usermode execution.
-   117	 *
-   118	 * We crowbar the ->dynticks_nmi_nesting field to zero to allow for
-   119	 * the possibility of usermode upcalls having messed up our count
-   120	 * of interrupt nesting level during the prior busy period.
-   121	 */
-   122	static void noinstr rcu_eqs_enter(bool user)
-   123	{
- > 124		struct context_tracking *ct = this_cpu_ptr(&context_tracking);
-   125	
-   126		WARN_ON_ONCE(ct_dynticks_nmi_nesting() != DYNTICK_IRQ_NONIDLE);
-   127		WRITE_ONCE(ct->dynticks_nmi_nesting, 0);
-   128		WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) &&
-   129			     ct_dynticks_nesting() == 0);
-   130		if (ct_dynticks_nesting() != 1) {
-   131			// RCU will still be watching, so just do accounting and leave.
-   132			ct->dynticks_nesting--;
-   133			return;
-   134		}
-   135	
-   136		instrumentation_begin();
-   137		lockdep_assert_irqs_disabled();
-   138		trace_rcu_dyntick(TPS("Start"), ct_dynticks_nesting(), 0, ct_dynticks());
-   139		WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !user && !is_idle_task(current));
-   140		rcu_preempt_deferred_qs(current);
-   141	
-   142		// instrumentation for the noinstr rcu_dynticks_eqs_enter()
-   143		instrument_atomic_write(&ct->dynticks, sizeof(ct->dynticks));
-   144	
-   145		instrumentation_end();
-   146		WRITE_ONCE(ct->dynticks_nesting, 0); /* Avoid irq-access tearing. */
-   147		// RCU is watching here ...
-   148		rcu_dynticks_eqs_enter();
-   149		// ... but is no longer watching here.
-   150		rcu_dynticks_task_enter();
-   151	}
-   152	
+Phillip (Squashfs maintainer and author).
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> 
+>> v3->v4: Fix a few variable type and their locations.
+>> v3: https://lore.kernel.org/lkml/20220523065909.883444-4-hsinyi@chromium.org/
+>> v2: https://lore.kernel.org/lkml/20220517082650.2005840-4-hsinyi@chromium.org/
+>> v1: https://lore.kernel.org/lkml/20220516105100.1412740-3-hsinyi@chromium.org/
+>> ---
+>>    fs/squashfs/file.c | 97 +++++++++++++++++++++++++++++++++++++++++++++-
+>>    1 file changed, 96 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/fs/squashfs/file.c b/fs/squashfs/file.c
+>> index a8e495d8eb86..df7ad4b3e99c 100644
+>> --- a/fs/squashfs/file.c
+>> +++ b/fs/squashfs/file.c
+>> @@ -39,6 +39,7 @@
+>>    #include "squashfs_fs_sb.h"
+>>    #include "squashfs_fs_i.h"
+>>    #include "squashfs.h"
+>> +#include "page_actor.h"
+>>    
+>>    /*
+>>     * Locate cache slot in range [offset, index] for specified inode.  If
+>> @@ -495,7 +496,101 @@ static int squashfs_read_folio(struct file *file, struct folio *folio)
+>>    	return 0;
+>>    }
+>>    
+>> +static void squashfs_readahead(struct readahead_control *ractl)
+>> +{
+>> +	struct inode *inode = ractl->mapping->host;
+>> +	struct squashfs_sb_info *msblk = inode->i_sb->s_fs_info;
+>> +	size_t mask = (1UL << msblk->block_log) - 1;
+>> +	unsigned short shift = msblk->block_log - PAGE_SHIFT;
+>> +	loff_t start = readahead_pos(ractl) &~ mask;
+>> +	size_t len = readahead_length(ractl) + readahead_pos(ractl) - start;
+>> +	struct squashfs_page_actor *actor;
+>> +	unsigned int nr_pages = 0;
+>> +	struct page **pages;
+>> +	int i, file_end = i_size_read(inode) >> msblk->block_log;
+>> +	unsigned int max_pages = 1UL << shift;
+>> +
+>> +	readahead_expand(ractl, start, (len | mask) + 1);
+>> +
+>> +	if (file_end == 0)
+>> +		return;
+>> +
+>> +	pages = kmalloc_array(max_pages, sizeof(void *), GFP_KERNEL);
+>> +	if (!pages)
+>> +		return;
+>> +
+>> +	actor = squashfs_page_actor_init_special(pages, max_pages, 0);
+>> +	if (!actor)
+>> +		goto out;
+>> +
+>> +	for (;;) {
+>> +		pgoff_t index;
+>> +		int res, bsize;
+>> +		u64 block = 0;
+>> +		unsigned int expected;
+>> +
+>> +		nr_pages = __readahead_batch(ractl, pages, max_pages);
+>> +		if (!nr_pages)
+>> +			break;
+>> +
+>> +		if (readahead_pos(ractl) >= i_size_read(inode) ||
+>> +		    nr_pages < max_pages)
+>> +			goto skip_pages;
+>> +
+>> +		index = pages[0]->index >> shift;
+>> +		if ((pages[nr_pages - 1]->index >> shift) != index)
+>> +			goto skip_pages;
+>> +
+>> +		expected = index == file_end ?
+>> +			   (i_size_read(inode) & (msblk->block_size - 1)) :
+>> +			    msblk->block_size;
+>> +
+>> +		bsize = read_blocklist(inode, index, &block);
+>> +		if (bsize == 0)
+>> +			goto skip_pages;
+>> +
+>> +		res = squashfs_read_data(inode->i_sb, block, bsize, NULL,
+>> +					 actor);
+>> +
+>> +		if (res == expected) {
+>> +			int bytes;
+>> +
+>> +			/* Last page may have trailing bytes not filled */
+>> +			bytes = res % PAGE_SIZE;
+>> +			if (bytes) {
+>> +				void *pageaddr;
+>> +
+>> +				pageaddr = kmap_atomic(pages[nr_pages - 1]);
+>> +				memset(pageaddr + bytes, 0, PAGE_SIZE - bytes);
+>> +				kunmap_atomic(pageaddr);
+>> +			}
+>> +
+>> +			for (i = 0; i < nr_pages; i++)
+>> +				SetPageUptodate(pages[i]);
+>> +		}
+>> +
+>> +		for (i = 0; i < nr_pages; i++) {
+>> +			unlock_page(pages[i]);
+>> +			put_page(pages[i]);
+>> +		}
+>> +	}
+>> +
+>> +	kfree(actor);
+>> +	kfree(pages);
+>> +	return;
+>> +
+>> +skip_pages:
+>> +	for (i = 0; i < nr_pages; i++) {
+>> +		unlock_page(pages[i]);
+>> +		put_page(pages[i]);
+>> +	}
+>> +
+>> +	kfree(actor);
+>> +out:
+>> +	kfree(pages);
+>> +}
+>>    
+>>    const struct address_space_operations squashfs_aops = {
+>> -	.read_folio = squashfs_read_folio
+>> +	.read_folio = squashfs_read_folio,
+>> +	.readahead = squashfs_readahead
+>>    };
+> 
+> Best regards
+
