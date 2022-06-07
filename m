@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3EF5CCA483
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1015FCCA486
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387077AbiFGWtw (ORCPT
+        id S1383087AbiFGWoR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40914 "EHLO
+        Tue, 7 Jun 2022 18:44:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381462AbiFGVkp (ORCPT
+        with ESMTP id S1381012AbiFGVbc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:40:45 -0400
+        Tue, 7 Jun 2022 17:31:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5EA12332D7;
-        Tue,  7 Jun 2022 12:07:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB7322C4B9;
+        Tue,  7 Jun 2022 12:03:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3E766185A;
-        Tue,  7 Jun 2022 19:06:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A7B0C3411C;
-        Tue,  7 Jun 2022 19:06:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8109617DA;
+        Tue,  7 Jun 2022 19:03:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2AFBC385A2;
+        Tue,  7 Jun 2022 19:03:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628819;
-        bh=T6MiXZpB06tcLxMbXmqVOWVYpW3czv+bImNQtA0WiII=;
+        s=korg; t=1654628634;
+        bh=qW/Z142EkSTf8b2VZLz+a4hXdjAZN4WuHOZt+Y4BaMo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HhuZuvjHe+jteG1pxNqhHNviF0W2q4pEtoG9ilh5KGq1Uvz332LdVYkmiyIHJ6SzT
-         T6S7sOPLfSv0cL4AlhLLPCn8beyLzd/vdIHBzPn47isZCc39f+QFrC+A/0rlzsULVr
-         oKPtWmV9suSwrh9KCaSLRbl/fzRCKDmZBJj5UMc4=
+        b=FkpMPwD/81BWzAPNyYKbZ+50/XZzvDQnVF/vBOx5a6lzC4KDJ3GgrQ0nThvrun7q+
+         uoo+Ya6RKrrFLh4E2AbcuVjS19jhUPVr6wg6NHnO07Dj7kcEujmwGvfzpx1bYVpEM4
+         kai6Tc+Y1waSu3u8TBlpQOTUpNOi+Z1anGw5v4RY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Jessica Zhang <quic_jesszhan@quicinc.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 468/879] sctp: read sk->sk_bound_dev_if once in sctp_rcv()
-Date:   Tue,  7 Jun 2022 18:59:46 +0200
-Message-Id: <20220607165016.462618613@linuxfoundation.org>
+Subject: [PATCH 5.18 399/879] drm/msm/mdp5: Return error code in mdp5_pipe_release when deadlock is detected
+Date:   Tue,  7 Jun 2022 18:58:37 +0200
+Message-Id: <20220607165014.445374136@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,47 +52,131 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Jessica Zhang <quic_jesszhan@quicinc.com>
 
-[ Upstream commit a20ea298071f46effa3aaf965bf9bb34c901db3f ]
+[ Upstream commit d59be579fa932c46b908f37509f319cbd4ca9a68 ]
 
-sctp_rcv() reads sk->sk_bound_dev_if twice while the socket
-is not locked. Another cpu could change this field under us.
+mdp5_get_global_state runs the risk of hitting a -EDEADLK when acquiring
+the modeset lock, but currently mdp5_pipe_release doesn't check for if
+an error is returned. Because of this, there is a possibility of
+mdp5_pipe_release hitting a NULL dereference error.
 
-Fixes: 0fd9a65a76e8 ("[SCTP] Support SO_BINDTODEVICE socket option on incoming packets.")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Neil Horman <nhorman@tuxdriver.com>
-Cc: Vlad Yasevich <vyasevich@gmail.com>
-Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+To avoid this, let's have mdp5_pipe_release check if
+mdp5_get_global_state returns an error and propogate that error.
+
+Changes since v1:
+- Separated declaration and initialization of *new_state to avoid
+  compiler warning
+- Fixed some spelling mistakes in commit message
+
+Changes since v2:
+- Return 0 in case where hwpipe is NULL as this is considered normal
+  behavior
+- Added 2nd patch in series to fix a similar NULL dereference issue in
+  mdp5_mixer_release
+
+Reported-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Signed-off-by: Jessica Zhang <quic_jesszhan@quicinc.com>
+Fixes: 7907a0d77cb4 ("drm/msm/mdp5: Use the new private_obj state")
+Reviewed-by: Rob Clark <robdclark@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/485179/
+Link: https://lore.kernel.org/r/20220505214051.155-1-quic_jesszhan@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sctp/input.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c  | 15 +++++++++++----
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h  |  2 +-
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c | 20 ++++++++++++++++----
+ 3 files changed, 28 insertions(+), 9 deletions(-)
 
-diff --git a/net/sctp/input.c b/net/sctp/input.c
-index 90e12bafdd48..4f43afa8678f 100644
---- a/net/sctp/input.c
-+++ b/net/sctp/input.c
-@@ -92,6 +92,7 @@ int sctp_rcv(struct sk_buff *skb)
- 	struct sctp_chunk *chunk;
- 	union sctp_addr src;
- 	union sctp_addr dest;
-+	int bound_dev_if;
- 	int family;
- 	struct sctp_af *af;
- 	struct net *net = dev_net(skb->dev);
-@@ -169,7 +170,8 @@ int sctp_rcv(struct sk_buff *skb)
- 	 * If a frame arrives on an interface and the receiving socket is
- 	 * bound to another interface, via SO_BINDTODEVICE, treat it as OOTB
- 	 */
--	if (sk->sk_bound_dev_if && (sk->sk_bound_dev_if != af->skb_iif(skb))) {
-+	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
-+	if (bound_dev_if && (bound_dev_if != af->skb_iif(skb))) {
- 		if (transport) {
- 			sctp_transport_put(transport);
- 			asoc = NULL;
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
+index ba6695963aa6..a4f5cb90f3e8 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
+@@ -119,18 +119,23 @@ int mdp5_pipe_assign(struct drm_atomic_state *s, struct drm_plane *plane,
+ 	return 0;
+ }
+ 
+-void mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
++int mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
+ {
+ 	struct msm_drm_private *priv = s->dev->dev_private;
+ 	struct mdp5_kms *mdp5_kms = to_mdp5_kms(to_mdp_kms(priv->kms));
+ 	struct mdp5_global_state *state = mdp5_get_global_state(s);
+-	struct mdp5_hw_pipe_state *new_state = &state->hwpipe;
++	struct mdp5_hw_pipe_state *new_state;
+ 
+ 	if (!hwpipe)
+-		return;
++		return 0;
++
++	if (IS_ERR(state))
++		return PTR_ERR(state);
++
++	new_state = &state->hwpipe;
+ 
+ 	if (WARN_ON(!new_state->hwpipe_to_plane[hwpipe->idx]))
+-		return;
++		return -EINVAL;
+ 
+ 	DBG("%s: release from plane %s", hwpipe->name,
+ 		new_state->hwpipe_to_plane[hwpipe->idx]->name);
+@@ -141,6 +146,8 @@ void mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
+ 	}
+ 
+ 	new_state->hwpipe_to_plane[hwpipe->idx] = NULL;
++
++	return 0;
+ }
+ 
+ void mdp5_pipe_destroy(struct mdp5_hw_pipe *hwpipe)
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h
+index 9b26d0761bd4..cca67938cab2 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h
+@@ -37,7 +37,7 @@ int mdp5_pipe_assign(struct drm_atomic_state *s, struct drm_plane *plane,
+ 		     uint32_t caps, uint32_t blkcfg,
+ 		     struct mdp5_hw_pipe **hwpipe,
+ 		     struct mdp5_hw_pipe **r_hwpipe);
+-void mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe);
++int mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe);
+ 
+ struct mdp5_hw_pipe *mdp5_pipe_init(enum mdp5_pipe pipe,
+ 		uint32_t reg_offset, uint32_t caps);
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
+index c478d25f7825..f2d72497467b 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
+@@ -314,12 +314,24 @@ static int mdp5_plane_atomic_check_with_state(struct drm_crtc_state *crtc_state,
+ 				mdp5_state->r_hwpipe = NULL;
+ 
+ 
+-			mdp5_pipe_release(state->state, old_hwpipe);
+-			mdp5_pipe_release(state->state, old_right_hwpipe);
++			ret = mdp5_pipe_release(state->state, old_hwpipe);
++			if (ret)
++				return ret;
++
++			ret = mdp5_pipe_release(state->state, old_right_hwpipe);
++			if (ret)
++				return ret;
++
+ 		}
+ 	} else {
+-		mdp5_pipe_release(state->state, mdp5_state->hwpipe);
+-		mdp5_pipe_release(state->state, mdp5_state->r_hwpipe);
++		ret = mdp5_pipe_release(state->state, mdp5_state->hwpipe);
++		if (ret)
++			return ret;
++
++		ret = mdp5_pipe_release(state->state, mdp5_state->r_hwpipe);
++		if (ret)
++			return ret;
++
+ 		mdp5_state->hwpipe = mdp5_state->r_hwpipe = NULL;
+ 	}
+ 
 -- 
 2.35.1
 
