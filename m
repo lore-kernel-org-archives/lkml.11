@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 773F9CCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 686E7CCA48D
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376267AbiFGUQf (ORCPT
+        id S1359791AbiFGUQW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51946 "EHLO
+        Tue, 7 Jun 2022 16:16:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355955AbiFGT0O (ORCPT
+        with ESMTP id S1355759AbiFGTZs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:26:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06ED819F040;
-        Tue,  7 Jun 2022 11:09:37 -0700 (PDT)
+        Tue, 7 Jun 2022 15:25:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1124019F042;
+        Tue,  7 Jun 2022 11:09:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57CD9B82354;
-        Tue,  7 Jun 2022 18:09:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A50F4C385A2;
-        Tue,  7 Jun 2022 18:09:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30384B82340;
+        Tue,  7 Jun 2022 18:09:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 825D3C385A2;
+        Tue,  7 Jun 2022 18:09:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625375;
-        bh=K0bdUzOfeyMkxgs4pOZ4/dubG5F1GljN0qv8FWivZ/Q=;
+        s=korg; t=1654625366;
+        bh=17Ri7RaW54DNnuOE3bzfEoXvHE2DBf0eBzZRTgFQTEk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vFSvHudnWn9LKIgcdiLVgXjdK1seMq28YmaNw6M1loFuaa+wRSLYHRrtMPX1coS+R
-         Tc9CSenlWtSLWjYKSEp2s1uTvnTnOIzshAZqj+3biQIOosuQcsVIUb1r/jgpaaGMox
-         toNgsGzN/26Zo7T6pqSslz0eKkrlZmlbpoaX0yqU=
+        b=UFpbkYqPQVKTlfLJKf8GGclHubSSH5vQxLzTdjBv2tLOWpljyLyeSQktBeSod6HOZ
+         bM1Kdbu5UBPWj1JCsLyCEodL6jXcs3nD0PuTS0R08cNkuYL6UgtLV+HWPFuxzb6BUn
+         65KkkHTryvAfuqim47uloWCCZ38LPBsoqfRWI27U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fine Fan <ffan@redhat.com>,
-        Xiao Ni <xni@redhat.com>, Song Liu <song@kernel.org>
-Subject: [PATCH 5.15 665/667] md: Dont set mddev private to NULL in raid0 pers->free
-Date:   Tue,  7 Jun 2022 19:05:30 +0200
-Message-Id: <20220607164954.585737970@linuxfoundation.org>
+        stable@vger.kernel.org, Catrinel Catrinescu <cc@80211.de>,
+        Felix Fietkau <nbd@nbd.name>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.15 610/667] mac80211: upgrade passive scan to active scan on DFS channels after beacon rx
+Date:   Tue,  7 Jun 2022 19:04:35 +0200
+Message-Id: <20220607164952.969992007@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,72 +50,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiao Ni <xni@redhat.com>
+From: Felix Fietkau <nbd@nbd.name>
 
-commit 0f2571ad7a30ff6b33cde142439f9378669f8b4f upstream.
+commit b041b7b9de6e1d4362de855ab90f9d03ef323edd upstream.
 
-In normal stop process, it does like this:
-   do_md_stop
-      |
-   __md_stop (pers->free(); mddev->private=NULL)
-      |
-   md_free (free mddev)
-__md_stop sets mddev->private to NULL after pers->free. The raid device
-will be stopped and mddev memory is free. But in reshape, it doesn't
-free the mddev and mddev will still be used in new raid.
+In client mode, we can't connect to hidden SSID APs or SSIDs not advertised
+in beacons on DFS channels, since we're forced to passive scan. Fix this by
+sending out a probe request immediately after the first beacon, if active
+scan was requested by the user.
 
-In reshape, it first sets mddev->private to new_pers and then runs
-old_pers->free(). Now raid0 sets mddev->private to NULL in raid0_free.
-The new raid can't work anymore. It will panic when dereference
-mddev->private because of NULL pointer dereference.
-
-It can panic like this:
-[63010.814972] kernel BUG at drivers/md/raid10.c:928!
-[63010.819778] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
-[63010.825011] CPU: 3 PID: 44437 Comm: md0_resync Kdump: loaded Not tainted 5.14.0-86.el9.x86_64 #1
-[63010.833789] Hardware name: Dell Inc. PowerEdge R6415/07YXFK, BIOS 1.15.0 09/11/2020
-[63010.841440] RIP: 0010:raise_barrier+0x161/0x170 [raid10]
-[63010.865508] RSP: 0018:ffffc312408bbc10 EFLAGS: 00010246
-[63010.870734] RAX: 0000000000000000 RBX: ffffa00bf7d39800 RCX: 0000000000000000
-[63010.877866] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffffa00bf7d39800
-[63010.884999] RBP: 0000000000000000 R08: fffffa4945e74400 R09: 0000000000000000
-[63010.892132] R10: ffffa00eed02f798 R11: 0000000000000000 R12: ffffa00bbc435200
-[63010.899266] R13: ffffa00bf7d39800 R14: 0000000000000400 R15: 0000000000000003
-[63010.906399] FS:  0000000000000000(0000) GS:ffffa00eed000000(0000) knlGS:0000000000000000
-[63010.914485] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[63010.920229] CR2: 00007f5cfbe99828 CR3: 0000000105efe000 CR4: 00000000003506e0
-[63010.927363] Call Trace:
-[63010.929822]  ? bio_reset+0xe/0x40
-[63010.933144]  ? raid10_alloc_init_r10buf+0x60/0xa0 [raid10]
-[63010.938629]  raid10_sync_request+0x756/0x1610 [raid10]
-[63010.943770]  md_do_sync.cold+0x3e4/0x94c
-[63010.947698]  md_thread+0xab/0x160
-[63010.951024]  ? md_write_inc+0x50/0x50
-[63010.954688]  kthread+0x149/0x170
-[63010.957923]  ? set_kthread_struct+0x40/0x40
-[63010.962107]  ret_from_fork+0x22/0x30
-
-Removing the code that sets mddev->private to NULL in raid0 can fix
-problem.
-
-Fixes: 0c031fd37f69 (md: Move alloc/free acct bioset in to personality)
-Reported-by: Fine Fan <ffan@redhat.com>
-Signed-off-by: Xiao Ni <xni@redhat.com>
-Signed-off-by: Song Liu <song@kernel.org>
+Cc: stable@vger.kernel.org
+Reported-by: Catrinel Catrinescu <cc@80211.de>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Link: https://lore.kernel.org/r/20220420104907.36275-1-nbd@nbd.name
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/raid0.c |    1 -
- 1 file changed, 1 deletion(-)
+ net/mac80211/ieee80211_i.h |    5 +++++
+ net/mac80211/scan.c        |   20 ++++++++++++++++++++
+ 2 files changed, 25 insertions(+)
 
---- a/drivers/md/raid0.c
-+++ b/drivers/md/raid0.c
-@@ -361,7 +361,6 @@ static void free_conf(struct mddev *mdde
- 	kfree(conf->strip_zone);
- 	kfree(conf->devlist);
- 	kfree(conf);
--	mddev->private = NULL;
- }
+--- a/net/mac80211/ieee80211_i.h
++++ b/net/mac80211/ieee80211_i.h
+@@ -1129,6 +1129,9 @@ struct tpt_led_trigger {
+  *	a scan complete for an aborted scan.
+  * @SCAN_HW_CANCELLED: Set for our scan work function when the scan is being
+  *	cancelled.
++ * @SCAN_BEACON_WAIT: Set whenever we're passive scanning because of radar/no-IR
++ *	and could send a probe request after receiving a beacon.
++ * @SCAN_BEACON_DONE: Beacon received, we can now send a probe request
+  */
+ enum {
+ 	SCAN_SW_SCANNING,
+@@ -1137,6 +1140,8 @@ enum {
+ 	SCAN_COMPLETED,
+ 	SCAN_ABORTED,
+ 	SCAN_HW_CANCELLED,
++	SCAN_BEACON_WAIT,
++	SCAN_BEACON_DONE,
+ };
  
- static void raid0_free(struct mddev *mddev, void *priv)
+ /**
+--- a/net/mac80211/scan.c
++++ b/net/mac80211/scan.c
+@@ -277,6 +277,16 @@ void ieee80211_scan_rx(struct ieee80211_
+ 	if (likely(!sdata1 && !sdata2))
+ 		return;
+ 
++	if (test_and_clear_bit(SCAN_BEACON_WAIT, &local->scanning)) {
++		/*
++		 * we were passive scanning because of radar/no-IR, but
++		 * the beacon/proberesp rx gives us an opportunity to upgrade
++		 * to active scan
++		 */
++		 set_bit(SCAN_BEACON_DONE, &local->scanning);
++		 ieee80211_queue_delayed_work(&local->hw, &local->scan_work, 0);
++	}
++
+ 	if (ieee80211_is_probe_resp(mgmt->frame_control)) {
+ 		struct cfg80211_scan_request *scan_req;
+ 		struct cfg80211_sched_scan_request *sched_scan_req;
+@@ -783,6 +793,8 @@ static int __ieee80211_start_scan(struct
+ 						IEEE80211_CHAN_RADAR)) ||
+ 		    !req->n_ssids) {
+ 			next_delay = IEEE80211_PASSIVE_CHANNEL_TIME;
++			if (req->n_ssids)
++				set_bit(SCAN_BEACON_WAIT, &local->scanning);
+ 		} else {
+ 			ieee80211_scan_state_send_probe(local, &next_delay);
+ 			next_delay = IEEE80211_CHANNEL_TIME;
+@@ -994,6 +1006,8 @@ set_channel:
+ 	    !scan_req->n_ssids) {
+ 		*next_delay = IEEE80211_PASSIVE_CHANNEL_TIME;
+ 		local->next_scan_state = SCAN_DECISION;
++		if (scan_req->n_ssids)
++			set_bit(SCAN_BEACON_WAIT, &local->scanning);
+ 		return;
+ 	}
+ 
+@@ -1086,6 +1100,8 @@ void ieee80211_scan_work(struct work_str
+ 			goto out;
+ 	}
+ 
++	clear_bit(SCAN_BEACON_WAIT, &local->scanning);
++
+ 	/*
+ 	 * as long as no delay is required advance immediately
+ 	 * without scheduling a new work
+@@ -1096,6 +1112,10 @@ void ieee80211_scan_work(struct work_str
+ 			goto out_complete;
+ 		}
+ 
++		if (test_and_clear_bit(SCAN_BEACON_DONE, &local->scanning) &&
++		    local->next_scan_state == SCAN_DECISION)
++			local->next_scan_state = SCAN_SEND_PROBE;
++
+ 		switch (local->next_scan_state) {
+ 		case SCAN_DECISION:
+ 			/* if no more bands/channels left, complete scan */
 
 
