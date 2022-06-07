@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E08CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:32:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:32:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381660AbiFGWc0 (ORCPT
+        id S1381766AbiFGWcg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50224 "EHLO
+        Tue, 7 Jun 2022 18:32:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380636AbiFGVQi (ORCPT
+        with ESMTP id S1380515AbiFGVQZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:16:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6F0B21E333;
-        Tue,  7 Jun 2022 11:55:43 -0700 (PDT)
+        Tue, 7 Jun 2022 17:16:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D422721D48A;
+        Tue,  7 Jun 2022 11:55:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C6FDB81FE1;
-        Tue,  7 Jun 2022 18:55:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82563C385A2;
-        Tue,  7 Jun 2022 18:55:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D262B8237F;
+        Tue,  7 Jun 2022 18:55:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0EBFC385A2;
+        Tue,  7 Jun 2022 18:55:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628141;
-        bh=yoxhDZYgsb+yYlZZwz5ToNqwGqQPdnkh/B9IKDpd3kM=;
+        s=korg; t=1654628116;
+        bh=Aif4FJPRrLoivnL8rDTd2v7dRNw5XL0pabuaQUQORPE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m6j89rsuKBfCS73Dobnk3iyqkHne8BjH8oioTGHbdeYnv8a7KruXfgFC7L/Xfdnnl
-         HNAKnXyKa+d0D+Gh88AtyaWk85NfaezezS5KlWf2F+UvoQ5xbDuHy4CRT3+7pt9qYJ
-         zopxTejqsWu+FJMc6sNrKOy+KufxvRLbSqjUlPJk=
+        b=a/Mz0OIlP8S4e7hQi991WiJxuua3NladmTZB5cGMxZ6x+z93aexuKrXP9KdWEpMgW
+         LffmB/6BnoHWLjDaTUQ6aI6En0/XkXIKtXXUhfmhWB8Ko7b26w5XyRtr1VQMuL6bIS
+         w+xC6kyGrGQzQvs167dlPBUsdK2fQLMGxEwB+CAg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Zixuan Fu <r33s3n6@gmail.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        stable@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
+        Jonathan Bakker <xc-racer2@live.ca>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 221/879] fs: jfs: fix possible NULL pointer dereference in dbFree()
-Date:   Tue,  7 Jun 2022 18:55:39 +0200
-Message-Id: <20220607165009.268155164@linuxfoundation.org>
+Subject: [PATCH 5.18 213/879] ARM: dts: s5pv210: align DMA channels with dtschema
+Date:   Tue,  7 Jun 2022 18:55:31 +0200
+Message-Id: <20220607165009.037001077@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,57 +51,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
 
-[ Upstream commit 0d4837fdb796f99369cf7691d33de1b856bcaf1f ]
+[ Upstream commit 9e916fb9bc3d16066286f19fc9c51d26a6aec6bd ]
 
-In our fault-injection testing, the variable "nblocks" in dbFree() can be
-zero when kmalloc_array() fails in dtSearch(). In this case, the variable
- "mp" in dbFree() would be NULL and then it is dereferenced in
-"write_metapage(mp)".
+dtschema expects DMA channels in specific order (tx, rx and tx-sec).
+The order actually should not matter because dma-names is used however
+let's make it aligned with dtschema to suppress warnings like:
 
-The failure log is listed as follows:
+  i2s@eee30000: dma-names: ['rx', 'tx', 'tx-sec'] is not valid under any of the given schemas
 
-[   13.824137] BUG: kernel NULL pointer dereference, address: 0000000000000020
-...
-[   13.827416] RIP: 0010:dbFree+0x5f7/0x910 [jfs]
-[   13.834341] Call Trace:
-[   13.834540]  <TASK>
-[   13.834713]  txFreeMap+0x7b4/0xb10 [jfs]
-[   13.835038]  txUpdateMap+0x311/0x650 [jfs]
-[   13.835375]  jfs_lazycommit+0x5f2/0xc70 [jfs]
-[   13.835726]  ? sched_dynamic_update+0x1b0/0x1b0
-[   13.836092]  kthread+0x3c2/0x4a0
-[   13.836355]  ? txLockFree+0x160/0x160 [jfs]
-[   13.836763]  ? kthread_unuse_mm+0x160/0x160
-[   13.837106]  ret_from_fork+0x1f/0x30
-[   13.837402]  </TASK>
-...
-
-This patch adds a NULL check of "mp" before "write_metapage(mp)" is called.
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+Co-developed-by: Jonathan Bakker <xc-racer2@live.ca>
+Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
+Link: https://lore.kernel.org/r/CY4PR04MB056779A9C50DC95987C5272ACB1C9@CY4PR04MB0567.namprd04.prod.outlook.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jfs/jfs_dmap.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/s5pv210-aries.dtsi |  2 +-
+ arch/arm/boot/dts/s5pv210.dtsi       | 12 ++++++------
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
-index d8502f4989d9..e75f31b81d63 100644
---- a/fs/jfs/jfs_dmap.c
-+++ b/fs/jfs/jfs_dmap.c
-@@ -385,7 +385,8 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
- 	}
+diff --git a/arch/arm/boot/dts/s5pv210-aries.dtsi b/arch/arm/boot/dts/s5pv210-aries.dtsi
+index 26f2be2d9faa..c44fdf535795 100644
+--- a/arch/arm/boot/dts/s5pv210-aries.dtsi
++++ b/arch/arm/boot/dts/s5pv210-aries.dtsi
+@@ -636,7 +636,7 @@
+ };
  
- 	/* write the last buffer. */
--	write_metapage(mp);
-+	if (mp)
-+		write_metapage(mp);
+ &i2s0 {
+-	dmas = <&pdma0 9>, <&pdma0 10>, <&pdma0 11>;
++	dmas = <&pdma0 10>, <&pdma0 9>, <&pdma0 11>;
+ 	status = "okay";
+ };
  
- 	IREAD_UNLOCK(ipbmap);
- 
+diff --git a/arch/arm/boot/dts/s5pv210.dtsi b/arch/arm/boot/dts/s5pv210.dtsi
+index 353ba7b09a0c..c5265f3ae31d 100644
+--- a/arch/arm/boot/dts/s5pv210.dtsi
++++ b/arch/arm/boot/dts/s5pv210.dtsi
+@@ -239,8 +239,8 @@
+ 			reg = <0xeee30000 0x1000>;
+ 			interrupt-parent = <&vic2>;
+ 			interrupts = <16>;
+-			dma-names = "rx", "tx", "tx-sec";
+-			dmas = <&pdma1 9>, <&pdma1 10>, <&pdma1 11>;
++			dma-names = "tx", "rx", "tx-sec";
++			dmas = <&pdma1 10>, <&pdma1 9>, <&pdma1 11>;
+ 			clock-names = "iis",
+ 				      "i2s_opclk0",
+ 				      "i2s_opclk1";
+@@ -259,8 +259,8 @@
+ 			reg = <0xe2100000 0x1000>;
+ 			interrupt-parent = <&vic2>;
+ 			interrupts = <17>;
+-			dma-names = "rx", "tx";
+-			dmas = <&pdma1 12>, <&pdma1 13>;
++			dma-names = "tx", "rx";
++			dmas = <&pdma1 13>, <&pdma1 12>;
+ 			clock-names = "iis", "i2s_opclk0";
+ 			clocks = <&clocks CLK_I2S1>, <&clocks SCLK_AUDIO1>;
+ 			pinctrl-names = "default";
+@@ -274,8 +274,8 @@
+ 			reg = <0xe2a00000 0x1000>;
+ 			interrupt-parent = <&vic2>;
+ 			interrupts = <18>;
+-			dma-names = "rx", "tx";
+-			dmas = <&pdma1 14>, <&pdma1 15>;
++			dma-names = "tx", "rx";
++			dmas = <&pdma1 15>, <&pdma1 14>;
+ 			clock-names = "iis", "i2s_opclk0";
+ 			clocks = <&clocks CLK_I2S2>, <&clocks SCLK_AUDIO2>;
+ 			pinctrl-names = "default";
 -- 
 2.35.1
 
