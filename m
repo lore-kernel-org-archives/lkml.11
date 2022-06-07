@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96965C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:29:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F98CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351426AbiFGW3D (ORCPT
+        id S1358497AbiFGW3P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:29:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54946 "EHLO
+        Tue, 7 Jun 2022 18:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378548AbiFGVTD (ORCPT
+        with ESMTP id S1380975AbiFGVRM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:19:03 -0400
+        Tue, 7 Jun 2022 17:17:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72B1122445F;
-        Tue,  7 Jun 2022 11:59:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B01901455BA;
+        Tue,  7 Jun 2022 11:58:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 454D0B82391;
-        Tue,  7 Jun 2022 18:59:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ECD2C385A2;
-        Tue,  7 Jun 2022 18:59:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2CDDB8220B;
+        Tue,  7 Jun 2022 18:58:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F624C3411F;
+        Tue,  7 Jun 2022 18:58:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628368;
-        bh=1vuZle/aJdf8IXFfMGotKYrT8HQrM8syeDFZeWAjPJM=;
+        s=korg; t=1654628286;
+        bh=gbzerGw41nFYcSBVbgsHBzOTUnrtuO+DP0OSHhN634Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rGjXHm6nnejWqetoI2wOM8iylv596oGQCU7tJnaMh/IzIEzfypoE2YjiA3lkj2rMq
-         BcKDqe/cgsWtQpylbfnXTI9Rff3YvNAbspvF1vtr9pMGcUmMC/fadJR75QTJ7YfFbj
-         i3hCxIBitbSC9N9s0bp6mp0oweRySMND9522kP2M=
+        b=CL5GjuMgzMh/M2muJkCSJQx8PwE6PDfZJQyY7qdiahRsmmR2DJP+iOSL+ALV3hpyF
+         PGulaXvCEyWsNIK+GqMCDhlQoKKLjwJfs7nh9PI+Tjiev7vJ6gjK3rT1AuzdvntTVt
+         pfSqNdYtucJYbRSJbxNRHxdxFCraRYfV5f027Jcc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 304/879] spi: spi-ti-qspi: Fix return value handling of wait_for_completion_timeout
-Date:   Tue,  7 Jun 2022 18:57:02 +0200
-Message-Id: <20220607165011.673443006@linuxfoundation.org>
+Subject: [PATCH 5.18 273/879] drm/bridge: anx7625: add missing destroy_workqueue() in anx7625_i2c_probe()
+Date:   Tue,  7 Jun 2022 18:56:31 +0200
+Message-Id: <20220607165010.773878807@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,48 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 8b1ea69a63eb62f97cef63e6d816b64ed84e8760 ]
+[ Upstream commit 6f5efd118efafa22139e8670a4e4b506ba757dfd ]
 
-wait_for_completion_timeout() returns unsigned long not int.
-It returns 0 if timed out, and positive if completed.
-The check for <= 0 is ambiguous and should be == 0 here
-indicating timeout which is the only error case.
+Add the missing destroy_workqueue() before return from
+anx7625_i2c_probe() in the error handling case.
 
-Fixes: 5720ec0a6d26 ("spi: spi-ti-qspi: Add DMA support for QSPI mmap read")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220411111034.24447-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: adca62ec370c ("drm/bridge: anx7625: Support reading edid through aux channel")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Hsin-Yi Wang <hsinyi@chromium.org>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220326073326.3389347-1-yangyingliang@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-ti-qspi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/bridge/analogix/anx7625.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/spi/spi-ti-qspi.c b/drivers/spi/spi-ti-qspi.c
-index e06aafe169e0..081da1fd3fd7 100644
---- a/drivers/spi/spi-ti-qspi.c
-+++ b/drivers/spi/spi-ti-qspi.c
-@@ -448,6 +448,7 @@ static int ti_qspi_dma_xfer(struct ti_qspi *qspi, dma_addr_t dma_dst,
- 	enum dma_ctrl_flags flags = DMA_CTRL_ACK | DMA_PREP_INTERRUPT;
- 	struct dma_async_tx_descriptor *tx;
- 	int ret;
-+	unsigned long time_left;
- 
- 	tx = dmaengine_prep_dma_memcpy(chan, dma_dst, dma_src, len, flags);
- 	if (!tx) {
-@@ -467,9 +468,9 @@ static int ti_qspi_dma_xfer(struct ti_qspi *qspi, dma_addr_t dma_dst,
+diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+index 8e1851a57638..a23e13c29a1d 100644
+--- a/drivers/gpu/drm/bridge/analogix/anx7625.c
++++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+@@ -2657,7 +2657,7 @@ static int anx7625_i2c_probe(struct i2c_client *client,
+ 	if (ret) {
+ 		if (ret != -EPROBE_DEFER)
+ 			DRM_DEV_ERROR(dev, "fail to parse DT : %d\n", ret);
+-		return ret;
++		goto free_wq;
  	}
  
- 	dma_async_issue_pending(chan);
--	ret = wait_for_completion_timeout(&qspi->transfer_complete,
-+	time_left = wait_for_completion_timeout(&qspi->transfer_complete,
- 					  msecs_to_jiffies(len));
--	if (ret <= 0) {
-+	if (time_left == 0) {
- 		dmaengine_terminate_sync(chan);
- 		dev_err(qspi->dev, "DMA wait_for_completion_timeout\n");
- 		return -ETIMEDOUT;
+ 	if (anx7625_register_i2c_dummy_clients(platform, client) != 0) {
+@@ -2672,7 +2672,7 @@ static int anx7625_i2c_probe(struct i2c_client *client,
+ 	pm_suspend_ignore_children(dev, true);
+ 	ret = devm_add_action_or_reset(dev, anx7625_runtime_disable, dev);
+ 	if (ret)
+-		return ret;
++		goto free_wq;
+ 
+ 	if (!platform->pdata.low_power_mode) {
+ 		anx7625_disable_pd_protocol(platform);
 -- 
 2.35.1
 
