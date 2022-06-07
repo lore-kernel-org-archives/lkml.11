@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6FBECCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E74BCCCA488
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351217AbiFGSQJ (ORCPT
+        id S1351249AbiFGSQN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48662 "EHLO
+        Tue, 7 Jun 2022 14:16:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349370AbiFGR4N (ORCPT
+        with ESMTP id S1349377AbiFGR4N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:56:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E667C2C666;
-        Tue,  7 Jun 2022 10:40:08 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84CBC30569;
+        Tue,  7 Jun 2022 10:40:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E695B822AD;
-        Tue,  7 Jun 2022 17:40:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE916C385A5;
-        Tue,  7 Jun 2022 17:40:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2A2261529;
+        Tue,  7 Jun 2022 17:39:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB905C385A5;
+        Tue,  7 Jun 2022 17:39:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623607;
-        bh=24/+sW6Sob7YMv6wVRkObr+QQ67G3CdFjp9sCUgysVY=;
+        s=korg; t=1654623596;
+        bh=VJRyBH7vH9lulJ4xxbCwKEzvFI6nstpYBhWD9hFVqdU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zbO9TpAOV0NUalPM0R6n0z07YE8eF/iiFIbYrabulvi8R+InhXY4j0an5eFINBe46
-         uQhpZruqLNY3SnHjQ06VSOmcNEVEs8pynAsJ32PLsKSNkzb+UPUATyZtIYTCfouM7r
-         oh8f3TUpYsbCdqFIoyWfeCrbiMlBmefnpesCVj0c=
+        b=xYkSHMo0SnqQfyr35OE8WBYcBRtab47LIDKE/Ivkthlud6P+QnXpNlZw6qTw/1glL
+         Fiywdc5nHvVDNL4gw2g3Cy47UJavl+iF7tnkJEVXlNJrZenFTb3azs9erbJrdxrh3f
+         I/ePKkRfl2yaIRZXD9z0/EE76RQ4Mthr+fDuuXAY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Ganapathi Kamath <hgkamath@hotmail.com>,
+        Kari Argillander <kari.argillander@gmail.com>,
         Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Subject: [PATCH 5.15 026/667] fs/ntfs3: Update i_ctime when xattr is added
-Date:   Tue,  7 Jun 2022 18:54:51 +0200
-Message-Id: <20220607164935.581533452@linuxfoundation.org>
+Subject: [PATCH 5.15 022/667] fs/ntfs3: Keep preallocated only if option prealloc enabled
+Date:   Tue,  7 Jun 2022 18:54:47 +0200
+Message-Id: <20220607164935.460996809@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,29 +52,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 
-commit 2d44667c306e7806848a3478820f87343feb5421 upstream.
+commit e95113ed4d428219e3395044e29f5713fc446720 upstream.
 
-Ctime wasn't updated after setfacl command.
-This commit fixes xfstest generic/307
-Fixes: be71b5cba2e6 ("fs/ntfs3: Add attrib operations")
+If size of file was reduced, we still kept allocated blocks.
+This commit makes ntfs3 work as other fs like btrfs.
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=214719
+Fixes: 4342306f0f0d ("fs/ntfs3: Add file operations and implementation")
 
+Reported-by: Ganapathi Kamath <hgkamath@hotmail.com>
+Tested-by: Ganapathi Kamath <hgkamath@hotmail.com>
+Reviewed-by: Kari Argillander <kari.argillander@gmail.com>
 Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs3/xattr.c |    3 +++
- 1 file changed, 3 insertions(+)
+ fs/ntfs3/file.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ntfs3/xattr.c
-+++ b/fs/ntfs3/xattr.c
-@@ -902,6 +902,9 @@ set_new_fa:
- 	err = ntfs_set_ea(inode, name, name_len, value, size, flags);
+--- a/fs/ntfs3/file.c
++++ b/fs/ntfs3/file.c
+@@ -494,7 +494,7 @@ static int ntfs_truncate(struct inode *i
  
- out:
-+	inode->i_ctime = current_time(inode);
-+	mark_inode_dirty(inode);
-+
- 	return err;
- }
+ 	down_write(&ni->file.run_lock);
+ 	err = attr_set_size(ni, ATTR_DATA, NULL, 0, &ni->file.run, new_size,
+-			    &new_valid, true, NULL);
++			    &new_valid, ni->mi.sbi->options->prealloc, NULL);
+ 	up_write(&ni->file.run_lock);
  
+ 	if (new_valid < ni->i_valid)
 
 
