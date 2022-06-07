@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7ABEC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:28:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E573AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:28:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243334AbiFHA1s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:27:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45066 "EHLO
+        id S1356319AbiFHA2S (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 20:28:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381274AbiFGWcT (ORCPT
+        with ESMTP id S1384830AbiFGWbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:32:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7E027C25E;
-        Tue,  7 Jun 2022 12:25:36 -0700 (PDT)
+        Tue, 7 Jun 2022 18:31:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B766A279341;
+        Tue,  7 Jun 2022 12:24:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC8EC609D0;
-        Tue,  7 Jun 2022 19:25:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCF4BC385A2;
-        Tue,  7 Jun 2022 19:25:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1BCA4B823CA;
+        Tue,  7 Jun 2022 19:24:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 812D7C385A2;
+        Tue,  7 Jun 2022 19:24:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629935;
-        bh=FxSYe1AzQYvUcxMa1izcvVIzUUdLyz/bSiRT/8U0Heo=;
+        s=korg; t=1654629876;
+        bh=VWcjbaWEKU8jM7eBzPIHpVL4HsBF647GA3mic0FDKcI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1LN3yKOphaYNFCyoDhSwWej6+zCi99owfqYUwUBM3l0mHcJF8E4fv8CfrFzeF9dBR
-         leWd0hPBBE7WVbrVEQVNpdFbU34pInOch+eQFxVK0IOit/U8u/jngCi0WZqMfjKhTC
-         5fy7uj2trER11KFvHjQyBqP4fz2RUXA9a6m+9zS0=
+        b=MihFh0s46Da8XElh+qavHLunReq4LA5/AUsTbNpfPKonEJzoX8Y+Zcd6r3sOskiz1
+         5LUhsqUhMYj29Y4ajurPdKZv+9TzGZh37Y4c539IJlPoZ+SxBO99PMKEvNnTRdEynP
+         i7O9+hha+5jkUvRidiSeCCscOTAlH3Kv0HAKWFGA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiao Yang <yangx.jy@fujitsu.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.18 870/879] RDMA/rxe: Generate a completion for unsupported/invalid opcode
-Date:   Tue,  7 Jun 2022 19:06:28 +0200
-Message-Id: <20220607165028.107351566@linuxfoundation.org>
+        stable@vger.kernel.org, Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>,
+        Thierry Reding <treding@nvidia.com>
+Subject: [PATCH 5.18 847/879] arm64: tegra: Add missing DFLL reset on Tegra210
+Date:   Tue,  7 Jun 2022 19:06:05 +0200
+Message-Id: <20220607165027.437715567@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -48,35 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiao Yang <yangx.jy@fujitsu.com>
+From: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
 
-commit 2f917af777011c88e977b9b9a5d00b280d3a59ce upstream.
+commit 0017f2c856e21bb900be88469e15dac4f41f4065 upstream.
 
-Current rxe_requester() doesn't generate a completion when processing an
-unsupported/invalid opcode. If rxe driver doesn't support a new opcode
-(e.g. RDMA Atomic Write) and RDMA library supports it, an application
-using the new opcode can reproduce this issue. Fix the issue by calling
-"goto err;".
+Commit 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling
+clocks") removed deassertion of reset lines when enabling peripheral
+clocks. This breaks the initialization of the DFLL driver which relied
+on this behaviour.
 
-Fixes: 8700e3e7c485 ("Soft RoCE driver")
-Link: https://lore.kernel.org/r/20220410113513.27537-1-yangx.jy@fujitsu.com
-Signed-off-by: Xiao Yang <yangx.jy@fujitsu.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+In order to be able to fix this, add the corresponding reset to the DT.
+Tested on Google Pixel C.
+
+Cc: stable@vger.kernel.org
+Fixes: 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling clocks")
+Signed-off-by: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/sw/rxe/rxe_req.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/nvidia/tegra210.dtsi |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/infiniband/sw/rxe/rxe_req.c
-+++ b/drivers/infiniband/sw/rxe/rxe_req.c
-@@ -661,7 +661,7 @@ next_wqe:
- 	opcode = next_opcode(qp, wqe, wqe->wr.opcode);
- 	if (unlikely(opcode < 0)) {
- 		wqe->status = IB_WC_LOC_QP_OP_ERR;
--		goto exit;
-+		goto err;
- 	}
- 
- 	mask = rxe_opcode[opcode].mask;
+--- a/arch/arm64/boot/dts/nvidia/tegra210.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra210.dtsi
+@@ -1366,8 +1366,9 @@
+ 			 <&tegra_car TEGRA210_CLK_DFLL_REF>,
+ 			 <&tegra_car TEGRA210_CLK_I2C5>;
+ 		clock-names = "soc", "ref", "i2c";
+-		resets = <&tegra_car TEGRA210_RST_DFLL_DVCO>;
+-		reset-names = "dvco";
++		resets = <&tegra_car TEGRA210_RST_DFLL_DVCO>,
++			 <&tegra_car 155>;
++		reset-names = "dvco", "dfll";
+ 		#clock-cells = <0>;
+ 		clock-output-names = "dfllCPU_out";
+ 		status = "disabled";
 
 
