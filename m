@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88531CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7668CCA486
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359536AbiFGUPc (ORCPT
+        id S1359559AbiFGUPh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:15:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34240 "EHLO
+        Tue, 7 Jun 2022 16:15:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355125AbiFGTWL (ORCPT
+        with ESMTP id S1354192AbiFGTWr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:22:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0FF67D24;
-        Tue,  7 Jun 2022 11:09:02 -0700 (PDT)
+        Tue, 7 Jun 2022 15:22:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78FAA2DC3;
+        Tue,  7 Jun 2022 11:09:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 00F686193C;
-        Tue,  7 Jun 2022 18:09:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 141EDC3411C;
-        Tue,  7 Jun 2022 18:09:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A13E26191F;
+        Tue,  7 Jun 2022 18:09:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC936C385A5;
+        Tue,  7 Jun 2022 18:09:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625341;
-        bh=ODRQG+sRCqh6RBUSnN70/uOk5euMC1g+MOEckd+VAeA=;
+        s=korg; t=1654625347;
+        bh=1CltcFnzp83Lp3shBByI0qoMgoRiBqUKG72OG4ryCK8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vpWizjkEnnnK8sBouKrYvdB+viAiM7IKLW3aUxWr5KNDjRIOObJexDGiAIzoSTFNx
-         wTjHPKv0QnKBJhnnf/xwnB53R8FU4nA2DdqYslYqfW9DEcv8pXK/SJlGNg/FyMyiau
-         iTj8y7ixdXrlekCfWh+jMRbvgGeAxTxxVApCh460=
+        b=UYw6uwSgwEt9NdOs0Bo1hqlGbFzkVWJ7JJ2w2zU14OcUzrkcSTBMD6Pmq+0QIwi08
+         i2K4i5AWZbSITjyyp39fdIZpdUpKpmVeAQqpmkJC+5+wMlv5zxR65cY+HpbSr+8C4d
+         hBZ6hVhcmRKSuQJ78XGLIMhsoKLIuVogmWwbAs3o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 650/667] net: ipa: fix page free in ipa_endpoint_replenish_one()
-Date:   Tue,  7 Jun 2022 19:05:15 +0200
-Message-Id: <20220607164954.147888942@linuxfoundation.org>
+        stable@vger.kernel.org, David Gow <davidgow@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Subject: [PATCH 5.15 652/667] list: test: Add a test for list_is_head()
+Date:   Tue,  7 Jun 2022 19:05:17 +0200
+Message-Id: <20220607164954.205666782@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,38 +52,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: David Gow <davidgow@google.com>
 
-commit 70132763d5d2e94cd185e3aa92ac6a3ba89068fa upstream.
+commit 37dc573c0a547e1aed0c9abb480fab797bd3833f upstream.
 
-Currently the (possibly compound) pages used for receive buffers are
-freed using __free_pages().  But according to this comment above the
-definition of that function, that's wrong:
-    If you want to use the page's reference count to decide
-    when to free the allocation, you should allocate a compound
-    page, and use put_page() instead of __free_pages().
+list_is_head() was added recently[1], and didn't have a KUnit test. The
+implementation is trivial, so it's not a particularly exciting test, but
+it'd be nice to get back to full coverage of the list functions.
 
-Convert the call to __free_pages() in ipa_endpoint_replenish_one()
-to use put_page() instead.
+[1]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/include/linux/list.h?id=0425473037db40d9e322631f2d4dc6ef51f97e88
 
-Fixes: 6a606b90153b8 ("net: ipa: allocate transaction in replenish loop")
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David Gow <davidgow@google.com>
+Acked-by: Daniel Latypov <dlatypov@google.com>
+Acked-by: Brendan Higgins <brendanhiggins@google.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ipa/ipa_endpoint.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ lib/list-test.c |   19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1049,7 +1049,7 @@ static int ipa_endpoint_replenish_one(st
- err_trans_free:
- 	gsi_trans_free(trans);
- err_free_pages:
--	__free_pages(page, get_order(IPA_RX_BUFFER_SIZE));
-+	put_page(page);
- 
- 	return -ENOMEM;
+--- a/lib/list-test.c
++++ b/lib/list-test.c
+@@ -234,6 +234,24 @@ static void list_test_list_bulk_move_tai
+ 	KUNIT_EXPECT_EQ(test, i, 2);
  }
+ 
++static void list_test_list_is_head(struct kunit *test)
++{
++	struct list_head a, b, c;
++
++	/* Two lists: [a] -> b, [c] */
++	INIT_LIST_HEAD(&a);
++	INIT_LIST_HEAD(&c);
++	list_add_tail(&b, &a);
++
++	KUNIT_EXPECT_TRUE_MSG(test, list_is_head(&a, &a),
++		"Head element of same list");
++	KUNIT_EXPECT_FALSE_MSG(test, list_is_head(&a, &b),
++		"Non-head element of same list");
++	KUNIT_EXPECT_FALSE_MSG(test, list_is_head(&a, &c),
++		"Head element of different list");
++}
++
++
+ static void list_test_list_is_first(struct kunit *test)
+ {
+ 	struct list_head a, b;
+@@ -710,6 +728,7 @@ static struct kunit_case list_test_cases
+ 	KUNIT_CASE(list_test_list_move),
+ 	KUNIT_CASE(list_test_list_move_tail),
+ 	KUNIT_CASE(list_test_list_bulk_move_tail),
++	KUNIT_CASE(list_test_list_is_head),
+ 	KUNIT_CASE(list_test_list_is_first),
+ 	KUNIT_CASE(list_test_list_is_last),
+ 	KUNIT_CASE(list_test_list_empty),
 
 
