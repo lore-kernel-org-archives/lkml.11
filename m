@@ -2,312 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40558C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:59:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 848A6CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:01:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343742AbiFGO7L (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 10:59:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50844 "EHLO
+        id S238383AbiFGPBN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 11:01:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343784AbiFGO7F (ORCPT
+        with ESMTP id S236248AbiFGPBF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 10:59:05 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C474836309
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 07:59:02 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id b5so15006854plx.10
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 07:59:02 -0700 (PDT)
+        Tue, 7 Jun 2022 11:01:05 -0400
+Received: from de-smtp-delivery-102.mimecast.com (de-smtp-delivery-102.mimecast.com [194.104.109.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0A9B36B60
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:01:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1654614059;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=wCsJmrOz1PLJTFb2O10R8SS9O65xSSCD7VtyWUVzbcM=;
+        b=enAD44a2pkaIcAaeChB2b4HettX0oX/PYFd4YmQKt9Zz6rNxuYIWqqLnlT4ufznINBiebz
+        ikr8AFnj5Zg80EQ+gDQJcdyWL0m1u9iMEqm515BWeWnuFLIMzNMBpQCnD4X4eQB8hpZpf5
+        m3e6ZpkUGcLpj7li1taDcWg2wjrZxo0=
+Received: from EUR03-VE1-obe.outbound.protection.outlook.com
+ (mail-ve1eur03lp2059.outbound.protection.outlook.com [104.47.9.59]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-37-NR-fkCkMO2m88n6LfTuhRw-1; Tue, 07 Jun 2022 17:00:57 +0200
+X-MC-Unique: NR-fkCkMO2m88n6LfTuhRw-1
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dZBEe13CbuVT615vW9JmlLf9mEh8Cq8aplYyHwKFcwirzSEZkPAstw196lQO3ooECjadfhEcsBCiO2xC1ul6X58gLbqU+5aQFb2ypbHG/ZlonJPtBuAJgFq3+nYcHwbfbmgjel4VC6v75rVVY4HN+ZkVk+t3fLbh/5zO74Gg0cdp3N7DkuKyauHPNR6pB824N7oiciPeYSfeLY9rBqC5sRfxXX0x0c2W/xlFpJnwJfOYzo5oYKx7YQwL5zSf35pkXBjSnfM3k8iM2OjT6KEX9POgmp8ssNY+cnuTQP5bZ8xOYmALSnXUo8b6UpZVoY6/CTWC6KU4hg3QllLa7AkeAg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wCsJmrOz1PLJTFb2O10R8SS9O65xSSCD7VtyWUVzbcM=;
+ b=Ew0zwf3UdCG+GEmd/bIudT9E78zGboO3rOl6ZqPhToBxI+BTBr85EcaJevSV5SYMQYe2WU9swf7qBbb6msPYk0Y9ihBepJ3tnVHbLxHePxhsjXUGwPvYGekQMme/rUS6EVy2TweDfM661SJGtNobCz5QJLA/shnyIQRRBaFg/43fhFXOMC+eOeLVJ/4XJOE+uHjb6gey8Iet6JGrlf6tbcarPna26Cwxk7yUTti7kh5+KPz6JFGmPF9MRGOKo1PrqLayNWXdkTKwYtx01JG2KBBTpNr2TjeeEMQliXMH/hIKaanpzOrYSd2lpf4aFWg/AWMpLJPsm5dfqTZ4/a9J7Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=N6fInSi9IKn11UYioNg0FX3MDrRJ2i6Bxa8SfRwdMnU=;
-        b=VpvRwD/MvUeV/UMSEYxAnXc2vh5H6N8grM0vYZasS57iTLIc+dGtWicVxYEtFihsXE
-         iZLrESXvRdt+KE33G6FN2VAiP9EigiMYzp30wVGtGtdnuEsjfBepw2afVInuw55oSoro
-         tmlPfMRT48pkpiJO+zWdjRCL6ttAo0eKlFGX5w/IJBbMWltmlv/o0k4wav/tiSBsU75n
-         9pIRinmkClhE++CXNIyZ3Du9viTb2Fy71GNNobcxx9wzPeFebZbZnO+86k+snErh6onV
-         wElA10JDwttb8kA8vb06lSXLH0EuZstkwv8eNK0qPQXFLX56kDjUfUXgBNc4W+fT1iof
-         07VA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=N6fInSi9IKn11UYioNg0FX3MDrRJ2i6Bxa8SfRwdMnU=;
-        b=n0t5qZDrv91lBNSEfpdDli8zMzFAw1ykFDkntgqmc4vyvV2HdA9YlA1qbPip3Eb1lN
-         oRKbSmAYqr7UxMoVB1vOALuq4oci3o1B+KdwDW2mG+gruw1PIEYErCjoaPxRKSJKBmk1
-         lFBPO4e/h/QP7KtUJkmoSiDKyx3Si0Ov6QcJFGAY8mci0TEKeYsTwystxX4ktyjckBrH
-         oXMEq2nTryK7/3v32Jw8dXZP9zxLcjvJhIQ+0kpZTK4LVPpGX2RhVecvLMzAhXClP4x6
-         c6uE+pP1/teyQ3+lBc0UtkqwRJtmI417PJgjLsASVRntTAB/7Sn3RW9A8cEXTi3/FzYg
-         uQoQ==
-X-Gm-Message-State: AOAM533OmgX39bWb0LAewwhid9STRSevyW9McnQ/2x3ltxKrOQpzEm+g
-        8WxnHMU3Gr8h/gNPrPHNxTkReA==
-X-Google-Smtp-Source: ABdhPJxVlOT8xgA9/zx52969XdiX1zynIBnGs1TwQT+qfkN5m+FXrmnhBQ+GqG6BXc07Vf+NS2uI9A==
-X-Received: by 2002:a17:903:2290:b0:167:59ad:52fb with SMTP id b16-20020a170903229000b0016759ad52fbmr18883395plh.78.1654613941968;
-        Tue, 07 Jun 2022 07:59:01 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id dw15-20020a17090b094f00b001e307d66123sm12232632pjb.25.2022.06.07.07.59.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 07:59:00 -0700 (PDT)
-Date:   Tue, 7 Jun 2022 14:58:57 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Yuan Yao <yuan.yao@intel.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Kai Huang <kai.huang@intel.com>,
-        Yuan Yao <yuan.yao@linux.intel.com>
-Subject: Re: [PATCH 1/1] KVM: MMU: Fix VM entry failure and OOPS for shdaow
- page table
-Message-ID: <Yp9nsbNzoIEyJeDv@google.com>
-References: <20220607074034.7109-1-yuan.yao@intel.com>
+ d=mysuse.onmicrosoft.com; s=selector1-mysuse-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wCsJmrOz1PLJTFb2O10R8SS9O65xSSCD7VtyWUVzbcM=;
+ b=EDGgyxxgkFcU05VH7bow19GpFlpxqMLoQOIYe3W0blAoELwG/xdoQ1bxsC2t+KO3E+JcYLzQZnlakUSufzbElVSnk4QxOIT1aw10KSSK+sdaKD9A7ULVnJ6tAoGG3SX85GzuVtv14eSBGWzdtwLYfVSEiTgj2ZpVsoDUByEqPUJr5OQX/6vZJGUQQ2ANFTMjMJnBojwBJdDv6AC0Q4jtKnG3z/Oeq42u3UWyqPTMSFK9MGw7h0CqzJoyGDybTv7cjpN7OlCWymzdr5lvjhpKuqk8lReCChSG2S3HjbYXF1VhaJ9FuYzTUzFmEiYJb6JTACLOAs0Aez2ae5aVbQ4jgQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from VE1PR04MB6560.eurprd04.prod.outlook.com (2603:10a6:803:122::25)
+ by AS8PR04MB7878.eurprd04.prod.outlook.com (2603:10a6:20b:2af::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.19; Tue, 7 Jun
+ 2022 15:00:55 +0000
+Received: from VE1PR04MB6560.eurprd04.prod.outlook.com
+ ([fe80::dfa:a64a:432f:e26b]) by VE1PR04MB6560.eurprd04.prod.outlook.com
+ ([fe80::dfa:a64a:432f:e26b%7]) with mapi id 15.20.5314.019; Tue, 7 Jun 2022
+ 15:00:55 +0000
+Message-ID: <485c0c0b-a3a7-0b7c-5264-7d00c01de032@suse.com>
+Date:   Tue, 7 Jun 2022 17:00:53 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Content-Language: en-US
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>
+Cc:     lkml <linux-kernel@vger.kernel.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+From:   Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH] x86: drop bogus "cc" clobber from __try_cmpxchg_user_asm()
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR0P281CA0066.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:49::12) To VE1PR04MB6560.eurprd04.prod.outlook.com
+ (2603:10a6:803:122::25)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607074034.7109-1-yuan.yao@intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9edcdee9-a93e-441b-5047-08da48968590
+X-MS-TrafficTypeDiagnostic: AS8PR04MB7878:EE_
+X-Microsoft-Antispam-PRVS: <AS8PR04MB7878F9D7D1B2C76705CD8779B3A59@AS8PR04MB7878.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HD/tYrm0crxHwrlJwCBm4tBJQi+dUbDied+/q+HTfv5zePZ1ddMJdGWWG7EhHxclg40zWtkzw/nkE+0RbZHDXarUKaSm8zI6WG5lhFs0853lsEioBTrLQi1dhgfly5LRurvQWf8stT+PPg4/NL3grXc4tL9nua2lFiUqHf5Df4Vo4IVLF4IpxHmje3ATOZIKWVC81ybuyqFFkCrlobF8l8UdxgMivTydMWkwLCDkNfkyXfuLOIp8GdScjl13aotuEu3sy6bar59sXCSqbNrdxuKUFuEZAUT3GOuzjgVkyfEV3XINECeh+Ozor1ePYXzlRLfN8p3wVY53t1v772hzqPiBCX9AL4IDzSvmGuOyLYG/1FQMMt8nmnGQC0euwT8DE00sJA99Rzo58ozRrEhpdoKN3yx8bhKn5mF5PDMdzy6QGysvIz9IxcSYbDLyTNm8B4XaLUGSfQCARbXQXo1+OSViY0kfPZV9Bm660n5QHubgaiocPBlLl07IDTX14KaTY74Y06W1i9XBbyHB2cZVwZ98nkjve4XKwF42cZdEDTtjAqvrlKpszxuSS+XJ0ubcBiV/o9mXsuFdrA9pjDj66UkHv2SHYnLvxKR7Fxfk7JjtDh010dfCttRD953rQaiWMYjeoWpvfDuKnrjbu69YiJEp2ZOEl0ljgrUuf1dv5bAf8sG9PZXRfc6dWG+tweS1zhNyDBzA64mmCpmf2asi8R1ohizTprRLnsxTXoZSckKQIYwcw9EqBng+G4lj7WbU
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6560.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66556008)(66476007)(83380400001)(4326008)(66946007)(8676002)(6506007)(4744005)(508600001)(6486002)(86362001)(186003)(2616005)(2906002)(36756003)(110136005)(54906003)(38100700002)(8936002)(31696002)(7416002)(26005)(31686004)(6512007)(316002)(5660300002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eVZIQ2U5NTdvQkQ1MGdJeStzZmxpN2ZQQWtIQXRnaGJxQk5QaDl0TER5UTlJ?=
+ =?utf-8?B?TU5uaUVEdWpidjhqOThJbU9jdFd3d0VCaDhIY2YwRm5QRmZRcFJOUERqanJI?=
+ =?utf-8?B?Ym54TVUxb3pYZ3JuQjByelpWdEN2dFp5VG9NYWJiUEhEL2gxSHdDT3g2RkIr?=
+ =?utf-8?B?UjJYYVlITjRMelhoTlZkTmJuNlRGcktMOW93bU9LNXNFQVpkWFpJSmIrOWp5?=
+ =?utf-8?B?N3NPN2hNeEpyYis0RHJNMmZqdE42OTZTSHdLR05TaHdodFp3QUpuTG55YXVU?=
+ =?utf-8?B?L1JQTVZPSlZnU1R6c1JiTmtuN0JFamdtNFB0Wk5XbUFmM0cyRWRWOCtkZFV3?=
+ =?utf-8?B?VmZvWmRlTmljc1NQTlFETzJMYWs3TVhDSmtsdjQ4OXJxN2syRUVCRy96TUNN?=
+ =?utf-8?B?WmMxQlBHbEVSSk5kMVlSOWZhUHdFWDV3cEFCRHgxNmRCSkpQdUJZWk93b29Z?=
+ =?utf-8?B?WWVCT1pEUVVFSnFLQStBVDBjVFNRWklrT3QzcGg3VThPa2FHMDlWR2JsYlVD?=
+ =?utf-8?B?eW9jbEFXV3gxc3FHejIvamJOTjVUUkM3VkJYNnB2T2lmQ0NMRno5YTlKRDk2?=
+ =?utf-8?B?dDQ1MnBUc0RMWXRRdDh6aE9WUDlpRjVDTFgzemdoVzlDclZIbFg5OUlrY1ly?=
+ =?utf-8?B?ak5QeXloek4wZ1B6cDk2YXFHTi9iTWFvckZaL1hQMFkxcEU2azFWd09hbUZv?=
+ =?utf-8?B?b3R5VG5RSitwRm81Y1VQcEtlSkFGNmd4cWVINUxsWHpNSGNlV2pzem1ldlZN?=
+ =?utf-8?B?OHhHWktCeWJhOGl0YkxMMTZZYXhBWVNsbnpOS0VNTUsyN2ZTZ2xOK0JpZEN2?=
+ =?utf-8?B?Z2RNUXp1NEVIbTZhQ3VnYVY2T1B4LzlJYWVOdkREQzVXZ3M3ZE9aa21UcUVM?=
+ =?utf-8?B?eis4V1RQcnJoa0dnREc3RVJwdm1rcFc1K09pL3A1TFI1T0xibU02aWlTL1JD?=
+ =?utf-8?B?Q2h3NERHbTg5VSsrQ3hIKzgvREdXYUM2Z1B1cTRkemlubFFHYzBsdWxuOTU4?=
+ =?utf-8?B?em1ZT09TeEtzeFFVWGJ2UDN0cXBCTElwcHdHbnJWclBKQ1ZmZVNFRWg3TzZN?=
+ =?utf-8?B?WWtSVGo2NTJpM09OM1h0WlczNWpKYTF0eEU1QW1PdlNicGQ2ai9GWXZKY2lP?=
+ =?utf-8?B?STkvclliUnBXejdYV3RGOGZvZ0RzUElBc25ybVNkVVlWNTJ4LzVLVWd4UkVY?=
+ =?utf-8?B?S2FyV1o4TFZ5eXlyRUJjZDVveHpOOEp0c1JPK202SUFRWWNFRGN0bEM4cGlQ?=
+ =?utf-8?B?bHE2Z3VzditoQkRZejVSdzdjRUUxYUJEV1VaT0hUY21Ed1dJb0xoQlJrMXFY?=
+ =?utf-8?B?RDZ2SDlxTlBqTlBaUCtITDNHUkROaG1La3RWVmpJUXo3UE9HSXVCTmxvSWhl?=
+ =?utf-8?B?Q0JtNm0ySjM3VUhOalJLeUk0M0luNFBZZXdYNTkrOC9HckxoMVZwaDYxZzlh?=
+ =?utf-8?B?SXM5eDBITWxtY2pYS1BmeExvdGdVbkpMWUsrelNtK1Z6S1pMZ1pjVk1XeFJ4?=
+ =?utf-8?B?Sk1QLzFUekFOVGtOSzFVQi9PbVRxL2Nkd1JyTXVQczYzeUZ4TUZxVDJwenpB?=
+ =?utf-8?B?OHhXVFNDbnpRUy92T0NrWGU5Y3FXU1Rjb3Z6V1E5UEliNTluTGN5ayt5T2tN?=
+ =?utf-8?B?anhXSHhWVHdQRjFRSEREN3FKWEh6YUpNcDhORU1vdHVDcEE1aVBGaFJPKzJo?=
+ =?utf-8?B?em1pYXgwOWlZRXpoSnczQUhmRGMxZ3k5SXNUS2dBS2gwL2pWM1pRR3NRWEtl?=
+ =?utf-8?B?MWtYK2FFak8vMFJRdEk0ZzVLMjdLRC95SnBxTnRWN2tvbkQ0eHFjSHJUS0I3?=
+ =?utf-8?B?Mk5uYzVQc3FtTmQxK3Y4dHdoMmMzMlJnV0U1andYYmEvZUFnR0tDek56VkdN?=
+ =?utf-8?B?U1hHL0toSUhYUm01V05SbWp6dktNMHJidjJOL0ZXUkkzbCtLemtYdzZyZXE4?=
+ =?utf-8?B?a3VlTW8wdGRGL1FrQ2luckNaMVI2enN5akNMbXhoaW0vM0ZFRVBrT3dqd2pG?=
+ =?utf-8?B?R05IS1J5UmdaN00ySDZTZE4vaWVmUHpNZUVSYzhmSDNiMUZZQzltWmc2Tkhz?=
+ =?utf-8?B?YkdaT2dUbTVTajQ1R1lKbitsSGIxUGRaeE92ZVVzTkVmenorSUh3WEpYSGRi?=
+ =?utf-8?B?eVptZFpEQ2RoRW5sdFBld1JiM1B5RUtSZCsxTXRNSFM5VG95MHQ1endqYzlU?=
+ =?utf-8?B?eVhrSXZ0MytKUXdqUmtGcHg1TWRCbHJWOVl0UXR2ZzRTYTQwU1lmNUl2aG12?=
+ =?utf-8?B?TS85b3A0YmdqNXdWeHc0TG5mY2tMK2JnaEVzQXlDdWJNbmUwVWtWT2NFOWRO?=
+ =?utf-8?B?ZEhGNnhlZU9Dd2NoRmhFck5wSlBrZHhFUm8rSG84c3R6cUJFR3NJdz09?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9edcdee9-a93e-441b-5047-08da48968590
+X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6560.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2022 15:00:55.0874
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: boE7Njlf7ANfoRkOLu97UCtDwNzODKZxBGGxktq5035RfrSIP2HfB0DBOHeCbC2e5QB0UBVedrXxBPqvbHKZJg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7878
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"KVM: x86/mmu:" for the scope please (because I'm holding out hope that someday
-we'll have a common "KVM: MMU:" that's shared by multiple architectures.
+As noted (and fixed) a couple of times in the past, "=@cc<cond>" outputs
+and clobbering of "cc" don't work well together. The compiler appears to
+mean to reject such, but doesn't - in its upstream form - quite manage
+to yet for "cc". Furthermore two similar macros don't clobber "cc", and
+clobbering "cc" is pointless in asm()-s for x86 anyway - the compiler
+always assumes status flags to be clobbered there.
 
-And there's a s/shdaow/shadow typo.  That said, I'd prefer to use the shortlog to
-give the reader a hint as to what the underlying bug is, e.g. it's not immediately
-obvious that hitting this bug requires a platform with MKTME enabled.  Maybe:
+Fixes: 989b5db215a2 ("x86/uaccess: Implement macros for CMPXCHG on user addresses")
+Signed-off-by: Jan Beulich <jbeulich@suse.com>
+---
+The change I continue to carry locally actually allows specifying that
+"cc" is _not_ clobbered; it only happens to improve detection of bad
+situations like the one here.
 
-  KVM: x86/mmu: Set memory encryption "value", not "mask", in shadow PDPTRs
+--- a/arch/x86/include/asm/uaccess.h
++++ b/arch/x86/include/asm/uaccess.h
+@@ -439,7 +439,7 @@ do {									\
+ 		       [ptr] "+m" (*_ptr),				\
+ 		       [old] "+a" (__old)				\
+ 		     : [new] ltype (__new)				\
+-		     : "memory", "cc");					\
++		     : "memory");					\
+ 	if (unlikely(__err))						\
+ 		goto label;						\
+ 	if (unlikely(!success))						\
 
-On Tue, Jun 07, 2022, Yuan Yao wrote:
-> commit e54f1ff244ac ("KVM: x86/mmu: Add shadow_me_value and
-
-Personal preference, I don't bother with a "commit ..." in the changelog if there's
-a Fixes: that provides the same information.
-
-> repurpose shadow_me_mask") repurposed below varables:
-
-Please wrap closer to ~75 chars.
-
-Please lead with the "what", then dive into the details, that way the reader has
-an idea of what's changing.  And if there's a trace, finding the one sentence that
-describes the actual change can be surprisingly difficult.  Somethine like:
-
-  Assign shadow_me_value, not shadow_me_mask, to PAE root entries, a.k.a. shadow
-  PDPTRs, when host memory encryption is supported.  The "mask" is the set of all
-  possible memory encryption bits, e.g. MKTME KeyIDs, whereas "value" holds the
-  actual value that needs to be stuffed into host page tables.
-
-  Using shadow_me_mask results in a failed VM-Entry due to setting reserved PA
-  bits in the PDPTRs, and ultimately causes an OOPS due to physical addresses
-  with non-zero MKTME bits sending to_shadow_page() into the weeds.
-
-> shadow_me_value: the memory encryption bit(s) that will be
-> set to the SPTE (the original shadow_me_mask).
-> shadow_me_mask: all possible memory encryption bits (which
-> is a super set of shadow_me_value).
-> 
-> So assign shadow_me_mask to pae root page is wrong, instead
-> using shadow_me_value.
-> 
-> Fixes: e54f1ff244ac ("KVM: x86/mmu: Add shadow_me_value and repurpose shadow_me_mask")
-
-Convention is to put Fixes: at the end of the changelog, i.e. after the trace and
-next to the Cc list and SOB chain.
-
-> ----------------------
-> KVM: entry failed, hardware error 0x80000021
-
-For this specific bug, I wouldn't bother with a dump of the failed VM-Entry,
-nothing in the dump is relevant/interesting. 
-
-> If you're running a guest on an Intel machine without unrestricted mode
-> support, the failure can be most likely due to the guest entering an invalid
-> state for Intel VT. For example, the guest maybe running in big real mode
-> which is not supported on less recent Intel processors.
-> 
-> EAX=00000000 EBX=00000000 ECX=00000000 EDX=000806f3
-> ESI=00000000 EDI=00000000 EBP=00000000 ESP=00000000
-> EIP=0000e05b EFL=00000002 [-------] CPL=0 II=0 A20=1 SMM=0 HLT=0
-> ES =0000 00000000 0000ffff 00009300
-> CS =f000 000f0000 0000ffff 00009b00
-> SS =0000 00000000 0000ffff 00009300
-> DS =0000 00000000 0000ffff 00009300
-> FS =0000 00000000 0000ffff 00009300
-> GS =0000 00000000 0000ffff 00009300
-> LDT=0000 00000000 0000ffff 00008200
-> TR =0000 00000000 0000ffff 00008b00
-> GDT=     00000000 0000ffff
-> IDT=     00000000 0000ffff
-> CR0=60000010 CR2=00000000 CR3=00000000 CR4=00000000
-> DR0=0000000000000000 DR1=0000000000000000 DR2=0000000000000000 DR3=0000000000000000
-> DR6=00000000ffff0ff0 DR7=0000000000000400
-> EFER=0000000000000000
-> Code=8c 0a 14 28 3c 50 64 c8 66 90 66 90 66 90 66 90 66 90 66 90 <2e> 66 83 3e c8 61 00 0f 85 89 f0 31 d2 8e d2 66 bc 00 70 00 00 66 ba 63 fc 0e 00 e9 f3 ee
-> 
-> ----------------------
-> [   80.806596] set kvm_intel.dump_invalid_vmcs=1 to dump internal KVM state.
-> [  293.504118] BUG: unable to handle page fault for address: ffd43f00063049e8
-> [  293.515075] #PF: supervisor read access in kernel mode
-> [  293.524031] #PF: error_code(0x0000) - not-present page
-> [  293.532935] PGD 86dfd8067 P4D 0
-> [  293.539626] Oops: 0000 [#1] PREEMPT SMP
-> [  293.546958] CPU: 164 PID: 4260 Comm: qemu-system-x86 Tainted: G        W         5.18.0-rc6-kvm-upstream-workaround+ #82
-> [  293.565354] Hardware name: Intel Corporation ArcherCity/ArcherCity, BIOS EGSDCRB1.86B.0069.D14.2111291356 11/29/2021
-
-Thanks for the trace!  But please trim the superfluous information, e.g. the
-timestamps, registers, code stream, etc... aren't necessary to understand why the
-fault occured.
-
-> [  293.583639] RIP: 0010:mmu_free_root_page+0x3c/0x90 [kvm]
-> [  293.592911] Code: 25 28 00 00 00 48 89 45 f0 31 c0 48 8b 06 48 83 f8 ff 74 4a 48 c1 e0 0c 48 89 f3 48 c1 e8 18 48 c1 e0 06 48 03 05 e4 08 20 c2 <48> 8b 70 28 48 85 f6 74 41 80 7e 20 00 75 17 83 6e 48 01 75 18 f6
-> [  293.624056] RSP: 0018:ffa000000b3afb88 EFLAGS: 00010286
-> [  293.633326] RAX: ffd43f00063049c0 RBX: ff110000777ff000 RCX: 0000000000000001
-> [  293.644758] RDX: ffa000000b3afbc8 RSI: ff110000777ff000 RDI: ffa000000c211000
-> [  293.656132] RBP: ffa000000b3afba0 R08: 0000000000000100 R09: ffa000000b3afbe0
-> [  293.667480] R10: ffa000000b3afbe0 R11: 0000000000000000 R12: ffa000000c211000
-> [  293.678771] R13: ffa000000b3afbc8 R14: ff11000112e9c290 R15: 00000000ffffffef
-> [  293.690069] FS:  0000000000000000(0000) GS:ff1100084e300000(0000) knlGS:0000000000000000
-> [  293.702514] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  293.712338] CR2: ffd43f00063049e8 CR3: 000000000260a006 CR4: 0000000000773ee0
-> [  293.723802] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [  293.735230] DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7: 0000000000000400
-> [  293.746597] PKRU: 55555554
-> [  293.752962] Call Trace:
-> [  293.758978]  <TASK>
-> [  293.764579]  kvm_mmu_free_roots+0xd1/0x200 [kvm]
-> [  293.773060]  __kvm_mmu_unload+0x29/0x70 [kvm]
-> [  293.781177]  kvm_mmu_unload+0x13/0x20 [kvm]
-> [  293.789012]  kvm_arch_destroy_vm+0x8a/0x190 [kvm]
-> [  293.797355]  kvm_put_kvm+0x197/0x2d0 [kvm]
-> [  293.804925]  kvm_vm_release+0x21/0x30 [kvm]
-> [  293.812499]  __fput+0x8e/0x260
-> [  293.818715]  ____fput+0xe/0x10
-> [  293.824822]  task_work_run+0x6f/0xb0
-> [  293.831433]  do_exit+0x327/0xa90
-> [  293.837586]  ? futex_unqueue+0x3f/0x70
-
-Lines with leading '?' should be dropped, they're "guesses" from the unwinder.
-
-> [  293.844283]  do_group_exit+0x35/0xa0
-> [  293.850770]  get_signal+0x911/0x930
-> [  293.857137]  arch_do_signal_or_restart+0x37/0x720
-> [  293.864896]  ? do_futex+0xf9/0x1a0
-> [  293.871139]  ? __x64_sys_futex+0x66/0x160
-> [  293.878001]  exit_to_user_mode_prepare+0xb2/0x140
-> [  293.885576]  syscall_exit_to_user_mode+0x16/0x30
-> [  293.892973]  do_syscall_64+0x4e/0x90
-> [  293.899162]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [  293.906972] RIP: 0033:0x7f6c844f752d
-
-Everything below here can be dropped as it's not relevant to the original bug.
-
-E.g. the entire trace can be trimmed to:
-
-  set kvm_intel.dump_invalid_vmcs=1 to dump internal KVM state.
-  BUG: unable to handle page fault for address: ffd43f00063049e8
-  #PF: supervisor read access in kernel mode
-  #PF: error_code(0x0000) - not-present page
-  PGD 86dfd8067 P4D 0
-  Oops: 0000 [#1] PREEMPT SMP
-  CPU: 164 PID: 4260 Comm: qemu-system-x86 Tainted: G        W         5.18.0-rc6-kvm-upstream-workaround+ #82
-  Hardware name: Intel Corporation ArcherCity/ArcherCity, BIOS EGSDCRB1.86B.0069.D14.2111291356 11/29/2021
-  RIP: 0010:mmu_free_root_page+0x3c/0x90 [kvm]
-  Call Trace:
-   <TASK>
-   kvm_mmu_free_roots+0xd1/0x200 [kvm]
-   __kvm_mmu_unload+0x29/0x70 [kvm]
-   kvm_mmu_unload+0x13/0x20 [kvm]
-   kvm_arch_destroy_vm+0x8a/0x190 [kvm]
-   kvm_put_kvm+0x197/0x2d0 [kvm]
-   kvm_vm_release+0x21/0x30 [kvm]
-   __fput+0x8e/0x260
-   ____fput+0xe/0x10
-   task_work_run+0x6f/0xb0
-   do_exit+0x327/0xa90
-   do_group_exit+0x35/0xa0
-   get_signal+0x911/0x930
-   arch_do_signal_or_restart+0x37/0x720
-   exit_to_user_mode_prepare+0xb2/0x140
-   syscall_exit_to_user_mode+0x16/0x30
-   do_syscall_64+0x4e/0x90
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-> [  293.913050] Code: Unable to access opcode bytes at RIP 0x7f6c844f7503.
-> [  293.922442] RSP: 002b:00007f6c7fbfe648 EFLAGS: 00000212 ORIG_RAX: 00000000000000ca
-> [  293.933048] RAX: fffffffffffffe00 RBX: 0000000000000000 RCX: 00007f6c844f752d
-> [  293.943161] RDX: 00000000ffffffff RSI: 0000000000000000 RDI: 0000557dd5a1ac58
-> [  293.953281] RBP: 00007f6c7fbfe670 R08: 0000000000000000 R09: 0000000000000000
-> [  293.963401] R10: 0000000000000000 R11: 0000000000000212 R12: 00007ffd0f3001be
-> [  293.973542] R13: 00007ffd0f3001bf R14: 00007ffd0f300280 R15: 00007f6c7fbfe880
-> [  293.983683]  </TASK>
-> [  293.988216] Modules linked in: kvm_intel kvm x86_pkg_temp_thermal snd_pcm input_leds snd_timer joydev led_class snd irqbypass efi_pstore soundcore mac_hid button sch_fq_codel ip_tables x_tables ixgbe mdio mdio_devres libphy igc xfrm_algo ptp pps_core efivarfs [last unloaded: kvm]
-> [  294.022648] CR2: ffd43f00063049e8
-> [  294.028694] ---[ end trace 0000000000000000 ]---
-> [  294.042573] RIP: 0010:mmu_free_root_page+0x3c/0x90 [kvm]
-> [  294.050908] Code: 25 28 00 00 00 48 89 45 f0 31 c0 48 8b 06 48 83 f8 ff 74 4a 48 c1 e0 0c 48 89 f3 48 c1 e8 18 48 c1 e0 06 48 03 05 e4 08 20 c2 <48> 8b 70 28 48 85 f6 74 41 80 7e 20 00 75 17 83 6e 48 01 75 18 f6
-> [  294.079460] RSP: 0018:ffa000000b3afb88 EFLAGS: 00010286
-> [  294.087908] RAX: ffd43f00063049c0 RBX: ff110000777ff000 RCX: 0000000000000001
-> [  294.098558] RDX: ffa000000b3afbc8 RSI: ff110000777ff000 RDI: ffa000000c211000
-> [  294.109193] RBP: ffa000000b3afba0 R08: 0000000000000100 R09: ffa000000b3afbe0
-> [  294.119831] R10: ffa000000b3afbe0 R11: 0000000000000000 R12: ffa000000c211000
-> [  294.130449] R13: ffa000000b3afbc8 R14: ff11000112e9c290 R15: 00000000ffffffef
-> [  294.141090] FS:  0000000000000000(0000) GS:ff1100084e300000(0000) knlGS:0000000000000000
-> [  294.152867] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  294.162035] CR2: ffd43f00063049e8 CR3: 000000000260a006 CR4: 0000000000773ee0
-> [  294.172825] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [  294.183618] DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7: 0000000000000400
-> [  294.194390] PKRU: 55555554
-> [  294.200189] note: qemu-system-x86[4260] exited with preempt_count 1
-> [  294.210044] Fixing recursive fault but reboot is needed!
-> [  294.218854] BUG: scheduling while atomic: qemu-system-x86/4260/0x00000000
-> [  294.229357] Modules linked in: kvm_intel kvm x86_pkg_temp_thermal snd_pcm input_leds snd_timer joydev led_class snd irqbypass efi_pstore soundcore mac_hid button sch_fq_codel ip_tables x_tables ixgbe mdio mdio_devres libphy igc xfrm_algo ptp pps_core efivarfs [last unloaded: kvm]
-> [  294.266273] Preemption disabled at:
-> [  294.266273] [<ffffffff8109e404>] do_task_dead+0x24/0x50
-> [  294.282274] CPU: 164 PID: 4260 Comm: qemu-system-x86 Tainted: G      D W         5.18.0-rc6-kvm-upstream-workaround+ #82
-> [  294.300693] Hardware name: Intel Corporation ArcherCity/ArcherCity, BIOS EGSDCRB1.86B.0069.D14.2111291356 11/29/2021
-> [  294.319002] Call Trace:
-> [  294.325007]  <TASK>
-> [  294.330587]  dump_stack_lvl+0x38/0x49
-> [  294.337889]  ? do_task_dead+0x24/0x50
-> [  294.345102]  dump_stack+0x10/0x12
-> [  294.351836]  __schedule_bug.cold.156+0x7d/0x8e
-> [  294.359770]  __schedule+0x578/0x820
-> [  294.366552]  ? vprintk+0x52/0x80
-> [  294.373025]  ? _printk+0x58/0x6f
-> [  294.379449]  do_task_dead+0x44/0x50
-> [  294.386097]  make_task_dead.cold.48+0x50/0xaf
-> [  294.393650]  rewind_stack_and_make_dead+0x17/0x17
-> [  294.401549] RIP: 0033:0x7f6c844f752d
-> [  294.408147] Code: Unable to access opcode bytes at RIP 0x7f6c844f7503.
-> [  294.418086] RSP: 002b:00007f6c7fbfe648 EFLAGS: 00000212 ORIG_RAX: 00000000000000ca
-> [  294.429266] RAX: fffffffffffffe00 RBX: 0000000000000000 RCX: 00007f6c844f752d
-> [  294.439998] RDX: 00000000ffffffff RSI: 0000000000000000 RDI: 0000557dd5a1ac58
-> [  294.450748] RBP: 00007f6c7fbfe670 R08: 0000000000000000 R09: 0000000000000000
-> [  294.461498] R10: 0000000000000000 R11: 0000000000000212 R12: 00007ffd0f3001be
-> [  294.472199] R13: 00007ffd0f3001bf R14: 00007ffd0f300280 R15: 00007f6c7fbfe880
-> [  294.482869]  </TASK>
-> 
-> Signed-off-by: Yuan Yao <yuan.yao@intel.com>
-> ---
->  arch/x86/kvm/mmu/mmu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index efe5a3dca1e0..6bd144f1e60c 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -3411,7 +3411,7 @@ static int mmu_alloc_direct_roots(struct kvm_vcpu *vcpu)
->  			root = mmu_alloc_root(vcpu, i << (30 - PAGE_SHIFT),
->  					      i << 30, PT32_ROOT_LEVEL, true);
->  			mmu->pae_root[i] = root | PT_PRESENT_MASK |
-> -					   shadow_me_mask;
-> +					   shadow_me_value;
->  		}
->  		mmu->root.hpa = __pa(mmu->pae_root);
->  	} else {
-> -- 
-> 2.27.0
-> 
