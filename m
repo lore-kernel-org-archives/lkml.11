@@ -2,101 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A60C6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:59:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48AE7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:59:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357955AbiFGT7V (ORCPT
+        id S1357998AbiFGT7Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:59:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49724 "EHLO
+        Tue, 7 Jun 2022 15:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351936AbiFGSxR (ORCPT
+        with ESMTP id S1347697AbiFGSxT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:53:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEA7D1EC41;
-        Tue,  7 Jun 2022 11:03:40 -0700 (PDT)
+        Tue, 7 Jun 2022 14:53:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B61101733;
+        Tue,  7 Jun 2022 11:03:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A4EDA617C4;
+        by ams.source.kernel.org (Postfix) with ESMTPS id F4211B82343;
+        Tue,  7 Jun 2022 18:03:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C1EFC34119;
         Tue,  7 Jun 2022 18:03:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8E1EC34115;
-        Tue,  7 Jun 2022 18:03:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654625019;
-        bh=rQEkonLA1YADugnWeYW7KfUtah3MwnizqTX+nl2xgIs=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654625019;
+        bh=WzvN1A/2QTk/kMzoYD1MIT9522XX+Es0Y51WSP4wVDA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K2UlHEf1zr/LgAIgvBuRBTIUbm1NBldlXV5wFN/1G+OKMIt8syZmA3SZ4Z8GcWx8/
-         n0zJGTmB4EOquldecsGf1mLPh9lFEK5u0Kv8zk7xzu37VgR6UR3zxuwyZ+AFE7SX+4
-         UI49SbPiwtqfI+Uqn4zAXDmxU+Ns4aNNvT9IYNklMxAMuDXGr5GjufCaDsQEghMI1q
-         kNSQaJMWXLIMd2hmivPo5XdudISNv7ilPswh5q53OyImHF/X2ytMfCDLzVzMkKac5o
-         amX3FY/b7Fkb/rllHetmth2DDO3dPxmLn2torv2GUbsmcxSJ2vZ1iEEKQVB83W/EMd
-         CqJyCPLyjjo0w==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Evan Green <evgreen@chromium.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, yj84.jang@samsung.com,
-        bhelgaas@google.com, christophe.leroy@csgroup.eu,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 09/19] USB: hcd-pci: Fully suspend across freeze/thaw cycle
-Date:   Tue,  7 Jun 2022 14:03:04 -0400
-Message-Id: <20220607180317.482354-9-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180317.482354-1-sashal@kernel.org>
-References: <20220607180317.482354-1-sashal@kernel.org>
+        b=yny3Rh6awcsDq3Me40YSkJM4FNOjEtDmmu0aL2J00CSNLieANCbhDYQH4JFxWyZYY
+         yO/Q6D4ozGssdkDV2BWXtqxVP8w9HoYOq7/FtM9ct/JEII61Xxob1TEYvcQP1GGjZ7
+         7kIGSaHRxl1v8baEpMWh3Tiq9/ya+J0D/sT58QHE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 538/667] bfq: Get rid of __bio_blkcg() usage
+Date:   Tue,  7 Jun 2022 19:03:23 +0200
+Message-Id: <20220607164950.836477993@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Green <evgreen@chromium.org>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit 63acaa8e9c65dc34dc249440216f8e977f5d2748 ]
+commit 4e54a2493e582361adc3bfbf06c7d50d19d18837 upstream.
 
-The documentation for the freeze() method says that it "should quiesce
-the device so that it doesn't generate IRQs or DMA". The unspoken
-consequence of not doing this is that MSIs aimed at non-boot CPUs may
-get fully lost if they're sent during the period where the target CPU is
-offline.
+BFQ usage of __bio_blkcg() is a relict from the past. Furthermore if bio
+would not be associated with any blkcg, the usage of __bio_blkcg() in
+BFQ is prone to races with the task being migrated between cgroups as
+__bio_blkcg() calls at different places could return different blkcgs.
 
-The current callbacks for USB HCD do not fully quiesce interrupts,
-specifically on XHCI. Change to use the full suspend/resume flow for
-freeze/thaw to ensure interrupts are fully quiesced. This fixes issues
-where USB devices fail to thaw during hibernation because XHCI misses
-its interrupt and cannot recover.
+Convert BFQ to the new situation where bio->bi_blkg is initialized in
+bio_set_dev() and thus practically always valid. This allows us to save
+blkcg_gq lookup and noticeably simplify the code.
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Evan Green <evgreen@chromium.org>
-Link: https://lore.kernel.org/r/20220421103751.v3.2.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid
+CC: stable@vger.kernel.org
+Fixes: 0fe061b9f03c ("blkcg: fix ref count issue with bio_blkcg() using task_css")
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-8-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/core/hcd-pci.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ block/bfq-cgroup.c  |   63 ++++++++++++++++++----------------------------------
+ block/bfq-iosched.c |   11 ---------
+ block/bfq-iosched.h |    3 --
+ 3 files changed, 25 insertions(+), 52 deletions(-)
 
-diff --git a/drivers/usb/core/hcd-pci.c b/drivers/usb/core/hcd-pci.c
-index 7af23b215254..a416eea9a366 100644
---- a/drivers/usb/core/hcd-pci.c
-+++ b/drivers/usb/core/hcd-pci.c
-@@ -637,10 +637,10 @@ const struct dev_pm_ops usb_hcd_pci_pm_ops = {
- 	.suspend_noirq	= hcd_pci_suspend_noirq,
- 	.resume_noirq	= hcd_pci_resume_noirq,
- 	.resume		= hcd_pci_resume,
--	.freeze		= check_root_hub_suspended,
-+	.freeze		= hcd_pci_suspend,
- 	.freeze_noirq	= check_root_hub_suspended,
- 	.thaw_noirq	= NULL,
--	.thaw		= NULL,
-+	.thaw		= hcd_pci_resume,
- 	.poweroff	= hcd_pci_suspend,
- 	.poweroff_noirq	= hcd_pci_suspend_noirq,
- 	.restore_noirq	= hcd_pci_resume_noirq,
--- 
-2.35.1
+--- a/block/bfq-cgroup.c
++++ b/block/bfq-cgroup.c
+@@ -584,27 +584,11 @@ static void bfq_group_set_parent(struct
+ 	entity->sched_data = &parent->sched_data;
+ }
+ 
+-static struct bfq_group *bfq_lookup_bfqg(struct bfq_data *bfqd,
+-					 struct blkcg *blkcg)
++static void bfq_link_bfqg(struct bfq_data *bfqd, struct bfq_group *bfqg)
+ {
+-	struct blkcg_gq *blkg;
+-
+-	blkg = blkg_lookup(blkcg, bfqd->queue);
+-	if (likely(blkg))
+-		return blkg_to_bfqg(blkg);
+-	return NULL;
+-}
+-
+-struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd,
+-				     struct blkcg *blkcg)
+-{
+-	struct bfq_group *bfqg, *parent;
++	struct bfq_group *parent;
+ 	struct bfq_entity *entity;
+ 
+-	bfqg = bfq_lookup_bfqg(bfqd, blkcg);
+-	if (unlikely(!bfqg))
+-		return NULL;
+-
+ 	/*
+ 	 * Update chain of bfq_groups as we might be handling a leaf group
+ 	 * which, along with some of its relatives, has not been hooked yet
+@@ -621,8 +605,15 @@ struct bfq_group *bfq_find_set_group(str
+ 			bfq_group_set_parent(curr_bfqg, parent);
+ 		}
+ 	}
++}
+ 
+-	return bfqg;
++struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
++{
++	struct blkcg_gq *blkg = bio->bi_blkg;
++
++	if (!blkg)
++		return bfqd->root_group;
++	return blkg_to_bfqg(blkg);
+ }
+ 
+ /**
+@@ -704,25 +695,15 @@ void bfq_bfqq_move(struct bfq_data *bfqd
+  * Move bic to blkcg, assuming that bfqd->lock is held; which makes
+  * sure that the reference to cgroup is valid across the call (see
+  * comments in bfq_bic_update_cgroup on this issue)
+- *
+- * NOTE: an alternative approach might have been to store the current
+- * cgroup in bfqq and getting a reference to it, reducing the lookup
+- * time here, at the price of slightly more complex code.
+  */
+-static struct bfq_group *__bfq_bic_change_cgroup(struct bfq_data *bfqd,
+-						struct bfq_io_cq *bic,
+-						struct blkcg *blkcg)
++static void *__bfq_bic_change_cgroup(struct bfq_data *bfqd,
++				     struct bfq_io_cq *bic,
++				     struct bfq_group *bfqg)
+ {
+ 	struct bfq_queue *async_bfqq = bic_to_bfqq(bic, 0);
+ 	struct bfq_queue *sync_bfqq = bic_to_bfqq(bic, 1);
+-	struct bfq_group *bfqg;
+ 	struct bfq_entity *entity;
+ 
+-	bfqg = bfq_find_set_group(bfqd, blkcg);
+-
+-	if (unlikely(!bfqg))
+-		bfqg = bfqd->root_group;
+-
+ 	if (async_bfqq) {
+ 		entity = &async_bfqq->entity;
+ 
+@@ -774,20 +755,24 @@ static struct bfq_group *__bfq_bic_chang
+ void bfq_bic_update_cgroup(struct bfq_io_cq *bic, struct bio *bio)
+ {
+ 	struct bfq_data *bfqd = bic_to_bfqd(bic);
+-	struct bfq_group *bfqg = NULL;
++	struct bfq_group *bfqg = bfq_bio_bfqg(bfqd, bio);
+ 	uint64_t serial_nr;
+ 
+-	rcu_read_lock();
+-	serial_nr = __bio_blkcg(bio)->css.serial_nr;
++	serial_nr = bfqg_to_blkg(bfqg)->blkcg->css.serial_nr;
+ 
+ 	/*
+ 	 * Check whether blkcg has changed.  The condition may trigger
+ 	 * spuriously on a newly created cic but there's no harm.
+ 	 */
+ 	if (unlikely(!bfqd) || likely(bic->blkcg_serial_nr == serial_nr))
+-		goto out;
++		return;
+ 
+-	bfqg = __bfq_bic_change_cgroup(bfqd, bic, __bio_blkcg(bio));
++	/*
++	 * New cgroup for this process. Make sure it is linked to bfq internal
++	 * cgroup hierarchy.
++	 */
++	bfq_link_bfqg(bfqd, bfqg);
++	__bfq_bic_change_cgroup(bfqd, bic, bfqg);
+ 	/*
+ 	 * Update blkg_path for bfq_log_* functions. We cache this
+ 	 * path, and update it here, for the following
+@@ -840,8 +825,6 @@ void bfq_bic_update_cgroup(struct bfq_io
+ 	 */
+ 	blkg_path(bfqg_to_blkg(bfqg), bfqg->blkg_path, sizeof(bfqg->blkg_path));
+ 	bic->blkcg_serial_nr = serial_nr;
+-out:
+-	rcu_read_unlock();
+ }
+ 
+ /**
+@@ -1459,7 +1442,7 @@ void bfq_end_wr_async(struct bfq_data *b
+ 	bfq_end_wr_async_queues(bfqd, bfqd->root_group);
+ }
+ 
+-struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd, struct blkcg *blkcg)
++struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
+ {
+ 	return bfqd->root_group;
+ }
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -5604,14 +5604,7 @@ static struct bfq_queue *bfq_get_queue(s
+ 	struct bfq_queue *bfqq;
+ 	struct bfq_group *bfqg;
+ 
+-	rcu_read_lock();
+-
+-	bfqg = bfq_find_set_group(bfqd, __bio_blkcg(bio));
+-	if (!bfqg) {
+-		bfqq = &bfqd->oom_bfqq;
+-		goto out;
+-	}
+-
++	bfqg = bfq_bio_bfqg(bfqd, bio);
+ 	if (!is_sync) {
+ 		async_bfqq = bfq_async_queue_prio(bfqd, bfqg, ioprio_class,
+ 						  ioprio);
+@@ -5657,8 +5650,6 @@ out:
+ 
+ 	if (bfqq != &bfqd->oom_bfqq && is_sync && !respawn)
+ 		bfqq = bfq_do_or_sched_stable_merge(bfqd, bfqq, bic);
+-
+-	rcu_read_unlock();
+ 	return bfqq;
+ }
+ 
+--- a/block/bfq-iosched.h
++++ b/block/bfq-iosched.h
+@@ -1007,8 +1007,7 @@ void bfq_bfqq_move(struct bfq_data *bfqd
+ void bfq_init_entity(struct bfq_entity *entity, struct bfq_group *bfqg);
+ void bfq_bic_update_cgroup(struct bfq_io_cq *bic, struct bio *bio);
+ void bfq_end_wr_async(struct bfq_data *bfqd);
+-struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd,
+-				     struct blkcg *blkcg);
++struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio);
+ struct blkcg_gq *bfqg_to_blkg(struct bfq_group *bfqg);
+ struct bfq_group *bfqq_group(struct bfq_queue *bfqq);
+ struct bfq_group *bfq_create_group_hierarchy(struct bfq_data *bfqd, int node);
+
 
