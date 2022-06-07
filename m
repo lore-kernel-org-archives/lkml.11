@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F34DC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F335C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386940AbiFGWth (ORCPT
+        id S1386127AbiFGWsA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:49:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52088 "EHLO
+        Tue, 7 Jun 2022 18:48:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381308AbiFGVk0 (ORCPT
+        with ESMTP id S1380529AbiFGVjM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:40:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9368F232802;
-        Tue,  7 Jun 2022 12:06:40 -0700 (PDT)
+        Tue, 7 Jun 2022 17:39:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 762F7231CF8;
+        Tue,  7 Jun 2022 12:05:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E3CC617DA;
-        Tue,  7 Jun 2022 19:06:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E98CC34115;
-        Tue,  7 Jun 2022 19:06:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20378B8220B;
+        Tue,  7 Jun 2022 19:05:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 872E4C385A5;
+        Tue,  7 Jun 2022 19:05:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628799;
-        bh=ocfS7A3RXskJpAaCX74xsV9vLCUzdp7U0CdD+K9j1Jc=;
+        s=korg; t=1654628744;
+        bh=TSgm+7hqyTIfbHqD+qNUZvrt3HWfTuFjrUiCDoRHTzU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fNMeuffSebsR52mtJuvluRM/FCvWKJASlhg1ht0QeV7hCyIfplOR4lNPvFivvQRIb
-         l8ghZIFz+hIELSitS43jG58OY3XnjXHjdwNTIW9TcF71RKNZmQPk/ok3qfu7gBDxIi
-         0n/NY7Sso1huODWezuDxjFQMwIfqWVPpFeSIqUhc=
+        b=JPZNHa2899U2n1lHcihQKWTkqukEXsI0d0ZnlFmT54PjjtrFkY8HZ3j/jKsEXpCNv
+         VK70knO9scURGzmqW4g3IZUEo5Uu5xxrZkzEDZuM0LdiqbAmT4YIX2RMB5+uuCgI2D
+         KVgT0kn+7PjLD1LMzI9UU1Zj38lR5rEm17ADWu1k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 419/879] ASoC: mxs-saif: Fix refcount leak in mxs_saif_probe
-Date:   Tue,  7 Jun 2022 18:58:57 +0200
-Message-Id: <20220607165015.024921083@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Greear <greearb@candelatech.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 440/879] mt76: fix tx status related use-after-free race on station removal
+Date:   Tue,  7 Jun 2022 18:59:18 +0200
+Message-Id: <20220607165015.640712235@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,34 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit 2be84f73785fa9ed6443e3c5b158730266f1c2ee ]
+[ Upstream commit fcfe1b5e162bf473c1d47760962cec8523c00466 ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
+There is a small race window where ongoing tx activity can lead to a skb
+getting added to the status tracking idr after that idr has already been
+cleaned up, which will keep the wcid linked in the status poll list.
+Fix this by only adding status skbs if the wcid pointer is still assigned
+in dev->wcid, which gets cleared early by mt76_sta_pre_rcu_remove
 
-Fixes: 08641c7c74dd ("ASoC: mxs: add device tree support for mxs-saif")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220511133725.39039-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: bd1e3e7b693c ("mt76: introduce packet_id idr")
+Tested-by: Ben Greear <greearb@candelatech.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mxs/mxs-saif.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/mediatek/mt76/mac80211.c | 2 ++
+ drivers/net/wireless/mediatek/mt76/tx.c       | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/mxs/mxs-saif.c b/sound/soc/mxs/mxs-saif.c
-index 879c1221a809..7afe1a1acc56 100644
---- a/sound/soc/mxs/mxs-saif.c
-+++ b/sound/soc/mxs/mxs-saif.c
-@@ -754,6 +754,7 @@ static int mxs_saif_probe(struct platform_device *pdev)
- 		saif->master_id = saif->id;
- 	} else {
- 		ret = of_alias_get_id(master, "saif");
-+		of_node_put(master);
- 		if (ret < 0)
- 			return ret;
- 		else
+diff --git a/drivers/net/wireless/mediatek/mt76/mac80211.c b/drivers/net/wireless/mediatek/mt76/mac80211.c
+index 917ea20c026b..ef11043d1a4a 100644
+--- a/drivers/net/wireless/mediatek/mt76/mac80211.c
++++ b/drivers/net/wireless/mediatek/mt76/mac80211.c
+@@ -1381,7 +1381,9 @@ void mt76_sta_pre_rcu_remove(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+ 	struct mt76_wcid *wcid = (struct mt76_wcid *)sta->drv_priv;
+ 
+ 	mutex_lock(&dev->mutex);
++	spin_lock_bh(&dev->status_lock);
+ 	rcu_assign_pointer(dev->wcid[wcid->idx], NULL);
++	spin_unlock_bh(&dev->status_lock);
+ 	mutex_unlock(&dev->mutex);
+ }
+ EXPORT_SYMBOL_GPL(mt76_sta_pre_rcu_remove);
+diff --git a/drivers/net/wireless/mediatek/mt76/tx.c b/drivers/net/wireless/mediatek/mt76/tx.c
+index 6b8c9dc80542..ccaf9a31fbc4 100644
+--- a/drivers/net/wireless/mediatek/mt76/tx.c
++++ b/drivers/net/wireless/mediatek/mt76/tx.c
+@@ -120,7 +120,7 @@ mt76_tx_status_skb_add(struct mt76_dev *dev, struct mt76_wcid *wcid,
+ 
+ 	memset(cb, 0, sizeof(*cb));
+ 
+-	if (!wcid)
++	if (!wcid || !rcu_access_pointer(dev->wcid[wcid->idx]))
+ 		return MT_PACKET_ID_NO_ACK;
+ 
+ 	if (info->flags & IEEE80211_TX_CTL_NO_ACK)
 -- 
 2.35.1
 
