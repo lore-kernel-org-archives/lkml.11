@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC04C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05377C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:32:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351675AbiFGScj (ORCPT
+        id S1351757AbiFGSco (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60996 "EHLO
+        Tue, 7 Jun 2022 14:32:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347964AbiFGSCn (ORCPT
+        with ESMTP id S1351693AbiFGSCO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:02:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB83910173A;
-        Tue,  7 Jun 2022 10:47:01 -0700 (PDT)
+        Tue, 7 Jun 2022 14:02:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2DC1059F8;
+        Tue,  7 Jun 2022 10:45:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27C8FB82340;
-        Tue,  7 Jun 2022 17:47:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FDA1C36B01;
-        Tue,  7 Jun 2022 17:46:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D805B80B66;
+        Tue,  7 Jun 2022 17:45:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBC63C385A5;
+        Tue,  7 Jun 2022 17:45:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624018;
-        bh=k0V0CGh24QZpI6yNSYhiwQtHgkrRzv0OACgWzWYIktE=;
+        s=korg; t=1654623907;
+        bh=ARbzlDf1UKpKv9/GIRtOkWDmRY3goZYnA1OEOS34yEI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n/sutQSg1tAjTrBPOvZPM/VXnPd05/a/ejSEXoAuIhugEzAseY2dL7quTIZ24kS3c
-         6aoZLVCR1+6paxaKdIWSX9wic6X2AeQgqFvSzAqiUY4i7gvW6jEJvLfn1o9pxhTXZZ
-         26Fmlcg//LdQBDvb0gI6Hrcekjn3mTndcQlhZK9I=
+        b=uEzBJOwx0ACqFYIRs0g1It6z+bjKc9zRi9Q/etbvdradIYlTwEb6XjqIw+kwax1np
+         uXl8PMJU9WoDMuQe17uJiXIwiuuiVBN1tm0DqQtuhuUu+0JV8zp8naCPoOhUt1LdUg
+         8fyK0CLzUp3THrglxZKdbHSTQGRlzppfxQc0gknY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pierre Gondois <pierre.gondois@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org,
+        Hari Chandrakanthan <quic_haric@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 134/667] ACPI: CPPC: Assume no transition latency if no PCCT
-Date:   Tue,  7 Jun 2022 18:56:39 +0200
-Message-Id: <20220607164938.841664272@linuxfoundation.org>
+Subject: [PATCH 5.15 084/667] ath11k: disable spectral scan during spectral deinit
+Date:   Tue,  7 Jun 2022 18:55:49 +0200
+Message-Id: <20220607164937.340462412@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,94 +51,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre Gondois <Pierre.Gondois@arm.com>
+From: Hari Chandrakanthan <quic_haric@quicinc.com>
 
-[ Upstream commit 6380b7b2b29da9d9c5ab2d4a265901cd93ba3696 ]
+[ Upstream commit 161c64de239c7018e0295e7e0520a19f00aa32dc ]
 
-The transition_delay_us (struct cpufreq_policy) is currently defined
-as:
-  Preferred average time interval between consecutive invocations of
-  the driver to set the frequency for this policy.  To be set by the
-  scaling driver (0, which is the default, means no preference).
-The transition_latency represents the amount of time necessary for a
-CPU to change its frequency.
+When ath11k modules are removed using rmmod with spectral scan enabled,
+crash is observed. Different crash trace is observed for each crash.
 
-A PCCT table advertises mutliple values:
-- pcc_nominal: Expected latency to process a command, in microseconds
-- pcc_mpar: The maximum number of periodic requests that the subspace
-  channel can support, reported in commands per minute. 0 indicates no
-  limitation.
-- pcc_mrtt: The minimum amount of time that OSPM must wait after the
-  completion of a command before issuing the next command,
-  in microseconds.
-cppc_get_transition_latency() allows to get the max of them.
+Send spectral scan disable WMI command to firmware before cleaning
+the spectral dbring in the spectral_deinit API to avoid this crash.
 
-commit d4f3388afd48 ("cpufreq / CPPC: Set platform specific
-transition_delay_us") allows to select transition_delay_us based on
-the platform, and fallbacks to cppc_get_transition_latency()
-otherwise.
+call trace from one of the crash observed:
+[ 1252.880802] Unable to handle kernel NULL pointer dereference at virtual address 00000008
+[ 1252.882722] pgd = 0f42e886
+[ 1252.890955] [00000008] *pgd=00000000
+[ 1252.893478] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
+[ 1253.093035] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.4.89 #0
+[ 1253.115261] Hardware name: Generic DT based system
+[ 1253.121149] PC is at ath11k_spectral_process_data+0x434/0x574 [ath11k]
+[ 1253.125940] LR is at 0x88e31017
+[ 1253.132448] pc : [<7f9387b8>]    lr : [<88e31017>]    psr: a0000193
+[ 1253.135488] sp : 80d01bc8  ip : 00000001  fp : 970e0000
+[ 1253.141737] r10: 88e31000  r9 : 970ec000  r8 : 00000080
+[ 1253.146946] r7 : 94734040  r6 : a0000113  r5 : 00000057  r4 : 00000000
+[ 1253.152159] r3 : e18cb694  r2 : 00000217  r1 : 1df1f000  r0 : 00000001
+[ 1253.158755] Flags: NzCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment user
+[ 1253.165266] Control: 10c0383d  Table: 5e71006a  DAC: 00000055
+[ 1253.172472] Process swapper/0 (pid: 0, stack limit = 0x60870141)
+[ 1253.458055] [<7f9387b8>] (ath11k_spectral_process_data [ath11k]) from [<7f917fdc>] (ath11k_dbring_buffer_release_event+0x214/0x2e4 [ath11k])
+[ 1253.466139] [<7f917fdc>] (ath11k_dbring_buffer_release_event [ath11k]) from [<7f8ea3c4>] (ath11k_wmi_tlv_op_rx+0x1840/0x29cc [ath11k])
+[ 1253.478807] [<7f8ea3c4>] (ath11k_wmi_tlv_op_rx [ath11k]) from [<7f8fe868>] (ath11k_htc_rx_completion_handler+0x180/0x4e0 [ath11k])
+[ 1253.490699] [<7f8fe868>] (ath11k_htc_rx_completion_handler [ath11k]) from [<7f91308c>] (ath11k_ce_per_engine_service+0x2c4/0x3b4 [ath11k])
+[ 1253.502386] [<7f91308c>] (ath11k_ce_per_engine_service [ath11k]) from [<7f9a4198>] (ath11k_pci_ce_tasklet+0x28/0x80 [ath11k_pci])
+[ 1253.514811] [<7f9a4198>] (ath11k_pci_ce_tasklet [ath11k_pci]) from [<8032227c>] (tasklet_action_common.constprop.2+0x64/0xe8)
+[ 1253.526476] [<8032227c>] (tasklet_action_common.constprop.2) from [<803021e8>] (__do_softirq+0x130/0x2d0)
+[ 1253.537756] [<803021e8>] (__do_softirq) from [<80322610>] (irq_exit+0xcc/0xe8)
+[ 1253.547304] [<80322610>] (irq_exit) from [<8036a4a4>] (__handle_domain_irq+0x60/0xb4)
+[ 1253.554428] [<8036a4a4>] (__handle_domain_irq) from [<805eb348>] (gic_handle_irq+0x4c/0x90)
+[ 1253.562321] [<805eb348>] (gic_handle_irq) from [<80301a78>] (__irq_svc+0x58/0x8c)
 
-If _CPC objects are not using PCC channels (no PPCT table), the
-transition_delay_us is set to CPUFREQ_ETERNAL, leading to really long
-periods between frequency updates (~4s).
+Tested-on: QCN6122 hw1.0 AHB WLAN.HK.2.6.0.1-00851-QCAHKSWPL_SILICONZ-1
 
-If the desired_reg, where performance requests are written, is in
-SystemMemory or SystemIo ACPI address space, there is no delay
-in requests. So return 0 instead of CPUFREQ_ETERNAL, leading to
-transition_delay_us being set to LATENCY_MULTIPLIER us (1000 us).
-
-This patch also adds two macros to check the address spaces.
-
-Signed-off-by: Pierre Gondois <pierre.gondois@arm.com>
-Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Hari Chandrakanthan <quic_haric@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/1649396345-349-1-git-send-email-quic_haric@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/cppc_acpi.c | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath11k/spectral.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
-index 71b87c16f92d..ed1341030684 100644
---- a/drivers/acpi/cppc_acpi.c
-+++ b/drivers/acpi/cppc_acpi.c
-@@ -100,6 +100,16 @@ static DEFINE_PER_CPU(struct cpc_desc *, cpc_desc_ptr);
- 				(cpc)->cpc_entry.reg.space_id ==	\
- 				ACPI_ADR_SPACE_PLATFORM_COMM)
+diff --git a/drivers/net/wireless/ath/ath11k/spectral.c b/drivers/net/wireless/ath/ath11k/spectral.c
+index 1afe67759659..e5af9358e610 100644
+--- a/drivers/net/wireless/ath/ath11k/spectral.c
++++ b/drivers/net/wireless/ath/ath11k/spectral.c
+@@ -214,7 +214,10 @@ static int ath11k_spectral_scan_config(struct ath11k *ar,
+ 		return -ENODEV;
  
-+/* Check if a CPC register is in SystemMemory */
-+#define CPC_IN_SYSTEM_MEMORY(cpc) ((cpc)->type == ACPI_TYPE_BUFFER &&	\
-+				(cpc)->cpc_entry.reg.space_id ==	\
-+				ACPI_ADR_SPACE_SYSTEM_MEMORY)
+ 	arvif->spectral_enabled = (mode != ATH11K_SPECTRAL_DISABLED);
 +
-+/* Check if a CPC register is in SystemIo */
-+#define CPC_IN_SYSTEM_IO(cpc) ((cpc)->type == ACPI_TYPE_BUFFER &&	\
-+				(cpc)->cpc_entry.reg.space_id ==	\
-+				ACPI_ADR_SPACE_SYSTEM_IO)
-+
- /* Evaluates to True if reg is a NULL register descriptor */
- #define IS_NULL_REG(reg) ((reg)->space_id ==  ACPI_ADR_SPACE_SYSTEM_MEMORY && \
- 				(reg)->address == 0 &&			\
-@@ -1378,6 +1388,9 @@ EXPORT_SYMBOL_GPL(cppc_set_perf);
-  * transition latency for performance change requests. The closest we have
-  * is the timing information from the PCCT tables which provides the info
-  * on the number and frequency of PCC commands the platform can handle.
-+ *
-+ * If desired_reg is in the SystemMemory or SystemIo ACPI address space,
-+ * then assume there is no latency.
-  */
- unsigned int cppc_get_transition_latency(int cpu_num)
++	spin_lock_bh(&ar->spectral.lock);
+ 	ar->spectral.mode = mode;
++	spin_unlock_bh(&ar->spectral.lock);
+ 
+ 	ret = ath11k_wmi_vdev_spectral_enable(ar, arvif->vdev_id,
+ 					      ATH11K_WMI_SPECTRAL_TRIGGER_CMD_CLEAR,
+@@ -829,9 +832,6 @@ static inline void ath11k_spectral_ring_free(struct ath11k *ar)
  {
-@@ -1403,7 +1416,9 @@ unsigned int cppc_get_transition_latency(int cpu_num)
- 		return CPUFREQ_ETERNAL;
+ 	struct ath11k_spectral *sp = &ar->spectral;
  
- 	desired_reg = &cpc_desc->cpc_regs[DESIRED_PERF];
--	if (!CPC_IN_PCC(desired_reg))
-+	if (CPC_IN_SYSTEM_MEMORY(desired_reg) || CPC_IN_SYSTEM_IO(desired_reg))
-+		return 0;
-+	else if (!CPC_IN_PCC(desired_reg))
- 		return CPUFREQ_ETERNAL;
+-	if (!sp->enabled)
+-		return;
+-
+ 	ath11k_dbring_srng_cleanup(ar, &sp->rx_ring);
+ 	ath11k_dbring_buf_cleanup(ar, &sp->rx_ring);
+ }
+@@ -883,15 +883,16 @@ void ath11k_spectral_deinit(struct ath11k_base *ab)
+ 		if (!sp->enabled)
+ 			continue;
  
- 	if (pcc_ss_id < 0)
+-		ath11k_spectral_debug_unregister(ar);
+-		ath11k_spectral_ring_free(ar);
++		mutex_lock(&ar->conf_mutex);
++		ath11k_spectral_scan_config(ar, ATH11K_SPECTRAL_DISABLED);
++		mutex_unlock(&ar->conf_mutex);
+ 
+ 		spin_lock_bh(&sp->lock);
+-
+-		sp->mode = ATH11K_SPECTRAL_DISABLED;
+ 		sp->enabled = false;
+-
+ 		spin_unlock_bh(&sp->lock);
++
++		ath11k_spectral_debug_unregister(ar);
++		ath11k_spectral_ring_free(ar);
+ 	}
+ }
+ 
 -- 
 2.35.1
 
