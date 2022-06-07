@@ -2,104 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F360CCA496
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86BCECCA490
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379453AbiFGVC3 (ORCPT
+        id S1379229AbiFGVCN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:02:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34254 "EHLO
+        Tue, 7 Jun 2022 17:02:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358166AbiFGUAB (ORCPT
+        with ESMTP id S1357940AbiFGT7C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:00:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FD99D4101;
-        Tue,  7 Jun 2022 11:24:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02286B82384;
-        Tue,  7 Jun 2022 18:24:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 665C0C3411F;
-        Tue,  7 Jun 2022 18:24:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626259;
-        bh=yjXIabT8CzDQBDlxiw8aaagQ5pPQEpagMKjAQtE30MI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KYXClIulsjr7UxRlEqVMxjfrVXfT7Qbm8kCvN02K3+HRfGCrAiEZxSG39LTPk+Bap
-         6V8Um++bHqQDp2S2Xjta2A4lYZ+qxA6YAmUVz4iHco3uohSw8dScfAsmSl0Yl74ujn
-         cOJykrwMKAyRp+wFTJsUOvi0GJs+UvbZ/j6UD/6w=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        Tue, 7 Jun 2022 15:59:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 379A61BBAD8
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:24:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654626234;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=P4f3wHn7jIrIURtw341a5ADfTmzk5i8t59cyMFQz5Qc=;
+        b=Xw4HHWK9BFohqfbyqXsndyNgX19ayI7Gri9nvVyAhnDSAS69b3VGCx5V+2JkJo2Pm6n78f
+        eOdI75AOMO6uAafiZiDTCndifelG6JaNCAf8WoiJt5UZ9yJRsS5kMvG62DbTJNUVKqbBy3
+        1S7frUjuyDro36D10+XguV9r3j4lLVc=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-356-SAisHlqNP5WsHUtNi6HY6Q-1; Tue, 07 Jun 2022 14:23:53 -0400
+X-MC-Unique: SAisHlqNP5WsHUtNi6HY6Q-1
+Received: by mail-wr1-f70.google.com with SMTP id c16-20020a5d4cd0000000b00213b1d4a96cso3618521wrt.1
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:23:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=P4f3wHn7jIrIURtw341a5ADfTmzk5i8t59cyMFQz5Qc=;
+        b=f3JxSlTgPlQAjXLF6kkXcs9ymkWH9K2VLFf2599DLbTDayOylkYBPqKw53bStqJJyV
+         H9bAxz+XMPNcBfWukeX4Uq5p2k1lzr3wZqhdbLhoROulaCryz+TonjHw94x7cqiILvTq
+         S6dHmmbTzY5/L4ptQpRQSaQU16KVH5BE7V+0PH7Bv7H3JAHAFfuwe6XYa9YSyE5oWGpg
+         2iBMqXEygJq3GGKoIHRVI9Fb4D/DGg4znPQoZCSleNlIr46l0iCL0HLSdnXzU+zYg3yy
+         yFk18Ym3quGuThEQYwm44ayZ0Ft/Jw7n/VzSFfzkEvyjD7j1towRo6nK45ebdlslBpGc
+         y1wA==
+X-Gm-Message-State: AOAM5318VWDgIIFfOqor/eGuvsm/EiA10iXNYGOViot8QLtoEe6GIN3/
+        +v9AT/G/QEKUnIwWfhx9m9oyV1XN13oTa0zE7Qd1GyDbW2jDzthFXGCAnmlLOXQcvnHcpnj8nid
+        HHSvmHtFv19k6rKQ76XQnF59iUcIPEQV9tI16HzCatU/0ZOWWgqwBcnhNY+hnq51bmxSZKgsPBB
+        4=
+X-Received: by 2002:a05:6000:711:b0:217:371e:b7ff with SMTP id bs17-20020a056000071100b00217371eb7ffmr16261836wrb.127.1654626232103;
+        Tue, 07 Jun 2022 11:23:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx/N4WjMmddIXMJgSScZ/qUGCGSnIp6UQDq474dS3NmqfffRft8Ws4ePchj9FzlpDpPJ0DOSA==
+X-Received: by 2002:a05:6000:711:b0:217:371e:b7ff with SMTP id bs17-20020a056000071100b00217371eb7ffmr16261787wrb.127.1654626231742;
+        Tue, 07 Jun 2022 11:23:51 -0700 (PDT)
+Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id m8-20020a05600c4f4800b003942a244f51sm28267502wmq.42.2022.06.07.11.23.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 11:23:51 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vinod Polimera <quic_vpolimer@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 314/772] drm/msm/disp/dpu1: set vbif hw config to NULL to avoid use after memory free during pm runtime resume
-Date:   Tue,  7 Jun 2022 18:58:26 +0200
-Message-Id: <20220607164958.280449517@linuxfoundation.org>
+Cc:     dri-devel@lists.freedesktop.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Laszlo Ersek <lersek@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Gerd Hoffmann <kraxel@redhat.com>, kvm@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        kernel test robot <lkp@intel.com>,
+        Jens Frederich <jfrederich@gmail.com>,
+        Jon Nettleton <jon.nettleton@gmail.com>,
+        linux-staging@lists.linux.dev,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
+        Matthew Wilcox <willy@infradead.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        linux-fbdev@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH v6 5/5] fbdev: Make registered_fb[] private to fbmem.c
+Date:   Tue,  7 Jun 2022 20:23:38 +0200
+Message-Id: <20220607182338.344270-6-javierm@redhat.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220607182338.344270-1-javierm@redhat.com>
+References: <20220607182338.344270-1-javierm@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vinod Polimera <quic_vpolimer@quicinc.com>
+From: Daniel Vetter <daniel.vetter@ffwll.ch>
 
-[ Upstream commit fa5186b279ecf44b14fb435540d2065be91cb1ed ]
+Well except when the olpc dcon fbdev driver is enabled, that thing
+digs around in there in rather unfixable ways.
 
-BUG: Unable to handle kernel paging request at virtual address 006b6b6b6b6b6be3
+Cc oldc_dcon maintainers as fyi.
 
-Call trace:
-  dpu_vbif_init_memtypes+0x40/0xb8
-  dpu_runtime_resume+0xcc/0x1c0
-  pm_generic_runtime_resume+0x30/0x44
-  __genpd_runtime_resume+0x68/0x7c
-  genpd_runtime_resume+0x134/0x258
-  __rpm_callback+0x98/0x138
-  rpm_callback+0x30/0x88
-  rpm_resume+0x36c/0x49c
-  __pm_runtime_resume+0x80/0xb0
-  dpu_core_irq_uninstall+0x30/0xb0
-  dpu_irq_uninstall+0x18/0x24
-  msm_drm_uninit+0xd8/0x16c
+v2: I typoed the config name (0day)
 
-Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
-Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/483255/
-Link: https://lore.kernel.org/r/1650857213-30075-1-git-send-email-quic_vpolimer@quicinc.com
-[DB: fixed Fixes tag]
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: kernel test robot <lkp@intel.com>
+Cc: Jens Frederich <jfrederich@gmail.com>
+Cc: Jon Nettleton <jon.nettleton@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-staging@lists.linux.dev
+Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Helge Deller <deller@gmx.de>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc: Zhen Lei <thunder.leizhen@huawei.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>
+Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Cc: linux-fbdev@vger.kernel.org
+Cc: Zheyu Ma <zheyuma97@gmail.com>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-index 47fe11a84a77..4a8cf33594c3 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-@@ -795,8 +795,10 @@ static void _dpu_kms_hw_destroy(struct dpu_kms *dpu_kms)
- 		for (i = 0; i < dpu_kms->catalog->vbif_count; i++) {
- 			u32 vbif_idx = dpu_kms->catalog->vbif[i].id;
+(no changes since v1)
+
+ drivers/video/fbdev/core/fbmem.c | 8 ++++++--
+ include/linux/fb.h               | 7 +++----
+ 2 files changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
+index e0720fef0ee6..bdb08b665b43 100644
+--- a/drivers/video/fbdev/core/fbmem.c
++++ b/drivers/video/fbdev/core/fbmem.c
+@@ -50,10 +50,14 @@
+ static DEFINE_MUTEX(registration_lock);
  
--			if ((vbif_idx < VBIF_MAX) && dpu_kms->hw_vbif[vbif_idx])
-+			if ((vbif_idx < VBIF_MAX) && dpu_kms->hw_vbif[vbif_idx]) {
- 				dpu_hw_vbif_destroy(dpu_kms->hw_vbif[vbif_idx]);
-+				dpu_kms->hw_vbif[vbif_idx] = NULL;
-+			}
- 		}
- 	}
+ struct fb_info *registered_fb[FB_MAX] __read_mostly;
+-EXPORT_SYMBOL(registered_fb);
+-
+ int num_registered_fb __read_mostly;
++#if IS_ENABLED(CONFIG_FB_OLPC_DCON)
++EXPORT_SYMBOL(registered_fb);
+ EXPORT_SYMBOL(num_registered_fb);
++#endif
++#define for_each_registered_fb(i)		\
++	for (i = 0; i < FB_MAX; i++)		\
++		if (!registered_fb[i]) {} else
  
+ bool fb_center_logo __read_mostly;
+ 
+diff --git a/include/linux/fb.h b/include/linux/fb.h
+index bbe1e4571899..c563e24b6293 100644
+--- a/include/linux/fb.h
++++ b/include/linux/fb.h
+@@ -632,16 +632,15 @@ extern int fb_get_color_depth(struct fb_var_screeninfo *var,
+ extern int fb_get_options(const char *name, char **option);
+ extern int fb_new_modelist(struct fb_info *info);
+ 
++#if IS_ENABLED(CONFIG_FB_OLPC_DCON)
+ extern struct fb_info *registered_fb[FB_MAX];
++
+ extern int num_registered_fb;
++#endif
+ extern bool fb_center_logo;
+ extern int fb_logo_count;
+ extern struct class *fb_class;
+ 
+-#define for_each_registered_fb(i)		\
+-	for (i = 0; i < FB_MAX; i++)		\
+-		if (!registered_fb[i]) {} else
+-
+ static inline void lock_fb_info(struct fb_info *info)
+ {
+ 	mutex_lock(&info->lock);
 -- 
-2.35.1
-
-
+2.36.1
 
