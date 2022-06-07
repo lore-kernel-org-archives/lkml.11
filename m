@@ -2,50 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F13CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6AC3CCA48A
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350323AbiFGSAx (ORCPT
+        id S1350599AbiFGSBT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:00:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37254 "EHLO
+        Tue, 7 Jun 2022 14:01:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348512AbiFGRlD (ORCPT
+        with ESMTP id S1348669AbiFGRlR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:41:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 741981203D2;
-        Tue,  7 Jun 2022 10:34:19 -0700 (PDT)
+        Tue, 7 Jun 2022 13:41:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7C2122974;
+        Tue,  7 Jun 2022 10:34:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD154B820C3;
-        Tue,  7 Jun 2022 17:33:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2A26C385A5;
-        Tue,  7 Jun 2022 17:33:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 921E26157D;
+        Tue,  7 Jun 2022 17:34:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FAE0C34119;
+        Tue,  7 Jun 2022 17:34:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623230;
-        bh=dyRX6GXQh42NPE/QvtqTAJqN+LWYb6ytbMwcZJZrj6k=;
+        s=korg; t=1654623269;
+        bh=Szbdp3dbQL5SZT5WgSpBoqQq5qpRBZObrw0n2Sa/d6M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FK/E5UEV2gznv9Ia7n3UeS7zOQJf51zJ/fwDvDPdlIgCDy/2DmE/9wNkUJNbOTKB0
-         ddx0lv96POcwcD7WjcdCfvWbWOlXgD1LhqEOy+5+uAKbgEd6zyhwnSpfT2A1Z98Cph
-         MdeBS0tYLncFU+o8b+Ecg4Omz5uECWbhXcAe9lLk=
+        b=jaIwS87RBUezg3taiRnEMO+vXsRPwWl2FUpndyKSIqMCflM416XCBADNvVaBvObTs
+         HIiuEnWcgnisWOWrX4CRYo8VhZl7db5zPg4wv+KABDYieCtZkbPeNmO+mvQa7lzDkL
+         A8Fm6RU/0MkEvd4cldk481agJUNPXFSZ4Rq3QwjE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexander Shishkin <alexander.shishkin@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 343/452] perf jevents: Fix event syntax error caused by ExtSel
-Date:   Tue,  7 Jun 2022 19:03:20 +0200
-Message-Id: <20220607164918.778281311@linuxfoundation.org>
+        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 356/452] bfq: Split shared queues on move between cgroups
+Date:   Tue,  7 Jun 2022 19:03:33 +0200
+Message-Id: <20220607164919.173105589@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -57,59 +50,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit f4df0dbbe62ee8e4405a57b27ccd54393971c773 ]
+commit 3bc5e683c67d94bd839a1da2e796c15847b51b69 upstream.
 
-In the origin code, when "ExtSel" is 1, the eventcode will change to
-"eventcode |= 1 << 21”. For event “UNC_Q_RxL_CREDITS_CONSUMED_VN0.DRS",
-its "ExtSel" is "1", its eventcode will change from 0x1E to 0x20001E,
-but in fact the eventcode should <=0x1FF, so this will cause the parse
-fail:
+When bfqq is shared by multiple processes it can happen that one of the
+processes gets moved to a different cgroup (or just starts submitting IO
+for different cgroup). In case that happens we need to split the merged
+bfqq as otherwise we will have IO for multiple cgroups in one bfqq and
+we will just account IO time to wrong entities etc.
 
-  # perf stat -e "UNC_Q_RxL_CREDITS_CONSUMED_VN0.DRS" -a sleep 0.1
-  event syntax error: '.._RxL_CREDITS_CONSUMED_VN0.DRS'
-                                    \___ value too big for format, maximum is 511
+Similarly if the bfqq is scheduled to merge with another bfqq but the
+merge didn't happen yet, cancel the merge as it need not be valid
+anymore.
 
-On the perf kernel side, the kernel assumes the valid bits are continuous.
-It will adjust the 0x100 (bit 8 for perf tool) to bit 21 in HW.
-
-DEFINE_UNCORE_FORMAT_ATTR(event_ext, event, "config:0-7,21");
-
-So the perf tool follows the kernel side and just set bit8 other than bit21.
-
-Fixes: fedb2b518239cbc0 ("perf jevents: Add support for parsing uncore json files")
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Xing Zhengjun <zhengjun.xing@linux.intel.com>
-Acked-by: Ian Rogers <irogers@google.com>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Alexander Shishkin <alexander.shishkin@intel.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220525140410.1706851-1-zhengjun.xing@linux.intel.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+CC: stable@vger.kernel.org
+Fixes: e21b7a0b9887 ("block, bfq: add full hierarchical scheduling and cgroups support")
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-3-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/pmu-events/jevents.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ block/bfq-cgroup.c  |   36 +++++++++++++++++++++++++++++++++---
+ block/bfq-iosched.c |    2 +-
+ block/bfq-iosched.h |    1 +
+ 3 files changed, 35 insertions(+), 4 deletions(-)
 
-diff --git a/tools/perf/pmu-events/jevents.c b/tools/perf/pmu-events/jevents.c
-index c679a79aef51..1f20f587e053 100644
---- a/tools/perf/pmu-events/jevents.c
-+++ b/tools/perf/pmu-events/jevents.c
-@@ -579,7 +579,7 @@ static int json_events(const char *fn,
- 			} else if (json_streq(map, field, "ExtSel")) {
- 				char *code = NULL;
- 				addfield(map, &code, "", "", val);
--				eventcode |= strtoul(code, NULL, 0) << 21;
-+				eventcode |= strtoul(code, NULL, 0) << 8;
- 				free(code);
- 			} else if (json_streq(map, field, "EventName")) {
- 				addfield(map, &je.name, "", "", val);
--- 
-2.35.1
-
+--- a/block/bfq-cgroup.c
++++ b/block/bfq-cgroup.c
+@@ -725,9 +725,39 @@ static struct bfq_group *__bfq_bic_chang
+ 	}
+ 
+ 	if (sync_bfqq) {
+-		entity = &sync_bfqq->entity;
+-		if (entity->sched_data != &bfqg->sched_data)
+-			bfq_bfqq_move(bfqd, sync_bfqq, bfqg);
++		if (!sync_bfqq->new_bfqq && !bfq_bfqq_coop(sync_bfqq)) {
++			/* We are the only user of this bfqq, just move it */
++			if (sync_bfqq->entity.sched_data != &bfqg->sched_data)
++				bfq_bfqq_move(bfqd, sync_bfqq, bfqg);
++		} else {
++			struct bfq_queue *bfqq;
++
++			/*
++			 * The queue was merged to a different queue. Check
++			 * that the merge chain still belongs to the same
++			 * cgroup.
++			 */
++			for (bfqq = sync_bfqq; bfqq; bfqq = bfqq->new_bfqq)
++				if (bfqq->entity.sched_data !=
++				    &bfqg->sched_data)
++					break;
++			if (bfqq) {
++				/*
++				 * Some queue changed cgroup so the merge is
++				 * not valid anymore. We cannot easily just
++				 * cancel the merge (by clearing new_bfqq) as
++				 * there may be other processes using this
++				 * queue and holding refs to all queues below
++				 * sync_bfqq->new_bfqq. Similarly if the merge
++				 * already happened, we need to detach from
++				 * bfqq now so that we cannot merge bio to a
++				 * request from the old cgroup.
++				 */
++				bfq_put_cooperator(sync_bfqq);
++				bfq_release_process_ref(bfqd, sync_bfqq);
++				bic_set_bfqq(bic, NULL, 1);
++			}
++		}
+ 	}
+ 
+ 	return bfqg;
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -4917,7 +4917,7 @@ void bfq_put_queue(struct bfq_queue *bfq
+ 	bfqg_and_blkg_put(bfqg);
+ }
+ 
+-static void bfq_put_cooperator(struct bfq_queue *bfqq)
++void bfq_put_cooperator(struct bfq_queue *bfqq)
+ {
+ 	struct bfq_queue *__bfqq, *next;
+ 
+--- a/block/bfq-iosched.h
++++ b/block/bfq-iosched.h
+@@ -954,6 +954,7 @@ void bfq_weights_tree_remove(struct bfq_
+ void bfq_bfqq_expire(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ 		     bool compensate, enum bfqq_expiration reason);
+ void bfq_put_queue(struct bfq_queue *bfqq);
++void bfq_put_cooperator(struct bfq_queue *bfqq);
+ void bfq_end_wr_async_queues(struct bfq_data *bfqd, struct bfq_group *bfqg);
+ void bfq_release_process_ref(struct bfq_data *bfqd, struct bfq_queue *bfqq);
+ void bfq_schedule_dispatch(struct bfq_data *bfqd);
 
 
