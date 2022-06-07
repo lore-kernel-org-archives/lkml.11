@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E2BECCA485
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC882CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349953AbiFGSAi (ORCPT
+        id S1349749AbiFGSA0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:00:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35918 "EHLO
+        Tue, 7 Jun 2022 14:00:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347312AbiFGRjC (ORCPT
+        with ESMTP id S1348581AbiFGRlL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:39:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5545736147;
-        Tue,  7 Jun 2022 10:33:27 -0700 (PDT)
+        Tue, 7 Jun 2022 13:41:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5311208A7;
+        Tue,  7 Jun 2022 10:34:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1654B822AD;
-        Tue,  7 Jun 2022 17:33:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04C4EC385A5;
-        Tue,  7 Jun 2022 17:33:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F11F9614BC;
+        Tue,  7 Jun 2022 17:34:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BEB7C385A5;
+        Tue,  7 Jun 2022 17:34:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623183;
-        bh=HWrh3eNyUWp0UeZbAh0SxbRayZHDbgIJWamQdjsz8cM=;
+        s=korg; t=1654623241;
+        bh=1vjbRoK32tlsSZxIdo7suU7AvWFNx1IyAovN/+eLCAI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AlhWFEMhwJAlon2Y+v99nHH9QiPqvVgP0twIeMvnyTnBJ2JvWQ0WlFtZsPQDzPtP9
-         StXVa6iLK78DsE44HF8R6RLHx2IGeuOGTm4qJoIw0PdGDZeFF8hUZc6179/9ooBXQb
-         ArptaftaCorV9D+VQuk8HgU6bUmYTikWZcDY0XUo=
+        b=alL+KHl5r3qeK7GWg0eRgvyRCTQqQI+SWQ8foYCaYjJ9U/Z43xsg0EsQcAPHErQHt
+         xppV6AxYgxul3ks0WJeAFfOKpUCkTCDMFOMF63avDiDKMisMMdk3cyOgVEMtfwkhSA
+         3gOeImZioa9CMnPYv99hBNc5zKKnU5dxanasohSY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 324/452] cpufreq: mediatek: Unregister platform device on exit
-Date:   Tue,  7 Jun 2022 19:03:01 +0200
-Message-Id: <20220607164918.215272229@linuxfoundation.org>
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.10 347/452] f2fs: fix deadloop in foreground GC
+Date:   Tue,  7 Jun 2022 19:03:24 +0200
+Message-Id: <20220607164918.897424084@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,72 +49,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rex-BC Chen <rex-bc.chen@mediatek.com>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit f126fbadce92b92c3a7be41e4abc1fbae93ae2ef ]
+commit cfd66bb715fd11fde3338d0660cffa1396adc27d upstream.
 
-We register the platform device when driver inits. However, we do not
-unregister it when driver exits.
+As Yanming reported in bugzilla:
 
-To resolve this, we declare the platform data to be a global static
-variable and rename it to be "cpufreq_pdev". With this global variable,
-we can do platform_device_unregister() when driver exits.
+https://bugzilla.kernel.org/show_bug.cgi?id=215914
 
-Fixes: 501c574f4e3a ("cpufreq: mediatek: Add support of cpufreq to MT2701/MT7623 SoC")
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-[ Viresh: Commit log and Subject ]
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The root cause is: in a very small sized image, it's very easy to
+exceed threshold of foreground GC, if we calculate free space and
+dirty data based on section granularity, in corner case,
+has_not_enough_free_secs() will always return true, result in
+deadloop in f2fs_gc().
+
+So this patch refactors has_not_enough_free_secs() as below to fix
+this issue:
+1. calculate needed space based on block granularity, and separate
+all blocks to two parts, section part, and block part, comparing
+section part to free section, and comparing block part to free space
+in openned log.
+2. account F2FS_DIRTY_NODES, F2FS_DIRTY_IMETA and F2FS_DIRTY_DENTS
+as node block consumer;
+3. account F2FS_DIRTY_DENTS as data block consumer;
+
+Cc: stable@vger.kernel.org
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/cpufreq/mediatek-cpufreq.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ fs/f2fs/segment.h |   32 ++++++++++++++++++++------------
+ 1 file changed, 20 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/cpufreq/mediatek-cpufreq.c b/drivers/cpufreq/mediatek-cpufreq.c
-index 07ba238a0e0e..82f6592bbadb 100644
---- a/drivers/cpufreq/mediatek-cpufreq.c
-+++ b/drivers/cpufreq/mediatek-cpufreq.c
-@@ -44,6 +44,8 @@ struct mtk_cpu_dvfs_info {
- 	bool need_voltage_tracking;
- };
- 
-+static struct platform_device *cpufreq_pdev;
-+
- static LIST_HEAD(dvfs_info_list);
- 
- static struct mtk_cpu_dvfs_info *mtk_cpu_dvfs_info_lookup(int cpu)
-@@ -546,7 +548,6 @@ static int __init mtk_cpufreq_driver_init(void)
- {
- 	struct device_node *np;
- 	const struct of_device_id *match;
--	struct platform_device *pdev;
- 	int err;
- 
- 	np = of_find_node_by_path("/");
-@@ -570,11 +571,11 @@ static int __init mtk_cpufreq_driver_init(void)
- 	 * and the device registration codes are put here to handle defer
- 	 * probing.
- 	 */
--	pdev = platform_device_register_simple("mtk-cpufreq", -1, NULL, 0);
--	if (IS_ERR(pdev)) {
-+	cpufreq_pdev = platform_device_register_simple("mtk-cpufreq", -1, NULL, 0);
-+	if (IS_ERR(cpufreq_pdev)) {
- 		pr_err("failed to register mtk-cpufreq platform device\n");
- 		platform_driver_unregister(&mtk_cpufreq_platdrv);
--		return PTR_ERR(pdev);
-+		return PTR_ERR(cpufreq_pdev);
- 	}
- 
- 	return 0;
-@@ -583,6 +584,7 @@ module_init(mtk_cpufreq_driver_init)
- 
- static void __exit mtk_cpufreq_driver_exit(void)
- {
-+	platform_device_unregister(cpufreq_pdev);
- 	platform_driver_unregister(&mtk_cpufreq_platdrv);
+--- a/fs/f2fs/segment.h
++++ b/fs/f2fs/segment.h
+@@ -573,11 +573,10 @@ static inline int reserved_sections(stru
+ 	return GET_SEC_FROM_SEG(sbi, reserved_segments(sbi));
  }
- module_exit(mtk_cpufreq_driver_exit)
--- 
-2.35.1
-
+ 
+-static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi)
++static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi,
++			unsigned int node_blocks, unsigned int dent_blocks)
+ {
+-	unsigned int node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
+-					get_pages(sbi, F2FS_DIRTY_DENTS);
+-	unsigned int dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
++
+ 	unsigned int segno, left_blocks;
+ 	int i;
+ 
+@@ -603,19 +602,28 @@ static inline bool has_curseg_enough_spa
+ static inline bool has_not_enough_free_secs(struct f2fs_sb_info *sbi,
+ 					int freed, int needed)
+ {
+-	int node_secs = get_blocktype_secs(sbi, F2FS_DIRTY_NODES);
+-	int dent_secs = get_blocktype_secs(sbi, F2FS_DIRTY_DENTS);
+-	int imeta_secs = get_blocktype_secs(sbi, F2FS_DIRTY_IMETA);
++	unsigned int total_node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
++					get_pages(sbi, F2FS_DIRTY_DENTS) +
++					get_pages(sbi, F2FS_DIRTY_IMETA);
++	unsigned int total_dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
++	unsigned int node_secs = total_node_blocks / BLKS_PER_SEC(sbi);
++	unsigned int dent_secs = total_dent_blocks / BLKS_PER_SEC(sbi);
++	unsigned int node_blocks = total_node_blocks % BLKS_PER_SEC(sbi);
++	unsigned int dent_blocks = total_dent_blocks % BLKS_PER_SEC(sbi);
++	unsigned int free, need_lower, need_upper;
+ 
+ 	if (unlikely(is_sbi_flag_set(sbi, SBI_POR_DOING)))
+ 		return false;
+ 
+-	if (free_sections(sbi) + freed == reserved_sections(sbi) + needed &&
+-			has_curseg_enough_space(sbi))
++	free = free_sections(sbi) + freed;
++	need_lower = node_secs + dent_secs + reserved_sections(sbi) + needed;
++	need_upper = need_lower + (node_blocks ? 1 : 0) + (dent_blocks ? 1 : 0);
++
++	if (free > need_upper)
+ 		return false;
+-	return (free_sections(sbi) + freed) <=
+-		(node_secs + 2 * dent_secs + imeta_secs +
+-		reserved_sections(sbi) + needed);
++	else if (free <= need_lower)
++		return true;
++	return !has_curseg_enough_space(sbi, node_blocks, dent_blocks);
+ }
+ 
+ static inline bool f2fs_is_checkpoint_ready(struct f2fs_sb_info *sbi)
 
 
