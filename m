@@ -2,140 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE0AAC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:53:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7674FCCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:53:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390650AbiFHBvA (ORCPT
+        id S1391107AbiFHBwN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:51:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46388 "EHLO
+        Tue, 7 Jun 2022 21:52:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1574462AbiFGXZp (ORCPT
+        with ESMTP id S1382703AbiFGWDu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:25:45 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA5E91737F5
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:23 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id p8-20020a63c148000000b003fe2810ba94so334598pgi.3
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=cSKpn6SMwTsMUj7CoeqNmjfQf5su6IS+82GqcaqnP00=;
-        b=JWGXT7GEWj3pb9eTehi/Y90hNRe2r2nD3GODPRsCFGFIO94KMlBrx7c8XB4DkoWFap
-         tI4niM/3ed3SzDY3NNkzOSRYzSLkiLqPjkk3As2ovRFbd7pmVxZt+sXbTl9x8LiAAORi
-         3Vr9LYTZi42R/BwxBDnt3jkpFPN+FupD/o/vIOY+4xjMON2gHl0fqkFDS8Yg5YKrTe/c
-         ciWQpj/Mlx/ZoNQ6xdJFdhWaJnLFxmXQSqomzM0qnlnJZqYtX4teaqf2dzyoJ1KIMKVG
-         rln0JOiOQl42ONjEwe3TmRLV8G0Jb3/5MmIy3TScrZlJTjBvqimcF2h1BdxYiVVdv7sE
-         hOxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=cSKpn6SMwTsMUj7CoeqNmjfQf5su6IS+82GqcaqnP00=;
-        b=udaFmyUPyrz5hvA9V6lP9dUn+DCF8ZJNW1mM8bMT4V4cPZV11/Kzby9j5cegc71dlJ
-         3vWDCQLqcCynxIYQtsuMLBYyoN7Tt9tmwPt4+EeJNLlmHSN46LTQ90soA8Jalv5OrE9g
-         rTSY5NIIQhrtOOwu25T4/IrW0dXrw8gjiA/6bdzKtRBT5Ww7ELjqUuHHih7Ckq2pbkiV
-         jb8gh7wM4eCFYLqsWif05JjkG17SXRDzcei6xVAm+q/sfKJeBlXlcvN0ADU1T5iQuG7a
-         lzhZ2tul8S1PFjQZ5mi6WghqMYnvAj78ZPS9r6Cb4jedn5k9E2KaEldhRbH/FWy02uAW
-         H2lA==
-X-Gm-Message-State: AOAM531rocmBwlc+fHIsWDlazwh7f/UMljTL0yC4jz4G+GTVCEdZxyso
-        xJdgANxHYs/TrmKMuUlqnR2Cql4EcJ0=
-X-Google-Smtp-Source: ABdhPJwE2W93MwTTHTpFoshK51Bw9wW68F1SgoKDpJfNb8EAazUid7gT93Su7z8/oN2Qp2FKn/9dCM2Yy7E=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:7594:b0:15e:bbac:8d49 with SMTP id
- j20-20020a170902759400b0015ebbac8d49mr30533387pll.124.1654637783148; Tue, 07
- Jun 2022 14:36:23 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue,  7 Jun 2022 21:35:52 +0000
-In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
-Message-Id: <20220607213604.3346000-4-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220607213604.3346000-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v5 03/15] KVM: nVMX: Inject #UD if VMXON is attempted with
- incompatible CR0/CR4
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
-        David Matlack <dmatlack@google.com>,
-        Oliver Upton <oupton@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 7 Jun 2022 18:03:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C6D252C0C;
+        Tue,  7 Jun 2022 12:15:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 307C5B822C0;
+        Tue,  7 Jun 2022 19:15:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A17C2C385A2;
+        Tue,  7 Jun 2022 19:15:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629329;
+        bh=oXpLKd/DALznNGwvJ+rgzx7UyoKE6EsnxDc4+u+dhNg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mVIeXRJrmUotg0n5AH+6rcTLEAi/R7Rf6j1nVrmnDrlAxAN+WaSfSvgy7lWcyn0DE
+         P3lKTFPF/YWDLvwtUl1eYQtaPBuSiDZOLZOMzJwSD/drKrsTULxNTHVReMNV4Q0HqA
+         /CwUjRCgOGOHivfSKFBvLIOqUkVQ/1IMHC8PlOVQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 652/879] RDMA/rxe: Fix an error handling path in rxe_get_mcg()
+Date:   Tue,  7 Jun 2022 19:02:50 +0200
+Message-Id: <20220607165021.772480272@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Inject a #UD if L1 attempts VMXON with a CR0 or CR4 that is disallowed
-per the associated nested VMX MSRs' fixed0/1 settings.  KVM cannot rely
-on hardware to perform the checks, even for the few checks that have
-higher priority than VM-Exit, as (a) KVM may have forced CR0/CR4 bits in
-hardware while running the guest, (b) there may incompatible CR0/CR4 bits
-that have lower priority than VM-Exit, e.g. CR0.NE, and (c) userspace may
-have further restricted the allowed CR0/CR4 values by manipulating the
-guest's nested VMX MSRs.
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Note, despite a very strong desire to throw shade at Jim, commit
-70f3aac964ae ("kvm: nVMX: Remove superfluous VMX instruction fault checks")
-is not to blame for the buggy behavior (though the comment...).  That
-commit only removed the CR0.PE, EFLAGS.VM, and COMPATIBILITY mode checks
-(though it did erroneously drop the CPL check, but that has already been
-remedied).  KVM may force CR0.PE=1, but will do so only when also
-forcing EFLAGS.VM=1 to emulate Real Mode, i.e. hardware will still #UD.
+[ Upstream commit 7f60951ff4d1664dfa2c304d144d195989199ef3 ]
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216033
-Fixes: ec378aeef9df ("KVM: nVMX: Implement VMXON and VMXOFF")
-Reported-by: Eric Li <ercli@ucdavis.edu>
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+The commit in the Fixes tag has shuffled some code.
+Now 'mcg_num' is incremented before the kzalloc(). So if the memory
+allocation fails, this increment must be undone.
+
+Fixes: a926a903b7dc ("RDMA/rxe: Do not call dev_mc_add/del() under a spinlock")
+Link: https://lore.kernel.org/r/fe137cd8b1f17593243aa73d59c18ea71ab9ee36.1653225896.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/vmx/nested.c | 23 ++++++++++++++---------
- 1 file changed, 14 insertions(+), 9 deletions(-)
+ drivers/infiniband/sw/rxe/rxe_mcast.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 7d8cd0ebcc75..9a5b6ef16c1c 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -4968,20 +4968,25 @@ static int handle_vmon(struct kvm_vcpu *vcpu)
- 		| FEAT_CTL_VMX_ENABLED_OUTSIDE_SMX;
+diff --git a/drivers/infiniband/sw/rxe/rxe_mcast.c b/drivers/infiniband/sw/rxe/rxe_mcast.c
+index 873a9b10307c..86cc2e18a7fd 100644
+--- a/drivers/infiniband/sw/rxe/rxe_mcast.c
++++ b/drivers/infiniband/sw/rxe/rxe_mcast.c
+@@ -206,8 +206,10 @@ static struct rxe_mcg *rxe_get_mcg(struct rxe_dev *rxe, union ib_gid *mgid)
  
- 	/*
--	 * The Intel VMX Instruction Reference lists a bunch of bits that are
--	 * prerequisite to running VMXON, most notably cr4.VMXE must be set to
--	 * 1 (see vmx_is_valid_cr4() for when we allow the guest to set this).
--	 * Otherwise, we should fail with #UD.  But most faulting conditions
--	 * have already been checked by hardware, prior to the VM-exit for
--	 * VMXON.  We do test guest cr4.VMXE because processor CR4 always has
--	 * that bit set to 1 in non-root mode.
-+	 * Note, KVM cannot rely on hardware to perform the CR0/CR4 #UD checks
-+	 * that have higher priority than VM-Exit (see Intel SDM's pseudocode
-+	 * for VMXON), as KVM must load valid CR0/CR4 values into hardware while
-+	 * running the guest, i.e. KVM needs to check the _guest_ values.
-+	 *
-+	 * Rely on hardware for the other two pre-VM-Exit checks, !VM86 and
-+	 * !COMPATIBILITY modes.  KVM may run the guest in VM86 to emulate Real
-+	 * Mode, but KVM will never take the guest out of those modes.
- 	 */
--	if (!kvm_read_cr4_bits(vcpu, X86_CR4_VMXE)) {
-+	if (!nested_host_cr0_valid(vcpu, kvm_read_cr0(vcpu)) ||
-+	    !nested_host_cr4_valid(vcpu, kvm_read_cr4(vcpu))) {
- 		kvm_queue_exception(vcpu, UD_VECTOR);
- 		return 1;
- 	}
+ 	/* speculative alloc of new mcg */
+ 	mcg = kzalloc(sizeof(*mcg), GFP_KERNEL);
+-	if (!mcg)
+-		return ERR_PTR(-ENOMEM);
++	if (!mcg) {
++		err = -ENOMEM;
++		goto err_dec;
++	}
  
--	/* CPL=0 must be checked manually. */
-+	/*
-+	 * CPL=0 and all other checks that are lower priority than VM-Exit must
-+	 * be checked manually.
-+	 */
- 	if (vmx_get_cpl(vcpu)) {
- 		kvm_inject_gp(vcpu, 0);
- 		return 1;
+ 	spin_lock_bh(&rxe->mcg_lock);
+ 	/* re-check to see if someone else just added it */
 -- 
-2.36.1.255.ge46751e96f-goog
+2.35.1
+
+
 
