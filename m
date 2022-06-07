@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ECAEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:39:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 273E2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:39:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350115AbiFGSjf (ORCPT
+        id S1346500AbiFGSjk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:39:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52864 "EHLO
+        Tue, 7 Jun 2022 14:39:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349797AbiFGSI5 (ORCPT
+        with ESMTP id S1349923AbiFGSKH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:08:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA7276B7D7;
-        Tue,  7 Jun 2022 10:48:19 -0700 (PDT)
+        Tue, 7 Jun 2022 14:10:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06093B642A;
+        Tue,  7 Jun 2022 10:48:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 933DC6174D;
-        Tue,  7 Jun 2022 17:48:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EBCFC341C6;
-        Tue,  7 Jun 2022 17:48:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6460B81F38;
+        Tue,  7 Jun 2022 17:48:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AFF4C385A5;
+        Tue,  7 Jun 2022 17:48:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624093;
-        bh=G1gax5Xss8HQPWq41h/Wu8k+afvXNnM5IWX6Ml/e6dY=;
+        s=korg; t=1654624109;
+        bh=zsjmbv4CwpLwHPpbcPnSVnTmO+KVbwQy7o0E/Pbn7LU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YA1/0gujFj0LhQET7WhYQ1phujpjsD+sg7wGRK1QmoIqEgyzFjPh9VCVUV7Aw5t4d
-         WBMKxbGODNWHfEtdICKomfMw3q8Pw/07xf2o+ydQQJd5ujc5eoOromLjQ0G+2HAgp1
-         zl2zCthVF40uYWaKD6eMMkEf5qlUaCvrPtXUEY+E=
+        b=02NGu/9730u/QGrT91vfZjyIW/pIb/sDFTizDcWNvh/8NMrx4eCxWfMb2VfG/Vg0i
+         pSgwvOZIkgDDk0PLmNKbhFX5CDYv+PTOJQZCCAZYhLe2FCtcEl8ta6KqwmiEh8d2qj
+         nx2D92wAqfG1RlGw4muRy+qdGHAN1N/txXM5yEJ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
+        Liviu Dudau <liviu.dudau@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 175/667] powerpc/xics: fix refcount leak in icp_opal_init()
-Date:   Tue,  7 Jun 2022 18:57:20 +0200
-Message-Id: <20220607164940.059418881@linuxfoundation.org>
+Subject: [PATCH 5.15 207/667] drm/komeda: Fix an undefined behavior bug in komeda_plane_add()
+Date:   Tue,  7 Jun 2022 18:57:52 +0200
+Message-Id: <20220607164941.007671251@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,34 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit 5dd9e27ea4a39f7edd4bf81e9e70208e7ac0b7c9 ]
+[ Upstream commit f5e284bb74ab296f98122673c7ecd22028b2c200 ]
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, use of_node_put() on it when done.
+In komeda_plane_add(), komeda_get_layer_fourcc_list() is assigned to
+formats and used in drm_universal_plane_init().
+drm_universal_plane_init() passes formats to
+__drm_universal_plane_init(). __drm_universal_plane_init() further
+passes formats to memcpy() as src parameter, which could lead to an
+undefined behavior bug on failure of komeda_get_layer_fourcc_list().
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220402013419.2410298-1-lv.ruyi@zte.com.cn
+Fix this bug by adding a check of formats.
+
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
+
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
+
+Builds with CONFIG_DRM_KOMEDA=m show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Fixes: 61f1c4a8ab75 ("drm/komeda: Attach komeda_dev to DRM-KMS")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
+Link: https://lore.kernel.org/dri-devel/20211201033704.32054-1-zhou1615@umn.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/xics/icp-opal.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/arm/display/komeda/komeda_plane.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/powerpc/sysdev/xics/icp-opal.c b/arch/powerpc/sysdev/xics/icp-opal.c
-index 675d708863d5..db0452e7c351 100644
---- a/arch/powerpc/sysdev/xics/icp-opal.c
-+++ b/arch/powerpc/sysdev/xics/icp-opal.c
-@@ -196,6 +196,7 @@ int icp_opal_init(void)
+diff --git a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
+index d646e3ae1a23..517b94c3bcaf 100644
+--- a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
++++ b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
+@@ -265,6 +265,10 @@ static int komeda_plane_add(struct komeda_kms_dev *kms,
  
- 	printk("XICS: Using OPAL ICP fallbacks\n");
+ 	formats = komeda_get_layer_fourcc_list(&mdev->fmt_tbl,
+ 					       layer->layer_type, &n_formats);
++	if (!formats) {
++		kfree(kplane);
++		return -ENOMEM;
++	}
  
-+	of_node_put(np);
- 	return 0;
- }
- 
+ 	err = drm_universal_plane_init(&kms->base, plane,
+ 			get_possible_crtcs(kms, c->pipeline),
 -- 
 2.35.1
 
