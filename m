@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C10CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 966BCC19F56
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230264AbiFHAz5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:55:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44840 "EHLO
+        id S238470AbiFHA4E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 20:56:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384286AbiFGVyZ (ORCPT
+        with ESMTP id S1381902AbiFGVpc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:54:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C893824A1F9;
-        Tue,  7 Jun 2022 12:13:21 -0700 (PDT)
+        Tue, 7 Jun 2022 17:45:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E13C23512A;
+        Tue,  7 Jun 2022 12:07:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E951617DA;
-        Tue,  7 Jun 2022 19:13:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90978C385A2;
-        Tue,  7 Jun 2022 19:13:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B4F8B82182;
+        Tue,  7 Jun 2022 19:07:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D56CC385A5;
+        Tue,  7 Jun 2022 19:07:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629199;
-        bh=f0qjRxAqq3MPhGvkFvgfXxFOd3nQx8XC80gGPqBDDeU=;
+        s=korg; t=1654628846;
+        bh=G4QYV8KfCGN2kJuv0APB3ew8HI83mkxuqGlT4tkQ4ak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iyQ2D6Pv+gv2IzmR9jNPtk9tt1Jp4f8JwZR5WWO/1N6iC/jMTPMlxScAF7LYt9w0N
-         WqCASFje6zdOK5zHnoslKaIVIOUZSX9sA3lgwZB4zKwJjkBJixQW6DeCKRoKFwLObi
-         D8QNxE0JkglMwv17z4gmLsvuP/9eR3if6hF/RUXc=
+        b=VpaqeErBX06cshDzka/gyYjfFoVwWTh4diUnmTthNoS9uzooAV4oSdHqTrO/FTyfp
+         +nsoz/b4BUhaHK0s2ei1JimeujyRpFBas09h/MkhAy3UJlxTaVue+Pj6eeBegkyYIz
+         vskVDNSCvIhiErYe2WoAPxCe/OyCEFVbF4+Ks8+c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Jonas Karlman <jonas@kwiboo.se>,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Ezequiel Garcia <ezequiel@collabora.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 588/879] ASoC: sh: rz-ssi: Propagate error codes returned from platform_get_irq_byname()
-Date:   Tue,  7 Jun 2022 19:01:46 +0200
-Message-Id: <20220607165019.920778468@linuxfoundation.org>
+Subject: [PATCH 5.18 477/879] media: rkvdec: h264: Fix bit depth wrap in pps packet
+Date:   Tue,  7 Jun 2022 18:59:55 +0200
+Message-Id: <20220607165016.724139272@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,59 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Jonas Karlman <jonas@kwiboo.se>
 
-[ Upstream commit 91686a3984f34df0ab844cdbaa7e4d9621129f5d ]
+[ Upstream commit a074aa4760d1dad0bd565c0f66e7250f5f219ab0 ]
 
-Propagate error codes returned from platform_get_irq_byname() instead of
-returning -ENODEV. platform_get_irq_byname() may return -EPROBE_DEFER, to
-handle such cases propagate the error codes.
+The luma and chroma bit depth fields in the pps packet are 3 bits wide.
+8 is wrongly added to the bit depth values written to these 3 bit fields.
+Because only the 3 LSB are written, the hardware was configured
+correctly.
 
-While at it drop the dev_err_probe() messages as platform_get_irq_byname()
-already does this for us in case of error.
+Correct this by not adding 8 to the luma and chroma bit depth value.
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Link: https://lore.kernel.org/r/20220426074922.13319-3-prabhakar.mahadev-lad.rj@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: cd33c830448ba ("media: rkvdec: Add the rkvdec driver")
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Reviewed-by: Ezequiel Garcia <ezequiel@collabora.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sh/rz-ssi.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/staging/media/rkvdec/rkvdec-h264.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
-index e8edaed05d4c..8bbcebbe7e73 100644
---- a/sound/soc/sh/rz-ssi.c
-+++ b/sound/soc/sh/rz-ssi.c
-@@ -979,8 +979,7 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 	/* Error Interrupt */
- 	ssi->irq_int = platform_get_irq_byname(pdev, "int_req");
- 	if (ssi->irq_int < 0)
--		return dev_err_probe(&pdev->dev, -ENODEV,
--				     "Unable to get SSI int_req IRQ\n");
-+		return ssi->irq_int;
- 
- 	ret = devm_request_irq(&pdev->dev, ssi->irq_int, &rz_ssi_interrupt,
- 			       0, dev_name(&pdev->dev), ssi);
-@@ -992,8 +991,7 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 		/* Tx and Rx interrupts (pio only) */
- 		ssi->irq_tx = platform_get_irq_byname(pdev, "dma_tx");
- 		if (ssi->irq_tx < 0)
--			return dev_err_probe(&pdev->dev, -ENODEV,
--					     "Unable to get SSI dma_tx IRQ\n");
-+			return ssi->irq_tx;
- 
- 		ret = devm_request_irq(&pdev->dev, ssi->irq_tx,
- 				       &rz_ssi_interrupt, 0,
-@@ -1004,8 +1002,7 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 
- 		ssi->irq_rx = platform_get_irq_byname(pdev, "dma_rx");
- 		if (ssi->irq_rx < 0)
--			return dev_err_probe(&pdev->dev, -ENODEV,
--					     "Unable to get SSI dma_rx IRQ\n");
-+			return ssi->irq_rx;
- 
- 		ret = devm_request_irq(&pdev->dev, ssi->irq_rx,
- 				       &rz_ssi_interrupt, 0,
+diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
+index f5d8c6cb740b..22b4bf9e9ef4 100644
+--- a/drivers/staging/media/rkvdec/rkvdec-h264.c
++++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
+@@ -662,8 +662,8 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
+ 	WRITE_PPS(0xff, PROFILE_IDC);
+ 	WRITE_PPS(1, CONSTRAINT_SET3_FLAG);
+ 	WRITE_PPS(sps->chroma_format_idc, CHROMA_FORMAT_IDC);
+-	WRITE_PPS(sps->bit_depth_luma_minus8 + 8, BIT_DEPTH_LUMA);
+-	WRITE_PPS(sps->bit_depth_chroma_minus8 + 8, BIT_DEPTH_CHROMA);
++	WRITE_PPS(sps->bit_depth_luma_minus8, BIT_DEPTH_LUMA);
++	WRITE_PPS(sps->bit_depth_chroma_minus8, BIT_DEPTH_CHROMA);
+ 	WRITE_PPS(0, QPPRIME_Y_ZERO_TRANSFORM_BYPASS_FLAG);
+ 	WRITE_PPS(sps->log2_max_frame_num_minus4, LOG2_MAX_FRAME_NUM_MINUS4);
+ 	WRITE_PPS(sps->max_num_ref_frames, MAX_NUM_REF_FRAMES);
 -- 
 2.35.1
 
