@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4307C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:29:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6631C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:29:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350104AbiFGS3N (ORCPT
+        id S1350606AbiFGS3V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:29:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33792 "EHLO
+        Tue, 7 Jun 2022 14:29:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351854AbiFGSCY (ORCPT
+        with ESMTP id S1351877AbiFGSCY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:02:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5958810EA46;
-        Tue,  7 Jun 2022 10:45:54 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42EAD120882;
+        Tue,  7 Jun 2022 10:46:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1BE95B80B66;
-        Tue,  7 Jun 2022 17:45:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88F3CC385A5;
-        Tue,  7 Jun 2022 17:45:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C18A46146F;
+        Tue,  7 Jun 2022 17:46:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6590C385A5;
+        Tue,  7 Jun 2022 17:45:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623951;
-        bh=dDQBw/jW4HnJXnRCLxGt4OkKA7zSd9joddnpvBMiXL0=;
+        s=korg; t=1654623960;
+        bh=3a8gxMHCDSeL/R2EhuktrXzbJmCqXw0BGoZqVqZ6DYA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OInkDvJ+9KJJIgwiIDFgzI2qCyv54geV8CvW8dIWG4RFbuslgkwITYDOZ+3npnOT7
-         9fyCzq5P+edZ53kamRgCNZrJ8CMbSaG66HOqmCpeuDOdZ/IgNxUuy02cYC2L0k7qjl
-         hdTbqlCgyPwKM2wLb+ZubgBCbv6tUG6bfh/2wNkU=
+        b=vA94riozqmX/zFbxrjmLy4L/efmRVs8WrNbpxwtoi6lD+KLxTs2bHj7ECtNqPs4IT
+         h04B9hI2v0+I8idw4BgrxrxVcSzkEfz0zAEdMeiA9B5r48KCdJZ/KYkG2knTRsTmlJ
+         jo/7cS380rW04LriGS+Byw0B8KXst6UHR5/KQLkc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
-        Jonathan Bakker <xc-racer2@live.ca>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 151/667] ARM: dts: s5pv210: align DMA channels with dtschema
-Date:   Tue,  7 Jun 2022 18:56:56 +0200
-Message-Id: <20220607164939.347042688@linuxfoundation.org>
+Subject: [PATCH 5.15 154/667] PM / devfreq: rk3399_dmc: Disable edev on remove()
+Date:   Tue,  7 Jun 2022 18:56:59 +0200
+Message-Id: <20220607164939.434342098@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,77 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzk@kernel.org>
+From: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit 9e916fb9bc3d16066286f19fc9c51d26a6aec6bd ]
+[ Upstream commit 2fccf9e6050e0e3b8b4cd275d41daf7f7fa22804 ]
 
-dtschema expects DMA channels in specific order (tx, rx and tx-sec).
-The order actually should not matter because dma-names is used however
-let's make it aligned with dtschema to suppress warnings like:
+Otherwise we hit an unablanced enable-count when unbinding the DFI
+device:
 
-  i2s@eee30000: dma-names: ['rx', 'tx', 'tx-sec'] is not valid under any of the given schemas
+[ 1279.659119] ------------[ cut here ]------------
+[ 1279.659179] WARNING: CPU: 2 PID: 5638 at drivers/devfreq/devfreq-event.c:360 devfreq_event_remove_edev+0x84/0x8c
+...
+[ 1279.659352] Hardware name: Google Kevin (DT)
+[ 1279.659363] pstate: 80400005 (Nzcv daif +PAN -UAO -TCO BTYPE=--)
+[ 1279.659371] pc : devfreq_event_remove_edev+0x84/0x8c
+[ 1279.659380] lr : devm_devfreq_event_release+0x1c/0x28
+...
+[ 1279.659571] Call trace:
+[ 1279.659582]  devfreq_event_remove_edev+0x84/0x8c
+[ 1279.659590]  devm_devfreq_event_release+0x1c/0x28
+[ 1279.659602]  release_nodes+0x1cc/0x244
+[ 1279.659611]  devres_release_all+0x44/0x60
+[ 1279.659621]  device_release_driver_internal+0x11c/0x1ac
+[ 1279.659629]  device_driver_detach+0x20/0x2c
+[ 1279.659641]  unbind_store+0x7c/0xb0
+[ 1279.659650]  drv_attr_store+0x2c/0x40
+[ 1279.659663]  sysfs_kf_write+0x44/0x58
+[ 1279.659672]  kernfs_fop_write_iter+0xf4/0x190
+[ 1279.659684]  vfs_write+0x2b0/0x2e4
+[ 1279.659693]  ksys_write+0x80/0xec
+[ 1279.659701]  __arm64_sys_write+0x24/0x30
+[ 1279.659714]  el0_svc_common+0xf0/0x1d8
+[ 1279.659724]  do_el0_svc_compat+0x28/0x3c
+[ 1279.659738]  el0_svc_compat+0x10/0x1c
+[ 1279.659746]  el0_sync_compat_handler+0xa8/0xcc
+[ 1279.659758]  el0_sync_compat+0x188/0x1c0
+[ 1279.659768] ---[ end trace cec200e5094155b4 ]---
 
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-Co-developed-by: Jonathan Bakker <xc-racer2@live.ca>
-Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
-Link: https://lore.kernel.org/r/CY4PR04MB056779A9C50DC95987C5272ACB1C9@CY4PR04MB0567.namprd04.prod.outlook.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/s5pv210-aries.dtsi |  2 +-
- arch/arm/boot/dts/s5pv210.dtsi       | 12 ++++++------
- 2 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/devfreq/rk3399_dmc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/boot/dts/s5pv210-aries.dtsi b/arch/arm/boot/dts/s5pv210-aries.dtsi
-index 2f57100a011a..9b7da2bc3a06 100644
---- a/arch/arm/boot/dts/s5pv210-aries.dtsi
-+++ b/arch/arm/boot/dts/s5pv210-aries.dtsi
-@@ -636,7 +636,7 @@
- };
+diff --git a/drivers/devfreq/rk3399_dmc.c b/drivers/devfreq/rk3399_dmc.c
+index 293857ebfd75..538e8dc74f40 100644
+--- a/drivers/devfreq/rk3399_dmc.c
++++ b/drivers/devfreq/rk3399_dmc.c
+@@ -477,6 +477,8 @@ static int rk3399_dmcfreq_remove(struct platform_device *pdev)
+ {
+ 	struct rk3399_dmcfreq *dmcfreq = dev_get_drvdata(&pdev->dev);
  
- &i2s0 {
--	dmas = <&pdma0 9>, <&pdma0 10>, <&pdma0 11>;
-+	dmas = <&pdma0 10>, <&pdma0 9>, <&pdma0 11>;
- 	status = "okay";
- };
- 
-diff --git a/arch/arm/boot/dts/s5pv210.dtsi b/arch/arm/boot/dts/s5pv210.dtsi
-index 353ba7b09a0c..c5265f3ae31d 100644
---- a/arch/arm/boot/dts/s5pv210.dtsi
-+++ b/arch/arm/boot/dts/s5pv210.dtsi
-@@ -239,8 +239,8 @@
- 			reg = <0xeee30000 0x1000>;
- 			interrupt-parent = <&vic2>;
- 			interrupts = <16>;
--			dma-names = "rx", "tx", "tx-sec";
--			dmas = <&pdma1 9>, <&pdma1 10>, <&pdma1 11>;
-+			dma-names = "tx", "rx", "tx-sec";
-+			dmas = <&pdma1 10>, <&pdma1 9>, <&pdma1 11>;
- 			clock-names = "iis",
- 				      "i2s_opclk0",
- 				      "i2s_opclk1";
-@@ -259,8 +259,8 @@
- 			reg = <0xe2100000 0x1000>;
- 			interrupt-parent = <&vic2>;
- 			interrupts = <17>;
--			dma-names = "rx", "tx";
--			dmas = <&pdma1 12>, <&pdma1 13>;
-+			dma-names = "tx", "rx";
-+			dmas = <&pdma1 13>, <&pdma1 12>;
- 			clock-names = "iis", "i2s_opclk0";
- 			clocks = <&clocks CLK_I2S1>, <&clocks SCLK_AUDIO1>;
- 			pinctrl-names = "default";
-@@ -274,8 +274,8 @@
- 			reg = <0xe2a00000 0x1000>;
- 			interrupt-parent = <&vic2>;
- 			interrupts = <18>;
--			dma-names = "rx", "tx";
--			dmas = <&pdma1 14>, <&pdma1 15>;
-+			dma-names = "tx", "rx";
-+			dmas = <&pdma1 15>, <&pdma1 14>;
- 			clock-names = "iis", "i2s_opclk0";
- 			clocks = <&clocks CLK_I2S2>, <&clocks SCLK_AUDIO2>;
- 			pinctrl-names = "default";
++	devfreq_event_disable_edev(dmcfreq->edev);
++
+ 	/*
+ 	 * Before remove the opp table we need to unregister the opp notifier.
+ 	 */
 -- 
 2.35.1
 
