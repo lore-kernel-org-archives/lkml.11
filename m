@@ -2,188 +2,301 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92685C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:01:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA433C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:02:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343790AbiFGPBp (ORCPT
+        id S1343795AbiFGPB6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 11:01:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60942 "EHLO
+        Tue, 7 Jun 2022 11:01:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343623AbiFGPBj (ORCPT
+        with ESMTP id S1343797AbiFGPBy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 11:01:39 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4B57F5051;
-        Tue,  7 Jun 2022 08:01:37 -0700 (PDT)
+        Tue, 7 Jun 2022 11:01:54 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29B10F5D25;
+        Tue,  7 Jun 2022 08:01:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654614097; x=1686150097;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=5urjf3yyCNVdX4AvCUgr4B4VOToBmA0tLtZ3YDEdC20=;
-  b=TDXNXhtE88bjQ+R/r0g1YCjIsg8pSQjZGLcGIxeBGbKtzMmlpoZs2W03
-   Omayd3IcZVOupeh79ilmtd/5VbJyUrANHZkES9pSM7KD4N4R4TuJDF3Br
-   G0Sl4JJak/eFamLFIT/J94i6VPcFcxNEOGVpbfxfbCr93BJSd7o3pGvcZ
-   jQ0iYyCRFie3cXVJnE8q4BQdmeYfQkDGC13YDLzpuaIwMfUnAE9+UQ1Uw
-   Z1m44yGKfkbDTb8tWM/rTYdquWxO63xqk+fmV0IVr1mzH7OrKBHqZTVAW
-   jrBsV+OsIbSxyssxa2jWgJh+BgPoBdWcZPCfzee8eS034rHS2S0RJ/XeE
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277235568"
+  t=1654614113; x=1686150113;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=iaOyYvYEVBYFFDmFVexCfU7QcKvd9WljFSDmDNU1a3Q=;
+  b=G9YWl9UaI+CJeXxZW+WH3SmATRiJBLMQSrGXLGloxft1vuwQ7+duTOJq
+   S/eIsOLD6rWTbK+W4rfKQ0aNgiN1kyttZcbhbaGX/QmPGL6Ws61h3pCBq
+   Syjns0uYyzDFlG9pdjx19G388yzae/eEy/8eysSRy2hNyF252NGmA0CX/
+   pQzv7/wmV+g4kghmbJ02wwFebTpoPaC6E7HBcJ3qATcwTkpJUJlIgzPOg
+   4/jZNpQV5OYQnLtz25cgOiCiSgiKaS1LuS1nBc1ODAgwzGtJ2JICsViZR
+   zsRF/AxQhWcy0bakUL9TtniUa0qW/ONHnjBo0hOdUKlRr2dlemXX5YaTC
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="363068040"
 X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="277235568"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 08:01:08 -0700
+   d="scan'208";a="363068040"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 08:01:52 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="648063534"
-Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
-  by fmsmga004.fm.intel.com with ESMTP; 07 Jun 2022 08:01:07 -0700
-Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
- ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 7 Jun 2022 08:01:07 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 7 Jun 2022 08:01:06 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Tue, 7 Jun 2022 08:01:06 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.171)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Tue, 7 Jun 2022 08:01:06 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e0lUjQja+6Vb3B1PBKjAFtK5OJO4UyphNpgyLrpU9c2PCbgv/flGg72GXlpeulUCOs5uqXRKiejGiW2LYVCZouPTGcqHf0BFUww3IQ1hS12d3Zww1CyxgeY0O+uyu/kRGZ2PRjcXEreXvaaKmxp0j8vZTZljPXGXIf/nwpnqGfzyHUwXb2pn1Xempq3FpO8Fn2yGwWzLVfyKd5l1Y7fiu/D/R2kQhuTKeXyUvmR8hQFkNXMx+2cQUSznOab3kfwusuRyK5i01+dpF+JReWNp6Y2xsn5PK5EvM2idOfcM0BQIGG4m1toSeRxuyMk+eA7gox+NenpGrh+vp58w+aT1iA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4ETgPB1QxR16Le9hrHh+BvhfjoqPpoOqg7nl3fcLIaw=;
- b=BiYNLHhAh5A+BjZBIfVaop5T/uCytCXr5xOcCrjkgp+0NnEHIvbqnIQXZW4xYqy4UiYI8P6idfnMtWzw4qoGUUjbQbvcjtF7m3ljIUyKM3+9t8/uhrHIfykAsrL9NUgY9YQtn1Xe6vFgRwp9oY61+bTP0dCEQmCuV1AXy+hILCXCdJMknIaOzerFtLAi4qvRkLTxozJIMw7DRXDG7hAOIaLffxK8Yjmyv5pGlXqmDj2AKRrH7FoIL2p2JKKRB6lj6r+xBGz5rRt6R63XKzdBjPLEMRfg1lexeLBG58cx6aAfD6li7oCoR0AR8cBkLwP7vUO5zIFtoUa7G4O0hK06/A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MN2PR11MB3870.namprd11.prod.outlook.com (2603:10b6:208:152::11)
- by BN6PR11MB1266.namprd11.prod.outlook.com (2603:10b6:404:49::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12; Tue, 7 Jun
- 2022 15:01:04 +0000
-Received: from MN2PR11MB3870.namprd11.prod.outlook.com
- ([fe80::e819:fb65:2ca3:567b]) by MN2PR11MB3870.namprd11.prod.outlook.com
- ([fe80::e819:fb65:2ca3:567b%6]) with mapi id 15.20.5314.019; Tue, 7 Jun 2022
- 15:01:04 +0000
-Message-ID: <1abaea0d-7e21-b596-eb5d-75217133a504@intel.com>
-Date:   Tue, 7 Jun 2022 23:00:51 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.10.0
-Subject: Re: [PATCH v2] KVM: x86/mmu: Check every prev_roots in
- __kvm_mmu_free_obsolete_roots()
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-CC:     <pbonzini@redhat.com>, Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ben Gardon <bgardon@google.com>,
-        <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20220607005905.2933378-1-shaoqin.huang@intel.com>
- <Yp4x0twziuEr3KRm@google.com>
-From:   "Huang, Shaoqin" <shaoqin.huang@intel.com>
-In-Reply-To: <Yp4x0twziuEr3KRm@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG2PR01CA0180.apcprd01.prod.exchangelabs.com
- (2603:1096:4:28::36) To MN2PR11MB3870.namprd11.prod.outlook.com
- (2603:10b6:208:152::11)
+   d="scan'208";a="682784197"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by fmsmga002.fm.intel.com with ESMTP; 07 Jun 2022 08:01:49 -0700
+Date:   Tue, 7 Jun 2022 22:53:55 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Russ Weight <russell.h.weight@intel.com>
+Cc:     mdf@kernel.org, hao.wu@intel.com, lee.jones@linaro.org,
+        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org,
+        trix@redhat.com, marpagan@redhat.com, lgoncalv@redhat.com,
+        matthew.gerlach@linux.intel.com,
+        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com
+Subject: Re: [PATCH v23 0/5] FPGA MAX10 BMC Secure Update Driver
+Message-ID: <20220607145355.GA387517@yilunxu-OptiPlex-7050>
+References: <20220606160038.846236-1-russell.h.weight@intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 25d88216-eda9-40fa-ac41-08da48968af6
-X-MS-TrafficTypeDiagnostic: BN6PR11MB1266:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-Microsoft-Antispam-PRVS: <BN6PR11MB12665D9781C0E294A1BC34B4F7A59@BN6PR11MB1266.namprd11.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Y+jRkFtapXIcmZi8A6I/KTSpPkEVjo0q6fTecPQsAkLHAQlU3gt7hfZjMaJ3X+XLdxAXX31j4EX6yOx14cwjpZvIAp6oa1kVrwvY2SU3ZA9RTi7oqZKpvmEgbTRjsjroR82i3e64pYDUhj3REmvm4BUSIkJxmqasbpZnEW0CKHjPEjpHo5D/JEGbaD3ZeKJT4obWLTRDEImmKtZXEE5euguXvsN+5VY509u0Tc/cPOYkavfj/DKEGjzVeWH/mon7WOj54Lk8BzcWm/XXC+m0UDaYHgmvi77lbJthvC317+9tiWHLFRiuVMetzgSaoRiWJT8zpAQmsAO7MiBkyP7Avqe0p3U0f1FnHA1XFNxLNqx75hDUgmbEbo/VEFkUurrs6QlTMqgKiz58PG+MNC/z0AQ+s4vzN1mpO8nQnqzAZOVx3e2giuzoixSnKxLICuKP0wYrlUnMv+p7xfmE8crvAvGFWAG3CbUAKmCC7LhmnADgmniCpPud9DSF8sCnw3G2eRjPKNU3DZJOPke5ypIEbpt9aTnK9AlThJ2wC49zMF9YBtAC4QG9Eri29GNIW6RQgb3/WwULFNtD5LwC4K8nJN3O1RYLrlWWe82XV/gmPPrbGf4+KPPQA9b8xJ0fvhsX2XJqQAEwbnz1BBo0j7qvC+ECYZfnN4LyvlP4zeu2wBsCgNq+8Sq47XClR6+ah5hDGCXzoW2yxU+ncV6IK8aDiTy0SKpjkv8s+sSLYgPmKnZeBqItHaFGcsWAC3kfyJ6z
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR11MB3870.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(316002)(54906003)(66946007)(8676002)(4326008)(66556008)(31696002)(66476007)(2906002)(86362001)(6916009)(6486002)(53546011)(4744005)(36756003)(7416002)(8936002)(6506007)(6512007)(26005)(5660300002)(82960400001)(31686004)(2616005)(186003)(38100700002)(508600001)(6666004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bEVVTG5vSUxyRW5SU1RVWWpDUmNwUjZFOXdoSGZXMitDeEE4emZvT1RFYlAz?=
- =?utf-8?B?bFBuS0l6SHZkZ2FpU2lpSFJXNVlPUFJrTGx5eTZBenJaeFVEMDg1L0gvZVFn?=
- =?utf-8?B?b01VOTRUZEkyMCttNVREeTUwSU8yeFpHV01oTVdFMUloS3lvZ3RZMEFuOVNO?=
- =?utf-8?B?SUg0dWpwZlJVRzVGRjI4b0hWSUh2SjZMUzdjczJqQzJTUlNyVFVjaWFPMndt?=
- =?utf-8?B?V1BhNGlCQ2IyVzhxR2M3aHhpVGxjcjFRbXpjUElKNFZEUEtJMWg5N0tqRUxk?=
- =?utf-8?B?ZWhEbjdydkwxQVYxQ1VteGFQRisvNldoWEpUUzhGTDU4M0pxbXBJa3BmSGZn?=
- =?utf-8?B?UUZwbERXMi9aYkQrR0VGazVrUDRTT3pCRDQvL2U3S09WWnJCanJJSzVnMzI3?=
- =?utf-8?B?WnhPK3U2eVNZa3lQWFBwM0lqUGRRQmVIa0dpOUowekpBTytSNHB3YWo3QllD?=
- =?utf-8?B?RUd1cWxORURKM0NhSEViaHJCNEkyMUMxMEdoZXNTS2cvNU9yYVZaZmgzdU9w?=
- =?utf-8?B?a0RhRUJGRGVScjg0N0pDMm54Rlh6QjY1c3U4cWF5bnBaSE1jOUFpcjhQS1BI?=
- =?utf-8?B?T0phVGkzenYrK1IwMlBJTE13bHlNcUFlK2RWWTQ4WGdnMVB5YXRzYXRuR2RW?=
- =?utf-8?B?TllSZnlnSFhYSGZ0a2hab00vank0NE5NUU9TOE84TFhid2lzeDN0NkkvWkRM?=
- =?utf-8?B?NTNZM0E0L3hSMXk5VnhDaU9NbXRxNUFRaWpkM2VtVWhDa094dkx5TWVuRFRV?=
- =?utf-8?B?TENCREZ1YkNHWkxnNnVoTVMweHNLV1RWdmE4UnpoU2tUZlA0VVlJK3Y4ZXBM?=
- =?utf-8?B?Sjd0LzhCbDdldkxEaXZaSk1rT3lEai9ZYUVyNk5VUFhTWFFJLzBQTENJWE1z?=
- =?utf-8?B?dHZQRjZaNGRFQ0NlY0Q0VWJUczBNcVVBU1BNbUJKMm5udHNkUUorZGVmUlA0?=
- =?utf-8?B?bzBTR3VON2QxTnlvaVlYNUNVdSsrOS92SjhoM0J0QnZuYWNaVXZ4b3RCbTd5?=
- =?utf-8?B?a2VxY2JTK0p0b3JSWEtxQ0hHQzY0OSt5WFpWUWtZVGRyRnc2TEorT2w5TjVG?=
- =?utf-8?B?K29UTjlJUVFqa0Z5enhpb2dpOU96QXNJdS9PaW8vZkhQSk5TTWtYbXFlNmxa?=
- =?utf-8?B?VHRLQm1RSnN2Q0dSWjltZTgreXQxQ2xtVTlRNUpIajVrVEVSSmxZSWZDZjFM?=
- =?utf-8?B?Rzk1YXlJbS82MVdHMHpaMTFqSzdyN2RXdVJ4RnpZZ2lYQWZnZ0w1ZGU3azVx?=
- =?utf-8?B?MWZnejR3Q2NlMzNuNXNuYXI3OXVMdVpuV0VmR0JDRHR2d3Q2YlJZWllSVmY1?=
- =?utf-8?B?Y25Wb2lML3pjOFR0WTRKRk9LV2wwU21LSVJpTGdxcDc0aW4wbDZ2REpCZVp3?=
- =?utf-8?B?UTBaczhjRHpLUTlnTDVTdFZDMmFoVzI0eXd5Q3lpUDdKMElXMGd2N3Rjenps?=
- =?utf-8?B?L3ZDWnpMTTh4S2hzajI3TFlCbk13YXp5dXFabW5RQ0M1Z3hsVGdISVZ4YmxO?=
- =?utf-8?B?ODh5NHdJMmZBUUNNcWdDTkI2aUludEFIZ2RkbnlPS0kyVzFnNUJSWTREYmUz?=
- =?utf-8?B?T3ZmVjlGR0U4VXVpOGFMT1hWekpBUHJMM0xEYUxhK25pVUZFcGdTejRoR1Nh?=
- =?utf-8?B?REszb05lUWdpRTZnTjBiTDN4ZHdhMzhDZDMrMFliNm0rSlJUamtRc0xya0xz?=
- =?utf-8?B?Y0hsUENMcDdWYUhENS9WczBlOEkvM0RWZkd2RDVGdVZDNC9mL2hkdkFUV0U2?=
- =?utf-8?B?MWc3RWZuZVY4cWxyVmc3MWpuOWxMdUZXQ2pZckF6V2J0amdVcjk4KytNNXNh?=
- =?utf-8?B?UW1Da3QvSW8zVis5VnlmMUpkdTBydlZGNWtoUGZoWnlVdUlqQVdIZVF2dk9K?=
- =?utf-8?B?Mk1Uc1pBL2RmZ09qU2ZTWGRjek11VWkzajhCMjhjeGQxN09IaTJoTC9udW9k?=
- =?utf-8?B?UFJNMHFxakhzQXdrSmdSNFAyTSsyWUFmY2Vady8yN0RJeTY2b3ppZm8rRkph?=
- =?utf-8?B?b1lDdGk0R0RteGVBaVJHeTNrT0swM2JWUmdwZDVuY2FNUW1JaUxFRXBETXAr?=
- =?utf-8?B?dzdoSENpZk5SbnA1aGVGcW5WRWN3cW5mVWZPMGJkTk9nWVMxamhEWDQweSth?=
- =?utf-8?B?RGZ0RnZmWXoxMStUak1OTlpPeUtuSFFrSFhjMmRJMjZJV21DMW55TFNYUmVK?=
- =?utf-8?B?Y2xhYUZoVDFGd2lCZVNMc3p5Vks1OUlmSHlKcktWSjBPM1c3Zkx2eGw2b2Jw?=
- =?utf-8?B?U1hxRlFVdTlvZE0wdWoxUnhVMEhRK2VUaG4xTjMzRDhLVk0xcEkyVndNc3o5?=
- =?utf-8?B?aFQ4cDBhTkdwOGdzN1oxalA5OG9OSlJiaElURHhzR2xyd3BkTTZGa2JCNUZt?=
- =?utf-8?Q?wV65o2+Ubzb1vQtA=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 25d88216-eda9-40fa-ac41-08da48968af6
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR11MB3870.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2022 15:01:04.4281
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KOBUm3G608LzuNV7K38IadOmZ9OlgpogqxWCd/CMjiu09BqObKJWKKGCU6MQPkr2MfB+ts9j8e3HDPWaq8PE3A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1266
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220606160038.846236-1-russell.h.weight@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks Sean!
+On Mon, Jun 06, 2022 at 09:00:33AM -0700, Russ Weight wrote:
+> The MAX10 BMC Secure Update driver instantiates the new Firmware
+> Upload functionality of the Firmware Loader and provides the callback
+> functions required to support secure updates on Intel n3000 PAC
+> devices.  This driver is implemented as a sub-driver of the Intel MAX10
+> BMC mfd driver.
+> 
+> This driver interacts with the HW secure update engine of the FPGA
+> card BMC in order to transfer new FPGA and BMC images to FLASH on
+> the FPGA card.  Security is enforced by hardware and firmware.  The
+> FPGA Card BMC Secure Update driver interacts with the firmware to
+> initiate an update, pass in the necessary data, and collect status
+> on the update.
+> 
+> This driver provides sysfs files for displaying the flash count, the
+> root entry hashes (REH), and the code-signing-key (CSK) cancellation
+> vectors.
+> 
+> Changelog v22 -> v23:
+>   - Rebased for 5.19-rc1
+>   - Added Acked-by tag from Yilun for patch #5
+> 
+> Changelog v21 -> v22:
+>   - Added Tested-by tags from Tianfei and Acked-by tags from Yilun.
+>   - Updated KernelVersion and Date in ABI documentation to 5.20 and
+>     Sep 2022 respectively.
+>   - Removed unnecessary alignment check for source address from
+>     m10bmc_sec_prepare().
+>   - Changed the handling of a misaligned blk_size in m10bmc_sec_write().
+>     Instead of allocating an aligned buffer and copying the block, copy
+>     the misaligned bytes into an unsigned int and write with
+>     regmap_write().
+> 
+> Changelog v20 -> v21:
+>   - Replace WARN_ON() calls in flash_count_show() and show_canceled_csk()
+>     with a more elaborate test. Return -EINVAL and write a message to the
+>     kernel log. Call WARN_ON_ONCE().
+>   - Update m10bmc_sec_prepare() to ensure that the base address for an
+>     update image is aligned with stride.
+>   - Update m10bmc_sec_write() to handle a block size that is not aligned
+>     with stride by allocating a zero-filled block that is aligned, and
+>     copying the data before calling regmap_bulk_write().
+> 
+> Changelog v19 -> v20:
+>   - Added text to commit messages to describe Root Entry Hashes (REH) and
+>     Code Signing Key (CSK) cancellation.
+>   - Use reverse christmas tree format for local variable declarations in
+>     show_root_entry_hash().
+>   - Remove WARN_ON() from show_root_entry_hash() and return -EINVAL if 
+>     sha_num_bytes is not a multiple of stride.
+>   - Move MODULE_DEVICE_TABLE() macro to just beneath the definition of
+>     intel_m10bmc_sec_ids[].
+> 
+> Changelog v18 -> v19:
+>   - Change "card bmc" naming back to "m10 bmc" naming to be consistent
+>     with the parent driver.
+> 
+> Changelog v17 -> v18:
+>   - Changed the ABI documentation for the Root Entry Hashes to specify
+>     string as the format for the output.
+>   - Updated comments, strings and config options to more consistently
+>     refer to the driver as the Intel FPGA Card BMC Secure Update driver.
+>   - Removed an instance of dev_dbg().
+>   - Deferred the call to firmware_upload_register() to a later patch
+>     where the required ops are provided.
+>   - Switched from MODULE_ALIAS() to MODULE_DEVICE_TABLE() in anticipation
+>     of additional cards to be supported by the same driver.
+> 
+> Changelog v16 -> v17:
+>   - Change m10bmc to cardbmc to reflect the fact that the future devices
+>     will not necessarily use the MAX10. This affects filenames, configs,
+>     symbol names, and the driver name.
+>   - Update the Date and KernelVersion for the ABI documentation to Jul 2022
+>     and 5.19 respectively.
+>   - Updated the copyright end-date to 2022 for the secure update driver.
+>   - Removed references to the FPGA Image Load class driver and replaced
+>     them with the new firmware-upload service from the firmware loader.
+>   - Use xarray_alloc to generate a unique number/name firmware-upload.
+>   - Chang the license from GPL to GPLv2 per commit bf7fbeeae6db ("module:
+>     Cure the MODULE_LICENSE "GPL" vs. "GPL v2" bogosity")
+>   - fw_upload_ops functions will return "enum fw_upload_err" data types
+>     instead of integer values.
+> 
+> Changelog v15 -> v16:
+>   - Use 0 instead of FPGA_IMAGE_ERR_NONE to indicate success.
+>   - The size alignment check was moved from the FPGA Image Load framework
+>     to the prepare() op.
+>   - Added cancel_request boolean flag to struct m10bmc_sec.
+>   - Moved the RSU cancellation logic from m10bmc_sec_cancel() to a new
+>     rsu_cancel() function.
+>   - The m10bmc_sec_cancel() function ONLY sets the cancel_request flag.
+>     The cancel_request flag is checked at the beginning of the
+>     m10bmc_sec_write() and m10bmc_sec_poll_complete() functions.
+>   - Adapt to changed prototypes for the prepare() and write() ops. The
+>     m10bmc_sec_write_blk() function has been renamed to
+>     m10bmc_sec_write().
+>   - Created a cleanup op, m10bmc_sec_cleanup(), to attempt to cancel an
+>     ongoing op during when exiting the update process.
+> 
+> Changelog v14 -> v15:
+>   - Updated the Dates and KernelVersions in the ABI documentation
+>   - Change driver name from "n3000bmc-secure" to "n3000bmc-sec-update".
+>   - Change CONFIG_FPGA_M10_BMC_SECURE to CONFIG_FPGA_M10_BMC_SEC_UPDATE.
+>   - Change instances of *bmc-secure to *bmc-sec-update in file name
+>     and symbol names.
+>   - Change instances of *m10bmc_secure* to *m10bmc-sec_update* in symbol
+>     names.
+>   - Adapted to changes in the FPGA Image Load framework:
+>     (1) All enum types (progress and errors) are now type u32
+>     (2) m10bmc_sec_write_blk() adds *blk_size and max_size parameters
+>         and uses *blk_size as provided by the caller.
+>     (3) m10bmc_sec_poll_complete() no long checks the driver_unload
+>         flag.
+> 
+> Changelog v13 -> v14:
+>   - Changed symbol and text references to reflect the renaming of the
+>     Security Manager Class driver to FPGA Image Load.
+> 
+> Changelog v12 -> v13:
+>   - Updated copyright to 2021
+>   - Updated Date and KernelVersion fields in ABI documentation
+>   - Call updated fpga_sec_mgr_register() and fpga_sec_mgr_unregister()
+>     functions instead of devm_fpga_sec_mgr_create() and
+>     devm_fpga_sec_mgr_register().
+> 
+> Changelog v11 -> v12:
+>   - Updated Date and KernelVersion fields in ABI documentation
+>   - Removed size parameter from the write_blk() op. m10bmc_sec_write_blk()
+>     no longer has a size parameter, and the block size is determined
+>     in this (the lower-level) driver.
+> 
+> Changelog v10 -> v11:
+>   - Added Reviewed-by tag to patch #1
+> 
+> Changelog v9 -> v10:
+>   - Changed the path expressions in the sysfs documentation to
+>     replace the n3000 reference with something more generic to
+>     accommodate other devices that use the same driver.
+> 
+> Changelog v8 -> v9:
+>   - Rebased to 5.12-rc2 next
+>   - Updated Date and KernelVersion in ABI documentation
+> 
+> Changelog v7 -> v8:
+>   - Split out patch "mfd: intel-m10-bmc: support for MAX10 BMC Secure
+>     Updates" and submitted it separately:
+>     https://marc.info/?l=linux-kernel&m=161126987101096&w=2
+> 
+> Changelog v6 -> v7:
+>   - Rebased patches for 5.11-rc2
+>   - Updated Date and KernelVersion in ABI documentation
+> 
+> Changelog v5 -> v6:
+>   - Added WARN_ON() prior to several calls to regmap_bulk_read()
+>     to assert that the (SIZE / stride) calculations did not result
+>     in remainders.
+>   - Changed the (size / stride) calculation in regmap_bulk_write()
+>     call to ensure that we don't write one less than intended.
+>   - Changed flash_count_show() parameter list to achieve
+>     reverse-christmas tree format.
+>   - Removed unnecessary call to rsu_check_complete() in
+>     m10bmc_sec_poll_complete() and changed while loop to
+>     do/while loop.
+>   - Initialized auth_result and doorbell to HW_ERRINFO_POISON
+>     in m10bmc_sec_hw_errinfo() and removed unnecessary if statements.
+> 
+> Changelog v4 -> v5:
+>   - Renamed sysfs node user_flash_count to flash_count and updated
+>     the sysfs documentation accordingly to more accurately descirbe
+>     the purpose of the count.
+> 
+> Changelog v3 -> v4:
+>   - Moved sysfs files for displaying the flash count, the root
+>     entry hashes (REH), and the code-signing-key (CSK) cancellation
+>     vectors from the FPGA Security Manager class driver to this
+>     driver (as they are not generic enough for the class driver).
+>   - Added a new ABI documentation file with informtaion about the
+>     new sysfs entries: sysfs-driver-intel-m10-bmc-secure
+>   - Updated the MAINTAINERS file to add the new ABI documentation
+>     file: sysfs-driver-intel-m10-bmc-secure
+>   - Removed unnecessary ret variable from m10bmc_secure_probe()
+>   - Incorporated new devm_fpga_sec_mgr_register() function into
+>     m10bmc_secure_probe() and removed the m10bmc_secure_remove()
+>     function.
+> 
+> Changelog v2 -> v3:
+>   - Changed "MAX10 BMC Security Engine driver" to "MAX10 BMC Secure
+>     Update driver"
+>   - Changed from "Intel FPGA Security Manager" to FPGA Security Manager"
+>   - Changed: iops -> sops, imgr -> smgr, IFPGA_ -> FPGA_, ifpga_ to fpga_
+>   - Removed wrapper functions (m10bmc_raw_*, m10bmc_sys_*). The
+>     underlying functions are now called directly.
+>   - Changed "_root_entry_hash" to "_reh", with a comment explaining
+>     what reh is.
+>   - Renamed get_csk_vector() to m10bmc_csk_vector()
+>   - Changed calling functions of functions that return "enum fpga_sec_err"
+>     to check for (ret != FPGA_SEC_ERR_NONE) instead of (ret)
+> 
+> Changelog v1 -> v2:
+>   - These patches were previously submitted as part of a larger V1
+>     patch set under the title "Intel FPGA Security Manager Class Driver".
+>   - Grouped all changes to include/linux/mfd/intel-m10-bmc.h into a
+>     single patch: "mfd: intel-m10-bmc: support for MAX10 BMC Security
+>     Engine".
+>   - Removed ifpga_sec_mgr_init() and ifpga_sec_mgr_uinit() functions.
+>   - Adapted to changes in the Intel FPGA Security Manager by splitting
+>     the single call to ifpga_sec_mgr_register() into two function
+>     calls: devm_ifpga_sec_mgr_create() and ifpga_sec_mgr_register().
+>   - Replaced small function-creation macros for explicit function
+>     declarations.
+>   - Bug fix for the get_csk_vector() function to properly apply the
+>     stride variable in calls to m10bmc_raw_bulk_read().
+>   - Added m10bmc_ prefix to functions in m10bmc_iops structure
+>   - Implemented HW_ERRINFO_POISON for m10bmc_sec_hw_errinfo() to
+>     ensure that corresponding bits are set to 1 if we are unable
+>     to read the doorbell or auth_result registers.
+>   - Added comments and additional code cleanup per V1 review.
+> 
+> Russ Weight (5):
+>   mfd: intel-m10-bmc: Rename n3000bmc-secure driver
+>   fpga: m10bmc-sec: create max10 bmc secure update
+>   fpga: m10bmc-sec: expose max10 flash update count
+>   fpga: m10bmc-sec: expose max10 canceled keys in sysfs
+>   fpga: m10bmc-sec: add max10 secure update functions
+> 
+>  .../sysfs-driver-intel-m10-bmc-sec-update     |  61 ++
+>  MAINTAINERS                                   |   7 +
+>  drivers/fpga/Kconfig                          |  12 +
+>  drivers/fpga/Makefile                         |   3 +
+>  drivers/fpga/intel-m10-bmc-sec-update.c       | 625 ++++++++++++++++++
+>  drivers/mfd/intel-m10-bmc.c                   |   2 +-
+>  6 files changed, 709 insertions(+), 1 deletion(-)
+>  create mode 100644 Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-sec-update
+>  create mode 100644 drivers/fpga/intel-m10-bmc-sec-update.c
+> 
+> 
+> base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
 
-On 6/7/2022 12:56 AM, Sean Christopherson wrote:
-> On Mon, Jun 06, 2022, shaoqin.huang@intel.com wrote:
->> From: Shaoqin Huang <shaoqin.huang@intel.com>
->>
->> When freeing obsolete previous roots, check prev_roots as intended, not
->> the current root.
->>
->> Signed-off-by: Shaoqin Huang <shaoqin.huang@intel.com>
->> Fixes: 527d5cd7eece ("KVM: x86/mmu: Zap only obsolete roots if a root shadow page is zapped")
-> 
-> Because KVM patches aren't guaranteed to be backported without it (though it's
-> "only" v5.18 that's affected), this needs:
-> 
->    Cc: stable@vger.kernel.org
-> 
-> Reviewed-by: Sean Christopherson <seanjc@google.com>
+Applied to for-next
+
+> -- 
+> 2.25.1
