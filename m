@@ -2,101 +2,314 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BA2AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 07:47:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38805CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 07:48:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237901AbiFGHrs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 03:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49916 "EHLO
+        id S237916AbiFGHst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 03:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237904AbiFGHrm (ORCPT
+        with ESMTP id S237902AbiFGHsq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 03:47:42 -0400
-Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2F8B8BF7D
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 00:47:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=FzsQe
-        Klfx+PTNhydCXy5arK4m63g42oEcDpVKHz+ar0=; b=Eqd5XGCE4BV50FAUN/N4t
-        q7z/nZMZr7sIwloIGMSpLbKhTA7sDPho1a0gsRfPPiIdh3JUiz1ZfbYx06iFRxKT
-        kr/NKH0YuNIgP0XSHvW99p93YbU/3sNYKGZJw0MJjc+NpPfDPuHx/yVEY2okMPPv
-        G2irPV95sR/DiAtmPSgcxU=
-Received: from localhost.localdomain (unknown [123.112.69.106])
-        by smtp2 (Coremail) with SMTP id GtxpCgB3PCJrAp9iIndHHQ--.24586S4;
-        Tue, 07 Jun 2022 15:47:06 +0800 (CST)
-From:   Jianglei Nie <niejianglei2021@163.com>
-To:     jejb@linux.ibm.com, jarkko@kernel.org, zohar@linux.ibm.com,
-        dhowells@redhat.com, jmorris@namei.org, serge@hallyn.com
-Cc:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH] security:trusted_tpm2: Fix memory leak in tpm2_key_encode()
-Date:   Tue,  7 Jun 2022 15:46:50 +0800
-Message-Id: <20220607074650.432834-1-niejianglei2021@163.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 7 Jun 2022 03:48:46 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD506929E;
+        Tue,  7 Jun 2022 00:48:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1654588114;
+        bh=XYARkqqaVqftLCqlQUQeDaR5u91Hn+J10YMbU4qU9lI=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=aaDhxrBZiU8ke+OssL/f4KmK+EvroqqN5BazzLkRXc4yMfKheYXz4pEFA59Xw+yab
+         UfKtHvUrBTQkSmUdIQ+tqHuxfZPanLB6AlNnzJsBXvj5RrNPZA7gqna6LAD/gJZR06
+         LAJ5zhnxiMbhTP5taz/QYaVQo8qoWtDXzLmkyqOo=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.123.67] ([62.143.94.109]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N1fii-1nnjPG1Yl6-0124IT; Tue, 07
+ Jun 2022 09:48:34 +0200
+Message-ID: <7657a50f-20c0-9ad0-aecb-5b3e71feb18c@gmx.de>
+Date:   Tue, 7 Jun 2022 09:48:33 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GtxpCgB3PCJrAp9iIndHHQ--.24586S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Ar4xKFyxXF18uFykuFyDKFg_yoW8Zr1kpF
-        ZxKF4aqrZF9F9rAry7JF4fZF13C395Gr47Gwsru39rGasxJFsxtFy7AF4Ygr17CFWftw15
-        AFWDZFWUWrWqvr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRIPfLUUUUU=
-X-Originating-IP: [123.112.69.106]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiWxoZjGI0U5oI1wAAsU
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] dt-bindings: input: Convert adc-keys to DT schema
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+Cc:     linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+References: <20220606184243.1057145-1-robh@kernel.org>
+From:   Heinrich Schuchardt <xypron.glpk@gmx.de>
+In-Reply-To: <20220606184243.1057145-1-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:I3YB0lPaJUOplx/vQSPeHGrtDco826MdF1hF1rUuKn3lzH5qILv
+ Kz671t5zpPHDFolDtg7q+QWzW8o1OoLhtXH8zkJrWvU2XxrmOKCWMJ9IOEq9uLmCEV7hwK4
+ Otv/QOnJ+eVUOeQEJSa8XEDfDBj1h64voFHz72OhMTKYbdS83kdJiSmlvDLi5vrzTzo2YAj
+ ivQq5wamhdNzlfPZ8lBGg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:p0NOTkT/fgY=:NVIzx0j8BCwuY+DFtAGDkp
+ FbExGYS/rBzpWs5t1sd+FOB2OqMl5YSeP/EjiFjrlszqXToRjY+xCLvqWypE7WG+eTJuXzi1M
+ PIjfRGyGe+VRg5P7A2D0TkKbsxR4YUn6rEJzIXvCGA9ZlJ57xkxuOowWvaqzPtLiYPUdGCLD4
+ nRIO5+u5u0+UUSynnnFk+NcKq+Yelda4ajhj1CqACydpIFXetCIDfnpTtDXNtdz0vEXuWbQwF
+ 1kUOhf/nqs+VF4e9ZWoOVSvhYCwabeiNzm/L1Pc0dwuZRzHXre8Zu5JTLMRy7ZgIPE6/yvfhQ
+ 0Af/MYwXyCDXibViPAA4IOFWf3ieQSDTFcvDkR0xo0XEBYdpSMGV/f5fdHxEpV8UVYXWtWkel
+ MKNC9m3trHrTz62cJX9lMOv1B9MN8gbKl/WVvyQP77ffEDPl0t9K5jTLLzvYv6plVvHgS3fnF
+ 13btvpP9bOyVimjJtwKpsUNJOM1ppXPQ8v+WacreXFP2T0X43WPJSmIlhjVUTKkh4Ucx1dfG2
+ Bh8zg0rryOEilVeU4Wu/YYzmSMggP6iezmG5OVn8qdQM0WcPIbg71iyJP7aeL56ZwyA5kbdvd
+ dNwrHH23IwVlISKc0qKrjfy3aHnkuNeodbUoz6c0zg0V5ilJI4+T2EDQlJjN1Q+rwTFkVWhPL
+ 9+WdcJnJrHRTBbIkC3Qy9UAMxnl0ztl8GPVsu3mlHgLpD+fDI7ip/caglr9V9tkuk305WnOwO
+ bIBsPhF/JKKo/aifAX7FFB7iPN9V6kN4Fj+q7vUvDdUAvbJTLzaklzFoUpgxchQ4IQmtXhuLr
+ dopUQfy8CRL2L/UfAvb/5i1e6BxEu4gHfltsEoc9RD0QzR9UJFvF15Jjt585fxs0LdJaShOeC
+ ZpsG9YHNgfAaI9lszZUXk6Zv9pC3DVb8oylI0bE6hfJQ1kmOdmJCFdGErW7SzTmwDJWupRWG0
+ q5D4m5CJaV1p0zlOLDd0D3D/tERUBC6rKRiNoYdzusWxMdx8XL/wxaDzna9if0cdNKJ7gHpfc
+ J1HmkA9ZDR4i1a6ibY91VoGIG8B0ijTb4tzkW7IoV/RbmA/Bcxa9iqsb3JM8Kq/gZr9gL7GfC
+ zcXGNRwRMru03bTrEHF92ncTnez4mJwSiR+1Ek5SVUSndoC8VyEH3+9Pg==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function allocates a memory chunk for scratch by kmalloc(), but
-it is never freed through the function, which leads to a memory leak.
-Handle those cases with kfree().
+On 6/6/22 20:42, Rob Herring wrote:
+> Convert the adc-keys binding to DT schema format.
+>
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>   .../devicetree/bindings/input/adc-keys.txt    |  67 ------------
+>   .../devicetree/bindings/input/adc-keys.yaml   | 103 ++++++++++++++++++
+>   2 files changed, 103 insertions(+), 67 deletions(-)
+>   delete mode 100644 Documentation/devicetree/bindings/input/adc-keys.tx=
+t
+>   create mode 100644 Documentation/devicetree/bindings/input/adc-keys.ya=
+ml
+>
+> diff --git a/Documentation/devicetree/bindings/input/adc-keys.txt b/Docu=
+mentation/devicetree/bindings/input/adc-keys.txt
+> deleted file mode 100644
+> index 6c8be6a9ace2..000000000000
+> --- a/Documentation/devicetree/bindings/input/adc-keys.txt
+> +++ /dev/null
+> @@ -1,67 +0,0 @@
+> -ADC attached resistor ladder buttons
+> -------------------------------------
+> -
+> -Required properties:
+> - - compatible: "adc-keys"
+> - - io-channels: Phandle to an ADC channel
+> - - io-channel-names =3D "buttons";
+> - - keyup-threshold-microvolt: Voltage above or equal to which all the k=
+eys are
+> -			      considered up.
+> -
+> -Optional properties:
+> -	- poll-interval: Poll interval time in milliseconds
+> -	- autorepeat: Boolean, Enable auto repeat feature of Linux input
+> -	  subsystem.
+> -
+> -Each button (key) is represented as a sub-node of "adc-keys":
+> -
+> -Required subnode-properties:
+> -	- label: Descriptive name of the key.
+> -	- linux,code: Keycode to emit.
+> -	- press-threshold-microvolt: voltage above or equal to which this key =
+is
+> -				     considered pressed.
+> -
+> -No two values of press-threshold-microvolt may be the same.
+> -All values of press-threshold-microvolt must be less than
+> -keyup-threshold-microvolt.
+> -
+> -Example:
+> -
+> -#include <dt-bindings/input/input.h>
+> -
+> -	adc-keys {
+> -		compatible =3D "adc-keys";
+> -		io-channels =3D <&lradc 0>;
+> -		io-channel-names =3D "buttons";
+> -		keyup-threshold-microvolt =3D <2000000>;
+> -
+> -		button-up {
+> -			label =3D "Volume Up";
+> -			linux,code =3D <KEY_VOLUMEUP>;
+> -			press-threshold-microvolt =3D <1500000>;
+> -		};
+> -
+> -		button-down {
+> -			label =3D "Volume Down";
+> -			linux,code =3D <KEY_VOLUMEDOWN>;
+> -			press-threshold-microvolt =3D <1000000>;
+> -		};
+> -
+> -		button-enter {
+> -			label =3D "Enter";
+> -			linux,code =3D <KEY_ENTER>;
+> -			press-threshold-microvolt =3D <500000>;
+> -		};
+> -	};
+> -
+> -+--------------------------------+------------------------+
+> -| 2.000.000 <=3D value             | no key pressed         |
+> -+--------------------------------+------------------------+
+> -| 1.500.000 <=3D value < 2.000.000 | KEY_VOLUMEUP pressed   |
+> -+--------------------------------+------------------------+
+> -| 1.000.000 <=3D value < 1.500.000 | KEY_VOLUMEDOWN pressed |
+> -+--------------------------------+------------------------+
+> -|   500.000 <=3D value < 1.000.000 | KEY_ENTER pressed      |
+> -+--------------------------------+------------------------+
+> -|              value <   500.000 | no key pressed         |
+> -+--------------------------------+------------------------+
+> diff --git a/Documentation/devicetree/bindings/input/adc-keys.yaml b/Doc=
+umentation/devicetree/bindings/input/adc-keys.yaml
+> new file mode 100644
+> index 000000000000..a3a1af9550bc
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/input/adc-keys.yaml
+> @@ -0,0 +1,103 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/input/adc-keys.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: ADC attached resistor ladder buttons
+> +
+> +maintainers:
+> +  - Heinrich Schuchardt <xypron.glpk@gmx.de>
 
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
----
- security/keys/trusted-keys/trusted_tpm2.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+Thanks for converting to yaml.
 
-diff --git a/security/keys/trusted-keys/trusted_tpm2.c b/security/keys/trusted-keys/trusted_tpm2.c
-index 0165da386289..dc9efd6c8b14 100644
---- a/security/keys/trusted-keys/trusted_tpm2.c
-+++ b/security/keys/trusted-keys/trusted_tpm2.c
-@@ -57,8 +57,10 @@ static int tpm2_key_encode(struct trusted_key_payload *payload,
- 		unsigned char bool[3], *w = bool;
- 		/* tag 0 is emptyAuth */
- 		w = asn1_encode_boolean(w, w + sizeof(bool), true);
--		if (WARN(IS_ERR(w), "BUG: Boolean failed to encode"))
-+		if (WARN(IS_ERR(w), "BUG: Boolean failed to encode")) {
-+			kfree(scratch);
- 			return PTR_ERR(w);
-+		}
- 		work = asn1_encode_tag(work, end_work, 0, bool, w - bool);
- 	}
- 
-@@ -69,8 +71,10 @@ static int tpm2_key_encode(struct trusted_key_payload *payload,
- 	 * trigger, so if it does there's something nefarious going on
- 	 */
- 	if (WARN(work - scratch + pub_len + priv_len + 14 > SCRATCH_SIZE,
--		 "BUG: scratch buffer is too small"))
-+		 "BUG: scratch buffer is too small")) {
-+		kfree(scratch);
- 		return -EINVAL;
-+	}
- 
- 	work = asn1_encode_integer(work, end_work, options->keyhandle);
- 	work = asn1_encode_octet_string(work, end_work, pub, pub_len);
-@@ -79,8 +83,10 @@ static int tpm2_key_encode(struct trusted_key_payload *payload,
- 	work1 = payload->blob;
- 	work1 = asn1_encode_sequence(work1, work1 + sizeof(payload->blob),
- 				     scratch, work - scratch);
--	if (WARN(IS_ERR(work1), "BUG: ASN.1 encoder failed"))
-+	if (WARN(IS_ERR(work1), "BUG: ASN.1 encoder failed")) {
-+		kfree(scratch);
- 		return PTR_ERR(work1);
-+	}
- 
- 	return work1 - payload->blob;
- }
--- 
-2.25.1
+I only contributed a single patch. I am not a maintainer. Please, remove
+that line.
+
+scripts/get_maintainer.pl
+Documentation/devicetree/bindings/input/adc-keys.txt yields
+Dmitry Torokhov <dmitry.torokhov@gmail.com> (maintainer:INPUT (KEYBOARD,
+MOUSE, JOYSTICK, TOUCHSCREEN)...)
+
+It would be preferable to have a single reference point for
+maintainership: file /MAINTAINERS.
+
+
+> +  - Alexandre Belloni <alexandre.belloni@bootlin.com>
+> +
+> +allOf:
+> +  - $ref: /schemas/input/input.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    const: adc-keys
+> +
+> +  io-channels:
+> +    maxItems: 1
+
+Please, add a description to each property.
+
+> +
+> +  io-channel-names:
+> +    const: buttons
+> +
+> +  keyup-threshold-microvolt:
+> +    description:
+> +      Voltage above or equal to which all the keys are considered up.
+> +
+> +patternProperties:
+> +  '^button-':
+> +    type: object
+> +    additionalProperties: false
+> +    description:
+> +      Each button (key) is represented as a sub-node.
+> +
+> +    properties:
+> +      label: true
+
+Please, add a description.
+
+> +
+> +      linux,code:
+> +        description: Keycode to emit.
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+
+Unfortunately usable values are only defined in
+include/uapi/linux/input-event-codes.h up to now. Please, consider
+adding that link to the description.
+
+It is unclear to me if using values above KEY_MAX (=3D0x2ff) could make
+sense of should be forbidden by this yaml file.
+
+For interoperability of device-trees with other operating systems we
+should have a yaml file defining an enum with used values and their meanin=
+g.
+
+> +
+> +      press-threshold-microvolt:
+> +        description:
+> +          Voltage above or equal to which this key is considered presse=
+d. No
+> +          two values of press-threshold-microvolt may be the same. All =
+values
+> +          of press-threshold-microvolt must be less than
+> +          keyup-threshold-microvolt.
+> +
+> +    required:
+> +      - label
+
+Property label is not used in our the driver code. It only exists for
+human readability. Why is it marked as required? Stripping the labels
+would reduce the DT size.
+
+Best regards
+
+Heinrich
+
+> +      - linux,code
+> +      - press-threshold-microvolt
+> +
+> +required:
+> +  - compatible
+> +  - io-channels
+> +  - io-channel-names
+> +  - keyup-threshold-microvolt
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/input/input.h>
+> +    // +--------------------------------+------------------------+
+> +    // | 2.000.000 <=3D value             | no key pressed         |
+> +    // +--------------------------------+------------------------+
+> +    // | 1.500.000 <=3D value < 2.000.000 | KEY_VOLUMEUP pressed   |
+> +    // +--------------------------------+------------------------+
+> +    // | 1.000.000 <=3D value < 1.500.000 | KEY_VOLUMEDOWN pressed |
+> +    // +--------------------------------+------------------------+
+> +    // |   500.000 <=3D value < 1.000.000 | KEY_ENTER pressed      |
+> +    // +--------------------------------+------------------------+
+> +    // |              value <   500.000 | no key pressed         |
+> +    // +--------------------------------+------------------------+
+> +
+> +    adc-keys {
+> +        compatible =3D "adc-keys";
+> +        io-channels =3D <&lradc 0>;
+> +        io-channel-names =3D "buttons";
+> +        keyup-threshold-microvolt =3D <2000000>;
+> +
+> +        button-up {
+> +            label =3D "Volume Up";
+> +            linux,code =3D <KEY_VOLUMEUP>;
+> +            press-threshold-microvolt =3D <1500000>;
+> +        };
+> +
+> +        button-down {
+> +            label =3D "Volume Down";
+> +            linux,code =3D <KEY_VOLUMEDOWN>;
+> +            press-threshold-microvolt =3D <1000000>;
+> +        };
+> +
+> +        button-enter {
+> +            label =3D "Enter";
+> +            linux,code =3D <KEY_ENTER>;
+> +            press-threshold-microvolt =3D <500000>;
+> +        };
+> +    };
+> +...
 
