@@ -2,139 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 060DDCCA48F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1EE7CCA48B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441921AbiFHB66 (ORCPT
+        id S1392572AbiFHB6g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:58:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48694 "EHLO
+        Tue, 7 Jun 2022 21:58:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1835816AbiFGX5C (ORCPT
+        with ESMTP id S1835740AbiFGX4v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:57:02 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE6667E1FA
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:23:58 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id r10-20020a632b0a000000b003fcb4af0273so8811489pgr.1
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 16:23:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=7BEMJCReDvWYRKLhlInIZ1OFpFjx1quNIbfK5hEhej4=;
-        b=NkgordnQuuAVc31UeJpYQYToToDAsNS1qL4WUn+TkIFlIEfUpGIbU4rTmpOmS9Rkyn
-         H5jZdL7P9KCG+61Cs3FRM1mEWhyKhkOl4hKqQqA29qa8+hs3jVTGALzrQ9QQyG68gjhA
-         5XesWEK1k1vi3J+iWPZxg0MeELXLa1RIFxMSuN0EIKPP/HSD1MPBVoaTwhMA6pKBeRGp
-         pTz+Js9Q3laKX18zRENswO6LLmTOnQ5zETw82uIktLilDZ8f0IUqk4g2pFMJj+cG2a9o
-         04PIUH/iUhjVIiSCaL1lxwaLD4PWvykFJHrbLN3ZtTJAs4neY5ahOTpKYXsO0a+FaKzn
-         AdHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=7BEMJCReDvWYRKLhlInIZ1OFpFjx1quNIbfK5hEhej4=;
-        b=M9h6kyjeYvWMYVmPxIiX22KUqq/BfXQJt7wIrjYLK9XceBSuaCqlU5QoygEBAlSgnV
-         dB9NIl+MBTxcr6AE3wt40288kCHCXervkeko/T+hI9X5TjSXhRD1zyb9p1mU5tEWqRHU
-         VTckbhFkeU90LNC6r1Ihvb1bnkCh+ZUAB6VNLzbBrAGOUlbhrQ2coaAqfRIiBmIZ17uu
-         Riodcz6aybYXJ1wEZkHpmzMzJJC/YacPPjWEoVzp2kr+NKMuv5WRFWYiTYOw9R1DtDEG
-         Wfu9jPkiZ5uwHW4a6cRMDftbJMKCEdcVXz1SC8RBpybCkDNXCCOIuLCbC3WDpsKgsdw0
-         GFrg==
-X-Gm-Message-State: AOAM531FbPi4s/O2B4LfPfZvNpHyNWnrNDHjBF9St90IUjdMEewDbjXR
-        aMaKFuQjikk2NPeMzI0V3lAzAcZIDJU=
-X-Google-Smtp-Source: ABdhPJwKUS2rXe4ZMRGjiGGfUOn8NT8M/vx1ChFdkFHaTIAOt6gmH867C8Af6ZFHbfa0UQNuE8DP+0nAHVo=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:903:234b:b0:166:4459:c43a with SMTP id
- c11-20020a170903234b00b001664459c43amr28857631plh.35.1654644238156; Tue, 07
- Jun 2022 16:23:58 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue,  7 Jun 2022 23:23:51 +0000
-In-Reply-To: <20220607232353.3375324-1-seanjc@google.com>
-Message-Id: <20220607232353.3375324-2-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220607232353.3375324-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH 1/3] KVM: VMX: Allow userspace to set all supported
- FEATURE_CONTROL bits
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 7 Jun 2022 19:56:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E36240BB;
+        Tue,  7 Jun 2022 16:19:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F12C961745;
+        Tue,  7 Jun 2022 23:19:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3604C3411C;
+        Tue,  7 Jun 2022 23:19:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654643941;
+        bh=ZzzuMYRQflijaLaBGfODgyjv11U3286DsATKWuFwpis=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Q4tzwZKLfTJhFiZ6E6ehWQruktJF1G9RCR7xH9LzpMzFvIflKnHRv+NGoljYjEf/D
+         2GGR4p4XBrnLRyyQepbNS4pBZofypkhAC9PD4prF/CDDJOQb8Z/NvXRbHS7UUWCMHx
+         zcPrPNwfbvhDBQBpQhOUX2589ylWzHF3SBoE7srbHRiDoYZfHOh6KCGTrjWRwgRk1v
+         N58ZBwHrloJZYgCtaqQhb/rgiNH3flwfgsF1UJqXa3YWaKK5YH4JJNIneY5Phqupkc
+         saueSepJdmC3+kbeduzEfiDVE9LAAeBf3osntAYbeMgarOoV4bL5w2CkuysSb6UM7Z
+         FgnilzIcr5W0Q==
+Date:   Tue, 7 Jun 2022 16:18:58 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     syzbot <syzbot+2c93b863a7698df84bad@syzkaller.appspotmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com,
+        willy@infradead.org,
+        Stephen Brennan <stephen.s.brennan@oracle.com>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
+        ntfs3@lists.linux.dev
+Subject: Re: [syzbot] WARNING: locking bug in truncate_inode_pages_final
+Message-ID: <Yp/c4p4MSUyoFenY@sol.localdomain>
+References: <0000000000000cf8be05e0d65e09@google.com>
+ <20220607160020.c088f4d29929310f2a3c1c32@linux-foundation.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607160020.c088f4d29929310f2a3c1c32@linux-foundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow userspace to set all supported bits in MSR IA32_FEATURE_CONTROL
-irrespective of the guest CPUID model, e.g. via KVM_SET_MSRS.  KVM's ABI
-is that userspace is allowed to set MSRs before CPUID, i.e. can set MSRs
-to values that would fault according to the guest CPUID model.
+On Tue, Jun 07, 2022 at 04:00:20PM -0700, Andrew Morton wrote:
+> Lots of cc's added.
+> 
+> On Tue, 07 Jun 2022 00:16:29 -0700 syzbot <syzbot+2c93b863a7698df84bad@syzkaller.appspotmail.com> wrote:
+> 
+> > Hello,
+> 
+> Thanks.
+> 
+> > syzbot found the following issue on:
+> 
+> Oh dear.
+> 
+> > HEAD commit:    d1dc87763f40 assoc_array: Fix BUG_ON during garbage collect
+> 
+> I think this bisection is wrong.
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/vmx/vmx.c | 36 +++++++++++++++++++++++++++++++-----
- 1 file changed, 31 insertions(+), 5 deletions(-)
+It's not a bisection; if it was, the report would say so.  It's just the commit
+that identifies the kernel version on which the problem was seen.
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index fd2e707faf2b..8e83e12373c5 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -1741,12 +1741,38 @@ bool nested_vmx_allowed(struct kvm_vcpu *vcpu)
- 	return nested && guest_cpuid_has(vcpu, X86_FEATURE_VMX);
- }
- 
--static inline bool vmx_feature_control_msr_valid(struct kvm_vcpu *vcpu,
--						 uint64_t val)
-+/*
-+ * Userspace is allowed to set any supported IA32_FEATURE_CONTROL regardless of
-+ * guest CPUID.  Note, KVM allows userspace to set "VMX in SMX" to maintain
-+ * backwards compatibility even though KVM doesn't support emulating SMX.  And
-+ * because userspace set "VMX in SMX", the guest must also be allowed to set it,
-+ * e.g. if the MSR is left unlocked and the guest does a RMW operation.
-+ */
-+#define KVM_SUPPORTED_FEATURE_CONTROL  (FEAT_CTL_LOCKED			 | \
-+					FEAT_CTL_VMX_ENABLED_INSIDE_SMX	 | \
-+					FEAT_CTL_VMX_ENABLED_OUTSIDE_SMX | \
-+					FEAT_CTL_SGX_LC_ENABLED		 | \
-+					FEAT_CTL_SGX_ENABLED		 | \
-+					FEAT_CTL_LMCE_ENABLED)
-+
-+static inline bool vmx_feature_control_msr_valid(struct vcpu_vmx *vmx,
-+						 struct msr_data *msr)
- {
--	uint64_t valid_bits = to_vmx(vcpu)->msr_ia32_feature_control_valid_bits;
-+	uint64_t valid_bits;
- 
--	return !(val & ~valid_bits);
-+	/*
-+	 * Ensure KVM_SUPPORTED_FEATURE_CONTROL is updated when new bits are
-+	 * exposed to the guest.
-+	 */
-+	WARN_ON_ONCE(vmx->msr_ia32_feature_control_valid_bits &
-+		     ~KVM_SUPPORTED_FEATURE_CONTROL);
-+
-+	if (msr->host_initiated)
-+		valid_bits = KVM_SUPPORTED_FEATURE_CONTROL;
-+	else
-+		valid_bits = vmx->msr_ia32_feature_control_valid_bits;
-+
-+	return !(msr->data & ~valid_bits);
- }
- 
- static int vmx_get_msr_feature(struct kvm_msr_entry *msr)
-@@ -2139,7 +2165,7 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 		vcpu->arch.mcg_ext_ctl = data;
- 		break;
- 	case MSR_IA32_FEAT_CTL:
--		if (!vmx_feature_control_msr_valid(vcpu, data) ||
-+		if (!vmx_feature_control_msr_valid(vmx, msr_info) ||
- 		    (to_vmx(vcpu)->msr_ia32_feature_control &
- 		     FEAT_CTL_LOCKED && !msr_info->host_initiated))
- 			return 1;
--- 
-2.36.1.255.ge46751e96f-goog
-
+- Eric
