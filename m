@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE36C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:49:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23893C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:52:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348629AbiFGRtw (ORCPT
+        id S1348673AbiFGRt7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42258 "EHLO
+        Tue, 7 Jun 2022 13:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347463AbiFGRap (ORCPT
+        with ESMTP id S1346849AbiFGR3x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:30:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 658DC111B89;
-        Tue,  7 Jun 2022 10:26:54 -0700 (PDT)
+        Tue, 7 Jun 2022 13:29:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F089660E9;
+        Tue,  7 Jun 2022 10:25:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F0A1060DE0;
-        Tue,  7 Jun 2022 17:26:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B855C385A5;
-        Tue,  7 Jun 2022 17:26:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8704960906;
+        Tue,  7 Jun 2022 17:25:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A152C385A5;
+        Tue,  7 Jun 2022 17:25:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622813;
-        bh=jPH97mOQ/vhneuAL1PtOJd++20+ovSawJ5KDI9CKecs=;
+        s=korg; t=1654622709;
+        bh=6WufMX3W+3Mz4YL4KNh5xMOCfFOf8Su4lg0ID/P/nmY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mWEla15LuEirsM/oHrQXV5miJE28tYpmvWSg3gNc4Gol14cIh1iW1DM6oiDFBoI0n
-         y3qT1DTiMr6/bkuu71Q2r41EGh2EIZwwvS9SA7i0ak1oXC364V0GnI0KBAp3wWx1Rb
-         6otwn2SEPQCH+NC979q+yZs29rvGv84/bzOeESzI=
+        b=an7TzVJ9ff5KRKdAKIp5sBd6eeAaO1qZNBh8ySFRnuE6WVhr8jwuspCxqLsum3RaL
+         u4F/xCaIqgAWvRqlpQWtpvomHu382hdaikeNtXUZSJsRmnsnmkSRLxisvaUWZ8/JO+
+         90WKAkmWLY3VOZhUDI9lJqieFC5nCPWBwfv3YotI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
+        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 191/452] drm/msm/dp: fix event thread stuck in wait_event after kthread_stop()
-Date:   Tue,  7 Jun 2022 19:00:48 +0200
-Message-Id: <20220607164914.254880956@linuxfoundation.org>
+Subject: [PATCH 5.10 154/452] cpufreq: Fix possible race in cpufreq online error path
+Date:   Tue,  7 Jun 2022 19:00:11 +0200
+Message-Id: <20220607164913.148292956@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -52,66 +50,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+From: Schspa Shi <schspa@gmail.com>
 
-[ Upstream commit 2f9b5b3ae2eb625b75a898212a76f3b8c6d0d2b0 ]
+[ Upstream commit f346e96267cd76175d6c201b40f770c0116a8a04 ]
 
-Event thread supposed to exit from its while loop after kthread_stop().
-However there may has possibility that event thread is pending in the
-middle of wait_event due to condition checking never become true.
-To make sure event thread exit its loop after kthread_stop(), this
-patch OR kthread_should_stop() into wait_event's condition checking
-so that event thread will exit its loop after kernal_stop().
+When cpufreq online fails, the policy->cpus mask is not cleared and
+policy->rwsem is released too early, so the driver can be invoked
+via the cpuinfo_cur_freq sysfs attribute while its ->offline() or
+->exit() callbacks are being run.
 
-Changes in v2:
---  correct spelling error at commit title
+Take policy->clk as an example:
 
-Changes in v3:
--- remove unnecessary parenthesis
--- while(1) to replace while (!kthread_should_stop())
+static int cpufreq_online(unsigned int cpu)
+{
+  ...
+  // policy->cpus != 0 at this time
+  down_write(&policy->rwsem);
+  ret = cpufreq_add_dev_interface(policy);
+  up_write(&policy->rwsem);
 
-Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Fixes: 570d3e5d28db ("drm/msm/dp: stop event kernel thread when DP unbind")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/484576/
-Link: https://lore.kernel.org/r/1651595136-24312-1-git-send-email-quic_khsieh@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+  return 0;
+
+out_destroy_policy:
+	for_each_cpu(j, policy->real_cpus)
+		remove_cpu_dev_symlink(policy, get_cpu_device(j));
+    up_write(&policy->rwsem);
+...
+out_exit_policy:
+  if (cpufreq_driver->exit)
+    cpufreq_driver->exit(policy);
+      clk_put(policy->clk);
+      // policy->clk is a wild pointer
+...
+                                    ^
+                                    |
+                            Another process access
+                            __cpufreq_get
+                              cpufreq_verify_current_freq
+                                cpufreq_generic_get
+                                  // acces wild pointer of policy->clk;
+                                    |
+                                    |
+out_offline_policy:                 |
+  cpufreq_policy_free(policy);      |
+    // deleted here, and will wait for no body reference
+    cpufreq_policy_put_kobj(policy);
+}
+
+Address this by modifying cpufreq_online() to release policy->rwsem
+in the error path after the driver callbacks have run and to clear
+policy->cpus before releasing the semaphore.
+
+Fixes: 7106e02baed4 ("cpufreq: release policy->rwsem on error")
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+[ rjw: Subject and changelog edits ]
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_display.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/cpufreq/cpufreq.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 09c8e50da68d..ebd05678a27b 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -998,15 +998,20 @@ static int hpd_event_thread(void *data)
+diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+index 30dafe8fc505..3540ea93b6f1 100644
+--- a/drivers/cpufreq/cpufreq.c
++++ b/drivers/cpufreq/cpufreq.c
+@@ -1515,8 +1515,6 @@ static int cpufreq_online(unsigned int cpu)
+ 	for_each_cpu(j, policy->real_cpus)
+ 		remove_cpu_dev_symlink(policy, get_cpu_device(j));
  
- 	dp_priv = (struct dp_display_private *)data;
+-	up_write(&policy->rwsem);
+-
+ out_offline_policy:
+ 	if (cpufreq_driver->offline)
+ 		cpufreq_driver->offline(policy);
+@@ -1525,6 +1523,9 @@ static int cpufreq_online(unsigned int cpu)
+ 	if (cpufreq_driver->exit)
+ 		cpufreq_driver->exit(policy);
  
--	while (!kthread_should_stop()) {
-+	while (1) {
- 		if (timeout_mode) {
- 			wait_event_timeout(dp_priv->event_q,
--				(dp_priv->event_pndx == dp_priv->event_gndx),
--						EVENT_TIMEOUT);
-+				(dp_priv->event_pndx == dp_priv->event_gndx) ||
-+					kthread_should_stop(), EVENT_TIMEOUT);
- 		} else {
- 			wait_event_interruptible(dp_priv->event_q,
--				(dp_priv->event_pndx != dp_priv->event_gndx));
-+				(dp_priv->event_pndx != dp_priv->event_gndx) ||
-+					kthread_should_stop());
- 		}
++	cpumask_clear(policy->cpus);
++	up_write(&policy->rwsem);
 +
-+		if (kthread_should_stop())
-+			break;
-+
- 		spin_lock_irqsave(&dp_priv->event_lock, flag);
- 		todo = &dp_priv->event_list[dp_priv->event_gndx];
- 		if (todo->delay) {
+ out_free_policy:
+ 	cpufreq_policy_free(policy);
+ 	return ret;
 -- 
 2.35.1
 
