@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1DDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5AB2C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386754AbiFGWtY (ORCPT
+        id S1386539AbiFGWtD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:49:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52066 "EHLO
+        Tue, 7 Jun 2022 18:49:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381303AbiFGVk0 (ORCPT
+        with ESMTP id S1381329AbiFGVk1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:40:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19C4921F9BB;
-        Tue,  7 Jun 2022 12:06:28 -0700 (PDT)
+        Tue, 7 Jun 2022 17:40:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9761318FF18;
+        Tue,  7 Jun 2022 12:06:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B974CB822C0;
-        Tue,  7 Jun 2022 19:06:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 367C3C385A2;
-        Tue,  7 Jun 2022 19:06:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFF5D61846;
+        Tue,  7 Jun 2022 19:06:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8E73C341D3;
+        Tue,  7 Jun 2022 19:06:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628785;
-        bh=fBS2BidZn5RqdMjmAq72Xd9LzbXKHWPaJR3JL95dGIc=;
+        s=korg; t=1654628805;
+        bh=o2wbFfEQvs2eiY4N0Y272HxREAh16iSWwNULUjZBAAI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e6XRoCzmLP9oje7NrAFt7lNmfSWPLDVgp1Ozgfpzay3PbNCx0IabrvRXk//yvnwdB
-         V/9DV4wLVE35Rk1eUX6GdCtqAcbZroIUTh2xw7Zvv2u1CuYnI1A1o13ibAdWdv/ERM
-         LHgw/aEWnzedshj5TGjBosstkfpiisHIaqrP4eFw=
+        b=Ut2oZ1PyvOy77mRkIebEpifkzaHXJQQai0720S7jQBo3Rl3D3OWlIPKLBPwL0szC4
+         R0NE0j5fgBxek64XsYs0pAPk4MB55qsyGSpedqdPA4UPaJwLaV25pHkRssIJeODH83
+         j5qpqTOMYp+DC9xr98qzgFH/M4GG6uTkCKyB1Kjw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Pierre Gondois <pierre.gondois@arm.com>,
+        Vincent Donnefort <vincent.donnefort@arm.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 453/879] Bluetooth: use hdev lock in activate_scan for hci_is_adv_monitoring
-Date:   Tue,  7 Jun 2022 18:59:31 +0200
-Message-Id: <20220607165016.018255763@linuxfoundation.org>
+Subject: [PATCH 5.18 421/879] PM: EM: Decrement policy counter
+Date:   Tue,  7 Jun 2022 18:58:59 +0200
+Message-Id: <20220607165015.084278018@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,46 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Pierre Gondois <Pierre.Gondois@arm.com>
 
-[ Upstream commit 50a3633ae5e98cf1b80ef5b73c9e341aee9ad896 ]
+[ Upstream commit c9d8923bfbcb63f15ea6cb2b5c8426fc3d96f643 ]
 
-hci_is_adv_monitoring's function documentation states that it must be
-called under the hdev lock. Paths that leads to an unlocked call are:
-discov_update => start_discovery => interleaved_discov => active_scan
-and: discov_update => start_discovery => active_scan
+In commit e458716a92b57 ("PM: EM: Mark inefficiencies in CPUFreq"),
+cpufreq_cpu_get() is called without a cpufreq_cpu_put(), permanently
+increasing the reference counts of the policy struct.
 
-The solution is to take the lock in active_scan during the duration of
-the call to hci_is_adv_monitoring.
+Decrement the reference count once the policy struct is not used
+anymore.
 
-Fixes: c32d624640fd ("Bluetooth: disable filter dup when scan for adv monitor")
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: e458716a92b57 ("PM: EM: Mark inefficiencies in CPUFreq")
+Tested-by: Cristian Marussi <cristian.marussi@arm.com>
+Signed-off-by: Pierre Gondois <pierre.gondois@arm.com>
+Reviewed-by: Vincent Donnefort <vincent.donnefort@arm.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_request.c | 2 ++
+ kernel/power/energy_model.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index 42c8047a9897..f4afe482e300 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -2260,6 +2260,7 @@ static int active_scan(struct hci_request *req, unsigned long opt)
- 	if (err < 0)
- 		own_addr_type = ADDR_LE_DEV_PUBLIC;
- 
-+	hci_dev_lock(hdev);
- 	if (hci_is_adv_monitoring(hdev)) {
- 		/* Duplicate filter should be disabled when some advertisement
- 		 * monitor is activated, otherwise AdvMon can only receive one
-@@ -2276,6 +2277,7 @@ static int active_scan(struct hci_request *req, unsigned long opt)
- 		 */
- 		filter_dup = LE_SCAN_FILTER_DUP_DISABLE;
+diff --git a/kernel/power/energy_model.c b/kernel/power/energy_model.c
+index 0153b0ca7b23..6219aaa454b5 100644
+--- a/kernel/power/energy_model.c
++++ b/kernel/power/energy_model.c
+@@ -259,6 +259,8 @@ static void em_cpufreq_update_efficiencies(struct device *dev)
+ 			found++;
  	}
-+	hci_dev_unlock(hdev);
  
- 	hci_req_start_scan(req, LE_SCAN_ACTIVE, interval,
- 			   hdev->le_scan_window_discovery, own_addr_type,
++	cpufreq_cpu_put(policy);
++
+ 	if (!found)
+ 		return;
+ 
 -- 
 2.35.1
 
