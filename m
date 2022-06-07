@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13A2CCCA48D
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 365ABCCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382268AbiFHBPA (ORCPT
+        id S1382998AbiFHBPP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:15:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35094 "EHLO
+        Tue, 7 Jun 2022 21:15:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385498AbiFGWbe (ORCPT
+        with ESMTP id S1382649AbiFGVvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:31:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA3A27B481;
-        Tue,  7 Jun 2022 12:24:56 -0700 (PDT)
+        Tue, 7 Jun 2022 17:51:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A39F923D5D4;
+        Tue,  7 Jun 2022 12:09:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CBE16B8220B;
-        Tue,  7 Jun 2022 19:24:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42AEAC385A5;
-        Tue,  7 Jun 2022 19:24:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6C906188D;
+        Tue,  7 Jun 2022 19:09:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5AEDC385A2;
+        Tue,  7 Jun 2022 19:09:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629893;
-        bh=mTdIDoujXMOK+HqZWo1bcLLznZ0mfsHSUpSPn8Lcwd8=;
+        s=korg; t=1654628948;
+        bh=cNOrBeipYs4+o24KDc75FBnvoDRrZfjh1pCMj8Jy9TM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vIgU3Sl1XyqfPvoe0kgesTJ2zlUTctwMd0IcJWYagOw/r0s7/jlIUhRZUp07BIJWd
-         l+b+AA8d6jI3T34FyotoMOFsDIfaOxCJ9ZJe5+9vRZfhNmCkf2OVahRdNadEiWyRBG
-         EHH6KdY3nLBI4b8QiiCoMym42APo+KKrt7Ny9ufQ=
+        b=cK24aMgqOPccQErEIgfbvid26hd1GbU1RciCC6o4YSYJhAXs9Me95Gg/jlSOGYw+z
+         XuEnx4lmklZojWT/pn1Iy0zHMqr93AfkFqw6eA/ONFQIgDJqZvcR8Ob5DMlGNEb1Su
+         kusQU8TSnR5MlgpfMjBAPPkLzNEyl6Zv7l3f5CB0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, GUO Zihua <guozihua@huawei.com>,
-        Stable@vger.kernel.org, Mimi Zohar <zohar@linux.ibm.com>
-Subject: [PATCH 5.18 804/879] ima: remove the IMA_TEMPLATE Kconfig option
-Date:   Tue,  7 Jun 2022 19:05:22 +0200
-Message-Id: <20220607165026.196094150@linuxfoundation.org>
+        stable@vger.kernel.org, Adam Wujek <dev_public@wujek.eu>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 515/879] hwmon: (pmbus) Check PEC support before reading other registers
+Date:   Tue,  7 Jun 2022 19:00:33 +0200
+Message-Id: <20220607165017.825232303@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,100 +50,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: GUO Zihua <guozihua@huawei.com>
+From: Adam Wujek <dev_public@wujek.eu>
 
-commit 891163adf180bc369b2f11c9dfce6d2758d2a5bd upstream.
+[ Upstream commit d1baf7a3a3177d46a7149858beddb88a9eca7a54 ]
 
-The original 'ima' measurement list template contains a hash, defined
-as 20 bytes, and a null terminated pathname, limited to 255
-characters.  Other measurement list templates permit both larger hashes
-and longer pathnames.  When the "ima" template is configured as the
-default, a new measurement list template (ima_template=) must be
-specified before specifying a larger hash algorithm (ima_hash=) on the
-boot command line.
+Make sure that the support of PEC is determined before the read of other
+registers. Otherwise the validation of PEC can trigger an error on the read
+of STATUS_BYTE or STATUS_WORD registers.
 
-To avoid this boot command line ordering issue, remove the legacy "ima"
-template configuration option, allowing it to still be specified on the
-boot command line.
+The problematic scenario is the following. A device with enabled PEC
+support is up and running and a kernel driver is loaded.
+Then the driver is unloaded (or device unbound), the HW device
+is reconfigured externally (e.g. by i2cset) to advertise itself as not
+supporting PEC. Without the move of the code, at the second load of
+the driver (or bind) the STATUS_BYTE or STATUS_WORD register is always
+read with PEC enabled, which is likely to cause a read error resulting
+with fail of a driver load (or bind).
 
-The root cause of this issue is that during the processing of ima_hash,
-we would try to check whether the hash algorithm is compatible with the
-template. If the template is not set at the moment we do the check, we
-check the algorithm against the configured default template. If the
-default template is "ima", then we reject any hash algorithm other than
-sha1 and md5.
-
-For example, if the compiled default template is "ima", and the default
-algorithm is sha1 (which is the current default). In the cmdline, we put
-in "ima_hash=sha256 ima_template=ima-ng". The expected behavior would be
-that ima starts with ima-ng as the template and sha256 as the hash
-algorithm. However, during the processing of "ima_hash=",
-"ima_template=" has not been processed yet, and hash_setup would check
-the configured hash algorithm against the compiled default: ima, and
-reject sha256. So at the end, the hash algorithm that is actually used
-will be sha1.
-
-With template "ima" removed from the configured default, we ensure that
-the default tempalte would at least be "ima-ng" which allows for
-basically any hash algorithm.
-
-This change would not break the algorithm compatibility checks for IMA.
-
-Fixes: 4286587dccd43 ("ima: add Kconfig default measurement list template")
-Signed-off-by: GUO Zihua <guozihua@huawei.com>
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Adam Wujek <dev_public@wujek.eu>
+Link: https://lore.kernel.org/r/20220519233334.438621-1-dev_public@wujek.eu
+Fixes: 75d2b2b06bd84 ("hwmon: (pmbus) disable PEC if not enabled")
+Fixes: 4e5418f787ec5 ("hwmon: (pmbus_core) Check adapter PEC support")
+[groeck: Added Fixes: tags, dropped continuation line]
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/integrity/ima/Kconfig |   14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ drivers/hwmon/pmbus/pmbus_core.c | 28 +++++++++++++++-------------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
 
---- a/security/integrity/ima/Kconfig
-+++ b/security/integrity/ima/Kconfig
-@@ -69,10 +69,9 @@ choice
- 	  hash, defined as 20 bytes, and a null terminated pathname,
- 	  limited to 255 characters.  The 'ima-ng' measurement list
- 	  template permits both larger hash digests and longer
--	  pathnames.
-+	  pathnames. The configured default template can be replaced
-+	  by specifying "ima_template=" on the boot command line.
+diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+index 5a1796650f5b..86429bfa4847 100644
+--- a/drivers/hwmon/pmbus/pmbus_core.c
++++ b/drivers/hwmon/pmbus/pmbus_core.c
+@@ -2308,6 +2308,21 @@ static int pmbus_init_common(struct i2c_client *client, struct pmbus_data *data,
+ 	struct device *dev = &client->dev;
+ 	int page, ret;
  
--	config IMA_TEMPLATE
--		bool "ima"
- 	config IMA_NG_TEMPLATE
- 		bool "ima-ng (default)"
- 	config IMA_SIG_TEMPLATE
-@@ -82,7 +81,6 @@ endchoice
- config IMA_DEFAULT_TEMPLATE
- 	string
- 	depends on IMA
--	default "ima" if IMA_TEMPLATE
- 	default "ima-ng" if IMA_NG_TEMPLATE
- 	default "ima-sig" if IMA_SIG_TEMPLATE
++	/*
++	 * Figure out if PEC is enabled before accessing any other register.
++	 * Make sure PEC is disabled, will be enabled later if needed.
++	 */
++	client->flags &= ~I2C_CLIENT_PEC;
++
++	/* Enable PEC if the controller and bus supports it */
++	if (!(data->flags & PMBUS_NO_CAPABILITY)) {
++		ret = i2c_smbus_read_byte_data(client, PMBUS_CAPABILITY);
++		if (ret >= 0 && (ret & PB_CAPABILITY_ERROR_CHECK)) {
++			if (i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_PEC))
++				client->flags |= I2C_CLIENT_PEC;
++		}
++	}
++
+ 	/*
+ 	 * Some PMBus chips don't support PMBUS_STATUS_WORD, so try
+ 	 * to use PMBUS_STATUS_BYTE instead if that is the case.
+@@ -2326,19 +2341,6 @@ static int pmbus_init_common(struct i2c_client *client, struct pmbus_data *data,
+ 		data->has_status_word = true;
+ 	}
  
-@@ -102,19 +100,19 @@ choice
- 
- 	config IMA_DEFAULT_HASH_SHA256
- 		bool "SHA256"
--		depends on CRYPTO_SHA256=y && !IMA_TEMPLATE
-+		depends on CRYPTO_SHA256=y
- 
- 	config IMA_DEFAULT_HASH_SHA512
- 		bool "SHA512"
--		depends on CRYPTO_SHA512=y && !IMA_TEMPLATE
-+		depends on CRYPTO_SHA512=y
- 
- 	config IMA_DEFAULT_HASH_WP512
- 		bool "WP512"
--		depends on CRYPTO_WP512=y && !IMA_TEMPLATE
-+		depends on CRYPTO_WP512=y
- 
- 	config IMA_DEFAULT_HASH_SM3
- 		bool "SM3"
--		depends on CRYPTO_SM3=y && !IMA_TEMPLATE
-+		depends on CRYPTO_SM3=y
- endchoice
- 
- config IMA_DEFAULT_HASH
+-	/* Make sure PEC is disabled, will be enabled later if needed */
+-	client->flags &= ~I2C_CLIENT_PEC;
+-
+-	/* Enable PEC if the controller and bus supports it */
+-	if (!(data->flags & PMBUS_NO_CAPABILITY)) {
+-		ret = i2c_smbus_read_byte_data(client, PMBUS_CAPABILITY);
+-		if (ret >= 0 && (ret & PB_CAPABILITY_ERROR_CHECK)) {
+-			if (i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_PEC)) {
+-				client->flags |= I2C_CLIENT_PEC;
+-			}
+-		}
+-	}
+-
+ 	/*
+ 	 * Check if the chip is write protected. If it is, we can not clear
+ 	 * faults, and we should not try it. Also, in that case, writes into
+-- 
+2.35.1
+
 
 
