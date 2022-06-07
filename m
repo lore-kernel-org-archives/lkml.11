@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D811AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:01:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EFC8CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:01:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353325AbiFGTAP (ORCPT
+        id S1353885AbiFGTAq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:00:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41768 "EHLO
+        Tue, 7 Jun 2022 15:00:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352268AbiFGSRA (ORCPT
+        with ESMTP id S1352212AbiFGSQ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DB457A82A;
-        Tue,  7 Jun 2022 10:51:18 -0700 (PDT)
+        Tue, 7 Jun 2022 14:16:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE4CF193C3;
+        Tue,  7 Jun 2022 10:51:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F856616A3;
-        Tue,  7 Jun 2022 17:51:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AB2DC34115;
-        Tue,  7 Jun 2022 17:51:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F763617A6;
+        Tue,  7 Jun 2022 17:51:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 671A4C34115;
+        Tue,  7 Jun 2022 17:51:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624277;
-        bh=W1dWzICFRP6sYvlkV3Ti3k7/EiLaFrobnxuCwIq+YeY=;
+        s=k20201202; t=1654624266;
+        bh=mSmapjDN1hLuiRaMFbGcdot/5OABdk/qIsbPhTmZHB0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y5p4uW5JSiicqumzkUPCXQXVYFQY4a/I1UFt1X4vYQVHwAfymRd3bpHXViBuSyaGX
-         IMYLn8oXaSmrBHN2VbLRq+8hfcmnNSIY05R/6W06sXr5HEA3a0iJXhLhCT398uHt1v
-         +DsOIZf1EzOqxpIZC2pOGim4e056Z+XUZssbcEdDt62VMtwWjhGUHzX6KzabHhXgoz
-         CHqoNW2+EVim8iEHlagcvT/m3ckhrV3iGEhS6nDigeqJ59hgAZgenqALGosIgMbXm0
-         P3kj5H5seSyxEmZDF3vnQBx5Ex/KZXG7wYHlPktr6f7pFHW6zy73hEvdwJncXwEQXh
-         8685hWkNTBHiQ==
+        b=Zzs+efBhEZHp9l98Ftgfnv3JHjFzpD/hMfKf6M26Xjvhl34PCD2+rdhABGqpa/7Ak
+         kP204X3Fcb342LXdLAkI6fM6aNogl385ofgePy1b9CFEp8w5tfP2pOOL0q4xE+wLl9
+         uqrbqX6aTJ05EnnQcWsoV4H0ooxjshyBXVsTvHY+MwbuqvsuCI2NiGwY+sDvbhDR4K
+         Zxuvm//eY5c7JxlZDbK0U/2k1Pd72lVT2fU+MyClfGgYPrR9SG7jw+F7cReeoDveLc
+         J6m2N47H9PRjZE/UI64WuW/De62718jwR2tdf7MbVz/e8z4NQhC4OURPNl5eLQGfwv
+         1hCHJAs/6xqgQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiubo Li <xiubli@redhat.com>, Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 42/68] ceph: flush the mdlog for filesystem sync
-Date:   Tue,  7 Jun 2022 13:48:08 -0400
-Message-Id: <20220607174846.477972-42-sashal@kernel.org>
+Cc:     Syed Saba kareem <ssabakar@amd.com>,
+        kernel test robot <lkp@intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, AjitKumar.Pandey@amd.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.18 37/68] ASoC: SOF: amd: Fixed Build error
+Date:   Tue,  7 Jun 2022 13:48:03 -0400
+Message-Id: <20220607174846.477972-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
 References: <20220607174846.477972-1-sashal@kernel.org>
@@ -52,111 +55,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiubo Li <xiubli@redhat.com>
+From: Syed Saba kareem <ssabakar@amd.com>
 
-[ Upstream commit 1b2ba3c5616e17ff951359e25c658a1c3f146f1e ]
+[ Upstream commit 803a1f7272797faa15a7879cdc70f9adaf3fdcba ]
 
-Before waiting for a request's safe reply, we will send the mdlog flush
-request to the relevant MDS. And this will also flush the mdlog for all
-the other unsafe requests in the same session, so we can record the last
-session and no need to flush mdlog again in the next loop. But there
-still have cases that it may send the mdlog flush requst twice or more,
-but that should be not often.
+Add linux/module.h in acp-pci.c to solve the below dependency
 
-Rename wait_unsafe_requests() to
-flush_mdlog_and_wait_mdsc_unsafe_requests() to make it more
-descriptive.
+All error/warnings (new ones prefixed by >>):
 
-[xiubli: fold in MDS request refcount leak fix from Jeff]
+>> sound/soc/amd/acp/acp-pci.c:148:1: warning: data definition has no type or storage class
+148 | MODULE_DEVICE_TABLE(pci, acp_pci_ids);
+| ^~~~~~~~~~~~~~~~~~~
+>> sound/soc/amd/acp/acp-pci.c:148:1: error: type defaults to 'int' in declaration of 'MODULE_DEVICE_TABLE' [-Werror=implicit-int]
+...
 
-URL: https://tracker.ceph.com/issues/55284
-URL: https://tracker.ceph.com/issues/55411
-Signed-off-by: Xiubo Li <xiubli@redhat.com>
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Syed Saba Kareem<ssabakar@amd.com>
+Link: https://lore.kernel.org/r/20220523112956.3087604-1-ssabakar@amd.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/mds_client.c | 33 +++++++++++++++++++++++++++------
- 1 file changed, 27 insertions(+), 6 deletions(-)
+ sound/soc/amd/acp/acp-pci.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
-index 00c3de177dd6..86215822e84e 100644
---- a/fs/ceph/mds_client.c
-+++ b/fs/ceph/mds_client.c
-@@ -4696,15 +4696,17 @@ void ceph_mdsc_pre_umount(struct ceph_mds_client *mdsc)
- }
+diff --git a/sound/soc/amd/acp/acp-pci.c b/sound/soc/amd/acp/acp-pci.c
+index 340e39d7f420..c893963ee2d0 100644
+--- a/sound/soc/amd/acp/acp-pci.c
++++ b/sound/soc/amd/acp/acp-pci.c
+@@ -16,6 +16,7 @@
+ #include <linux/pci.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
++#include <linux/module.h>
  
- /*
-- * wait for all write mds requests to flush.
-+ * flush the mdlog and wait for all write mds requests to flush.
-  */
--static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
-+static void flush_mdlog_and_wait_mdsc_unsafe_requests(struct ceph_mds_client *mdsc,
-+						 u64 want_tid)
- {
- 	struct ceph_mds_request *req = NULL, *nextreq;
-+	struct ceph_mds_session *last_session = NULL;
- 	struct rb_node *n;
- 
- 	mutex_lock(&mdsc->mutex);
--	dout("wait_unsafe_requests want %lld\n", want_tid);
-+	dout("%s want %lld\n", __func__, want_tid);
- restart:
- 	req = __get_oldest_req(mdsc);
- 	while (req && req->r_tid <= want_tid) {
-@@ -4716,14 +4718,32 @@ static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
- 			nextreq = NULL;
- 		if (req->r_op != CEPH_MDS_OP_SETFILELOCK &&
- 		    (req->r_op & CEPH_MDS_OP_WRITE)) {
-+			struct ceph_mds_session *s = req->r_session;
-+
-+			if (!s) {
-+				req = nextreq;
-+				continue;
-+			}
-+
- 			/* write op */
- 			ceph_mdsc_get_request(req);
- 			if (nextreq)
- 				ceph_mdsc_get_request(nextreq);
-+			s = ceph_get_mds_session(s);
- 			mutex_unlock(&mdsc->mutex);
--			dout("wait_unsafe_requests  wait on %llu (want %llu)\n",
-+
-+			/* send flush mdlog request to MDS */
-+			if (last_session != s) {
-+				send_flush_mdlog(s);
-+				ceph_put_mds_session(last_session);
-+				last_session = s;
-+			} else {
-+				ceph_put_mds_session(s);
-+			}
-+			dout("%s wait on %llu (want %llu)\n", __func__,
- 			     req->r_tid, want_tid);
- 			wait_for_completion(&req->r_safe_completion);
-+
- 			mutex_lock(&mdsc->mutex);
- 			ceph_mdsc_put_request(req);
- 			if (!nextreq)
-@@ -4738,7 +4758,8 @@ static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
- 		req = nextreq;
- 	}
- 	mutex_unlock(&mdsc->mutex);
--	dout("wait_unsafe_requests done\n");
-+	ceph_put_mds_session(last_session);
-+	dout("%s done\n", __func__);
- }
- 
- void ceph_mdsc_sync(struct ceph_mds_client *mdsc)
-@@ -4767,7 +4788,7 @@ void ceph_mdsc_sync(struct ceph_mds_client *mdsc)
- 	dout("sync want tid %lld flush_seq %lld\n",
- 	     want_tid, want_flush);
- 
--	wait_unsafe_requests(mdsc, want_tid);
-+	flush_mdlog_and_wait_mdsc_unsafe_requests(mdsc, want_tid);
- 	wait_caps_flush(mdsc, want_flush);
- }
- 
+ #include "amd.h"
+ #include "../mach-config.h"
 -- 
 2.35.1
 
