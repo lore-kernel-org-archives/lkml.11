@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B69BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:37:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF63C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:37:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376807AbiFGUhF (ORCPT
+        id S1376828AbiFGUhV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:37:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54100 "EHLO
+        Tue, 7 Jun 2022 16:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357810AbiFGTmX (ORCPT
+        with ESMTP id S1357855AbiFGTm2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:42:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6FF515A76E;
-        Tue,  7 Jun 2022 11:16:23 -0700 (PDT)
+        Tue, 7 Jun 2022 15:42:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D7915BADA;
+        Tue,  7 Jun 2022 11:16:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 814DF60A21;
-        Tue,  7 Jun 2022 18:16:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B04DC385A5;
-        Tue,  7 Jun 2022 18:16:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CE2960C1A;
+        Tue,  7 Jun 2022 18:16:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 194F1C385A2;
+        Tue,  7 Jun 2022 18:16:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625782;
-        bh=S8nu9Wrj80nFqvcHMwSeosMnoFWh1xZotRyH4pzSSZw=;
+        s=korg; t=1654625799;
+        bh=hy2mevBC+d+imUghO9WNY0JWs2ZLXPExJBDxBRuXzXs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PW71jXlkNeXX+Ue5O6xCsBDFeSlcYUyFgU/uQSjAKy4G/RImaxLLmHqydcpwqWUDJ
-         cunj3YphjzHTasFILvbzQYTIUJtR0LfDskDkb8aS3/fFrPRpSVH8NuojrdktbtEYZV
-         n2VPfHE4OU9FV190wpJl1vlUCapZhqvlC9h2Pwfw=
+        b=WbDFFnOMSl2RtENkEYcRUmHTqAWxsietjQwPL14PCOzriHWn514qh0R2JqGV6UV72
+         RrM0xPnwitDhptD9AV/XabLkzheHdYI7HbRCakt5reRZF8AmQsuW8FzsEBkkQ6fGc+
+         ekSm5IZWLbaSF38dj5hbBir6q9sGtOyhR8Z56qPc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 142/772] media: hantro: HEVC: unconditionnaly set pps_{cb/cr}_qp_offset values
-Date:   Tue,  7 Jun 2022 18:55:34 +0200
-Message-Id: <20220607164953.228482387@linuxfoundation.org>
+Subject: [PATCH 5.17 148/772] Bluetooth: btusb: Set HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN for QCA
+Date:   Tue,  7 Jun 2022 18:55:40 +0200
+Message-Id: <20220607164953.404844807@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,47 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit 46c836569196f377f87a3657b330cffaf94bd727 ]
+[ Upstream commit d44e1dbda36fff5d7c2586683c4adc0963aef908 ]
 
-Always set pps_cb_qp_offset and pps_cr_qp_offset values in Hantro/G2
-register whatever is V4L2_HEVC_PPS_FLAG_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT
-flag value.
-The vendor code does the same to set these values.
-This fixes conformance test CAINIT_G_SHARP_3.
+This sets HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN for QCA controllers
+since SCO appear to not work when using HCI_OP_ENHANCED_SETUP_SYNC_CONN.
 
-Fluster HEVC score is increase by one with this patch.
-
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215576
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+ drivers/bluetooth/btusb.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-index 99d8ea7543da..fab326389261 100644
---- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-+++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-@@ -180,13 +180,8 @@ static void set_params(struct hantro_ctx *ctx)
- 		hantro_reg_write(vpu, &g2_max_cu_qpd_depth, 0);
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index 42234d5f602d..34215dc5e684 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -3317,6 +3317,11 @@ static int btusb_setup_qca(struct hci_dev *hdev)
+ 			return err;
  	}
  
--	if (pps->flags & V4L2_HEVC_PPS_FLAG_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT) {
--		hantro_reg_write(vpu, &g2_cb_qp_offset, pps->pps_cb_qp_offset);
--		hantro_reg_write(vpu, &g2_cr_qp_offset, pps->pps_cr_qp_offset);
--	} else {
--		hantro_reg_write(vpu, &g2_cb_qp_offset, 0);
--		hantro_reg_write(vpu, &g2_cr_qp_offset, 0);
--	}
-+	hantro_reg_write(vpu, &g2_cb_qp_offset, pps->pps_cb_qp_offset);
-+	hantro_reg_write(vpu, &g2_cr_qp_offset, pps->pps_cr_qp_offset);
++	/* Mark HCI_OP_ENHANCED_SETUP_SYNC_CONN as broken as it doesn't seem to
++	 * work with the likes of HSP/HFP mSBC.
++	 */
++	set_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &hdev->quirks);
++
+ 	return 0;
+ }
  
- 	hantro_reg_write(vpu, &g2_filt_offset_beta, pps->pps_beta_offset_div2);
- 	hantro_reg_write(vpu, &g2_filt_offset_tc, pps->pps_tc_offset_div2);
 -- 
 2.35.1
 
