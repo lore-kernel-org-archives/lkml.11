@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 971FECCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC316CCA482
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384550AbiFGWPW (ORCPT
+        id S1384594AbiFGWPi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:15:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34834 "EHLO
+        Tue, 7 Jun 2022 18:15:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380160AbiFGVLf (ORCPT
+        with ESMTP id S1379211AbiFGVJj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:11:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 948D9149A8C;
-        Tue,  7 Jun 2022 11:53:21 -0700 (PDT)
+        Tue, 7 Jun 2022 17:09:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0DE412E80E;
+        Tue,  7 Jun 2022 11:51:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AEDDF616C2;
-        Tue,  7 Jun 2022 18:53:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8A6AC36AFE;
-        Tue,  7 Jun 2022 18:53:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0289CB81FE1;
+        Tue,  7 Jun 2022 18:51:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F6CAC385A5;
+        Tue,  7 Jun 2022 18:51:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628000;
-        bh=++FBKUrUNdenNgdg9O0dxiFbOQonQ6ctCVrjU7cnTw8=;
+        s=korg; t=1654627887;
+        bh=4jTvK2lpoiEdeQm+qpzHyCZoxAUPXJcXPmcaCJ93CzI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JSnTpldIPLH5+RXLMmk3lNyHpzIkK/rhyGJG77lD+9Uh7bVyAA8xubky911k50ECI
-         0Z0ADLN7gQD0xrhHS1VTD89/LrSHlxjcXGtWd86LswSvdcwRXzEY59GiH0it8W19HI
-         rrrhPFRDOfP8TEVwIJhI9wzTko7P/0cJXm638Hgo=
+        b=DWxb8c3ysWmQ7k5oVLTInjsbVwnEORJcBI+fygSB7mM3FfVduYnwmwEaPzfwVXeju
+         MpQ+uDvVUZqF+WdLeIcr3S7wCTj+Tm6qZlIA0XwTyh6XLuMzau5GNmWLTFF3srh+Vr
+         9seftkbymh/E4Jgv6qkgiG0fVi83GtFP21dEmmYs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jian-Hong Pan <jhp@endlessos.org>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 153/879] ACPI: PM: Block ASUS B1400CEAE from suspend to idle by default
-Date:   Tue,  7 Jun 2022 18:54:31 +0200
-Message-Id: <20220607165007.147422801@linuxfoundation.org>
+Subject: [PATCH 5.18 129/879] ASoC: SOF: ipc3-topology: Correct get_control_data for non bytes payload
+Date:   Tue,  7 Jun 2022 18:54:07 +0200
+Message-Id: <20220607165006.447365727@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,54 +52,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 
-[ Upstream commit d52848620de00cde4a3a5df908e231b8c8868250 ]
+[ Upstream commit a962890a5a3cce903ff7c7a19fadee63ed9efdc7 ]
 
-ASUS B1400CEAE fails to resume from suspend to idle by default.  This was
-bisected back to commit df4f9bc4fb9c ("nvme-pci: add support for ACPI
-StorageD3Enable property") but this is a red herring to the problem.
+It is possible to craft a topology where sof_get_control_data() would do
+out of bounds access because it expects that it is only called when the
+payload is bytes type.
+Confusingly it also handles other types of controls, but the payload
+parsing implementation is only valid for bytes.
 
-Before this commit the system wasn't getting into deepest sleep state.
-Presumably this commit is allowing entry into deepest sleep state as
-advertised by firmware, but there are some other problems related to
-the wakeup.
+Fix the code to count the non bytes controls and instead of storing a
+pointer to sof_abi_hdr in sof_widget_data (which is only valid for bytes),
+store the pointer to the data itself and add a new member to save the size
+of the data.
 
-As it is confirmed the system works properly with S3, set the default for
-this system to S3.
+In case of non bytes controls we store the pointer to the chanv itself,
+which is just an array of values at the end.
 
-Reported-by: Jian-Hong Pan <jhp@endlessos.org>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215742
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Tested-by: Jian-Hong Pan <jhp@endlessos.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+In case of bytes control, drop the wrong cdata->data (wdata[i].pdata) check
+against NULL since it is incorrect and invalid in this context.
+The data is pointing to the end of cdata struct, so it should never be
+null.
+
+Reported-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+Tested-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+Link: https://lore.kernel.org/r/20220427185221.28928-1-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/sleep.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ sound/soc/sof/ipc3-topology.c | 39 +++++++++++++++++++++++------------
+ 1 file changed, 26 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
-index c992e57b2c79..3147702710af 100644
---- a/drivers/acpi/sleep.c
-+++ b/drivers/acpi/sleep.c
-@@ -373,6 +373,18 @@ static const struct dmi_system_id acpisleep_dmi_table[] __initconst = {
- 		DMI_MATCH(DMI_PRODUCT_NAME, "20GGA00L00"),
- 		},
- 	},
-+	/*
-+	 * ASUS B1400CEAE hangs on resume from suspend (see
-+	 * https://bugzilla.kernel.org/show_bug.cgi?id=215742).
-+	 */
-+	{
-+	.callback = init_default_s3,
-+	.ident = "ASUS B1400CEAE",
-+	.matches = {
-+		DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
-+		DMI_MATCH(DMI_PRODUCT_NAME, "ASUS EXPERTBOOK B1400CEAE"),
-+		},
-+	},
- 	{},
+diff --git a/sound/soc/sof/ipc3-topology.c b/sound/soc/sof/ipc3-topology.c
+index 2f8450a8c0a1..af1bbd34213c 100644
+--- a/sound/soc/sof/ipc3-topology.c
++++ b/sound/soc/sof/ipc3-topology.c
+@@ -20,7 +20,8 @@
+ struct sof_widget_data {
+ 	int ctrl_type;
+ 	int ipc_cmd;
+-	struct sof_abi_hdr *pdata;
++	void *pdata;
++	size_t pdata_size;
+ 	struct snd_sof_control *control;
  };
+ 
+@@ -784,16 +785,26 @@ static int sof_get_control_data(struct snd_soc_component *scomp,
+ 		}
+ 
+ 		cdata = wdata[i].control->ipc_control_data;
+-		wdata[i].pdata = cdata->data;
+-		if (!wdata[i].pdata)
+-			return -EINVAL;
+ 
+-		/* make sure data is valid - data can be updated at runtime */
+-		if (widget->dobj.widget.kcontrol_type[i] == SND_SOC_TPLG_TYPE_BYTES &&
+-		    wdata[i].pdata->magic != SOF_ABI_MAGIC)
+-			return -EINVAL;
++		if (widget->dobj.widget.kcontrol_type[i] == SND_SOC_TPLG_TYPE_BYTES) {
++			/* make sure data is valid - data can be updated at runtime */
++			if (cdata->data->magic != SOF_ABI_MAGIC)
++				return -EINVAL;
++
++			wdata[i].pdata = cdata->data->data;
++			wdata[i].pdata_size = cdata->data->size;
++		} else {
++			/* points to the control data union */
++			wdata[i].pdata = cdata->chanv;
++			/*
++			 * wdata[i].control->size is calculated with struct_size
++			 * and includes the size of struct sof_ipc_ctrl_data
++			 */
++			wdata[i].pdata_size = wdata[i].control->size -
++					      sizeof(struct sof_ipc_ctrl_data);
++		}
+ 
+-		*size += wdata[i].pdata->size;
++		*size += wdata[i].pdata_size;
+ 
+ 		/* get data type */
+ 		switch (cdata->cmd) {
+@@ -876,10 +887,12 @@ static int sof_process_load(struct snd_soc_component *scomp,
+ 	 */
+ 	if (ipc_data_size) {
+ 		for (i = 0; i < widget->num_kcontrols; i++) {
+-			memcpy(&process->data[offset],
+-			       wdata[i].pdata->data,
+-			       wdata[i].pdata->size);
+-			offset += wdata[i].pdata->size;
++			if (!wdata[i].pdata_size)
++				continue;
++
++			memcpy(&process->data[offset], wdata[i].pdata,
++			       wdata[i].pdata_size);
++			offset += wdata[i].pdata_size;
+ 		}
+ 	}
  
 -- 
 2.35.1
