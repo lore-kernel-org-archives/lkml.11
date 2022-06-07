@@ -2,91 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AA9DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:59:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47DF2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349121AbiFGR7u (ORCPT
+        id S1349260AbiFGSAB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:59:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45580 "EHLO
+        Tue, 7 Jun 2022 14:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348150AbiFGRkh (ORCPT
+        with ESMTP id S1348216AbiFGRkl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:40:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A9086B003;
-        Tue,  7 Jun 2022 10:33:55 -0700 (PDT)
+        Tue, 7 Jun 2022 13:40:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711E36D3AE;
+        Tue,  7 Jun 2022 10:33:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4AFB614D8;
-        Tue,  7 Jun 2022 17:33:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2948BC385A5;
-        Tue,  7 Jun 2022 17:33:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654623214;
-        bh=Lk4+xjJRHwdFc/LovKppznE7yFQsbzVIbVHDMQnayTs=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=l4aDlf+uVpJEHdQOfzIMYm09KQjrAuAw2erK07aLAfug5ApRDy1XlakPrXXiRYdjx
-         H16vDx4r+ESt+hngYJXiiLR+NzX5bjXB+UX50eIiQHeC1sQOeRnW2ql7bkXl2FhIFY
-         zvqjlWqXvCxzwZUuRJ47iIY8Sl6vBWGvDk87EojOv2ovl5aTPm4MAW5/Qof+2ZHvIF
-         sQ1u65bcdOaqbZkxoIVS+cTTL3OofM4gnByabptzabArXTJKGrA6Wv1ovXhL0cBfn4
-         TEbO/RAHe4ZpSpMwoI+6bGvSgkXl30yo3ZJb4OBym2lEY88l++N09PII2NnRNC9/7N
-         J8WhjYZ+EDjYg==
-From:   Mark Brown <broonie@kernel.org>
-To:     conor.dooley@microchip.com
-Cc:     linux-riscv@lists.infradead.org, linux-spi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, daire.mcnamara@microchip.com
-In-Reply-To: <20220607073833.2331539-1-conor.dooley@microchip.com>
-References: <20220607073833.2331539-1-conor.dooley@microchip.com>
-Subject: Re: [PATCH 0/2] Add support for PolarFire SoC's spi controllers
-Message-Id: <165462321288.3040195.2196860226827286633.b4-ty@kernel.org>
-Date:   Tue, 07 Jun 2022 18:33:32 +0100
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6359EB822B4;
+        Tue,  7 Jun 2022 17:33:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6592C34115;
+        Tue,  7 Jun 2022 17:33:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654623214;
+        bh=fvqtBcjkHl2wfnU3dwlKLPAsMA4RiLi7gEH+8xIRx/M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YXLIIL7FW/XG3zMTifq0FIV+KeNzforC6W9XuqOsY/c8wukJcMQ8Hp6aNmCPWnqlC
+         KNEUD6SEc+PJfzT8C/fsbOC/ku8lIUuJnXEtZQG0grOPsWnEW4cs+tKLlLKVsBurD4
+         X2u3SIMFsf3fYWQFNGpqYz3Eip5b8VmM0ifXOwak=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 295/452] pinctrl: renesas: core: Fix possible null-ptr-deref in sh_pfc_map_resources()
+Date:   Tue,  7 Jun 2022 19:02:32 +0200
+Message-Id: <20220607164917.345838911@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
+References: <20220607164908.521895282@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 7 Jun 2022 08:38:32 +0100, Conor Dooley wrote:
-> Hey Mark,
-> 
-> As it says on the tin, here's a patch adding support for the spi
-> controllers on PolarFire SoC. The binding for them was already
-> added in 5.18.
-> 
-> Thanks,
-> Conor.
-> 
-> [...]
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-Applied to
+[ Upstream commit 5376e3d904532e657fd7ca1a9b1ff3d351527b90 ]
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-Thanks!
+Fixes: c7977ec4a336 ("pinctrl: sh-pfc: Convert to platform_get_*()")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220429082637.1308182-1-yangyingliang@huawei.com
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/pinctrl/renesas/core.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-[1/2] spi: add support for microchip fpga spi controllers
-      commit: 9ac8d17694b66d54b13e9718b25c14ca36dbebbd
-[2/2] MAINTAINERS: add spi to PolarFire SoC entry
-      commit: f303c6b26cede1aa137dc3e10eee78a80cde9999
+diff --git a/drivers/pinctrl/renesas/core.c b/drivers/pinctrl/renesas/core.c
+index 258972672eda..54f1a7334027 100644
+--- a/drivers/pinctrl/renesas/core.c
++++ b/drivers/pinctrl/renesas/core.c
+@@ -71,12 +71,11 @@ static int sh_pfc_map_resources(struct sh_pfc *pfc,
+ 
+ 	/* Fill them. */
+ 	for (i = 0; i < num_windows; i++) {
+-		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
+-		windows->phys = res->start;
+-		windows->size = resource_size(res);
+-		windows->virt = devm_ioremap_resource(pfc->dev, res);
++		windows->virt = devm_platform_get_and_ioremap_resource(pdev, i, &res);
+ 		if (IS_ERR(windows->virt))
+ 			return -ENOMEM;
++		windows->phys = res->start;
++		windows->size = resource_size(res);
+ 		windows++;
+ 	}
+ 	for (i = 0; i < num_irqs; i++)
+-- 
+2.35.1
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
