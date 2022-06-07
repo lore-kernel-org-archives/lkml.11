@@ -2,85 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4477C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:36:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E7C1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240957AbiFGKgO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39314 "EHLO
+        id S241200AbiFGKge (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241214AbiFGKf7 (ORCPT
+        with ESMTP id S241178AbiFGKgZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:35:59 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB9D0ED3E8;
-        Tue,  7 Jun 2022 03:35:51 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id f34so30414458ybj.6;
-        Tue, 07 Jun 2022 03:35:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Z0ZozeEuIbZiflGhi9tRrNZpoPtpA/EvsLsniAdD5yU=;
-        b=OrMz7uNrq51Yp3MfnX4W+nb8tJbgAfPzI96E70/Joq+KygueECNGvmQFuBumtKJNyd
-         xeX2oCOuPwZPXKfSw1mY6IXel31cF2/8A0HaVNjX9Dxzd6ds7BxZYmdyaM8ksNH800J+
-         UQmtnPck5+fTaLrcy2wTxOuuexWXCrfFIxPFZokL0R1rAtS8XwOOo/MCkWllv68LRi5n
-         wfadNFiLtCzihFIygtm8YYBmHElvF1WSURU0PlsNfSnWpXO54x0OUFOIGrDei81CixFO
-         6wzY9LLvWmAfqLfCPsRuDHVK8jtr+rLhcwHeHgYY5yCmwRxLl0lptka5tb9FUuusqDBL
-         MmzA==
+        Tue, 7 Jun 2022 06:36:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BB1F8EC336
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 03:36:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654598183;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VIZmENWoecc1Gjip/W8Q1+dSiheQPkO4yhqkXrzmqmA=;
+        b=KbKhOchsr23hSRwnGzay+5kok3z0O/8peBFL/J/muwzfLomSRhhcD/HD2TOSdFypLp4GS+
+        2Lmw0ZT0pbsbE57XE6+3evfI4QxZFDK/3hTL1WhH6BG7g7REX687TqRg3QJr7smYWAgeiG
+        c6/gqjJtlseVjZyAIunHjpp9a1Sm2L8=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-492-K7FkSfscOPeeN8s5yE5YwQ-1; Tue, 07 Jun 2022 06:36:22 -0400
+X-MC-Unique: K7FkSfscOPeeN8s5yE5YwQ-1
+Received: by mail-wm1-f72.google.com with SMTP id n15-20020a05600c4f8f00b0039c3e76d646so5290551wmq.7
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 03:36:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Z0ZozeEuIbZiflGhi9tRrNZpoPtpA/EvsLsniAdD5yU=;
-        b=z63RCte1tZOYM+TRonPShmxTAHXfmKXU/qZrdfDuILEX7uO0gwmm8/AbgtF7bnbcNv
-         bIOGaAdx87/xsPsDIt0GQ8+XPPYr/HgDXuYD5+zw+erMGvkBFLljZJfBK4ggQm73pZsK
-         PXtx7ptRLTlt12Yf6l8gDC6EYt+pY53j+aY54mEYDRce0uvlbtvrn2OTqd55Q3DdcurB
-         WQ6I/PPHm2NHwOsUrtua/JABhtUBDsD/6kP8hA9soIvKVNBbnk7Qz4QE+OTyyzmB1E+6
-         rfMg8ddNNu/7D4nDc6PPBoPzUUbBP0TLG4WeBdy76SjremZeh6ZJPjrb7ME+CJkC9iI8
-         4W8A==
-X-Gm-Message-State: AOAM533J6Sl6tJFlONE90+CSEJbobJeb/3qp9jG7aKQ7G4kjlacqrgQ/
-        oHhCWVEnAZUreAIyPp+JHNluYCrWraC5VtNl5/c=
-X-Google-Smtp-Source: ABdhPJwKFYylw0Y6L+dxIpzj0rWIiZ2w2G9OUdgFwmnLKdPL9DGzBgcbM6IwwOuC+ZMI1bJzTTDCWU+4FeVcB7sOXlQ=
-X-Received: by 2002:a25:7795:0:b0:662:666b:f927 with SMTP id
- s143-20020a257795000000b00662666bf927mr20533999ybc.100.1654598151081; Tue, 07
- Jun 2022 03:35:51 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=VIZmENWoecc1Gjip/W8Q1+dSiheQPkO4yhqkXrzmqmA=;
+        b=tOIaTke36wTrXOJfqmhHbyTM4/gh9LGw7sYy0WL5qfMKdepngLMjztKa0rW30IDDc5
+         gcTZkNQdJ6MN8MOcSGxpMO1hWD+uxGUl4aTo4BuH/EmJXiCpO9SBS3jaNUsK2jh0Gar7
+         M/lLvu2eXZetL0h+lk24soXqiLVY00t8rLPvTSgSc1MscgTpZfPqKgCdwFBzeoSNlmbR
+         OBzdzhLp94dKR3chkki+vY6/NBDaeNwMH4m9i7KJk7+lHexkaasW+cSJTSmrIrLek0G7
+         6oev4zEln8/0pr7IUnXXnPP7+PhVVQmB95Oo2XSOum0AxA/PzqsjgMArywUgpg5F23fZ
+         /1cw==
+X-Gm-Message-State: AOAM5328Su/KgQkv5RD7ApG51BWfKdz1hJ8daDT7FYE9fVp00Dg4NeD4
+        x7HXsEGYZQb2bV3xqfvP9Yu4P1zsAk4fAotsAXJVxap4gaaNUqGqRk4CkSnFMSNq3U4U7k6wjiW
+        txmOvYM4ApZTXPpsXwfWwYrt4
+X-Received: by 2002:a05:600c:3b20:b0:397:6311:c0c7 with SMTP id m32-20020a05600c3b2000b003976311c0c7mr56578498wms.69.1654598181302;
+        Tue, 07 Jun 2022 03:36:21 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxMvJByNJtOpfW7JFF+6+fzeex2HW2ExVgG0ZmK8Z/TskZxgAJUrPnbY07auM9j9IWBDFyxdA==
+X-Received: by 2002:a05:600c:3b20:b0:397:6311:c0c7 with SMTP id m32-20020a05600c3b2000b003976311c0c7mr56578454wms.69.1654598181061;
+        Tue, 07 Jun 2022 03:36:21 -0700 (PDT)
+Received: from redhat.com ([2.55.169.1])
+        by smtp.gmail.com with ESMTPSA id m4-20020a1c2604000000b0039c506de087sm5271489wmm.6.2022.06.07.03.36.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 03:36:20 -0700 (PDT)
+Date:   Tue, 7 Jun 2022 06:36:17 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Bo Liu =?utf-8?B?KOWImOazoikt5rWq5r2u5L+h5oGv?= 
+        <liubo03@inspur.com>
+Cc:     "jasowang@redhat.com" <jasowang@redhat.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] virtio_ring: remove unnecessary to_vvq call
+Message-ID: <20220607063549-mutt-send-email-mst@kernel.org>
+References: <f5cef070316447cebe0e9c6e86657218@inspur.com>
 MIME-Version: 1.0
-References: <20220607090206.19830-1-arnd@kernel.org>
-In-Reply-To: <20220607090206.19830-1-arnd@kernel.org>
-From:   Manuel Lauss <manuel.lauss@gmail.com>
-Date:   Tue, 7 Jun 2022 12:35:15 +0200
-Message-ID: <CAOLZvyFvSJ_+SJCY6T5zBTetf-oezm+A9w6gR+cnLOC4T+8HwA@mail.gmail.com>
-Subject: Re: [PATCH] au1000_eth: stop using virt_to_bus()
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
-        netdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <f5cef070316447cebe0e9c6e86657218@inspur.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 11:02 AM Arnd Bergmann <arnd@kernel.org> wrote:
->
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> The conversion to the dma-mapping API in linux-2.6.11 was incomplete
-> and left a virt_to_bus() call around. There have been a number of
-> fixes for DMA mapping API abuse in this driver, but this one always
-> slipped through.
->
-> Change it to just use the existing dma_addr_t pointer, and make it
-> use the correct types throughout the driver to make it easier to
-> understand the virtual vs dma address spaces.
->
-> Cc: Manuel Lauss <manuel.lauss@gmail.com>
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+On Tue, Jun 07, 2022 at 08:08:58AM +0000, Bo Liu (刘波)-浪潮信息 wrote:
+> This patch removes unnecessary code and generates smaller binary files.
+> Thanks
 
-lightly tested on a DB1500 board, without issues.
+Can you post info on which files are smaller an by how much please?
 
-Tested-by: Manuel Lauss <manuel.lauss@gmail.com>
+-- 
+MST
 
-Thanks!
