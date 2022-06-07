@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF75C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:19:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABAA5C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:19:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357975AbiFGWTa (ORCPT
+        id S1381910AbiFGWTh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:19:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47328 "EHLO
+        Tue, 7 Jun 2022 18:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378852AbiFGVNr (ORCPT
+        with ESMTP id S1346961AbiFGVNr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:13:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D21F152D8F;
-        Tue,  7 Jun 2022 11:54:25 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FE121AC46;
+        Tue,  7 Jun 2022 11:54:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D74F61277;
-        Tue,  7 Jun 2022 18:54:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AE98C385A5;
-        Tue,  7 Jun 2022 18:54:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8077B82018;
+        Tue,  7 Jun 2022 18:54:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19785C385A5;
+        Tue,  7 Jun 2022 18:54:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628063;
-        bh=DEoc8i7aPgstshbzPGcR3ZykmcCRzy2UNNk8exG0MWY=;
+        s=korg; t=1654628066;
+        bh=q3LpIfPSwOGe/mvSWUmd9l5vhrYfQkqCQRcFEYW08qE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eZL5A55d34p77nl+lT9otwQREfWZ52xiqtlOgb90mPS3vfjL4VqrOekl73jRxuxoQ
-         9ZR6MnKdkQ7TLhvAUF4NG9PSewEkTiJus0gfY2jv19qFzl9MMLkEDMuyoge5CA+gUF
-         xEjvzDTrURSCi5bYKgSjBqAnfny2ZJVeyOJC51Y0=
+        b=v4z/K2928vMxMevcc+2G6zT+bjnLBhNCx/rz67Xcy1zlulZoY/geWqQ+zHkVrR/ND
+         RNxAVj9G28/DFrCIets1+nX7B6FH9Hbu8q65/0jg+KYAycqeCGbE6gBRelzmU2W7Do
+         bKIM6Zbg2tLK7jjC6xMSyRCzlopH5I4n0HmD/IZk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pierre Gondois <pierre.gondois@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 191/879] ACPI: CPPC: Assume no transition latency if no PCCT
-Date:   Tue,  7 Jun 2022 18:55:09 +0200
-Message-Id: <20220607165008.385335751@linuxfoundation.org>
+        stable@vger.kernel.org, Chaitanya Kulkarni <kch@nvidia.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 192/879] nvme: set non-mdts limits in nvme_scan_work
+Date:   Tue,  7 Jun 2022 18:55:10 +0200
+Message-Id: <20220607165008.414623997@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,94 +50,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre Gondois <Pierre.Gondois@arm.com>
+From: Chaitanya Kulkarni <kch@nvidia.com>
 
-[ Upstream commit 6380b7b2b29da9d9c5ab2d4a265901cd93ba3696 ]
+[ Upstream commit 78288665b5d0154978fed431985310cb4f166836 ]
 
-The transition_delay_us (struct cpufreq_policy) is currently defined
-as:
-  Preferred average time interval between consecutive invocations of
-  the driver to set the frequency for this policy.  To be set by the
-  scaling driver (0, which is the default, means no preference).
-The transition_latency represents the amount of time necessary for a
-CPU to change its frequency.
+In current implementation we set the non-mdts limits by calling
+nvme_init_non_mdts_limits() from nvme_init_ctrl_finish().
+This also tries to set the limits for the discovery controller which
+has no I/O queues resulting in the warning message reported by the
+nvme_log_error() when running blktest nvme/002: -
 
-A PCCT table advertises mutliple values:
-- pcc_nominal: Expected latency to process a command, in microseconds
-- pcc_mpar: The maximum number of periodic requests that the subspace
-  channel can support, reported in commands per minute. 0 indicates no
-  limitation.
-- pcc_mrtt: The minimum amount of time that OSPM must wait after the
-  completion of a command before issuing the next command,
-  in microseconds.
-cppc_get_transition_latency() allows to get the max of them.
+[ 2005.155946] run blktests nvme/002 at 2022-04-09 16:57:47
+[ 2005.192223] loop: module loaded
+[ 2005.196429] nvmet: adding nsid 1 to subsystem blktests-subsystem-0
+[ 2005.200334] nvmet: adding nsid 1 to subsystem blktests-subsystem-1
 
-commit d4f3388afd48 ("cpufreq / CPPC: Set platform specific
-transition_delay_us") allows to select transition_delay_us based on
-the platform, and fallbacks to cppc_get_transition_latency()
-otherwise.
+<------------------------------SNIP---------------------------------->
 
-If _CPC objects are not using PCC channels (no PPCT table), the
-transition_delay_us is set to CPUFREQ_ETERNAL, leading to really long
-periods between frequency updates (~4s).
+[ 2008.958108] nvmet: adding nsid 1 to subsystem blktests-subsystem-997
+[ 2008.962082] nvmet: adding nsid 1 to subsystem blktests-subsystem-998
+[ 2008.966102] nvmet: adding nsid 1 to subsystem blktests-subsystem-999
+[ 2008.973132] nvmet: creating discovery controller 1 for subsystem nqn.2014-08.org.nvmexpress.discovery for NQN testhostnqn.
+*[ 2008.973196] nvme1: Identify(0x6), Invalid Field in Command (sct 0x0 / sc 0x2) MORE DNR*
+[ 2008.974595] nvme nvme1: new ctrl: "nqn.2014-08.org.nvmexpress.discovery"
+[ 2009.103248] nvme nvme1: Removing ctrl: NQN "nqn.2014-08.org.nvmexpress.discovery"
 
-If the desired_reg, where performance requests are written, is in
-SystemMemory or SystemIo ACPI address space, there is no delay
-in requests. So return 0 instead of CPUFREQ_ETERNAL, leading to
-transition_delay_us being set to LATENCY_MULTIPLIER us (1000 us).
+Move the call of nvme_init_non_mdts_limits() to nvme_scan_work() after
+we verify that I/O queues are created since that is a converging point
+for each transport where these limits are actually used.
 
-This patch also adds two macros to check the address spaces.
+1. FC :
+nvme_fc_create_association()
+ ...
+ nvme_fc_create_io_queues(ctrl);
+ ...
+ nvme_start_ctrl()
+  nvme_scan_queue()
+   nvme_scan_work()
 
-Signed-off-by: Pierre Gondois <pierre.gondois@arm.com>
-Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+2. PCIe:-
+nvme_reset_work()
+ ...
+ nvme_setup_io_queues()
+  nvme_create_io_queues()
+   nvme_alloc_queue()
+ ...
+ nvme_start_ctrl()
+  nvme_scan_queue()
+   nvme_scan_work()
+
+3. RDMA :-
+nvme_rdma_setup_ctrl
+ ...
+  nvme_rdma_configure_io_queues
+  ...
+  nvme_start_ctrl()
+   nvme_scan_queue()
+    nvme_scan_work()
+
+4. TCP :-
+nvme_tcp_setup_ctrl
+ ...
+  nvme_tcp_configure_io_queues
+  ...
+  nvme_start_ctrl()
+   nvme_scan_queue()
+    nvme_scan_work()
+
+* nvme_scan_work()
+...
+nvme_validate_or_alloc_ns()
+  nvme_alloc_ns()
+   nvme_update_ns_info()
+    nvme_update_disk_info()
+     nvme_config_discard() <---
+     blk_queue_max_write_zeroes_sectors() <---
+
+Signed-off-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Keith Busch <kbusch@kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/cppc_acpi.c | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ drivers/nvme/host/core.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
-index bc1454789a06..34576ab0e2e1 100644
---- a/drivers/acpi/cppc_acpi.c
-+++ b/drivers/acpi/cppc_acpi.c
-@@ -100,6 +100,16 @@ static DEFINE_PER_CPU(struct cpc_desc *, cpc_desc_ptr);
- 				(cpc)->cpc_entry.reg.space_id ==	\
- 				ACPI_ADR_SPACE_PLATFORM_COMM)
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index e1846d04817f..ac32d1cd8477 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -3080,10 +3080,6 @@ int nvme_init_ctrl_finish(struct nvme_ctrl *ctrl)
+ 	if (ret)
+ 		return ret;
  
-+/* Check if a CPC register is in SystemMemory */
-+#define CPC_IN_SYSTEM_MEMORY(cpc) ((cpc)->type == ACPI_TYPE_BUFFER &&	\
-+				(cpc)->cpc_entry.reg.space_id ==	\
-+				ACPI_ADR_SPACE_SYSTEM_MEMORY)
-+
-+/* Check if a CPC register is in SystemIo */
-+#define CPC_IN_SYSTEM_IO(cpc) ((cpc)->type == ACPI_TYPE_BUFFER &&	\
-+				(cpc)->cpc_entry.reg.space_id ==	\
-+				ACPI_ADR_SPACE_SYSTEM_IO)
-+
- /* Evaluates to True if reg is a NULL register descriptor */
- #define IS_NULL_REG(reg) ((reg)->space_id ==  ACPI_ADR_SPACE_SYSTEM_MEMORY && \
- 				(reg)->address == 0 &&			\
-@@ -1447,6 +1457,9 @@ EXPORT_SYMBOL_GPL(cppc_set_perf);
-  * transition latency for performance change requests. The closest we have
-  * is the timing information from the PCCT tables which provides the info
-  * on the number and frequency of PCC commands the platform can handle.
-+ *
-+ * If desired_reg is in the SystemMemory or SystemIo ACPI address space,
-+ * then assume there is no latency.
-  */
- unsigned int cppc_get_transition_latency(int cpu_num)
+-	ret = nvme_init_non_mdts_limits(ctrl);
+-	if (ret < 0)
+-		return ret;
+-
+ 	ret = nvme_configure_apst(ctrl);
+ 	if (ret < 0)
+ 		return ret;
+@@ -4237,11 +4233,26 @@ static void nvme_scan_work(struct work_struct *work)
  {
-@@ -1472,7 +1485,9 @@ unsigned int cppc_get_transition_latency(int cpu_num)
- 		return CPUFREQ_ETERNAL;
+ 	struct nvme_ctrl *ctrl =
+ 		container_of(work, struct nvme_ctrl, scan_work);
++	int ret;
  
- 	desired_reg = &cpc_desc->cpc_regs[DESIRED_PERF];
--	if (!CPC_IN_PCC(desired_reg))
-+	if (CPC_IN_SYSTEM_MEMORY(desired_reg) || CPC_IN_SYSTEM_IO(desired_reg))
-+		return 0;
-+	else if (!CPC_IN_PCC(desired_reg))
- 		return CPUFREQ_ETERNAL;
+ 	/* No tagset on a live ctrl means IO queues could not created */
+ 	if (ctrl->state != NVME_CTRL_LIVE || !ctrl->tagset)
+ 		return;
  
- 	if (pcc_ss_id < 0)
++	/*
++	 * Identify controller limits can change at controller reset due to
++	 * new firmware download, even though it is not common we cannot ignore
++	 * such scenario. Controller's non-mdts limits are reported in the unit
++	 * of logical blocks that is dependent on the format of attached
++	 * namespace. Hence re-read the limits at the time of ns allocation.
++	 */
++	ret = nvme_init_non_mdts_limits(ctrl);
++	if (ret < 0) {
++		dev_warn(ctrl->device,
++			"reading non-mdts-limits failed: %d\n", ret);
++		return;
++	}
++
+ 	if (test_and_clear_bit(NVME_AER_NOTICE_NS_CHANGED, &ctrl->events)) {
+ 		dev_info(ctrl->device, "rescanning namespaces.\n");
+ 		nvme_clear_changed_ns_log(ctrl);
 -- 
 2.35.1
 
