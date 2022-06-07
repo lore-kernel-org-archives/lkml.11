@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA92ACCA491
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB9F1CCA498
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384865AbiFGWQd (ORCPT
+        id S1385008AbiFGWRJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:16:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44756 "EHLO
+        Tue, 7 Jun 2022 18:17:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380256AbiFGVLn (ORCPT
+        with ESMTP id S1380207AbiFGVLl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:11:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC883219105;
-        Tue,  7 Jun 2022 11:53:42 -0700 (PDT)
+        Tue, 7 Jun 2022 17:11:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB4A218AA1;
+        Tue,  7 Jun 2022 11:53:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 271ECB8220B;
-        Tue,  7 Jun 2022 18:53:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C9D3C385A2;
-        Tue,  7 Jun 2022 18:53:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07FCD6176D;
+        Tue,  7 Jun 2022 18:53:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1682CC385A2;
+        Tue,  7 Jun 2022 18:53:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628019;
-        bh=y3bhC0rUOrF3icDOfUWiGnm7BKnScQLuWa8qmBsViaY=;
+        s=korg; t=1654628011;
+        bh=HfOrDTLhdUzR7V2uVaro7XE7vKpON/b5Tcu5bw6pI6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HEDoOpe1pHS5fynIEH26O2OPlG9y0dFOiUs9I+8Qk6vU53GmHUsqKIRWjhYpfHn/1
-         YqzUvTLQfZeVfjSgGaMNKJTyZQfs24dWvzzVBs1ptxYTXYEV+/LAG7gFjRpSORiqqN
-         Y8UWunvimrriIzEQlltd/XiUn82ETViOuQ/SkeNI=
+        b=Suoh2DyTcAmYQwcdDFTOah0GP7uRCWIJ4CS6h/szG3AEiVA6hk58BnxdOmxpOolcv
+         LLS/NoMXWH7vNkgLt9Y/3+dymhWa5fyqZSsIqV0CzLlhp36ondDATrAWLFDvqkEHy4
+         zUMH77aMHpGj3E6Mt2oCaFwJnHA75/66yOPyU15w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xu Jianhai <zero.xu@bytedance.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 177/879] nbd: Fix hung on disconnect request if socket is closed before
-Date:   Tue,  7 Jun 2022 18:54:55 +0200
-Message-Id: <20220607165007.979386632@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, Jonas Bonn <jonas@southpole.se>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Stafford Horne <shorne@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 174/879] openrisc: start CPU timer early in boot
+Date:   Tue,  7 Jun 2022 18:54:52 +0200
+Message-Id: <20220607165007.891629583@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,61 +54,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit 491bf8f236fdeec698fa6744993f1ecf3fafd1a5 ]
+[ Upstream commit 516dd4aacd67a0f27da94f3fe63fe0f4dbab6e2b ]
 
-When userspace closes the socket before sending a disconnect
-request, the following I/O requests will be blocked in
-wait_for_reconnect() until dead timeout. This will cause the
-following disconnect request also hung on blk_mq_quiesce_queue().
-That means we have no way to disconnect a nbd device if there
-are some I/O requests waiting for reconnecting until dead timeout.
-It's not expected. So let's wake up the thread waiting for
-reconnecting directly when a disconnect request is sent.
+In order to measure the boot process, the timer should be switched on as
+early in boot as possible. As well, the commit defines the get_cycles
+macro, like the previous patches in this series, so that generic code is
+aware that it's implemented by the platform, as is done on other archs.
 
-Reported-by: Xu Jianhai <zero.xu@bytedance.com>
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Link: https://lore.kernel.org/r/20220322080639.142-1-xieyongji@bytedance.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Jonas Bonn <jonas@southpole.se>
+Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
+Acked-by: Stafford Horne <shorne@gmail.com>
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/nbd.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ arch/openrisc/include/asm/timex.h | 1 +
+ arch/openrisc/kernel/head.S       | 9 +++++++++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index 5a1f98494ddd..284557041336 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -947,11 +947,15 @@ static int wait_for_reconnect(struct nbd_device *nbd)
- 	struct nbd_config *config = nbd->config;
- 	if (!config->dead_conn_timeout)
- 		return 0;
--	if (test_bit(NBD_RT_DISCONNECTED, &config->runtime_flags))
-+
-+	if (!wait_event_timeout(config->conn_wait,
-+				test_bit(NBD_RT_DISCONNECTED,
-+					 &config->runtime_flags) ||
-+				atomic_read(&config->live_connections) > 0,
-+				config->dead_conn_timeout))
- 		return 0;
--	return wait_event_timeout(config->conn_wait,
--				  atomic_read(&config->live_connections) > 0,
--				  config->dead_conn_timeout) > 0;
-+
-+	return !test_bit(NBD_RT_DISCONNECTED, &config->runtime_flags);
+diff --git a/arch/openrisc/include/asm/timex.h b/arch/openrisc/include/asm/timex.h
+index d52b4e536e3f..5487fa93dd9b 100644
+--- a/arch/openrisc/include/asm/timex.h
++++ b/arch/openrisc/include/asm/timex.h
+@@ -23,6 +23,7 @@ static inline cycles_t get_cycles(void)
+ {
+ 	return mfspr(SPR_TTCR);
  }
++#define get_cycles get_cycles
  
- static int nbd_handle_cmd(struct nbd_cmd *cmd, int index)
-@@ -2082,6 +2086,7 @@ static void nbd_disconnect_and_put(struct nbd_device *nbd)
- 	mutex_lock(&nbd->config_lock);
- 	nbd_disconnect(nbd);
- 	sock_shutdown(nbd);
-+	wake_up(&nbd->config->conn_wait);
- 	/*
- 	 * Make sure recv thread has finished, we can safely call nbd_clear_que()
- 	 * to cancel the inflight I/Os.
+ /* This isn't really used any more */
+ #define CLOCK_TICK_RATE 1000
+diff --git a/arch/openrisc/kernel/head.S b/arch/openrisc/kernel/head.S
+index 15f1b38dfe03..871f4c858859 100644
+--- a/arch/openrisc/kernel/head.S
++++ b/arch/openrisc/kernel/head.S
+@@ -521,6 +521,15 @@ _start:
+ 	l.ori	r3,r0,0x1
+ 	l.mtspr	r0,r3,SPR_SR
+ 
++	/*
++	 * Start the TTCR as early as possible, so that the RNG can make use of
++	 * measurements of boot time from the earliest opportunity. Especially
++	 * important is that the TTCR does not return zero by the time we reach
++	 * rand_initialize().
++	 */
++	l.movhi r3,hi(SPR_TTMR_CR)
++	l.mtspr r0,r3,SPR_TTMR
++
+ 	CLEAR_GPR(r1)
+ 	CLEAR_GPR(r2)
+ 	CLEAR_GPR(r3)
 -- 
 2.35.1
 
