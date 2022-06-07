@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08D63C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB5BCCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:21:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359240AbiFGUUP (ORCPT
+        id S1359260AbiFGUUT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:20:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49446 "EHLO
+        Tue, 7 Jun 2022 16:20:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356811AbiFGT2N (ORCPT
+        with ESMTP id S1356822AbiFGT2N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 15:28:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56DFB1A1951;
-        Tue,  7 Jun 2022 11:10:55 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537E26A027;
+        Tue,  7 Jun 2022 11:11:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DE309B8233E;
-        Tue,  7 Jun 2022 18:10:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 489A6C385A5;
-        Tue,  7 Jun 2022 18:10:52 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A5A96CE2439;
+        Tue,  7 Jun 2022 18:10:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFEB5C385A2;
+        Tue,  7 Jun 2022 18:10:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625452;
-        bh=qO2K96LJDhbirD99gp0YVHECVMdEPs1haKCeGlOd7O0=;
+        s=korg; t=1654625458;
+        bh=24/+sW6Sob7YMv6wVRkObr+QQ67G3CdFjp9sCUgysVY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jOYltGspLBHE2liFTe5hNgTW/Ax/k6osF93gt4bB8W/4+arbbL8K5GviU6BNWokEH
-         DKu8S4TwCw0Z5hRM3CT27v4pPbWXVaQzT7ptqzAU5xkzMbZlEgWcllC3K74nZamjUY
-         +DCUuMYbf0bhzeUNblb7WDjS9YsELD0K+ZAktSNs=
+        b=ty3EyXE5U+aXqZn3krI/O98oDhJ177LiKwyAqPB0xNjiT5+UzVA6rGap4aJTMYWbj
+         WWMgPQT+qb+1Gs6FiuHrUku5BQ4Fjz0y2uWaixLsv5R9q2wrFfLVvMZLgH1foT8tqH
+         tGbqhbyymfOrG49Z0T4EJuOh0BwmZbzz0/EqiAhM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Perches <joe@perches.com>,
+        stable@vger.kernel.org,
         Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Subject: [PATCH 5.17 024/772] fs/ntfs3: In function ntfs_set_acl_ex do not change inode->i_mode if called from function ntfs_init_acl
-Date:   Tue,  7 Jun 2022 18:53:36 +0200
-Message-Id: <20220607164949.726810942@linuxfoundation.org>
+Subject: [PATCH 5.17 026/772] fs/ntfs3: Update i_ctime when xattr is added
+Date:   Tue,  7 Jun 2022 18:53:38 +0200
+Message-Id: <20220607164949.787502692@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,69 +51,29 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 
-commit 9186d472ee780fabf74424756c4c00545166157e upstream.
+commit 2d44667c306e7806848a3478820f87343feb5421 upstream.
 
-ntfs_init_acl sets mode. ntfs_init_acl calls ntfs_set_acl_ex.
-ntfs_set_acl_ex must not change this mode.
-Fixes xfstest generic/444
+Ctime wasn't updated after setfacl command.
+This commit fixes xfstest generic/307
 Fixes: be71b5cba2e6 ("fs/ntfs3: Add attrib operations")
 
-Reviewed-by: Joe Perches <joe@perches.com>
 Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs3/xattr.c |   13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ fs/ntfs3/xattr.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
 --- a/fs/ntfs3/xattr.c
 +++ b/fs/ntfs3/xattr.c
-@@ -541,7 +541,7 @@ struct posix_acl *ntfs_get_acl(struct in
+@@ -902,6 +902,9 @@ set_new_fa:
+ 	err = ntfs_set_ea(inode, name, name_len, value, size, flags);
  
- static noinline int ntfs_set_acl_ex(struct user_namespace *mnt_userns,
- 				    struct inode *inode, struct posix_acl *acl,
--				    int type)
-+				    int type, bool init_acl)
- {
- 	const char *name;
- 	size_t size, name_len;
-@@ -554,8 +554,9 @@ static noinline int ntfs_set_acl_ex(stru
- 
- 	switch (type) {
- 	case ACL_TYPE_ACCESS:
--		if (acl) {
--			umode_t mode = inode->i_mode;
-+		/* Do not change i_mode if we are in init_acl */
-+		if (acl && !init_acl) {
-+			umode_t mode;
- 
- 			err = posix_acl_update_mode(mnt_userns, inode, &mode,
- 						    &acl);
-@@ -616,7 +617,7 @@ out:
- int ntfs_set_acl(struct user_namespace *mnt_userns, struct inode *inode,
- 		 struct posix_acl *acl, int type)
- {
--	return ntfs_set_acl_ex(mnt_userns, inode, acl, type);
-+	return ntfs_set_acl_ex(mnt_userns, inode, acl, type, false);
+ out:
++	inode->i_ctime = current_time(inode);
++	mark_inode_dirty(inode);
++
+ 	return err;
  }
- 
- /*
-@@ -636,7 +637,7 @@ int ntfs_init_acl(struct user_namespace
- 
- 	if (default_acl) {
- 		err = ntfs_set_acl_ex(mnt_userns, inode, default_acl,
--				      ACL_TYPE_DEFAULT);
-+				      ACL_TYPE_DEFAULT, true);
- 		posix_acl_release(default_acl);
- 	} else {
- 		inode->i_default_acl = NULL;
-@@ -647,7 +648,7 @@ int ntfs_init_acl(struct user_namespace
- 	else {
- 		if (!err)
- 			err = ntfs_set_acl_ex(mnt_userns, inode, acl,
--					      ACL_TYPE_ACCESS);
-+					      ACL_TYPE_ACCESS, true);
- 		posix_acl_release(acl);
- 	}
  
 
 
