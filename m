@@ -2,151 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0370FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 06:58:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10972C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 06:59:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237359AbiFGG6D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 02:58:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58334 "EHLO
+        id S237312AbiFGG7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 02:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237352AbiFGG54 (ORCPT
+        with ESMTP id S229559AbiFGG7U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 02:57:56 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E4B10FC7
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 23:57:54 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id w2so29579047ybi.7
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 23:57:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=K4uR5LbV6EbWG9F2qM3fIinCESP1HArAd0O7vuPpEds=;
-        b=pMuwb7jvfkdxK8pbZCWeKKSg0+Kv9kt1do1kXVTFq+txdIuBwlB1UcIwp57DKh7i9g
-         szai/PtBxsDy+76Fqksu4Gc8kwsS/ROWpTvx3qN8hzbJ3WdCoH3Bh3Fn2YT9apwRBF6l
-         ih+xe8ACA+kYvlXM6qLdo5POpDiTlNYkapy3rBLKHFr5RNh7OVfzlEoI6dnWrt46dpQU
-         c9tBAuzh8e+2DLroOqjo0UwAKKIVMoZX5KqG3zEidJVZlbqm5oQ4KCix4/H10xJCk6bM
-         dBrmEeOlP0QuCOdwA86sHSfvdBl83wAkplC+C+mq3Qm6VBQF+RQ0sa/JJOIUvm7a1iEf
-         o82Q==
+        Tue, 7 Jun 2022 02:59:20 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5AB4E15FE
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 23:59:17 -0700 (PDT)
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 6660C3F1A6
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 06:59:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1654585155;
+        bh=IsT8hRw/sNvl8bYDkskbd+oZi1y5enJZxvvxqrYnrr4=;
+        h=From:Date:To:Cc:Subject:Message-ID:In-Reply-To:References:
+         MIME-Version:Content-Type;
+        b=chLaiaBiYJyeJyWb0qyPcnPD2gCuYc3xaRKDY/2W+3oO8OP64l/iQ5XeQvMx9O3RA
+         rPCV35JrwCt1hIENBDGjS2BW94T6lwvTB63vvSU2bnqbm3I9VgYo4cQYNWUQilk20Y
+         3TxI9Th+6n5X9peHNo1mlimzh4HypZXJGR41PHQ5LZ8BSsspZ70DJHPtEoG8LzP0uS
+         nPetqUtnvJBr3dyTNfpxI5/nVJAZmTC+GrLQzMLh+HW2yAAAf6rChpwg06XvXc7hKy
+         q+koA2eKbmPF/l3L0cu+5KL2LpOH04iKykvM+XlYwkn1DZqGdStCg4c/4ye05mKHAR
+         ox7pd5gtRrxVQ==
+Received: by mail-ej1-f70.google.com with SMTP id pv1-20020a170907208100b00710f5f8105cso2598331ejb.17
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 23:59:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=K4uR5LbV6EbWG9F2qM3fIinCESP1HArAd0O7vuPpEds=;
-        b=e7XMjhrO2ig1TvTMUIf86TUYKMbp0c0hzUZ9iO9scbjz1xUSinQMsy0RC6lD3GYq4w
-         jx/Fkv4bhsuRmZPu63ZpUOl955bRtAtiBHS36Pt/RJUvhi4XPNKuwWdmh3MTTPP/9jI4
-         9g0ejzJAZUiMZfIL7lwEpH4J1oM3iNXfPTkCM0nFFVz+lGCIPmXBxWohCpnb50z+3tz1
-         paxGJ0bnN8FgUJQFB4zW5Ob9JlxkiyQ1WW1VjPwhpX9Cyl3RCfrDMXGuXgwY0MGrc4uX
-         CYlUQHTbDByHeuKZvUzlkj71xrxZduE5NGNXYoMl/Jf5onsLTt8OSIo9h1JQ8ipm1Fsy
-         iqeg==
-X-Gm-Message-State: AOAM533ikiEONwhqkjsuoOvTfQNAWKJNU9xSGLbCyJ3YzNMkAUnTNXzB
-        OcKZyzIzaOOXfnAjzBU0dHiQTi/4KVDoBL7W+DS3/A==
-X-Google-Smtp-Source: ABdhPJycGoatlV+SG49QjETFiIpead89XGEIv/BQTi+Beq0Q6TNzic9FjRAFVjuVipLQ5UKzpQkzp7CCWT9e7rrJzTk=
-X-Received: by 2002:a25:6041:0:b0:663:6f4c:b3b8 with SMTP id
- u62-20020a256041000000b006636f4cb3b8mr11869917ybb.236.1654585073784; Mon, 06
- Jun 2022 23:57:53 -0700 (PDT)
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version;
+        bh=IsT8hRw/sNvl8bYDkskbd+oZi1y5enJZxvvxqrYnrr4=;
+        b=N3yIuFfI5R8eXxf6xLUeiM0ZGQdqg8Xx5zzr+g/85s00WxkL8ZDUZt3xFOUq5uDDGI
+         27RpRMTwIfRh15ULFSnG293HbAsq9PIHwPyHM0wQaFRCP7wU9L5yIx3PulNev/SqgGT8
+         6H6+FlLQY3S6VPJdrLEoXcSqwqKCgZUp2SeNXGp3S/r8KxFK+N5C1rsd8Sdc//hc8cGK
+         BcuftfMaHHNz3dxQWRIPsj7i48EkSFcNlAnoTEg1XtzlvzDOWZA767Y0N+QXqF7bEQgV
+         G9zPV3TeW8MBlDiYRNNUGkRJ6DG6q40zYAi3d7TDsaSU0O/k40j0LtNgv+dblUCCVwGy
+         3mUw==
+X-Gm-Message-State: AOAM531zHzGMARs9d9QDHCgJQRTddE/vZPIFouFtZHdw8QAsFOPUHuFO
+        jdlJ4CN9T9+3RzoMdPNn4QVx5hfnYKtquxCXHvZ24vgUDPkkCLucBAoBUtb1EfSli6j0HXKXQ4W
+        2YpkDgZOW2x8Gl1k8K6iaT5bMuMM3IgqbmR95uYDD+Q==
+X-Received: by 2002:a05:6402:d0a:b0:425:d455:452 with SMTP id eb10-20020a0564020d0a00b00425d4550452mr31270536edb.259.1654585155042;
+        Mon, 06 Jun 2022 23:59:15 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyd9i/9BbSQOIg/c0QLsT8DddOAUdP7JtdSIrybDIOeMXXJCPyjEqk2UpdA6PvWtnllmKbnzg==
+X-Received: by 2002:a05:6402:d0a:b0:425:d455:452 with SMTP id eb10-20020a0564020d0a00b00425d4550452mr31270521edb.259.1654585154860;
+        Mon, 06 Jun 2022 23:59:14 -0700 (PDT)
+Received: from smeagol ([194.191.244.86])
+        by smtp.gmail.com with ESMTPSA id ex1-20020a170907954100b007052b183d51sm7090557ejc.132.2022.06.06.23.59.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 23:59:13 -0700 (PDT)
+From:   Juerg Haefliger <juerg.haefliger@canonical.com>
+X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
+Date:   Tue, 7 Jun 2022 08:59:11 +0200
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Juerg Haefliger <juerg.haefliger@canonical.com>,
+        linux@armlinux.org.uk, alim.akhtar@samsung.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] ARM: s3c: Kconfig: Style cleanups
+Message-ID: <20220607085911.4b0f7f10@smeagol>
+In-Reply-To: <63eabd40-761e-3b4e-c1be-43a12516e1b0@linaro.org>
+References: <20220523064252.11938-1-juergh@canonical.com>
+        <165450679893.60702.4773704114108524411.b4-ty@linaro.org>
+        <63eabd40-761e-3b4e-c1be-43a12516e1b0@linaro.org>
+Organization: Canonical Ltd
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220523155140.2878563-1-vdonnefort@google.com>
- <20220523155140.2878563-3-vdonnefort@google.com> <72bd6945-c167-65ba-6f81-fad2768972dc@arm.com>
- <Yp3JZIokwFxT+X6M@google.com>
-In-Reply-To: <Yp3JZIokwFxT+X6M@google.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Tue, 7 Jun 2022 08:57:42 +0200
-Message-ID: <CAKfTPtD6TpaJoz37Xv2_1Cc8ij_XGFjDTwA+TvN3ddiASkYc4g@mail.gmail.com>
-Subject: Re: [PATCH v9 2/7] sched/fair: Decay task PELT values during wakeup migration
-To:     Vincent Donnefort <vdonnefort@google.com>
-Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>, peterz@infradead.org,
-        mingo@redhat.com, linux-kernel@vger.kernel.org,
-        morten.rasmussen@arm.com, chris.redpath@arm.com,
-        qperret@google.com, tao.zhou@linux.dev, kernel-team@android.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/dzSs=0VGa2QCNMu0FW4QcUo";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 6 Jun 2022 at 11:31, Vincent Donnefort <vdonnefort@google.com> wrote:
->
-> [...]
-> > > @@ -8114,6 +8212,10 @@ static bool __update_blocked_fair(struct rq *rq, bool *done)
-> > >             if (update_cfs_rq_load_avg(cfs_rq_clock_pelt(cfs_rq), cfs_rq)) {
-> > >                     update_tg_load_avg(cfs_rq);
-> > >
-> > > +                   /* sync clock_pelt_idle with last update */
-> >
-> > update_idle_cfs_rq_clock_pelt() syncs cfs_rq->throttled_pelt_idle with
-> > cfs_rq->throttled_clock_pelt_time. Not sure what `clock_pelt_idle` and
-> > `last update` here mean?
->
->
-> Indeed, this comment is not helpful at all. What matters here is that the cfs_rq
-> is idle and we need to update the throttled_pelt_idle accordingly.
->
-> >
-> > [...]
-> >
-> > > +/* The rq is idle, we can sync to clock_task */
-> > > +static inline void _update_idle_rq_clock_pelt(struct rq *rq)
-> > > +{
-> > > +   rq->clock_pelt  = rq_clock_task(rq);
-> > > +
-> > > +   u64_u32_store(rq->enter_idle, rq_clock(rq));
-> > > +   /* Paired with smp_rmb in migrate_se_pelt_lag */
-> >
-> > minor:
-> >
-> > s/migrate_se_pelt_lag/migrate_se_pelt_lag()
-> >
-> > [...]
-> >
-> > > diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-> > > index bf4a0ec98678..97bc26e5c8af 100644
-> > > --- a/kernel/sched/sched.h
-> > > +++ b/kernel/sched/sched.h
-> > > @@ -648,6 +648,10 @@ struct cfs_rq {
-> > >     int                     runtime_enabled;
-> > >     s64                     runtime_remaining;
-> > >
-> > > +   u64                     throttled_pelt_idle;
-> > > +#ifndef CONFIG_64BIT
-> > > +   u64                     throttled_pelt_idle_copy;
-> > > +#endif
-> > >     u64                     throttled_clock;
-> > >     u64                     throttled_clock_pelt;
-> > >     u64                     throttled_clock_pelt_time;
-> > > @@ -1020,6 +1024,12 @@ struct rq {
-> > >     u64                     clock_task ____cacheline_aligned;
-> > >     u64                     clock_pelt;
-> > >     unsigned long           lost_idle_time;
-> > > +   u64                     clock_pelt_idle;
-> > > +   u64                     enter_idle;
-> > > +#ifndef CONFIG_64BIT
-> > > +   u64                     clock_pelt_idle_copy;
-> > > +   u64                     enter_idle_copy;
-> > > +#endif
-> > >
-> > >     atomic_t                nr_iowait;
-> >
-> > `throttled_pelt_idle`, `clock_pelt_idle` and `enter_idle` are clock
-> > snapshots when cfs_rq resp. rq go idle. But the naming does not really
-> > show this relation. And this makes reading those equations rather difficult.
-> >
-> > What about something like `throttled_clock_pelt_time_enter_idle`,
-> > `clock_pelt_enter_idle`, `clock_enter_idle`? Especially the first one is
-> > too long but something which shows that those are clock snapshots when
-> > enter idle would IMHO augment readability in migrate_se_pelt_lag().
->
-> What if I drop the "enter"?
->
->  clock_idle;
->  clock_pelt_idle;
->  throttled_clock_pelt_time_idle;
+--Sig_/dzSs=0VGa2QCNMu0FW4QcUo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-and you can even remove the _time for throttled_clock_pelt_idle
+On Mon, 6 Jun 2022 11:14:28 +0200
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 
->
-> >
-> > Besides these small issues:
-> >
-> > Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
->
-> Thanks!
+> On 06/06/2022 11:13, Krzysztof Kozlowski wrote:
+> > On Mon, 23 May 2022 08:42:49 +0200, Juerg Haefliger wrote: =20
+> >> The majority of the Kconfig files use a single tab for basic indentati=
+on
+> >> and a single tab followed by two whitespaces for help text indentation.
+> >> Fix the lines that don't follow this convention.
+> >>
+> >> While at it, add missing trailing comments to endif statements and rep=
+lace
+> >> tabs before comments with whitespaces (which seems to be more common).
+> >>
+> >> [...] =20
+> >=20
+> > Applied, thanks!
+> >=20
+> > [1/3] ARM: s3c: Kconfig: Fix indentation
+> >       https://git.kernel.org/krzk/linux/c/076702da7e8a2472f8ac86f1179dd=
+cc5e90febae
+> > [3/3] ARM: s3c: Kconfig.s3c64xx: Fix indentation
+> >       (no commit info) =20
+>=20
+> ...And dropped. This does not pass checkpatch. Please be sure you run
+> scripts/checkpatch on your contributions.
+
+I did and the check passed but email aliases don't work well in this scenar=
+io.
+Will fix and resubmit.
+
+...Juerg
+
+
+> WARNING: From:/Signed-off-by: email address mismatch: 'From: Juerg
+> Haefliger <juerg.haefliger@canonical.com>' !=3D 'Signed-off-by: Juerg
+> Haefliger <juergh@canonical.com>'
+>=20
+>=20
+> Best regards,
+> Krzysztof
+
+
+--Sig_/dzSs=0VGa2QCNMu0FW4QcUo
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEhZfU96IuprviLdeLD9OLCQumQrcFAmKe9z8ACgkQD9OLCQum
+QrekSxAAr7orCH7rJvXteTM/jHkBdQCnPsvWgUeCXlACg24BKoLr05vB8yy4RUNG
+PMg5pSZd9xhqJ2eOn8wjzMAKhEL/BRvgUmqKmip+4BLtl0MVwZcykQBD2wqCYS3i
+lALzu45t9X+WV0dDRx2D96Xqp1ycUT1YSIpZ5fVsoZtJz9v0F0F5gJUlwooP8QHX
+SwW83+HQFwjSv5WtaNZaE/+VW4rV5wS0sF0OQ9AfbD3KrZ4w8TcSbLwe3zbAJDK+
+Duso7rtqlmGfSDwBwHz4RjLYwxTvOG4OVjeTfjhaUpHmcumA8FDrH9CAYcEeBk3R
+cX3SxOS1yJn0bkMMDcNQd8m5XjGzX1ZZAZFc/XQ4MCK8jTBdpqjDbemL4qVvKD3X
+7s2BiQzvs75A+rcI4jrItEr4ecIP4HEQDxGmo7VbpJzX0G8dsvywOVmBgwaSBcAW
+iQ176Fa2lqrE+KiMWJVBvnJJ01KmbrsAWzxNBUijjq+OKONfs9oP+3HjjogS3Vts
+3gaVLqr3T9eFA3hWOPtK+WCYG61X8BX0E8KRUSc02BYYynfSPiMMK+pO1nShdcev
+oY9k2TeSr/r/zNfuGPgDPS32AR3xeODGWyYtMuMEnws4rf5eBpdjVYGMB31WRQtM
+s4czehkmQOcqGX/TdbjkRNvMr6jGC+c2KUKvK4hCRpMPcZ9yUUY=
+=stuX
+-----END PGP SIGNATURE-----
+
+--Sig_/dzSs=0VGa2QCNMu0FW4QcUo--
