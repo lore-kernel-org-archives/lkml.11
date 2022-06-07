@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC159CCA48F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13335C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359483AbiFHAeZ (ORCPT
+        id S1377288AbiFHAeg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:34:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
+        Tue, 7 Jun 2022 20:34:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383055AbiFGVwO (ORCPT
+        with ESMTP id S1382793AbiFGVvz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:52:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D419812D1F9;
-        Tue,  7 Jun 2022 12:10:23 -0700 (PDT)
+        Tue, 7 Jun 2022 17:51:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB8623E82B;
+        Tue,  7 Jun 2022 12:09:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A456617D0;
-        Tue,  7 Jun 2022 19:10:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6760AC385A5;
-        Tue,  7 Jun 2022 19:10:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 474F3B81F6D;
+        Tue,  7 Jun 2022 19:09:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8213C3411C;
+        Tue,  7 Jun 2022 19:09:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629022;
-        bh=u9c66hxd3Gms4SPDAZa/wUClxIpzgAWDdqlqJK5JUd0=;
+        s=korg; t=1654628973;
+        bh=3WkLGgrPgXyt6niNQshuTYXlUyoQOPiPks9fVvqPlt0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wpegZkBzqKmaCyw7rasOPPbDUWeQbgOhqjdgw/Io6CCF5ROWzE2BixXHRBqxTKkwJ
-         laxb3aywEpfOorW3H9vjE7RHsucXDmUsNOi+Fcm2XijxFQu0b90JUmQ/XhANDF38Ho
-         IAX6WZ1rQh36Gi52+F9xADTjHSQfE/KpkEIGgwLc=
+        b=s5SwWJcSkBfxuJyijW4LCgLX3Zs5bSVuPyl4QL/opX0QWlsYp/aDYP4RuEa9VoGQt
+         x1yyDXu8zYTPl5Ve2n5+8oPClnUnKDLrkOudRtygMLqfbBMFL0cIoi/N2tOS1aR/Nk
+         j+BmiQsMjOUsOWNmx8x9aNWYd/dcg8NwzfbE031k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 539/879] soc: qcom: smp2p: Fix missing of_node_put() in smp2p_parse_ipc
-Date:   Tue,  7 Jun 2022 19:00:57 +0200
-Message-Id: <20220607165018.517871860@linuxfoundation.org>
+Subject: [PATCH 5.18 523/879] dpaa2-eth: retrieve the virtual address before dma_unmap
+Date:   Tue,  7 Jun 2022 19:00:41 +0200
+Message-Id: <20220607165018.057656305@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,34 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-[ Upstream commit 8fd3f18ea31a398ecce4a6d3804433658678b0a3 ]
+[ Upstream commit 06d129946a71f3159b3b40ee95549183edf2c79d ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+The TSO header was DMA unmapped before the virtual address was retrieved
+and then used to free the buffer. This meant that we were actually
+removing the DMA map and then trying to search for it to help in
+retrieving the virtual address. This lead to a invalid virtual address
+being used in the kfree call.
 
-Fixes: 50e99641413e ("soc: qcom: smp2p: Qualcomm Shared Memory Point to Point")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220308071942.22942-1-linmq006@gmail.com
+Fix this by calling dpaa2_iova_to_virt() prior to the dma_unmap call.
+
+[  487.231819] Unable to handle kernel paging request at virtual address fffffd9807000008
+
+(...)
+
+[  487.354061] Hardware name: SolidRun LX2160A Honeycomb (DT)
+[  487.359535] pstate: a0400005 (NzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[  487.366485] pc : kfree+0xac/0x304
+[  487.369799] lr : kfree+0x204/0x304
+[  487.373191] sp : ffff80000c4eb120
+[  487.376493] x29: ffff80000c4eb120 x28: ffff662240c46400 x27: 0000000000000001
+[  487.383621] x26: 0000000000000001 x25: ffff662246da0cc0 x24: ffff66224af78000
+[  487.390748] x23: ffffad184f4ce008 x22: ffffad1850185000 x21: ffffad1838d13cec
+[  487.397874] x20: ffff6601c0000000 x19: fffffd9807000000 x18: 0000000000000000
+[  487.405000] x17: ffffb910cdc49000 x16: ffffad184d7d9080 x15: 0000000000004000
+[  487.412126] x14: 0000000000000008 x13: 000000000000ffff x12: 0000000000000000
+[  487.419252] x11: 0000000000000004 x10: 0000000000000001 x9 : ffffad184d7d927c
+[  487.426379] x8 : 0000000000000000 x7 : 0000000ffffffd1d x6 : ffff662240a94900
+[  487.433505] x5 : 0000000000000003 x4 : 0000000000000009 x3 : ffffad184f4ce008
+[  487.440632] x2 : ffff662243eec000 x1 : 0000000100000100 x0 : fffffc0000000000
+[  487.447758] Call trace:
+[  487.450194]  kfree+0xac/0x304
+[  487.453151]  dpaa2_eth_free_tx_fd.isra.0+0x33c/0x3e0 [fsl_dpaa2_eth]
+[  487.459507]  dpaa2_eth_tx_conf+0x100/0x2e0 [fsl_dpaa2_eth]
+[  487.464989]  dpaa2_eth_poll+0xdc/0x380 [fsl_dpaa2_eth]
+
+Fixes: 3dc709e0cd47 ("dpaa2-eth: add support for software TSO")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215886
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/qcom/smp2p.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/soc/qcom/smp2p.c b/drivers/soc/qcom/smp2p.c
-index 4a157240f419..59dbf4b61e6c 100644
---- a/drivers/soc/qcom/smp2p.c
-+++ b/drivers/soc/qcom/smp2p.c
-@@ -493,6 +493,7 @@ static int smp2p_parse_ipc(struct qcom_smp2p *smp2p)
- 	}
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index 4b047255d928..766391310d1b 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -1097,6 +1097,7 @@ static void dpaa2_eth_free_tx_fd(struct dpaa2_eth_priv *priv,
+ 	u32 fd_len = dpaa2_fd_get_len(fd);
+ 	struct dpaa2_sg_entry *sgt;
+ 	int should_free_skb = 1;
++	void *tso_hdr;
+ 	int i;
  
- 	smp2p->ipc_regmap = syscon_node_to_regmap(syscon);
-+	of_node_put(syscon);
- 	if (IS_ERR(smp2p->ipc_regmap))
- 		return PTR_ERR(smp2p->ipc_regmap);
+ 	fd_addr = dpaa2_fd_get_addr(fd);
+@@ -1136,9 +1137,10 @@ static void dpaa2_eth_free_tx_fd(struct dpaa2_eth_priv *priv,
+ 							priv->tx_data_offset);
  
+ 			/* Unmap and free the header */
++			tso_hdr = dpaa2_iova_to_virt(priv->iommu_domain, dpaa2_sg_get_addr(sgt));
+ 			dma_unmap_single(dev, dpaa2_sg_get_addr(sgt), TSO_HEADER_SIZE,
+ 					 DMA_TO_DEVICE);
+-			kfree(dpaa2_iova_to_virt(priv->iommu_domain, dpaa2_sg_get_addr(sgt)));
++			kfree(tso_hdr);
+ 
+ 			/* Unmap the other SG entries for the data */
+ 			for (i = 1; i < swa->tso.num_sg; i++)
 -- 
 2.35.1
 
