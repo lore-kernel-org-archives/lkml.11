@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB03AC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB2ABC43334
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:35:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377632AbiFGUdz (ORCPT
+        id S1377066AbiFGUcQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55224 "EHLO
+        Tue, 7 Jun 2022 16:32:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357501AbiFGTmD (ORCPT
+        with ESMTP id S1356749AbiFGTji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:42:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01E891B434F;
-        Tue,  7 Jun 2022 11:15:15 -0700 (PDT)
+        Tue, 7 Jun 2022 15:39:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 353DBFD360;
+        Tue,  7 Jun 2022 11:14:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 218B360907;
-        Tue,  7 Jun 2022 18:15:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EF6CC385A2;
-        Tue,  7 Jun 2022 18:15:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72412608CD;
+        Tue,  7 Jun 2022 18:14:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EEEBC385A2;
+        Tue,  7 Jun 2022 18:14:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625714;
-        bh=htPLHIavmzyKkdgcgtvk/pHoNlVhNVBf2q2ECVQ1E6k=;
+        s=korg; t=1654625664;
+        bh=j8Yt/rvyij5nfucFmUgDa7YJAs2n/VmhyAQLsHtBdKM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GAN5hPafDOxAS5wsrKN91hXTW3JlLG8UOXPuHlA3kk46toTb2tGUgS/U9dygUv414
-         uBeFpJ0yYapYXLPMcxaWqqlC2/7grE3DVVCGovKfEdrG+0Ym9wh4yQjhrXAK9ugHlf
-         iYcc96+dwrd3iHFCea0VS4CR4nKMFnhceB5guNAM=
+        b=Zqae/b+WaSWApkKx1aRU9l1c7dkZI1jz8Lb/ZyRFGedI1MDaDHh+tExU9fZrOYFq+
+         2rfEoRHLf0Sx6Xc4qxe+nfUH95bQaOafXij4SjFIKkUIMPr1ztlJsHLDKzXi+H2K2J
+         hHkf37mrvr7+wtHZ1A1rgc1kKjDUtYfjWdLf7A8s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org,
+        Hari Chandrakanthan <quic_haric@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 080/772] scsi: lpfc: Fix SCSI I/O completion and abort handler deadlock
-Date:   Tue,  7 Jun 2022 18:54:32 +0200
-Message-Id: <20220607164951.397886491@linuxfoundation.org>
+Subject: [PATCH 5.17 099/772] ath11k: disable spectral scan during spectral deinit
+Date:   Tue,  7 Jun 2022 18:54:51 +0200
+Message-Id: <20220607164951.966138341@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,149 +51,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Hari Chandrakanthan <quic_haric@quicinc.com>
 
-[ Upstream commit 03cbbd7c2f5ee288f648f4aeedc765a181188553 ]
+[ Upstream commit 161c64de239c7018e0295e7e0520a19f00aa32dc ]
 
-During stress I/O tests with 500+ vports, hard LOCKUP call traces are
-observed.
+When ath11k modules are removed using rmmod with spectral scan enabled,
+crash is observed. Different crash trace is observed for each crash.
 
-CPU A:
- native_queued_spin_lock_slowpath+0x192
- _raw_spin_lock_irqsave+0x32
- lpfc_handle_fcp_err+0x4c6
- lpfc_fcp_io_cmd_wqe_cmpl+0x964
- lpfc_sli4_fp_handle_cqe+0x266
- __lpfc_sli4_process_cq+0x105
- __lpfc_sli4_hba_process_cq+0x3c
- lpfc_cq_poll_hdler+0x16
- irq_poll_softirq+0x76
- __softirqentry_text_start+0xe4
- irq_exit+0xf7
- do_IRQ+0x7f
+Send spectral scan disable WMI command to firmware before cleaning
+the spectral dbring in the spectral_deinit API to avoid this crash.
 
-CPU B:
- native_queued_spin_lock_slowpath+0x5b
- _raw_spin_lock+0x1c
- lpfc_abort_handler+0x13e
- scmd_eh_abort_handler+0x85
- process_one_work+0x1a7
- worker_thread+0x30
- kthread+0x112
- ret_from_fork+0x1f
+call trace from one of the crash observed:
+[ 1252.880802] Unable to handle kernel NULL pointer dereference at virtual address 00000008
+[ 1252.882722] pgd = 0f42e886
+[ 1252.890955] [00000008] *pgd=00000000
+[ 1252.893478] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
+[ 1253.093035] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.4.89 #0
+[ 1253.115261] Hardware name: Generic DT based system
+[ 1253.121149] PC is at ath11k_spectral_process_data+0x434/0x574 [ath11k]
+[ 1253.125940] LR is at 0x88e31017
+[ 1253.132448] pc : [<7f9387b8>]    lr : [<88e31017>]    psr: a0000193
+[ 1253.135488] sp : 80d01bc8  ip : 00000001  fp : 970e0000
+[ 1253.141737] r10: 88e31000  r9 : 970ec000  r8 : 00000080
+[ 1253.146946] r7 : 94734040  r6 : a0000113  r5 : 00000057  r4 : 00000000
+[ 1253.152159] r3 : e18cb694  r2 : 00000217  r1 : 1df1f000  r0 : 00000001
+[ 1253.158755] Flags: NzCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment user
+[ 1253.165266] Control: 10c0383d  Table: 5e71006a  DAC: 00000055
+[ 1253.172472] Process swapper/0 (pid: 0, stack limit = 0x60870141)
+[ 1253.458055] [<7f9387b8>] (ath11k_spectral_process_data [ath11k]) from [<7f917fdc>] (ath11k_dbring_buffer_release_event+0x214/0x2e4 [ath11k])
+[ 1253.466139] [<7f917fdc>] (ath11k_dbring_buffer_release_event [ath11k]) from [<7f8ea3c4>] (ath11k_wmi_tlv_op_rx+0x1840/0x29cc [ath11k])
+[ 1253.478807] [<7f8ea3c4>] (ath11k_wmi_tlv_op_rx [ath11k]) from [<7f8fe868>] (ath11k_htc_rx_completion_handler+0x180/0x4e0 [ath11k])
+[ 1253.490699] [<7f8fe868>] (ath11k_htc_rx_completion_handler [ath11k]) from [<7f91308c>] (ath11k_ce_per_engine_service+0x2c4/0x3b4 [ath11k])
+[ 1253.502386] [<7f91308c>] (ath11k_ce_per_engine_service [ath11k]) from [<7f9a4198>] (ath11k_pci_ce_tasklet+0x28/0x80 [ath11k_pci])
+[ 1253.514811] [<7f9a4198>] (ath11k_pci_ce_tasklet [ath11k_pci]) from [<8032227c>] (tasklet_action_common.constprop.2+0x64/0xe8)
+[ 1253.526476] [<8032227c>] (tasklet_action_common.constprop.2) from [<803021e8>] (__do_softirq+0x130/0x2d0)
+[ 1253.537756] [<803021e8>] (__do_softirq) from [<80322610>] (irq_exit+0xcc/0xe8)
+[ 1253.547304] [<80322610>] (irq_exit) from [<8036a4a4>] (__handle_domain_irq+0x60/0xb4)
+[ 1253.554428] [<8036a4a4>] (__handle_domain_irq) from [<805eb348>] (gic_handle_irq+0x4c/0x90)
+[ 1253.562321] [<805eb348>] (gic_handle_irq) from [<80301a78>] (__irq_svc+0x58/0x8c)
 
-Diagram of lockup:
+Tested-on: QCN6122 hw1.0 AHB WLAN.HK.2.6.0.1-00851-QCAHKSWPL_SILICONZ-1
 
-CPUA                            CPUB
-----                            ----
-lpfc_cmd->buf_lock
-                            phba->hbalock
-                            lpfc_cmd->buf_lock
-phba->hbalock
-
-Fix by reordering the taking of the lpfc_cmd->buf_lock and phba->hbalock in
-lpfc_abort_handler routine so that it tries to take the lpfc_cmd->buf_lock
-first before phba->hbalock.
-
-Link: https://lore.kernel.org/r/20220412222008.126521-7-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Hari Chandrakanthan <quic_haric@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/1649396345-349-1-git-send-email-quic_haric@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_scsi.c | 33 +++++++++++++++------------------
- 1 file changed, 15 insertions(+), 18 deletions(-)
+ drivers/net/wireless/ath/ath11k/spectral.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_scsi.c b/drivers/scsi/lpfc/lpfc_scsi.c
-index 5a3da38a9067..6cc94fae01b8 100644
---- a/drivers/scsi/lpfc/lpfc_scsi.c
-+++ b/drivers/scsi/lpfc/lpfc_scsi.c
-@@ -5907,25 +5907,25 @@ lpfc_abort_handler(struct scsi_cmnd *cmnd)
- 	if (!lpfc_cmd)
- 		return ret;
+diff --git a/drivers/net/wireless/ath/ath11k/spectral.c b/drivers/net/wireless/ath/ath11k/spectral.c
+index 4100cc1449a2..e997426a1b4b 100644
+--- a/drivers/net/wireless/ath/ath11k/spectral.c
++++ b/drivers/net/wireless/ath/ath11k/spectral.c
+@@ -212,7 +212,10 @@ static int ath11k_spectral_scan_config(struct ath11k *ar,
+ 		return -ENODEV;
  
--	spin_lock_irqsave(&phba->hbalock, flags);
-+	/* Guard against IO completion being called at same time */
-+	spin_lock_irqsave(&lpfc_cmd->buf_lock, flags);
+ 	arvif->spectral_enabled = (mode != ATH11K_SPECTRAL_DISABLED);
 +
-+	spin_lock(&phba->hbalock);
- 	/* driver queued commands are in process of being flushed */
- 	if (phba->hba_flag & HBA_IOQ_FLUSH) {
- 		lpfc_printf_vlog(vport, KERN_WARNING, LOG_FCP,
- 			"3168 SCSI Layer abort requested I/O has been "
- 			"flushed by LLD.\n");
- 		ret = FAILED;
--		goto out_unlock;
-+		goto out_unlock_hba;
- 	}
++	spin_lock_bh(&ar->spectral.lock);
+ 	ar->spectral.mode = mode;
++	spin_unlock_bh(&ar->spectral.lock);
  
--	/* Guard against IO completion being called at same time */
--	spin_lock(&lpfc_cmd->buf_lock);
+ 	ret = ath11k_wmi_vdev_spectral_enable(ar, arvif->vdev_id,
+ 					      ATH11K_WMI_SPECTRAL_TRIGGER_CMD_CLEAR,
+@@ -843,9 +846,6 @@ static inline void ath11k_spectral_ring_free(struct ath11k *ar)
+ {
+ 	struct ath11k_spectral *sp = &ar->spectral;
+ 
+-	if (!sp->enabled)
+-		return;
 -
- 	if (!lpfc_cmd->pCmd) {
- 		lpfc_printf_vlog(vport, KERN_WARNING, LOG_FCP,
- 			 "2873 SCSI Layer I/O Abort Request IO CMPL Status "
- 			 "x%x ID %d LUN %llu\n",
- 			 SUCCESS, cmnd->device->id, cmnd->device->lun);
--		goto out_unlock_buf;
-+		goto out_unlock_hba;
- 	}
+ 	ath11k_dbring_srng_cleanup(ar, &sp->rx_ring);
+ 	ath11k_dbring_buf_cleanup(ar, &sp->rx_ring);
+ }
+@@ -897,15 +897,16 @@ void ath11k_spectral_deinit(struct ath11k_base *ab)
+ 		if (!sp->enabled)
+ 			continue;
  
- 	iocb = &lpfc_cmd->cur_iocbq;
-@@ -5933,7 +5933,7 @@ lpfc_abort_handler(struct scsi_cmnd *cmnd)
- 		pring_s4 = phba->sli4_hba.hdwq[iocb->hba_wqidx].io_wq->pring;
- 		if (!pring_s4) {
- 			ret = FAILED;
--			goto out_unlock_buf;
-+			goto out_unlock_hba;
- 		}
- 		spin_lock(&pring_s4->ring_lock);
- 	}
-@@ -5966,8 +5966,8 @@ lpfc_abort_handler(struct scsi_cmnd *cmnd)
- 			 "3389 SCSI Layer I/O Abort Request is pending\n");
- 		if (phba->sli_rev == LPFC_SLI_REV4)
- 			spin_unlock(&pring_s4->ring_lock);
--		spin_unlock(&lpfc_cmd->buf_lock);
--		spin_unlock_irqrestore(&phba->hbalock, flags);
-+		spin_unlock(&phba->hbalock);
-+		spin_unlock_irqrestore(&lpfc_cmd->buf_lock, flags);
- 		goto wait_for_cmpl;
- 	}
+-		ath11k_spectral_debug_unregister(ar);
+-		ath11k_spectral_ring_free(ar);
++		mutex_lock(&ar->conf_mutex);
++		ath11k_spectral_scan_config(ar, ATH11K_SPECTRAL_DISABLED);
++		mutex_unlock(&ar->conf_mutex);
  
-@@ -5988,15 +5988,13 @@ lpfc_abort_handler(struct scsi_cmnd *cmnd)
- 	if (ret_val != IOCB_SUCCESS) {
- 		/* Indicate the IO is not being aborted by the driver. */
- 		lpfc_cmd->waitq = NULL;
--		spin_unlock(&lpfc_cmd->buf_lock);
--		spin_unlock_irqrestore(&phba->hbalock, flags);
- 		ret = FAILED;
--		goto out;
-+		goto out_unlock_hba;
+ 		spin_lock_bh(&sp->lock);
+-
+-		sp->mode = ATH11K_SPECTRAL_DISABLED;
+ 		sp->enabled = false;
+-
+ 		spin_unlock_bh(&sp->lock);
++
++		ath11k_spectral_debug_unregister(ar);
++		ath11k_spectral_ring_free(ar);
  	}
+ }
  
- 	/* no longer need the lock after this point */
--	spin_unlock(&lpfc_cmd->buf_lock);
--	spin_unlock_irqrestore(&phba->hbalock, flags);
-+	spin_unlock(&phba->hbalock);
-+	spin_unlock_irqrestore(&lpfc_cmd->buf_lock, flags);
- 
- 	if (phba->cfg_poll & DISABLE_FCP_RING_INT)
- 		lpfc_sli_handle_fast_ring_event(phba,
-@@ -6031,10 +6029,9 @@ lpfc_abort_handler(struct scsi_cmnd *cmnd)
- out_unlock_ring:
- 	if (phba->sli_rev == LPFC_SLI_REV4)
- 		spin_unlock(&pring_s4->ring_lock);
--out_unlock_buf:
--	spin_unlock(&lpfc_cmd->buf_lock);
--out_unlock:
--	spin_unlock_irqrestore(&phba->hbalock, flags);
-+out_unlock_hba:
-+	spin_unlock(&phba->hbalock);
-+	spin_unlock_irqrestore(&lpfc_cmd->buf_lock, flags);
- out:
- 	lpfc_printf_vlog(vport, KERN_WARNING, LOG_FCP,
- 			 "0749 SCSI Layer I/O Abort Request Status x%x ID %d "
 -- 
 2.35.1
 
