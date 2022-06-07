@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 629FBCCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82CDBCCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380574AbiFGVbA (ORCPT
+        id S1380696AbiFGVbL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46164 "EHLO
+        Tue, 7 Jun 2022 17:31:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378075AbiFGUet (ORCPT
+        with ESMTP id S1378071AbiFGUes (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:49 -0400
+        Tue, 7 Jun 2022 16:34:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF55181443;
-        Tue,  7 Jun 2022 11:37:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 512921E96D5;
+        Tue,  7 Jun 2022 11:37:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 481DD6156D;
-        Tue,  7 Jun 2022 18:37:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E3B5C385A5;
-        Tue,  7 Jun 2022 18:37:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E35661564;
+        Tue,  7 Jun 2022 18:37:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ADECC36B03;
+        Tue,  7 Jun 2022 18:37:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627038;
-        bh=MWvXMyoHOrEdCFlLY9mx2YvjDbiogfrSF1YvuFt01/c=;
+        s=korg; t=1654627041;
+        bh=SlBPGji7woA4rGOeBaUnM7hABHCKRDfgOmNlCjm/ZjY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uN2rci62ii8oaLxRVIDY6SsWqGhHVjobry6yLNzY0uAv6lHJYl0WdRLceaVE+eYrc
-         m2FTujUt5Ln2adkgKl+NSUpGDrPiLvVhNIKYanc37IL+aM6tCKG2s3LiYnjSMG7JJU
-         BsXFhgXdQWK9OhPs5ugD6LeEVIeAVQ+bPDXlmuII=
+        b=B4wtaeu3AwHYMS7NRoflTlrOxaxYSlcouOaVROFHfEnNMh3yBvWdSP5ND4sbuVihj
+         HPm8NKV1XEuqI9a3m2FGPr5pK5OmiY/qL8x7Z1Y2Z+5U0GFoqbFd7lWVbld4nyB4GB
+         eXkp3Jto2fNLiDTaSToFsoSOgrljZLYyp+3AKkls=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 594/772] i2c: rcar: fix PM ref counts in probe error paths
-Date:   Tue,  7 Jun 2022 19:03:06 +0200
-Message-Id: <20220607165006.447141889@linuxfoundation.org>
+        stable@vger.kernel.org, Li Huafei <lihuafei1@huawei.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 595/772] tracing: Reset the function filter after completing trampoline/graph selftest
+Date:   Tue,  7 Jun 2022 19:03:07 +0200
+Message-Id: <20220607165006.475470301@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,71 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+From: Li Huafei <lihuafei1@huawei.com>
 
-[ Upstream commit 3fe2ec59db1a7569e18594b9c0cf1f4f1afd498e ]
+[ Upstream commit e35c2d8e22745751cf304ec3fe39616643db2e0a ]
 
-We have to take care of ID_P_PM_BLOCKED when bailing out during probe.
+The direct trampoline and graph coexistence test sets global_ops to
+trace only 'trace_selftest_dynamic_test_func', but does not reset it
+after the test is completed, resulting in the function filter being set
+already after the system starts. Although it can be reset through the
+tracefs interface, it is more or less confusing to the user, and we
+should reset it to trace all functions after the trampoline/graph test
+completes.
 
-Fixes: 7ee24eb508d6 ("i2c: rcar: disable PM in multi-master mode")
-Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Link: https://lkml.kernel.org/r/20220427034119.24668-1-lihuafei1@huawei.com
+Link: https://lore.kernel.org/all/20220418073958.104029-1-lihuafei1@huawei.com/
+
+Fixes: 130c08065848 ("tracing: Add trampoline/graph selftest")
+Signed-off-by: Li Huafei <lihuafei1@huawei.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-rcar.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ kernel/trace/trace_selftest.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/i2c/busses/i2c-rcar.c b/drivers/i2c/busses/i2c-rcar.c
-index f71c730f9838..995ecf5e4438 100644
---- a/drivers/i2c/busses/i2c-rcar.c
-+++ b/drivers/i2c/busses/i2c-rcar.c
-@@ -1062,8 +1062,10 @@ static int rcar_i2c_probe(struct platform_device *pdev)
- 	pm_runtime_enable(dev);
- 	pm_runtime_get_sync(dev);
- 	ret = rcar_i2c_clock_calculate(priv);
--	if (ret < 0)
--		goto out_pm_put;
-+	if (ret < 0) {
-+		pm_runtime_put(dev);
-+		goto out_pm_disable;
-+	}
- 
- 	rcar_i2c_write(priv, ICSAR, 0); /* Gen2: must be 0 if not using slave */
- 
-@@ -1092,19 +1094,19 @@ static int rcar_i2c_probe(struct platform_device *pdev)
- 
- 	ret = platform_get_irq(pdev, 0);
- 	if (ret < 0)
--		goto out_pm_disable;
-+		goto out_pm_put;
- 	priv->irq = ret;
- 	ret = devm_request_irq(dev, priv->irq, irqhandler, irqflags, dev_name(dev), priv);
- 	if (ret < 0) {
- 		dev_err(dev, "cannot get irq %d\n", priv->irq);
--		goto out_pm_disable;
-+		goto out_pm_put;
+diff --git a/kernel/trace/trace_selftest.c b/kernel/trace/trace_selftest.c
+index abcadbe933bb..a2d301f58ced 100644
+--- a/kernel/trace/trace_selftest.c
++++ b/kernel/trace/trace_selftest.c
+@@ -895,6 +895,9 @@ trace_selftest_startup_function_graph(struct tracer *trace,
+ 		ret = -1;
+ 		goto out;
  	}
++
++	/* Enable tracing on all functions again */
++	ftrace_set_global_filter(NULL, 0, 1);
+ #endif
  
- 	platform_set_drvdata(pdev, priv);
- 
- 	ret = i2c_add_numbered_adapter(adap);
- 	if (ret < 0)
--		goto out_pm_disable;
-+		goto out_pm_put;
- 
- 	if (priv->flags & ID_P_HOST_NOTIFY) {
- 		priv->host_notify_client = i2c_new_slave_host_notify_device(adap);
-@@ -1121,7 +1123,8 @@ static int rcar_i2c_probe(struct platform_device *pdev)
-  out_del_device:
- 	i2c_del_adapter(&priv->adap);
-  out_pm_put:
--	pm_runtime_put(dev);
-+	if (priv->flags & ID_P_PM_BLOCKED)
-+		pm_runtime_put(dev);
-  out_pm_disable:
- 	pm_runtime_disable(dev);
- 	return ret;
+ 	/* Don't test dynamic tracing, the function tracer already did */
 -- 
 2.35.1
 
