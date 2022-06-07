@@ -2,83 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D776CCA486
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 03:17:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9CB1C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 03:18:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243384AbiFHDRc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 23:17:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43974 "EHLO
+        id S243765AbiFHDRu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 23:17:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345238AbiFHDOX (ORCPT
+        with ESMTP id S1346406AbiFHDOd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 23:14:23 -0400
-X-Greylist: delayed 366 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 12:24:22 PDT
-Received: from 11.mo581.mail-out.ovh.net (11.mo581.mail-out.ovh.net [87.98.173.157])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07613277FAC
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:24:21 -0700 (PDT)
-Received: from player698.ha.ovh.net (unknown [10.109.143.220])
-        by mo581.mail-out.ovh.net (Postfix) with ESMTP id 06E6424103
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:24:20 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player698.ha.ovh.net (Postfix) with ESMTPSA id D80BF2B48047A;
-        Tue,  7 Jun 2022 19:24:10 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-110S004c12dac52-d115-480d-84c5-32e704857230,
-                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Antonino Daplas <adaplas@gmail.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Helge Deller <deller@gmx.de>, Paul Mackerras <paulus@samba.org>
-Cc:     linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>, dri-devel@lists.freedesktop.org
-Subject: [PATCH 3/7] fbdev: radeon: Use backlight helper
-Date:   Tue,  7 Jun 2022 21:23:31 +0200
-Message-Id: <20220607192335.1137249-4-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220607192335.1137249-1-steve@sk2.org>
-References: <20220607192335.1137249-1-steve@sk2.org>
+        Tue, 7 Jun 2022 23:14:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C1519EC05;
+        Tue,  7 Jun 2022 12:26:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3550B823CC;
+        Tue,  7 Jun 2022 19:26:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D833C385A5;
+        Tue,  7 Jun 2022 19:26:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629968;
+        bh=ydX+2CKF6CXsKEyIp/NMR38F13oGuyKzNtRL6g2GNiI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bCGgJCXHl5Sxqzkq98hUAN/g42XDLoerZFgAPdI2Ke9TMdjSwbXHwJ8qHE8CEQXSR
+         ffJ3NW1aUUl5j1ItSaWZh00P8+u4QbgTSQ0Rr7YniAyZoMKbALQFKSYXOT/K2sI3Cj
+         rP64Of8X2J1InIFsSHF4WzZmHjCuMjx7kRzj+1nY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jan Jablonsky <jjablonsky@snapchat.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Subject: [PATCH 5.18 853/879] misc: fastrpc: fix list iterator in fastrpc_req_mem_unmap_impl
+Date:   Tue,  7 Jun 2022 19:06:11 +0200
+Message-Id: <20220607165027.614890950@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 11953397840202401513
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudefjecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekud
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of retrieving the backlight brightness in struct
-backlight_properties manually, and then checking whether the backlight
-should be on at all, use backlight_get_brightness() which does all
-this and insulates this from future changes.
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Helge Deller <deller@gmx.de>
-Cc: linux-fbdev@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
+commit c5c07c5958cf0c9af6e76813e6de15d42ee49822 upstream.
+
+This is another instance of incorrect use of list iterator and
+checking it for NULL.
+
+The list iterator value 'map' will *always* be set and non-NULL
+by list_for_each_entry(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty (in this case, the
+check 'if (!map) {' will always be false and never exit as expected).
+
+To fix the bug, use a new variable 'iter' as the list iterator,
+while use the original variable 'map' as a dedicated pointer to
+point to the found element.
+
+Without this patch, Kernel crashes with below trace:
+
+Unable to handle kernel access to user memory outside uaccess routines
+ at virtual address 0000ffff7fb03750
+...
+Call trace:
+ fastrpc_map_create+0x70/0x290 [fastrpc]
+ fastrpc_req_mem_map+0xf0/0x2dc [fastrpc]
+ fastrpc_device_ioctl+0x138/0xc60 [fastrpc]
+ __arm64_sys_ioctl+0xa8/0xec
+ invoke_syscall+0x48/0x114
+ el0_svc_common.constprop.0+0xd4/0xfc
+ do_el0_svc+0x28/0x90
+ el0_svc+0x3c/0x130
+ el0t_64_sync_handler+0xa4/0x130
+ el0t_64_sync+0x18c/0x190
+Code: 14000016 f94000a5 eb05029f 54000260 (b94018a6)
+---[ end trace 0000000000000000 ]---
+
+Fixes: 5c1b97c7d7b7 ("misc: fastrpc: add support for FASTRPC_IOCTL_MEM_MAP/UNMAP")
+Cc: stable@vger.kernel.org
+Reported-by: Jan Jablonsky <jjablonsky@snapchat.com>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220518152353.13058-1-srinivas.kandagatla@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/aty/radeon_backlight.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/misc/fastrpc.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/video/fbdev/aty/radeon_backlight.c b/drivers/video/fbdev/aty/radeon_backlight.c
-index d2c1263ad260..427adc838f77 100644
---- a/drivers/video/fbdev/aty/radeon_backlight.c
-+++ b/drivers/video/fbdev/aty/radeon_backlight.c
-@@ -57,11 +57,7 @@ static int radeon_bl_update_status(struct backlight_device *bd)
- 	 * backlight. This provides some greater power saving and the display
- 	 * is useless without backlight anyway.
- 	 */
--        if (bd->props.power != FB_BLANK_UNBLANK ||
--	    bd->props.fb_blank != FB_BLANK_UNBLANK)
--		level = 0;
--	else
--		level = bd->props.brightness;
-+	level = backlight_get_brightness(bd);
+--- a/drivers/misc/fastrpc.c
++++ b/drivers/misc/fastrpc.c
+@@ -1747,17 +1747,18 @@ err_invoke:
+ static int fastrpc_req_mem_unmap_impl(struct fastrpc_user *fl, struct fastrpc_mem_unmap *req)
+ {
+ 	struct fastrpc_invoke_args args[1] = { [0] = { 0 } };
+-	struct fastrpc_map *map = NULL, *m;
++	struct fastrpc_map *map = NULL, *iter, *m;
+ 	struct fastrpc_mem_unmap_req_msg req_msg = { 0 };
+ 	int err = 0;
+ 	u32 sc;
+ 	struct device *dev = fl->sctx->dev;
  
- 	del_timer_sync(&rinfo->lvds_timer);
- 	radeon_engine_idle();
--- 
-2.30.2
+ 	spin_lock(&fl->lock);
+-	list_for_each_entry_safe(map, m, &fl->maps, node) {
+-		if ((req->fd < 0 || map->fd == req->fd) && (map->raddr == req->vaddr))
++	list_for_each_entry_safe(iter, m, &fl->maps, node) {
++		if ((req->fd < 0 || iter->fd == req->fd) && (iter->raddr == req->vaddr)) {
++			map = iter;
+ 			break;
+-		map = NULL;
++		}
+ 	}
+ 
+ 	spin_unlock(&fl->lock);
+
 
