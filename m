@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F623CCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:23:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ADA3CCA482
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:23:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385282AbiFHAVK (ORCPT
+        id S1385475AbiFHAV3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:21:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46010 "EHLO
+        Tue, 7 Jun 2022 20:21:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383244AbiFGVw6 (ORCPT
+        with ESMTP id S1383095AbiFGWFR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:52:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E052431B1;
-        Tue,  7 Jun 2022 12:10:50 -0700 (PDT)
+        Tue, 7 Jun 2022 18:05:17 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 464AB195945;
+        Tue,  7 Jun 2022 12:16:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6A83B8220B;
-        Tue,  7 Jun 2022 19:10:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18ABAC385A2;
-        Tue,  7 Jun 2022 19:10:46 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B338FCE24AA;
+        Tue,  7 Jun 2022 19:16:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92EB1C34115;
+        Tue,  7 Jun 2022 19:16:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629047;
-        bh=Lvhq4E20hiCY4U4uXUpM5ihKqDyUNNnEd67JNgqPIjY=;
+        s=korg; t=1654629386;
+        bh=bztlmvwcCgpEkjqxhJVwCHE/RQIR8mjqYy01g1meIeY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ahq+6Chp5pxtWxZAobEbmJScQdrW4h0JtV3e5oWXMn3AZDCfV2G8t21N7agL0maOZ
-         CW5K0quJI5c1BVfF2/rP/FywY0zq6ORD0skaLtGjhiF41R/Plq8JRzQvl21maUhypF
-         Y1C7hOaquOAvZBrYsUygIlTLxIDQ8mvF+nA7p3JI=
+        b=yk2aeMDkrFZb3lIaQiYm6jGwxUODbguSIDH6zhrsCdfEgLbMhMpTSuCMpOLQnflpB
+         zfrqz7SgA5OwRmOsRPaNYndyvwRSRBl68p/OkLDXI0jxmQ7c1D4TlG0AvZdGMeK30D
+         8tiW6pJo6GczIv1yWNjtME6xh2WyvdL6b5FFr+us=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
-        Anup Patel <anup@brainfault.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 499/879] cpuidle: psci: Fix regression leading to no genpd governor
-Date:   Tue,  7 Jun 2022 19:00:17 +0200
-Message-Id: <20220607165017.356200407@linuxfoundation.org>
+Subject: [PATCH 5.18 670/879] cpufreq: mediatek: Unregister platform device on exit
+Date:   Tue,  7 Jun 2022 19:03:08 +0200
+Message-Id: <20220607165022.298206332@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,46 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Rex-BC Chen <rex-bc.chen@mediatek.com>
 
-[ Upstream commit 34be27517cb763ea367da21e3cdee5d1bc40f47f ]
+[ Upstream commit f126fbadce92b92c3a7be41e4abc1fbae93ae2ef ]
 
-While factoring out the PM domain related code from PSCI domain driver into
-a set of library functions, a regression when initializing the genpds got
-introduced. More precisely, we fail to assign a genpd governor, so let's
-fix this.
+We register the platform device when driver inits. However, we do not
+unregister it when driver exits.
 
-Fixes: 9d976d6721df ("cpuidle: Factor-out power domain related code from PSCI domain driver")
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Reviewed-by: Anup Patel <anup@brainfault.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+To resolve this, we declare the platform data to be a global static
+variable and rename it to be "cpufreq_pdev". With this global variable,
+we can do platform_device_unregister() when driver exits.
+
+Fixes: 501c574f4e3a ("cpufreq: mediatek: Add support of cpufreq to MT2701/MT7623 SoC")
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+[ Viresh: Commit log and Subject ]
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpuidle/cpuidle-psci-domain.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/cpufreq/mediatek-cpufreq.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/cpuidle/cpuidle-psci-domain.c b/drivers/cpuidle/cpuidle-psci-domain.c
-index 755bbdfc5b82..3db4fca1172b 100644
---- a/drivers/cpuidle/cpuidle-psci-domain.c
-+++ b/drivers/cpuidle/cpuidle-psci-domain.c
-@@ -52,7 +52,7 @@ static int psci_pd_init(struct device_node *np, bool use_osi)
- 	struct generic_pm_domain *pd;
- 	struct psci_pd_provider *pd_provider;
- 	struct dev_power_governor *pd_gov;
--	int ret = -ENOMEM, state_count = 0;
-+	int ret = -ENOMEM;
+diff --git a/drivers/cpufreq/mediatek-cpufreq.c b/drivers/cpufreq/mediatek-cpufreq.c
+index 9d7d9c8dc184..bfe240c726e3 100644
+--- a/drivers/cpufreq/mediatek-cpufreq.c
++++ b/drivers/cpufreq/mediatek-cpufreq.c
+@@ -44,6 +44,8 @@ struct mtk_cpu_dvfs_info {
+ 	bool need_voltage_tracking;
+ };
  
- 	pd = dt_idle_pd_alloc(np, psci_dt_parse_state_node);
- 	if (!pd)
-@@ -71,7 +71,7 @@ static int psci_pd_init(struct device_node *np, bool use_osi)
- 		pd->flags |= GENPD_FLAG_ALWAYS_ON;
++static struct platform_device *cpufreq_pdev;
++
+ static LIST_HEAD(dvfs_info_list);
  
- 	/* Use governor for CPU PM domains if it has some states to manage. */
--	pd_gov = state_count > 0 ? &pm_domain_cpu_gov : NULL;
-+	pd_gov = pd->states ? &pm_domain_cpu_gov : NULL;
+ static struct mtk_cpu_dvfs_info *mtk_cpu_dvfs_info_lookup(int cpu)
+@@ -547,7 +549,6 @@ static int __init mtk_cpufreq_driver_init(void)
+ {
+ 	struct device_node *np;
+ 	const struct of_device_id *match;
+-	struct platform_device *pdev;
+ 	int err;
  
- 	ret = pm_genpd_init(pd, pd_gov, false);
- 	if (ret)
+ 	np = of_find_node_by_path("/");
+@@ -571,11 +572,11 @@ static int __init mtk_cpufreq_driver_init(void)
+ 	 * and the device registration codes are put here to handle defer
+ 	 * probing.
+ 	 */
+-	pdev = platform_device_register_simple("mtk-cpufreq", -1, NULL, 0);
+-	if (IS_ERR(pdev)) {
++	cpufreq_pdev = platform_device_register_simple("mtk-cpufreq", -1, NULL, 0);
++	if (IS_ERR(cpufreq_pdev)) {
+ 		pr_err("failed to register mtk-cpufreq platform device\n");
+ 		platform_driver_unregister(&mtk_cpufreq_platdrv);
+-		return PTR_ERR(pdev);
++		return PTR_ERR(cpufreq_pdev);
+ 	}
+ 
+ 	return 0;
+@@ -584,6 +585,7 @@ module_init(mtk_cpufreq_driver_init)
+ 
+ static void __exit mtk_cpufreq_driver_exit(void)
+ {
++	platform_device_unregister(cpufreq_pdev);
+ 	platform_driver_unregister(&mtk_cpufreq_platdrv);
+ }
+ module_exit(mtk_cpufreq_driver_exit)
 -- 
 2.35.1
 
