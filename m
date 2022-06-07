@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38307CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DDA7CCA488
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382246AbiFHBfv (ORCPT
+        id S1382733AbiFHBf6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:35:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45582 "EHLO
+        Tue, 7 Jun 2022 21:35:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384099AbiFGVyI (ORCPT
+        with ESMTP id S1349103AbiFGWVm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:54:08 -0400
+        Tue, 7 Jun 2022 18:21:42 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76BCFBC6D7;
-        Tue,  7 Jun 2022 12:13:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5442B26A0AA;
+        Tue,  7 Jun 2022 12:21:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9F9CB823AE;
-        Tue,  7 Jun 2022 19:12:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29FB1C385A2;
-        Tue,  7 Jun 2022 19:12:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93B9EB823CC;
+        Tue,  7 Jun 2022 19:21:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DED30C385A2;
+        Tue,  7 Jun 2022 19:21:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629144;
-        bh=ChG5KglVMpbMmET+uPYKCKvlwS3FJg7jw68kdmf/5z0=;
+        s=korg; t=1654629708;
+        bh=6OCOup2jxFyPMio7PTP0EyiHgfEdOVgowN2xRnYuOhg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oUQwiIvf+QJGgoFGdF79fhWnDqUBAwJawB3SQBidzo/r+wPjgl0tKm0V90l9CMtCw
-         NJVOZfvMjucUUG7vcMLvH8DekGn0ek5ZBnymVs3uFk5CvVqqXmbaAxtugJ0cUSGZqs
-         vpa5ebmTypXJdEbfdU1ov5Y4EuQw44WQA/nQ/Dk0=
+        b=QUB9u7E6oBTPwvJe4iDcgWpvAq8D64LoONgthKOXqOFA5oSQACn4RvgtgC456FWyN
+         k/r750sgFM7MZFL8qT670OVK0KLht7MvtYOrIBYQ94Mg6XRtioWgj1ORA1tkwVafjz
+         wYH52W1k5SLXsLjqo3ju4VXcylPM5ZOh3vCVXf2k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hari Bathini <hbathini@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 583/879] powerpc/fadump: fix PT_LOAD segment for boot memory area
-Date:   Tue,  7 Jun 2022 19:01:41 +0200
-Message-Id: <20220607165019.775638526@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Moore <paul@paul-moore.com>,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
+Subject: [PATCH 5.18 788/879] landlock: Reduce the maximum number of layers to 16
+Date:   Tue,  7 Jun 2022 19:05:06 +0200
+Message-Id: <20220607165025.739544729@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,62 +49,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hari Bathini <hbathini@linux.ibm.com>
+From: Mickaël Salaün <mic@digikod.net>
 
-[ Upstream commit 15eb77f873255cf9f4d703b63cfbd23c46579654 ]
+commit 75c542d6c6cc48720376862d5496d51509160dfd upstream.
 
-Boot memory area is setup as separate PT_LOAD segment in the vmcore
-as it is moved by f/w, on crash, to a destination address provided by
-the kernel. Having separate PT_LOAD segment helps in handling the
-different physical address and offset for boot memory area in the
-vmcore.
+The maximum number of nested Landlock domains is currently 64.  Because
+of the following fix and to help reduce the stack size, let's reduce it
+to 16.  This seems large enough for a lot of use cases (e.g. sandboxed
+init service, spawning a sandboxed SSH service, in nested sandboxed
+containers).  Reducing the number of nested domains may also help to
+discover misuse of Landlock (e.g. creating a domain per rule).
 
-Commit ced1bf52f477 ("powerpc/fadump: merge adjacent memory ranges to
-reduce PT_LOAD segements") inadvertly broke this pre-condition for
-cases where some of the first kernel memory is available adjacent to
-boot memory area. This scenario is rare but possible when memory for
-fadump could not be reserved adjacent to boot memory area owing to
-memory hole or such. Reading memory from a vmcore exported in such
-scenario provides incorrect data.  Fix it by ensuring no other region
-is folded into boot memory area.
+Add and use a dedicated layer_mask_t typedef to fit with the number of
+layers.  This might be useful when changing it and to keep it consistent
+with the maximum number of layers.
 
-Fixes: ced1bf52f477 ("powerpc/fadump: merge adjacent memory ranges to reduce PT_LOAD segements")
-Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220406093839.206608-2-hbathini@linux.ibm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reviewed-by: Paul Moore <paul@paul-moore.com>
+Link: https://lore.kernel.org/r/20220506161102.525323-3-mic@digikod.net
+Cc: stable@vger.kernel.org
+Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/fadump.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ Documentation/userspace-api/landlock.rst   |    4 ++--
+ security/landlock/fs.c                     |   17 +++++++----------
+ security/landlock/limits.h                 |    2 +-
+ security/landlock/ruleset.h                |    4 ++++
+ tools/testing/selftests/landlock/fs_test.c |    2 +-
+ 5 files changed, 15 insertions(+), 14 deletions(-)
 
-diff --git a/arch/powerpc/kernel/fadump.c b/arch/powerpc/kernel/fadump.c
-index 65562c4a0a69..dc2350b288cf 100644
---- a/arch/powerpc/kernel/fadump.c
-+++ b/arch/powerpc/kernel/fadump.c
-@@ -867,7 +867,6 @@ static int fadump_alloc_mem_ranges(struct fadump_mrange_info *mrange_info)
- 				       sizeof(struct fadump_memory_range));
- 	return 0;
- }
--
- static inline int fadump_add_mem_range(struct fadump_mrange_info *mrange_info,
- 				       u64 base, u64 end)
- {
-@@ -886,7 +885,12 @@ static inline int fadump_add_mem_range(struct fadump_mrange_info *mrange_info,
- 		start = mem_ranges[mrange_info->mem_range_cnt - 1].base;
- 		size  = mem_ranges[mrange_info->mem_range_cnt - 1].size;
+--- a/Documentation/userspace-api/landlock.rst
++++ b/Documentation/userspace-api/landlock.rst
+@@ -267,8 +267,8 @@ restrict such paths with dedicated rules
+ Ruleset layers
+ --------------
  
--		if ((start + size) == base)
-+		/*
-+		 * Boot memory area needs separate PT_LOAD segment(s) as it
-+		 * is moved to a different location at the time of crash.
-+		 * So, fold only if the region is not boot memory area.
-+		 */
-+		if ((start + size) == base && start >= fw_dump.boot_mem_top)
- 			is_adjacent = true;
- 	}
- 	if (!is_adjacent) {
--- 
-2.35.1
-
+-There is a limit of 64 layers of stacked rulesets.  This can be an issue for a
+-task willing to enforce a new ruleset in complement to its 64 inherited
++There is a limit of 16 layers of stacked rulesets.  This can be an issue for a
++task willing to enforce a new ruleset in complement to its 16 inherited
+ rulesets.  Once this limit is reached, sys_landlock_restrict_self() returns
+ E2BIG.  It is then strongly suggested to carefully build rulesets once in the
+ life of a thread, especially for applications able to launch other applications
+--- a/security/landlock/fs.c
++++ b/security/landlock/fs.c
+@@ -183,10 +183,10 @@ int landlock_append_fs_rule(struct landl
+ 
+ /* Access-control management */
+ 
+-static inline u64 unmask_layers(const struct landlock_ruleset *const domain,
+-				const struct path *const path,
+-				const access_mask_t access_request,
+-				u64 layer_mask)
++static inline layer_mask_t
++unmask_layers(const struct landlock_ruleset *const domain,
++	      const struct path *const path, const access_mask_t access_request,
++	      layer_mask_t layer_mask)
+ {
+ 	const struct landlock_rule *rule;
+ 	const struct inode *inode;
+@@ -212,11 +212,11 @@ static inline u64 unmask_layers(const st
+ 	 */
+ 	for (i = 0; i < rule->num_layers; i++) {
+ 		const struct landlock_layer *const layer = &rule->layers[i];
+-		const u64 layer_level = BIT_ULL(layer->level - 1);
++		const layer_mask_t layer_bit = BIT_ULL(layer->level - 1);
+ 
+ 		/* Checks that the layer grants access to the full request. */
+ 		if ((layer->access & access_request) == access_request) {
+-			layer_mask &= ~layer_level;
++			layer_mask &= ~layer_bit;
+ 
+ 			if (layer_mask == 0)
+ 				return layer_mask;
+@@ -231,12 +231,9 @@ static int check_access_path(const struc
+ {
+ 	bool allowed = false;
+ 	struct path walker_path;
+-	u64 layer_mask;
++	layer_mask_t layer_mask;
+ 	size_t i;
+ 
+-	/* Make sure all layers can be checked. */
+-	BUILD_BUG_ON(BITS_PER_TYPE(layer_mask) < LANDLOCK_MAX_NUM_LAYERS);
+-
+ 	if (!access_request)
+ 		return 0;
+ 	if (WARN_ON_ONCE(!domain || !path))
+--- a/security/landlock/limits.h
++++ b/security/landlock/limits.h
+@@ -15,7 +15,7 @@
+ 
+ /* clang-format off */
+ 
+-#define LANDLOCK_MAX_NUM_LAYERS		64
++#define LANDLOCK_MAX_NUM_LAYERS		16
+ #define LANDLOCK_MAX_NUM_RULES		U32_MAX
+ 
+ #define LANDLOCK_LAST_ACCESS_FS		LANDLOCK_ACCESS_FS_MAKE_SYM
+--- a/security/landlock/ruleset.h
++++ b/security/landlock/ruleset.h
+@@ -23,6 +23,10 @@ typedef u16 access_mask_t;
+ /* Makes sure all filesystem access rights can be stored. */
+ static_assert(BITS_PER_TYPE(access_mask_t) >= LANDLOCK_NUM_ACCESS_FS);
+ 
++typedef u16 layer_mask_t;
++/* Makes sure all layers can be checked. */
++static_assert(BITS_PER_TYPE(layer_mask_t) >= LANDLOCK_MAX_NUM_LAYERS);
++
+ /**
+  * struct landlock_layer - Access rights for a given layer
+  */
+--- a/tools/testing/selftests/landlock/fs_test.c
++++ b/tools/testing/selftests/landlock/fs_test.c
+@@ -1159,7 +1159,7 @@ TEST_F_FORK(layout1, max_layers)
+ 	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
+ 
+ 	ASSERT_LE(0, ruleset_fd);
+-	for (i = 0; i < 64; i++)
++	for (i = 0; i < 16; i++)
+ 		enforce_ruleset(_metadata, ruleset_fd);
+ 
+ 	for (i = 0; i < 2; i++) {
 
 
