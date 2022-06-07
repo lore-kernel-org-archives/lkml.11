@@ -2,121 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B07EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:19:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E552CCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:19:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378287AbiFGVTA (ORCPT
+        id S1350844AbiFGVTJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:19:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52130 "EHLO
+        Tue, 7 Jun 2022 17:19:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358793AbiFGUWf (ORCPT
+        with ESMTP id S1346748AbiFGUWj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:22:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3529317B860;
-        Tue,  7 Jun 2022 11:31:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6436B82188;
-        Tue,  7 Jun 2022 18:31:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49B87C385A2;
-        Tue,  7 Jun 2022 18:31:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626698;
-        bh=Mytd2SzCLUOya9ZKdQUO8kOUQglohpjh14lZeClQtVg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=keyaQt8s+ryIf4jfrdLkNcGCurxxgjJTUd0dqnP0vGVbWPECQqTn+Dd3mWUHsZ/7o
-         ctQfdc/52NsQ5S6UdRYOFdK+/d061fYx5hNs3vQeOWJngKpgJ8W9BbSwNGQExUTdrs
-         V6AcsSPsuIJrjUtPIn2lCHrycZyZBmhnialVBF4E=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 432/772] net: stmmac: fix out-of-bounds access in a selftest
-Date:   Tue,  7 Jun 2022 19:00:24 +0200
-Message-Id: <20220607165001.732605384@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 16:22:39 -0400
+Received: from 17.mo583.mail-out.ovh.net (17.mo583.mail-out.ovh.net [46.105.56.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C604117CC81
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:31:51 -0700 (PDT)
+Received: from player787.ha.ovh.net (unknown [10.109.146.20])
+        by mo583.mail-out.ovh.net (Postfix) with ESMTP id 82AC6245AD
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:31:49 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player787.ha.ovh.net (Postfix) with ESMTPSA id 7992E2B83FDBE;
+        Tue,  7 Jun 2022 18:31:42 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-99G003306a2cf4-fadc-40c8-8275-d06e835c23f7,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH] drm: shmobile: Use backlight helper
+Date:   Tue,  7 Jun 2022 20:31:32 +0200
+Message-Id: <20220607183132.1123648-1-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11066751659652646534
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddviecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejkeejrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekfe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+backlight_properties.fb_blank is deprecated. The states it represents
+are handled by other properties; but instead of accessing those
+properties directly, drivers should use the helpers provided by
+backlight.h.
 
-[ Upstream commit fe5c5fc145edcf98a759b895f52b646730eeb7be ]
+Instead of retrieving the backlight brightness in struct
+backlight_properties manually, and then checking whether the backlight
+should be on at all, use backlight_get_brightness() which does all
+this and insulates this from future changes.
 
-GCC 12 points out that struct tc_action is smaller than
-struct tcf_action:
-
-drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c: In function ‘stmmac_test_rxp’:
-drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:1132:21: warning: array subscript ‘struct tcf_gact[0]’ is partly outside array bounds of ‘unsigned char[272]’ [-Warray-bounds]
- 1132 |                 gact->tcf_action = TC_ACT_SHOT;
-      |                     ^~
-
-Fixes: ccfc639a94f2 ("net: stmmac: selftests: Add a selftest for Flexible RX Parser")
-Link: https://lore.kernel.org/r/20220519004305.2109708-1-kuba@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: dri-devel@lists.freedesktop.org
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_selftests.c  | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/shmobile/shmob_drm_backlight.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-index be3cb63675a5..133c5bd2ef45 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-@@ -1084,8 +1084,9 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
- 	unsigned char addr[ETH_ALEN] = {0xde, 0xad, 0xbe, 0xef, 0x00, 0x00};
- 	struct tc_cls_u32_offload cls_u32 = { };
- 	struct stmmac_packet_attrs attr = { };
--	struct tc_action **actions, *act;
-+	struct tc_action **actions;
- 	struct tc_u32_sel *sel;
-+	struct tcf_gact *gact;
- 	struct tcf_exts *exts;
- 	int ret, i, nk = 1;
- 
-@@ -1110,8 +1111,8 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
- 		goto cleanup_exts;
- 	}
- 
--	act = kcalloc(nk, sizeof(*act), GFP_KERNEL);
--	if (!act) {
-+	gact = kcalloc(nk, sizeof(*gact), GFP_KERNEL);
-+	if (!gact) {
- 		ret = -ENOMEM;
- 		goto cleanup_actions;
- 	}
-@@ -1126,9 +1127,7 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
- 	exts->nr_actions = nk;
- 	exts->actions = actions;
- 	for (i = 0; i < nk; i++) {
--		struct tcf_gact *gact = to_gact(&act[i]);
+diff --git a/drivers/gpu/drm/shmobile/shmob_drm_backlight.c b/drivers/gpu/drm/shmobile/shmob_drm_backlight.c
+index f6628a5ee95f..794573badfe8 100644
+--- a/drivers/gpu/drm/shmobile/shmob_drm_backlight.c
++++ b/drivers/gpu/drm/shmobile/shmob_drm_backlight.c
+@@ -18,11 +18,7 @@ static int shmob_drm_backlight_update(struct backlight_device *bdev)
+ 	struct shmob_drm_connector *scon = bl_get_data(bdev);
+ 	struct shmob_drm_device *sdev = scon->connector.dev->dev_private;
+ 	const struct shmob_drm_backlight_data *bdata = &sdev->pdata->backlight;
+-	int brightness = bdev->props.brightness;
 -
--		actions[i] = &act[i];
-+		actions[i] = (struct tc_action *)&gact[i];
- 		gact->tcf_action = TC_ACT_SHOT;
- 	}
+-	if (bdev->props.power != FB_BLANK_UNBLANK ||
+-	    bdev->props.state & BL_CORE_SUSPENDED)
+-		brightness = 0;
++	int brightness = backlight_get_brightness(bdev);
  
-@@ -1152,7 +1151,7 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
- 	stmmac_tc_setup_cls_u32(priv, priv, &cls_u32);
- 
- cleanup_act:
--	kfree(act);
-+	kfree(gact);
- cleanup_actions:
- 	kfree(actions);
- cleanup_exts:
+ 	return bdata->set_brightness(brightness);
+ }
+
+base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
 -- 
-2.35.1
-
-
+2.30.2
 
