@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 432DDCCA490
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83F8FCCA491
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:42:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381651AbiFGVl3 (ORCPT
+        id S1381681AbiFGVlh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:41:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48962 "EHLO
+        Tue, 7 Jun 2022 17:41:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378100AbiFGUv0 (ORCPT
+        with ESMTP id S1378161AbiFGUv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:51:26 -0400
+        Tue, 7 Jun 2022 16:51:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918411FDEB9;
-        Tue,  7 Jun 2022 11:41:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 629781FE4C8;
+        Tue,  7 Jun 2022 11:41:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C73CD60AD9;
-        Tue,  7 Jun 2022 18:41:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCB54C385A2;
-        Tue,  7 Jun 2022 18:41:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E3CAB6160D;
+        Tue,  7 Jun 2022 18:41:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04458C385A2;
+        Tue,  7 Jun 2022 18:41:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627301;
-        bh=2WUZ9csMZY9sWw0RqK8v8u5bxhmQ1tvqlevsvNOvsgc=;
+        s=korg; t=1654627309;
+        bh=yRHv5eXkjDPEXQstJOBVNdSb05vdr2N8+AelV6TYtYQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XN8FxxkDizqW39moU9dy/Vx2cY0dezlAcZOEvPrq1c4wqsjxp6cWBDpnm9EhpTH8f
-         bVsy4KoW3F3N4I6VcxMvwgESpXr1rI+Dngz7t0Pawu0ki92PXj0kiLnkJcBOL47+eD
-         3gWmUJCU9+KL0VHoBsH/P4Kba8lwYzeMFzs1Hk/w=
+        b=oVPvlwKKJarCCloEBWzrlhE7M5uaNZpBRaP7abxL79afVYMTlIgnXL4OdMGozEwni
+         kJsR6f9mQHr91fdLjZFo3FdNC9e3o82AWTkwJP617n9xTs0FQyEWmWaPdu3NJLmjPz
+         Y2zjUchW+hJf+51ZWHy+SnZdRS2U8nNHOw+CwX00=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
-        Tom Zanussi <zanussi@kernel.org>,
-        Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.17 649/772] tracing: Fix potential double free in create_var_ref()
-Date:   Tue,  7 Jun 2022 19:04:01 +0200
-Message-Id: <20220607165008.188962871@linuxfoundation.org>
+        stable@vger.kernel.org, Guchun Chen <guchun.chen@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.17 652/772] drm/amdgpu: add beige goby PCI ID
+Date:   Tue,  7 Jun 2022 19:04:04 +0200
+Message-Id: <20220607165008.276326032@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,48 +49,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-commit 99696a2592bca641eb88cc9a80c90e591afebd0f upstream.
+commit 62e9bd20035b53ff6c679499c08546d96c6c60a7 upstream.
 
-In create_var_ref(), init_var_ref() is called to initialize the fields
-of variable ref_field, which is allocated in the previous function call
-to create_hist_field(). Function init_var_ref() allocates the
-corresponding fields such as ref_field->system, but frees these fields
-when the function encounters an error. The caller later calls
-destroy_hist_field() to conduct error handling, which frees the fields
-and the variable itself. This results in double free of the fields which
-are already freed in the previous function.
+Add a beige goby PCI ID.
 
-Fix this by storing NULL to the corresponding fields when they are freed
-in init_var_ref().
-
-Link: https://lkml.kernel.org/r/20220425063739.3859998-1-keitasuzuki.park@sslab.ics.keio.ac.jp
-
-Fixes: 067fe038e70f ("tracing: Add variable reference handling to hist triggers")
-CC: stable@vger.kernel.org
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-Reviewed-by: Tom Zanussi <zanussi@kernel.org>
-Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Reviewed-by: Guchun Chen <guchun.chen@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_events_hist.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/kernel/trace/trace_events_hist.c
-+++ b/kernel/trace/trace_events_hist.c
-@@ -2074,8 +2074,11 @@ static int init_var_ref(struct hist_fiel
- 	return err;
-  free:
- 	kfree(ref_field->system);
-+	ref_field->system = NULL;
- 	kfree(ref_field->event_name);
-+	ref_field->event_name = NULL;
- 	kfree(ref_field->name);
-+	ref_field->name = NULL;
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -1955,6 +1955,7 @@ static const struct pci_device_id pciidl
+ 	{0x1002, 0x7421, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_BEIGE_GOBY},
+ 	{0x1002, 0x7422, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_BEIGE_GOBY},
+ 	{0x1002, 0x7423, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_BEIGE_GOBY},
++	{0x1002, 0x7424, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_BEIGE_GOBY},
+ 	{0x1002, 0x743F, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_BEIGE_GOBY},
  
- 	goto out;
- }
+ 	{ PCI_DEVICE(0x1002, PCI_ANY_ID),
 
 
