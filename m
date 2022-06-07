@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9895DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:08:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D7BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378979AbiFGVIB (ORCPT
+        id S1358162AbiFGVIK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:08:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58140 "EHLO
+        Tue, 7 Jun 2022 17:08:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359194AbiFGUJh (ORCPT
+        with ESMTP id S1359195AbiFGUJi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:09:37 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB081C4F11;
-        Tue,  7 Jun 2022 11:26:53 -0700 (PDT)
+        Tue, 7 Jun 2022 16:09:38 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4E114385B;
+        Tue,  7 Jun 2022 11:26:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 84469CE2439;
-        Tue,  7 Jun 2022 18:26:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C846C385A2;
-        Tue,  7 Jun 2022 18:26:49 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2E0A2CE2451;
+        Tue,  7 Jun 2022 18:26:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A639C385A2;
+        Tue,  7 Jun 2022 18:26:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626409;
-        bh=rIWEQtuxPfuKBsbbuJZf9HyCJZEe/1UXdJJHnQuAxVI=;
+        s=korg; t=1654626415;
+        bh=0bo0HpIdec6Q2HW1VvnqdH82NSSLOTfGiJXwD0+ptA4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zrb5WDxZwYuvodAG+hgrCHNeqnZ93/i0kGzVdjV+0yFJoDs3AKwlvuHv18PT0UgLy
-         pLsSutrENY/A/nf/kyRWVdicfp2/NdmF3i2+9fvoz4S4BIGk1C0wC//Wt93ie+L34/
-         KshZXhZN3kCOByZm+jv38ECrBTsGNNUXlbUsN2To=
+        b=U2sd1sG6Hrua7qdWsy1xt6c/lKr4kvWkVFoDahBelKbp6bkwMtqqVYqkbIK+Xpu5a
+         mM/9y4BComYWan6Cm3qYvfwetpDuhQ/LIoO8fEHMtPK5BHm/6L0rmmwwjQqEjKZRpM
+         VmAWUNCBuZEx785k1xdc68bnQwXVAAIvQgyNGb0E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Jessica Zhang <quic_jesszhan@quicinc.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 341/772] drm/msm/mdp5: Return error code in mdp5_mixer_release when deadlock is detected
-Date:   Tue,  7 Jun 2022 18:58:53 +0200
-Message-Id: <20220607164959.071961204@linuxfoundation.org>
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 369/772] mt76: mt7915: do not pass data pointer to mt7915_mcu_muru_debug_set
+Date:   Tue,  7 Jun 2022 18:59:21 +0200
+Message-Id: <20220607164959.889533988@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,105 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jessica Zhang <quic_jesszhan@quicinc.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit ca75f6f7c6f89365e40f10f641b15981b1f07c31 ]
+[ Upstream commit badb6ffaa1439fce30fc6ef10571dcf45a622b44 ]
 
-There is a possibility for mdp5_get_global_state to return
--EDEADLK when acquiring the modeset lock, but currently global_state in
-mdp5_mixer_release doesn't check for if an error is returned.
+Fix typo in mt7915_muru_debug_set routine and pass muru_debug value to
+mt7915_mcu_muru_debug_set() instead of data pointer.
 
-To avoid a NULL dereference error, let's have mdp5_mixer_release
-check if an error is returned and propagate that error.
-
-Reported-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Signed-off-by: Jessica Zhang <quic_jesszhan@quicinc.com>
-Fixes: 7907a0d77cb4 ("drm/msm/mdp5: Use the new private_obj state")
-Reviewed-by: Rob Clark <robdclark@gmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/485181/
-Link: https://lore.kernel.org/r/20220505214051.155-2-quic_jesszhan@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fixes: 1966a5078f2d ("mt76: mt7915: add mu-mimo and ofdma debugfs knobs")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c  | 10 ++++++++--
- drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c | 15 +++++++++++----
- drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h |  4 ++--
- 3 files changed, 21 insertions(+), 8 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-index bb7d066618e6..477cda4ec23b 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-@@ -612,9 +612,15 @@ static int mdp5_crtc_setup_pipeline(struct drm_crtc *crtc,
- 		if (ret)
- 			return ret;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
+index e96d1c31dd36..2ff054187dac 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
+@@ -87,7 +87,7 @@ mt7915_muru_debug_set(void *data, u64 val)
+ 	struct mt7915_dev *dev = data;
  
--		mdp5_mixer_release(new_crtc_state->state, old_mixer);
-+		ret = mdp5_mixer_release(new_crtc_state->state, old_mixer);
-+		if (ret)
-+			return ret;
-+
- 		if (old_r_mixer) {
--			mdp5_mixer_release(new_crtc_state->state, old_r_mixer);
-+			ret = mdp5_mixer_release(new_crtc_state->state, old_r_mixer);
-+			if (ret)
-+				return ret;
-+
- 			if (!need_right_mixer)
- 				pipeline->r_mixer = NULL;
- 		}
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
-index 954db683ae44..2536def2a000 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
-@@ -116,21 +116,28 @@ int mdp5_mixer_assign(struct drm_atomic_state *s, struct drm_crtc *crtc,
+ 	dev->muru_debug = val;
+-	mt7915_mcu_muru_debug_set(dev, data);
++	mt7915_mcu_muru_debug_set(dev, dev->muru_debug);
+ 
  	return 0;
  }
- 
--void mdp5_mixer_release(struct drm_atomic_state *s, struct mdp5_hw_mixer *mixer)
-+int mdp5_mixer_release(struct drm_atomic_state *s, struct mdp5_hw_mixer *mixer)
- {
- 	struct mdp5_global_state *global_state = mdp5_get_global_state(s);
--	struct mdp5_hw_mixer_state *new_state = &global_state->hwmixer;
-+	struct mdp5_hw_mixer_state *new_state;
- 
- 	if (!mixer)
--		return;
-+		return 0;
-+
-+	if (IS_ERR(global_state))
-+		return PTR_ERR(global_state);
-+
-+	new_state = &global_state->hwmixer;
- 
- 	if (WARN_ON(!new_state->hwmixer_to_crtc[mixer->idx]))
--		return;
-+		return -EINVAL;
- 
- 	DBG("%s: release from crtc %s", mixer->name,
- 	    new_state->hwmixer_to_crtc[mixer->idx]->name);
- 
- 	new_state->hwmixer_to_crtc[mixer->idx] = NULL;
-+
-+	return 0;
- }
- 
- void mdp5_mixer_destroy(struct mdp5_hw_mixer *mixer)
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
-index 43c9ba43ce18..545ee223b9d7 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
-@@ -30,7 +30,7 @@ void mdp5_mixer_destroy(struct mdp5_hw_mixer *lm);
- int mdp5_mixer_assign(struct drm_atomic_state *s, struct drm_crtc *crtc,
- 		      uint32_t caps, struct mdp5_hw_mixer **mixer,
- 		      struct mdp5_hw_mixer **r_mixer);
--void mdp5_mixer_release(struct drm_atomic_state *s,
--			struct mdp5_hw_mixer *mixer);
-+int mdp5_mixer_release(struct drm_atomic_state *s,
-+		       struct mdp5_hw_mixer *mixer);
- 
- #endif /* __MDP5_LM_H__ */
 -- 
 2.35.1
 
