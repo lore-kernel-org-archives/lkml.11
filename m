@@ -2,78 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 493FEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:13:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3187C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245218AbiFGONE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 10:13:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34702 "EHLO
+        id S245200AbiFGON6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 10:13:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241035AbiFGOM7 (ORCPT
+        with ESMTP id S229797AbiFGONz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 10:12:59 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C9A19E;
-        Tue,  7 Jun 2022 07:12:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654611178; x=1686147178;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=gBeOmaL6KbNtWkAXK4mRzbR9MnHeARJ2NfcwMDEO/5A=;
-  b=mg/bMfVmv10f40UdT+wjRUH0afaeA748IfAspQXAIAVTiefSVICn0YrK
-   l97GdGLo2owpu5r60i0RuBd6xF3biJ0EHmLhbPD+Z8yiRjGt89MzNHEsw
-   evvENl+K9AXJTl2jHvI26osZAbrOSS8LhisggxVb1+pFDYruDoy+1biQt
-   s6ERTqNA5FeIHv3hqRC7OixZ8QUvB5joVpo//drTfxSmpItWi3O4lqM66
-   OJGOD4nD2QaAKOEqQCO6paa4MPGhexCSPqHHncac846aKo23RDXr/Oqma
-   BqlVMFlNO1UuQRU7cR2TDlACiPb4As0jEhcmiRpV9jeGTo/pJ8b7NrgNz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277531492"
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="277531492"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:07:03 -0700
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="636138930"
-Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:06:57 -0700
-Date:   Tue, 7 Jun 2022 17:06:54 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 13/36] tty/vt: consolemap: make con_set_unimap() more
- readable
-In-Reply-To: <20220607104946.18710-13-jslaby@suse.cz>
-Message-ID: <73d65e7-7635-55d7-415e-7c2af3c267f4@linux.intel.com>
-References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-13-jslaby@suse.cz>
+        Tue, 7 Jun 2022 10:13:55 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3940381
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 07:13:53 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id k16so24378573wrg.7
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 07:13:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=raspberrypi.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=PMMOc1GLcfcdM1iK8PSOo17yG4c306XasMZduCxOcn0=;
+        b=nQOuOcwZH2PAh9xbXAPTfYhhSdMW7q1m/uLuH6VSBh6IRjnNoa2qrNEaX3pyswoBsx
+         E/UATB2Id9WMUkF9UOzZU5DN2BITuSmnLMT+6zsEpH2YNc3ZwAdN60eWzov5R8uPR53T
+         bHMGDQVY2MN+rev1oC1/09WlsD7NmEcuUgwAdaYVFWllJ0TXf7f1TH8BO+nG4N40jYP8
+         8X5oEyVKcsX/78WQ/zhSMDGbvtVlQ9br0wuXjOqgQGnjHKYa4J81Rjk1BZzbViKzCk1s
+         isY8DrtwUAUuddsRexA5uB2RhCzCgkCOYc1n9tawXmTZu168dKD4Zc/Rys7q4IplMJyJ
+         loEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=PMMOc1GLcfcdM1iK8PSOo17yG4c306XasMZduCxOcn0=;
+        b=m7mSuOgsp8+evS4Qi7VOCt8CVOvnUkdsimiuk2C3LntTiKnE/BLkMtPIGVytH7CU78
+         WeBiyRhKldJ30s5GvHzAnCkaCmOLUhwBoTZVArTp8ldD944JRIpUDkOdFfK2vaJFS2E8
+         b876Xu9Tqx/b80Nr1D8Lneu3FDifSsOd3hKcXuMTE+UzoTVD0sCLp6ssstiHEzwlkt21
+         ec7dqqc2C7qRx88RopIlJM9E1i/SwCd5WqhX91q3cdneiqSt7Eb/nGfZmTibPK7yQ8EB
+         FTsnfE19JjC81xoOBp+ASBOtTyiWjFEerLh6aTLM5fWjDQZDFydtDC4rLbI18znmRWLc
+         foiQ==
+X-Gm-Message-State: AOAM532GiNEzmkQaZTjlUvqBodP0vTTHdpcK4OcjX+/nBBWBs1VBR+i4
+        XiwGtsdyACNDZ+/0Pxo+Uiz5OA==
+X-Google-Smtp-Source: ABdhPJyixQhz+aPznWDqS7/u9tnFl9odZj+pZ7kuQPzihlqMhOFE7hcE6ZWUAE13mDEfhv9YUZGC6w==
+X-Received: by 2002:a5d:47c1:0:b0:217:1959:3bf5 with SMTP id o1-20020a5d47c1000000b0021719593bf5mr15233692wrc.319.1654611232468;
+        Tue, 07 Jun 2022 07:13:52 -0700 (PDT)
+Received: from ?IPV6:2a00:1098:3142:14:901f:dbcb:c1e4:e4b8? ([2a00:1098:3142:14:901f:dbcb:c1e4:e4b8])
+        by smtp.gmail.com with ESMTPSA id r19-20020a05600c35d300b0039c2e2d0502sm18009733wmq.4.2022.06.07.07.13.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 07:13:52 -0700 (PDT)
+Message-ID: <a696e6fe-7337-2f16-9349-13130bc7805e@raspberrypi.com>
+Date:   Tue, 7 Jun 2022 15:13:51 +0100
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-716620653-1654610818=:1622"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3] random: defer crediting bootloader randomness to
+ random_init()
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>
+References: <Yp9DWT3RttJGZhvu@zx2c4.com>
+ <20220607124450.794347-1-Jason@zx2c4.com>
+ <9a5d23ee-06d2-82e3-1e32-00367125990d@raspberrypi.com>
+ <CAHmME9owv1Cj8=XVV+i-4uC9Tc1TsKDUMeFcO-ziGv88GRk8Ow@mail.gmail.com>
+From:   Phil Elwell <phil@raspberrypi.com>
+In-Reply-To: <CAHmME9owv1Cj8=XVV+i-4uC9Tc1TsKDUMeFcO-ziGv88GRk8Ow@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Jason,
 
---8323329-716620653-1654610818=:1622
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-
-On Tue, 7 Jun 2022, Jiri Slaby wrote:
-
-> The indentation was completely broken in con_set_unimap(). Reorder the
-> code using 'if (!cond) continue;'s so that the code makes sense. Not
-> that it is perfect now, but it can be followed at least. More cleanup to
-> come. And remove all those useless whitespaces at the EOLs too.
+On 07/06/2022 14:51, Jason A. Donenfeld wrote:
+> Hi Phil,
 > 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> And this one also works, I assume?
+> 
+> https://lore.kernel.org/lkml/20220607100210.683136-1-Jason@zx2c4.com/
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Using the metrics "earlier is better2 and "shorter is better", that patch wins 
+on both counts:
 
+With 5.15.45 + CONFIG_RANDOM_TRUST_BOOTLOADER=y:
+[    0.000000] random: crng init done
+[    1.985290] bcm2835-rng 3f104000.rng: hwrng registered
 
--- 
- i.
+With rpi-5.15.y:
+[    0.000000] random: crng init done
+[    1.969552] bcm2835-rng 3f104000.rng: hwrng registered
 
---8323329-716620653-1654610818=:1622--
+No splats in either, of course.
+
+Phil
