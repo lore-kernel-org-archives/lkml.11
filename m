@@ -2,148 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8E75C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:49:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 442A4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:49:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356473AbiFGTto (ORCPT
+        id S1356039AbiFGTtr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:49:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53890 "EHLO
+        Tue, 7 Jun 2022 15:49:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354550AbiFGSrH (ORCPT
+        with ESMTP id S1354546AbiFGSrH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:47:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE745B0D18;
-        Tue,  7 Jun 2022 11:02:05 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F5BAB0D0A;
+        Tue,  7 Jun 2022 11:02:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 805D0B82349;
-        Tue,  7 Jun 2022 18:02:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99EA8C3411F;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3691A617B0;
+        Tue,  7 Jun 2022 18:02:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 402E5C34115;
         Tue,  7 Jun 2022 18:02:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624923;
-        bh=2nCehD+6zsqESb8V+De9ZH7Y5QDMbXTzj6OC/Q9De78=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624922;
+        bh=7wjUYIaNsXVt03m+j0Kox8IXzon5mRDG5anZNTMcKHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bvA0NVYuCyaRe1sDIoPewiHrEqSrWt5vNLhoKpIAeJfPdv65tk90yZKwqYa1nv08l
-         khgf8Mb4WzCKhpnhKMrcQywzy9+1uT9h1iVI5TK3tK5nbjgz/39WCDfnrawig6ZjuG
-         sN+xEypwkQ1G3d4MHb9wcAzF1z2kMdRAzOwIGu6UO+Dd4U3+PkWLL9GgjdCXljfUND
-         poYFFx5zpxWOn+JWCDQ6zVVGUN3RrqJZByDIGFc1WPHU17C05EjzP1ljTi+q0192ef
-         kehb0bh0f7NiKy5B/So39kIioLBOt/oH+bcayIK60sRHyVOWISxEtSeyKlG66ebwlJ
-         BsdFYHo2g88nw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     bumwoo lee <bw365.lee@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Sasha Levin <sashal@kernel.org>, myungjoo.ham@samsung.com
-Subject: [PATCH AUTOSEL 4.19 13/27] extcon: Modify extcon device to be created after driver data is set
-Date:   Tue,  7 Jun 2022 14:01:17 -0400
-Message-Id: <20220607180133.481701-13-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180133.481701-1-sashal@kernel.org>
-References: <20220607180133.481701-1-sashal@kernel.org>
+        b=RMJzV8Tv8v9lwL9MY8uA57bi050+qEsThEFnMKyPcnC3Q8UHJys04un1+tfd663Q+
+         S8bGf4a60JiBpsoJXW6fsCXf0lVzFFgLT3aX9UEGFZuYXCwKkupCx/8uA7J33U9o4V
+         bS9ScRJFXp33CR8BESJ1hetWjisq0LYEVQusr1Z0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 502/667] dmaengine: stm32-mdma: fix chan initialization in stm32_mdma_irq_handler()
+Date:   Tue,  7 Jun 2022 19:02:47 +0200
+Message-Id: <20220607164949.757277311@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: bumwoo lee <bw365.lee@samsung.com>
+From: Amelie Delaunay <amelie.delaunay@foss.st.com>
 
-[ Upstream commit 5dcc2afe716d69f5112ce035cb14f007461ff189 ]
+[ Upstream commit da3b8ddb464bd49b6248d00ca888ad751c9e44fd ]
 
-Currently, someone can invoke the sysfs such as state_show()
-intermittently before dev_set_drvdata() is done.
-And it can be a cause of kernel Oops because of edev is Null at that time.
-So modified the driver registration to after setting drviver data.
+The parameter to pass back to the handler function when irq has been
+requested is a struct stm32_mdma_device pointer, not a struct
+stm32_mdma_chan pointer.
+Even if chan is reinit later in the function, remove this wrong
+initialization.
 
-- Oops's backtrace.
-
-Backtrace:
-[<c067865c>] (state_show) from [<c05222e8>] (dev_attr_show)
-[<c05222c0>] (dev_attr_show) from [<c02c66e0>] (sysfs_kf_seq_show)
-[<c02c6648>] (sysfs_kf_seq_show) from [<c02c496c>] (kernfs_seq_show)
-[<c02c4938>] (kernfs_seq_show) from [<c025e2a0>] (seq_read)
-[<c025e11c>] (seq_read) from [<c02c50a0>] (kernfs_fop_read)
-[<c02c5064>] (kernfs_fop_read) from [<c0231cac>] (__vfs_read)
-[<c0231c5c>] (__vfs_read) from [<c0231ee0>] (vfs_read)
-[<c0231e34>] (vfs_read) from [<c0232464>] (ksys_read)
-[<c02323f0>] (ksys_read) from [<c02324fc>] (sys_read)
-[<c02324e4>] (sys_read) from [<c00091d0>] (__sys_trace_return)
-
-Signed-off-by: bumwoo lee <bw365.lee@samsung.com>
-Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+Fixes: a4ffb13c8946 ("dmaengine: Add STM32 MDMA driver")
+Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+Link: https://lore.kernel.org/r/20220504155322.121431-3-amelie.delaunay@foss.st.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/extcon/extcon.c | 29 +++++++++++++++++------------
- 1 file changed, 17 insertions(+), 12 deletions(-)
+ drivers/dma/stm32-mdma.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/extcon/extcon.c b/drivers/extcon/extcon.c
-index e70f21ae85ff..4c70136c7aa3 100644
---- a/drivers/extcon/extcon.c
-+++ b/drivers/extcon/extcon.c
-@@ -1245,19 +1245,14 @@ int extcon_dev_register(struct extcon_dev *edev)
- 		edev->dev.type = &edev->extcon_dev_type;
- 	}
+diff --git a/drivers/dma/stm32-mdma.c b/drivers/dma/stm32-mdma.c
+index 343afb9722ea..21a7bdc88970 100644
+--- a/drivers/dma/stm32-mdma.c
++++ b/drivers/dma/stm32-mdma.c
+@@ -1344,7 +1344,7 @@ static void stm32_mdma_xfer_end(struct stm32_mdma_chan *chan)
+ static irqreturn_t stm32_mdma_irq_handler(int irq, void *devid)
+ {
+ 	struct stm32_mdma_device *dmadev = devid;
+-	struct stm32_mdma_chan *chan = devid;
++	struct stm32_mdma_chan *chan;
+ 	u32 reg, id, ccr, ien, status;
  
--	ret = device_register(&edev->dev);
--	if (ret) {
--		put_device(&edev->dev);
--		goto err_dev;
--	}
--
- 	spin_lock_init(&edev->lock);
--	edev->nh = devm_kcalloc(&edev->dev, edev->max_supported,
--				sizeof(*edev->nh), GFP_KERNEL);
--	if (!edev->nh) {
--		ret = -ENOMEM;
--		device_unregister(&edev->dev);
--		goto err_dev;
-+	if (edev->max_supported) {
-+		edev->nh = kcalloc(edev->max_supported, sizeof(*edev->nh),
-+				GFP_KERNEL);
-+		if (!edev->nh) {
-+			ret = -ENOMEM;
-+			goto err_alloc_nh;
-+		}
- 	}
- 
- 	for (index = 0; index < edev->max_supported; index++)
-@@ -1268,6 +1263,12 @@ int extcon_dev_register(struct extcon_dev *edev)
- 	dev_set_drvdata(&edev->dev, edev);
- 	edev->state = 0;
- 
-+	ret = device_register(&edev->dev);
-+	if (ret) {
-+		put_device(&edev->dev);
-+		goto err_dev;
-+	}
-+
- 	mutex_lock(&extcon_dev_list_lock);
- 	list_add(&edev->entry, &extcon_dev_list);
- 	mutex_unlock(&extcon_dev_list_lock);
-@@ -1275,6 +1276,9 @@ int extcon_dev_register(struct extcon_dev *edev)
- 	return 0;
- 
- err_dev:
-+	if (edev->max_supported)
-+		kfree(edev->nh);
-+err_alloc_nh:
- 	if (edev->max_supported)
- 		kfree(edev->extcon_dev_type.groups);
- err_alloc_groups:
-@@ -1335,6 +1339,7 @@ void extcon_dev_unregister(struct extcon_dev *edev)
- 	if (edev->max_supported) {
- 		kfree(edev->extcon_dev_type.groups);
- 		kfree(edev->cables);
-+		kfree(edev->nh);
- 	}
- 
- 	put_device(&edev->dev);
+ 	/* Find out which channel generates the interrupt */
 -- 
 2.35.1
+
+
 
