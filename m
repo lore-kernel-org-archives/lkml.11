@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D88F5CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:53:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DA63C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:53:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358575AbiFGUxN (ORCPT
+        id S1376908AbiFGUxS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:53:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49250 "EHLO
+        Tue, 7 Jun 2022 16:53:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358638AbiFGTws (ORCPT
+        with ESMTP id S1358630AbiFGTwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:52:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D8C136173;
-        Tue,  7 Jun 2022 11:21:45 -0700 (PDT)
+        Tue, 7 Jun 2022 15:52:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B0E34B88;
+        Tue,  7 Jun 2022 11:21:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2540560DDA;
-        Tue,  7 Jun 2022 18:21:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3613FC385A2;
-        Tue,  7 Jun 2022 18:21:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6307AB82239;
+        Tue,  7 Jun 2022 18:21:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACF31C385A2;
+        Tue,  7 Jun 2022 18:21:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626104;
-        bh=OfpDucA+meciRfZXXHe2/e6CRQkH5VCUTVwXmkHiZOA=;
+        s=korg; t=1654626099;
+        bh=ctIJdYl0vlNt157giC31wNXX7wsg81SlduRBQ1uUmGs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oOug5rrZHE69fyncveyoQGx2yOZygdCl3Yk6B3gLx69M9ecPXMqodBzfdeRdKTMzm
-         092oKVS4HA4WU8z5IQLBhhSkT5fMBTjfBbJ3UQCAwJBD1oNewqcehgwWiXLcq3rhTU
-         NFAGFuv3njcbzQ8fPq/TiG8l3YwNdtqzYzj6CGUw=
+        b=S0gJn3NOcA4CfLawRSehqC6RJM9pezC6o+aj4DnbXlxYy9L+fUlV89DlG+aYVKs6m
+         4o6mkHVkiXz3HWv9QZb90kGdPWl7Bbicf42vFpQfL9K0MDCcAvDwncW7/vucbUUYsL
+         mMjJEVZicH6Ck3m0y/XaMBxI9NZsiO0Pzr7fwLWg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Thomas Gleixner <tglx@linutronix.de>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 252/772] x86/PCI: Fix ALi M1487 (IBC) PIRQ router link value interpretation
-Date:   Tue,  7 Jun 2022 18:57:24 +0200
-Message-Id: <20220607164956.451603819@linuxfoundation.org>
+Subject: [PATCH 5.17 216/772] powerpc/xics: fix refcount leak in icp_opal_init()
+Date:   Tue,  7 Jun 2022 18:56:48 +0200
+Message-Id: <20220607164955.399195185@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,85 +51,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 4969e223b109754c2340a26bba9b1cf44f0cba9b ]
+[ Upstream commit 5dd9e27ea4a39f7edd4bf81e9e70208e7ac0b7c9 ]
 
-Fix an issue with commit 1ce849c75534 ("x86/PCI: Add support for the ALi
-M1487 (IBC) PIRQ router") and correct ALi M1487 (IBC) PIRQ router link
-value (`pirq' cookie) interpretation according to findings in the BIOS.
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, use of_node_put() on it when done.
 
-Credit to Nikolai Zhubr for the detective work as to the bit layout.
-
-Fixes: 1ce849c75534 ("x86/PCI: Add support for the ALi M1487 (IBC) PIRQ router")
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/alpine.DEB.2.21.2203310013270.44113@angie.orcam.me.uk
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220402013419.2410298-1-lv.ruyi@zte.com.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/pci/irq.c | 19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
+ arch/powerpc/sysdev/xics/icp-opal.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/x86/pci/irq.c b/arch/x86/pci/irq.c
-index 97b63e35e152..21c4bc41741f 100644
---- a/arch/x86/pci/irq.c
-+++ b/arch/x86/pci/irq.c
-@@ -253,6 +253,15 @@ static void write_pc_conf_nybble(u8 base, u8 index, u8 val)
- 	pc_conf_set(reg, x);
+diff --git a/arch/powerpc/sysdev/xics/icp-opal.c b/arch/powerpc/sysdev/xics/icp-opal.c
+index bda4c32582d9..4dae624b9f2f 100644
+--- a/arch/powerpc/sysdev/xics/icp-opal.c
++++ b/arch/powerpc/sysdev/xics/icp-opal.c
+@@ -196,6 +196,7 @@ int __init icp_opal_init(void)
+ 
+ 	printk("XICS: Using OPAL ICP fallbacks\n");
+ 
++	of_node_put(np);
+ 	return 0;
  }
- 
-+/*
-+ * FinALi pirq rules are as follows:
-+ *
-+ * - bit 0 selects between INTx Routing Table Mapping Registers,
-+ *
-+ * - bit 3 selects the nibble within the INTx Routing Table Mapping Register,
-+ *
-+ * - bits 7:4 map to bits 3:0 of the PCI INTx Sensitivity Register.
-+ */
- static int pirq_finali_get(struct pci_dev *router, struct pci_dev *dev,
- 			   int pirq)
- {
-@@ -260,11 +269,13 @@ static int pirq_finali_get(struct pci_dev *router, struct pci_dev *dev,
- 		0, 9, 3, 10, 4, 5, 7, 6, 0, 11, 0, 12, 0, 14, 0, 15
- 	};
- 	unsigned long flags;
-+	u8 index;
- 	u8 x;
- 
-+	index = (pirq & 1) << 1 | (pirq & 8) >> 3;
- 	raw_spin_lock_irqsave(&pc_conf_lock, flags);
- 	pc_conf_set(PC_CONF_FINALI_LOCK, PC_CONF_FINALI_LOCK_KEY);
--	x = irqmap[read_pc_conf_nybble(PC_CONF_FINALI_PCI_INTX_RT1, pirq - 1)];
-+	x = irqmap[read_pc_conf_nybble(PC_CONF_FINALI_PCI_INTX_RT1, index)];
- 	pc_conf_set(PC_CONF_FINALI_LOCK, 0);
- 	raw_spin_unlock_irqrestore(&pc_conf_lock, flags);
- 	return x;
-@@ -278,13 +289,15 @@ static int pirq_finali_set(struct pci_dev *router, struct pci_dev *dev,
- 	};
- 	u8 val = irqmap[irq];
- 	unsigned long flags;
-+	u8 index;
- 
- 	if (!val)
- 		return 0;
- 
-+	index = (pirq & 1) << 1 | (pirq & 8) >> 3;
- 	raw_spin_lock_irqsave(&pc_conf_lock, flags);
- 	pc_conf_set(PC_CONF_FINALI_LOCK, PC_CONF_FINALI_LOCK_KEY);
--	write_pc_conf_nybble(PC_CONF_FINALI_PCI_INTX_RT1, pirq - 1, val);
-+	write_pc_conf_nybble(PC_CONF_FINALI_PCI_INTX_RT1, index, val);
- 	pc_conf_set(PC_CONF_FINALI_LOCK, 0);
- 	raw_spin_unlock_irqrestore(&pc_conf_lock, flags);
- 	return 1;
-@@ -293,7 +306,7 @@ static int pirq_finali_set(struct pci_dev *router, struct pci_dev *dev,
- static int pirq_finali_lvl(struct pci_dev *router, struct pci_dev *dev,
- 			   int pirq, int irq)
- {
--	u8 mask = ~(1u << (pirq - 1));
-+	u8 mask = ~((pirq & 0xf0u) >> 4);
- 	unsigned long flags;
- 	u8 trig;
  
 -- 
 2.35.1
