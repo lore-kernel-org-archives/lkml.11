@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7014CCA484
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C78FDCCA486
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:41:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348423AbiFGRkt (ORCPT
+        id S1348571AbiFGRlK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:40:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
+        Tue, 7 Jun 2022 13:41:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347555AbiFGRav (ORCPT
+        with ESMTP id S1347639AbiFGRa4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:30:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21A92DAB5;
-        Tue,  7 Jun 2022 10:27:18 -0700 (PDT)
+        Tue, 7 Jun 2022 13:30:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3788113B7B;
+        Tue,  7 Jun 2022 10:27:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B735B822B4;
-        Tue,  7 Jun 2022 17:27:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B550C34115;
-        Tue,  7 Jun 2022 17:27:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0D49B80B66;
+        Tue,  7 Jun 2022 17:27:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 188C1C385A5;
+        Tue,  7 Jun 2022 17:27:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622835;
-        bh=DTpGyTKV+LT/SCUePKuCxICQSzzQPd2s0Y5HqKYS4CU=;
+        s=korg; t=1654622866;
+        bh=ZAMveTWAi+AXmb7bx/BqPzHEUjQdOAW3YaWQ5M7ujiQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gK1m2lG64T2RlD/Ncoi4w4FjoyK3iEB8Vk0A7LSGISt4lW5DyJBwm1uYL1gNIcExe
-         B9PvwPHudU+DOxhvTKs9JmkTLVtCH2QTDXcE9/onyKoxo0sgG8WU1ihRl1yCcAmeXv
-         L5vRqhcYwUzSNAYRwPKJ5NSDd1o2S+YcPTgBFt00=
+        b=QdMRwQuxOrflSg4ON0by82Cv03XJiW5n8DHK8RKrielgntYKgLsimyrRfVm+e6ImH
+         DgBvbh8IwOa00Zp/luINZ1NnH+h3OUi73/c7Me2wjln2GouJ8vz2a6rzFTZTTQeGAM
+         I8RdAJn/qH77UmQlHp527KLGKsWstzlUAaT4hgSM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 198/452] Revert "cpufreq: Fix possible race in cpufreq online error path"
-Date:   Tue,  7 Jun 2022 19:00:55 +0200
-Message-Id: <20220607164914.464475954@linuxfoundation.org>
+Subject: [PATCH 5.10 212/452] media: exynos4-is: Change clk_disable to clk_disable_unprepare
+Date:   Tue,  7 Jun 2022 19:01:09 +0200
+Message-Id: <20220607164914.879757424@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,49 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Viresh Kumar <viresh.kumar@linaro.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 85f0e42bd65d01b351d561efb38e584d4c596553 ]
+[ Upstream commit 9fadab72a6916c7507d7fedcd644859eef995078 ]
 
-This reverts commit f346e96267cd76175d6c201b40f770c0116a8a04.
+The corresponding API for clk_prepare_enable is clk_disable_unprepare,
+other than clk_disable.
 
-The commit tried to fix a possible real bug but it made it even worse.
-The fix was simply buggy as now an error out to out_offline_policy or
-out_exit_policy will try to release a semaphore which was never taken in
-the first place. This works fine only if we failed late, i.e. via
-out_destroy_policy.
+Fix this by changing clk_disable to clk_disable_unprepare.
 
-Fixes: f346e96267cd ("cpufreq: Fix possible race in cpufreq online error path")
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: b4155d7d5b2c ("[media] exynos4-is: Ensure fimc-is clocks are not enabled until properly configured")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/cpufreq.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/media/platform/exynos4-is/fimc-is.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-index 3540ea93b6f1..30dafe8fc505 100644
---- a/drivers/cpufreq/cpufreq.c
-+++ b/drivers/cpufreq/cpufreq.c
-@@ -1515,6 +1515,8 @@ static int cpufreq_online(unsigned int cpu)
- 	for_each_cpu(j, policy->real_cpus)
- 		remove_cpu_dev_symlink(policy, get_cpu_device(j));
- 
-+	up_write(&policy->rwsem);
-+
- out_offline_policy:
- 	if (cpufreq_driver->offline)
- 		cpufreq_driver->offline(policy);
-@@ -1523,9 +1525,6 @@ static int cpufreq_online(unsigned int cpu)
- 	if (cpufreq_driver->exit)
- 		cpufreq_driver->exit(policy);
- 
--	cpumask_clear(policy->cpus);
--	up_write(&policy->rwsem);
--
- out_free_policy:
- 	cpufreq_policy_free(policy);
- 	return ret;
+diff --git a/drivers/media/platform/exynos4-is/fimc-is.c b/drivers/media/platform/exynos4-is/fimc-is.c
+index d4b31b3c9282..dc2a144cd29b 100644
+--- a/drivers/media/platform/exynos4-is/fimc-is.c
++++ b/drivers/media/platform/exynos4-is/fimc-is.c
+@@ -140,7 +140,7 @@ static int fimc_is_enable_clocks(struct fimc_is *is)
+ 			dev_err(&is->pdev->dev, "clock %s enable failed\n",
+ 				fimc_is_clocks[i]);
+ 			for (--i; i >= 0; i--)
+-				clk_disable(is->clocks[i]);
++				clk_disable_unprepare(is->clocks[i]);
+ 			return ret;
+ 		}
+ 		pr_debug("enabled clock: %s\n", fimc_is_clocks[i]);
 -- 
 2.35.1
 
