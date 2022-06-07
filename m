@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9ACACCA485
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:23:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEDFCC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:23:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359278AbiFGUXK (ORCPT
+        id S1359259AbiFGUXQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:23:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59642 "EHLO
+        Tue, 7 Jun 2022 16:23:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356585AbiFGTbs (ORCPT
+        with ESMTP id S1356579AbiFGTbs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 15:31:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE951A65F0;
-        Tue,  7 Jun 2022 11:12:36 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 631171A65CA;
+        Tue,  7 Jun 2022 11:12:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7424060920;
-        Tue,  7 Jun 2022 18:12:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CDB3C385A2;
-        Tue,  7 Jun 2022 18:12:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 44D9DB82374;
+        Tue,  7 Jun 2022 18:12:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FF3DC385A5;
+        Tue,  7 Jun 2022 18:12:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625554;
-        bh=gam7VJRU5tQrQ47mhnmERO7Bdx+TDXwHG5e3vtQwqLQ=;
+        s=korg; t=1654625552;
+        bh=NCZ8ENLCATeP2GIJLaAP/xz+MzB5wHdRUTpcdOOL+I4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BND6vij9ON04xrMRbkxddk8bDBdKlhyJt9Uhub2Kt/jb1z7rjLat2FNFgm8moWH23
-         YfTP2JUty4MY+xd9Oiy5DK5EgBxItUq3PksrMdCOEeHVP5+hdcYqdJ7bLIXFTbZ9vE
-         PMhPp5iAYaoPIObDHL+bfOv8uI7blz0YLrgxea3I=
+        b=sjdlYL3+lA+OCIn4ix3y4GU7fYYJmSbiQVvYkzmAEW1Bko97+CFpBIs9PH5v42Cxi
+         c6I3ZEB11Gt6JxHP05xXbInF49ptriUgqVn9zS37nkfAl46adHK62YrLq7p1jjZC7l
+         ya2OrKQY25b+W/6H/Rh5Ir+b1VA3GtATGRIzOgxE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
         Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 060/772] ipw2x00: Fix potential NULL dereference in libipw_xmit()
-Date:   Tue,  7 Jun 2022 18:54:12 +0200
-Message-Id: <20220607164950.809103592@linuxfoundation.org>
+Subject: [PATCH 5.17 059/772] b43: Fix assigning negative value to unsigned variable
+Date:   Tue,  7 Jun 2022 18:54:11 +0200
+Message-Id: <20220607164950.779259958@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,32 +51,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Haowen Bai <baihaowen@meizu.com>
 
-[ Upstream commit e8366bbabe1d207cf7c5b11ae50e223ae6fc278b ]
+[ Upstream commit 11800d893b38e0e12d636c170c1abc19c43c730c ]
 
-crypt and crypt->ops could be null, so we need to checking null
-before dereference
+fix warning reported by smatch:
+drivers/net/wireless/broadcom/b43/phy_n.c:585 b43_nphy_adjust_lna_gain_table()
+warn: assigning (-2) to unsigned variable '*(lna_gain[0])'
 
 Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/1648797055-25730-1-git-send-email-baihaowen@meizu.com
+Link: https://lore.kernel.org/r/1648203315-28093-1-git-send-email-baihaowen@meizu.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/ipw2x00/libipw_tx.c | 2 +-
+ drivers/net/wireless/broadcom/b43/phy_n.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/ipw2x00/libipw_tx.c b/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
-index 36d1e6b2568d..4aec1fce1ae2 100644
---- a/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
-+++ b/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
-@@ -383,7 +383,7 @@ netdev_tx_t libipw_xmit(struct sk_buff *skb, struct net_device *dev)
+diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
+index cf3ccf4ddfe7..aa5c99465674 100644
+--- a/drivers/net/wireless/broadcom/b43/phy_n.c
++++ b/drivers/net/wireless/broadcom/b43/phy_n.c
+@@ -582,7 +582,7 @@ static void b43_nphy_adjust_lna_gain_table(struct b43_wldev *dev)
+ 	u16 data[4];
+ 	s16 gain[2];
+ 	u16 minmax[2];
+-	static const u16 lna_gain[4] = { -2, 10, 19, 25 };
++	static const s16 lna_gain[4] = { -2, 10, 19, 25 };
  
- 		/* Each fragment may need to have room for encryption
- 		 * pre/postfix */
--		if (host_encrypt)
-+		if (host_encrypt && crypt && crypt->ops)
- 			bytes_per_frag -= crypt->ops->extra_mpdu_prefix_len +
- 			    crypt->ops->extra_mpdu_postfix_len;
- 
+ 	if (nphy->hang_avoid)
+ 		b43_nphy_stay_in_carrier_search(dev, 1);
 -- 
 2.35.1
 
