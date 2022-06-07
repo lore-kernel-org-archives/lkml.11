@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE3DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:06:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E981CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353818AbiFGTE5 (ORCPT
+        id S1354147AbiFGTFT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:04:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52706 "EHLO
+        Tue, 7 Jun 2022 15:05:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351439AbiFGSQV (ORCPT
+        with ESMTP id S1352598AbiFGSRV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256ED15FE26;
-        Tue,  7 Jun 2022 10:49:32 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9514013A2EF;
+        Tue,  7 Jun 2022 10:52:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E57EC616B6;
-        Tue,  7 Jun 2022 17:49:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 050A5C3411C;
-        Tue,  7 Jun 2022 17:49:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C983EB8236C;
+        Tue,  7 Jun 2022 17:52:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33889C3411C;
+        Tue,  7 Jun 2022 17:52:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624170;
-        bh=uKzbAHhniBxqNfOLHN7fXBq8UX3CxpbNw564zyvnrWA=;
+        s=korg; t=1654624343;
+        bh=N2G7P5kX8WC/LFedJRSAAVNnpl8GrNl/yZz/XNcovSg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tpdXCPlm4CQPBSAG/m8P3OL94qDAh2Gt4tECyLBP886+CHT0dJLAIeNRa7PH9STHL
-         5cnFMyx0MDPMsK9dd0Ly55b5MWEhZSiAmdwQY1kWtijFE6eiCR+rpbE7eevFCqb8g0
-         BC9jKsKHHiJsHn82nOksQJdtt+gAcrVtZzsJDI+E=
+        b=1X5CHBmq/dpcPcyNVF1FSz1FGOFGjmuCyVUGWqSxRR94d49W/bYwO22gX6kLXQFIa
+         Bi5RD7NOWDAelrXwsJc6B0h4+OksQerrXsrXBQlcYhgm7IMs17NkUkBGoIgIPnfGS3
+         vwzfML3HOZUtmHpnf7MguVKRAiK+5OoRLb/8WT3M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        John Ogness <john.ogness@linutronix.de>,
-        Petr Mladek <pmladek@suse.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 231/667] printk: use atomic updates for klogd work
-Date:   Tue,  7 Jun 2022 18:58:16 +0200
-Message-Id: <20220607164941.716619893@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 292/667] drm/msm: return an error pointer in msm_gem_prime_get_sg_table()
+Date:   Tue,  7 Jun 2022 18:59:17 +0200
+Message-Id: <20220607164943.535767570@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,69 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Ogness <john.ogness@linutronix.de>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 2ba3673d70178bf07fb75ff25c54bc478add4021 ]
+[ Upstream commit cf575e31611eb6dccf08fad02e57e35b2187704d ]
 
-The per-cpu @printk_pending variable can be updated from
-sleepable contexts, such as:
+The msm_gem_prime_get_sg_table() needs to return error pointers on
+error.  This is called from drm_gem_map_dma_buf() and returning a
+NULL will lead to a crash in that function.
 
-  get_random_bytes()
-    warn_unseeded_randomness()
-      printk_deferred()
-        defer_console_output()
-
-and can be updated from interrupt contexts, such as:
-
-  handle_irq_event_percpu()
-    __irq_wake_thread()
-      wake_up_process()
-        try_to_wake_up()
-          select_task_rq()
-            select_fallback_rq()
-              printk_deferred()
-                defer_console_output()
-
-and can be updated from NMI contexts, such as:
-
-  vprintk()
-    if (in_nmi()) defer_console_output()
-
-Therefore the atomic variant of the updating functions must be used.
-
-Replace __this_cpu_xchg() with this_cpu_xchg().
-Replace __this_cpu_or() with this_cpu_or().
-
-Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Link: https://lore.kernel.org/r/87iltld4ue.fsf@jogness.linutronix.de
+Fixes: ac45146733b0 ("drm/msm: fix msm_gem_prime_get_sg_table()")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/485023/
+Link: https://lore.kernel.org/r/YnOmtS5tfENywR9m@kili
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/printk/printk.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/msm_gem_prime.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 7aeb13542ce7..e6a815a1cd76 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -3215,7 +3215,7 @@ static DEFINE_PER_CPU(int, printk_pending);
+diff --git a/drivers/gpu/drm/msm/msm_gem_prime.c b/drivers/gpu/drm/msm/msm_gem_prime.c
+index fc94e061d6a7..8a2d94bd5df2 100644
+--- a/drivers/gpu/drm/msm/msm_gem_prime.c
++++ b/drivers/gpu/drm/msm/msm_gem_prime.c
+@@ -17,7 +17,7 @@ struct sg_table *msm_gem_prime_get_sg_table(struct drm_gem_object *obj)
+ 	int npages = obj->size >> PAGE_SHIFT;
  
- static void wake_up_klogd_work_func(struct irq_work *irq_work)
- {
--	int pending = __this_cpu_xchg(printk_pending, 0);
-+	int pending = this_cpu_xchg(printk_pending, 0);
+ 	if (WARN_ON(!msm_obj->pages))  /* should have already pinned! */
+-		return NULL;
++		return ERR_PTR(-ENOMEM);
  
- 	if (pending & PRINTK_PENDING_OUTPUT) {
- 		/* If trylock fails, someone else is doing the printing */
-@@ -3249,7 +3249,7 @@ void defer_console_output(void)
- 		return;
- 
- 	preempt_disable();
--	__this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
-+	this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
- 	irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
- 	preempt_enable();
+ 	return drm_prime_pages_to_sg(obj->dev, msm_obj->pages, npages);
  }
 -- 
 2.35.1
