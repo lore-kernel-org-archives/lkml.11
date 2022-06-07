@@ -2,690 +2,275 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 070AEC04E85
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:55:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4499CC19F56
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:56:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391971AbiFHAvk (ORCPT
+        id S1392184AbiFHAv5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:51:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48548 "EHLO
+        Tue, 7 Jun 2022 20:51:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1575230AbiFGX04 (ORCPT
+        with ESMTP id S1385844AbiFGWrK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:26:56 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D44024096AF
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:38:58 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id l81so10211072oif.9
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:38:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=mmhJTrds0AK825mdt0RAOR2S9VJs5ATamOGYxgtTiGE=;
-        b=kgtVED8yCNKTkSolu+HhI4L0ia4bhgC9LPlxsdechqL+fiMDvnqPzY76GC7xcuBJB2
-         +Qle3/2cVItzOrsti8mklUwWCeH5Qw30E3vSbxY0xhf3UN0axpShuqk+onrRIWIQeX2K
-         qzmC5ic6PvIKx3E8PHNVxdlQ2lBioQ2Nj+oCgfP4cD7dQl/RQrztTGupSJxbeR0EoIAE
-         nwVATnJ9WITVxNXa/nCG+xiS6NNxrKqDDPkh7fy0r71uNrAaYrJQ366mQpNzD1EWkYtm
-         90Do+NXb/OGa3nSUZv/ym/KTNl7HCmkrtaKO2LWpL2xxqyuMeVB1+SMpiGI1ryzWgtj0
-         aSQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mmhJTrds0AK825mdt0RAOR2S9VJs5ATamOGYxgtTiGE=;
-        b=C36lvOzR0eDtLwIG4iRCKGZX/J+K9iUc101K2hPJ73nm3dFmk6PpdrfCkt/OeXUucj
-         2RyOz28nOVczeI0cvOqv/b9E7eLgd0zGLNlyKawvMekO8+tDcvWFeG3ctkTAqhtBqOVY
-         d1Li59usyz8BgOTDg2Ui0jPRb2bvDIGx8JUbFv/WFjIeoaemjVIBtl+1OaRtXNJQoCw6
-         dYbIYSJu3z01sPD6yxz+lltyF9hSc9GmviiqMPF2HKCrd7pi3jYmCW49tqnJMpe8FkLg
-         KhEfCQnbKMy52lY/2To8FRz+sd1WhTonDvuuO7SuXJu+MwKpobwdVaKMJIzUaDKfJZ48
-         fl5w==
-X-Gm-Message-State: AOAM5329l4JPridwVlBNQR6QL1OOUdlKERCVaC+K29iS3v9wEMWK7OZ9
-        1DQMLFEcZWu2USgcgaeruA6D8g==
-X-Google-Smtp-Source: ABdhPJxhCOn4x9ulK4BZABDhXUp2WB1BUMpNTcNNkp4vcQ/D/EW0ImPOa3V3AjWnBjEqapmqHj58nw==
-X-Received: by 2002:a05:6808:1308:b0:32b:a23d:bc05 with SMTP id y8-20020a056808130800b0032ba23dbc05mr571724oiv.145.1654637933525;
-        Tue, 07 Jun 2022 14:38:53 -0700 (PDT)
-Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id cr11-20020a056870ebcb00b000f33a37411dsm8554122oab.26.2022.06.07.14.38.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 14:38:52 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>
-Cc:     Jassi Brar <jassisinghbrar@gmail.com>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 4/4] arm64: dts: qcom: add SA8540P and ADP
-Date:   Tue,  7 Jun 2022 14:41:13 -0700
-Message-Id: <20220607214113.4057684-5-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607214113.4057684-1-bjorn.andersson@linaro.org>
-References: <20220607214113.4057684-1-bjorn.andersson@linaro.org>
+        Tue, 7 Jun 2022 18:47:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 68C6A29A612
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:35:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654630492;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Zg8yBeGSpujFygwxJkzWzOm3xQkMe4291lxPHo3F32k=;
+        b=Douby9tMUc835IaCukM7PHm4FEkW1E7LGUWup1t3pVTUCauMYJ1r2cTXKmPyTeILMZvz9o
+        vVQgNSOgRkVaetruhn4Wqn1iV5N+J46rrHZyfdEIJu9GYkQUqw4zbMa0A98QtrPCoufHL/
+        6qtAa96zzSAY2zdmzsNFqTmgtWdkzuw=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-78-cQ4PIU33NzyuBBFMuEMiMQ-1; Tue, 07 Jun 2022 15:34:47 -0400
+X-MC-Unique: cQ4PIU33NzyuBBFMuEMiMQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6C1D63C41678;
+        Tue,  7 Jun 2022 19:33:21 +0000 (UTC)
+Received: from emerald.redhat.com (unknown [10.22.9.252])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E5AD321FB7E2;
+        Tue,  7 Jun 2022 19:32:52 +0000 (UTC)
+From:   Lyude Paul <lyude@redhat.com>
+To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org
+Cc:     Wayne Lin <Wayne.Lin@amd.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Imre Deak <imre.deak@intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RESEND RFC 07/18] drm/display/dp_mst: Add helper for finding payloads in atomic MST state
+Date:   Tue,  7 Jun 2022 15:29:22 -0400
+Message-Id: <20220607192933.1333228-8-lyude@redhat.com>
+In-Reply-To: <20220607192933.1333228-1-lyude@redhat.com>
+References: <20220607192933.1333228-1-lyude@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce the Qualcomm SA8540P automotive platform and the SA8295P ADP
-development board.
+We already open-code this quite often, and will be iterating through
+payloads even more once we've moved all of the payload tracking into the
+atomic state. So, let's add a helper for doing this.
 
-The SA8540P and SC8280XP are fairly similar, so the SA8540P is built
-ontop of the SC8280XP dtsi to reduce duplication. As more advanced
-features are integrated this might be re-evaluated.
-
-This initial contribution supports SMP, CPUFreq, cluster idle, UFS, RPMh
-regulators, debug UART, PMICs, remoteprocs (NSPs crashes shortly after
-booting) and USB.
-
-The SA8295P ADP contains four PM8450 PMICs, which according to their
-revid are compatible with PM8150. They are defined within the ADP for
-now, to avoid creating additional .dtsi files for PM8150 with just
-addresses changed - and to allow using the labels from the schematics.
-
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Cc: Wayne Lin <Wayne.Lin@amd.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Imre Deak <imre.deak@intel.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Sean Paul <sean@poorly.run>
 ---
- arch/arm64/boot/dts/qcom/Makefile        |   1 +
- arch/arm64/boot/dts/qcom/sa8295p-adp.dts | 434 +++++++++++++++++++++++
- arch/arm64/boot/dts/qcom/sa8540p.dtsi    | 133 +++++++
- 3 files changed, 568 insertions(+)
- create mode 100644 arch/arm64/boot/dts/qcom/sa8295p-adp.dts
- create mode 100644 arch/arm64/boot/dts/qcom/sa8540p.dtsi
+ drivers/gpu/drm/display/drm_dp_mst_topology.c | 109 ++++++++----------
+ 1 file changed, 45 insertions(+), 64 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-index ceeae094a59f..2f416b84b71c 100644
---- a/arch/arm64/boot/dts/qcom/Makefile
-+++ b/arch/arm64/boot/dts/qcom/Makefile
-@@ -52,6 +52,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= qcs404-evb-1000.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= qcs404-evb-4000.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= qrb5165-rb5.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sa8155p-adp.dtb
-+dtb-$(CONFIG_ARCH_QCOM)	+= sa8295p-adp.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-idp.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-coachz-r1.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-coachz-r1-lte.dtb
-diff --git a/arch/arm64/boot/dts/qcom/sa8295p-adp.dts b/arch/arm64/boot/dts/qcom/sa8295p-adp.dts
-new file mode 100644
-index 000000000000..f78203d7bfd2
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sa8295p-adp.dts
-@@ -0,0 +1,434 @@
-+// SPDX-License-Identifier: BSD-3-Clause
-+/*
-+ * Copyright (c) 2021, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2022, Linaro Limited
-+ */
-+
-+/dts-v1/;
-+
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/input/gpio-keys.h>
-+#include <dt-bindings/input/input.h>
-+#include <dt-bindings/regulator/qcom,rpmh-regulator.h>
-+#include <dt-bindings/spmi/spmi.h>
-+
-+#include "sa8540p.dtsi"
-+
-+/ {
-+	model = "Qualcomm SA8295P ADP";
-+	compatible = "qcom,sa8295p-adp", "qcom,sa8540p";
-+
-+	aliases {
-+		serial0 = &qup2_uart17;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	reserved-memory {
-+	};
-+};
-+
-+&apps_rsc {
-+	pmm8540-a-regulators {
-+		compatible = "qcom,pm8150-rpmh-regulators";
-+		qcom,pmic-id = "a";
-+
-+		vreg_l3a: ldo3 {
-+			regulator-name = "vreg_l3a";
-+			regulator-min-microvolt = <1200000>;
-+			regulator-max-microvolt = <1208000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l5a: ldo5 {
-+			regulator-name = "vreg_l5a";
-+			regulator-min-microvolt = <912000>;
-+			regulator-max-microvolt = <912000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l7a: ldo7 {
-+			regulator-name = "vreg_l7a";
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l13a: ldo13 {
-+			regulator-name = "vreg_l13a";
-+			regulator-min-microvolt = <3072000>;
-+			regulator-max-microvolt = <3072000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+	};
-+
-+	pmm8540-c-regulators {
-+		compatible = "qcom,pm8150-rpmh-regulators";
-+		qcom,pmic-id = "c";
-+
-+		vreg_l1c: ldo1 {
-+			regulator-name = "vreg_l1c";
-+			regulator-min-microvolt = <912000>;
-+			regulator-max-microvolt = <912000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l2c: ldo2 {
-+			regulator-name = "vreg_l2c";
-+			regulator-min-microvolt = <3072000>;
-+			regulator-max-microvolt = <3072000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l3c: ldo3 {
-+			regulator-name = "vreg_l3c";
-+			regulator-min-microvolt = <1200000>;
-+			regulator-max-microvolt = <1200000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l4c: ldo4 {
-+			regulator-name = "vreg_l4c";
-+			regulator-min-microvolt = <1200000>;
-+			regulator-max-microvolt = <1208000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l6c: ldo6 {
-+			regulator-name = "vreg_l6c";
-+			regulator-min-microvolt = <1200000>;
-+			regulator-max-microvolt = <1200000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l7c: ldo7 {
-+			regulator-name = "vreg_l7c";
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l10c: ldo10 {
-+			regulator-name = "vreg_l10c";
-+			regulator-min-microvolt = <2504000>;
-+			regulator-max-microvolt = <2504000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l17c: ldo17 {
-+			regulator-name = "vreg_l17c";
-+			regulator-min-microvolt = <2504000>;
-+			regulator-max-microvolt = <2504000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+	};
-+
-+	pmm8540-g-regulators {
-+		compatible = "qcom,pm8150-rpmh-regulators";
-+		qcom,pmic-id = "g";
-+
-+		vreg_l3g: ldo3 {
-+			regulator-name = "vreg_l3g";
-+			regulator-min-microvolt = <1200000>;
-+			regulator-max-microvolt = <1200000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l7g: ldo7 {
-+			regulator-name = "vreg_l7g";
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <1800000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+
-+		vreg_l8g: ldo8 {
-+			regulator-name = "vreg_l8g";
-+			regulator-min-microvolt = <880000>;
-+			regulator-max-microvolt = <880000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+			regulator-allow-set-load;
-+		};
-+	};
-+};
-+
-+&qup2 {
-+	status = "okay";
-+};
-+
-+&qup2_uart17 {
-+	compatible = "qcom,geni-debug-uart";
-+	status = "okay";
-+};
-+
-+&remoteproc_adsp {
-+	status = "okay";
-+	firmware-name = "qcom/sa8540p/adsp.mbn";
-+};
-+
-+&remoteproc_nsp0 {
-+	status = "okay";
-+	firmware-name = "qcom/sa8540p/cdsp.mbn";
-+};
-+
-+&remoteproc_nsp1 {
-+	status = "okay";
-+	firmware-name = "qcom/sa8540p/cdsp1.mbn";
-+};
-+
-+&spmi_bus {
-+	pm8450a: pmic@0 {
-+		compatible = "qcom,pm8150", "qcom,spmi-pmic";
-+		reg = <0x0 SPMI_USID>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		pm8450a_gpios: gpio@c000 {
-+			compatible = "qcom,pm8150-gpio";
-+			reg = <0xc000>;
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+		};
-+	};
-+
-+	pm8450c: pmic@4 {
-+		compatible = "qcom,pm8150", "qcom,spmi-pmic";
-+		reg = <0x4 SPMI_USID>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		pm8450c_gpios: gpio@c000 {
-+			compatible = "qcom,pm8150-gpio";
-+			reg = <0xc000>;
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+		};
-+	};
-+
-+	pm8450e: pmic@8 {
-+		compatible = "qcom,pm8150", "qcom,spmi-pmic";
-+		reg = <0x8 SPMI_USID>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		pm8450e_gpios: gpio@c000 {
-+			compatible = "qcom,pm8150-gpio";
-+			reg = <0xc000>;
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+		};
-+	};
-+
-+	pm8450g: pmic@c {
-+		compatible = "qcom,pm8150", "qcom,spmi-pmic";
-+		reg = <0xc SPMI_USID>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		pm8450g_gpios: gpio@c000 {
-+			compatible = "qcom,pm8150-gpio";
-+			reg = <0xc000>;
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+		};
-+	};
-+};
-+
-+&ufs_mem_hc {
-+	status = "okay";
-+
-+	reset-gpios = <&tlmm 228 GPIO_ACTIVE_LOW>;
-+
-+	vcc-supply = <&vreg_l17c>;
-+	vcc-max-microamp = <800000>;
-+	vccq-supply = <&vreg_l6c>;
-+	vccq-max-microamp = <900000>;
-+};
-+
-+&ufs_mem_phy {
-+	status = "okay";
-+
-+	vdda-phy-supply = <&vreg_l8g>;
-+	vdda-pll-supply = <&vreg_l3g>;
-+};
-+
-+&ufs_card_hc {
-+	status = "okay";
-+
-+	reset-gpios = <&tlmm 229 GPIO_ACTIVE_LOW>;
-+
-+	vcc-supply = <&vreg_l10c>;
-+	vcc-max-microamp = <800000>;
-+	vccq-supply = <&vreg_l3c>;
-+	vccq-max-microamp = <900000>;
-+};
-+
-+&ufs_card_phy {
-+	status = "okay";
-+
-+	vdda-phy-supply = <&vreg_l8g>;
-+	vdda-pll-supply = <&vreg_l3g>;
-+};
-+
-+&usb_0 {
-+	status = "okay";
-+};
-+
-+&usb_0_dwc3 {
-+	/* TODO: Define USB-C connector properly */
-+	dr_mode = "peripheral";
-+};
-+
-+&usb_0_hsphy {
-+	status = "okay";
-+
-+	vdda-pll-supply = <&vreg_l5a>;
-+	vdda18-supply = <&vreg_l7a>;
-+	vdda33-supply = <&vreg_l13a>;
-+};
-+
-+&usb_0_qmpphy {
-+	status = "okay";
-+
-+	vdda-phy-supply = <&vreg_l3a>;
-+	vdda-pll-supply = <&vreg_l5a>;
-+};
-+
-+&usb_1 {
-+	status = "okay";
-+};
-+
-+&usb_1_dwc3 {
-+	/* TODO: Define USB-C connector properly */
-+	dr_mode = "host";
-+};
-+
-+&usb_1_hsphy {
-+	status = "okay";
-+
-+	vdda-pll-supply = <&vreg_l1c>;
-+	vdda18-supply = <&vreg_l7c>;
-+	vdda33-supply = <&vreg_l2c>;
-+};
-+
-+&usb_1_qmpphy {
-+	status = "okay";
-+
-+	vdda-phy-supply = <&vreg_l4c>;
-+	vdda-pll-supply = <&vreg_l1c>;
-+};
-+
-+&usb_2 {
-+	status = "okay";
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&usb2_en_state>, <&usb3_en_state>, <&usb4_en_state>, <&usb5_en_state>;
-+};
-+
-+&usb_2_dwc3 {
-+	dr_mode = "host";
-+};
-+
-+&usb_2_hsphy0 {
-+	status = "okay";
-+
-+	vdda-pll-supply = <&vreg_l5a>;
-+	vdda18-supply = <&vreg_l7g>;
-+	vdda33-supply = <&vreg_l13a>;
-+};
-+
-+&usb_2_hsphy1 {
-+	status = "okay";
-+
-+	vdda-pll-supply = <&vreg_l5a>;
-+	vdda18-supply = <&vreg_l7g>;
-+	vdda33-supply = <&vreg_l13a>;
-+};
-+
-+&usb_2_hsphy2 {
-+	status = "okay";
-+
-+	vdda-pll-supply = <&vreg_l5a>;
-+	vdda18-supply = <&vreg_l7g>;
-+	vdda33-supply = <&vreg_l13a>;
-+};
-+
-+&usb_2_hsphy3 {
-+	status = "okay";
-+
-+	vdda-pll-supply = <&vreg_l5a>;
-+	vdda18-supply = <&vreg_l7g>;
-+	vdda33-supply = <&vreg_l13a>;
-+};
-+
-+&usb_2_qmpphy0 {
-+	status = "okay";
-+
-+	vdda-phy-supply = <&vreg_l3a>;
-+	vdda-pll-supply = <&vreg_l5a>;
-+};
-+
-+&usb_2_qmpphy1 {
-+	status = "okay";
-+
-+	vdda-phy-supply = <&vreg_l3a>;
-+	vdda-pll-supply = <&vreg_l5a>;
-+};
-+
-+/* PINCTRL */
-+&pm8450c_gpios {
-+	usb2_en_state: usb2-en-state {
-+		pins = "gpio9";
-+		function = "normal";
-+		output-high;
-+		power-source = <0>;
-+	};
-+};
-+
-+&pm8450e_gpios {
-+	usb3_en_state: usb3-en-state {
-+		pins = "gpio5";
-+		function = "normal";
-+		output-high;
-+		power-source = <0>;
-+	};
-+};
-+
-+&pm8450g_gpios {
-+	usb4_en_state: usb4-en-state {
-+		pins = "gpio5";
-+		function = "normal";
-+		output-high;
-+		power-source = <0>;
-+	};
-+
-+	usb5_en_state: usb5-en-state {
-+		pins = "gpio9";
-+		function = "normal";
-+		output-high;
-+		power-source = <0>;
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/qcom/sa8540p.dtsi b/arch/arm64/boot/dts/qcom/sa8540p.dtsi
-new file mode 100644
-index 000000000000..8ea2886fbab2
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sa8540p.dtsi
-@@ -0,0 +1,133 @@
-+// SPDX-License-Identifier: BSD-3-Clause
-+/*
-+ * Copyright (c) 2021, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2022, Linaro Limited
-+ */
-+
-+#include "sc8280xp.dtsi"
-+
-+/delete-node/ &cpu0_opp_table;
-+/delete-node/ &cpu4_opp_table;
-+
-+/ {
-+	cpu0_opp_table: cpu0-opp-table {
-+		compatible = "operating-points-v2";
-+		opp-shared;
-+
-+		opp-403200000 {
-+			opp-hz = /bits/ 64 <403200000>;
-+		};
-+		opp-499200000 {
-+			opp-hz = /bits/ 64 <499200000>;
-+		};
-+		opp-595200000 {
-+			opp-hz = /bits/ 64 <595200000>;
-+		};
-+		opp-710400000 {
-+			opp-hz = /bits/ 64 <710400000>;
-+		};
-+		opp-806400000 {
-+			opp-hz = /bits/ 64 <806400000>;
-+		};
-+		opp-902400000 {
-+			opp-hz = /bits/ 64 <902400000>;
-+		};
-+		opp-1017600000 {
-+			opp-hz = /bits/ 64 <1017600000>;
-+		};
-+		opp-1113600000 {
-+			opp-hz = /bits/ 64 <1113600000>;
-+		};
-+		opp-1209600000 {
-+			opp-hz = /bits/ 64 <1209600000>;
-+		};
-+		opp-1324800000 {
-+			opp-hz = /bits/ 64 <1324800000>;
-+		};
-+		opp-1440000000 {
-+			opp-hz = /bits/ 64 <1440000000>;
-+		};
-+		opp-1555200000 {
-+			opp-hz = /bits/ 64 <1555200000>;
-+		};
-+		opp-1670400000 {
-+			opp-hz = /bits/ 64 <1670400000>;
-+		};
-+		opp-1785600000 {
-+			opp-hz = /bits/ 64 <1785600000>;
-+		};
-+		opp-1881600000 {
-+			opp-hz = /bits/ 64 <1881600000>;
-+		};
-+		opp-2016000000 {
-+			opp-hz = /bits/ 64 <2016000000>;
-+		};
-+		opp-2131200000 {
-+			opp-hz = /bits/ 64 <2131200000>;
-+		};
-+		opp-2246400000 {
-+			opp-hz = /bits/ 64 <2246400000>;
-+		};
-+	};
-+
-+	cpu4_opp_table: cpu4-opp-table {
-+		compatible = "operating-points-v2";
-+		opp-shared;
-+
-+		opp-825600000 {
-+			opp-hz = /bits/ 64 <825600000>;
-+		};
-+		opp-940800000 {
-+			opp-hz = /bits/ 64 <940800000>;
-+		};
-+		opp-1056000000 {
-+			opp-hz = /bits/ 64 <1056000000>;
-+		};
-+		opp-1171200000 {
-+			opp-hz = /bits/ 64 <1171200000>;
-+		};
-+		opp-1286400000 {
-+			opp-hz = /bits/ 64 <1286400000>;
-+		};
-+		opp-1401600000 {
-+			opp-hz = /bits/ 64 <1401600000>;
-+		};
-+		opp-1516800000 {
-+			opp-hz = /bits/ 64 <1516800000>;
-+		};
-+		opp-1632000000 {
-+			opp-hz = /bits/ 64 <1632000000>;
-+		};
-+		opp-1747200000 {
-+			opp-hz = /bits/ 64 <1747200000>;
-+		};
-+		opp-1862400000 {
-+			opp-hz = /bits/ 64 <1862400000>;
-+		};
-+		opp-1977600000 {
-+			opp-hz = /bits/ 64 <1977600000>;
-+		};
-+		opp-2073600000 {
-+			opp-hz = /bits/ 64 <2073600000>;
-+		};
-+		opp-2169600000 {
-+			opp-hz = /bits/ 64 <2169600000>;
-+		};
-+		opp-2284800000 {
-+			opp-hz = /bits/ 64 <2284800000>;
-+		};
-+		opp-2380800000 {
-+			opp-hz = /bits/ 64 <2380800000>;
-+		};
-+		opp-2496000000 {
-+			opp-hz = /bits/ 64 <2496000000>;
-+		};
-+		opp-2592000000 {
-+			opp-hz = /bits/ 64 <2592000000>;
-+		};
-+	};
-+};
-+
-+&rpmhpd {
-+	compatible = "qcom,sa8540p-rpmhpd";
-+};
+diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+index ec52f91b1f0e..0bc2c7a90c37 100644
+--- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
++++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+@@ -1737,6 +1737,19 @@ drm_dp_mst_dump_port_topology_history(struct drm_dp_mst_port *port) {}
+ #define save_port_topology_ref(port, type)
+ #endif
+ 
++static struct drm_dp_mst_atomic_payload *
++drm_atomic_get_mst_payload_state(struct drm_dp_mst_topology_state *state,
++				 struct drm_dp_mst_port *port)
++{
++	struct drm_dp_mst_atomic_payload *payload;
++
++	list_for_each_entry(payload, &state->payloads, next)
++		if (payload->port == port)
++			return payload;
++
++	return NULL;
++}
++
+ static void drm_dp_destroy_mst_branch_device(struct kref *kref)
+ {
+ 	struct drm_dp_mst_branch *mstb =
+@@ -4381,39 +4394,31 @@ int drm_dp_atomic_find_time_slots(struct drm_atomic_state *state,
+ 				  int pbn_div)
+ {
+ 	struct drm_dp_mst_topology_state *topology_state;
+-	struct drm_dp_mst_atomic_payload *pos, *payload = NULL;
+-	int prev_slots, prev_bw, req_slots;
++	struct drm_dp_mst_atomic_payload *payload = NULL;
++	int prev_slots = 0, prev_bw = 0, req_slots;
+ 
+ 	topology_state = drm_atomic_get_mst_topology_state(state, mgr);
+ 	if (IS_ERR(topology_state))
+ 		return PTR_ERR(topology_state);
+ 
+ 	/* Find the current allocation for this port, if any */
+-	list_for_each_entry(pos, &topology_state->payloads, next) {
+-		if (pos->port == port) {
+-			payload = pos;
+-			prev_slots = payload->time_slots;
+-			prev_bw = payload->pbn;
+-
+-			/*
+-			 * This should never happen, unless the driver tries
+-			 * releasing and allocating the same timeslot allocation,
+-			 * which is an error
+-			 */
+-			if (WARN_ON(!prev_slots)) {
+-				drm_err(mgr->dev,
+-					"cannot allocate and release time slots on [MST PORT:%p] in the same state\n",
+-					port);
+-				return -EINVAL;
+-			}
++	payload = drm_atomic_get_mst_payload_state(topology_state, port);
++	if (payload) {
++		prev_slots = payload->time_slots;
++		prev_bw = payload->pbn;
+ 
+-			break;
++		/*
++		 * This should never happen, unless the driver tries
++		 * releasing and allocating the same timeslot allocation,
++		 * which is an error
++		 */
++		if (WARN_ON(!prev_slots)) {
++			drm_err(mgr->dev,
++				"cannot allocate and release time slots on [MST PORT:%p] in the same state\n",
++				port);
++			return -EINVAL;
+ 		}
+ 	}
+-	if (!payload) {
+-		prev_slots = 0;
+-		prev_bw = 0;
+-	}
+ 
+ 	if (pbn_div <= 0)
+ 		pbn_div = mgr->pbn_div;
+@@ -4474,30 +4479,24 @@ int drm_dp_atomic_release_time_slots(struct drm_atomic_state *state,
+ 				     struct drm_dp_mst_port *port)
+ {
+ 	struct drm_dp_mst_topology_state *topology_state;
+-	struct drm_dp_mst_atomic_payload *pos;
+-	bool found = false;
++	struct drm_dp_mst_atomic_payload *payload;
+ 
+ 	topology_state = drm_atomic_get_mst_topology_state(state, mgr);
+ 	if (IS_ERR(topology_state))
+ 		return PTR_ERR(topology_state);
+ 
+-	list_for_each_entry(pos, &topology_state->payloads, next) {
+-		if (pos->port == port) {
+-			found = true;
+-			break;
+-		}
+-	}
+-	if (WARN_ON(!found)) {
++	payload = drm_atomic_get_mst_payload_state(topology_state, port);
++	if (WARN_ON(!payload)) {
+ 		drm_err(mgr->dev, "No payload for [MST PORT:%p] found in mst state %p\n",
+ 			port, &topology_state->base);
+ 		return -EINVAL;
+ 	}
+ 
+-	drm_dbg_atomic(mgr->dev, "[MST PORT:%p] TU %d -> 0\n", port, pos->time_slots);
+-	if (pos->time_slots) {
++	drm_dbg_atomic(mgr->dev, "[MST PORT:%p] TU %d -> 0\n", port, payload->time_slots);
++	if (payload->time_slots) {
+ 		drm_dp_mst_put_port_malloc(port);
+-		pos->time_slots = 0;
+-		pos->pbn = 0;
++		payload->time_slots = 0;
++		payload->pbn = 0;
+ 	}
+ 
+ 	return 0;
+@@ -5194,18 +5193,8 @@ drm_dp_mst_atomic_check_port_bw_limit(struct drm_dp_mst_port *port,
+ 		return 0;
+ 
+ 	if (drm_dp_mst_is_end_device(port->pdt, port->mcs)) {
+-		bool found = false;
+-
+-		list_for_each_entry(payload, &state->payloads, next) {
+-			if (payload->port != port)
+-				continue;
+-			if (!payload->pbn)
+-				return 0;
+-
+-			found = true;
+-			break;
+-		}
+-		if (!found)
++		payload = drm_atomic_get_mst_payload_state(state, port);
++		if (!payload)
+ 			return 0;
+ 
+ 		/*
+@@ -5360,34 +5349,26 @@ int drm_dp_mst_atomic_enable_dsc(struct drm_atomic_state *state,
+ 				 bool enable)
+ {
+ 	struct drm_dp_mst_topology_state *mst_state;
+-	struct drm_dp_mst_atomic_payload *pos;
+-	bool found = false;
++	struct drm_dp_mst_atomic_payload *payload;
+ 	int time_slots = 0;
+ 
+ 	mst_state = drm_atomic_get_mst_topology_state(state, port->mgr);
+-
+ 	if (IS_ERR(mst_state))
+ 		return PTR_ERR(mst_state);
+ 
+-	list_for_each_entry(pos, &mst_state->payloads, next) {
+-		if (pos->port == port) {
+-			found = true;
+-			break;
+-		}
+-	}
+-
+-	if (!found) {
++	payload = drm_atomic_get_mst_payload_state(mst_state, port);
++	if (!payload) {
+ 		drm_dbg_atomic(state->dev,
+ 			       "[MST PORT:%p] Couldn't find payload in mst state %p\n",
+ 			       port, mst_state);
+ 		return -EINVAL;
+ 	}
+ 
+-	if (pos->dsc_enabled == enable) {
++	if (payload->dsc_enabled == enable) {
+ 		drm_dbg_atomic(state->dev,
+ 			       "[MST PORT:%p] DSC flag is already set to %d, returning %d time slots\n",
+-			       port, enable, pos->time_slots);
+-		time_slots = pos->time_slots;
++			       port, enable, payload->time_slots);
++		time_slots = payload->time_slots;
+ 	}
+ 
+ 	if (enable) {
+@@ -5399,7 +5380,7 @@ int drm_dp_mst_atomic_enable_dsc(struct drm_atomic_state *state,
+ 			return -EINVAL;
+ 	}
+ 
+-	pos->dsc_enabled = enable;
++	payload->dsc_enabled = enable;
+ 
+ 	return time_slots;
+ }
 -- 
-2.35.1
+2.35.3
 
