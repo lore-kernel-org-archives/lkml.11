@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97214CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD25BCCA48A
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:23:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385995AbiFHAWJ (ORCPT
+        id S1386712AbiFHAWa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:22:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35094 "EHLO
+        Tue, 7 Jun 2022 20:22:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385260AbiFGW0q (ORCPT
+        with ESMTP id S1381972AbiFGVpz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:26:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F23270428;
-        Tue,  7 Jun 2022 12:23:07 -0700 (PDT)
+        Tue, 7 Jun 2022 17:45:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4AEB235252;
+        Tue,  7 Jun 2022 12:07:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B48FE60BA5;
-        Tue,  7 Jun 2022 19:23:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBEAFC385A2;
-        Tue,  7 Jun 2022 19:23:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6241EB823B2;
+        Tue,  7 Jun 2022 19:07:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3764C385A2;
+        Tue,  7 Jun 2022 19:07:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629786;
-        bh=WXRcVCPP2UKRCYY2jK+D9kxdNOkgPnIo2N2sDgEC/Ls=;
+        s=korg; t=1654628855;
+        bh=p/vWRLsXaxn69jFFiFCh3tIbEqu+F8JroeQeTdsr9i0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rAfe5ZSyX26BqPN09JgplT2Bhy1gxxcaBE9hryuVNo+ApUHDE2fiqW9gLzdK0pHjM
-         VjNz6VkSQrwY2wZlWxWr/OOz5YVkHEx9LXEeCcQxfAuHknNeMZk0pftvA/gPq52zpW
-         JYytd31U2fKtJKGZU0dGf+/TywX350vovQmBe7ys=
+        b=NttA6XJRqA7iWrcCM2eTtwyNY6NZSa9N0C/Hf7FMf+4rux+7c4nfohjkMrNGlSUyP
+         mXeQH+avgnW0cp1pbhGuj2QYBTGhh5cHOwmTxwabSeRQkfmZwoXExRj4vUiq/fZjBw
+         HvbhszrCDrFo7LTao4mCz0uJA98LMJ/CUFNFZqnU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.18 817/879] um: Use asm-generic/dma-mapping.h
-Date:   Tue,  7 Jun 2022 19:05:35 +0200
-Message-Id: <20220607165026.568459082@linuxfoundation.org>
+        stable@vger.kernel.org, Yue Hu <huyue2@coolpad.com>,
+        Chao Yu <chao@kernel.org>,
+        Gao Xiang <hsiangkao@linux.alibaba.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 480/879] erofs: fix buffer copy overflow of ztailpacking feature
+Date:   Tue,  7 Jun 2022 18:59:58 +0200
+Message-Id: <20220607165016.809309386@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,44 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Gao Xiang <hsiangkao@linux.alibaba.com>
 
-commit 365719035526e8eda214a1cedb2e1c96e969a0d7 upstream.
+[ Upstream commit dcbe6803fffd387f72b48c2373b5f5ed12a5804b ]
 
-If DMA (PCI over virtio) is enabled, then some drivers may
-enable CONFIG_DMA_OPS as well, and then we pull in the x86
-definition of get_arch_dma_ops(), which uses the dma_ops
-symbol, which isn't defined.
+I got some KASAN report as below:
 
-Since we don't have real DMA ops nor any kind of IOMMU fix
-this in the simplest possible way: pull in the asm-generic
-file instead of inheriting the x86 one. It's not clear why
-those drivers that do (e.g. VDPA) "select DMA_OPS", and if
-they'd even work with this, but chances are nobody will be
-wanting to do that anyway, so fixing the build failure is
-good enough.
+[   46.959738] ==================================================================
+[   46.960430] BUG: KASAN: use-after-free in z_erofs_shifted_transform+0x2bd/0x370
+[   46.960430] Read of size 4074 at addr ffff8880300c2f8e by task fssum/188
+...
+[   46.960430] Call Trace:
+[   46.960430]  <TASK>
+[   46.960430]  dump_stack_lvl+0x41/0x5e
+[   46.960430]  print_report.cold+0xb2/0x6b7
+[   46.960430]  ? z_erofs_shifted_transform+0x2bd/0x370
+[   46.960430]  kasan_report+0x8a/0x140
+[   46.960430]  ? z_erofs_shifted_transform+0x2bd/0x370
+[   46.960430]  kasan_check_range+0x14d/0x1d0
+[   46.960430]  memcpy+0x20/0x60
+[   46.960430]  z_erofs_shifted_transform+0x2bd/0x370
+[   46.960430]  z_erofs_decompress_pcluster+0xaae/0x1080
 
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Fixes: 68f5d3f3b654 ("um: add PCI over virtio emulation driver")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Tested-by: Randy Dunlap <rdunlap@infradead.org>
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: stable@vger.kernel.org
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The root cause is that the tail pcluster won't be a complete filesystem
+block anymore. So if ztailpacking is used, the second part of an
+uncompressed tail pcluster may not be ``rq->pageofs_out``.
+
+Fixes: ab749badf9f4 ("erofs: support unaligned data decompression")
+Fixes: cecf864d3d76 ("erofs: support inline data decompression")
+Reviewed-by: Yue Hu <huyue2@coolpad.com>
+Reviewed-by: Chao Yu <chao@kernel.org>
+Link: https://lore.kernel.org/r/20220512115833.24175-1-hsiangkao@linux.alibaba.com
+Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/include/asm/Kbuild |    1 +
- 1 file changed, 1 insertion(+)
+ fs/erofs/decompressor.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/arch/um/include/asm/Kbuild
-+++ b/arch/um/include/asm/Kbuild
-@@ -4,6 +4,7 @@ generic-y += bug.h
- generic-y += compat.h
- generic-y += current.h
- generic-y += device.h
-+generic-y += dma-mapping.h
- generic-y += emergency-restart.h
- generic-y += exec.h
- generic-y += extable.h
+diff --git a/fs/erofs/decompressor.c b/fs/erofs/decompressor.c
+index 3efa686c7644..0e0d1fc0f130 100644
+--- a/fs/erofs/decompressor.c
++++ b/fs/erofs/decompressor.c
+@@ -322,6 +322,7 @@ static int z_erofs_shifted_transform(struct z_erofs_decompress_req *rq,
+ 		PAGE_ALIGN(rq->pageofs_out + rq->outputsize) >> PAGE_SHIFT;
+ 	const unsigned int righthalf = min_t(unsigned int, rq->outputsize,
+ 					     PAGE_SIZE - rq->pageofs_out);
++	const unsigned int lefthalf = rq->outputsize - righthalf;
+ 	unsigned char *src, *dst;
+ 
+ 	if (nrpages_out > 2) {
+@@ -344,10 +345,10 @@ static int z_erofs_shifted_transform(struct z_erofs_decompress_req *rq,
+ 	if (nrpages_out == 2) {
+ 		DBG_BUGON(!rq->out[1]);
+ 		if (rq->out[1] == *rq->in) {
+-			memmove(src, src + righthalf, rq->pageofs_out);
++			memmove(src, src + righthalf, lefthalf);
+ 		} else {
+ 			dst = kmap_atomic(rq->out[1]);
+-			memcpy(dst, src + righthalf, rq->pageofs_out);
++			memcpy(dst, src + righthalf, lefthalf);
+ 			kunmap_atomic(dst);
+ 		}
+ 	}
+-- 
+2.35.1
+
 
 
