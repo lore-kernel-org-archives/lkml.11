@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54FF4CCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4382CCCA48A
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376417AbiFGU0k (ORCPT
+        id S1376353AbiFGU00 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:26:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43968 "EHLO
+        Tue, 7 Jun 2022 16:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356497AbiFGTgi (ORCPT
+        with ESMTP id S1356496AbiFGTgi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 15:36:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0D041AD583;
-        Tue,  7 Jun 2022 11:13:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A6E11ACE7A;
+        Tue,  7 Jun 2022 11:13:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 760A860A2A;
-        Tue,  7 Jun 2022 18:13:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86FBDC385A5;
-        Tue,  7 Jun 2022 18:13:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DCD66006F;
+        Tue,  7 Jun 2022 18:13:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 342F3C385A2;
+        Tue,  7 Jun 2022 18:13:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625611;
-        bh=A9Xp+0cFMfeM0QwmYMoc/fILwvbSoeT5uKdV//Im2qg=;
+        s=korg; t=1654625606;
+        bh=/CyJwoKVuBaWLWd1+cNI4FVcV/PQuwuPI5jlFRzY3CE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=15a46ngthYoz/RHqSwSohExvOh5IaOkz1qOhf8s/2P/e92Smuv+Z5XP/lmleyuX/5
-         mPpzh4sD0VDTAHJnUv272NKx1uk0MyEKdav4wskJ419YHCepZwe/OrKt68zd3fK9W7
-         e9FLdfv9RJGH04yowySqZL7BgBAbjzgwKOsBD43g=
+        b=A4Wh2wmDfZPIH8ez8ChT5BdwcGE0wiEOB2/3bk/nNdAdhH8vravSiCmAm9/KZRhkc
+         /Hjm2zq2nOnWaYbmz3oUicIG17Klz6TvUnz4Gb5e24P5XNvfY4KE+oS7gZMrd6GhkW
+         Wz2NN2sv0egeGYu1Wss7FyHXHq2E/WwGYGqqw/LA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes@sipsolutions.net>,
-        Kees Cook <keescook@chromium.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.17 039/772] ptrace/um: Replace PT_DTRACE with TIF_SINGLESTEP
-Date:   Tue,  7 Jun 2022 18:53:51 +0200
-Message-Id: <20220607164950.177224509@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Kristen Carlson Accardi <kristen@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>
+Subject: [PATCH 5.17 037/772] x86/sgx: Set active memcg prior to shmem allocation
+Date:   Tue,  7 Jun 2022 18:53:49 +0200
+Message-Id: <20220607164950.117359893@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,140 +52,237 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Kristen Carlson Accardi <kristen@linux.intel.com>
 
-commit c200e4bb44e80b343c09841e7caaaca0aac5e5fa upstream.
+commit 0c9782e204d3cc5625b9e8bf4e8625d38dfe0139 upstream.
 
-User mode linux is the last user of the PT_DTRACE flag.  Using the flag to indicate
-single stepping is a little confusing and worse changing tsk->ptrace without locking
-could potentionally cause problems.
+When the system runs out of enclave memory, SGX can reclaim EPC pages
+by swapping to normal RAM. These backing pages are allocated via a
+per-enclave shared memory area. Since SGX allows unlimited over
+commit on EPC memory, the reclaimer thread can allocate a large
+number of backing RAM pages in response to EPC memory pressure.
 
-So use a thread info flag with a better name instead of flag in tsk->ptrace.
+When the shared memory backing RAM allocation occurs during
+the reclaimer thread context, the shared memory is charged to
+the root memory control group, and the shmem usage of the enclave
+is not properly accounted for, making cgroups ineffective at
+limiting the amount of RAM an enclave can consume.
 
-Remove the definition PT_DTRACE as uml is the last user.
+For example, when using a cgroup to launch a set of test
+enclaves, the kernel does not properly account for 50% - 75% of
+shmem page allocations on average. In the worst case, when
+nearly all allocations occur during the reclaimer thread, the
+kernel accounts less than a percent of the amount of shmem used
+by the enclave's cgroup to the correct cgroup.
+
+SGX stores a list of mm_structs that are associated with
+an enclave. Pick one of them during reclaim and charge that
+mm's memcg with the shmem allocation. The one that gets picked
+is arbitrary, but this list almost always only has one mm. The
+cases where there is more than one mm with different memcg's
+are not worth considering.
+
+Create a new function - sgx_encl_alloc_backing(). This function
+is used whenever a new backing storage page needs to be
+allocated. Previously the same function was used for page
+allocation as well as retrieving a previously allocated page.
+Prior to backing page allocation, if there is a mm_struct associated
+with the enclave that is requesting the allocation, it is set
+as the active memory control group.
+
+[ dhansen: - fix merge conflict with ELDU fixes
+           - check against actual ksgxd_tsk, not ->mm ]
 
 Cc: stable@vger.kernel.org
-Acked-by: Johannes Berg <johannes@sipsolutions.net>
-Tested-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Oleg Nesterov <oleg@redhat.com>
-Link: https://lkml.kernel.org/r/20220505182645.497868-3-ebiederm@xmission.com
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Signed-off-by: Kristen Carlson Accardi <kristen@linux.intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
+Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
+Link: https://lkml.kernel.org/r/20220520174248.4918-1-kristen@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/um/include/asm/thread_info.h |    2 ++
- arch/um/kernel/exec.c             |    2 +-
- arch/um/kernel/process.c          |    2 +-
- arch/um/kernel/ptrace.c           |    8 ++++----
- arch/um/kernel/signal.c           |    4 ++--
- include/linux/ptrace.h            |    1 -
- 6 files changed, 10 insertions(+), 9 deletions(-)
+ arch/x86/kernel/cpu/sgx/encl.c |  105 ++++++++++++++++++++++++++++++++++++++++-
+ arch/x86/kernel/cpu/sgx/encl.h |    7 +-
+ arch/x86/kernel/cpu/sgx/main.c |    9 ++-
+ 3 files changed, 115 insertions(+), 6 deletions(-)
 
---- a/arch/um/include/asm/thread_info.h
-+++ b/arch/um/include/asm/thread_info.h
-@@ -60,6 +60,7 @@ static inline struct thread_info *curren
- #define TIF_RESTORE_SIGMASK	7
- #define TIF_NOTIFY_RESUME	8
- #define TIF_SECCOMP		9	/* secure computing */
-+#define TIF_SINGLESTEP		10	/* single stepping userspace */
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -152,7 +152,7 @@ static int __sgx_encl_eldu(struct sgx_en
  
- #define _TIF_SYSCALL_TRACE	(1 << TIF_SYSCALL_TRACE)
- #define _TIF_SIGPENDING		(1 << TIF_SIGPENDING)
-@@ -68,5 +69,6 @@ static inline struct thread_info *curren
- #define _TIF_MEMDIE		(1 << TIF_MEMDIE)
- #define _TIF_SYSCALL_AUDIT	(1 << TIF_SYSCALL_AUDIT)
- #define _TIF_SECCOMP		(1 << TIF_SECCOMP)
-+#define _TIF_SINGLESTEP		(1 << TIF_SINGLESTEP)
+ 	page_pcmd_off = sgx_encl_get_backing_page_pcmd_offset(encl, page_index);
  
- #endif
---- a/arch/um/kernel/exec.c
-+++ b/arch/um/kernel/exec.c
-@@ -43,7 +43,7 @@ void start_thread(struct pt_regs *regs,
+-	ret = sgx_encl_get_backing(encl, page_index, &b);
++	ret = sgx_encl_lookup_backing(encl, page_index, &b);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -718,7 +718,7 @@ static struct page *sgx_encl_get_backing
+  *   0 on success,
+  *   -errno otherwise.
+  */
+-int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
++static int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
+ 			 struct sgx_backing *backing)
  {
- 	PT_REGS_IP(regs) = eip;
- 	PT_REGS_SP(regs) = esp;
--	current->ptrace &= ~PT_DTRACE;
-+	clear_thread_flag(TIF_SINGLESTEP);
- #ifdef SUBARCH_EXECVE1
- 	SUBARCH_EXECVE1(regs->regs);
- #endif
---- a/arch/um/kernel/process.c
-+++ b/arch/um/kernel/process.c
-@@ -335,7 +335,7 @@ int singlestepping(void * t)
- {
- 	struct task_struct *task = t ? t : current;
- 
--	if (!(task->ptrace & PT_DTRACE))
-+	if (!test_thread_flag(TIF_SINGLESTEP))
- 		return 0;
- 
- 	if (task->thread.singlestep_syscall)
---- a/arch/um/kernel/ptrace.c
-+++ b/arch/um/kernel/ptrace.c
-@@ -12,7 +12,7 @@
- 
- void user_enable_single_step(struct task_struct *child)
- {
--	child->ptrace |= PT_DTRACE;
-+	set_tsk_thread_flag(child, TIF_SINGLESTEP);
- 	child->thread.singlestep_syscall = 0;
- 
- #ifdef SUBARCH_SET_SINGLESTEPPING
-@@ -22,7 +22,7 @@ void user_enable_single_step(struct task
- 
- void user_disable_single_step(struct task_struct *child)
- {
--	child->ptrace &= ~PT_DTRACE;
-+	clear_tsk_thread_flag(child, TIF_SINGLESTEP);
- 	child->thread.singlestep_syscall = 0;
- 
- #ifdef SUBARCH_SET_SINGLESTEPPING
-@@ -121,7 +121,7 @@ static void send_sigtrap(struct uml_pt_r
+ 	pgoff_t page_pcmd_off = sgx_encl_get_backing_page_pcmd_offset(encl, page_index);
+@@ -743,6 +743,107 @@ int sgx_encl_get_backing(struct sgx_encl
+ 	return 0;
  }
  
- /*
-- * XXX Check PT_DTRACE vs TIF_SINGLESTEP for singlestepping check and
-+ * XXX Check TIF_SINGLESTEP for singlestepping check and
-  * PT_PTRACED vs TIF_SYSCALL_TRACE for syscall tracing check
-  */
- int syscall_trace_enter(struct pt_regs *regs)
-@@ -145,7 +145,7 @@ void syscall_trace_leave(struct pt_regs
- 	audit_syscall_exit(regs);
++/*
++ * When called from ksgxd, returns the mem_cgroup of a struct mm stored
++ * in the enclave's mm_list. When not called from ksgxd, just returns
++ * the mem_cgroup of the current task.
++ */
++static struct mem_cgroup *sgx_encl_get_mem_cgroup(struct sgx_encl *encl)
++{
++	struct mem_cgroup *memcg = NULL;
++	struct sgx_encl_mm *encl_mm;
++	int idx;
++
++	/*
++	 * If called from normal task context, return the mem_cgroup
++	 * of the current task's mm. The remainder of the handling is for
++	 * ksgxd.
++	 */
++	if (!current_is_ksgxd())
++		return get_mem_cgroup_from_mm(current->mm);
++
++	/*
++	 * Search the enclave's mm_list to find an mm associated with
++	 * this enclave to charge the allocation to.
++	 */
++	idx = srcu_read_lock(&encl->srcu);
++
++	list_for_each_entry_rcu(encl_mm, &encl->mm_list, list) {
++		if (!mmget_not_zero(encl_mm->mm))
++			continue;
++
++		memcg = get_mem_cgroup_from_mm(encl_mm->mm);
++
++		mmput_async(encl_mm->mm);
++
++		break;
++	}
++
++	srcu_read_unlock(&encl->srcu, idx);
++
++	/*
++	 * In the rare case that there isn't an mm associated with
++	 * the enclave, set memcg to the current active mem_cgroup.
++	 * This will be the root mem_cgroup if there is no active
++	 * mem_cgroup.
++	 */
++	if (!memcg)
++		return get_mem_cgroup_from_mm(NULL);
++
++	return memcg;
++}
++
++/**
++ * sgx_encl_alloc_backing() - allocate a new backing storage page
++ * @encl:	an enclave pointer
++ * @page_index:	enclave page index
++ * @backing:	data for accessing backing storage for the page
++ *
++ * When called from ksgxd, sets the active memcg from one of the
++ * mms in the enclave's mm_list prior to any backing page allocation,
++ * in order to ensure that shmem page allocations are charged to the
++ * enclave.
++ *
++ * Return:
++ *   0 on success,
++ *   -errno otherwise.
++ */
++int sgx_encl_alloc_backing(struct sgx_encl *encl, unsigned long page_index,
++			   struct sgx_backing *backing)
++{
++	struct mem_cgroup *encl_memcg = sgx_encl_get_mem_cgroup(encl);
++	struct mem_cgroup *memcg = set_active_memcg(encl_memcg);
++	int ret;
++
++	ret = sgx_encl_get_backing(encl, page_index, backing);
++
++	set_active_memcg(memcg);
++	mem_cgroup_put(encl_memcg);
++
++	return ret;
++}
++
++/**
++ * sgx_encl_lookup_backing() - retrieve an existing backing storage page
++ * @encl:	an enclave pointer
++ * @page_index:	enclave page index
++ * @backing:	data for accessing backing storage for the page
++ *
++ * Retrieve a backing page for loading data back into an EPC page with ELDU.
++ * It is the caller's responsibility to ensure that it is appropriate to use
++ * sgx_encl_lookup_backing() rather than sgx_encl_alloc_backing(). If lookup is
++ * not used correctly, this will cause an allocation which is not accounted for.
++ *
++ * Return:
++ *   0 on success,
++ *   -errno otherwise.
++ */
++int sgx_encl_lookup_backing(struct sgx_encl *encl, unsigned long page_index,
++			   struct sgx_backing *backing)
++{
++	return sgx_encl_get_backing(encl, page_index, backing);
++}
++
+ /**
+  * sgx_encl_put_backing() - Unpin the backing storage
+  * @backing:	data for accessing backing storage for the page
+--- a/arch/x86/kernel/cpu/sgx/encl.h
++++ b/arch/x86/kernel/cpu/sgx/encl.h
+@@ -103,10 +103,13 @@ static inline int sgx_encl_find(struct m
+ int sgx_encl_may_map(struct sgx_encl *encl, unsigned long start,
+ 		     unsigned long end, unsigned long vm_flags);
  
- 	/* Fake a debug trap */
--	if (ptraced & PT_DTRACE)
-+	if (test_thread_flag(TIF_SINGLESTEP))
- 		send_sigtrap(&regs->regs, 0);
++bool current_is_ksgxd(void);
+ void sgx_encl_release(struct kref *ref);
+ int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm);
+-int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
+-			 struct sgx_backing *backing);
++int sgx_encl_lookup_backing(struct sgx_encl *encl, unsigned long page_index,
++			    struct sgx_backing *backing);
++int sgx_encl_alloc_backing(struct sgx_encl *encl, unsigned long page_index,
++			   struct sgx_backing *backing);
+ void sgx_encl_put_backing(struct sgx_backing *backing);
+ int sgx_encl_test_and_clear_young(struct mm_struct *mm,
+ 				  struct sgx_encl_page *page);
+--- a/arch/x86/kernel/cpu/sgx/main.c
++++ b/arch/x86/kernel/cpu/sgx/main.c
+@@ -313,7 +313,7 @@ static void sgx_reclaimer_write(struct s
+ 	sgx_encl_put_backing(backing);
  
- 	if (!test_thread_flag(TIF_SYSCALL_TRACE))
---- a/arch/um/kernel/signal.c
-+++ b/arch/um/kernel/signal.c
-@@ -53,7 +53,7 @@ static void handle_signal(struct ksignal
- 	unsigned long sp;
- 	int err;
+ 	if (!encl->secs_child_cnt && test_bit(SGX_ENCL_INITIALIZED, &encl->flags)) {
+-		ret = sgx_encl_get_backing(encl, PFN_DOWN(encl->size),
++		ret = sgx_encl_alloc_backing(encl, PFN_DOWN(encl->size),
+ 					   &secs_backing);
+ 		if (ret)
+ 			goto out;
+@@ -384,7 +384,7 @@ static void sgx_reclaim_pages(void)
+ 		page_index = PFN_DOWN(encl_page->desc - encl_page->encl->base);
  
--	if ((current->ptrace & PT_DTRACE) && (current->ptrace & PT_PTRACED))
-+	if (test_thread_flag(TIF_SINGLESTEP) && (current->ptrace & PT_PTRACED))
- 		singlestep = 1;
+ 		mutex_lock(&encl_page->encl->lock);
+-		ret = sgx_encl_get_backing(encl_page->encl, page_index, &backing[i]);
++		ret = sgx_encl_alloc_backing(encl_page->encl, page_index, &backing[i]);
+ 		if (ret) {
+ 			mutex_unlock(&encl_page->encl->lock);
+ 			goto skip;
+@@ -475,6 +475,11 @@ static bool __init sgx_page_reclaimer_in
+ 	return true;
+ }
  
- 	/* Did we come from a system call? */
-@@ -128,7 +128,7 @@ void do_signal(struct pt_regs *regs)
- 	 * on the host.  The tracing thread will check this flag and
- 	 * PTRACE_SYSCALL if necessary.
- 	 */
--	if (current->ptrace & PT_DTRACE)
-+	if (test_thread_flag(TIF_SINGLESTEP))
- 		current->thread.singlestep_syscall =
- 			is_syscall(PT_REGS_IP(&current->thread.regs));
- 
---- a/include/linux/ptrace.h
-+++ b/include/linux/ptrace.h
-@@ -30,7 +30,6 @@ extern int ptrace_access_vm(struct task_
- 
- #define PT_SEIZED	0x00010000	/* SEIZE used, enable new behavior */
- #define PT_PTRACED	0x00000001
--#define PT_DTRACE	0x00000002	/* delayed trace (used on m68k, i386) */
- 
- #define PT_OPT_FLAG_SHIFT	3
- /* PT_TRACE_* event enable flags */
++bool current_is_ksgxd(void)
++{
++	return current == ksgxd_tsk;
++}
++
+ static struct sgx_epc_page *__sgx_alloc_epc_page_from_node(int nid)
+ {
+ 	struct sgx_numa_node *node = &sgx_numa_nodes[nid];
 
 
