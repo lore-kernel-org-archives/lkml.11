@@ -2,123 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 289AFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:03:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE441C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:03:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240597AbiFGKDr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:03:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34964 "EHLO
+        id S240613AbiFGKDy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:03:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240596AbiFGKDl (ORCPT
+        with ESMTP id S239176AbiFGKDn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:03:41 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD675EBD6
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 03:03:36 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id u8so19068458wrm.13
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 03:03:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7o1kiVWsps+vIhkxg/IQloUD0Hiziwxoz/V6KdYQOyY=;
-        b=kZxbJqy8Rryx67Dly8fVIGhpCGeSMjXzDS/TzRgdUe+mns8uwIPq5w8T3YTSksZGSk
-         7PZEksRo4iNy2ivxtfRpDMYW6D227T+ctLTR3Iv7RBmAF7ecFKBfYSI6tNGukvssJSJZ
-         gDSfhlEPFV8i/BN7HMzEAthwO3Kz/JiHIUza5UOsbZqXBjov/yeJuD4Gcu7L6hoKTZH0
-         Aw12LIZ5zh7InYN9JjDZGZppLMoxsY2w8ERk+XrFyJgWQOHt8mzt+UMsVII12zcrchUz
-         DKiq1ysCMHrBh3cHwoexwGWWUZdnu+Vt4cAz7YmisCosu8jK1Dwo6zfjs/CIJaDWarWM
-         fxow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7o1kiVWsps+vIhkxg/IQloUD0Hiziwxoz/V6KdYQOyY=;
-        b=WX/85cyIA7D5wEWy2sB8QotpvyKs4zjifL/d+zsZCk7ozaKlrWMdMu7sfEpc987JMj
-         97RmcNSz+s/xg11WDuluK73iGP23SI+/h7Nk0BBSZJaCadhtneOvVmoXIAAQiXDjw1bI
-         EhdS4r3cDgdhmWX+Y4AGAR203ogZazyUGOzUn200mzFXmZCr0u34U/qMa+zBg7SdoGHA
-         PkQoGsZeNziUNKhZ3zTttRfe0ubwfkNXs05hKd08MQlaoF75c9oBrPPKzCqeJg29LPEP
-         gJNkCt7JLu1frU7s0J7Mrt3+ZQW0fANR9fNknAyLvkxES+a7Ckhh1d8o5ijYcSZBVq+O
-         aFYw==
-X-Gm-Message-State: AOAM533SwWo9ArvA4rMEcR6Lzk4+owqPbtP7GbyLEKPwdo0TxLq8fB36
-        7EOTyglz4Mp2kabEkHfopihm5A==
-X-Google-Smtp-Source: ABdhPJxdvXoxqy1gKgabD4qSW0C2ND08SuuVKFFlV892xB593AXTOV8DdKelMTCVM+1Op2CGk/c4KA==
-X-Received: by 2002:a05:6000:1861:b0:216:4019:9ee6 with SMTP id d1-20020a056000186100b0021640199ee6mr16754179wri.172.1654596215125;
-        Tue, 07 Jun 2022 03:03:35 -0700 (PDT)
-Received: from google.com (109.36.187.35.bc.googleusercontent.com. [35.187.36.109])
-        by smtp.gmail.com with ESMTPSA id q16-20020adfcd90000000b00213abce60e4sm13745840wrj.111.2022.06.07.03.03.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 03:03:34 -0700 (PDT)
-Date:   Tue, 7 Jun 2022 11:03:30 +0100
-From:   Vincent Donnefort <vdonnefort@google.com>
-To:     Vincent Guittot <vincent.guittot@linaro.org>
-Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>, peterz@infradead.org,
-        mingo@redhat.com, linux-kernel@vger.kernel.org,
-        morten.rasmussen@arm.com, chris.redpath@arm.com,
-        qperret@google.com, tao.zhou@linux.dev, kernel-team@android.com
-Subject: Re: [PATCH v9 2/7] sched/fair: Decay task PELT values during wakeup
- migration
-Message-ID: <Yp8ico+B8USmi7fY@google.com>
-References: <20220523155140.2878563-1-vdonnefort@google.com>
- <20220523155140.2878563-3-vdonnefort@google.com>
- <72bd6945-c167-65ba-6f81-fad2768972dc@arm.com>
- <Yp3JZIokwFxT+X6M@google.com>
- <CAKfTPtD6TpaJoz37Xv2_1Cc8ij_XGFjDTwA+TvN3ddiASkYc4g@mail.gmail.com>
+        Tue, 7 Jun 2022 06:03:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4762DC0E09;
+        Tue,  7 Jun 2022 03:03:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D03C561373;
+        Tue,  7 Jun 2022 10:03:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF87BC34119;
+        Tue,  7 Jun 2022 10:03:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654596219;
+        bh=u1B8uxzMCkFey7cgXnz/vr+zToHpWFs1K5+BWxxYloU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=K26BYJKPorCQqVcj8VFZH7g9DPuMkA/G8siXvq9Rkg3Q2HYIh8PuG+u/cFCKsjBYY
+         gNaYErecq/8WR+Oi6yHa8vmhhQmSAFgAcgTiFGlp934idTcwd6gg83YBH6bfwFRfuk
+         /XqYUH88dY44xe56sijpmV9e06rHlp0vC0PannW61RJZ9Y9WjTGsNwkMIU09Lv29jj
+         wJ/C0UDg/U+Rq1OZ+mgy46Gd/DD4W5RK/aPXs6RXjcqg6ltHNpux6aH8qsYY1snSHx
+         HOLGQj6AEsxuCU29cx+NfqEuqGNQnVtmCB10ZSDNeaYVtmu4vAuXqpDsv8jua93gV5
+         CoLlhPJTAwRag==
+Date:   Tue, 7 Jun 2022 13:01:44 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     David Howells <dhowells@redhat.com>
+Cc:     torvalds@linux-foundation.org,
+        =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@linux.microsoft.com>,
+        keyrings@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] certs: Convert spaces in certs/Makefile to a tab
+Message-ID: <Yp8iCErgXDFBvhzJ@iki.fi>
+References: <165451871967.1941436.17828809503267245815.stgit@warthog.procyon.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <CAKfTPtD6TpaJoz37Xv2_1Cc8ij_XGFjDTwA+TvN3ddiASkYc4g@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <165451871967.1941436.17828809503267245815.stgit@warthog.procyon.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[...]
-
-> > >
-> > > > diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-> > > > index bf4a0ec98678..97bc26e5c8af 100644
-> > > > --- a/kernel/sched/sched.h
-> > > > +++ b/kernel/sched/sched.h
-> > > > @@ -648,6 +648,10 @@ struct cfs_rq {
-> > > >     int                     runtime_enabled;
-> > > >     s64                     runtime_remaining;
-> > > >
-> > > > +   u64                     throttled_pelt_idle;
-> > > > +#ifndef CONFIG_64BIT
-> > > > +   u64                     throttled_pelt_idle_copy;
-> > > > +#endif
-> > > >     u64                     throttled_clock;
-> > > >     u64                     throttled_clock_pelt;
-> > > >     u64                     throttled_clock_pelt_time;
-> > > > @@ -1020,6 +1024,12 @@ struct rq {
-> > > >     u64                     clock_task ____cacheline_aligned;
-> > > >     u64                     clock_pelt;
-> > > >     unsigned long           lost_idle_time;
-> > > > +   u64                     clock_pelt_idle;
-> > > > +   u64                     enter_idle;
-> > > > +#ifndef CONFIG_64BIT
-> > > > +   u64                     clock_pelt_idle_copy;
-> > > > +   u64                     enter_idle_copy;
-> > > > +#endif
-> > > >
-> > > >     atomic_t                nr_iowait;
-> > >
-> > > `throttled_pelt_idle`, `clock_pelt_idle` and `enter_idle` are clock
-> > > snapshots when cfs_rq resp. rq go idle. But the naming does not really
-> > > show this relation. And this makes reading those equations rather difficult.
-> > >
-> > > What about something like `throttled_clock_pelt_time_enter_idle`,
-> > > `clock_pelt_enter_idle`, `clock_enter_idle`? Especially the first one is
-> > > too long but something which shows that those are clock snapshots when
-> > > enter idle would IMHO augment readability in migrate_se_pelt_lag().
-> >
-> > What if I drop the "enter"?
-> >
-> >  clock_idle;
-> >  clock_pelt_idle;
-> >  throttled_clock_pelt_time_idle;
+On Mon, Jun 06, 2022 at 01:31:59PM +0100, David Howells wrote:
+> There's a rule in certs/Makefile for which the command begins with eight
+> spaces.  This results in:
 > 
-> and you can even remove the _time for throttled_clock_pelt_idle
+> 	../certs/Makefile:21: FORCE prerequisite is missing
+> 	../certs/Makefile:21: *** missing separator.  Stop.
+> 
+> Fix this by turning the spaces into a tab.
+> 
+> Fixes: addf466389d9 ("certs: Check that builtin blacklist hashes are valid")
+> Signed-off-by: David Howells <dhowells@redhat.com>
+> cc: Mickaël Salaün <mic@linux.microsoft.com>
+> cc: Jarkko Sakkinen <jarkko@kernel.org>
+> cc: keyrings@vger.kernel.org
+> ---
+> 
+>  certs/Makefile |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/certs/Makefile b/certs/Makefile
+> index bb904f90f139..cb1a9da3fc58 100644
+> --- a/certs/Makefile
+> +++ b/certs/Makefile
+> @@ -18,7 +18,7 @@ CFLAGS_blacklist_hashes.o += -I$(srctree)
+>  
+>  targets += blacklist_hashes_checked
+>  $(obj)/blacklist_hashes_checked: $(SYSTEM_BLACKLIST_HASH_LIST_SRCPREFIX)$(SYSTEM_BLACKLIST_HASH_LIST_FILENAME) scripts/check-blacklist-hashes.awk FORCE
+> -       $(call if_changed,check_blacklist_hashes,$(SYSTEM_BLACKLIST_HASH_LIST_SRCPREFIX)$(CONFIG_SYSTEM_BLACKLIST_HASH_LIST))
+> +	$(call if_changed,check_blacklist_hashes,$(SYSTEM_BLACKLIST_HASH_LIST_SRCPREFIX)$(CONFIG_SYSTEM_BLACKLIST_HASH_LIST))
+>  obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist_hashes.o
+>  else
+>  obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist_nohashes.o
+> 
 > 
 
-Hum, "throttled_clock_pelt" already exists, while what we really snapshot is
-"throttled_clock_pelt_time".
+
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+
+BR, Jarkko
