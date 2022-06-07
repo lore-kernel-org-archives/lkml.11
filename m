@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F9D7CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0674CCA486
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:54:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383225AbiFGVwt (ORCPT
+        id S1383245AbiFGVw6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:52:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43308 "EHLO
+        Tue, 7 Jun 2022 17:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377656AbiFGU6r (ORCPT
+        with ESMTP id S1377724AbiFGU6s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:58:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9338F209041;
-        Tue,  7 Jun 2022 11:44:40 -0700 (PDT)
+        Tue, 7 Jun 2022 16:58:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7416C20A087;
+        Tue,  7 Jun 2022 11:44:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AFE9BB8239A;
-        Tue,  7 Jun 2022 18:44:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20960C385A2;
-        Tue,  7 Jun 2022 18:44:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA3ED61295;
+        Tue,  7 Jun 2022 18:44:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C137DC385A2;
+        Tue,  7 Jun 2022 18:44:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627477;
-        bh=5OBm9dt0dopWHUdAfMbIrlGBjhk5o7UD1IJ3NEMLvN8=;
+        s=korg; t=1654627483;
+        bh=h96rxag+E6cq0S1AR/1pcZZD3EluK5LjxM3GIvxyU98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NWghgRRHVpds1kGkZLTm3yXBUYlT7bL65//7m5QZspGQ4Vwte71BwqhO86GSmQVd+
-         eTKfaiNaLaEZuRuqpRYP3k0hVayvDip2yvCCwV9gvYOHT+al9RkS53c8l+NkBpEYiX
-         JKFEqKsX4A0586afuaZ8tSOPvYt9VWRaDDUI8PaI=
+        b=rQ7FBYoOjBhy2zYzMkB0qeW/Nfkoob7ewrZedWr8QWecI7tVRf4cw6ep7XP/d+wuS
+         5quHX5mJG58B+iHE3T31NBLFFRKDn6mFGxsihHWoG0PJznAV9Mb6o9ZqeEtR14qXxH
+         ajLPDAEp9d0mQI1BRx8fsuEcDblem1+btOiBHFwI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.17 754/772] net: ipa: fix page free in ipa_endpoint_trans_release()
-Date:   Tue,  7 Jun 2022 19:05:46 +0200
-Message-Id: <20220607165011.245179357@linuxfoundation.org>
+        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
+        Tejun Heo <tj@kernel.org>
+Subject: [PATCH 5.17 756/772] kseltest/cgroup: Make test_stress.sh work if run interactively
+Date:   Tue,  7 Jun 2022 19:05:48 +0200
+Message-Id: <20220607165011.302859805@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,38 +49,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Waiman Long <longman@redhat.com>
 
-commit 155c0c90bca918de6e4327275dfc1d97fd604115 upstream.
+commit 213adc63dfbcdff9a0c19ec1f2681fda9c05cf6d upstream.
 
-Currently the (possibly compound) page used for receive buffers are
-freed using __free_pages().  But according to this comment above the
-definition of that function, that's wrong:
-    If you want to use the page's reference count to decide when
-    to free the allocation, you should allocate a compound page,
-    and use put_page() instead of __free_pages().
+Commit 54de76c01239 ("kselftest/cgroup: fix test_stress.sh to use OUTPUT
+dir") changes the test_core command path from . to $OUTPUT. However,
+variable OUTPUT may not be defined if the command is run interactively.
+Fix that by using ${OUTPUT:-.} to cover both cases.
 
-Convert the call to __free_pages() in ipa_endpoint_trans_release()
-to use put_page() instead.
-
-Fixes: ed23f02680caa ("net: ipa: define per-endpoint receive buffer size")
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Waiman Long <longman@redhat.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ipa/ipa_endpoint.c |    2 +-
+ tools/testing/selftests/cgroup/test_stress.sh |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1402,7 +1402,7 @@ void ipa_endpoint_trans_release(struct i
- 		struct page *page = trans->data;
+--- a/tools/testing/selftests/cgroup/test_stress.sh
++++ b/tools/testing/selftests/cgroup/test_stress.sh
+@@ -1,4 +1,4 @@
+ #!/bin/bash
+ # SPDX-License-Identifier: GPL-2.0
  
- 		if (page)
--			__free_pages(page, get_order(IPA_RX_BUFFER_SIZE));
-+			put_page(page);
- 	}
- }
- 
+-./with_stress.sh -s subsys -s fork ${OUTPUT}/test_core
++./with_stress.sh -s subsys -s fork ${OUTPUT:-.}/test_core
 
 
