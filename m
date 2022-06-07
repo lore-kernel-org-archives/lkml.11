@@ -2,84 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9786CCCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2A89CCA48A
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441848AbiFHAxL (ORCPT
+        id S1441939AbiFHAx3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:53:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49886 "EHLO
+        Tue, 7 Jun 2022 20:53:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385381AbiFGWVf (ORCPT
+        with ESMTP id S1354515AbiFGWCX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:21:35 -0400
+        Tue, 7 Jun 2022 18:02:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D22B31994A3;
-        Tue,  7 Jun 2022 12:21:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C183424E1CB;
+        Tue,  7 Jun 2022 12:14:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CCF960906;
-        Tue,  7 Jun 2022 19:21:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EF4FC3411C;
-        Tue,  7 Jun 2022 19:21:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654629687;
-        bh=ErEmBZd3G+2nCeZwKqv3UDzHU86hysk68o0uchcsTnE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iMrxxJJVlB/KVuBZmk4eOUrThqeqR3mCWDLGLjT19/9FVY4iwJhsnYCO9qj6nX+Vo
-         KmJAgkvfGdSF2uB8DobBDYTHQ77BWzXWmrYc1LW6yPjKKFkW3MmikIE0DO8bUUleFx
-         5HBwJh0RMz5iIejETu8ACYocZ78pZ6JO2xtNZvKn9JitLU4b7zZGijaDSwsUGOq+jh
-         D4uEtTveg9XJPSEsVHO/wBouTb6T4FWEmLYeKC316fV3l8rYYy3w7D8Owwx7qp1KlF
-         Pl1xv72R0bsv/dTlc7yQwptnedhMOveFRDmwb9QXuuNO8C9Mpd+GSELpTITQ7OvoRK
-         kZRe1BiJKh7qQ==
-Date:   Tue, 7 Jun 2022 20:21:22 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Robert Marko <robimarko@gmail.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] regulator: qcom_smd: correct MP5496 ranges
-Message-ID: <Yp+lMm66+imh1wvk@sirena.org.uk>
-References: <20220604193300.125758-1-robimarko@gmail.com>
- <20220604193300.125758-2-robimarko@gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58EB061917;
+        Tue,  7 Jun 2022 19:14:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BCE1C385A2;
+        Tue,  7 Jun 2022 19:14:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629252;
+        bh=ucIaXTRbVB/oL/7bl68xYrtIpt1U6H0UrivdO4ahS1Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=j8LYjj+I5mrX0ynIRqh8vWCV7awnFk6LGj8CN3j10HcEJUMXwVa8EoeiklpcA7CPB
+         yjNobT6srLlc+BgtsGttNb0lZ0n4DEPyZM/gG+zrJTh/dYh3R0sAG1HLINXinH0VxY
+         si96CXhbgZ9VzKF9hNlfp9BV/SsWKup5HzvYQ588=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 623/879] crypto: cryptd - Protect per-CPU resource by disabling BH.
+Date:   Tue,  7 Jun 2022 19:02:21 +0200
+Message-Id: <20220607165020.935015007@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="PVVUTsmlegdQ6yDN"
-Content-Disposition: inline
-In-Reply-To: <20220604193300.125758-2-robimarko@gmail.com>
-X-Cookie: Where's SANDY DUNCAN?
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
---PVVUTsmlegdQ6yDN
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+[ Upstream commit 91e8bcd7b4da182e09ea19a2c73167345fe14c98 ]
 
-On Sat, Jun 04, 2022 at 09:33:00PM +0200, Robert Marko wrote:
-> Currently set MP5496 Buck and LDO ranges dont match its datasheet[1].
-> According to the datasheet:
-> Buck range is 0.6-2.1875V with a 12.5mV step
-> LDO range is 0.8-3.975V with a 25mV step.
+The access to cryptd_queue::cpu_queue is synchronized by disabling
+preemption in cryptd_enqueue_request() and disabling BH in
+cryptd_queue_worker(). This implies that access is allowed from BH.
 
-Doesn't make much difference here but in general fixes like this should
-come before new features in a series so they can be applied without
-dependency issues.
+If cryptd_enqueue_request() is invoked from preemptible context _and_
+soft interrupt then this can lead to list corruption since
+cryptd_enqueue_request() is not protected against access from
+soft interrupt.
 
---PVVUTsmlegdQ6yDN
-Content-Type: application/pgp-signature; name="signature.asc"
+Replace get_cpu() in cryptd_enqueue_request() with local_bh_disable()
+to ensure BH is always disabled.
+Remove preempt_disable() from cryptd_queue_worker() since it is not
+needed because local_bh_disable() ensures synchronisation.
 
------BEGIN PGP SIGNATURE-----
+Fixes: 254eff771441 ("crypto: cryptd - Per-CPU thread implementation...")
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ crypto/cryptd.c | 23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKfpTEACgkQJNaLcl1U
-h9AhTgf+Od+PkiFj34Fq+VGSFfiNc7og5D8mxgVCFTFSZ3zf4liijqW0zWl2kJFw
-auCo3cJ75iR7DlDFOUGoU57JQeVRTKFI8oiy22abWM8/X06HWyV8MJhwwII6Clk9
-m/muvCiPowA9AWT0VvXu5r4Z8G6TC8ANmcNlw21pHtmX7fhDpPlQGaW1beF3YkOJ
-+8FZvaNWwC7mCx5ARiDmfW0EfBtjcFl7NQK2uozEiYRmTe2EzWDfA4jx8dPH/sTf
-qxgwEfeGn2Souy+Ax3ns4XiiVSoFJX+R3UGyU+MpcJ33/gtlkz7i6JQgf2whuXMP
-u1S1lOtUHQRp44gA03oVbHqMP00XBw==
-=TPNT
------END PGP SIGNATURE-----
+diff --git a/crypto/cryptd.c b/crypto/cryptd.c
+index a1bea0f4baa8..668095eca0fa 100644
+--- a/crypto/cryptd.c
++++ b/crypto/cryptd.c
+@@ -39,6 +39,10 @@ struct cryptd_cpu_queue {
+ };
+ 
+ struct cryptd_queue {
++	/*
++	 * Protected by disabling BH to allow enqueueing from softinterrupt and
++	 * dequeuing from kworker (cryptd_queue_worker()).
++	 */
+ 	struct cryptd_cpu_queue __percpu *cpu_queue;
+ };
+ 
+@@ -125,28 +129,28 @@ static void cryptd_fini_queue(struct cryptd_queue *queue)
+ static int cryptd_enqueue_request(struct cryptd_queue *queue,
+ 				  struct crypto_async_request *request)
+ {
+-	int cpu, err;
++	int err;
+ 	struct cryptd_cpu_queue *cpu_queue;
+ 	refcount_t *refcnt;
+ 
+-	cpu = get_cpu();
++	local_bh_disable();
+ 	cpu_queue = this_cpu_ptr(queue->cpu_queue);
+ 	err = crypto_enqueue_request(&cpu_queue->queue, request);
+ 
+ 	refcnt = crypto_tfm_ctx(request->tfm);
+ 
+ 	if (err == -ENOSPC)
+-		goto out_put_cpu;
++		goto out;
+ 
+-	queue_work_on(cpu, cryptd_wq, &cpu_queue->work);
++	queue_work_on(smp_processor_id(), cryptd_wq, &cpu_queue->work);
+ 
+ 	if (!refcount_read(refcnt))
+-		goto out_put_cpu;
++		goto out;
+ 
+ 	refcount_inc(refcnt);
+ 
+-out_put_cpu:
+-	put_cpu();
++out:
++	local_bh_enable();
+ 
+ 	return err;
+ }
+@@ -162,15 +166,10 @@ static void cryptd_queue_worker(struct work_struct *work)
+ 	cpu_queue = container_of(work, struct cryptd_cpu_queue, work);
+ 	/*
+ 	 * Only handle one request at a time to avoid hogging crypto workqueue.
+-	 * preempt_disable/enable is used to prevent being preempted by
+-	 * cryptd_enqueue_request(). local_bh_disable/enable is used to prevent
+-	 * cryptd_enqueue_request() being accessed from software interrupts.
+ 	 */
+ 	local_bh_disable();
+-	preempt_disable();
+ 	backlog = crypto_get_backlog(&cpu_queue->queue);
+ 	req = crypto_dequeue_request(&cpu_queue->queue);
+-	preempt_enable();
+ 	local_bh_enable();
+ 
+ 	if (!req)
+-- 
+2.35.1
 
---PVVUTsmlegdQ6yDN--
+
+
