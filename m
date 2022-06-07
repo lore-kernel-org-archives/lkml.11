@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50612CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63969CCA489
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389142AbiFHBpt (ORCPT
+        id S1389214AbiFHBpy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:45:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59530 "EHLO
+        Tue, 7 Jun 2022 21:45:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381082AbiFGW2A (ORCPT
+        with ESMTP id S1385577AbiFGWbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:28:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89E2E2717B3;
-        Tue,  7 Jun 2022 12:23:21 -0700 (PDT)
+        Tue, 7 Jun 2022 18:31:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EBE4279E58;
+        Tue,  7 Jun 2022 12:24:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 610BA60B07;
-        Tue,  7 Jun 2022 19:23:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E043C385A2;
-        Tue,  7 Jun 2022 19:23:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37EBAB8220B;
+        Tue,  7 Jun 2022 19:24:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F499C385A2;
+        Tue,  7 Jun 2022 19:24:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629799;
-        bh=KQhNUBLOLtZcrsJx4S47bHKKob7oUfommlWDtlE6Xv8=;
+        s=korg; t=1654629887;
+        bh=s88LYf1pFdDDcHZeXM4fiQIU0i0g0org+rLeRSkBlFg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NtJ4lUdEHczcLWeK68cU1vPOl/tEEb4vEgO9qMuF01u+jEub8Nt85QlrdG2Apwwxp
-         tyHihSMbbjZqeMhUIRJnh0Nra0Cmkw1qg6ryhbaXQAJa2pTXo34nMZ72JV+Kgn7lyc
-         +STSFDIEl5VvV5BzvEpY29X8AOY50CHq55zh/IaQ=
+        b=zt74k6AboFeAMpOpEROpUZzoKPdiIzeI8ll2Wizf/BSw1WUDN/Rqx8L7qP5EbFhTn
+         DGy58JiXa/bw91Tlw0zwLWJipoV/jaHYxnLZOUz1QZ5XcgwgcsBm2cJeok7gWiK0cH
+         T3HsNi1bTDiLllhGMNjw7u2HoyHU+hCD8sa1Cu4w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.18 822/879] kexec_file: drop weak attribute from arch_kexec_apply_relocations[_add]
-Date:   Tue,  7 Jun 2022 19:05:40 +0200
-Message-Id: <20220607165026.712596078@linuxfoundation.org>
+        stable@vger.kernel.org, Kant Fan <kant@allwinnertech.com>,
+        Lukasz Luba <lukasz.luba@arm.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.18 812/879] thermal: devfreq_cooling: use local ops instead of global ops
+Date:   Tue,  7 Jun 2022 19:05:30 +0200
+Message-Id: <20220607165026.426095182@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,184 +50,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+From: Kant Fan <kant@allwinnertech.com>
 
-commit 3e35142ef99fe6b4fe5d834ad43ee13cca10a2dc upstream.
+commit b947769b8f778db130aad834257fcaca25df2edc upstream.
 
-Since commit d1bcae833b32f1 ("ELF: Don't generate unused section
-symbols") [1], binutils (v2.36+) started dropping section symbols that
-it thought were unused.  This isn't an issue in general, but with
-kexec_file.c, gcc is placing kexec_arch_apply_relocations[_add] into a
-separate .text.unlikely section and the section symbol ".text.unlikely"
-is being dropped. Due to this, recordmcount is unable to find a non-weak
-symbol in .text.unlikely to generate a relocation record against.
+Fix access illegal address problem in following condition:
 
-Address this by dropping the weak attribute from these functions.
-Instead, follow the existing pattern of having architectures #define the
-name of the function they want to override in their headers.
+There are multiple devfreq cooling devices in system, some of them has
+EM model but others do not. Energy model ops such as state2power will
+append to global devfreq_cooling_ops when the cooling device with
+EM model is registered. It makes the cooling device without EM model
+also use devfreq_cooling_ops after appending when registered later by
+of_devfreq_cooling_register_power() or of_devfreq_cooling_register().
 
-[1] https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=d1bcae833b32f1
+The IPA governor regards the cooling devices without EM model as a power
+actor, because they also have energy model ops, and will access illegal
+address at dfc->em_pd when execute cdev->ops->get_requested_power,
+cdev->ops->state2power or cdev->ops->power2state.
 
-[akpm@linux-foundation.org: arch/s390/include/asm/kexec.h needs linux/module.h]
-Link: https://lkml.kernel.org/r/20220519091237.676736-1-naveen.n.rao@linux.vnet.ibm.com
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Cc: "Eric W. Biederman" <ebiederm@xmission.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: 615510fe13bd2 ("thermal: devfreq_cooling: remove old power model and use EM")
+Cc: 5.13+ <stable@vger.kernel.org> # 5.13+
+Signed-off-by: Kant Fan <kant@allwinnertech.com>
+Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/include/asm/kexec.h |   10 +++++++++
- arch/x86/include/asm/kexec.h  |    8 +++++++
- include/linux/kexec.h         |   46 ++++++++++++++++++++++++++++++++++--------
- kernel/kexec_file.c           |   34 -------------------------------
- 4 files changed, 56 insertions(+), 42 deletions(-)
+ drivers/thermal/devfreq_cooling.c |   25 ++++++++++++++++++-------
+ 1 file changed, 18 insertions(+), 7 deletions(-)
 
---- a/arch/s390/include/asm/kexec.h
-+++ b/arch/s390/include/asm/kexec.h
-@@ -9,6 +9,8 @@
- #ifndef _S390_KEXEC_H
- #define _S390_KEXEC_H
+--- a/drivers/thermal/devfreq_cooling.c
++++ b/drivers/thermal/devfreq_cooling.c
+@@ -358,21 +358,28 @@ of_devfreq_cooling_register_power(struct
+ 	struct thermal_cooling_device *cdev;
+ 	struct device *dev = df->dev.parent;
+ 	struct devfreq_cooling_device *dfc;
++	struct thermal_cooling_device_ops *ops;
+ 	char *name;
+ 	int err, num_opps;
  
-+#include <linux/module.h>
+-	dfc = kzalloc(sizeof(*dfc), GFP_KERNEL);
+-	if (!dfc)
++	ops = kmemdup(&devfreq_cooling_ops, sizeof(*ops), GFP_KERNEL);
++	if (!ops)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	dfc = kzalloc(sizeof(*dfc), GFP_KERNEL);
++	if (!dfc) {
++		err = -ENOMEM;
++		goto free_ops;
++	}
 +
- #include <asm/processor.h>
- #include <asm/page.h>
- #include <asm/setup.h>
-@@ -83,4 +85,12 @@ struct kimage_arch {
- extern const struct kexec_file_ops s390_kexec_image_ops;
- extern const struct kexec_file_ops s390_kexec_elf_ops;
+ 	dfc->devfreq = df;
  
-+#ifdef CONFIG_KEXEC_FILE
-+struct purgatory_info;
-+int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
-+				     Elf_Shdr *section,
-+				     const Elf_Shdr *relsec,
-+				     const Elf_Shdr *symtab);
-+#define arch_kexec_apply_relocations_add arch_kexec_apply_relocations_add
-+#endif
- #endif /*_S390_KEXEC_H */
---- a/arch/x86/include/asm/kexec.h
-+++ b/arch/x86/include/asm/kexec.h
-@@ -186,6 +186,14 @@ extern int arch_kexec_post_alloc_pages(v
- extern void arch_kexec_pre_free_pages(void *vaddr, unsigned int pages);
- #define arch_kexec_pre_free_pages arch_kexec_pre_free_pages
+ 	dfc->em_pd = em_pd_get(dev);
+ 	if (dfc->em_pd) {
+-		devfreq_cooling_ops.get_requested_power =
++		ops->get_requested_power =
+ 			devfreq_cooling_get_requested_power;
+-		devfreq_cooling_ops.state2power = devfreq_cooling_state2power;
+-		devfreq_cooling_ops.power2state = devfreq_cooling_power2state;
++		ops->state2power = devfreq_cooling_state2power;
++		ops->power2state = devfreq_cooling_power2state;
  
-+#ifdef CONFIG_KEXEC_FILE
-+struct purgatory_info;
-+int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
-+				     Elf_Shdr *section,
-+				     const Elf_Shdr *relsec,
-+				     const Elf_Shdr *symtab);
-+#define arch_kexec_apply_relocations_add arch_kexec_apply_relocations_add
-+#endif
- #endif
+ 		dfc->power_ops = dfc_power;
  
- typedef void crash_vmclear_fn(void);
---- a/include/linux/kexec.h
-+++ b/include/linux/kexec.h
-@@ -193,14 +193,6 @@ void *kexec_purgatory_get_symbol_addr(st
- int arch_kexec_kernel_image_probe(struct kimage *image, void *buf,
- 				  unsigned long buf_len);
- void *arch_kexec_kernel_image_load(struct kimage *image);
--int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
--				     Elf_Shdr *section,
--				     const Elf_Shdr *relsec,
--				     const Elf_Shdr *symtab);
--int arch_kexec_apply_relocations(struct purgatory_info *pi,
--				 Elf_Shdr *section,
--				 const Elf_Shdr *relsec,
--				 const Elf_Shdr *symtab);
- int arch_kimage_file_post_load_cleanup(struct kimage *image);
- #ifdef CONFIG_KEXEC_SIG
- int arch_kexec_kernel_verify_sig(struct kimage *image, void *buf,
-@@ -229,6 +221,44 @@ extern int crash_exclude_mem_range(struc
- 				   unsigned long long mend);
- extern int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
- 				       void **addr, unsigned long *sz);
-+
-+#ifndef arch_kexec_apply_relocations_add
-+/*
-+ * arch_kexec_apply_relocations_add - apply relocations of type RELA
-+ * @pi:		Purgatory to be relocated.
-+ * @section:	Section relocations applying to.
-+ * @relsec:	Section containing RELAs.
-+ * @symtab:	Corresponding symtab.
-+ *
-+ * Return: 0 on success, negative errno on error.
-+ */
-+static inline int
-+arch_kexec_apply_relocations_add(struct purgatory_info *pi, Elf_Shdr *section,
-+				 const Elf_Shdr *relsec, const Elf_Shdr *symtab)
-+{
-+	pr_err("RELA relocation unsupported.\n");
-+	return -ENOEXEC;
-+}
-+#endif
-+
-+#ifndef arch_kexec_apply_relocations
-+/*
-+ * arch_kexec_apply_relocations - apply relocations of type REL
-+ * @pi:		Purgatory to be relocated.
-+ * @section:	Section relocations applying to.
-+ * @relsec:	Section containing RELs.
-+ * @symtab:	Corresponding symtab.
-+ *
-+ * Return: 0 on success, negative errno on error.
-+ */
-+static inline int
-+arch_kexec_apply_relocations(struct purgatory_info *pi, Elf_Shdr *section,
-+			     const Elf_Shdr *relsec, const Elf_Shdr *symtab)
-+{
-+	pr_err("REL relocation unsupported.\n");
-+	return -ENOEXEC;
-+}
-+#endif
- #endif /* CONFIG_KEXEC_FILE */
+@@ -407,8 +414,7 @@ of_devfreq_cooling_register_power(struct
+ 	if (!name)
+ 		goto remove_qos_req;
  
- #ifdef CONFIG_KEXEC_ELF
---- a/kernel/kexec_file.c
-+++ b/kernel/kexec_file.c
-@@ -109,40 +109,6 @@ int __weak arch_kexec_kernel_verify_sig(
- #endif
+-	cdev = thermal_of_cooling_device_register(np, name, dfc,
+-						  &devfreq_cooling_ops);
++	cdev = thermal_of_cooling_device_register(np, name, dfc, ops);
+ 	kfree(name);
  
- /*
-- * arch_kexec_apply_relocations_add - apply relocations of type RELA
-- * @pi:		Purgatory to be relocated.
-- * @section:	Section relocations applying to.
-- * @relsec:	Section containing RELAs.
-- * @symtab:	Corresponding symtab.
-- *
-- * Return: 0 on success, negative errno on error.
-- */
--int __weak
--arch_kexec_apply_relocations_add(struct purgatory_info *pi, Elf_Shdr *section,
--				 const Elf_Shdr *relsec, const Elf_Shdr *symtab)
--{
--	pr_err("RELA relocation unsupported.\n");
--	return -ENOEXEC;
--}
--
--/*
-- * arch_kexec_apply_relocations - apply relocations of type REL
-- * @pi:		Purgatory to be relocated.
-- * @section:	Section relocations applying to.
-- * @relsec:	Section containing RELs.
-- * @symtab:	Corresponding symtab.
-- *
-- * Return: 0 on success, negative errno on error.
-- */
--int __weak
--arch_kexec_apply_relocations(struct purgatory_info *pi, Elf_Shdr *section,
--			     const Elf_Shdr *relsec, const Elf_Shdr *symtab)
--{
--	pr_err("REL relocation unsupported.\n");
--	return -ENOEXEC;
--}
--
--/*
-  * Free up memory used by kernel, initrd, and command line. This is temporary
-  * memory allocation which is not needed any more after these buffers have
-  * been loaded into separate segments and have been copied elsewhere.
+ 	if (IS_ERR(cdev)) {
+@@ -429,6 +435,8 @@ free_table:
+ 	kfree(dfc->freq_table);
+ free_dfc:
+ 	kfree(dfc);
++free_ops:
++	kfree(ops);
+ 
+ 	return ERR_PTR(err);
+ }
+@@ -510,11 +518,13 @@ EXPORT_SYMBOL_GPL(devfreq_cooling_em_reg
+ void devfreq_cooling_unregister(struct thermal_cooling_device *cdev)
+ {
+ 	struct devfreq_cooling_device *dfc;
++	const struct thermal_cooling_device_ops *ops;
+ 	struct device *dev;
+ 
+ 	if (IS_ERR_OR_NULL(cdev))
+ 		return;
+ 
++	ops = cdev->ops;
+ 	dfc = cdev->devdata;
+ 	dev = dfc->devfreq->dev.parent;
+ 
+@@ -525,5 +535,6 @@ void devfreq_cooling_unregister(struct t
+ 
+ 	kfree(dfc->freq_table);
+ 	kfree(dfc);
++	kfree(ops);
+ }
+ EXPORT_SYMBOL_GPL(devfreq_cooling_unregister);
 
 
