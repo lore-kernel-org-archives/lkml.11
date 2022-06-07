@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7AFEC2BBF5
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C4F8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355007AbiFGS5t (ORCPT
+        id S1354839AbiFGS5H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42296 "EHLO
+        Tue, 7 Jun 2022 14:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352351AbiFGSRD (ORCPT
+        with ESMTP id S1352400AbiFGSRG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12338BD39;
-        Tue,  7 Jun 2022 10:51:26 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85ABA1928C;
+        Tue,  7 Jun 2022 10:51:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D2006172E;
-        Tue,  7 Jun 2022 17:51:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69730C34115;
-        Tue,  7 Jun 2022 17:51:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F14CB82354;
+        Tue,  7 Jun 2022 17:51:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C42CC385A5;
+        Tue,  7 Jun 2022 17:51:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624285;
-        bh=qlmXHUGCFcDHqwqkCcIi4THSIp4NWofFcLYLYb3H83g=;
+        s=korg; t=1654624299;
+        bh=RVNCiTgrNrYESd/rZDsxx0nLrxVIdSA1WieB6mjc8Ek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OXADQ14kYNs7BnlWDHz6w2UKhxc3uKyQeuTHwJlkzoq2XgYmvoV0mfPu6NfRCk8Xr
-         BcxVqJh6zMcO59jRsiTKrKty8DdYtN9nxLi3Lx7KTFO/DSRkiKtr4TBLKiI/Fmr+ki
-         dVJsTmHQSPXRk3V2Huw2KlEs+f4bOLJ26bfH6OFs=
+        b=iSErQ0vHuMI6/uXhCiP26xgrtTKhjNJ11i4EIu9HVdQng882GNNpSR7hNfmUhORrS
+         xxf52mHIdv1O6wmS2Q0CfAcOwcNJSpP0JHewFUorydIi6ka382Kb+uIOSoF7Zc2Emj
+         rwCx1MwS3+dcrzStQXHgWXJmduJfKDe/UzVjp7zM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 273/667] drm/msm: add missing include to msm_drv.c
-Date:   Tue,  7 Jun 2022 18:58:58 +0200
-Message-Id: <20220607164942.973798310@linuxfoundation.org>
+Subject: [PATCH 5.15 278/667] perf tools: Use Python devtools for version autodetection rather than runtime
+Date:   Tue,  7 Jun 2022 18:59:03 +0200
+Message-Id: <20220607164943.124319103@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,39 +54,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: James Clark <james.clark@arm.com>
 
-[ Upstream commit 8123fe83c3a3448bbfa5b5b1cacfdfe7d076fca6 ]
+[ Upstream commit 630af16eee495f583db5202c3613d1b191f10694 ]
 
-Add explicit include of drm_bridge.h to the msm_drv.c to fix the
-following warning:
+This fixes the issue where the build will fail if only the Python2
+runtime is installed but the Python3 devtools are installed. Currently
+the workaround is 'make PYTHON=python3'.
 
-drivers/gpu/drm/msm/msm_drv.c:236:17: error: implicit declaration of function 'drm_bridge_remove'; did you mean 'drm_bridge_detach'? [-Werror=implicit-function-declaration]
+Fix it by autodetecting Python based on whether python[x]-config exists
+rather than just python[x] because both are needed for the build. Then
+-config is stripped to find the Python runtime.
 
-Fixes: d28ea556267c ("drm/msm: properly add and remove internal bridges")
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/484310/
-Link: https://lore.kernel.org/r/20220430180917.3819294-1-dmitry.baryshkov@linaro.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Testing
+=======
+
+ * Auto detect links with Python3 when the v3 devtools are installed
+   and only Python 2 runtime is installed
+ * Auto detect links with Python2 when both devtools are installed
+ * Sensible warning is printed if no Python devtools are installed
+ * 'make PYTHON=x' still automatically sets PYTHON_CONFIG=x-config
+ * 'make PYTHON=x' fails if x-config doesn't exist
+ * 'make PYTHON=python3' overrides Python2 devtools
+ * 'make PYTHON=python2' overrides Python3 devtools
+ * 'make PYTHON_CONFIG=x-config' works
+ * 'make PYTHON=x PYTHON_CONFIG=x' works
+ * 'make PYTHON=missing' reports an error
+ * 'make PYTHON_CONFIG=missing' reports an error
+
+Fixes: 79373082fa9de8be ("perf python: Autodetect python3 binary")
+Signed-off-by: James Clark <james.clark@arm.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: James Clark <james.clark@arm.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Link: https://lore.kernel.org/r/20220309194313.3350126-2-james.clark@arm.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/msm_drv.c | 1 +
- 1 file changed, 1 insertion(+)
+ tools/perf/Makefile.config | 39 ++++++++++++++++++++++++++------------
+ 1 file changed, 27 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
-index bbf999c66517..28524ea8601f 100644
---- a/drivers/gpu/drm/msm/msm_drv.c
-+++ b/drivers/gpu/drm/msm/msm_drv.c
-@@ -11,6 +11,7 @@
- #include <linux/uaccess.h>
- #include <uapi/linux/sched/types.h>
+diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
+index e0660bc76b7b..1afc67047420 100644
+--- a/tools/perf/Makefile.config
++++ b/tools/perf/Makefile.config
+@@ -237,18 +237,33 @@ ifdef PARSER_DEBUG
+ endif
  
-+#include <drm/drm_bridge.h>
- #include <drm/drm_drv.h>
- #include <drm/drm_file.h>
- #include <drm/drm_ioctl.h>
+ # Try different combinations to accommodate systems that only have
+-# python[2][-config] in weird combinations but always preferring
+-# python2 and python2-config as per pep-0394. If python2 or python
+-# aren't found, then python3 is used.
+-PYTHON_AUTO := python
+-PYTHON_AUTO := $(if $(call get-executable,python3),python3,$(PYTHON_AUTO))
+-PYTHON_AUTO := $(if $(call get-executable,python),python,$(PYTHON_AUTO))
+-PYTHON_AUTO := $(if $(call get-executable,python2),python2,$(PYTHON_AUTO))
+-override PYTHON := $(call get-executable-or-default,PYTHON,$(PYTHON_AUTO))
+-PYTHON_AUTO_CONFIG := \
+-  $(if $(call get-executable,$(PYTHON)-config),$(PYTHON)-config,python-config)
+-override PYTHON_CONFIG := \
+-  $(call get-executable-or-default,PYTHON_CONFIG,$(PYTHON_AUTO_CONFIG))
++# python[2][3]-config in weird combinations in the following order of
++# priority from lowest to highest:
++#   * python3-config
++#   * python-config
++#   * python2-config as per pep-0394.
++#   * $(PYTHON)-config (If PYTHON is user supplied but PYTHON_CONFIG isn't)
++#
++PYTHON_AUTO := python-config
++PYTHON_AUTO := $(if $(call get-executable,python3-config),python3-config,$(PYTHON_AUTO))
++PYTHON_AUTO := $(if $(call get-executable,python-config),python-config,$(PYTHON_AUTO))
++PYTHON_AUTO := $(if $(call get-executable,python2-config),python2-config,$(PYTHON_AUTO))
++
++# If PYTHON is defined but PYTHON_CONFIG isn't, then take $(PYTHON)-config as if it was the user
++# supplied value for PYTHON_CONFIG. Because it's "user supplied", error out if it doesn't exist.
++ifdef PYTHON
++  ifndef PYTHON_CONFIG
++    PYTHON_CONFIG_AUTO := $(call get-executable,$(PYTHON)-config)
++    PYTHON_CONFIG := $(if $(PYTHON_CONFIG_AUTO),$(PYTHON_CONFIG_AUTO),\
++                          $(call $(error $(PYTHON)-config not found)))
++  endif
++endif
++
++# Select either auto detected python and python-config or use user supplied values if they are
++# defined. get-executable-or-default fails with an error if the first argument is supplied but
++# doesn't exist.
++override PYTHON_CONFIG := $(call get-executable-or-default,PYTHON_CONFIG,$(PYTHON_AUTO))
++override PYTHON := $(call get-executable-or-default,PYTHON,$(subst -config,,$(PYTHON_AUTO)))
+ 
+ grep-libs  = $(filter -l%,$(1))
+ strip-libs  = $(filter-out -l%,$(1))
 -- 
 2.35.1
 
