@@ -2,43 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6AC3CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82429CCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350599AbiFGSBT (ORCPT
+        id S1350399AbiFGSBA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:01:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45608 "EHLO
+        Tue, 7 Jun 2022 14:01:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348669AbiFGRlR (ORCPT
+        with ESMTP id S1348505AbiFGRk7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:41:17 -0400
+        Tue, 7 Jun 2022 13:40:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7C2122974;
-        Tue,  7 Jun 2022 10:34:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DF31203D0;
+        Tue,  7 Jun 2022 10:34:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 921E26157D;
-        Tue,  7 Jun 2022 17:34:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FAE0C34119;
-        Tue,  7 Jun 2022 17:34:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 712F66146F;
+        Tue,  7 Jun 2022 17:33:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53325C385A5;
+        Tue,  7 Jun 2022 17:33:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623269;
-        bh=Szbdp3dbQL5SZT5WgSpBoqQq5qpRBZObrw0n2Sa/d6M=;
+        s=korg; t=1654623205;
+        bh=JCm1b5N3/b9pAm8ZufeikkbDqu9hOtf7zipRZfAqLTk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jaIwS87RBUezg3taiRnEMO+vXsRPwWl2FUpndyKSIqMCflM416XCBADNvVaBvObTs
-         HIiuEnWcgnisWOWrX4CRYo8VhZl7db5zPg4wv+KABDYieCtZkbPeNmO+mvQa7lzDkL
-         A8Fm6RU/0MkEvd4cldk481agJUNPXFSZ4Rq3QwjE=
+        b=LuFNdH21E/m1FQFE9IHlzPz0yKCRToqu2wkx3bfd3j2OGZi39OyPTEqw81Hr0Yqae
+         CvBk0AFzrBksSLVSsl8DaQ/XG6xOyhb4eOO0zay0/esumJv7pVNWKBBSVwhp+SIgmz
+         GVMtyY7Gd3eZ6BY5GpJwdhffyHHtIco7Hui3/Qtk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 356/452] bfq: Split shared queues on move between cgroups
-Date:   Tue,  7 Jun 2022 19:03:33 +0200
-Message-Id: <20220607164919.173105589@linuxfoundation.org>
+        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Alistair Popple <apopple@nvidia.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Ross Zwisler <zwisler@kernel.org>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Yang Shi <shy828301@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 292/452] dax: fix cache flush on PMD-mapped pages
+Date:   Tue,  7 Jun 2022 19:02:29 +0200
+Message-Id: <20220607164917.253007588@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,99 +62,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Muchun Song <songmuchun@bytedance.com>
 
-commit 3bc5e683c67d94bd839a1da2e796c15847b51b69 upstream.
+[ Upstream commit e583b5c472bd23d450e06f148dc1f37be74f7666 ]
 
-When bfqq is shared by multiple processes it can happen that one of the
-processes gets moved to a different cgroup (or just starts submitting IO
-for different cgroup). In case that happens we need to split the merged
-bfqq as otherwise we will have IO for multiple cgroups in one bfqq and
-we will just account IO time to wrong entities etc.
+The flush_cache_page() only remove a PAGE_SIZE sized range from the cache.
+However, it does not cover the full pages in a THP except a head page.
+Replace it with flush_cache_range() to fix this issue.  This is just a
+documentation issue with the respect to properly documenting the expected
+usage of cache flushing before modifying the pmd.  However, in practice
+this is not a problem due to the fact that DAX is not available on
+architectures with virtually indexed caches per:
 
-Similarly if the bfqq is scheduled to merge with another bfqq but the
-merge didn't happen yet, cancel the merge as it need not be valid
-anymore.
+  commit d92576f1167c ("dax: does not work correctly with virtual aliasing caches")
 
-CC: stable@vger.kernel.org
-Fixes: e21b7a0b9887 ("block, bfq: add full hierarchical scheduling and cgroups support")
-Tested-by: "yukuai (C)" <yukuai3@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lkml.kernel.org/r/20220403053957.10770-3-songmuchun@bytedance.com
+Fixes: f729c8c9b24f ("dax: wrprotect pmd_t in dax_mapping_entry_mkclean")
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220401102752.8599-3-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alistair Popple <apopple@nvidia.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Jan Kara <jack@suse.cz>
+Cc: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Ralph Campbell <rcampbell@nvidia.com>
+Cc: Ross Zwisler <zwisler@kernel.org>
+Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
+Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Cc: Yang Shi <shy828301@gmail.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bfq-cgroup.c  |   36 +++++++++++++++++++++++++++++++++---
- block/bfq-iosched.c |    2 +-
- block/bfq-iosched.h |    1 +
- 3 files changed, 35 insertions(+), 4 deletions(-)
+ fs/dax.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/block/bfq-cgroup.c
-+++ b/block/bfq-cgroup.c
-@@ -725,9 +725,39 @@ static struct bfq_group *__bfq_bic_chang
- 	}
+diff --git a/fs/dax.c b/fs/dax.c
+index d5d7b9393bca..3e7e9a57fd28 100644
+--- a/fs/dax.c
++++ b/fs/dax.c
+@@ -846,7 +846,8 @@ static void dax_entry_mkclean(struct address_space *mapping, pgoff_t index,
+ 			if (!pmd_dirty(*pmdp) && !pmd_write(*pmdp))
+ 				goto unlock_pmd;
  
- 	if (sync_bfqq) {
--		entity = &sync_bfqq->entity;
--		if (entity->sched_data != &bfqg->sched_data)
--			bfq_bfqq_move(bfqd, sync_bfqq, bfqg);
-+		if (!sync_bfqq->new_bfqq && !bfq_bfqq_coop(sync_bfqq)) {
-+			/* We are the only user of this bfqq, just move it */
-+			if (sync_bfqq->entity.sched_data != &bfqg->sched_data)
-+				bfq_bfqq_move(bfqd, sync_bfqq, bfqg);
-+		} else {
-+			struct bfq_queue *bfqq;
-+
-+			/*
-+			 * The queue was merged to a different queue. Check
-+			 * that the merge chain still belongs to the same
-+			 * cgroup.
-+			 */
-+			for (bfqq = sync_bfqq; bfqq; bfqq = bfqq->new_bfqq)
-+				if (bfqq->entity.sched_data !=
-+				    &bfqg->sched_data)
-+					break;
-+			if (bfqq) {
-+				/*
-+				 * Some queue changed cgroup so the merge is
-+				 * not valid anymore. We cannot easily just
-+				 * cancel the merge (by clearing new_bfqq) as
-+				 * there may be other processes using this
-+				 * queue and holding refs to all queues below
-+				 * sync_bfqq->new_bfqq. Similarly if the merge
-+				 * already happened, we need to detach from
-+				 * bfqq now so that we cannot merge bio to a
-+				 * request from the old cgroup.
-+				 */
-+				bfq_put_cooperator(sync_bfqq);
-+				bfq_release_process_ref(bfqd, sync_bfqq);
-+				bic_set_bfqq(bic, NULL, 1);
-+			}
-+		}
- 	}
- 
- 	return bfqg;
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -4917,7 +4917,7 @@ void bfq_put_queue(struct bfq_queue *bfq
- 	bfqg_and_blkg_put(bfqg);
- }
- 
--static void bfq_put_cooperator(struct bfq_queue *bfqq)
-+void bfq_put_cooperator(struct bfq_queue *bfqq)
- {
- 	struct bfq_queue *__bfqq, *next;
- 
---- a/block/bfq-iosched.h
-+++ b/block/bfq-iosched.h
-@@ -954,6 +954,7 @@ void bfq_weights_tree_remove(struct bfq_
- void bfq_bfqq_expire(struct bfq_data *bfqd, struct bfq_queue *bfqq,
- 		     bool compensate, enum bfqq_expiration reason);
- void bfq_put_queue(struct bfq_queue *bfqq);
-+void bfq_put_cooperator(struct bfq_queue *bfqq);
- void bfq_end_wr_async_queues(struct bfq_data *bfqd, struct bfq_group *bfqg);
- void bfq_release_process_ref(struct bfq_data *bfqd, struct bfq_queue *bfqq);
- void bfq_schedule_dispatch(struct bfq_data *bfqd);
+-			flush_cache_page(vma, address, pfn);
++			flush_cache_range(vma, address,
++					  address + HPAGE_PMD_SIZE);
+ 			pmd = pmdp_invalidate(vma, address, pmdp);
+ 			pmd = pmd_wrprotect(pmd);
+ 			pmd = pmd_mkclean(pmd);
+-- 
+2.35.1
+
 
 
