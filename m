@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9440FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:13:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5079DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:14:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358408AbiFGUNy (ORCPT
+        id S1358212AbiFGUN7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:13:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33728 "EHLO
+        Tue, 7 Jun 2022 16:13:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355270AbiFGTUG (ORCPT
+        with ESMTP id S1356156AbiFGTSD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:20:06 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84940198C0F;
-        Tue,  7 Jun 2022 11:08:34 -0700 (PDT)
+        Tue, 7 Jun 2022 15:18:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA4C719F6;
+        Tue,  7 Jun 2022 11:08:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EF753CE2425;
-        Tue,  7 Jun 2022 18:08:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4B19C385A5;
-        Tue,  7 Jun 2022 18:08:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B58EE6171C;
+        Tue,  7 Jun 2022 18:08:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9D7BC385A5;
+        Tue,  7 Jun 2022 18:08:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625311;
-        bh=92uU6VQZ8vRHI63+qTv3k7gUUiysfrjpvmX9xY6PYjY=;
+        s=korg; t=1654625297;
+        bh=rcBjoiXgO+z+OvXdXoESTU8m02RbV16e9JWR3eqW3Y8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U9krlvTGWNHnq/Tjeym+gi/cowXe/nUj+5ID8qNq6W4Vy3NIObJeT6ekm4S2HTw/X
-         OXVuixKjuoni9dbzekaVfuovD4YHTANWRDRxun1+bO+2yB8BJNiSN7GrScRmm/woE1
-         +NaNJZEbrFk/ba9TU+XL1y3LrMKNwhaMMBjSB4/s=
+        b=dtJ4ZJRcb3TVBKniu8qZyFjEmXqyi3X85IofwMDoRqKM+Yk7IYrJXJPHE2CGbw8e1
+         v36k5nwgIxK5BlAjsLtEPMOrjj7yKEptUzBo94/D816+lv7iexH/4Vux4c/myEEIsi
+         TSZtBR+PMbQZ4wCjFa+HnAESLplepydrkTkQE8Vg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Bakker <xc-racer2@live.ca>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 5.15 640/667] ARM: dts: s5pv210: Remove spi-cs-high on panel in Aries
-Date:   Tue,  7 Jun 2022 19:05:05 +0200
-Message-Id: <20220607164953.854156747@linuxfoundation.org>
+        stable@vger.kernel.org, Kathiravan T <quic_kathirav@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 5.15 636/667] arm64: dts: qcom: ipq8074: fix the sleep clock frequency
+Date:   Tue,  7 Jun 2022 19:05:01 +0200
+Message-Id: <20220607164953.736696860@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,33 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Bakker <xc-racer2@live.ca>
+From: Kathiravan T <quic_kathirav@quicinc.com>
 
-commit 096f58507374e1293a9e9cff8a1ccd5f37780a20 upstream.
+commit f607dd767f5d6800ffbdce5b99ba81763b023781 upstream.
 
-Since commit 766c6b63aa04 ("spi: fix client driver breakages when using
-GPIO descriptors"), the panel has been blank due to an inverted CS GPIO.
-In order to correct this, drop the spi-cs-high from the panel SPI device.
+Sleep clock frequency should be 32768Hz. Lets fix it.
 
-Fixes: 766c6b63aa04 ("spi: fix client driver breakages when using GPIO descriptors")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
-Link: https://lore.kernel.org/r/CY4PR04MB05670C771062570E911AF3B4CB1C9@CY4PR04MB0567.namprd04.prod.outlook.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: stable@vger.kernel.org
+Fixes: 41dac73e243d ("arm64: dts: Add ipq8074 SoC and HK01 board support")
+Link: https://lore.kernel.org/all/e2a447f8-6024-0369-f698-2027b6edcf9e@codeaurora.org/
+Signed-off-by: Kathiravan T <quic_kathirav@quicinc.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/1644581655-11568-1-git-send-email-quic_kathirav@quicinc.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/s5pv210-aries.dtsi |    1 -
- 1 file changed, 1 deletion(-)
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm/boot/dts/s5pv210-aries.dtsi
-+++ b/arch/arm/boot/dts/s5pv210-aries.dtsi
-@@ -564,7 +564,6 @@
- 			reset-gpios = <&mp05 5 GPIO_ACTIVE_LOW>;
- 			vdd3-supply = <&ldo7_reg>;
- 			vci-supply = <&ldo17_reg>;
--			spi-cs-high;
- 			spi-max-frequency = <1200000>;
+--- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+@@ -13,7 +13,7 @@
+ 	clocks {
+ 		sleep_clk: sleep_clk {
+ 			compatible = "fixed-clock";
+-			clock-frequency = <32000>;
++			clock-frequency = <32768>;
+ 			#clock-cells = <0>;
+ 		};
  
- 			pinctrl-names = "default";
 
 
