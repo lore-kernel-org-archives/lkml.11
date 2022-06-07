@@ -2,110 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 881D4C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A60CCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355979AbiFGTbH (ORCPT
+        id S1356176AbiFGTbY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38350 "EHLO
+        Tue, 7 Jun 2022 15:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352558AbiFGSiw (ORCPT
+        with ESMTP id S1352647AbiFGSjE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:38:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E34E1842F4;
-        Tue,  7 Jun 2022 10:58:25 -0700 (PDT)
+        Tue, 7 Jun 2022 14:39:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A63184863;
+        Tue,  7 Jun 2022 10:58:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1F6E618DB;
-        Tue,  7 Jun 2022 17:58:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E40FEC36B03;
-        Tue,  7 Jun 2022 17:58:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624695;
-        bh=p0aLmWRISE6ht0b6iIng3ogD2g7pyk9Y428MhTNJoag=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 255CEB81F38;
+        Tue,  7 Jun 2022 17:58:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E30EC36AFE;
+        Tue,  7 Jun 2022 17:58:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624699;
+        bh=WjlPiW19crEYmsn/usMNLrHWV8DmX3Lja2fcB7x66uQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kFew4n6nBdhRO2qYHWzrvIYafDqdEOqRMb5apNrQSa2iTzzu6M8dCyVxzGPAfD5PD
-         X7f0sEbEs3yimXrRx3x3lKQx151MgLjjFUB4S3flOMSrPFm8s66DiN0U0ugoUkxmky
-         VPM+P/U9iRIth4hup8GE2MD0SUnJzO7FCp0Pwokg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hari Bathini <hbathini@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 420/667] powerpc/fadump: fix PT_LOAD segment for boot memory area
-Date:   Tue,  7 Jun 2022 19:01:25 +0200
-Message-Id: <20220607164947.332423795@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=l1lxFBtXd9M5LJtVJ882+sbE++xBs+pTst6un4fpc8cFy6nsdZ41pFIPzjjn/2Jaj
+         KDUi6bZyEvUlh9GD9dhoaRxEJeZguRMVmx5lyouThdHpxXBRgseDGZcZjMzNaUTNf+
+         LLLOgVp0++Lg2hKZ61+MvN0Vokb+l6lEGoyw0l2f29el5b1SDw1GK+PcSnmycZQRhj
+         JZ5ctQsjsIBs2Je3ZbOq1iPoGQOzROrfPTdHDFEeI7MZuhYUfn4SmEyVO9MzklqDiT
+         BTumA2sH5Yk4D8D63/816hY5UKAs7uPNh4TpuZbsamNbFkqqtAZE3ADSGo2OPy0MSi
+         22B9xqVMIe2vQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>, frankja@linux.ibm.com,
+        gor@linux.ibm.com, kvm@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 48/51] s390/gmap: voluntarily schedule during key setting
+Date:   Tue,  7 Jun 2022 13:55:47 -0400
+Message-Id: <20220607175552.479948-48-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
+References: <20220607175552.479948-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hari Bathini <hbathini@linux.ibm.com>
+From: Christian Borntraeger <borntraeger@linux.ibm.com>
 
-[ Upstream commit 15eb77f873255cf9f4d703b63cfbd23c46579654 ]
+[ Upstream commit 6d5946274df1fff539a7eece458a43be733d1db8 ]
 
-Boot memory area is setup as separate PT_LOAD segment in the vmcore
-as it is moved by f/w, on crash, to a destination address provided by
-the kernel. Having separate PT_LOAD segment helps in handling the
-different physical address and offset for boot memory area in the
-vmcore.
+With large and many guest with storage keys it is possible to create
+large latencies or stalls during initial key setting:
 
-Commit ced1bf52f477 ("powerpc/fadump: merge adjacent memory ranges to
-reduce PT_LOAD segements") inadvertly broke this pre-condition for
-cases where some of the first kernel memory is available adjacent to
-boot memory area. This scenario is rare but possible when memory for
-fadump could not be reserved adjacent to boot memory area owing to
-memory hole or such. Reading memory from a vmcore exported in such
-scenario provides incorrect data.  Fix it by ensuring no other region
-is folded into boot memory area.
+rcu: INFO: rcu_sched self-detected stall on CPU
+rcu:   18-....: (2099 ticks this GP) idle=54e/1/0x4000000000000002 softirq=35598716/35598716 fqs=998
+       (t=2100 jiffies g=155867385 q=20879)
+Task dump for CPU 18:
+CPU 1/KVM       R  running task        0 1030947 256019 0x06000004
+Call Trace:
+sched_show_task
+rcu_dump_cpu_stacks
+rcu_sched_clock_irq
+update_process_times
+tick_sched_handle
+tick_sched_timer
+__hrtimer_run_queues
+hrtimer_interrupt
+do_IRQ
+ext_int_handler
+ptep_zap_key
 
-Fixes: ced1bf52f477 ("powerpc/fadump: merge adjacent memory ranges to reduce PT_LOAD segements")
-Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220406093839.206608-2-hbathini@linux.ibm.com
+The mmap lock is held during the page walking but since this is a
+semaphore scheduling is still possible. Same for the kvm srcu.
+To minimize overhead do this on every segment table entry or large page.
+
+Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Reviewed-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220530092706.11637-2-borntraeger@linux.ibm.com
+Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/fadump.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/s390/mm/gmap.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/arch/powerpc/kernel/fadump.c b/arch/powerpc/kernel/fadump.c
-index 60f5fc14aa23..ad1c4575c61c 100644
---- a/arch/powerpc/kernel/fadump.c
-+++ b/arch/powerpc/kernel/fadump.c
-@@ -861,7 +861,6 @@ static int fadump_alloc_mem_ranges(struct fadump_mrange_info *mrange_info)
- 				       sizeof(struct fadump_memory_range));
+diff --git a/arch/s390/mm/gmap.c b/arch/s390/mm/gmap.c
+index d63c0ccc5ccd..4ce3a2f01c91 100644
+--- a/arch/s390/mm/gmap.c
++++ b/arch/s390/mm/gmap.c
+@@ -2601,6 +2601,18 @@ static int __s390_enable_skey_pte(pte_t *pte, unsigned long addr,
  	return 0;
  }
--
- static inline int fadump_add_mem_range(struct fadump_mrange_info *mrange_info,
- 				       u64 base, u64 end)
- {
-@@ -880,7 +879,12 @@ static inline int fadump_add_mem_range(struct fadump_mrange_info *mrange_info,
- 		start = mem_ranges[mrange_info->mem_range_cnt - 1].base;
- 		size  = mem_ranges[mrange_info->mem_range_cnt - 1].size;
  
--		if ((start + size) == base)
-+		/*
-+		 * Boot memory area needs separate PT_LOAD segment(s) as it
-+		 * is moved to a different location at the time of crash.
-+		 * So, fold only if the region is not boot memory area.
-+		 */
-+		if ((start + size) == base && start >= fw_dump.boot_mem_top)
- 			is_adjacent = true;
- 	}
- 	if (!is_adjacent) {
++/*
++ * Give a chance to schedule after setting a key to 256 pages.
++ * We only hold the mm lock, which is a rwsem and the kvm srcu.
++ * Both can sleep.
++ */
++static int __s390_enable_skey_pmd(pmd_t *pmd, unsigned long addr,
++				  unsigned long next, struct mm_walk *walk)
++{
++	cond_resched();
++	return 0;
++}
++
+ static int __s390_enable_skey_hugetlb(pte_t *pte, unsigned long addr,
+ 				      unsigned long hmask, unsigned long next,
+ 				      struct mm_walk *walk)
+@@ -2623,12 +2635,14 @@ static int __s390_enable_skey_hugetlb(pte_t *pte, unsigned long addr,
+ 	end = start + HPAGE_SIZE - 1;
+ 	__storage_key_init_range(start, end);
+ 	set_bit(PG_arch_1, &page->flags);
++	cond_resched();
+ 	return 0;
+ }
+ 
+ static const struct mm_walk_ops enable_skey_walk_ops = {
+ 	.hugetlb_entry		= __s390_enable_skey_hugetlb,
+ 	.pte_entry		= __s390_enable_skey_pte,
++	.pmd_entry		= __s390_enable_skey_pmd,
+ };
+ 
+ int s390_enable_skey(void)
 -- 
 2.35.1
-
-
 
