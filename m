@@ -2,92 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA873CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD2FECCA47C
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386407AbiFHB5P (ORCPT
+        id S1391697AbiFHB51 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:57:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49300 "EHLO
+        Tue, 7 Jun 2022 21:57:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588393AbiFGXyh (ORCPT
+        with ESMTP id S1588470AbiFGXyl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:54:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5A93887;
-        Tue,  7 Jun 2022 16:05:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA6E8616C3;
-        Tue,  7 Jun 2022 23:05:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E53A3C3411C;
-        Tue,  7 Jun 2022 23:05:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1654643147;
-        bh=L2/9wdu7Khtn1jgRd/gRWs85FKV7GMEfu2Bx/poJDFY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=k+UwKDEV/MRQwkXB5GEKRtm2Di/gHC2LRSO6nQViEuk/6dD3hr7MvP/0vj0zqLVWv
-         9JNVf6cy17/X+St9S61aR7O50aZcShX/CFBiouhtQyH7lXP1P09Z8/WH425ooZ8oVC
-         qOwAf9x8kdCgV042PxoFEupjtD+JDsP+Rk+VMujE=
-Date:   Tue, 7 Jun 2022 16:05:46 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Shiyang Ruan <ruansy.fnst@fujitsu.com>, kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        "Darrick J. Wong" <djwong@kernel.org>, linux-xfs@vger.kernel.org,
+        Tue, 7 Jun 2022 19:54:41 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D14E96FF;
+        Tue,  7 Jun 2022 16:09:55 -0700 (PDT)
+Date:   Tue, 07 Jun 2022 23:09:52 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1654643394;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dPtbavvWbpS7D7tQA2mHOL1BkRlP5Uv7lAoc3YHVg04=;
+        b=nxJI3qMF2EzpyqqTD8K6BZxPqOoAptV7F3Jrbt+1JxEWQYfZQfrrJGBN3M4z5Lwge7Mdam
+        UF0oCKTcFl8nJ9duQNV8D+s0ggs4YH8O5TBqBlTtNoMa0i4Nx9pNhVKgbHM2ikTt5R7SzB
+        pEpL1o2INu7OaCRPBILjvIqOpJZmsMGmhsJYQnIF4Fg537RZabMMwq9OcAuTOXUCDoIIc9
+        MizjeurkocdCLuxQJnphtZJvyow9TNfuhc0hxeZIfPD3nr00asR/4fpEDMnFiJFKviTlkf
+        fkWHkhQJoIspFzzKQNQqbir6vWFd4bEKcqdIZzGMDKjdOGlknRp0xMe5GhcJtg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1654643394;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dPtbavvWbpS7D7tQA2mHOL1BkRlP5Uv7lAoc3YHVg04=;
+        b=Wo3Sp00UT3ZpFCyVn+uwJxxrggurJSA46NHn9T9gIG2lDUpnh1T+0+4IBmiGzy2+ASyyHZ
+        BpL2qfI4DRSULbAA==
+From:   "tip-bot2 for Ira Weiny" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/mm] x86/pkeys: Clarify PKRU_AD_KEY macro
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Ira Weiny <ira.weiny@intel.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [linux-next:master 728/1207] fs/xfs/xfs_file.c:1266:31: sparse:
- sparse: incorrect type in return expression (different base types)
-Message-Id: <20220607160546.2a0a826d29bec858ca402720@linux-foundation.org>
-In-Reply-To: <202206071511.FI7WLdZo-lkp@intel.com>
-References: <202206071511.FI7WLdZo-lkp@intel.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20220419170649.1022246-3-ira.weiny@intel.com>
+References: <20220419170649.1022246-3-ira.weiny@intel.com>
+MIME-Version: 1.0
+Message-ID: <165464339203.4207.2085449999144025922.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 7 Jun 2022 15:09:18 +0800 kernel test robot <lkp@intel.com> wrote:
+The following commit has been merged into the x86/mm branch of tip:
 
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-> head:   73d0e32571a0786151eb72634f1a4c5891166176
-> commit: d5f5b32dee7c09e3152cbbce45c73f0b1ea7d94c [728/1207] xfs: support CoW in fsdax mode
-> config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220607/202206071511.FI7WLdZo-lkp@intel.com/config)
-> compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-> reproduce:
->         # apt-get install sparse
->         # sparse version: v0.6.4-18-g56afb504-dirty
->         # https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=d5f5b32dee7c09e3152cbbce45c73f0b1ea7d94c
->         git remote add linux-next https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
->         git fetch --no-tags linux-next master
->         git checkout d5f5b32dee7c09e3152cbbce45c73f0b1ea7d94c
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/xfs/
-> 
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> 
-> sparse warnings: (new ones prefixed by >>)
-> >> fs/xfs/xfs_file.c:1266:31: sparse: sparse: incorrect type in return expression (different base types) @@     expected int @@     got restricted vm_fault_t @@
->    fs/xfs/xfs_file.c:1266:31: sparse:     expected int
->    fs/xfs/xfs_file.c:1266:31: sparse:     got restricted vm_fault_t
-> >> fs/xfs/xfs_file.c:1260:1: sparse: sparse: symbol 'xfs_dax_fault' was not declared. Should it be static?
-> >> fs/xfs/xfs_file.c:1314:21: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted vm_fault_t [usertype] ret @@     got int @@
->    fs/xfs/xfs_file.c:1314:21: sparse:     expected restricted vm_fault_t [usertype] ret
->    fs/xfs/xfs_file.c:1314:21: sparse:     got int
-> 
-> Please review and possibly fold the followup patch.
+Commit-ID:     54ee1844047c1df015ab2679a4f55564a3aa1fa1
+Gitweb:        https://git.kernel.org/tip/54ee1844047c1df015ab2679a4f55564a3aa1fa1
+Author:        Ira Weiny <ira.weiny@intel.com>
+AuthorDate:    Tue, 19 Apr 2022 10:06:07 -07:00
+Committer:     Dave Hansen <dave.hansen@linux.intel.com>
+CommitterDate: Tue, 07 Jun 2022 16:06:33 -07:00
 
-Well yes, the followup patch
-(https://git.kernel.org/pub/scm/linux/kernel/git/akpm/25-new.git/tree/patches/xfs-support-cow-in-fsdax-mode-fix.patch)
-will most definitely be folded.
+x86/pkeys: Clarify PKRU_AD_KEY macro
 
-Can you suggest how this can be communicated to the robot in order to
-suppress this notification?  A Fixes: won't work, as neither of these
-patches have yet been promoted to a "stable" state.  Their hashes will
-change.
+When changing the PKRU_AD_KEY macro to be used for PKS the name came
+into question.[1]
+
+The intent of PKRU_AD_KEY is to set an initial value for the PKRU
+register but that is just a mask value.
+
+Clarify this by changing the name to PKRU_AD_MASK().
+
+NOTE the checkpatch errors are ignored for the init_pkru_value to align
+the values in the code.
+
+[1] https://lore.kernel.org/lkml/eff862e2-bfaa-9e12-42b5-a12467d72a22@intel.com/
+
+Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Link: https://lkml.kernel.org/r/20220419170649.1022246-3-ira.weiny@intel.com
+---
+ arch/x86/mm/pkeys.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/mm/pkeys.c b/arch/x86/mm/pkeys.c
+index e44e938..7418c36 100644
+--- a/arch/x86/mm/pkeys.c
++++ b/arch/x86/mm/pkeys.c
+@@ -110,7 +110,7 @@ int __arch_override_mprotect_pkey(struct vm_area_struct *vma, int prot, int pkey
+ 	return vma_pkey(vma);
+ }
+ 
+-#define PKRU_AD_KEY(pkey)	(PKRU_AD_BIT << ((pkey) * PKRU_BITS_PER_PKEY))
++#define PKRU_AD_MASK(pkey)	(PKRU_AD_BIT << ((pkey) * PKRU_BITS_PER_PKEY))
+ 
+ /*
+  * Make the default PKRU value (at execve() time) as restrictive
+@@ -118,11 +118,14 @@ int __arch_override_mprotect_pkey(struct vm_area_struct *vma, int prot, int pkey
+  * in the process's lifetime will not accidentally get access
+  * to data which is pkey-protected later on.
+  */
+-u32 init_pkru_value = PKRU_AD_KEY( 1) | PKRU_AD_KEY( 2) | PKRU_AD_KEY( 3) |
+-		      PKRU_AD_KEY( 4) | PKRU_AD_KEY( 5) | PKRU_AD_KEY( 6) |
+-		      PKRU_AD_KEY( 7) | PKRU_AD_KEY( 8) | PKRU_AD_KEY( 9) |
+-		      PKRU_AD_KEY(10) | PKRU_AD_KEY(11) | PKRU_AD_KEY(12) |
+-		      PKRU_AD_KEY(13) | PKRU_AD_KEY(14) | PKRU_AD_KEY(15);
++u32 init_pkru_value = PKRU_AD_MASK( 1) | PKRU_AD_MASK( 2) |
++		      PKRU_AD_MASK( 3) | PKRU_AD_MASK( 4) |
++		      PKRU_AD_MASK( 5) | PKRU_AD_MASK( 6) |
++		      PKRU_AD_MASK( 7) | PKRU_AD_MASK( 8) |
++		      PKRU_AD_MASK( 9) | PKRU_AD_MASK(10) |
++		      PKRU_AD_MASK(11) | PKRU_AD_MASK(12) |
++		      PKRU_AD_MASK(13) | PKRU_AD_MASK(14) |
++		      PKRU_AD_MASK(15);
+ 
+ static ssize_t init_pkru_read_file(struct file *file, char __user *user_buf,
+ 			     size_t count, loff_t *ppos)
