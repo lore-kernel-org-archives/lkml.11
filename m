@@ -2,76 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51244C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDD14C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:22:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238659AbiFGPUM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 11:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55306 "EHLO
+        id S1343994AbiFGPWs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 11:22:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230093AbiFGPUG (ORCPT
+        with ESMTP id S230093AbiFGPWo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 11:20:06 -0400
-Received: from conuserg-08.nifty.com (conuserg-08.nifty.com [210.131.2.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727FF66ADE;
-        Tue,  7 Jun 2022 08:20:05 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-08.nifty.com with ESMTP id 257FIhb0015394;
-        Wed, 8 Jun 2022 00:18:44 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 257FIhb0015394
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1654615124;
-        bh=LIQRolKJUy5EgtlTCuYPI57ux74QTIvAUnxIqYWqrlc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=CaLs/kJ01/rgCoCm8BVFkd73Mc6d4vewxfkABOPm6hyicQVsd3ke2P1wGZCPm7f22
-         Me1tksnhDPZprP3M5P6ATB8HbiO3LBwsje7N3NecSpjtNHucl1d5+ntZesivQ9l9pN
-         Xp4kA2B6I79IBo2uGYQIe3Ez50/GhLBhIvFaEonaO6m2eIxorRl+FHrsAWlwkExR80
-         Q88dk2b1+3KzdpG+mt4lrp3vBofWNaUyssqvkNsCvMkTY4U+3BWERcN86Ab8Z5LD7R
-         tYPc7LMsX/XRduLrR6MnvI1IeLsUPFMqu8VDfO1N8YjlJo9SOR7dKQsDjoyhABFIdD
-         75+iEOsQFPgHw==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Matthias Maennich <maennich@google.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] scripts/nsdeps: adjust to the format change of *.mod files
-Date:   Wed,  8 Jun 2022 00:18:40 +0900
-Message-Id: <20220607151840.437500-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        Tue, 7 Jun 2022 11:22:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 191F439142
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:22:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654615363;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
+        b=VXPV+99u9K+ADvxxp+Ay9L+bRQvrJZazxbS5j5qDhtFZAet/O144u9LQKG/BsY7QhgaL6X
+        SO2dzMEzUSPAG9IY8nsI2H5gEfVP/GT8GVXhvERoFm7JEFI2qr9zNFukNiZsf8kwRyZHGj
+        IkMt65foFWWp8OK6fhyEXYu2inejA2I=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-235-hzmjbzQHN0mFPNnEvDOkAw-1; Tue, 07 Jun 2022 11:22:40 -0400
+X-MC-Unique: hzmjbzQHN0mFPNnEvDOkAw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 83FA5101E988;
+        Tue,  7 Jun 2022 15:22:39 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1E27B2166B26;
+        Tue,  7 Jun 2022 15:22:39 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     kvm@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] KVM: selftests: Make hyperv_clock selftest more stable
+Date:   Tue,  7 Jun 2022 11:22:20 -0400
+Message-Id: <20220607152220.754919-1-pbonzini@redhat.com>
+In-Reply-To: <20220601144322.1968742-1-vkuznets@redhat.com>
+References: 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 22f26f21774f ("kbuild: get rid of duplication in *.mod files")
-changed the format of *.mod files to put one object per line, but missed
-to adjust scripts/nsdeps.
+Queued, thanks.
 
-Fixes: 22f26f21774f ("kbuild: get rid of duplication in *.mod files")
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
+Paolo
 
- scripts/nsdeps | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/scripts/nsdeps b/scripts/nsdeps
-index 04c4b96e95ec..f1718cc0d700 100644
---- a/scripts/nsdeps
-+++ b/scripts/nsdeps
-@@ -34,9 +34,8 @@ generate_deps() {
- 	local mod=${1%.ko:}
- 	shift
- 	local namespaces="$*"
--	local mod_source_files="`cat $mod.mod | sed -n 1p                      \
--					      | sed -e 's/\.o/\.c/g'           \
--					      | sed "s|[^ ]* *|${src_prefix}&|g"`"
-+	local mod_source_files=$(sed "s|^\(.*\)\.o$|${src_prefix}\1.c|" $mod.mod)
-+
- 	for ns in $namespaces; do
- 		echo "Adding namespace $ns to module $mod.ko."
- 		generate_deps_for_ns $ns "$mod_source_files"
--- 
-2.32.0
 
