@@ -2,96 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFFF3CCA47E
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:47:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C8E0C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:47:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347896AbiFHCrG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:47:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
+        id S235977AbiFHCrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:47:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447306AbiFHClh (ORCPT
+        with ESMTP id S1447807AbiFHCoG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:41:37 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5A6601915FE
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 17:21:13 -0700 (PDT)
-Received: from [10.130.0.135] (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxH09N659i388mAA--.57253S3;
-        Wed, 08 Jun 2022 08:20:29 +0800 (CST)
-Subject: Re: [PATCH] samples: Use KSYM_NAME_LEN for fprobe and kprobes
-To:     "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
-References: <1654594536-2915-1-git-send-email-yangtiezhu@loongson.cn>
- <20220608011739.4331f96f3354e05f23c26dde@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        linux-kernel@vger.kernel.org
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-Message-ID: <491cda3a-2e2e-fde7-1b4d-2261b95651fe@loongson.cn>
-Date:   Wed, 8 Jun 2022 08:20:28 +0800
-User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
- Thunderbird/45.4.0
+        Tue, 7 Jun 2022 22:44:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF76927CCC3;
+        Tue,  7 Jun 2022 12:25:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 87CE060B09;
+        Tue,  7 Jun 2022 19:25:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9393EC385A2;
+        Tue,  7 Jun 2022 19:25:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629957;
+        bh=mPewBoiGdgt0ZMOFYhhXllvEH0qMUNb+JQwB77vrY7Y=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pDfmkdWjvmkEUWtueVKHMPEM84ZalxtznEfDRk4CeVqRgXwaZvuHxTlP8nE8LjYsW
+         gBS57xap9urKhALWs9wYGeSLOW6beYEIpRjRcSgvsba5pTsV9yk1h1WIItL0+T/qDr
+         MwLfpQ1xd0eoBnJozr4XvOrJJz0wQkPv4bq0Tiog=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Robert Jarzmik <robert.jarzmik@free.fr>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.18 851/879] ARM: pxa: maybe fix gpio lookup tables
+Date:   Tue,  7 Jun 2022 19:06:09 +0200
+Message-Id: <20220607165027.556327263@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-In-Reply-To: <20220608011739.4331f96f3354e05f23c26dde@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: AQAAf9DxH09N659i388mAA--.57253S3
-X-Coremail-Antispam: 1UD129KBjvdXoWruF48WF15WFW7tw45Gry8Zrb_yoW3trb_Ca
-        4fGryrCw4DWw4Sq3WUK3y5XFWDt39xWw4DJw1UW342y3sYq343Wa18GrnY9w40qFsrtFnr
-        Wr1v9345ZF1UXjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbs8FF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-        Cr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr0_Gr
-        1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
-        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
-        1lF7xvr2IY64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7Mxk0xIA0c2IEe2xFo4CEbIxv
-        r21lc2xSY4AK67AK6w1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2
-        IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v2
-        6r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2
-        IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2
-        jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43
-        ZEXa7VUU_cTDUUUUU==
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Arnd Bergmann <arnd@arndb.de>
 
+commit 2672a4bff6c03a20d5ae460a091f67ee782c3eff upstream.
 
-On 06/08/2022 12:17 AM, Masami Hiramatsu (Google) wrote:
-> On Tue,  7 Jun 2022 17:35:36 +0800
-> Tiezhu Yang <yangtiezhu@loongson.cn> wrote:
->
->> It is better and enough to use KSYM_NAME_LEN for fprobe and kprobes
->> in samples, no need to define and use the other values.
->>
->
-> This is good for kprobe and kretprobe examples because it will get
-> a single symbol name, but not good for the fprobe. It can take
-> several comma separated symbols.
->
-> -----
-> static int __init fprobe_init(void)
-> {
-> ...
->         /* Comma separated symbols */
->         symbuf = kstrdup(symbol, GFP_KERNEL);
->         if (!symbuf)
->                 return -ENOMEM;
->         p = symbuf;
->         count = 1;
->         while ((p = strchr(++p, ',')) != NULL)
->                 count++;
->
->         pr_info("%d symbols found\n", count);
-> -----
->
-> Can you drop the fprobe_example.c part?
->
+>From inspection I found a couple of GPIO lookups that are
+listed with device "gpio-pxa", but actually have a number
+from a different gpio controller.
 
-OK, I will send v2 later, thank you.
+Try to rectify that here, with a guess of what the actual
+device name is.
 
-Thanks,
-Tiezhu
+Acked-by: Robert Jarzmik <robert.jarzmik@free.fr>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm/mach-pxa/cm-x300.c  |    8 ++++----
+ arch/arm/mach-pxa/magician.c |    2 +-
+ arch/arm/mach-pxa/tosa.c     |    4 ++--
+ 3 files changed, 7 insertions(+), 7 deletions(-)
+
+--- a/arch/arm/mach-pxa/cm-x300.c
++++ b/arch/arm/mach-pxa/cm-x300.c
+@@ -354,13 +354,13 @@ static struct platform_device cm_x300_sp
+ static struct gpiod_lookup_table cm_x300_spi_gpiod_table = {
+ 	.dev_id         = "spi_gpio",
+ 	.table          = {
+-		GPIO_LOOKUP("gpio-pxa", GPIO_LCD_SCL,
++		GPIO_LOOKUP("pca9555.1", GPIO_LCD_SCL - GPIO_LCD_BASE,
+ 			    "sck", GPIO_ACTIVE_HIGH),
+-		GPIO_LOOKUP("gpio-pxa", GPIO_LCD_DIN,
++		GPIO_LOOKUP("pca9555.1", GPIO_LCD_DIN - GPIO_LCD_BASE,
+ 			    "mosi", GPIO_ACTIVE_HIGH),
+-		GPIO_LOOKUP("gpio-pxa", GPIO_LCD_DOUT,
++		GPIO_LOOKUP("pca9555.1", GPIO_LCD_DOUT - GPIO_LCD_BASE,
+ 			    "miso", GPIO_ACTIVE_HIGH),
+-		GPIO_LOOKUP("gpio-pxa", GPIO_LCD_CS,
++		GPIO_LOOKUP("pca9555.1", GPIO_LCD_CS - GPIO_LCD_BASE,
+ 			    "cs", GPIO_ACTIVE_HIGH),
+ 		{ },
+ 	},
+--- a/arch/arm/mach-pxa/magician.c
++++ b/arch/arm/mach-pxa/magician.c
+@@ -681,7 +681,7 @@ static struct platform_device bq24022 =
+ static struct gpiod_lookup_table bq24022_gpiod_table = {
+ 	.dev_id = "gpio-regulator",
+ 	.table = {
+-		GPIO_LOOKUP("gpio-pxa", EGPIO_MAGICIAN_BQ24022_ISET2,
++		GPIO_LOOKUP("htc-egpio-0", EGPIO_MAGICIAN_BQ24022_ISET2 - MAGICIAN_EGPIO_BASE,
+ 			    NULL, GPIO_ACTIVE_HIGH),
+ 		GPIO_LOOKUP("gpio-pxa", GPIO30_MAGICIAN_BQ24022_nCHARGE_EN,
+ 			    "enable", GPIO_ACTIVE_LOW),
+--- a/arch/arm/mach-pxa/tosa.c
++++ b/arch/arm/mach-pxa/tosa.c
+@@ -296,9 +296,9 @@ static struct gpiod_lookup_table tosa_mc
+ 	.table = {
+ 		GPIO_LOOKUP("gpio-pxa", TOSA_GPIO_nSD_DETECT,
+ 			    "cd", GPIO_ACTIVE_LOW),
+-		GPIO_LOOKUP("gpio-pxa", TOSA_GPIO_SD_WP,
++		GPIO_LOOKUP("sharp-scoop.0", TOSA_GPIO_SD_WP - TOSA_SCOOP_GPIO_BASE,
+ 			    "wp", GPIO_ACTIVE_LOW),
+-		GPIO_LOOKUP("gpio-pxa", TOSA_GPIO_PWR_ON,
++		GPIO_LOOKUP("sharp-scoop.0", TOSA_GPIO_PWR_ON - TOSA_SCOOP_GPIO_BASE,
+ 			    "power", GPIO_ACTIVE_HIGH),
+ 		{ },
+ 	},
+
 
