@@ -2,92 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00DD3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:20:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 682C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:20:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344839AbiFGQUs (ORCPT
+        id S1345035AbiFGQU0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 12:20:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
+        Tue, 7 Jun 2022 12:20:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343753AbiFGQUp (ORCPT
+        with ESMTP id S1344968AbiFGQUK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 12:20:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2556610191B;
-        Tue,  7 Jun 2022 09:20:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B847B617BF;
-        Tue,  7 Jun 2022 16:20:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49B83C385A5;
-        Tue,  7 Jun 2022 16:20:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654618844;
-        bh=l9olBdY8XoPM0wf1tBtpXR5ucJg+To7Pu36qgJqjaqk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NQP8+i8X1y17vNEFOscgQI0w77IuDZF+Fb0YMAmNub+87rZKCbc2s99eyXz5dGYu1
-         MquzbeVwpnRq5KWaarHllVfoQm8s1AlgXzJqvUk0XOp67mQUfq/PIsNjPWiax2/moO
-         6DTcoJuGX6paPBFBEA8dGQsb+kZtnaqsL/GuGy230fi7CBoMZUN4bPcMqRXksb449K
-         6r8kuPAm5yNYp+1HAzVUJMzdNzUHRiW8/hkqPal4utd29p11Fm82TaTn+QxBYioZ/k
-         TDvuhv/igCZjMlx67qcqv5HIgW6qVLSBqRtGGI2KPjBPb1G4UaZUGiNow2kjPif8QM
-         Rd3SlDZ6Y2APA==
-Date:   Tue, 7 Jun 2022 17:20:39 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] spi: fix use after free in of_spi_notify
-Message-ID: <Yp961zPy064+ouF0@sirena.org.uk>
-References: <20220607155233.27235-1-xiaohuizhang@ruc.edu.cn>
+        Tue, 7 Jun 2022 12:20:10 -0400
+Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9708B100516;
+        Tue,  7 Jun 2022 09:20:08 -0700 (PDT)
+Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182]) (authenticated)
+        by conssluserg-05.nifty.com with ESMTP id 257GJoBO025330;
+        Wed, 8 Jun 2022 01:19:51 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 257GJoBO025330
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1654618791;
+        bh=6jn4g0bEm4pnbqpqYo5valb6ctHlAIo3Yj8rwsQtilo=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=U/Obnu8qP3eDyfPEa2ueMu5okOo9mz3I4EcmjOnQIFg+NfCPrXR/Hgd+jbCy8r4TM
+         9p1ROeAQ/56dphxgCypDD+pHDkVU8LIJLkPlJgjNba9//HrvwbxI0zLNo4lHP93QI/
+         9g+UwvUjRmdQ9XBNL12/Aphcf/Rtsy7yzy7Js2ichMEEjAqw+I2ksHY6ZAn8xPMpw4
+         jXVGsYhjnvouUdqyDoP0rSZHVTCcTTzCjJsGSWq/0Pbzdi3o89NwTDpG53wHLms2L+
+         4zno6JlEvdFy+wtjIvoXJG9K1JlX2BlW65gPB0fs8tm3zyQakERR+uprcvrrAbFa7d
+         OuiWz6wjNdecw==
+X-Nifty-SrcIP: [209.85.210.182]
+Received: by mail-pf1-f182.google.com with SMTP id j6so15909329pfe.13;
+        Tue, 07 Jun 2022 09:19:51 -0700 (PDT)
+X-Gm-Message-State: AOAM533cIR/QsRjrSlVXpd7+woCeptCpRdIdGpRNbtxB9D2bo9i9y05Q
+        uKml8FULNHnlKz86EyBwHh/eNOF0khesLQs994w=
+X-Google-Smtp-Source: ABdhPJz5DeWEk7jFaz5r/SLeE6TLHxM5/3UGC85lnyTqC7mkSeVa3DqNqn5kbJoQ1Ag0SxD1MwqgQ2YERlTO5QBkWLk=
+X-Received: by 2002:a05:6a00:2349:b0:51c:29c0:82f6 with SMTP id
+ j9-20020a056a00234900b0051c29c082f6mr8191041pfj.32.1654618790202; Tue, 07 Jun
+ 2022 09:19:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="TVcPyVtbuby/o9WR"
-Content-Disposition: inline
-In-Reply-To: <20220607155233.27235-1-xiaohuizhang@ruc.edu.cn>
-X-Cookie: Where's SANDY DUNCAN?
+References: <368129160298161a9eb40ad4f489458be6be3b6f.1654569774.git.kevin@kevinlocke.name>
+In-Reply-To: <368129160298161a9eb40ad4f489458be6be3b6f.1654569774.git.kevin@kevinlocke.name>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Wed, 8 Jun 2022 01:19:12 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQZqpXw4UVzFtg55ewgCrgGu3BGHNj3mB0YNfiswAT12Q@mail.gmail.com>
+Message-ID: <CAK7LNAQZqpXw4UVzFtg55ewgCrgGu3BGHNj3mB0YNfiswAT12Q@mail.gmail.com>
+Subject: Re: [PATCH] kbuild: avoid regex RS for POSIX awk
+To:     Kevin Locke <kevin@kevinlocke.name>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Jun 7, 2022 at 11:43 AM Kevin Locke <kevin@kevinlocke.name> wrote:
+>
+> In 22f26f21774f8 awk was added to deduplicate *.mod files.  The awk
+> invocation passes -v RS='( |\n)' to match a space or newline character
+> as the record separator.  Unfortunately, POSIX states[1]
+>
+> > If RS contains more than one character, the results are unspecified.
+>
+> Some implementations (such as the One True Awk[2] used by the BSDs) do
+> not treat RS as a regular expression.  When awk does not support regex
+> RS, build failures such as the following are produced (first error using
+> allmodconfig):
+>
+>       CC [M]  arch/x86/events/intel/uncore.o
+>       CC [M]  arch/x86/events/intel/uncore_nhmex.o
+>       CC [M]  arch/x86/events/intel/uncore_snb.o
+>       CC [M]  arch/x86/events/intel/uncore_snbep.o
+>       CC [M]  arch/x86/events/intel/uncore_discovery.o
+>       LD [M]  arch/x86/events/intel/intel-uncore.o
+>     ld: cannot find uncore_nhmex.o: No such file or directory
+>     ld: cannot find uncore_snb.o: No such file or directory
+>     ld: cannot find uncore_snbep.o: No such file or directory
+>     ld: cannot find uncore_discovery.o: No such file or directory
+>     make[3]: *** [scripts/Makefile.build:422: arch/x86/events/intel/intel-uncore.o] Error 1
+>     make[2]: *** [scripts/Makefile.build:487: arch/x86/events/intel] Error 2
+>     make[1]: *** [scripts/Makefile.build:487: arch/x86/events] Error 2
+>     make: *** [Makefile:1839: arch/x86] Error 2
+>
+> To avoid this, use printf(1) to produce a newline between each object
+> path, instead of the space produced by echo(1), so that the default RS
+> can be used by awk.
+>
+> [1]: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html
+> [2]: https://github.com/onetrueawk/awk
+>
+> Fixes: 22f26f21774f ("kbuild: get rid of duplication in *.mod files")
+> Signed-off-by: Kevin Locke <kevin@kevinlocke.name>
+> ---
 
---TVcPyVtbuby/o9WR
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Portable and clean solution!
 
-On Tue, Jun 07, 2022 at 11:52:33PM +0800, Xiaohui Zhang wrote:
-> We can't use "ctlr->dev" after it has been freed.
+Applied to linux-kbuild/fixes. Thanks.
 
->  		spi =3D of_register_spi_device(ctlr, rd->dn);
-> -		put_device(&ctlr->dev);
-> =20
->  		if (IS_ERR(spi)) {
->  			pr_err("%s: failed to create for '%pOF'\n",
->  					__func__, rd->dn);
-> +			put_device(&ctlr->dev);
->  			of_node_clear_flag(rd->dn, OF_POPULATED);
->  			return notifier_from_errno(PTR_ERR(spi));
->  		}
-> +		put_device(&ctlr->dev);
->  		break;
 
-Could you be more explicit about where the problematic use of ctlr->dev
-is please?
 
---TVcPyVtbuby/o9WR
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKfetcACgkQJNaLcl1U
-h9DqjQf/Sqhd8EwOOC3Tz3LWmIt8e8a9/0Tz3BKJ+BnMEu0OvgpypqYFAKkwmKo5
-eus+x+63OYod/Gv6nZplOOdo7hCwTvG2Cfw8RSpp+2NQiSl3repfVb/OXdFlizm6
-xCS39kszeGsWNTE4lZ6c4ivseeJD1niCQ8WjYbB94ozvqVZbm5/YvQWzxG7PT2c+
-SvkAaeNkh1OV3GbRCSLu8ANLTHePt4iBnq1L3bcQnxXC+V7N+NRWMb3L67wSzvNj
-lAoyl+jUKniAg8d0kcV+j5H3cS95usOnNGDAqeXQtjcGDX846lPsGVhJQ5g0RU4E
-kftauAlFT43fOlYnU3VOX9HvhXtRbQ==
-=Sbkt
------END PGP SIGNATURE-----
-
---TVcPyVtbuby/o9WR--
+-- 
+Best Regards
+Masahiro Yamada
