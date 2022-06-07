@@ -2,126 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EA11C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:38:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33888CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:38:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356070AbiFGTiJ (ORCPT
+        id S1347145AbiFGTiO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:38:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
+        Tue, 7 Jun 2022 15:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354128AbiFGSqg (ORCPT
+        with ESMTP id S1354185AbiFGSqn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B51B18E466;
-        Tue,  7 Jun 2022 11:00:04 -0700 (PDT)
+        Tue, 7 Jun 2022 14:46:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 448F81207C9;
+        Tue,  7 Jun 2022 11:00:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 779F4617B0;
-        Tue,  7 Jun 2022 18:00:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 063BBC341C0;
-        Tue,  7 Jun 2022 18:00:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624803;
-        bh=sRAXRIlhQdb1dQkrSGjJ08KnQf6HU6CzE14+TaRoE4s=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7259F61866;
+        Tue,  7 Jun 2022 18:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83CE3C34119;
+        Tue,  7 Jun 2022 18:00:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624816;
+        bh=eQrp7ehyRF6SABiuRaT4M28GSSc4s7Yfm1AF4+NH/Q0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N849DzrVakDC1pK3x1pSt8J8ZxVKLQt2uWb/CQjtbLxV+UwQLpIxFCOcROsYWwDG3
-         Y5YjUCFrv+A59hEmgde0LGFk39JKP0Ww4QekphloV1hPUZhE4JoSLvUp5tJJji3f/E
-         fTs75JfMfnhLwR4N+hrIhgQCMJUJmjsKgzsub5+hVN4ZOqqN8iYetK1+sFCH7wL6Ka
-         lsXAis/Slin7VFNzng/xhzka+ZuM9irVXZFrnSHevJzd8xRxg+lGgUK8jYn7kVXOWo
-         vE/RQSMY3Okge4uQNvDeHAxNC5agom9KhT4puDayjL6K6xnRCjrE0Yi4xXTZXNmBwD
-         s/gmPWdxJv8Yw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yu Kuai <yukuai3@huawei.com>, Josef Bacik <josef@toxicpanda.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        linux-block@vger.kernel.org, nbd@other.debian.org
-Subject: [PATCH AUTOSEL 5.10 35/38] nbd: fix io hung while disconnecting device
-Date:   Tue,  7 Jun 2022 13:58:30 -0400
-Message-Id: <20220607175835.480735-35-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
-References: <20220607175835.480735-1-sashal@kernel.org>
+        b=XJRfZ78RI2/iAVF58d/+WHdTJ98K0MjEOuSodHgLcYwDS5s14edUNdnW4JiQJE5NS
+         LkoZp/6uAdZqGqRDsLfV5I6lqNkxy3wD4Tu6eLPzcze0gyV+N9gTOXL4L/wonFD1ER
+         yszgCTs7cdMCJsU2hJxO/Onpnz3604xZ9QgRx0e8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kajol Jain <kjain@linux.ibm.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 464/667] powerpc/perf: Fix the threshold compare group constraint for power10
+Date:   Tue,  7 Jun 2022 19:02:09 +0200
+Message-Id: <20220607164948.625619308@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+From: Kajol Jain <kjain@linux.ibm.com>
 
-[ Upstream commit 09dadb5985023e27d4740ebd17e6fea4640110e5 ]
+[ Upstream commit 505d31650ba96d6032313480fdb566d289a4698c ]
 
-In our tests, "qemu-nbd" triggers a io hung:
+Thresh compare bits for a event is used to program thresh compare
+field in Monitor Mode Control Register A (MMCRA: 8-18 bits for power10).
+When scheduling events as a group, all events in that group should
+match value in threshold bits. Otherwise event open for the sibling
+events should fail. But in the current code, incase thresh compare bits are
+not valid, we are not failing in group_constraint function which can result
+in invalid group schduling.
 
-INFO: task qemu-nbd:11445 blocked for more than 368 seconds.
-      Not tainted 5.18.0-rc3-next-20220422-00003-g2176915513ca #884
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:qemu-nbd        state:D stack:    0 pid:11445 ppid:     1 flags:0x00000000
-Call Trace:
- <TASK>
- __schedule+0x480/0x1050
- ? _raw_spin_lock_irqsave+0x3e/0xb0
- schedule+0x9c/0x1b0
- blk_mq_freeze_queue_wait+0x9d/0xf0
- ? ipi_rseq+0x70/0x70
- blk_mq_freeze_queue+0x2b/0x40
- nbd_add_socket+0x6b/0x270 [nbd]
- nbd_ioctl+0x383/0x510 [nbd]
- blkdev_ioctl+0x18e/0x3e0
- __x64_sys_ioctl+0xac/0x120
- do_syscall_64+0x35/0x80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fd8ff706577
-RSP: 002b:00007fd8fcdfebf8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000040000000 RCX: 00007fd8ff706577
-RDX: 000000000000000d RSI: 000000000000ab00 RDI: 000000000000000f
-RBP: 000000000000000f R08: 000000000000fbe8 R09: 000055fe497c62b0
-R10: 00000002aff20000 R11: 0000000000000246 R12: 000000000000006d
-R13: 0000000000000000 R14: 00007ffe82dc5e70 R15: 00007fd8fcdff9c0
+Fix the issue by returning -1 incase event is threshold and threshold
+compare value is not valid in group_constraint function.
 
-"qemu-ndb -d" will call ioctl 'NBD_DISCONNECT' first, however, following
-message was found:
+Patch also fixes the p10_thresh_cmp_val function to return -1,
+incase threshold bits are not valid and changes corresponding check in
+is_thresh_cmp_valid function to return false only when the thresh_cmp
+value is less then 0.
 
-block nbd0: Send disconnect failed -32
+Thresh control bits in the event code is used to program thresh_ctl
+field in Monitor Mode Control Register A (MMCRA: 48-55). In below example,
+the scheduling of group events PM_MRK_INST_CMPL (3534401e0) and
+PM_THRESH_MET (34340101ec) is expected to fail as both event
+request different thresh control bits.
 
-Which indicate that something is wrong with the server. Then,
-"qemu-nbd -d" will call ioctl 'NBD_CLEAR_SOCK', however ioctl can't clear
-requests after commit 2516ab1543fd("nbd: only clear the queue on device
-teardown"). And in the meantime, request can't complete through timeout
-because nbd_xmit_timeout() will always return 'BLK_EH_RESET_TIMER', which
-means such request will never be completed in this situation.
+Result before the patch changes:
 
-Now that the flag 'NBD_CMD_INFLIGHT' can make sure requests won't
-complete multiple times, switch back to call nbd_clear_sock() in
-nbd_clear_sock_ioctl(), so that inflight requests can be cleared.
+[command]# perf stat -e "{r35340401e0,r34340101ec}" sleep 1
 
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Link: https://lore.kernel.org/r/20220521073749.3146892-5-yukuai3@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+ Performance counter stats for 'sleep 1':
+
+             8,482      r35340401e0
+                 0      r34340101ec
+
+       1.001474838 seconds time elapsed
+
+       0.001145000 seconds user
+       0.000000000 seconds sys
+
+Result after the patch changes:
+
+[command]# perf stat -e "{r35340401e0,r34340101ec}" sleep 1
+
+ Performance counter stats for 'sleep 1':
+
+     <not counted>      r35340401e0
+   <not supported>      r34340101ec
+
+       1.001499607 seconds time elapsed
+
+       0.000204000 seconds user
+       0.000760000 seconds sys
+
+Fixes: 82d2c16b350f7 ("powerpc/perf: Adds support for programming of Thresholding in P10")
+Signed-off-by: Kajol Jain <kjain@linux.ibm.com>
+Reviewed-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220506061015.43916-1-kjain@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/nbd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/perf/isa207-common.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index 29f9f1bcf1cb..edd49f1b4499 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -1355,7 +1355,7 @@ static int nbd_start_device_ioctl(struct nbd_device *nbd, struct block_device *b
- static void nbd_clear_sock_ioctl(struct nbd_device *nbd,
- 				 struct block_device *bdev)
+diff --git a/arch/powerpc/perf/isa207-common.c b/arch/powerpc/perf/isa207-common.c
+index f92bf5f6b74f..b910a5a5d209 100644
+--- a/arch/powerpc/perf/isa207-common.c
++++ b/arch/powerpc/perf/isa207-common.c
+@@ -108,7 +108,7 @@ static void mmcra_sdar_mode(u64 event, unsigned long *mmcra)
+ 		*mmcra |= MMCRA_SDAR_MODE_TLB;
+ }
+ 
+-static u64 p10_thresh_cmp_val(u64 value)
++static int p10_thresh_cmp_val(u64 value)
  {
--	sock_shutdown(nbd);
-+	nbd_clear_sock(nbd);
- 	__invalidate_device(bdev, true);
- 	nbd_bdev_reset(bdev);
- 	if (test_and_clear_bit(NBD_RT_HAS_CONFIG_REF,
+ 	int exp = 0;
+ 	u64 result = value;
+@@ -139,7 +139,7 @@ static u64 p10_thresh_cmp_val(u64 value)
+ 		 * exponent is also zero.
+ 		 */
+ 		if (!(value & 0xC0) && exp)
+-			result = 0;
++			result = -1;
+ 		else
+ 			result = (exp << 8) | value;
+ 	}
+@@ -187,7 +187,7 @@ static bool is_thresh_cmp_valid(u64 event)
+ 	unsigned int cmp, exp;
+ 
+ 	if (cpu_has_feature(CPU_FTR_ARCH_31))
+-		return p10_thresh_cmp_val(event) != 0;
++		return p10_thresh_cmp_val(event) >= 0;
+ 
+ 	/*
+ 	 * Check the mantissa upper two bits are not zero, unless the
+@@ -456,7 +456,8 @@ int isa207_get_constraint(u64 event, unsigned long *maskp, unsigned long *valp,
+ 			value |= CNST_THRESH_CTL_SEL_VAL(event >> EVENT_THRESH_SHIFT);
+ 			mask  |= p10_CNST_THRESH_CMP_MASK;
+ 			value |= p10_CNST_THRESH_CMP_VAL(p10_thresh_cmp_val(event_config1));
+-		}
++		} else if (event_is_threshold(event))
++			return -1;
+ 	} else if (cpu_has_feature(CPU_FTR_ARCH_300))  {
+ 		if (event_is_threshold(event) && is_thresh_cmp_valid(event)) {
+ 			mask  |= CNST_THRESH_MASK;
 -- 
 2.35.1
+
+
 
