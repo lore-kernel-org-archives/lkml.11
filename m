@@ -2,86 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 666C2CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F28ACCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384399AbiFGWgB (ORCPT
+        id S1384264AbiFGWfx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:36:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38714 "EHLO
+        Tue, 7 Jun 2022 18:35:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378277AbiFGVX3 (ORCPT
+        with ESMTP id S1378460AbiFGVXP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:23:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7052A2258A2;
-        Tue,  7 Jun 2022 12:00:36 -0700 (PDT)
+        Tue, 7 Jun 2022 17:23:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4940B226CFB;
+        Tue,  7 Jun 2022 12:00:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E9526159D;
-        Tue,  7 Jun 2022 19:00:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E4A7C385A2;
-        Tue,  7 Jun 2022 19:00:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628412;
-        bh=uG365FWOJXLP9dZ6rGocKIu+oCmCh1t20MUDojwND2Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EYcN53MhpXDti5ebZxza9tZ2G+dfUZaFRQXcpKaE/VoQMe6B3FLg7oaMGa//qaHmj
-         CWh9NyFQsyORs+lcvYgRwUNooj7uZ6eXHRVAga+rA1J4Xv97J4kUuko6GXj4cN7Ur4
-         jlQPm/1Wol/9kp9O1gwAvbRGFAVZALjLeIBgHgtU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 319/879] drbd: use bdev_alignment_offset instead of queue_alignment_offset
-Date:   Tue,  7 Jun 2022 18:57:17 +0200
-Message-Id: <20220607165012.111296099@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by sin.source.kernel.org (Postfix) with ESMTPS id D0E9BCE247C;
+        Tue,  7 Jun 2022 19:00:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C34FC385A5;
+        Tue,  7 Jun 2022 19:00:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654628433;
+        bh=PETGTpshoDoTRoH9w/heaUnGsqX8NQyeufAgBDPT+dc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iuBUuLTlpKLrFOJkqHh9kPQ0JfJeWqd0WcizgQYJomwFKG9B/mo340eff68SsGWf4
+         u5rhlB6BKhXhVBjN+rccBwo2qO7SHi+KTsBx3QaTokTup472ptXiBsZ5TOOWgyqnXP
+         DaIVzhsTvmjipXXk7l4x/9ezYPItrCzvrh0mT4PsSa7pLcSRAuCUUZ9/JVbsZpqQEo
+         USNVw2sU7sHjD53sXPDaUC2koJIWm9cA2cdI0bcBwo1O72rEspr0ANGPvUsPjK5Zrq
+         Nnhj4Ww7jT9vCOXVegNe5YkO+lNfWH/hYB6P0yggJTeDAEQL069ZI1yQiGHZEE2fJA
+         zArkaLa/809aw==
+Date:   Tue, 7 Jun 2022 20:00:27 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     cy_huang <u0084500@gmail.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        lee.jones@linaro.org, dmitry.torokhov@gmail.com,
+        lgirdwood@gmail.com, cy_huang@richtek.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-input@vger.kernel.org
+Subject: Re: [PATCH 3/4] regulator: rt5120: Add PMIC regulator support
+Message-ID: <Yp+gS6r5Kpi33Ags@sirena.org.uk>
+References: <1654581161-12349-1-git-send-email-u0084500@gmail.com>
+ <1654581161-12349-4-git-send-email-u0084500@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ksAClhgkgYP1BOgI"
+Content-Disposition: inline
+In-Reply-To: <1654581161-12349-4-git-send-email-u0084500@gmail.com>
+X-Cookie: Where's SANDY DUNCAN?
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit c6f23b1a05441a26f765e59dd95e8ba7354f9388 ]
+--ksAClhgkgYP1BOgI
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-The bdev version does the right thing for partitions, so use that.
+On Tue, Jun 07, 2022 at 01:52:40PM +0800, cy_huang wrote:
 
-Fixes: 9104d31a759f ("drbd: introduce WRITE_SAME support")
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
-Link: https://lore.kernel.org/r/20220415045258.199825-7-hch@lst.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/block/drbd/drbd_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This looks mostly good, a few things though:
 
-diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
-index c39b04bda261..7b501c8d5992 100644
---- a/drivers/block/drbd/drbd_main.c
-+++ b/drivers/block/drbd/drbd_main.c
-@@ -939,7 +939,7 @@ int drbd_send_sizes(struct drbd_peer_device *peer_device, int trigger_reply, enu
- 		p->qlim->logical_block_size =
- 			cpu_to_be32(bdev_logical_block_size(bdev));
- 		p->qlim->alignment_offset =
--			cpu_to_be32(queue_alignment_offset(q));
-+			cpu_to_be32(bdev_alignment_offset(bdev));
- 		p->qlim->io_min = cpu_to_be32(bdev_io_min(bdev));
- 		p->qlim->io_opt = cpu_to_be32(bdev_io_opt(bdev));
- 		p->qlim->discard_enabled = blk_queue_discard(q);
--- 
-2.35.1
+> +static void rt5120_fillin_regulator_desc(struct regulator_desc *desc, int rid)
+> +{
+> +	static const char * const name[] = { "buck1", "buck2", "buck3", "buck4",
+> +					     "ldo", "exten" };
+> +	static const char * const sname[] = { "vin1", "vin2", "vin3", "vin4",
+> +					      "vinldo", NULL };
 
+It would be easier and clearer to just make this a static table like
+other drivers do, there's no need to generate anything dynamically as
+far as I can see.
 
+> +static int rt5120_of_parse_cb(struct rt5120_priv *priv, int rid,
+> +			      struct of_regulator_match *match)
+> +{
+> +	struct regulator_desc *desc = priv->rdesc + rid;
+> +	struct regulator_init_data *init_data = match->init_data;
+> +
+> +	if (!init_data || rid == RT5120_REGULATOR_BUCK1)
+> +		return 0;
+> +
+> +	if (init_data->constraints.min_uV != init_data->constraints.max_uV) {
+> +		dev_err(priv->dev, "Variable voltage for fixed regulator\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	desc->fixed_uV = init_data->constraints.min_uV;
+> +	init_data->constraints.apply_uV = 0;
 
+Drivers should never override constraints passed in by machine drivers,
+if there's validation needed let the core do it.  The same probably
+applies to providing a voltage range for a fixed regulator though that's
+not modifying everything so not such a problem.
+
+> +static int rt5120_parse_regulator_dt_data(struct rt5120_priv *priv)
+> +{
+> +	struct device *dev = priv->dev->parent;
+> +	struct device_node *reg_node;
+> +	int i, ret;
+> +
+> +	for (i = 0; i < RT5120_MAX_REGULATOR; i++) {
+> +		rt5120_fillin_regulator_desc(priv->rdesc + i, i);
+> +
+> +		rt5120_regu_match[i].desc = priv->rdesc + i;
+> +	}
+
+Like I said above just make the list of regulators static data and loop
+through registering them.
+
+> +
+> +	reg_node = of_get_child_by_name(dev->of_node, "regulators");
+> +	if (!reg_node) {
+> +		dev_err(priv->dev, "Couldn't find 'regulators' node\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	ret = of_regulator_match(priv->dev, reg_node, rt5120_regu_match,
+> +				 ARRAY_SIZE(rt5120_regu_match));
+> +
+> +	of_node_put(reg_node);
+> +
+> +	if (ret < 0) {
+> +		dev_err(priv->dev,
+> +			"Error parsing regulator init data (%d)\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	for (i = 0; i < RT5120_MAX_REGULATOR; i++) {
+> +		ret = rt5120_of_parse_cb(priv, i, rt5120_regu_match + i);
+> +		if (ret) {
+> +			dev_err(priv->dev, "Failed in [%d] of_passe_cb\n", i);
+> +			return ret;
+> +		}
+> +	}
+
+This is all open coding stuff that's in the core - just provde an
+of_parse_cb() operation and let the core take care of calling it.
+
+> +static int rt5120_device_property_init(struct rt5120_priv *priv)
+> +{
+> +	struct device *dev = priv->dev->parent;
+> +	bool prot_enable;
+> +	unsigned int prot_enable_val = 0;
+> +
+> +	/* Assign UV/OV HW protection behavior */
+> +	prot_enable = device_property_read_bool(dev,
+> +					"richtek,enable-undervolt-hiccup");
+> +	if (prot_enable)
+> +		prot_enable_val |= RT5120_UVHICCUP_MASK;
+
+Use the DT APIs to parse DT - since ACPI has a very strong idea of how
+power management works which is fundamentally incompatible with with the
+DT model we should be writing code in a way that minimises the risk that
+we'll end up trying to parse DT properties out of ACPI systems and
+creating confusion as DT and ACPI software tries to run on the same
+system.
+
+--ksAClhgkgYP1BOgI
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKfoEsACgkQJNaLcl1U
+h9CbXgf/UP1xlHdcxsSMcl+dOuHtQVClDCrw8ssMEZoh5P0ptx96m8VaEPkVF/pU
+64Y/IH4gv/ROwEXDSIT9ExPMBg4J0kTvOl08x+bnUl3oQUopPOC65uA03hOkI9V1
+ygSjgh6WlNl6sT8mKOPRluz85uEGgzlGQviAdXhe/WvMSpYRkeQwScD61qJYE0Ur
+yO+goydPHRmt/kNT/fqTypQ0wKu5n0j4LzIxcKN+4ovTJiNj4jdnoPLwtr+iVDVR
+5n2ze8TBEUuL2Elh0d2qWqc6DXDm/2OelFLCx03gVdkr6ahg62/QOTRnJzz2Vhgp
+SINDFI1pJt2+4f+R/poMsQxOUOvdPA==
+=d5Wn
+-----END PGP SIGNATURE-----
+
+--ksAClhgkgYP1BOgI--
