@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0EB0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:49:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF9FDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:49:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377034AbiFGUtn (ORCPT
+        id S1377039AbiFGUtt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60760 "EHLO
+        Tue, 7 Jun 2022 16:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357108AbiFGTs2 (ORCPT
+        with ESMTP id S1357382AbiFGTuK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:48:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B34A7522F;
-        Tue,  7 Jun 2022 11:19:23 -0700 (PDT)
+        Tue, 7 Jun 2022 15:50:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C537CB74;
+        Tue,  7 Jun 2022 11:19:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF0FDB8237C;
-        Tue,  7 Jun 2022 18:19:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45D12C385A2;
-        Tue,  7 Jun 2022 18:19:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E4A560C7E;
+        Tue,  7 Jun 2022 18:19:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F8EAC385A2;
+        Tue,  7 Jun 2022 18:19:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625958;
-        bh=A5qnA9C+kP6l+c9zYf7PMXtikJHUSGvTK8q0Jfa21Ks=;
+        s=korg; t=1654625969;
+        bh=yshcQHCPfHZtHbEvkMQsCzGrimfL7sMR4F4SAhXpLKo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nYe/RhXbVKCmGMk5pQk8YEfl1fD5UiBA1V+tJCYKqVi3xINzUUo+u92R4ubKEnfem
-         vc+62RF5jXR7WlhClGH0xE0oqsonsau2pE98AULbXbePQ/S5TrqU3kRvSYx2xRaHPp
-         gOU1xb6YrxJIpACf9AU7YatJFEMgbt034hVquMz4=
+        b=WradzlYeITYOdMWeq2PP/NtYBQgKMb6BHg9S13Y1llvO+NeLllOdgT/saHN4PAni+
+         JIccjLUc/m1FWuwrlHFHt/HQkH+DOSuoPrhhyP4XO4Cmt04ExEOgtNrDWLk18DwiT7
+         4xcX7mjyVEufwvA9ChQnihDQ9iRDlB6JHd9vw73A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 204/772] arm64: dts: qcom: sc7280-idp: Configure CTS pin to bias-bus-hold for bluetooth
-Date:   Tue,  7 Jun 2022 18:56:36 +0200
-Message-Id: <20220607164955.044737521@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 169/772] x86/microcode: Add explicit CPU vendor dependency
+Date:   Tue,  7 Jun 2022 18:56:01 +0200
+Message-Id: <20220607164954.021277169@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,60 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit 497b272759986af1aa5a25b5e903d082c67bd8f6 ]
+[ Upstream commit 9c55d99e099bd7aa6b91fce8718505c35d5dfc65 ]
 
-WLAN rail was leaking power during RBSC/sleep even after turning BT off.
-Change active and sleep pinctrl configurations to handle same.
+Add an explicit dependency to the respective CPU vendor so that the
+respective microcode support for it gets built only when that support is
+enabled.
 
-Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/1650556567-4995-2-git-send-email-quic_vnivarth@quicinc.com
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/8ead0da9-9545-b10d-e3db-7df1a1f219e4@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ arch/x86/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index d623d71d8bd4..dd6dac0e1784 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -462,10 +462,13 @@
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index d0ecc4005df3..380c16ff5078 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1332,7 +1332,7 @@ config MICROCODE
  
- &qup_uart7_cts {
- 	/*
--	 * Configure a pull-down on CTS to match the pull of
--	 * the Bluetooth module.
-+	 * Configure a bias-bus-hold on CTS to lower power
-+	 * usage when Bluetooth is turned off. Bus hold will
-+	 * maintain a low power state regardless of whether
-+	 * the Bluetooth module drives the pin in either
-+	 * direction or leaves the pin fully unpowered.
- 	 */
--	bias-pull-down;
-+	bias-bus-hold;
- };
+ config MICROCODE_INTEL
+ 	bool "Intel microcode loading support"
+-	depends on MICROCODE
++	depends on CPU_SUP_INTEL && MICROCODE
+ 	default MICROCODE
+ 	help
+ 	  This options enables microcode patch loading support for Intel
+@@ -1344,7 +1344,7 @@ config MICROCODE_INTEL
  
- &qup_uart7_rts {
-@@ -516,10 +519,13 @@
- 		pins = "gpio28";
- 		function = "gpio";
- 		/*
--		 * Configure a pull-down on CTS to match the pull of
--		 * the Bluetooth module.
-+		 * Configure a bias-bus-hold on CTS to lower power
-+		 * usage when Bluetooth is turned off. Bus hold will
-+		 * maintain a low power state regardless of whether
-+		 * the Bluetooth module drives the pin in either
-+		 * direction or leaves the pin fully unpowered.
- 		 */
--		bias-pull-down;
-+		bias-bus-hold;
- 	};
- 
- 	qup_uart7_sleep_rts: qup-uart7-sleep-rts {
+ config MICROCODE_AMD
+ 	bool "AMD microcode loading support"
+-	depends on MICROCODE
++	depends on CPU_SUP_AMD && MICROCODE
+ 	help
+ 	  If you select this option, microcode patch loading support for AMD
+ 	  processors will be enabled.
 -- 
 2.35.1
 
