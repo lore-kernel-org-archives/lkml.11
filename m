@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E498FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:33:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09C74C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:33:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353398AbiFGTde (ORCPT
+        id S1355698AbiFGTdk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:33:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55242 "EHLO
+        Tue, 7 Jun 2022 15:33:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353506AbiFGSlf (ORCPT
+        with ESMTP id S1346131AbiFGSlg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:41:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E152F186B9C;
-        Tue,  7 Jun 2022 10:58:47 -0700 (PDT)
+        Tue, 7 Jun 2022 14:41:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25503186BB4;
+        Tue,  7 Jun 2022 10:58:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB3ABB82182;
-        Tue,  7 Jun 2022 17:58:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25506C385A5;
-        Tue,  7 Jun 2022 17:58:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 364CA61883;
+        Tue,  7 Jun 2022 17:58:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46116C385A5;
+        Tue,  7 Jun 2022 17:58:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624725;
-        bh=1ASL6fBMDAmWBj3axiWH/dhSFOu0lxh5MMkutiN/P/U=;
+        s=korg; t=1654624733;
+        bh=zAI4Ecr07YE0jxsrG6iNMiep9L8whui7+AfVab8/K6U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lPE3VFCdTWfTgEBIEAVA1gVGmUrSW0eWgQTGHHZ1DEDLQXZT4yOmgnliYs9eDembW
-         h1tkLLfRUvdoOo88lC5xzW8UlBJUM7HUBn0zBOpeBrxeD8r/h+jzJgAJyhGi6QtRh9
-         zCwq6bkgIO7jRgudRo0HZDqYI3GoenxxMzVfMj2k=
+        b=D8PZVRQqt3WYJBlNDsKCDYul7RlCrVfYqD+Aa/XvNYqx5wvPG6ub5Lad0BeBhG+Fw
+         9o4bkVAYd4CezHMdKsDrLK4Ysocadp78/NWzpTuNevwRW2Qdar4l68IlWmpJXKOtXL
+         Q0ksq/eg3woXq1GCTg/b4NT1dZ4OVvaLAsHFCaGs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Jeff Moyer <jmoyer@redhat.com>,
-        Krzysztof Kensicki <krzysztof.kensicki@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Mel Gorman <mel@csn.ul.ie>,
+        Minchan Kim <minchan.kim@gmail.com>,
+        KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>,
+        KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 430/667] nvdimm: Allow overwrite in the presence of disabled dimms
-Date:   Tue,  7 Jun 2022 19:01:35 +0200
-Message-Id: <20220607164947.622541412@linuxfoundation.org>
+Subject: [PATCH 5.15 432/667] drivers/base/node.c: fix compaction sysfs file leak
+Date:   Tue,  7 Jun 2022 19:01:37 +0200
+Message-Id: <20220607164947.682182691@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -54,48 +55,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-[ Upstream commit bb7bf697fed58eae9d3445944e457ab0de4da54f ]
+[ Upstream commit da63dc84befaa9e6079a0bc363ff0eaa975f9073 ]
 
-It is not clear why the original implementation of overwrite support
-required the dimm driver to be active before overwrite could proceed. In
-fact that can lead to cases where the kernel retains an invalid cached
-copy of the labels from before the overwrite. Unfortunately the kernel
-has not only allowed that case, but enforced it.
+Compaction sysfs file is created via compaction_register_node in
+register_node.  But we forgot to remove it in unregister_node.  Thus
+compaction sysfs file is leaked.  Using compaction_unregister_node to fix
+this issue.
 
-Going forward, allow for overwrite to happen while the label area is
-offline, and follow-on with updates to 'ndctl sanitize-dimm --overwrite'
-to trigger the label area invalidation by default.
-
-Cc: Vishal Verma <vishal.l.verma@intel.com>
-Cc: Dave Jiang <dave.jiang@intel.com>
-Cc: Ira Weiny <ira.weiny@intel.com>
-Cc: Jeff Moyer <jmoyer@redhat.com>
-Reported-by: Krzysztof Kensicki <krzysztof.kensicki@intel.com>
-Fixes: 7d988097c546 ("acpi/nfit, libnvdimm/security: Add security DSM overwrite support")
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Link: https://lkml.kernel.org/r/20220401070905.43679-1-linmiaohe@huawei.com
+Fixes: ed4a6d7f0676 ("mm: compaction: add /sys trigger for per-node memory compaction")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Rafael J. Wysocki <rafael@kernel.org>
+Cc: Mel Gorman <mel@csn.ul.ie>
+Cc: Minchan Kim <minchan.kim@gmail.com>
+Cc: KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>
+Cc: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvdimm/security.c | 5 -----
- 1 file changed, 5 deletions(-)
+ drivers/base/node.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/nvdimm/security.c b/drivers/nvdimm/security.c
-index 4b80150e4afa..b5aa55c61461 100644
---- a/drivers/nvdimm/security.c
-+++ b/drivers/nvdimm/security.c
-@@ -379,11 +379,6 @@ static int security_overwrite(struct nvdimm *nvdimm, unsigned int keyid)
- 			|| !nvdimm->sec.flags)
- 		return -EOPNOTSUPP;
- 
--	if (dev->driver == NULL) {
--		dev_dbg(dev, "Unable to overwrite while DIMM active.\n");
--		return -EINVAL;
--	}
--
- 	rc = check_security_state(nvdimm);
- 	if (rc)
- 		return rc;
+diff --git a/drivers/base/node.c b/drivers/base/node.c
+index c56d34f8158f..0f5319b79fad 100644
+--- a/drivers/base/node.c
++++ b/drivers/base/node.c
+@@ -679,6 +679,7 @@ static int register_node(struct node *node, int num)
+  */
+ void unregister_node(struct node *node)
+ {
++	compaction_unregister_node(node);
+ 	hugetlb_unregister_node(node);		/* no-op, if memoryless node */
+ 	node_remove_accesses(node);
+ 	node_remove_caches(node);
 -- 
 2.35.1
 
