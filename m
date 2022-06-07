@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F9A6CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1326CCA488
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376990AbiFGUbv (ORCPT
+        id S1377093AbiFGUc3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:31:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47564 "EHLO
+        Tue, 7 Jun 2022 16:32:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356682AbiFGTjg (ORCPT
+        with ESMTP id S1356777AbiFGTjs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:39:36 -0400
+        Tue, 7 Jun 2022 15:39:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C768F99DE;
-        Tue,  7 Jun 2022 11:14:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDDBE1AEC50;
+        Tue,  7 Jun 2022 11:14:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 548BD6062B;
-        Tue,  7 Jun 2022 18:14:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C455C385A2;
-        Tue,  7 Jun 2022 18:14:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC99F60AD9;
+        Tue,  7 Jun 2022 18:14:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFE54C385A5;
+        Tue,  7 Jun 2022 18:14:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625653;
-        bh=Y5TfIR57pQIvdobT2yvCU/JqS/K7zygsgLVkFeCYq5o=;
+        s=korg; t=1654625670;
+        bh=Nk3kL6bonCgW2p1suaJIp+npmeYoouMji55NiDP4wXM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J9Vd/HDos00jfisKJEDEm0ywwSOgUwOj+hUEGlaRc9Dj9SI1PYCZIasx9kUFnKW+n
-         v8RRCtewtZs9NX/PMQONwffQAL/3Pefwy1fxwZNhJt5wDsnF+1If6+RZ5VGIchd3hV
-         7ZsaHLGww0aBXLc35o8eyCtODNmCw6m1QmRUXm08=
+        b=cgEas+Vw4sYtSIMwTiXkJ0Z9ptqBowZdcCiMWWxHprWU0a6T78nzyezyBt0NbohMv
+         GoLuum9+w5rYJTwsO6UG0pvh2FAZK21CZdsdq96WJY+3OKKY3zL48HheymmjCs6Z/Z
+         Gf7aUxbKFMt5YNB5TUEdlVVJfHhcSl/I1Hacqo7g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Steven Price <steven.price@arm.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 078/772] tcp: consume incoming skb leading to a reset
-Date:   Tue,  7 Jun 2022 18:54:30 +0200
-Message-Id: <20220607164951.337712968@linuxfoundation.org>
+Subject: [PATCH 5.17 101/772] drm/plane: Move range check for format_count earlier
+Date:   Tue,  7 Jun 2022 18:54:53 +0200
+Message-Id: <20220607164952.023953602@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,76 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Steven Price <steven.price@arm.com>
 
-[ Upstream commit d9d024f96609016628d750ebc8ee4a6f0d80e6e1 ]
+[ Upstream commit 4b674dd69701c2e22e8e7770c1706a69f3b17269 ]
 
-Whenever tcp_validate_incoming() handles a valid RST packet,
-we should not pretend the packet was dropped.
+While the check for format_count > 64 in __drm_universal_plane_init()
+shouldn't be hit (it's a WARN_ON), in its current position it will then
+leak the plane->format_types array and fail to call
+drm_mode_object_unregister() leaking the modeset identifier. Move it to
+the start of the function to avoid allocating those resources in the
+first place.
 
-Create a special section at the end of tcp_validate_incoming()
-to handle this case.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
+Link: https://lore.kernel.org/dri-devel/20211203102815.38624-1-steven.price@arm.com/
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_input.c | 28 ++++++++++++++++------------
- 1 file changed, 16 insertions(+), 12 deletions(-)
+ drivers/gpu/drm/drm_plane.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 7bf84ce34d9e..96c25c97ee56 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -5694,7 +5694,7 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
- 						  &tp->last_oow_ack_time))
- 				tcp_send_dupack(sk, skb);
- 		} else if (tcp_reset_check(sk, skb)) {
--			tcp_reset(sk, skb);
-+			goto reset;
- 		}
- 		goto discard;
- 	}
-@@ -5730,17 +5730,16 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
- 		}
+diff --git a/drivers/gpu/drm/drm_plane.c b/drivers/gpu/drm/drm_plane.c
+index 82afb854141b..fd0bf90fb4c2 100644
+--- a/drivers/gpu/drm/drm_plane.c
++++ b/drivers/gpu/drm/drm_plane.c
+@@ -249,6 +249,13 @@ static int __drm_universal_plane_init(struct drm_device *dev,
+ 	if (WARN_ON(config->num_total_plane >= 32))
+ 		return -EINVAL;
  
- 		if (rst_seq_match)
--			tcp_reset(sk, skb);
--		else {
--			/* Disable TFO if RST is out-of-order
--			 * and no data has been received
--			 * for current active TFO socket
--			 */
--			if (tp->syn_fastopen && !tp->data_segs_in &&
--			    sk->sk_state == TCP_ESTABLISHED)
--				tcp_fastopen_active_disable(sk);
--			tcp_send_challenge_ack(sk);
--		}
-+			goto reset;
++	/*
++	 * First driver to need more than 64 formats needs to fix this. Each
++	 * format is encoded as a bit and the current code only supports a u64.
++	 */
++	if (WARN_ON(format_count > 64))
++		return -EINVAL;
 +
-+		/* Disable TFO if RST is out-of-order
-+		 * and no data has been received
-+		 * for current active TFO socket
-+		 */
-+		if (tp->syn_fastopen && !tp->data_segs_in &&
-+		    sk->sk_state == TCP_ESTABLISHED)
-+			tcp_fastopen_active_disable(sk);
-+		tcp_send_challenge_ack(sk);
- 		goto discard;
+ 	WARN_ON(drm_drv_uses_atomic_modeset(dev) &&
+ 		(!funcs->atomic_destroy_state ||
+ 		 !funcs->atomic_duplicate_state));
+@@ -270,13 +277,6 @@ static int __drm_universal_plane_init(struct drm_device *dev,
+ 		return -ENOMEM;
  	}
  
-@@ -5765,6 +5764,11 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
- discard:
- 	tcp_drop(sk, skb);
- 	return false;
-+
-+reset:
-+	tcp_reset(sk, skb);
-+	__kfree_skb(skb);
-+	return false;
- }
+-	/*
+-	 * First driver to need more than 64 formats needs to fix this. Each
+-	 * format is encoded as a bit and the current code only supports a u64.
+-	 */
+-	if (WARN_ON(format_count > 64))
+-		return -EINVAL;
+-
+ 	if (format_modifiers) {
+ 		const uint64_t *temp_modifiers = format_modifiers;
  
- /*
 -- 
 2.35.1
 
