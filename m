@@ -2,114 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B02ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D56BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:18:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380325AbiFHARo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:17:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54850 "EHLO
+        id S234968AbiFHASX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 20:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391411AbiFGW40 (ORCPT
+        with ESMTP id S1383408AbiFGWHV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:56:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C33B030C9FA
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:58:05 -0700 (PDT)
+        Tue, 7 Jun 2022 18:07:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C7625697F;
+        Tue,  7 Jun 2022 12:18:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B3ED0616A8
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:58:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44582C385A2;
-        Tue,  7 Jun 2022 19:58:00 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="P3yIR3c3"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1654631878;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=UkQJjvZ5xCdBwiht+8tu2AP0BLnypsD3C8jDx5YCgmc=;
-        b=P3yIR3c3DtR/RhcoMlwU4sIlFUoCPUUImnF0ckmOipgBY1DMO0Mr7snbuEmvcVropUQvY+
-        1+phCFG5vWnyOj2zdcr06D8eVgM1LzYv7wfljGWl2x/n8RrmYu9w+z90FdjamBIDjW/kyK
-        /93Sjs9SFfqRUWrygIZrwCI5ylBXVf8=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 5d384389 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 7 Jun 2022 19:57:57 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Phil Elwell <phil@raspberrypi.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Russel King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>
-Subject: [PATCH] riscv: initialize jump labels before early_init_dt_scan()
-Date:   Tue,  7 Jun 2022 21:57:52 +0200
-Message-Id: <20220607195752.1146431-1-Jason@zx2c4.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 644FEB823D7;
+        Tue,  7 Jun 2022 19:18:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7F96C385A5;
+        Tue,  7 Jun 2022 19:18:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629513;
+        bh=kvQwX66IBqrliEZUsOIORhCNcgPD4+MofW2EB6QgFGY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QwrKwOthhKO5++ZBDR1+7XlO3D3gujNd7+YB4gAi9AlluZxfkGIJlv2AKB9+4cVOf
+         yooEpKsoudDkl45peQOinHmXKcCge+dwiTtgh/FEb3An7xnyuHMe7tGIN4I0FPRREE
+         BIwpwYkQonRUpVxrW9c6KDxplu28ZOVAEiYajosI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.18 716/879] f2fs: fix to do sanity check for inline inode
+Date:   Tue,  7 Jun 2022 19:03:54 +0200
+Message-Id: <20220607165023.636219498@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Stephen reported that a static key warning splat appears during early
-boot on arm64 systems that credit randomness from device trees that
-contain an "rng-seed" property, because the dtb is parsed is called
-before jump_label_init() during setup_arch(), which was fixed by
-73e2d827a501 ("arm64: Initialize jump labels before
-setup_machine_fdt()").
+From: Chao Yu <chao@kernel.org>
 
-The same basic issue applies to RISC-V as well. So this commit moves the
-call to jump_label_init() just before early_init_dt_scan().
-jump_label_init() actually requires sbi_init() to be called first for
-proper functioning, so it also moves that to the right place.
+commit 677a82b44ebf263d4f9a0cfbd576a6ade797a07b upstream.
 
-Reported-by: Stephen Boyd <swboyd@chromium.org>
-Reported-by: Phil Elwell <phil@raspberrypi.com>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: Russel King <linux@armlinux.org.uk>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>
-Fixes: f5bda35fba61 ("random: use static branch for crng_ready()")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Yanming reported a kernel bug in Bugzilla kernel [1], which can be
+reproduced. The bug message is:
+
+The kernel message is shown below:
+
+kernel BUG at fs/inode.c:611!
+Call Trace:
+ evict+0x282/0x4e0
+ __dentry_kill+0x2b2/0x4d0
+ dput+0x2dd/0x720
+ do_renameat2+0x596/0x970
+ __x64_sys_rename+0x78/0x90
+ do_syscall_64+0x3b/0x90
+
+[1] https://bugzilla.kernel.org/show_bug.cgi?id=215895
+
+The bug is due to fuzzed inode has both inline_data and encrypted flags.
+During f2fs_evict_inode(), as the inode was deleted by rename(), it
+will cause inline data conversion due to conflicting flags. The page
+cache will be polluted and the panic will be triggered in clear_inode().
+
+Try fixing the bug by doing more sanity checks for inline data inode in
+sanity_check_inode().
+
+Cc: stable@vger.kernel.org
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kernel/setup.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ fs/f2fs/f2fs.h   |    1 +
+ fs/f2fs/inline.c |   29 ++++++++++++++++++++++++-----
+ fs/f2fs/inode.c  |    3 +--
+ 3 files changed, 26 insertions(+), 7 deletions(-)
 
-diff --git a/arch/riscv/kernel/setup.c b/arch/riscv/kernel/setup.c
-index f0f36a4a0e9b..c44c81b1cfb3 100644
---- a/arch/riscv/kernel/setup.c
-+++ b/arch/riscv/kernel/setup.c
-@@ -263,13 +263,15 @@ static void __init parse_dtb(void)
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -4052,6 +4052,7 @@ extern struct kmem_cache *f2fs_inode_ent
+  * inline.c
+  */
+ bool f2fs_may_inline_data(struct inode *inode);
++bool f2fs_sanity_check_inline_data(struct inode *inode);
+ bool f2fs_may_inline_dentry(struct inode *inode);
+ void f2fs_do_read_inline_data(struct page *page, struct page *ipage);
+ void f2fs_truncate_inline_inode(struct inode *inode,
+--- a/fs/f2fs/inline.c
++++ b/fs/f2fs/inline.c
+@@ -14,21 +14,40 @@
+ #include "node.h"
+ #include <trace/events/f2fs.h>
  
- void __init setup_arch(char **cmdline_p)
+-bool f2fs_may_inline_data(struct inode *inode)
++static bool support_inline_data(struct inode *inode)
  {
-+	early_ioremap_setup();
-+	sbi_init();
-+	jump_label_init();
+ 	if (f2fs_is_atomic_file(inode))
+ 		return false;
+-
+ 	if (!S_ISREG(inode->i_mode) && !S_ISLNK(inode->i_mode))
+ 		return false;
+-
+ 	if (i_size_read(inode) > MAX_INLINE_DATA(inode))
+ 		return false;
++	return true;
++}
 +
- 	parse_dtb();
- 	setup_initial_init_mm(_stext, _etext, _edata, _end);
++bool f2fs_may_inline_data(struct inode *inode)
++{
++	if (!support_inline_data(inode))
++		return false;
++
++	return !f2fs_post_read_required(inode);
++}
  
- 	*cmdline_p = boot_command_line;
+-	if (f2fs_post_read_required(inode))
++bool f2fs_sanity_check_inline_data(struct inode *inode)
++{
++	if (!f2fs_has_inline_data(inode))
+ 		return false;
  
--	early_ioremap_setup();
--	jump_label_init();
- 	parse_early_param();
+-	return true;
++	if (!support_inline_data(inode))
++		return true;
++
++	/*
++	 * used by sanity_check_inode(), when disk layout fields has not
++	 * been synchronized to inmem fields.
++	 */
++	return (S_ISREG(inode->i_mode) &&
++		(file_is_encrypt(inode) || file_is_verity(inode) ||
++		(F2FS_I(inode)->i_flags & F2FS_COMPR_FL)));
+ }
  
- 	efi_init();
-@@ -285,7 +287,6 @@ void __init setup_arch(char **cmdline_p)
- 	misc_mem_init();
+ bool f2fs_may_inline_dentry(struct inode *inode)
+--- a/fs/f2fs/inode.c
++++ b/fs/f2fs/inode.c
+@@ -276,8 +276,7 @@ static bool sanity_check_inode(struct in
+ 		}
+ 	}
  
- 	init_resources();
--	sbi_init();
- 
- #ifdef CONFIG_KASAN
- 	kasan_init();
--- 
-2.35.1
+-	if (f2fs_has_inline_data(inode) &&
+-			(!S_ISREG(inode->i_mode) && !S_ISLNK(inode->i_mode))) {
++	if (f2fs_sanity_check_inline_data(inode)) {
+ 		set_sbi_flag(sbi, SBI_NEED_FSCK);
+ 		f2fs_warn(sbi, "%s: inode (ino=%lx, mode=%u) should not have inline_data, run fsck to fix",
+ 			  __func__, inode->i_ino, inode->i_mode);
+
 
