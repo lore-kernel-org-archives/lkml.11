@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58AFFCCA487
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:23:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D480CCA485
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:23:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378549AbiFGVXJ (ORCPT
+        id S1378286AbiFGVWx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:23:09 -0400
+        Tue, 7 Jun 2022 17:22:53 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376913AbiFGU2Q (ORCPT
+        with ESMTP id S1376809AbiFGU2L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:28:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9F81D9B7A;
-        Tue,  7 Jun 2022 11:33:29 -0700 (PDT)
+        Tue, 7 Jun 2022 16:28:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB861D92D3;
+        Tue,  7 Jun 2022 11:33:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EF9160906;
-        Tue,  7 Jun 2022 18:33:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FA03C34115;
-        Tue,  7 Jun 2022 18:33:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10CB6B82188;
+        Tue,  7 Jun 2022 18:33:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76EC0C385A2;
+        Tue,  7 Jun 2022 18:33:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626807;
-        bh=/Tu8r2LfOw0CLxiSZGrql0GLd6ZXzzDncyyTCP0+Lc4=;
+        s=korg; t=1654626793;
+        bh=aSoKgQo3dMDBuDYbjgDk2sOaJdxoVF0R36S6qlw9zqE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G0nsFaSbehreYEB+AMSusmbOll+5m4X6QXfzmGeRXeruVMW0fmExAIqnIW7pWvWI7
-         cST9s/GAXjPQdrqm1b3agAwwqiMCrLgfFc5iwrxQoEPZvvK2sI0LQnVyuEyx49qQFl
-         wo315GaKw33XKuKrwmAQRDiz5MeeiDwanUfdLKYg=
+        b=DLSbSs2JRN/P5Xxv1Fnmgoj0eiIRRb06o0xQmYxL9F8yn+hmqhtzPJCr4D5mYkJK9
+         zQUZ5Y9FoRzc5Php6Do53JTGXw9NfgutHe7OCrEDKcBz3d9yLQOfxaq82ovxbdOe0K
+         jhQp1zGgdEwE7ZXoezRmcKhVEn/mVK2HVydFy1mM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Mel Gorman <mel@csn.ul.ie>,
+        Minchan Kim <minchan.kim@gmail.com>,
+        KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>,
+        KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 509/772] firmware: arm_ffa: Remove incorrect assignment of driver_data
-Date:   Tue,  7 Jun 2022 19:01:41 +0200
-Message-Id: <20220607165003.977213165@linuxfoundation.org>
+Subject: [PATCH 5.17 505/772] drivers/base/node.c: fix compaction sysfs file leak
+Date:   Tue,  7 Jun 2022 19:01:37 +0200
+Message-Id: <20220607165003.859966201@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,37 +55,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sudeep Holla <sudeep.holla@arm.com>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-[ Upstream commit 00512d2930b338fdd42bd90bbd1793fe212c2d31 ]
+[ Upstream commit da63dc84befaa9e6079a0bc363ff0eaa975f9073 ]
 
-The ffa core driver currently assigns its own driver information
-to individual ffa device driver_data which is wrong. Firstly, it leaks
-this core driver information to individual ffa_device and hence to
-ffa_driver. Secondly the ffa_device driver_data is for use by individual
-ffa_driver and not for this core driver managing all those devices.
+Compaction sysfs file is created via compaction_register_node in
+register_node.  But we forgot to remove it in unregister_node.  Thus
+compaction sysfs file is leaked.  Using compaction_unregister_node to fix
+this issue.
 
-Link: https://lore.kernel.org/r/20220429113946.2087145-2-sudeep.holla@arm.com
-Fixes: d0c0bce83122 ("firmware: arm_ffa: Setup in-kernel users of FFA partitions")
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Link: https://lkml.kernel.org/r/20220401070905.43679-1-linmiaohe@huawei.com
+Fixes: ed4a6d7f0676 ("mm: compaction: add /sys trigger for per-node memory compaction")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Rafael J. Wysocki <rafael@kernel.org>
+Cc: Mel Gorman <mel@csn.ul.ie>
+Cc: Minchan Kim <minchan.kim@gmail.com>
+Cc: KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>
+Cc: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/arm_ffa/driver.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/base/node.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/firmware/arm_ffa/driver.c b/drivers/firmware/arm_ffa/driver.c
-index 8fa1785afd42..44300dbcc643 100644
---- a/drivers/firmware/arm_ffa/driver.c
-+++ b/drivers/firmware/arm_ffa/driver.c
-@@ -688,8 +688,6 @@ static void ffa_setup_partitions(void)
- 			       __func__, tpbuf->id);
- 			continue;
- 		}
--
--		ffa_dev_set_drvdata(ffa_dev, drv_info);
- 	}
- 	kfree(pbuf);
- }
+diff --git a/drivers/base/node.c b/drivers/base/node.c
+index 87acc47e8951..7b8368bc2000 100644
+--- a/drivers/base/node.c
++++ b/drivers/base/node.c
+@@ -682,6 +682,7 @@ static int register_node(struct node *node, int num)
+  */
+ void unregister_node(struct node *node)
+ {
++	compaction_unregister_node(node);
+ 	hugetlb_unregister_node(node);		/* no-op, if memoryless node */
+ 	node_remove_accesses(node);
+ 	node_remove_caches(node);
 -- 
 2.35.1
 
