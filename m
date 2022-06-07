@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C390CCA483
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:03:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 833AFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:03:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443655AbiFHBAm (ORCPT
+        id S1444392AbiFHBBo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:00:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40078 "EHLO
+        Tue, 7 Jun 2022 21:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383158AbiFGWFS (ORCPT
+        with ESMTP id S1379238AbiFGWLy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:05:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A1D419594A;
-        Tue,  7 Jun 2022 12:16:31 -0700 (PDT)
+        Tue, 7 Jun 2022 18:11:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5CD259F4F;
+        Tue,  7 Jun 2022 12:19:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15E2BB823CA;
-        Tue,  7 Jun 2022 19:16:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73593C385A2;
-        Tue,  7 Jun 2022 19:16:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A0D96194F;
+        Tue,  7 Jun 2022 19:19:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84148C385A2;
+        Tue,  7 Jun 2022 19:19:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629388;
-        bh=b1g1fws0lCsOl10pEsDk3as04zJl0512CLXA21q35DY=;
+        s=korg; t=1654629543;
+        bh=07dGVDfzvZJmA12SM98FMPiVikR3yZALXl/WHor0dGU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HTzPwQhSa5ZElVoIp24FjoKQmbQ+trwyFQRuf0KriS0fSKpyU4S2fzl89TgxIHuKn
-         gei99Px6/g6gTsyuFKy1MzCOmLQUQire33KT3Fhex1xZnvcQzOXYQ2CDDENoiVg57F
-         pWA3buCRbkNSH6l4/x3sT4gs3g5Ce/KGzPMSYU1I=
+        b=i9fCZJ9ru9BaR+A76Zaw2L6jMkvXbyUARaDAF6NW0ZoExcab42zgvTZqLlA0e4SKp
+         anEWxFU3QhCxAAjF+EmKY5cfRJNcRsHwz8deBw15O877bHgQHSqahIyLjwh8O/B6vF
+         OZgxCHxVD/ZtZ9SA45ZYUmkxv7NP5M/Qsf7GHCVc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Zhangfei Gao <zhangfei.gao@linaro.org>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 671/879] iommu/arm-smmu-v3-sva: Fix mm use-after-free
-Date:   Tue,  7 Jun 2022 19:03:09 +0200
-Message-Id: <20220607165022.326261425@linuxfoundation.org>
+        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.18 730/879] bfq: Update cgroup information before merging bio
+Date:   Tue,  7 Jun 2022 19:04:08 +0200
+Message-Id: <20220607165024.045284505@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,72 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit cbd23144f7662b00bcde32a938c4a4057e476d68 ]
+commit ea591cd4eb270393810e7be01feb8fde6a34fbbe upstream.
 
-We currently call arm64_mm_context_put() without holding a reference to
-the mm, which can result in use-after-free. Call mmgrab()/mmdrop() to
-ensure the mm only gets freed after we unpinned the ASID.
+When the process is migrated to a different cgroup (or in case of
+writeback just starts submitting bios associated with a different
+cgroup) bfq_merge_bio() can operate with stale cgroup information in
+bic. Thus the bio can be merged to a request from a different cgroup or
+it can result in merging of bfqqs for different cgroups or bfqqs of
+already dead cgroups and causing possible use-after-free issues. Fix the
+problem by updating cgroup information in bfq_merge_bio().
 
-Fixes: 32784a9562fb ("iommu/arm-smmu-v3: Implement iommu_sva_bind/unbind()")
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Link: https://lore.kernel.org/r/20220426130444.300556-1-jean-philippe@linaro.org
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+CC: stable@vger.kernel.org
+Fixes: e21b7a0b9887 ("block, bfq: add full hierarchical scheduling and cgroups support")
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-4-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ block/bfq-iosched.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index c623dae1e115..1ef7bbb4acf3 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -6,6 +6,7 @@
- #include <linux/mm.h>
- #include <linux/mmu_context.h>
- #include <linux/mmu_notifier.h>
-+#include <linux/sched/mm.h>
- #include <linux/slab.h>
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -2461,10 +2461,17 @@ static bool bfq_bio_merge(struct request
  
- #include "arm-smmu-v3.h"
-@@ -96,9 +97,14 @@ static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
- 	struct arm_smmu_ctx_desc *cd;
- 	struct arm_smmu_ctx_desc *ret = NULL;
+ 	spin_lock_irq(&bfqd->lock);
  
-+	/* Don't free the mm until we release the ASID */
-+	mmgrab(mm);
+-	if (bic)
++	if (bic) {
++		/*
++		 * Make sure cgroup info is uptodate for current process before
++		 * considering the merge.
++		 */
++		bfq_bic_update_cgroup(bic, bio);
 +
- 	asid = arm64_mm_context_get(mm);
--	if (!asid)
--		return ERR_PTR(-ESRCH);
-+	if (!asid) {
-+		err = -ESRCH;
-+		goto out_drop_mm;
+ 		bfqd->bio_bfqq = bic_to_bfqq(bic, op_is_sync(bio->bi_opf));
+-	else
++	} else {
+ 		bfqd->bio_bfqq = NULL;
 +	}
+ 	bfqd->bio_bic = bic;
  
- 	cd = kzalloc(sizeof(*cd), GFP_KERNEL);
- 	if (!cd) {
-@@ -165,6 +171,8 @@ static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
- 	kfree(cd);
- out_put_context:
- 	arm64_mm_context_put(mm);
-+out_drop_mm:
-+	mmdrop(mm);
- 	return err < 0 ? ERR_PTR(err) : ret;
- }
- 
-@@ -173,6 +181,7 @@ static void arm_smmu_free_shared_cd(struct arm_smmu_ctx_desc *cd)
- 	if (arm_smmu_free_asid(cd)) {
- 		/* Unpin ASID */
- 		arm64_mm_context_put(cd->mm);
-+		mmdrop(cd->mm);
- 		kfree(cd);
- 	}
- }
--- 
-2.35.1
-
+ 	ret = blk_mq_sched_try_merge(q, bio, nr_segs, &free);
 
 
