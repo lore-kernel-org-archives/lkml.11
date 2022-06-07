@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3903CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:08:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B2E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354158AbiFGVIt (ORCPT
+        id S1377832AbiFGVIw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54504 "EHLO
+        Tue, 7 Jun 2022 17:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359215AbiFGUJk (ORCPT
+        with ESMTP id S1359095AbiFGUJl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:09:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4A422A26C;
-        Tue,  7 Jun 2022 11:27:15 -0700 (PDT)
+        Tue, 7 Jun 2022 16:09:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 065DDB79;
+        Tue,  7 Jun 2022 11:27:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5060961252;
-        Tue,  7 Jun 2022 18:27:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5848DC385A2;
-        Tue,  7 Jun 2022 18:27:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 962AC611B9;
+        Tue,  7 Jun 2022 18:27:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A66D4C385A5;
+        Tue,  7 Jun 2022 18:27:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626434;
-        bh=cXV3sr4h7qPlYTdlf5L5Dlt/QzpVwYZxTFuVBJa4DYE=;
+        s=korg; t=1654626443;
+        bh=21hBvAqjWgZPVZ41EoxFTaicryQRjHH9kB2zenjleVY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LPe40dDQGn6g1D+vt6iDKtOF+XLKk+9E2aGkCnKmWpuUpwMdfMUrd9bztcfMESPRq
-         IxkldxSV0Xq4bERj3VCWUjaaArjIIctxFbT+cKvBX+7Q5Uyph3TTj6/0WT94B+wKlp
-         +/N92VARTasarWRaVYxhjgqzYuMAi1V9TNGkVnKE=
+        b=NZ1E9M+nQAUIq4ncjtA8YUiDFtppt9EHPZG8Inc2HcFzF/VmMJKtzBh3pbNiVAm8K
+         5aXHRYPPqUWQLznr6yuXrq6m9blLKrBdy1QMNKKufCexlUXi/5odUNzwD9Pj+fffmu
+         8kpYn5sAurK2tvbRbJMt5D8Vs1deeqgJZ94EGAzc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 376/772] media: atmel: atmel-isc: Fix PM disable depth imbalance in atmel_isc_probe
-Date:   Tue,  7 Jun 2022 18:59:28 +0200
-Message-Id: <20220607165000.095245000@linuxfoundation.org>
+Subject: [PATCH 5.17 378/772] media: exynos4-is: Change clk_disable to clk_disable_unprepare
+Date:   Tue,  7 Jun 2022 18:59:30 +0200
+Message-Id: <20220607165000.154489668@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,44 +53,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 395829c61a196a0821a703a49c4db3ac51daff73 ]
+[ Upstream commit 9fadab72a6916c7507d7fedcd644859eef995078 ]
 
-The pm_runtime_enable will decrease power disable depth.
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable().
+The corresponding API for clk_prepare_enable is clk_disable_unprepare,
+other than clk_disable.
 
-Fixes: 0a0e265515db ("media: atmel: atmel-isc: split driver into driver base and isc")
+Fix this by changing clk_disable to clk_disable_unprepare.
+
+Fixes: b4155d7d5b2c ("[media] exynos4-is: Ensure fimc-is clocks are not enabled until properly configured")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/atmel/atmel-sama5d2-isc.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/media/platform/exynos4-is/fimc-is.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/atmel/atmel-sama5d2-isc.c b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-index 1b2063cce0f7..949035cdb846 100644
---- a/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-+++ b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-@@ -538,7 +538,7 @@ static int atmel_isc_probe(struct platform_device *pdev)
- 	ret = clk_prepare_enable(isc->ispck);
- 	if (ret) {
- 		dev_err(dev, "failed to enable ispck: %d\n", ret);
--		goto cleanup_subdev;
-+		goto disable_pm;
- 	}
- 
- 	/* ispck should be greater or equal to hclock */
-@@ -556,6 +556,9 @@ static int atmel_isc_probe(struct platform_device *pdev)
- unprepare_clk:
- 	clk_disable_unprepare(isc->ispck);
- 
-+disable_pm:
-+	pm_runtime_disable(dev);
-+
- cleanup_subdev:
- 	isc_subdev_cleanup(isc);
- 
+diff --git a/drivers/media/platform/exynos4-is/fimc-is.c b/drivers/media/platform/exynos4-is/fimc-is.c
+index 81b290dace3a..e3072d69c49f 100644
+--- a/drivers/media/platform/exynos4-is/fimc-is.c
++++ b/drivers/media/platform/exynos4-is/fimc-is.c
+@@ -140,7 +140,7 @@ static int fimc_is_enable_clocks(struct fimc_is *is)
+ 			dev_err(&is->pdev->dev, "clock %s enable failed\n",
+ 				fimc_is_clocks[i]);
+ 			for (--i; i >= 0; i--)
+-				clk_disable(is->clocks[i]);
++				clk_disable_unprepare(is->clocks[i]);
+ 			return ret;
+ 		}
+ 		pr_debug("enabled clock: %s\n", fimc_is_clocks[i]);
 -- 
 2.35.1
 
