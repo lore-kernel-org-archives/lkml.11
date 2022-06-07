@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDBEAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A9C3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:38:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356769AbiFGWiB (ORCPT
+        id S1380632AbiFGWiG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:38:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45680 "EHLO
+        Tue, 7 Jun 2022 18:38:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378396AbiFGVY6 (ORCPT
+        with ESMTP id S1378812AbiFGVZJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:24:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 355DE14FC9E;
-        Tue,  7 Jun 2022 12:01:13 -0700 (PDT)
+        Tue, 7 Jun 2022 17:25:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D32150A2B;
+        Tue,  7 Jun 2022 12:01:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A58BBB82391;
-        Tue,  7 Jun 2022 19:01:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0687C385A2;
-        Tue,  7 Jun 2022 19:01:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B785D61787;
+        Tue,  7 Jun 2022 19:01:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1FFCC385A2;
+        Tue,  7 Jun 2022 19:01:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628470;
-        bh=d8rn+GMSsyVcqcclXF/X1Gus3C71I/FtkotnJluWPxY=;
+        s=korg; t=1654628476;
+        bh=YYntbBxSmHLpv4WdmEm/Uq7d1DT6K8VOfuhEt88cfHU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b+akAB8sdI3UtKyeT0TVwfVIwdROm666F3ULYcg3yqQVVfu+cMn5Du4cXO1ErOYrg
-         P+BwIu89PRbjN3aBlzGlPPyCzlzu9O3I2vqm3MvaiZL2wzA2iLK76ypklAoKom2/AA
-         5DXbG0Zxs3XcHMYiSx1ZHnCDcKEfR6qpiMz01Fbs=
+        b=IUcRw+EngNipYMwYKoKAx4D8PFsvyQncR8ml2xx0PZ2vPG82E0j0xcLQsWUW1IIS6
+         x4PElYis39kYqbf7BIf8DJC/SO0EPZxGmynIKM+U45eUfC6FnR3ljkJllAuYpMIQEk
+         rnJDbvB3O1rl9ygDJtAVhJzZAs56/kg4FZ8hwzxY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        stable@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 342/879] media: hantro: Empty encoder capture buffers by default
-Date:   Tue,  7 Jun 2022 18:57:40 +0200
-Message-Id: <20220607165012.787189357@linuxfoundation.org>
+Subject: [PATCH 5.18 344/879] media: imx: imx-mipi-csis: Fix active format initialization on source pad
+Date:   Tue,  7 Jun 2022 18:57:42 +0200
+Message-Id: <20220607165012.845606488@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,50 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-[ Upstream commit 309373a3571ef7175bd9da0c9b13476a718e8478 ]
+[ Upstream commit fe14b546d6e57542dbd4f5ccdb5a382904d26c5a ]
 
-The payload size for encoder capture buffers is set by the driver upon
-finishing encoding each frame, based on the encoded length returned from
-hardware, and whatever header and padding length used. Setting a
-non-zero default serves no real purpose, and also causes issues if the
-capture buffer is returned to userspace unused, confusing the
-application.
+Commit 5c0701a0e791 ("media: imx: csis: Store pads format separately")
+broke initialization of the active format on the source pad, as it
+forgot to update the .init_cfg() handler. Fix it.
 
-Instead, always set the payload size to 0 for encoder capture buffers
-when preparing them.
-
-Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
-Fixes: 082aaecff35f ("media: hantro: Fix .buf_prepare")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Fixes: 5c0701a0e791 ("media: imx: csis: Store pads format separately")
+Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Acked-by: Rui Miguel Silva <rmfrfs@gmail.com>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/hantro/hantro_v4l2.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/media/platform/nxp/imx-mipi-csis.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging/media/hantro/hantro_v4l2.c
-index 8b8276ff7b28..71a6279750bf 100644
---- a/drivers/staging/media/hantro/hantro_v4l2.c
-+++ b/drivers/staging/media/hantro/hantro_v4l2.c
-@@ -768,8 +768,12 @@ static int hantro_buf_prepare(struct vb2_buffer *vb)
- 	 * (for OUTPUT buffers, if userspace passes 0 bytesused, v4l2-core sets
- 	 * it to buffer length).
- 	 */
--	if (V4L2_TYPE_IS_CAPTURE(vq->type))
--		vb2_set_plane_payload(vb, 0, pix_fmt->plane_fmt[0].sizeimage);
-+	if (V4L2_TYPE_IS_CAPTURE(vq->type)) {
-+		if (ctx->is_encoder)
-+			vb2_set_plane_payload(vb, 0, 0);
-+		else
-+			vb2_set_plane_payload(vb, 0, pix_fmt->plane_fmt[0].sizeimage);
-+	}
+diff --git a/drivers/media/platform/nxp/imx-mipi-csis.c b/drivers/media/platform/nxp/imx-mipi-csis.c
+index d9719d0b2f0a..e0e345fbb00f 100644
+--- a/drivers/media/platform/nxp/imx-mipi-csis.c
++++ b/drivers/media/platform/nxp/imx-mipi-csis.c
+@@ -994,14 +994,6 @@ static int mipi_csis_init_cfg(struct v4l2_subdev *sd,
+ 		V4L2_MAP_QUANTIZATION_DEFAULT(false, fmt_sink->colorspace,
+ 					      fmt_sink->ycbcr_enc);
  
- 	return 0;
- }
+-	/*
+-	 * When called from mipi_csis_subdev_init() to initialize the active
+-	 * configuration, cfg is NULL, which indicates there's no source pad
+-	 * configuration to set.
+-	 */
+-	if (!sd_state)
+-		return 0;
+-
+ 	fmt_source = mipi_csis_get_format(csis, sd_state, which,
+ 					  CSIS_PAD_SOURCE);
+ 	*fmt_source = *fmt_sink;
 -- 
 2.35.1
 
