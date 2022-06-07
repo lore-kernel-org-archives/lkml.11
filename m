@@ -2,136 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B79ACCCA488
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D969C2BBF3
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354880AbiFGS5O (ORCPT
+        id S1354955AbiFGS5f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:57:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41774 "EHLO
+        Tue, 7 Jun 2022 14:57:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352408AbiFGSRI (ORCPT
+        with ESMTP id S1352404AbiFGSRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:17:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02D022534;
-        Tue,  7 Jun 2022 10:51:50 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5BE1222A2;
+        Tue,  7 Jun 2022 10:51:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B59661797;
-        Tue,  7 Jun 2022 17:51:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35EEDC385A5;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 71A9261797;
+        Tue,  7 Jun 2022 17:51:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F42FC34119;
         Tue,  7 Jun 2022 17:51:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624309;
-        bh=WOZZ81gRLciIhVRawU+i1v+Da6F8SDjqNSRRDxrrypA=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624307;
+        bh=eI1Prs6HZFky+OeyBZ/e+ucaVtq3KyroYdNwTACoPH4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LJBd9gXmVLcmbxvJOYkoSsJXJqPT/iJPZ5nINJlDqarivZ3EMWjuKUxMM8s0cjQDR
-         fWWIc1PUfeHJf1Zoqegn/jodLF86AOhjRh+9iSdKslJfoqf995F+xFuVMLFy40sMgG
-         F5jqwaHgGyR2A7ADsKv1ic5fBAIyziOK/pAu2gCf/Fw4PfgBS+ObbY8XhqT00hXHcL
-         dKMGtp9pilsilThCuS6e0blVhXIlR8+V9Sx7bu0txPDpIJMsE9b8YplS04EO7PK0rk
-         +WMhninCYJcnnZmVzptVZZeuvEL20lswYJCtA/T8XZD/MNK5As4afQCOC44rqVAdo8
-         2731n6Qyt/+KQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
-        Qingqing Zhuo <qingqing.zhuo@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
-        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, Eric.Yang2@amd.com, michael.strauss@amd.com,
-        Charlene.Liu@amd.com, paul.hsieh@amd.com, nikola.cornij@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.18 46/68] drm/amd/display: Check zero planes for OTG disable W/A on clock change
-Date:   Tue,  7 Jun 2022 13:48:12 -0400
-Message-Id: <20220607174846.477972-46-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+        b=MuRfFyQJgaOikCSpqvq41IrgHypn7ftKkcCQqzvP0MDM4g8QRfqX3qZjiwKu/uHgz
+         JZqa7ER6ev7ctxOaD7O5iJo+bYiwqycxdvJO4gvuMwbvNvS9LMAC/JHOtJHdmD/mU1
+         GPikj789OdPhRzHyjQeRo55RxjI4OjkYTbDHpb14=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 280/667] nl80211: dont hold RTNL in color change request
+Date:   Tue,  7 Jun 2022 18:59:05 +0200
+Message-Id: <20220607164943.183814493@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 66a197203794339b028eedfa880bff9367fce783 ]
+[ Upstream commit 1b550a0bebfc0b69d6ec08fe6eb58953a8aec48a ]
 
-[Why]
-A display clock change hang can occur when switching between DIO and HPO
-enabled modes during the optimize_bandwidth in dc_commit_state_no_check
-call.
+It's not necessary to hold the RTNL across color change
+requests, since all the inner locking needs only the
+wiphy mutex which we already hold as well.
 
-This happens when going from 4k120 8bpc 420 to 4k144 10bpc 444.
-
-Display clock in the DIO case is 1200MHz, but pixel rate is 600MHz
-because the pixel format is 420.
-
-Display clock in the HPO case is less (800MHz?) because of ODM combine
-which results in a smaller divider.
-
-The DIO is still active in prepare but not active in the optimize which
-results in the hang occuring.
-
-During this change there are no planes on the stream so it's safe to
-apply the workaround, but dpms_off = false and signal type is not
-virtual.
-
-[How]
-Check for plane_count == 0, no planes on the stream.
-
-It's easiest to check pipe->plane_state == NULL as an equivalent check
-rather than trying to search for the stream status in the context
-associated with the stream, so let's do that.
-
-The primary, non MPO pipe should not have a NULL plane state.
-
-Reviewed-by: Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>
-Acked-by: Qingqing Zhuo <qingqing.zhuo@amd.com>
-Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: 0d2ab3aea50b ("nl80211: add support for BSS coloring")
+Link: https://lore.kernel.org/r/20220414140402.32e03e8c261b.I5e7dc6bc563a129b938c43298da6bb4e812400a5@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c | 3 ++-
- drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_clk_mgr.c | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ net/wireless/nl80211.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c
-index 8be4c1970628..3bf2ab2ff7f8 100644
---- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c
-+++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c
-@@ -91,7 +91,8 @@ static void dcn315_disable_otg_wa(struct clk_mgr *clk_mgr_base, bool disable)
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index dafa2c5b71a4..bb46a6a34614 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -15936,8 +15936,7 @@ static const struct genl_small_ops nl80211_small_ops[] = {
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nl80211_color_change,
+ 		.flags = GENL_UNS_ADMIN_PERM,
+-		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+-				  NL80211_FLAG_NEED_RTNL,
++		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP,
+ 	},
+ };
  
- 		if (pipe->top_pipe || pipe->prev_odm_pipe)
- 			continue;
--		if (pipe->stream && (pipe->stream->dpms_off || dc_is_virtual_signal(pipe->stream->signal))) {
-+		if (pipe->stream && (pipe->stream->dpms_off || pipe->plane_state == NULL ||
-+				     dc_is_virtual_signal(pipe->stream->signal))) {
- 			if (disable)
- 				pipe->stream_res.tg->funcs->immediate_disable_crtc(pipe->stream_res.tg);
- 			else
-diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_clk_mgr.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_clk_mgr.c
-index 3121dd2d2a91..fc3af81ed6c6 100644
---- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_clk_mgr.c
-+++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_clk_mgr.c
-@@ -122,7 +122,8 @@ static void dcn316_disable_otg_wa(struct clk_mgr *clk_mgr_base, bool disable)
- 
- 		if (pipe->top_pipe || pipe->prev_odm_pipe)
- 			continue;
--		if (pipe->stream && (pipe->stream->dpms_off || dc_is_virtual_signal(pipe->stream->signal))) {
-+		if (pipe->stream && (pipe->stream->dpms_off || pipe->plane_state == NULL ||
-+				     dc_is_virtual_signal(pipe->stream->signal))) {
- 			if (disable)
- 				pipe->stream_res.tg->funcs->immediate_disable_crtc(pipe->stream_res.tg);
- 			else
 -- 
 2.35.1
+
+
 
