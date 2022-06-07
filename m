@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F179AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:42:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D209CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352535AbiFHAjl (ORCPT
+        id S1388320AbiFHAlA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55826 "EHLO
+        Tue, 7 Jun 2022 20:41:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381849AbiFGV5U (ORCPT
+        with ESMTP id S1383301AbiFGVxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:57:20 -0400
+        Tue, 7 Jun 2022 17:53:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5122224CCA6;
-        Tue,  7 Jun 2022 12:13:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90FA4FF0;
+        Tue,  7 Jun 2022 12:11:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 13438617DA;
-        Tue,  7 Jun 2022 19:13:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 210D8C385A2;
-        Tue,  7 Jun 2022 19:13:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20629617D0;
+        Tue,  7 Jun 2022 19:11:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CF21C385A2;
+        Tue,  7 Jun 2022 19:11:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629213;
-        bh=zbZoZDXyPQtH/CA9+JLIhXQbldowgqpgV7bnTEcHvuQ=;
+        s=korg; t=1654629069;
+        bh=/SXHeppL4FHWK2iK+Q7roRMlKdDXea05upheVTxrlhc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RTbkc2JImoBL6fYsKSgir73wcAJp55U53iRJi3ym68ShuLY13Lra2xXCrLlpdG5Ux
-         5gIAuHJiCFTSuDDV7GnrS4vQBUo9o646N8yeJSEAFBoJcgcQ6ghziaEVoABlFTdwQT
-         4jpET+aHjJwez6v7ccYnm85FBpN/lJF+LRikWrfM=
+        b=jCJVKoqPxk9Yxs9XdmOpR2z0Sc/YgNqBt1msenKlvp9ePlYUUtpmXcTYyVtI2s7m7
+         7HdsUiOjmD7dxUaTWEmVTm0ek5oP4ho9hDhkvo4cYesTpd2SES7YtWIqnn2vxHeeFr
+         OHxF69RUx03DPA8fH2GI46BiE4j70lv/xDQBM/h4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robert.marko@sartura.hr>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        stable@vger.kernel.org, Daisuke Nojiri <dnojiri@chromium.org>,
+        Rob Barnes <robbarnes@google.com>,
+        Rajat Jain <rajatja@google.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Parth Malkan <parthmalkan@google.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 610/879] arm64: dts: marvell: espressobin-ultra: fix SPI-NOR config
-Date:   Tue,  7 Jun 2022 19:02:08 +0200
-Message-Id: <20220607165020.556106124@linuxfoundation.org>
+Subject: [PATCH 5.18 559/879] platform/chrome: Re-introduce cros_ec_cmd_xfer and use it for ioctls
+Date:   Tue,  7 Jun 2022 19:01:17 +0200
+Message-Id: <20220607165019.089075278@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,41 +55,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robert.marko@sartura.hr>
+From: Guenter Roeck <linux@roeck-us.net>
 
-[ Upstream commit 5202f4c3816b42e989f9cad49a73c7e88fba89f4 ]
+[ Upstream commit 57b888ca2541785de2fcb90575b378921919b6c0 ]
 
-SPI config for the SPI-NOR is incorrect and completely breaking
-reading/writing to the onboard SPI-NOR.
+Commit 413dda8f2c6f ("platform/chrome: cros_ec_chardev: Use
+cros_ec_cmd_xfer_status helper") inadvertendly changed the userspace ABI.
+Previously, cros_ec ioctls would only report errors if the EC communication
+failed, and otherwise return success and the result of the EC
+communication. An EC command execution failure was reported in the EC
+response field. The above mentioned commit changed this behavior, and the
+ioctl itself would fail. This breaks userspace commands trying to analyze
+the EC command execution error since the actual EC command response is no
+longer reported to userspace.
 
-SPI-NOR is connected in the single(x1) IO mode and not in the quad
-(x4) mode.
-Also, there is no need to override the max frequency from the DTSI
-as the mx25u3235f that is used supports 104Mhz.
+Fix the problem by re-introducing the cros_ec_cmd_xfer() helper, and use it
+to handle ioctl messages.
 
-Fixes: 3404fe15a60f ("arm64: dts: marvell: add DT for ESPRESSObin-Ultra")
-Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Fixes: 413dda8f2c6f ("platform/chrome: cros_ec_chardev: Use cros_ec_cmd_xfer_status helper")
+Cc: Daisuke Nojiri <dnojiri@chromium.org>
+Cc: Rob Barnes <robbarnes@google.com>
+Cc: Rajat Jain <rajatja@google.com>
+Cc: Brian Norris <briannorris@chromium.org>
+Cc: Parth Malkan <parthmalkan@google.com>
+Reviewed-by: Daisuke Nojiri <dnojiri@chromium.org>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/platform/chrome/cros_ec_chardev.c   |  2 +-
+ drivers/platform/chrome/cros_ec_proto.c     | 50 +++++++++++++++++----
+ include/linux/platform_data/cros_ec_proto.h |  3 ++
+ 3 files changed, 45 insertions(+), 10 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-index c5eb3604dd5b..610ff6f385c7 100644
---- a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-@@ -71,10 +71,6 @@
+diff --git a/drivers/platform/chrome/cros_ec_chardev.c b/drivers/platform/chrome/cros_ec_chardev.c
+index e0bce869c49a..fd33de546aee 100644
+--- a/drivers/platform/chrome/cros_ec_chardev.c
++++ b/drivers/platform/chrome/cros_ec_chardev.c
+@@ -301,7 +301,7 @@ static long cros_ec_chardev_ioctl_xcmd(struct cros_ec_dev *ec, void __user *arg)
+ 	}
  
- &spi0 {
- 	flash@0 {
--		spi-max-frequency = <108000000>;
--		spi-rx-bus-width = <4>;
--		spi-tx-bus-width = <4>;
--
- 		partitions {
- 			compatible = "fixed-partitions";
- 			#address-cells = <1>;
+ 	s_cmd->command += ec->cmd_offset;
+-	ret = cros_ec_cmd_xfer_status(ec->ec_dev, s_cmd);
++	ret = cros_ec_cmd_xfer(ec->ec_dev, s_cmd);
+ 	/* Only copy data to userland if data was received. */
+ 	if (ret < 0)
+ 		goto exit;
+diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+index c4caf2e2de82..ac1419881ff3 100644
+--- a/drivers/platform/chrome/cros_ec_proto.c
++++ b/drivers/platform/chrome/cros_ec_proto.c
+@@ -560,22 +560,28 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+ EXPORT_SYMBOL(cros_ec_query_all);
+ 
+ /**
+- * cros_ec_cmd_xfer_status() - Send a command to the ChromeOS EC.
++ * cros_ec_cmd_xfer() - Send a command to the ChromeOS EC.
+  * @ec_dev: EC device.
+  * @msg: Message to write.
+  *
+- * Call this to send a command to the ChromeOS EC. This should be used instead of calling the EC's
+- * cmd_xfer() callback directly. It returns success status only if both the command was transmitted
+- * successfully and the EC replied with success status.
++ * Call this to send a command to the ChromeOS EC. This should be used instead
++ * of calling the EC's cmd_xfer() callback directly. This function does not
++ * convert EC command execution error codes to Linux error codes. Most
++ * in-kernel users will want to use cros_ec_cmd_xfer_status() instead since
++ * that function implements the conversion.
+  *
+  * Return:
+- * >=0 - The number of bytes transferred
+- * <0 - Linux error code
++ * >0 - EC command was executed successfully. The return value is the number
++ *      of bytes returned by the EC (excluding the header).
++ * =0 - EC communication was successful. EC command execution results are
++ *      reported in msg->result. The result will be EC_RES_SUCCESS if the
++ *      command was executed successfully or report an EC command execution
++ *      error.
++ * <0 - EC communication error. Return value is the Linux error code.
+  */
+-int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
+-			    struct cros_ec_command *msg)
++int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
+ {
+-	int ret, mapped;
++	int ret;
+ 
+ 	mutex_lock(&ec_dev->lock);
+ 	if (ec_dev->proto_version == EC_PROTO_VERSION_UNKNOWN) {
+@@ -616,6 +622,32 @@ int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
+ 	ret = send_command(ec_dev, msg);
+ 	mutex_unlock(&ec_dev->lock);
+ 
++	return ret;
++}
++EXPORT_SYMBOL(cros_ec_cmd_xfer);
++
++/**
++ * cros_ec_cmd_xfer_status() - Send a command to the ChromeOS EC.
++ * @ec_dev: EC device.
++ * @msg: Message to write.
++ *
++ * Call this to send a command to the ChromeOS EC. This should be used instead of calling the EC's
++ * cmd_xfer() callback directly. It returns success status only if both the command was transmitted
++ * successfully and the EC replied with success status.
++ *
++ * Return:
++ * >=0 - The number of bytes transferred.
++ * <0 - Linux error code
++ */
++int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
++			    struct cros_ec_command *msg)
++{
++	int ret, mapped;
++
++	ret = cros_ec_cmd_xfer(ec_dev, msg);
++	if (ret < 0)
++		return ret;
++
+ 	mapped = cros_ec_map_error(msg->result);
+ 	if (mapped) {
+ 		dev_dbg(ec_dev->dev, "Command result (err: %d [%d])\n",
+diff --git a/include/linux/platform_data/cros_ec_proto.h b/include/linux/platform_data/cros_ec_proto.h
+index df3c78c92ca2..16931569adce 100644
+--- a/include/linux/platform_data/cros_ec_proto.h
++++ b/include/linux/platform_data/cros_ec_proto.h
+@@ -216,6 +216,9 @@ int cros_ec_prepare_tx(struct cros_ec_device *ec_dev,
+ int cros_ec_check_result(struct cros_ec_device *ec_dev,
+ 			 struct cros_ec_command *msg);
+ 
++int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev,
++		     struct cros_ec_command *msg);
++
+ int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
+ 			    struct cros_ec_command *msg);
+ 
 -- 
 2.35.1
 
