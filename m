@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54CB1CCA496
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3157ACCA485
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355799AbiFGTRX (ORCPT
+        id S1350929AbiFGTSQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:17:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49868 "EHLO
+        Tue, 7 Jun 2022 15:18:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351524AbiFGS3c (ORCPT
+        with ESMTP id S1352095AbiFGSao (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:29:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1673C179946;
-        Tue,  7 Jun 2022 10:55:21 -0700 (PDT)
+        Tue, 7 Jun 2022 14:30:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43306144FFD;
+        Tue,  7 Jun 2022 10:55:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0F62FCE2426;
-        Tue,  7 Jun 2022 17:55:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7578DC3411C;
-        Tue,  7 Jun 2022 17:55:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE9A6B8236A;
+        Tue,  7 Jun 2022 17:55:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C56C2C3411C;
+        Tue,  7 Jun 2022 17:55:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624518;
-        bh=KcOo1oA3ujYCM/X6/pxf5zQ0h3TH3jWllfC3FvL+cl8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LJZrLbjIhV57CeYCj3DSD1begJOOKNQ4QCfZOh+FPFjbzb4mnOeNHwJvLYxRdUDaW
-         9BDY6HEHO0JUJ5eNZPjxlLIK/iZOTFXQZP0xfcwTKBCc8Ti+iBFcRMM4e5otXsa1yR
-         /LYZWnlBQoDT1i6+lbqPIFJgbk45AeQHvSzVOzClNo9v1pJzEBvDVi/l8gxytrv2LJ
-         CSjojsSenT3aZE0+1Di8XCOdKzRct71741unX+oDRkQ0/sN3QcZinK5ul1tHWHf9AR
-         VuV/4nWVSUKrxGVbciBP7xxDE19ZwZav7urGN7M9BgH+zs5xR3F+7NEIjuzHnCjQMc
-         /1QFQXf3Xw0BQ==
+        s=k20201202; t=1654624555;
+        bh=aT6YvPhoPElGUTTysLZKWXB1UMLXmkhkzGyEYMZj38o=;
+        h=From:To:Cc:Subject:Date:From;
+        b=QHzeFGt3jSq/+dlXkrpI9Movyc3Rgs5C1fOuzdZ11SuanpIpAIwH4JOTAMlTMZq7H
+         HuBSa6Qsh42AY41RkBkA0GW6qmQWhfaEZ75JxaE9KBHkD2ebG4NzBEjT7+DtkGSJd6
+         L3zPAHFtFRZGRy/ucE3eM3RNcxEp/UszX1KpY+aHy1pObLOmc4RaZYF4wc2Aw2BXb9
+         CMsfHoaTed/e2xQNTBT48oGJ1NeOuRSFjTzib4DQ+bYDV6GUOJ+siTNSCcGIP+ZfKs
+         DM4uYI6IydIa3PMIW+yEeasnO55F7fIQEgT9VWQdCMZ1BPvcdmx6+StLWpirxwSyrM
+         tUde5bOMAyW1Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Sasha Levin <sashal@kernel.org>, jpoimboe@kernel.org,
-        jbaron@akamai.com
-Subject: [PATCH AUTOSEL 5.17 48/60] jump_label,noinstr: Avoid instrumentation for JUMP_LABEL=n builds
-Date:   Tue,  7 Jun 2022 13:52:45 -0400
-Message-Id: <20220607175259.478835-48-sashal@kernel.org>
+Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>, jic23@kernel.org,
+        linux-iio@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 01/51] iio: dummy: iio_simple_dummy: check the return value of kstrdup()
+Date:   Tue,  7 Jun 2022 13:55:00 -0400
+Message-Id: <20220607175552.479948-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,42 +51,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit 656d054e0a15ec327bd82801ccd58201e59f6896 ]
+[ Upstream commit ba93642188a6fed754bf7447f638bc410e05a929 ]
 
-When building x86_64 with JUMP_LABEL=n it's possible for
-instrumentation to sneak into noinstr:
+kstrdup() is also a memory allocation-related function, it returns NULL
+when some memory errors happen. So it is better to check the return
+value of it so to catch the memory error in time. Besides, there should
+have a kfree() to clear up the allocation if we get a failure later in
+this function to prevent memory leak.
 
-vmlinux.o: warning: objtool: exit_to_user_mode+0x14: call to static_key_count.constprop.0() leaves .noinstr.text section
-vmlinux.o: warning: objtool: syscall_exit_to_user_mode+0x2d: call to static_key_count.constprop.0() leaves .noinstr.text section
-vmlinux.o: warning: objtool: irqentry_exit_to_user_mode+0x1b: call to static_key_count.constprop.0() leaves .noinstr.text section
-
-Switch to arch_ prefixed atomic to avoid the explicit instrumentation.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Link: https://lore.kernel.org/r/tencent_C920CFCC33B9CC1C63141FE1334A39FF8508@qq.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/jump_label.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/dummy/iio_simple_dummy.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/jump_label.h b/include/linux/jump_label.h
-index 48b9b2a82767..019e55c13248 100644
---- a/include/linux/jump_label.h
-+++ b/include/linux/jump_label.h
-@@ -261,9 +261,9 @@ extern void static_key_disable_cpuslocked(struct static_key *key);
- #include <linux/atomic.h>
- #include <linux/bug.h>
+diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
+index c0b7ef900735..c24f609c2ade 100644
+--- a/drivers/iio/dummy/iio_simple_dummy.c
++++ b/drivers/iio/dummy/iio_simple_dummy.c
+@@ -575,10 +575,9 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	 */
  
--static inline int static_key_count(struct static_key *key)
-+static __always_inline int static_key_count(struct static_key *key)
- {
--	return atomic_read(&key->enabled);
-+	return arch_atomic_read(&key->enabled);
+ 	swd = kzalloc(sizeof(*swd), GFP_KERNEL);
+-	if (!swd) {
+-		ret = -ENOMEM;
+-		goto error_kzalloc;
+-	}
++	if (!swd)
++		return ERR_PTR(-ENOMEM);
++
+ 	/*
+ 	 * Allocate an IIO device.
+ 	 *
+@@ -590,7 +589,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	indio_dev = iio_device_alloc(parent, sizeof(*st));
+ 	if (!indio_dev) {
+ 		ret = -ENOMEM;
+-		goto error_ret;
++		goto error_free_swd;
+ 	}
+ 
+ 	st = iio_priv(indio_dev);
+@@ -616,6 +615,10 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	 *    indio_dev->name = spi_get_device_id(spi)->name;
+ 	 */
+ 	indio_dev->name = kstrdup(name, GFP_KERNEL);
++	if (!indio_dev->name) {
++		ret = -ENOMEM;
++		goto error_free_device;
++	}
+ 
+ 	/* Provide description of available channels */
+ 	indio_dev->channels = iio_dummy_channels;
+@@ -632,7 +635,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 
+ 	ret = iio_simple_dummy_events_register(indio_dev);
+ 	if (ret < 0)
+-		goto error_free_device;
++		goto error_free_name;
+ 
+ 	ret = iio_simple_dummy_configure_buffer(indio_dev);
+ 	if (ret < 0)
+@@ -649,11 +652,12 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	iio_simple_dummy_unconfigure_buffer(indio_dev);
+ error_unregister_events:
+ 	iio_simple_dummy_events_unregister(indio_dev);
++error_free_name:
++	kfree(indio_dev->name);
+ error_free_device:
+ 	iio_device_free(indio_dev);
+-error_ret:
++error_free_swd:
+ 	kfree(swd);
+-error_kzalloc:
+ 	return ERR_PTR(ret);
  }
  
- static __always_inline void jump_label_init(void)
 -- 
 2.35.1
 
