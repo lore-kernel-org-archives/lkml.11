@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F51ECCA48E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2B19CCA48F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:35:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378237AbiFGUfL (ORCPT
+        id S1378262AbiFGUfS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:35:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55388 "EHLO
+        Tue, 7 Jun 2022 16:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357632AbiFGTmK (ORCPT
+        with ESMTP id S1357653AbiFGTmL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:42:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2B31B6053;
-        Tue,  7 Jun 2022 11:15:36 -0700 (PDT)
+        Tue, 7 Jun 2022 15:42:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C134C1B606C;
+        Tue,  7 Jun 2022 11:15:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CEE1AB822C0;
-        Tue,  7 Jun 2022 18:15:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D177C385A2;
-        Tue,  7 Jun 2022 18:15:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52961B8233E;
+        Tue,  7 Jun 2022 18:15:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA6E1C385A2;
+        Tue,  7 Jun 2022 18:15:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625733;
-        bh=w+Mx4L1UD8ofc/ecEwIzqvOnTw6oXAnw/UDczpyP7ds=;
+        s=korg; t=1654625739;
+        bh=z4wDMbAV2RS1G7aP/5ULZccvzCp/6WBnP3rMRzqLcME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mSketXd12WIpFheNnLCOpEQSXbn9WO8eejrItc9HGE7DpIuQEYHGC36kScxUtR0Ue
-         +JE0Svx0yB52TbWE4qG5a7F3RGUR1fXYgltusj8fzrjoOgdEIGCnUu0DD03t0bjLI5
-         htEso9tZDz6EEZZbXUPiwVYkIUfGW4hmOLHrYC8I=
+        b=GMFTWTgd5mp86owLLJBmrqR7K0of9nwNL3RCYERn7b9p8qOCeTjtHJqRtDiXB9oyp
+         2GKX6sCGkvHRZrnZ0HCJfIWxNbOjFjIR2qcoea9aMk7+PTHK7xr8IwQQKrzrjJPw2d
+         MI5WN4CAADU7eXn8N+Lmb1b9uvqVNfzH9PJEeFpo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 083/772] drm/amd/pm: fix double free in si_parse_power_table()
-Date:   Tue,  7 Jun 2022 18:54:35 +0200
-Message-Id: <20220607164951.487694850@linuxfoundation.org>
+Subject: [PATCH 5.17 085/772] ASoC: rsnd: care return value from rsnd_node_fixed_index()
+Date:   Tue,  7 Jun 2022 18:54:37 +0200
+Message-Id: <20220607164951.548435170@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,68 +52,209 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
 
-[ Upstream commit f3fa2becf2fc25b6ac7cf8d8b1a2e4a86b3b72bd ]
+[ Upstream commit d09a7db431c65aaa8303eb456439d1831ca2e6b4 ]
 
-In function si_parse_power_table(), array adev->pm.dpm.ps and its member
-is allocated. If the allocation of each member fails, the array itself
-is freed and returned with an error code. However, the array is later
-freed again in si_dpm_fini() function which is called when the function
-returns an error.
+Renesas Sound is very complex, and thus it needs to use
+rsnd_node_fixed_index() to know enabled pin index.
 
-This leads to potential double free of the array adev->pm.dpm.ps, as
-well as leak of its array members, since the members are not freed in
-the allocation function and the array is not nulled when freed.
-In addition adev->pm.dpm.num_ps, which keeps track of the allocated
-array member, is not updated until the member allocation is
-successfully finished, this could also lead to either use after free,
-or uninitialized variable access in si_dpm_fini().
+It returns error if strange pin was selected,
+but some codes didn't check it.
 
-Fix this by postponing the free of the array until si_dpm_fini() and
-increment adev->pm.dpm.num_ps everytime the array member is allocated.
+This patch 1) indicates error message, 2) check return
+value.
 
-Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+Link: https://lore.kernel.org/r/87pmlbgn5t.wl-kuninori.morimoto.gx@renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/powerplay/si_dpm.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ sound/soc/sh/rcar/core.c | 15 ++++++++++-----
+ sound/soc/sh/rcar/dma.c  |  9 ++++++++-
+ sound/soc/sh/rcar/rsnd.h |  2 +-
+ sound/soc/sh/rcar/src.c  |  7 ++++++-
+ sound/soc/sh/rcar/ssi.c  | 14 ++++++++++++--
+ sound/soc/sh/rcar/ssiu.c |  7 ++++++-
+ 6 files changed, 43 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c b/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c
-index 81f82aa05ec2..66fc63f1f1c1 100644
---- a/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c
-+++ b/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c
-@@ -7247,17 +7247,15 @@ static int si_parse_power_table(struct amdgpu_device *adev)
- 	if (!adev->pm.dpm.ps)
- 		return -ENOMEM;
- 	power_state_offset = (u8 *)state_array->states;
--	for (i = 0; i < state_array->ucNumEntries; i++) {
-+	for (adev->pm.dpm.num_ps = 0, i = 0; i < state_array->ucNumEntries; i++) {
- 		u8 *idx;
- 		power_state = (union pplib_power_state *)power_state_offset;
- 		non_clock_array_index = power_state->v2.nonClockInfoIndex;
- 		non_clock_info = (struct _ATOM_PPLIB_NONCLOCK_INFO *)
- 			&non_clock_info_array->nonClockInfo[non_clock_array_index];
- 		ps = kzalloc(sizeof(struct  si_ps), GFP_KERNEL);
--		if (ps == NULL) {
--			kfree(adev->pm.dpm.ps);
-+		if (ps == NULL)
- 			return -ENOMEM;
--		}
- 		adev->pm.dpm.ps[i].ps_priv = ps;
- 		si_parse_pplib_non_clock_info(adev, &adev->pm.dpm.ps[i],
- 					      non_clock_info,
-@@ -7279,8 +7277,8 @@ static int si_parse_power_table(struct amdgpu_device *adev)
- 			k++;
- 		}
- 		power_state_offset += 2 + power_state->v2.ucNumDPMLevels;
-+		adev->pm.dpm.num_ps++;
- 	}
--	adev->pm.dpm.num_ps = state_array->ucNumEntries;
+diff --git a/sound/soc/sh/rcar/core.c b/sound/soc/sh/rcar/core.c
+index 6a8fe0da7670..af8ef2a27d34 100644
+--- a/sound/soc/sh/rcar/core.c
++++ b/sound/soc/sh/rcar/core.c
+@@ -1159,6 +1159,7 @@ void rsnd_parse_connect_common(struct rsnd_dai *rdai, char *name,
+ 		struct device_node *capture)
+ {
+ 	struct rsnd_priv *priv = rsnd_rdai_to_priv(rdai);
++	struct device *dev = rsnd_priv_to_dev(priv);
+ 	struct device_node *np;
+ 	int i;
  
- 	/* fill in the vce power states */
- 	for (i = 0; i < adev->pm.dpm.num_of_vce_states; i++) {
+@@ -1169,7 +1170,11 @@ void rsnd_parse_connect_common(struct rsnd_dai *rdai, char *name,
+ 	for_each_child_of_node(node, np) {
+ 		struct rsnd_mod *mod;
+ 
+-		i = rsnd_node_fixed_index(np, name, i);
++		i = rsnd_node_fixed_index(dev, np, name, i);
++		if (i < 0) {
++			of_node_put(np);
++			break;
++		}
+ 
+ 		mod = mod_get(priv, i);
+ 
+@@ -1183,7 +1188,7 @@ void rsnd_parse_connect_common(struct rsnd_dai *rdai, char *name,
+ 	of_node_put(node);
+ }
+ 
+-int rsnd_node_fixed_index(struct device_node *node, char *name, int idx)
++int rsnd_node_fixed_index(struct device *dev, struct device_node *node, char *name, int idx)
+ {
+ 	char node_name[16];
+ 
+@@ -1210,6 +1215,8 @@ int rsnd_node_fixed_index(struct device_node *node, char *name, int idx)
+ 			return idx;
+ 	}
+ 
++	dev_err(dev, "strange node numbering (%s)",
++		of_node_full_name(node));
+ 	return -EINVAL;
+ }
+ 
+@@ -1221,10 +1228,8 @@ int rsnd_node_count(struct rsnd_priv *priv, struct device_node *node, char *name
+ 
+ 	i = 0;
+ 	for_each_child_of_node(node, np) {
+-		i = rsnd_node_fixed_index(np, name, i);
++		i = rsnd_node_fixed_index(dev, np, name, i);
+ 		if (i < 0) {
+-			dev_err(dev, "strange node numbering (%s)",
+-				of_node_full_name(node));
+ 			of_node_put(np);
+ 			return 0;
+ 		}
+diff --git a/sound/soc/sh/rcar/dma.c b/sound/soc/sh/rcar/dma.c
+index 03e0d4eca781..463ab237d7bd 100644
+--- a/sound/soc/sh/rcar/dma.c
++++ b/sound/soc/sh/rcar/dma.c
+@@ -240,12 +240,19 @@ static int rsnd_dmaen_start(struct rsnd_mod *mod,
+ struct dma_chan *rsnd_dma_request_channel(struct device_node *of_node, char *name,
+ 					  struct rsnd_mod *mod, char *x)
+ {
++	struct rsnd_priv *priv = rsnd_mod_to_priv(mod);
++	struct device *dev = rsnd_priv_to_dev(priv);
+ 	struct dma_chan *chan = NULL;
+ 	struct device_node *np;
+ 	int i = 0;
+ 
+ 	for_each_child_of_node(of_node, np) {
+-		i = rsnd_node_fixed_index(np, name, i);
++		i = rsnd_node_fixed_index(dev, np, name, i);
++		if (i < 0) {
++			chan = NULL;
++			of_node_put(np);
++			break;
++		}
+ 
+ 		if (i == rsnd_mod_id_raw(mod) && (!chan))
+ 			chan = of_dma_request_slave_channel(np, x);
+diff --git a/sound/soc/sh/rcar/rsnd.h b/sound/soc/sh/rcar/rsnd.h
+index 6580bab0e229..d9cd190d7e19 100644
+--- a/sound/soc/sh/rcar/rsnd.h
++++ b/sound/soc/sh/rcar/rsnd.h
+@@ -460,7 +460,7 @@ void rsnd_parse_connect_common(struct rsnd_dai *rdai, char *name,
+ 		struct device_node *playback,
+ 		struct device_node *capture);
+ int rsnd_node_count(struct rsnd_priv *priv, struct device_node *node, char *name);
+-int rsnd_node_fixed_index(struct device_node *node, char *name, int idx);
++int rsnd_node_fixed_index(struct device *dev, struct device_node *node, char *name, int idx);
+ 
+ int rsnd_channel_normalization(int chan);
+ #define rsnd_runtime_channel_original(io) \
+diff --git a/sound/soc/sh/rcar/src.c b/sound/soc/sh/rcar/src.c
+index 42a100c6303d..0ea84ae57c6a 100644
+--- a/sound/soc/sh/rcar/src.c
++++ b/sound/soc/sh/rcar/src.c
+@@ -676,7 +676,12 @@ int rsnd_src_probe(struct rsnd_priv *priv)
+ 		if (!of_device_is_available(np))
+ 			goto skip;
+ 
+-		i = rsnd_node_fixed_index(np, SRC_NAME, i);
++		i = rsnd_node_fixed_index(dev, np, SRC_NAME, i);
++		if (i < 0) {
++			ret = -EINVAL;
++			of_node_put(np);
++			goto rsnd_src_probe_done;
++		}
+ 
+ 		src = rsnd_src_get(priv, i);
+ 
+diff --git a/sound/soc/sh/rcar/ssi.c b/sound/soc/sh/rcar/ssi.c
+index 87e606f688d3..43c5e27dc5c8 100644
+--- a/sound/soc/sh/rcar/ssi.c
++++ b/sound/soc/sh/rcar/ssi.c
+@@ -1105,6 +1105,7 @@ void rsnd_parse_connect_ssi(struct rsnd_dai *rdai,
+ 			    struct device_node *capture)
+ {
+ 	struct rsnd_priv *priv = rsnd_rdai_to_priv(rdai);
++	struct device *dev = rsnd_priv_to_dev(priv);
+ 	struct device_node *node;
+ 	struct device_node *np;
+ 	int i;
+@@ -1117,7 +1118,11 @@ void rsnd_parse_connect_ssi(struct rsnd_dai *rdai,
+ 	for_each_child_of_node(node, np) {
+ 		struct rsnd_mod *mod;
+ 
+-		i = rsnd_node_fixed_index(np, SSI_NAME, i);
++		i = rsnd_node_fixed_index(dev, np, SSI_NAME, i);
++		if (i < 0) {
++			of_node_put(np);
++			break;
++		}
+ 
+ 		mod = rsnd_ssi_mod_get(priv, i);
+ 
+@@ -1182,7 +1187,12 @@ int rsnd_ssi_probe(struct rsnd_priv *priv)
+ 		if (!of_device_is_available(np))
+ 			goto skip;
+ 
+-		i = rsnd_node_fixed_index(np, SSI_NAME, i);
++		i = rsnd_node_fixed_index(dev, np, SSI_NAME, i);
++		if (i < 0) {
++			ret = -EINVAL;
++			of_node_put(np);
++			goto rsnd_ssi_probe_done;
++		}
+ 
+ 		ssi = rsnd_ssi_get(priv, i);
+ 
+diff --git a/sound/soc/sh/rcar/ssiu.c b/sound/soc/sh/rcar/ssiu.c
+index 138f95dd9f4a..4b8a63e336c7 100644
+--- a/sound/soc/sh/rcar/ssiu.c
++++ b/sound/soc/sh/rcar/ssiu.c
+@@ -462,6 +462,7 @@ void rsnd_parse_connect_ssiu(struct rsnd_dai *rdai,
+ 			     struct device_node *capture)
+ {
+ 	struct rsnd_priv *priv = rsnd_rdai_to_priv(rdai);
++	struct device *dev = rsnd_priv_to_dev(priv);
+ 	struct device_node *node = rsnd_ssiu_of_node(priv);
+ 	struct rsnd_dai_stream *io_p = &rdai->playback;
+ 	struct rsnd_dai_stream *io_c = &rdai->capture;
+@@ -474,7 +475,11 @@ void rsnd_parse_connect_ssiu(struct rsnd_dai *rdai,
+ 		for_each_child_of_node(node, np) {
+ 			struct rsnd_mod *mod;
+ 
+-			i = rsnd_node_fixed_index(np, SSIU_NAME, i);
++			i = rsnd_node_fixed_index(dev, np, SSIU_NAME, i);
++			if (i < 0) {
++				of_node_put(np);
++				break;
++			}
+ 
+ 			mod = rsnd_ssiu_mod_get(priv, i);
+ 
 -- 
 2.35.1
 
