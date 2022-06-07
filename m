@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 686E7CCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F84CCA48F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359791AbiFGUQW (ORCPT
+        id S1376345AbiFGUQl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:16:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47278 "EHLO
+        Tue, 7 Jun 2022 16:16:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355759AbiFGTZs (ORCPT
+        with ESMTP id S1355971AbiFGT0O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:25:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1124019F042;
-        Tue,  7 Jun 2022 11:09:29 -0700 (PDT)
+        Tue, 7 Jun 2022 15:26:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F30F19F078;
+        Tue,  7 Jun 2022 11:09:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30384B82340;
-        Tue,  7 Jun 2022 18:09:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 825D3C385A2;
-        Tue,  7 Jun 2022 18:09:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6745617AE;
+        Tue,  7 Jun 2022 18:09:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3560C385A2;
+        Tue,  7 Jun 2022 18:09:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625366;
-        bh=17Ri7RaW54DNnuOE3bzfEoXvHE2DBf0eBzZRTgFQTEk=;
+        s=korg; t=1654625372;
+        bh=i2aBAC+nkmqctlRSusmxse0DlTK5H314CzgX7Q94to0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UFpbkYqPQVKTlfLJKf8GGclHubSSH5vQxLzTdjBv2tLOWpljyLyeSQktBeSod6HOZ
-         bM1Kdbu5UBPWj1JCsLyCEodL6jXcs3nD0PuTS0R08cNkuYL6UgtLV+HWPFuxzb6BUn
-         65KkkHTryvAfuqim47uloWCCZ38LPBsoqfRWI27U=
+        b=dse9uIwAIMsFEv2A2nb/SjNN9WkX1aiRLiGYPM15/RaYhC//NZC38/SB3+DZ1CC54
+         RTu8QtwFtwLoccjeJmTAsb3QK0Pa+7fysGuvtLwX1UQJv26v07LYvZt3aQCsIXhUqO
+         vrx0yvSFgiJOn68tSPd+BWZVrzGrdW0L9aKwbPtA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catrinel Catrinescu <cc@80211.de>,
-        Felix Fietkau <nbd@nbd.name>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.15 610/667] mac80211: upgrade passive scan to active scan on DFS channels after beacon rx
-Date:   Tue,  7 Jun 2022 19:04:35 +0200
-Message-Id: <20220607164952.969992007@linuxfoundation.org>
+        stable@vger.kernel.org, Gerald Lee <sundaywind2004@gmail.com>,
+        Namjae Jeon <linkinjeon@kernel.org>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH 5.15 664/667] fs/ntfs3: Fix invalid free in log_replay
+Date:   Tue,  7 Jun 2022 19:05:29 +0200
+Message-Id: <20220607164954.556798520@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,103 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-commit b041b7b9de6e1d4362de855ab90f9d03ef323edd upstream.
+commit f26967b9f7a830e228bb13fb41bd516ddd9d789d upstream.
 
-In client mode, we can't connect to hidden SSID APs or SSIDs not advertised
-in beacons on DFS channels, since we're forced to passive scan. Fix this by
-sending out a probe request immediately after the first beacon, if active
-scan was requested by the user.
+log_read_rst() returns ENOMEM error when there is not enough memory.
+In this case, if info is returned without initialization,
+it attempts to kfree the uninitialized info->r_page pointer. This patch
+moves the memset initialization code to before log_read_rst() is called.
 
-Cc: stable@vger.kernel.org
-Reported-by: Catrinel Catrinescu <cc@80211.de>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Link: https://lore.kernel.org/r/20220420104907.36275-1-nbd@nbd.name
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Reported-by: Gerald Lee <sundaywind2004@gmail.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/mac80211/ieee80211_i.h |    5 +++++
- net/mac80211/scan.c        |   20 ++++++++++++++++++++
- 2 files changed, 25 insertions(+)
+ fs/ntfs3/fslog.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/net/mac80211/ieee80211_i.h
-+++ b/net/mac80211/ieee80211_i.h
-@@ -1129,6 +1129,9 @@ struct tpt_led_trigger {
-  *	a scan complete for an aborted scan.
-  * @SCAN_HW_CANCELLED: Set for our scan work function when the scan is being
-  *	cancelled.
-+ * @SCAN_BEACON_WAIT: Set whenever we're passive scanning because of radar/no-IR
-+ *	and could send a probe request after receiving a beacon.
-+ * @SCAN_BEACON_DONE: Beacon received, we can now send a probe request
-  */
- enum {
- 	SCAN_SW_SCANNING,
-@@ -1137,6 +1140,8 @@ enum {
- 	SCAN_COMPLETED,
- 	SCAN_ABORTED,
- 	SCAN_HW_CANCELLED,
-+	SCAN_BEACON_WAIT,
-+	SCAN_BEACON_DONE,
- };
+--- a/fs/ntfs3/fslog.c
++++ b/fs/ntfs3/fslog.c
+@@ -1185,8 +1185,6 @@ static int log_read_rst(struct ntfs_log
+ 	if (!r_page)
+ 		return -ENOMEM;
  
- /**
---- a/net/mac80211/scan.c
-+++ b/net/mac80211/scan.c
-@@ -277,6 +277,16 @@ void ieee80211_scan_rx(struct ieee80211_
- 	if (likely(!sdata1 && !sdata2))
- 		return;
+-	memset(info, 0, sizeof(struct restart_info));
+-
+ 	/* Determine which restart area we are looking for. */
+ 	if (first) {
+ 		vbo = 0;
+@@ -3791,10 +3789,11 @@ int log_replay(struct ntfs_inode *ni, bo
+ 	if (!log)
+ 		return -ENOMEM;
  
-+	if (test_and_clear_bit(SCAN_BEACON_WAIT, &local->scanning)) {
-+		/*
-+		 * we were passive scanning because of radar/no-IR, but
-+		 * the beacon/proberesp rx gives us an opportunity to upgrade
-+		 * to active scan
-+		 */
-+		 set_bit(SCAN_BEACON_DONE, &local->scanning);
-+		 ieee80211_queue_delayed_work(&local->hw, &local->scan_work, 0);
-+	}
++	memset(&rst_info, 0, sizeof(struct restart_info));
 +
- 	if (ieee80211_is_probe_resp(mgmt->frame_control)) {
- 		struct cfg80211_scan_request *scan_req;
- 		struct cfg80211_sched_scan_request *sched_scan_req;
-@@ -783,6 +793,8 @@ static int __ieee80211_start_scan(struct
- 						IEEE80211_CHAN_RADAR)) ||
- 		    !req->n_ssids) {
- 			next_delay = IEEE80211_PASSIVE_CHANNEL_TIME;
-+			if (req->n_ssids)
-+				set_bit(SCAN_BEACON_WAIT, &local->scanning);
- 		} else {
- 			ieee80211_scan_state_send_probe(local, &next_delay);
- 			next_delay = IEEE80211_CHANNEL_TIME;
-@@ -994,6 +1006,8 @@ set_channel:
- 	    !scan_req->n_ssids) {
- 		*next_delay = IEEE80211_PASSIVE_CHANNEL_TIME;
- 		local->next_scan_state = SCAN_DECISION;
-+		if (scan_req->n_ssids)
-+			set_bit(SCAN_BEACON_WAIT, &local->scanning);
- 		return;
- 	}
+ 	log->ni = ni;
+ 	log->l_size = l_size;
+ 	log->one_page_buf = kmalloc(page_size, GFP_NOFS);
+-
+ 	if (!log->one_page_buf) {
+ 		err = -ENOMEM;
+ 		goto out;
+@@ -3842,6 +3841,7 @@ int log_replay(struct ntfs_inode *ni, bo
+ 	if (rst_info.vbo)
+ 		goto check_restart_area;
  
-@@ -1086,6 +1100,8 @@ void ieee80211_scan_work(struct work_str
- 			goto out;
- 	}
++	memset(&rst_info2, 0, sizeof(struct restart_info));
+ 	err = log_read_rst(log, l_size, false, &rst_info2);
  
-+	clear_bit(SCAN_BEACON_WAIT, &local->scanning);
-+
- 	/*
- 	 * as long as no delay is required advance immediately
- 	 * without scheduling a new work
-@@ -1096,6 +1112,10 @@ void ieee80211_scan_work(struct work_str
- 			goto out_complete;
- 		}
- 
-+		if (test_and_clear_bit(SCAN_BEACON_DONE, &local->scanning) &&
-+		    local->next_scan_state == SCAN_DECISION)
-+			local->next_scan_state = SCAN_SEND_PROBE;
-+
- 		switch (local->next_scan_state) {
- 		case SCAN_DECISION:
- 			/* if no more bands/channels left, complete scan */
+ 	/* Determine which restart area to use. */
 
 
