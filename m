@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5FE0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:39:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9B6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:39:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347465AbiFGRjP (ORCPT
+        id S1347474AbiFGRjW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42958 "EHLO
+        Tue, 7 Jun 2022 13:39:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347349AbiFGRak (ORCPT
+        with ESMTP id S1347311AbiFGRaT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:30:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7AEB110984;
-        Tue,  7 Jun 2022 10:26:24 -0700 (PDT)
+        Tue, 7 Jun 2022 13:30:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D93AF11045C;
+        Tue,  7 Jun 2022 10:26:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96495B8220C;
-        Tue,  7 Jun 2022 17:26:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07694C385A5;
-        Tue,  7 Jun 2022 17:26:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D05C60C7C;
+        Tue,  7 Jun 2022 17:26:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A262C385A5;
+        Tue,  7 Jun 2022 17:26:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622782;
-        bh=/PJHXJD5l+6VAC4skzJzuffQbUWHX6LhgWNRyk0rliw=;
+        s=korg; t=1654622776;
+        bh=NL7gGFOHv+cLPWl7gYW+d3Yk50XlZ7XMtbFH16fvmSg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S+2sAHJT6z83xExN8GUUd0nYc1Y3tRkEDCvvctRl05DrsAN1MQEPcVevcvY6DFlDG
-         TIVZP52T3vJjiw3V3T5AmTuJZQJMNJkrnVJ9HiLXa0O98zznMxIaPZJdrHhlVP774v
-         /sMCjqi34q827pTGP4tzXB4holwYcu0i+0k+IImI=
+        b=yemNG19H+8ye4EJPIdHlF656bzBNYNtOYl5V6tWGeWj864mU18tMzCWHiA5UFKBl/
+         dg9nbzT7WWPhb7iQa9JN+4tsUc+iEuv3NbBvdAmlAZVb1XEfokwyj/aPjUniuGdPxU
+         m9n2ryLHQnd6l+faWsl8R+PTmzYWDa/cR90sroVw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 181/452] drm/rockchip: vop: fix possible null-ptr-deref in vop_bind()
-Date:   Tue,  7 Jun 2022 19:00:38 +0200
-Message-Id: <20220607164913.956128333@linuxfoundation.org>
+Subject: [PATCH 5.10 179/452] drm/msm: add missing include to msm_drv.c
+Date:   Tue,  7 Jun 2022 19:00:36 +0200
+Message-Id: <20220607164913.896561547@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,39 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit f8c242908ad15bbd604d3bcb54961b7d454c43f8 ]
+[ Upstream commit 8123fe83c3a3448bbfa5b5b1cacfdfe7d076fca6 ]
 
-It will cause null-ptr-deref in resource_size(), if platform_get_resource()
-returns NULL, move calling resource_size() after devm_ioremap_resource() that
-will check 'res' to avoid null-ptr-deref.
+Add explicit include of drm_bridge.h to the msm_drv.c to fix the
+following warning:
 
-Fixes: 2048e3286f34 ("drm: rockchip: Add basic drm driver")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220422032854.2995175-1-yangyingliang@huawei.com
+drivers/gpu/drm/msm/msm_drv.c:236:17: error: implicit declaration of function 'drm_bridge_remove'; did you mean 'drm_bridge_detach'? [-Werror=implicit-function-declaration]
+
+Fixes: d28ea556267c ("drm/msm: properly add and remove internal bridges")
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/484310/
+Link: https://lore.kernel.org/r/20220430180917.3819294-1-dmitry.baryshkov@linaro.org
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/rockchip/rockchip_drm_vop.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/msm/msm_drv.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-index 0f23144491e4..91568f166a8a 100644
---- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-+++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-@@ -2097,10 +2097,10 @@ static int vop_bind(struct device *dev, struct device *master, void *data)
- 	vop_win_init(vop);
+diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+index e37e5afc680a..087efcb1f34c 100644
+--- a/drivers/gpu/drm/msm/msm_drv.c
++++ b/drivers/gpu/drm/msm/msm_drv.c
+@@ -10,6 +10,7 @@
+ #include <linux/uaccess.h>
+ #include <uapi/linux/sched/types.h>
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	vop->len = resource_size(res);
- 	vop->regs = devm_ioremap_resource(dev, res);
- 	if (IS_ERR(vop->regs))
- 		return PTR_ERR(vop->regs);
-+	vop->len = resource_size(res);
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
- 	if (res) {
++#include <drm/drm_bridge.h>
+ #include <drm/drm_drv.h>
+ #include <drm/drm_file.h>
+ #include <drm/drm_ioctl.h>
 -- 
 2.35.1
 
