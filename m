@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C0DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:27:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9F32C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:27:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346362AbiFGR1o (ORCPT
+        id S1346374AbiFGR1s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:27:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45356 "EHLO
+        Tue, 7 Jun 2022 13:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344886AbiFGRXr (ORCPT
+        with ESMTP id S1346347AbiFGRXn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:23:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFDF41059F5;
-        Tue,  7 Jun 2022 10:22:00 -0700 (PDT)
+        Tue, 7 Jun 2022 13:23:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02EF210A639;
+        Tue,  7 Jun 2022 10:21:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BCC860906;
-        Tue,  7 Jun 2022 17:22:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89778C385A5;
-        Tue,  7 Jun 2022 17:21:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 931746009B;
+        Tue,  7 Jun 2022 17:21:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98B0FC385A5;
+        Tue,  7 Jun 2022 17:21:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622519;
-        bh=7XsYRlWM8qmHI/XkqixZ5LiDMS9nt6vg5uZEvzT5rvc=;
+        s=korg; t=1654622517;
+        bh=lnFWTkPmB85aDeslaT/hBp9DroN6KQakjVzon6SCK3g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=phUvzwugTbZv6um7XltgA7I8E2NnlbCuJ8588n+feiZTxQfXPB2t/n+IzCAg3jrNC
-         CplJaP3IRw/Bku0ix9lHxndRN+8IUS8Jq7h2jyuXMAQR1E6Knd8PWQu4lJi6x2B0VS
-         vao5bfUP76ROERE4XyMq+5F5SkAA8zwY8MSLV6mg=
+        b=uVBLFLBaNNvTELkyYmhF7aJMb/Jo6Oq98CXq64QxPBIIYFL623fp1RjUBpQS1niQK
+         fJohdb8/NpFd+fCAbWDCfADZkJ7b9VblYVhtGgIAjLMzCsc9/jO3jPtssaWVz0Yej6
+         6gXxruNoNz2Wi57qeFjkDVG/upI/cCyCPkwNn9h0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <yujie.liu@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Ravi Bangoria <ravi.bangoria@amd.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 088/452] ASoC: rt1015p: remove dependency on GPIOLIB
-Date:   Tue,  7 Jun 2022 18:59:05 +0200
-Message-Id: <20220607164911.179276336@linuxfoundation.org>
+Subject: [PATCH 5.10 070/452] perf/amd/ibs: Cascade pmu init functions return value
+Date:   Tue,  7 Jun 2022 18:58:47 +0200
+Message-Id: <20220607164910.635944015@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -52,54 +50,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Ravi Bangoria <ravi.bangoria@amd.com>
 
-[ Upstream commit b390c25c6757b9d56cecdfbf6d55f15fc89a6386 ]
+[ Upstream commit 39b2ca75eec8a33e2ffdb8aa0c4840ec3e3b472c ]
 
-commit dcc2c012c7691 ("ASoC: Fix gpiolib dependencies") removed a
-series of unnecessary dependencies on GPIOLIB when the gpio was
-optional.
+IBS pmu initialization code ignores return value provided by
+callee functions. Fix it.
 
-A similar simplification seems valid for rt1015p, so remove the
-dependency as well. This will avoid the following warning
-
-  WARNING: unmet direct dependencies detected for SND_SOC_RT1015P
-
-     Depends on [n]: SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] &&
-     GPIOLIB [=n]
-
-     Selected by [y]:
-
-     - SND_SOC_INTEL_SOF_RT5682_MACH [=y] && SOUND [=y] && !UML && SND
-       [=y] && SND_SOC [=y] && SND_SOC_INTEL_MACH [=y] &&
-       (SND_SOC_SOF_HDA_LINK [=y] || SND_SOC_SOF_BAYTRAIL [=n]) && I2C
-       [=y] && ACPI [=y] && (SND_HDA_CODEC_HDMI [=y] &&
-       SND_SOC_SOF_HDA_AUDIO_CODEC [=y] && (MFD_INTEL_LPSS [=y] ||
-       COMPILE_TEST [=y]) || SND_SOC_SOF_BAYTRAIL [=n] &&
-       (X86_INTEL_LPSS [=n] || COMPILE_TEST [=y]))
-
-Reported-by: kernel test robot <yujie.liu@intel.com>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220517172647.468244-3-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220509044914.1473-2-ravi.bangoria@amd.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+ arch/x86/events/amd/ibs.c | 37 +++++++++++++++++++++++++++++--------
+ 1 file changed, 29 insertions(+), 8 deletions(-)
 
-diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
-index 612fd7516666..25f331551f68 100644
---- a/sound/soc/codecs/Kconfig
-+++ b/sound/soc/codecs/Kconfig
-@@ -1098,7 +1098,6 @@ config SND_SOC_RT1015
+diff --git a/arch/x86/events/amd/ibs.c b/arch/x86/events/amd/ibs.c
+index ccc9ee1971e8..780d89d2ae32 100644
+--- a/arch/x86/events/amd/ibs.c
++++ b/arch/x86/events/amd/ibs.c
+@@ -764,9 +764,10 @@ static __init int perf_ibs_pmu_init(struct perf_ibs *perf_ibs, char *name)
+ 	return ret;
+ }
  
- config SND_SOC_RT1015P
- 	tristate
--	depends on GPIOLIB
+-static __init void perf_event_ibs_init(void)
++static __init int perf_event_ibs_init(void)
+ {
+ 	struct attribute **attr = ibs_op_format_attrs;
++	int ret;
  
- config SND_SOC_RT1305
- 	tristate
+ 	/*
+ 	 * Some chips fail to reset the fetch count when it is written; instead
+@@ -778,7 +779,9 @@ static __init void perf_event_ibs_init(void)
+ 	if (boot_cpu_data.x86 == 0x19 && boot_cpu_data.x86_model < 0x10)
+ 		perf_ibs_fetch.fetch_ignore_if_zero_rip = 1;
+ 
+-	perf_ibs_pmu_init(&perf_ibs_fetch, "ibs_fetch");
++	ret = perf_ibs_pmu_init(&perf_ibs_fetch, "ibs_fetch");
++	if (ret)
++		return ret;
+ 
+ 	if (ibs_caps & IBS_CAPS_OPCNT) {
+ 		perf_ibs_op.config_mask |= IBS_OP_CNT_CTL;
+@@ -791,15 +794,35 @@ static __init void perf_event_ibs_init(void)
+ 		perf_ibs_op.cnt_mask    |= IBS_OP_MAX_CNT_EXT_MASK;
+ 	}
+ 
+-	perf_ibs_pmu_init(&perf_ibs_op, "ibs_op");
++	ret = perf_ibs_pmu_init(&perf_ibs_op, "ibs_op");
++	if (ret)
++		goto err_op;
++
++	ret = register_nmi_handler(NMI_LOCAL, perf_ibs_nmi_handler, 0, "perf_ibs");
++	if (ret)
++		goto err_nmi;
+ 
+-	register_nmi_handler(NMI_LOCAL, perf_ibs_nmi_handler, 0, "perf_ibs");
+ 	pr_info("perf: AMD IBS detected (0x%08x)\n", ibs_caps);
++	return 0;
++
++err_nmi:
++	perf_pmu_unregister(&perf_ibs_op.pmu);
++	free_percpu(perf_ibs_op.pcpu);
++	perf_ibs_op.pcpu = NULL;
++err_op:
++	perf_pmu_unregister(&perf_ibs_fetch.pmu);
++	free_percpu(perf_ibs_fetch.pcpu);
++	perf_ibs_fetch.pcpu = NULL;
++
++	return ret;
+ }
+ 
+ #else /* defined(CONFIG_PERF_EVENTS) && defined(CONFIG_CPU_SUP_AMD) */
+ 
+-static __init void perf_event_ibs_init(void) { }
++static __init int perf_event_ibs_init(void)
++{
++	return 0;
++}
+ 
+ #endif
+ 
+@@ -1069,9 +1092,7 @@ static __init int amd_ibs_init(void)
+ 			  x86_pmu_amd_ibs_starting_cpu,
+ 			  x86_pmu_amd_ibs_dying_cpu);
+ 
+-	perf_event_ibs_init();
+-
+-	return 0;
++	return perf_event_ibs_init();
+ }
+ 
+ /* Since we need the pci subsystem to init ibs we can't do this earlier: */
 -- 
 2.35.1
 
