@@ -2,153 +2,263 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C150CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63935CCA496
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391770AbiFHBw4 (ORCPT
+        id S1391874AbiFHBw7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:52:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59740 "EHLO
+        Tue, 7 Jun 2022 21:52:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1579396AbiFGXkA (ORCPT
+        with ESMTP id S1580018AbiFGXk6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:40:00 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9025823282D
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:41:49 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id d7so10392102iof.10
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:41:49 -0700 (PDT)
+        Tue, 7 Jun 2022 19:40:58 -0400
+Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCB9F42DFDB
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:50:29 -0700 (PDT)
+Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-f2cd424b9cso24896019fac.7
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:50:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Zei+rMtXofDNspSEQfHDdxvw6FwTTwwAkNk8PaYH+Vk=;
-        b=gM1q3haoZ8xcG2m/1cV4QlglIObFRuaOTqfk3ZWzwKu4lYch/pviT5/sn6YWsi2Ful
-         MUyuJNgKwzjHOT4WiD66Cg7h8YfDvPP7TQ5z4caqZ0/iE2nrwwvmyzkjl1ra6qYZwVji
-         +jHM75UnnwV5WsODAILvthjF49P4Hna02u2ZM=
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Nb9SkIgDmJbNtztO2QtRfshc39VCOn3yZ8K4x6tgCI8=;
+        b=ZjlbpWnbvwLZ4FcdcujCEGwTzuwR5j3RabAea0KFc0ojHE481b6VfdAHB/R3w6F32w
+         69MfYg65z+IjLC8oWaKTO4jAy6xsE95hOxVfPLrmYc4aXFJBdg/FV8ASD1DukEcq6QH/
+         qdon7uQbyqqVXP6joVC9OLZi96DdicboXpkL0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Zei+rMtXofDNspSEQfHDdxvw6FwTTwwAkNk8PaYH+Vk=;
-        b=alIglxgqrGi5V7Xxqi8g0FcY+lCJaPYnLIpOkZ0f1SgeM+MNaKL/5U4Suvwu6dI2bJ
-         0JTNTrm7VJSLIblpt+8iGhtJGp70ZxGdhSkaTEJmCO0nvVqFzkT4jVEG7SV5/zqIhwPa
-         S136ZcH/OjSqpyAMgsh4wNwAvT3apLHWG3awguYuhXEk7ijN/tqDNZZw5pihW1XTtnpq
-         jqQO6DpzSfpCj0Aaq+ZW10p87XT+GDf7x7hJuNBIGW0QFOTdhI0PdRuN9a9+Jw7LmfTB
-         rnItgKYhaCv1m4A9I2jCWOF/O02DDvI3OVNTOOuSzCKP5AmMOK0Kn2U46iRYWBjo7O0r
-         sq0g==
-X-Gm-Message-State: AOAM530eztgRAOO0zxRRJx/WRguxwqeKwSS+PzlvaR2FXwVRED5WYPJS
-        zMyAVSvzpybs0iQcMN+I0q38sDVWRCDvEA==
-X-Google-Smtp-Source: ABdhPJx71niVTJbfk9wp/5WJhlD+JuQVs7tZ8hmuK9HPnLiZYXzVppCBWspGOgJX6/6yZCG6NS2ztA==
-X-Received: by 2002:a05:6638:2105:b0:331:9c7:4e8b with SMTP id n5-20020a056638210500b0033109c74e8bmr17555779jaj.129.1654638108936;
-        Tue, 07 Jun 2022 14:41:48 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id g11-20020a02b70b000000b0033136906e1esm7153212jam.18.2022.06.07.14.41.48
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Nb9SkIgDmJbNtztO2QtRfshc39VCOn3yZ8K4x6tgCI8=;
+        b=Ou6EDgKtxXPYO5k4WMod9YX4xStG60BcSYqD7ysvUnpdxQuvG7421V3K1YsSAjelqg
+         Jg461n6bef8TI+1AvHKYekjrI4Do/7p0FTnex3PppsUo0FMS8JQ822F4XWOqr5uo5O7q
+         tmj0KkGrx1gLrZLtT9Fw2bR4PXQP0BFO5kOz2hQuqbR/a6hYT3ABLnrdEjZcC7vzHTzr
+         LvQ1xSfN0P35bFtjrM6Id3f25mcT+JyuctsGHNm4NEGSUuVC30r4Sgw7+stVKOqE2iAU
+         EIqmkC/OOyz4cGu9Pj++Jvdyi1wwiQesDYdRdTCW7f3ycKYBg2m+FRjptM6ZkjnztC40
+         J7cQ==
+X-Gm-Message-State: AOAM530NGANsEIzvJj+BV+ciwIlW7CHsS7ZnuXFg//ecYnT4ER8hUJnd
+        CuhW/Cu0uZlxI7AmuyR2F6BEPJXc4jKmZ+3S
+X-Google-Smtp-Source: ABdhPJyUwgME+dZYoXI7IyumJPlp2hW6mOli3mMq64qnsXsfDfIyAQ8EiD1kPMiS4rwfYhR+KURLgg==
+X-Received: by 2002:a05:6870:5621:b0:f5:d454:d7c7 with SMTP id m33-20020a056870562100b000f5d454d7c7mr610360oao.236.1654638628686;
+        Tue, 07 Jun 2022 14:50:28 -0700 (PDT)
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com. [209.85.160.47])
+        by smtp.gmail.com with ESMTPSA id k16-20020a056808069000b00325cda1ffa6sm10085205oig.37.2022.06.07.14.50.26
+        for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 14:41:48 -0700 (PDT)
-Subject: Re: [PATCH v2] docs/kselftest: add more guidelines for adding new
- tests
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Shuah Khan <shuah@kernel.org>, Jonathan Corbet <corbet@lwn.net>
-Cc:     kernel@collabora.com, bagasdotme@gmail.com,
-        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220521073651.4191910-1-usama.anjum@collabora.com>
- <e01f90a0-a3c7-c5fd-ae1f-197c6fec525e@collabora.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <63fc263d-c06a-2974-298c-5da80322411a@linuxfoundation.org>
-Date:   Tue, 7 Jun 2022 15:41:48 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Tue, 07 Jun 2022 14:50:27 -0700 (PDT)
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-e5e433d66dso24878456fac.5
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:50:26 -0700 (PDT)
+X-Received: by 2002:a05:6870:5702:b0:f2:d904:fd95 with SMTP id
+ k2-20020a056870570200b000f2d904fd95mr619948oap.66.1654638626234; Tue, 07 Jun
+ 2022 14:50:26 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <e01f90a0-a3c7-c5fd-ae1f-197c6fec525e@collabora.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20220607134405.166704-1-ribalda@chromium.org> <20220607134405.166704-2-ribalda@chromium.org>
+ <Yp+hF+HcZUIqC/Pm@pendragon.ideasonboard.com>
+In-Reply-To: <Yp+hF+HcZUIqC/Pm@pendragon.ideasonboard.com>
+From:   Ricardo Ribalda <ribalda@chromium.org>
+Date:   Tue, 7 Jun 2022 23:50:15 +0200
+X-Gmail-Original-Message-ID: <CANiDSCt-2RWQqGi9z=fm26NZWodr0yJHrtdJeePcKsKjxsVO4Q@mail.gmail.com>
+Message-ID: <CANiDSCt-2RWQqGi9z=fm26NZWodr0yJHrtdJeePcKsKjxsVO4Q@mail.gmail.com>
+Subject: Re: [PATCH v3 1/7] media: uvcvideo: Add missing value for power_line_frequency
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tomasz Figa <tfiga@chromium.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Yunke Cao <yunkec@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/7/22 6:59 AM, Muhammad Usama Anjum wrote:
-> Reminder!
-> 
+Hi Laurent
 
-Remember to avoid top posting.
+On Tue, 7 Jun 2022 at 21:04, Laurent Pinchart
+<laurent.pinchart@ideasonboard.com> wrote:
+>
+> Hi Ricardo,
+>
+> Thank you for the patch.
 
-> On 5/21/22 12:36 PM, Muhammad Usama Anjum wrote:
->> Improve and add instructions to add new tests. Add build commands to
->> test before sending the new test patch.
->>
->> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
->> ---
->> Changes in v2:
->> - Updated commit message
->> - Removed dependence of this patch from other patch
->> - Updated instructions
->> ---
->>   Documentation/dev-tools/kselftest.rst | 27 ++++++++++++++++++++++++++-
->>   1 file changed, 26 insertions(+), 1 deletion(-)
->>
->> diff --git a/Documentation/dev-tools/kselftest.rst b/Documentation/dev-tools/kselftest.rst
->> index a833ecf12fbc1..ee6467ca8293f 100644
->> --- a/Documentation/dev-tools/kselftest.rst
->> +++ b/Documentation/dev-tools/kselftest.rst
->> @@ -208,6 +208,14 @@ In general, the rules for selftests are
->>   Contributing new tests (details)
->>   ================================
->>   
->> + * In your Makefile, use facilities from lib.mk by including it instead of
->> +   reinventing the wheel. Specify flags and binaries generation flags on
->> +   need basis before including lib.mk. ::
->> +
->> +    CFLAGS = $(KHDR_INCLUDES)
->> +    TEST_GEN_PROGS := close_range_test
->> +    include ../lib.mk
->> +
->>    * Use TEST_GEN_XXX if such binaries or files are generated during
->>      compiling.
->>   
->> @@ -230,13 +238,30 @@ Contributing new tests (details)
->>    * First use the headers inside the kernel source and/or git repo, and then the
->>      system headers.  Headers for the kernel release as opposed to headers
->>      installed by the distro on the system should be the primary focus to be able
->> -   to find regressions.
->> +   to find regressions. Use KHDR_INCLUDES in Makefile to include headers from
->> +   the kernel source.
->>   
->>    * If a test needs specific kernel config options enabled, add a config file in
->>      the test directory to enable them.
->>   
->>      e.g: tools/testing/selftests/android/config
->>   
->> + * Create a .gitignore file inside test directory and add all generated objects
->> +   in it.
->> +
->> + * Add new test name in TARGETS in selftests/Makefile::
->> +
->> +    TARGETS += android
->> +
->> + * All changes should pass::
->> +
->> +    kselftest-{all,install,clean,gen_tar}
->> +    kselftest-{all,install,clean,gen_tar} O=abo_path
->> +    kselftest-{all,install,clean,gen_tar} O=rel_path
->> +    make -C tools/testing/selftests {all,install,clean,gen_tar}
->> +    make -C tools/testing/selftests {all,install,clean,gen_tar} O=abs_path
->> +    make -C tools/testing/selftests {all,install,clean,gen_tar} O=rel_path
->> +
->>   Test Module
->>   ===========
->>   
-> 
+Thanks for your review :)
 
-The change looks good to me. I am catching up on patch backlog after the
-merge window and vacation. I can take this through kselftest or if it
-goes through doc tree - here is my
+>
+> On Tue, Jun 07, 2022 at 03:43:58PM +0200, Ricardo Ribalda wrote:
+> > UVC 1.5 class defines 4 values for this control on:
+> > 4.2.2.3.6 Power Line Frequency Control
+> >
+> > Add the missing value when the uvc version is 1.5.
+> >
+> > Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+> > ---
+> >  drivers/media/usb/uvc/uvc_ctrl.c | 67 ++++++++++++++++++++++++++------
+> >  1 file changed, 55 insertions(+), 12 deletions(-)
+> >
+> > diff --git a/drivers/media/usb/uvc/uvc_ctrl.c b/drivers/media/usb/uvc/uvc_ctrl.c
+> > index 0e78233fc8a0..f9d4ac81e62f 100644
+> > --- a/drivers/media/usb/uvc/uvc_ctrl.c
+> > +++ b/drivers/media/usb/uvc/uvc_ctrl.c
+> > @@ -362,12 +362,19 @@ static const u32 uvc_control_classes[] = {
+> >       V4L2_CID_USER_CLASS,
+> >  };
+> >
+> > -static const struct uvc_menu_info power_line_frequency_controls[] = {
+> > +static const struct uvc_menu_info power_line_frequency_controls_uvc11[] = {
+> >       { 0, "Disabled" },
+> >       { 1, "50 Hz" },
+> >       { 2, "60 Hz" },
+> >  };
+>
+> Let's drop this, and ...
+>
+> >
+> > +static const struct uvc_menu_info power_line_frequency_controls_uvc15[] = {
+>
+> ... rename this to power_line_frequency_controls, and ...
+>
+> > +     { 0, "Disabled" },
+> > +     { 1, "50 Hz" },
+> > +     { 2, "60 Hz" },
+> > +     { 3, "Auto" },
+> > +};
+> > +
+> >  static const struct uvc_menu_info exposure_auto_controls[] = {
+> >       { 2, "Auto Mode" },
+> >       { 1, "Manual Mode" },
+> > @@ -504,17 +511,6 @@ static const struct uvc_control_mapping uvc_ctrl_mappings[] = {
+> >               .v4l2_type      = V4L2_CTRL_TYPE_INTEGER,
+> >               .data_type      = UVC_CTRL_DATA_TYPE_UNSIGNED,
+> >       },
+> > -     {
+> > -             .id             = V4L2_CID_POWER_LINE_FREQUENCY,
+> > -             .entity         = UVC_GUID_UVC_PROCESSING,
+> > -             .selector       = UVC_PU_POWER_LINE_FREQUENCY_CONTROL,
+> > -             .size           = 2,
+> > -             .offset         = 0,
+> > -             .v4l2_type      = V4L2_CTRL_TYPE_MENU,
+> > -             .data_type      = UVC_CTRL_DATA_TYPE_ENUM,
+> > -             .menu_info      = power_line_frequency_controls,
+> > -             .menu_count     = ARRAY_SIZE(power_line_frequency_controls),
+> > -     },
+> >       {
+> >               .id             = V4L2_CID_HUE_AUTO,
+> >               .entity         = UVC_GUID_UVC_PROCESSING,
+> > @@ -730,6 +726,32 @@ static const struct uvc_control_mapping uvc_ctrl_mappings[] = {
+> >       },
+> >  };
+> >
+> > +static const
+> > +struct uvc_control_mapping power_line_mapping_uvc11 = {
+> > +     .id             = V4L2_CID_POWER_LINE_FREQUENCY,
+> > +     .entity         = UVC_GUID_UVC_PROCESSING,
+> > +     .selector       = UVC_PU_POWER_LINE_FREQUENCY_CONTROL,
+> > +     .size           = 2,
+> > +     .offset         = 0,
+> > +     .v4l2_type      = V4L2_CTRL_TYPE_MENU,
+> > +     .data_type      = UVC_CTRL_DATA_TYPE_ENUM,
+> > +     .menu_info      = power_line_frequency_controls_uvc11,
+> > +     .menu_count     = ARRAY_SIZE(power_line_frequency_controls_uvc11),
+>
+> ... use
+>
+>         .menu_count     = ARRAY_SIZE(power_line_frequency_controls) - 1,
+>
+> here. It will avoid duplicating the common menu items.
+>
+> > +};
+> > +
+> > +static const
+> > +struct uvc_control_mapping power_line_mapping_uvc15 = {
+>
+> This holds on a single line (and same for uvc11).
+>
+> > +     .id             = V4L2_CID_POWER_LINE_FREQUENCY,
+> > +     .entity         = UVC_GUID_UVC_PROCESSING,
+> > +     .selector       = UVC_PU_POWER_LINE_FREQUENCY_CONTROL,
+> > +     .size           = 2,
+> > +     .offset         = 0,
+> > +     .v4l2_type      = V4L2_CTRL_TYPE_MENU,
+> > +     .data_type      = UVC_CTRL_DATA_TYPE_ENUM,
+> > +     .menu_info      = power_line_frequency_controls_uvc15,
+> > +     .menu_count     = ARRAY_SIZE(power_line_frequency_controls_uvc15),
+> > +};
+>
+> How about turning those two into arrays (named uvc_ctrl_mappings_uvc11
+> and uvc_ctrl_mappings_uvc15) ? uvc_ctrl_init_ctrl() would first loop
+> over uvc_ctrl_mappings, and then over the version-specific arrays. This
+> would ease support of further version-specific controls.
+>
 
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+I like the idea, but in this particular case, we have to add a third
+value for limited_powerline, which defeats the purpose :(.
 
-thanks,
--- Shuah
+What about  something like this:
+https://git.kernel.org/pub/scm/linux/kernel/git/ribalda/linux.git/commit/?h=uvc-powerline-v4&id=f1ad7c4d8552843c785d4a22bba233d21f3aed45
+
+Basically, leave an array with all the powerline definitions
+(Disabled, 50,  60 and auto), and then hack around the index and
+sizes.
+
+
+> > +
+> >  /* ------------------------------------------------------------------------
+> >   * Utility functions
+> >   */
+> > @@ -2376,6 +2398,22 @@ static void uvc_ctrl_prune_entity(struct uvc_device *dev,
+> >       }
+> >  }
+> >
+> > +/*
+> > + * The powerline control has different valid values depending on the
+> > + * uvc version.
+> > + */
+> > +static void uvc_ctrl_init_powerline(struct uvc_video_chain *chain,
+> > +                                 struct uvc_control *ctrl)
+> > +{
+> > +     if (chain->dev->uvc_version < 0x0150) {
+> > +             __uvc_ctrl_add_mapping(chain, ctrl,
+> > +                                    &power_line_mapping_uvc11);
+> > +             return;
+> > +     }
+> > +
+> > +     __uvc_ctrl_add_mapping(chain, ctrl, &power_line_mapping_uvc15);
+> > +}
+> > +
+> >  /*
+> >   * Add control information and hardcoded stock control mappings to the given
+> >   * device.
+> > @@ -2385,6 +2423,7 @@ static void uvc_ctrl_init_ctrl(struct uvc_video_chain *chain,
+> >  {
+> >       const struct uvc_control_info *info = uvc_ctrls;
+> >       const struct uvc_control_info *iend = info + ARRAY_SIZE(uvc_ctrls);
+> > +     static const u8 uvc_processing_guid[16] = UVC_GUID_UVC_PROCESSING;
+>
+> Please move this first, the driver declares static variables before the
+> non-static ones.
+Ack
+>
+> >       const struct uvc_control_mapping *mapping = uvc_ctrl_mappings;
+> >       const struct uvc_control_mapping *mend =
+> >               mapping + ARRAY_SIZE(uvc_ctrl_mappings);
+> > @@ -2415,6 +2454,10 @@ static void uvc_ctrl_init_ctrl(struct uvc_video_chain *chain,
+> >       if (!ctrl->initialized)
+> >               return;
+> >
+> > +     if (uvc_entity_match_guid(ctrl->entity, uvc_processing_guid) &&
+> > +         ctrl->info.selector == UVC_PU_POWER_LINE_FREQUENCY_CONTROL)
+> > +             return uvc_ctrl_init_powerline(chain, ctrl);
+> > +
+> >       for (; mapping < mend; ++mapping) {
+> >               if (uvc_entity_match_guid(ctrl->entity, mapping->entity) &&
+> >                   ctrl->info.selector == mapping->selector)
+>
+> --
+> Regards,
+>
+> Laurent Pinchart
+
+
+
+-- 
+Ricardo Ribalda
