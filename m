@@ -2,95 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 635EDCCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:59:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 015C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:00:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344639AbiFGP7K (ORCPT
+        id S1344691AbiFGQAv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 11:59:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46842 "EHLO
+        Tue, 7 Jun 2022 12:00:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344674AbiFGP67 (ORCPT
+        with ESMTP id S1344874AbiFGQAk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 11:58:59 -0400
-Received: from relayaws-01.paragon-software.com (relayaws-01.paragon-software.com [35.157.23.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74ED5DE4E
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:58:56 -0700 (PDT)
-Received: from relayfre-01.paragon-software.com (unknown [172.30.72.12])
-        by relayaws-01.paragon-software.com (Postfix) with ESMTPS id 5FA5B255B;
-        Tue,  7 Jun 2022 15:58:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paragon-software.com; s=mail; t=1654617497;
-        bh=gyeTbiR+uUhE29A+RGuh6i8rdvYUlUvUGCn1xr1k4cs=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=E9D9zVOYRdWoge0CnkXB7UdtfsA3h/RovelUsR30YXMLNOThcmNY5zWXcevyMIw/Q
-         3eCOD2nG2R+3aLqY8ZGWKCJx+9DiwE0RBwNrdkR2D3GjubNIVFOvyxH48FP0tMAON3
-         Uv+Gj6A4iEawWW7EDTGe4C0v6StfNftJ4zYbhw8s=
-Received: from dlg2.mail.paragon-software.com (vdlg-exch-02.paragon-software.com [172.30.1.105])
-        by relayfre-01.paragon-software.com (Postfix) with ESMTPS id 6C7481D0B;
-        Tue,  7 Jun 2022 15:58:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paragon-software.com; s=mail; t=1654617534;
-        bh=gyeTbiR+uUhE29A+RGuh6i8rdvYUlUvUGCn1xr1k4cs=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=pqBlGqW6xS6n3BWqW/81M589K6ALyy85JH0UEAahiZxABf8Z0GwvzPioqJXHZnbLI
-         clBXZyjEH412XG3NHfnqLNEBpR0dpNBqqz6lBPwotKWopecHCbnZ1gcz+qxKBVFj/o
-         QvS+0J5c+2tkBgkcEFk+AsJMy1fcsjBc5QCxwimE=
-Received: from [172.30.8.65] (172.30.8.65) by
- vdlg-exch-02.paragon-software.com (172.30.1.105) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Tue, 7 Jun 2022 18:58:54 +0300
-Message-ID: <4f66239a-2209-6375-95ad-e8be0d28cf85@paragon-software.com>
-Date:   Tue, 7 Jun 2022 18:58:53 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] fs/ntfs3: Remove a useless test
-Content-Language: en-US
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-CC:     <ntfs3@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>
-References: <ade97ac1a1506fd322b008bdf8c24f0fb01b02a0.1640261993.git.christophe.jaillet@wanadoo.fr>
-From:   Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-In-Reply-To: <ade97ac1a1506fd322b008bdf8c24f0fb01b02a0.1640261993.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.30.8.65]
-X-ClientProxiedBy: vdlg-exch-02.paragon-software.com (172.30.1.105) To
- vdlg-exch-02.paragon-software.com (172.30.1.105)
+        Tue, 7 Jun 2022 12:00:40 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FFAB8BC9;
+        Tue,  7 Jun 2022 09:00:39 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 9EA0D5C0211;
+        Tue,  7 Jun 2022 12:00:37 -0400 (EDT)
+Received: from imap47 ([10.202.2.97])
+  by compute2.internal (MEProxy); Tue, 07 Jun 2022 12:00:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+         h=cc:cc:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1654617637; x=1654704037; bh=Ff
+        6e/dqI0fSDW23eseMba0aeJUA9DeTZ9JjgyeGwyuY=; b=UrfpmeBgfU5s4Ap0P0
+        tnTV4+V5xTSfQW0ZQNo9je8ioCmPf5Al7xIs0tka4tY0g4QPxkhvgvx26U8Si5AN
+        VojnAGad5jZJDSezcU0YqQLYOcGRk55sRjaGrj5NU0HxDyureIA6WD1ca+0U0dd4
+        yjeUlxZjrRkx+A5Z6Lmp+VTqm37cCgkf2XtecMlZHudWJi6M1Fgmg9zKziMFC8FZ
+        dIAa8VQnnfs3Fb1FjO71l98hFzsqhyFKO4Cng5Raau+eKsus/cN1zfg/f4adj3fA
+        kTen1NgaBpA1ESnD1EhcG0dKF9AVwXoOhcuuZvtZT9AiUIH9DhFIe8O0FKQXe7pE
+        2aKQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; t=1654617637; x=1654704037; bh=Ff6e/dqI0fSDW23eseMba0aeJUA9
+        DeTZ9JjgyeGwyuY=; b=Mv5ZoVwjHHz5OfeXfutmFGjBC0mezFJo3zV/Qxat0Yll
+        3oyBs8lR0RmCKPzNNNTnaQXMSDRr6DO4NY6rxJy/ldEdHp+xvWVK1O5qORw4otXI
+        0GIUucfmBSPguf7nQfBXHW+BLbebq2aI/BqjmgFZTaOSV7+3fPnCLj5gk7pWjUnV
+        5CRBvNTHh9v2EOcBdYWJ0XuANSTzxa2395Iap5JRIgvr51b/Y4RH87zO7V9CeApR
+        7VWkoaMAuD65nn8+LTw6Q2a/qKOO9TT1jqNUF5p6kuU/KJU0NrhFJjwCFQrdyPlB
+        fWfJCugveCV/Rqj9hnCBncSlvuKxutK6RPnbmO4olg==
+X-ME-Sender: <xms:JHafYpaoE8SVZiOCunCp7iJ7vmt2I6DVBBWALlPCtlUFPy2KnQU9LA>
+    <xme:JHafYgaoE-wyjZM5Hr8pNnCEwvX2GWjnM84I8eLYuVXTO5DK4KpPnFqQ1auIxv733
+    fmCbqeusesDo2M1Kek>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgleeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedfufhv
+    vghnucfrvghtvghrfdcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrf
+    grthhtvghrnhepleevgfegffehvedtieevhfekheeftedtjeetudevieehveevieelgffh
+    ieevieeunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    epshhvvghnsehsvhgvnhhpvghtvghrrdguvghv
+X-ME-Proxy: <xmx:JHafYr9GPD67vVvs_lV2RX-3BETMFUVB8TbfDMaROOzBPW8huvnyzg>
+    <xmx:JHafYnolMcbbvej20IRRKUduC7s3YpprNbrHe2t5ACQdq-K0Z0k-6Q>
+    <xmx:JHafYkpVVB_Owy2uHGy0nAIHBB8HUbhCDatMdTTVVRlbMr3BrDRmbw>
+    <xmx:JXafYtkpz_zIVZVcLHdLswDU4gXWxcm8E5LHTj7ZCECOPZIvfH7ORQ>
+Feedback-ID: i51094778:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id A684FA6007E; Tue,  7 Jun 2022 12:00:36 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-592-g7095c13f5a-fm-20220603.004-g7095c13f
+Mime-Version: 1.0
+Message-Id: <6fc94e84-a94e-49a0-9cce-2478e08b63fd@www.fastmail.com>
+In-Reply-To: <20220606212230.1360617-1-robh@kernel.org>
+References: <20220606212230.1360617-1-robh@kernel.org>
+Date:   Tue, 07 Jun 2022 18:00:36 +0200
+From:   "Sven Peter" <sven@svenpeter.dev>
+To:     "Rob Herring" <robh@kernel.org>,
+        "Hector Martin" <marcan@marcan.st>,
+        "Alyssa Rosenzweig" <alyssa@rosenzweig.io>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: nvme: apple,nvme-ans: Drop 'maxItems' from
+ 'apple,sart'
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Jun 6, 2022, at 23:22, Rob Herring wrote:
+> A 'phandle' type is always a single cell, so 'maxItems: 1' is redundant.
+>
+> Fixes: 82b96552f15a ("dt-bindings: nvme: Add Apple ANS NVMe")
+> Signed-off-by: Rob Herring <robh@kernel.org>
 
-
-On 12/23/21 15:20, Christophe JAILLET wrote:
-> 'new_free' has just been allocated by kmalloc() and is known to be not
-> NULL.
-> So this pointer can't be equal to a previous memory allocation, or there
-> would be trouble in paradise.
-> 
-> Axe the always true test and make the code more readable.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
->   fs/ntfs3/bitmap.c | 4 +---
->   1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/fs/ntfs3/bitmap.c b/fs/ntfs3/bitmap.c
-> index aa184407520f..e3b5680fd516 100644
-> --- a/fs/ntfs3/bitmap.c
-> +++ b/fs/ntfs3/bitmap.c
-> @@ -1333,9 +1333,7 @@ int wnd_extend(struct wnd_bitmap *wnd, size_t new_bits)
->   		if (!new_free)
->   			return -ENOMEM;
->   
-> -		if (new_free != wnd->free_bits)
-> -			memcpy(new_free, wnd->free_bits,
-> -			       wnd->nwnd * sizeof(short));
-> +		memcpy(new_free, wnd->free_bits, wnd->nwnd * sizeof(short));
->   		memset(new_free + wnd->nwnd, 0,
->   		       (new_wnd - wnd->nwnd) * sizeof(short));
->   		kfree(wnd->free_bits);
-
-Thanks for patch, applied!
+Reviewed-by: Sven Peter <sven@svenpeter.dev>
