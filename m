@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB5CAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:13:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BACB8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:14:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379860AbiFGVN5 (ORCPT
+        id S1379886AbiFGVOB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:13:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34302 "EHLO
+        Tue, 7 Jun 2022 17:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376741AbiFGURF (ORCPT
+        with ESMTP id S1376787AbiFGURP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:17:05 -0400
+        Tue, 7 Jun 2022 16:17:15 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D68178551;
-        Tue,  7 Jun 2022 11:29:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685841D01D9;
+        Tue,  7 Jun 2022 11:29:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FABE60906;
-        Tue,  7 Jun 2022 18:29:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42531C385A5;
-        Tue,  7 Jun 2022 18:29:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C97D0611B9;
+        Tue,  7 Jun 2022 18:29:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEBD0C385A2;
+        Tue,  7 Jun 2022 18:29:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626590;
-        bh=ehigRDV6aEkOO9FKdsssfVJZiCfIdcxMdf6rVapXAdM=;
+        s=korg; t=1654626593;
+        bh=Gp+fKIouTkVwtbPlTH5fr09sqfLTT1i0CBpHw4HfJpk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IttNesU8sboTU0FX+nCtoJelAbMNC5SvA1iA4FyLVWep7MqswO+ynk7tXv5TJHiKX
-         fvpFk174iuRTQmM0NkhhlLFjUV/pycuKPhstBKZnlMO6UpsMiMGbXxOeS+1wCaTje3
-         RhHfvVbY99XnbLQLWzW5As9XnGhaDNY7eSW4zB2c=
+        b=hhJXocXpb6nDVho3/ugKEZxm+fpFyCdovd2PMapi2RPLI9iOoVRlwE7ryNbIGvID2
+         7O7vEOhSXMFl+m2sMjOy/vgewLH9BdSZH1Cx9oeAlJzmgNM0Jv1VgFpw5w2PY2U74x
+         cd/pwVgIJTcE3Czz+H7UzxdNJR5PIpPqU9AcQWu8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Yihang Li <liyihang6@hisilicon.com>,
+        Xiang Chen <chenxiang66@hisilicon.com>,
+        John Garry <john.garry@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 382/772] media: hantro: HEVC: Fix tile info buffer value computation
-Date:   Tue,  7 Jun 2022 18:59:34 +0200
-Message-Id: <20220607165000.272882696@linuxfoundation.org>
+Subject: [PATCH 5.17 427/772] scsi: hisi_sas: Fix rescan after deleting a disk
+Date:   Tue,  7 Jun 2022 19:00:19 +0200
+Message-Id: <20220607165001.586716528@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,37 +52,139 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+From: John Garry <john.garry@huawei.com>
 
-[ Upstream commit d7f4149df818463c1d7094b35db6ebd79f46c7bd ]
+[ Upstream commit e9dedc13bb11bc553754abecb322e5e41d1b4fef ]
 
-Use pps->column_width_minus1[j] + 1 as value for the tile info buffer
-instead of pps->column_width_minus1[j + 1].
-The patch fixes DBLK_E_VIXS_2, DBLK_F_VIXS_2, DBLK_G_VIXS_2,
-SAO_B_MediaTek_5, TILES_A_Cisco_2 and TILES_B_Cisco_1 tests in fluster.
+Removing an ATA device via sysfs means that the device may not be found
+through re-scanning:
 
-Fixes: cb5dd5a0fa51 ("media: hantro: Introduce G2/HEVC decoder")
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+root@ubuntu:/home/john# lsscsi
+[0:0:0:0] disk SanDisk LT0200MO P404 /dev/sda
+[0:0:1:0] disk ATA HGST HUS724040AL A8B0 /dev/sdb
+[0:0:8:0] enclosu 12G SAS Expander RevB -
+root@ubuntu:/home/john# echo 1 > /sys/block/sdb/device/delete
+root@ubuntu:/home/john# echo "- - -" > /sys/class/scsi_host/host0/scan
+root@ubuntu:/home/john# lsscsi
+[0:0:0:0] disk SanDisk LT0200MO P404 /dev/sda
+[0:0:8:0] enclosu 12G SAS Expander RevB -
+root@ubuntu:/home/john#
+
+The problem is that the rescan of the device may conflict with the device
+in being re-initialized, as follows:
+
+ - In the rescan we call hisi_sas_slave_alloc() in store_scan() ->
+   sas_user_scan() -> [__]scsi_scan_target() -> scsi_probe_and_add_lunc()
+   -> scsi_alloc_sdev() -> hisi_sas_slave_alloc() -> hisi_sas_init_device()
+   In hisi_sas_init_device() we issue an IT nexus reset for ATA devices
+
+ - That IT nexus causes the remote PHY to go down and this triggers a bcast
+   event
+
+ - In parallel libsas processes the bcast event, finds that the phy is down
+   and marks the device as gone
+
+The hard reset issued in hisi_sas_init_device() is unncessary - as
+described in the code comment - so remove it. Also set dev status as
+HISI_SAS_DEV_NORMAL as the hisi_sas_init_device() call.
+
+Link: https://lore.kernel.org/r/1652354134-171343-4-git-send-email-john.garry@huawei.com
+Fixes: 36c6b7613ef1 ("scsi: hisi_sas: Initialise devices in .slave_alloc callback")
+Tested-by: Yihang Li <liyihang6@hisilicon.com>
+Reviewed-by: Xiang Chen <chenxiang66@hisilicon.com>
+Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/hisi_sas/hisi_sas_main.c | 47 ++++++++++-----------------
+ 1 file changed, 18 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-index fab326389261..13602e051a06 100644
---- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-+++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-@@ -60,7 +60,7 @@ static void prepare_tile_info_buffer(struct hantro_ctx *ctx)
- 					no_chroma = 1;
- 				for (j = 0, tmp_w = 0; j < num_tile_cols - 1; j++) {
- 					tmp_w += pps->column_width_minus1[j] + 1;
--					*p++ = pps->column_width_minus1[j + 1];
-+					*p++ = pps->column_width_minus1[j] + 1;
- 					*p++ = h;
- 					if (i == 0 && h == 1 && ctb_size == 16)
- 						no_chroma = 1;
+diff --git a/drivers/scsi/hisi_sas/hisi_sas_main.c b/drivers/scsi/hisi_sas/hisi_sas_main.c
+index ebf5ec38891b..2fbeb151aadb 100644
+--- a/drivers/scsi/hisi_sas/hisi_sas_main.c
++++ b/drivers/scsi/hisi_sas/hisi_sas_main.c
+@@ -680,8 +680,6 @@ static int hisi_sas_init_device(struct domain_device *device)
+ 	struct hisi_sas_tmf_task tmf_task;
+ 	int retry = HISI_SAS_DISK_RECOVER_CNT;
+ 	struct hisi_hba *hisi_hba = dev_to_hisi_hba(device);
+-	struct device *dev = hisi_hba->dev;
+-	struct sas_phy *local_phy;
+ 
+ 	switch (device->dev_type) {
+ 	case SAS_END_DEVICE:
+@@ -702,30 +700,18 @@ static int hisi_sas_init_device(struct domain_device *device)
+ 	case SAS_SATA_PM_PORT:
+ 	case SAS_SATA_PENDING:
+ 		/*
+-		 * send HARD RESET to clear previous affiliation of
+-		 * STP target port
++		 * If an expander is swapped when a SATA disk is attached then
++		 * we should issue a hard reset to clear previous affiliation
++		 * of STP target port, see SPL (chapter 6.19.4).
++		 *
++		 * However we don't need to issue a hard reset here for these
++		 * reasons:
++		 * a. When probing the device, libsas/libata already issues a
++		 * hard reset in sas_probe_sata() -> ata_sas_async_probe().
++		 * Note that in hisi_sas_debug_I_T_nexus_reset() we take care
++		 * to issue a hard reset by checking the dev status (== INIT).
++		 * b. When resetting the controller, this is simply unnecessary.
+ 		 */
+-		local_phy = sas_get_local_phy(device);
+-		if (!scsi_is_sas_phy_local(local_phy) &&
+-		    !test_bit(HISI_SAS_RESETTING_BIT, &hisi_hba->flags)) {
+-			unsigned long deadline = ata_deadline(jiffies, 20000);
+-			struct sata_device *sata_dev = &device->sata_dev;
+-			struct ata_host *ata_host = sata_dev->ata_host;
+-			struct ata_port_operations *ops = ata_host->ops;
+-			struct ata_port *ap = sata_dev->ap;
+-			struct ata_link *link;
+-			unsigned int classes;
+-
+-			ata_for_each_link(link, ap, EDGE)
+-				rc = ops->hardreset(link, &classes,
+-						    deadline);
+-		}
+-		sas_put_local_phy(local_phy);
+-		if (rc) {
+-			dev_warn(dev, "SATA disk hardreset fail: %d\n", rc);
+-			return rc;
+-		}
+-
+ 		while (retry-- > 0) {
+ 			rc = hisi_sas_softreset_ata_disk(device);
+ 			if (!rc)
+@@ -741,15 +727,19 @@ static int hisi_sas_init_device(struct domain_device *device)
+ 
+ int hisi_sas_slave_alloc(struct scsi_device *sdev)
+ {
+-	struct domain_device *ddev;
++	struct domain_device *ddev = sdev_to_domain_dev(sdev);
++	struct hisi_sas_device *sas_dev = ddev->lldd_dev;
+ 	int rc;
+ 
+ 	rc = sas_slave_alloc(sdev);
+ 	if (rc)
+ 		return rc;
+-	ddev = sdev_to_domain_dev(sdev);
+ 
+-	return hisi_sas_init_device(ddev);
++	rc = hisi_sas_init_device(ddev);
++	if (rc)
++		return rc;
++	sas_dev->dev_status = HISI_SAS_DEV_NORMAL;
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(hisi_sas_slave_alloc);
+ 
+@@ -799,7 +789,6 @@ static int hisi_sas_dev_found(struct domain_device *device)
+ 	dev_info(dev, "dev[%d:%x] found\n",
+ 		sas_dev->device_id, sas_dev->dev_type);
+ 
+-	sas_dev->dev_status = HISI_SAS_DEV_NORMAL;
+ 	return 0;
+ 
+ err_out:
 -- 
 2.35.1
 
