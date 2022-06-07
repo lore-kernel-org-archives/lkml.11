@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38355C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:28:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFB0FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:28:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381790AbiFGW2h (ORCPT
+        id S1381959AbiFGW2o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:28:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55246 "EHLO
+        Tue, 7 Jun 2022 18:28:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381077AbiFGVRS (ORCPT
+        with ESMTP id S1378479AbiFGVTC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:17:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4263BC1EC8;
-        Tue,  7 Jun 2022 11:58:19 -0700 (PDT)
+        Tue, 7 Jun 2022 17:19:02 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E818322445B;
+        Tue,  7 Jun 2022 11:59:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A1D261768;
-        Tue,  7 Jun 2022 18:58:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17749C34115;
-        Tue,  7 Jun 2022 18:58:16 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6552CCE247C;
+        Tue,  7 Jun 2022 18:59:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B74AC34115;
+        Tue,  7 Jun 2022 18:59:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628297;
-        bh=Chb73ZYLXdHRVkDpmNtakm3BbqknUBSfsjD/jO4aXgc=;
+        s=korg; t=1654628349;
+        bh=xTzq9ap8H1ICIVQA5jMVvngsvaOqHvDOplS/ac4gl0k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rppU1N1vDvpJw41lWxSmD+jRDZw8Gy8Neuz1+0qdEsbfORJanTcG1JKKtKPtqDQEa
-         gt4pjyaY7R0tCdIt6PMi5AVMnvZjiuy+TQ7NoUbHpZhrJfABsF2Ed9iJGUIGfKnNfM
-         YM+FzVBVJ4WZ6WlndDUbH/e1J3CY2u7B+RfUydCA=
+        b=WIM32K0rdFBwyTgb5Il7mZYdtZemxx93fo0MSthl6NB9n4IkvI4pf5kTSfbtzEgIJ
+         86XUgObFJALV+I2/nDmyNyN6sNfxHEjmopO/bxSLululXf6f7VAwiSysAnQTDYHkq0
+         X3qfCfhTo3t+qN04NcmoXB5+efQk/1yZ3XSWCIcM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuanhong Guo <gch981213@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Davide Caratti <dcaratti@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 277/879] mtd: spinand: gigadevice: fix Quad IO for GD5F1GQ5UExxG
-Date:   Tue,  7 Jun 2022 18:56:35 +0200
-Message-Id: <20220607165010.889114213@linuxfoundation.org>
+Subject: [PATCH 5.18 298/879] mptcp: reset the packet scheduler on incoming MP_PRIO
+Date:   Tue,  7 Jun 2022 18:56:56 +0200
+Message-Id: <20220607165011.497008039@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,52 +52,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuanhong Guo <gch981213@gmail.com>
+From: Paolo Abeni <pabeni@redhat.com>
 
-[ Upstream commit a4f9dd55c5e1bb951db6f1dee20e62e0103f3438 ]
+[ Upstream commit 43f5b111d1ff16161ce60e19aeddb999cb6f0b01 ]
 
-Read From Cache Quad IO (EBH) uses 2 dummy bytes on this chip according
-to page 23 of the datasheet[0].
+When an incoming MP_PRIO option changes the backup
+status of any subflow, we need to reset the packet
+scheduler status, or the next send could keep using
+the previously selected subflow, without taking in account
+the new priorities.
 
-[0]: https://www.gigadevice.com/datasheet/gd5f1gq5xexxg/
-
-Fixes: 469b99248985 ("mtd: spinand: gigadevice: Support GD5F1GQ5UExxG")
-Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220320100001.247905-2-gch981213@gmail.com
+Reported-by: Davide Caratti <dcaratti@redhat.com>
+Fixes: 40453a5c61f4 ("mptcp: add the incoming MP_PRIO support")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/spi/gigadevice.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ net/mptcp/pm.c       | 19 +++++++++++++++----
+ net/mptcp/protocol.c |  2 ++
+ net/mptcp/protocol.h |  1 +
+ 3 files changed, 18 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/mtd/nand/spi/gigadevice.c b/drivers/mtd/nand/spi/gigadevice.c
-index 1dd1c5898093..da77ab20296e 100644
---- a/drivers/mtd/nand/spi/gigadevice.c
-+++ b/drivers/mtd/nand/spi/gigadevice.c
-@@ -39,6 +39,14 @@ static SPINAND_OP_VARIANTS(read_cache_variants_f,
- 		SPINAND_PAGE_READ_FROM_CACHE_OP_3A(true, 0, 1, NULL, 0),
- 		SPINAND_PAGE_READ_FROM_CACHE_OP_3A(false, 0, 0, NULL, 0));
+diff --git a/net/mptcp/pm.c b/net/mptcp/pm.c
+index aa51b100e033..4d6a61acc487 100644
+--- a/net/mptcp/pm.c
++++ b/net/mptcp/pm.c
+@@ -261,14 +261,25 @@ void mptcp_pm_rm_addr_received(struct mptcp_sock *msk,
+ 	spin_unlock_bh(&pm->lock);
+ }
  
-+static SPINAND_OP_VARIANTS(read_cache_variants_1gq5,
-+		SPINAND_PAGE_READ_FROM_CACHE_QUADIO_OP(0, 2, NULL, 0),
-+		SPINAND_PAGE_READ_FROM_CACHE_X4_OP(0, 1, NULL, 0),
-+		SPINAND_PAGE_READ_FROM_CACHE_DUALIO_OP(0, 1, NULL, 0),
-+		SPINAND_PAGE_READ_FROM_CACHE_X2_OP(0, 1, NULL, 0),
-+		SPINAND_PAGE_READ_FROM_CACHE_OP(true, 0, 1, NULL, 0),
-+		SPINAND_PAGE_READ_FROM_CACHE_OP(false, 0, 1, NULL, 0));
-+
- static SPINAND_OP_VARIANTS(write_cache_variants,
- 		SPINAND_PROG_LOAD_X4(true, 0, NULL, 0),
- 		SPINAND_PROG_LOAD(true, 0, NULL, 0));
-@@ -339,7 +347,7 @@ static const struct spinand_info gigadevice_spinand_table[] = {
- 		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0x51),
- 		     NAND_MEMORG(1, 2048, 128, 64, 1024, 20, 1, 1, 1),
- 		     NAND_ECCREQ(4, 512),
--		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
-+		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants_1gq5,
- 					      &write_cache_variants,
- 					      &update_cache_variants),
- 		     SPINAND_HAS_QE_BIT,
+-void mptcp_pm_mp_prio_received(struct sock *sk, u8 bkup)
++void mptcp_pm_mp_prio_received(struct sock *ssk, u8 bkup)
+ {
+-	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
++	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
++	struct sock *sk = subflow->conn;
++	struct mptcp_sock *msk;
+ 
+ 	pr_debug("subflow->backup=%d, bkup=%d\n", subflow->backup, bkup);
+-	subflow->backup = bkup;
++	msk = mptcp_sk(sk);
++	if (subflow->backup != bkup) {
++		subflow->backup = bkup;
++		mptcp_data_lock(sk);
++		if (!sock_owned_by_user(sk))
++			msk->last_snd = NULL;
++		else
++			__set_bit(MPTCP_RESET_SCHEDULER,  &msk->cb_flags);
++		mptcp_data_unlock(sk);
++	}
+ 
+-	mptcp_event(MPTCP_EVENT_SUB_PRIORITY, mptcp_sk(subflow->conn), sk, GFP_ATOMIC);
++	mptcp_event(MPTCP_EVENT_SUB_PRIORITY, msk, ssk, GFP_ATOMIC);
+ }
+ 
+ void mptcp_pm_mp_fail_received(struct sock *sk, u64 fail_seq)
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 2a9335ce5df1..8f54293c1d88 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -3102,6 +3102,8 @@ static void mptcp_release_cb(struct sock *sk)
+ 			__mptcp_set_connected(sk);
+ 		if (__test_and_clear_bit(MPTCP_ERROR_REPORT, &msk->cb_flags))
+ 			__mptcp_error_report(sk);
++		if (__test_and_clear_bit(MPTCP_RESET_SCHEDULER, &msk->cb_flags))
++			msk->last_snd = NULL;
+ 	}
+ 
+ 	__mptcp_update_rmem(sk);
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 5655a63aa6a8..9ac63fa4866e 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -124,6 +124,7 @@
+ #define MPTCP_RETRANSMIT	4
+ #define MPTCP_FLUSH_JOIN_LIST	5
+ #define MPTCP_CONNECTED		6
++#define MPTCP_RESET_SCHEDULER	7
+ 
+ static inline bool before64(__u64 seq1, __u64 seq2)
+ {
 -- 
 2.35.1
 
