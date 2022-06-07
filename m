@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D77BC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BA04C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:21:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380435AbiFGVV1 (ORCPT
+        id S1380335AbiFGVVV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:21:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51686 "EHLO
+        Tue, 7 Jun 2022 17:21:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359664AbiFGUZJ (ORCPT
+        with ESMTP id S1359553AbiFGUZE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:25:09 -0400
+        Tue, 7 Jun 2022 16:25:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A1F1D6864;
-        Tue,  7 Jun 2022 11:32:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12551D5AA1;
+        Tue,  7 Jun 2022 11:32:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F5C3612E9;
-        Tue,  7 Jun 2022 18:32:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B231C341C4;
-        Tue,  7 Jun 2022 18:32:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1ED561501;
+        Tue,  7 Jun 2022 18:32:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02974C385A5;
+        Tue,  7 Jun 2022 18:32:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626743;
-        bh=/SXHeppL4FHWK2iK+Q7roRMlKdDXea05upheVTxrlhc=;
+        s=korg; t=1654626735;
+        bh=GMXBlVwOGVOOay5UPM87/qJvud8BFxVOjea5/lZDl7A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mMWlDCd+uQwU5Yk+AvSV+zYDcddeBNR4ZS6Tiww6TwNAk6uljobPGW4Spc2PyCAyR
-         tKAS55XHs2fu+DbgJ5a27rL0PYgvvCwzZNePUxH09wgj53znF/aeNiaFi8m6LwdZzV
-         wi2RcguFpJ38dxQKicCI6THZPx3iyvcKtqrGa8cc=
+        b=zJ+yIif3hSq3QP8E6aBIXkWTeSoAkJZVZZbfUC80/VSkxgBcIirDaG6wo8GKQE/oy
+         2LqzVz4JS5lzyeR6g/Bv8NftArhMugv+ECu31Sq22JVJlTTfa7QS1jEdBiletUHZei
+         FqDdWSqEm/0+kp0pmacv4CZiF9gSKEf76BtXrVI0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daisuke Nojiri <dnojiri@chromium.org>,
-        Rob Barnes <robbarnes@google.com>,
-        Rajat Jain <rajatja@google.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Parth Malkan <parthmalkan@google.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
+        stable@vger.kernel.org, Chia-I Wu <olvaffe@gmail.com>,
+        Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 471/772] platform/chrome: Re-introduce cros_ec_cmd_xfer and use it for ioctls
-Date:   Tue,  7 Jun 2022 19:01:03 +0200
-Message-Id: <20220607165002.876040134@linuxfoundation.org>
+Subject: [PATCH 5.17 486/772] drm/msm: simplify gpu_busy callback
+Date:   Tue,  7 Jun 2022 19:01:18 +0200
+Message-Id: <20220607165003.308406947@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -55,142 +50,180 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Chia-I Wu <olvaffe@gmail.com>
 
-[ Upstream commit 57b888ca2541785de2fcb90575b378921919b6c0 ]
+[ Upstream commit 15c411980bacddf294452fd1cf7308b14f3f8c63 ]
 
-Commit 413dda8f2c6f ("platform/chrome: cros_ec_chardev: Use
-cros_ec_cmd_xfer_status helper") inadvertendly changed the userspace ABI.
-Previously, cros_ec ioctls would only report errors if the EC communication
-failed, and otherwise return success and the result of the EC
-communication. An EC command execution failure was reported in the EC
-response field. The above mentioned commit changed this behavior, and the
-ioctl itself would fail. This breaks userspace commands trying to analyze
-the EC command execution error since the actual EC command response is no
-longer reported to userspace.
+Move tracking and busy time calculation to msm_devfreq_get_dev_status.
 
-Fix the problem by re-introducing the cros_ec_cmd_xfer() helper, and use it
-to handle ioctl messages.
-
-Fixes: 413dda8f2c6f ("platform/chrome: cros_ec_chardev: Use cros_ec_cmd_xfer_status helper")
-Cc: Daisuke Nojiri <dnojiri@chromium.org>
-Cc: Rob Barnes <robbarnes@google.com>
-Cc: Rajat Jain <rajatja@google.com>
-Cc: Brian Norris <briannorris@chromium.org>
-Cc: Parth Malkan <parthmalkan@google.com>
-Reviewed-by: Daisuke Nojiri <dnojiri@chromium.org>
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+Signed-off-by: Chia-I Wu <olvaffe@gmail.com>
+Cc: Rob Clark <robdclark@chromium.org>
+Link: https://lore.kernel.org/r/20220416003314.59211-2-olvaffe@gmail.com
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/chrome/cros_ec_chardev.c   |  2 +-
- drivers/platform/chrome/cros_ec_proto.c     | 50 +++++++++++++++++----
- include/linux/platform_data/cros_ec_proto.h |  3 ++
- 3 files changed, 45 insertions(+), 10 deletions(-)
+ drivers/gpu/drm/msm/adreno/a5xx_gpu.c | 19 ++++++----------
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 15 +++++--------
+ drivers/gpu/drm/msm/msm_gpu.h         |  9 +++-----
+ drivers/gpu/drm/msm/msm_gpu_devfreq.c | 32 ++++++++++++++++++++++-----
+ 4 files changed, 41 insertions(+), 34 deletions(-)
 
-diff --git a/drivers/platform/chrome/cros_ec_chardev.c b/drivers/platform/chrome/cros_ec_chardev.c
-index e0bce869c49a..fd33de546aee 100644
---- a/drivers/platform/chrome/cros_ec_chardev.c
-+++ b/drivers/platform/chrome/cros_ec_chardev.c
-@@ -301,7 +301,7 @@ static long cros_ec_chardev_ioctl_xcmd(struct cros_ec_dev *ec, void __user *arg)
- 	}
+diff --git a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
+index 3d28fcf841a6..1e5de1477968 100644
+--- a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
+@@ -1662,28 +1662,23 @@ static struct msm_ringbuffer *a5xx_active_ring(struct msm_gpu *gpu)
+ 	return a5xx_gpu->cur_ring;
+ }
  
- 	s_cmd->command += ec->cmd_offset;
--	ret = cros_ec_cmd_xfer_status(ec->ec_dev, s_cmd);
-+	ret = cros_ec_cmd_xfer(ec->ec_dev, s_cmd);
- 	/* Only copy data to userland if data was received. */
- 	if (ret < 0)
- 		goto exit;
-diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index c4caf2e2de82..ac1419881ff3 100644
---- a/drivers/platform/chrome/cros_ec_proto.c
-+++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -560,22 +560,28 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
- EXPORT_SYMBOL(cros_ec_query_all);
- 
- /**
-- * cros_ec_cmd_xfer_status() - Send a command to the ChromeOS EC.
-+ * cros_ec_cmd_xfer() - Send a command to the ChromeOS EC.
-  * @ec_dev: EC device.
-  * @msg: Message to write.
-  *
-- * Call this to send a command to the ChromeOS EC. This should be used instead of calling the EC's
-- * cmd_xfer() callback directly. It returns success status only if both the command was transmitted
-- * successfully and the EC replied with success status.
-+ * Call this to send a command to the ChromeOS EC. This should be used instead
-+ * of calling the EC's cmd_xfer() callback directly. This function does not
-+ * convert EC command execution error codes to Linux error codes. Most
-+ * in-kernel users will want to use cros_ec_cmd_xfer_status() instead since
-+ * that function implements the conversion.
-  *
-  * Return:
-- * >=0 - The number of bytes transferred
-- * <0 - Linux error code
-+ * >0 - EC command was executed successfully. The return value is the number
-+ *      of bytes returned by the EC (excluding the header).
-+ * =0 - EC communication was successful. EC command execution results are
-+ *      reported in msg->result. The result will be EC_RES_SUCCESS if the
-+ *      command was executed successfully or report an EC command execution
-+ *      error.
-+ * <0 - EC communication error. Return value is the Linux error code.
-  */
--int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
--			    struct cros_ec_command *msg)
-+int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
+-static unsigned long a5xx_gpu_busy(struct msm_gpu *gpu)
++static u64 a5xx_gpu_busy(struct msm_gpu *gpu, unsigned long *out_sample_rate)
  {
--	int ret, mapped;
-+	int ret;
+-	u64 busy_cycles, busy_time;
++	u64 busy_cycles;
  
- 	mutex_lock(&ec_dev->lock);
- 	if (ec_dev->proto_version == EC_PROTO_VERSION_UNKNOWN) {
-@@ -616,6 +622,32 @@ int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
- 	ret = send_command(ec_dev, msg);
- 	mutex_unlock(&ec_dev->lock);
+ 	/* Only read the gpu busy if the hardware is already active */
+-	if (pm_runtime_get_if_in_use(&gpu->pdev->dev) == 0)
++	if (pm_runtime_get_if_in_use(&gpu->pdev->dev) == 0) {
++		*out_sample_rate = 1;
+ 		return 0;
++	}
  
-+	return ret;
+ 	busy_cycles = gpu_read64(gpu, REG_A5XX_RBBM_PERFCTR_RBBM_0_LO,
+ 			REG_A5XX_RBBM_PERFCTR_RBBM_0_HI);
+-
+-	busy_time = busy_cycles - gpu->devfreq.busy_cycles;
+-	do_div(busy_time, clk_get_rate(gpu->core_clk) / 1000000);
+-
+-	gpu->devfreq.busy_cycles = busy_cycles;
++	*out_sample_rate = clk_get_rate(gpu->core_clk);
+ 
+ 	pm_runtime_put(&gpu->pdev->dev);
+ 
+-	if (WARN_ON(busy_time > ~0LU))
+-		return ~0LU;
+-
+-	return (unsigned long)busy_time;
++	return busy_cycles;
+ }
+ 
+ static uint32_t a5xx_get_rptr(struct msm_gpu *gpu, struct msm_ringbuffer *ring)
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+index 147e716108ba..55eb0054cd3a 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+@@ -1621,12 +1621,14 @@ static void a6xx_destroy(struct msm_gpu *gpu)
+ 	kfree(a6xx_gpu);
+ }
+ 
+-static unsigned long a6xx_gpu_busy(struct msm_gpu *gpu)
++static u64 a6xx_gpu_busy(struct msm_gpu *gpu, unsigned long *out_sample_rate)
+ {
+ 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
+ 	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
+-	u64 busy_cycles, busy_time;
++	u64 busy_cycles;
+ 
++	/* 19.2MHz */
++	*out_sample_rate = 19200000;
+ 
+ 	/* Only read the gpu busy if the hardware is already active */
+ 	if (pm_runtime_get_if_in_use(a6xx_gpu->gmu.dev) == 0)
+@@ -1636,17 +1638,10 @@ static unsigned long a6xx_gpu_busy(struct msm_gpu *gpu)
+ 			REG_A6XX_GMU_CX_GMU_POWER_COUNTER_XOCLK_0_L,
+ 			REG_A6XX_GMU_CX_GMU_POWER_COUNTER_XOCLK_0_H);
+ 
+-	busy_time = (busy_cycles - gpu->devfreq.busy_cycles) * 10;
+-	do_div(busy_time, 192);
+-
+-	gpu->devfreq.busy_cycles = busy_cycles;
+ 
+ 	pm_runtime_put(a6xx_gpu->gmu.dev);
+ 
+-	if (WARN_ON(busy_time > ~0LU))
+-		return ~0LU;
+-
+-	return (unsigned long)busy_time;
++	return busy_cycles;
+ }
+ 
+ static void a6xx_gpu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp)
+diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
+index 92aa1e9196c6..a88ec0fc6d87 100644
+--- a/drivers/gpu/drm/msm/msm_gpu.h
++++ b/drivers/gpu/drm/msm/msm_gpu.h
+@@ -59,7 +59,7 @@ struct msm_gpu_funcs {
+ 	/* for generation specific debugfs: */
+ 	void (*debugfs_init)(struct msm_gpu *gpu, struct drm_minor *minor);
+ #endif
+-	unsigned long (*gpu_busy)(struct msm_gpu *gpu);
++	u64 (*gpu_busy)(struct msm_gpu *gpu, unsigned long *out_sample_rate);
+ 	struct msm_gpu_state *(*gpu_state_get)(struct msm_gpu *gpu);
+ 	int (*gpu_state_put)(struct msm_gpu_state *state);
+ 	unsigned long (*gpu_get_freq)(struct msm_gpu *gpu);
+@@ -103,11 +103,8 @@ struct msm_gpu_devfreq {
+ 	struct dev_pm_qos_request boost_freq;
+ 
+ 	/**
+-	 * busy_cycles:
+-	 *
+-	 * Used by implementation of gpu->gpu_busy() to track the last
+-	 * busy counter value, for calculating elapsed busy cycles since
+-	 * last sampling period.
++	 * busy_cycles: Last busy counter value, for calculating elapsed busy
++	 * cycles since last sampling period.
+ 	 */
+ 	u64 busy_cycles;
+ 
+diff --git a/drivers/gpu/drm/msm/msm_gpu_devfreq.c b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
+index 12641616acd3..d2b4c646a0ae 100644
+--- a/drivers/gpu/drm/msm/msm_gpu_devfreq.c
++++ b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
+@@ -49,18 +49,38 @@ static unsigned long get_freq(struct msm_gpu *gpu)
+ 	return clk_get_rate(gpu->core_clk);
+ }
+ 
+-static int msm_devfreq_get_dev_status(struct device *dev,
++static void get_raw_dev_status(struct msm_gpu *gpu,
+ 		struct devfreq_dev_status *status)
+ {
+-	struct msm_gpu *gpu = dev_to_gpu(dev);
++	struct msm_gpu_devfreq *df = &gpu->devfreq;
++	u64 busy_cycles, busy_time;
++	unsigned long sample_rate;
+ 	ktime_t time;
+ 
+ 	status->current_frequency = get_freq(gpu);
+-	status->busy_time = gpu->funcs->gpu_busy(gpu);
+-
++	busy_cycles = gpu->funcs->gpu_busy(gpu, &sample_rate);
+ 	time = ktime_get();
+-	status->total_time = ktime_us_delta(time, gpu->devfreq.time);
+-	gpu->devfreq.time = time;
++
++	busy_time = busy_cycles - df->busy_cycles;
++	status->total_time = ktime_us_delta(time, df->time);
++
++	df->busy_cycles = busy_cycles;
++	df->time = time;
++
++	busy_time *= USEC_PER_SEC;
++	do_div(busy_time, sample_rate);
++	if (WARN_ON(busy_time > ~0LU))
++		busy_time = ~0LU;
++
++	status->busy_time = busy_time;
 +}
-+EXPORT_SYMBOL(cros_ec_cmd_xfer);
 +
-+/**
-+ * cros_ec_cmd_xfer_status() - Send a command to the ChromeOS EC.
-+ * @ec_dev: EC device.
-+ * @msg: Message to write.
-+ *
-+ * Call this to send a command to the ChromeOS EC. This should be used instead of calling the EC's
-+ * cmd_xfer() callback directly. It returns success status only if both the command was transmitted
-+ * successfully and the EC replied with success status.
-+ *
-+ * Return:
-+ * >=0 - The number of bytes transferred.
-+ * <0 - Linux error code
-+ */
-+int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
-+			    struct cros_ec_command *msg)
++static int msm_devfreq_get_dev_status(struct device *dev,
++		struct devfreq_dev_status *status)
 +{
-+	int ret, mapped;
++	struct msm_gpu *gpu = dev_to_gpu(dev);
 +
-+	ret = cros_ec_cmd_xfer(ec_dev, msg);
-+	if (ret < 0)
-+		return ret;
-+
- 	mapped = cros_ec_map_error(msg->result);
- 	if (mapped) {
- 		dev_dbg(ec_dev->dev, "Command result (err: %d [%d])\n",
-diff --git a/include/linux/platform_data/cros_ec_proto.h b/include/linux/platform_data/cros_ec_proto.h
-index df3c78c92ca2..16931569adce 100644
---- a/include/linux/platform_data/cros_ec_proto.h
-+++ b/include/linux/platform_data/cros_ec_proto.h
-@@ -216,6 +216,9 @@ int cros_ec_prepare_tx(struct cros_ec_device *ec_dev,
- int cros_ec_check_result(struct cros_ec_device *ec_dev,
- 			 struct cros_ec_command *msg);
++	get_raw_dev_status(gpu, status);
  
-+int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev,
-+		     struct cros_ec_command *msg);
-+
- int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
- 			    struct cros_ec_command *msg);
- 
+ 	return 0;
+ }
 -- 
 2.35.1
 
