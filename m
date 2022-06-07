@@ -2,42 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D909C04E88
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B047BC3F2D4
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442929AbiFHBHC (ORCPT
+        id S1443203AbiFHBHH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:07:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49874 "EHLO
+        Tue, 7 Jun 2022 21:07:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385164AbiFGWVP (ORCPT
+        with ESMTP id S1384131AbiFGVyK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:21:15 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9288F265FA3;
-        Tue,  7 Jun 2022 12:21:11 -0700 (PDT)
+        Tue, 7 Jun 2022 17:54:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C8BBDA2C;
+        Tue,  7 Jun 2022 12:13:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EA544CE2476;
-        Tue,  7 Jun 2022 19:21:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01979C385A2;
-        Tue,  7 Jun 2022 19:21:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD149618F2;
+        Tue,  7 Jun 2022 19:13:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98170C385A2;
+        Tue,  7 Jun 2022 19:13:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629663;
-        bh=kn6sAE0YkITH3uwY7tqEKQQ1ZIy1Yzl46v+yJv1v1i0=;
+        s=korg; t=1654629183;
+        bh=rcb2EbCweuz3IIvcMuAiaNyBslN563Cuvdbu7vol/Fg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rvcEP+yuS7Tk3CiEq9y74YDg2yJ0dpfJGci5+cEsExicMAEOsIhZMzV7NV0k1Opr/
-         CA3d6ujORuXknqbHAWoCAEybiyE9vnlflEZdBelC6KTGT7nw9lGWvirABFiGuLHLDP
-         3/ToiNngPXttQdFQdX7sks7qk4HD20PMZHTGpdrA=
+        b=q8m204655JuNFxYiHD2GkvwVJ/cWacxIECAudro+NWsnpeqNPMNMXAyKjGpqmEn00
+         1h/JylIfQw6fUmbx1BnWNpvyDLYBd7g1d6FgasVdGMwwVFDN4jfHZ9EuWJzr3KeVbZ
+         hl9o8EsO0EOIabH35ry7Ib24pvN1FYlhEA8ddkYo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.18 773/879] selftests/landlock: Normalize array assignment
-Date:   Tue,  7 Jun 2022 19:04:51 +0200
-Message-Id: <20220607165025.297562157@linuxfoundation.org>
+        stable@vger.kernel.org, Heming Zhao <heming.zhao@suse.com>,
+        Joseph Qi <joseph.qi@linux.alibaba.com>,
+        Mark Fasheh <mark@fasheh.com>,
+        Joel Becker <jlbec@evilplan.org>,
+        Junxiao Bi <junxiao.bi@oracle.com>,
+        Changwei Ge <gechangwei@live.cn>, Gang He <ghe@suse.com>,
+        Jun Piao <piaojun@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 600/879] ocfs2: fix mounting crash if journal is not alloced
+Date:   Tue,  7 Jun 2022 19:01:58 +0200
+Message-Id: <20220607165020.268176053@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,516 +56,219 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@digikod.net>
+From: Heming Zhao via Ocfs2-devel <ocfs2-devel@oss.oracle.com>
 
-commit 135464f9d29c5b306d7201220f1d00dab30fea89 upstream.
+[ Upstream commit bb20b31dee1a6c329c2f721fbe21c51945cdfc29 ]
 
-Add a comma after each array value to make clang-format keep the
-current array formatting.  See the following commit.
+Patch series "rewrite error handling during mounting stage".
 
-Automatically modified with:
-sed -i 's/\t\({}\|NULL\)$/\0,/' tools/testing/selftests/landlock/fs_test.c
+This patch (of 5):
 
-Link: https://lore.kernel.org/r/20220506160513.523257-5-mic@digikod.net
-Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+After commit da5e7c87827e8 ("ocfs2: cleanup journal init and shutdown"),
+journal init later than before, it makes NULL pointer access in free
+routine.
+
+Crash flow:
+
+ocfs2_fill_super
+ + ocfs2_mount_volume
+ |  + ocfs2_dlm_init //fail & return, osb->journal is NULL.
+ |  + ...
+ |  + ocfs2_check_volume //no chance to init osb->journal
+ |
+ + ...
+ + ocfs2_dismount_volume
+    ocfs2_release_system_inodes
+      ...
+       evict
+        ...
+         ocfs2_clear_inode
+          ocfs2_checkpoint_inode
+           ocfs2_ci_fully_checkpointed
+            time_after(journal->j_trans_id, ci->ci_last_trans)
+             + journal is empty, crash!
+
+For fixing, there are three solutions:
+
+1> Partly revert commit da5e7c87827e8
+
+   For avoiding kernel crash, this make sense for us.  We only
+   concerned whether there has any non-system inode access before dlm
+   init.  The answer is NO.  And all journal replay/recovery handling
+   happen after dlm & journal init done.  So this method is not graceful
+   but workable.
+
+2> Add osb->journal check in free inode routine (eg ocfs2_clear_inode)
+
+   The fix code is special for mounting phase, but it will continue
+   working after mounting stage.  In another word, this method adds
+   useless code in normal inode free flow.
+
+3> Do directly free inode in mounting phase
+
+   This method is brutal/complex and may introduce unsafe code,
+   currently maintainer didn't like.
+
+At last, we chose method <1> and did partly reverted job.  We reverted
+journal init codes, and kept cleanup codes flow.
+
+Link: https://lkml.kernel.org/r/20220424130952.2436-1-heming.zhao@suse.com
+Link: https://lkml.kernel.org/r/20220424130952.2436-2-heming.zhao@suse.com
+Fixes: da5e7c87827e8 ("ocfs2: cleanup journal init and shutdown")
+Signed-off-by: Heming Zhao <heming.zhao@suse.com>
+Reviewed-by: Joseph Qi <joseph.qi@linux.alibaba.com>
+Cc: Mark Fasheh <mark@fasheh.com>
+Cc: Joel Becker <jlbec@evilplan.org>
+Cc: Junxiao Bi <junxiao.bi@oracle.com>
+Cc: Changwei Ge <gechangwei@live.cn>
+Cc: Gang He <ghe@suse.com>
+Cc: Jun Piao <piaojun@huawei.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/landlock/fs_test.c |  112 ++++++++++++++---------------
- 1 file changed, 56 insertions(+), 56 deletions(-)
+ fs/ocfs2/inode.c   |  4 ++--
+ fs/ocfs2/journal.c | 33 +++++++++++++++++++++++----------
+ fs/ocfs2/journal.h |  2 ++
+ fs/ocfs2/super.c   | 15 +++++++++++++++
+ 4 files changed, 42 insertions(+), 12 deletions(-)
 
---- a/tools/testing/selftests/landlock/fs_test.c
-+++ b/tools/testing/selftests/landlock/fs_test.c
-@@ -514,7 +514,7 @@ TEST_F_FORK(layout1, proc_nsfs)
- 			.access = LANDLOCK_ACCESS_FS_READ_FILE |
- 				LANDLOCK_ACCESS_FS_WRITE_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	struct landlock_path_beneath_attr path_beneath;
- 	const int ruleset_fd = create_ruleset(_metadata, rules[0].access |
-@@ -560,7 +560,7 @@ TEST_F_FORK(layout1, unpriv) {
- 			.path = dir_s1d2,
- 			.access = ACCESS_RO,
- 		},
--		{}
-+		{},
- 	};
- 	int ruleset_fd;
+diff --git a/fs/ocfs2/inode.c b/fs/ocfs2/inode.c
+index 5739dc301569..bb116c39b581 100644
+--- a/fs/ocfs2/inode.c
++++ b/fs/ocfs2/inode.c
+@@ -125,6 +125,7 @@ struct inode *ocfs2_iget(struct ocfs2_super *osb, u64 blkno, unsigned flags,
+ 	struct inode *inode = NULL;
+ 	struct super_block *sb = osb->sb;
+ 	struct ocfs2_find_inode_args args;
++	journal_t *journal = osb->journal->j_journal;
  
-@@ -588,7 +588,7 @@ TEST_F_FORK(layout1, effective_access)
- 			.access = LANDLOCK_ACCESS_FS_READ_FILE |
- 				LANDLOCK_ACCESS_FS_WRITE_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
- 	char buf;
-@@ -635,7 +635,7 @@ TEST_F_FORK(layout1, unhandled_access)
- 			.path = dir_s1d2,
- 			.access = ACCESS_RO,
- 		},
--		{}
-+		{},
- 	};
- 	/* Here, we only handle read accesses, not write accesses. */
- 	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RO, rules);
-@@ -669,7 +669,7 @@ TEST_F_FORK(layout1, ruleset_overlap)
- 			.access = LANDLOCK_ACCESS_FS_READ_FILE |
- 				LANDLOCK_ACCESS_FS_READ_DIR,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
+ 	trace_ocfs2_iget_begin((unsigned long long)blkno, flags,
+ 			       sysfile_type);
+@@ -171,11 +172,10 @@ struct inode *ocfs2_iget(struct ocfs2_super *osb, u64 blkno, unsigned flags,
+ 	 * part of the transaction - the inode could have been reclaimed and
+ 	 * now it is reread from disk.
+ 	 */
+-	if (osb->journal) {
++	if (journal) {
+ 		transaction_t *transaction;
+ 		tid_t tid;
+ 		struct ocfs2_inode_info *oi = OCFS2_I(inode);
+-		journal_t *journal = osb->journal->j_journal;
  
-@@ -703,14 +703,14 @@ TEST_F_FORK(layout1, non_overlapping_acc
- 			.path = dir_s1d2,
- 			.access = LANDLOCK_ACCESS_FS_MAKE_REG,
- 		},
--		{}
-+		{},
- 	};
- 	const struct rule layer2[] = {
- 		{
- 			.path = dir_s1d3,
- 			.access = LANDLOCK_ACCESS_FS_REMOVE_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	int ruleset_fd;
+ 		read_lock(&journal->j_state_lock);
+ 		if (journal->j_running_transaction)
+diff --git a/fs/ocfs2/journal.c b/fs/ocfs2/journal.c
+index 1887a2708709..fa87d89cf754 100644
+--- a/fs/ocfs2/journal.c
++++ b/fs/ocfs2/journal.c
+@@ -810,22 +810,20 @@ void ocfs2_set_journal_params(struct ocfs2_super *osb)
+ 	write_unlock(&journal->j_state_lock);
+ }
  
-@@ -767,7 +767,7 @@ TEST_F_FORK(layout1, interleaved_masked_
- 			.path = file1_s1d3,
- 			.access = LANDLOCK_ACCESS_FS_READ_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	/* First rule with write restrictions. */
- 	const struct rule layer2_read_write[] = {
-@@ -782,7 +782,7 @@ TEST_F_FORK(layout1, interleaved_masked_
- 			.path = dir_s1d2,
- 			.access = LANDLOCK_ACCESS_FS_WRITE_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	const struct rule layer3_read[] = {
- 		/* Allows read access via its great-grandparent directory. */
-@@ -790,7 +790,7 @@ TEST_F_FORK(layout1, interleaved_masked_
- 			.path = dir_s1d1,
- 			.access = LANDLOCK_ACCESS_FS_READ_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	const struct rule layer4_read_write[] = {
- 		/*
-@@ -801,7 +801,7 @@ TEST_F_FORK(layout1, interleaved_masked_
- 			.path = dir_s1d2,
- 			.access = LANDLOCK_ACCESS_FS_READ_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	const struct rule layer5_read[] = {
- 		/*
-@@ -812,7 +812,7 @@ TEST_F_FORK(layout1, interleaved_masked_
- 			.path = dir_s1d2,
- 			.access = LANDLOCK_ACCESS_FS_READ_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	const struct rule layer6_execute[] = {
- 		/*
-@@ -823,7 +823,7 @@ TEST_F_FORK(layout1, interleaved_masked_
- 			.path = dir_s2d1,
- 			.access = LANDLOCK_ACCESS_FS_EXECUTE,
- 		},
--		{}
-+		{},
- 	};
- 	const struct rule layer7_read_write[] = {
- 		/*
-@@ -834,7 +834,7 @@ TEST_F_FORK(layout1, interleaved_masked_
- 			.path = dir_s1d2,
- 			.access = LANDLOCK_ACCESS_FS_WRITE_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	int ruleset_fd;
+-int ocfs2_journal_init(struct ocfs2_super *osb, int *dirty)
++/*
++ * alloc & initialize skeleton for journal structure.
++ * ocfs2_journal_init() will make fs have journal ability.
++ */
++int ocfs2_journal_alloc(struct ocfs2_super *osb)
+ {
+-	int status = -1;
+-	struct inode *inode = NULL; /* the journal inode */
+-	journal_t *j_journal = NULL;
+-	struct ocfs2_journal *journal = NULL;
+-	struct ocfs2_dinode *di = NULL;
+-	struct buffer_head *bh = NULL;
+-	int inode_lock = 0;
++	int status = 0;
++	struct ocfs2_journal *journal;
  
-@@ -932,7 +932,7 @@ TEST_F_FORK(layout1, inherit_subset)
- 			.access = LANDLOCK_ACCESS_FS_READ_FILE |
- 				LANDLOCK_ACCESS_FS_READ_DIR,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
+-	/* initialize our journal structure */
+ 	journal = kzalloc(sizeof(struct ocfs2_journal), GFP_KERNEL);
+ 	if (!journal) {
+ 		mlog(ML_ERROR, "unable to alloc journal\n");
+ 		status = -ENOMEM;
+-		goto done;
++		goto bail;
+ 	}
+ 	osb->journal = journal;
+ 	journal->j_osb = osb;
+@@ -839,6 +837,21 @@ int ocfs2_journal_init(struct ocfs2_super *osb, int *dirty)
+ 	INIT_WORK(&journal->j_recovery_work, ocfs2_complete_recovery);
+ 	journal->j_state = OCFS2_JOURNAL_FREE;
  
-@@ -1048,7 +1048,7 @@ TEST_F_FORK(layout1, inherit_superset)
- 			.path = dir_s1d3,
- 			.access = ACCESS_RO,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
++bail:
++	return status;
++}
++
++int ocfs2_journal_init(struct ocfs2_super *osb, int *dirty)
++{
++	int status = -1;
++	struct inode *inode = NULL; /* the journal inode */
++	journal_t *j_journal = NULL;
++	struct ocfs2_journal *journal = osb->journal;
++	struct ocfs2_dinode *di = NULL;
++	struct buffer_head *bh = NULL;
++	int inode_lock = 0;
++
++	BUG_ON(!journal);
+ 	/* already have the inode for our journal */
+ 	inode = ocfs2_get_system_file_inode(osb, JOURNAL_SYSTEM_INODE,
+ 					    osb->slot_num);
+diff --git a/fs/ocfs2/journal.h b/fs/ocfs2/journal.h
+index 8dcb2f2cadbc..969d0aa28718 100644
+--- a/fs/ocfs2/journal.h
++++ b/fs/ocfs2/journal.h
+@@ -154,6 +154,7 @@ int ocfs2_compute_replay_slots(struct ocfs2_super *osb);
+  *  Journal Control:
+  *  Initialize, Load, Shutdown, Wipe a journal.
+  *
++ *  ocfs2_journal_alloc    - Initialize skeleton for journal structure.
+  *  ocfs2_journal_init     - Initialize journal structures in the OSB.
+  *  ocfs2_journal_load     - Load the given journal off disk. Replay it if
+  *                          there's transactions still in there.
+@@ -167,6 +168,7 @@ int ocfs2_compute_replay_slots(struct ocfs2_super *osb);
+  *  ocfs2_start_checkpoint - Kick the commit thread to do a checkpoint.
+  */
+ void   ocfs2_set_journal_params(struct ocfs2_super *osb);
++int    ocfs2_journal_alloc(struct ocfs2_super *osb);
+ int    ocfs2_journal_init(struct ocfs2_super *osb, int *dirty);
+ void   ocfs2_journal_shutdown(struct ocfs2_super *osb);
+ int    ocfs2_journal_wipe(struct ocfs2_journal *journal,
+diff --git a/fs/ocfs2/super.c b/fs/ocfs2/super.c
+index 477cdf94122e..311433c69a3f 100644
+--- a/fs/ocfs2/super.c
++++ b/fs/ocfs2/super.c
+@@ -2195,6 +2195,15 @@ static int ocfs2_initialize_super(struct super_block *sb,
  
-@@ -1084,7 +1084,7 @@ TEST_F_FORK(layout1, max_layers)
- 			.path = dir_s1d2,
- 			.access = ACCESS_RO,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
+ 	get_random_bytes(&osb->s_next_generation, sizeof(u32));
  
-@@ -1146,7 +1146,7 @@ TEST_F_FORK(layout1, rule_on_mountpoint)
- 			.path = dir_s3d2,
- 			.access = ACCESS_RO,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
++	/*
++	 * FIXME
++	 * This should be done in ocfs2_journal_init(), but any inode
++	 * writes back operation will cause the filesystem to crash.
++	 */
++	status = ocfs2_journal_alloc(osb);
++	if (status < 0)
++		goto bail;
++
+ 	INIT_WORK(&osb->dquot_drop_work, ocfs2_drop_dquot_refs);
+ 	init_llist_head(&osb->dquot_drop_list);
  
-@@ -1175,7 +1175,7 @@ TEST_F_FORK(layout1, rule_over_mountpoin
- 			.path = dir_s3d1,
- 			.access = ACCESS_RO,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
+@@ -2483,6 +2492,12 @@ static void ocfs2_delete_osb(struct ocfs2_super *osb)
  
-@@ -1203,7 +1203,7 @@ TEST_F_FORK(layout1, rule_over_root_allo
- 			.path = "/",
- 			.access = ACCESS_RO,
- 		},
--		{}
-+		{},
- 	};
- 	int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
- 
-@@ -1233,7 +1233,7 @@ TEST_F_FORK(layout1, rule_over_root_deny
- 			.path = "/",
- 			.access = LANDLOCK_ACCESS_FS_READ_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
- 
-@@ -1253,7 +1253,7 @@ TEST_F_FORK(layout1, rule_inside_mount_n
- 			.path = "s3d3",
- 			.access = ACCESS_RO,
- 		},
--		{}
-+		{},
- 	};
- 	int ruleset_fd;
- 
-@@ -1280,7 +1280,7 @@ TEST_F_FORK(layout1, mount_and_pivot)
- 			.path = dir_s3d2,
- 			.access = ACCESS_RO,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
- 
-@@ -1303,7 +1303,7 @@ TEST_F_FORK(layout1, move_mount)
- 			.path = dir_s3d2,
- 			.access = ACCESS_RO,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
- 
-@@ -1344,7 +1344,7 @@ TEST_F_FORK(layout1, release_inodes)
- 			.path = dir_s3d3,
- 			.access = ACCESS_RO,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
- 
-@@ -1382,7 +1382,7 @@ static void test_relative_path(struct __
- 			.path = TMP_DIR,
- 			.access = ACCESS_RO,
- 		},
--		{}
-+		{},
- 	};
- 	const struct rule layer2_subs[] = {
- 		{
-@@ -1393,7 +1393,7 @@ static void test_relative_path(struct __
- 			.path = dir_s2d2,
- 			.access = ACCESS_RO,
- 		},
--		{}
-+		{},
- 	};
- 	int dirfd, ruleset_fd;
- 
-@@ -1558,7 +1558,7 @@ TEST_F_FORK(layout1, execute)
- 			.path = dir_s1d2,
- 			.access = LANDLOCK_ACCESS_FS_EXECUTE,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, rules[0].access,
- 			rules);
-@@ -1591,7 +1591,7 @@ TEST_F_FORK(layout1, link)
- 			.path = dir_s1d2,
- 			.access = LANDLOCK_ACCESS_FS_MAKE_REG,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, rules[0].access,
- 			rules);
-@@ -1628,7 +1628,7 @@ TEST_F_FORK(layout1, rename_file)
- 			.path = dir_s2d2,
- 			.access = LANDLOCK_ACCESS_FS_REMOVE_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, rules[0].access,
- 			rules);
-@@ -1705,7 +1705,7 @@ TEST_F_FORK(layout1, rename_dir)
- 			.path = dir_s2d1,
- 			.access = LANDLOCK_ACCESS_FS_REMOVE_DIR,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, rules[0].access,
- 			rules);
-@@ -1759,7 +1759,7 @@ TEST_F_FORK(layout1, remove_dir)
- 			.path = dir_s1d2,
- 			.access = LANDLOCK_ACCESS_FS_REMOVE_DIR,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, rules[0].access,
- 			rules);
-@@ -1796,7 +1796,7 @@ TEST_F_FORK(layout1, remove_file)
- 			.path = dir_s1d2,
- 			.access = LANDLOCK_ACCESS_FS_REMOVE_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, rules[0].access,
- 			rules);
-@@ -1821,7 +1821,7 @@ static void test_make_file(struct __test
- 			.path = dir_s1d2,
- 			.access = access,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, access, rules);
- 
-@@ -1907,7 +1907,7 @@ TEST_F_FORK(layout1, make_sym)
- 			.path = dir_s1d2,
- 			.access = LANDLOCK_ACCESS_FS_MAKE_SYM,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, rules[0].access,
- 			rules);
-@@ -1952,7 +1952,7 @@ TEST_F_FORK(layout1, make_dir)
- 			.path = dir_s1d2,
- 			.access = LANDLOCK_ACCESS_FS_MAKE_DIR,
- 		},
--		{}
-+		{},
- 	};
- 	const int ruleset_fd = create_ruleset(_metadata, rules[0].access,
- 			rules);
-@@ -1992,7 +1992,7 @@ TEST_F_FORK(layout1, proc_unlinked_file)
- 			.path = file1_s1d2,
- 			.access = LANDLOCK_ACCESS_FS_READ_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	int reg_fd, proc_fd;
- 	const int ruleset_fd = create_ruleset(_metadata,
-@@ -2034,7 +2034,7 @@ TEST_F_FORK(layout1, proc_pipe)
- 			.access = LANDLOCK_ACCESS_FS_READ_FILE |
- 				LANDLOCK_ACCESS_FS_WRITE_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	/* Limits read and write access to files tied to the filesystem. */
- 	const int ruleset_fd = create_ruleset(_metadata, rules[0].access,
-@@ -2171,7 +2171,7 @@ TEST_F_FORK(layout1_bind, same_content_s
- 			.path = dir_s2d1,
- 			.access = ACCESS_RW,
- 		},
--		{}
-+		{},
- 	};
- 	/*
- 	 * Sets access rights on the same bind-mounted directories.  The result
-@@ -2187,7 +2187,7 @@ TEST_F_FORK(layout1_bind, same_content_s
- 			.path = dir_s2d2,
- 			.access = ACCESS_RW,
- 		},
--		{}
-+		{},
- 	};
- 	/* Only allow read-access to the s1d3 hierarchies. */
- 	const struct rule layer3_source[] = {
-@@ -2195,7 +2195,7 @@ TEST_F_FORK(layout1_bind, same_content_s
- 			.path = dir_s1d3,
- 			.access = LANDLOCK_ACCESS_FS_READ_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	/* Removes all access rights. */
- 	const struct rule layer4_destination[] = {
-@@ -2203,7 +2203,7 @@ TEST_F_FORK(layout1_bind, same_content_s
- 			.path = bind_file1_s1d3,
- 			.access = LANDLOCK_ACCESS_FS_WRITE_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	int ruleset_fd;
- 
-@@ -2305,18 +2305,18 @@ static const char lower_do1_fl3[] = LOWE
- static const char (*lower_base_files[])[] = {
- 	&lower_fl1,
- 	&lower_fo1,
--	NULL
-+	NULL,
- };
- static const char (*lower_base_directories[])[] = {
- 	&lower_dl1,
- 	&lower_do1,
--	NULL
-+	NULL,
- };
- static const char (*lower_sub_files[])[] = {
- 	&lower_dl1_fl2,
- 	&lower_do1_fo2,
- 	&lower_do1_fl3,
--	NULL
-+	NULL,
- };
- 
- #define UPPER_BASE	TMP_DIR "/upper"
-@@ -2333,18 +2333,18 @@ static const char upper_do1_fu3[] = UPPE
- static const char (*upper_base_files[])[] = {
- 	&upper_fu1,
- 	&upper_fo1,
--	NULL
-+	NULL,
- };
- static const char (*upper_base_directories[])[] = {
- 	&upper_du1,
- 	&upper_do1,
--	NULL
-+	NULL,
- };
- static const char (*upper_sub_files[])[] = {
- 	&upper_du1_fu2,
- 	&upper_do1_fo2,
- 	&upper_do1_fu3,
--	NULL
-+	NULL,
- };
- 
- #define MERGE_BASE	TMP_DIR "/merge"
-@@ -2365,13 +2365,13 @@ static const char (*merge_base_files[])[
- 	&merge_fl1,
- 	&merge_fu1,
- 	&merge_fo1,
--	NULL
-+	NULL,
- };
- static const char (*merge_base_directories[])[] = {
- 	&merge_dl1,
- 	&merge_du1,
- 	&merge_do1,
--	NULL
-+	NULL,
- };
- static const char (*merge_sub_files[])[] = {
- 	&merge_dl1_fl2,
-@@ -2379,7 +2379,7 @@ static const char (*merge_sub_files[])[]
- 	&merge_do1_fo2,
- 	&merge_do1_fl3,
- 	&merge_do1_fu3,
--	NULL
-+	NULL,
- };
- 
- /*
-@@ -2544,7 +2544,7 @@ TEST_F_FORK(layout2_overlay, same_conten
- 			.path = MERGE_BASE,
- 			.access = ACCESS_RW,
- 		},
--		{}
-+		{},
- 	};
- 	const struct rule layer2_data[] = {
- 		{
-@@ -2559,7 +2559,7 @@ TEST_F_FORK(layout2_overlay, same_conten
- 			.path = MERGE_DATA,
- 			.access = ACCESS_RW,
- 		},
--		{}
-+		{},
- 	};
- 	/* Sets access right on directories inside both layers. */
- 	const struct rule layer3_subdirs[] = {
-@@ -2591,7 +2591,7 @@ TEST_F_FORK(layout2_overlay, same_conten
- 			.path = merge_do1,
- 			.access = ACCESS_RW,
- 		},
--		{}
-+		{},
- 	};
- 	/* Tighten access rights to the files. */
- 	const struct rule layer4_files[] = {
-@@ -2644,7 +2644,7 @@ TEST_F_FORK(layout2_overlay, same_conten
- 			.access = LANDLOCK_ACCESS_FS_READ_FILE |
- 				LANDLOCK_ACCESS_FS_WRITE_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	const struct rule layer5_merge_only[] = {
- 		{
-@@ -2652,7 +2652,7 @@ TEST_F_FORK(layout2_overlay, same_conten
- 			.access = LANDLOCK_ACCESS_FS_READ_FILE |
- 				LANDLOCK_ACCESS_FS_WRITE_FILE,
- 		},
--		{}
-+		{},
- 	};
- 	int ruleset_fd;
- 	size_t i;
+ 	kfree(osb->osb_orphan_wipes);
+ 	kfree(osb->slot_recovery_generations);
++	/* FIXME
++	 * This belongs in journal shutdown, but because we have to
++	 * allocate osb->journal at the middle of ocfs2_initialize_super(),
++	 * we free it here.
++	 */
++	kfree(osb->journal);
+ 	kfree(osb->local_alloc_copy);
+ 	kfree(osb->uuid_str);
+ 	kfree(osb->vol_label);
+-- 
+2.35.1
+
 
 
