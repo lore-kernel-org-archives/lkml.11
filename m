@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C9A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:43:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 363F1CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:43:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353505AbiFGSnE (ORCPT
+        id S1346875AbiFGSnT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:43:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52814 "EHLO
+        Tue, 7 Jun 2022 14:43:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349930AbiFGSNx (ORCPT
+        with ESMTP id S1349964AbiFGSNy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:13:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5478A159070;
-        Tue,  7 Jun 2022 10:49:03 -0700 (PDT)
+        Tue, 7 Jun 2022 14:13:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0708C15904A;
+        Tue,  7 Jun 2022 10:49:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4033C61782;
-        Tue,  7 Jun 2022 17:49:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DF40C385A5;
-        Tue,  7 Jun 2022 17:49:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F4D8B81F38;
+        Tue,  7 Jun 2022 17:48:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E4D9C385A5;
+        Tue,  7 Jun 2022 17:48:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624142;
-        bh=8D15uPtE3xzFTL7RFxE6DtiM+zTsnzoGBO5Q+B9naE0=;
+        s=korg; t=1654624136;
+        bh=Gd+81C6t792u/OyBDJ9pfgOthfvlR8CL7NYdML5/hfE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a3e3TCpDFOpil8lMxTaPVw8PE/lqiHkSBq0u0dux812irw1Qxvx7eMO+Vh3NEPWrH
-         FKmDYdiks3Z9CtYD/KvU8JTlG9tmMkt3ID1WRpW6xG0ytKOo9fi8dlmxp62YdCgwLZ
-         OvDyWxIvH5eSO+WVy0g00GYXJMnpuvBr+Bs0W9JI=
+        b=bLCCSkepEknTGAES6poJaw48Fd7jOSaqZeHoVYbGU1EsBC208IU6BVyuyZ4u8yYd/
+         YzV0W2kK/L1aV51lijaeC5vtDvDaSFxZAvteXWNyEyZiPq7iSoBifTdnzLwB/fziqw
+         8IWIHJHPJMwvGWCjWayoJlHLOcFVPIICGM8mu5B8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Finn Thain <fthain@linux-m68k.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 179/667] smb3: check for null tcon
-Date:   Tue,  7 Jun 2022 18:57:24 +0200
-Message-Id: <20220607164940.177772538@linuxfoundation.org>
+Subject: [PATCH 5.15 177/667] macintosh/via-pmu: Fix build failure when CONFIG_INPUT is disabled
+Date:   Tue,  7 Jun 2022 18:57:22 +0200
+Message-Id: <20220607164940.117678831@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,47 +53,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steve French <stfrench@microsoft.com>
+From: Finn Thain <fthain@linux-m68k.org>
 
-[ Upstream commit bbdf6cf56c88845fb0b713cbf5c6623c53fe40d8 ]
+[ Upstream commit 86ce436e30d86327c9f5260f718104ae7b21f506 ]
 
-Although unlikely to be null, it is confusing to use a pointer
-before checking for it to be null so move the use down after
-null check.
+drivers/macintosh/via-pmu-event.o: In function `via_pmu_event':
+via-pmu-event.c:(.text+0x44): undefined reference to `input_event'
+via-pmu-event.c:(.text+0x68): undefined reference to `input_event'
+via-pmu-event.c:(.text+0x94): undefined reference to `input_event'
+via-pmu-event.c:(.text+0xb8): undefined reference to `input_event'
+drivers/macintosh/via-pmu-event.o: In function `via_pmu_event_init':
+via-pmu-event.c:(.init.text+0x20): undefined reference to `input_allocate_device'
+via-pmu-event.c:(.init.text+0xc4): undefined reference to `input_register_device'
+via-pmu-event.c:(.init.text+0xd4): undefined reference to `input_free_device'
+make[1]: *** [Makefile:1155: vmlinux] Error 1
+make: *** [Makefile:350: __build_one_by_one] Error 2
 
-Addresses-Coverity: 1517586 ("Null pointer dereferences  (REVERSE_INULL)")
-Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Don't call into the input subsystem unless CONFIG_INPUT is built-in.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Finn Thain <fthain@linux-m68k.org>
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/5edbe76ce68227f71e09af4614cc4c1bd61c7ec8.1649326292.git.fthain@linux-m68k.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/smb2ops.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/macintosh/Kconfig   | 4 ++++
+ drivers/macintosh/Makefile  | 3 ++-
+ drivers/macintosh/via-pmu.c | 2 +-
+ 3 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
-index df9ba3729d1f..775296e4d3c8 100644
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -745,8 +745,8 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
- 		struct cifs_sb_info *cifs_sb,
- 		struct cached_fid **cfid)
- {
--	struct cifs_ses *ses = tcon->ses;
--	struct TCP_Server_Info *server = ses->server;
-+	struct cifs_ses *ses;
-+	struct TCP_Server_Info *server;
- 	struct cifs_open_parms oparms;
- 	struct smb2_create_rsp *o_rsp = NULL;
- 	struct smb2_query_info_rsp *qi_rsp = NULL;
-@@ -764,6 +764,9 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
- 	if (tcon->nohandlecache)
- 		return -ENOTSUPP;
+diff --git a/drivers/macintosh/Kconfig b/drivers/macintosh/Kconfig
+index 5cdc361da37c..3942db15a2b8 100644
+--- a/drivers/macintosh/Kconfig
++++ b/drivers/macintosh/Kconfig
+@@ -67,6 +67,10 @@ config ADB_PMU
+ 	  this device; you should do so if your machine is one of those
+ 	  mentioned above.
  
-+	ses = tcon->ses;
-+	server = ses->server;
++config ADB_PMU_EVENT
++	def_bool y
++	depends on ADB_PMU && INPUT=y
 +
- 	if (cifs_sb->root == NULL)
- 		return -ENOENT;
+ config ADB_PMU_LED
+ 	bool "Support for the Power/iBook front LED"
+ 	depends on PPC_PMAC && ADB_PMU
+diff --git a/drivers/macintosh/Makefile b/drivers/macintosh/Makefile
+index 49819b1b6f20..712edcb3e0b0 100644
+--- a/drivers/macintosh/Makefile
++++ b/drivers/macintosh/Makefile
+@@ -12,7 +12,8 @@ obj-$(CONFIG_MAC_EMUMOUSEBTN)	+= mac_hid.o
+ obj-$(CONFIG_INPUT_ADBHID)	+= adbhid.o
+ obj-$(CONFIG_ANSLCD)		+= ans-lcd.o
  
+-obj-$(CONFIG_ADB_PMU)		+= via-pmu.o via-pmu-event.o
++obj-$(CONFIG_ADB_PMU)		+= via-pmu.o
++obj-$(CONFIG_ADB_PMU_EVENT)	+= via-pmu-event.o
+ obj-$(CONFIG_ADB_PMU_LED)	+= via-pmu-led.o
+ obj-$(CONFIG_PMAC_BACKLIGHT)	+= via-pmu-backlight.o
+ obj-$(CONFIG_ADB_CUDA)		+= via-cuda.o
+diff --git a/drivers/macintosh/via-pmu.c b/drivers/macintosh/via-pmu.c
+index 4b98bc26a94b..2109129ea1bb 100644
+--- a/drivers/macintosh/via-pmu.c
++++ b/drivers/macintosh/via-pmu.c
+@@ -1459,7 +1459,7 @@ pmu_handle_data(unsigned char *data, int len)
+ 		pmu_pass_intr(data, len);
+ 		/* len == 6 is probably a bad check. But how do I
+ 		 * know what PMU versions send what events here? */
+-		if (len == 6) {
++		if (IS_ENABLED(CONFIG_ADB_PMU_EVENT) && len == 6) {
+ 			via_pmu_event(PMU_EVT_POWER, !!(data[1]&8));
+ 			via_pmu_event(PMU_EVT_LID, data[1]&1);
+ 		}
 -- 
 2.35.1
 
