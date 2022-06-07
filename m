@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D82C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E62C8CCA482
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:42:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381179AbiFGVkJ (ORCPT
+        id S1381220AbiFGVkT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:40:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48998 "EHLO
+        Tue, 7 Jun 2022 17:40:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377475AbiFGUuo (ORCPT
+        with ESMTP id S1377606AbiFGUut (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:50:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE1E1F98F3;
-        Tue,  7 Jun 2022 11:40:18 -0700 (PDT)
+        Tue, 7 Jun 2022 16:50:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E252E1FBF53;
+        Tue,  7 Jun 2022 11:40:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8DA03B8233E;
-        Tue,  7 Jun 2022 18:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 060D8C385A2;
-        Tue,  7 Jun 2022 18:40:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 42081612EC;
+        Tue,  7 Jun 2022 18:40:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E738C385A2;
+        Tue,  7 Jun 2022 18:40:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627215;
-        bh=hmOnrUcH7670N2tE92uyQ8lRAcXD4hwB3zS1oR7mbno=;
+        s=korg; t=1654627223;
+        bh=DerCkNsI2Cf3QemMT/beBdirNFSwUzXe5oOGb6F9b4A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d54W5v/0dUDE45h1pPQRyFEFqBMxZFtPTy1FkgVvgOBp/RZDeH1nNp3OErckRDWra
-         2xwSbg1M2ISy1LpkfuUMKFSSv9om3E9PGPsQ4BSZgyDERWEfGgJv2LbToV31P+lMvi
-         r5N1RXbPyUsZyjgYU6+X0xoT5wog5kKon4E7+o1I=
+        b=Jpdd/xcPV4WhdcExrvaLJqoGMWVf95tHr1J/bR02G4EZozUKty3HWVsvxDihJ0u5Q
+         HTf4XEJ/0+VHFwYRcQXSK3UQv6ytW4Gv5tGCQPnw7aDpKTvy8mP4uE52/qFw3kmgw8
+         zKZwc6lpVGVg5RUpYtqXnAVhwUWuF9OXVc0SuwcE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sven Schnelle <svens@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>
-Subject: [PATCH 5.17 660/772] s390/stp: clock_delta should be signed
-Date:   Tue,  7 Jun 2022 19:04:12 +0200
-Message-Id: <20220607165008.509115168@linuxfoundation.org>
+        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
+        David Teigland <teigland@redhat.com>
+Subject: [PATCH 5.17 663/772] dlm: fix wake_up() calls for pending remove
+Date:   Tue,  7 Jun 2022 19:04:15 +0200
+Message-Id: <20220607165008.596062012@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,94 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Schnelle <svens@linux.ibm.com>
+From: Alexander Aring <aahringo@redhat.com>
 
-commit 5ace65ebb5ce9fe1cc8fdbdd97079fb566ef0ea4 upstream.
+commit f6f7418357457ed58cbb020fc97e74d4e0e7b47f upstream.
 
-clock_delta is declared as unsigned long in various places. However,
-the clock sync delta can be negative. This would add a huge positive
-offset in clock_sync_global where clock_delta is added to clk.eitod
-which is a 72 bit integer. Declare it as signed long to fix this.
+This patch move the wake_up() call at the point when a remove message
+completed. Before it was only when a remove message was going to be
+sent. The possible waiter in wait_pending_remove() waits until a remove
+is done if the resource name matches with the per ls variable
+ls->ls_remove_name. If this is the case we must wait until a pending
+remove is done which is indicated if DLM_WAIT_PENDING_COND() returns
+false which will always be the case when ls_remove_len and
+ls_remove_name are unset to indicate that a remove is not going on
+anymore.
 
+Fixes: 21d9ac1a5376 ("fs: dlm: use event based wait for pending remove")
 Cc: stable@vger.kernel.org
-Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
-Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+Signed-off-by: David Teigland <teigland@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/include/asm/cio.h |    2 +-
- arch/s390/kernel/time.c     |    8 ++++----
- drivers/s390/cio/chsc.c     |    4 ++--
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ fs/dlm/lock.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/s390/include/asm/cio.h
-+++ b/arch/s390/include/asm/cio.h
-@@ -369,7 +369,7 @@ void cio_gp_dma_destroy(struct gen_pool
- struct gen_pool *cio_gp_dma_create(struct device *dma_dev, int nr_pages);
+--- a/fs/dlm/lock.c
++++ b/fs/dlm/lock.c
+@@ -1795,7 +1795,6 @@ static void shrink_bucket(struct dlm_ls
+ 		memcpy(ls->ls_remove_name, name, DLM_RESNAME_MAXLEN);
+ 		spin_unlock(&ls->ls_remove_spin);
+ 		spin_unlock(&ls->ls_rsbtbl[b].lock);
+-		wake_up(&ls->ls_remove_wait);
  
- /* Function from drivers/s390/cio/chsc.c */
--int chsc_sstpc(void *page, unsigned int op, u16 ctrl, u64 *clock_delta);
-+int chsc_sstpc(void *page, unsigned int op, u16 ctrl, long *clock_delta);
- int chsc_sstpi(void *page, void *result, size_t size);
- int chsc_stzi(void *page, void *result, size_t size);
- int chsc_sgib(u32 origin);
---- a/arch/s390/kernel/time.c
-+++ b/arch/s390/kernel/time.c
-@@ -364,7 +364,7 @@ static inline int check_sync_clock(void)
-  * Apply clock delta to the global data structures.
-  * This is called once on the CPU that performed the clock sync.
-  */
--static void clock_sync_global(unsigned long delta)
-+static void clock_sync_global(long delta)
- {
- 	unsigned long now, adj;
- 	struct ptff_qto qto;
-@@ -400,7 +400,7 @@ static void clock_sync_global(unsigned l
-  * Apply clock delta to the per-CPU data structures of this CPU.
-  * This is called for each online CPU after the call to clock_sync_global.
-  */
--static void clock_sync_local(unsigned long delta)
-+static void clock_sync_local(long delta)
- {
- 	/* Add the delta to the clock comparator. */
- 	if (S390_lowcore.clock_comparator != clock_comparator_max) {
-@@ -424,7 +424,7 @@ static void __init time_init_wq(void)
- struct clock_sync_data {
- 	atomic_t cpus;
- 	int in_sync;
--	unsigned long clock_delta;
-+	long clock_delta;
- };
+ 		send_remove(r);
  
- /*
-@@ -544,7 +544,7 @@ static int stpinfo_valid(void)
- static int stp_sync_clock(void *data)
- {
- 	struct clock_sync_data *sync = data;
--	u64 clock_delta, flags;
-+	long clock_delta, flags;
- 	static int first;
- 	int rc;
+@@ -1804,6 +1803,7 @@ static void shrink_bucket(struct dlm_ls
+ 		ls->ls_remove_len = 0;
+ 		memset(ls->ls_remove_name, 0, DLM_RESNAME_MAXLEN);
+ 		spin_unlock(&ls->ls_remove_spin);
++		wake_up(&ls->ls_remove_wait);
  
---- a/drivers/s390/cio/chsc.c
-+++ b/drivers/s390/cio/chsc.c
-@@ -1255,7 +1255,7 @@ exit:
- EXPORT_SYMBOL_GPL(css_general_characteristics);
- EXPORT_SYMBOL_GPL(css_chsc_characteristics);
+ 		dlm_free_rsb(r);
+ 	}
+@@ -4079,7 +4079,6 @@ static void send_repeat_remove(struct dl
+ 	memcpy(ls->ls_remove_name, name, DLM_RESNAME_MAXLEN);
+ 	spin_unlock(&ls->ls_remove_spin);
+ 	spin_unlock(&ls->ls_rsbtbl[b].lock);
+-	wake_up(&ls->ls_remove_wait);
  
--int chsc_sstpc(void *page, unsigned int op, u16 ctrl, u64 *clock_delta)
-+int chsc_sstpc(void *page, unsigned int op, u16 ctrl, long *clock_delta)
- {
- 	struct {
- 		struct chsc_header request;
-@@ -1266,7 +1266,7 @@ int chsc_sstpc(void *page, unsigned int
- 		unsigned int rsvd2[5];
- 		struct chsc_header response;
- 		unsigned int rsvd3[3];
--		u64 clock_delta;
-+		s64 clock_delta;
- 		unsigned int rsvd4[2];
- 	} *rr;
- 	int rc;
+ 	rv = _create_message(ls, sizeof(struct dlm_message) + len,
+ 			     dir_nodeid, DLM_MSG_REMOVE, &ms, &mh);
+@@ -4095,6 +4094,7 @@ static void send_repeat_remove(struct dl
+ 	ls->ls_remove_len = 0;
+ 	memset(ls->ls_remove_name, 0, DLM_RESNAME_MAXLEN);
+ 	spin_unlock(&ls->ls_remove_spin);
++	wake_up(&ls->ls_remove_wait);
+ }
+ 
+ static int receive_request(struct dlm_ls *ls, struct dlm_message *ms)
 
 
