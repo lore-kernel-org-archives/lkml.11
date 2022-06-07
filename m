@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE6DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:48:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 918C5C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:49:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345109AbiFGRs4 (ORCPT
+        id S1347913AbiFGRtE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:48:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53232 "EHLO
+        Tue, 7 Jun 2022 13:49:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348329AbiFGRbq (ORCPT
+        with ESMTP id S1347967AbiFGRb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:31:46 -0400
+        Tue, 7 Jun 2022 13:31:27 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB50E11803A;
-        Tue,  7 Jun 2022 10:29:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C248311CB55;
+        Tue,  7 Jun 2022 10:28:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CEF4AB82285;
-        Tue,  7 Jun 2022 17:29:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31679C385A5;
-        Tue,  7 Jun 2022 17:29:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A851B822B0;
+        Tue,  7 Jun 2022 17:28:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FFBBC385A5;
+        Tue,  7 Jun 2022 17:28:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622991;
-        bh=b++NisNEOYAJekWC1SOtCV27oqLTWJV7laUnxid2riI=;
+        s=korg; t=1654622936;
+        bh=2j7o75Snrv7Dgn8DW99eVATPtDQZVnpiMo3Wkpu2h+M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZZMYXYWtIjovskPA5qlxn7HH24XFnbcBJlyXTr8z6xB/fCIPFJb0LIvUJeqRC/4vZ
-         HefzYFC6pzCm6sHntxCOio1ph9P4BOEDfEzQo3nz60ffqDPXnmLXYTVFgT/j0mglCw
-         UDhGGWvnIdrJ9o6Lm/wiaXePHU/BAoFMqwufABo4=
+        b=TkxP9h2pVqObs+2aOi/q7pcMy5/vbNuujNH45b+baRtqY/pTX+ptKP1BO6Z5tDeUq
+         +q227GMNB3irO3AYgqOhs6d/T1OzUQTueYI5FLl1O9RfqEoSuex5qvbcZMN3TG9a7M
+         RKBVStEGcEyR0Mlg6rkx3hImMb9a4e6k7d0zM59Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 257/452] net/smc: postpone sk_refcnt increment in connect()
-Date:   Tue,  7 Jun 2022 19:01:54 +0200
-Message-Id: <20220607164916.215711033@linuxfoundation.org>
+Subject: [PATCH 5.10 235/452] drm: msm: fix possible memory leak in mdp5_crtc_cursor_set()
+Date:   Tue,  7 Jun 2022 19:01:32 +0200
+Message-Id: <20220607164915.563387026@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,40 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: liuyacan <liuyacan@corp.netease.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 75c1edf23b95a9c66923d9269d8e86e4dbde151f ]
+[ Upstream commit 947a844bb3ebff0f4736d244d792ce129f6700d7 ]
 
-Same trigger condition as commit 86434744. When setsockopt runs
-in parallel to a connect(), and switch the socket into fallback
-mode. Then the sk_refcnt is incremented in smc_connect(), but
-its state stay in SMC_INIT (NOT SMC_ACTIVE). This cause the
-corresponding sk_refcnt decrement in __smc_release() will not be
-performed.
+drm_gem_object_lookup will call drm_gem_object_get inside. So cursor_bo
+needs to be put when msm_gem_get_and_pin_iova fails.
 
-Fixes: 86434744fedf ("net/smc: add fallback check to connect()")
-Signed-off-by: liuyacan <liuyacan@corp.netease.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: e172d10a9c4a ("drm/msm/mdp5: Add hardware cursor support")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20220509061125.18585-1-hbh25y@gmail.com
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/af_smc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 35db3260e8d5..5d7710dd9514 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -1118,9 +1118,9 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
- 	if (rc && rc != -EINPROGRESS)
- 		goto out;
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
+index 06f19ef5dbf3..ff4f207cbdea 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
+@@ -983,8 +983,10 @@ static int mdp5_crtc_cursor_set(struct drm_crtc *crtc,
  
--	sock_hold(&smc->sk); /* sock put in passive closing */
- 	if (smc->use_fallback)
- 		goto out;
-+	sock_hold(&smc->sk); /* sock put in passive closing */
- 	if (flags & O_NONBLOCK) {
- 		if (queue_work(smc_hs_wq, &smc->connect_work))
- 			smc->connect_nonblock = 1;
+ 	ret = msm_gem_get_and_pin_iova(cursor_bo, kms->aspace,
+ 			&mdp5_crtc->cursor.iova);
+-	if (ret)
++	if (ret) {
++		drm_gem_object_put(cursor_bo);
+ 		return -EINVAL;
++	}
+ 
+ 	pm_runtime_get_sync(&pdev->dev);
+ 
 -- 
 2.35.1
 
