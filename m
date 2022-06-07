@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54DAFC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7494DC43334
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377769AbiFGVAF (ORCPT
+        id S1377802AbiFGVAL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50074 "EHLO
+        Tue, 7 Jun 2022 17:00:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357034AbiFGTyh (ORCPT
+        with ESMTP id S1357011AbiFGTyg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:54:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB0881499;
-        Tue,  7 Jun 2022 11:23:32 -0700 (PDT)
+        Tue, 7 Jun 2022 15:54:36 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6609279392;
+        Tue,  7 Jun 2022 11:23:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97254B82340;
-        Tue,  7 Jun 2022 18:23:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E0C9C385A5;
-        Tue,  7 Jun 2022 18:23:29 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9BC56CE2425;
+        Tue,  7 Jun 2022 18:23:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D37CC36B00;
+        Tue,  7 Jun 2022 18:23:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626210;
-        bh=Y6XVSDQIQqH4KWDzX8d/ookexY2fa+XPD1DwkyN8ET0=;
+        s=korg; t=1654626204;
+        bh=EFyZopC0NhI4QmX1Xz/RSlu+pmSVcB0t0WKz9AarTs8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=riVa8yyce+0FaBxBieoge1UzEllMWSuKFcVwo2MrjlXSTpw4gJMFvCh6gD8wLSWyj
-         MMa0kbx/XNBW3zH6hi9UMmOsKTd8gkfQOb79AmLkqtEalTGJNbTJvLHu0dw3Ry+5/q
-         gtxd5mh3D/xR5i0eVI48TCSqYTnRlCij43nbvUwk=
+        b=kxSwA5TqszOh9mODzEGJ9Ns9jFd+Jhqp1SIqLtaChUFHCF6J+f9wxWCPORXWXLYjt
+         UTxGvgZ3igefME6/lUVsxOd//mTchzKnZWgd4SxfRvKl6LfIk6/lt0R4iBYIbMP2T9
+         sXs1aFgsT+KD7UBoTnTz3MQpc6KGF+ocRjaUS188=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 256/772] nl80211: show SSID for P2P_GO interfaces
-Date:   Tue,  7 Jun 2022 18:57:28 +0200
-Message-Id: <20220607164956.566349852@linuxfoundation.org>
+        stable@vger.kernel.org, Amir Goldstein <amir73il@gmail.com>,
+        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 292/772] inotify: show inotify mask flags in proc fdinfo
+Date:   Tue,  7 Jun 2022 18:58:04 +0200
+Message-Id: <20220607164957.628779500@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,35 +49,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Amir Goldstein <amir73il@gmail.com>
 
-[ Upstream commit a75971bc2b8453630e9f85e0beaa4da8db8277a3 ]
+[ Upstream commit a32e697cda27679a0327ae2cafdad8c7170f548f ]
 
-There's no real reason not to send the SSID to userspace
-when it requests information about P2P_GO, it is, in that
-respect, exactly the same as AP interfaces. Fix that.
+The inotify mask flags IN_ONESHOT and IN_EXCL_UNLINK are not "internal
+to kernel" and should be exposed in procfs fdinfo so CRIU can restore
+them.
 
-Fixes: 44905265bc15 ("nl80211: don't expose wdev->ssid for most interfaces")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20220318134656.14354ae223f0.Ia25e85a512281b92e1645d4160766a4b1a471597@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: 6933599697c9 ("inotify: hide internal kernel bits from fdinfo")
+Link: https://lore.kernel.org/r/20220422120327.3459282-2-amir73il@gmail.com
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/nl80211.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/notify/fdinfo.c               | 11 ++---------
+ fs/notify/inotify/inotify.h      | 12 ++++++++++++
+ fs/notify/inotify/inotify_user.c |  2 +-
+ 3 files changed, 15 insertions(+), 10 deletions(-)
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 0c20df052db3..ba53bc820d81 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -3674,6 +3674,7 @@ static int nl80211_send_iface(struct sk_buff *msg, u32 portid, u32 seq, int flag
- 	wdev_lock(wdev);
- 	switch (wdev->iftype) {
- 	case NL80211_IFTYPE_AP:
-+	case NL80211_IFTYPE_P2P_GO:
- 		if (wdev->ssid_len &&
- 		    nla_put(msg, NL80211_ATTR_SSID, wdev->ssid_len, wdev->ssid))
- 			goto nla_put_failure_locked;
+diff --git a/fs/notify/fdinfo.c b/fs/notify/fdinfo.c
+index 57f0d5d9f934..3451708fd035 100644
+--- a/fs/notify/fdinfo.c
++++ b/fs/notify/fdinfo.c
+@@ -83,16 +83,9 @@ static void inotify_fdinfo(struct seq_file *m, struct fsnotify_mark *mark)
+ 	inode_mark = container_of(mark, struct inotify_inode_mark, fsn_mark);
+ 	inode = igrab(fsnotify_conn_inode(mark->connector));
+ 	if (inode) {
+-		/*
+-		 * IN_ALL_EVENTS represents all of the mask bits
+-		 * that we expose to userspace.  There is at
+-		 * least one bit (FS_EVENT_ON_CHILD) which is
+-		 * used only internally to the kernel.
+-		 */
+-		u32 mask = mark->mask & IN_ALL_EVENTS;
+-		seq_printf(m, "inotify wd:%x ino:%lx sdev:%x mask:%x ignored_mask:%x ",
++		seq_printf(m, "inotify wd:%x ino:%lx sdev:%x mask:%x ignored_mask:0 ",
+ 			   inode_mark->wd, inode->i_ino, inode->i_sb->s_dev,
+-			   mask, mark->ignored_mask);
++			   inotify_mark_user_mask(mark));
+ 		show_mark_fhandle(m, inode);
+ 		seq_putc(m, '\n');
+ 		iput(inode);
+diff --git a/fs/notify/inotify/inotify.h b/fs/notify/inotify/inotify.h
+index 2007e3711916..8f00151eb731 100644
+--- a/fs/notify/inotify/inotify.h
++++ b/fs/notify/inotify/inotify.h
+@@ -22,6 +22,18 @@ static inline struct inotify_event_info *INOTIFY_E(struct fsnotify_event *fse)
+ 	return container_of(fse, struct inotify_event_info, fse);
+ }
+ 
++/*
++ * INOTIFY_USER_FLAGS represents all of the mask bits that we expose to
++ * userspace.  There is at least one bit (FS_EVENT_ON_CHILD) which is
++ * used only internally to the kernel.
++ */
++#define INOTIFY_USER_MASK (IN_ALL_EVENTS | IN_ONESHOT | IN_EXCL_UNLINK)
++
++static inline __u32 inotify_mark_user_mask(struct fsnotify_mark *fsn_mark)
++{
++	return fsn_mark->mask & INOTIFY_USER_MASK;
++}
++
+ extern void inotify_ignored_and_remove_idr(struct fsnotify_mark *fsn_mark,
+ 					   struct fsnotify_group *group);
+ extern int inotify_handle_inode_event(struct fsnotify_mark *inode_mark,
+diff --git a/fs/notify/inotify/inotify_user.c b/fs/notify/inotify/inotify_user.c
+index 54583f62dc44..3ef57db0ec9d 100644
+--- a/fs/notify/inotify/inotify_user.c
++++ b/fs/notify/inotify/inotify_user.c
+@@ -110,7 +110,7 @@ static inline __u32 inotify_arg_to_mask(struct inode *inode, u32 arg)
+ 		mask |= FS_EVENT_ON_CHILD;
+ 
+ 	/* mask off the flags used to open the fd */
+-	mask |= (arg & (IN_ALL_EVENTS | IN_ONESHOT | IN_EXCL_UNLINK));
++	mask |= (arg & INOTIFY_USER_MASK);
+ 
+ 	return mask;
+ }
 -- 
 2.35.1
 
