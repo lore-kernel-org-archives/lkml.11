@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE834CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99C8CCCA486
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359434AbiFGUUu (ORCPT
+        id S1359323AbiFGUUo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:20:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53360 "EHLO
+        Tue, 7 Jun 2022 16:20:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356904AbiFGT2V (ORCPT
+        with ESMTP id S1356669AbiFGT2G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:28:21 -0400
+        Tue, 7 Jun 2022 15:28:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52AFF1A29FE;
-        Tue,  7 Jun 2022 11:11:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E00166FA14;
+        Tue,  7 Jun 2022 11:10:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 05EA861927;
-        Tue,  7 Jun 2022 18:11:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13FCEC34115;
-        Tue,  7 Jun 2022 18:11:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B06B61929;
+        Tue,  7 Jun 2022 18:10:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8593DC385A2;
+        Tue,  7 Jun 2022 18:10:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625499;
-        bh=4JWxKeMCzS1I9F8T8lOqSs2eeTmYuFxzWuEf3D1lwX4=;
+        s=korg; t=1654625424;
+        bh=TOJbzG2XZoI2WrokbFQt+q9q4+105c+y04J+e5RILtI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=viJLPULvug5khyyEPvb0q63Q35yTa3aIcH04CYyYJA6om/r7Yb/YzVlMQifdmonQL
-         8cgR41YZxOScvtyS129QKo8huGEcMGxb35iDqRVGtX3vzGvUK3m6v0k1oS668xhcVv
-         S9bGMCEPOEUCbTYklTyKJ/nwyznMAxe2ssqv1b1k=
+        b=htikj+esIUZipE3FNsYbeqf7XOG5t7zYodH1Yr+ufh2E11E5r56yh+gj2AM2ngx9O
+         FslfuIldkrmkyCb3oZvJHS45o+9cS6mZB2Khvh/Jb5Ao9U2ezYZz0THxfKsf7nIOfp
+         aLreJJcDiIJjNR8ow9bBPnCl/hXFzdLoxdpdKXJ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Michael=20Niew=C3=B6hner?= <linux@mniewoehner.de>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 5.17 033/772] platform/x86: intel-hid: fix _DSM function index handling
-Date:   Tue,  7 Jun 2022 18:53:45 +0200
-Message-Id: <20220607164949.999122441@linuxfoundation.org>
+        stable@vger.kernel.org, Carl Yin <carl.yin@quectel.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.17 015/772] USB: serial: option: add Quectel BG95 modem
+Date:   Tue,  7 Jun 2022 18:53:27 +0200
+Message-Id: <20220607164949.452924864@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,36 +49,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Niewöhner <linux@mniewoehner.de>
+From: Carl Yin(殷张成) <carl.yin@quectel.com>
 
-commit 1620c80bba53af8c547bab34a1d3bc58319fe608 upstream.
+commit 33b7af2f459df453feb0d44628d820c47fefe7a8 upstream.
 
-intel_hid_dsm_fn_mask is a bit mask containing one bit for each function
-index. Fix the function index check in intel_hid_evaluate_method
-accordingly, which was missed in commit 97ab4516205e ("platform/x86:
-intel-hid: fix _DSM function index handling").
+The BG95 modem has 3 USB configurations that are configurable via the AT
+command AT+QCFGEXT="usbnet",["ecm"|"modem"|"rmnet"] which make the modem
+enumerate with the following interfaces, respectively:
 
-Fixes: 97ab4516205e ("platform/x86: intel-hid: fix _DSM function index handling")
+"modem": Diag + GNSS + Modem + Modem
+"ecm"  : Diag + GNSS + Modem + ECM
+"rmnet": Diag + GNSS + Modem + QMI
+         Don't support Full QMI messages (e.g WDS_START_NETWORK_INTERFACE)
+
+A detailed description of the USB configuration for each mode follows:
+
++QCFGEXT: "usbnet","modem"
+--------------------------
+T:  Bus=01 Lev=02 Prnt=02 Port=01 Cnt=01 Dev#=  3 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+P:  Vendor=2c7c ProdID=0700 Rev= 0.00
+S:  Manufacturer=Quectel, Incorporated
+S:  Product=Quectel LPWA Module
+S:  SerialNumber=884328a2
+C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
+I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=fe Prot=ff Driver=option
+E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+
++QCFGEXT: "usbnet","ecm"
+------------------------
+T:  Bus=01 Lev=02 Prnt=02 Port=01 Cnt=01 Dev#=  4 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=2c7c ProdID=0700 Rev= 0.00
+S:  Manufacturer=Quectel, Incorporated
+S:  Product=Quectel LPWA Module
+S:  SerialNumber=884328a2
+C:* #Ifs= 5 Cfg#= 1 Atr=e0 MxPwr=500mA
+A:  FirstIf#= 3 IfCount= 2 Cls=02(comm.) Sub=00 Prot=00
+I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
+E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+I:  If#= 4 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+I:* If#= 4 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+
++QCFGEXT: "usbnet","rmnet"
+--------------------------
+T:  Bus=01 Lev=02 Prnt=02 Port=01 Cnt=01 Dev#=  4 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+P:  Vendor=2c7c ProdID=0700 Rev= 0.00
+S:  Manufacturer=Quectel, Incorporated
+S:  Product=Quectel LPWA Module
+S:  SerialNumber=884328a2
+C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
+I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+
+Signed-off-by: Carl Yin <carl.yin@quectel.com>
 Cc: stable@vger.kernel.org
-Signed-off-by: Michael Niewöhner <linux@mniewoehner.de>
-Link: https://lore.kernel.org/r/66f813f5bcc724a0f6dd5adefe6a9728dbe509e3.camel@mniewoehner.de
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/platform/x86/intel/hid.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/serial/option.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/platform/x86/intel/hid.c
-+++ b/drivers/platform/x86/intel/hid.c
-@@ -238,7 +238,7 @@ static bool intel_hid_evaluate_method(ac
- 
- 	method_name = (char *)intel_hid_dsm_fn_to_method[fn_index];
- 
--	if (!(intel_hid_dsm_fn_mask & fn_index))
-+	if (!(intel_hid_dsm_fn_mask & BIT(fn_index)))
- 		goto skip_dsm_eval;
- 
- 	obj = acpi_evaluate_dsm_typed(handle, &intel_dsm_guid,
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -1137,6 +1137,8 @@ static const struct usb_device_id option
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EM12, 0xff, 0, 0) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, 0x0620, 0xff, 0xff, 0x30) },	/* EM160R-GL */
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, 0x0620, 0xff, 0, 0) },
++	{ USB_DEVICE_INTERFACE_CLASS(QUECTEL_VENDOR_ID, 0x0700, 0xff), /* BG95 */
++	  .driver_info = RSVD(3) | ZLP },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500Q, 0xff, 0xff, 0x30) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500Q, 0xff, 0, 0) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500Q, 0xff, 0xff, 0x10),
 
 
