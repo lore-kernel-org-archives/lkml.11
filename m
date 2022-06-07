@@ -2,92 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60ED8C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:05:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6A2BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:07:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231382AbiFHCFU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:05:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41454 "EHLO
+        id S1443986AbiFHCH0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:07:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386084AbiFHAWK (ORCPT
+        with ESMTP id S1391009AbiFHAgq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:22:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E935F8D5;
-        Tue,  7 Jun 2022 12:17:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22CC761929;
-        Tue,  7 Jun 2022 19:17:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27C4EC385A2;
-        Tue,  7 Jun 2022 19:17:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629466;
-        bh=cXCUdxYiYGxbcZlFp+894IWrbykYvUG1cHNVONu5V+w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0VmkxWh518vrCiLmdNLmR9DVG47DRgiaodwsEjVJ66xMX2eT0N3MekB44JyqHNdco
-         2WqhMga8Pey4LUVzFbu+oN4HQUWY3ljq9sHMetAXXnUneW/F712PKu5Cgy+OwldcM4
-         RABK0JtyeaG1UkHZPGFHdA+uVZs+0SNhL12aDIyo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 701/879] rtla: Fix __set_sched_attr error message
-Date:   Tue,  7 Jun 2022 19:03:39 +0200
-Message-Id: <20220607165023.195646253@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 20:36:46 -0400
+X-Greylist: delayed 5978 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 14:02:45 PDT
+Received: from 20.mo582.mail-out.ovh.net (20.mo582.mail-out.ovh.net [178.32.124.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F4F6110AFD
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:02:43 -0700 (PDT)
+Received: from player739.ha.ovh.net (unknown [10.108.4.54])
+        by mo582.mail-out.ovh.net (Postfix) with ESMTP id 54E522414E
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 21:02:42 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player739.ha.ovh.net (Postfix) with ESMTPSA id 95405274946B0;
+        Tue,  7 Jun 2022 21:02:38 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-107S00141dc07c7-5d7b-4e1e-8dda-b9878c058f71,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+Date:   Tue, 7 Jun 2022 23:02:31 +0200
+From:   Stephen Kitt <steve@sk2.org>
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc:     Robin van der Gracht <robin@protonic.nl>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] auxdisplay: ht16k33: Use backlight helper
+Message-ID: <20220607230231.07e36338@heffalump.sk2.org>
+In-Reply-To: <CANiq72kRhmT37H1FAGYGny83ONYXeqJuO8ZPbym0ajQOWKY4Kw@mail.gmail.com>
+References: <20220607180406.1116277-1-steve@sk2.org>
+        <CANiq72kRhmT37H1FAGYGny83ONYXeqJuO8ZPbym0ajQOWKY4Kw@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/PUlUnIq0mXPgwAmIA0b49MF";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
+X-Ovh-Tracer-Id: 13614944625785603718
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudehiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeffhffvvefukfgjfhfogggtsehgtderreertdejnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeiheevvdeugeejffefteffvefhieegjeevhfekjeejvdelgfefkeehhfdufffhjeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejfeelrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekvd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Bristot de Oliveira <bristot@kernel.org>
+--Sig_/PUlUnIq0mXPgwAmIA0b49MF
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-[ Upstream commit 941a53c39a151e9aceef153cdfaed0f166ba01b7 ]
+Hi Miguel,
 
-rtla's function __set_sched_attr() was borrowed from stalld, but I
-forgot to update the error message to something meaningful for rtla.
+On Tue, 7 Jun 2022 21:08:34 +0200, Miguel Ojeda
+<miguel.ojeda.sandonis@gmail.com> wrote:
+> On Tue, Jun 7, 2022 at 8:04 PM Stephen Kitt <steve@sk2.org> wrote:
+> > backlight_properties.fb_blank is deprecated. The states it represents
+> > are handled by other properties; but instead of accessing those
+> > properties directly, drivers should use the helpers provided by
+> > backlight.h.
+> >
+> > Instead of retrieving the backlight brightness in struct
+> > backlight_properties manually, and then checking whether the backlight
+> > should be on at all, use backlight_get_brightness() which does all
+> > this and insulates this from future changes. =20
+>=20
+> Thanks for the patch! Looks good to me.
+>=20
+> There is a functional change in that `BL_CORE_SUSPENDED` is taken into
+> account with this change, but I assume that is expected. In that case,
+> it could be good to mention it in the commit message.
 
- Update the error message from:
-        boost_with_deadline failed to boost pid PID: STRERROR
- to a proper one:
-        Failed to set sched attributes to the pid PID: STRERROR
+That=E2=80=99s a good point, and it is indeed expected; I=E2=80=99ll add it=
+ to the commit
+message.
 
-Link: https://lkml.kernel.org/r/a2d19b2c53f6512aefd1ee7f8c1bd19d4fc8b99d.1651247710.git.bristot@kernel.org
-Link: https://lore.kernel.org/r/eeded730413e7feaa13f946924bcf2cbf7dd9561.1650617571.git.bristot@kernel.org/
+Regards,
 
-Fixes: b1696371d865 ("rtla: Helper functions for rtla")
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/tracing/rtla/src/utils.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Stephen
 
-diff --git a/tools/tracing/rtla/src/utils.c b/tools/tracing/rtla/src/utils.c
-index da2b590edaed..3bd6f64780cf 100644
---- a/tools/tracing/rtla/src/utils.c
-+++ b/tools/tracing/rtla/src/utils.c
-@@ -255,7 +255,7 @@ int __set_sched_attr(int pid, struct sched_attr *attr)
- 
- 	retval = sched_setattr(pid, attr, flags);
- 	if (retval < 0) {
--		err_msg("boost_with_deadline failed to boost pid %d: %s\n",
-+		err_msg("Failed to set sched attributes to the pid %d: %s\n",
- 			pid, strerror(errno));
- 		return 1;
- 	}
--- 
-2.35.1
+--Sig_/PUlUnIq0mXPgwAmIA0b49MF
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
+-----BEGIN PGP SIGNATURE-----
 
+iQIzBAEBCgAdFiEEnPVX/hPLkMoq7x0ggNMC9Yhtg5wFAmKfvOcACgkQgNMC9Yht
+g5zYOQ/9H3YNK2TyqQSG4j7HQk9Wj4DrSnbALPbkQ+Ej+PNa/OrE5SDk+bfhFJig
+Ctiu1ja2SQHnCoda0Wxy9FuXJXNXp9YNO64Bo1GrQ6zSSNJO5MiDBr82HwF2GfvU
+sbLnsDipylStz7F5+qHfVbUSFvWT3xOFZJwB62JiSrNL5Y7qQr3OR+50BW1s2gid
+rU9MPTfyRBkIeR/JrkyN2ZO1TZweAhVFzn5QVfOxCBmdE1Qzj1Drw9+C3wxaXtfL
+rsLhUaBcvUi0xl9BCavgB/Zk+dIq0k9jXJKOyddp/M0utEf9daCPJswN85I98RKe
+mhKWACHvx8zTh1G7/86+hyV8VLhG995zuPW13TMRR5hSJ3RIGyadwo/MAw8+3Jaf
+31F3g+0e/cbux4a8WRu2VOICrbv9ZfYf6LG9dN3qyj7uwujVMfAbR4j2tphxOIb0
+Z0T85E+gr82uZHDVT7Hyr+cK/dSSxhYU6xjW+ywdlXjGLy86qVr2QwTBjUxRI35I
+aPLrarw8prP3nch47JnfUsfjO65vXqcy9/EHY4FjwFuxRjbxisY7VDZw458suid6
+yk7VdYU/EAYhj2I9E6+NZEtQVCV/XnMqZw7Ma82aHf/7HRWuOkat10PpPXH/mnN1
+XOkR6MTcxLz89MqCZIu5+HyY/haBcWSpq5WCd4U3oPm7jnVG2+8=
+=//gF
+-----END PGP SIGNATURE-----
 
+--Sig_/PUlUnIq0mXPgwAmIA0b49MF--
