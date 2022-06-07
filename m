@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3F0CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F069DCCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359833AbiFGUZs (ORCPT
+        id S1376257AbiFGUZ5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:25:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58096 "EHLO
+        Tue, 7 Jun 2022 16:25:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355923AbiFGTe0 (ORCPT
+        with ESMTP id S1355765AbiFGTew (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:34:26 -0400
+        Tue, 7 Jun 2022 15:34:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2A41AA17E;
-        Tue,  7 Jun 2022 11:13:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991FC1ABFA5;
+        Tue,  7 Jun 2022 11:13:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06CF060B3B;
-        Tue,  7 Jun 2022 18:13:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EF5FC385A2;
-        Tue,  7 Jun 2022 18:13:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADDF560B26;
+        Tue,  7 Jun 2022 18:13:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9E69C385A2;
+        Tue,  7 Jun 2022 18:13:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625585;
-        bh=j8edraf78Gz65VYZ9nUIUzDh7hJEDVGQ5Xh3R5WcUCQ=;
+        s=korg; t=1654625588;
+        bh=/bRe3fMWLujieOuRXkmsKWSwKCr2pPGcp3HWPp9ylT8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GOeJwOT1WeEJ1syymSdTgEVvRZdkYhDYQiMiYB8b8b/QwoXF9Px3VnT6ZWEDKYYR8
-         bu7KIlABArThNrz5dCQfa9S2Iv0SehQ1rWfej9gNLDR2zixcNzGK99RJAqp+pp5P+H
-         Rk94vwo5HspzqJ8yiGtLFNaqjg7OAhIE4Gk/knTQ=
+        b=RHypOqKkTRmfQddo2St5g9wNTCyhZ0MvrA/69+OIBkiMr+PzFLA/M4YbOZLfkRyNs
+         TdyqlQ3CzpcBchuSKiIVK5bXYVQgJGoAbdNocDfzp4q3z4lvNK5u85wNAukWGZFFrz
+         ZG26D5BzfTI0iiEzDXs0BMtO8djZcuHNJ2KrJ0KI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        stable@vger.kernel.org, Hyeonggon Yoo <42.hyeyoo@gmail.com>,
         "Paul E. McKenney" <paulmck@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 070/772] rcu-tasks: Handle sparse cpu_possible_mask in rcu_tasks_invoke_cbs()
-Date:   Tue,  7 Jun 2022 18:54:22 +0200
-Message-Id: <20220607164951.103939864@linuxfoundation.org>
+Subject: [PATCH 5.17 071/772] rcu: Make TASKS_RUDE_RCU select IRQ_WORK
+Date:   Tue,  7 Jun 2022 18:54:23 +0200
+Message-Id: <20220607164951.133727498@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,39 +52,31 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Paul E. McKenney <paulmck@kernel.org>
 
-[ Upstream commit ab2756ea6b74987849b44ad0e33c3cfec159033b ]
+[ Upstream commit 46e861be589881e0905b9ade3d8439883858721c ]
 
-If the cpu_possible_mask is sparse (for example, if bits are set only for
-CPUs 0, 4, 8, ...), then rcu_tasks_invoke_cbs() will access per-CPU data
-for a CPU not in cpu_possible_mask.  It makes these accesses while doing
-a workqueue-based binary search for non-empty callback lists.  Although
-this search must pass through CPUs not represented in cpu_possible_mask,
-it has no need to check the callback list for such CPUs.
+The TASKS_RUDE_RCU does not select IRQ_WORK, which can result in build
+failures for kernels that do not otherwise select IRQ_WORK.  This commit
+therefore causes the TASKS_RUDE_RCU Kconfig option to select IRQ_WORK.
 
-This commit therefore changes the rcu_tasks_invoke_cbs() function's
-binary search so as to only check callback lists for CPUs present in
-cpu_possible_mask.
-
-Reported-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/rcu/tasks.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/rcu/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
-index 30c42797f53b..1664e472524b 100644
---- a/kernel/rcu/tasks.h
-+++ b/kernel/rcu/tasks.h
-@@ -460,7 +460,7 @@ static void rcu_tasks_invoke_cbs(struct rcu_tasks *rtp, struct rcu_tasks_percpu
- 		}
- 	}
+diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
+index bf8e341e75b4..f559870fbf8b 100644
+--- a/kernel/rcu/Kconfig
++++ b/kernel/rcu/Kconfig
+@@ -86,6 +86,7 @@ config TASKS_RCU
  
--	if (rcu_segcblist_empty(&rtpcp->cblist))
-+	if (rcu_segcblist_empty(&rtpcp->cblist) || !cpu_possible(cpu))
- 		return;
- 	raw_spin_lock_irqsave_rcu_node(rtpcp, flags);
- 	rcu_segcblist_advance(&rtpcp->cblist, rcu_seq_current(&rtp->tasks_gp_seq));
+ config TASKS_RUDE_RCU
+ 	def_bool 0
++	select IRQ_WORK
+ 	help
+ 	  This option enables a task-based RCU implementation that uses
+ 	  only context switch (including preemption) and user-mode
 -- 
 2.35.1
 
