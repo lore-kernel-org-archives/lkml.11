@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F788CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0180CCA485
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385199AbiFGWpj (ORCPT
+        id S1386224AbiFGWsl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:45:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51026 "EHLO
+        Tue, 7 Jun 2022 18:48:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352049AbiFGVcp (ORCPT
+        with ESMTP id S1381296AbiFGVk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:32:45 -0400
+        Tue, 7 Jun 2022 17:40:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FF5A17A88B;
-        Tue,  7 Jun 2022 12:04:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 732831A1955;
+        Tue,  7 Jun 2022 12:06:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1936661787;
-        Tue,  7 Jun 2022 19:04:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23E9BC385A5;
-        Tue,  7 Jun 2022 19:04:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 086A7617CC;
+        Tue,  7 Jun 2022 19:06:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C48BC385A2;
+        Tue,  7 Jun 2022 19:06:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628653;
-        bh=z738e8BO/UJzm9zIi0Uml3nSYGvE+UB3QROE2NXxJmA=;
+        s=korg; t=1654628777;
+        bh=lCSjziNxTNEwSEtrEq7GooJbluSq6XU4T2ICg7uY5No=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mi8uqq72aLpQc898sKeKyaeHIgD0rr+SIL3ectcBMvobQZ19tTuXqBnAUAWk1lpXv
-         UuVtvJbEF9nsRSK1NuZ0etl6ALP8LKC9Ng2bbY9PwvAU6INe1nsAsu+Gee0CnE+3VF
-         8lOuJbLLNt7yNE+fcNfVpaP0AY7vEtNYQQMV1rWo=
+        b=YoeSCJOL00lg3V1or8os+JYaeh+EpqVMzZD6GxHQZi0YgOc4Bej5njK0q7eZJsEyx
+         jwoo4erf1bDOuDu0BOGgcykL6n57ard0yETXwo+vBu7Zi2ZwRU2TykNeMllnITWvws
+         y2JVRjgsFqQrfyQCoW0/OskL+4vCGMSyyTuWxAXU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        stable@vger.kernel.org, Yake Yang <yake.yang@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 406/879] selftests/bpf: Prevent skeleton generation race
-Date:   Tue,  7 Jun 2022 18:58:44 +0200
-Message-Id: <20220607165014.646932607@linuxfoundation.org>
+Subject: [PATCH 5.18 451/879] Bluetooth: mt7921s: Fix the incorrect pointer check
+Date:   Tue,  7 Jun 2022 18:59:29 +0200
+Message-Id: <20220607165015.959413495@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,56 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Sean Wang <sean.wang@mediatek.com>
 
-[ Upstream commit 1e2666e029e5cc2b81dbd7c85af5bcc8c80524e0 ]
+[ Upstream commit 789f6b8ac3b15bca09b69d5699cad0bf6e2103aa ]
 
-Prevent "classic" and light skeleton generation rules from stomping on
-each other's toes due to the use of the same <obj>.linked{1,2,3}.o
-naming pattern. There is no coordination and synchronizataion between
-.skel.h and .lskel.h rules, so they can easily overwrite each other's
-intermediate object files, leading to errors like:
+Fix the incorrect pointer check on ven_data.
 
-  /bin/sh: line 1: 170928 Bus error               (core dumped)
-  /data/users/andriin/linux/tools/testing/selftests/bpf/tools/sbin/bpftool gen skeleton
-  /data/users/andriin/linux/tools/testing/selftests/bpf/test_ksyms_weak.linked3.o
-  name test_ksyms_weak
-  > /data/users/andriin/linux/tools/testing/selftests/bpf/test_ksyms_weak.skel.h
-  make: *** [Makefile:507: /data/users/andriin/linux/tools/testing/selftests/bpf/test_ksyms_weak.skel.h] Error 135
-  make: *** Deleting file '/data/users/andriin/linux/tools/testing/selftests/bpf/test_ksyms_weak.skel.h'
-
-Fix by using different suffix for light skeleton rule.
-
-Fixes: c48e51c8b07a ("bpf: selftests: Add selftests for module kfunc support")
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220509004148.1801791-2-andrii@kernel.org
+Fixes: f41b91fa1783 ("Bluetooth: mt7921s: Add .btmtk_get_codec_config_data")
+Co-developed-by: Yake Yang <yake.yang@mediatek.com>
+Signed-off-by: Yake Yang <yake.yang@mediatek.com>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/Makefile | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/bluetooth/btmtksdio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 3820608faf57..a15c47d2fa73 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -415,11 +415,11 @@ $(TRUNNER_BPF_SKELS): %.skel.h: %.o $(BPFTOOL) | $(TRUNNER_OUTPUT)
+diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
+index f3dc5881fff7..b6d77e04240c 100644
+--- a/drivers/bluetooth/btmtksdio.c
++++ b/drivers/bluetooth/btmtksdio.c
+@@ -961,7 +961,7 @@ static int btmtksdio_get_codec_config_data(struct hci_dev *hdev,
+ 	}
  
- $(TRUNNER_BPF_LSKELS): %.lskel.h: %.o $(BPFTOOL) | $(TRUNNER_OUTPUT)
- 	$$(call msg,GEN-SKEL,$(TRUNNER_BINARY),$$@)
--	$(Q)$$(BPFTOOL) gen object $$(<:.o=.linked1.o) $$<
--	$(Q)$$(BPFTOOL) gen object $$(<:.o=.linked2.o) $$(<:.o=.linked1.o)
--	$(Q)$$(BPFTOOL) gen object $$(<:.o=.linked3.o) $$(<:.o=.linked2.o)
--	$(Q)diff $$(<:.o=.linked2.o) $$(<:.o=.linked3.o)
--	$(Q)$$(BPFTOOL) gen skeleton -L $$(<:.o=.linked3.o) name $$(notdir $$(<:.o=_lskel)) > $$@
-+	$(Q)$$(BPFTOOL) gen object $$(<:.o=.llinked1.o) $$<
-+	$(Q)$$(BPFTOOL) gen object $$(<:.o=.llinked2.o) $$(<:.o=.llinked1.o)
-+	$(Q)$$(BPFTOOL) gen object $$(<:.o=.llinked3.o) $$(<:.o=.llinked2.o)
-+	$(Q)diff $$(<:.o=.llinked2.o) $$(<:.o=.llinked3.o)
-+	$(Q)$$(BPFTOOL) gen skeleton -L $$(<:.o=.llinked3.o) name $$(notdir $$(<:.o=_lskel)) > $$@
- 
- $(TRUNNER_BPF_SKELS_LINKED): $(TRUNNER_BPF_OBJS) $(BPFTOOL) | $(TRUNNER_OUTPUT)
- 	$$(call msg,LINK-BPF,$(TRUNNER_BINARY),$$(@:.skel.h=.o))
+ 	*ven_data = kmalloc(sizeof(__u8), GFP_KERNEL);
+-	if (!ven_data) {
++	if (!*ven_data) {
+ 		err = -ENOMEM;
+ 		goto error;
+ 	}
 -- 
 2.35.1
 
