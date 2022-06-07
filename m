@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D36BBCCA486
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6636C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352846AbiFGS6L (ORCPT
+        id S1353154AbiFGS6U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33004 "EHLO
+        Tue, 7 Jun 2022 14:58:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352080AbiFGSUt (ORCPT
+        with ESMTP id S1352069AbiFGSUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:20:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8605A3055D;
-        Tue,  7 Jun 2022 10:53:48 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F7D130541;
+        Tue,  7 Jun 2022 10:53:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D293D6137B;
-        Tue,  7 Jun 2022 17:53:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BF70C36AFE;
-        Tue,  7 Jun 2022 17:53:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4F2BB8236D;
+        Tue,  7 Jun 2022 17:53:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB7D5C34115;
+        Tue,  7 Jun 2022 17:53:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624426;
-        bh=YrV3nqLP+jAT5CvSK+m0J/RN1V+pBDdcZX8TEWWHFFg=;
+        s=k20201202; t=1654624405;
+        bh=C3p8V+CShGR7nozEVmR7aMQKSLK+SVYLvPNgHctlLf8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tYzQ+UFiqDuJjK9ioNmnNBJid8aLeKMsNEXSV3JTHCDENtED1bC702O6G+kMDTuvo
-         dykNJr+I7dX99Fmykg265YlciiPfQGb6hKHtmdjfRSmsGEko6SOfBcPNM0EtYptCnB
-         KUSvda0CkebEMi0hehD5ZFBrS/790uyvrBc5GOl/hqXregEyyWQNMB7ZiX7HiDD081
-         4HTPgbmbYxL5Dwskz8osq1rFmfBy4pf2kKzGjHE5lRNXqmdd0XJtM9YXd/OIjbEHwK
-         TZoS57TUlRuVdRrSyn5HP8Mz6+R1v8xpWIeCfYgUxiZFExtTTdJjqqz1B52ijOjxD2
-         ZH+4soHcaWyrw==
+        b=Kol9521fs7CqhKFDDdll/nC+p02+bkXFS15aavvICnohaQrV6tFixRJ0Idw9GOANc
+         C/W1NJZvdimJL3Xq2DlR+aV2pg2BaqEa90/9jqDHZwlBkIr0JlPDzxsFljVyjYhy/5
+         Ky/niUUAbVb7tmrPcdGpI+2Io19wPbu3wpqxQHlHhQqy0IYGMp/Z3GiSipypfvykBA
+         0vkuANyr4RZ/2m0mKcejc8OxbMq20zJ3h45UO4K+nSv2+khfyIrq35Fdz4jG6VgVS9
+         1LrH8lCFqDZvS8yVjiHi3aYAjldyjjItKlxdE0nRMbHXfGF/eWe5wP0Wi5/xwCHXSQ
+         43AD/R5TJpKmg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Evan Green <evgreen@chromium.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
+Cc:     Huang Guobin <huangguobin4@huawei.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, bhelgaas@google.com,
-        rafael.j.wysocki@intel.com, christophe.leroy@csgroup.eu,
-        yj84.jang@samsung.com, linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 15/60] USB: hcd-pci: Fully suspend across freeze/thaw cycle
-Date:   Tue,  7 Jun 2022 13:52:12 -0400
-Message-Id: <20220607175259.478835-15-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 08/60] tty: Fix a possible resource leak in icom_probe
+Date:   Tue,  7 Jun 2022 13:52:05 -0400
+Message-Id: <20220607175259.478835-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
 References: <20220607175259.478835-1-sashal@kernel.org>
@@ -55,48 +53,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Green <evgreen@chromium.org>
+From: Huang Guobin <huangguobin4@huawei.com>
 
-[ Upstream commit 63acaa8e9c65dc34dc249440216f8e977f5d2748 ]
+[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
 
-The documentation for the freeze() method says that it "should quiesce
-the device so that it doesn't generate IRQs or DMA". The unspoken
-consequence of not doing this is that MSIs aimed at non-boot CPUs may
-get fully lost if they're sent during the period where the target CPU is
-offline.
+When pci_read_config_dword failed, call pci_release_regions() and
+pci_disable_device() to recycle the resource previously allocated.
 
-The current callbacks for USB HCD do not fully quiesce interrupts,
-specifically on XHCI. Change to use the full suspend/resume flow for
-freeze/thaw to ensure interrupts are fully quiesced. This fixes issues
-where USB devices fail to thaw during hibernation because XHCI misses
-its interrupt and cannot recover.
-
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Evan Green <evgreen@chromium.org>
-Link: https://lore.kernel.org/r/20220421103751.v3.2.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
+Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/core/hcd-pci.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/icom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/core/hcd-pci.c b/drivers/usb/core/hcd-pci.c
-index d630cccd2e6e..5af810cd8a58 100644
---- a/drivers/usb/core/hcd-pci.c
-+++ b/drivers/usb/core/hcd-pci.c
-@@ -616,10 +616,10 @@ const struct dev_pm_ops usb_hcd_pci_pm_ops = {
- 	.suspend_noirq	= hcd_pci_suspend_noirq,
- 	.resume_noirq	= hcd_pci_resume_noirq,
- 	.resume		= hcd_pci_resume,
--	.freeze		= check_root_hub_suspended,
-+	.freeze		= hcd_pci_suspend,
- 	.freeze_noirq	= check_root_hub_suspended,
- 	.thaw_noirq	= NULL,
--	.thaw		= NULL,
-+	.thaw		= hcd_pci_resume,
- 	.poweroff	= hcd_pci_suspend,
- 	.poweroff_noirq	= hcd_pci_suspend_noirq,
- 	.restore_noirq	= hcd_pci_resume_noirq,
+diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
+index 03a2fe9f4c9a..02b375ba2f07 100644
+--- a/drivers/tty/serial/icom.c
++++ b/drivers/tty/serial/icom.c
+@@ -1501,7 +1501,7 @@ static int icom_probe(struct pci_dev *dev,
+ 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
+ 	if (retval) {
+ 		dev_err(&dev->dev, "PCI Config read FAILED\n");
+-		return retval;
++		goto probe_exit0;
+ 	}
+ 
+ 	pci_write_config_dword(dev, PCI_COMMAND,
 -- 
 2.35.1
 
