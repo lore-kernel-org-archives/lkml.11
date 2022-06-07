@@ -2,110 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4A90CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:38:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A37ECCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345079AbiFGQi5 (ORCPT
+        id S1345091AbiFGQji (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 12:38:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40612 "EHLO
+        Tue, 7 Jun 2022 12:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345069AbiFGQi4 (ORCPT
+        with ESMTP id S1345085AbiFGQjf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 12:38:56 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCD6814B4;
-        Tue,  7 Jun 2022 09:38:55 -0700 (PDT)
+        Tue, 7 Jun 2022 12:39:35 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB32AC8BD1;
+        Tue,  7 Jun 2022 09:39:34 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id q18so15238708pln.12;
+        Tue, 07 Jun 2022 09:39:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654619935; x=1686155935;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=uKV8Rrvy8kCqSKlM45aKJN6vfteKfERlb/gHHUZ2hGE=;
-  b=eenzpvUgxXQaYdsJQYmJHLoYazvwDnOAI4KDAjGbDTl+g3zQzAgyPcKq
-   FkEn23dldDXQrfHYuvtZyUc8QdA6zAL3NLW59CMRAjHJG6sFQjwQd907x
-   1mxveKa4iESJVznu5hOOO4maN4zX9WEEEmHNKC5VFMpf7CpkOXzFvugHv
-   M=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 07 Jun 2022 09:38:55 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 09:38:54 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 7 Jun 2022 09:38:54 -0700
-Received: from [10.216.1.130] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 7 Jun 2022
- 09:38:46 -0700
-Message-ID: <5427aa79-b87c-74eb-def5-9b4e3299a331@quicinc.com>
-Date:   Tue, 7 Jun 2022 22:08:38 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v12 00/12] Add soundcard support for sc7280 based
- platforms.
-Content-Language: en-US
-To:     Matthias Kaehlcke <mka@chromium.org>
-CC:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>, <quic_tdas@quicinc.com>
-References: <1653049124-24713-1-git-send-email-quic_srivasam@quicinc.com>
- <Yp5yUSvC05wOxtei@google.com>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <Yp5yUSvC05wOxtei@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=MMsXwp0wncXVlQhEOdDSIGnh/k5pLZa/8LV3fqGCk4Y=;
+        b=KIKbOB4wieeuMpPaO4+32G+4O/nY09/u19Hqx4jPcpRklBIHv2pGAdhO1sQC919tqD
+         NDH4+9zXCSW0mRmdCh/7PSXshbx4o0PDMEieI3ug6oYly+Y6IHZoreB1ONVcYCRJhWvF
+         SR6PP+uhXWFry/W5JVfWBl5xTF6wXJcMIt76Nt3bkIKvt8VBhN29upjxcjONcAn9QLE+
+         lWjCZ1G826QU7OO3kpgh8vE/sigSZehnXmu/DXLREfk1V5buNv4/PBT35ez61pRAom3D
+         RteKFqjdRcjWzcMLhx2XeHk656GOqb+/22zVFV4ZOfAL82uPf+DTqpzmWMjV7cMNI9p2
+         LJGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=MMsXwp0wncXVlQhEOdDSIGnh/k5pLZa/8LV3fqGCk4Y=;
+        b=dEBIwXPPHY4aRRIKg04ep5vXTBHJkgSZIOS9zYMlAanM1zGcyiPkLBWo7LXc+Tl/Cu
+         8YQJBIBl0SKmNYVCTL6N2Ixor/ie7/RFky+DhpqKuWkeN1gt0g8aZwGOkZdGwr01RgL7
+         gzCY+dkQbXyuNmIF9GETnz1R3Prm8tJs2idkizTvtyYmcxQf4H21Vu8U9EwbmXq3SCVN
+         AQ3FlY1XevRobbOZ6xxMbmmu8Uw4FEgBx5eksrF6103crC/ES4wwvKvL+YLUFHEoLPVs
+         8hVWnIsIKAV7mX8AQ89OaE6lWhte+J+3IBaZhmElzud5Uyxh+Nr3vaTgn/dbbuWyBJAg
+         BZqg==
+X-Gm-Message-State: AOAM530U8z286HPj+/ImUy071JZKGFpHk1o5fCnOBMrvgkcU70TEtvFz
+        b+Hta6iI4g1L/s4QgmYEydc=
+X-Google-Smtp-Source: ABdhPJwNz5IykOxSZ49GvZQ67utgu7Sq19F/1tUevm/gmcskQusvlJdzF1E9V8CoEor0rp7A6HBZsQ==
+X-Received: by 2002:a17:90b:2247:b0:1e8:9f24:269a with SMTP id hk7-20020a17090b224700b001e89f24269amr5405690pjb.14.1654619974077;
+        Tue, 07 Jun 2022 09:39:34 -0700 (PDT)
+Received: from potin-quanta.dhcpserver.local (125-228-123-29.hinet-ip.hinet.net. [125.228.123.29])
+        by smtp.gmail.com with ESMTPSA id d15-20020aa797af000000b0051bbc198f3fsm12560272pfq.13.2022.06.07.09.39.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 09:39:33 -0700 (PDT)
+From:   Potin Lai <potin.lai.pt@gmail.com>
+To:     Brendan Higgins <brendanhiggins@google.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Rob Herring <robh+dt@kernel.org>,
+        Rayn Chen <rayn_chen@aspeedtech.com>
+Cc:     Patrick Williams <patrick@stwcx.xyz>,
+        Potin Lai <potin.lai@quantatw.com>, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Potin Lai <potin.lai.pt@gmail.com>
+Subject: [PATCH v3 0/2] Add i2c clock duty cycle property for setting minimum persentage of clock high
+Date:   Wed,  8 Jun 2022 00:37:01 +0800
+Message-Id: <20220607163703.26355-1-potin.lai.pt@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Introducing i2c-clk-duty-cycle-min property for setting minimum persentage
+of clock high. 
 
-On 6/7/2022 3:02 AM, Matthias Kaehlcke wrote:
-Thanks for your time Matthias!!!
-> On Fri, May 20, 2022 at 05:48:32PM +0530, Srinivasa Rao Mandadapu wrote:
->> This patch set is to add bolero digital macros, WCD and maxim codecs nodes
->> for audio on sc7280 based platforms.
->>
->> This patch set depends on:
->>      -- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=638776
->>      -- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=634597
->>      -- https://patchwork.kernel.org/project/linux-clk/list/?series=637999
->>      -- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=638002
-> Another dependency (at least in terms of functionality) is:
->
-> ASoC: qcom: soundwire: Add support for controlling audio CGCR from HLOS
-> https://patchwork.kernel.org/patch/12853622/
-This is landed today.
->
-> And then there is this:
->
-> arm64: dts: qcom: sc7280: Add lpasscore & lpassaudio clock controllers
-> https://patchwork.kernel.org/project/linux-arm-msm/patch/20220523100058.26241-1-quic_tdas@quicinc.com/
->
-> A previous version (v3) of that patch already landed (9499240d15f2
-> "arm64: dts: qcom: sc7280: Add lpasscore & lpassaudio clock controllers"),
-> it is not clear to me why it is still evolving as if that weren't the
-> case.
+This driver will go through base clock divisor and calculate a set of
+high/low clock with duty cycle applied. if driver could not find a suit
+high/low clock set, then it will use default duty cycle (50%) recalculate.
 
-I too have same doubt. the changes should be incremental and new patch. 
-May be Taniya considered
+LINK: [v1] https://lore.kernel.org/all/20220530114056.8722-1-potin.lai.pt@gmail.com/
+LINK: [v2] https://lore.kernel.org/all/20220601041512.21484-1-potin.lai.pt@gmail.com/
 
-the status in patchwork.kernel org, where still it's showing new.
+changes v2 --> v3:
+* discard the properties for manual setting, use duty cycle to calculate
+  high/low clock.
 
->
->  From the newer version of the patch at least marking the 'lpasscc' node
-> as disabled is needed.
+changes v1 --> v2:
+* update bt-bindings documentation
+* use meaningful values for properties instead of acture value in register
 
-yes, agree. And the node name changed to lpasscore to lpass_core.
+Potin Lai (2):
+  aspeed: i2c: add clock duty cycle property
+  dt-bindings: aspeed-i2c: add properties for setting i2c clock duty
+    cycle
 
-Included Taniya in the mail chain for further discussion.
+ .../devicetree/bindings/i2c/aspeed,i2c.yaml   |  8 +++
+ drivers/i2c/busses/i2c-aspeed.c               | 56 +++++++++++++++----
+ 2 files changed, 53 insertions(+), 11 deletions(-)
+
+-- 
+2.17.1
 
