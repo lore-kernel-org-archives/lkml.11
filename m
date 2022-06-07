@@ -2,95 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 966BCC19F56
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8E21C28D13
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238470AbiFHA4E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:56:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53902 "EHLO
+        id S1377785AbiFHA4a (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 20:56:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381902AbiFGVpc (ORCPT
+        with ESMTP id S1575217AbiFGX0z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:45:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E13C23512A;
-        Tue,  7 Jun 2022 12:07:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B4F8B82182;
-        Tue,  7 Jun 2022 19:07:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D56CC385A5;
-        Tue,  7 Jun 2022 19:07:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628846;
-        bh=G4QYV8KfCGN2kJuv0APB3ew8HI83mkxuqGlT4tkQ4ak=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VpaqeErBX06cshDzka/gyYjfFoVwWTh4diUnmTthNoS9uzooAV4oSdHqTrO/FTyfp
-         +nsoz/b4BUhaHK0s2ei1JimeujyRpFBas09h/MkhAy3UJlxTaVue+Pj6eeBegkyYIz
-         vskVDNSCvIhiErYe2WoAPxCe/OyCEFVbF4+Ks8+c=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonas Karlman <jonas@kwiboo.se>,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Ezequiel Garcia <ezequiel@collabora.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 477/879] media: rkvdec: h264: Fix bit depth wrap in pps packet
-Date:   Tue,  7 Jun 2022 18:59:55 +0200
-Message-Id: <20220607165016.724139272@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 19:26:55 -0400
+Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C4BF23144F
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:38:51 -0700 (PDT)
+Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-f2cbceefb8so24832106fac.11
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:38:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UT6FRxZCCVn7OqqVAbhvoV4VpY3ARaNq+uPA/xI1MuY=;
+        b=pc9UJg+xnBO5ap56BHhUl3f6eqKcQD+0/WnYWubChDarInjUWRNdUsIXAP/TIqDJ79
+         HxMD4bDcMtpNrD7R8lHGDakIRXNOIyGEgdJH41ZE3Ez69dfu82XlKRb5GM+65JuUPkAU
+         WiFrnkPjo/dGb19y3hYGLC/wxrhvy9KHKxdd89IFC8TnbRuJpCPHF5Dcgku5pmBdmWXb
+         Z1/JffT2b4CA6/n25K5VgyK6aEMrLVvpmw0TwSVw3hLcTDZSsYYck7kWLPKMUerCcE0F
+         s4sGhT+PpowYPXn9rbhIzGR610wywA0PTR/h8IvRMIeZ3vqg+waaINh6KJaqsw3L3pUK
+         Nr6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UT6FRxZCCVn7OqqVAbhvoV4VpY3ARaNq+uPA/xI1MuY=;
+        b=3n5ZEmRCFgTH+60uLYBrMG8IsgKWt/jDhvsJzhT8GMT3eagcVW6TWaB16v38v46dZp
+         Sa6+Rcjqi3025p9Qzo7nkzRKNolDSjPyokc6ZMCXLVgoIzAt9n35E+wyQkqtrp4xH6D6
+         2p6B8CLWi/VwTCJGkbgNoIM+17FjlqjYeZp+rcnBshj4knZUSLBEh8oCrw7mrpSDJR7X
+         teqlLN29igxuMHbsVEygazcJrCSHm4WPl/O/izFaUrnBaIbi5OhN3MnDBWek7rTjFa7c
+         PCdSqMsjsSvGopzfvRwp2kAboLMRQg85+KvCegeefV6hDfVutlQ4BSy4H5rHKJIGhrp/
+         0PAA==
+X-Gm-Message-State: AOAM531isEySmQCBBBNs45nmAfxwHmEh8Px3kNAetNV+HU4EtCBblBBJ
+        FHDewzQ+Lbu4mKQj+k+c02ZMjQ==
+X-Google-Smtp-Source: ABdhPJz2UhA25gNgndTVySjZihJZbirawDXxRv/5lfYlPIluRnbJOQvbiRmLREaRqTzA3owg0a8Wgw==
+X-Received: by 2002:a05:6870:23a6:b0:f2:2dfd:d6d5 with SMTP id e38-20020a05687023a600b000f22dfdd6d5mr620206oap.100.1654637929436;
+        Tue, 07 Jun 2022 14:38:49 -0700 (PDT)
+Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id cr11-20020a056870ebcb00b000f33a37411dsm8554122oab.26.2022.06.07.14.38.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 14:38:48 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/4] arm64: dts: qcom: Introduce SC8280XP
+Date:   Tue,  7 Jun 2022 14:41:09 -0700
+Message-Id: <20220607214113.4057684-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonas Karlman <jonas@kwiboo.se>
+This series introduces the Qualcomm 8cx Gen 3 platform, with basic support for
+the CRD reference device and the SA8295P automotive development platform.
 
-[ Upstream commit a074aa4760d1dad0bd565c0f66e7250f5f219ab0 ]
+Bjorn Andersson (4):
+  dt-bindings: mailbox: qcom-ipcc: Add NSP1 client
+  arm64: dts: qcom: add SC8280XP platform
+  arm64: dts: qcom: sc8280x: Add reference device
+  arm64: dts: qcom: add SA8540P and ADP
 
-The luma and chroma bit depth fields in the pps packet are 3 bits wide.
-8 is wrongly added to the bit depth values written to these 3 bit fields.
-Because only the 3 LSB are written, the hardware was configured
-correctly.
+ arch/arm64/boot/dts/qcom/Makefile            |    2 +
+ arch/arm64/boot/dts/qcom/sa8295p-adp.dts     |  434 ++++
+ arch/arm64/boot/dts/qcom/sa8540p.dtsi        |  133 ++
+ arch/arm64/boot/dts/qcom/sc8280xp-crd.dts    |  423 ++++
+ arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi |  108 +
+ arch/arm64/boot/dts/qcom/sc8280xp.dtsi       | 2195 ++++++++++++++++++
+ include/dt-bindings/mailbox/qcom-ipcc.h      |    1 +
+ 7 files changed, 3296 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/sa8295p-adp.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sa8540p.dtsi
+ create mode 100644 arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc8280xp-pmics.dtsi
+ create mode 100644 arch/arm64/boot/dts/qcom/sc8280xp.dtsi
 
-Correct this by not adding 8 to the luma and chroma bit depth value.
-
-Fixes: cd33c830448ba ("media: rkvdec: Add the rkvdec driver")
-Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
-Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@collabora.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/staging/media/rkvdec/rkvdec-h264.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-index f5d8c6cb740b..22b4bf9e9ef4 100644
---- a/drivers/staging/media/rkvdec/rkvdec-h264.c
-+++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
-@@ -662,8 +662,8 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
- 	WRITE_PPS(0xff, PROFILE_IDC);
- 	WRITE_PPS(1, CONSTRAINT_SET3_FLAG);
- 	WRITE_PPS(sps->chroma_format_idc, CHROMA_FORMAT_IDC);
--	WRITE_PPS(sps->bit_depth_luma_minus8 + 8, BIT_DEPTH_LUMA);
--	WRITE_PPS(sps->bit_depth_chroma_minus8 + 8, BIT_DEPTH_CHROMA);
-+	WRITE_PPS(sps->bit_depth_luma_minus8, BIT_DEPTH_LUMA);
-+	WRITE_PPS(sps->bit_depth_chroma_minus8, BIT_DEPTH_CHROMA);
- 	WRITE_PPS(0, QPPRIME_Y_ZERO_TRANSFORM_BYPASS_FLAG);
- 	WRITE_PPS(sps->log2_max_frame_num_minus4, LOG2_MAX_FRAME_NUM_MINUS4);
- 	WRITE_PPS(sps->max_num_ref_frames, MAX_NUM_REF_FRAMES);
 -- 
 2.35.1
-
-
 
