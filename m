@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE48FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D1CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:03:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378922AbiFGWDR (ORCPT
+        id S1382405AbiFGWDV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50314 "EHLO
+        Tue, 7 Jun 2022 18:03:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378918AbiFGVBy (ORCPT
+        with ESMTP id S1378874AbiFGVBx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:01:54 -0400
+        Tue, 7 Jun 2022 17:01:53 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF56A69296;
-        Tue,  7 Jun 2022 11:45:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9842C20EE86;
+        Tue,  7 Jun 2022 11:45:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62E8BB82182;
-        Tue,  7 Jun 2022 18:45:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA382C385A2;
-        Tue,  7 Jun 2022 18:45:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2EC5BB822C0;
+        Tue,  7 Jun 2022 18:45:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71B1EC385A2;
+        Tue,  7 Jun 2022 18:45:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627554;
-        bh=KidPKL7CSKLt/gRwD34Zy5/VxtuEN1OY6TljW2bDPrg=;
+        s=korg; t=1654627548;
+        bh=NOiv8Tiyc/iLudToEyG5vrD7UybPASKRRba4y5xBscc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lRkxEG8+PSHOSGeH1C5wfkBkz/who/hDQhWm22ElhClGWhqVeW851kNcSyMn2+cMw
-         1eU0Gv8zRYpBMb/iyb0hRNANV5SafmuZdNO8m0W1Fx8MeEali4lOEkzB5t8hl8O67t
-         1dy6baNCWgnlgu7wgkC05GDVaAM6s187HKyxqQ4U=
+        b=jq5QMVBoEYGlfASOy5DvzkVgFBbSrkyliNRELPEADt4sDdssSFSf2MuMFPuOg8C6I
+         lrMFMpsiy7FBPf08FXOEfuNvPDnsCG+jveICgcD8GTAIARCcelBRnpmnGFp6jAwp2A
+         iozp6s5b2lNOTrX3c49B9JsM2iCwv47jFj6EXH0A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.18 010/879] riscv: Move alternative length validation into subsection
-Date:   Tue,  7 Jun 2022 18:52:08 +0200
-Message-Id: <20220607165002.969931142@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>,
+        Philippe Cornu <philippe.cornu@foss.st.com>
+Subject: [PATCH 5.17 732/772] stm: ltdc: fix two incorrect NULL checks on list iterator
+Date:   Tue,  7 Jun 2022 19:05:24 +0200
+Message-Id: <20220607165010.609589954@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,92 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 61114e734ccb804bc12561ab4020745e02c468c2 upstream.
+commit 2e6c86be0e57079d1fb6c7c7e5423db096d0548a upstream.
 
-After commit 49b290e430d3 ("riscv: prevent compressed instructions in
-alternatives"), builds with LLVM's integrated assembler fail:
+The two bugs are here:
+	if (encoder) {
+	if (bridge && bridge->timings)
 
-  In file included from arch/riscv/mm/init.c:10:
-  In file included from ./include/linux/mm.h:29:
-  In file included from ./include/linux/pgtable.h:6:
-  In file included from ./arch/riscv/include/asm/pgtable.h:108:
-  ./arch/riscv/include/asm/tlbflush.h:23:2: error: expected assembly-time absolute expression
-          ALT_FLUSH_TLB_PAGE(__asm__ __volatile__ ("sfence.vma %0" : : "r" (addr) : "memory"));
-          ^
-  ./arch/riscv/include/asm/errata_list.h:33:5: note: expanded from macro 'ALT_FLUSH_TLB_PAGE'
-  asm(ALTERNATIVE("sfence.vma %0", "sfence.vma", SIFIVE_VENDOR_ID,        \
-      ^
-  ./arch/riscv/include/asm/alternative-macros.h:187:2: note: expanded from macro 'ALTERNATIVE'
-          _ALTERNATIVE_CFG(old_content, new_content, vendor_id, errata_id, CONFIG_k)
-          ^
-  ./arch/riscv/include/asm/alternative-macros.h:113:2: note: expanded from macro '_ALTERNATIVE_CFG'
-          __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, IS_ENABLED(CONFIG_k))
-          ^
-  ./arch/riscv/include/asm/alternative-macros.h:110:2: note: expanded from macro '__ALTERNATIVE_CFG'
-          ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c)
-          ^
-  ./arch/riscv/include/asm/alternative-macros.h:99:3: note: expanded from macro 'ALT_NEW_CONTENT'
-          ".org   . - (889b - 888b) + (887b - 886b)\n"                    \
-           ^
-  <inline asm>:26:6: note: instantiated into assembly here
-  .org    . - (889b - 888b) + (887b - 886b)
-          ^
+The list iterator value 'encoder/bridge' will *always* be set and
+non-NULL by drm_for_each_encoder()/list_for_each_entry(), so it is
+incorrect to assume that the iterator value will be NULL if the
+list is empty or no element is found.
 
-This error happens because LLVM's integrated assembler has a one-pass
-design, which means it cannot figure out the instruction lengths when
-the .org directive is outside of the subsection that contains the
-instructions, which was changed by the .option directives added by the
-above change.
+To fix the bug, use a new variable '*_iter' as the list iterator,
+while use the old variable 'encoder/bridge' as a dedicated pointer
+to point to the found element.
 
-Move the .org directives before the .previous directive so that these
-directives are always within the same subsection, which resolves the
-failures and does not introduce any new issues with GNU as. This was
-done for arm64 in commit 966a0acce2fc ("arm64/alternatives: move length
-validation inside the subsection") and commit 22315a2296f4 ("arm64:
-alternatives: Move length validation in alternative_{insn, endif}").
-
-While there is no error from the assembly versions of the macro, they
-appear to have the same problem so just make the same change there as
-well so that there are no problems in the future.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1640
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-Tested-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://lore.kernel.org/r/20220516214520.3252074-1-nathan@kernel.org
 Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Fixes: 99e360442f223 ("drm/stm: Fix bus_flags handling")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Acked-by: Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
+Signed-off-by: Philippe Cornu <philippe.cornu@foss.st.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220327055355.3808-1-xiam0nd.tong@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/include/asm/alternative-macros.h |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/stm/ltdc.c |   16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
---- a/arch/riscv/include/asm/alternative-macros.h
-+++ b/arch/riscv/include/asm/alternative-macros.h
-@@ -23,9 +23,9 @@
- 888 :
- 	\new_c
- 889 :
--	.previous
- 	.org    . - (889b - 888b) + (887b - 886b)
- 	.org    . - (887b - 886b) + (889b - 888b)
-+	.previous
- 	.endif
- .endm
+--- a/drivers/gpu/drm/stm/ltdc.c
++++ b/drivers/gpu/drm/stm/ltdc.c
+@@ -528,8 +528,8 @@ static void ltdc_crtc_mode_set_nofb(stru
+ 	struct drm_device *ddev = crtc->dev;
+ 	struct drm_connector_list_iter iter;
+ 	struct drm_connector *connector = NULL;
+-	struct drm_encoder *encoder = NULL;
+-	struct drm_bridge *bridge = NULL;
++	struct drm_encoder *encoder = NULL, *en_iter;
++	struct drm_bridge *bridge = NULL, *br_iter;
+ 	struct drm_display_mode *mode = &crtc->state->adjusted_mode;
+ 	u32 hsync, vsync, accum_hbp, accum_vbp, accum_act_w, accum_act_h;
+ 	u32 total_width, total_height;
+@@ -538,15 +538,19 @@ static void ltdc_crtc_mode_set_nofb(stru
+ 	int ret;
  
-@@ -60,9 +60,9 @@
- 	"888 :\n"							\
- 	new_c "\n"							\
- 	"889 :\n"							\
--	".previous\n"							\
- 	".org	. - (887b - 886b) + (889b - 888b)\n"			\
- 	".org	. - (889b - 888b) + (887b - 886b)\n"			\
-+	".previous\n"							\
- 	".endif\n"
+ 	/* get encoder from crtc */
+-	drm_for_each_encoder(encoder, ddev)
+-		if (encoder->crtc == crtc)
++	drm_for_each_encoder(en_iter, ddev)
++		if (en_iter->crtc == crtc) {
++			encoder = en_iter;
+ 			break;
++		}
  
- #define __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, enable) \
+ 	if (encoder) {
+ 		/* get bridge from encoder */
+-		list_for_each_entry(bridge, &encoder->bridge_chain, chain_node)
+-			if (bridge->encoder == encoder)
++		list_for_each_entry(br_iter, &encoder->bridge_chain, chain_node)
++			if (br_iter->encoder == encoder) {
++				bridge = br_iter;
+ 				break;
++			}
+ 
+ 		/* Get the connector from encoder */
+ 		drm_connector_list_iter_begin(ddev, &iter);
 
 
