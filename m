@@ -2,111 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC85C3F2D4
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:01:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8923FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:01:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353710AbiFGTAk (ORCPT
+        id S1352202AbiFGTBr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:00:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51608 "EHLO
+        Tue, 7 Jun 2022 15:01:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352213AbiFGSQ6 (ORCPT
+        with ESMTP id S1352168AbiFGSQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:58 -0400
+        Tue, 7 Jun 2022 14:16:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A06101929F;
-        Tue,  7 Jun 2022 10:51:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA07A11141;
+        Tue,  7 Jun 2022 10:50:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 344B5616A3;
-        Tue,  7 Jun 2022 17:51:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42178C385A5;
-        Tue,  7 Jun 2022 17:51:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624266;
-        bh=RR3aylxj9NPe3mDlcntd+PKS/4WJpELSeq1aLFk8eHE=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8465161650;
+        Tue,  7 Jun 2022 17:50:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A3CDC34115;
+        Tue,  7 Jun 2022 17:50:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624253;
+        bh=b0y7kcZVJHUzbw5GlGaRG2weKRKicsuh66ywd8v6S5I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cH9o+ZojewPfKK0Bk2QLfFwmvHxHxQYfm6p4XJZugG0Qo9CSl5XHr4mI/soMOW9rx
-         DGDiQTSu/os4Dbv4p7pNF8xj0DaFN2TxUBhGCoLFWZc/f9Yh21VuQYR+5Z2cLnOLOJ
-         4cR3FpD0NBbXOrvbaPw8B4+mgto4wgWhYEXyTSp8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
-        Adam Ward <Adam.Ward.Opensource@diasemi.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 224/667] regulator: da9121: Fix uninit-value in da9121_assign_chip_model()
-Date:   Tue,  7 Jun 2022 18:58:09 +0200
-Message-Id: <20220607164941.510173474@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=Q7hStlKvc5btCB3Cj473dwObUBZ2TZOPM9ak5lbryL+4EPwjK35YYnoU+oPoO5ln6
+         353X49dV26sf7xI6SRGLv8pcNtopGJPuXakj85O9zUPUAMyj/V/h1Y0fFtKj3lwCYG
+         J8UQM9wtcuE1jAWZi5RbiPqhADTayCMSBZy4GdHw+BwclUju3PlRKrit+k5Z5J16dR
+         j6vvBOkEZgwANi+NbgtK4XdoJCRtWe9/EWZ0pxlIOheIVh/iqfo7P9d+GCG5ps9OLf
+         nihEoj0VMN+g8dqH5XGQ3rCRxrNmUPANlKbQ5XJEe0zIBV1bZud+C7nY48qjE5P+Tc
+         BkTTNcbtJmTHg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Zheng Bin <zhengbin13@huawei.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, w.d.hubbs@gmail.com,
+        chris@the-brannons.com, kirk@reisers.ca,
+        samuel.thibault@ens-lyon.org, trix@redhat.com,
+        salah.triki@gmail.com, speakup@linux-speakup.org
+Subject: [PATCH AUTOSEL 5.18 31/68] accessiblity: speakup: Add missing misc_deregister in softsynth_probe
+Date:   Tue,  7 Jun 2022 13:47:57 -0400
+Message-Id: <20220607174846.477972-31-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Zheng Bin <zhengbin13@huawei.com>
 
-[ Upstream commit bab76514aca36bc513224525d5598da676938218 ]
+[ Upstream commit 106101303eda8f93c65158e5d72b2cc6088ed034 ]
 
-KASAN report slab-out-of-bounds in __regmap_init as follows:
+softsynth_probe misses a call misc_deregister() in an error path, this
+patch fixes that.
 
-BUG: KASAN: slab-out-of-bounds in __regmap_init drivers/base/regmap/regmap.c:841
-Read of size 1 at addr ffff88803678cdf1 by task xrun/9137
-
-CPU: 0 PID: 9137 Comm: xrun Tainted: G        W         5.18.0-rc2
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x15a lib/dump_stack.c:88
- print_report.cold+0xcd/0x69b mm/kasan/report.c:313
- kasan_report+0x8e/0xc0 mm/kasan/report.c:491
- __regmap_init+0x4540/0x4ba0 drivers/base/regmap/regmap.c:841
- __devm_regmap_init+0x7a/0x100 drivers/base/regmap/regmap.c:1266
- __devm_regmap_init_i2c+0x65/0x80 drivers/base/regmap/regmap-i2c.c:394
- da9121_i2c_probe+0x386/0x6d1 drivers/regulator/da9121-regulator.c:1039
- i2c_device_probe+0x959/0xac0 drivers/i2c/i2c-core-base.c:563
-
-This happend when da9121 device is probe by da9121_i2c_id, but with
-invalid dts. Thus, chip->subvariant_id is set to -EINVAL, and later
-da9121_assign_chip_model() will access 'regmap' without init it.
-
-Fix it by return -EINVAL from da9121_assign_chip_model() if
-'chip->subvariant_id' is invalid.
-
-Fixes: f3fbd5566f6a ("regulator: da9121: Add device variants")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Reviewed-by: Adam Ward <Adam.Ward.Opensource@diasemi.com>
-Link: https://lore.kernel.org/r/20220421090335.1876149-1-weiyongjun1@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+Link: https://lore.kernel.org/r/20220511032937.2736738-1-zhengbin13@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/da9121-regulator.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/accessibility/speakup/speakup_soft.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/regulator/da9121-regulator.c b/drivers/regulator/da9121-regulator.c
-index 0a4fd449c27d..3315994d7e31 100644
---- a/drivers/regulator/da9121-regulator.c
-+++ b/drivers/regulator/da9121-regulator.c
-@@ -936,6 +936,8 @@ static int da9121_assign_chip_model(struct i2c_client *i2c,
- 		chip->variant_id = DA9121_TYPE_DA9220_DA9132;
- 		regmap = &da9121_2ch_regmap_config;
- 		break;
-+	default:
-+		return -EINVAL;
+diff --git a/drivers/accessibility/speakup/speakup_soft.c b/drivers/accessibility/speakup/speakup_soft.c
+index 19824e7006fe..786dc5d080f3 100644
+--- a/drivers/accessibility/speakup/speakup_soft.c
++++ b/drivers/accessibility/speakup/speakup_soft.c
+@@ -397,6 +397,7 @@ static int softsynth_probe(struct spk_synth *synth)
+ 	synthu_device.name = "softsynthu";
+ 	synthu_device.fops = &softsynthu_fops;
+ 	if (misc_register(&synthu_device)) {
++		misc_deregister(&synth_device);
+ 		pr_warn("Couldn't initialize miscdevice /dev/softsynthu.\n");
+ 		return -ENODEV;
  	}
- 
- 	/* Set these up for of_regulator_match call which may want .of_map_modes */
 -- 
 2.35.1
-
-
 
