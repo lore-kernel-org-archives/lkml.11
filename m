@@ -2,115 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40A7EC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31B28C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351145AbiFHBYg (ORCPT
+        id S1345757AbiFHBYH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:24:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53900 "EHLO
+        Tue, 7 Jun 2022 21:24:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381245AbiFGVmo (ORCPT
+        with ESMTP id S1453119AbiFGXO5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:42:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B5F50043;
-        Tue,  7 Jun 2022 12:07:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7AEAB81F6D;
-        Tue,  7 Jun 2022 19:07:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EB4EC34115;
-        Tue,  7 Jun 2022 19:07:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628827;
-        bh=HIQk/uw7vS5y7k9V6eMIFVegpbu+WXgZ8oYpaSKok5U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X1pPBkLijY12NnTsDfQeEULz1hhL//S5Dd3ruO6M0OdgsN/OkmuVST3pig7ymT+Fl
-         0lHU0fkJr3h95lCpi7TE5BKsf3WpkUtw1nZR1gDFAN/5crNRSa3X7+LXlS7gdfhbBB
-         Q+/02/uQfg8/kE0d0v58UWnHPdSTBzc4j31nklBw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 471/879] kselftest/arm64: bti: force static linking
-Date:   Tue,  7 Jun 2022 18:59:49 +0200
-Message-Id: <20220607165016.550577017@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 19:14:57 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16893B4EE5
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:04:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654635899; x=1686171899;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=FPcIftRj6V6O6B26UF70MyNErLXGhjWNb6LX0nAvIH0=;
+  b=OXyOO2/+sbp8npJP4nWVU3b9GSfH7blo8zVXIQQgEglsQyKY9RrRgcdq
+   2ISm/yAOG1ICHPVLJiyLXx7YS5eBwS/5zQqry9gMgVVzCnXNK05WOhZ+3
+   jBKhLKuMQbjOHH9i5zsQuaDnoEP4laJzTWiHsn8Xw1am1kutWGLwybOtW
+   LrztkVxqFU5loWHUgYq8pqHh++01C4TC1bBzoow8rdWZM9Dq44dUKTv3n
+   qNmEeNQ02HMhr5BpJlLClW6LtRKBYOBV1HSoF7YAP5OO7/IL2genxHyYl
+   hMeH/iau0UHgysQ5v2qNg9YKsBO8vJQZqN3A3aU+z8Opai5QOM6QSbqSm
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277746378"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="277746378"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 13:16:00 -0700
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="584375949"
+Received: from schen9-mobl.amr.corp.intel.com ([10.251.8.166])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 13:15:59 -0700
+Message-ID: <fa6b575dfea7c2131ecfec0f5578d72ca4acfd95.camel@linux.intel.com>
+Subject: Re: [PATCH v5 2/9] mm/demotion: Expose per node memory tier to sysfs
+From:   Tim Chen <tim.c.chen@linux.intel.com>
+To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
+        Greg Thelen <gthelen@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>
+Date:   Tue, 07 Jun 2022 13:15:59 -0700
+In-Reply-To: <20220603134237.131362-3-aneesh.kumar@linux.ibm.com>
+References: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
+         <20220603134237.131362-3-aneesh.kumar@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+On Fri, 2022-06-03 at 19:12 +0530, Aneesh Kumar K.V wrote:
+> 
+>  
+> +static struct memory_tier *__node_get_memory_tier(int node)
+> +{
+> +	struct memory_tier *memtier;
+> +
+> +	list_for_each_entry(memtier, &memory_tiers, list) {
 
-[ Upstream commit d7a49291d786b4400996afe3afcc3ef5eeb6f0ef ]
-
-The "bti" selftests are built with -nostdlib, which apparently
-automatically creates a statically linked binary, which is what we want
-and need for BTI (to avoid interactions with the dynamic linker).
-
-However this is not true when building a PIE binary, which some
-toolchains (Ubuntu) configure as the default.
-When compiling btitest with such a toolchain, it will create a
-dynamically linked binary, which will probably fail some tests, as the
-dynamic linker might not support BTI:
-===================
-TAP version 13
-1..18
-not ok 1 nohint_func/call_using_br_x0
-not ok 2 nohint_func/call_using_br_x16
-not ok 3 nohint_func/call_using_blr
-....
-===================
-
-To make sure we create static binaries, add an explicit -static on the
-linker command line. This forces static linking even if the toolchain
-defaults to PIE builds, and fixes btitest runs on BTI enabled machines.
-
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Mark Brown <broonie@kernel.org>
-Fixes: 314bcbf09f14 ("kselftest: arm64: Add BTI tests")
-Link: https://lore.kernel.org/r/20220511172129.2078337-1-andre.przywara@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/testing/selftests/arm64/bti/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/tools/testing/selftests/arm64/bti/Makefile b/tools/testing/selftests/arm64/bti/Makefile
-index 73e013c082a6..dafa1c2aa5c4 100644
---- a/tools/testing/selftests/arm64/bti/Makefile
-+++ b/tools/testing/selftests/arm64/bti/Makefile
-@@ -39,7 +39,7 @@ BTI_OBJS =                                      \
- 	teststubs-bti.o                         \
- 	trampoline-bti.o
- gen/btitest: $(BTI_OBJS)
--	$(CC) $(CFLAGS_BTI) $(CFLAGS_COMMON) -nostdlib -o $@ $^
-+	$(CC) $(CFLAGS_BTI) $(CFLAGS_COMMON) -nostdlib -static -o $@ $^
- 
- NOBTI_OBJS =                                    \
- 	test-nobti.o                         \
-@@ -50,7 +50,7 @@ NOBTI_OBJS =                                    \
- 	teststubs-nobti.o                       \
- 	trampoline-nobti.o
- gen/nobtitest: $(NOBTI_OBJS)
--	$(CC) $(CFLAGS_BTI) $(CFLAGS_COMMON) -nostdlib -o $@ $^
-+	$(CC) $(CFLAGS_BTI) $(CFLAGS_COMMON) -nostdlib -static -o $@ $^
- 
- # Including KSFT lib.mk here will also mangle the TEST_GEN_PROGS list
- # to account for any OUTPUT target-dirs optionally provided by
--- 
-2.35.1
+We could need to map node to mem_tier quite often, if we need
+to account memory usage at tier level.  It will be more efficient
+to have a pointer from node (pgdat) to memtier rather
+than doing a search through the list.
 
 
+> +		if (node_isset(node, memtier->nodelist))
+> +			return memtier;
+> +	}
+> +	return NULL;
+> +}
+> +
+> 
+
+Tim
 
