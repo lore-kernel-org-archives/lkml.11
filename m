@@ -2,161 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5350CCA49A
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C5A3CCA49B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442303AbiFHCAI (ORCPT
+        id S1442428AbiFHCAa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:00:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49606 "EHLO
+        Tue, 7 Jun 2022 22:00:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1836899AbiFGX67 (ORCPT
+        with ESMTP id S1837516AbiFHAAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:58:59 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE2521DE8C1
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:47:07 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id h192so10546281pgc.4
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 16:47:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xTyvpi/CRKA0ZDhB9x52q5aVKrqnKx4HjDRfGU8RMEU=;
-        b=RhcM6qukhvT8pJFmYD+0mUKD5iWzoF5VN8gC6Tr64XQE9Mc990RPHwCJQ0Dm1TSHI0
-         i1v5/nMeNtJ1sTNx1X7feZVKvVM5xc0KoNGrVgd1zw8v4hbfe/d0GGgnCXp1bs9Y7bAp
-         be+uXA+qs+u8UtQA4YdSBnqz0QTFsgOYFdcga1jqfz+kB6kD/rOTYDVi26HQl34C78QT
-         Qv69mncqMNaEwY0ZGEKC9iwgAgq183dsWPEvWtReoG8K9jb/DSKXwrHWzZYk0vvl3TLJ
-         avoyFNORUPpA1Q+9WfNI8gKy42nVJVfPH8LoaAbm4wZXMGYIWrr0q6q9PhVJkKn894/t
-         JW6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=xTyvpi/CRKA0ZDhB9x52q5aVKrqnKx4HjDRfGU8RMEU=;
-        b=7cZ8SjYAI6sEuN4k1KUMwCv2l+a4vLgMtMPOuiMfZsfU7SZoR9bzvg5plOYr0N3fSz
-         xHH/n4Gos4eHmr5Nj8K3F4wdwOhZ5XqNVINB4QKll7KUOiTS9eBBN4nnpAvWZsFgvrjw
-         demtRKiXV/XPZdFsfcp6TAuznwyyqd/mdqY8eiyFl9Pjjr/nSzH2D6fTywVy7hqkTcU2
-         49Ta2MevdpoXq6CJRV21YoZpacfmZBdCnHPYX+6UD/TGGIbAQofFl3vHetuPG2mCB75C
-         hskOWlp6GM6NwnKMrMi880Lx4UWlInw2Atd7+qXS5RiUgdofuC6z1VLs2IghuZf4hf3I
-         3mlA==
-X-Gm-Message-State: AOAM532AHChYudWLO7PjaCdevHS7N1+lnz/IBKmYdutSGd1V9DXUXXee
-        OfueCa04Ep4RwXF154kSeUk=
-X-Google-Smtp-Source: ABdhPJwXmky3Mb1g3joIbwT3sQR3nWxYKsMw1MQpZUNSfpVt5QUFs23oawRfNxy+Mb0Yfh8FKDB5bA==
-X-Received: by 2002:a05:6a00:1513:b0:51c:3ca8:47a4 with SMTP id q19-20020a056a00151300b0051c3ca847a4mr5537879pfu.48.1654645627188;
-        Tue, 07 Jun 2022 16:47:07 -0700 (PDT)
-Received: from google.com ([2620:15c:211:201:f30f:4d03:66e6:b121])
-        by smtp.gmail.com with ESMTPSA id q6-20020a170902a3c600b0016203a92865sm7365536plb.107.2022.06.07.16.47.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 16:47:06 -0700 (PDT)
-Sender: Minchan Kim <minchan.kim@gmail.com>
-Date:   Tue, 7 Jun 2022 16:47:04 -0700
-From:   Minchan Kim <minchan@kernel.org>
-To:     Jaewon Kim <jaewon31.kim@samsung.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        "ngupta@vflare.org" <ngupta@vflare.org>,
-        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
-        "avromanov@sberdevices.ru" <avromanov@sberdevices.ru>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Sooyong Suk <s.suk@samsung.com>,
-        YongTaek Lee <ytk.lee@samsung.com>,
-        "jaewon31.kim@gmail.com" <jaewon31.kim@gmail.com>,
-        Chulmin Kim <cmlaika.kim@samsung.com>
-Subject: Re: [PATCH] zram_drv: add __GFP_NOMEMALLOC not to use
- ALLOC_NO_WATERMARKS
-Message-ID: <Yp/jeBtxIV/nsMiJ@google.com>
-References: <Yp5oDD8mfsGtsSaB@google.com>
- <20220603055747.11694-1-jaewon31.kim@samsung.com>
- <Yp5ZnkYEA5xrUksX@google.com>
- <20220606125939.ae37867e43b8b8b07fa06ca7@linux-foundation.org>
- <CGME20220603055341epcas1p2dd357326eea0cd818daf6f0db7c2aae1@epcms1p1>
- <20220607011702epcms1p10100c4e86e2e0334f7fabbfafa3a0698@epcms1p1>
+        Tue, 7 Jun 2022 20:00:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36AAA260CE7;
+        Tue,  7 Jun 2022 12:19:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 646EFB823D5;
+        Tue,  7 Jun 2022 19:19:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C30E2C385A5;
+        Tue,  7 Jun 2022 19:19:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629571;
+        bh=f1/aLaFgD4itD3YkkfGc2G4fFiUHO4CCJ9gyDsVs6bU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=T8XSD/IWj5ZKoQN2t//N6MSLBZe/2VtB6PIBhkRX1Hjdb3ZafNh8B1k1WcDJBbcZ/
+         uzE5CAyF5gEq3qTDn+ZZHhCHO9eKCp6xWY8TfknxEC2Sh9u2QDScUBnwaBL/rrE49w
+         SwhG5hmMOKDHJNbrJh40pnvidQV65GAnV8qrTriU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.18 739/879] ext4: fix race condition between ext4_write and ext4_convert_inline_data
+Date:   Tue,  7 Jun 2022 19:04:17 +0200
+Message-Id: <20220607165024.306693809@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607011702epcms1p10100c4e86e2e0334f7fabbfafa3a0698@epcms1p1>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jaewon,
+From: Baokun Li <libaokun1@huawei.com>
 
-On Tue, Jun 07, 2022 at 10:17:02AM +0900, Jaewon Kim wrote:
-> > 
-> > 
-> >--------- Original Message ---------
-> >Sender : Minchan Kim <minchan@kernel.org>
-> >Date : 2022-06-07 05:48 (GMT+9)
-> >Title : Re: [PATCH] zram_drv: add __GFP_NOMEMALLOC not to use ALLOC_NO_WATERMARKS
-> > 
-> >On Mon, Jun 06, 2022 at 12:59:39PM -0700, Andrew Morton wrote:
-> >> On Mon, 6 Jun 2022 12:46:38 -0700 Minchan Kim <minchan@kernel.org> wrote:
-> >> 
-> >> > On Fri, Jun 03, 2022 at 02:57:47PM +0900, Jaewon Kim wrote:
-> >> > > The atomic page allocation failure sometimes happened, and most of them
-> >> > > seem to occur during boot time.
-> >> > > 
-> >> > > <4>[   59.707645] system_server: page allocation failure: order:0, mode:0xa20(GFP_ATOMIC), nodemask=(null),cpuset=foreground-boost,mems_allowed=0
-> >> >
-> >> > ...
-> >> >
-> >> > > 
-> >> > > The kswapd or other reclaim contexts may not prepare enough free pages
-> >> > > for too many atomic allocations occurred in short time. But zram may not
-> >> > > be helpful for this atomic allocation even though zram is used to
-> >> > > reclaim.
-> >> > > 
-> >> > > To get one zs object for a specific size, zram may allocate serveral
-> >> > > pages. And this can be happened on different class sizes at the same
-> >> > > time. It means zram may consume more pages to reclaim only one page.
-> >> > > This inefficiency may consume all free pages below watmerk min by a
-> >> > > process having PF_MEMALLOC like kswapd.
-> >> > 
-> >> > However, that's how zram has worked for a long time(allocate memory
-> >> > under memory pressure) and many folks already have raised min_free_kbytes
-> >> > when they use zram as swap. If we don't allow the allocation, swap out
-> >> > fails easier than old, which would break existing tunes.
-> 
-> 
-> Hello.
-> 
-> Yes correct. We may need to tune again to swap out as much as we did.
-> 
-> But on my experiment, there were quite many zram allocations which might
-> be failed unless it has the ALLOC_NO_WATERMARKS. I thought the zram
-> allocations seem to be easy to affect atomic allocation failure.
+commit f87c7a4b084afc13190cbb263538e444cb2b392a upstream.
 
-I understand your concern but solution here would affect to existing common
-users too much.
+Hulk Robot reported a BUG_ON:
+ ==================================================================
+ EXT4-fs error (device loop3): ext4_mb_generate_buddy:805: group 0,
+ block bitmap and bg descriptor inconsistent: 25 vs 31513 free clusters
+ kernel BUG at fs/ext4/ext4_jbd2.c:53!
+ invalid opcode: 0000 [#1] SMP KASAN PTI
+ CPU: 0 PID: 25371 Comm: syz-executor.3 Not tainted 5.10.0+ #1
+ RIP: 0010:ext4_put_nojournal fs/ext4/ext4_jbd2.c:53 [inline]
+ RIP: 0010:__ext4_journal_stop+0x10e/0x110 fs/ext4/ext4_jbd2.c:116
+ [...]
+ Call Trace:
+  ext4_write_inline_data_end+0x59a/0x730 fs/ext4/inline.c:795
+  generic_perform_write+0x279/0x3c0 mm/filemap.c:3344
+  ext4_buffered_write_iter+0x2e3/0x3d0 fs/ext4/file.c:270
+  ext4_file_write_iter+0x30a/0x11c0 fs/ext4/file.c:520
+  do_iter_readv_writev+0x339/0x3c0 fs/read_write.c:732
+  do_iter_write+0x107/0x430 fs/read_write.c:861
+  vfs_writev fs/read_write.c:934 [inline]
+  do_pwritev+0x1e5/0x380 fs/read_write.c:1031
+ [...]
+ ==================================================================
 
-> 
-> >> 
-> >> So is there a better way of preventing this warning?  Just suppress it
-> >> with __GFP_NOWARN?
-> > 
-> >For me, I usually tries to remove GFP_ATOMIC alllocation since the
-> >atomic allocation can be failed easily(zram is not only source for
-> >it). Otherwise, increase min_free_kbytes?
-> > 
-> 
-> I also hope driver developers to handle this atomic allocation failure.
-> However this selinux stuff, context_struct_to_string, is out of their domain.
-> Do I need to report this to selinux community? Actualy I got several
-> different callpaths to reach this context_struct_to_string.
+Above issue may happen as follows:
+           cpu1                     cpu2
+__________________________|__________________________
+do_pwritev
+ vfs_writev
+  do_iter_write
+   ext4_file_write_iter
+    ext4_buffered_write_iter
+     generic_perform_write
+      ext4_da_write_begin
+                           vfs_fallocate
+                            ext4_fallocate
+                             ext4_convert_inline_data
+                              ext4_convert_inline_data_nolock
+                               ext4_destroy_inline_data_nolock
+                                clear EXT4_STATE_MAY_INLINE_DATA
+                               ext4_map_blocks
+                                ext4_ext_map_blocks
+                                 ext4_mb_new_blocks
+                                  ext4_mb_regular_allocator
+                                   ext4_mb_good_group_nolock
+                                    ext4_mb_init_group
+                                     ext4_mb_init_cache
+                                      ext4_mb_generate_buddy  --> error
+       ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
+                                ext4_restore_inline_data
+                                 set EXT4_STATE_MAY_INLINE_DATA
+       ext4_block_write_begin
+      ext4_da_write_end
+       ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
+       ext4_write_inline_data_end
+        handle=NULL
+        ext4_journal_stop(handle)
+         __ext4_journal_stop
+          ext4_put_nojournal(handle)
+           ref_cnt = (unsigned long)handle
+           BUG_ON(ref_cnt == 0)  ---> BUG_ON
 
-I am not famliar with selinux stuff but if it's common to see the
-GFP_ATOMIC failures in the path, I think it should have __GFP_NOWARN
-or other solution to allocate memory in advance.
-(BTW, I had similar problem before and fixed it with adding __GFP_NOWARN
-648f2c6100cf, selinux: use __GFP_NOWARN with GFP_NOWAIT in the AVC)
+The lock held by ext4_convert_inline_data is xattr_sem, but the lock
+held by generic_perform_write is i_rwsem. Therefore, the two locks can
+be concurrent.
 
-> 
-> Yes we may need to increase min_free_kbytes. But I have an experience where
-> changing wmark_min from 4MB to 8MB did not work last year. Could you share 
-> some advice about size?
+To solve above issue, we add inode_lock() for ext4_convert_inline_data().
+At the same time, move ext4_convert_inline_data() in front of
+ext4_punch_hole(), remove similar handling from ext4_punch_hole().
 
-I don't think we could have universal golden value for it since every
-workload and configuration are different in their system. Maybe,
-your zram size is rather big compared to system memory and swappiness
-is rather high for boot.
+Fixes: 0c8d414f163f ("ext4: let fallocate handle inline data correctly")
+Cc: stable@vger.kernel.org
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220428134031.4153381-1-libaokun1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/ext4/extents.c |   10 ++++++----
+ fs/ext4/inode.c   |    9 ---------
+ 2 files changed, 6 insertions(+), 13 deletions(-)
+
+--- a/fs/ext4/extents.c
++++ b/fs/ext4/extents.c
+@@ -4693,15 +4693,17 @@ long ext4_fallocate(struct file *file, i
+ 		     FALLOC_FL_INSERT_RANGE))
+ 		return -EOPNOTSUPP;
+ 
++	inode_lock(inode);
++	ret = ext4_convert_inline_data(inode);
++	inode_unlock(inode);
++	if (ret)
++		goto exit;
++
+ 	if (mode & FALLOC_FL_PUNCH_HOLE) {
+ 		ret = ext4_punch_hole(file, offset, len);
+ 		goto exit;
+ 	}
+ 
+-	ret = ext4_convert_inline_data(inode);
+-	if (ret)
+-		goto exit;
+-
+ 	if (mode & FALLOC_FL_COLLAPSE_RANGE) {
+ 		ret = ext4_collapse_range(file, offset, len);
+ 		goto exit;
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -3967,15 +3967,6 @@ int ext4_punch_hole(struct file *file, l
+ 
+ 	trace_ext4_punch_hole(inode, offset, length, 0);
+ 
+-	ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
+-	if (ext4_has_inline_data(inode)) {
+-		filemap_invalidate_lock(mapping);
+-		ret = ext4_convert_inline_data(inode);
+-		filemap_invalidate_unlock(mapping);
+-		if (ret)
+-			return ret;
+-	}
+-
+ 	/*
+ 	 * Write out all dirty pages to avoid race conditions
+ 	 * Then release them.
+
+
