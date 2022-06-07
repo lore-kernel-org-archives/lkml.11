@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED426C2BBE6
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:56:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85033CCA486
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:56:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357775AbiFGTzu (ORCPT
+        id S1357862AbiFGTz4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:55:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42366 "EHLO
+        Tue, 7 Jun 2022 15:55:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353789AbiFGSqF (ORCPT
+        with ESMTP id S1354570AbiFGSrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7C4188EA4;
-        Tue,  7 Jun 2022 10:59:31 -0700 (PDT)
+        Tue, 7 Jun 2022 14:47:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9EB110AFD;
+        Tue,  7 Jun 2022 11:02:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8BC8B82368;
-        Tue,  7 Jun 2022 17:59:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B96AC385A5;
-        Tue,  7 Jun 2022 17:59:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3835E617AE;
+        Tue,  7 Jun 2022 18:02:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4389DC36AFE;
+        Tue,  7 Jun 2022 18:02:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624769;
-        bh=cDGXQDzvZnIg4L2nHZB3SGryb9zKYnI5rFK0O1CZtEY=;
+        s=korg; t=1654624936;
+        bh=SYfDcBS5l0KHvukvnWZ1CDr4lBjQVVe7NVWB4fHKLWA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wGfbDzhr54u8zu/CX/CKuCSxrZjEY8YxBxppCQf7fLltTxiKz6ph5Ra1euKO4FIeX
-         qjsh5mPuLtnvl3TKltYy8hcrHyOuOfBsj/xFJ7DXKsYzoDwFB9gisFWIBo036M0/Co
-         JgpBqjwehrqnCbMACoZ5jDaSAMlRr5Ihe/9Kd3aQ=
+        b=POkLCfrWr6ianXN6w/51GGOC1Kcpwip8luUSlWH6uFF65WvAXcV86t2V/y4aI3bhJ
+         g1tfqIesUX0P/ssPCn2ODLizHa7iLzATuhZq1s/Aa4GZ64OeILjxj1lYfjN4TbqPsB
+         B9haCBx8+hHKrqvMKxnXuGVULFYtVd4RuAVNGKUw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 448/667] ASoC: atmel-pdmic: Remove endianness flag on pdmic component
-Date:   Tue,  7 Jun 2022 19:01:53 +0200
-Message-Id: <20220607164948.154491281@linuxfoundation.org>
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 507/667] i2c: rcar: fix PM ref counts in probe error paths
+Date:   Tue,  7 Jun 2022 19:02:52 +0200
+Message-Id: <20220607164949.905865504@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,42 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
 
-[ Upstream commit 52857c3baa0e5ddeba7b2c84e56bb71c9674e048 ]
+[ Upstream commit 3fe2ec59db1a7569e18594b9c0cf1f4f1afd498e ]
 
-The endianness flag should have been removed when the driver was
-ported across from having both a CODEC and CPU side component, to
-just having a CPU component and using the dummy for the CODEC. The
-endianness flag is used to indicate that the device is completely
-ambivalent to the endianness of the data, typically due to the
-endianness being lost over the hardware link (ie. the link defines
-bit ordering). It's usage didn't have any effect when the driver
-had both a CPU and CODEC component, since the union of those equals
-the CPU side settings, but now causes the driver to falsely report
-it supports big endian. Correct this by removing the flag.
+We have to take care of ID_P_PM_BLOCKED when bailing out during probe.
 
-Fixes: f3c668074a04 ("ASoC: atmel-pdmic: remove codec component")
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220504170905.332415-3-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 7ee24eb508d6 ("i2c: rcar: disable PM in multi-master mode")
+Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/atmel/atmel-pdmic.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/i2c/busses/i2c-rcar.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/sound/soc/atmel/atmel-pdmic.c b/sound/soc/atmel/atmel-pdmic.c
-index 42117de299e7..ea34efac2fff 100644
---- a/sound/soc/atmel/atmel-pdmic.c
-+++ b/sound/soc/atmel/atmel-pdmic.c
-@@ -481,7 +481,6 @@ static const struct snd_soc_component_driver atmel_pdmic_cpu_dai_component = {
- 	.num_controls		= ARRAY_SIZE(atmel_pdmic_snd_controls),
- 	.idle_bias_on		= 1,
- 	.use_pmdown_time	= 1,
--	.endianness		= 1,
- };
+diff --git a/drivers/i2c/busses/i2c-rcar.c b/drivers/i2c/busses/i2c-rcar.c
+index bff9913c37b8..2c016f0299fc 100644
+--- a/drivers/i2c/busses/i2c-rcar.c
++++ b/drivers/i2c/busses/i2c-rcar.c
+@@ -1070,8 +1070,10 @@ static int rcar_i2c_probe(struct platform_device *pdev)
+ 	pm_runtime_enable(dev);
+ 	pm_runtime_get_sync(dev);
+ 	ret = rcar_i2c_clock_calculate(priv);
+-	if (ret < 0)
+-		goto out_pm_put;
++	if (ret < 0) {
++		pm_runtime_put(dev);
++		goto out_pm_disable;
++	}
  
- /* ASoC sound card */
+ 	rcar_i2c_write(priv, ICSAR, 0); /* Gen2: must be 0 if not using slave */
+ 
+@@ -1100,19 +1102,19 @@ static int rcar_i2c_probe(struct platform_device *pdev)
+ 
+ 	ret = platform_get_irq(pdev, 0);
+ 	if (ret < 0)
+-		goto out_pm_disable;
++		goto out_pm_put;
+ 	priv->irq = ret;
+ 	ret = devm_request_irq(dev, priv->irq, irqhandler, irqflags, dev_name(dev), priv);
+ 	if (ret < 0) {
+ 		dev_err(dev, "cannot get irq %d\n", priv->irq);
+-		goto out_pm_disable;
++		goto out_pm_put;
+ 	}
+ 
+ 	platform_set_drvdata(pdev, priv);
+ 
+ 	ret = i2c_add_numbered_adapter(adap);
+ 	if (ret < 0)
+-		goto out_pm_disable;
++		goto out_pm_put;
+ 
+ 	if (priv->flags & ID_P_HOST_NOTIFY) {
+ 		priv->host_notify_client = i2c_new_slave_host_notify_device(adap);
+@@ -1129,7 +1131,8 @@ static int rcar_i2c_probe(struct platform_device *pdev)
+  out_del_device:
+ 	i2c_del_adapter(&priv->adap);
+  out_pm_put:
+-	pm_runtime_put(dev);
++	if (priv->flags & ID_P_PM_BLOCKED)
++		pm_runtime_put(dev);
+  out_pm_disable:
+ 	pm_runtime_disable(dev);
+ 	return ret;
 -- 
 2.35.1
 
