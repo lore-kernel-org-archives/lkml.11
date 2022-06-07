@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55157C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:53:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD1D0CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:53:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348746AbiFGRxq (ORCPT
+        id S1348384AbiFGRxx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:53:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53244 "EHLO
+        Tue, 7 Jun 2022 13:53:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347822AbiFGRft (ORCPT
+        with ESMTP id S1348125AbiFGRgF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:35:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A1D410A632;
-        Tue,  7 Jun 2022 10:31:48 -0700 (PDT)
+        Tue, 7 Jun 2022 13:36:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10566115CB4;
+        Tue,  7 Jun 2022 10:32:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04C03B82285;
-        Tue,  7 Jun 2022 17:31:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F00BC385A5;
-        Tue,  7 Jun 2022 17:31:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 267B3B822B4;
+        Tue,  7 Jun 2022 17:32:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 812AAC34115;
+        Tue,  7 Jun 2022 17:32:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623105;
-        bh=v09xPAsk/yP3Wxx2wRm66/yibzyov9NUjjZG7AkDYyE=;
+        s=korg; t=1654623130;
+        bh=1ASL6fBMDAmWBj3axiWH/dhSFOu0lxh5MMkutiN/P/U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KcxdNrOg2Xm+Zqx2IkiiaDRCRBaElwjFoLy8M34fPsm6qizNW86xIQJa1odaF3ZxQ
-         MTYB/mzmlpmzP0zSoO5ylDRwUxR8fkst2lCIrvLZ6gu/9I+tN69KVHA7pRM6Zyu1bU
-         FWTY/BI1CqgUEKz5wNaGPsLsV5V3qAeq5Zi4yHQk=
+        b=D7w2QyGYgv+xwlL2jjD2ESX1W0EZt2Xh+NKZk6xPFOTGNLPlfiCfz4CoBiOpJ8akY
+         CDOVIPoARZec6I0cJcJ2DSnsRUtru26CG3aHBIwXkGGYyO7u0TrFJWxEZlQNxyS+lH
+         ///Hpq0JT87BdWQvqfRwq3V7VYro+thgzeI1caVk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Jeff Moyer <jmoyer@redhat.com>,
+        Krzysztof Kensicki <krzysztof.kensicki@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 298/452] ASoC: atmel-pdmic: Remove endianness flag on pdmic component
-Date:   Tue,  7 Jun 2022 19:02:35 +0200
-Message-Id: <20220607164917.436609143@linuxfoundation.org>
+Subject: [PATCH 5.10 289/452] nvdimm: Allow overwrite in the presence of disabled dimms
+Date:   Tue,  7 Jun 2022 19:02:26 +0200
+Message-Id: <20220607164917.162007878@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,42 +54,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Dan Williams <dan.j.williams@intel.com>
 
-[ Upstream commit 52857c3baa0e5ddeba7b2c84e56bb71c9674e048 ]
+[ Upstream commit bb7bf697fed58eae9d3445944e457ab0de4da54f ]
 
-The endianness flag should have been removed when the driver was
-ported across from having both a CODEC and CPU side component, to
-just having a CPU component and using the dummy for the CODEC. The
-endianness flag is used to indicate that the device is completely
-ambivalent to the endianness of the data, typically due to the
-endianness being lost over the hardware link (ie. the link defines
-bit ordering). It's usage didn't have any effect when the driver
-had both a CPU and CODEC component, since the union of those equals
-the CPU side settings, but now causes the driver to falsely report
-it supports big endian. Correct this by removing the flag.
+It is not clear why the original implementation of overwrite support
+required the dimm driver to be active before overwrite could proceed. In
+fact that can lead to cases where the kernel retains an invalid cached
+copy of the labels from before the overwrite. Unfortunately the kernel
+has not only allowed that case, but enforced it.
 
-Fixes: f3c668074a04 ("ASoC: atmel-pdmic: remove codec component")
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220504170905.332415-3-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Going forward, allow for overwrite to happen while the label area is
+offline, and follow-on with updates to 'ndctl sanitize-dimm --overwrite'
+to trigger the label area invalidation by default.
+
+Cc: Vishal Verma <vishal.l.verma@intel.com>
+Cc: Dave Jiang <dave.jiang@intel.com>
+Cc: Ira Weiny <ira.weiny@intel.com>
+Cc: Jeff Moyer <jmoyer@redhat.com>
+Reported-by: Krzysztof Kensicki <krzysztof.kensicki@intel.com>
+Fixes: 7d988097c546 ("acpi/nfit, libnvdimm/security: Add security DSM overwrite support")
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/atmel/atmel-pdmic.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/nvdimm/security.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/sound/soc/atmel/atmel-pdmic.c b/sound/soc/atmel/atmel-pdmic.c
-index 8e1d8230b180..049383e5405e 100644
---- a/sound/soc/atmel/atmel-pdmic.c
-+++ b/sound/soc/atmel/atmel-pdmic.c
-@@ -481,7 +481,6 @@ static const struct snd_soc_component_driver atmel_pdmic_cpu_dai_component = {
- 	.num_controls		= ARRAY_SIZE(atmel_pdmic_snd_controls),
- 	.idle_bias_on		= 1,
- 	.use_pmdown_time	= 1,
--	.endianness		= 1,
- };
+diff --git a/drivers/nvdimm/security.c b/drivers/nvdimm/security.c
+index 4b80150e4afa..b5aa55c61461 100644
+--- a/drivers/nvdimm/security.c
++++ b/drivers/nvdimm/security.c
+@@ -379,11 +379,6 @@ static int security_overwrite(struct nvdimm *nvdimm, unsigned int keyid)
+ 			|| !nvdimm->sec.flags)
+ 		return -EOPNOTSUPP;
  
- /* ASoC sound card */
+-	if (dev->driver == NULL) {
+-		dev_dbg(dev, "Unable to overwrite while DIMM active.\n");
+-		return -EINVAL;
+-	}
+-
+ 	rc = check_security_state(nvdimm);
+ 	if (rc)
+ 		return rc;
 -- 
 2.35.1
 
