@@ -2,93 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 312B7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:59:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AA9DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:59:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348933AbiFGR7s (ORCPT
+        id S1349121AbiFGR7u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33354 "EHLO
+        Tue, 7 Jun 2022 13:59:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348042AbiFGRkb (ORCPT
+        with ESMTP id S1348150AbiFGRkh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:40:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CDB25DA4E;
-        Tue,  7 Jun 2022 10:33:46 -0700 (PDT)
+        Tue, 7 Jun 2022 13:40:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A9086B003;
+        Tue,  7 Jun 2022 10:33:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B3A0B80B66;
-        Tue,  7 Jun 2022 17:32:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEAADC385A5;
-        Tue,  7 Jun 2022 17:32:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623172;
-        bh=gre4uAHrsKDi39ok3MaazrrARM/PvoktjsklLRrW6s8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xmaytr4BBrPiDGDlW0ak3XNBNgZQFj8M5tGGtf9264O7RDsDUFo1oh2lnZNRRB8ww
-         FgqQeVxRj0KBECuq4Pv0OOEzqBKbiUAtoGABcsmRPAns3S5B4fTTgdQF3igyhZ7/sg
-         VyQxMA2XlmI1kHFh74KGHnFTwXCOpNwX1EzfHsJw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yong Wu <yong.wu@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 320/452] iommu/mediatek: Add list_del in mtk_iommu_remove
-Date:   Tue,  7 Jun 2022 19:02:57 +0200
-Message-Id: <20220607164918.092690377@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
-References: <20220607164908.521895282@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4AFB614D8;
+        Tue,  7 Jun 2022 17:33:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2948BC385A5;
+        Tue,  7 Jun 2022 17:33:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654623214;
+        bh=Lk4+xjJRHwdFc/LovKppznE7yFQsbzVIbVHDMQnayTs=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=l4aDlf+uVpJEHdQOfzIMYm09KQjrAuAw2erK07aLAfug5ApRDy1XlakPrXXiRYdjx
+         H16vDx4r+ESt+hngYJXiiLR+NzX5bjXB+UX50eIiQHeC1sQOeRnW2ql7bkXl2FhIFY
+         zvqjlWqXvCxzwZUuRJ47iIY8Sl6vBWGvDk87EojOv2ovl5aTPm4MAW5/Qof+2ZHvIF
+         sQ1u65bcdOaqbZkxoIVS+cTTL3OofM4gnByabptzabArXTJKGrA6Wv1ovXhL0cBfn4
+         TEbO/RAHe4ZpSpMwoI+6bGvSgkXl30yo3ZJb4OBym2lEY88l++N09PII2NnRNC9/7N
+         J8WhjYZ+EDjYg==
+From:   Mark Brown <broonie@kernel.org>
+To:     conor.dooley@microchip.com
+Cc:     linux-riscv@lists.infradead.org, linux-spi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, daire.mcnamara@microchip.com
+In-Reply-To: <20220607073833.2331539-1-conor.dooley@microchip.com>
+References: <20220607073833.2331539-1-conor.dooley@microchip.com>
+Subject: Re: [PATCH 0/2] Add support for PolarFire SoC's spi controllers
+Message-Id: <165462321288.3040195.2196860226827286633.b4-ty@kernel.org>
+Date:   Tue, 07 Jun 2022 18:33:32 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yong Wu <yong.wu@mediatek.com>
+On Tue, 7 Jun 2022 08:38:32 +0100, Conor Dooley wrote:
+> Hey Mark,
+> 
+> As it says on the tin, here's a patch adding support for the spi
+> controllers on PolarFire SoC. The binding for them was already
+> added in 5.18.
+> 
+> Thanks,
+> Conor.
+> 
+> [...]
 
-[ Upstream commit ee55f75e4bcade81d253163641b63bef3e76cac4 ]
+Applied to
 
-Lack the list_del in the mtk_iommu_remove, and remove
-bus_set_iommu(*, NULL) since there may be several iommu HWs.
-we can not bus_set_iommu null when one iommu driver unbind.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
 
-This could be a fix for mt2712 which support 2 M4U HW and list them.
+Thanks!
 
-Fixes: 7c3a2ec02806 ("iommu/mediatek: Merge 2 M4U HWs into one iommu domain")
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Link: https://lore.kernel.org/r/20220503071427.2285-6-yong.wu@mediatek.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/mtk_iommu.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+[1/2] spi: add support for microchip fpga spi controllers
+      commit: 9ac8d17694b66d54b13e9718b25c14ca36dbebbd
+[2/2] MAINTAINERS: add spi to PolarFire SoC entry
+      commit: f303c6b26cede1aa137dc3e10eee78a80cde9999
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 19387d2bc4b4..051815c9d2bb 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -768,8 +768,7 @@ static int mtk_iommu_remove(struct platform_device *pdev)
- 	iommu_device_sysfs_remove(&data->iommu);
- 	iommu_device_unregister(&data->iommu);
- 
--	if (iommu_present(&platform_bus_type))
--		bus_set_iommu(&platform_bus_type, NULL);
-+	list_del(&data->list);
- 
- 	clk_disable_unprepare(data->bclk);
- 	devm_free_irq(&pdev->dev, data->irq, data);
--- 
-2.35.1
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
