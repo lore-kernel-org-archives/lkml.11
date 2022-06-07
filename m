@@ -2,43 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 094C1CCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3007CCCA48E
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389915AbiFHBqe (ORCPT
+        id S1390048AbiFHBqo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38126 "EHLO
+        Tue, 7 Jun 2022 21:46:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379188AbiFGWG4 (ORCPT
+        with ESMTP id S1382947AbiFGVwH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:06:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9B7252C39;
-        Tue,  7 Jun 2022 12:15:54 -0700 (PDT)
+        Tue, 7 Jun 2022 17:52:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD0A23F89A;
+        Tue,  7 Jun 2022 12:10:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DFFE6192F;
-        Tue,  7 Jun 2022 19:15:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52E99C385A2;
-        Tue,  7 Jun 2022 19:15:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0CB061846;
+        Tue,  7 Jun 2022 19:10:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEC22C385A2;
+        Tue,  7 Jun 2022 19:10:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629353;
-        bh=4YDOMqXx4RcoErZe6jqiuMfx+Sf4E1czh/gF3x97jlY=;
+        s=korg; t=1654629006;
+        bh=ghnyZk8Ge/7Ge9bH2SGblDxlalkQ6+ik5emQgvTZezc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XUDucJMhcbMuN3bxjprPrkgwsijJF5tUYiCgHw2KteGb/fPtoJxp6JFhMokXOvxTA
-         JPVHLiYnlLGAoudeEp4m92urOJk/mr/1895bd+yYGoK90qTUPDvRUWQZEeM82WCbuT
-         1+CBn5P0LR4ye84jGi+Vq1IbB5mojbfwac5PWb5U=
+        b=j1D8P4R9v3fw93NnST9ndHYzqSCn2sFiKDoD7oPYNhmb1p5m44BKbH1tBS3ahTtqa
+         8tTNKaAHRue8G2JcLTr6/A6T9w4OIVmpO3hQqlwKOIReGKkAEm5irA0ggI+VzN/FsO
+         u6SRHBcip2r4oP37led8Txgrm0KH/2EFp3MP1NUQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 660/879] f2fs: fix dereference of stale list iterator after loop body
-Date:   Tue,  7 Jun 2022 19:02:58 +0200
-Message-Id: <20220607165022.005037060@linuxfoundation.org>
+Subject: [PATCH 5.18 534/879] arm64: dts: mt8192: Fix nor_flash status disable typo
+Date:   Tue,  7 Jun 2022 19:00:52 +0200
+Message-Id: <20220607165018.373137565@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,60 +56,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 
-[ Upstream commit 2aaf51dd39afb6d01d13f1e6fe20b684733b37d5 ]
+[ Upstream commit 27f0eb16b0d417c155e96b5d3b89074699944e09 ]
 
-The list iterator variable will be a bogus pointer if no break was hit.
-Dereferencing it (cur->page in this case) could load an out-of-bounds/undefined
-value making it unsafe to use that in the comparision to determine if the
-specific element was found.
+Correct nor_flash status disable typo of mt8192 SoC.
 
-Since 'cur->page' *can* be out-ouf-bounds it cannot be guaranteed that
-by chance (or intention of an attacker) it matches the value of 'page'
-even though the correct element was not found.
+Fixes: d0a197a0d064a ("arm64: dts: mt8192: add nor_flash device node")
 
-This is fixed by using a separate list iterator variable for the loop
-and only setting the original variable if a suitable element was found.
-Then determing if the element was found is simply checking if the
-variable is set.
-
-Fixes: 8c242db9b8c0 ("f2fs: fix stale ATOMIC_WRITTEN_PAGE private pointer")
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Link: https://lore.kernel.org/r/20220318144534.17996-11-allen-kh.cheng@mediatek.com
+Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/segment.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-index bd9731cdec56..9dd9f88b75e9 100644
---- a/fs/f2fs/segment.c
-+++ b/fs/f2fs/segment.c
-@@ -355,16 +355,19 @@ void f2fs_drop_inmem_page(struct inode *inode, struct page *page)
- 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
- 	struct list_head *head = &fi->inmem_pages;
- 	struct inmem_pages *cur = NULL;
-+	struct inmem_pages *tmp;
+diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+index 411feb294613..bcecc7484453 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+@@ -679,7 +679,7 @@
+ 			assigned-clock-parents = <&clk26m>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+-			status = "disable";
++			status = "disabled";
+ 		};
  
- 	f2fs_bug_on(sbi, !page_private_atomic(page));
- 
- 	mutex_lock(&fi->inmem_lock);
--	list_for_each_entry(cur, head, list) {
--		if (cur->page == page)
-+	list_for_each_entry(tmp, head, list) {
-+		if (tmp->page == page) {
-+			cur = tmp;
- 			break;
-+		}
- 	}
- 
--	f2fs_bug_on(sbi, list_empty(head) || cur->page != page);
-+	f2fs_bug_on(sbi, !cur);
- 	list_del(&cur->list);
- 	mutex_unlock(&fi->inmem_lock);
- 
+ 		audsys: clock-controller@11210000 {
 -- 
 2.35.1
 
