@@ -2,100 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 735B0CCA493
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C08BCCA48C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389076AbiFHAfP (ORCPT
+        id S1388277AbiFHAb6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43502 "EHLO
+        Tue, 7 Jun 2022 20:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387122AbiFGWt5 (ORCPT
+        with ESMTP id S1382816AbiFGVv6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:49:57 -0400
-Received: from 1.mo582.mail-out.ovh.net (1.mo582.mail-out.ovh.net [46.105.56.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4CD42AA001
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:38:35 -0700 (PDT)
-Received: from player728.ha.ovh.net (unknown [10.108.4.44])
-        by mo582.mail-out.ovh.net (Postfix) with ESMTP id 88CC22479F
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:21:19 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player728.ha.ovh.net (Postfix) with ESMTPSA id CA4DE2B3FFBEF;
-        Tue,  7 Jun 2022 18:21:11 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-103G005316ed421-19f3-47a4-8681-230257df63a6,
-                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH 3/3] drm/panel: sony-acx565akm: Use backlight helpers
-Date:   Tue,  7 Jun 2022 20:20:26 +0200
-Message-Id: <20220607182026.1121992-4-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220607182026.1121992-1-steve@sk2.org>
-References: <20220607182026.1121992-1-steve@sk2.org>
+        Tue, 7 Jun 2022 17:51:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9341423EF93;
+        Tue,  7 Jun 2022 12:09:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 09843617DA;
+        Tue,  7 Jun 2022 19:09:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE8CAC385A2;
+        Tue,  7 Jun 2022 19:09:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628981;
+        bh=e+hc29pBLZsMe6PI4BEPi4bMoIro/89iPVAskzB7OPU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=R45bRtOoQj/D2JUQb3lJPFOzuUgO6spJ+Epb3B4JCZf/SKo4A7E1Jtnu+TSLSiuac
+         tVj6u6KhPGQaZ06Sjyl5BYr0vkTZ9AwNAHHHEGPMoKRRj3KYYfNqSVCNbbEacl2kxB
+         t1pPc0GTrIa4D1ox6Gno6AOGfu343IMXO2dr1BlU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Juergen Borleis <jbe@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mans Rullgard <mans@mansr.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 526/879] net: dsa: restrict SMSC_LAN9303_I2C kconfig
+Date:   Tue,  7 Jun 2022 19:00:44 +0200
+Message-Id: <20220607165018.142208582@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 10889422424181868166
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddvgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejvdekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekvd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of retrieving the backlight brightness in struct
-backlight_properties manually, and then checking whether the backlight
-should be on at all, use backlight_get_brightness() which does all
-this and insulates this from future changes.
+From: Randy Dunlap <rdunlap@infradead.org>
 
-Instead of manually checking the power state in struct
-backlight_properties, use backlight_is_blank().
+[ Upstream commit 0a3ad7d323686fbaae8688326cc5ea0d185c6fca ]
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: dri-devel@lists.freedesktop.org
+Since kconfig 'select' does not follow dependency chains, if symbol KSA
+selects KSB, then KSA should also depend on the same symbols that KSB
+depends on, in order to prevent Kconfig warnings and possible build
+errors.
+
+Change NET_DSA_SMSC_LAN9303_I2C and NET_DSA_SMSC_LAN9303_MDIO so that
+they are limited to VLAN_8021Q if the latter is enabled. This prevents
+the Kconfig warning:
+
+WARNING: unmet direct dependencies detected for NET_DSA_SMSC_LAN9303
+  Depends on [m]: NETDEVICES [=y] && NET_DSA [=y] && (VLAN_8021Q [=m] || VLAN_8021Q [=m]=n)
+  Selected by [y]:
+  - NET_DSA_SMSC_LAN9303_I2C [=y] && NETDEVICES [=y] && NET_DSA [=y] && I2C [=y]
+
+Fixes: 430065e26719 ("net: dsa: lan9303: add VLAN IDs to master device")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Vivien Didelot <vivien.didelot@gmail.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Vladimir Oltean <olteanv@gmail.com>
+Cc: Juergen Borleis <jbe@pengutronix.de>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Mans Rullgard <mans@mansr.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panel/panel-sony-acx565akm.c | 11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
+ drivers/net/dsa/Kconfig | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/panel/panel-sony-acx565akm.c b/drivers/gpu/drm/panel/panel-sony-acx565akm.c
-index 0d7541a33f87..a6bc8c8cf6c8 100644
---- a/drivers/gpu/drm/panel/panel-sony-acx565akm.c
-+++ b/drivers/gpu/drm/panel/panel-sony-acx565akm.c
-@@ -298,13 +298,7 @@ static void acx565akm_set_brightness(struct acx565akm_panel *lcd, int level)
- static int acx565akm_bl_update_status_locked(struct backlight_device *dev)
- {
- 	struct acx565akm_panel *lcd = dev_get_drvdata(&dev->dev);
--	int level;
--
--	if (dev->props.fb_blank == FB_BLANK_UNBLANK &&
--	    dev->props.power == FB_BLANK_UNBLANK)
--		level = dev->props.brightness;
--	else
--		level = 0;
-+	int level = backlight_get_brightness(dev);
+diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
+index 37a3dabdce31..6d1fcb08bba1 100644
+--- a/drivers/net/dsa/Kconfig
++++ b/drivers/net/dsa/Kconfig
+@@ -72,7 +72,6 @@ source "drivers/net/dsa/realtek/Kconfig"
  
- 	acx565akm_set_brightness(lcd, level);
- 
-@@ -330,8 +324,7 @@ static int acx565akm_bl_get_intensity(struct backlight_device *dev)
- 
- 	mutex_lock(&lcd->mutex);
- 
--	if (dev->props.fb_blank == FB_BLANK_UNBLANK &&
--	    dev->props.power == FB_BLANK_UNBLANK)
-+	if (!backlight_is_blank(dev))
- 		intensity = acx565akm_get_actual_brightness(lcd);
- 	else
- 		intensity = 0;
+ config NET_DSA_SMSC_LAN9303
+ 	tristate
+-	depends on VLAN_8021Q || VLAN_8021Q=n
+ 	select NET_DSA_TAG_LAN9303
+ 	select REGMAP
+ 	help
+@@ -82,6 +81,7 @@ config NET_DSA_SMSC_LAN9303
+ config NET_DSA_SMSC_LAN9303_I2C
+ 	tristate "SMSC/Microchip LAN9303 3-ports 10/100 ethernet switch in I2C managed mode"
+ 	depends on I2C
++	depends on VLAN_8021Q || VLAN_8021Q=n
+ 	select NET_DSA_SMSC_LAN9303
+ 	select REGMAP_I2C
+ 	help
+@@ -91,6 +91,7 @@ config NET_DSA_SMSC_LAN9303_I2C
+ config NET_DSA_SMSC_LAN9303_MDIO
+ 	tristate "SMSC/Microchip LAN9303 3-ports 10/100 ethernet switch in MDIO managed mode"
+ 	select NET_DSA_SMSC_LAN9303
++	depends on VLAN_8021Q || VLAN_8021Q=n
+ 	help
+ 	  Enable access functions if the SMSC/Microchip LAN9303 is configured
+ 	  for MDIO managed mode.
 -- 
-2.30.2
+2.35.1
+
+
 
