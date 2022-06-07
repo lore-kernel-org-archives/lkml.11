@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF991C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:42:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DFF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:42:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346380AbiFGSmq (ORCPT
+        id S1353500AbiFGSmt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:42:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35818 "EHLO
+        Tue, 7 Jun 2022 14:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349083AbiFGSMy (ORCPT
+        with ESMTP id S1350410AbiFGSNH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:12:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC0D158955;
-        Tue,  7 Jun 2022 10:48:55 -0700 (PDT)
+        Tue, 7 Jun 2022 14:13:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F728158976;
+        Tue,  7 Jun 2022 10:48:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7AE3BB8234F;
-        Tue,  7 Jun 2022 17:48:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC844C385A5;
-        Tue,  7 Jun 2022 17:48:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3BB8B82343;
+        Tue,  7 Jun 2022 17:48:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43FB4C385A5;
+        Tue,  7 Jun 2022 17:48:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624134;
-        bh=j/FHXUNXxbjTglfxsp6+7UF8NtOZAH48oMNxpP2zr5U=;
+        s=korg; t=1654624098;
+        bh=SfL4ZS5ZSKLeYfug2c1BNi01hwrXoCpz82t+YI/bsI8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=izFe7LlTtZVTx6B6OCVafKKWuY+AwjfSIofgpYUYlRpO7qPO/RNcV5nxTJDhJjgTE
-         lLg+nye3NWdFPDJKJdz4wqM9Uc1bavmC7noxME1iHYWWL4EaX1OhqySC4wG/xUSpv9
-         PGnNEUkfktvKJ3AENb4VLgc44Afpn5mgdNjHgpZ4=
+        b=isW8myvP8ve5X8f9/5ftgGYS/W//EjMEVn5JaA0BkgmoEV4KF7bWRFweydYR5fleC
+         pxwSuXZmoWA1BWk0eogsCq4uLNqssQiINiAvykiK4P20o81NzX95jOJ6fBT3anxXIw
+         OFgk24UcPkLa2JnEPa7BSY1xFwNC6394froqgizw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Daniel Scally <djrscally@gmail.com>,
+        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 215/667] device property: Check fwnode->secondary when finding properties
-Date:   Tue,  7 Jun 2022 18:58:00 +0200
-Message-Id: <20220607164941.242849283@linuxfoundation.org>
+Subject: [PATCH 5.15 203/667] libbpf: Dont error out on CO-RE relos for overriden weak subprogs
+Date:   Tue,  7 Jun 2022 18:57:48 +0200
+Message-Id: <20220607164940.888535931@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,49 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Scally <djrscally@gmail.com>
+From: Andrii Nakryiko <andrii@kernel.org>
 
-[ Upstream commit c097af1d0a8483b44fa30e86b311991d76b6ae67 ]
+[ Upstream commit e89d57d938c8fa80c457982154ed6110804814fe ]
 
-fwnode_property_get_reference_args() searches for named properties
-against a fwnode_handle, but these could instead be against the fwnode's
-secondary. If the property isn't found against the primary, check the
-secondary to see if it's there instead.
+During BPF static linking, all the ELF relocations and .BTF.ext
+information (including CO-RE relocations) are preserved for __weak
+subprograms that were logically overriden by either previous weak
+subprogram instance or by corresponding "strong" (non-weak) subprogram.
+This is just how native user-space linkers work, nothing new.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Daniel Scally <djrscally@gmail.com>
-Link: https://lore.kernel.org/r/20211128232455.39332-1-djrscally@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+But libbpf is over-zealous when processing CO-RE relocation to error out
+when CO-RE relocation belonging to such eliminated weak subprogram is
+encountered. Instead of erroring out on this expected situation, log
+debug-level message and skip the relocation.
+
+Fixes: db2b8b06423c ("libbpf: Support CO-RE relocations for multi-prog sections")
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220408181425.2287230-2-andrii@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/property.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ tools/lib/bpf/libbpf.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/base/property.c b/drivers/base/property.c
-index 4c77837769c6..c29fa92be1fd 100644
---- a/drivers/base/property.c
-+++ b/drivers/base/property.c
-@@ -479,8 +479,17 @@ int fwnode_property_get_reference_args(const struct fwnode_handle *fwnode,
- 				       unsigned int nargs, unsigned int index,
- 				       struct fwnode_reference_args *args)
- {
--	return fwnode_call_int_op(fwnode, get_reference_args, prop, nargs_prop,
--				  nargs, index, args);
-+	int ret;
-+
-+	ret = fwnode_call_int_op(fwnode, get_reference_args, prop, nargs_prop,
-+				 nargs, index, args);
-+
-+	if (ret < 0 && !IS_ERR_OR_NULL(fwnode) &&
-+	    !IS_ERR_OR_NULL(fwnode->secondary))
-+		ret = fwnode_call_int_op(fwnode->secondary, get_reference_args,
-+					 prop, nargs_prop, nargs, index, args);
-+
-+	return ret;
- }
- EXPORT_SYMBOL_GPL(fwnode_property_get_reference_args);
- 
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 693e14799fb9..5612d0938fc9 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -5238,10 +5238,17 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
+ 			insn_idx = rec->insn_off / BPF_INSN_SZ;
+ 			prog = find_prog_by_sec_insn(obj, sec_idx, insn_idx);
+ 			if (!prog) {
+-				pr_warn("sec '%s': failed to find program at insn #%d for CO-RE offset relocation #%d\n",
+-					sec_name, insn_idx, i);
+-				err = -EINVAL;
+-				goto out;
++				/* When __weak subprog is "overridden" by another instance
++				 * of the subprog from a different object file, linker still
++				 * appends all the .BTF.ext info that used to belong to that
++				 * eliminated subprogram.
++				 * This is similar to what x86-64 linker does for relocations.
++				 * So just ignore such relocations just like we ignore
++				 * subprog instructions when discovering subprograms.
++				 */
++				pr_debug("sec '%s': skipping CO-RE relocation #%d for insn #%d belonging to eliminated weak subprogram\n",
++					 sec_name, i, insn_idx);
++				continue;
+ 			}
+ 			/* no need to apply CO-RE relocation if the program is
+ 			 * not going to be loaded
 -- 
 2.35.1
 
