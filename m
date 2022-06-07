@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60EB4CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:47:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07817C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:47:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377683AbiFGVr1 (ORCPT
+        id S1378691AbiFGVrf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48902 "EHLO
+        Tue, 7 Jun 2022 17:47:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378002AbiFGUvQ (ORCPT
+        with ESMTP id S1377968AbiFGUvP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:51:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6E11FDEA2;
-        Tue,  7 Jun 2022 11:41:14 -0700 (PDT)
+        Tue, 7 Jun 2022 16:51:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF76E184869;
+        Tue,  7 Jun 2022 11:41:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 316D061295;
-        Tue,  7 Jun 2022 18:41:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37E8DC385A2;
-        Tue,  7 Jun 2022 18:41:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82092B82182;
+        Tue,  7 Jun 2022 18:41:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7379C385A2;
+        Tue,  7 Jun 2022 18:41:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627273;
-        bh=5or48Sd0+2qQPDKl+woFHQA/id1AA8D8c0YmSyWFprU=;
+        s=korg; t=1654627262;
+        bh=YIivGeXXRfB6Sue+gelH2WioHvR7o0hxg8DWNPtEYV4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zXXxSVLTqOQfNEpAaMgmvJfx+IzRIEtzZHZbihO/2xoA+LB7tJDVT+4H4/kixqkZk
-         OODr5D7U+wEmLA01N4abCbvC2ozKkt7a+HuJ5in56nH8NygYgdv6cOW7HkyCnvyOrw
-         VbNJBkF4cE0qy9H/McbmVMPQ0SlAiEsjZCAVfVvA=
+        b=o+ycQWLERCsuaMwg8T/t6xrVsKZzlIDtw5Ti7yNz0VLzoJBP68I6dTHP6LSi0Zaxn
+         OH1vZC/DyMcsXkQcjQf9zd03tmWaEJVdJYDtoqrs26VJtfXP2OIOBA2lfeDOFCHuGj
+         OONY3uq8couzEGl1ipre1lyxtQFRJ5LzOMZ90Hl0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        stable@vger.kernel.org,
         =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.17 679/772] selftests/landlock: Extend access right tests to directories
-Date:   Tue,  7 Jun 2022 19:04:31 +0200
-Message-Id: <20220607165009.065451258@linuxfoundation.org>
+Subject: [PATCH 5.17 675/772] landlock: Fix landlock_add_rule(2) documentation
+Date:   Tue,  7 Jun 2022 19:04:27 +0200
+Message-Id: <20220607165008.950089574@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,78 +51,53 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mickaël Salaün <mic@digikod.net>
 
-commit d18955d094d09a220cf8f533f5e896a2fe31575a upstream.
+commit a13e248ff90e81e9322406c0e618cf2168702f4e upstream.
 
-Make sure that all filesystem access rights can be tied to directories.
+It is not mandatory to pass a file descriptor obtained with the O_PATH
+flag.  Also, replace rule's accesses with ruleset's accesses.
 
-Rename layout1.file_access_rights to layout1.file_and_dir_access_rights
-to reflect this change.
-
-Cc: Shuah Khan <shuah@kernel.org>
-Link: https://lore.kernel.org/r/20220506160820.524344-6-mic@digikod.net
+Link: https://lore.kernel.org/r/20220506160820.524344-2-mic@digikod.net
 Cc: stable@vger.kernel.org
 Signed-off-by: Mickaël Salaün <mic@digikod.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/landlock/fs_test.c |   30 +++++++++++++++++++++--------
- 1 file changed, 22 insertions(+), 8 deletions(-)
+ include/uapi/linux/landlock.h |    5 +++--
+ security/landlock/syscalls.c  |    7 +++----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
---- a/tools/testing/selftests/landlock/fs_test.c
-+++ b/tools/testing/selftests/landlock/fs_test.c
-@@ -418,11 +418,12 @@ TEST_F_FORK(layout1, inval)
- 
- /* clang-format on */
- 
--TEST_F_FORK(layout1, file_access_rights)
-+TEST_F_FORK(layout1, file_and_dir_access_rights)
- {
- 	__u64 access;
- 	int err;
--	struct landlock_path_beneath_attr path_beneath = {};
-+	struct landlock_path_beneath_attr path_beneath_file = {},
-+					  path_beneath_dir = {};
- 	struct landlock_ruleset_attr ruleset_attr = {
- 		.handled_access_fs = ACCESS_ALL,
- 	};
-@@ -432,20 +433,33 @@ TEST_F_FORK(layout1, file_access_rights)
- 	ASSERT_LE(0, ruleset_fd);
- 
- 	/* Tests access rights for files. */
--	path_beneath.parent_fd = open(file1_s1d2, O_PATH | O_CLOEXEC);
--	ASSERT_LE(0, path_beneath.parent_fd);
-+	path_beneath_file.parent_fd = open(file1_s1d2, O_PATH | O_CLOEXEC);
-+	ASSERT_LE(0, path_beneath_file.parent_fd);
-+
-+	/* Tests access rights for directories. */
-+	path_beneath_dir.parent_fd =
-+		open(dir_s1d2, O_PATH | O_DIRECTORY | O_CLOEXEC);
-+	ASSERT_LE(0, path_beneath_dir.parent_fd);
-+
- 	for (access = 1; access <= ACCESS_LAST; access <<= 1) {
--		path_beneath.allowed_access = access;
-+		path_beneath_dir.allowed_access = access;
-+		ASSERT_EQ(0, landlock_add_rule(ruleset_fd,
-+					       LANDLOCK_RULE_PATH_BENEATH,
-+					       &path_beneath_dir, 0));
-+
-+		path_beneath_file.allowed_access = access;
- 		err = landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
--					&path_beneath, 0);
--		if ((access | ACCESS_FILE) == ACCESS_FILE) {
-+					&path_beneath_file, 0);
-+		if (access & ACCESS_FILE) {
- 			ASSERT_EQ(0, err);
- 		} else {
- 			ASSERT_EQ(-1, err);
- 			ASSERT_EQ(EINVAL, errno);
- 		}
- 	}
--	ASSERT_EQ(0, close(path_beneath.parent_fd));
-+	ASSERT_EQ(0, close(path_beneath_file.parent_fd));
-+	ASSERT_EQ(0, close(path_beneath_dir.parent_fd));
-+	ASSERT_EQ(0, close(ruleset_fd));
- }
- 
- TEST_F_FORK(layout1, unknown_access_rights)
+--- a/include/uapi/linux/landlock.h
++++ b/include/uapi/linux/landlock.h
+@@ -62,8 +62,9 @@ struct landlock_path_beneath_attr {
+ 	 */
+ 	__u64 allowed_access;
+ 	/**
+-	 * @parent_fd: File descriptor, open with ``O_PATH``, which identifies
+-	 * the parent directory of a file hierarchy, or just a file.
++	 * @parent_fd: File descriptor, preferably opened with ``O_PATH``,
++	 * which identifies the parent directory of a file hierarchy, or just a
++	 * file.
+ 	 */
+ 	__s32 parent_fd;
+ 	/*
+--- a/security/landlock/syscalls.c
++++ b/security/landlock/syscalls.c
+@@ -292,14 +292,13 @@ out_fdput:
+  *
+  * - EOPNOTSUPP: Landlock is supported by the kernel but disabled at boot time;
+  * - EINVAL: @flags is not 0, or inconsistent access in the rule (i.e.
+- *   &landlock_path_beneath_attr.allowed_access is not a subset of the rule's
+- *   accesses);
++ *   &landlock_path_beneath_attr.allowed_access is not a subset of the
++ *   ruleset handled accesses);
+  * - ENOMSG: Empty accesses (e.g. &landlock_path_beneath_attr.allowed_access);
+  * - EBADF: @ruleset_fd is not a file descriptor for the current thread, or a
+  *   member of @rule_attr is not a file descriptor as expected;
+  * - EBADFD: @ruleset_fd is not a ruleset file descriptor, or a member of
+- *   @rule_attr is not the expected file descriptor type (e.g. file open
+- *   without O_PATH);
++ *   @rule_attr is not the expected file descriptor type;
+  * - EPERM: @ruleset_fd has no write access to the underlying ruleset;
+  * - EFAULT: @rule_attr inconsistency.
+  */
 
 
