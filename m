@@ -2,133 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A582DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36CB0C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444004AbiFHCHb (ORCPT
+        id S1442007AbiFHCGM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:07:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36996 "EHLO
+        Tue, 7 Jun 2022 22:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1586177AbiFGXuv (ORCPT
+        with ESMTP id S1841781AbiFHAIO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:50:51 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C7932E43B4;
-        Tue,  7 Jun 2022 15:06:28 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id m20so37807645ejj.10;
-        Tue, 07 Jun 2022 15:06:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ALd0eOORSOPkFVDrzHX6x7yxY/dHxk/oAxZcRLZpKk8=;
-        b=Ju0rSQOF4ohU1iMi2o5c94qKHMnjUgxcFGRMOI/OIBoiHhfHMwSiUkh7r+fPpagtFq
-         /3QWMmCORHVnxrVWROQOfvOuEpJHi9I1whS1eolI/rQr9vEAbKfsazjkfaBci94ts62/
-         NFZArgHXsDQEgCJ9vfl0dqAqt5mWIlt3qVxmHA840maUWKJmnfoiUa9XCxI2kW+25se/
-         RIajjfSZkUs4GlB3VD3fPxK733ckd6IyGUt1SOBVDkqABgt3PtNAcQ2A3zTxCbugXkfZ
-         Ki8LZ2cD8iNnGey0em0VqQYggZwSbpht3fpvDZPsb1V/doO3pOGck9G7ChImMXDb3zZG
-         A1Rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ALd0eOORSOPkFVDrzHX6x7yxY/dHxk/oAxZcRLZpKk8=;
-        b=502yb6/YGobL6mFMzzHxHigMjvqi6c6nGwdyCGt4MSgpqrEIaI2Tf1dn49gcWQCxaq
-         x5u70fKRxKqv8OVnre8Agtf34+gwKI6+6aHxTBgffMV9P0jqlcoQuBxsXB6uA8NuWiE5
-         6AsWNqZhHdxu4TY8/6ReT0o1rIdlj96EnekNoSd8+KAJKOTS6eT/ei2I/njLj+60FWhV
-         ibAnBUxwCSk9746bXmAHXvYnMTTrMII9UfnUc3EO1PMjekToQhiCzDANmvhGTxLFVUS0
-         04i471PvD3GSu5gzAAROuw3VTtlWnPxudBNIMlMfW2MY9VP4QnLAA2sv62kjMno1lxVU
-         cdFg==
-X-Gm-Message-State: AOAM5321qodYzYN3VpmF6w5RWK6SOckgNl5tdBCDQWQYfjEAxPYUrwhw
-        7QR5Y/DjlSSemONUCCwPSmhozB7P9obgseOtvG0=
-X-Google-Smtp-Source: ABdhPJxXaHUQ1t3Fs2bSMI3+q6sxcHm8rkhZ9MBNJzCeoX+bDvFVR+JvWTugFFPoWKkVMocln9rP5ok83qFIjfh1Fus=
-X-Received: by 2002:a17:907:72cf:b0:6ff:4607:1bf with SMTP id
- du15-20020a17090772cf00b006ff460701bfmr30230387ejc.649.1654639586442; Tue, 07
- Jun 2022 15:06:26 -0700 (PDT)
+        Tue, 7 Jun 2022 20:08:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674E2267CE4;
+        Tue,  7 Jun 2022 12:21:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 789FAB823CC;
+        Tue,  7 Jun 2022 19:21:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEA7AC385A5;
+        Tue,  7 Jun 2022 19:21:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629694;
+        bh=GmrMzbqcZ2nl6Mbbuu93Fv32BUR3uWJx+cJ6lsJTsWU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gQL19/RCxBR47po3oG7o7UK7viVmjQS+zR/PO0AbinNyLLX/i36rehHQJI6q1zmn7
+         TnCRgJJQQg0jBWMLSsLT+uT+ygsxImofP26Phc8XAHXSqIkZj70nxENiST0VjQS/Ho
+         RbZn6N2Xk6Ron9mzw7qu782ijQANcxdUPbmX7E+s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
+Subject: [PATCH 5.18 783/879] selftests/landlock: Add tests for O_PATH
+Date:   Tue,  7 Jun 2022 19:05:01 +0200
+Message-Id: <20220607165025.597516138@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220530135457.1104091-1-s.hauer@pengutronix.de> <20220530135457.1104091-6-s.hauer@pengutronix.de>
-In-Reply-To: <20220530135457.1104091-6-s.hauer@pengutronix.de>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Wed, 8 Jun 2022 00:06:15 +0200
-Message-ID: <CAFBinCDgErZzFs5NiDT0JAOhziz5WLiy0+yxF9Z-kXPxD1j8Dw@mail.gmail.com>
-Subject: Re: [PATCH v2 05/10] rtw88: iterate over vif/sta list non-atomically
-To:     Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     linux-wireless@vger.kernel.org, Neo Jou <neojou@gmail.com>,
-        Hans Ulli Kroll <linux@ulli-kroll.de>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        Johannes Berg <johannes@sipsolutions.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sascha,
+From: Mickaël Salaün <mic@digikod.net>
 
-thanks for this patch!
+commit d1788ad990874734341b05ab8ccb6448c09c6422 upstream.
 
-On Mon, May 30, 2022 at 3:55 PM Sascha Hauer <s.hauer@pengutronix.de> wrote:
-[...]
->  drivers/net/wireless/realtek/rtw88/phy.c  |   6 +-
->  drivers/net/wireless/realtek/rtw88/ps.c   |   2 +-
->  drivers/net/wireless/realtek/rtw88/util.c | 103 ++++++++++++++++++++++
->  drivers/net/wireless/realtek/rtw88/util.h |  12 ++-
->  4 files changed, 116 insertions(+), 7 deletions(-)
-I compared the changes from this patch with my earlier work. I would
-like to highlight a few functions to understand if they were left out
-on purpose or by accident.
+The O_PATH flag is currently not handled by Landlock.  Let's make sure
+this behavior will remain consistent with the same ruleset over time.
 
-__fw_recovery_work() in main.c (unfortunately I am not sure how to
-trigger/test this "firmware recovery" logic):
-- this is already called with &rtwdev->mutex held
-- it uses rtw_iterate_keys_rcu() (which internally uses rtw_write32
-from rtw_sec_clear_cam). feel free to either add [0] to your series or
-even squash it into an existing patch
-- it uses rtw_iterate_stas_atomic() (which internally uses
-rtw_fw_send_h2c_command from rtw_fw_media_status_report)
-- it uses rtw_iterate_vifs_atomic() (which internally can read/write
-registers from rtw_chip_config_bfee)
-- in my previous series I simply replaced the
-rtw_iterate_stas_atomic() and rtw_iterate_vifs_atomic() calls with the
-non-atomic variants (for the rtw_iterate_keys_rcu() call I did some
-extra cleanup, see [0])
+Cc: Shuah Khan <shuah@kernel.org>
+Link: https://lore.kernel.org/r/20220506160820.524344-8-mic@digikod.net
+Cc: stable@vger.kernel.org
+Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ tools/testing/selftests/landlock/fs_test.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-rtw_wow_fw_media_status() in wow.c (unfortunately I am also not sure
-how to test WoWLAN):
-- I am not sure if &rtwdev->mutex is held when this function is called
-- it uses rtw_iterate_stas_atomic() (which internally uses
-rtw_fw_send_h2c_command from rtw_fw_media_status_report)
-- in my previous series I simply replaced rtw_iterate_stas_atomic()
-with it's non-atomic variant
-
-Additionally I rebased my SDIO work on top of your USB series.
-This makes SDIO support a lot easier - so thank you for your work!
-I found that three of my previous patches (in addition to [0] which I
-already mentioned earlier) are still needed to get rid of some
-warnings when using the SDIO interface (the same warnings may or may
-not be there with the USB interface - it just depends on whether your
-AP makes rtw88 hit that specific code-path):
-- [1]: rtw88: Configure the registers from rtw_bf_assoc() outside the RCU lock
-- [2]: rtw88: Move rtw_chip_cfg_csi_rate() out of rtw_vif_watch_dog_iter()
-- [3]: rtw88: Move rtw_update_sta_info() out of rtw_ra_mask_info_update_iter()
-
-These three patches are freshly rebased to apply on top of your series.
-If you (or Ping-Ke) think those are needed for USB support then please
-feel free to include them in your series, squash them into one of your
-patches or just ask me to send them as an individual series)
-
-I am running out of time for today. I'll be able to continue on this
-later this week/during the weekend.
+--- a/tools/testing/selftests/landlock/fs_test.c
++++ b/tools/testing/selftests/landlock/fs_test.c
+@@ -654,17 +654,23 @@ TEST_F_FORK(layout1, effective_access)
+ 	enforce_ruleset(_metadata, ruleset_fd);
+ 	ASSERT_EQ(0, close(ruleset_fd));
+ 
+-	/* Tests on a directory. */
++	/* Tests on a directory (with or without O_PATH). */
+ 	ASSERT_EQ(EACCES, test_open("/", O_RDONLY));
++	ASSERT_EQ(0, test_open("/", O_RDONLY | O_PATH));
+ 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY));
++	ASSERT_EQ(0, test_open(dir_s1d1, O_RDONLY | O_PATH));
+ 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDONLY));
++	ASSERT_EQ(0, test_open(file1_s1d1, O_RDONLY | O_PATH));
++
+ 	ASSERT_EQ(0, test_open(dir_s1d2, O_RDONLY));
+ 	ASSERT_EQ(0, test_open(file1_s1d2, O_RDONLY));
+ 	ASSERT_EQ(0, test_open(dir_s1d3, O_RDONLY));
+ 	ASSERT_EQ(0, test_open(file1_s1d3, O_RDONLY));
+ 
+-	/* Tests on a file. */
++	/* Tests on a file (with or without O_PATH). */
+ 	ASSERT_EQ(EACCES, test_open(dir_s2d2, O_RDONLY));
++	ASSERT_EQ(0, test_open(dir_s2d2, O_RDONLY | O_PATH));
++
+ 	ASSERT_EQ(0, test_open(file1_s2d2, O_RDONLY));
+ 
+ 	/* Checks effective read and write actions. */
 
 
-Best regards,
-Martin
-
-
-[0] https://lore.kernel.org/all/20220108005533.947787-6-martin.blumenstingl@googlemail.com/
-[1] https://github.com/xdarklight/linux/commit/420bb40511151fbc9f5447aced4fde3a7bb0566b.patch
-[2] https://github.com/xdarklight/linux/commit/cc08cc8fb697157b99304ad3ec89b1cca0900697.patch
-[3] https://github.com/xdarklight/linux/commit/5db636e3035a425e104fba7983301b0085366268.patch
