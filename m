@@ -2,122 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEFADC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 13:18:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44330C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 13:21:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244560AbiFGNSu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 09:18:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56634 "EHLO
+        id S244554AbiFGNVN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 09:21:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244554AbiFGNSr (ORCPT
+        with ESMTP id S234281AbiFGNVJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 09:18:47 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05CCB6972A
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 06:18:45 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id me5so34617232ejb.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 06:18:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair;
-        h=cc:subject:from:to:mime-version:content-transfer-encoding:date
-         :message-id:references:in-reply-to;
-        bh=xQ/38FMDTLXlcNU1vfrf+06M1Gbcy9oJbFk2y6vkO2w=;
-        b=oHVLGgKjmFMRMizTWmpZDLzkW76syBiOmiYDceeIW+ewSxfl64CjZKYzxmVFRGMpTG
-         LU0BRmI9u2/28Lm0vt5W5IjCHcVZ4Z5Dec6IwLNQn/yl3CL7iqmUdOoAwJqpRNb5/sv5
-         eIsgDDe6s9HKYbysqzFAhfZX/nXhqmpFw7RLOKKuiSXxo1ke3Mj21BdmuSc2klLcL5Za
-         WcpPogll14XXtfMDfJMPsnUnOUv4dgw4QJUyZh6N5EzxJBdXX22J1a+1EVZosCacRCpH
-         kBiL6+pzjpOnKRkfl7RNP7bw7kSlVzi7ds8+B7I1KThDpMy+czgIGLsZt02Ee3VflEBz
-         D8lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:cc:subject:from:to:mime-version
-         :content-transfer-encoding:date:message-id:references:in-reply-to;
-        bh=xQ/38FMDTLXlcNU1vfrf+06M1Gbcy9oJbFk2y6vkO2w=;
-        b=IQKu/KKlA9LI4NzDUsjqLOVLoLuO+z9ivoKtl5X05nLJgCY/LsDttqPRLePsNCtYm3
-         +08j/7TjX0RvVjSjQ72x6E6IO9Og8iHKj9zhkBOk8c86rSYIw58bCzBaQTDQj0xHxLJm
-         XJ6P4M1AF9JkcoqDi+XFyObPVExZbK37lJuQT9BwLucQIzrFeishx5OjAbRmLTtJet+w
-         yn7TzCgn5aXPP1pFz/rJmqNIBJXEnI5tR5SC2eiRtLOy5JQcwH10340BE6PyQcu9bBK4
-         VfQcWlfvRS3eWunyW1F5FWab4CmMtrp1qG+1lykPhXll6MDPALThZqPc9fViqAl6xgYF
-         XfXA==
-X-Gm-Message-State: AOAM533wku0W9mWaK3jB4YtCR74ZDOv8tX6ircax4LM74X0NG+B02vu+
-        2Xdc+nbKDFpl4tlVHrPGmNcD/w==
-X-Google-Smtp-Source: ABdhPJzl8lTpta7T4QnmJUQpMYORX+lUVc3wUnHas6OVjJwcyHdfSOUBlntzuSdVEyfl0tXG5VwNiw==
-X-Received: by 2002:a17:907:1ca8:b0:70c:68ce:dade with SMTP id nb40-20020a1709071ca800b0070c68cedademr23803960ejc.723.1654607923570;
-        Tue, 07 Jun 2022 06:18:43 -0700 (PDT)
-Received: from localhost (144-178-202-138.static.ef-service.nl. [144.178.202.138])
-        by smtp.gmail.com with ESMTPSA id z14-20020a170906074e00b006fecf62536asm5311035ejb.188.2022.06.07.06.18.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 06:18:43 -0700 (PDT)
-Content-Type: text/plain; charset=UTF-8
-Cc:     "Lee Jones" <lee.jones@linaro.org>,
-        "Liam Girdwood" <lgirdwood@gmail.com>,
-        "Mark Brown" <broonie@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <swboyd@chromium.org>, <quic_collinsd@quicinc.com>,
-        <quic_subbaram@quicinc.com>, <quic_jprakash@quicinc.com>
-Subject: Re: [PATCH V14 8/9] arm64: dts: qcom: pm8008: Add base dts file
-From:   "Luca Weiss" <luca.weiss@fairphone.com>
-To:     "Satya Priya" <quic_c_skakit@quicinc.com>,
-        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
-        "Rob Herring" <robh+dt@kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Date:   Tue, 07 Jun 2022 15:16:31 +0200
-Message-Id: <CKJXIE08RHD0.31NM2AKTA8B9V@otso>
-X-Mailer: aerc 0.9.0
-References: <1654602615-28849-1-git-send-email-quic_c_skakit@quicinc.com>
- <1654602615-28849-9-git-send-email-quic_c_skakit@quicinc.com>
-In-Reply-To: <1654602615-28849-9-git-send-email-quic_c_skakit@quicinc.com>
+        Tue, 7 Jun 2022 09:21:09 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7786069290;
+        Tue,  7 Jun 2022 06:21:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654608065; x=1686144065;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=7M5Zbf6hRRdvfgbssy0k9CPN3f/nvfC3XOcth6rYGQk=;
+  b=FHXsuwGpLGZWha5LbKRCDBbsq1MM68THXH+D+IVm6uo8+NwjPA0NFLo1
+   b5lRFgvwyiLwIj5tTeg5yaj1TynWY494DgU/Ci/OlBwSFEfKI8dqfGyEe
+   f6har4NkwRD52rrDTAJlq7F9OPWO8tiGQjuisCxk0PbTBYnzX3jPGjZTa
+   yxDCdirecVN2wRv4wSbBAlxjwmxFPxGNHImu5VRuqQul0QRedwmhF7OMm
+   sLHbCc32NuwbH3TQBxjbxyFpR3GuccOmJe6vhj5agjSdZ/D6RgdalwoWn
+   AUiWkvFuC2Cew1xTrTylxGrpI9Hq225mSYllvzZiA5dWlidP3+8qYyk7G
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="277508732"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="277508732"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 06:21:04 -0700
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="636122037"
+Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 06:21:03 -0700
+Date:   Tue, 7 Jun 2022 16:21:00 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 03/36] tty/vt: consolemap: define UNI_* macros for
+ constants
+In-Reply-To: <20220607104946.18710-3-jslaby@suse.cz>
+Message-ID: <59e0ae93-c7b-2087-75f8-4da0de918250@linux.intel.com>
+References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-3-jslaby@suse.cz>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; BOUNDARY="8323329-1534695395-1654607902=:1622"
+Content-ID: <7e28987a-6395-d443-4367-a4e8891c480@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Satya,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-On Tue Jun 7, 2022 at 1:50 PM CEST, Satya Priya wrote:
-> Add base DTS file for pm8008.
->
-> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
-> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-> ---
-> Changes in V14:
->  - None.
->
-> Changes in V13:
->  - None.
->
-> Changes in V12:
->  - None.
->
-> Changes in V11:
->  - Remove intermediate regulators node and add the ldos under
->    pm8008@8 node.
->  - change the address cells as 2 for pm8008 parent mfd node.
->  - add compatible to register the ldos.
->  - add reg with i2c client offset and address.
->
->  arc
->  arch/arm64/boot/dts/qcom/pm8008.dtsi | 54 ++++++++++++++++++++++++++++++=
-++++++
->  1 file changed, 54 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/qcom/pm8008.dtsi
->
-> diff --git a/arch/arm64/boot/dts/qcom/pm8008.dtsi b/arch/arm64/boot/dts/q=
-com/pm8008.dtsi
-> new file mode 100644
-> index 0000000..6f37e4d
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/pm8008.dtsi
-> @@ -0,0 +1,54 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +// Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserv=
-ed.
+--8323329-1534695395-1654607902=:1622
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <de645f70-e7af-dfeb-4ac2-646eea40a368@linux.intel.com>
 
-I noticed this file was licensed as BSD-3-Clause in V13 and
-this change was not mentioned in the "Changes" part.
-Any specific reason? Especially newer dts files should be BSD-licensed,
-and having this GPL dtsi included in otherwise BSD dts files is not
-good.
+On Tue, 7 Jun 2022, Jiri Slaby wrote:
 
-Regards
-Luca
+> The code uses constants for sizes of dictionary substructures on many
+> places. Define 3 macros and use them in the code, so that loop bounds,
+> local variables and the dictionary always match. (And the loop bounds
+> are obvious now too.)
+> 
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+> -			for (k = 0; k < 64; k++) {
+> +			for (k = 0; k < UNI_ROW_GLYPHS; k++) {
+>  				glyph = p2[k];
+>  				if (glyph >= 0 && glyph < MAX_GLYPH
+>  					       && q[glyph] < 32)
+
+Probably unrelated to this change but what's that < 32? It seems to appear 
+twice related to the inverse mapping (and you didn't end up naming it).
+
+
+-- 
+ i.
+--8323329-1534695395-1654607902=:1622--
