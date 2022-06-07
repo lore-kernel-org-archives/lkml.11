@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 046ACCCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69AEDCCA47F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385062AbiFGWU5 (ORCPT
+        id S1385223AbiFGWVW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
+        Tue, 7 Jun 2022 18:21:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380427AbiFGVQS (ORCPT
+        with ESMTP id S1380545AbiFGVQb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:16:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE48B21CBFC;
-        Tue,  7 Jun 2022 11:55:05 -0700 (PDT)
+        Tue, 7 Jun 2022 17:16:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD38021DA39;
+        Tue,  7 Jun 2022 11:55:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 925EE61277;
-        Tue,  7 Jun 2022 18:55:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A399EC385A2;
-        Tue,  7 Jun 2022 18:55:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41FF861277;
+        Tue,  7 Jun 2022 18:55:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52FBDC385A2;
+        Tue,  7 Jun 2022 18:55:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628105;
-        bh=Io4HhJb+Cz16sRUnVJbOtBv6IWiQnhJuRY59WG07j+s=;
+        s=korg; t=1654628124;
+        bh=5ijuIaRbgd+oSgheT9EPvH3wQ/y54m1bFMPcfGh+Pzk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PY11wD6HNhsbobYiOdBf9xufMl36zGVvY814mOQlai5kAgoMazkXnpdPfdBdCGHNs
-         aAlw9gNfK2Sf+zBIORMZOzFPEoi3pRZThrwWB5kEymlCIUHoYuBVI3zF1/6s559Oqo
-         2oGRs5dD033v/g3r3n2JDlaflAoJz4X1UDFSyRDI=
+        b=zsqatreeRUGkly+ZDvF9xkdAtRxu5QnkYK/yKUHD9C6YTsX8SRwo5c5cd2U6WiSWj
+         hVjZO40ZcVNc+xaWJDgcZ8aEZ7M5DFrJglmRt6StCIVioRzY5sOAYwdHwHd5dfBM6Z
+         Fd7qs+BA7qsKt4Rwg8hJROGW/3U1hf8XdUtT8MIQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 209/879] IB/rdmavt: add missing locks in rvt_ruc_loopback
-Date:   Tue,  7 Jun 2022 18:55:27 +0200
-Message-Id: <20220607165008.918827102@linuxfoundation.org>
+Subject: [PATCH 5.18 215/879] arm64: dts: qcom: msm8994: Fix the cont_splash_mem address
+Date:   Tue,  7 Jun 2022 18:55:33 +0200
+Message-Id: <20220607165009.094740814@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,61 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit 22cbc6c2681a0a4fe76150270426e763d52353a4 ]
+[ Upstream commit 049c46f31a726bf8d202ff1681661513447fac84 ]
 
-The documentation of the function rvt_error_qp says both r_lock and
-s_lock need to be held when calling that function.
-It also asserts using lockdep that both of those locks are held.
-rvt_error_qp is called form rvt_send_cq, which is called from
-rvt_qp_complete_swqe, which is called from rvt_send_complete, which is
-called from rvt_ruc_loopback in two places. Both of these places do not
-hold r_lock. Fix this by acquiring a spin_lock of r_lock in both of
-these places.
-The r_lock acquiring cannot be added in rvt_qp_complete_swqe because
-some of its other callers already have r_lock acquired.
+The default memory map places cont_splash_mem at 3401000, which was
+overlooked.. Fix it!
 
-Link: https://lore.kernel.org/r/20220228195144.71946-1-dossche.niels@gmail.com
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220319174645.340379-9-konrad.dybcio@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rdmavt/qp.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/msm8994.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/sw/rdmavt/qp.c b/drivers/infiniband/sw/rdmavt/qp.c
-index 8ef112f883a7..3acab569fbb9 100644
---- a/drivers/infiniband/sw/rdmavt/qp.c
-+++ b/drivers/infiniband/sw/rdmavt/qp.c
-@@ -2775,7 +2775,7 @@ void rvt_qp_iter(struct rvt_dev_info *rdi,
- EXPORT_SYMBOL(rvt_qp_iter);
+diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+index 8c1dc5155b71..c65618b95ce0 100644
+--- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+@@ -183,8 +183,8 @@
+ 			no-map;
+ 		};
  
- /*
-- * This should be called with s_lock held.
-+ * This should be called with s_lock and r_lock held.
-  */
- void rvt_send_complete(struct rvt_qp *qp, struct rvt_swqe *wqe,
- 		       enum ib_wc_status status)
-@@ -3134,7 +3134,9 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
- 	rvp->n_loop_pkts++;
- flush_send:
- 	sqp->s_rnr_retry = sqp->s_rnr_retry_cnt;
-+	spin_lock(&sqp->r_lock);
- 	rvt_send_complete(sqp, wqe, send_status);
-+	spin_unlock(&sqp->r_lock);
- 	if (local_ops) {
- 		atomic_dec(&sqp->local_ops_pending);
- 		local_ops = 0;
-@@ -3188,7 +3190,9 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
- 	spin_unlock_irqrestore(&qp->r_lock, flags);
- serr_no_r_lock:
- 	spin_lock_irqsave(&sqp->s_lock, flags);
-+	spin_lock(&sqp->r_lock);
- 	rvt_send_complete(sqp, wqe, send_status);
-+	spin_unlock(&sqp->r_lock);
- 	if (sqp->ibqp.qp_type == IB_QPT_RC) {
- 		int lastwqe;
+-		cont_splash_mem: memory@3800000 {
+-			reg = <0 0x03800000 0 0x2400000>;
++		cont_splash_mem: memory@3401000 {
++			reg = <0 0x03401000 0 0x2200000>;
+ 			no-map;
+ 		};
  
 -- 
 2.35.1
