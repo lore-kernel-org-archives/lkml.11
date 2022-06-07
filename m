@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5897AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:43:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C982C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347727AbiFGRm7 (ORCPT
+        id S1347494AbiFGRnK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:42:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41790 "EHLO
+        Tue, 7 Jun 2022 13:43:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347818AbiFGRbO (ORCPT
+        with ESMTP id S1347859AbiFGRbU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:31:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E4E410A622;
-        Tue,  7 Jun 2022 10:28:31 -0700 (PDT)
+        Tue, 7 Jun 2022 13:31:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9703B1059CB;
+        Tue,  7 Jun 2022 10:28:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2C87B8220B;
-        Tue,  7 Jun 2022 17:28:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CF40C385A5;
-        Tue,  7 Jun 2022 17:28:28 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BC931CE2396;
+        Tue,  7 Jun 2022 17:28:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8030C385A5;
+        Tue,  7 Jun 2022 17:28:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622908;
-        bh=6PvPp41sWDIFRVcwMs3dWSgt0lhHS7kXOIPuLaqjBcM=;
+        s=korg; t=1654622914;
+        bh=hKaaFKKJkTwL/NOcTKoKRquAfxInXdQEATkMxPCLz1A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bTIEDBg68VAR88X7vZhksMAAWemd3RDXJwizbPxJpfGG9/wjMzQmk92EJw7yehtjO
-         oe8EpJHf9ohvl8CCcSdYirc3/qmNgvbHfrG4K5XAL84Ds1ozl7j8jVl46xo/qudt1e
-         BhWKVd692qzSvz4sx/VMD255gp875W2h8AtfvAzE=
+        b=euZ1V3lF2vYOho1A7FOeMBiaq5VSfaiLCRZsxr6UpHSySd2o7BGheEiGRC/Ga4Iml
+         7PqgM+Km1z4YLfcrSYQ02yvS7NbVVcaX2q5Fz5gu7E8YB3CcNLYgzMFimtnED2Vn+F
+         9VbaCJ3ru9UvvWVZpRqTzz3G50iEpl9OMLjyKGEQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheng Bin <zhengbin13@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Dongliang Mu <mudongliangabcd@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 226/452] net: hinic: add missing destroy_workqueue in hinic_pf_to_mgmt_init
-Date:   Tue,  7 Jun 2022 19:01:23 +0200
-Message-Id: <20220607164915.298695412@linuxfoundation.org>
+Subject: [PATCH 5.10 228/452] media: ov7670: remove ov7670_power_off from ov7670_remove
+Date:   Tue,  7 Jun 2022 19:01:25 +0200
+Message-Id: <20220607164915.356419505@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,41 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Bin <zhengbin13@huawei.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit 382d917bfc1e92339dae3c8a636b2730e8bb5132 ]
+[ Upstream commit 5bf19572e31375368f19edd2dbb2e0789518bb99 ]
 
-hinic_pf_to_mgmt_init misses destroy_workqueue in error path,
-this patch fixes that.
+In ov7670_probe, it always invokes ov7670_power_off() no matter
+the execution is successful or failed. So we cannot invoke it
+agiain in ov7670_remove().
 
-Fixes: 6dbb89014dc3 ("hinic: fix sending mailbox timeout in aeq event work")
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fix this by removing ov7670_power_off from ov7670_remove.
+
+Fixes: 030f9f682e66 ("media: ov7670: control clock along with power")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/media/i2c/ov7670.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-index 819fa13034c0..027dcc453506 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-@@ -647,6 +647,7 @@ int hinic_pf_to_mgmt_init(struct hinic_pf_to_mgmt *pf_to_mgmt,
- 	err = alloc_msg_buf(pf_to_mgmt);
- 	if (err) {
- 		dev_err(&pdev->dev, "Failed to allocate msg buffers\n");
-+		destroy_workqueue(pf_to_mgmt->workq);
- 		hinic_health_reporters_destroy(hwdev->devlink_dev);
- 		return err;
- 	}
-@@ -654,6 +655,7 @@ int hinic_pf_to_mgmt_init(struct hinic_pf_to_mgmt *pf_to_mgmt,
- 	err = hinic_api_cmd_init(pf_to_mgmt->cmd_chain, hwif);
- 	if (err) {
- 		dev_err(&pdev->dev, "Failed to initialize cmd chains\n");
-+		destroy_workqueue(pf_to_mgmt->workq);
- 		hinic_health_reporters_destroy(hwdev->devlink_dev);
- 		return err;
- 	}
+diff --git a/drivers/media/i2c/ov7670.c b/drivers/media/i2c/ov7670.c
+index b42b289faaef..154776d0069e 100644
+--- a/drivers/media/i2c/ov7670.c
++++ b/drivers/media/i2c/ov7670.c
+@@ -2000,7 +2000,6 @@ static int ov7670_remove(struct i2c_client *client)
+ 	v4l2_async_unregister_subdev(sd);
+ 	v4l2_ctrl_handler_free(&info->hdl);
+ 	media_entity_cleanup(&info->sd.entity);
+-	ov7670_power_off(sd);
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
