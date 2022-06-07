@@ -2,277 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B452C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECFEACCA47C
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377805AbiFHBoH (ORCPT
+        id S1386663AbiFHBpM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:44:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43644 "EHLO
+        Tue, 7 Jun 2022 21:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387074AbiFGWtw (ORCPT
+        with ESMTP id S1382437AbiFGWCi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:49:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CEA642AA010
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:38:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654630694;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hKE/h82CPv0u0XoKS7MJOdRnsMSzYWemhQRHX7aHBZI=;
-        b=OSbkd0+hVpyStSAVs8AQcnw3PCOf6xKWgbK2c1EjecasJSSxV42SndRzfiSWt8FR05dB3s
-        rX+u4wshlZ+1K08QeEH/1fEFsPL5UU8QtMSzSfE3JuTNNAs3K8a2nLQtO68ij68FFSkIxy
-        MiX4sjvgzkZPaGpJy1qYfq3sC0+pbV8=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-584-LUSfwX0XNF24XFxgHDPxmg-1; Tue, 07 Jun 2022 15:38:07 -0400
-X-MC-Unique: LUSfwX0XNF24XFxgHDPxmg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 7 Jun 2022 18:02:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB8B924F799;
+        Tue,  7 Jun 2022 12:14:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3ED93382ECD1;
-        Tue,  7 Jun 2022 19:34:55 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.9.252])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 318E72BFD953;
-        Tue,  7 Jun 2022 19:34:03 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org
-Cc:     Wayne Lin <Wayne.Lin@amd.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sean Paul <sean@poorly.run>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Hersen Wu <hersenwu@amd.com>, Roman Li <Roman.Li@amd.com>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
-        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
-        He Ying <heying24@huawei.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Sean Paul <seanpaul@chromium.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Fernando Ramos <greenfoo@u92.eu>,
-        linux-kernel@vger.kernel.org (open list),
-        intel-gfx@lists.freedesktop.org (open list:INTEL DRM DRIVERS)
-Subject: [RESEND RFC 09/18] drm/display/dp_mst: Don't open code modeset checks for releasing time slots
-Date:   Tue,  7 Jun 2022 15:29:24 -0400
-Message-Id: <20220607192933.1333228-10-lyude@redhat.com>
-In-Reply-To: <20220607192933.1333228-1-lyude@redhat.com>
-References: <20220607192933.1333228-1-lyude@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95180617DA;
+        Tue,  7 Jun 2022 19:14:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0D59C34115;
+        Tue,  7 Jun 2022 19:14:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629272;
+        bh=F+Ejk3TJqvM9iJL5X57Am9LXrVwli2Qkgi0+4c09buY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=emSbu9NKAwLEWGI8kU9fBYnhVb5SGKSYdjzBJXxxXKX/qaHfsRCN35JH+ZVALTgnk
+         3LAO9cO/l66GiplBom+sVCtsMK0TCL2PyBp4flcGiaMCHBTRY2mN/fbCtG1JQzucQT
+         hkZ5qF4LvguxVfC/K4Xy2NIk42F2DFWwBPapn2mA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 629/879] Input: sparcspkr - fix refcount leak in bbc_beep_probe
+Date:   Tue,  7 Jun 2022 19:02:27 +0200
+Message-Id: <20220607165021.107265229@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm not sure why, but at the time I originally wrote the find/release time
-slot helpers I thought we should avoid keeping modeset tracking out of the
-MST helpers. In retrospect though there's no actual good reason to do
-this, and the logic has ended up being identical across all the drivers
-using the helpers. Also, it needs to be fixed anyway so we don't break
-things when going atomic-only with MST.
+From: Miaoqian Lin <linmq006@gmail.com>
 
-So, let's just move this code into drm_dp_atomic_release_time_slots() and
-stop open coding it.
+[ Upstream commit c8994b30d71d64d5dcc9bc0edbfdf367171aa96f ]
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: Wayne Lin <Wayne.Lin@amd.com>
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Imre Deak <imre.deak@intel.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Sean Paul <sean@poorly.run>
+of_find_node_by_path() calls of_find_node_opts_by_path(),
+which returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
+
+Fixes: 9c1a5077fdca ("input: Rewrite sparcspkr device probing.")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220516081018.42728-1-linmq006@gmail.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../display/amdgpu_dm/amdgpu_dm_mst_types.c   | 29 +++----------------
- drivers/gpu/drm/display/drm_dp_mst_topology.c | 21 ++++++++++++--
- drivers/gpu/drm/i915/display/intel_dp_mst.c   | 24 +--------------
- drivers/gpu/drm/nouveau/dispnv50/disp.c       | 21 --------------
- 4 files changed, 23 insertions(+), 72 deletions(-)
+ drivers/input/misc/sparcspkr.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c
-index e40ff51e7be0..b447c453b58d 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c
-@@ -353,34 +353,13 @@ dm_dp_mst_detect(struct drm_connector *connector,
- }
+diff --git a/drivers/input/misc/sparcspkr.c b/drivers/input/misc/sparcspkr.c
+index fe43e5557ed7..cdcb7737c46a 100644
+--- a/drivers/input/misc/sparcspkr.c
++++ b/drivers/input/misc/sparcspkr.c
+@@ -205,6 +205,7 @@ static int bbc_beep_probe(struct platform_device *op)
  
- static int dm_dp_mst_atomic_check(struct drm_connector *connector,
--				struct drm_atomic_state *state)
-+				  struct drm_atomic_state *state)
- {
--	struct drm_connector_state *new_conn_state =
--			drm_atomic_get_new_connector_state(state, connector);
--	struct drm_connector_state *old_conn_state =
--			drm_atomic_get_old_connector_state(state, connector);
- 	struct amdgpu_dm_connector *aconnector = to_amdgpu_dm_connector(connector);
--	struct drm_crtc_state *new_crtc_state;
--	struct drm_dp_mst_topology_mgr *mst_mgr;
--	struct drm_dp_mst_port *mst_port;
-+	struct drm_dp_mst_topology_mgr *mst_mgr = &aconnector->mst_port->mst_mgr;
-+	struct drm_dp_mst_port *mst_port = aconnector->port;
+ 	info = &state->u.bbc;
+ 	info->clock_freq = of_getintprop_default(dp, "clock-frequency", 0);
++	of_node_put(dp);
+ 	if (!info->clock_freq)
+ 		goto out_free;
  
--	mst_port = aconnector->port;
--	mst_mgr = &aconnector->mst_port->mst_mgr;
--
--	if (!old_conn_state->crtc)
--		return 0;
--
--	if (new_conn_state->crtc) {
--		new_crtc_state = drm_atomic_get_new_crtc_state(state, new_conn_state->crtc);
--		if (!new_crtc_state ||
--		    !drm_atomic_crtc_needs_modeset(new_crtc_state) ||
--		    new_crtc_state->enable)
--			return 0;
--		}
--
--	return drm_dp_atomic_release_time_slots(state,
--						mst_mgr,
--						mst_port);
-+	return drm_dp_atomic_release_time_slots(state, mst_mgr, mst_port);
- }
- 
- static const struct drm_connector_helper_funcs dm_dp_mst_connector_helper_funcs = {
-diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-index a0ed29f83556..e73b34c0cc9e 100644
---- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
-+++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-@@ -4484,14 +4484,29 @@ int drm_dp_atomic_release_time_slots(struct drm_atomic_state *state,
- {
- 	struct drm_dp_mst_topology_state *topology_state;
- 	struct drm_dp_mst_atomic_payload *payload;
--	struct drm_connector_state *conn_state;
-+	struct drm_connector_state *old_conn_state, *new_conn_state;
-+
-+	old_conn_state = drm_atomic_get_old_connector_state(state, port->connector);
-+	if (!old_conn_state->crtc)
-+		return 0;
-+
-+	/* If the CRTC isn't disabled by this state, don't release it's payload */
-+	new_conn_state = drm_atomic_get_new_connector_state(state, port->connector);
-+	if (new_conn_state->crtc) {
-+		struct drm_crtc_state *crtc_state =
-+			drm_atomic_get_new_crtc_state(state, new_conn_state->crtc);
-+
-+		if (!crtc_state ||
-+		    !drm_atomic_crtc_needs_modeset(crtc_state) ||
-+		    crtc_state->enable)
-+			return 0;
-+	}
- 
- 	topology_state = drm_atomic_get_mst_topology_state(state, mgr);
- 	if (IS_ERR(topology_state))
- 		return PTR_ERR(topology_state);
- 
--	conn_state = drm_atomic_get_old_connector_state(state, port->connector);
--	topology_state->pending_crtc_mask |= drm_crtc_mask(conn_state->crtc);
-+	topology_state->pending_crtc_mask |= drm_crtc_mask(old_conn_state->crtc);
- 
- 	payload = drm_atomic_get_mst_payload_state(topology_state, port);
- 	if (WARN_ON(!payload)) {
-diff --git a/drivers/gpu/drm/i915/display/intel_dp_mst.c b/drivers/gpu/drm/i915/display/intel_dp_mst.c
-index 0c922667398a..4b0af3c26176 100644
---- a/drivers/gpu/drm/i915/display/intel_dp_mst.c
-+++ b/drivers/gpu/drm/i915/display/intel_dp_mst.c
-@@ -308,13 +308,10 @@ intel_dp_mst_atomic_check(struct drm_connector *connector,
- 			  struct drm_atomic_state *_state)
- {
- 	struct intel_atomic_state *state = to_intel_atomic_state(_state);
--	struct drm_connector_state *new_conn_state =
--		drm_atomic_get_new_connector_state(&state->base, connector);
- 	struct drm_connector_state *old_conn_state =
- 		drm_atomic_get_old_connector_state(&state->base, connector);
- 	struct intel_connector *intel_connector =
- 		to_intel_connector(connector);
--	struct drm_crtc *new_crtc = new_conn_state->crtc;
- 	struct drm_dp_mst_topology_mgr *mgr;
- 	int ret;
- 
-@@ -326,27 +323,8 @@ intel_dp_mst_atomic_check(struct drm_connector *connector,
- 	if (ret)
- 		return ret;
- 
--	if (!old_conn_state->crtc)
--		return 0;
--
--	/* We only want to free VCPI if this state disables the CRTC on this
--	 * connector
--	 */
--	if (new_crtc) {
--		struct intel_crtc *crtc = to_intel_crtc(new_crtc);
--		struct intel_crtc_state *crtc_state =
--			intel_atomic_get_new_crtc_state(state, crtc);
--
--		if (!crtc_state ||
--		    !drm_atomic_crtc_needs_modeset(&crtc_state->uapi) ||
--		    crtc_state->uapi.enable)
--			return 0;
--	}
--
- 	mgr = &enc_to_mst(to_intel_encoder(old_conn_state->best_encoder))->primary->dp.mst_mgr;
--	ret = drm_dp_atomic_release_time_slots(&state->base, mgr, intel_connector->port);
--
--	return ret;
-+	return drm_dp_atomic_release_time_slots(&state->base, mgr, intel_connector->port);
- }
- 
- static void clear_act_sent(struct intel_encoder *encoder,
-diff --git a/drivers/gpu/drm/nouveau/dispnv50/disp.c b/drivers/gpu/drm/nouveau/dispnv50/disp.c
-index 768312607fdb..461e5e3345f8 100644
---- a/drivers/gpu/drm/nouveau/dispnv50/disp.c
-+++ b/drivers/gpu/drm/nouveau/dispnv50/disp.c
-@@ -1260,27 +1260,6 @@ nv50_mstc_atomic_check(struct drm_connector *connector,
- {
- 	struct nv50_mstc *mstc = nv50_mstc(connector);
- 	struct drm_dp_mst_topology_mgr *mgr = &mstc->mstm->mgr;
--	struct drm_connector_state *new_conn_state =
--		drm_atomic_get_new_connector_state(state, connector);
--	struct drm_connector_state *old_conn_state =
--		drm_atomic_get_old_connector_state(state, connector);
--	struct drm_crtc_state *crtc_state;
--	struct drm_crtc *new_crtc = new_conn_state->crtc;
--
--	if (!old_conn_state->crtc)
--		return 0;
--
--	/* We only want to free VCPI if this state disables the CRTC on this
--	 * connector
--	 */
--	if (new_crtc) {
--		crtc_state = drm_atomic_get_new_crtc_state(state, new_crtc);
--
--		if (!crtc_state ||
--		    !drm_atomic_crtc_needs_modeset(crtc_state) ||
--		    crtc_state->enable)
--			return 0;
--	}
- 
- 	return drm_dp_atomic_release_time_slots(state, mgr, mstc->port);
- }
 -- 
-2.35.3
+2.35.1
+
+
 
