@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3674CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9355CCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377946AbiFGVAh (ORCPT
+        id S1377983AbiFGVAn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:00:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49976 "EHLO
+        Tue, 7 Jun 2022 17:00:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357507AbiFGTzZ (ORCPT
+        with ESMTP id S1358000AbiFGT4D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:55:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE33C8A052;
-        Tue,  7 Jun 2022 11:23:36 -0700 (PDT)
+        Tue, 7 Jun 2022 15:56:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58DC1A98A5;
+        Tue,  7 Jun 2022 11:23:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7647D60DDF;
-        Tue,  7 Jun 2022 18:23:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D4D1C3411C;
-        Tue,  7 Jun 2022 18:23:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69EDAB82384;
+        Tue,  7 Jun 2022 18:23:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBC0AC385A2;
+        Tue,  7 Jun 2022 18:23:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626215;
-        bh=/dbWxOZHy2OewWmHqoNlkYSibashwQ7otUvCVbYc+WE=;
+        s=korg; t=1654626224;
+        bh=NPDiN+CanNAilpu0n+ltTem564gOr0BM86ye5sr/dEI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ld3IMjjax5UbWYX4+h+94+7bNWGXLNNRCuHiJnQgS0nuipwG3nBWAHtRDjxdUqn3c
-         FGVSu2BZUaoxyqmgG8Q0vFsyQD2KMHnPXXBF0M7pd13tq98t26HnABUArFYkSUOpEY
-         xQOtbxels1DGQCKVmYWddqlj7tcmnU1wtfOCCMyw=
+        b=b8FkRndOaajOuunZJnQj5fJEsMXKraqh3jUUj4ZaRAY8bWbnjporH23YGQOAou4L0
+         3yZeYqDtTpwViyBkYveS/zAQQd3DBbUGs6JBTjhVD8CmkSth86SjjQA84CR/X4IsqJ
+         ciN9VVI/oGR1+7OweXj/Et4ZDJUaNHWEZ4QypwE0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Brian Starkey <brian.starkey@arm.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
+        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 258/772] drm: mali-dp: potential dereference of null pointer
-Date:   Tue,  7 Jun 2022 18:57:30 +0200
-Message-Id: <20220607164956.625088066@linuxfoundation.org>
+Subject: [PATCH 5.17 251/772] libbpf: Dont error out on CO-RE relos for overriden weak subprogs
+Date:   Tue,  7 Jun 2022 18:57:23 +0200
+Message-Id: <20220607164956.421914516@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,40 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Andrii Nakryiko <andrii@kernel.org>
 
-[ Upstream commit 73c3ed7495c67b8fbdc31cf58e6ca8757df31a33 ]
+[ Upstream commit e89d57d938c8fa80c457982154ed6110804814fe ]
 
-The return value of kzalloc() needs to be checked.
-To avoid use of null pointer '&state->base' in case of the
-failure of alloc.
+During BPF static linking, all the ELF relocations and .BTF.ext
+information (including CO-RE relocations) are preserved for __weak
+subprograms that were logically overriden by either previous weak
+subprogram instance or by corresponding "strong" (non-weak) subprogram.
+This is just how native user-space linkers work, nothing new.
 
-Fixes: 99665d072183 ("drm: mali-dp: add malidp_crtc_state struct")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Reviewed-by: Brian Starkey <brian.starkey@arm.com>
-Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211214100837.46912-1-jiasheng@iscas.ac.cn
+But libbpf is over-zealous when processing CO-RE relocation to error out
+when CO-RE relocation belonging to such eliminated weak subprogram is
+encountered. Instead of erroring out on this expected situation, log
+debug-level message and skip the relocation.
+
+Fixes: db2b8b06423c ("libbpf: Support CO-RE relocations for multi-prog sections")
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220408181425.2287230-2-andrii@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/arm/malidp_crtc.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ tools/lib/bpf/libbpf.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/arm/malidp_crtc.c b/drivers/gpu/drm/arm/malidp_crtc.c
-index 494075ddbef6..b5928b52e279 100644
---- a/drivers/gpu/drm/arm/malidp_crtc.c
-+++ b/drivers/gpu/drm/arm/malidp_crtc.c
-@@ -487,7 +487,10 @@ static void malidp_crtc_reset(struct drm_crtc *crtc)
- 	if (crtc->state)
- 		malidp_crtc_destroy_state(crtc, crtc->state);
- 
--	__drm_atomic_helper_crtc_reset(crtc, &state->base);
-+	if (state)
-+		__drm_atomic_helper_crtc_reset(crtc, &state->base);
-+	else
-+		__drm_atomic_helper_crtc_reset(crtc, NULL);
- }
- 
- static int malidp_crtc_enable_vblank(struct drm_crtc *crtc)
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 41515a770e3a..9c202bba911c 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -5656,10 +5656,17 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
+ 			insn_idx = rec->insn_off / BPF_INSN_SZ;
+ 			prog = find_prog_by_sec_insn(obj, sec_idx, insn_idx);
+ 			if (!prog) {
+-				pr_warn("sec '%s': failed to find program at insn #%d for CO-RE offset relocation #%d\n",
+-					sec_name, insn_idx, i);
+-				err = -EINVAL;
+-				goto out;
++				/* When __weak subprog is "overridden" by another instance
++				 * of the subprog from a different object file, linker still
++				 * appends all the .BTF.ext info that used to belong to that
++				 * eliminated subprogram.
++				 * This is similar to what x86-64 linker does for relocations.
++				 * So just ignore such relocations just like we ignore
++				 * subprog instructions when discovering subprograms.
++				 */
++				pr_debug("sec '%s': skipping CO-RE relocation #%d for insn #%d belonging to eliminated weak subprogram\n",
++					 sec_name, i, insn_idx);
++				continue;
+ 			}
+ 			/* no need to apply CO-RE relocation if the program is
+ 			 * not going to be loaded
 -- 
 2.35.1
 
