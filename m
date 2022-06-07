@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47DF2C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC9EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349260AbiFGSAB (ORCPT
+        id S1349395AbiFGSAH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:00:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49524 "EHLO
+        Tue, 7 Jun 2022 14:00:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348216AbiFGRkl (ORCPT
+        with ESMTP id S1348412AbiFGRkt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:40:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711E36D3AE;
-        Tue,  7 Jun 2022 10:33:59 -0700 (PDT)
+        Tue, 7 Jun 2022 13:40:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 626FC11CB49;
+        Tue,  7 Jun 2022 10:34:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6359EB822B4;
-        Tue,  7 Jun 2022 17:33:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6592C34115;
-        Tue,  7 Jun 2022 17:33:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB65C6157D;
+        Tue,  7 Jun 2022 17:33:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD48FC385A5;
+        Tue,  7 Jun 2022 17:33:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623214;
-        bh=fvqtBcjkHl2wfnU3dwlKLPAsMA4RiLi7gEH+8xIRx/M=;
+        s=korg; t=1654623222;
+        bh=r+PiPBr4xTAxxMb9zWAk9Kk81bO+/sVjicksRNPqiGI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YXLIIL7FW/XG3zMTifq0FIV+KeNzforC6W9XuqOsY/c8wukJcMQ8Hp6aNmCPWnqlC
-         KNEUD6SEc+PJfzT8C/fsbOC/ku8lIUuJnXEtZQG0grOPsWnEW4cs+tKLlLKVsBurD4
-         X2u3SIMFsf3fYWQFNGpqYz3Eip5b8VmM0ifXOwak=
+        b=TlHkrWQlUdxp1ge34B9ZjzrhN7cA9rjuvZq4FoC6evka4ELCoM3+a8jVfByZHwiVQ
+         UKkIzSvzGAogpobzWoMn2cnsLi1ZjDpb2EvS2oR6dm5stwkvM9q6kvbG70KtQpsU/3
+         apCZujA2ZMX54oTQ7ulL7431yJpP13cVQDyQ1fkA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+        stable@vger.kernel.org, Olga Kornievskaia <aglo@umich.edu>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 295/452] pinctrl: renesas: core: Fix possible null-ptr-deref in sh_pfc_map_resources()
-Date:   Tue,  7 Jun 2022 19:02:32 +0200
-Message-Id: <20220607164917.345838911@linuxfoundation.org>
+Subject: [PATCH 5.10 332/452] NFSv4/pNFS: Do not fail I/O when we fail to allocate the pNFS layout
+Date:   Tue,  7 Jun 2022 19:03:09 +0200
+Message-Id: <20220607164918.452934740@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,44 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 5376e3d904532e657fd7ca1a9b1ff3d351527b90 ]
+[ Upstream commit 3764a17e31d579cf9b4bd0a69894b577e8d75702 ]
 
-It will cause null-ptr-deref when using 'res', if platform_get_resource()
-returns NULL, so move using 'res' after devm_ioremap_resource() that
-will check it to avoid null-ptr-deref.
-And use devm_platform_get_and_ioremap_resource() to simplify code.
+Commit 587f03deb69b caused pnfs_update_layout() to stop returning ENOMEM
+when the memory allocation fails, and hence causes it to fall back to
+trying to do I/O through the MDS. There is no guarantee that this will
+fare any better. If we're failing the pNFS layout allocation, then we
+should just redirty the page and retry later.
 
-Fixes: c7977ec4a336 ("pinctrl: sh-pfc: Convert to platform_get_*()")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220429082637.1308182-1-yangyingliang@huawei.com
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reported-by: Olga Kornievskaia <aglo@umich.edu>
+Fixes: 587f03deb69b ("pnfs: refactor send_layoutget")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/renesas/core.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ fs/nfs/pnfs.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/pinctrl/renesas/core.c b/drivers/pinctrl/renesas/core.c
-index 258972672eda..54f1a7334027 100644
---- a/drivers/pinctrl/renesas/core.c
-+++ b/drivers/pinctrl/renesas/core.c
-@@ -71,12 +71,11 @@ static int sh_pfc_map_resources(struct sh_pfc *pfc,
+diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
+index b3b9eff5d572..8c0803d98008 100644
+--- a/fs/nfs/pnfs.c
++++ b/fs/nfs/pnfs.c
+@@ -2006,6 +2006,7 @@ pnfs_update_layout(struct inode *ino,
+ 	lo = pnfs_find_alloc_layout(ino, ctx, gfp_flags);
+ 	if (lo == NULL) {
+ 		spin_unlock(&ino->i_lock);
++		lseg = ERR_PTR(-ENOMEM);
+ 		trace_pnfs_update_layout(ino, pos, count, iomode, lo, lseg,
+ 				 PNFS_UPDATE_LAYOUT_NOMEM);
+ 		goto out;
+@@ -2134,6 +2135,7 @@ pnfs_update_layout(struct inode *ino,
  
- 	/* Fill them. */
- 	for (i = 0; i < num_windows; i++) {
--		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
--		windows->phys = res->start;
--		windows->size = resource_size(res);
--		windows->virt = devm_ioremap_resource(pfc->dev, res);
-+		windows->virt = devm_platform_get_and_ioremap_resource(pdev, i, &res);
- 		if (IS_ERR(windows->virt))
- 			return -ENOMEM;
-+		windows->phys = res->start;
-+		windows->size = resource_size(res);
- 		windows++;
- 	}
- 	for (i = 0; i < num_irqs; i++)
+ 	lgp = pnfs_alloc_init_layoutget_args(ino, ctx, &stateid, &arg, gfp_flags);
+ 	if (!lgp) {
++		lseg = ERR_PTR(-ENOMEM);
+ 		trace_pnfs_update_layout(ino, pos, count, iomode, lo, NULL,
+ 					 PNFS_UPDATE_LAYOUT_NOMEM);
+ 		nfs_layoutget_end(lo);
 -- 
 2.35.1
 
