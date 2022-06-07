@@ -2,79 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32B39C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 07:13:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD51EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 07:13:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237535AbiFGHNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 03:13:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39670 "EHLO
+        id S237570AbiFGHNW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 03:13:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237509AbiFGHND (ORCPT
+        with ESMTP id S237529AbiFGHNN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 03:13:03 -0400
-Received: from mail-m973.mail.163.com (mail-m973.mail.163.com [123.126.97.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B8ACE1057B
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 00:12:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=gvH36
-        QjK8hx1fii/eQMosYL0OpSsVFi8yqDxaN79F00=; b=jkxKeMQalPoRSfYYWFa/3
-        aVQSwDn2x0fzsZ/+IACmfp2cxZG4FlFcwM/dJbRaFv00QJE8hjuxlM+nLYOuRff3
-        nJ+u3YtkaA2SXeULfZxqoyXmskS4of6ObHWJybfKFpwlCueLqvJWpjFqXGT903iI
-        JmLGvLVn4ZdahDD4DZOc9U=
-Received: from localhost.localdomain (unknown [123.112.69.106])
-        by smtp3 (Coremail) with SMTP id G9xpCgCnHGhm+p5i8kyGHQ--.37666S4;
-        Tue, 07 Jun 2022 15:12:45 +0800 (CST)
-From:   Jianglei Nie <niejianglei2021@163.com>
-To:     alexander.deucher@amd.com, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        Hawking.Zhang@amd.com, john.clements@amd.com, candice.li@amd.com,
-        Likun.Gao@amd.com
-Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH] drm/amdgpu: Fix reference leak in psp_xgmi_reflect_topology_info()
-Date:   Tue,  7 Jun 2022 15:12:34 +0800
-Message-Id: <20220607071234.431245-1-niejianglei2021@163.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 7 Jun 2022 03:13:13 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB7218E0D
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 00:13:10 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nyTOm-0002mw-8X; Tue, 07 Jun 2022 09:13:08 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 30BC38D77E;
+        Tue,  7 Jun 2022 07:13:06 +0000 (UTC)
+Date:   Tue, 7 Jun 2022 09:13:05 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        linux-can <linux-can@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Max Staudt <max@enpas.org>, netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH v5 0/7] can: refactoring of can-dev module and of Kbuild
+Message-ID: <20220607071305.olsrshjqtmkrp5et@pengutronix.de>
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
+ <2e8666f3-1bd9-8610-6b72-e56e669d3484@hartkopp.net>
+ <CAMZ6RqKWUyf6dZmxG809-yvjg5wbLwPSLtEfv-MgPpJ5ra=iGQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: G9xpCgCnHGhm+p5i8kyGHQ--.37666S4
-X-Coremail-Antispam: 1Uf129KBjvdXoW7Gr4xWF1rKry3try8XFyrWFg_yoWDZrg_Gr
-        WUJFy3A39xCr1qgw1IyrWaq3srKFsa9rZ7Gr1ftFsaq34UZayrAryUGr1kXw48urs7Casr
-        ZF1YgF1UZwnxWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xREsjjJUUUUU==
-X-Originating-IP: [123.112.69.106]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbi6w0ZjFXl16EqCwAAsU
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="mgsbpo4n6776e7lh"
+Content-Disposition: inline
+In-Reply-To: <CAMZ6RqKWUyf6dZmxG809-yvjg5wbLwPSLtEfv-MgPpJ5ra=iGQ@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-amdgpu_get_xgmi_hive() increases the kobject reference counter of the
-hive it returned. The hive returned by amdgpu_get_xgmi_hive() should be
-released with the help of amdgpu_put_xgmi_hive() to balance its kobject
-reference counter properly. Forgetting the amdgpu_put_xgmi_hive()
-operation will result in reference leak.
 
-We can fix it by calling amdgpu_put_xgmi_hive() before the end of the
-function.
+--mgsbpo4n6776e7lh
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
----
- drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c | 1 +
- 1 file changed, 1 insertion(+)
+On 07.06.2022 11:49:30, Vincent MAILHOL wrote:
+[...]
+> So I think that the diagram is correct. Maybe rephrasing the cover
+> letter as below would address your concerns?
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-index e9411c28d88b..7b3a78da1684 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-@@ -1292,6 +1292,7 @@ static void psp_xgmi_reflect_topology_info(struct psp_context *psp,
- 
- 		break;
- 	}
-+	amdgpu_put_xgmi_hive(hive);
- }
- 
- int psp_xgmi_get_topology_info(struct psp_context *psp,
--- 
-2.25.1
+BTW: I got the OK from Jakub to send PR with merges.
 
+If you think the cover letter needs rephrasing, send a new series and
+I'm going to force push that over can-next/master. After that let's
+consider can-next/master as fast-forward only.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--mgsbpo4n6776e7lh
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKe+nwACgkQrX5LkNig
+013wTwgAlcP3nZHN7Z1ztiCpNOZJjCinvwJafPOpjxyax+kE//w5nTQrKruBY+bh
+h/J6u+8MQrmuPI+RunwoSIp5MDS7BjosH5PVmyE4KbjzPTzJk8Xm2u5rSTdrvGBo
+oVt8y3DcjZuzpby4bpdV0YyjP0m7QyWMRXpPTZiumERcUGAT2rDDHP0Vi5c0D4MH
+xF1K6C2OXnmJHCQk9ryDG7SEipCpXJbLMNug5mvNp936BR+SKh4j4JnbiuzT/WaG
+sAt9mH0bxkKm2KwJm4KyD+o4tNEH/3B2grfAIXE5yDSS5pUk2uFmAo5NBZ1khM0H
+jQuM1MwW/RNtcg97qjfJmvjluqlVWw==
+=Bqqn
+-----END PGP SIGNATURE-----
+
+--mgsbpo4n6776e7lh--
