@@ -2,304 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B4ABCCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F71CCCA485
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384239AbiFGWKl (ORCPT
+        id S1384279AbiFGWKp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35112 "EHLO
+        Tue, 7 Jun 2022 18:10:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378652AbiFGVHH (ORCPT
+        with ESMTP id S1378969AbiFGVIC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:07:07 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4543212C8B
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:50:47 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id x5so19075633edi.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:50:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W8c7XviK21D78aKTK2Cw12N8OINsCSGJ3h/K2HP8/hE=;
-        b=pICBQz1mVIybEDl/G3L+dmdC4HRSaeRO6lQ1VcLVqAZ6o1+6BKi52O9EzTjqWgsg+/
-         M/ZGaVBOBEr1drYZjV+EvQPZCLMtxVL0UI1BGCbM8ZuVtIoxGx8o1X00bnsjpaJtQiRl
-         iawaA4VEMwhiOTmtrW+v/tBqQFcUPMjO8yUoEu4Z6zr7p73AH7Hy7V66yU7r8Dk2Qdj3
-         SNErw5AFTGEImdVDQL7wgDrXnCpRSwANNDdnUPZHJq3SVz0vk2bGjv0dQsX7zl9Tb/pg
-         MhdjPqpkE3/JpZOx32vX3QJOllZbZhJwYzm3otHivev/9DgVcTmKSCrzxmqcdMZENlgF
-         gaAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W8c7XviK21D78aKTK2Cw12N8OINsCSGJ3h/K2HP8/hE=;
-        b=LFA1PTf59AkowIyWMa8jLYtle6SxaorgEupZwNeQHVfr20Qtu3u1bwp5UVU0236E46
-         aT0kHW3qrQ+kMykDYJDJX6TPUkbRZVbeoPS2lHMC4p3kwkmxIEwzzwzZ37dUJJ6WNXdD
-         Y204pX+WH8CiNSnwNTTB62jLBM5Rq2H7coZGA8gRa2NWdsIpd+ED0sTp047K9GtcufHS
-         xs3LIC0Cj+Q2KtDWWsARLLIHzkZdGMrjUaWk3JxyaIqvmN0LFc/sH/jXFztov3ZdFSmh
-         akh2efnVz/aVo+7nnrQsRHB7rEPsk+JQVECmvshX2jviSaR0eFUvxuTnUnnJX+Bn9VCr
-         /vNw==
-X-Gm-Message-State: AOAM5302czbBjHITd1qQziSXOzZQmSqJZrPTzwYpNtelkA/z2p0Sulu+
-        0rXZZCjqUisW7XlZ4ygtZK6AQEOsCLfOAiC9f1vw8w==
-X-Google-Smtp-Source: ABdhPJyOYG+zuoZtsjzyDwfyMmgPIdt9vGdA6yyokIa9vv1x6iUtTx1isMRgtHomYi793FVbBT5TipH8fRvG8j0yDnc=
-X-Received: by 2002:a05:6402:350e:b0:42f:b2c1:9393 with SMTP id
- b14-20020a056402350e00b0042fb2c19393mr24686982edd.11.1654627845656; Tue, 07
- Jun 2022 11:50:45 -0700 (PDT)
+        Tue, 7 Jun 2022 17:08:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BFBC212CBE;
+        Tue,  7 Jun 2022 11:50:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81D00B82018;
+        Tue,  7 Jun 2022 18:50:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0423C385A5;
+        Tue,  7 Jun 2022 18:50:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654627852;
+        bh=4Ka0zqH5BPXKlynHTbbm9h1V2CMI319SCy/R6j+8HWI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zXrWOx3yXpuCpFb4wwKbHEHRevCsW72Bf2uMq6wwKFxp4o3TPlNGbsb/m8KWFxX5A
+         o2XBcmLqacBwxVte5O09eyvrDBi1+XOnFdWecwc1rqV50J8ZPr0cWEQlcYh1t3omdh
+         LkEoier+KGwRZWIneZtUtYIdJjR2sPcn09nP8ftk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Evan Quan <evan.quan@amd.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 117/879] drm/amd/pm: fix the compile warning
+Date:   Tue,  7 Jun 2022 18:53:55 +0200
+Message-Id: <20220607165006.097552034@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220607145639.2362750-1-tzungbi@kernel.org> <20220607145639.2362750-10-tzungbi@kernel.org>
-In-Reply-To: <20220607145639.2362750-10-tzungbi@kernel.org>
-From:   Guenter Roeck <groeck@google.com>
-Date:   Tue, 7 Jun 2022 11:50:34 -0700
-Message-ID: <CABXOdTfErYRQm5TxKGCBp6+kaRwz=5u=uceKzqnE2iBJvojKQw@mail.gmail.com>
-Subject: Re: [PATCH v2 09/15] platform/chrome: cros_ec_proto: separate cros_ec_get_proto_info_legacy()
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     bleung@chromium.org, groeck@chromium.org,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 7:57 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
->
-> Rename cros_ec_host_command_proto_query_v2() to
-> cros_ec_get_proto_info_legacy() and make it responsible for setting
-> `ec_dev` fields for EC protocol v2.
->
-> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+From: Evan Quan <evan.quan@amd.com>
 
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
+[ Upstream commit 555238d92ac32dbad2d77ad2bafc48d17391990c ]
 
-> ---
-> Changes from v1:
-> - Preserve the "cros_ec_" prefix.
->
->  drivers/platform/chrome/cros_ec_proto.c      | 72 +++++++++-----------
->  drivers/platform/chrome/cros_ec_proto_test.c | 22 +++---
->  2 files changed, 44 insertions(+), 50 deletions(-)
->
-> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-> index 6f5be9e5ede4..04b9704ed302 100644
-> --- a/drivers/platform/chrome/cros_ec_proto.c
-> +++ b/drivers/platform/chrome/cros_ec_proto.c
-> @@ -351,51 +351,57 @@ static int cros_ec_get_proto_info(struct cros_ec_device *ec_dev, int devidx)
->         return ret;
->  }
->
-> -static int cros_ec_host_command_proto_query_v2(struct cros_ec_device *ec_dev)
-> +static int cros_ec_get_proto_info_legacy(struct cros_ec_device *ec_dev)
->  {
->         struct cros_ec_command *msg;
-> -       struct ec_params_hello *hello_params;
-> -       struct ec_response_hello *hello_response;
-> +       struct ec_params_hello *params;
-> +       struct ec_response_hello *response;
->         int ret;
-> -       int len = max(sizeof(*hello_params), sizeof(*hello_response));
->
-> -       msg = kmalloc(sizeof(*msg) + len, GFP_KERNEL);
-> +       ec_dev->proto_version = 2;
-> +
-> +       msg = kzalloc(sizeof(*msg) + max(sizeof(*params), sizeof(*response)), GFP_KERNEL);
->         if (!msg)
->                 return -ENOMEM;
->
-> -       msg->version = 0;
->         msg->command = EC_CMD_HELLO;
-> -       hello_params = (struct ec_params_hello *)msg->data;
-> -       msg->outsize = sizeof(*hello_params);
-> -       hello_response = (struct ec_response_hello *)msg->data;
-> -       msg->insize = sizeof(*hello_response);
-> +       msg->insize = sizeof(*response);
-> +       msg->outsize = sizeof(*params);
->
-> -       hello_params->in_data = 0xa0b0c0d0;
-> +       params = (struct ec_params_hello *)msg->data;
-> +       params->in_data = 0xa0b0c0d0;
->
->         ret = send_command(ec_dev, msg);
-> -
->         if (ret < 0) {
-> -               dev_dbg(ec_dev->dev,
-> -                       "EC failed to respond to v2 hello: %d\n",
-> -                       ret);
-> +               dev_dbg(ec_dev->dev, "EC failed to respond to v2 hello: %d\n", ret);
->                 goto exit;
-> -       } else if (msg->result != EC_RES_SUCCESS) {
-> -               dev_err(ec_dev->dev,
-> -                       "EC responded to v2 hello with error: %d\n",
-> -                       msg->result);
-> -               ret = msg->result;
-> +       }
-> +
-> +       ret = cros_ec_map_error(msg->result);
-> +       if (ret) {
-> +               dev_err(ec_dev->dev, "EC responded to v2 hello with error: %d\n", msg->result);
->                 goto exit;
-> -       } else if (hello_response->out_data != 0xa1b2c3d4) {
-> +       }
-> +
-> +       response = (struct ec_response_hello *)msg->data;
-> +       if (response->out_data != 0xa1b2c3d4) {
->                 dev_err(ec_dev->dev,
->                         "EC responded to v2 hello with bad result: %u\n",
-> -                       hello_response->out_data);
-> +                       response->out_data);
->                 ret = -EBADMSG;
->                 goto exit;
->         }
->
-> -       ret = 0;
-> +       ec_dev->max_request = EC_PROTO2_MAX_PARAM_SIZE;
-> +       ec_dev->max_response = EC_PROTO2_MAX_PARAM_SIZE;
-> +       ec_dev->max_passthru = 0;
-> +       ec_dev->pkt_xfer = NULL;
-> +       ec_dev->din_size = EC_PROTO2_MSG_BYTES;
-> +       ec_dev->dout_size = EC_PROTO2_MSG_BYTES;
->
-> - exit:
-> +       dev_dbg(ec_dev->dev, "falling back to proto v2\n");
-> +       ret = 0;
-> +exit:
->         kfree(msg);
->         return ret;
->  }
-> @@ -467,20 +473,8 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
->                 cros_ec_get_proto_info(ec_dev, CROS_EC_DEV_PD_INDEX);
->         } else {
->                 /* Try querying with a v2 hello message. */
-> -               ec_dev->proto_version = 2;
-> -               ret = cros_ec_host_command_proto_query_v2(ec_dev);
-> -
-> -               if (ret == 0) {
-> -                       /* V2 hello succeeded. */
-> -                       dev_dbg(ec_dev->dev, "falling back to proto v2\n");
-> -
-> -                       ec_dev->max_request = EC_PROTO2_MAX_PARAM_SIZE;
-> -                       ec_dev->max_response = EC_PROTO2_MAX_PARAM_SIZE;
-> -                       ec_dev->max_passthru = 0;
-> -                       ec_dev->pkt_xfer = NULL;
-> -                       ec_dev->din_size = EC_PROTO2_MSG_BYTES;
-> -                       ec_dev->dout_size = EC_PROTO2_MSG_BYTES;
-> -               } else {
-> +               ret = cros_ec_get_proto_info_legacy(ec_dev);
-> +               if (ret) {
->                         /*
->                          * It's possible for a test to occur too early when
->                          * the EC isn't listening. If this happens, we'll
-> @@ -488,7 +482,7 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
->                          */
->                         ec_dev->proto_version = EC_PROTO_VERSION_UNKNOWN;
->                         dev_dbg(ec_dev->dev, "EC query failed: %d\n", ret);
-> -                       goto exit;
-> +                       return ret;
->                 }
->         }
->
-> diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
-> index 473714964cf2..9f7d9666369f 100644
-> --- a/drivers/platform/chrome/cros_ec_proto_test.c
-> +++ b/drivers/platform/chrome/cros_ec_proto_test.c
-> @@ -484,7 +484,7 @@ static void cros_ec_proto_test_query_all_legacy_normal_v3_return_error(struct ku
->                 KUNIT_ASSERT_PTR_NE(test, mock, NULL);
->         }
->
-> -       /* For cros_ec_host_command_proto_query_v2(). */
-> +       /* For cros_ec_get_proto_info_legacy(). */
->         {
->                 struct ec_response_hello *data;
->
-> @@ -511,7 +511,7 @@ static void cros_ec_proto_test_query_all_legacy_normal_v3_return_error(struct ku
->                 KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
->         }
->
-> -       /* For cros_ec_host_command_proto_query_v2(). */
-> +       /* For cros_ec_get_proto_info_legacy(). */
->         {
->                 struct ec_params_hello *data;
->
-> @@ -549,7 +549,7 @@ static void cros_ec_proto_test_query_all_legacy_normal_v3_return0(struct kunit *
->                 KUNIT_ASSERT_PTR_NE(test, mock, NULL);
->         }
->
-> -       /* For cros_ec_host_command_proto_query_v2(). */
-> +       /* For cros_ec_get_proto_info_legacy(). */
->         {
->                 struct ec_response_hello *data;
->
-> @@ -576,7 +576,7 @@ static void cros_ec_proto_test_query_all_legacy_normal_v3_return0(struct kunit *
->                 KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
->         }
->
-> -       /* For cros_ec_host_command_proto_query_v2(). */
-> +       /* For cros_ec_get_proto_info_legacy(). */
->         {
->                 struct ec_params_hello *data;
->
-> @@ -614,7 +614,7 @@ static void cros_ec_proto_test_query_all_legacy_xfer_error(struct kunit *test)
->                 KUNIT_ASSERT_PTR_NE(test, mock, NULL);
->         }
->
-> -       /* For cros_ec_host_command_proto_query_v2(). */
-> +       /* For cros_ec_get_proto_info_legacy(). */
->         {
->                 mock = cros_kunit_ec_xfer_mock_addx(test, -EIO, EC_RES_SUCCESS, 0);
->                 KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> @@ -637,7 +637,7 @@ static void cros_ec_proto_test_query_all_legacy_xfer_error(struct kunit *test)
->                 KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
->         }
->
-> -       /* For cros_ec_host_command_proto_query_v2(). */
-> +       /* For cros_ec_get_proto_info_legacy(). */
->         {
->                 mock = cros_kunit_ec_xfer_mock_next();
->                 KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> @@ -662,7 +662,7 @@ static void cros_ec_proto_test_query_all_legacy_return_error(struct kunit *test)
->                 KUNIT_ASSERT_PTR_NE(test, mock, NULL);
->         }
->
-> -       /* For cros_ec_host_command_proto_query_v2(). */
-> +       /* For cros_ec_get_proto_info_legacy(). */
->         {
->                 mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
->                 KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> @@ -670,7 +670,7 @@ static void cros_ec_proto_test_query_all_legacy_return_error(struct kunit *test)
->
->         cros_ec_proto_test_query_all_pretest(test);
->         ret = cros_ec_query_all(ec_dev);
-> -       KUNIT_EXPECT_EQ(test, ret, EC_RES_INVALID_COMMAND);
-> +       KUNIT_EXPECT_EQ(test, ret, -EOPNOTSUPP);
->         KUNIT_EXPECT_EQ(test, ec_dev->proto_version, EC_PROTO_VERSION_UNKNOWN);
->
->         /* For cros_ec_get_proto_info() without passthru. */
-> @@ -685,7 +685,7 @@ static void cros_ec_proto_test_query_all_legacy_return_error(struct kunit *test)
->                 KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
->         }
->
-> -       /* For cros_ec_host_command_proto_query_v2(). */
-> +       /* For cros_ec_get_proto_info_legacy(). */
->         {
->                 mock = cros_kunit_ec_xfer_mock_next();
->                 KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> @@ -710,7 +710,7 @@ static void cros_ec_proto_test_query_all_legacy_data_error(struct kunit *test)
->                 KUNIT_ASSERT_PTR_NE(test, mock, NULL);
->         }
->
-> -       /* For cros_ec_host_command_proto_query_v2(). */
-> +       /* For cros_ec_get_proto_info_legacy(). */
->         {
->                 struct ec_response_hello *data;
->
-> @@ -738,7 +738,7 @@ static void cros_ec_proto_test_query_all_legacy_data_error(struct kunit *test)
->                 KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
->         }
->
-> -       /* For cros_ec_host_command_proto_query_v2(). */
-> +       /* For cros_ec_get_proto_info_legacy(). */
->         {
->                 mock = cros_kunit_ec_xfer_mock_next();
->                 KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> --
-> 2.36.1.255.ge46751e96f-goog
->
+Fix the compile warning below:
+drivers/gpu/drm/amd/amdgpu/../pm/legacy-dpm/kv_dpm.c:1641
+kv_get_acp_boot_level() warn: always true condition '(table->entries[i]->clk >= 0) => (0-u32max >= 0)'
+
+Reported-by: kernel test robot <lkp@intel.com>
+CC: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/amd/pm/legacy-dpm/kv_dpm.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/pm/legacy-dpm/kv_dpm.c b/drivers/gpu/drm/amd/pm/legacy-dpm/kv_dpm.c
+index 8b23cc9f098a..8fd0782a2b20 100644
+--- a/drivers/gpu/drm/amd/pm/legacy-dpm/kv_dpm.c
++++ b/drivers/gpu/drm/amd/pm/legacy-dpm/kv_dpm.c
+@@ -1623,19 +1623,7 @@ static int kv_update_samu_dpm(struct amdgpu_device *adev, bool gate)
+ 
+ static u8 kv_get_acp_boot_level(struct amdgpu_device *adev)
+ {
+-	u8 i;
+-	struct amdgpu_clock_voltage_dependency_table *table =
+-		&adev->pm.dpm.dyn_state.acp_clock_voltage_dependency_table;
+-
+-	for (i = 0; i < table->count; i++) {
+-		if (table->entries[i].clk >= 0) /* XXX */
+-			break;
+-	}
+-
+-	if (i >= table->count)
+-		i = table->count - 1;
+-
+-	return i;
++	return 0;
+ }
+ 
+ static void kv_update_acp_boot_level(struct amdgpu_device *adev)
+-- 
+2.35.1
+
+
+
