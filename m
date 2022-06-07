@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14373CCA495
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A8ECCCA47E
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:37:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353316AbiFGSgy (ORCPT
+        id S1353332AbiFGSg6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:36:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58438 "EHLO
+        Tue, 7 Jun 2022 14:36:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350105AbiFGSAo (ORCPT
+        with ESMTP id S1351007AbiFGSGm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:00:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B6B414ACB3;
-        Tue,  7 Jun 2022 10:42:41 -0700 (PDT)
+        Tue, 7 Jun 2022 14:06:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA61344EF;
+        Tue,  7 Jun 2022 10:47:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C768DB82285;
-        Tue,  7 Jun 2022 17:42:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30D3BC34115;
-        Tue,  7 Jun 2022 17:42:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C11C76171B;
+        Tue,  7 Jun 2022 17:47:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D18D8C385A5;
+        Tue,  7 Jun 2022 17:47:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623739;
-        bh=6GPI7gYf07+zFN1Ol/tp6iH7PZSLrK3qLnRFMdReihY=;
+        s=korg; t=1654624065;
+        bh=wlau1dshHNRQvKJUZTXil8xlx3EVVAG/4k/WKwapXEA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q8nl3ztyLFbbjX9+Bot4SwK3ciA4Muvz+MF1ODaAFTPBTC8nYagnTJzHAM1DWQA6Q
-         LD9rK5ejzIAsC7nyZTD6G2hJ6mIlXKx+EZVC2Ivh9nt0wcIBWEI/lZliru+6kET3IG
-         XUxV1XHnvKwg9buma5yDTlU27yrDFDLyG1aMo3TY=
+        b=Q4mfUo1mj5q/vNL1SVAqHiGUp0+wvTYz3vx6d0sM6SUj1hCscbMzSGC3EsFK/hvXv
+         95xUbP52aQcaxUORahqmzwO/PU+xQGSK2WGJ2BfKaZRcMmh+E3wAGIIIZ7zJ0CdBA5
+         19IjEZJtKG0Tfxz2qevXzI1q2FIieHCT8mjIJNdE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Thibaut=20VAR=C3=88NE?= <hacks+kernel@slashdirt.org>,
-        Felix Fietkau <nbd@nbd.name>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Marek Vasut <marex@denx.de>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 073/667] ath9k: fix QCA9561 PA bias level
-Date:   Tue,  7 Jun 2022 18:55:38 +0200
-Message-Id: <20220607164937.007515088@linuxfoundation.org>
+Subject: [PATCH 5.15 192/667] drm: bridge: icn6211: Fix HFP_HSW_HBP_HI and HFP_MIN handling
+Date:   Tue,  7 Jun 2022 18:57:37 +0200
+Message-Id: <20220607164940.561410840@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -53,49 +54,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit e999a5da28a0e0f7de242d841ef7d5e48f4646ae ]
+[ Upstream commit c0ff7a649d62105a9308cc3ac36e52a4669d9cb4 ]
 
-This patch fixes an invalid TX PA DC bias level on QCA9561, which
-results in a very low output power and very low throughput as devices
-are further away from the AP (compared to other 2.4GHz APs).
+The HFP_HSW_HBP_HI register must be programmed with 2 LSbits of each
+Horizontal Front Porch/Sync/Back Porch. Currently the driver programs
+this register to 0, which breaks displays with either value above 255.
 
-This patch was suggested by Felix Fietkau, who noted[1]:
-"The value written to that register is wrong, because while the mask
-definition AR_CH0_TOP2_XPABIASLVL uses a different value for 9561, the
-shift definition AR_CH0_TOP2_XPABIASLVL_S is hardcoded to 12, which is
-wrong for 9561."
+The HFP_MIN register must be set to the same value as HFP_LI, otherwise
+there is visible image distortion, usually in the form of missing lines
+at the bottom of the panel.
 
-In real life testing, without this patch the 2.4GHz throughput on
-Yuncore XD3200 is around 10Mbps sitting next to the AP, and closer to
-practical maximum with the patch applied.
+Fix this by correctly programming the HFP_HSW_HBP_HI and HFP_MIN registers.
 
-[1] https://lore.kernel.org/all/91c58969-c60e-2f41-00ac-737786d435ae@nbd.name
-
-Signed-off-by: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
-Acked-by: Felix Fietkau <nbd@nbd.name>
-Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220417145145.1847-1-hacks+kernel@slashdirt.org
+Acked-by: Maxime Ripard <maxime@cerno.tech>
+Fixes: ce517f18944e3 ("drm: bridge: Add Chipone ICN6211 MIPI-DSI to RGB bridge")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Jagan Teki <jagan@amarulasolutions.com>
+Cc: Maxime Ripard <maxime@cerno.tech>
+Cc: Robert Foss <robert.foss@linaro.org>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+To: dri-devel@lists.freedesktop.org
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220331150509.9838-3-marex@denx.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/ar9003_phy.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/bridge/chipone-icn6211.c | 23 ++++++++++++++++-------
+ 1 file changed, 16 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/ar9003_phy.h b/drivers/net/wireless/ath/ath9k/ar9003_phy.h
-index a171dbb29fbb..ad949eb02f3d 100644
---- a/drivers/net/wireless/ath/ath9k/ar9003_phy.h
-+++ b/drivers/net/wireless/ath/ath9k/ar9003_phy.h
-@@ -720,7 +720,7 @@
- #define AR_CH0_TOP2		(AR_SREV_9300(ah) ? 0x1628c : \
- 					(AR_SREV_9462(ah) ? 0x16290 : 0x16284))
- #define AR_CH0_TOP2_XPABIASLVL		(AR_SREV_9561(ah) ? 0x1e00 : 0xf000)
--#define AR_CH0_TOP2_XPABIASLVL_S	12
-+#define AR_CH0_TOP2_XPABIASLVL_S	(AR_SREV_9561(ah) ? 9 : 12)
+diff --git a/drivers/gpu/drm/bridge/chipone-icn6211.c b/drivers/gpu/drm/bridge/chipone-icn6211.c
+index eb26615b2993..d7eedf35e841 100644
+--- a/drivers/gpu/drm/bridge/chipone-icn6211.c
++++ b/drivers/gpu/drm/bridge/chipone-icn6211.c
+@@ -34,6 +34,9 @@
+ #define HSYNC_LI		0x24
+ #define HBP_LI			0x25
+ #define HFP_HSW_HBP_HI		0x26
++#define HFP_HSW_HBP_HI_HFP(n)		(((n) & 0x300) >> 4)
++#define HFP_HSW_HBP_HI_HS(n)		(((n) & 0x300) >> 6)
++#define HFP_HSW_HBP_HI_HBP(n)		(((n) & 0x300) >> 8)
+ #define VFP			0x27
+ #define VSYNC			0x28
+ #define VBP			0x29
+@@ -165,6 +168,7 @@ static void chipone_enable(struct drm_bridge *bridge)
+ {
+ 	struct chipone *icn = bridge_to_chipone(bridge);
+ 	struct drm_display_mode *mode = bridge_to_mode(bridge);
++	u16 hfp, hbp, hsync;
  
- #define AR_CH0_XTAL		(AR_SREV_9300(ah) ? 0x16294 : \
- 				 ((AR_SREV_9462(ah) || AR_SREV_9565(ah)) ? 0x16298 : \
+ 	ICN6211_DSI(icn, MIPI_CFG_PW, MIPI_CFG_PW_CONFIG_DSI);
+ 
+@@ -180,13 +184,18 @@ static void chipone_enable(struct drm_bridge *bridge)
+ 		    ((mode->hdisplay >> 8) & 0xf) |
+ 		    (((mode->vdisplay >> 8) & 0xf) << 4));
+ 
+-	ICN6211_DSI(icn, HFP_LI, mode->hsync_start - mode->hdisplay);
++	hfp = mode->hsync_start - mode->hdisplay;
++	hsync = mode->hsync_end - mode->hsync_start;
++	hbp = mode->htotal - mode->hsync_end;
+ 
+-	ICN6211_DSI(icn, HSYNC_LI, mode->hsync_end - mode->hsync_start);
+-
+-	ICN6211_DSI(icn, HBP_LI, mode->htotal - mode->hsync_end);
+-
+-	ICN6211_DSI(icn, HFP_HSW_HBP_HI, 0x00);
++	ICN6211_DSI(icn, HFP_LI, hfp & 0xff);
++	ICN6211_DSI(icn, HSYNC_LI, hsync & 0xff);
++	ICN6211_DSI(icn, HBP_LI, hbp & 0xff);
++	/* Top two bits of Horizontal Front porch/Sync/Back porch */
++	ICN6211_DSI(icn, HFP_HSW_HBP_HI,
++		    HFP_HSW_HBP_HI_HFP(hfp) |
++		    HFP_HSW_HBP_HI_HS(hsync) |
++		    HFP_HSW_HBP_HI_HBP(hbp));
+ 
+ 	ICN6211_DSI(icn, VFP, mode->vsync_start - mode->vdisplay);
+ 
+@@ -196,7 +205,7 @@ static void chipone_enable(struct drm_bridge *bridge)
+ 
+ 	/* dsi specific sequence */
+ 	ICN6211_DSI(icn, SYNC_EVENT_DLY, 0x80);
+-	ICN6211_DSI(icn, HFP_MIN, 0x28);
++	ICN6211_DSI(icn, HFP_MIN, hfp & 0xff);
+ 	ICN6211_DSI(icn, MIPI_PD_CK_LANE, 0xa0);
+ 	ICN6211_DSI(icn, PLL_CTRL(12), 0xff);
+ 	ICN6211_DSI(icn, BIST_POL, BIST_POL_DE_POL);
 -- 
 2.35.1
 
