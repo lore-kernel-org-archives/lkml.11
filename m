@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79486C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59B1AC43334
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350131AbiFGSKa (ORCPT
+        id S1350015AbiFGSKU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:10:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40692 "EHLO
+        Tue, 7 Jun 2022 14:10:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349753AbiFGRve (ORCPT
+        with ESMTP id S1349411AbiFGRur (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:51:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAA113AF3D;
-        Tue,  7 Jun 2022 10:38:51 -0700 (PDT)
+        Tue, 7 Jun 2022 13:50:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BA8517048;
+        Tue,  7 Jun 2022 10:38:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C7BC6164A;
-        Tue,  7 Jun 2022 17:38:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63053C34115;
-        Tue,  7 Jun 2022 17:38:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F14CB822B5;
+        Tue,  7 Jun 2022 17:37:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3FF3C385A5;
+        Tue,  7 Jun 2022 17:37:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623505;
-        bh=9OVdoleGkdoG1w/I/9GHVvRNmcXCvndh0qaqcBXBFIY=;
+        s=korg; t=1654623464;
+        bh=PP6xuZ+OYIWi/Lg7w2BAYMZ4Np2wleQMLd4YyDw0zp0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UPs2km50uJgbiNXc5wVLxaaaeGtkMTdh+zBu4vAMn/wS+GWbFGMmiblpy351AKIuR
-         jZ9eLPUdndILDgRxL3A0Ybr/zp3nXxSusulzaiuEGB3+p7/5NTWFFjTciP0xAEhlk3
-         MbqQFQ+pXP1TxM+oFQ8kf4nQKtJHNKQOf9BXN8qU=
+        b=zefBUM+UhjI3jzP8SF2JkbJzjaiKt7w5StznelQXkCO+fHWUEvdoKAQ0s3lEjalJ+
+         saLp9aY3phFYyWUq/7HqRIKRxWtvYf3LCjHXGxFFv5tuQzFF3mEQY/Twtxi6k+Okjx
+         jqpsd0b+NiopQgx6yTGCQogI670wQsoAtZuKdivk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "yukuai (C)" <yukuai3@huawei.com>, Jan Kara <jack@suse.cz>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 442/452] bfq: Drop pointless unlock-lock pair
-Date:   Tue,  7 Jun 2022 19:04:59 +0200
-Message-Id: <20220607164921.735922268@linuxfoundation.org>
+        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 428/452] net: ipa: fix page free in ipa_endpoint_trans_release()
+Date:   Tue,  7 Jun 2022 19:04:45 +0200
+Message-Id: <20220607164921.309516217@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,39 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Alex Elder <elder@linaro.org>
 
-commit fc84e1f941b91221092da5b3102ec82da24c5673 upstream.
+commit 155c0c90bca918de6e4327275dfc1d97fd604115 upstream.
 
-In bfq_insert_request() we unlock bfqd->lock only to call
-trace_block_rq_insert() and then lock bfqd->lock again. This is really
-pointless since tracing is disabled if we really care about performance
-and even if the tracepoint is enabled, it is a quick call.
+Currently the (possibly compound) page used for receive buffers are
+freed using __free_pages().  But according to this comment above the
+definition of that function, that's wrong:
+    If you want to use the page's reference count to decide when
+    to free the allocation, you should allocate a compound page,
+    and use put_page() instead of __free_pages().
 
-CC: stable@vger.kernel.org
-Tested-by: "yukuai (C)" <yukuai3@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220401102752.8599-5-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Convert the call to __free_pages() in ipa_endpoint_trans_release()
+to use put_page() instead.
+
+Fixes: ed23f02680caa ("net: ipa: define per-endpoint receive buffer size")
+Signed-off-by: Alex Elder <elder@linaro.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/bfq-iosched.c |    3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/ipa/ipa_endpoint.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -5537,11 +5537,8 @@ static void bfq_insert_request(struct bl
- 		return;
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -1179,7 +1179,7 @@ void ipa_endpoint_trans_release(struct i
+ 		struct page *page = trans->data;
+ 
+ 		if (page)
+-			__free_pages(page, get_order(IPA_RX_BUFFER_SIZE));
++			put_page(page);
  	}
+ }
  
--	spin_unlock_irq(&bfqd->lock);
--
- 	blk_mq_sched_request_inserted(rq);
- 
--	spin_lock_irq(&bfqd->lock);
- 	bfqq = bfq_init_rq(rq);
- 	if (!bfqq || at_head || blk_rq_is_passthrough(rq)) {
- 		if (at_head)
 
 
