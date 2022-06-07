@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53BCBCCA48E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65132CCA491
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385370AbiFGW1F (ORCPT
+        id S1385398AbiFGW1J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:27:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54916 "EHLO
+        Tue, 7 Jun 2022 18:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381382AbiFGVRl (ORCPT
+        with ESMTP id S1381315AbiFGVRe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:17:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B8C014CDF5;
-        Tue,  7 Jun 2022 11:58:48 -0700 (PDT)
+        Tue, 7 Jun 2022 17:17:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08FA222369;
+        Tue,  7 Jun 2022 11:58:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A4666179F;
-        Tue,  7 Jun 2022 18:58:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D500C385A2;
-        Tue,  7 Jun 2022 18:58:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F65AB82399;
+        Tue,  7 Jun 2022 18:58:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6F84C385A5;
+        Tue,  7 Jun 2022 18:58:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628327;
-        bh=84IfR7RwwFTk8qrcm0SBcSTrKK/dW3sr/Vog+1TxXdk=;
+        s=korg; t=1654628322;
+        bh=Gd+81C6t792u/OyBDJ9pfgOthfvlR8CL7NYdML5/hfE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lyqfN13hz1LGMegCoapNUT7QYcUNnqTpw5W+WxwFY81dU8tKwWp0niCUpRrHwnoU1
-         9Mn1ReRZoHbhkb2Ee5qv5TAK6VBNe3Z53jsLRlUYIGIQU1QlOsvvcNDVwCxoivpYrt
-         Dd7aZmQ7xbxAdDWc+GAErCDYSvRXWv6npMxAGE7I=
+        b=lhSM0F7mrceLObPjFWwHoP2z537rZkyLUC2ONtau0Ry95LKnubtenfJdRAQhzre/T
+         JddQYehsnu2DOwF5+P5dTa/mzqzOmv0likvoKMFkA3T8cU0b0obiQdrDjA3eS7EGo5
+         TpLlb3LNuPujxrYFI9KUqIuUTOfFo+VEMismlloY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Parshuram Thombare <pthombar@cadence.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Finn Thain <fthain@linux-m68k.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 238/879] PCI: cadence: Clear FLR in device capabilities register
-Date:   Tue,  7 Jun 2022 18:55:56 +0200
-Message-Id: <20220607165009.761206695@linuxfoundation.org>
+Subject: [PATCH 5.18 246/879] macintosh/via-pmu: Fix build failure when CONFIG_INPUT is disabled
+Date:   Tue,  7 Jun 2022 18:56:04 +0200
+Message-Id: <20220607165009.993135897@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,122 +53,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Parshuram Thombare <pthombar@cadence.com>
+From: Finn Thain <fthain@linux-m68k.org>
 
-[ Upstream commit 95b00f68209e2bc9f2ee9126afcebab451e0e9d8 ]
+[ Upstream commit 86ce436e30d86327c9f5260f718104ae7b21f506 ]
 
-Clear FLR (Function Level Reset) from device capabilities
-registers for all physical functions.
+drivers/macintosh/via-pmu-event.o: In function `via_pmu_event':
+via-pmu-event.c:(.text+0x44): undefined reference to `input_event'
+via-pmu-event.c:(.text+0x68): undefined reference to `input_event'
+via-pmu-event.c:(.text+0x94): undefined reference to `input_event'
+via-pmu-event.c:(.text+0xb8): undefined reference to `input_event'
+drivers/macintosh/via-pmu-event.o: In function `via_pmu_event_init':
+via-pmu-event.c:(.init.text+0x20): undefined reference to `input_allocate_device'
+via-pmu-event.c:(.init.text+0xc4): undefined reference to `input_register_device'
+via-pmu-event.c:(.init.text+0xd4): undefined reference to `input_free_device'
+make[1]: *** [Makefile:1155: vmlinux] Error 1
+make: *** [Makefile:350: __build_one_by_one] Error 2
 
-During FLR, the Margining Lane Status and Margining Lane Control
-registers should not be reset, as per PCIe specification.
-However, the controller incorrectly resets these registers upon FLR.
-This causes PCISIG compliance FLR test to fail. Hence preventing
-all functions from advertising FLR support if flag quirk_disable_flr
-is set.
+Don't call into the input subsystem unless CONFIG_INPUT is built-in.
 
-Link: https://lore.kernel.org/r/1635165075-89864-1-git-send-email-pthombar@cadence.com
-Signed-off-by: Parshuram Thombare <pthombar@cadence.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Finn Thain <fthain@linux-m68k.org>
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/5edbe76ce68227f71e09af4614cc4c1bd61c7ec8.1649326292.git.fthain@linux-m68k.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/cadence/pci-j721e.c     |  3 +++
- .../pci/controller/cadence/pcie-cadence-ep.c   | 18 +++++++++++++++++-
- drivers/pci/controller/cadence/pcie-cadence.h  |  3 +++
- 3 files changed, 23 insertions(+), 1 deletion(-)
+ drivers/macintosh/Kconfig   | 4 ++++
+ drivers/macintosh/Makefile  | 3 ++-
+ drivers/macintosh/via-pmu.c | 2 +-
+ 3 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/controller/cadence/pci-j721e.c b/drivers/pci/controller/cadence/pci-j721e.c
-index 768d33f9ebc8..a82f845cc4b5 100644
---- a/drivers/pci/controller/cadence/pci-j721e.c
-+++ b/drivers/pci/controller/cadence/pci-j721e.c
-@@ -69,6 +69,7 @@ struct j721e_pcie_data {
- 	enum j721e_pcie_mode	mode;
- 	unsigned int		quirk_retrain_flag:1;
- 	unsigned int		quirk_detect_quiet_flag:1;
-+	unsigned int		quirk_disable_flr:1;
- 	u32			linkdown_irq_regfield;
- 	unsigned int		byte_access_allowed:1;
- };
-@@ -307,6 +308,7 @@ static const struct j721e_pcie_data j7200_pcie_rc_data = {
- static const struct j721e_pcie_data j7200_pcie_ep_data = {
- 	.mode = PCI_MODE_EP,
- 	.quirk_detect_quiet_flag = true,
-+	.quirk_disable_flr = true,
- };
+diff --git a/drivers/macintosh/Kconfig b/drivers/macintosh/Kconfig
+index 5cdc361da37c..3942db15a2b8 100644
+--- a/drivers/macintosh/Kconfig
++++ b/drivers/macintosh/Kconfig
+@@ -67,6 +67,10 @@ config ADB_PMU
+ 	  this device; you should do so if your machine is one of those
+ 	  mentioned above.
  
- static const struct j721e_pcie_data am64_pcie_rc_data = {
-@@ -405,6 +407,7 @@ static int j721e_pcie_probe(struct platform_device *pdev)
- 			return -ENOMEM;
- 
- 		ep->quirk_detect_quiet_flag = data->quirk_detect_quiet_flag;
-+		ep->quirk_disable_flr = data->quirk_disable_flr;
- 
- 		cdns_pcie = &ep->pcie;
- 		cdns_pcie->dev = dev;
-diff --git a/drivers/pci/controller/cadence/pcie-cadence-ep.c b/drivers/pci/controller/cadence/pcie-cadence-ep.c
-index 88e05b9c2e5b..4b1c4bc4e003 100644
---- a/drivers/pci/controller/cadence/pcie-cadence-ep.c
-+++ b/drivers/pci/controller/cadence/pcie-cadence-ep.c
-@@ -565,7 +565,8 @@ static int cdns_pcie_ep_start(struct pci_epc *epc)
- 	struct cdns_pcie_ep *ep = epc_get_drvdata(epc);
- 	struct cdns_pcie *pcie = &ep->pcie;
- 	struct device *dev = pcie->dev;
--	int ret;
-+	int max_epfs = sizeof(epc->function_num_map) * 8;
-+	int ret, value, epf;
- 
- 	/*
- 	 * BIT(0) is hardwired to 1, hence function 0 is always enabled
-@@ -573,6 +574,21 @@ static int cdns_pcie_ep_start(struct pci_epc *epc)
- 	 */
- 	cdns_pcie_writel(pcie, CDNS_PCIE_LM_EP_FUNC_CFG, epc->function_num_map);
- 
-+	if (ep->quirk_disable_flr) {
-+		for (epf = 0; epf < max_epfs; epf++) {
-+			if (!(epc->function_num_map & BIT(epf)))
-+				continue;
++config ADB_PMU_EVENT
++	def_bool y
++	depends on ADB_PMU && INPUT=y
 +
-+			value = cdns_pcie_ep_fn_readl(pcie, epf,
-+					CDNS_PCIE_EP_FUNC_DEV_CAP_OFFSET +
-+					PCI_EXP_DEVCAP);
-+			value &= ~PCI_EXP_DEVCAP_FLR;
-+			cdns_pcie_ep_fn_writel(pcie, epf,
-+					CDNS_PCIE_EP_FUNC_DEV_CAP_OFFSET +
-+					PCI_EXP_DEVCAP, value);
-+		}
-+	}
-+
- 	ret = cdns_pcie_start_link(pcie);
- 	if (ret) {
- 		dev_err(dev, "Failed to start link\n");
-diff --git a/drivers/pci/controller/cadence/pcie-cadence.h b/drivers/pci/controller/cadence/pcie-cadence.h
-index c8a27b6290ce..d9c785365da3 100644
---- a/drivers/pci/controller/cadence/pcie-cadence.h
-+++ b/drivers/pci/controller/cadence/pcie-cadence.h
-@@ -123,6 +123,7 @@
+ config ADB_PMU_LED
+ 	bool "Support for the Power/iBook front LED"
+ 	depends on PPC_PMAC && ADB_PMU
+diff --git a/drivers/macintosh/Makefile b/drivers/macintosh/Makefile
+index 49819b1b6f20..712edcb3e0b0 100644
+--- a/drivers/macintosh/Makefile
++++ b/drivers/macintosh/Makefile
+@@ -12,7 +12,8 @@ obj-$(CONFIG_MAC_EMUMOUSEBTN)	+= mac_hid.o
+ obj-$(CONFIG_INPUT_ADBHID)	+= adbhid.o
+ obj-$(CONFIG_ANSLCD)		+= ans-lcd.o
  
- #define CDNS_PCIE_EP_FUNC_MSI_CAP_OFFSET	0x90
- #define CDNS_PCIE_EP_FUNC_MSIX_CAP_OFFSET	0xb0
-+#define CDNS_PCIE_EP_FUNC_DEV_CAP_OFFSET	0xc0
- #define CDNS_PCIE_EP_FUNC_SRIOV_CAP_OFFSET	0x200
- 
- /*
-@@ -357,6 +358,7 @@ struct cdns_pcie_epf {
-  *        minimize time between read and write
-  * @epf: Structure to hold info about endpoint function
-  * @quirk_detect_quiet_flag: LTSSM Detect Quiet min delay set as quirk
-+ * @quirk_disable_flr: Disable FLR (Function Level Reset) quirk flag
-  */
- struct cdns_pcie_ep {
- 	struct cdns_pcie	pcie;
-@@ -372,6 +374,7 @@ struct cdns_pcie_ep {
- 	spinlock_t		lock;
- 	struct cdns_pcie_epf	*epf;
- 	unsigned int		quirk_detect_quiet_flag:1;
-+	unsigned int		quirk_disable_flr:1;
- };
- 
- 
+-obj-$(CONFIG_ADB_PMU)		+= via-pmu.o via-pmu-event.o
++obj-$(CONFIG_ADB_PMU)		+= via-pmu.o
++obj-$(CONFIG_ADB_PMU_EVENT)	+= via-pmu-event.o
+ obj-$(CONFIG_ADB_PMU_LED)	+= via-pmu-led.o
+ obj-$(CONFIG_PMAC_BACKLIGHT)	+= via-pmu-backlight.o
+ obj-$(CONFIG_ADB_CUDA)		+= via-cuda.o
+diff --git a/drivers/macintosh/via-pmu.c b/drivers/macintosh/via-pmu.c
+index 4b98bc26a94b..2109129ea1bb 100644
+--- a/drivers/macintosh/via-pmu.c
++++ b/drivers/macintosh/via-pmu.c
+@@ -1459,7 +1459,7 @@ pmu_handle_data(unsigned char *data, int len)
+ 		pmu_pass_intr(data, len);
+ 		/* len == 6 is probably a bad check. But how do I
+ 		 * know what PMU versions send what events here? */
+-		if (len == 6) {
++		if (IS_ENABLED(CONFIG_ADB_PMU_EVENT) && len == 6) {
+ 			via_pmu_event(PMU_EVT_POWER, !!(data[1]&8));
+ 			via_pmu_event(PMU_EVT_LID, data[1]&1);
+ 		}
 -- 
 2.35.1
 
