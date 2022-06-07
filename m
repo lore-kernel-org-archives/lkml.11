@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 532ECCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:09:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7382C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379074AbiFGVI7 (ORCPT
+        id S1379154AbiFGVJE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:08:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51086 "EHLO
+        Tue, 7 Jun 2022 17:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359219AbiFGUJk (ORCPT
+        with ESMTP id S1359223AbiFGUJk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:09:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35DA78FD7D;
-        Tue,  7 Jun 2022 11:27:20 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E448B8BC9;
+        Tue,  7 Jun 2022 11:27:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD005B81FF8;
-        Tue,  7 Jun 2022 18:27:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39B78C385A5;
-        Tue,  7 Jun 2022 18:27:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9B0F60906;
+        Tue,  7 Jun 2022 18:27:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E59C0C385A2;
+        Tue,  7 Jun 2022 18:27:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626437;
-        bh=l+0I0SbIqtb+A2f2/RYmBLgaBp3aFf+0oUxXgNg1N6s=;
+        s=korg; t=1654626440;
+        bh=N2G7P5kX8WC/LFedJRSAAVNnpl8GrNl/yZz/XNcovSg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fELWQ9OJ+KvnCLgA8z0AXDFvVCRifF4edTUPayvYILihzmuUHXZsJiTM/IxMa9yuj
-         2Qxu+monuv9qGzPXLnlQY4Y9NWZMKhy2mLyaaevllZ1tvCeNE9brMPKggYk7WASeNC
-         b1EWvNz+V4TmnQnmt2yZScYtQ85AUN9ovJfkOWbU=
+        b=wmSWiJSLRh1IHnfvd1z355BhWj+oq/PQI4aEvW9oH85LJ6xvzLFEshsWz6A0NivEW
+         3/ts74xKnAOppoZDQnRWhLDLE81ZSemNrcGt0AqW+mn53oIDYdkbA2nu8e1mVmg2yc
+         eQd/h8Qp/4koa+Z2zpxCNes+q3MIOywljfj8wRak=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>,
-        Jacopo Mondi <jacopo+renesas@jmondi.org>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 377/772] media: i2c: rdacm2x: properly set subdev entity function
-Date:   Tue,  7 Jun 2022 18:59:29 +0200
-Message-Id: <20220607165000.125041592@linuxfoundation.org>
+Subject: [PATCH 5.17 342/772] drm/msm: return an error pointer in msm_gem_prime_get_sg_table()
+Date:   Tue,  7 Jun 2022 18:58:54 +0200
+Message-Id: <20220607164959.101005403@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -54,58 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit d2facee67b4883bb3e7461a0a93fd70d0c7b7261 ]
+[ Upstream commit cf575e31611eb6dccf08fad02e57e35b2187704d ]
 
-The subdevice entity function was left unset, which produces a warning
-when probing the device:
+The msm_gem_prime_get_sg_table() needs to return error pointers on
+error.  This is called from drm_gem_map_dma_buf() and returning a
+NULL will lead to a crash in that function.
 
-mxc-md bus@58000000:camera: Entity type for entity rdacm20 19-0051 was
-not initialized!
-
-This patch will set entity function to MEDIA_ENT_F_CAM_SENSOR and leave
-flags unset.
-
-Fixes: 34009bffc1c6 ("media: i2c: Add RDACM20 driver")
-Fixes: a59f853b3b4b ("media: i2c: Add driver for RDACM21 camera module")
-Signed-off-by: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
-Reviewed-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
-Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: ac45146733b0 ("drm/msm: fix msm_gem_prime_get_sg_table()")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/485023/
+Link: https://lore.kernel.org/r/YnOmtS5tfENywR9m@kili
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/rdacm20.c | 2 +-
- drivers/media/i2c/rdacm21.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/msm_gem_prime.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/i2c/rdacm20.c b/drivers/media/i2c/rdacm20.c
-index 025a610de893..9c6f66cab564 100644
---- a/drivers/media/i2c/rdacm20.c
-+++ b/drivers/media/i2c/rdacm20.c
-@@ -611,7 +611,7 @@ static int rdacm20_probe(struct i2c_client *client)
- 		goto error_free_ctrls;
+diff --git a/drivers/gpu/drm/msm/msm_gem_prime.c b/drivers/gpu/drm/msm/msm_gem_prime.c
+index fc94e061d6a7..8a2d94bd5df2 100644
+--- a/drivers/gpu/drm/msm/msm_gem_prime.c
++++ b/drivers/gpu/drm/msm/msm_gem_prime.c
+@@ -17,7 +17,7 @@ struct sg_table *msm_gem_prime_get_sg_table(struct drm_gem_object *obj)
+ 	int npages = obj->size >> PAGE_SHIFT;
  
- 	dev->pad.flags = MEDIA_PAD_FL_SOURCE;
--	dev->sd.entity.flags |= MEDIA_ENT_F_CAM_SENSOR;
-+	dev->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
- 	ret = media_entity_pads_init(&dev->sd.entity, 1, &dev->pad);
- 	if (ret < 0)
- 		goto error_free_ctrls;
-diff --git a/drivers/media/i2c/rdacm21.c b/drivers/media/i2c/rdacm21.c
-index 12ec5467ed1e..ef31cf5f23ca 100644
---- a/drivers/media/i2c/rdacm21.c
-+++ b/drivers/media/i2c/rdacm21.c
-@@ -583,7 +583,7 @@ static int rdacm21_probe(struct i2c_client *client)
- 		goto error_free_ctrls;
+ 	if (WARN_ON(!msm_obj->pages))  /* should have already pinned! */
+-		return NULL;
++		return ERR_PTR(-ENOMEM);
  
- 	dev->pad.flags = MEDIA_PAD_FL_SOURCE;
--	dev->sd.entity.flags |= MEDIA_ENT_F_CAM_SENSOR;
-+	dev->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
- 	ret = media_entity_pads_init(&dev->sd.entity, 1, &dev->pad);
- 	if (ret < 0)
- 		goto error_free_ctrls;
+ 	return drm_prime_pages_to_sg(obj->dev, msm_obj->pages, npages);
+ }
 -- 
 2.35.1
 
