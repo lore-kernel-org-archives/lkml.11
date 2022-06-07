@@ -2,158 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0125ECCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC974CCA482
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386017AbiFGWmT (ORCPT
+        id S1385956AbiFGWmQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:42:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51482 "EHLO
+        Tue, 7 Jun 2022 18:42:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380648AbiFGVbG (ORCPT
+        with ESMTP id S1380601AbiFGVbD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:31:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21652152B99;
-        Tue,  7 Jun 2022 12:03:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7306361807;
-        Tue,  7 Jun 2022 19:03:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50B48C385A2;
-        Tue,  7 Jun 2022 19:03:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628594;
-        bh=E2FtmkbALIyQJChFCFNJq0pthjb2gN5BOrVUP9JgayI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cOa5RzHHoYcrGuRY48EZIZjrG77dwP3vGLSVCDzQ83uPb8QyLEJUjwG6m8YmTcJTT
-         9ojfbkp53+BGJpxrzX+8Fjv/GIL1fF9p6Pyo34WEMrDwuu5C2it1j7Y2ZTqU+ouwyF
-         QVIuGwECqBFdtIxWwI2P64J60UMT2ZNcR3rtYf20=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 387/879] irqchip/exiu: Fix acknowledgment of edge triggered interrupts
-Date:   Tue,  7 Jun 2022 18:58:25 +0200
-Message-Id: <20220607165014.097787867@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:31:03 -0400
+X-Greylist: delayed 595 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 12:03:14 PDT
+Received: from 4.mo560.mail-out.ovh.net (4.mo560.mail-out.ovh.net [87.98.172.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C88AC13F40B
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:03:14 -0700 (PDT)
+Received: from player158.ha.ovh.net (unknown [10.109.146.86])
+        by mo560.mail-out.ovh.net (Postfix) with ESMTP id 85EA721D9F
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:53:17 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player158.ha.ovh.net (Postfix) with ESMTPSA id CF6072B4B06CA;
+        Tue,  7 Jun 2022 18:53:13 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-98R0025b23b570-e9a2-4f30-9c24-99b8b7f3b651,
+                    2B697642B4708974A8072F1FAB3368C632332CFF) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
+Subject: [PATCH] regulator: rpi-panel-attiny: Use backlight helper
+Date:   Tue,  7 Jun 2022 20:53:04 +0200
+Message-Id: <20220607185304.1128962-1-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11429291431109691014
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudeftdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhduheekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheeitd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Thompson <daniel.thompson@linaro.org>
+backlight_properties.fb_blank is deprecated. The states it represents
+are handled by other properties; but instead of accessing those
+properties directly, drivers should use the helpers provided by
+backlight.h.
 
-[ Upstream commit 4efc851c36e389f7ed432edac0149acc5f94b0c7 ]
+Instead of retrieving the backlight brightness in struct
+backlight_properties manually, and then checking whether the backlight
+should be on at all, use backlight_get_brightness() which does all
+this and insulates this from future changes.
 
-Currently the EXIU uses the fasteoi interrupt flow that is configured by
-it's parent (irq-gic-v3.c). With this flow the only chance to clear the
-interrupt request happens during .irq_eoi() and (obviously) this happens
-after the interrupt handler has run. EXIU requires edge triggered
-interrupts to be acked prior to interrupt handling. Without this we
-risk incorrect interrupt dismissal when a new interrupt is delivered
-after the handler reads and acknowledges the peripheral but before the
-irq_eoi() takes place.
-
-Fix this by clearing the interrupt request from .irq_ack() if we are
-configured for edge triggered interrupts. This requires adopting the
-fasteoi-ack flow instead of the fasteoi to ensure the ack gets called.
-
-These changes have been tested using the power button on a
-Developerbox/SC2A11 combined with some hackery in gpio-keys so I can
-play with the different trigger mode [and an mdelay(500) so I can
-can check what happens on a double click in both modes].
-
-Fixes: 706cffc1b912 ("irqchip/exiu: Add support for Socionext Synquacer EXIU controller")
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220503134541.2566457-1-daniel.thompson@linaro.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Cc: Liam Girdwood <lgirdwood@gmail.com>
+Cc: Mark Brown <broonie@kernel.org>
 ---
- arch/arm64/Kconfig.platforms   |  1 +
- drivers/irqchip/irq-sni-exiu.c | 25 ++++++++++++++++++++++---
- 2 files changed, 23 insertions(+), 3 deletions(-)
+ drivers/regulator/rpi-panel-attiny-regulator.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
-index 30b123cde02c..aaeaf57c8222 100644
---- a/arch/arm64/Kconfig.platforms
-+++ b/arch/arm64/Kconfig.platforms
-@@ -253,6 +253,7 @@ config ARCH_INTEL_SOCFPGA
- 
- config ARCH_SYNQUACER
- 	bool "Socionext SynQuacer SoC Family"
-+	select IRQ_FASTEOI_HIERARCHY_HANDLERS
- 
- config ARCH_TEGRA
- 	bool "NVIDIA Tegra SoC Family"
-diff --git a/drivers/irqchip/irq-sni-exiu.c b/drivers/irqchip/irq-sni-exiu.c
-index abd011fcecf4..c7db617e1a2f 100644
---- a/drivers/irqchip/irq-sni-exiu.c
-+++ b/drivers/irqchip/irq-sni-exiu.c
-@@ -37,11 +37,26 @@ struct exiu_irq_data {
- 	u32		spi_base;
- };
- 
--static void exiu_irq_eoi(struct irq_data *d)
-+static void exiu_irq_ack(struct irq_data *d)
+diff --git a/drivers/regulator/rpi-panel-attiny-regulator.c b/drivers/regulator/rpi-panel-attiny-regulator.c
+index fa8706a352ce..105f694a67e6 100644
+--- a/drivers/regulator/rpi-panel-attiny-regulator.c
++++ b/drivers/regulator/rpi-panel-attiny-regulator.c
+@@ -187,15 +187,11 @@ static int attiny_update_status(struct backlight_device *bl)
  {
- 	struct exiu_irq_data *data = irq_data_get_irq_chip_data(d);
+ 	struct attiny_lcd *state = bl_get_data(bl);
+ 	struct regmap *regmap = state->regmap;
+-	int brightness = bl->props.brightness;
++	int brightness = backlight_get_brightness(bl);
+ 	int ret, i;
  
- 	writel(BIT(d->hwirq), data->base + EIREQCLR);
-+}
-+
-+static void exiu_irq_eoi(struct irq_data *d)
-+{
-+	struct exiu_irq_data *data = irq_data_get_irq_chip_data(d);
-+
-+	/*
-+	 * Level triggered interrupts are latched and must be cleared during
-+	 * EOI or the interrupt will be jammed on. Of course if a level
-+	 * triggered interrupt is still asserted then the write will not clear
-+	 * the interrupt.
-+	 */
-+	if (irqd_is_level_type(d))
-+		writel(BIT(d->hwirq), data->base + EIREQCLR);
-+
- 	irq_chip_eoi_parent(d);
- }
+ 	mutex_lock(&state->lock);
  
-@@ -91,10 +106,13 @@ static int exiu_irq_set_type(struct irq_data *d, unsigned int type)
- 	writel_relaxed(val, data->base + EILVL);
- 
- 	val = readl_relaxed(data->base + EIEDG);
--	if (type == IRQ_TYPE_LEVEL_LOW || type == IRQ_TYPE_LEVEL_HIGH)
-+	if (type == IRQ_TYPE_LEVEL_LOW || type == IRQ_TYPE_LEVEL_HIGH) {
- 		val &= ~BIT(d->hwirq);
--	else
-+		irq_set_handler_locked(d, handle_fasteoi_irq);
-+	} else {
- 		val |= BIT(d->hwirq);
-+		irq_set_handler_locked(d, handle_fasteoi_ack_irq);
-+	}
- 	writel_relaxed(val, data->base + EIEDG);
- 
- 	writel_relaxed(BIT(d->hwirq), data->base + EIREQCLR);
-@@ -104,6 +122,7 @@ static int exiu_irq_set_type(struct irq_data *d, unsigned int type)
- 
- static struct irq_chip exiu_irq_chip = {
- 	.name			= "EXIU",
-+	.irq_ack		= exiu_irq_ack,
- 	.irq_eoi		= exiu_irq_eoi,
- 	.irq_enable		= exiu_irq_enable,
- 	.irq_mask		= exiu_irq_mask,
+-	if (bl->props.power != FB_BLANK_UNBLANK ||
+-	    bl->props.fb_blank != FB_BLANK_UNBLANK)
+-		brightness = 0;
+-
+ 	for (i = 0; i < 10; i++) {
+ 		ret = regmap_write(regmap, REG_PWM, brightness);
+ 		if (!ret)
+
+base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
 -- 
-2.35.1
-
-
+2.30.2
 
