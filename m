@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C6DFCCA48C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC5DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386961AbiFHAWr (ORCPT
+        id S1387078AbiFHAW5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:22:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36130 "EHLO
+        Tue, 7 Jun 2022 20:22:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382203AbiFGVuE (ORCPT
+        with ESMTP id S1383781AbiFGWIU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:50:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7469C190D22;
-        Tue,  7 Jun 2022 12:08:38 -0700 (PDT)
+        Tue, 7 Jun 2022 18:08:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE68256958;
+        Tue,  7 Jun 2022 12:18:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D39A1B8220B;
-        Tue,  7 Jun 2022 19:08:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C685C385A5;
-        Tue,  7 Jun 2022 19:08:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 745AE61937;
+        Tue,  7 Jun 2022 19:18:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B540C385A2;
+        Tue,  7 Jun 2022 19:18:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628915;
-        bh=7ADwI4ceJ9tEh1nUpeN96td1EOsOqnWLQPLVG7+l0rw=;
+        s=korg; t=1654629518;
+        bh=q/qGVdP1QmculnLBqOY5CtVe3ahdbNWzYw2U/xURrBU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hDxBsa2wHxHxlkz7O5p3KWa4gLp1OuTUrwpekJYrlNse7Pb70g/TwsUc7Pum/WcoB
-         DZ3NoU1Nh4RxF+hbvXS7l3Jeqoc33AjlWAbUinslWGOpA1iAfk8KsP9WeZcda+iTQf
-         vaKU1TjXi1yMwc+gasCwmes/UyUso43jZqplCWEg=
+        b=lgfpTuzh+JmSKYIFKQhcyDrwkaTeQodHGglTLxCyKT6vKp7Wnp6/sfC8KPXF5k8MG
+         FI2YzCrfdzYyRswiWhkWRineDCdnU2/YelAm40ZPul3LlsTEUuxRSH7kTcZnmhYacx
+         upLloTcsNRh2orilBmIwn97z0syg20fZ/amkPFzU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will.deacon@arm.com>,
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 462/879] irqchip/gic-v3: Ensure pseudo-NMIs have an ISB between ack and handling
-Date:   Tue,  7 Jun 2022 18:59:40 +0200
-Message-Id: <20220607165016.284240302@linuxfoundation.org>
+Subject: [PATCH 5.18 679/879] NFS: Do not report flush errors in nfs_write_end()
+Date:   Tue,  7 Jun 2022 19:03:17 +0200
+Message-Id: <20220607165022.556269950@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,56 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Rutland <mark.rutland@arm.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit adf14453d2c037ab529040c1186ea32e277e783a ]
+[ Upstream commit d95b26650e86175e4a97698d89bc1626cd1df0c6 ]
 
-There are cases where a context synchronization event is necessary
-between an IRQ being raised and being handled, and there are races such
-that we cannot rely upon the exception entry being subsequent to the
-interrupt being raised.
+If we do flush cached writebacks in nfs_write_end() due to the imminent
+expiration of an RPCSEC_GSS session, then we should defer reporting any
+resulting errors until the calls to file_check_and_advance_wb_err() in
+nfs_file_write() and nfs_file_fsync().
 
-We identified and fixes this for regular IRQs in commit:
-
-  39a06b67c2c1256b ("irqchip/gic: Ensure we have an ISB between ack and ->handle_irq")
-
-Unfortunately, we forgot to do the same for psuedo-NMIs when support for
-those was added in commit:
-
-  f32c926651dcd168 ("irqchip/gic-v3: Handle pseudo-NMIs")
-
-Which means that when pseudo-NMIs are used for PMU support, we'll hit
-the same problem.
-
-Apply the same fix as for regular IRQs. Note that when EOI mode 1 is in
-use, the call to gic_write_eoir() will provide an ISB.
-
-Fixes: f32c926651dcd168 ("irqchip/gic-v3: Handle pseudo-NMIs")
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Will Deacon <will.deacon@arm.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220513133038.226182-2-mark.rutland@arm.com
+Fixes: 6fbda89b257f ("NFS: Replace custom error reporting mechanism with generic one")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-gic-v3.c | 3 +++
- 1 file changed, 3 insertions(+)
+ fs/nfs/file.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index b252d5534547..7305d84f2df5 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -654,6 +654,9 @@ static inline void gic_handle_nmi(u32 irqnr, struct pt_regs *regs)
+diff --git a/fs/nfs/file.c b/fs/nfs/file.c
+index 87e4cd5e8fe2..3f17748eaf29 100644
+--- a/fs/nfs/file.c
++++ b/fs/nfs/file.c
+@@ -386,11 +386,8 @@ static int nfs_write_end(struct file *file, struct address_space *mapping,
+ 		return status;
+ 	NFS_I(mapping->host)->write_io += copied;
  
- 	if (static_branch_likely(&supports_deactivate_key))
- 		gic_write_eoir(irqnr);
-+	else
-+		isb()
-+
- 	/*
- 	 * Leave the PSR.I bit set to prevent other NMIs to be
- 	 * received while handling this one.
+-	if (nfs_ctx_key_to_expire(ctx, mapping->host)) {
+-		status = nfs_wb_all(mapping->host);
+-		if (status < 0)
+-			return status;
+-	}
++	if (nfs_ctx_key_to_expire(ctx, mapping->host))
++		nfs_wb_all(mapping->host);
+ 
+ 	return copied;
+ }
 -- 
 2.35.1
 
