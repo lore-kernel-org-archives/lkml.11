@@ -2,125 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F1EDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED6DCCA49A
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378478AbiFGUwJ (ORCPT
+        id S1349328AbiFGUwt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50084 "EHLO
+        Tue, 7 Jun 2022 16:52:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358594AbiFGTwo (ORCPT
+        with ESMTP id S1358431AbiFGTw3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:52:44 -0400
-X-Greylist: delayed 179 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 11:21:13 PDT
-Received: from 9.mo576.mail-out.ovh.net (9.mo576.mail-out.ovh.net [46.105.56.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED7625DA
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:21:13 -0700 (PDT)
-Received: from player728.ha.ovh.net (unknown [10.111.172.36])
-        by mo576.mail-out.ovh.net (Postfix) with ESMTP id CD860241BC
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:21:11 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player728.ha.ovh.net (Postfix) with ESMTPSA id 83A8D2B3FFBBD;
-        Tue,  7 Jun 2022 18:21:03 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-103G005c1a5820f-bbd6-4097-a39f-86f090581fe2,
-                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH 2/3] drm/panel: panel-dsi-cm: Use backlight helpers
-Date:   Tue,  7 Jun 2022 20:20:25 +0200
-Message-Id: <20220607182026.1121992-3-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220607182026.1121992-1-steve@sk2.org>
-References: <20220607182026.1121992-1-steve@sk2.org>
+        Tue, 7 Jun 2022 15:52:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 946FDEFF17;
+        Tue,  7 Jun 2022 11:20:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0DDC0B82239;
+        Tue,  7 Jun 2022 18:20:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6ED47C385A2;
+        Tue,  7 Jun 2022 18:20:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654626024;
+        bh=B7+TLIpamswXZAjKolO5qXIuezHKavchvj0PzWpvahY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rCWZ54sh8U6nwKr7j55cfTgfxQj/6OBK5b5Ux2fHyw0x24kgjjjoeyiUEBz4C2IXv
+         exNhCakPVzATPHhrDatyRTHsv6zq8J6PAZGSKKahoR3C/hIAtED2SxmCQdffXzWWeW
+         FKe3Oqb0rQ+nb92ogqMya+6jFZ8r9eni5vjks01o=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 230/772] ath11k: acquire ab->base_lock in unassign when finding the peer by addr
+Date:   Tue,  7 Jun 2022 18:57:02 +0200
+Message-Id: <20220607164955.809651781@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 10887170627632334470
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddvgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejvdekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheejie
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of retrieving the backlight brightness in struct
-backlight_properties manually, and then checking whether the backlight
-should be on at all, use backlight_get_brightness() which does all
-this and insulates this from future changes.
+From: Niels Dossche <dossche.niels@gmail.com>
 
-Instead of setting the power state by manually updating fields in
-struct backlight_properties, use backlight_enable() and
-backlight_disable(). These also call backlight_update_status() so the
-separate call is no longer needed.
+[ Upstream commit 2db80f93869d491be57cbc2b36f30d0d3a0e5bde ]
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: dri-devel@lists.freedesktop.org
+ath11k_peer_find_by_addr states via lockdep that ab->base_lock must be
+held when calling that function in order to protect the list. All
+callers except ath11k_mac_op_unassign_vif_chanctx have that lock
+acquired when calling ath11k_peer_find_by_addr. That lock is also not
+transitively held by a path towards ath11k_mac_op_unassign_vif_chanctx.
+The solution is to acquire the lock when calling
+ath11k_peer_find_by_addr inside ath11k_mac_op_unassign_vif_chanctx.
+
+I am currently working on a static analyser to detect missing locks and
+this was a reported case. I manually verified the report by looking at
+the code, but I do not have real hardware so this is compile tested
+only.
+
+Fixes: 701e48a43e15 ("ath11k: add packet log support for QCA6390")
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220314215253.92658-1-dossche.niels@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panel/panel-dsi-cm.c | 24 ++++--------------------
- 1 file changed, 4 insertions(+), 20 deletions(-)
+ drivers/net/wireless/ath/ath11k/mac.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/panel/panel-dsi-cm.c b/drivers/gpu/drm/panel/panel-dsi-cm.c
-index b58cb064975f..aa36dc6cedd3 100644
---- a/drivers/gpu/drm/panel/panel-dsi-cm.c
-+++ b/drivers/gpu/drm/panel/panel-dsi-cm.c
-@@ -86,16 +86,10 @@ static void dsicm_bl_power(struct panel_drv_data *ddata, bool enable)
- 		return;
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index b2dac859dfe1..16b45b742f9d 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -7068,6 +7068,7 @@ ath11k_mac_op_unassign_vif_chanctx(struct ieee80211_hw *hw,
+ 	struct ath11k *ar = hw->priv;
+ 	struct ath11k_base *ab = ar->ab;
+ 	struct ath11k_vif *arvif = (void *)vif->drv_priv;
++	struct ath11k_peer *peer;
+ 	int ret;
  
- 	if (enable) {
--		backlight->props.fb_blank = FB_BLANK_UNBLANK;
--		backlight->props.state = ~(BL_CORE_FBBLANK | BL_CORE_SUSPENDED);
--		backlight->props.power = FB_BLANK_UNBLANK;
-+		backlight_enable(backlight);
- 	} else {
--		backlight->props.fb_blank = FB_BLANK_NORMAL;
--		backlight->props.power = FB_BLANK_POWERDOWN;
--		backlight->props.state |= BL_CORE_FBBLANK | BL_CORE_SUSPENDED;
-+		backlight_disable(backlight);
- 	}
--
--	backlight_update_status(backlight);
- }
+ 	mutex_lock(&ar->conf_mutex);
+@@ -7079,9 +7080,13 @@ ath11k_mac_op_unassign_vif_chanctx(struct ieee80211_hw *hw,
+ 	WARN_ON(!arvif->is_started);
  
- static void hw_guard_start(struct panel_drv_data *ddata, int guard_msec)
-@@ -196,13 +190,7 @@ static int dsicm_bl_update_status(struct backlight_device *dev)
- {
- 	struct panel_drv_data *ddata = dev_get_drvdata(&dev->dev);
- 	int r = 0;
--	int level;
--
--	if (dev->props.fb_blank == FB_BLANK_UNBLANK &&
--			dev->props.power == FB_BLANK_UNBLANK)
--		level = dev->props.brightness;
--	else
--		level = 0;
-+	int level = backlight_get_brightness(dev);
+ 	if (ab->hw_params.vdev_start_delay &&
+-	    arvif->vdev_type == WMI_VDEV_TYPE_MONITOR &&
+-	    ath11k_peer_find_by_addr(ab, ar->mac_addr))
+-		ath11k_peer_delete(ar, arvif->vdev_id, ar->mac_addr);
++	    arvif->vdev_type == WMI_VDEV_TYPE_MONITOR) {
++		spin_lock_bh(&ab->base_lock);
++		peer = ath11k_peer_find_by_addr(ab, ar->mac_addr);
++		spin_unlock_bh(&ab->base_lock);
++		if (peer)
++			ath11k_peer_delete(ar, arvif->vdev_id, ar->mac_addr);
++	}
  
- 	dev_dbg(&ddata->dsi->dev, "update brightness to %d\n", level);
- 
-@@ -219,11 +207,7 @@ static int dsicm_bl_update_status(struct backlight_device *dev)
- 
- static int dsicm_bl_get_intensity(struct backlight_device *dev)
- {
--	if (dev->props.fb_blank == FB_BLANK_UNBLANK &&
--			dev->props.power == FB_BLANK_UNBLANK)
--		return dev->props.brightness;
--
--	return 0;
-+	return backlight_get_brightness(dev);
- }
- 
- static const struct backlight_ops dsicm_bl_ops = {
+ 	if (arvif->vdev_type == WMI_VDEV_TYPE_MONITOR) {
+ 		ret = ath11k_mac_monitor_stop(ar);
 -- 
-2.30.2
+2.35.1
+
+
 
