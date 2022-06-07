@@ -2,135 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B640C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:44:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B7E5CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:44:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356162AbiFGTo0 (ORCPT
+        id S1357180AbiFGTob (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:44:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58474 "EHLO
+        Tue, 7 Jun 2022 15:44:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354616AbiFGSrb (ORCPT
+        with ESMTP id S1354620AbiFGSrb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:47:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3916630F44;
-        Tue,  7 Jun 2022 11:02:34 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13A2366A3;
+        Tue,  7 Jun 2022 11:02:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF804B82340;
-        Tue,  7 Jun 2022 18:02:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFDFCC385A5;
-        Tue,  7 Jun 2022 18:02:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624951;
-        bh=LauyIngqKhHgUdFrZjftbaUlMZvP3vHjbGSVAmxtyFI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=sjGU6sgFmx8nPGcQxyewBKelQAvomxm9quAdwqW8rhPO7/89TICy6eyrEA8u3uIYy
-         CBi4Puz/pzMst9JhT1rea3ESzOoyZrCA6aQEzNOjTVnv8mkCwv2w1FItg/A+QWMZTG
-         9AGif+ny+HmUF+ljZmQ64Z7dVEhR5gAIRLwy+BJZT2BjN2Kh/U2q4tcPo71ILDKOLl
-         7q9Czb9XR+8S3bvursvaqfAtDV5ZLa8gYR+lWp/kxcN6zKiPJab63AqhTNwEGneOUM
-         zfrV/RQ3PJ9V0xj5sJdnCNHaX8SpIb0IMA7O3mKz11ScB54IGwSFnD36sZPcJMhsdi
-         2QX+je0mLvFHg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, jic23@kernel.org,
-        linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 01/25] iio: dummy: iio_simple_dummy: check the return value of kstrdup()
-Date:   Tue,  7 Jun 2022 14:02:02 -0400
-Message-Id: <20220607180229.482040-1-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46820618DE;
+        Tue,  7 Jun 2022 18:02:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52B9AC385A5;
+        Tue,  7 Jun 2022 18:02:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624955;
+        bh=PU9uh3rClWw6uB3MVdt2U8NRohynfHhGPod8jVgggrs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QKwoBQ2YlHGY43P88QJ9f+Pw4rTG2Cynnu9LmmVwQUTF1XXnJlHJ03SAmVlVxd42n
+         6yOuriUS+CsAyhThZ2HnsB7sKNLvlI37PD8lqwfc1oF8DDKFoXg2gEIeS5IE+boS9J
+         7rZGXTWaxtwhvnHrqsOpH47RWVMqTC7fE7WzQv/k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 513/667] NFS: Create a new nfs_alloc_fattr_with_label() function
+Date:   Tue,  7 Jun 2022 19:02:58 +0200
+Message-Id: <20220607164950.089796084@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Anna Schumaker <Anna.Schumaker@Netapp.com>
 
-[ Upstream commit ba93642188a6fed754bf7447f638bc410e05a929 ]
+[ Upstream commit d755ad8dc752d44545613ea04d660aed674e540d ]
 
-kstrdup() is also a memory allocation-related function, it returns NULL
-when some memory errors happen. So it is better to check the return
-value of it so to catch the memory error in time. Besides, there should
-have a kfree() to clear up the allocation if we get a failure later in
-this function to prevent memory leak.
+For creating fattrs with the label field already allocated for us. I
+also update nfs_free_fattr() to free the label in the end.
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Link: https://lore.kernel.org/r/tencent_C920CFCC33B9CC1C63141FE1334A39FF8508@qq.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/dummy/iio_simple_dummy.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ fs/nfs/getroot.c       | 17 ++++++-----------
+ fs/nfs/inode.c         | 17 +++++++++++++++++
+ fs/nfs/internal.h      |  9 ---------
+ include/linux/nfs_fs.h | 13 +++++++++++++
+ 4 files changed, 36 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
-index ad3410e528b6..7fef76f0b5c7 100644
---- a/drivers/iio/dummy/iio_simple_dummy.c
-+++ b/drivers/iio/dummy/iio_simple_dummy.c
-@@ -572,10 +572,9 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	struct iio_sw_device *swd;
+diff --git a/fs/nfs/getroot.c b/fs/nfs/getroot.c
+index 59355c106ece..7604cb6a0ac2 100644
+--- a/fs/nfs/getroot.c
++++ b/fs/nfs/getroot.c
+@@ -80,18 +80,15 @@ int nfs_get_root(struct super_block *s, struct fs_context *fc)
+ 		goto out;
  
- 	swd = kzalloc(sizeof(*swd), GFP_KERNEL);
--	if (!swd) {
--		ret = -ENOMEM;
--		goto error_kzalloc;
--	}
-+	if (!swd)
-+		return ERR_PTR(-ENOMEM);
-+
- 	/*
- 	 * Allocate an IIO device.
- 	 *
-@@ -587,7 +586,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	indio_dev = iio_device_alloc(sizeof(*st));
- 	if (!indio_dev) {
- 		ret = -ENOMEM;
--		goto error_ret;
-+		goto error_free_swd;
+ 	/* get the actual root for this mount */
+-	fsinfo.fattr = nfs_alloc_fattr();
++	fsinfo.fattr = nfs_alloc_fattr_with_label(server);
+ 	if (fsinfo.fattr == NULL)
+ 		goto out_name;
+ 
+-	fsinfo.fattr->label = nfs4_label_alloc(server, GFP_KERNEL);
+-	if (IS_ERR(fsinfo.fattr->label))
+-		goto out_fattr;
+ 	error = server->nfs_client->rpc_ops->getroot(server, ctx->mntfh, &fsinfo);
+ 	if (error < 0) {
+ 		dprintk("nfs_get_root: getattr error = %d\n", -error);
+ 		nfs_errorf(fc, "NFS: Couldn't getattr on root");
+-		goto out_label;
++		goto out_fattr;
  	}
  
- 	st = iio_priv(indio_dev);
-@@ -618,6 +617,10 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	 *    indio_dev->name = spi_get_device_id(spi)->name;
- 	 */
- 	indio_dev->name = kstrdup(name, GFP_KERNEL);
-+	if (!indio_dev->name) {
-+		ret = -ENOMEM;
-+		goto error_free_device;
+ 	inode = nfs_fhget(s, ctx->mntfh, fsinfo.fattr, NULL);
+@@ -99,12 +96,12 @@ int nfs_get_root(struct super_block *s, struct fs_context *fc)
+ 		dprintk("nfs_get_root: get root inode failed\n");
+ 		error = PTR_ERR(inode);
+ 		nfs_errorf(fc, "NFS: Couldn't get root inode");
+-		goto out_label;
++		goto out_fattr;
+ 	}
+ 
+ 	error = nfs_superblock_set_dummy_root(s, inode);
+ 	if (error != 0)
+-		goto out_label;
++		goto out_fattr;
+ 
+ 	/* root dentries normally start off anonymous and get spliced in later
+ 	 * if the dentry tree reaches them; however if the dentry already
+@@ -115,7 +112,7 @@ int nfs_get_root(struct super_block *s, struct fs_context *fc)
+ 		dprintk("nfs_get_root: get root dentry failed\n");
+ 		error = PTR_ERR(root);
+ 		nfs_errorf(fc, "NFS: Couldn't get root dentry");
+-		goto out_label;
++		goto out_fattr;
+ 	}
+ 
+ 	security_d_instantiate(root, inode);
+@@ -154,8 +151,6 @@ int nfs_get_root(struct super_block *s, struct fs_context *fc)
+ 	nfs_setsecurity(inode, fsinfo.fattr, fsinfo.fattr->label);
+ 	error = 0;
+ 
+-out_label:
+-	nfs4_label_free(fsinfo.fattr->label);
+ out_fattr:
+ 	nfs_free_fattr(fsinfo.fattr);
+ out_name:
+@@ -165,5 +160,5 @@ int nfs_get_root(struct super_block *s, struct fs_context *fc)
+ error_splat_root:
+ 	dput(fc->root);
+ 	fc->root = NULL;
+-	goto out_label;
++	goto out_fattr;
+ }
+diff --git a/fs/nfs/inode.c b/fs/nfs/inode.c
+index 4ed75673adf6..b60c57f6f723 100644
+--- a/fs/nfs/inode.c
++++ b/fs/nfs/inode.c
+@@ -1589,6 +1589,23 @@ struct nfs_fattr *nfs_alloc_fattr(void)
+ }
+ EXPORT_SYMBOL_GPL(nfs_alloc_fattr);
+ 
++struct nfs_fattr *nfs_alloc_fattr_with_label(struct nfs_server *server)
++{
++	struct nfs_fattr *fattr = nfs_alloc_fattr();
++
++	if (!fattr)
++		return NULL;
++
++	fattr->label = nfs4_label_alloc(server, GFP_NOFS);
++	if (IS_ERR(fattr->label)) {
++		kfree(fattr);
++		return NULL;
 +	}
++
++	return fattr;
++}
++EXPORT_SYMBOL_GPL(nfs_alloc_fattr_with_label);
++
+ struct nfs_fh *nfs_alloc_fhandle(void)
+ {
+ 	struct nfs_fh *fh;
+diff --git a/fs/nfs/internal.h b/fs/nfs/internal.h
+index fbfe293af72c..2ceb4b98ec15 100644
+--- a/fs/nfs/internal.h
++++ b/fs/nfs/internal.h
+@@ -351,14 +351,6 @@ nfs4_label_copy(struct nfs4_label *dst, struct nfs4_label *src)
  
- 	/* Provide description of available channels */
- 	indio_dev->channels = iio_dummy_channels;
-@@ -634,7 +637,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	return dst;
+ }
+-static inline void nfs4_label_free(struct nfs4_label *label)
+-{
+-	if (label) {
+-		kfree(label->label);
+-		kfree(label);
+-	}
+-	return;
+-}
  
- 	ret = iio_simple_dummy_events_register(indio_dev);
- 	if (ret < 0)
--		goto error_free_device;
-+		goto error_free_name;
+ static inline void nfs_zap_label_cache_locked(struct nfs_inode *nfsi)
+ {
+@@ -367,7 +359,6 @@ static inline void nfs_zap_label_cache_locked(struct nfs_inode *nfsi)
+ }
+ #else
+ static inline struct nfs4_label *nfs4_label_alloc(struct nfs_server *server, gfp_t flags) { return NULL; }
+-static inline void nfs4_label_free(void *label) {}
+ static inline void nfs_zap_label_cache_locked(struct nfs_inode *nfsi)
+ {
+ }
+diff --git a/include/linux/nfs_fs.h b/include/linux/nfs_fs.h
+index 5ffcde9ac413..66b6cc24ab8c 100644
+--- a/include/linux/nfs_fs.h
++++ b/include/linux/nfs_fs.h
+@@ -421,9 +421,22 @@ extern void nfs_fattr_set_barrier(struct nfs_fattr *fattr);
+ extern unsigned long nfs_inc_attr_generation_counter(void);
  
- 	ret = iio_simple_dummy_configure_buffer(indio_dev);
- 	if (ret < 0)
-@@ -651,11 +654,12 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	iio_simple_dummy_unconfigure_buffer(indio_dev);
- error_unregister_events:
- 	iio_simple_dummy_events_unregister(indio_dev);
-+error_free_name:
-+	kfree(indio_dev->name);
- error_free_device:
- 	iio_device_free(indio_dev);
--error_ret:
-+error_free_swd:
- 	kfree(swd);
--error_kzalloc:
- 	return ERR_PTR(ret);
+ extern struct nfs_fattr *nfs_alloc_fattr(void);
++extern struct nfs_fattr *nfs_alloc_fattr_with_label(struct nfs_server *server);
++
++static inline void nfs4_label_free(struct nfs4_label *label)
++{
++#ifdef CONFIG_NFS_V4_SECURITY_LABEL
++	if (label) {
++		kfree(label->label);
++		kfree(label);
++	}
++#endif
++}
+ 
+ static inline void nfs_free_fattr(const struct nfs_fattr *fattr)
+ {
++	if (fattr)
++		nfs4_label_free(fattr->label);
+ 	kfree(fattr);
  }
  
 -- 
 2.35.1
+
+
 
