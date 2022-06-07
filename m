@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D273DCCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90710CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:54:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377399AbiFGUyE (ORCPT
+        id S1377424AbiFGUyK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:54:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50236 "EHLO
+        Tue, 7 Jun 2022 16:54:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358625AbiFGTwr (ORCPT
+        with ESMTP id S1358728AbiFGTxH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:52:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 594BB33A0A;
-        Tue,  7 Jun 2022 11:21:37 -0700 (PDT)
+        Tue, 7 Jun 2022 15:53:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B6A17A86;
+        Tue,  7 Jun 2022 11:22:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E74C960DDA;
-        Tue,  7 Jun 2022 18:21:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2616C385A2;
-        Tue,  7 Jun 2022 18:21:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23826B82349;
+        Tue,  7 Jun 2022 18:22:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47BABC385A5;
+        Tue,  7 Jun 2022 18:22:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626096;
-        bh=ynjdX7sqIzj3XGbBUvL+J2pZWNuexzQpo7a/4F/yD1M=;
+        s=korg; t=1654626134;
+        bh=V+p0Th3xWGbUtPtgSLGdfLKHai+s7Y4QJdrTov6I7sA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R36DDBDded6yZN0GPJTf+0wOoKAnyNbmX8WO7wAptbEtboP9HSqtKSyDacsUBT4hl
-         lKtbOfNZ2/oxKLGnhWmWSTjtFasHS+QO/8bgG2LNMFpH1/IEOnDF/w3MC7UMjBB5xo
-         arC2tJdHccBXZZG04dsaiDoOcC0vH7WX4KgHmnXk=
+        b=OxyzWXtHly3uBQY6QwafIZIcqOIgDMQpJbRhqLpiq0u5qPn/ZzYSMInmtbq2ElOQJ
+         yCXZyGeh6kvr4n409gMh5nB1DvuSLpeuOh+qKl5RKmlsSA6KDBTZrbsG+WvVuJtj6N
+         GMtQOeDtk9/jlHVGS5sFknefxERLKUcs2XiszQM4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-        Haren Myneni <haren@linux.ibm.com>,
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 215/772] powerpc/powernv/vas: Assign real address to rx_fifo in vas_rx_win_attr
-Date:   Tue,  7 Jun 2022 18:56:47 +0200
-Message-Id: <20220607164955.369606920@linuxfoundation.org>
+Subject: [PATCH 5.17 253/772] mptcp: optimize release_cb for the common case
+Date:   Tue,  7 Jun 2022 18:57:25 +0200
+Message-Id: <20220607164956.480643936@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,105 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haren Myneni <haren@linux.ibm.com>
+From: Paolo Abeni <pabeni@redhat.com>
 
-[ Upstream commit c127d130f6d59fa81701f6b04023cf7cd1972fb3 ]
+[ Upstream commit 65a569b03ca832ebc93ce45a7466137e2bb62254 ]
 
-In init_winctx_regs(), __pa() is called on winctx->rx_fifo and this
-function is called to initialize registers for receive and fault
-windows. But the real address is passed in winctx->rx_fifo for
-receive windows and the virtual address for fault windows which
-causes errors with DEBUG_VIRTUAL enabled. Fixes this issue by
-assigning only real address to rx_fifo in vas_rx_win_attr struct
-for both receive and fault windows.
+The mptcp release callback checks several flags in atomic
+context, but only MPTCP_CLEAN_UNA can be up frequently.
 
-Reported-by: Michael Ellerman <mpe@ellerman.id.au>
-Signed-off-by: Haren Myneni <haren@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/338e958c7ab8f3b266fa794a1f80f99b9671829e.camel@linux.ibm.com
+Reorganize the code to avoid multiple conditionals in the
+most common scenarios.
+
+Additional clarify a related comment.
+
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/include/asm/vas.h              | 2 +-
- arch/powerpc/platforms/powernv/vas-fault.c  | 2 +-
- arch/powerpc/platforms/powernv/vas-window.c | 4 ++--
- arch/powerpc/platforms/powernv/vas.h        | 2 +-
- drivers/crypto/nx/nx-common-powernv.c       | 2 +-
- 5 files changed, 6 insertions(+), 6 deletions(-)
+ net/mptcp/protocol.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/arch/powerpc/include/asm/vas.h b/arch/powerpc/include/asm/vas.h
-index 57573d9c1e09..56834a8a1465 100644
---- a/arch/powerpc/include/asm/vas.h
-+++ b/arch/powerpc/include/asm/vas.h
-@@ -112,7 +112,7 @@ static inline void vas_user_win_add_mm_context(struct vas_user_win_ref *ref)
-  * Receive window attributes specified by the (in-kernel) owner of window.
-  */
- struct vas_rx_win_attr {
--	void *rx_fifo;
-+	u64 rx_fifo;
- 	int rx_fifo_size;
- 	int wcreds_max;
- 
-diff --git a/arch/powerpc/platforms/powernv/vas-fault.c b/arch/powerpc/platforms/powernv/vas-fault.c
-index a7aabc18039e..c1bfad56447d 100644
---- a/arch/powerpc/platforms/powernv/vas-fault.c
-+++ b/arch/powerpc/platforms/powernv/vas-fault.c
-@@ -216,7 +216,7 @@ int vas_setup_fault_window(struct vas_instance *vinst)
- 	vas_init_rx_win_attr(&attr, VAS_COP_TYPE_FAULT);
- 
- 	attr.rx_fifo_size = vinst->fault_fifo_size;
--	attr.rx_fifo = vinst->fault_fifo;
-+	attr.rx_fifo = __pa(vinst->fault_fifo);
- 
- 	/*
- 	 * Max creds is based on number of CRBs can fit in the FIFO.
-diff --git a/arch/powerpc/platforms/powernv/vas-window.c b/arch/powerpc/platforms/powernv/vas-window.c
-index 0f8d39fbf2b2..0072682531d8 100644
---- a/arch/powerpc/platforms/powernv/vas-window.c
-+++ b/arch/powerpc/platforms/powernv/vas-window.c
-@@ -404,7 +404,7 @@ static void init_winctx_regs(struct pnv_vas_window *window,
- 	 *
- 	 * See also: Design note in function header.
- 	 */
--	val = __pa(winctx->rx_fifo);
-+	val = winctx->rx_fifo;
- 	val = SET_FIELD(VAS_PAGE_MIGRATION_SELECT, val, 0);
- 	write_hvwc_reg(window, VREG(LFIFO_BAR), val);
- 
-@@ -739,7 +739,7 @@ static void init_winctx_for_rxwin(struct pnv_vas_window *rxwin,
- 		 */
- 		winctx->fifo_disable = true;
- 		winctx->intr_disable = true;
--		winctx->rx_fifo = NULL;
-+		winctx->rx_fifo = 0;
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 014c9d88f947..7e8083d6f033 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -3088,15 +3088,17 @@ static void mptcp_release_cb(struct sock *sk)
+ 		spin_lock_bh(&sk->sk_lock.slock);
  	}
  
- 	winctx->lnotify_lpid = rxattr->lnotify_lpid;
-diff --git a/arch/powerpc/platforms/powernv/vas.h b/arch/powerpc/platforms/powernv/vas.h
-index 8bb08e395de0..08d9d3d5a22b 100644
---- a/arch/powerpc/platforms/powernv/vas.h
-+++ b/arch/powerpc/platforms/powernv/vas.h
-@@ -376,7 +376,7 @@ struct pnv_vas_window {
-  * is a container for the register fields in the window context.
-  */
- struct vas_winctx {
--	void *rx_fifo;
-+	u64 rx_fifo;
- 	int rx_fifo_size;
- 	int wcreds_max;
- 	int rsvd_txbuf_count;
-diff --git a/drivers/crypto/nx/nx-common-powernv.c b/drivers/crypto/nx/nx-common-powernv.c
-index 32a036ada5d0..f418817c0f43 100644
---- a/drivers/crypto/nx/nx-common-powernv.c
-+++ b/drivers/crypto/nx/nx-common-powernv.c
-@@ -827,7 +827,7 @@ static int __init vas_cfg_coproc_info(struct device_node *dn, int chip_id,
- 		goto err_out;
+-	/* be sure to set the current sk state before tacking actions
+-	 * depending on sk_state
+-	 */
+-	if (__test_and_clear_bit(MPTCP_CONNECTED, &msk->cb_flags))
+-		__mptcp_set_connected(sk);
+ 	if (__test_and_clear_bit(MPTCP_CLEAN_UNA, &msk->cb_flags))
+ 		__mptcp_clean_una_wakeup(sk);
+-	if (__test_and_clear_bit(MPTCP_ERROR_REPORT, &msk->cb_flags))
+-		__mptcp_error_report(sk);
++	if (unlikely(&msk->cb_flags)) {
++		/* be sure to set the current sk state before tacking actions
++		 * depending on sk_state, that is processing MPTCP_ERROR_REPORT
++		 */
++		if (__test_and_clear_bit(MPTCP_CONNECTED, &msk->cb_flags))
++			__mptcp_set_connected(sk);
++		if (__test_and_clear_bit(MPTCP_ERROR_REPORT, &msk->cb_flags))
++			__mptcp_error_report(sk);
++	}
  
- 	vas_init_rx_win_attr(&rxattr, coproc->ct);
--	rxattr.rx_fifo = (void *)rx_fifo;
-+	rxattr.rx_fifo = rx_fifo;
- 	rxattr.rx_fifo_size = fifo_size;
- 	rxattr.lnotify_lpid = lpid;
- 	rxattr.lnotify_pid = pid;
+ 	__mptcp_update_rmem(sk);
+ }
 -- 
 2.35.1
 
