@@ -2,92 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17DEDCCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E73CCA486
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385770AbiFGWqj (ORCPT
+        id S1386013AbiFGWrp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:46:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37002 "EHLO
+        Tue, 7 Jun 2022 18:47:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381141AbiFGVgd (ORCPT
+        with ESMTP id S1380750AbiFGVif (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:36:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1899814087F;
-        Tue,  7 Jun 2022 12:04:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85961B823B0;
-        Tue,  7 Jun 2022 19:04:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0DDCC385A2;
-        Tue,  7 Jun 2022 19:04:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628695;
-        bh=ldGhd7bSBWMTDEq9RvkJwTdry4k2qspt5cCyIwrHyVg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=odDAOy5Q+GORoSe/DdlY2JYPaqLZa+DHLsl+asNtyackLQL4r2uFCILI2nyC30fZz
-         W0KPbSbRdXAClePrh5z6gqz3VzIDQg1yL3UDUCfGn2rxC/UNs29/hmk8VbOXkCZtRV
-         T2vcjbn0WQcjPwdlMsXVI3QaOdUcGVSTXtauQjeI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 423/879] ASoC: samsung: Fix refcount leak in aries_audio_probe
-Date:   Tue,  7 Jun 2022 18:59:01 +0200
-Message-Id: <20220607165015.144184549@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:38:35 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9713FC047E
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:05:33 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id 187so16302273pfu.9
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:05:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=zrwToAbRm/8o4mYKXHsvwuZsdzi56cDWjWGCsMFQCq4=;
+        b=IJmEKjbu0NsIQ2TIKKHgQBPdu95rE+fxg/uNfUr8lhMeiyM3S3ZNsC45sqxk/R9FaT
+         /r8eY4OIvLSDUSY2xX5aGB0rM79qaZ0k5s1ANX+OWkeNYD2rYOnI8ALWyLGqAVuXsJB6
+         i/HNUOWDOs5Bk+bD/8AV47NIeWcKF4/IUypi8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zrwToAbRm/8o4mYKXHsvwuZsdzi56cDWjWGCsMFQCq4=;
+        b=77E3pC4FdmQZYF2FLNULXeBhxlIZu4vBLiiROm8NVageP1DJ6G/pTDKqCvKIVZ4VQV
+         RUDZQa5XI88nWHFoUJn+POsF4WH5VQO6110kZeYoM9zDHtXmxTlgAhr20JkzN6Qo0lrM
+         TbgL3tDHlc6k75m11bU4Kdzpo3oGD/k6C6Lq/hXCz+OlFZ1wMVL6aqYl08Bz9+EIFEdO
+         OHfW0A0/38IXlPdWYcjpkkcIBj9ZvyPgM/7jemHAgM2b5vFAaw6JPZN9Jn0ErDxwPblC
+         L1U9PAupPBZEnKepYmzYpcDS6x/qQCVjrL3P3IQYlOveUTNe016aZy4shVa+2+B8Pyg9
+         5kNw==
+X-Gm-Message-State: AOAM531iM305ykfAYoi9XhZ1qFv3mxS6PnUE0qxkLV2tJC0GLRbYFcR0
+        84ZyrNCjJ99Lc1zVbksQcd5KLL+AstbxDw==
+X-Google-Smtp-Source: ABdhPJyUhy7+cJfaDKfU+dlJllV7FTT99DCfwfNrat7f5aIWF9lfM1q5wj8dxgFa13yBRD3PkrsPDQ==
+X-Received: by 2002:a63:8841:0:b0:3fc:704c:24ff with SMTP id l62-20020a638841000000b003fc704c24ffmr26783832pgd.116.1654628732819;
+        Tue, 07 Jun 2022 12:05:32 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id g29-20020aa79ddd000000b0050dc762819esm13236084pfq.120.2022.06.07.12.05.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 12:05:32 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Cc:     bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Prashant Malani <pmalani@chromium.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS),
+        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Tzung-Bi Shih <tzungbi@google.com>,
+        Xin Ji <xji@analogixsemi.com>
+Subject: [PATCH 2/7] usb: typec: mux: Add CONFIG guards for functions
+Date:   Tue,  7 Jun 2022 19:00:20 +0000
+Message-Id: <20220607190131.1647511-3-pmalani@chromium.org>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+In-Reply-To: <20220607190131.1647511-1-pmalani@chromium.org>
+References: <20220607190131.1647511-1-pmalani@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+There are some drivers that can use the Type C mux API, but don't have
+to. Introduce CONFIG guards for the mux functions so that drivers can
+include the header file and not run into compilation errors on systems
+which don't have CONFIG_TYPEC enabled. When CONFIG_TYPEC is not enabled,
+the Type C mux functions will be stub versions of the original calls.
 
-[ Upstream commit bf4a9b2467b775717d0e9034ad916888e19713a3 ]
-
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-If extcon_find_edev_by_node() fails, it doesn't call of_node_put()
-Calling of_node_put() after extcon_find_edev_by_node() to fix this.
-
-Fixes: 7a3a7671fa6c ("ASoC: samsung: Add driver for Aries boards")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220512043828.496-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
 ---
- sound/soc/samsung/aries_wm8994.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/usb/typec_mux.h | 38 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/sound/soc/samsung/aries_wm8994.c b/sound/soc/samsung/aries_wm8994.c
-index 5265e546b124..83acbe57b248 100644
---- a/sound/soc/samsung/aries_wm8994.c
-+++ b/sound/soc/samsung/aries_wm8994.c
-@@ -585,10 +585,10 @@ static int aries_audio_probe(struct platform_device *pdev)
+diff --git a/include/linux/usb/typec_mux.h b/include/linux/usb/typec_mux.h
+index ee57781dcf28..758d34ced1f8 100644
+--- a/include/linux/usb/typec_mux.h
++++ b/include/linux/usb/typec_mux.h
+@@ -58,6 +58,8 @@ struct typec_mux_desc {
+ 	void *drvdata;
+ };
  
- 	extcon_np = of_parse_phandle(np, "extcon", 0);
- 	priv->usb_extcon = extcon_find_edev_by_node(extcon_np);
-+	of_node_put(extcon_np);
- 	if (IS_ERR(priv->usb_extcon))
- 		return dev_err_probe(dev, PTR_ERR(priv->usb_extcon),
- 				     "Failed to get extcon device");
--	of_node_put(extcon_np);
++#if IS_ENABLED(CONFIG_TYPEC) || IS_MODULE(CONFIG_TYPEC)
++
+ struct typec_mux *fwnode_typec_mux_get(struct fwnode_handle *fwnode,
+ 				       const struct typec_altmode_desc *desc);
+ void typec_mux_put(struct typec_mux *mux);
+@@ -76,4 +78,40 @@ void typec_mux_unregister(struct typec_mux_dev *mux);
+ void typec_mux_set_drvdata(struct typec_mux_dev *mux, void *data);
+ void *typec_mux_get_drvdata(struct typec_mux_dev *mux);
  
- 	priv->adc = devm_iio_channel_get(dev, "headset-detect");
- 	if (IS_ERR(priv->adc))
++#else
++
++struct typec_mux *fwnode_typec_mux_get(struct fwnode_handle *fwnode,
++				       const struct typec_altmode_desc *desc)
++{
++	return ERR_PTR(-EOPNOTSUPP);
++}
++
++void typec_mux_put(struct typec_mux *mux) {}
++
++int typec_mux_set(struct typec_mux *mux, struct typec_mux_state *state)
++{
++	return -EOPNOTSUPP;
++}
++
++static inline struct typec_mux *
++typec_mux_get(struct device *dev, const struct typec_altmode_desc *desc)
++{
++	return ERR_PTR(-EOPNOTSUPP);
++}
++
++struct typec_mux *
++typec_mux_register(struct device *parent, const struct typec_mux_desc *desc)
++{
++	return ERR_PTR(-EOPNOTSUPP);
++}
++void typec_mux_unregister(struct typec_mux *mux) {}
++
++void typec_mux_set_drvdata(struct typec_mux *mux, void *data) {}
++void *typec_mux_get_drvdata(struct typec_mux *mux)
++{
++	return ERR_PTR(-EOPNOTSUPP);
++}
++
++#endif /* CONFIG_TYPEC */
++
+ #endif /* __USB_TYPEC_MUX */
 -- 
-2.35.1
-
-
+2.36.1.255.ge46751e96f-goog
 
