@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05459CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CC31CCA47C
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386172AbiFGWsT (ORCPT
+        id S1386193AbiFGWsc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:48:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51946 "EHLO
+        Tue, 7 Jun 2022 18:48:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381285AbiFGVkY (ORCPT
+        with ESMTP id S1381298AbiFGVk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:40:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60A0616FEEC;
-        Tue,  7 Jun 2022 12:06:10 -0700 (PDT)
+        Tue, 7 Jun 2022 17:40:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252F91C4F25;
+        Tue,  7 Jun 2022 12:06:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EFB48617DA;
-        Tue,  7 Jun 2022 19:06:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F44DC385A2;
-        Tue,  7 Jun 2022 19:06:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AEE6B617EE;
+        Tue,  7 Jun 2022 19:06:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF862C385A2;
+        Tue,  7 Jun 2022 19:06:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628769;
-        bh=/LaCpluMEeShuvIrMiUNHXDWu5sar2QacCl1BpBcrRM=;
+        s=korg; t=1654628780;
+        bh=zQFcd0tZBj3/kM6RE7wQSDtna4ihg2M5PCf88aQNVFQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DMDbfDbchsYrYAb2frUDigqtdocfe9MlSEqkZIUx3zgVZEPCri2UXlOecnESeCc2D
-         yQFJyuongZk8VT//uewKgxgJ9AEckb8p5fs2fh2cXFeOR1sO+fsZjPnyfnvvPNo2dg
-         LlmoNqvnO8ddNJwgJZB8DJaWCOLCIdUSlXzU0/l8=
+        b=O0iQPt4vPqO544Gzj+Le0yJhI6VPA2b9Orf+w0DNk0Av/CkN6vAezx8WVzSE4Nu08
+         68fxWQes1iMoSyTdFsuzdca/SKTEFqaAiZDcSSrwyIIDfPz2/ZK3IpQdGm9r/zWrbK
+         6YVwuBQuw7tRMigeh4Elw/YKB1aUBQLshNc6JT0I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Rodin <mrodin@de.adit-jv.com>,
-        LUU HOAI <hoai.luu.ub@renesas.com>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 448/879] media: vsp1: Fix offset calculation for plane cropping
-Date:   Tue,  7 Jun 2022 18:59:26 +0200
-Message-Id: <20220607165015.873509496@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 416/879] HID: amd_sfh: Modify the hid name
+Date:   Tue,  7 Jun 2022 18:58:54 +0200
+Message-Id: <20220607165014.934803153@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,49 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Rodin <mrodin@de.adit-jv.com>
+From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
 
-[ Upstream commit 5f25abec8f21b7527c1223a354d23c270befddb3 ]
+[ Upstream commit 10f865cdcf37d26ae5e9595a7b4f9e06538e84e5 ]
 
-The vertical subsampling factor is currently not considered in the
-offset calculation for plane cropping done in rpf_configure_partition.
-This causes a distortion (shift of the color plane) when formats with
-the vsub factor larger than 1 are used (e.g. NV12, see
-vsp1_video_formats in vsp1_pipe.c). This commit considers vsub factor
-for all planes except plane 0 (luminance).
+Modifying the amd-sfh hid name to meaningful name.
 
-Drop generalization of the offset calculation to reduce the binary size.
-
-Fixes: e5ad37b64de9 ("[media] v4l: vsp1: Add cropping support")
-Signed-off-by: Michael Rodin <mrodin@de.adit-jv.com>
-Signed-off-by: LUU HOAI <hoai.luu.ub@renesas.com>
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 4b2c53d93a4b ("SFH:Transport Driver to add support of AMD Sensor Fusion Hub (SFH)")
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/renesas/vsp1/vsp1_rpf.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/hid/amd-sfh-hid/amd_sfh_hid.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/renesas/vsp1/vsp1_rpf.c b/drivers/media/platform/renesas/vsp1/vsp1_rpf.c
-index 85587c1b6a37..75083cb234fe 100644
---- a/drivers/media/platform/renesas/vsp1/vsp1_rpf.c
-+++ b/drivers/media/platform/renesas/vsp1/vsp1_rpf.c
-@@ -291,11 +291,11 @@ static void rpf_configure_partition(struct vsp1_entity *entity,
- 		     + crop.left * fmtinfo->bpp[0] / 8;
+diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_hid.c b/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
+index 6e487e41f4dd..e2a9679e32be 100644
+--- a/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
++++ b/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
+@@ -144,7 +144,7 @@ int amdtp_hid_probe(u32 cur_hid_dev, struct amdtp_cl_data *cli_data)
+ 	hid->bus = BUS_AMD_SFH;
+ 	hid->vendor = AMD_SFH_HID_VENDOR;
+ 	hid->product = AMD_SFH_HID_PRODUCT;
+-	snprintf(hid->name, sizeof(hid->name), "%s %04X:%04X", "hid-amdtp",
++	snprintf(hid->name, sizeof(hid->name), "%s %04X:%04X", "hid-amdsfh",
+ 		 hid->vendor, hid->product);
  
- 	if (format->num_planes > 1) {
-+		unsigned int bpl = format->plane_fmt[1].bytesperline;
- 		unsigned int offset;
- 
--		offset = crop.top * format->plane_fmt[1].bytesperline
--		       + crop.left / fmtinfo->hsub
--		       * fmtinfo->bpp[1] / 8;
-+		offset = crop.top / fmtinfo->vsub * bpl
-+		       + crop.left / fmtinfo->hsub * fmtinfo->bpp[1] / 8;
- 		mem.addr[1] += offset;
- 		mem.addr[2] += offset;
- 	}
+ 	rc = hid_add_device(hid);
 -- 
 2.35.1
 
