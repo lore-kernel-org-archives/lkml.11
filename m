@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C168ECCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D3FCCA48E
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386113AbiFHBge (ORCPT
+        id S1386317AbiFHBgm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:36:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43444 "EHLO
+        Tue, 7 Jun 2022 21:36:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381781AbiFGWcc (ORCPT
+        with ESMTP id S1384810AbiFGWUs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:32:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA4B22508;
-        Tue,  7 Jun 2022 12:25:25 -0700 (PDT)
+        Tue, 7 Jun 2022 18:20:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8FF9263286;
+        Tue,  7 Jun 2022 12:20:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5B9C2CE2478;
-        Tue,  7 Jun 2022 19:25:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43FB3C385A2;
-        Tue,  7 Jun 2022 19:25:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7361060A21;
+        Tue,  7 Jun 2022 19:20:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81A46C385A2;
+        Tue,  7 Jun 2022 19:20:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629921;
-        bh=4EKyYJ2EBnd47zcCCrMDKfdZTmj/kYWTH+AI9gJfgTg=;
+        s=korg; t=1654629643;
+        bh=qVgSGNTA10yoXOmVS9eSdEfnCYfxg4a9wPi4RdE+Q6o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kyC1SywNpxZ69SVJoNZIKdP53G5ImWEzNJUfyKq7Ccg2O436HjZ86KcA+nRnIXIF4
-         h8ipvEzum8hGcPdCtqPdZFpLw2PlgrGU8Tpm9El5qWFDfD7LIW5jdIKXbx9qaKV3uv
-         zH3AqyBK9vX6FIBpNaMPsHaZsLTSMGL9/3vtTivI=
+        b=NLugf7DGnePok2QMzFSSwdUzIF+2y/G4UhWIJ+cMJUD/de0Ua8EJYrgvgeizkiedy
+         GfTcRGDtVAbVUl3iujvrBTtxMe9o35HE8TXzowhBR9isdHtSduHjjfblO69PubLp8s
+         fXl7K6QIHFBBo0zdcG5NujhraNsOYefEWrtDvw5A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.18 866/879] Revert "random: use static branch for crng_ready()"
-Date:   Tue,  7 Jun 2022 19:06:24 +0200
-Message-Id: <20220607165027.989427675@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Corey Minyard <cminyard@mvista.com>
+Subject: [PATCH 5.18 724/879] ipmi:ipmb: Fix refcount leak in ipmi_ipmb_probe
+Date:   Tue,  7 Jun 2022 19:04:02 +0200
+Message-Id: <20220607165023.869056542@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -48,65 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-This reverts upstream commit f5bda35fba615ace70a656d4700423fa6c9bebee
-from stable. It's not essential and will take some time during 5.19 to
-work out properly.
+commit a508e33956b538e034ed5df619a73ec7c15bda72 upstream.
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
+
+Fixes: 00d93611f002 ("ipmi:ipmb: Add the ability to have a separate slave and master device")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Message-Id: <20220512044445.3102-1-linmq006@gmail.com>
+Cc: stable@vger.kernel.org # v5.17+
+Signed-off-by: Corey Minyard <cminyard@mvista.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
+ drivers/char/ipmi/ipmi_ipmb.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -78,8 +78,7 @@ static enum {
- 	CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
- 	CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
- } crng_init __read_mostly = CRNG_EMPTY;
--static DEFINE_STATIC_KEY_FALSE(crng_is_ready);
--#define crng_ready() (static_branch_likely(&crng_is_ready) || crng_init >= CRNG_READY)
-+#define crng_ready() (likely(crng_init >= CRNG_READY))
- /* Various types of waiters for crng_init->CRNG_READY transition. */
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- static struct fasync_struct *fasync;
-@@ -109,11 +108,6 @@ bool rng_is_initialized(void)
- }
- EXPORT_SYMBOL(rng_is_initialized);
- 
--static void __cold crng_set_ready(struct work_struct *work)
--{
--	static_branch_enable(&crng_is_ready);
--}
--
- /* Used by wait_for_random_bytes(), and considered an entropy collector, below. */
- static void try_to_generate_entropy(void);
- 
-@@ -267,7 +261,7 @@ static void crng_reseed(void)
- 		++next_gen;
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	WRITE_ONCE(base_crng.birth, jiffies);
--	if (!static_branch_likely(&crng_is_ready))
-+	if (!crng_ready())
- 		crng_init = CRNG_READY;
- 	spin_unlock_irqrestore(&base_crng.lock, flags);
- 	memzero_explicit(key, sizeof(key));
-@@ -710,7 +704,6 @@ static void extract_entropy(void *buf, s
- 
- static void __cold _credit_init_bits(size_t bits)
- {
--	static struct execute_work set_ready;
- 	unsigned int new, orig, add;
- 	unsigned long flags;
- 
-@@ -726,7 +719,6 @@ static void __cold _credit_init_bits(siz
- 
- 	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
- 		crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
--		execute_in_process_context(crng_set_ready, &set_ready);
- 		process_random_ready_list();
- 		wake_up_interruptible(&crng_init_wait);
- 		kill_fasync(&fasync, SIGIO, POLL_IN);
+--- a/drivers/char/ipmi/ipmi_ipmb.c
++++ b/drivers/char/ipmi/ipmi_ipmb.c
+@@ -476,6 +476,7 @@ static int ipmi_ipmb_probe(struct i2c_cl
+ 	slave_np = of_parse_phandle(dev->of_node, "slave-dev", 0);
+ 	if (slave_np) {
+ 		slave_adap = of_get_i2c_adapter_by_node(slave_np);
++		of_node_put(slave_np);
+ 		if (!slave_adap) {
+ 			dev_notice(&client->dev,
+ 				   "Could not find slave adapter\n");
 
 
