@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B8ECCA481
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:43:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC200CCA48B
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377693AbiFGUmx (ORCPT
+        id S1359738AbiFGUnK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:42:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55216 "EHLO
+        Tue, 7 Jun 2022 16:43:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357911AbiFGTmc (ORCPT
+        with ESMTP id S1357913AbiFGTmc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 15:42:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C629DE0A9;
-        Tue,  7 Jun 2022 11:17:12 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E76E28D;
+        Tue,  7 Jun 2022 11:17:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78250B8237C;
-        Tue,  7 Jun 2022 18:17:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD921C385A2;
-        Tue,  7 Jun 2022 18:17:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A00E60C7F;
+        Tue,  7 Jun 2022 18:17:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DECEC385A2;
+        Tue,  7 Jun 2022 18:17:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625830;
-        bh=OgUDXA45bwkJ5vJysgvw42AgkjEwX/rQiiRRrhcxWUo=;
+        s=korg; t=1654625835;
+        bh=90wQ+pzk/44KhTJkQSqcP7YrHUoP6Hv+ceVeixHLAHc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yPvUWXiL3gze9FvLe/3HGERnFoaUaReG5bMJsn6A52wHUAL5iUtJO+bNOai/Ad2Qy
-         Vx47Ux5rv28Gdcwe4BoDPWfDqHt/vebFHblDoaTw6DD3K57wjc0ZC6d9Ag9Rf/PEFj
-         RB92KI1guD5ITexMlcRTEXX5ZJjMnowPGOO5524k=
+        b=aEnN+tbpljTyn5/uEgISMXq3iionVhhTf0ja8V/uquPsS0ywx5OMdtH2dtHCb98im
+         fpDNQZ6p+AL1cwym0SBxyFAgA7nDwmxOR74R//WmxJI/J3SgN3I6qbC6AJwetcsiIY
+         PThB+hrGzRWB4JhvDL5/zRZPqGhQ/gEeIW03m/pY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 158/772] net: phy: micrel: Allow probing without .driver_data
-Date:   Tue,  7 Jun 2022 18:55:50 +0200
-Message-Id: <20220607164953.698865402@linuxfoundation.org>
+Subject: [PATCH 5.17 124/772] scsi: lpfc: Alter FPIN stat accounting logic
+Date:   Tue,  7 Jun 2022 18:55:16 +0200
+Message-Id: <20220607164952.700073624@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,70 +51,172 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit f2ef6f7539c68c6bd6c32323d8845ee102b7c450 ]
+[ Upstream commit e6f51041450282a8668af3a8fc5c7744e81a447c ]
 
-Currently, if the .probe element is present in the phy_driver structure
-and the .driver_data is not, a NULL pointer dereference happens.
+When configuring CMF management based on signals instead of FPINs, FPIN
+alarm and warning statistics are not tracked.
 
-Allow passing .probe without .driver_data by inserting NULL checks
-for priv->type.
+Change the behavior so that FPIN alarms and warnings are always tracked
+regardless of the configured mode.
 
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220513114613.762810-1-festevam@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Similar changes are made in the CMF signal stat accounting logic.  Upon
+receipt of a signal, only track signaled alarms and warnings. FPIN stats
+should not be incremented upon receipt of a signal.
+
+Link: https://lore.kernel.org/r/20220506035519.50908-11-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/micrel.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/scsi/lpfc/lpfc_els.c  | 49 +++++++++++------------------------
+ drivers/scsi/lpfc/lpfc_init.c | 22 ++--------------
+ 2 files changed, 17 insertions(+), 54 deletions(-)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index cfb5378bbb39..f20d8c3e91bf 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -348,7 +348,7 @@ static int kszphy_config_reset(struct phy_device *phydev)
+diff --git a/drivers/scsi/lpfc/lpfc_els.c b/drivers/scsi/lpfc/lpfc_els.c
+index f936833c9909..8d416019f59f 100644
+--- a/drivers/scsi/lpfc/lpfc_els.c
++++ b/drivers/scsi/lpfc/lpfc_els.c
+@@ -3784,9 +3784,6 @@ lpfc_least_capable_settings(struct lpfc_hba *phba,
+ {
+ 	u32 rsp_sig_cap = 0, drv_sig_cap = 0;
+ 	u32 rsp_sig_freq_cyc = 0, rsp_sig_freq_scale = 0;
+-	struct lpfc_cgn_info *cp;
+-	u32 crc;
+-	u16 sig_freq;
+ 
+ 	/* Get rsp signal and frequency capabilities.  */
+ 	rsp_sig_cap = be32_to_cpu(pcgd->xmt_signal_capability);
+@@ -3842,25 +3839,7 @@ lpfc_least_capable_settings(struct lpfc_hba *phba,
  		}
  	}
  
--	if (priv->led_mode >= 0)
-+	if (priv->type && priv->led_mode >= 0)
- 		kszphy_setup_led(phydev, priv->type->led_mode_reg, priv->led_mode);
+-	if (!phba->cgn_i)
+-		return;
+-
+-	/* Update signal frequency in congestion info buffer */
+-	cp = (struct lpfc_cgn_info *)phba->cgn_i->virt;
+-
+-	/* Frequency (in ms) Signal Warning/Signal Congestion Notifications
+-	 * are received by the HBA
+-	 */
+-	sig_freq = phba->cgn_sig_freq;
+-
+-	if (phba->cgn_reg_signal == EDC_CG_SIG_WARN_ONLY)
+-		cp->cgn_warn_freq = cpu_to_le16(sig_freq);
+-	if (phba->cgn_reg_signal == EDC_CG_SIG_WARN_ALARM) {
+-		cp->cgn_alarm_freq = cpu_to_le16(sig_freq);
+-		cp->cgn_warn_freq = cpu_to_le16(sig_freq);
+-	}
+-	crc = lpfc_cgn_calc_crc32(cp, LPFC_CGN_INFO_SZ, LPFC_CGN_CRC32_SEED);
+-	cp->cgn_info_crc = cpu_to_le32(crc);
++	/* We are NOT recording signal frequency in congestion info buffer */
+ 	return;
  
- 	return 0;
-@@ -364,10 +364,10 @@ static int kszphy_config_init(struct phy_device *phydev)
+ out_no_support:
+@@ -9606,11 +9585,14 @@ lpfc_els_rcv_fpin_cgn(struct lpfc_hba *phba, struct fc_tlv_desc *tlv)
+ 			/* Take action here for an Alarm event */
+ 			if (phba->cmf_active_mode != LPFC_CFG_OFF) {
+ 				if (phba->cgn_reg_fpin & LPFC_CGN_FPIN_ALARM) {
+-					/* Track of alarm cnt for cgn_info */
+-					atomic_inc(&phba->cgn_fabric_alarm_cnt);
+ 					/* Track of alarm cnt for SYNC_WQE */
+ 					atomic_inc(&phba->cgn_sync_alarm_cnt);
+ 				}
++				/* Track alarm cnt for cgn_info regardless
++				 * of whether CMF is configured for Signals
++				 * or FPINs.
++				 */
++				atomic_inc(&phba->cgn_fabric_alarm_cnt);
+ 				goto cleanup;
+ 			}
+ 			break;
+@@ -9618,11 +9600,14 @@ lpfc_els_rcv_fpin_cgn(struct lpfc_hba *phba, struct fc_tlv_desc *tlv)
+ 			/* Take action here for a Warning event */
+ 			if (phba->cmf_active_mode != LPFC_CFG_OFF) {
+ 				if (phba->cgn_reg_fpin & LPFC_CGN_FPIN_WARN) {
+-					/* Track of warning cnt for cgn_info */
+-					atomic_inc(&phba->cgn_fabric_warn_cnt);
+ 					/* Track of warning cnt for SYNC_WQE */
+ 					atomic_inc(&phba->cgn_sync_warn_cnt);
+ 				}
++				/* Track warning cnt and freq for cgn_info
++				 * regardless of whether CMF is configured for
++				 * Signals or FPINs.
++				 */
++				atomic_inc(&phba->cgn_fabric_warn_cnt);
+ cleanup:
+ 				/* Save frequency in ms */
+ 				phba->cgn_fpin_frequency =
+@@ -9631,14 +9616,10 @@ lpfc_els_rcv_fpin_cgn(struct lpfc_hba *phba, struct fc_tlv_desc *tlv)
+ 				if (phba->cgn_i) {
+ 					cp = (struct lpfc_cgn_info *)
+ 						phba->cgn_i->virt;
+-					if (phba->cgn_reg_fpin &
+-						LPFC_CGN_FPIN_ALARM)
+-						cp->cgn_alarm_freq =
+-							cpu_to_le16(value);
+-					if (phba->cgn_reg_fpin &
+-						LPFC_CGN_FPIN_WARN)
+-						cp->cgn_warn_freq =
+-							cpu_to_le16(value);
++					cp->cgn_alarm_freq =
++						cpu_to_le16(value);
++					cp->cgn_warn_freq =
++						cpu_to_le16(value);
+ 					crc = lpfc_cgn_calc_crc32
+ 						(cp,
+ 						LPFC_CGN_INFO_SZ,
+diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
+index 6739bdd8195d..7e4a8848a12c 100644
+--- a/drivers/scsi/lpfc/lpfc_init.c
++++ b/drivers/scsi/lpfc/lpfc_init.c
+@@ -5877,21 +5877,8 @@ lpfc_cgn_save_evt_cnt(struct lpfc_hba *phba)
  
- 	type = priv->type;
+ 	/* Use the frequency found in the last rcv'ed FPIN */
+ 	value = phba->cgn_fpin_frequency;
+-	if (phba->cgn_reg_fpin & LPFC_CGN_FPIN_WARN)
+-		cp->cgn_warn_freq = cpu_to_le16(value);
+-	if (phba->cgn_reg_fpin & LPFC_CGN_FPIN_ALARM)
+-		cp->cgn_alarm_freq = cpu_to_le16(value);
+-
+-	/* Frequency (in ms) Signal Warning/Signal Congestion Notifications
+-	 * are received by the HBA
+-	 */
+-	value = phba->cgn_sig_freq;
+-
+-	if (phba->cgn_reg_signal == EDC_CG_SIG_WARN_ONLY ||
+-	    phba->cgn_reg_signal == EDC_CG_SIG_WARN_ALARM)
+-		cp->cgn_warn_freq = cpu_to_le16(value);
+-	if (phba->cgn_reg_signal == EDC_CG_SIG_WARN_ALARM)
+-		cp->cgn_alarm_freq = cpu_to_le16(value);
++	cp->cgn_warn_freq = cpu_to_le16(value);
++	cp->cgn_alarm_freq = cpu_to_le16(value);
  
--	if (type->has_broadcast_disable)
-+	if (type && type->has_broadcast_disable)
- 		kszphy_broadcast_disable(phydev);
- 
--	if (type->has_nand_tree_disable)
-+	if (type && type->has_nand_tree_disable)
- 		kszphy_nand_tree_disable(phydev);
- 
- 	return kszphy_config_reset(phydev);
-@@ -1365,7 +1365,7 @@ static int kszphy_probe(struct phy_device *phydev)
- 
- 	priv->type = type;
- 
--	if (type->led_mode_reg) {
-+	if (type && type->led_mode_reg) {
- 		ret = of_property_read_u32(np, "micrel,led-mode",
- 				&priv->led_mode);
- 		if (ret)
-@@ -1386,7 +1386,8 @@ static int kszphy_probe(struct phy_device *phydev)
- 		unsigned long rate = clk_get_rate(clk);
- 		bool rmii_ref_clk_sel_25_mhz;
- 
--		priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
-+		if (type)
-+			priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
- 		rmii_ref_clk_sel_25_mhz = of_property_read_bool(np,
- 				"micrel,rmii-reference-clock-select-25-mhz");
- 
+ 	lvalue = lpfc_cgn_calc_crc32(cp, LPFC_CGN_INFO_SZ,
+ 				     LPFC_CGN_CRC32_SEED);
+@@ -6606,9 +6593,6 @@ lpfc_sli4_async_sli_evt(struct lpfc_hba *phba, struct lpfc_acqe_sli *acqe_sli)
+ 		/* Alarm overrides warning, so check that first */
+ 		if (cgn_signal->alarm_cnt) {
+ 			if (phba->cgn_reg_signal == EDC_CG_SIG_WARN_ALARM) {
+-				/* Keep track of alarm cnt for cgn_info */
+-				atomic_add(cgn_signal->alarm_cnt,
+-					   &phba->cgn_fabric_alarm_cnt);
+ 				/* Keep track of alarm cnt for CMF_SYNC_WQE */
+ 				atomic_add(cgn_signal->alarm_cnt,
+ 					   &phba->cgn_sync_alarm_cnt);
+@@ -6617,8 +6601,6 @@ lpfc_sli4_async_sli_evt(struct lpfc_hba *phba, struct lpfc_acqe_sli *acqe_sli)
+ 			/* signal action needs to be taken */
+ 			if (phba->cgn_reg_signal == EDC_CG_SIG_WARN_ONLY ||
+ 			    phba->cgn_reg_signal == EDC_CG_SIG_WARN_ALARM) {
+-				/* Keep track of warning cnt for cgn_info */
+-				atomic_add(cnt, &phba->cgn_fabric_warn_cnt);
+ 				/* Keep track of warning cnt for CMF_SYNC_WQE */
+ 				atomic_add(cnt, &phba->cgn_sync_warn_cnt);
+ 			}
 -- 
 2.35.1
 
