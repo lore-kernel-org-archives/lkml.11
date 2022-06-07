@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22873CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14806CCA48B
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357960AbiFGTvS (ORCPT
+        id S1357906AbiFGTvN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57670 "EHLO
+        Tue, 7 Jun 2022 15:51:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354371AbiFGSq5 (ORCPT
+        with ESMTP id S1354514AbiFGSrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:57 -0400
+        Tue, 7 Jun 2022 14:47:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F98C24F2F;
-        Tue,  7 Jun 2022 11:00:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2308819AB;
+        Tue,  7 Jun 2022 11:01:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5605617B4;
-        Tue,  7 Jun 2022 18:00:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF57FC385A5;
-        Tue,  7 Jun 2022 18:00:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57EC2617A7;
+        Tue,  7 Jun 2022 18:01:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 681F5C385A5;
+        Tue,  7 Jun 2022 18:01:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624856;
-        bh=50r0S2yycIIRdpqgRSzhdSQvB3+XeKxyRgl5F6GPwts=;
+        s=korg; t=1654624900;
+        bh=8sCIcx0aQxomEVMAr6YNxWI5i/2y9Ehb0ZbAhS4y7hE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eCW3TgiaiPrUF7wfKeiRfaTloG42k5HshlvWhadL/iSeHh+vAaSdRHlPT62U9R0ne
-         nQrJYdIqCCYE6VJqJ2JJ47BJqQMNjV1ks2LPbxKAL2vpzRl2CHjqpcf8UTo8FaBIn0
-         EaFyWe5BOitaRdTaiHvNHh68S1f7wAXDWW+S6Lvk=
+        b=CCyPeIbYZGaocwJPALAO0z4W4YLpv2lrm3BDGnnjH+YsruD4kgGtY002JwPNSlBW7
+         4QkXhWqw4eZPqOOgbj8q39zoaAxaFa8+lHz87A9eQV7wY73jwxVD4AzGIC3uQti+qR
+         CYAB1JVy6owLOosxOxxJ7EoSJOelyveNxtRxhyHc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
+        stable@vger.kernel.org, ChenXiaoSong <chenxiaosong2@huawei.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 476/667] OPP: call of_node_put() on error path in _bandwidth_supported()
-Date:   Tue,  7 Jun 2022 19:02:21 +0200
-Message-Id: <20220607164948.978346863@linuxfoundation.org>
+Subject: [PATCH 5.15 495/667] NFS: Dont report ENOSPC write errors twice
+Date:   Tue,  7 Jun 2022 19:02:40 +0200
+Message-Id: <20220607164949.544018544@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,38 +51,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 907ed123b9d096c73e9361f6cd4097f0691497f2 ]
+[ Upstream commit e6005436f6cc9ed13288f936903f0151e5543485 ]
 
-This code does not call of_node_put(opp_np) if of_get_next_available_child()
-returns NULL.  But it should.
+Any errors reported by the write() system call need to be cleared from
+the file descriptor's error tracking. The current call to nfs_wb_all()
+causes the error to be reported, but since it doesn't call
+file_check_and_advance_wb_err(), we can end up reporting the same error
+a second time when the application calls fsync().
 
-Fixes: 45679f9b508f ("opp: Don't parse icc paths unnecessarily")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Note that since Linux 4.13, the rule is that EIO may be reported for
+write(), but it must be reported by a subsequent fsync(), so let's just
+drop reporting it in write.
+
+The check for nfs_ctx_key_to_expire() is just a duplicate to the one
+already in nfs_write_end(), so let's drop that too.
+
+Reported-by: ChenXiaoSong <chenxiaosong2@huawei.com>
+Fixes: ce368536dd61 ("nfs: nfs_file_write() should check for writeback errors")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/opp/of.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfs/file.c | 34 ++++++++++++++--------------------
+ 1 file changed, 14 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/opp/of.c b/drivers/opp/of.c
-index c32ae7497392..3028353afece 100644
---- a/drivers/opp/of.c
-+++ b/drivers/opp/of.c
-@@ -437,11 +437,11 @@ static int _bandwidth_supported(struct device *dev, struct opp_table *opp_table)
+diff --git a/fs/nfs/file.c b/fs/nfs/file.c
+index 018d29a79e73..1b66362696e0 100644
+--- a/fs/nfs/file.c
++++ b/fs/nfs/file.c
+@@ -591,18 +591,6 @@ static const struct vm_operations_struct nfs_file_vm_ops = {
+ 	.page_mkwrite = nfs_vm_page_mkwrite,
+ };
  
- 	/* Checking only first OPP is sufficient */
- 	np = of_get_next_available_child(opp_np, NULL);
-+	of_node_put(opp_np);
- 	if (!np) {
- 		dev_err(dev, "OPP table empty\n");
- 		return -EINVAL;
+-static int nfs_need_check_write(struct file *filp, struct inode *inode,
+-				int error)
+-{
+-	struct nfs_open_context *ctx;
+-
+-	ctx = nfs_file_open_context(filp);
+-	if (nfs_error_is_fatal_on_server(error) ||
+-	    nfs_ctx_key_to_expire(ctx, inode))
+-		return 1;
+-	return 0;
+-}
+-
+ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
+ {
+ 	struct file *file = iocb->ki_filp;
+@@ -630,7 +618,7 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
+ 	if (iocb->ki_flags & IOCB_APPEND || iocb->ki_pos > i_size_read(inode)) {
+ 		result = nfs_revalidate_file_size(inode, file);
+ 		if (result)
+-			goto out;
++			return result;
  	}
--	of_node_put(opp_np);
  
- 	prop = of_find_property(np, "opp-peak-kBps", NULL);
- 	of_node_put(np);
+ 	nfs_clear_invalid_mapping(file->f_mapping);
+@@ -649,6 +637,7 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
+ 
+ 	written = result;
+ 	iocb->ki_pos += written;
++	nfs_add_stats(inode, NFSIOS_NORMALWRITTENBYTES, written);
+ 
+ 	if (mntflags & NFS_MOUNT_WRITE_EAGER) {
+ 		result = filemap_fdatawrite_range(file->f_mapping,
+@@ -666,17 +655,22 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
+ 	}
+ 	result = generic_write_sync(iocb, written);
+ 	if (result < 0)
+-		goto out;
++		return result;
+ 
++out:
+ 	/* Return error values */
+ 	error = filemap_check_wb_err(file->f_mapping, since);
+-	if (nfs_need_check_write(file, inode, error)) {
+-		int err = nfs_wb_all(inode);
+-		if (err < 0)
+-			result = err;
++	switch (error) {
++	default:
++		break;
++	case -EDQUOT:
++	case -EFBIG:
++	case -ENOSPC:
++		nfs_wb_all(inode);
++		error = file_check_and_advance_wb_err(file);
++		if (error < 0)
++			result = error;
+ 	}
+-	nfs_add_stats(inode, NFSIOS_NORMALWRITTENBYTES, written);
+-out:
+ 	return result;
+ 
+ out_swapfile:
 -- 
 2.35.1
 
