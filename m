@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FEB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D333CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:32:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381066AbiFGVbf (ORCPT
+        id S1348772AbiFGVbx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41868 "EHLO
+        Tue, 7 Jun 2022 17:31:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377990AbiFGUen (ORCPT
+        with ESMTP id S1378202AbiFGUe4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3919E1E82B9;
-        Tue,  7 Jun 2022 11:37:06 -0700 (PDT)
+        Tue, 7 Jun 2022 16:34:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 368D11EB423;
+        Tue,  7 Jun 2022 11:37:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AA7661579;
-        Tue,  7 Jun 2022 18:37:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54F22C36B0E;
-        Tue,  7 Jun 2022 18:37:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B85C3B81FE1;
+        Tue,  7 Jun 2022 18:37:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E76FC385A5;
+        Tue,  7 Jun 2022 18:37:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627024;
-        bh=ohP/jfSBL/ExsqgGs2Zkp69wvFadcqfktgMHUYKIiCM=;
+        s=korg; t=1654627063;
+        bh=AEng1q6LE9FakMDaNKeCdJFlFi/iLETcAAU9Bj1kWOg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M3VEBQMGu0QqlghWXc8tTwzIy6iNYaNNFN6s12iD5vMlLyMjH/h40GERe3pvhHa94
-         UmBx+4XtPV+kXyoAFyprUyoMZayWPHFqukKcTGCqtVhRMRNj2Ebd5PSnmbSFLBrea6
-         gNaOBG7c7ZqN/G9MJ6BQJWp3yVjB1e00IJYw8SYE=
+        b=g8B/CHnx7CwuWIK0ZwhsZFQbQaQjsBxMDH/Kgu9Ixy55SeIOXR7nZXh/AeQeSLUk6
+         b98xNKdPNnoe8LmxNGgEf/tzM1wIQkcJswzaaUZ2y4hN04MgA/bEeDolw2O/bNrmME
+         XDzTflUICXsRR3E0e8+iT0soeWecjA42jiIUHNZo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 589/772] dmaengine: stm32-mdma: fix chan initialization in stm32_mdma_irq_handler()
-Date:   Tue,  7 Jun 2022 19:03:01 +0200
-Message-Id: <20220607165006.301999510@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 563/772] OPP: call of_node_put() on error path in _bandwidth_supported()
+Date:   Tue,  7 Jun 2022 19:02:35 +0200
+Message-Id: <20220607165005.546940259@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,38 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amelie Delaunay <amelie.delaunay@foss.st.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit da3b8ddb464bd49b6248d00ca888ad751c9e44fd ]
+[ Upstream commit 907ed123b9d096c73e9361f6cd4097f0691497f2 ]
 
-The parameter to pass back to the handler function when irq has been
-requested is a struct stm32_mdma_device pointer, not a struct
-stm32_mdma_chan pointer.
-Even if chan is reinit later in the function, remove this wrong
-initialization.
+This code does not call of_node_put(opp_np) if of_get_next_available_child()
+returns NULL.  But it should.
 
-Fixes: a4ffb13c8946 ("dmaengine: Add STM32 MDMA driver")
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Link: https://lore.kernel.org/r/20220504155322.121431-3-amelie.delaunay@foss.st.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 45679f9b508f ("opp: Don't parse icc paths unnecessarily")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/stm32-mdma.c | 2 +-
+ drivers/opp/of.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/dma/stm32-mdma.c b/drivers/dma/stm32-mdma.c
-index 1e6bc22ddae9..f8c8b9d76aad 100644
---- a/drivers/dma/stm32-mdma.c
-+++ b/drivers/dma/stm32-mdma.c
-@@ -1316,7 +1316,7 @@ static void stm32_mdma_xfer_end(struct stm32_mdma_chan *chan)
- static irqreturn_t stm32_mdma_irq_handler(int irq, void *devid)
- {
- 	struct stm32_mdma_device *dmadev = devid;
--	struct stm32_mdma_chan *chan = devid;
-+	struct stm32_mdma_chan *chan;
- 	u32 reg, id, ccr, ien, status;
+diff --git a/drivers/opp/of.c b/drivers/opp/of.c
+index 2f40afa4e65c..b4e96d54387a 100644
+--- a/drivers/opp/of.c
++++ b/drivers/opp/of.c
+@@ -437,11 +437,11 @@ static int _bandwidth_supported(struct device *dev, struct opp_table *opp_table)
  
- 	/* Find out which channel generates the interrupt */
+ 	/* Checking only first OPP is sufficient */
+ 	np = of_get_next_available_child(opp_np, NULL);
++	of_node_put(opp_np);
+ 	if (!np) {
+ 		dev_err(dev, "OPP table empty\n");
+ 		return -EINVAL;
+ 	}
+-	of_node_put(opp_np);
+ 
+ 	prop = of_find_property(np, "opp-peak-kBps", NULL);
+ 	of_node_put(np);
 -- 
 2.35.1
 
