@@ -2,91 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48E96C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:11:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 748CDCCA482
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379007AbiFGVLu (ORCPT
+        id S1379316AbiFGVLz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:11:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58156 "EHLO
+        Tue, 7 Jun 2022 17:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358595AbiFGUNk (ORCPT
+        with ESMTP id S1358708AbiFGUO0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:13:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0917B1C5D53;
-        Tue,  7 Jun 2022 11:28:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F1B4611F3;
-        Tue,  7 Jun 2022 18:28:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 791E5C34115;
-        Tue,  7 Jun 2022 18:28:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626492;
-        bh=Q224vtITk0d/tz032JMgEBEMMV9rpIBeSBHpFkpXEq8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KIJXsezJjAGevsM5sjq7LMvZj4IFY4nhBHhEVH+S/9xfvxQJxZERWFtVLL+He84ZX
-         l1Gu1DiO5YCEzIt+qSN96cdwevt75x0Wmw2WyK6DFY9V5rQBO4aXfVa7q68Stj85Z2
-         JF/U/G0qC8wfPcmb4Ezlt1q6KRqZf0yWIFoP12kk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheng Bin <zhengbin13@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 399/772] net: hinic: add missing destroy_workqueue in hinic_pf_to_mgmt_init
-Date:   Tue,  7 Jun 2022 18:59:51 +0200
-Message-Id: <20220607165000.767884977@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 16:14:26 -0400
+X-Greylist: delayed 411 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 11:28:13 PDT
+Received: from 13.mo582.mail-out.ovh.net (13.mo582.mail-out.ovh.net [188.165.56.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 092771C864B
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:28:12 -0700 (PDT)
+Received: from player763.ha.ovh.net (unknown [10.109.143.3])
+        by mo582.mail-out.ovh.net (Postfix) with ESMTP id E9437246E6
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:10:55 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player763.ha.ovh.net (Postfix) with ESMTPSA id 94B5A2B565B67;
+        Tue,  7 Jun 2022 18:10:44 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-102R004222dfc05-6ee7-4795-a859-c8c48353692d,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH] drm/bridge: parade-ps8622: Use backlight helper
+Date:   Tue,  7 Jun 2022 20:10:22 +0200
+Message-Id: <20220607181022.1119546-1-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 10713782039836788358
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddvvdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejieefrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekvd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Bin <zhengbin13@huawei.com>
+backlight_properties.fb_blank is deprecated. The states it represents
+are handled by other properties; but instead of accessing those
+properties directly, drivers should use the helpers provided by
+backlight.h.
 
-[ Upstream commit 382d917bfc1e92339dae3c8a636b2730e8bb5132 ]
+Instead of retrieving the backlight brightness in struct
+backlight_properties manually, and then checking whether the backlight
+should be on at all, use backlight_get_brightness() which does all
+this and insulates this from future changes.
 
-hinic_pf_to_mgmt_init misses destroy_workqueue in error path,
-this patch fixes that.
-
-Fixes: 6dbb89014dc3 ("hinic: fix sending mailbox timeout in aeq event work")
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Cc: Andrzej Hajda <andrzej.hajda@intel.com>
+Cc: Neil Armstrong <narmstrong@baylibre.com>
+Cc: Robert Foss <robert.foss@linaro.org>
+Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
+Cc: Jonas Karlman <jonas@kwiboo.se>
+Cc: Jernej Skrabec <jernej.skrabec@gmail.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: dri-devel@lists.freedesktop.org
 ---
- drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/bridge/parade-ps8622.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-index ebc77771f5da..4aa1f433ed24 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-@@ -643,6 +643,7 @@ int hinic_pf_to_mgmt_init(struct hinic_pf_to_mgmt *pf_to_mgmt,
- 	err = alloc_msg_buf(pf_to_mgmt);
- 	if (err) {
- 		dev_err(&pdev->dev, "Failed to allocate msg buffers\n");
-+		destroy_workqueue(pf_to_mgmt->workq);
- 		hinic_health_reporters_destroy(hwdev->devlink_dev);
- 		return err;
- 	}
-@@ -650,6 +651,7 @@ int hinic_pf_to_mgmt_init(struct hinic_pf_to_mgmt *pf_to_mgmt,
- 	err = hinic_api_cmd_init(pf_to_mgmt->cmd_chain, hwif);
- 	if (err) {
- 		dev_err(&pdev->dev, "Failed to initialize cmd chains\n");
-+		destroy_workqueue(pf_to_mgmt->workq);
- 		hinic_health_reporters_destroy(hwdev->devlink_dev);
- 		return err;
- 	}
+diff --git a/drivers/gpu/drm/bridge/parade-ps8622.c b/drivers/gpu/drm/bridge/parade-ps8622.c
+index 37b308850b4e..b5750e5f71d7 100644
+--- a/drivers/gpu/drm/bridge/parade-ps8622.c
++++ b/drivers/gpu/drm/bridge/parade-ps8622.c
+@@ -324,11 +324,7 @@ static int ps8622_send_config(struct ps8622_bridge *ps8622)
+ static int ps8622_backlight_update(struct backlight_device *bl)
+ {
+ 	struct ps8622_bridge *ps8622 = dev_get_drvdata(&bl->dev);
+-	int ret, brightness = bl->props.brightness;
+-
+-	if (bl->props.power != FB_BLANK_UNBLANK ||
+-	    bl->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK))
+-		brightness = 0;
++	int ret, brightness = backlight_get_brightness(bl);
+ 
+ 	if (!ps8622->enabled)
+ 		return -EINVAL;
+
+base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
 -- 
-2.35.1
-
-
+2.30.2
 
