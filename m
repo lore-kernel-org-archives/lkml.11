@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54329CCA48B
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:56:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B793EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:57:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356426AbiFGV4l (ORCPT
+        id S1382662AbiFGVz6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:56:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50316 "EHLO
+        Tue, 7 Jun 2022 17:55:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379361AbiFGVCX (ORCPT
+        with ESMTP id S1379266AbiFGVCS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:02:23 -0400
+        Tue, 7 Jun 2022 17:02:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E08A813EF;
-        Tue,  7 Jun 2022 11:47:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97327393D8;
+        Tue,  7 Jun 2022 11:47:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 304E4B81FE1;
-        Tue,  7 Jun 2022 18:47:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E439C36AFF;
-        Tue,  7 Jun 2022 18:47:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 437DBB8220B;
+        Tue,  7 Jun 2022 18:47:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D7C4C385A2;
+        Tue,  7 Jun 2022 18:47:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627668;
-        bh=bH3s1BVToRvgFhBLsu+cvbtMNthczz1FNbaIJi0JObM=;
+        s=korg; t=1654627630;
+        bh=i7tc9pg+IEwtWnNUuNwd19qPDlKm1NBNTebaBBlJuf8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qqiiMYtDR5CpxGG5qVnxmDj0OvnHXIE9HKKBHxzWL7YRgDUFVWfeeniYDp8WerHc6
-         lgofgMp/U/KfyeMof9LF3TACsZWX3rwdICqnLl8BonvLqagGprVNNPvgf9BLYaeENm
-         o4UksWXCvDEUmysjb88NLuZYzQPJ2u6zc2Q6gMA0=
+        b=eFv903BQgLVH1de3sF7W1suOKUaiJp6vCECAloAfWyFnoOam9BIXHPtimGxi9/AfN
+         /66roiks9zS1IShffS3/++cMV24D8IhgDtDmbc6wWbDNnQIRb42s0su+o5r0BoTsvK
+         5T7dLToGykxtd1UmSMStgbe4AQ2apXGHyfW9y2XQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Subject: [PATCH 5.18 023/879] fs/ntfs3: Fix fiemap + fix shrink file size (to remove preallocated space)
-Date:   Tue,  7 Jun 2022 18:52:21 +0200
-Message-Id: <20220607165003.348544698@linuxfoundation.org>
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Yazen Ghannam <yazen.ghannam@amd.com>,
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.18 037/879] x86/MCE/AMD: Fix memory leak when threshold_create_bank() fails
+Date:   Tue,  7 Jun 2022 18:52:35 +0200
+Message-Id: <20220607165003.754599884@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,70 +52,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 
-commit 3880f2b816a7e4ca889b7e8a42e6c62c5706ed36 upstream.
+commit e5f28623ceb103e13fc3d7bd45edf9818b227fd0 upstream.
 
-Two problems:
-1. ntfs3_setattr can't truncate preallocated space;
-2. if allocated fragment "cross" valid size, then fragment splits into two parts:
-- normal part;
-- unwritten part (here we must return FIEMAP_EXTENT_LAST).
-Before this commit we returned FIEMAP_EXTENT_LAST for whole fragment.
-Fixes xfstest generic/092
-Fixes: 4342306f0f0d ("fs/ntfs3: Add file operations and implementation")
+In mce_threshold_create_device(), if threshold_create_bank() fails, the
+previously allocated threshold banks array @bp will be leaked because
+the call to mce_threshold_remove_device() will not free it.
 
-Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+This happens because mce_threshold_remove_device() fetches the pointer
+through the threshold_banks per-CPU variable but bp is written there
+only after the bank creation is successful, and not before, when
+threshold_create_bank() fails.
+
+Add a helper which unwinds all the bank creation work previously done
+and pass into it the previously allocated threshold banks array for
+freeing.
+
+  [ bp: Massage. ]
+
+Fixes: 6458de97fc15 ("x86/mce/amd: Straighten CPU hotplug path")
+Co-developed-by: Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+Signed-off-by: Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+Co-developed-by: Yazen Ghannam <yazen.ghannam@amd.com>
+Signed-off-by: Yazen Ghannam <yazen.ghannam@amd.com>
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220329104705.65256-3-ammarfaizi2@gnuweeb.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs3/file.c    |    2 +-
- fs/ntfs3/frecord.c |   10 +++++++---
- 2 files changed, 8 insertions(+), 4 deletions(-)
+ arch/x86/kernel/cpu/mce/amd.c |   32 +++++++++++++++++++-------------
+ 1 file changed, 19 insertions(+), 13 deletions(-)
 
---- a/fs/ntfs3/file.c
-+++ b/fs/ntfs3/file.c
-@@ -762,7 +762,7 @@ int ntfs3_setattr(struct user_namespace
- 		}
- 		inode_dio_wait(inode);
+--- a/arch/x86/kernel/cpu/mce/amd.c
++++ b/arch/x86/kernel/cpu/mce/amd.c
+@@ -1294,10 +1294,23 @@ out_free:
+ 	kfree(bank);
+ }
  
--		if (attr->ia_size < oldsize)
-+		if (attr->ia_size <= oldsize)
- 			err = ntfs_truncate(inode, attr->ia_size);
- 		else if (attr->ia_size > oldsize)
- 			err = ntfs_extend(inode, attr->ia_size, 0, NULL);
---- a/fs/ntfs3/frecord.c
-+++ b/fs/ntfs3/frecord.c
-@@ -1964,10 +1964,8 @@ int ni_fiemap(struct ntfs_inode *ni, str
++static void __threshold_remove_device(struct threshold_bank **bp)
++{
++	unsigned int bank, numbanks = this_cpu_read(mce_num_banks);
++
++	for (bank = 0; bank < numbanks; bank++) {
++		if (!bp[bank])
++			continue;
++
++		threshold_remove_bank(bp[bank]);
++		bp[bank] = NULL;
++	}
++	kfree(bp);
++}
++
+ int mce_threshold_remove_device(unsigned int cpu)
+ {
+ 	struct threshold_bank **bp = this_cpu_read(threshold_banks);
+-	unsigned int bank, numbanks = this_cpu_read(mce_num_banks);
  
- 		vcn += clen;
+ 	if (!bp)
+ 		return 0;
+@@ -1308,13 +1321,7 @@ int mce_threshold_remove_device(unsigned
+ 	 */
+ 	this_cpu_write(threshold_banks, NULL);
  
--		if (vbo + bytes >= end) {
-+		if (vbo + bytes >= end)
- 			bytes = end - vbo;
--			flags |= FIEMAP_EXTENT_LAST;
+-	for (bank = 0; bank < numbanks; bank++) {
+-		if (bp[bank]) {
+-			threshold_remove_bank(bp[bank]);
+-			bp[bank] = NULL;
 -		}
+-	}
+-	kfree(bp);
++	__threshold_remove_device(bp);
+ 	return 0;
+ }
  
- 		if (vbo + bytes <= valid) {
- 			;
-@@ -1977,6 +1975,9 @@ int ni_fiemap(struct ntfs_inode *ni, str
- 			/* vbo < valid && valid < vbo + bytes */
- 			u64 dlen = valid - vbo;
+@@ -1351,15 +1358,14 @@ int mce_threshold_create_device(unsigned
+ 		if (!(this_cpu_read(bank_map) & (1 << bank)))
+ 			continue;
+ 		err = threshold_create_bank(bp, cpu, bank);
+-		if (err)
+-			goto out_err;
++		if (err) {
++			__threshold_remove_device(bp);
++			return err;
++		}
+ 	}
+ 	this_cpu_write(threshold_banks, bp);
  
-+			if (vbo + dlen >= end)
-+				flags |= FIEMAP_EXTENT_LAST;
-+
- 			err = fiemap_fill_next_extent(fieinfo, vbo, lbo, dlen,
- 						      flags);
- 			if (err < 0)
-@@ -1995,6 +1996,9 @@ int ni_fiemap(struct ntfs_inode *ni, str
- 			flags |= FIEMAP_EXTENT_UNWRITTEN;
- 		}
- 
-+		if (vbo + bytes >= end)
-+			flags |= FIEMAP_EXTENT_LAST;
-+
- 		err = fiemap_fill_next_extent(fieinfo, vbo, lbo, bytes, flags);
- 		if (err < 0)
- 			break;
+ 	if (thresholding_irq_en)
+ 		mce_threshold_vector = amd_threshold_interrupt;
+ 	return 0;
+-out_err:
+-	mce_threshold_remove_device(cpu);
+-	return err;
+ }
 
 
