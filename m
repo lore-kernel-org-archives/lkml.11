@@ -2,90 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F1CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 03:34:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF1FCC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 03:38:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236385AbiFGDeh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 23:34:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57860 "EHLO
+        id S233614AbiFGDif (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 23:38:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236360AbiFGDe1 (ORCPT
+        with ESMTP id S233296AbiFGDic (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 23:34:27 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4BD352B19;
-        Mon,  6 Jun 2022 20:34:26 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id f9so3272372plg.0;
-        Mon, 06 Jun 2022 20:34:26 -0700 (PDT)
+        Mon, 6 Jun 2022 23:38:32 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A551535DE5
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 20:38:30 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id fu3so31088955ejc.7
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 20:38:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=9ZV/P7UMxj9WhigT41C+LW4SlFc5LyNEmugmcXHXNuo=;
-        b=LGku3SHTemGyfP0jmSQvlGv2PAi9vLvFv3xxjvx1lE2eMYco6VuT8MUFBJkQfhH1SP
-         R4DwTJZR3OtcMiR8W4pKan0d55JJtuT1MTixI1bhUXSSIFNPNbd6gV7DmjazVakL5LHO
-         nXRts8UrmJ39I68uMWzDZCRemIiODcAkP2r7h5P11Vmf2mGMJq4zpUoGIT67K0ck7Xif
-         gQGevZiLL0neQZzQ+FQhNaY/hGdTsRPgzUmaNMiHyjc7O3Zc+CKe4/Zywroh0QZNrOWL
-         wBmvnXxo9ksd383O2nplndogeN/gf8hC3agwQsbI9Rk8Drktf90NVPK6BC+513osSILk
-         XHrA==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lJ9t0JsMzf9+b8G+NsrCGuGZ2WHm7yJdraWRSfiKGkA=;
+        b=luqlEGHcZ3EsuUaCVY6GMNpFf/WWxyuViWZVeRqUEErf9I9VtVM1lds0X9kadOzOJN
+         cszTD9YoVUoRI7Y7blXJ11oo9McRcIKLzrEKA7N554p76iZLgY8Rd3ITfDBweQcSXSEp
+         ZvIHkSGHIxEHuVqKNxRubd5d5H8shRx58lWHE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9ZV/P7UMxj9WhigT41C+LW4SlFc5LyNEmugmcXHXNuo=;
-        b=l8j082fsCZYK8cs9A8bSOmrX+stgcP/3m/0Sv5CVd1Mp+k5gBt2kY5EtHxPffTWpVK
-         pEh/NoAkZIOtb2kpiul4BW60h0w9gqqqknnDbxXHCilf/3pHvz+hahncXUhc4NkMyw2r
-         0BO9VUw8KAMIH+d6OT6ySmcgzaFd10Jfg6dKV78K02l5LEZ4GD7LlH+5ytMQNjCV0YPy
-         mFx9e/QRVj5UiVLtd4NUar944zI2wkrX6ikgL4X/AFfC+oX44WNid/WS0f6Uyw4Svlt0
-         wgkcdRS7NqwnvJXtWr4wpcv0ym8WIsRL4+JClf5s7aDG+p+APfyT+R9SE9MUK9XL3eCD
-         fEAQ==
-X-Gm-Message-State: AOAM531ZZv3ON5yjooLvuxQthR9acpyyJeR6OdJlkhuCr7j6pJCHSq+D
-        DpnFHN2mjzMGrwTvTP5hRv8=
-X-Google-Smtp-Source: ABdhPJyRN2q0c27lJyTiX4ocCPgVPJEE4nzungwfhbKzMlC+X75Li/iCaQWNZ0CmQJmqpoD6typSKA==
-X-Received: by 2002:a17:90b:1c8f:b0:1b8:c6dc:ca61 with SMTP id oo15-20020a17090b1c8f00b001b8c6dcca61mr29795986pjb.13.1654572865957;
-        Mon, 06 Jun 2022 20:34:25 -0700 (PDT)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id l24-20020a17090ac59800b001e25e3ba05csm16700350pjt.2.2022.06.06.20.34.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 20:34:25 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Miaoqian Lin <linmq006@gmail.com>, sparclinux@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] sparc: kernel: Fix reference leak in jbusmc_probe
-Date:   Tue,  7 Jun 2022 07:33:00 +0400
-Message-Id: <20220607033306.688-3-linmq006@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220607033306.688-1-linmq006@gmail.com>
-References: <20220607033306.688-1-linmq006@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lJ9t0JsMzf9+b8G+NsrCGuGZ2WHm7yJdraWRSfiKGkA=;
+        b=7ox13zhroVbkdSeXr+LN9jzawv7DxpYgfEinAdmqUvVoQpDVUKCrW2ZeUOEBK654+l
+         avUf3soxl18Kldsv84eMbpPamBkjZMW0LJlx6TFo9II/wOLgyVWjynqj70I7h0cGfDiD
+         1xO1THX68ehUz/YRENlJJWpA44AjPcS1buQLe594vpRvB9feMPcLzI137xFLtwQ73KEn
+         u1pEzYaZfFdaivX5nZhJ6kl5AsAEUXpB2poBQw/j3rpKbE6N7xG24T2FiwDRvvwODo3R
+         a4jAw9+FTq1tpKlUCM/YhPfzMMU5ooKBvdHlXydUVi2LjAE/27DLeSOgHpqOiGGskhda
+         0YXg==
+X-Gm-Message-State: AOAM5301RBEIcLwIp1WniwqYa2kXlrnvTwPNLyeCWoJKD5/2oH8FhWuD
+        uWPT7KJWvEc6LpwCbSEz+iKDgnokBn5b9ydl8iK4/A==
+X-Google-Smtp-Source: ABdhPJxvmyTN4ySZ5rqR9pOFJ1zEcnVcYm+SktOdEe+JR5rDOKDREJpcaAfPg15x/AOi9cNPiXshMUiWFFvhktMChtw=
+X-Received: by 2002:a17:907:868f:b0:702:f865:55de with SMTP id
+ qa15-20020a170907868f00b00702f86555demr24650686ejc.24.1654573109183; Mon, 06
+ Jun 2022 20:38:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220606152431.1889185-1-hsinyi@chromium.org> <20220606152431.1889185-9-hsinyi@chromium.org>
+ <CAE-0n51Lq381dQW6zw3D0fibdj=Jm4r3uAYG59ySo4CXbx+EpA@mail.gmail.com>
+In-Reply-To: <CAE-0n51Lq381dQW6zw3D0fibdj=Jm4r3uAYG59ySo4CXbx+EpA@mail.gmail.com>
+From:   Hsin-Yi Wang <hsinyi@chromium.org>
+Date:   Tue, 7 Jun 2022 11:46:24 +0800
+Message-ID: <CAJMQK-hoKB+W4AY8trW-ni145oxde4ot1_z+d6sbxGrbQ6aMig@mail.gmail.com>
+Subject: Re: [PATCH v4 8/8] drm/mediatek: Config orientation property if panel
+ provides it
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org,
+        Rob Clark <robdclark@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_find_node_by_path() returns a node pointer with refcount incremented,
-we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+On Tue, Jun 7, 2022 at 3:16 AM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> Quoting Hsin-Yi Wang (2022-06-06 08:24:31)
+> > diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+> > index d9f10a33e6fa..c56282412bfa 100644
+> > --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
+> > +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+> > @@ -822,6 +823,12 @@ static int mtk_dsi_encoder_init(struct drm_device *drm, struct mtk_dsi *dsi)
+> >                 ret = PTR_ERR(dsi->connector);
+> >                 goto err_cleanup_encoder;
+> >         }
+> > +
+> > +       /* Read panel orientation */
+> > +       if (dsi->panel)
+> > +               drm_connector_set_panel_orientation(dsi->connector,
+> > +                               drm_panel_get_orientation(dsi->panel));
+> > +
+>
+> It could be simplified like so?
+>
+>         drm_connector_set_orientation_from_panel(dsi->connector, dsi->panel);
+>
+> Then the API could get the orientation if the panel pointer is valid.
+> Does any code need to use/modify the orientation value besides
+> drm_connector_set_panel_orientation()?
+>
 
-Fixes: 85269eb5542b ("sparc64: Add JBUS UltraSPARC-IIIi support to memory controller driver.")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- arch/sparc/kernel/chmc.c | 1 +
- 1 file changed, 1 insertion(+)
+We can add another function to call
+drm_connector_set_orientation_from_panel(), which will be like
 
-diff --git a/arch/sparc/kernel/chmc.c b/arch/sparc/kernel/chmc.c
-index 6ff43df740e0..9cc1b92ffff9 100644
---- a/arch/sparc/kernel/chmc.c
-+++ b/arch/sparc/kernel/chmc.c
-@@ -409,6 +409,7 @@ static int jbusmc_probe(struct platform_device *op)
- 		goto out;
- 	}
- 	mem_regs = of_get_property(mem_node, "reg", &len);
-+	of_node_put(mem_node);
- 	if (!mem_regs) {
- 		printk(KERN_ERR PFX "Cannot get reg property of /memory node.\n");
- 		goto out;
--- 
-2.25.1
+void drm_connector_set_orientation_from_panel(connector, panel)
+{
+     if (panel)
+          drm_connector_set_panel_orientation(connector,drm_panel_get_orientation(panel));
+}
 
+Though it's very should but I can add this if this can make the caller
+more convenient.
+
+> >         drm_connector_attach_encoder(dsi->connector, &dsi->encoder);
+> >
+> >         return 0;
