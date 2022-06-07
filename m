@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F4ECCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:37:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8185C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243988AbiFGMhJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:37:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55066 "EHLO
+        id S243881AbiFGMhQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:37:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243888AbiFGMgi (ORCPT
+        with ESMTP id S243946AbiFGMgq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:36:38 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C637D682D
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:36:21 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id a68-20020a25ca47000000b006605f788ff1so11567570ybg.16
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 05:36:21 -0700 (PDT)
+        Tue, 7 Jun 2022 08:36:46 -0400
+Received: from mail-wr1-x44a.google.com (mail-wr1-x44a.google.com [IPv6:2a00:1450:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7C9F74A5
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:36:33 -0700 (PDT)
+Received: by mail-wr1-x44a.google.com with SMTP id d9-20020adfe849000000b00213375a746aso3366018wrn.18
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 05:36:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=QWGH4BpFW5q+Xd27ZjfLsMf0ixYVsNcpsXx8SNZqClY=;
-        b=kOB2WlHM9Q4hkncQrB1CGU3oEad4K7hDyb2T+NaVPvZ0BxM3cArEKcfyS0NJpANnBN
-         0XY4wvuGl2uFI+2wWwnFptl4eLuQkifGCm3u70edruXTmseV3DZMXH0ZZUiq4YLnZnrG
-         yQKuEeBedLrEfqoQa40thvzMpuetpThEhda4PL6luUUlM3KeyVEu2+PaNaKSwDxEs9Gd
-         6wT21Wikf8ip4AfrHvw2rcjL3hsW5TCDVjE1vyS0exRWpTVaZFHAafaJ5jWymnhTVLgZ
-         f7Q4hHQUGzhs13tIFHvLiDwgcUMGC3ITB1mRZ1bppNd5EFVIUXagwhN/PrS+EQvjX4xl
-         +SkQ==
+        bh=RJ6plpCF2uM1G91EmsYmPYV+0SKOvHbu1ysukMwmlAc=;
+        b=EGLtVfnig7AA9jddTBtKtgLUmRuiWQi0i3lwbxU+XxSl/Me0WSyJqTfkJIMXPKpDat
+         z7IvDeaE7nAHkxdyHGn2HXqeH4Nv9jjVePTGSAogBjLiVt6GIPqCUFekYw3c3IXQ4c+T
+         pCTjB8FRHpCt0cyelLbbRElE+joOMjdpUAhhIWMSJo5mdheLCYpKQueGa5+ZypXCsLd4
+         NYhieCyIjhx+Bmlzl1ZL6MGu4Odj5xg3GVxMFxx5rysUDpdVvJejVzyD5rRAf+9gVW4o
+         VWFwkEEGfWcye1xV7WTm2v/BDWjfvHYN1sRmLpBPzh+zZ7DNI6JgKrRS9t2BcfWhcIxp
+         wc8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=QWGH4BpFW5q+Xd27ZjfLsMf0ixYVsNcpsXx8SNZqClY=;
-        b=x/rPkCTxqbIKy7uQh1P+oxlLswWNHa/C1q7e+X10e1MTDTWQ7iJON9pziEwM+3XkeM
-         yuyUrbuTKK/royOW55zXpc48TI98LZdMSVQPZqtDUOWAgpPrIlfXx5c54HKGDRtLpNkv
-         EFZ0B9az9MBSz7dk99pBXZ27YwRPyXpdriy81gk0YpyM0VE4ppG3Swd0K78TpvHmFzV+
-         wZq1ryFMmOV7Jc8XtqFk5KjvEjXORVG9U0IpGvEL/Ok0zsfJv2MOi+LUrJxjCBIz/Aov
-         prQq8ERHmSQKpL233mRo2ssGIWRYcR4J2PpYfbV9M4cgVvPL7LO048sqwBeGz/VQWqc/
-         Cw3w==
-X-Gm-Message-State: AOAM530WKZkxQ7moIViyLljOncAYpPtpojrkS+GLX20p2HSgP6b2Mj7v
-        oJssT2rMCLqXGFZQA2A4oCxQf8SyJ1axCiVQ
-X-Google-Smtp-Source: ABdhPJx6oTdQP1KjlaylWO8YxInKy6rT+AvT5zLIlU5TQX1OnI1ysmGyoRXuPcTkIlbxfV6k71uzgWkjJEpi/gAo
+        bh=RJ6plpCF2uM1G91EmsYmPYV+0SKOvHbu1ysukMwmlAc=;
+        b=whAhpiOfSQt4kUnxaMgHZgf7P2Zv84oTGtPugFnpOK8v2xT1ZE28qiCFEKclDr8+rN
+         tyCpkUASQrd/fXAdt0ujWy+f9La1doQXz8sCyk1lioPPDzgij5QitplqxL8Tkg2nuyUA
+         +XLeAiu9DZcGSCpuYDAmuqSMCegKsGe8W9jOVY2HK7a7zlRkUhZhA/mw17i2Ob9XWhNz
+         ZqhOCh2TF6H1yOAw1UNme+3VaomXw3FSoO15LA0SPMKBIPhFL/NSwsuGdb4tvAYlni06
+         1Mloht39DAgatZNnB4VP9+/DBZgwe4ELvaTdcm9+bIg+7I3nNag0Ey0qOzjA9t3r/t3C
+         6p/Q==
+X-Gm-Message-State: AOAM5334ILTHF3B2/MEQ3smEOnOpM5ZFho6IolLH3sn2j9aas8rIjb1Y
+        A6YjXNxzbeWbVRqhbhBHdzCHAQNxWrThi+mu
+X-Google-Smtp-Source: ABdhPJye8og3G5z86kr5mvOs6nKJTmFz4norIHsoBEJ8CpX8MUdrHNB+ZNVTCjZvseMtfBQDrJrwDyKaRt7fKymk
 X-Received: from vdonnefort.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:2eea])
- (user=vdonnefort job=sendgmr) by 2002:a81:160a:0:b0:2fe:c81e:f2a9 with SMTP
- id 10-20020a81160a000000b002fec81ef2a9mr31775678yww.282.1654605380505; Tue,
- 07 Jun 2022 05:36:20 -0700 (PDT)
-Date:   Tue,  7 Jun 2022 13:32:48 +0100
+ (user=vdonnefort job=sendgmr) by 2002:adf:e2cb:0:b0:20c:c1bb:9fcb with SMTP
+ id d11-20020adfe2cb000000b0020cc1bb9fcbmr28072106wrj.35.1654605391940; Tue,
+ 07 Jun 2022 05:36:31 -0700 (PDT)
+Date:   Tue,  7 Jun 2022 13:32:53 +0100
 In-Reply-To: <20220607123254.565579-1-vdonnefort@google.com>
-Message-Id: <20220607123254.565579-2-vdonnefort@google.com>
+Message-Id: <20220607123254.565579-7-vdonnefort@google.com>
 Mime-Version: 1.0
 References: <20220607123254.565579-1-vdonnefort@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v10 1/7] sched/fair: Provide u64 read for 32-bits arch helper
+Subject: [PATCH v10 6/7] sched/fair: Remove task_util from effective
+ utilization in feec()
 From:   Vincent Donnefort <vdonnefort@google.com>
 To:     peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org
 Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
@@ -67,220 +68,337 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Vincent Donnefort <vincent.donnefort@arm.com>
 
-Introducing macro helpers u64_u32_{store,load}() to factorize lockless
-accesses to u64 variables for 32-bits architectures.
+The energy estimation in find_energy_efficient_cpu() (feec()) relies on
+the computation of the effective utilization for each CPU of a perf domain
+(PD). This effective utilization is then used as an estimation of the busy
+time for this pd. The function effective_cpu_util() which gives this value,
+scales the utilization relative to IRQ pressure on the CPU to take into
+account that the IRQ time is hidden from the task clock. The IRQ scaling is
+as follow:
 
-Users are for now cfs_rq.min_vruntime and sched_avg.last_update_time. To
-accommodate the later where the copy lies outside of the structure
-(cfs_rq.last_udpate_time_copy instead of sched_avg.last_update_time_copy),
-use the _copy() version of those helpers.
+   effective_cpu_util = irq + (cpu_cap - irq)/cpu_cap * util
 
-Those new helpers encapsulate smp_rmb() and smp_wmb() synchronization and
-therefore, have a small penalty for 32-bits machines in set_task_rq_fair()
-and init_cfs_rq().
+Where util is the sum of CFS/RT/DL utilization, cpu_cap the capacity of
+the CPU and irq the IRQ avg time.
+
+If now we take as an example a task placement which doesn't raise the OPP
+on the candidate CPU, we can write the energy delta as:
+
+  delta = OPPcost/cpu_cap * (effective_cpu_util(cpu_util + task_util) -
+                             effective_cpu_util(cpu_util))
+        = OPPcost/cpu_cap * (cpu_cap - irq)/cpu_cap * task_util
+
+We end-up with an energy delta depending on the IRQ avg time, which is a
+problem: first the time spent on IRQs by a CPU has no effect on the
+additional energy that would be consumed by a task. Second, we don't want
+to favour a CPU with a higher IRQ avg time value.
+
+Nonetheless, we need to take the IRQ avg time into account. If a task
+placement raises the PD's frequency, it will increase the energy cost for
+the entire time where the CPU is busy. A solution is to only use
+effective_cpu_util() with the CPU contribution part. The task contribution
+is added separately and scaled according to prev_cpu's IRQ time.
+
+No change for the FREQUENCY_UTIL component of the energy estimation. We
+still want to get the actual frequency that would be selected after the
+task placement.
 
 Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
 Signed-off-by: Vincent Donnefort <vdonnefort@google.com>
 Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
 
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 77b2048a9326..05614d9b919c 100644
+index 08e604ddf520..780aee03b3cc 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -612,11 +612,8 @@ static void update_min_vruntime(struct cfs_rq *cfs_rq)
- 	}
- 
- 	/* ensure we never gain time by being placed backwards. */
--	cfs_rq->min_vruntime = max_vruntime(cfs_rq->min_vruntime, vruntime);
--#ifndef CONFIG_64BIT
--	smp_wmb();
--	cfs_rq->min_vruntime_copy = cfs_rq->min_vruntime;
--#endif
-+	u64_u32_store(cfs_rq->min_vruntime,
-+		      max_vruntime(cfs_rq->min_vruntime, vruntime));
+@@ -6694,61 +6694,96 @@ static unsigned long cpu_util_without(int cpu, struct task_struct *p)
  }
  
- static inline bool __entity_less(struct rb_node *a, const struct rb_node *b)
-@@ -3313,6 +3310,11 @@ static inline void cfs_rq_util_change(struct cfs_rq *cfs_rq, int flags)
- }
- 
- #ifdef CONFIG_SMP
-+static inline u64 cfs_rq_last_update_time(struct cfs_rq *cfs_rq)
-+{
-+	return u64_u32_load_copy(cfs_rq->avg.last_update_time,
-+				 cfs_rq->last_update_time_copy);
-+}
- #ifdef CONFIG_FAIR_GROUP_SCHED
  /*
-  * Because list_add_leaf_cfs_rq always places a child cfs_rq on the list
-@@ -3423,27 +3425,9 @@ void set_task_rq_fair(struct sched_entity *se,
- 	if (!(se->avg.last_update_time && prev))
- 		return;
- 
--#ifndef CONFIG_64BIT
--	{
--		u64 p_last_update_time_copy;
--		u64 n_last_update_time_copy;
--
--		do {
--			p_last_update_time_copy = prev->load_last_update_time_copy;
--			n_last_update_time_copy = next->load_last_update_time_copy;
--
--			smp_rmb();
--
--			p_last_update_time = prev->avg.last_update_time;
--			n_last_update_time = next->avg.last_update_time;
-+	p_last_update_time = cfs_rq_last_update_time(prev);
-+	n_last_update_time = cfs_rq_last_update_time(next);
- 
--		} while (p_last_update_time != p_last_update_time_copy ||
--			 n_last_update_time != n_last_update_time_copy);
--	}
--#else
--	p_last_update_time = prev->avg.last_update_time;
--	n_last_update_time = next->avg.last_update_time;
--#endif
- 	__update_load_avg_blocked_se(p_last_update_time, se);
- 	se->avg.last_update_time = n_last_update_time;
- }
-@@ -3796,12 +3780,9 @@ update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq)
- 	}
- 
- 	decayed |= __update_load_avg_cfs_rq(now, cfs_rq);
--
--#ifndef CONFIG_64BIT
--	smp_wmb();
--	cfs_rq->load_last_update_time_copy = sa->last_update_time;
--#endif
--
-+	u64_u32_store_copy(sa->last_update_time,
-+			   cfs_rq->last_update_time_copy,
-+			   sa->last_update_time);
- 	return decayed;
- }
- 
-@@ -3933,27 +3914,6 @@ static inline void update_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
- 	}
- }
- 
--#ifndef CONFIG_64BIT
--static inline u64 cfs_rq_last_update_time(struct cfs_rq *cfs_rq)
--{
--	u64 last_update_time_copy;
--	u64 last_update_time;
--
--	do {
--		last_update_time_copy = cfs_rq->load_last_update_time_copy;
--		smp_rmb();
--		last_update_time = cfs_rq->avg.last_update_time;
--	} while (last_update_time != last_update_time_copy);
--
--	return last_update_time;
--}
--#else
--static inline u64 cfs_rq_last_update_time(struct cfs_rq *cfs_rq)
--{
--	return cfs_rq->avg.last_update_time;
--}
--#endif
--
- /*
-  * Synchronize entity load avg of dequeued entity without locking
-  * the previous rq.
-@@ -6960,21 +6920,8 @@ static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
- 	if (READ_ONCE(p->__state) == TASK_WAKING) {
- 		struct sched_entity *se = &p->se;
- 		struct cfs_rq *cfs_rq = cfs_rq_of(se);
--		u64 min_vruntime;
--
--#ifndef CONFIG_64BIT
--		u64 min_vruntime_copy;
--
--		do {
--			min_vruntime_copy = cfs_rq->min_vruntime_copy;
--			smp_rmb();
--			min_vruntime = cfs_rq->min_vruntime;
--		} while (min_vruntime != min_vruntime_copy);
--#else
--		min_vruntime = cfs_rq->min_vruntime;
--#endif
- 
--		se->vruntime -= min_vruntime;
-+		se->vruntime -= u64_u32_load(cfs_rq->min_vruntime);
- 	}
- 
- 	if (p->on_rq == TASK_ON_RQ_MIGRATING) {
-@@ -11422,10 +11369,7 @@ static void set_next_task_fair(struct rq *rq, struct task_struct *p, bool first)
- void init_cfs_rq(struct cfs_rq *cfs_rq)
- {
- 	cfs_rq->tasks_timeline = RB_ROOT_CACHED;
--	cfs_rq->min_vruntime = (u64)(-(1LL << 20));
--#ifndef CONFIG_64BIT
--	cfs_rq->min_vruntime_copy = cfs_rq->min_vruntime;
--#endif
-+	u64_u32_store(cfs_rq->min_vruntime, (u64)(-(1LL << 20)));
- #ifdef CONFIG_SMP
- 	raw_spin_lock_init(&cfs_rq->removed.lock);
- #endif
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 1f97f357aacd..bf4a0ec98678 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -520,6 +520,45 @@ struct cfs_bandwidth { };
- 
- #endif	/* CONFIG_CGROUP_SCHED */
- 
-+/*
-+ * u64_u32_load/u64_u32_store
-+ *
-+ * Use a copy of a u64 value to protect against data race. This is only
-+ * applicable for 32-bits architectures.
+- * compute_energy(): Estimates the energy that @pd would consume if @p was
+- * migrated to @dst_cpu. compute_energy() predicts what will be the utilization
+- * landscape of @pd's CPUs after the task migration, and uses the Energy Model
+- * to compute what would be the energy if we decided to actually migrate that
+- * task.
++ * energy_env - Utilization landscape for energy estimation.
++ * @task_busy_time: Utilization contribution by the task for which we test the
++ *                  placement. Given by eenv_task_busy_time().
++ * @pd_busy_time:   Utilization of the whole perf domain without the task
++ *                  contribution. Given by eenv_pd_busy_time().
++ * @cpu_cap:        Maximum CPU capacity for the perf domain.
++ * @pd_cap:         Entire perf domain capacity. (pd->nr_cpus * cpu_cap).
 + */
-+#ifdef CONFIG_64BIT
-+# define u64_u32_load_copy(var, copy)       var
-+# define u64_u32_store_copy(var, copy, val) (var = val)
-+#else
-+# define u64_u32_load_copy(var, copy)					\
-+({									\
-+	u64 __val, __val_copy;						\
-+	do {								\
-+		__val_copy = copy;					\
-+		/*							\
-+		 * paired with u64_u32_store, ordering access		\
-+		 * to var and copy.					\
-+		 */							\
-+		smp_rmb();						\
-+		__val = var;						\
-+	} while (__val != __val_copy);					\
-+	__val;								\
-+})
-+# define u64_u32_store_copy(var, copy, val)				\
-+do {									\
-+	typeof(val) __val = (val);					\
-+	var = __val;							\
-+	/*								\
-+	 * paired with u64_u32_load, ordering access to var and		\
-+	 * copy.							\
-+	 */								\
-+	smp_wmb();							\
-+	copy = __val;							\
-+} while (0)
-+#endif
-+# define u64_u32_load(var)      u64_u32_load_copy(var, var##_copy)
-+# define u64_u32_store(var, val) u64_u32_store_copy(var, var##_copy, val)
++struct energy_env {
++	unsigned long task_busy_time;
++	unsigned long pd_busy_time;
++	unsigned long cpu_cap;
++	unsigned long pd_cap;
++};
 +
- /* CFS-related fields in a runqueue */
- struct cfs_rq {
- 	struct load_weight	load;
-@@ -560,7 +599,7 @@ struct cfs_rq {
- 	 */
- 	struct sched_avg	avg;
- #ifndef CONFIG_64BIT
--	u64			load_last_update_time_copy;
-+	u64			last_update_time_copy;
- #endif
- 	struct {
- 		raw_spinlock_t	lock ____cacheline_aligned;
++/*
++ * Compute the task busy time for compute_energy(). This time cannot be
++ * injected directly into effective_cpu_util() because of the IRQ scaling.
++ * The latter only makes sense with the most recent CPUs where the task has
++ * run.
+  */
+-static long
+-compute_energy(struct task_struct *p, int dst_cpu, struct cpumask *cpus,
+-	       struct perf_domain *pd)
++static inline void eenv_task_busy_time(struct energy_env *eenv,
++				       struct task_struct *p, int prev_cpu)
+ {
+-	unsigned long max_util = 0, sum_util = 0, cpu_cap;
++	unsigned long busy_time, max_cap = arch_scale_cpu_capacity(prev_cpu);
++	unsigned long irq = cpu_util_irq(cpu_rq(prev_cpu));
++
++	if (unlikely(irq >= max_cap))
++		busy_time = max_cap;
++	else
++		busy_time = scale_irq_capacity(task_util_est(p), irq, max_cap);
++
++	eenv->task_busy_time = busy_time;
++}
++
++/*
++ * Compute the perf_domain (PD) busy time for compute_energy(). Based on the
++ * utilization for each @pd_cpus, it however doesn't take into account
++ * clamping since the ratio (utilization / cpu_capacity) is already enough to
++ * scale the EM reported power consumption at the (eventually clamped)
++ * cpu_capacity.
++ *
++ * The contribution of the task @p for which we want to estimate the
++ * energy cost is removed (by cpu_util_next()) and must be calculated
++ * separately (see eenv_task_busy_time). This ensures:
++ *
++ *   - A stable PD utilization, no matter which CPU of that PD we want to place
++ *     the task on.
++ *
++ *   - A fair comparison between CPUs as the task contribution (task_util())
++ *     will always be the same no matter which CPU utilization we rely on
++ *     (util_avg or util_est).
++ *
++ * Set @eenv busy time for the PD that spans @pd_cpus. This busy time can't
++ * exceed @eenv->pd_cap.
++ */
++static inline void eenv_pd_busy_time(struct energy_env *eenv,
++				     struct cpumask *pd_cpus,
++				     struct task_struct *p)
++{
++	unsigned long busy_time = 0;
+ 	int cpu;
+ 
+-	cpu_cap = arch_scale_cpu_capacity(cpumask_first(cpus));
+-	cpu_cap -= arch_scale_thermal_pressure(cpumask_first(cpus));
++	for_each_cpu(cpu, pd_cpus) {
++		unsigned long util = cpu_util_next(cpu, p, -1);
+ 
+-	/*
+-	 * The capacity state of CPUs of the current rd can be driven by CPUs
+-	 * of another rd if they belong to the same pd. So, account for the
+-	 * utilization of these CPUs too by masking pd with cpu_online_mask
+-	 * instead of the rd span.
+-	 *
+-	 * If an entire pd is outside of the current rd, it will not appear in
+-	 * its pd list and will not be accounted by compute_energy().
+-	 */
+-	for_each_cpu(cpu, cpus) {
+-		unsigned long util_freq = cpu_util_next(cpu, p, dst_cpu);
+-		unsigned long cpu_util, util_running = util_freq;
+-		struct task_struct *tsk = NULL;
++		busy_time += effective_cpu_util(cpu, util, ENERGY_UTIL, NULL);
++	}
+ 
+-		/*
+-		 * When @p is placed on @cpu:
+-		 *
+-		 * util_running = max(cpu_util, cpu_util_est) +
+-		 *		  max(task_util, _task_util_est)
+-		 *
+-		 * while cpu_util_next is: max(cpu_util + task_util,
+-		 *			       cpu_util_est + _task_util_est)
+-		 */
+-		if (cpu == dst_cpu) {
+-			tsk = p;
+-			util_running =
+-				cpu_util_next(cpu, p, -1) + task_util_est(p);
+-		}
++	eenv->pd_busy_time = min(eenv->pd_cap, busy_time);
++}
+ 
+-		/*
+-		 * Busy time computation: utilization clamping is not
+-		 * required since the ratio (sum_util / cpu_capacity)
+-		 * is already enough to scale the EM reported power
+-		 * consumption at the (eventually clamped) cpu_capacity.
+-		 */
+-		cpu_util = effective_cpu_util(cpu, util_running, ENERGY_UTIL,
+-					      NULL);
++/*
++ * Compute the maximum utilization for compute_energy() when the task @p
++ * is placed on the cpu @dst_cpu.
++ *
++ * Returns the maximum utilization among @eenv->cpus. This utilization can't
++ * exceed @eenv->cpu_cap.
++ */
++static inline unsigned long
++eenv_pd_max_util(struct energy_env *eenv, struct cpumask *pd_cpus,
++		 struct task_struct *p, int dst_cpu)
++{
++	unsigned long max_util = 0;
++	int cpu;
+ 
+-		sum_util += min(cpu_util, cpu_cap);
++	for_each_cpu(cpu, pd_cpus) {
++		struct task_struct *tsk = (cpu == dst_cpu) ? p : NULL;
++		unsigned long util = cpu_util_next(cpu, p, dst_cpu);
++		unsigned long cpu_util;
+ 
+ 		/*
+ 		 * Performance domain frequency: utilization clamping
+@@ -6757,12 +6792,29 @@ compute_energy(struct task_struct *p, int dst_cpu, struct cpumask *cpus,
+ 		 * NOTE: in case RT tasks are running, by default the
+ 		 * FREQUENCY_UTIL's utilization can be max OPP.
+ 		 */
+-		cpu_util = effective_cpu_util(cpu, util_freq, FREQUENCY_UTIL,
+-					      tsk);
+-		max_util = max(max_util, min(cpu_util, cpu_cap));
++		cpu_util = effective_cpu_util(cpu, util, FREQUENCY_UTIL, tsk);
++		max_util = max(max_util, cpu_util);
+ 	}
+ 
+-	return em_cpu_energy(pd->em_pd, max_util, sum_util, cpu_cap);
++	return min(max_util, eenv->cpu_cap);
++}
++
++/*
++ * compute_energy(): Use the Energy Model to estimate the energy that @pd would
++ * consume for a given utilization landscape @eenv. When @dst_cpu < 0, the task
++ * contribution is ignored.
++ */
++static inline unsigned long
++compute_energy(struct energy_env *eenv, struct perf_domain *pd,
++	       struct cpumask *pd_cpus, struct task_struct *p, int dst_cpu)
++{
++	unsigned long max_util = eenv_pd_max_util(eenv, pd_cpus, p, dst_cpu);
++	unsigned long busy_time = eenv->pd_busy_time;
++
++	if (dst_cpu >= 0)
++		busy_time = min(eenv->pd_cap, busy_time + eenv->task_busy_time);
++
++	return em_cpu_energy(pd->em_pd, max_util, busy_time, eenv->cpu_cap);
+ }
+ 
+ /*
+@@ -6808,11 +6860,12 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
+ {
+ 	struct cpumask *cpus = this_cpu_cpumask_var_ptr(select_rq_mask);
+ 	unsigned long prev_delta = ULONG_MAX, best_delta = ULONG_MAX;
+-	struct root_domain *rd = cpu_rq(smp_processor_id())->rd;
+ 	int cpu, best_energy_cpu = prev_cpu, target = -1;
+-	unsigned long cpu_cap, util, base_energy = 0;
++	struct root_domain *rd = this_rq()->rd;
++	unsigned long base_energy = 0;
+ 	struct sched_domain *sd;
+ 	struct perf_domain *pd;
++	struct energy_env eenv;
+ 
+ 	rcu_read_lock();
+ 	pd = rcu_dereference(rd->pd);
+@@ -6835,22 +6888,39 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
+ 	if (!task_util_est(p))
+ 		goto unlock;
+ 
++	eenv_task_busy_time(&eenv, p, prev_cpu);
++
+ 	for (; pd; pd = pd->next) {
+-		unsigned long cur_delta, spare_cap, max_spare_cap = 0;
++		unsigned long cpu_cap, cpu_thermal_cap, util;
++		unsigned long cur_delta, max_spare_cap = 0;
+ 		bool compute_prev_delta = false;
+ 		unsigned long base_energy_pd;
+ 		int max_spare_cap_cpu = -1;
+ 
+ 		cpumask_and(cpus, perf_domain_span(pd), cpu_online_mask);
+ 
+-		for_each_cpu_and(cpu, cpus, sched_domain_span(sd)) {
++		if (cpumask_empty(cpus))
++			continue;
++
++		/* Account thermal pressure for the energy estimation */
++		cpu = cpumask_first(cpus);
++		cpu_thermal_cap = arch_scale_cpu_capacity(cpu);
++		cpu_thermal_cap -= arch_scale_thermal_pressure(cpu);
++
++		eenv.cpu_cap = cpu_thermal_cap;
++		eenv.pd_cap = 0;
++
++		for_each_cpu(cpu, cpus) {
++			eenv.pd_cap += cpu_thermal_cap;
++
++			if (!cpumask_test_cpu(cpu, sched_domain_span(sd)))
++				continue;
++
+ 			if (!cpumask_test_cpu(cpu, p->cpus_ptr))
+ 				continue;
+ 
+ 			util = cpu_util_next(cpu, p, cpu);
+ 			cpu_cap = capacity_of(cpu);
+-			spare_cap = cpu_cap;
+-			lsub_positive(&spare_cap, util);
+ 
+ 			/*
+ 			 * Skip CPUs that cannot satisfy the capacity request.
+@@ -6863,15 +6933,17 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
+ 			if (!fits_capacity(util, cpu_cap))
+ 				continue;
+ 
++			lsub_positive(&cpu_cap, util);
++
+ 			if (cpu == prev_cpu) {
+ 				/* Always use prev_cpu as a candidate. */
+ 				compute_prev_delta = true;
+-			} else if (spare_cap > max_spare_cap) {
++			} else if (cpu_cap > max_spare_cap) {
+ 				/*
+ 				 * Find the CPU with the maximum spare capacity
+ 				 * in the performance domain.
+ 				 */
+-				max_spare_cap = spare_cap;
++				max_spare_cap = cpu_cap;
+ 				max_spare_cap_cpu = cpu;
+ 			}
+ 		}
+@@ -6879,13 +6951,16 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
+ 		if (max_spare_cap_cpu < 0 && !compute_prev_delta)
+ 			continue;
+ 
++		eenv_pd_busy_time(&eenv, cpus, p);
+ 		/* Compute the 'base' energy of the pd, without @p */
+-		base_energy_pd = compute_energy(p, -1, cpus, pd);
++		base_energy_pd = compute_energy(&eenv, pd, cpus, p, -1);
+ 		base_energy += base_energy_pd;
+ 
+ 		/* Evaluate the energy impact of using prev_cpu. */
+ 		if (compute_prev_delta) {
+-			prev_delta = compute_energy(p, prev_cpu, cpus, pd);
++			prev_delta = compute_energy(&eenv, pd, cpus, p,
++						    prev_cpu);
++			/* CPU utilization has changed */
+ 			if (prev_delta < base_energy_pd)
+ 				goto unlock;
+ 			prev_delta -= base_energy_pd;
+@@ -6894,8 +6969,9 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
+ 
+ 		/* Evaluate the energy impact of using max_spare_cap_cpu. */
+ 		if (max_spare_cap_cpu >= 0) {
+-			cur_delta = compute_energy(p, max_spare_cap_cpu, cpus,
+-						   pd);
++			cur_delta = compute_energy(&eenv, pd, cpus, p,
++						   max_spare_cap_cpu);
++			/* CPU utilization has changed */
+ 			if (cur_delta < base_energy_pd)
+ 				goto unlock;
+ 			cur_delta -= base_energy_pd;
 -- 
 2.36.1.255.ge46751e96f-goog
 
