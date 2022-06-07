@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFEB3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:44:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B4CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:44:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376483AbiFGUop (ORCPT
+        id S1376301AbiFGUow (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:44:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
+        Tue, 7 Jun 2022 16:44:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357943AbiFGTmf (ORCPT
+        with ESMTP id S1357961AbiFGTmg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:42:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183C01116D;
-        Tue,  7 Jun 2022 11:17:24 -0700 (PDT)
+        Tue, 7 Jun 2022 15:42:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB23D20BDF;
+        Tue,  7 Jun 2022 11:17:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D2C160AD9;
-        Tue,  7 Jun 2022 18:17:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B7B2C385A2;
-        Tue,  7 Jun 2022 18:17:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77A78B82367;
+        Tue,  7 Jun 2022 18:17:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBB70C385A2;
+        Tue,  7 Jun 2022 18:17:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625843;
-        bh=goT196KiQfwpElqIN5celghRGMAp8wKph89erWgkuJs=;
+        s=korg; t=1654625849;
+        bh=g7XB8B2hXhx0t6vm3lGhWMstRlw7oJH8/lHkhtWU6kk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r+4YKREyhCjuymIEHZso5mfYjAsWGpGZ2/wq/wOAx9/I8rFVLRbwJXl05v+UrxVWp
-         hXITrWJVq1lG7QXe9bj2N8biTwjbFqTT+TgDok7cocu/zBfC3IoyO2EZF8k7Sj+zgd
-         gx4IG5nsGoSxqEkV+yYedBfuoFx088FChU7i3U5w=
+        b=h2aADI7odwPpUUMc0OdBSJLp7atW//f7NOr43hVYCCmUBpgQexNqpWg2kkMIxLQSH
+         QFJvNpmtMtK0MCBug7rBpBOkyZ1g10gSrJmekXwZk5/ROn6/HkVgA1D/pHtph7ZVA3
+         tDQfjbDnVTQje9EpC7E3v/L2tdTiF8u9Sbso0E8c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ross Burton <ross.burton@arm.com>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 162/772] of/fdt: Ignore disabled memory nodes
-Date:   Tue,  7 Jun 2022 18:55:54 +0200
-Message-Id: <20220607164953.815342455@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Richter <tmricht@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 126/772] s390/preempt: disable __preempt_count_add() optimization for PROFILE_ALL_BRANCHES
+Date:   Tue,  7 Jun 2022 18:55:18 +0200
+Message-Id: <20220607164952.757766395@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,87 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+From: Heiko Carstens <hca@linux.ibm.com>
 
-[ Upstream commit df5cd369876114f91f9ae60658fea80acfb15890 ]
+[ Upstream commit 63678eecec57fc51b778be3da35a397931287170 ]
 
-When we boot a machine using a devicetree, the generic DT code goes
-through all nodes with a 'device_type = "memory"' property, and collects
-all memory banks mentioned there. However it does not check for the
-status property, so any nodes which are explicitly "disabled" will still
-be added as a memblock.
-This ends up badly for QEMU, when booting with secure firmware on
-arm/arm64 machines, because QEMU adds a node describing secure-only
-memory:
-===================
-	secram@e000000 {
-		secure-status = "okay";
-		status = "disabled";
-		reg = <0x00 0xe000000 0x00 0x1000000>;
-		device_type = "memory";
-	};
-===================
+gcc 12 does not (always) optimize away code that should only be generated
+if parameters are constant and within in a certain range. This depends on
+various obscure kernel config options, however in particular
+PROFILE_ALL_BRANCHES can trigger this compile error:
 
-The kernel will eventually use that memory block (which is located below
-the main DRAM bank), but accesses to that will be answered with an
-SError:
-===================
-[    0.000000] Internal error: synchronous external abort: 96000050 [#1] PREEMPT SMP
-[    0.000000] Modules linked in:
-[    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 5.18.0-rc6-00014-g10c8acb8b679 #524
-[    0.000000] Hardware name: linux,dummy-virt (DT)
-[    0.000000] pstate: 200000c5 (nzCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[    0.000000] pc : new_slab+0x190/0x340
-[    0.000000] lr : new_slab+0x184/0x340
-[    0.000000] sp : ffff80000a4b3d10
-....
-==================
-The actual crash location and call stack will be somewhat random, and
-depend on the specific allocation of that physical memory range.
+In function ‘__atomic_add_const’,
+    inlined from ‘__preempt_count_add.part.0’ at ./arch/s390/include/asm/preempt.h:50:3:
+./arch/s390/include/asm/atomic_ops.h:80:9: error: impossible constraint in ‘asm’
+   80 |         asm volatile(                                                   \
+      |         ^~~
 
-As the DT spec[1] explicitly mentions standard properties, add a simple
-check to skip over disabled memory nodes, so that we only use memory
-that is meant for non-secure code to use.
+Workaround this by simply disabling the optimization for
+PROFILE_ALL_BRANCHES, since the kernel will be so slow, that this
+optimization won't matter at all.
 
-That fixes booting a QEMU arm64 VM with EL3 enabled ("secure=on"), when
-not using UEFI. In this case the QEMU generated DT will be handed on
-to the kernel, which will see the secram node.
-This issue is reproducible when using TF-A together with U-Boot as
-firmware, then booting with the "booti" command.
-
-When using U-Boot as an UEFI provider, the code there [2] explicitly
-filters for disabled nodes when generating the UEFI memory map, so we
-are safe.
-EDK/2 only reads the first bank of the first DT memory node [3] to learn
-about memory, so we got lucky there.
-
-[1] https://github.com/devicetree-org/devicetree-specification/blob/main/source/chapter3-devicenodes.rst#memory-node (after the table)
-[2] https://source.denx.de/u-boot/u-boot/-/blob/master/lib/fdtdec.c#L1061-1063
-[3] https://github.com/tianocore/edk2/blob/master/ArmVirtPkg/PrePi/FdtParser.c
-
-Reported-by: Ross Burton <ross.burton@arm.com>
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220517101410.3493781-1-andre.przywara@arm.com
+Reported-by: Thomas Richter <tmricht@linux.ibm.com>
+Reviewed-by: Sven Schnelle <svens@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/of/fdt.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/s390/include/asm/preempt.h | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index ec315b060cd5..0f30496ce80b 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -1105,6 +1105,9 @@ int __init early_init_dt_scan_memory(void)
- 		if (type == NULL || strcmp(type, "memory") != 0)
- 			continue;
+diff --git a/arch/s390/include/asm/preempt.h b/arch/s390/include/asm/preempt.h
+index d9d5350cc3ec..bf15da0fedbc 100644
+--- a/arch/s390/include/asm/preempt.h
++++ b/arch/s390/include/asm/preempt.h
+@@ -46,10 +46,17 @@ static inline bool test_preempt_need_resched(void)
  
-+		if (!of_fdt_device_is_available(fdt, node))
-+			continue;
-+
- 		reg = of_get_flat_dt_prop(node, "linux,usable-memory", &l);
- 		if (reg == NULL)
- 			reg = of_get_flat_dt_prop(node, "reg", &l);
+ static inline void __preempt_count_add(int val)
+ {
+-	if (__builtin_constant_p(val) && (val >= -128) && (val <= 127))
+-		__atomic_add_const(val, &S390_lowcore.preempt_count);
+-	else
+-		__atomic_add(val, &S390_lowcore.preempt_count);
++	/*
++	 * With some obscure config options and CONFIG_PROFILE_ALL_BRANCHES
++	 * enabled, gcc 12 fails to handle __builtin_constant_p().
++	 */
++	if (!IS_ENABLED(CONFIG_PROFILE_ALL_BRANCHES)) {
++		if (__builtin_constant_p(val) && (val >= -128) && (val <= 127)) {
++			__atomic_add_const(val, &S390_lowcore.preempt_count);
++			return;
++		}
++	}
++	__atomic_add(val, &S390_lowcore.preempt_count);
+ }
+ 
+ static inline void __preempt_count_sub(int val)
 -- 
 2.35.1
 
