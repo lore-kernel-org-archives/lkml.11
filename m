@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D575CCA495
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:02:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3769ECCA499
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:02:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358754AbiFGUCH (ORCPT
+        id S1358805AbiFGUCV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:02:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49228 "EHLO
+        Tue, 7 Jun 2022 16:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354370AbiFGTBM (ORCPT
+        with ESMTP id S1354861AbiFGTB3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:01:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B092150A16;
-        Tue,  7 Jun 2022 11:04:43 -0700 (PDT)
+        Tue, 7 Jun 2022 15:01:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59FA8152BB0;
+        Tue,  7 Jun 2022 11:04:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6305861804;
-        Tue,  7 Jun 2022 18:04:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70E6EC385A5;
-        Tue,  7 Jun 2022 18:04:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 126A9B81F38;
+        Tue,  7 Jun 2022 18:04:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E5C2C34115;
+        Tue,  7 Jun 2022 18:04:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625080;
-        bh=tTRXdsZk3qVL7leSZdmAYurzYGCe14BTkNs7eIceQfc=;
+        s=korg; t=1654625091;
+        bh=1dCLiXmDl2CygEcGAHLEhDctwJwsHtkve7vMV6l+/mg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kdtusdGwUY2GrUWoVHsF14dgsi0MDDfM5Ei9Gb8z0JCNceeuKGaVEiNXv/BBgJ5yo
-         zLe8UunfwzK2mz7wXBYr0BWJfdL5J1DcuM7aJM7FwekqXOaddw7ivmCi5CWKqo81n4
-         hKk4j4MkkzufRLpnYeRHkcQzUZLbpP8GZ7g0m+Us=
+        b=14q2Qm19elgdAqkOCXQDx/tlhk6uz3q98zPxq/RnIRkCZnVxZVsodXzEdbH3j6UCy
+         G+XZFfEcKlOaoSpKjLEyrBVxuUv1UgtgA8apofcrhXdnCKzZMAPhBUjqgv664u/q6/
+         Ed12lxTXDzj4xc7QfwnrHRxTw76ARqYjpSBKDKe8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Oscar Salvador <osalvador@suse.de>,
-        Don Dutile <ddutile@redhat.com>,
-        Wonhyuk Yang <vvghjk1234@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.15 558/667] mm, compaction: fast_find_migrateblock() should return pfn in the target zone
-Date:   Tue,  7 Jun 2022 19:03:43 +0200
-Message-Id: <20220607164951.435153923@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        David Teigland <teigland@redhat.com>
+Subject: [PATCH 5.15 562/667] dlm: uninitialized variable on error in dlm_listen_for_all()
+Date:   Tue,  7 Jun 2022 19:03:47 +0200
+Message-Id: <20220607164951.552022686@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -54,49 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit bbe832b9db2e1ad21522f8f0bf02775fff8a0e0e upstream.
+commit 1f4f10845e14690b02410de50d9ea9684625a4ae upstream.
 
-At present, pages not in the target zone are added to cc->migratepages
-list in isolate_migratepages_block().  As a result, pages may migrate
-between nodes unintentionally.
+The "sock" variable is not initialized on this error path.
 
-This would be a serious problem for older kernels without commit
-a984226f457f849e ("mm: memcontrol: remove the pgdata parameter of
-mem_cgroup_page_lruvec"), because it can corrupt the lru list by
-handling pages in list without holding proper lru_lock.
-
-Avoid returning a pfn outside the target zone in the case that it is
-not aligned with a pageblock boundary.  Otherwise
-isolate_migratepages_block() will handle pages not in the target zone.
-
-Link: https://lkml.kernel.org/r/20220511044300.4069-1-yamamoto.rei@jp.fujitsu.com
-Fixes: 70b44595eafe ("mm, compaction: use free lists to quickly locate a migration source")
-Signed-off-by: Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-Acked-by: Mel Gorman <mgorman@techsingularity.net>
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
-Cc: Don Dutile <ddutile@redhat.com>
-Cc: Wonhyuk Yang <vvghjk1234@gmail.com>
-Cc: Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Fixes: 2dc6b1158c28 ("fs: dlm: introduce generic listen")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+Signed-off-by: David Teigland <teigland@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/compaction.c |    2 ++
- 1 file changed, 2 insertions(+)
+ fs/dlm/lowcomms.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/compaction.c
-+++ b/mm/compaction.c
-@@ -1815,6 +1815,8 @@ static unsigned long fast_find_migratebl
+--- a/fs/dlm/lowcomms.c
++++ b/fs/dlm/lowcomms.c
+@@ -1776,7 +1776,7 @@ static int dlm_listen_for_all(void)
+ 				  SOCK_STREAM, dlm_proto_ops->proto, &sock);
+ 	if (result < 0) {
+ 		log_print("Can't create comms socket, check SCTP is loaded");
+-		goto out;
++		return result;
+ 	}
  
- 				update_fast_start_pfn(cc, free_pfn);
- 				pfn = pageblock_start_pfn(free_pfn);
-+				if (pfn < cc->zone->zone_start_pfn)
-+					pfn = cc->zone->zone_start_pfn;
- 				cc->fast_search_fail = 0;
- 				found_block = true;
- 				set_pageblock_skip(freepage);
+ 	sock_set_mark(sock->sk, dlm_config.ci_mark);
 
 
