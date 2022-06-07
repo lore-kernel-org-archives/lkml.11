@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC9EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C3F1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382258AbiFGWkB (ORCPT
+        id S1383222AbiFGWkQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:40:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46212 "EHLO
+        Tue, 7 Jun 2022 18:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379070AbiFGVZL (ORCPT
+        with ESMTP id S1379528AbiFGVZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:25:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CF9227CFB;
-        Tue,  7 Jun 2022 12:01:28 -0700 (PDT)
+        Tue, 7 Jun 2022 17:25:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F5522871B;
+        Tue,  7 Jun 2022 12:01:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D6F41617CC;
-        Tue,  7 Jun 2022 19:01:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA949C385A2;
-        Tue,  7 Jun 2022 19:01:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 019CAB8220B;
+        Tue,  7 Jun 2022 19:01:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EB63C385A5;
+        Tue,  7 Jun 2022 19:01:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628487;
-        bh=+tuo2CRgp+QVPGwPvewXtMmsI8rHSTGcq5AMWNkynzk=;
+        s=korg; t=1654628509;
+        bh=LQq/7blpbZyhfx4zRTEyWiRAUMsgZCLnSCZeVlsS+RE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S87ANvnJpIDEvhi0sPwEubYmdvViMZAFnYhYhhGIqKpLelV1E+ZvgjJiDhSAOJU8j
-         gUKcftrNsp1MimqcaUa6TSnk+MzuwTu4AtoO0d2JoesAnR0POtiJyoFOwoiQuiL55U
-         lGtVdlrY0Ng2ZtdQ0gA3P6kKm2b19r2kQsPklBd4=
+        b=I+FAD5ANiGV5TI/769ITUsqdpOzN998TTd+wuBzq4jhuNPnEldtpmD21sXL3iXc4k
+         3ZP1pl4ufwAR4FBEhRaHvq3TsgWMY8nsUZHpYLP75gV6G49AM7u+F3OpxFxEYUD4gB
+         e1/ifH3KQXmeQDQMWO491Bo6t658pF8W8nnCx/pY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Adam Ward <Adam.Ward.Opensource@diasemi.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 347/879] mtdblock: warn if opened on NAND
-Date:   Tue,  7 Jun 2022 18:57:45 +0200
-Message-Id: <20220607165012.932889479@linuxfoundation.org>
+Subject: [PATCH 5.18 328/879] regulator: da9121: Fix uninit-value in da9121_assign_chip_model()
+Date:   Tue,  7 Jun 2022 18:57:26 +0200
+Message-Id: <20220607165012.374554430@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,87 +52,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjørn Mork <bjorn@mork.no>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit 96a3295c351da82d7af99b2fc004a3cf9f4716a9 ]
+[ Upstream commit bab76514aca36bc513224525d5598da676938218 ]
 
-Warning on every translated mtd partition results in excessive log noise
-if this driver is loaded:
+KASAN report slab-out-of-bounds in __regmap_init as follows:
 
-  nand: device found, Manufacturer ID: 0xc2, Chip ID: 0xf1
-  nand: Macronix MX30LF1G18AC
-  nand: 128 MiB, SLC, erase size: 128 KiB, page size: 2048, OOB size: 64
-  mt7621-nand 1e003000.nand: ECC strength adjusted to 4 bits
-  read_bbt: found bbt at block 1023
-  10 fixed-partitions partitions found on MTD device mt7621-nand
-  Creating 10 MTD partitions on "mt7621-nand":
-  0x000000000000-0x000000080000 : "Bootloader"
-  mtdblock: MTD device 'Bootloader' is NAND, please consider using UBI block devices instead.
-  0x000000080000-0x000000100000 : "Config"
-  mtdblock: MTD device 'Config' is NAND, please consider using UBI block devices instead.
-  0x000000100000-0x000000140000 : "Factory"
-  mtdblock: MTD device 'Factory' is NAND, please consider using UBI block devices instead.
-  0x000000140000-0x000002000000 : "Kernel"
-  mtdblock: MTD device 'Kernel' is NAND, please consider using UBI block devices instead.
-  0x000000540000-0x000002000000 : "ubi"
-  mtdblock: MTD device 'ubi' is NAND, please consider using UBI block devices instead.
-  0x000002140000-0x000004000000 : "Kernel2"
-  mtdblock: MTD device 'Kernel2' is NAND, please consider using UBI block devices instead.
-  0x000004000000-0x000004100000 : "wwan"
-  mtdblock: MTD device 'wwan' is NAND, please consider using UBI block devices instead.
-  0x000004100000-0x000005100000 : "data"
-  mtdblock: MTD device 'data' is NAND, please consider using UBI block devices instead.
-  0x000005100000-0x000005200000 : "rom-d"
-  mtdblock: MTD device 'rom-d' is NAND, please consider using UBI block devices instead.
-  0x000005200000-0x000005280000 : "reserve"
-  mtdblock: MTD device 'reserve' is NAND, please consider using UBI block devices instead.
-  mtk_soc_eth 1e100000.ethernet eth0: mediatek frame engine at 0xbe100000, irq 21
+BUG: KASAN: slab-out-of-bounds in __regmap_init drivers/base/regmap/regmap.c:841
+Read of size 1 at addr ffff88803678cdf1 by task xrun/9137
 
-This is more likely to annoy than to help users of embedded distros where
-this driver is enabled by default.  Making the blockdevs available does
-not imply that they are in use, and warning about bootloader partitions
-or other devices which obviously never will be mounted is more confusing
-than helpful.
+CPU: 0 PID: 9137 Comm: xrun Tainted: G        W         5.18.0-rc2
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x15a lib/dump_stack.c:88
+ print_report.cold+0xcd/0x69b mm/kasan/report.c:313
+ kasan_report+0x8e/0xc0 mm/kasan/report.c:491
+ __regmap_init+0x4540/0x4ba0 drivers/base/regmap/regmap.c:841
+ __devm_regmap_init+0x7a/0x100 drivers/base/regmap/regmap.c:1266
+ __devm_regmap_init_i2c+0x65/0x80 drivers/base/regmap/regmap-i2c.c:394
+ da9121_i2c_probe+0x386/0x6d1 drivers/regulator/da9121-regulator.c:1039
+ i2c_device_probe+0x959/0xac0 drivers/i2c/i2c-core-base.c:563
 
-Move the warning to open(), where it will be of more use - actually warning
-anyone who mounts a file system on NAND using mtdblock.
+This happend when da9121 device is probe by da9121_i2c_id, but with
+invalid dts. Thus, chip->subvariant_id is set to -EINVAL, and later
+da9121_assign_chip_model() will access 'regmap' without init it.
 
-Fixes: e07403a8c6be ("mtdblock: Warn if added for a NAND device")
-Signed-off-by: Bjørn Mork <bjorn@mork.no>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220328161108.87757-1-bjorn@mork.no
+Fix it by return -EINVAL from da9121_assign_chip_model() if
+'chip->subvariant_id' is invalid.
+
+Fixes: f3fbd5566f6a ("regulator: da9121: Add device variants")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Reviewed-by: Adam Ward <Adam.Ward.Opensource@diasemi.com>
+Link: https://lore.kernel.org/r/20220421090335.1876149-1-weiyongjun1@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/mtdblock.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/regulator/da9121-regulator.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/mtd/mtdblock.c b/drivers/mtd/mtdblock.c
-index 03e3de3a5d79..1e94e7d10b8b 100644
---- a/drivers/mtd/mtdblock.c
-+++ b/drivers/mtd/mtdblock.c
-@@ -257,6 +257,10 @@ static int mtdblock_open(struct mtd_blktrans_dev *mbd)
- 		return 0;
+diff --git a/drivers/regulator/da9121-regulator.c b/drivers/regulator/da9121-regulator.c
+index eb9df485bd8a..76e0e23bf598 100644
+--- a/drivers/regulator/da9121-regulator.c
++++ b/drivers/regulator/da9121-regulator.c
+@@ -1030,6 +1030,8 @@ static int da9121_assign_chip_model(struct i2c_client *i2c,
+ 		chip->variant_id = DA9121_TYPE_DA9142;
+ 		regmap = &da9121_2ch_regmap_config;
+ 		break;
++	default:
++		return -EINVAL;
  	}
  
-+	if (mtd_type_is_nand(mbd->mtd))
-+		pr_warn("%s: MTD device '%s' is NAND, please consider using UBI block devices instead.\n",
-+			mbd->tr->name, mbd->mtd->name);
-+
- 	/* OK, it's not open. Create cache info for it */
- 	mtdblk->count = 1;
- 	mutex_init(&mtdblk->cache_mutex);
-@@ -322,10 +326,6 @@ static void mtdblock_add_mtd(struct mtd_blktrans_ops *tr, struct mtd_info *mtd)
- 	if (!(mtd->flags & MTD_WRITEABLE))
- 		dev->mbd.readonly = 1;
- 
--	if (mtd_type_is_nand(mtd))
--		pr_warn("%s: MTD device '%s' is NAND, please consider using UBI block devices instead.\n",
--			tr->name, mtd->name);
--
- 	if (add_mtd_blktrans_dev(&dev->mbd))
- 		kfree(dev);
- }
+ 	/* Set these up for of_regulator_match call which may want .of_map_modes */
 -- 
 2.35.1
 
