@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8702CCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC6CECCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:06:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383663AbiFGWGI (ORCPT
+        id S1383609AbiFGWGA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:06:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53574 "EHLO
+        Tue, 7 Jun 2022 18:06:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379405AbiFGVFz (ORCPT
+        with ESMTP id S1379299AbiFGVFv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:05:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F5118E47E;
-        Tue,  7 Jun 2022 11:49:27 -0700 (PDT)
+        Tue, 7 Jun 2022 17:05:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E66418DAEC;
+        Tue,  7 Jun 2022 11:49:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D5846156D;
-        Tue,  7 Jun 2022 18:49:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89095C385A5;
-        Tue,  7 Jun 2022 18:49:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19185616C3;
+        Tue,  7 Jun 2022 18:49:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F9DCC385A5;
+        Tue,  7 Jun 2022 18:49:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627765;
-        bh=mFZmCmXfkFOAG5ewdktFRxWxnqMPBYAH8t2tEQhXe+o=;
+        s=korg; t=1654627760;
+        bh=nQbb+Dvg94Bd3lpBOt9d1emxz4LV6Rz434ipGpczzEo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P9HUP1DbnV8cFB12TOWTE+2ngn1VhqVZmh4XIQTzsQZJN1W3v5Rys8B1DpaQAANdy
-         Yf7rleUBjlq+5ktqe1K5bn2OUjFvbxxM5REgsUFbYqToigRVvryobppR8rj7EG9EkV
-         md58Gidu5+JaIbZrOi8htjOJ4JdwesIa+G0uuf0c=
+        b=HBDS54y+/P/NdToJ5eWBUAOYp8wDE5yJ05Yw3c0IvsBiGyq8+tJCrV5dS2wv+/Rzr
+         uyWp5ZKyHZi8rjDGdF0bV3mVK6kxZ9ipbY1xqqf0P+1s4OPBUZPpkvzedjtiKYP30e
+         Fz/if3pIF7+OfNHB6Q41H4pVFfuqlYmPG6jDn6uY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Len Brown <len.brown@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 085/879] tools/power turbostat: fix ICX DRAM power numbers
-Date:   Tue,  7 Jun 2022 18:53:23 +0200
-Message-Id: <20220607165005.159684515@linuxfoundation.org>
+        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 066/879] b43legacy: Fix assigning negative value to unsigned variable
+Date:   Tue,  7 Jun 2022 18:53:04 +0200
+Message-Id: <20220607165004.608582811@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,32 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Len Brown <len.brown@intel.com>
+From: Haowen Bai <baihaowen@meizu.com>
 
-[ Upstream commit 6397b6418935773a34b533b3348b03f4ce3d7050 ]
+[ Upstream commit 3f6b867559b3d43a7ce1b4799b755e812fc0d503 ]
 
-ICX (and its duplicates) require special hard-coded DRAM RAPL units,
-rather than using the generic RAPL energy units.
+fix warning reported by smatch:
+drivers/net/wireless/broadcom/b43legacy/phy.c:1181 b43legacy_phy_lo_b_measure()
+warn: assigning (-772) to unsigned variable 'fval'
 
-Reported-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Signed-off-by: Len Brown <len.brown@intel.com>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/1648203433-8736-1-git-send-email-baihaowen@meizu.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/power/x86/turbostat/turbostat.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/broadcom/b43legacy/phy.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
-index bc5ae0872fed..babede4486de 100644
---- a/tools/power/x86/turbostat/turbostat.c
-+++ b/tools/power/x86/turbostat/turbostat.c
-@@ -4376,6 +4376,7 @@ static double rapl_dram_energy_units_probe(int model, double rapl_energy_units)
- 	case INTEL_FAM6_BROADWELL_X:	/* BDX */
- 	case INTEL_FAM6_SKYLAKE_X:	/* SKX */
- 	case INTEL_FAM6_XEON_PHI_KNL:	/* KNL */
-+	case INTEL_FAM6_ICELAKE_X:	/* ICX */
- 		return (rapl_dram_energy_units = 15.3 / 1000000);
- 	default:
- 		return (rapl_energy_units);
+diff --git a/drivers/net/wireless/broadcom/b43legacy/phy.c b/drivers/net/wireless/broadcom/b43legacy/phy.c
+index 05404fbd1e70..c1395e622759 100644
+--- a/drivers/net/wireless/broadcom/b43legacy/phy.c
++++ b/drivers/net/wireless/broadcom/b43legacy/phy.c
+@@ -1123,7 +1123,7 @@ void b43legacy_phy_lo_b_measure(struct b43legacy_wldev *dev)
+ 	struct b43legacy_phy *phy = &dev->phy;
+ 	u16 regstack[12] = { 0 };
+ 	u16 mls;
+-	u16 fval;
++	s16 fval;
+ 	int i;
+ 	int j;
+ 
 -- 
 2.35.1
 
