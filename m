@@ -2,134 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B462CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8ABDCCA483
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443846AbiFHCGr (ORCPT
+        id S1382648AbiFHCFp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:06:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48964 "EHLO
+        Tue, 7 Jun 2022 22:05:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1587993AbiFGXx7 (ORCPT
+        with ESMTP id S1383365AbiFHAYz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:53:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1739A26147C
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:20:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654629543;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jzPfLQqqrOOrtPSbwWM44VdH1zcU6PIWuEvhTsmS8xA=;
-        b=R37Y1GVPekIj+Q9A8xdbBvgan4hijYyZJjp2+jI2t0rI217WWrh/GR2MRDJyC4w7hBGMrO
-        308O/VcHzVyq6M5+ogKNSpDC8IN5ZzUJvkcK54DbzqLrjMHdls8u1fBDFfQ6Nm5Zj1OTSa
-        6JUPKY40lL8UUxQtdviV+XYf0zMAhbM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-634-L--pSe0POhiARLMLyaMN1g-1; Tue, 07 Jun 2022 15:12:58 -0400
-X-MC-Unique: L--pSe0POhiARLMLyaMN1g-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7106A101E165;
-        Tue,  7 Jun 2022 19:11:27 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.9.252])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 88D26412C4B0;
-        Tue,  7 Jun 2022 19:10:57 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org
-Cc:     Wayne Lin <Wayne.Lin@amd.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [RFC 06/18] drm/display/dp_mst: Add some missing kdocs for atomic MST structs
-Date:   Tue,  7 Jun 2022 15:07:03 -0400
-Message-Id: <20220607190715.1331124-7-lyude@redhat.com>
-In-Reply-To: <20220607190715.1331124-1-lyude@redhat.com>
-References: <20220607190715.1331124-1-lyude@redhat.com>
+        Tue, 7 Jun 2022 20:24:55 -0400
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82032279359;
+        Tue,  7 Jun 2022 12:39:47 -0700 (PDT)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id BA89E1C0BBA; Tue,  7 Jun 2022 21:39:34 +0200 (CEST)
+Date:   Tue, 7 Jun 2022 21:39:34 +0200
+From:   Pavel Machek <pavel@denx.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.10 000/452] 5.10.121-rc1 review
+Message-ID: <20220607193934.GA27442@duo.ucw.cz>
+References: <20220607164908.521895282@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="h31gzZEtNLTqOjlF"
+Content-Disposition: inline
+In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since we're about to start adding some stuff here, we may as well fill in
-any missing documentation that we forgot to write.
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: Wayne Lin <Wayne.Lin@amd.com>
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Imre Deak <imre.deak@intel.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Sean Paul <sean@poorly.run>
----
- include/drm/display/drm_dp_mst_helper.h | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+--h31gzZEtNLTqOjlF
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/include/drm/display/drm_dp_mst_helper.h b/include/drm/display/drm_dp_mst_helper.h
-index 8ab4f14f2344..eb0ea578b227 100644
---- a/include/drm/display/drm_dp_mst_helper.h
-+++ b/include/drm/display/drm_dp_mst_helper.h
-@@ -542,19 +542,43 @@ struct drm_dp_payload {
- 
- #define to_dp_mst_topology_state(x) container_of(x, struct drm_dp_mst_topology_state, base)
- 
-+/**
-+ * struct drm_dp_mst_atomic_payload - Atomic state struct for an MST payload
-+ *
-+ * The primary atomic state structure for a given MST payload. Stores information like current
-+ * bandwidth allocation, intended action for this payload, etc.
-+ */
- struct drm_dp_mst_atomic_payload {
-+	/** @port: The MST port assigned to this payload */
- 	struct drm_dp_mst_port *port;
-+	/** @time_slots: The number of timeslots allocated to this payload */
- 	int time_slots;
-+	/** @pbn: The payload bandwidth for this payload */
- 	int pbn;
-+	/** @dsc_enabled: Whether or not this payload has DSC enabled */
- 	bool dsc_enabled;
-+
-+	/** @next: The list node for this payload */
- 	struct list_head next;
- };
- 
-+/**
-+ * struct drm_dp_mst_topology_state - DisplayPort MST topology atomic state
-+ *
-+ * This struct represents the atomic state of the toplevel DisplayPort MST manager
-+ */
- struct drm_dp_mst_topology_state {
-+	/** @base: Base private state for atomic */
- 	struct drm_private_state base;
-+
-+	/** @payloads: The list of payloads being created/destroyed in this state */
- 	struct list_head payloads;
-+	/** @mgr: The topology manager */
- 	struct drm_dp_mst_topology_mgr *mgr;
-+
-+	/** @total_avail_slots: The total number of slots this topology can handle (63 or 64) */
- 	u8 total_avail_slots;
-+	/** @start_slot: The first usable time slot in this topology (1 or 0) */
- 	u8 start_slot;
- };
- 
--- 
-2.35.3
+Hi!
 
+> This is the start of the stable review cycle for the 5.10.121 release.
+> There are 452 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+
+CIP testing did not find any problems here:
+
+https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
+5.10.y
+
+Tested-by: Pavel Machek (CIP) <pavel@denx.de>
+
+Best regards,
+                                                                Pavel
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--h31gzZEtNLTqOjlF
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYp+pdgAKCRAw5/Bqldv6
+8vreAJoCS2NRr31iOf1bEGybo66Ity7kyACgjF+AlPpfJQPm87Faop0JckgSs98=
+=R1pa
+-----END PGP SIGNATURE-----
+
+--h31gzZEtNLTqOjlF--
