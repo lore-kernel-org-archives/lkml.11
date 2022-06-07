@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE7A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF1E5C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377505AbiFGVCo (ORCPT
+        id S1377791AbiFGVC4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:02:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34952 "EHLO
+        Tue, 7 Jun 2022 17:02:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358374AbiFGUA7 (ORCPT
+        with ESMTP id S1358404AbiFGUBF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:00:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8207FD4A3D;
-        Tue,  7 Jun 2022 11:24:56 -0700 (PDT)
+        Tue, 7 Jun 2022 16:01:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC491BF829;
+        Tue,  7 Jun 2022 11:25:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52B1CB8237F;
-        Tue,  7 Jun 2022 18:24:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0297C385A5;
-        Tue,  7 Jun 2022 18:24:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B740EB82380;
+        Tue,  7 Jun 2022 18:24:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31217C385A2;
+        Tue,  7 Jun 2022 18:24:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626257;
-        bh=fnG+UK/GdWNYtSgoQqZ5bqzvkDaVX9q79kRygAvrBt8=;
+        s=korg; t=1654626295;
+        bh=QC86eaR/Z38/8g/VRUCfa+oQBHk1N5srI9aCg/xtso0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cz5nDozrmhMe308RjGfkgdF3SinEA4mN6zz54qWSdU4X4bT8qgsRPGmuaWsv6I5qu
-         WNW/yCUkDjW6XpZYoIly8lyxvru2s0i+9PUj9PCyh87n+1KmU3WXyIIXEG4hZZ37A5
-         HYUiJzpy2xnt3eHtUeMrRx8PbXqWnlcLHaHHL1Do=
+        b=aMWYQuuRifbovV3kbCR5H62hrJnDzvVyY4vQKHu+a4MVsnHyI/uhtmQTDzav7Ri5E
+         BcCNdXmTODGvay/UAzTGWaT9cku3Q+Fq7QptN3iUIx0Gwno902+KSJw1Qmjr62wr0y
+         wBqstS6/MysEolIIf5+Hq/lbFUgItKnMZUH7vYAM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luca Ceresoli <luca.ceresoli@bootlin.com>,
+        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
+        Ian Abbott <abbotti@mev.co.uk>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 296/772] spi: rockchip: fix missing error on unsupported SPI_CS_HIGH
-Date:   Tue,  7 Jun 2022 18:58:08 +0200
-Message-Id: <20220607164957.745814757@linuxfoundation.org>
+Subject: [PATCH 5.17 326/772] spi: cadence-quadspi: fix Direct Access Mode disable for SoCFPGA
+Date:   Tue,  7 Jun 2022 18:58:38 +0200
+Message-Id: <20220607164958.627569468@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,68 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Ceresoli <luca.ceresoli@bootlin.com>
+From: Ian Abbott <abbotti@mev.co.uk>
 
-[ Upstream commit d5d933f09ac326aebad85bfb787cc786ad477711 ]
+[ Upstream commit f724c296f2f2cc3f9342b0fc26239635cbed856e ]
 
-The hardware (except for the ROCKCHIP_SPI_VER2_TYPE2 version) does not
-support active-high native chip selects. However if such a CS is configured
-the core does not error as it normally should, because the
-'ctlr->use_gpio_descriptors = true' line in rockchip_spi_probe() makes the
-core set SPI_CS_HIGH in ctlr->mode_bits.
+The Cadence QSPI compatible string required for the SoCFPGA platform
+changed from the default "cdns,qspi-nor" to "intel,socfpga-qspi" with
+the introduction of an additional quirk in
+commit 98d948eb8331 ("spi: cadence-quadspi: fix write completion support").
+However, that change did not preserve the previously used
+quirk for this platform.  Reinstate the `CQSPI_DISABLE_DAC_MODE` quirk
+for the SoCFPGA platform.
 
-In such a case the spi-rockchip driver operates normally but produces an
-active-low chip select signal without notice.
-
-There is no provision in the current core code to handle this
-situation. Fix by adding a check in the ctlr->setup function (similarly to
-what spi-atmel.c does).
-
-This cannot be done reading the SPI_CS_HIGH but in ctlr->mode_bits because
-that bit gets always set by the core for master mode (see above).
-
-Fixes: eb1262e3cc8b ("spi: spi-rockchip: use num-cs property and ctlr->enable_gpiods")
-Signed-off-by: Luca Ceresoli <luca.ceresoli@bootlin.com>
-Link: https://lore.kernel.org/r/20220421213251.1077899-1-luca.ceresoli@bootlin.com
+Fixes: 98d948eb8331 ("spi: cadence-quadspi: fix write completion support")
+Cc: Dinh Nguyen <dinguyen@kernel.org>
+Signed-off-by: Ian Abbott <abbotti@mev.co.uk>
+Link: https://lore.kernel.org/r/20220427153446.10113-1-abbotti@mev.co.uk
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-rockchip.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/spi/spi-cadence-quadspi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-rockchip.c b/drivers/spi/spi-rockchip.c
-index 83da8fdb3c02..b721b62118e1 100644
---- a/drivers/spi/spi-rockchip.c
-+++ b/drivers/spi/spi-rockchip.c
-@@ -196,6 +196,8 @@ struct rockchip_spi {
- 
- 	bool slave_abort;
- 	bool cs_inactive; /* spi slave tansmition stop when cs inactive */
-+	bool cs_high_supported; /* native CS supports active-high polarity */
-+
- 	struct spi_transfer *xfer; /* Store xfer temporarily */
+diff --git a/drivers/spi/spi-cadence-quadspi.c b/drivers/spi/spi-cadence-quadspi.c
+index b8ac24318cb3..85a33bcb7884 100644
+--- a/drivers/spi/spi-cadence-quadspi.c
++++ b/drivers/spi/spi-cadence-quadspi.c
+@@ -1863,7 +1863,7 @@ static const struct cqspi_driver_platdata intel_lgm_qspi = {
  };
  
-@@ -718,6 +720,11 @@ static int rockchip_spi_setup(struct spi_device *spi)
- 	struct rockchip_spi *rs = spi_controller_get_devdata(spi->controller);
- 	u32 cr0;
+ static const struct cqspi_driver_platdata socfpga_qspi = {
+-	.quirks = CQSPI_NO_SUPPORT_WR_COMPLETION,
++	.quirks = CQSPI_DISABLE_DAC_MODE | CQSPI_NO_SUPPORT_WR_COMPLETION,
+ };
  
-+	if (!spi->cs_gpiod && (spi->mode & SPI_CS_HIGH) && !rs->cs_high_supported) {
-+		dev_warn(&spi->dev, "setup: non GPIO CS can't be active-high\n");
-+		return -EINVAL;
-+	}
-+
- 	pm_runtime_get_sync(rs->dev);
- 
- 	cr0 = readl_relaxed(rs->regs + ROCKCHIP_SPI_CTRLR0);
-@@ -898,6 +905,7 @@ static int rockchip_spi_probe(struct platform_device *pdev)
- 
- 	switch (readl_relaxed(rs->regs + ROCKCHIP_SPI_VERSION)) {
- 	case ROCKCHIP_SPI_VER2_TYPE2:
-+		rs->cs_high_supported = true;
- 		ctlr->mode_bits |= SPI_CS_HIGH;
- 		if (ctlr->can_dma && slave_mode)
- 			rs->cs_inactive = true;
+ static const struct cqspi_driver_platdata versal_ospi = {
 -- 
 2.35.1
 
