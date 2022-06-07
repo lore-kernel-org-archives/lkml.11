@@ -2,76 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C55C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 06:57:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1DFCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 06:57:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237366AbiFGG5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 02:57:39 -0400
+        id S237384AbiFGG5x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 02:57:53 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237352AbiFGG5d (ORCPT
+        with ESMTP id S237253AbiFGG5r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 02:57:33 -0400
-Received: from smtpbg151.qq.com (smtpbg151.qq.com [18.169.211.239])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6E873CA6D
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 23:57:21 -0700 (PDT)
-X-QQ-mid: bizesmtp73t1654585032t8s42oo4
-Received: from localhost.localdomain ( [113.57.152.160])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 07 Jun 2022 14:57:10 +0800 (CST)
-X-QQ-SSF: 01400000002000B0I000B00A0000000
-X-QQ-FEAT: 3uawQE1sH+0UENyeZvBC2+CqJpj1X/QUXqr0o5erVBPRI3rYEoJGAe8aH2Z25
-        8OgPf7MwX9EgjwGBudMmQ6qGoUtpJ/S+lJ5tB7hvZq8BsklQ+Yt7UcoTMhRoxww78M7Z13o
-        iDaqoANJdy69LLTTKtKCmYTYlUpyehXGDJj/kzTX3ue0Z1JpMbs0FU+VyjkWV4fSWaFBXWM
-        Fa/2ovqlMsZoPK+4dnDWbht8YPZRCTwnNq/UIIh6wMehcRPW0Puw+R201pgKlRyRzNUEAHm
-        A3cxriZ4W2WkpbJw3dttm5tp3gA28bJn4a+G/1/aU/geTTbxGN2WrP/9wwV7rorXT7kTYfC
-        xdcd8dN2/bOVpFbf54=
-X-QQ-GoodBg: 2
-From:   huangwenhui <huangwenhuia@uniontech.com>
-To:     tiwai@suse.com, perex@perex.cz
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        huangwenhui <huangwenhuia@uniontech.com>
-Subject: [PATCH] ALSA: hda/conexant - Fix loopback issue with CX20632
-Date:   Tue,  7 Jun 2022 14:56:31 +0800
-Message-Id: <20220607065631.10708-1-huangwenhuia@uniontech.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign9
-X-QQ-Bgrelay: 1
+        Tue, 7 Jun 2022 02:57:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6AA445054
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 23:57:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E85A3615D7
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 06:57:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53906C385A5;
+        Tue,  7 Jun 2022 06:57:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654585054;
+        bh=KtiWr7sEF7GfIlwMm5Ji32JbOt1njWfIOM/HdH0FO2c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=k+9w7LrYZSqSdHLpc2OnoBXt7Kkv14vdn//d6IHqDyUukWP+f8A7h0OG6dAvsVNFe
+         V2PewoOJ2mXNJz+mG5/kp5yFR2zR7QMJvHFqaThnT+oFSXAwxy8YlMI0I3WYhcF/KK
+         JlQl0fTOBfnhBiRa3HMb5MAdy1BVCVnLySfJ9tK/raNpPdAhNJY4IyxQB/pF70VKRK
+         G0POUxwaIiCl8s/KwEW9kq+2kARgVFFqjImggOaaufjO6wcheGqQl4WsnUJWdyPncD
+         E1fSpt629hT8pkgiJsENieSxyOVdb+SUcDy/ByoiNpQcm7gGNLDSFBAwgkr0tihEPc
+         AlryR8DEMW+Jg==
+Received: from ip-185-104-136-29.ptr.icomera.net ([185.104.136.29] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nyT9d-00G5KH-6M; Tue, 07 Jun 2022 07:57:31 +0100
+Date:   Tue, 07 Jun 2022 07:56:52 +0100
+Message-ID: <87tu8xyn9n.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jianmin Lv <lvjianmin@loongson.cn>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH RFC V2 02/10] irqchip: Add LoongArch CPU interrupt controller support
+In-Reply-To: <0c6b88f8-c100-4068-5370-c30e95365b3c@loongson.cn>
+References: <1653649335-11998-1-git-send-email-lvjianmin@loongson.cn>
+        <1653649335-11998-3-git-send-email-lvjianmin@loongson.cn>
+        <87bkvf56wg.wl-maz@kernel.org>
+        <64990891.8322.18119c6d212.Coremail.lvjianmin@loongson.cn>
+        <87a6ax6c0n.wl-maz@kernel.org>
+        <1c7b1ee5-3f1e-c090-fb2e-65741de76a9f@loongson.cn>
+        <871qw25ctt.wl-maz@kernel.org>
+        <0c6b88f8-c100-4068-5370-c30e95365b3c@loongson.cn>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 185.104.136.29
+X-SA-Exim-Rcpt-To: lvjianmin@loongson.cn, tglx@linutronix.de, linux-kernel@vger.kernel.org, lixuefeng@loongson.cn, chenhuacai@gmail.com, jiaxun.yang@flygoat.com, chenhuacai@loongson.cn, guohanjun@huawei.com, lorenzo.pieralisi@arm.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On a machine with CX20632,Alsamixer doesn't have 'Loopback
-Mixing' and 'Line'.
+On Tue, 07 Jun 2022 04:41:22 +0100,
+Jianmin Lv <lvjianmin@loongson.cn> wrote:
+>=20
+>=20
+> On 2022/6/6 =E4=B8=8B=E5=8D=886:02, Marc Zyngier wrote:
+> > + Lorenzo and Hanjun who maintain the ACPI irq code
+> >=20
+> > On Thu, 02 Jun 2022 04:16:30 +0100,
+> > Jianmin Lv <lvjianmin@loongson.cn> wrote:
 
-Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
----
- sound/pci/hda/patch_conexant.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+[...]
 
-diff --git a/sound/pci/hda/patch_conexant.c b/sound/pci/hda/patch_conexant.c
-index aa360a0af284..1248d1a51cf0 100644
---- a/sound/pci/hda/patch_conexant.c
-+++ b/sound/pci/hda/patch_conexant.c
-@@ -1052,6 +1052,13 @@ static int patch_conexant_auto(struct hda_codec *codec)
- 		snd_hda_pick_fixup(codec, cxt5051_fixup_models,
- 				   cxt5051_fixups, cxt_fixups);
- 		break;
-+	case 0x14f15098:
-+		codec->pin_amp_workaround = 1;
-+		spec->gen.mixer_nid = 0x22;
-+		spec->gen.add_stereo_mix_input = HDA_HINT_STEREO_MIX_AUTO;
-+		snd_hda_pick_fixup(codec, cxt5066_fixup_models,
-+				   cxt5066_fixups, cxt_fixups);
-+		break;
- 	case 0x14f150f2:
- 		codec->power_save_node = 1;
- 		fallthrough;
--- 
-2.20.1
+> >> I'm so sorry, I really don't find a way to reuse driver/acpi/irq.c
+> >> after my humble work.
+> > I don't think reimplementing ACPI is the solution. What could be a
+> > reasonable approach is a way to overload the retrieval of the
+> > acpi_gsi_domain_id fwnode with a GSI parameter.
+> >=20
+> > I hacked the following patch, which will give you an idea of what I
+> > have in mind (only compile-tested).
+>=20
+>=20
+> Hi, Marc, thanks so much for your patch. I have verified it on my
+> LoongArch machine and it works well.
+>=20
+>=20
+> BTW, in acpi_get_irq_source_fwhandle(), maybe
+> acpi_get_gsi_domain_id(ctx->index) is needed to changed to
+> acpi_get_gsi_domain_id(irq->interrupts[ctx->index])?
 
+Yes, absolutely. Thanks for spotting it.
 
+> I have another question, for LoongArch, acpi_isa_irq_to_gsi is
+> required to implemente, but no common version, do we need to
+> implemente an weak version in driver/acpi/irq.c as following?
+>=20
+>=20
+> int __weak acpi_isa_irq_to_gsi(unsigned int isa_irq, u32 *gsi)
+> {
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (gsi)
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 *gsi =3D isa_irq;
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return 0;
+> }
 
+Do you actually have CONFIG_ISA? In 2022? For a brand new architecture?
+
+If you really have to, then this needs to be a bit more involved:
+
+#ifdef CONFIG_ISA
+int __weak acpi_isa_irq_to_gsi(unsigned int isa_irq, u32 *gsi)
+{
+	if (irq < nr_legacy_irqs()) {
+		*gsi =3D isa_irq;
+		return 0;
+	}
+
+	return -1;
+}
+#endif
+
+But I'd rather you get rid of any such legacy if this can be avoided.
+
+> I'll use the way you provided here to reuse driver/acpi/irq.c in next
+> version. How should I do next? Should I integrate your patch into my
+> next version or wait for you to merge it first?
+
+Please pick up the patch (with the above fix), and use it as a prefix
+to your series. It needs to be reviewed by the relevant maintainers
+anyway.
+
+Thanks,
+
+	M.
+
+--=20
+Without deviation from the norm, progress is not possible.
