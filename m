@@ -2,133 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A39ECCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:44:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 606A8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:44:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347098AbiFGSoS (ORCPT
+        id S1344825AbiFGSoc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48306 "EHLO
+        Tue, 7 Jun 2022 14:44:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350817AbiFGSOc (ORCPT
+        with ESMTP id S1350821AbiFGSOo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:14:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53842159066;
-        Tue,  7 Jun 2022 10:49:04 -0700 (PDT)
+        Tue, 7 Jun 2022 14:14:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D319215A743;
+        Tue,  7 Jun 2022 10:49:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D457C61789;
-        Tue,  7 Jun 2022 17:49:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FA8EC34115;
-        Tue,  7 Jun 2022 17:49:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624144;
-        bh=Dw/3gXXoXHY7mgJ/HZYNJmtxF73sLdFYSq0budvTY5M=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E2526170B;
+        Tue,  7 Jun 2022 17:48:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60F6AC34115;
+        Tue,  7 Jun 2022 17:48:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624128;
+        bh=W6/rJm2x4jEKbutBT4nzL4yNQLM+3X+Q8xBE+50Ah1c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IE9Rg6mspMYriTLSP5KVr1RRYw5dNmZIuhQoUKukS1CUAbHLhHt6ERjUQBzgf9sC2
-         xidDRL3kp+3Uz7JYa4sjSPWn2pyO52nBIXaNlku/B477LKHjeTZEL68XI0kAzWHTeC
-         vZON8yPQFOXj0SLU7GYRzg/mASp0PykWExuvXeVPDHyDV+LStJ/KDAOpldbwqN33b8
-         5oJk86LSP2kQ2ehRt6ajEMlquDgbsNe/FI2kdUO4/6kukiJQfTIHahkKkuRphgsBPh
-         6a7ByWibzquda+GY5Bm0Zsa8X3oC/m8PKgiDwFO1T6jhtUnUU7NB0dW54E/IagFvm0
-         Y36yZMhUPeHYA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, Larry.Finger@lwfinger.net,
-        florian.c.schilhabel@googlemail.com, kuba@kernel.org,
-        paskripkin@gmail.com, len.baker@gmx.com, skumark1902@gmail.com,
-        wanngchenng@gmail.com, linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.18 02/68] staging: rtl8712: fix a potential memory leak in r871xu_drv_init()
-Date:   Tue,  7 Jun 2022 13:47:28 -0400
-Message-Id: <20220607174846.477972-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+        b=VkIVpwjuoONSoIL7oa2qH6Uq2s8ViL+i7eoDdZ6hAtr84O30gwA73tjnMjpYdz5PY
+         qqp0YijmIHcL2krCQwXQi1JPh25fGWKaeUsnBinR7/QkvzVVHsf9RhCb4Y0druGjvf
+         ecLMC0p8slKSKzv/Bt2txHtrJcz5JhXRHTS9qDPI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 213/667] NFC: NULL out the dev->rfkill to prevent UAF
+Date:   Tue,  7 Jun 2022 18:57:58 +0200
+Message-Id: <20220607164941.184698223@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Lin Ma <linma@zju.edu.cn>
 
-[ Upstream commit 7288ff561de650d4139fab80e9cb0da9b5b32434 ]
+[ Upstream commit 1b0e81416a24d6e9b8c2341e22e8bf48f8b8bfc9 ]
 
-In r871xu_drv_init(), if r8712_init_drv_sw() fails, then the memory
-allocated by r8712_alloc_io_queue() in r8712_usb_dvobj_init() is not
-properly released as there is no action will be performed by
-r8712_usb_dvobj_deinit().
-To properly release it, we should call r8712_free_io_queue() in
-r8712_usb_dvobj_deinit().
+Commit 3e3b5dfcd16a ("NFC: reorder the logic in nfc_{un,}register_device")
+assumes the device_is_registered() in function nfc_dev_up() will help
+to check when the rfkill is unregistered. However, this check only
+take effect when device_del(&dev->dev) is done in nfc_unregister_device().
+Hence, the rfkill object is still possible be dereferenced.
 
-Besides, in r871xu_dev_remove(), r8712_usb_dvobj_deinit() will be called
-by r871x_dev_unload() under condition `padapter->bup` and
-r8712_free_io_queue() is called by r8712_free_drv_sw().
-However, r8712_usb_dvobj_deinit() does not rely on `padapter->bup` and
-calling r8712_free_io_queue() in r8712_free_drv_sw() is negative for
-better understading the code.
-So I move r8712_usb_dvobj_deinit() into r871xu_dev_remove(), and remove
-r8712_free_io_queue() from r8712_free_drv_sw().
+The crash trace in latest kernel (5.18-rc2):
 
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Link: https://lore.kernel.org/r/tencent_B8048C592777830380A23A7C4409F9DF1305@qq.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[   68.760105] ==================================================================
+[   68.760330] BUG: KASAN: use-after-free in __lock_acquire+0x3ec1/0x6750
+[   68.760756] Read of size 8 at addr ffff888009c93018 by task fuzz/313
+[   68.760756]
+[   68.760756] CPU: 0 PID: 313 Comm: fuzz Not tainted 5.18.0-rc2 #4
+[   68.760756] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+[   68.760756] Call Trace:
+[   68.760756]  <TASK>
+[   68.760756]  dump_stack_lvl+0x57/0x7d
+[   68.760756]  print_report.cold+0x5e/0x5db
+[   68.760756]  ? __lock_acquire+0x3ec1/0x6750
+[   68.760756]  kasan_report+0xbe/0x1c0
+[   68.760756]  ? __lock_acquire+0x3ec1/0x6750
+[   68.760756]  __lock_acquire+0x3ec1/0x6750
+[   68.760756]  ? lockdep_hardirqs_on_prepare+0x410/0x410
+[   68.760756]  ? register_lock_class+0x18d0/0x18d0
+[   68.760756]  lock_acquire+0x1ac/0x4f0
+[   68.760756]  ? rfkill_blocked+0xe/0x60
+[   68.760756]  ? lockdep_hardirqs_on_prepare+0x410/0x410
+[   68.760756]  ? mutex_lock_io_nested+0x12c0/0x12c0
+[   68.760756]  ? nla_get_range_signed+0x540/0x540
+[   68.760756]  ? _raw_spin_lock_irqsave+0x4e/0x50
+[   68.760756]  _raw_spin_lock_irqsave+0x39/0x50
+[   68.760756]  ? rfkill_blocked+0xe/0x60
+[   68.760756]  rfkill_blocked+0xe/0x60
+[   68.760756]  nfc_dev_up+0x84/0x260
+[   68.760756]  nfc_genl_dev_up+0x90/0xe0
+[   68.760756]  genl_family_rcv_msg_doit+0x1f4/0x2f0
+[   68.760756]  ? genl_family_rcv_msg_attrs_parse.constprop.0+0x230/0x230
+[   68.760756]  ? security_capable+0x51/0x90
+[   68.760756]  genl_rcv_msg+0x280/0x500
+[   68.760756]  ? genl_get_cmd+0x3c0/0x3c0
+[   68.760756]  ? lock_acquire+0x1ac/0x4f0
+[   68.760756]  ? nfc_genl_dev_down+0xe0/0xe0
+[   68.760756]  ? lockdep_hardirqs_on_prepare+0x410/0x410
+[   68.760756]  netlink_rcv_skb+0x11b/0x340
+[   68.760756]  ? genl_get_cmd+0x3c0/0x3c0
+[   68.760756]  ? netlink_ack+0x9c0/0x9c0
+[   68.760756]  ? netlink_deliver_tap+0x136/0xb00
+[   68.760756]  genl_rcv+0x1f/0x30
+[   68.760756]  netlink_unicast+0x430/0x710
+[   68.760756]  ? memset+0x20/0x40
+[   68.760756]  ? netlink_attachskb+0x740/0x740
+[   68.760756]  ? __build_skb_around+0x1f4/0x2a0
+[   68.760756]  netlink_sendmsg+0x75d/0xc00
+[   68.760756]  ? netlink_unicast+0x710/0x710
+[   68.760756]  ? netlink_unicast+0x710/0x710
+[   68.760756]  sock_sendmsg+0xdf/0x110
+[   68.760756]  __sys_sendto+0x19e/0x270
+[   68.760756]  ? __ia32_sys_getpeername+0xa0/0xa0
+[   68.760756]  ? fd_install+0x178/0x4c0
+[   68.760756]  ? fd_install+0x195/0x4c0
+[   68.760756]  ? kernel_fpu_begin_mask+0x1c0/0x1c0
+[   68.760756]  __x64_sys_sendto+0xd8/0x1b0
+[   68.760756]  ? lockdep_hardirqs_on+0xbf/0x130
+[   68.760756]  ? syscall_enter_from_user_mode+0x1d/0x50
+[   68.760756]  do_syscall_64+0x3b/0x90
+[   68.760756]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   68.760756] RIP: 0033:0x7f67fb50e6b3
+...
+[   68.760756] RSP: 002b:00007f67fa91fe90 EFLAGS: 00000293 ORIG_RAX: 000000000000002c
+[   68.760756] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f67fb50e6b3
+[   68.760756] RDX: 000000000000001c RSI: 0000559354603090 RDI: 0000000000000003
+[   68.760756] RBP: 00007f67fa91ff00 R08: 00007f67fa91fedc R09: 000000000000000c
+[   68.760756] R10: 0000000000000000 R11: 0000000000000293 R12: 00007ffe824d496e
+[   68.760756] R13: 00007ffe824d496f R14: 00007f67fa120000 R15: 0000000000000003
+
+[   68.760756]  </TASK>
+[   68.760756]
+[   68.760756] Allocated by task 279:
+[   68.760756]  kasan_save_stack+0x1e/0x40
+[   68.760756]  __kasan_kmalloc+0x81/0xa0
+[   68.760756]  rfkill_alloc+0x7f/0x280
+[   68.760756]  nfc_register_device+0xa3/0x1a0
+[   68.760756]  nci_register_device+0x77a/0xad0
+[   68.760756]  nfcmrvl_nci_register_dev+0x20b/0x2c0
+[   68.760756]  nfcmrvl_nci_uart_open+0xf2/0x1dd
+[   68.760756]  nci_uart_tty_ioctl+0x2c3/0x4a0
+[   68.760756]  tty_ioctl+0x764/0x1310
+[   68.760756]  __x64_sys_ioctl+0x122/0x190
+[   68.760756]  do_syscall_64+0x3b/0x90
+[   68.760756]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   68.760756]
+[   68.760756] Freed by task 314:
+[   68.760756]  kasan_save_stack+0x1e/0x40
+[   68.760756]  kasan_set_track+0x21/0x30
+[   68.760756]  kasan_set_free_info+0x20/0x30
+[   68.760756]  __kasan_slab_free+0x108/0x170
+[   68.760756]  kfree+0xb0/0x330
+[   68.760756]  device_release+0x96/0x200
+[   68.760756]  kobject_put+0xf9/0x1d0
+[   68.760756]  nfc_unregister_device+0x77/0x190
+[   68.760756]  nfcmrvl_nci_unregister_dev+0x88/0xd0
+[   68.760756]  nci_uart_tty_close+0xdf/0x180
+[   68.760756]  tty_ldisc_kill+0x73/0x110
+[   68.760756]  tty_ldisc_hangup+0x281/0x5b0
+[   68.760756]  __tty_hangup.part.0+0x431/0x890
+[   68.760756]  tty_release+0x3a8/0xc80
+[   68.760756]  __fput+0x1f0/0x8c0
+[   68.760756]  task_work_run+0xc9/0x170
+[   68.760756]  exit_to_user_mode_prepare+0x194/0x1a0
+[   68.760756]  syscall_exit_to_user_mode+0x19/0x50
+[   68.760756]  do_syscall_64+0x48/0x90
+[   68.760756]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+This patch just add the null out of dev->rfkill to make sure such
+dereference cannot happen. This is safe since the device_lock() already
+protect the check/write from data race.
+
+Fixes: 3e3b5dfcd16a ("NFC: reorder the logic in nfc_{un,}register_device")
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8712/os_intfs.c | 1 -
- drivers/staging/rtl8712/usb_intf.c | 6 +++---
- 2 files changed, 3 insertions(+), 4 deletions(-)
+ net/nfc/core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/staging/rtl8712/os_intfs.c b/drivers/staging/rtl8712/os_intfs.c
-index d15d52c0d1a7..003e97205124 100644
---- a/drivers/staging/rtl8712/os_intfs.c
-+++ b/drivers/staging/rtl8712/os_intfs.c
-@@ -332,7 +332,6 @@ void r8712_free_drv_sw(struct _adapter *padapter)
- 	r8712_free_evt_priv(&padapter->evtpriv);
- 	r8712_DeInitSwLeds(padapter);
- 	r8712_free_mlme_priv(&padapter->mlmepriv);
--	r8712_free_io_queue(padapter);
- 	_free_xmit_priv(&padapter->xmitpriv);
- 	_r8712_free_sta_priv(&padapter->stapriv);
- 	_r8712_free_recv_priv(&padapter->recvpriv);
-diff --git a/drivers/staging/rtl8712/usb_intf.c b/drivers/staging/rtl8712/usb_intf.c
-index ee4c61f85a07..56450ede9f23 100644
---- a/drivers/staging/rtl8712/usb_intf.c
-+++ b/drivers/staging/rtl8712/usb_intf.c
-@@ -265,6 +265,7 @@ static uint r8712_usb_dvobj_init(struct _adapter *padapter)
- 
- static void r8712_usb_dvobj_deinit(struct _adapter *padapter)
- {
-+	r8712_free_io_queue(padapter);
- }
- 
- void rtl871x_intf_stop(struct _adapter *padapter)
-@@ -302,9 +303,6 @@ void r871x_dev_unload(struct _adapter *padapter)
- 			rtl8712_hal_deinit(padapter);
- 		}
- 
--		/*s6.*/
--		if (padapter->dvobj_deinit)
--			padapter->dvobj_deinit(padapter);
- 		padapter->bup = false;
+diff --git a/net/nfc/core.c b/net/nfc/core.c
+index 5b286e1e0a6f..6ff3e10ff8e3 100644
+--- a/net/nfc/core.c
++++ b/net/nfc/core.c
+@@ -1166,6 +1166,7 @@ void nfc_unregister_device(struct nfc_dev *dev)
+ 	if (dev->rfkill) {
+ 		rfkill_unregister(dev->rfkill);
+ 		rfkill_destroy(dev->rfkill);
++		dev->rfkill = NULL;
  	}
- }
-@@ -607,6 +605,8 @@ static void r871xu_dev_remove(struct usb_interface *pusb_intf)
- 	/* Stop driver mlme relation timer */
- 	r8712_stop_drv_timers(padapter);
- 	r871x_dev_unload(padapter);
-+	if (padapter->dvobj_deinit)
-+		padapter->dvobj_deinit(padapter);
- 	r8712_free_drv_sw(padapter);
- 	free_netdev(pnetdev);
- 
+ 	dev->shutting_down = true;
+ 	device_unlock(&dev->dev);
 -- 
 2.35.1
+
+
 
