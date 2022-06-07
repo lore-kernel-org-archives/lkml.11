@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9215C19F55
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A92CEC2BBE8
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442749AbiFHA4p (ORCPT
+        id S1442943AbiFHA50 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:56:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59418 "EHLO
+        Tue, 7 Jun 2022 20:57:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384482AbiFGWOk (ORCPT
+        with ESMTP id S1384249AbiFGVyX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:14:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06AFD25DFB9;
-        Tue,  7 Jun 2022 12:19:43 -0700 (PDT)
+        Tue, 7 Jun 2022 17:54:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9D6AE66;
+        Tue,  7 Jun 2022 12:13:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4707CB8233E;
-        Tue,  7 Jun 2022 19:19:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A44C7C385A2;
-        Tue,  7 Jun 2022 19:19:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 547CA618DF;
+        Tue,  7 Jun 2022 19:12:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61CD4C385A5;
+        Tue,  7 Jun 2022 19:12:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629541;
-        bh=ac12JH8yvmBKG96v1+jlYRJ8DxZdAouOgOx3/vF7S3o=;
+        s=korg; t=1654629163;
+        bh=jVvs9w7K39JhmF1xVqZrSta5rt7NcM8+MKaMntkkGo8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b/oFff9rZFbPuHAfL2Qn0GaieY59baKNhwDh4tO01HPzpcH6CM9fU0LJpRWyAvsDk
-         PRVFtPe9xvMfoxUa9tpj1qhuud1PHu3TQOjre3vM5yqw020RDHqqxu/aI/ymCq1pdE
-         WtY1HfGy9a+f1yZ9/JgSZREJjE/0aNUitEpBsVbw=
+        b=sCT2uiL4J5DcJ9MQUPceiyB8/7UvyNvN4BrwBW3b1QZZJr9PR+JfR0kFNLGVra3Rb
+         HVSmmxmfln9waBHsbVKJ7FE4yfTsQI8sPYnFVcNj9akUxLWRR3PXdymK40fx/hIDIB
+         EbkoVDXC0eD0uUFzKSK1eXIm2dNPZf7sya0JItFE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.18 729/879] bfq: Split shared queues on move between cgroups
-Date:   Tue,  7 Jun 2022 19:04:07 +0200
-Message-Id: <20220607165024.016185919@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 552/879] KVM: nVMX: Leave most VM-Exit info fields unmodified on failed VM-Entry
+Date:   Tue,  7 Jun 2022 19:01:10 +0200
+Message-Id: <20220607165018.888621803@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,99 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 3bc5e683c67d94bd839a1da2e796c15847b51b69 upstream.
+[ Upstream commit c3634d25fbee88e2368a8e0903ae0d0670eb9e71 ]
 
-When bfqq is shared by multiple processes it can happen that one of the
-processes gets moved to a different cgroup (or just starts submitting IO
-for different cgroup). In case that happens we need to split the merged
-bfqq as otherwise we will have IO for multiple cgroups in one bfqq and
-we will just account IO time to wrong entities etc.
+Don't modify vmcs12 exit fields except EXIT_REASON and EXIT_QUALIFICATION
+when performing a nested VM-Exit due to failed VM-Entry.  Per the SDM,
+only the two aformentioned fields are filled and "All other VM-exit
+information fields are unmodified".
 
-Similarly if the bfqq is scheduled to merge with another bfqq but the
-merge didn't happen yet, cancel the merge as it need not be valid
-anymore.
-
-CC: stable@vger.kernel.org
-Fixes: e21b7a0b9887 ("block, bfq: add full hierarchical scheduling and cgroups support")
-Tested-by: "yukuai (C)" <yukuai3@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220401102752.8599-3-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4704d0befb07 ("KVM: nVMX: Exiting from L2 to L1")
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220407002315.78092-3-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bfq-cgroup.c  |   36 +++++++++++++++++++++++++++++++++---
- block/bfq-iosched.c |    2 +-
- block/bfq-iosched.h |    1 +
- 3 files changed, 35 insertions(+), 4 deletions(-)
+ arch/x86/kvm/vmx/nested.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
---- a/block/bfq-cgroup.c
-+++ b/block/bfq-cgroup.c
-@@ -743,9 +743,39 @@ static struct bfq_group *__bfq_bic_chang
- 	}
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index 880d0b0c9315..afaddd43a6c0 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -4202,12 +4202,12 @@ static void prepare_vmcs12(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
+ 	if (to_vmx(vcpu)->exit_reason.enclave_mode)
+ 		vmcs12->vm_exit_reason |= VMX_EXIT_REASONS_SGX_ENCLAVE_MODE;
+ 	vmcs12->exit_qualification = exit_qualification;
+-	vmcs12->vm_exit_intr_info = exit_intr_info;
+-
+-	vmcs12->idt_vectoring_info_field = 0;
+-	vmcs12->vm_exit_instruction_len = vmcs_read32(VM_EXIT_INSTRUCTION_LEN);
+-	vmcs12->vmx_instruction_info = vmcs_read32(VMX_INSTRUCTION_INFO);
  
- 	if (sync_bfqq) {
--		entity = &sync_bfqq->entity;
--		if (entity->sched_data != &bfqg->sched_data)
--			bfq_bfqq_move(bfqd, sync_bfqq, bfqg);
-+		if (!sync_bfqq->new_bfqq && !bfq_bfqq_coop(sync_bfqq)) {
-+			/* We are the only user of this bfqq, just move it */
-+			if (sync_bfqq->entity.sched_data != &bfqg->sched_data)
-+				bfq_bfqq_move(bfqd, sync_bfqq, bfqg);
-+		} else {
-+			struct bfq_queue *bfqq;
++	/*
++	 * On VM-Exit due to a failed VM-Entry, the VMCS isn't marked launched
++	 * and only EXIT_REASON and EXIT_QUALIFICATION are updated, all other
++	 * exit info fields are unmodified.
++	 */
+ 	if (!(vmcs12->vm_exit_reason & VMX_EXIT_REASONS_FAILED_VMENTRY)) {
+ 		vmcs12->launch_state = 1;
+ 
+@@ -4219,8 +4219,13 @@ static void prepare_vmcs12(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
+ 		 * Transfer the event that L0 or L1 may wanted to inject into
+ 		 * L2 to IDT_VECTORING_INFO_FIELD.
+ 		 */
++		vmcs12->idt_vectoring_info_field = 0;
+ 		vmcs12_save_pending_event(vcpu, vmcs12);
+ 
++		vmcs12->vm_exit_intr_info = exit_intr_info;
++		vmcs12->vm_exit_instruction_len = vmcs_read32(VM_EXIT_INSTRUCTION_LEN);
++		vmcs12->vmx_instruction_info = vmcs_read32(VMX_INSTRUCTION_INFO);
 +
-+			/*
-+			 * The queue was merged to a different queue. Check
-+			 * that the merge chain still belongs to the same
-+			 * cgroup.
-+			 */
-+			for (bfqq = sync_bfqq; bfqq; bfqq = bfqq->new_bfqq)
-+				if (bfqq->entity.sched_data !=
-+				    &bfqg->sched_data)
-+					break;
-+			if (bfqq) {
-+				/*
-+				 * Some queue changed cgroup so the merge is
-+				 * not valid anymore. We cannot easily just
-+				 * cancel the merge (by clearing new_bfqq) as
-+				 * there may be other processes using this
-+				 * queue and holding refs to all queues below
-+				 * sync_bfqq->new_bfqq. Similarly if the merge
-+				 * already happened, we need to detach from
-+				 * bfqq now so that we cannot merge bio to a
-+				 * request from the old cgroup.
-+				 */
-+				bfq_put_cooperator(sync_bfqq);
-+				bfq_release_process_ref(bfqd, sync_bfqq);
-+				bic_set_bfqq(bic, NULL, 1);
-+			}
-+		}
- 	}
- 
- 	return bfqg;
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -5319,7 +5319,7 @@ static void bfq_put_stable_ref(struct bf
- 	bfq_put_queue(bfqq);
- }
- 
--static void bfq_put_cooperator(struct bfq_queue *bfqq)
-+void bfq_put_cooperator(struct bfq_queue *bfqq)
- {
- 	struct bfq_queue *__bfqq, *next;
- 
---- a/block/bfq-iosched.h
-+++ b/block/bfq-iosched.h
-@@ -980,6 +980,7 @@ void bfq_weights_tree_remove(struct bfq_
- void bfq_bfqq_expire(struct bfq_data *bfqd, struct bfq_queue *bfqq,
- 		     bool compensate, enum bfqq_expiration reason);
- void bfq_put_queue(struct bfq_queue *bfqq);
-+void bfq_put_cooperator(struct bfq_queue *bfqq);
- void bfq_end_wr_async_queues(struct bfq_data *bfqd, struct bfq_group *bfqg);
- void bfq_release_process_ref(struct bfq_data *bfqd, struct bfq_queue *bfqq);
- void bfq_schedule_dispatch(struct bfq_data *bfqd);
+ 		/*
+ 		 * According to spec, there's no need to store the guest's
+ 		 * MSRs if the exit is due to a VM-entry failure that occurs
+-- 
+2.35.1
+
 
 
