@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4628C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:12:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B499BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:13:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235063AbiFHBLy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:11:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38174 "EHLO
+        id S244389AbiFHBMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:12:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382751AbiFGWEb (ORCPT
+        with ESMTP id S1382998AbiFGVwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:04:31 -0400
+        Tue, 7 Jun 2022 17:52:10 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B48F5194BD2;
-        Tue,  7 Jun 2022 12:15:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A7B7192270;
+        Tue,  7 Jun 2022 12:10:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 56EF5B82182;
-        Tue,  7 Jun 2022 19:15:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1177C385A2;
-        Tue,  7 Jun 2022 19:15:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E06D6B8220B;
+        Tue,  7 Jun 2022 19:10:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AB2AC385A5;
+        Tue,  7 Jun 2022 19:10:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629340;
-        bh=d7M/rrGTQxwwpheykmHfdAUrTOWJWEeOlwizrmgwhOo=;
+        s=korg; t=1654629011;
+        bh=DHhMOTAVSHSY0j7O0/1UO25k14ku7/TFOBskDOIVeLg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uoecNCu+Jv+UTyo4KxadkUt6S+Ms9X3AM1/F1kZ9aH6kR1lzlh3J4lz7AnnInG3Ri
-         LJGT2/q2hvPDzWJUrm52fbjXD/CjNi+s6TnT9t1wysyeN7XLVOGYSj9lIBR6A7Xhfn
-         ubTp+njlHerczghV3jrmD2Z0CN+2gND37Oz83z9k=
+        b=XTFHIP7F9YqQxMJ436dE5mVc2bSN9hYO8rrVE6EwlSGj4iT75ZdlT2ge0jQbxjWiO
+         uOaacoAc11OFFYtjJGxkSFoPSF1crYiFoIdG0I32jE0iCdReSLrCx0XVPiq2C9qHxD
+         f8eReM6izaP63zn2Tc0CQLDJdCc4eHjanqCmC+XI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 656/879] Input: stmfts - do not leave device disabled in stmfts_input_open
-Date:   Tue,  7 Jun 2022 19:02:54 +0200
-Message-Id: <20220607165021.886367492@linuxfoundation.org>
+Subject: [PATCH 5.18 536/879] memory: samsung: exynos5422-dmc: Avoid some over memory allocation
+Date:   Tue,  7 Jun 2022 19:00:54 +0200
+Message-Id: <20220607165018.430760211@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,63 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 5f76955ab1e43e5795a9631b22ca4f918a0ae986 ]
+[ Upstream commit 56653827f0d7bc7c2d8bac0e119fd1521fa9990a ]
 
-The commit 26623eea0da3 attempted to deal with potential leak of runtime
-PM counter when opening the touchscreen device, however it ended up
-erroneously dropping the counter in the case of successfully enabling the
-device.
+'dmc->counter' is a 'struct devfreq_event_dev **', so there is some
+over memory allocation. 'counters_size' should be computed with
+'sizeof(struct devfreq_event_dev *)'.
 
-Let's address this by using pm_runtime_resume_and_get() and then executing
-pm_runtime_put_sync() only when we fail to send "sense on" command to the
-device.
+Use 'sizeof(*dmc->counter)' instead to fix it.
 
-Fixes: 26623eea0da3 ("Input: stmfts - fix reference leak in stmfts_input_open")
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+While at it, use devm_kcalloc() instead of devm_kzalloc()+open coded
+multiplication.
+
+Fixes: 6e7674c3c6df ("memory: Add DMC driver for Exynos5422")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/69d7e69346986e2fdb994d4382954c932f9f0993.1647760213.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/touchscreen/stmfts.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/memory/samsung/exynos5422-dmc.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/input/touchscreen/stmfts.c b/drivers/input/touchscreen/stmfts.c
-index 72e0b767e1ba..c175d44c52f3 100644
---- a/drivers/input/touchscreen/stmfts.c
-+++ b/drivers/input/touchscreen/stmfts.c
-@@ -337,13 +337,15 @@ static int stmfts_input_open(struct input_dev *dev)
- 	struct stmfts_data *sdata = input_get_drvdata(dev);
- 	int err;
+diff --git a/drivers/memory/samsung/exynos5422-dmc.c b/drivers/memory/samsung/exynos5422-dmc.c
+index 9c8318923ed0..4733e7898ffe 100644
+--- a/drivers/memory/samsung/exynos5422-dmc.c
++++ b/drivers/memory/samsung/exynos5422-dmc.c
+@@ -1322,7 +1322,6 @@ static int exynos5_dmc_init_clks(struct exynos5_dmc *dmc)
+  */
+ static int exynos5_performance_counters_init(struct exynos5_dmc *dmc)
+ {
+-	int counters_size;
+ 	int ret, i;
  
--	err = pm_runtime_get_sync(&sdata->client->dev);
--	if (err < 0)
--		goto out;
-+	err = pm_runtime_resume_and_get(&sdata->client->dev);
-+	if (err)
-+		return err;
- 
- 	err = i2c_smbus_write_byte(sdata->client, STMFTS_MS_MT_SENSE_ON);
--	if (err)
--		goto out;
-+	if (err) {
-+		pm_runtime_put_sync(&sdata->client->dev);
-+		return err;
-+	}
- 
- 	mutex_lock(&sdata->mutex);
- 	sdata->running = true;
-@@ -366,9 +368,7 @@ static int stmfts_input_open(struct input_dev *dev)
- 				 "failed to enable touchkey\n");
+ 	dmc->num_counters = devfreq_event_get_edev_count(dmc->dev,
+@@ -1332,8 +1331,8 @@ static int exynos5_performance_counters_init(struct exynos5_dmc *dmc)
+ 		return dmc->num_counters;
  	}
  
--out:
--	pm_runtime_put_noidle(&sdata->client->dev);
--	return err;
-+	return 0;
- }
+-	counters_size = sizeof(struct devfreq_event_dev) * dmc->num_counters;
+-	dmc->counter = devm_kzalloc(dmc->dev, counters_size, GFP_KERNEL);
++	dmc->counter = devm_kcalloc(dmc->dev, dmc->num_counters,
++				    sizeof(*dmc->counter), GFP_KERNEL);
+ 	if (!dmc->counter)
+ 		return -ENOMEM;
  
- static void stmfts_input_close(struct input_dev *dev)
 -- 
 2.35.1
 
