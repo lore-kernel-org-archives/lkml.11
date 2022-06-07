@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F735CCA494
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:54:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7851ACCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:54:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384085AbiFGVyH (ORCPT
+        id S1377461AbiFGVyy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:54:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49798 "EHLO
+        Tue, 7 Jun 2022 17:54:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379051AbiFGVCA (ORCPT
+        with ESMTP id S1379200AbiFGVCL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:02:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A562A188E5F;
-        Tue,  7 Jun 2022 11:46:17 -0700 (PDT)
+        Tue, 7 Jun 2022 17:02:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E11411E1F3;
+        Tue,  7 Jun 2022 11:46:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D8D76156D;
-        Tue,  7 Jun 2022 18:46:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A753C385A2;
-        Tue,  7 Jun 2022 18:46:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C35EBB8220B;
+        Tue,  7 Jun 2022 18:46:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AC29C385A5;
+        Tue,  7 Jun 2022 18:46:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627576;
-        bh=COKzPOsl7kaNsDvx+z01yEVI+nhAt+B84z1IsdH3tzE=;
+        s=korg; t=1654627610;
+        bh=eQJDeW28Q8lNsEGx74LsciocffWBnYZhpPkrpvgHptg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TZir+/tXjmrZPpcl9MkFCJjYUNfBu1SxN2kCGpceY1VdPp0DgQICuVC92MhuS1731
-         rYPSMYM4TSvgvBGi1/IKSkWHk7Np97fG0wjm3MnoEFFnOC/ear8KTEuHVd31q4MXPJ
-         OltieqgB3Vn5cf8nRbldipQ2RSrRxYNS0LqPTx2A=
+        b=PIJ61amGj9mlHBpPzvxHY0DYmalA558cFH6sDK2qvsgnxXRL+5sCqqoTfVS2F/GnG
+         6Qud4Y2y3ZsPipQ+/sAADGHL8+VCwoxuGGV9Y4jEsDMx5zfsV4DCtNQkUHM5jc70nB
+         +flZWsYlUdUnKRq5/IOIL/c7t3FsEAOp0B5yYbn0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rui Miguel Silva <rui.silva@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.18 018/879] usb: isp1760: Fix out-of-bounds array access
-Date:   Tue,  7 Jun 2022 18:52:16 +0200
-Message-Id: <20220607165003.200430319@linuxfoundation.org>
+        stable@vger.kernel.org, "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
+        Enzo Matsumiya <ematsumiya@suse.de>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.18 030/879] cifs: dont call cifs_dfs_query_info_nonascii_quirk() if nodfs was set
+Date:   Tue,  7 Jun 2022 18:52:28 +0200
+Message-Id: <20220607165003.550879611@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,85 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Enzo Matsumiya <ematsumiya@suse.de>
 
-commit 26ae2c942b5702f2e43d36b2a4389cfb7d616b6a upstream.
+commit 421ef3d56513b2ff02e563623688cb6ab4977c4f upstream.
 
-Running the driver through kasan gives an interesting splat:
+Also return EOPNOTSUPP if path is remote but nodfs was set.
 
-  BUG: KASAN: global-out-of-bounds in isp1760_register+0x180/0x70c
-  Read of size 20 at addr f1db2e64 by task swapper/0/1
-  (...)
-  isp1760_register from isp1760_plat_probe+0x1d8/0x220
-  (...)
-
-This happens because the loop reading the regmap fields for the
-different ISP1760 variants look like this:
-
-  for (i = 0; i < HC_FIELD_MAX; i++) { ... }
-
-Meaning it expects the arrays to be at least HC_FIELD_MAX - 1 long.
-
-However the arrays isp1760_hc_reg_fields[], isp1763_hc_reg_fields[],
-isp1763_hc_volatile_ranges[] and isp1763_dc_volatile_ranges[] are
-dynamically sized during compilation.
-
-Fix this by putting an empty assignment to the [HC_FIELD_MAX]
-and [DC_FIELD_MAX] array member at the end of each array.
-This will make the array one member longer than it needs to be,
-but avoids the risk of overwriting whatever is inside
-[HC_FIELD_MAX - 1] and is simple and intuitive to read. Also
-add comments explaining what is going on.
-
-Fixes: 1da9e1c06873 ("usb: isp1760: move to regmap for register access")
+Fixes: a2809d0e1696 ("cifs: quirk for STATUS_OBJECT_NAME_INVALID returned for non-ASCII dfs refs")
 Cc: stable@vger.kernel.org
-Cc: Rui Miguel Silva <rui.silva@linaro.org>
-Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Reviewed-by: Rui Miguel Silva <rui.silva@linaro.org>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://lore.kernel.org/r/20220516091424.391209-1-linus.walleij@linaro.org
+Reviewed-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Signed-off-by: Enzo Matsumiya <ematsumiya@suse.de>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/isp1760/isp1760-core.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ fs/cifs/connect.c |   16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
---- a/drivers/usb/isp1760/isp1760-core.c
-+++ b/drivers/usb/isp1760/isp1760-core.c
-@@ -251,6 +251,8 @@ static const struct reg_field isp1760_hc
- 	[HW_DM_PULLDOWN]	= REG_FIELD(ISP176x_HC_OTG_CTRL, 2, 2),
- 	[HW_DP_PULLDOWN]	= REG_FIELD(ISP176x_HC_OTG_CTRL, 1, 1),
- 	[HW_DP_PULLUP]		= REG_FIELD(ISP176x_HC_OTG_CTRL, 0, 0),
-+	/* Make sure the array is sized properly during compilation */
-+	[HC_FIELD_MAX]		= {},
- };
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -3432,6 +3432,7 @@ static int is_path_remote(struct mount_c
+ 	struct cifs_tcon *tcon = mnt_ctx->tcon;
+ 	struct smb3_fs_context *ctx = mnt_ctx->fs_ctx;
+ 	char *full_path;
++	bool nodfs = cifs_sb->mnt_cifs_flags & CIFS_MOUNT_NO_DFS;
  
- static const struct reg_field isp1763_hc_reg_fields[] = {
-@@ -321,6 +323,8 @@ static const struct reg_field isp1763_hc
- 	[HW_DM_PULLDOWN_CLEAR]	= REG_FIELD(ISP1763_HC_OTG_CTRL_CLEAR, 2, 2),
- 	[HW_DP_PULLDOWN_CLEAR]	= REG_FIELD(ISP1763_HC_OTG_CTRL_CLEAR, 1, 1),
- 	[HW_DP_PULLUP_CLEAR]	= REG_FIELD(ISP1763_HC_OTG_CTRL_CLEAR, 0, 0),
-+	/* Make sure the array is sized properly during compilation */
-+	[HC_FIELD_MAX]		= {},
- };
+ 	if (!server->ops->is_path_accessible)
+ 		return -EOPNOTSUPP;
+@@ -3449,14 +3450,20 @@ static int is_path_remote(struct mount_c
+ 	rc = server->ops->is_path_accessible(xid, tcon, cifs_sb,
+ 					     full_path);
+ #ifdef CONFIG_CIFS_DFS_UPCALL
++	if (nodfs) {
++		if (rc == -EREMOTE)
++			rc = -EOPNOTSUPP;
++		goto out;
++	}
++
++	/* path *might* exist with non-ASCII characters in DFS root
++	 * try again with full path (only if nodfs is not set) */
+ 	if (rc == -ENOENT && is_tcon_dfs(tcon))
+ 		rc = cifs_dfs_query_info_nonascii_quirk(xid, tcon, cifs_sb,
+ 							full_path);
+ #endif
+-	if (rc != 0 && rc != -EREMOTE) {
+-		kfree(full_path);
+-		return rc;
+-	}
++	if (rc != 0 && rc != -EREMOTE)
++		goto out;
  
- static const struct regmap_range isp1763_hc_volatile_ranges[] = {
-@@ -405,6 +409,8 @@ static const struct reg_field isp1761_dc
- 	[DC_CHIP_ID_HIGH]	= REG_FIELD(ISP176x_DC_CHIPID, 16, 31),
- 	[DC_CHIP_ID_LOW]	= REG_FIELD(ISP176x_DC_CHIPID, 0, 15),
- 	[DC_SCRATCH]		= REG_FIELD(ISP176x_DC_SCRATCH, 0, 15),
-+	/* Make sure the array is sized properly during compilation */
-+	[DC_FIELD_MAX]		= {},
- };
+ 	if (rc != -EREMOTE) {
+ 		rc = cifs_are_all_path_components_accessible(server, xid, tcon,
+@@ -3468,6 +3475,7 @@ static int is_path_remote(struct mount_c
+ 		}
+ 	}
  
- static const struct regmap_range isp1763_dc_volatile_ranges[] = {
-@@ -458,6 +464,8 @@ static const struct reg_field isp1763_dc
- 	[DC_CHIP_ID_HIGH]	= REG_FIELD(ISP1763_DC_CHIPID_HIGH, 0, 15),
- 	[DC_CHIP_ID_LOW]	= REG_FIELD(ISP1763_DC_CHIPID_LOW, 0, 15),
- 	[DC_SCRATCH]		= REG_FIELD(ISP1763_DC_SCRATCH, 0, 15),
-+	/* Make sure the array is sized properly during compilation */
-+	[DC_FIELD_MAX]		= {},
- };
- 
- static const struct regmap_config isp1763_dc_regmap_conf = {
++out:
+ 	kfree(full_path);
+ 	return rc;
+ }
 
 
