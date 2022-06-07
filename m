@@ -2,85 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFCD8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:12:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BED0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:12:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349714AbiFGSL7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:11:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47718 "EHLO
+        id S239810AbiFGSME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 14:12:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349894AbiFGRvl (ORCPT
+        with ESMTP id S1350098AbiFGRvw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:51:41 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530F72C104
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:39:08 -0700 (PDT)
+        Tue, 7 Jun 2022 13:51:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F8A1406D6;
+        Tue,  7 Jun 2022 10:39:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0AB1BCE1D50
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 17:38:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DC63C385A5;
-        Tue,  7 Jun 2022 17:38:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654623510;
-        bh=a+3hVu4CEwKHNolyHlKtH7BP/4ObQEO8NwiNOI1cL80=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=FB9AYFJrhSiOoJ41euHMFKlYGxQHT3qcWi1/meTwBCgOk4VUHWbhzAa4v5LmXvB/K
-         ajcm+AqeXGL/HCvA/Xa07jwCs0czVdxeptxs15vRB4e9404i5cmMhnTy/bU9z/uBs3
-         bPkTF0rimOtuiPMeCwWNWoqMWSH9uVHcriI3cgvsASfcUeNhTWRmFEJdhEIcYuQ8gf
-         iQfGVGQorQD/XB7DpVEwtoueDBHjcPZpoZW3dthWQEEdnsPNGG4Zh8EA/Pt1rA+J0W
-         rnONhaYICxE6gw5L8VJAJ/r0GB3bQxSsqfFJnI728O5gzAXGqaI3BxouqajIJcwl+N
-         9T/kyy+ye5+ZQ==
-From:   Mark Brown <broonie@kernel.org>
-To:     robimarko@gmail.com, lgirdwood@gmail.com,
-        linux-kernel@vger.kernel.org, sravanhome@gmail.com
-Cc:     christophe.jaillet@wanadoo.fr
-In-Reply-To: <20220607124759.775133-1-robimarko@gmail.com>
-References: <20220607124759.775133-1-robimarko@gmail.com>
-Subject: Re: [PATCH] regulator: mp5416: remove kernel.h include
-Message-Id: <165462350917.3096919.8940550391219657945.b4-ty@kernel.org>
-Date:   Tue, 07 Jun 2022 18:38:29 +0100
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E20160BC6;
+        Tue,  7 Jun 2022 17:39:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33216C385A5;
+        Tue,  7 Jun 2022 17:39:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654623568;
+        bh=diPTJAlAYIKdCCWA3zqqCctkFNXEeBxcidPHNv1YQRA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BeCICZ4ED7hMZ3wGSlrq7uMMQ4uvR8mSjXn5h8sFYXZLZL+gRvqyyU53n0YZFmpfh
+         c4DbLNexJwytxGCMnfWjQMGueS2Yw5w4guww746Ir4LVSC+rK6RLlU4/PQovpEOkt2
+         9T2URmUlU2FltrASVMbtxx9XKr1O+EqL8a67cozI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+6912c9592caca7ca0e7d@syzkaller.appspotmail.com,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 013/667] ALSA: usb-audio: Cancel pending work at closing a MIDI substream
+Date:   Tue,  7 Jun 2022 18:54:38 +0200
+Message-Id: <20220607164935.187446946@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 7 Jun 2022 14:47:59 +0200, Robert Marko wrote:
-> Driver does not seem to utilize anything from the kernel.h, compiles
-> and works fine for me without it.
-> 
-> So remove kernel.h include as it pulls in a lot of unused stuff.
-> 
-> 
+From: Takashi Iwai <tiwai@suse.de>
 
-Applied to
+commit 0125de38122f0f66bf61336158d12a1aabfe6425 upstream.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
+At closing a USB MIDI output substream, there might be still a pending
+work, which would eventually access the rawmidi runtime object that is
+being released.  For fixing the race, make sure to cancel the pending
+work at closing.
 
-Thanks!
+Reported-by: syzbot+6912c9592caca7ca0e7d@syzkaller.appspotmail.com
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/000000000000e7e75005dfd07cf6@google.com
+Link: https://lore.kernel.org/r/20220525131203.11299-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ sound/usb/midi.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-[1/1] regulator: mp5416: remove kernel.h include
-      commit: a8280a5dd5a425bd33d858ac787defdbad47362d
+--- a/sound/usb/midi.c
++++ b/sound/usb/midi.c
+@@ -1145,6 +1145,9 @@ static int snd_usbmidi_output_open(struc
+ 
+ static int snd_usbmidi_output_close(struct snd_rawmidi_substream *substream)
+ {
++	struct usbmidi_out_port *port = substream->runtime->private_data;
++
++	cancel_work_sync(&port->ep->work);
+ 	return substream_open(substream, 0, 0);
+ }
+ 
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
