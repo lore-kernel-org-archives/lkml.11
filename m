@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E131EC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0807CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:31:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382396AbiFGWaM (ORCPT
+        id S1382633AbiFGWaR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:30:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55136 "EHLO
+        Tue, 7 Jun 2022 18:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378410AbiFGVTO (ORCPT
+        with ESMTP id S1352155AbiFGVTO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:19:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90DCC224D04;
-        Tue,  7 Jun 2022 11:59:38 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FCF6224470;
+        Tue,  7 Jun 2022 11:59:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B3BE561787;
-        Tue,  7 Jun 2022 18:59:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2056C385A2;
-        Tue,  7 Jun 2022 18:59:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5922B8239A;
+        Tue,  7 Jun 2022 18:59:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38DD6C385A2;
+        Tue,  7 Jun 2022 18:59:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628377;
-        bh=NLXJC2Os2ZFAlOQSsSpisO6mc7cXoVRqnXwEzHTGVf8=;
+        s=korg; t=1654628352;
+        bh=oMvoq6PzZoULewxmpDNz8DT3BADsI6X0K8E2Um8Lppo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PCJqGKuoMT9m+/3Jgg/qK/gBn66jBpPByrwCFh/IIbVmZ4qGlOXXzXhYTyOqaXwNP
-         IhCMCerkXONuZ7XApKZzfK9OFf/GZ++i2XcHzVbwnVXzo3qyVkQ48vhsI/hHGjbn8j
-         jTXfOvTzgUOwyCd42YDtIJRSPOIZ75srxEiPYbyk=
+        b=rTdzhQQYOaFuSy2sSRjxUOS3rRDwOk4cfDG+lWbfhTzdVIc+Ngpp8F7WrTcDnGJhs
+         UCpQdFj7R0qxxQ4Y5gsbXBkyWpejGUyf+Ukl30SMjz/yH8xYL70/U679wm0SMsY5Ty
+         QZFjjThcFPeJxMqhdilrtSIKOJ/2mTB8/nG5NRsk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 307/879] net: dsa: mt7530: 1G can also support 1000BASE-X link mode
-Date:   Tue,  7 Jun 2022 18:57:05 +0200
-Message-Id: <20220607165011.759684294@linuxfoundation.org>
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        Davide Caratti <dcaratti@redhat.com>
+Subject: [PATCH 5.18 299/879] mptcp: reset the packet scheduler on PRIO change
+Date:   Tue,  7 Jun 2022 18:56:57 +0200
+Message-Id: <20220607165011.526491992@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,67 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+From: Paolo Abeni <pabeni@redhat.com>
 
-[ Upstream commit 66f862563ed68717dfd84e808ca12705ed275ced ]
+[ Upstream commit 0e203c324752e13d22624ab7ffafe934fa06ab50 ]
 
-When using an external PHY connected using RGMII to mt7531 port 5, the
-PHY can be used to used support 1000BASE-X connections. Moreover, if
-1000BASE-T is supported, then we should allow 1000BASE-X as well, since
-which are supported is a property of the PHY.
+Similar to the previous patch, for priority changes
+requested by the local PM.
 
-Therefore, it makes no sense to exclude this from the linkmodes when
-1000BASE-T is supported.
-
-Fixes: c288575f7810 ("net: dsa: mt7530: Add the support of MT7531 switch")
-Tested-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reported-and-suggested-by: Davide Caratti <dcaratti@redhat.com>
+Fixes: 067065422fcd ("mptcp: add the outgoing MP_PRIO support")
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/mt7530.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ net/mptcp/pm_netlink.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index fe3cb26f4287..831ccbecb0c2 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -2540,13 +2540,7 @@ static void mt7531_sgmii_validate(struct mt7530_priv *priv, int port,
- 	/* Port5 supports ethier RGMII or SGMII.
- 	 * Port6 supports SGMII only.
- 	 */
--	switch (port) {
--	case 5:
--		if (mt7531_is_rgmii_port(priv, port))
--			break;
--		fallthrough;
--	case 6:
--		phylink_set(supported, 1000baseX_Full);
-+	if (port == 6) {
- 		phylink_set(supported, 2500baseX_Full);
- 		phylink_set(supported, 2500baseT_Full);
- 	}
-@@ -2914,8 +2908,6 @@ static void
- mt7530_mac_port_validate(struct dsa_switch *ds, int port,
- 			 unsigned long *supported)
- {
--	if (port == 5)
--		phylink_set(supported, 1000baseX_Full);
- }
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index b5e8de6f7507..e3dcc5501579 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -727,6 +727,8 @@ static int mptcp_pm_nl_mp_prio_send_ack(struct mptcp_sock *msk,
+ 		if (!addresses_equal(&local, addr, addr->port))
+ 			continue;
  
- static void mt7531_mac_port_validate(struct dsa_switch *ds, int port,
-@@ -2952,8 +2944,10 @@ mt753x_phylink_validate(struct dsa_switch *ds, int port,
- 	}
- 
- 	/* This switch only supports 1G full-duplex. */
--	if (state->interface != PHY_INTERFACE_MODE_MII)
-+	if (state->interface != PHY_INTERFACE_MODE_MII) {
- 		phylink_set(mask, 1000baseT_Full);
-+		phylink_set(mask, 1000baseX_Full);
-+	}
- 
- 	priv->info->mac_port_validate(ds, port, mask);
- 
++		if (subflow->backup != bkup)
++			msk->last_snd = NULL;
+ 		subflow->backup = bkup;
+ 		subflow->send_mp_prio = 1;
+ 		subflow->request_bkup = bkup;
 -- 
 2.35.1
 
