@@ -2,258 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7EABC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 01:41:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EF81C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 01:45:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233155AbiFGBlf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 21:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55442 "EHLO
+        id S233029AbiFGBpl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 21:45:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232911AbiFGBld (ORCPT
+        with ESMTP id S232401AbiFGBpj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 21:41:33 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ACB15AA62
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 18:41:31 -0700 (PDT)
+        Mon, 6 Jun 2022 21:45:39 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4852D98754
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 18:45:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654566091; x=1686102091;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=tkdB3t5TUgomYbZdCLgUQ5wx3hmqP7HEid2GOUqhJtI=;
-  b=h0olXQLYXoQeBij3HaIJLl7bxUZZWNzb3L42us68JSUmw1NjGB0un6La
-   8fdAoowUBPBW+BlTFFEmKGjzqtObh90tsp6vncHawk1thrJHsKr5Hobc9
-   3kxK6Gl5YS4LKQdsbgKGu3v2Gpiaubwn74NQY+/F84Wx81zI9g4koLOGp
-   K/el7HZzZ65735wcthvyC3dFgZuV4yioTtPcl3TCbYYTOFdjMM7pBUW6d
-   zFnfq6fPYXwEHlkHLogQypCjkHcjjhtFbX6O+WRNNJhzNmEOhfehvzXwA
-   qR3ClVRmWU3Z4aaROc7ugwzl4eN/KMQj0vVoQvQ/QHdyG0BEkw605xeNt
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="337882444"
+  t=1654566338; x=1686102338;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=961pAuhKqRvTk5Rh3Hpt2dVquDp8eG+F/18I15kl+/0=;
+  b=ST1GqJRkdy0SsbqcDc2giVmpjna3EBZHzM2EfO4zv5Ck8JZnGmfMMfbN
+   gcELdwQRp9u1JFDdwcNkHVviPkKAnqRSPOV2QI66fMOvaq5FHf1LIfXg2
+   fsazScVhhe8acxewECCsFAawBvmMhwPgvS2kwF5nEYEZUgFtmNxeijNsK
+   bJA+9hQETuW1pPXVZbzjBBhWr2qWyzW06PVZYffg0nyP3HuqDFBfQW+Gu
+   HjAspz5ESDKDrCrpgD+ulN1KEuiDLpAUEE/tSPniCoodTKT2BUtLTlDBr
+   S4A3TuxI5/zb75lWumCwWuwZmJcedhf1Szc0BgyN5wGlKzjgiDnaEBGxu
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="259280328"
 X-IronPort-AV: E=Sophos;i="5.91,282,1647327600"; 
-   d="scan'208";a="337882444"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 18:41:30 -0700
+   d="scan'208";a="259280328"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 18:45:37 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,282,1647327600"; 
-   d="scan'208";a="669761914"
-Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
-  by FMSMGA003.fm.intel.com with ESMTP; 06 Jun 2022 18:41:28 -0700
-From:   Tianfei Zhang <tianfei.zhang@intel.com>
-To:     broonie@kernel.org, gregkh@linuxfoundation.org, rafael@kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     hao.wu@intel.com, trix@redhat.com, yilun.xu@intel.com,
-        russell.h.weight@intel.com,
-        Matthew Gerlach <matthew.gerlach@linux.intel.com>,
-        Tianfei Zhang <tianfei.zhang@intel.com>
-Subject: [PATCH v1] regmap: add generic indirect regmap support
-Date:   Mon,  6 Jun 2022 21:37:55 -0400
-Message-Id: <20220607013755.594554-1-tianfei.zhang@intel.com>
-X-Mailer: git-send-email 2.26.2
+   d="scan'208";a="583957880"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 06 Jun 2022 18:45:36 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nyOHn-000DDR-Tx;
+        Tue, 07 Jun 2022 01:45:35 +0000
+Date:   Tue, 7 Jun 2022 09:44:53 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [norov:cpumask 1/2] include/linux/slab.h:608:46: error: conflicting
+ types for 'kmalloc_node'; have 'void *(size_t,  gfp_t,  int)' {aka 'void
+ *(unsigned int,  unsigned int,  int)'}
+Message-ID: <202206070941.bncwkp2B-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+tree:   https://github.com/norov/linux cpumask
+head:   baf4c0c7943ff03b66ab7c18550df9071b5ba097
+commit: 4fb0cdef75eb28ca37159b5c208ef574d6ccba98 [1/2] move cpumask
+config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220607/202206070941.bncwkp2B-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/norov/linux/commit/4fb0cdef75eb28ca37159b5c208ef574d6ccba98
+        git remote add norov https://github.com/norov/linux
+        git fetch --no-tags norov cpumask
+        git checkout 4fb0cdef75eb28ca37159b5c208ef574d6ccba98
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc prepare
 
-This patch adds support for regmap APIs that are intended to be used by
-the drivers of some devices which support generic indirect register access,
-for example PMCI (Platform Management Control Interface) device, HSSI
-(High Speed Serial Interface) device in FPGA.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
----
- drivers/base/regmap/Kconfig                   |   3 +
- drivers/base/regmap/Makefile                  |   1 +
- .../base/regmap/regmap-indirect-register.c    | 133 ++++++++++++++++++
- include/linux/regmap.h                        |  12 ++
- 4 files changed, 149 insertions(+)
- create mode 100644 drivers/base/regmap/regmap-indirect-register.c
+All errors (new ones prefixed by >>):
 
-diff --git a/drivers/base/regmap/Kconfig b/drivers/base/regmap/Kconfig
-index 159bac6c5046..4ea590604f8d 100644
---- a/drivers/base/regmap/Kconfig
-+++ b/drivers/base/regmap/Kconfig
-@@ -65,3 +65,6 @@ config REGMAP_I3C
- config REGMAP_SPI_AVMM
- 	tristate
- 	depends on SPI
-+
-+config REGMAP_INDIRECT_REGISTER
-+	tristate
-diff --git a/drivers/base/regmap/Makefile b/drivers/base/regmap/Makefile
-index 11facb32a027..504a32b79d8c 100644
---- a/drivers/base/regmap/Makefile
-+++ b/drivers/base/regmap/Makefile
-@@ -20,3 +20,4 @@ obj-$(CONFIG_REGMAP_SCCB) += regmap-sccb.o
- obj-$(CONFIG_REGMAP_I3C) += regmap-i3c.o
- obj-$(CONFIG_REGMAP_SPI_AVMM) += regmap-spi-avmm.o
- obj-$(CONFIG_REGMAP_MDIO) += regmap-mdio.o
-+obj-$(CONFIG_REGMAP_INDIRECT_REGISTER) += regmap-indirect-register.o
-diff --git a/drivers/base/regmap/regmap-indirect-register.c b/drivers/base/regmap/regmap-indirect-register.c
-new file mode 100644
-index 000000000000..0b748e48bd87
---- /dev/null
-+++ b/drivers/base/regmap/regmap-indirect-register.c
-@@ -0,0 +1,133 @@
-+// SPDX-License-Identifier: GPL-2.0
-+//
-+// Indirect Register Access.
-+//
-+// Copyright (C) 2022 Intel Corporation, Inc.
-+
-+#include <linux/device.h>
-+#include <linux/module.h>
-+#include <linux/regmap.h>
-+
-+#define INDIRECT_CMD_OFF	0x0
-+#define INDIRECT_CMD_RD	BIT(0)
-+#define INDIRECT_CMD_WR	BIT(1)
-+#define INDIRECT_CMD_ACK	BIT(2)
-+
-+#define INDIRECT_ADDR_OFF	0x4
-+#define INDIRECT_RD_OFF	0x8
-+#define INDIRECT_WR_OFF	0xc
-+
-+#define INDIRECT_INT_US	1
-+#define INDIRECT_TIMEOUT_US	10000
-+
-+struct indirect_ctx {
-+	void __iomem *base;
-+	struct device *dev;
-+};
-+
-+static int indirect_bus_clr_cmd(struct indirect_ctx *ctx)
-+{
-+	unsigned int cmd;
-+	int ret;
-+
-+	writel(0, ctx->base + INDIRECT_CMD_OFF);
-+	ret = readl_poll_timeout((ctx->base + INDIRECT_CMD_OFF), cmd,
-+				 (!cmd), INDIRECT_INT_US, INDIRECT_TIMEOUT_US);
-+	if (ret)
-+		dev_err(ctx->dev, "%s timed out on clearing cmd 0x%xn", __func__, cmd);
-+
-+	return ret;
-+}
-+
-+static int indirect_bus_reg_read(void *context, unsigned int reg,
-+				 unsigned int *val)
-+{
-+	struct indirect_ctx *ctx = context;
-+	unsigned int cmd;
-+	int ret;
-+
-+	cmd = readl(ctx->base + INDIRECT_CMD_OFF);
-+	if (cmd)
-+		dev_warn(ctx->dev, "%s non-zero cmd 0x%x\n", __func__, cmd);
-+
-+	writel(reg, ctx->base + INDIRECT_ADDR_OFF);
-+	writel(INDIRECT_CMD_RD, ctx->base + INDIRECT_CMD_OFF);
-+	ret = readl_poll_timeout((ctx->base + INDIRECT_CMD_OFF), cmd,
-+				 (cmd & INDIRECT_CMD_ACK), INDIRECT_INT_US,
-+				 INDIRECT_TIMEOUT_US);
-+	if (ret) {
-+		dev_err(ctx->dev, "%s timed out on reg 0x%x cmd 0x%x\n", __func__, reg, cmd);
-+		goto out;
-+	}
-+
-+	*val = readl(ctx->base + INDIRECT_RD_OFF);
-+
-+	if (indirect_bus_clr_cmd(ctx))
-+		ret = -ETIMEDOUT;
-+
-+out:
-+	return ret;
-+}
-+
-+static int indirect_bus_reg_write(void *context, unsigned int reg,
-+				  unsigned int val)
-+{
-+	struct indirect_ctx *ctx = context;
-+	unsigned int cmd;
-+	int ret;
-+
-+	cmd = readl(ctx->base + INDIRECT_CMD_OFF);
-+	if (cmd)
-+		dev_warn(ctx->dev, "%s non-zero cmd 0x%x\n", __func__, cmd);
-+
-+	writel(val, ctx->base + INDIRECT_WR_OFF);
-+	writel(reg, ctx->base + INDIRECT_ADDR_OFF);
-+	writel(INDIRECT_CMD_WR, ctx->base + INDIRECT_CMD_OFF);
-+	ret = readl_poll_timeout((ctx->base + INDIRECT_CMD_OFF), cmd,
-+				 (cmd & INDIRECT_CMD_ACK), INDIRECT_INT_US,
-+				 INDIRECT_TIMEOUT_US);
-+	if (ret) {
-+		dev_err(ctx->dev, "%s timed out on reg 0x%x cmd 0x%x\n", __func__, reg, cmd);
-+		goto out;
-+	}
-+
-+	if (indirect_bus_clr_cmd(ctx))
-+		ret = -ETIMEDOUT;
-+
-+out:
-+	return ret;
-+}
-+
-+static const struct regmap_bus indirect_bus = {
-+	.reg_write = indirect_bus_reg_write,
-+	.reg_read =  indirect_bus_reg_read,
-+};
-+
-+/**
-+ * devm_regmap_init_indirect_register - create a regmap for indirect register access
-+ * @dev: device creating the regmap
-+ * @base: __iomem point to base of memory with mailbox
-+ * @cfg: regmap_config describing interface
-+ *
-+ * Return: 0 on success, negative error code otherwise.
-+ */
-+struct regmap *devm_regmap_init_indirect_register(struct device *dev,
-+						  void __iomem *base,
-+						  struct regmap_config *cfg)
-+{
-+	struct indirect_ctx *ctx;
-+
-+	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
-+	if (!ctx)
-+		return NULL;
-+
-+	ctx->base = base;
-+	ctx->dev = dev;
-+
-+	return devm_regmap_init(dev, &indirect_bus, ctx, cfg);
-+}
-+EXPORT_SYMBOL_GPL(devm_regmap_init_indirect_register);
-+
-+MODULE_DESCRIPTION("Indirect Register Access");
-+MODULE_AUTHOR("Intel Corporation");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/regmap.h b/include/linux/regmap.h
-index de81a94d7b30..72eb38883e88 100644
---- a/include/linux/regmap.h
-+++ b/include/linux/regmap.h
-@@ -670,6 +670,18 @@ struct regmap *__devm_regmap_init_spi_avmm(struct spi_device *spi,
- 					   const struct regmap_config *config,
- 					   struct lock_class_key *lock_key,
- 					   const char *lock_name);
-+/**
-+ * devm_regmap_init_indirect_register - create a regmap for indirect register access
-+ * @dev: device creating the regmap
-+ * @base: __iomem point to base of memory with mailbox
-+ * @cfg: regmap_config describing interface
-+ *
-+ * Return: 0 on success, negative error code otherwise.
-+ */
-+struct regmap *devm_regmap_init_indirect_register(struct device *dev,
-+						  void __iomem *base,
-+						  struct regmap_config *cfg);
-+
- /*
-  * Wrapper for regmap_init macros to include a unique lockdep key and name
-  * for each call. No-op if CONFIG_LOCKDEP is not set.
+   In file included from include/linux/smp.h:13,
+                    from include/linux/lockdep.h:14,
+                    from include/linux/spinlock.h:62,
+                    from include/linux/ipc.h:5,
+                    from include/uapi/linux/sem.h:5,
+                    from include/linux/sem.h:5,
+                    from include/linux/compat.h:14,
+                    from arch/powerpc/kernel/asm-offsets.c:12:
+   include/linux/cpumask.h: In function 'alloc_cpumask_var_node':
+   include/linux/cpumask.h:812:17: error: implicit declaration of function 'kmalloc_node'; did you mean 'bitmap_alloc_node'? [-Werror=implicit-function-declaration]
+     812 |         *mask = kmalloc_node(cpumask_size(), flags, node);
+         |                 ^~~~~~~~~~~~
+         |                 bitmap_alloc_node
+   include/linux/cpumask.h:812:15: warning: assignment to 'cpumask_var_t' {aka 'struct cpumask *'} from 'int' makes pointer from integer without a cast [-Wint-conversion]
+     812 |         *mask = kmalloc_node(cpumask_size(), flags, node);
+         |               ^
+   include/linux/cpumask.h: In function 'alloc_cpumask_var':
+   include/linux/cpumask.h:836:52: error: 'NUMA_NO_NODE' undeclared (first use in this function)
+     836 |         return alloc_cpumask_var_node(mask, flags, NUMA_NO_NODE);
+         |                                                    ^~~~~~~~~~~~
+   include/linux/cpumask.h:836:52: note: each undeclared identifier is reported only once for each function it appears in
+   include/linux/cpumask.h: In function 'zalloc_cpumask_var_node':
+   include/linux/cpumask.h:841:53: error: '__GFP_ZERO' undeclared (first use in this function)
+     841 |         return alloc_cpumask_var_node(mask, flags | __GFP_ZERO, node);
+         |                                                     ^~~~~~~~~~
+   include/linux/cpumask.h: In function 'zalloc_cpumask_var':
+   include/linux/cpumask.h:846:48: error: '__GFP_ZERO' undeclared (first use in this function)
+     846 |         return alloc_cpumask_var(mask, flags | __GFP_ZERO);
+         |                                                ^~~~~~~~~~
+   include/linux/cpumask.h: In function 'alloc_bootmem_cpumask_var':
+   include/linux/cpumask.h:860:17: error: implicit declaration of function 'memblock_alloc' [-Werror=implicit-function-declaration]
+     860 |         *mask = memblock_alloc(cpumask_size(), SMP_CACHE_BYTES);
+         |                 ^~~~~~~~~~~~~~
+   include/linux/cpumask.h:860:15: warning: assignment to 'cpumask_var_t' {aka 'struct cpumask *'} from 'int' makes pointer from integer without a cast [-Wint-conversion]
+     860 |         *mask = memblock_alloc(cpumask_size(), SMP_CACHE_BYTES);
+         |               ^
+   include/linux/cpumask.h: In function 'free_cpumask_var':
+   include/linux/cpumask.h:874:9: error: implicit declaration of function 'kfree' [-Werror=implicit-function-declaration]
+     874 |         kfree(mask);
+         |         ^~~~~
+   include/linux/cpumask.h: In function 'free_bootmem_cpumask_var':
+   include/linux/cpumask.h:883:9: error: implicit declaration of function 'memblock_free' [-Werror=implicit-function-declaration]
+     883 |         memblock_free(mask, cpumask_size());
+         |         ^~~~~~~~~~~~~
+   In file included from include/linux/fs.h:45,
+                    from include/linux/compat.h:17,
+                    from arch/powerpc/kernel/asm-offsets.c:12:
+   include/linux/slab.h: At top level:
+   include/linux/slab.h:188:6: warning: conflicting types for 'kfree'; have 'void(const void *)'
+     188 | void kfree(const void *objp);
+         |      ^~~~~
+   In file included from include/linux/smp.h:13,
+                    from include/linux/lockdep.h:14,
+                    from include/linux/spinlock.h:62,
+                    from include/linux/ipc.h:5,
+                    from include/uapi/linux/sem.h:5,
+                    from include/linux/sem.h:5,
+                    from include/linux/compat.h:14,
+                    from arch/powerpc/kernel/asm-offsets.c:12:
+   include/linux/cpumask.h:874:9: note: previous implicit declaration of 'kfree' with type 'void(const void *)'
+     874 |         kfree(mask);
+         |         ^~~~~
+   In file included from include/linux/fs.h:45,
+                    from include/linux/compat.h:17,
+                    from arch/powerpc/kernel/asm-offsets.c:12:
+>> include/linux/slab.h:608:46: error: conflicting types for 'kmalloc_node'; have 'void *(size_t,  gfp_t,  int)' {aka 'void *(unsigned int,  unsigned int,  int)'}
+     608 | static __always_inline __alloc_size(1) void *kmalloc_node(size_t size, gfp_t flags, int node)
+         |                                              ^~~~~~~~~~~~
+   In file included from include/linux/smp.h:13,
+                    from include/linux/lockdep.h:14,
+                    from include/linux/spinlock.h:62,
+                    from include/linux/ipc.h:5,
+                    from include/uapi/linux/sem.h:5,
+                    from include/linux/sem.h:5,
+                    from include/linux/compat.h:14,
+                    from arch/powerpc/kernel/asm-offsets.c:12:
+   include/linux/cpumask.h:812:17: note: previous implicit declaration of 'kmalloc_node' with type 'int()'
+     812 |         *mask = kmalloc_node(cpumask_size(), flags, node);
+         |                 ^~~~~~~~~~~~
+   cc1: some warnings being treated as errors
+   make[2]: *** [scripts/Makefile.build:117: arch/powerpc/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1196: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
+
+
+vim +608 include/linux/slab.h
+
+ce6a50263d4ddeb Christoph Lameter 2013-01-10  607  
+c37495d6254c237 Kees Cook         2021-11-05 @608  static __always_inline __alloc_size(1) void *kmalloc_node(size_t size, gfp_t flags, int node)
+f1b6eb6e6be149b Christoph Lameter 2013-09-04  609  {
+f1b6eb6e6be149b Christoph Lameter 2013-09-04  610  #ifndef CONFIG_SLOB
+f1b6eb6e6be149b Christoph Lameter 2013-09-04  611  	if (__builtin_constant_p(size) &&
+cc252eae85e0955 Vlastimil Babka   2018-10-26  612  		size <= KMALLOC_MAX_CACHE_SIZE) {
+36071a279b4100a Alexey Dobriyan   2018-04-05  613  		unsigned int i = kmalloc_index(size);
+f1b6eb6e6be149b Christoph Lameter 2013-09-04  614  
+f1b6eb6e6be149b Christoph Lameter 2013-09-04  615  		if (!i)
+f1b6eb6e6be149b Christoph Lameter 2013-09-04  616  			return ZERO_SIZE_PTR;
+f1b6eb6e6be149b Christoph Lameter 2013-09-04  617  
+cc252eae85e0955 Vlastimil Babka   2018-10-26  618  		return kmem_cache_alloc_node_trace(
+cc252eae85e0955 Vlastimil Babka   2018-10-26  619  				kmalloc_caches[kmalloc_type(flags)][i],
+f1b6eb6e6be149b Christoph Lameter 2013-09-04  620  						flags, node, size);
+f1b6eb6e6be149b Christoph Lameter 2013-09-04  621  	}
+f1b6eb6e6be149b Christoph Lameter 2013-09-04  622  #endif
+f1b6eb6e6be149b Christoph Lameter 2013-09-04  623  	return __kmalloc_node(size, flags, node);
+f1b6eb6e6be149b Christoph Lameter 2013-09-04  624  }
+f1b6eb6e6be149b Christoph Lameter 2013-09-04  625  
+
+:::::: The code at line 608 was first introduced by commit
+:::::: c37495d6254c237578db3121dcf79857e033f8ff slab: add __alloc_size attributes for better bounds checking
+
+:::::: TO: Kees Cook <keescook@chromium.org>
+:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
+
 -- 
-2.26.2
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
