@@ -2,152 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE74C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 493FEC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:13:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244185AbiFGONA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 10:13:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34620 "EHLO
+        id S245218AbiFGONE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 10:13:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233115AbiFGOM6 (ORCPT
+        with ESMTP id S241035AbiFGOM7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 10:12:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F8F19E;
-        Tue,  7 Jun 2022 07:12:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF81461578;
-        Tue,  7 Jun 2022 14:12:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15294C385A5;
-        Tue,  7 Jun 2022 14:12:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654611175;
-        bh=tOlTuXrCdHXR6tngcOYuj9xb6Z7sf9Xjv7iA3sFggYc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KH4AWZwnRnDjxQDeZmq+Cmgtn6CDh5+jO2Zb7+EQMAhBVKoINQHyhMuThDfmevcBt
-         ZTDUUyjmeiOD4Tibu/IbzEYR2NAYUYA59os4W+XauvN7beQS/xos5AiLJDnwVrndUB
-         rM5amS1fGMBjy59vEfHyiqOmGRTu9UYaqMyg/YOisI7Va9vKbs3Qac9qJhRxKkexml
-         aU8UhPgCJH+avMFetQh4PoMZ0XdyT5aMEOm1EY4vsbeKaZ9Hwl8hfcWkqD8AjYVwK9
-         ukNPlmqK55f0NoRDtDaBQC0MTDoeqZPUvqzfB4UPasrcLeVxKToaglkKnnAk9WRCro
-         RPY6qgXxQqaTw==
-Date:   Tue, 7 Jun 2022 19:42:42 +0530
-From:   Manivannan Sadhasivam <mani@kernel.org>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-mtd@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] dt-bindings: mtd: qcom_nandc: document
- qcom,boot-pages binding
-Message-ID: <20220607141242.GA1882@thinkpad>
-References: <20220519190112.6344-1-ansuelsmth@gmail.com>
- <20220519190112.6344-3-ansuelsmth@gmail.com>
- <20220607091522.GB5410@thinkpad>
- <629f3127.1c69fb81.2590d.39ac@mx.google.com>
+        Tue, 7 Jun 2022 10:12:59 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C9A19E;
+        Tue,  7 Jun 2022 07:12:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654611178; x=1686147178;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=gBeOmaL6KbNtWkAXK4mRzbR9MnHeARJ2NfcwMDEO/5A=;
+  b=mg/bMfVmv10f40UdT+wjRUH0afaeA748IfAspQXAIAVTiefSVICn0YrK
+   l97GdGLo2owpu5r60i0RuBd6xF3biJ0EHmLhbPD+Z8yiRjGt89MzNHEsw
+   evvENl+K9AXJTl2jHvI26osZAbrOSS8LhisggxVb1+pFDYruDoy+1biQt
+   s6ERTqNA5FeIHv3hqRC7OixZ8QUvB5joVpo//drTfxSmpItWi3O4lqM66
+   OJGOD4nD2QaAKOEqQCO6paa4MPGhexCSPqHHncac846aKo23RDXr/Oqma
+   BqlVMFlNO1UuQRU7cR2TDlACiPb4As0jEhcmiRpV9jeGTo/pJ8b7NrgNz
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277531492"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="277531492"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:07:03 -0700
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="636138930"
+Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:06:57 -0700
+Date:   Tue, 7 Jun 2022 17:06:54 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 13/36] tty/vt: consolemap: make con_set_unimap() more
+ readable
+In-Reply-To: <20220607104946.18710-13-jslaby@suse.cz>
+Message-ID: <73d65e7-7635-55d7-415e-7c2af3c267f4@linux.intel.com>
+References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-13-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <629f3127.1c69fb81.2590d.39ac@mx.google.com>
+Content-Type: multipart/mixed; boundary="8323329-716620653-1654610818=:1622"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 09:05:16AM +0200, Ansuel Smith wrote:
-> On Tue, Jun 07, 2022 at 02:45:22PM +0530, Manivannan Sadhasivam wrote:
-> > On Thu, May 19, 2022 at 09:01:12PM +0200, Ansuel Smith wrote:
-> > > Document new qcom,boot-pages binding used to apply special
-> > > read/write configuration to boot pages.
-> > > 
-> > > QCOM apply a special configuration where spare data is not protected
-> > > by ECC for some special pages (used for boot partition). Add
-> > > Documentation on how to declare these special pages.
-> > > 
-> > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > > ---
-> > >  .../devicetree/bindings/mtd/qcom,nandc.yaml   | 26 +++++++++++++++++++
-> > >  1 file changed, 26 insertions(+)
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml b/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml
-> > > index 84ad7ff30121..a59ae9525f4e 100644
-> > > --- a/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml
-> > > +++ b/Documentation/devicetree/bindings/mtd/qcom,nandc.yaml
-> > > @@ -102,6 +102,30 @@ allOf:
-> > >              - const: rx
-> > >              - const: cmd
-> > >  
-> > > +  - if:
-> > > +      properties:
-> > > +        compatible:
-> > > +          contains:
-> > > +            enum:
-> > > +              - qcom,ipq806x-nand
-> > > +
-> > > +    then:
-> > > +      properties:
-> > > +        qcom,boot-pages:
-> > 
-> > Eventhough the page layout is what making the difference, here the boot
-> > partition offset and size are getting specified. So how about, changing it
-> > to "qcom,boot-partitions"?
-> > 
-> > Thanks,
-> > Mani
-> >
-> 
-> Yep, you are correct and the naming is confusing. Will do the change.
-> Did you check the code if you notice something to improve / an idea of a
-> better implementation or better naming?
-> Just to skip sending multiple revision with small changes.
-> 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Yep, I do have some comments. Will share them.
+--8323329-716620653-1654610818=:1622
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-Thanks,
-Mani
+On Tue, 7 Jun 2022, Jiri Slaby wrote:
 
-> > > +          $ref: /schemas/types.yaml#/definitions/uint32-matrix
-> > > +          items:
-> > > +            items:
-> > > +              - description: offset
-> > > +              - description: size
-> > > +          description:
-> > > +            Some special page used by boot partition have spare data
-> > > +            not protected by ECC. Use this to declare these special page
-> > > +            by defining first the offset and then the size.
-> > > +
-> > > +            It's in the form of <offset1 size1 offset2 size2 offset3 ...>
-> > > +
-> > > +            Refer to the ipq8064 example on how to use this special binding.
-> > > +
-> > >  required:
-> > >    - compatible
-> > >    - reg
-> > > @@ -135,6 +159,8 @@ examples:
-> > >          nand-ecc-strength = <4>;
-> > >          nand-bus-width = <8>;
-> > >  
-> > > +        qcom,boot-pages = <0x0 0x58a0000>;
-> > > +
-> > >          partitions {
-> > >            compatible = "fixed-partitions";
-> > >            #address-cells = <1>;
-> > > -- 
-> > > 2.34.1
-> > > 
-> > 
-> > -- 
-> > மணிவண்ணன் சதாசிவம்
+> The indentation was completely broken in con_set_unimap(). Reorder the
+> code using 'if (!cond) continue;'s so that the code makes sense. Not
+> that it is perfect now, but it can be followed at least. More cleanup to
+> come. And remove all those useless whitespaces at the EOLs too.
 > 
-> -- 
-> 	Ansuel
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+
+Reviewed-by: Ilpo J�rvinen <ilpo.jarvinen@linux.intel.com>
+
 
 -- 
-மணிவண்ணன் சதாசிவம்
+ i.
+
+--8323329-716620653-1654610818=:1622--
