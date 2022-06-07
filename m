@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F16CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:44:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1729C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:44:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356952AbiFGTn6 (ORCPT
+        id S1357030AbiFGToE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:43:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57714 "EHLO
+        Tue, 7 Jun 2022 15:44:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346216AbiFGSra (ORCPT
+        with ESMTP id S1346208AbiFGSra (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:47:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D6564666C;
-        Tue,  7 Jun 2022 11:02:26 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852D420F55;
+        Tue,  7 Jun 2022 11:02:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EF16B82354;
-        Tue,  7 Jun 2022 18:02:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AE13C34119;
-        Tue,  7 Jun 2022 18:02:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FD7B617AE;
+        Tue,  7 Jun 2022 18:02:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 037A9C34115;
+        Tue,  7 Jun 2022 18:02:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624944;
-        bh=Hsu9Qg27FCvvtxJFy5SmVJxnb5z/NwiPxb+adDfnNAM=;
+        s=korg; t=1654624947;
+        bh=z62NRjW3JBLN6rBIEdaQXCDoFIUywq8reT1dlr6cApo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xE945tp1bO9KsaN1wQKN0qXpvLI4iG0+vnZ0MaSZGYq2wmmdoAgIhXp8p1Fgdgg1N
-         U8jMqru8B3Zvy2yXh1FbxFuABdIH/YDNcJYw2b1ryVHzZcT1dgo6lj/5ag2cexpVzu
-         0SSastgTKepYCRDhOqjmCBTOCd2t92qh/jwbaFrA=
+        b=fdXuNsgWqnVZHMFacdfYLgup9rECsqbRSuJX95FjU6pA7kLHaJRVfJaXZzLXPNPI2
+         CAL8cuRjo+t34konSRxign05HDltFZk1v+yir7NdErMafWni5hhqikwd2Xs4b2vrbQ
+         oXJJuSKs/425UEYOYEPNkj/mOmaeiYERjRZhuAMY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Mario <jmario@redhat.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
+        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexander Shishkin <alexander.shishkin@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>,
         Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 509/667] perf c2c: Use stdio interface if slang is not supported
-Date:   Tue,  7 Jun 2022 19:02:54 +0200
-Message-Id: <20220607164949.966529576@linuxfoundation.org>
+Subject: [PATCH 5.15 510/667] perf jevents: Fix event syntax error caused by ExtSel
+Date:   Tue,  7 Jun 2022 19:02:55 +0200
+Message-Id: <20220607164949.997677051@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -56,80 +57,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leo Yan <leo.yan@linaro.org>
+From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
 
-[ Upstream commit c4040212bc97d16040712a410335f93bc94d2262 ]
+[ Upstream commit f4df0dbbe62ee8e4405a57b27ccd54393971c773 ]
 
-If the slang lib is not installed on the system, perf c2c tool disables TUI
-mode and roll back to use stdio mode;  but the flag 'c2c.use_stdio' is
-missed to set true and thus it wrongly applies UI quirks in the function
-ui_quirks().
+In the origin code, when "ExtSel" is 1, the eventcode will change to
+"eventcode |= 1 << 21”. For event “UNC_Q_RxL_CREDITS_CONSUMED_VN0.DRS",
+its "ExtSel" is "1", its eventcode will change from 0x1E to 0x20001E,
+but in fact the eventcode should <=0x1FF, so this will cause the parse
+fail:
 
-This commit forces to use stdio interface if slang is not supported, and
-it can avoid to apply the UI quirks and show the correct metric header.
+  # perf stat -e "UNC_Q_RxL_CREDITS_CONSUMED_VN0.DRS" -a sleep 0.1
+  event syntax error: '.._RxL_CREDITS_CONSUMED_VN0.DRS'
+                                    \___ value too big for format, maximum is 511
 
-Before:
+On the perf kernel side, the kernel assumes the valid bits are continuous.
+It will adjust the 0x100 (bit 8 for perf tool) to bit 21 in HW.
 
-=================================================
-      Shared Cache Line Distribution Pareto
-=================================================
-  -------------------------------------------------------------------------------
-      0        0        0       99        0        0        0      0xaaaac17d6000
-  -------------------------------------------------------------------------------
-    0.00%    0.00%    6.06%    0.00%    0.00%    0.00%   0x20   N/A       0      0xaaaac17c25ac         0         0        43       375    18469         2  [.] 0x00000000000025ac  memstress         memstress[25ac]   0
-    0.00%    0.00%   93.94%    0.00%    0.00%    0.00%   0x29   N/A       0      0xaaaac17c3e88         0         0       173       180      135         2  [.] 0x0000000000003e88  memstress         memstress[3e88]   0
+DEFINE_UNCORE_FORMAT_ATTR(event_ext, event, "config:0-7,21");
 
-After:
+So the perf tool follows the kernel side and just set bit8 other than bit21.
 
-=================================================
-      Shared Cache Line Distribution Pareto
-=================================================
-  -------------------------------------------------------------------------------
-      0        0        0       99        0        0        0      0xaaaac17d6000
-  -------------------------------------------------------------------------------
-           0.00%    0.00%    6.06%    0.00%    0.00%    0.00%                0x20   N/A       0      0xaaaac17c25ac         0         0        43       375    18469         2  [.] 0x00000000000025ac  memstress         memstress[25ac]   0
-           0.00%    0.00%   93.94%    0.00%    0.00%    0.00%                0x29   N/A       0      0xaaaac17c3e88         0         0       173       180      135         2  [.] 0x0000000000003e88  memstress         memstress[3e88]   0
-
-Fixes: 5a1a99cd2e4e1557 ("perf c2c report: Add main TUI browser")
-Reported-by: Joe Mario <jmario@redhat.com>
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Fixes: fedb2b518239cbc0 ("perf jevents: Add support for parsing uncore json files")
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Xing Zhengjun <zhengjun.xing@linux.intel.com>
+Acked-by: Ian Rogers <irogers@google.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Alexander Shishkin <alexander.shishkin@intel.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
 Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
 Cc: Peter Zijlstra <peterz@infradead.org>
-Link: http://lore.kernel.org/lkml/20220526145400.611249-1-leo.yan@linaro.org
+Link: https://lore.kernel.org/r/20220525140410.1706851-1-zhengjun.xing@linux.intel.com
 Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/builtin-c2c.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ tools/perf/pmu-events/jevents.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
-index a192014fa52b..1fb0c507a551 100644
---- a/tools/perf/builtin-c2c.c
-+++ b/tools/perf/builtin-c2c.c
-@@ -2733,9 +2733,7 @@ static int perf_c2c__report(int argc, const char **argv)
- 		   "the input file to process"),
- 	OPT_INCR('N', "node-info", &c2c.node_info,
- 		 "show extra node info in report (repeat for more info)"),
--#ifdef HAVE_SLANG_SUPPORT
- 	OPT_BOOLEAN(0, "stdio", &c2c.use_stdio, "Use the stdio interface"),
--#endif
- 	OPT_BOOLEAN(0, "stats", &c2c.stats_only,
- 		    "Display only statistic tables (implies --stdio)"),
- 	OPT_BOOLEAN(0, "full-symbols", &c2c.symbol_full,
-@@ -2765,6 +2763,10 @@ static int perf_c2c__report(int argc, const char **argv)
- 	if (argc)
- 		usage_with_options(report_c2c_usage, options);
- 
-+#ifndef HAVE_SLANG_SUPPORT
-+	c2c.use_stdio = true;
-+#endif
-+
- 	if (c2c.stats_only)
- 		c2c.use_stdio = true;
- 
+diff --git a/tools/perf/pmu-events/jevents.c b/tools/perf/pmu-events/jevents.c
+index 7c887d37b893..1db4df106c43 100644
+--- a/tools/perf/pmu-events/jevents.c
++++ b/tools/perf/pmu-events/jevents.c
+@@ -604,7 +604,7 @@ static int json_events(const char *fn,
+ 			} else if (json_streq(map, field, "ExtSel")) {
+ 				char *code = NULL;
+ 				addfield(map, &code, "", "", val);
+-				eventcode |= strtoul(code, NULL, 0) << 21;
++				eventcode |= strtoul(code, NULL, 0) << 8;
+ 				free(code);
+ 			} else if (json_streq(map, field, "EventName")) {
+ 				addfield(map, &je.name, "", "", val);
 -- 
 2.35.1
 
