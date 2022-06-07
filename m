@@ -2,101 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56B80CCA48E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CE55CCA491
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354101AbiFGSqd (ORCPT
+        id S1354143AbiFGSqj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:46:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51586 "EHLO
+        Tue, 7 Jun 2022 14:46:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352082AbiFGSQx (ORCPT
+        with ESMTP id S1352159AbiFGSQ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACB5D133271;
-        Tue,  7 Jun 2022 10:50:25 -0700 (PDT)
+        Tue, 7 Jun 2022 14:16:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E011E084;
+        Tue,  7 Jun 2022 10:50:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B2EE6159C;
-        Tue,  7 Jun 2022 17:50:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC3F7C341C5;
-        Tue,  7 Jun 2022 17:50:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624224;
-        bh=RpktX0h64ke1ndML5ud9B+DvdtiuU/h/XzPH811aUtE=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADFF561650;
+        Tue,  7 Jun 2022 17:50:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B85A6C34115;
+        Tue,  7 Jun 2022 17:50:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624247;
+        bh=4en+cC/nYj++7MgCIJDMIe5jSsByg+LEvsp7KKofpjw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F57r+Lf6hvh7XuHvgOXZ3nMYdr4NUgQvAOT9nzpawF0nEqwordjWlu1+e/GIs+hmU
-         Ylm+zfhB8SEShYYDmWlDs1DDIW31mfbDhAK4hYiLLDrXHpTbJwxe4ALdwyBlMPkJXb
-         Lm+LPAHHk7y4oZbRXPXylRuUkonIHzhD/4SdKNHzOntt6/z9k3HC178I+8Q9DBEnRd
-         05eZX0WQPgiD2OngZqV/mN1igqkG2RL2gST7URTK024uIMrn9tnkpi9yGDUucYqUK7
-         8Nho4OFx38QhW+qr0/vpDCLW1MhXTw/R/lemM41McUY3uhBjRDvvkcHdFRo30BheHh
-         4Yk4/660NXqJw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 21/68] usb: dwc3: gadget: Only End Transfer for ep0 data phase
-Date:   Tue,  7 Jun 2022 13:47:47 -0400
-Message-Id: <20220607174846.477972-21-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+        b=A0bbyTv0bT37e8h5331qqDErv1bCAfGeqA7Exl5QBJk54iEnBIojvabepNVHJn6hn
+         aDQhWRqgdgpy4+5i4FKhHC2kdWBBDFDDb00Av+dFEK0VaunBiL/0fsTX7rKpXmwvaa
+         ZsgGC43ANmk/euYtbN14hISrO+5O9J0WaorlBhtI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 256/667] selftests/resctrl: Fix null pointer dereference on open failed
+Date:   Tue,  7 Jun 2022 18:58:41 +0200
+Message-Id: <20220607164942.460918940@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+From: Colin Ian King <colin.i.king@gmail.com>
 
-[ Upstream commit ace17b6ee4f92ab0375d12a1b42494f8590a96b6 ]
+[ Upstream commit c7b607fa9325ccc94982774c505176677117689c ]
 
-The driver shouldn't be able to issue End Transfer to the control
-endpoint at anytime. Typically we should only do so in error cases such
-as invalid/unexpected direction of Data Phase as described in the
-control transfer flow of the programming guide. It _may_ end started
-data phase during controller deinitialization from soft disconnect or
-driver removal. However, that should not happen because the driver
-should be maintained in EP0_SETUP_PHASE during driver tear-down. On
-soft-connect, the controller should be reset from a soft-reset and there
-should be no issue starting the control endpoint.
+Currently if opening /dev/null fails to open then file pointer fp
+is null and further access to fp via fprintf will cause a null
+pointer dereference. Fix this by returning a negative error value
+when a null fp is detected.
 
-Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-Link: https://lore.kernel.org/r/3c6643678863a26702e4115e9e19d7d94a30d49c.1650593829.git.Thinh.Nguyen@synopsys.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Detected using cppcheck static analysis:
+tools/testing/selftests/resctrl/fill_buf.c:124:6: note: Assuming
+that condition '!fp' is not redundant
+ if (!fp)
+     ^
+tools/testing/selftests/resctrl/fill_buf.c:126:10: note: Null
+pointer dereference
+ fprintf(fp, "Sum: %d ", ret);
+
+Fixes: a2561b12fe39 ("selftests/resctrl: Add built in benchmark")
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc3/gadget.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ tools/testing/selftests/resctrl/fill_buf.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
-index 0b9c2493844a..05856bcaf2f7 100644
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -3673,6 +3673,17 @@ static void dwc3_reset_gadget(struct dwc3 *dwc)
- void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
- 	bool interrupt)
- {
-+	struct dwc3 *dwc = dep->dwc;
-+
-+	/*
-+	 * Only issue End Transfer command to the control endpoint of a started
-+	 * Data Phase. Typically we should only do so in error cases such as
-+	 * invalid/unexpected direction as described in the control transfer
-+	 * flow of the programming guide.
-+	 */
-+	if (dep->number <= 1 && dwc->ep0state != EP0_DATA_PHASE)
-+		return;
-+
- 	if (!(dep->flags & DWC3_EP_TRANSFER_STARTED) ||
- 	    (dep->flags & DWC3_EP_DELAY_STOP) ||
- 	    (dep->flags & DWC3_EP_END_TRANSFER_PENDING))
+diff --git a/tools/testing/selftests/resctrl/fill_buf.c b/tools/testing/selftests/resctrl/fill_buf.c
+index 51e5cf22632f..56ccbeae0638 100644
+--- a/tools/testing/selftests/resctrl/fill_buf.c
++++ b/tools/testing/selftests/resctrl/fill_buf.c
+@@ -121,8 +121,10 @@ static int fill_cache_read(unsigned char *start_ptr, unsigned char *end_ptr,
+ 
+ 	/* Consume read result so that reading memory is not optimized out. */
+ 	fp = fopen("/dev/null", "w");
+-	if (!fp)
++	if (!fp) {
+ 		perror("Unable to write to /dev/null");
++		return -1;
++	}
+ 	fprintf(fp, "Sum: %d ", ret);
+ 	fclose(fp);
+ 
 -- 
 2.35.1
+
+
 
