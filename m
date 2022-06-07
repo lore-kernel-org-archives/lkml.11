@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0CB6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:13:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A3AACCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383935AbiFGWNA (ORCPT
+        id S1379287AbiFGWNG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:13:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33210 "EHLO
+        Tue, 7 Jun 2022 18:13:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379682AbiFGVKt (ORCPT
+        with ESMTP id S1379661AbiFGVKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:10:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F47721565D;
-        Tue,  7 Jun 2022 11:51:56 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F93215642;
+        Tue,  7 Jun 2022 11:51:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4888617A4;
-        Tue,  7 Jun 2022 18:51:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1F74C341C7;
-        Tue,  7 Jun 2022 18:51:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0AA6B8239A;
+        Tue,  7 Jun 2022 18:51:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 572E9C34115;
+        Tue,  7 Jun 2022 18:51:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627915;
-        bh=31HpYQaWeWqtZN+AGWXO2osKlfGZ7/fW6vbdG5g5fus=;
+        s=korg; t=1654627909;
+        bh=uGxBakii2rIG+iogD6UuanWdzvcp4zMwBqkxmY5yAyg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=koQnRJnnVWWo5kDwuDW4MZxhZl4XbuCBe0t7hyQC5PUhRhXmyQlVZt2b+hnOKJ139
-         TpWKa4T1nullHKoMKS2XK/3e6nrP8mikClaqf/4CI55K5+Xx9vjDC+rpgwWWulvvmK
-         NFBff4JPPO1D5efzdRW5V0uZ2NytP7ZrcFgjVmNk=
+        b=v0bQCRNgfsZSybwt68ZlUs6vE97giCM52jIXzkEPvj3A/f8eIl7U38zHIkP0L4ZHp
+         07PyAio2o1VvD7DBDQVq4UQQh9uW1qGxKyLP37RjDU5cu1+W7SaiMwc8OkK1TsXhU0
+         zvPb0Gvi2SDl2NtVQc9IpvQi5z4MhSOAwAO4/Pg0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhen Lei <thunder.leizhen@huawei.com>,
-        Rob Herring <robh@kernel.org>, Baoquan He <bhe@redhat.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Haohui Mai <ricetons@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 138/879] of: Support more than one crash kernel regions for kexec -s
-Date:   Tue,  7 Jun 2022 18:54:16 +0200
-Message-Id: <20220607165006.711247089@linuxfoundation.org>
+Subject: [PATCH 5.18 110/879] drm/amdgpu/sdma: Fix incorrect calculations of the wptr of the doorbells
+Date:   Tue,  7 Jun 2022 18:53:48 +0200
+Message-Id: <20220607165005.890594916@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,48 +52,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhen Lei <thunder.leizhen@huawei.com>
+From: Haohui Mai <ricetons@gmail.com>
 
-[ Upstream commit 8af6b91f58341325bf74ecb0389ddc0039091d84 ]
+[ Upstream commit 7dba6e838e741caadcf27ef717b6dcb561e77f89 ]
 
-When "crashkernel=X,high" is used, there may be two crash regions:
-high=crashk_res and low=crashk_low_res. But now the syscall
-kexec_file_load() only add crashk_res into "linux,usable-memory-range",
-this may cause the second kernel to have no available dma memory.
+This patch fixes the issue where the driver miscomputes the 64-bit
+values of the wptr of the SDMA doorbell when initializing the
+hardware. SDMA engines v4 and later on have full 64-bit registers for
+wptr thus they should be set properly.
 
-Fix it like kexec-tools does for option -c, add both 'high' and 'low'
-regions into the dtb.
+Older generation hardwares like CIK / SI have only 16 / 20 / 24bits
+for the WPTR, where the calls of lower_32_bits() will be removed in a
+following patch.
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Acked-by: Baoquan He <bhe@redhat.com>
-Link: https://lore.kernel.org/r/20220506114402.365-6-thunder.leizhen@huawei.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Haohui Mai <ricetons@gmail.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/of/kexec.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c | 4 ++--
+ drivers/gpu/drm/amd/amdgpu/sdma_v5_0.c | 8 ++++----
+ drivers/gpu/drm/amd/amdgpu/sdma_v5_2.c | 8 ++++----
+ 3 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
-index b9bd1cff1793..8d374cc552be 100644
---- a/drivers/of/kexec.c
-+++ b/drivers/of/kexec.c
-@@ -386,6 +386,15 @@ void *of_kexec_alloc_and_setup_fdt(const struct kimage *image,
- 				crashk_res.end - crashk_res.start + 1);
- 		if (ret)
- 			goto out;
-+
-+		if (crashk_low_res.end) {
-+			ret = fdt_appendprop_addrrange(fdt, 0, chosen_node,
-+					"linux,usable-memory-range",
-+					crashk_low_res.start,
-+					crashk_low_res.end - crashk_low_res.start + 1);
-+			if (ret)
-+				goto out;
-+		}
- 	}
+diff --git a/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c b/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
+index d7e8f7232364..ff86c43b63d1 100644
+--- a/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
+@@ -772,8 +772,8 @@ static void sdma_v4_0_ring_set_wptr(struct amdgpu_ring *ring)
  
- 	/* add bootargs */
+ 		DRM_DEBUG("Using doorbell -- "
+ 				"wptr_offs == 0x%08x "
+-				"lower_32_bits(ring->wptr) << 2 == 0x%08x "
+-				"upper_32_bits(ring->wptr) << 2 == 0x%08x\n",
++				"lower_32_bits(ring->wptr << 2) == 0x%08x "
++				"upper_32_bits(ring->wptr << 2) == 0x%08x\n",
+ 				ring->wptr_offs,
+ 				lower_32_bits(ring->wptr << 2),
+ 				upper_32_bits(ring->wptr << 2));
+diff --git a/drivers/gpu/drm/amd/amdgpu/sdma_v5_0.c b/drivers/gpu/drm/amd/amdgpu/sdma_v5_0.c
+index a8d49c005f73..627eb1f147c2 100644
+--- a/drivers/gpu/drm/amd/amdgpu/sdma_v5_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/sdma_v5_0.c
+@@ -394,8 +394,8 @@ static void sdma_v5_0_ring_set_wptr(struct amdgpu_ring *ring)
+ 	if (ring->use_doorbell) {
+ 		DRM_DEBUG("Using doorbell -- "
+ 				"wptr_offs == 0x%08x "
+-				"lower_32_bits(ring->wptr) << 2 == 0x%08x "
+-				"upper_32_bits(ring->wptr) << 2 == 0x%08x\n",
++				"lower_32_bits(ring->wptr << 2) == 0x%08x "
++				"upper_32_bits(ring->wptr << 2) == 0x%08x\n",
+ 				ring->wptr_offs,
+ 				lower_32_bits(ring->wptr << 2),
+ 				upper_32_bits(ring->wptr << 2));
+@@ -774,9 +774,9 @@ static int sdma_v5_0_gfx_resume(struct amdgpu_device *adev)
+ 
+ 		if (!amdgpu_sriov_vf(adev)) { /* only bare-metal use register write for wptr */
+ 			WREG32(sdma_v5_0_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR),
+-			       lower_32_bits(ring->wptr) << 2);
++			       lower_32_bits(ring->wptr << 2));
+ 			WREG32(sdma_v5_0_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR_HI),
+-			       upper_32_bits(ring->wptr) << 2);
++			       upper_32_bits(ring->wptr << 2));
+ 		}
+ 
+ 		doorbell = RREG32_SOC15_IP(GC, sdma_v5_0_get_reg_offset(adev, i, mmSDMA0_GFX_DOORBELL));
+diff --git a/drivers/gpu/drm/amd/amdgpu/sdma_v5_2.c b/drivers/gpu/drm/amd/amdgpu/sdma_v5_2.c
+index 824eace69884..a5eb82bfeaa8 100644
+--- a/drivers/gpu/drm/amd/amdgpu/sdma_v5_2.c
++++ b/drivers/gpu/drm/amd/amdgpu/sdma_v5_2.c
+@@ -295,8 +295,8 @@ static void sdma_v5_2_ring_set_wptr(struct amdgpu_ring *ring)
+ 	if (ring->use_doorbell) {
+ 		DRM_DEBUG("Using doorbell -- "
+ 				"wptr_offs == 0x%08x "
+-				"lower_32_bits(ring->wptr) << 2 == 0x%08x "
+-				"upper_32_bits(ring->wptr) << 2 == 0x%08x\n",
++				"lower_32_bits(ring->wptr << 2) == 0x%08x "
++				"upper_32_bits(ring->wptr << 2) == 0x%08x\n",
+ 				ring->wptr_offs,
+ 				lower_32_bits(ring->wptr << 2),
+ 				upper_32_bits(ring->wptr << 2));
+@@ -672,8 +672,8 @@ static int sdma_v5_2_gfx_resume(struct amdgpu_device *adev)
+ 		WREG32_SOC15_IP(GC, sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_MINOR_PTR_UPDATE), 1);
+ 
+ 		if (!amdgpu_sriov_vf(adev)) { /* only bare-metal use register write for wptr */
+-			WREG32(sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR), lower_32_bits(ring->wptr) << 2);
+-			WREG32(sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR_HI), upper_32_bits(ring->wptr) << 2);
++			WREG32(sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR), lower_32_bits(ring->wptr << 2));
++			WREG32(sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR_HI), upper_32_bits(ring->wptr << 2));
+ 		}
+ 
+ 		doorbell = RREG32_SOC15_IP(GC, sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_DOORBELL));
 -- 
 2.35.1
 
