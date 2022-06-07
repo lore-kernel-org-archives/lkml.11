@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89EFDCCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA2E2CCA48C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:46:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357613AbiFGTqA (ORCPT
+        id S1357670AbiFGTqI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:46:00 -0400
+        Tue, 7 Jun 2022 15:46:08 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353475AbiFGSrj (ORCPT
+        with ESMTP id S1354631AbiFGSrb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:39 -0400
+        Tue, 7 Jun 2022 14:47:31 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F8AB6E;
-        Tue,  7 Jun 2022 11:02:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79EEB50E31;
+        Tue,  7 Jun 2022 11:02:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC8E1B82371;
-        Tue,  7 Jun 2022 18:02:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D70BC385A5;
-        Tue,  7 Jun 2022 18:02:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7E7FB81F38;
+        Tue,  7 Jun 2022 18:02:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1FE5C385A5;
+        Tue,  7 Jun 2022 18:02:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624974;
-        bh=Wk2SiS2mceLsePYCLyZsYF5/o+rOjRU/tSOFOuEtzhI=;
+        s=k20201202; t=1654624960;
+        bh=vYzLSmQkbnTtiS//7dQpP11ufnfqxIvecp/s4C8a2C8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UzJ6DhelbMsMEGHp5Cg/7zWLhh0u5M/JDsOdzfcLbmkmhcmbx15XH5Eu6PrHqO5UX
-         RRgHMf9rzYLakiuWCs2fGSZ7CUbJm15U+QYkGR0Hl89k1vgWu/wl5Mt+BWGlzlRB0J
-         0AycIBhiw5ag8Z4IpJP38hIZDY8WYdXgqhWy8xq/UQGMvyrwEN+NTb4toR4+R32q4r
-         MGOCEXuc/3bKSoLucsKU0YCs+ZKfA+Bco43wn6BM6qN9S0gHQx0wOIrca7PWo7ncTL
-         T7pJHZaZ/3kQ1Op+xG25AG/Xtgry8swDhByCJOYiDfsh63FttGJafYISbqvUAebfZi
-         6XCse4Ucrk7sg==
+        b=npUgRiVuiuXboRS8cBzUHTPkgx/ILXS+pGfsRzli+WeoEekh0uYyjkZ07UaQMMgee
+         kxrYiLJxN58IIwY5gNmuXrJ72I2g8m6v9PlQafKTqiLqK6BGzQCvrUl3Vngj3DoRpp
+         yFgZWRMVwYsP3yPdCtuM8E5ugRBfujWR9ndr/hG5k2AmGNvwE2N2ec8aYRdIhAuq18
+         Tc5lB9Xjr6F6Mjg0dBZk5OMHiojOdhXS+WqxIVroDcNBC/Dl6l5uWbSP0c0aSjAxZY
+         OLXs5e6PH+PFWJgFTpDr8u5J65l6JWQ/P3bzDGlurNm5M/mdPJM/r/95hYlEp5ax67
+         tZvViv9UEOfgw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andre Przywara <andre.przywara@arm.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de
-Subject: [PATCH AUTOSEL 4.14 13/25] clocksource/drivers/sp804: Avoid error on multiple instances
-Date:   Tue,  7 Jun 2022 14:02:14 -0400
-Message-Id: <20220607180229.482040-13-sashal@kernel.org>
+Cc:     Zhen Ni <nizhen@uniontech.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, ok@artecdesign.ee,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 06/25] USB: host: isp116x: check return value after calling platform_get_resource()
+Date:   Tue,  7 Jun 2022 14:02:07 -0400
+Message-Id: <20220607180229.482040-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607180229.482040-1-sashal@kernel.org>
 References: <20220607180229.482040-1-sashal@kernel.org>
@@ -53,63 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+From: Zhen Ni <nizhen@uniontech.com>
 
-[ Upstream commit a98399cbc1e05f7b977419f03905501d566cf54e ]
+[ Upstream commit 134a3408c2d3f7e23eb0e4556e0a2d9f36c2614e ]
 
-When a machine sports more than one SP804 timer instance, we only bring
-up the first one, since multiple timers of the same kind are not useful
-to Linux. As this is intentional behaviour, we should not return an
-error message, as we do today:
-===============
-[    0.000800] Failed to initialize '/bus@8000000/motherboard-bus@8000000/iofpga-bus@300000000/timer@120000': -22
-===============
+It will cause null-ptr-deref if platform_get_resource() returns NULL,
+we need check the return value.
 
-Replace the -EINVAL return with a debug message and return 0 instead.
-
-Also we do not reach the init function anymore if the DT node is
-disabled (as this is now handled by OF_DECLARE), so remove the explicit
-check for that case.
-
-This fixes a long standing bogus error when booting ARM's fastmodels.
-
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/20220506162522.3675399-1-andre.przywara@arm.com
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Signed-off-by: Zhen Ni <nizhen@uniontech.com>
+Link: https://lore.kernel.org/r/20220302033716.31272-1-nizhen@uniontech.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/timer-sp804.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/usb/host/isp116x-hcd.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clocksource/timer-sp804.c b/drivers/clocksource/timer-sp804.c
-index 3ac9dec9a038..42cac9262630 100644
---- a/drivers/clocksource/timer-sp804.c
-+++ b/drivers/clocksource/timer-sp804.c
-@@ -227,6 +227,11 @@ static int __init sp804_of_init(struct device_node *np)
- 	struct clk *clk1, *clk2;
- 	const char *name = of_get_property(np, "compatible", NULL);
+diff --git a/drivers/usb/host/isp116x-hcd.c b/drivers/usb/host/isp116x-hcd.c
+index 73fec38754f9..83eb62001679 100644
+--- a/drivers/usb/host/isp116x-hcd.c
++++ b/drivers/usb/host/isp116x-hcd.c
+@@ -1551,10 +1551,12 @@ static int isp116x_remove(struct platform_device *pdev)
  
-+	if (initialized) {
-+		pr_debug("%pOF: skipping further SP804 timer device\n", np);
-+		return 0;
-+	}
-+
- 	base = of_iomap(np, 0);
- 	if (!base)
- 		return -ENXIO;
-@@ -235,11 +240,6 @@ static int __init sp804_of_init(struct device_node *np)
- 	writel(0, base + TIMER_CTRL);
- 	writel(0, base + TIMER_2_BASE + TIMER_CTRL);
+ 	iounmap(isp116x->data_reg);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	release_mem_region(res->start, 2);
++	if (res)
++		release_mem_region(res->start, 2);
+ 	iounmap(isp116x->addr_reg);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	release_mem_region(res->start, 2);
++	if (res)
++		release_mem_region(res->start, 2);
  
--	if (initialized || !of_device_is_available(np)) {
--		ret = -EINVAL;
--		goto err;
--	}
--
- 	clk1 = of_clk_get(np, 0);
- 	if (IS_ERR(clk1))
- 		clk1 = NULL;
+ 	usb_put_hcd(hcd);
+ 	return 0;
 -- 
 2.35.1
 
