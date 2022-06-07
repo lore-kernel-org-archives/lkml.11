@@ -2,91 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12832CCA482
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:33:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84024C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:33:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381582AbiFHA3L (ORCPT
+        id S1385269AbiFHA3d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:29:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46214 "EHLO
+        Tue, 7 Jun 2022 20:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382609AbiFGVvi (ORCPT
+        with ESMTP id S1455645AbiFGXSz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:51:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C762923D571;
-        Tue,  7 Jun 2022 12:09:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 7 Jun 2022 19:18:55 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167E014CA3C;
+        Tue,  7 Jun 2022 14:21:01 -0700 (PDT)
+Received: from nicolas-tpx395.localdomain (192-222-136-102.qc.cable.ebox.net [192.222.136.102])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0BC4DB82182;
-        Tue,  7 Jun 2022 19:09:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 607F0C385A2;
-        Tue,  7 Jun 2022 19:09:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628942;
-        bh=kHhAYoGsPhV9+EArSetHwxqqBlxp/Pw5NoliB/+7KMQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RCQf9XRmaouDwOPsyKZjKykbPNd1TuNbJQzd6ORUe0tkcVoPOkA2pEvLgAqHHS+ZT
-         yGlY6PQdoFZ0vTqtFB3v5Nxc+811ioYmxfUDBbS0W0wjsb5u/dKlKT7oTZTDbovQEz
-         Fc8+cWxMlWTx7GCrXcmKpQmqBdEBF9cwVb/k1t6A=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 513/879] hv_netvsc: Fix potential dereference of NULL pointer
-Date:   Tue,  7 Jun 2022 19:00:31 +0200
-Message-Id: <20220607165017.766421564@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        (Authenticated sender: nicolas)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id B5C076601871;
+        Tue,  7 Jun 2022 22:20:51 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1654636852;
+        bh=dH4ePZwfeLtm9fi79oxsDTUIBw0bx6MHdxM1wE/tZqQ=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=WNvOADoRCCmqcW0ciRe4n/B5kvdvxoJJyqgrUKUAHAR9nFu2Ku1T2a+690+lFyA/S
+         2IDgEVjcC11SDcfX1akflY4OIdQ/bj0Uj2IxoEB+aaIyLlGaDOed642U3BPt8K2BhQ
+         8/Nni2eDQz6US5/y0asqf3RapGjnyJ24LUK82CN8Ov/JHF04L09D0oZPffGtRD2Zov
+         ZpQUQ2wg7HVqhSKQyF5Y58FNo4dNohpAPurdNF+dCWQfQ0tbLaCR+IDcF3HvOFG6dV
+         0FmnwFZKDFjbTZJqi27BvEYUY8a/wALRUJ5nlV+tT5Y3sdhoVenVLWDLs9kLcxtx8J
+         N7lkevwSQJjzQ==
+Message-ID: <253e2771abb13a3e62c07dfb0b420169bb572c2d.camel@collabora.com>
+Subject: Re: [PATCH] arm64: dts: rockchip: Assign RK3399 VDU clock rate
+From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
+To:     Brian Norris <briannorris@chromium.org>,
+        Heiko Stuebner <heiko@sntech.de>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        stable@vger.kernel.org
+Date:   Tue, 07 Jun 2022 17:20:41 -0400
+In-Reply-To: <20220607141535.1.Idafe043ffc94756a69426ec68872db0645c5d6e2@changeid>
+References: <20220607141535.1.Idafe043ffc94756a69426ec68872db0645c5d6e2@changeid>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+Le mardi 07 juin 2022 =C3=A0 14:15 -0700, Brian Norris a =C3=A9crit=C2=A0:
+> Before commit 9998943f6dfc ("media: rkvdec: Stop overclocking the
+> decoder"), the rkvdec driver was forcing the VDU clock rate. After that
+> commit, we rely on the default clock rate. That rate works OK on many
+> boards, with the default PLL settings (CPLL is 800MHz, VDU dividers
+> leave it at 400MHz); but some boards change PLL settings.
+>=20
+> Assign the expected default clock rate explicitly, so that the rate is
+> consistent, regardless of PLL configuration.
+>=20
+> This was particularly broken on RK3399 Gru Scarlet systems, where the
+> rk3399-gru-scarlet.dtsi assigns PLL_CPLL to 1.6 GHz, and so the VDU
+> clock ends up at 800 MHz (twice the expected rate), and causes video
+> artifacts and other issues.
+>=20
+> Note: I assign the clock rate in the clock controller instead of the
+> vdec node, because there are multiple nodes that use this clock, and per
+> the clock.yaml specification:
+>=20
+>   Configuring a clock's parent and rate through the device node that
+>   consumes the clock can be done only for clocks that have a single
+>   user. Specifying conflicting parent or rate configuration in multiple
+>   consumer nodes for a shared clock is forbidden.
+>=20
+>   Configuration of common clocks, which affect multiple consumer devices
+>   can be similarly specified in the clock provider node.
+>=20
+> Fixes: 9998943f6dfc ("media: rkvdec: Stop overclocking the decoder")
+> Cc: <stable@vger.kernel.org>
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit eb4c0788964730d12e8dd520bd8f5217ca48321c ]
+Reviewed-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
 
-The return value of netvsc_devinfo_get()
-needs to be checked to avoid use of NULL
-pointer in case of an allocation failure.
+My only doubt was if you really needed to duplicate that setting into gru-
+scarlet.dtsi, but I've simply assumed the answer is yes, and that you alrea=
+dy
+checked that.
 
-Fixes: 0efeea5fb153 ("hv_netvsc: Add the support of hibernation")
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
-Link: https://lore.kernel.org/r/1652962188-129281-1-git-send-email-lyz_cs@pku.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/hyperv/netvsc_drv.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index fde1c492ca02..b1dece6b9698 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -2671,7 +2671,10 @@ static int netvsc_suspend(struct hv_device *dev)
- 
- 	/* Save the current config info */
- 	ndev_ctx->saved_netvsc_dev_info = netvsc_devinfo_get(nvdev);
--
-+	if (!ndev_ctx->saved_netvsc_dev_info) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
- 	ret = netvsc_detach(net, nvdev);
- out:
- 	rtnl_unlock();
--- 
-2.35.1
-
-
+> ---
+> This is a candidate for 5.19 IMO, since commit 9998943f6dfc landed in
+> 5.19-rc1 and is being queued up for -stable as we speak.
+>=20
+>  arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi | 4 +++-
+>  arch/arm64/boot/dts/rockchip/rk3399.dtsi             | 6 ++++--
+>  2 files changed, 7 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi b/arch/=
+arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi
+> index 913d845eb51a..1977103a5ef4 100644
+> --- a/arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi
+> +++ b/arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi
+> @@ -376,7 +376,8 @@ &cru {
+>  		<&cru ACLK_VIO>,
+>  		<&cru ACLK_GIC_PRE>,
+>  		<&cru PCLK_DDR>,
+> -		<&cru ACLK_HDCP>;
+> +		<&cru ACLK_HDCP>,
+> +		<&cru ACLK_VDU>;
+>  	assigned-clock-rates =3D
+>  		<600000000>, <1600000000>,
+>  		<1000000000>,
+> @@ -388,6 +389,7 @@ &cru {
+>  		<400000000>,
+>  		<200000000>,
+>  		<200000000>,
+> +		<400000000>,
+>  		<400000000>;
+>  };
+> =20
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/d=
+ts/rockchip/rk3399.dtsi
+> index fbd0346624e6..9d5b0e8c9cca 100644
+> --- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+> +++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+> @@ -1462,7 +1462,8 @@ cru: clock-controller@ff760000 {
+>  			<&cru HCLK_PERILP1>, <&cru PCLK_PERILP1>,
+>  			<&cru ACLK_VIO>, <&cru ACLK_HDCP>,
+>  			<&cru ACLK_GIC_PRE>,
+> -			<&cru PCLK_DDR>;
+> +			<&cru PCLK_DDR>,
+> +			<&cru ACLK_VDU>;
+>  		assigned-clock-rates =3D
+>  			 <594000000>,  <800000000>,
+>  			<1000000000>,
+> @@ -1473,7 +1474,8 @@ cru: clock-controller@ff760000 {
+>  			 <100000000>,   <50000000>,
+>  			 <400000000>, <400000000>,
+>  			 <200000000>,
+> -			 <200000000>;
+> +			 <200000000>,
+> +			 <400000000>;
+>  	};
+> =20
+>  	grf: syscon@ff770000 {
 
