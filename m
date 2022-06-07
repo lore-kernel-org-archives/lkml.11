@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A87CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C77CCA47C
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:42:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234772AbiFHBiu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47620 "EHLO
+        id S1355211AbiFHBj5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:39:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382044AbiFGVzg (ORCPT
+        with ESMTP id S1383220AbiFGVwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:55:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA96A24B62C;
-        Tue,  7 Jun 2022 12:13:36 -0700 (PDT)
+        Tue, 7 Jun 2022 17:52:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B39B32431A6;
+        Tue,  7 Jun 2022 12:10:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C06F3B8233E;
-        Tue,  7 Jun 2022 19:12:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CEECC385A2;
-        Tue,  7 Jun 2022 19:12:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A410617D0;
+        Tue,  7 Jun 2022 19:10:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 391A9C385A2;
+        Tue,  7 Jun 2022 19:10:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629177;
-        bh=7xMcwb9TiKoQhDGVCSyKHR4w3KZW+4Mbltbx2mEeF3k=;
+        s=korg; t=1654629044;
+        bh=dJUCVa4nIa8YINdSoor1J/gc2l6XzUX9TFZT4NQvPgc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EeHcInzG8gWCFsvfmFqII8L7jP9EVhI1DjWCnw4C2LTIhenlevukx7L4NyylprMTv
-         +OtCNlM8awY+xLckzDo61ZPlckO79K6GGXy8vUd4rssG/12V7HzziNpc+ab91xyMaE
-         ez/PoUQkNfYbzdkwj2wqX9gedunDyoWIPLLBx1q0=
+        b=pEZlM2ceI6LteJexpDSdLlLsOGVjeB3ihvjUlu+opqlWiCFPgUsXzbtRss2an3463
+         +QcbTI5pgFTHkqctoH6nlwEKbzMTs+rffO//NQxMh+E8BuCSjzAt+65K9zVd19ucYB
+         MTe3JTwCuGme+eKHGu8j2UF0kWL2+g75xUyX0igA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Arunachalam Ganapathy <arunachalam.ganapathy@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
+        stable@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 598/879] firmware: arm_ffa: Fix uuid parameter to ffa_partition_probe
-Date:   Tue,  7 Jun 2022 19:01:56 +0200
-Message-Id: <20220607165020.210792995@linuxfoundation.org>
+Subject: [PATCH 5.18 508/879] ASoC: max98090: Move check for invalid values before casting in max98090_put_enab_tlv()
+Date:   Tue,  7 Jun 2022 19:00:26 +0200
+Message-Id: <20220607165017.620148269@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,39 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sudeep Holla <sudeep.holla@arm.com>
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
 
-[ Upstream commit f3c45c045e25ed52461829d2ce07954f72b6ad15 ]
+[ Upstream commit f7a344468105ef8c54086dfdc800e6f5a8417d3e ]
 
-While we pass uuid_null intentionally to ffa_partition_probe in
-ffa_setup_partitions to get the count of the partitions, it must not be
-uuid_null in ffa_partition_info_get which is used by the ffa_drivers
-to fetch the specific partition info passing the UUID of the partition.
+Validation of signed input should be done before casting to unsigned int.
 
-Fix ffa_partition_info_get by passing the received uuid down to
-ffa_partition_probe so that the correct partition information is fetched.
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-Link: https://lore.kernel.org/r/20220429113946.2087145-1-sudeep.holla@arm.com
-Fixes: d0c0bce83122 ("firmware: arm_ffa: Setup in-kernel users of FFA partitions")
-Reported-by: Arunachalam Ganapathy <arunachalam.ganapathy@arm.com>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Suggested-by: Mark Brown <broonie@kernel.org>
+Fixes: 2fbe467bcbfc ("ASoC: max98090: Reject invalid values in custom control put()")
+Link: https://lore.kernel.org/r/1652999486-29653-1-git-send-email-khoroshilov@ispras.ru
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/arm_ffa/driver.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/max98090.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/firmware/arm_ffa/driver.c b/drivers/firmware/arm_ffa/driver.c
-index 14f900047ac0..8fa1785afd42 100644
---- a/drivers/firmware/arm_ffa/driver.c
-+++ b/drivers/firmware/arm_ffa/driver.c
-@@ -582,7 +582,7 @@ static int ffa_partition_info_get(const char *uuid_str,
- 		return -ENODEV;
- 	}
+diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
+index 62b41ca050a2..5513acd360b8 100644
+--- a/sound/soc/codecs/max98090.c
++++ b/sound/soc/codecs/max98090.c
+@@ -393,7 +393,8 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+ 	struct soc_mixer_control *mc =
+ 		(struct soc_mixer_control *)kcontrol->private_value;
+ 	unsigned int mask = (1 << fls(mc->max)) - 1;
+-	unsigned int sel = ucontrol->value.integer.value[0];
++	int sel_unchecked = ucontrol->value.integer.value[0];
++	unsigned int sel;
+ 	unsigned int val = snd_soc_component_read(component, mc->reg);
+ 	unsigned int *select;
  
--	count = ffa_partition_probe(&uuid_null, &pbuf);
-+	count = ffa_partition_probe(&uuid, &pbuf);
- 	if (count <= 0)
- 		return -ENOENT;
+@@ -413,8 +414,9 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+ 
+ 	val = (val >> mc->shift) & mask;
+ 
+-	if (sel < 0 || sel > mc->max)
++	if (sel_unchecked < 0 || sel_unchecked > mc->max)
+ 		return -EINVAL;
++	sel = sel_unchecked;
+ 
+ 	*select = sel;
  
 -- 
 2.35.1
