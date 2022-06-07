@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C7F0CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:42:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12BF1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391624AbiFHAmK (ORCPT
+        id S1390953AbiFHAl7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40094 "EHLO
+        Tue, 7 Jun 2022 20:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383780AbiFGWGY (ORCPT
+        with ESMTP id S1382614AbiFGWVy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:06:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 010FF2514B7;
-        Tue,  7 Jun 2022 12:17:41 -0700 (PDT)
+        Tue, 7 Jun 2022 18:21:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DF126C0DF;
+        Tue,  7 Jun 2022 12:22:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 909D861929;
-        Tue,  7 Jun 2022 19:17:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C750C385A2;
-        Tue,  7 Jun 2022 19:17:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D8566077B;
+        Tue,  7 Jun 2022 19:22:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50086C385A5;
+        Tue,  7 Jun 2022 19:22:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629461;
-        bh=NrAeKNkxmSE5W5CrvSELKazV+if6cVxvBs1EbjA7sm0=;
+        s=korg; t=1654629730;
+        bh=Mfy3ytbbDKigbAx7RnPOWXW8wcLTxwl+MTXvB2B/5Hs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2K0KKnG7ODsGXjeopDzHxjWsZKPM8m76z5vJ1KFWzyBgNpA5t7IUPKegFrdhBHulk
-         q8MzgHjdHj1yDhMSo1nMXEDml3odqqGEox1dV3mUhrn8W2sTOzwyny7ho0CVy/OGV9
-         LzPZRywOM48s2armHKcOfTlz4yLoNpGTgMedi7gA=
+        b=wiPJY7w0tVg8yjxLDIiCO4WICmFQHqaZ8fWc/Ty9jJLg2V4ixnWEqz/w+pdXuVIsQ
+         6NlF/fORZjmihiFJSpPnJfAj9xGZejWgzS4k9JRjpP4Yco5r0jR8v4mf7hPD2v71Yt
+         BKDDb/tTyd4hR2WYEiyvZH/z2t/CE8SNf+R+cZmE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Daniel Bristot de Oliveria <bristot@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        John Kacur <jkacur@redhat.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 699/879] rtla: Dont overwrite existing directory mode
-Date:   Tue,  7 Jun 2022 19:03:37 +0200
-Message-Id: <20220607165023.137393581@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 5.18 795/879] drm/nouveau/kms/nv50-: atom: fix an incorrect NULL check on list iterator
+Date:   Tue,  7 Jun 2022 19:05:13 +0200
+Message-Id: <20220607165025.938481961@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,52 +49,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Kacur <jkacur@redhat.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit 39c3d84cb5b52792a7323a338334d8d65b2dbe3f ]
+commit 6ce4431c7ba7954c4fa6a96ce16ca1b2943e1a83 upstream.
 
-The mode on /usr/bin is often 555 these days,
-but make install on rtla overwrites this with 755
+The bug is here:
+	return encoder;
 
-Fix this by preserving the current directory if it exists.
+The list iterator value 'encoder' will *always* be set and non-NULL
+by drm_for_each_encoder_mask(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty or no element found.
+Otherwise it will bypass some NULL checks and lead to invalid memory
+access passing the check.
 
-Link: https://lkml.kernel.org/r/8c294a6961080a1970fd8b73f7bcf1e3984579e2.1651247710.git.bristot@kernel.org
-Link: https://lore.kernel.org/r/20220402043939.6962-1-jkacur@redhat.com
+To fix this bug, just return 'encoder' when found, otherwise return
+NULL.
 
-Cc: Daniel Bristot de Oliveria <bristot@redhat.com>
-Fixes: 79ce8f43ac5a ("rtla: Real-Time Linux Analysis tool")
-Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: John Kacur <jkacur@redhat.com>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: 12885ecbfe62d ("drm/nouveau/kms/nvd9-: Add CRC support")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+[Changed commit title]
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220327073925.11121-1-xiam0nd.tong@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/tracing/rtla/Makefile | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/nouveau/dispnv50/atom.h |    6 +++---
+ drivers/gpu/drm/nouveau/dispnv50/crc.c  |   27 ++++++++++++++++++++++-----
+ 2 files changed, 25 insertions(+), 8 deletions(-)
 
-diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
-index 11fb417abb42..5a3226e436ef 100644
---- a/tools/tracing/rtla/Makefile
-+++ b/tools/tracing/rtla/Makefile
-@@ -23,6 +23,7 @@ $(call allow-override,LD_SO_CONF_PATH,/etc/ld.so.conf.d/)
- $(call allow-override,LDCONFIG,ldconfig)
+--- a/drivers/gpu/drm/nouveau/dispnv50/atom.h
++++ b/drivers/gpu/drm/nouveau/dispnv50/atom.h
+@@ -160,14 +160,14 @@ nv50_head_atom_get(struct drm_atomic_sta
+ static inline struct drm_encoder *
+ nv50_head_atom_get_encoder(struct nv50_head_atom *atom)
+ {
+-	struct drm_encoder *encoder = NULL;
++	struct drm_encoder *encoder;
  
- INSTALL	=	install
-+MKDIR	=	mkdir
- FOPTS	:=	-flto=auto -ffat-lto-objects -fexceptions -fstack-protector-strong \
- 		-fasynchronous-unwind-tables -fstack-clash-protection
- WOPTS	:= 	-Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -Wno-maybe-uninitialized
-@@ -68,7 +69,7 @@ static: $(OBJ)
+ 	/* We only ever have a single encoder */
+ 	drm_for_each_encoder_mask(encoder, atom->state.crtc->dev,
+ 				  atom->state.encoder_mask)
+-		break;
++		return encoder;
  
- .PHONY: install
- install: doc_install
--	$(INSTALL) -d -m 755 $(DESTDIR)$(BINDIR)
-+	$(MKDIR) -p $(DESTDIR)$(BINDIR)
- 	$(INSTALL) rtla -m 755 $(DESTDIR)$(BINDIR)
- 	$(STRIP) $(DESTDIR)$(BINDIR)/rtla
- 	@test ! -f $(DESTDIR)$(BINDIR)/osnoise || rm $(DESTDIR)$(BINDIR)/osnoise
--- 
-2.35.1
-
+-	return encoder;
++	return NULL;
+ }
+ 
+ #define nv50_wndw_atom(p) container_of((p), struct nv50_wndw_atom, state)
+--- a/drivers/gpu/drm/nouveau/dispnv50/crc.c
++++ b/drivers/gpu/drm/nouveau/dispnv50/crc.c
+@@ -390,9 +390,18 @@ void nv50_crc_atomic_check_outp(struct n
+ 		struct nv50_head_atom *armh = nv50_head_atom(old_crtc_state);
+ 		struct nv50_head_atom *asyh = nv50_head_atom(new_crtc_state);
+ 		struct nv50_outp_atom *outp_atom;
+-		struct nouveau_encoder *outp =
+-			nv50_real_outp(nv50_head_atom_get_encoder(armh));
+-		struct drm_encoder *encoder = &outp->base.base;
++		struct nouveau_encoder *outp;
++		struct drm_encoder *encoder, *enc;
++
++		enc = nv50_head_atom_get_encoder(armh);
++		if (!enc)
++			continue;
++
++		outp = nv50_real_outp(enc);
++		if (!outp)
++			continue;
++
++		encoder = &outp->base.base;
+ 
+ 		if (!asyh->clr.crc)
+ 			continue;
+@@ -443,8 +452,16 @@ void nv50_crc_atomic_set(struct nv50_hea
+ 	struct drm_device *dev = crtc->dev;
+ 	struct nv50_crc *crc = &head->crc;
+ 	const struct nv50_crc_func *func = nv50_disp(dev)->core->func->crc;
+-	struct nouveau_encoder *outp =
+-		nv50_real_outp(nv50_head_atom_get_encoder(asyh));
++	struct nouveau_encoder *outp;
++	struct drm_encoder *encoder;
++
++	encoder = nv50_head_atom_get_encoder(asyh);
++	if (!encoder)
++		return;
++
++	outp = nv50_real_outp(encoder);
++	if (!outp)
++		return;
+ 
+ 	func->set_src(head, outp->or, nv50_crc_source_type(outp, asyh->crc.src),
+ 		      &crc->ctx[crc->ctx_idx]);
 
 
