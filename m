@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23338CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:33:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A12CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:33:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347095AbiFGRc7 (ORCPT
+        id S1346905AbiFGRdM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:32:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44930 "EHLO
+        Tue, 7 Jun 2022 13:33:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346173AbiFGRYT (ORCPT
+        with ESMTP id S1346340AbiFGRYS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:24:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CACF84A24;
-        Tue,  7 Jun 2022 10:22:37 -0700 (PDT)
+        Tue, 7 Jun 2022 13:24:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F11522D1;
+        Tue,  7 Jun 2022 10:22:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC0D260907;
-        Tue,  7 Jun 2022 17:22:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1316C385A5;
-        Tue,  7 Jun 2022 17:22:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 84930B822B0;
+        Tue,  7 Jun 2022 17:22:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3547C385A5;
+        Tue,  7 Jun 2022 17:22:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622556;
-        bh=xJh/Ac/Y/NTkDn+/CFSqKcmkRxTM/Tvw41jrvn0dtnk=;
+        s=korg; t=1654622550;
+        bh=87fusB1NbeF9d5w5FokHgelhk1HMeGJ7WnXMAGuYKQw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YsAYJWaWD0OzHYIdttmCRGftvo4H3DUo427PvXIA4Ew2owaQ6Xs+RNimhVNpvBmnG
-         RmiciCLsoKiyX6A0EnS/Oa2ENNksyk+fTzZvSkXhMCuGCaQRI8VpVi2wonJI4AwxlJ
-         FAws9QO3+sPxzKzu+38nZvmCpef5HEyN0it1dbXk=
+        b=H0FqJ0i9gm4Nz6QR/q8gc2i5/tWBCJPn2MfvlORhzOyAp3sYFmDwBjWGrmkjwRorT
+         jzmWypMimf/+bOgivJ5I4iCrQ1tR9LvKS8UK3jiM1tc44bIQgnSfHCb8+r3thXg0ut
+         +3mVpVDnGJnV+7TS8iF3wV6jzi0SDEkjNMiXUzUs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 100/452] arm64: dts: qcom: msm8994: Fix BLSP[12]_DMA channels count
-Date:   Tue,  7 Jun 2022 18:59:17 +0200
-Message-Id: <20220607164911.536028770@linuxfoundation.org>
+Subject: [PATCH 5.10 098/452] ARM: dts: ox820: align interrupt controller node name with dtschema
+Date:   Tue,  7 Jun 2022 18:59:15 +0200
+Message-Id: <20220607164911.477344155@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,43 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 1ae438d26b620979ed004d559c304d31c42173ae ]
+[ Upstream commit fbcd5ad7a419ad40644a0bb8b4152bc660172d8a ]
 
-MSM8994 actually features 24 DMA channels for each BLSP,
-fix it!
+Fixes dtbs_check warnings like:
 
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220319174645.340379-14-konrad.dybcio@somainline.org
+  gic@1000: $nodename:0: 'gic@1000' does not match '^interrupt-controller(@[0-9a-f,]+)*$'
+
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220317115705.450427-1-krzysztof.kozlowski@canonical.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/msm8994.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/ox820.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
-index 45f9a44326a6..297408b947ff 100644
---- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
-@@ -316,7 +316,7 @@
- 			#dma-cells = <1>;
- 			qcom,ee = <0>;
- 			qcom,controlled-remotely;
--			num-channels = <18>;
-+			num-channels = <24>;
- 			qcom,num-ees = <4>;
- 		};
+diff --git a/arch/arm/boot/dts/ox820.dtsi b/arch/arm/boot/dts/ox820.dtsi
+index 90846a7655b4..dde4364892bf 100644
+--- a/arch/arm/boot/dts/ox820.dtsi
++++ b/arch/arm/boot/dts/ox820.dtsi
+@@ -287,7 +287,7 @@
+ 				clocks = <&armclk>;
+ 			};
  
-@@ -412,7 +412,7 @@
- 			#dma-cells = <1>;
- 			qcom,ee = <0>;
- 			qcom,controlled-remotely;
--			num-channels = <18>;
-+			num-channels = <24>;
- 			qcom,num-ees = <4>;
- 		};
- 
+-			gic: gic@1000 {
++			gic: interrupt-controller@1000 {
+ 				compatible = "arm,arm11mp-gic";
+ 				interrupt-controller;
+ 				#interrupt-cells = <3>;
 -- 
 2.35.1
 
