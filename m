@@ -2,82 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E7DDCCA473
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 02:24:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84AA5C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 02:29:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235845AbiFGCYR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 22:24:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53880 "EHLO
+        id S235847AbiFGC3o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 22:29:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231431AbiFGCYM (ORCPT
+        with ESMTP id S233284AbiFGC3m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 22:24:12 -0400
-X-Greylist: delayed 403 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Jun 2022 19:24:08 PDT
-Received: from mail-m17635.qiye.163.com (mail-m17635.qiye.163.com [59.111.176.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BF0877F26
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 19:24:07 -0700 (PDT)
-Received: from localhost.localdomain (unknown [IPV6:240e:36a:1490:f100:dfad:59db:22ac:33c8])
-        by mail-m17635.qiye.163.com (Hmail) with ESMTPA id 769824001F3;
-        Tue,  7 Jun 2022 10:17:22 +0800 (CST)
-From:   Yupeng Li <liyupeng@zbhlos.com>
-To:     chenhc@lemote.com, ralf@linux-mips.org, paul.burton@mips.com,
-        jhogan@kernel.org
-Cc:     linux-mips@linux-mips.org, linux-kernel@vger.kernel.org,
-        caizp2008@163.com, Yupeng Li <liyupeng@zbhlos.com>
-Subject: [PATCH 1/1]   MIPS: Loongson-3: fix compile mips cpu_hwmon as a module build error.
-Date:   Tue,  7 Jun 2022 10:17:02 +0800
-Message-Id: <20220607021702.3224369-1-liyupeng@zbhlos.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 6 Jun 2022 22:29:42 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89F398A32D
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 19:29:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654568981; x=1686104981;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=v5oXcANHyW89S52EIMm3FhyHqq8xqZN2FZuxdjut53o=;
+  b=H8+WEODbnpk3jhUv/W/eIpk1YbC92syAcdSOvcVRis/YrDeusFwl/VLv
+   oYqrs08AJjvlnK/eevTmuy+yfOgtwza8owv/sw7Rk8kC0mk6L254H8xbl
+   uBoBjnTu2xZBigDzlz8zSWgYlFYjktOOZU1oxfDf1/UvL1FPnjdlkcI2n
+   AiE4Pt2atRTqdLbFWZP4mv/YKeMhD9EZXkL5GBsx1Z9gbmmsQBe3eTOCY
+   0Gq0XWxSOhYjqH3gTSr3SsfHdLtbQI47O/RKktMT/DgMF+w38wOg6ZEtc
+   aRHOSJsHYi+PgnU2x6IE4W4RCb+ULT6SZ0xDL9QqXuLoDZzP2WkdLUc5Q
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="275479029"
+X-IronPort-AV: E=Sophos;i="5.91,282,1647327600"; 
+   d="scan'208";a="275479029"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 19:29:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,282,1647327600"; 
+   d="scan'208";a="532419121"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 06 Jun 2022 19:29:38 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nyOyP-000DG3-Kw;
+        Tue, 07 Jun 2022 02:29:37 +0000
+Date:   Tue, 7 Jun 2022 10:28:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>
+Subject: drivers/gpu/drm/drm_atomic.c:1670:33: error: variable 'obj' set but
+ not used
+Message-ID: <202206071049.pofHsRih-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWUNOHkJWGk5IGklCTE8YSU
-        5LVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktITUpVS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PFE6ODo6NT00KREoNE4pSEwY
-        AlYaFEJVSlVKTU5PTk1DSU9JQkNIVTMWGhIXVRcSAg4LHhUcOwEZExcUCFUYFBZFWVdZEgtZQVlJ
-        T0seQUhNGkFKT0JLQR1KS0tBHx0aH0FOQh8ZQUlJGhhBSEgYQ1lXWQgBWUFJSE1ONwY+
-X-HM-Tid: 0a813bf3cdd7d991kuws769824001f3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  set cpu_hwmon as a module build with loongson_sysconf, loongson_chiptemp
-  undefined error,fix cpu_hwmon compile options to be bool.Some kernel
-  compilation error information is as follows:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   e71e60cd74df9386c3f684c54888f2367050b831
+commit: 97a1f01b3f2f734bd3982aa5639b2b54632f8f7d drm/atomic: Add atomic_print_state to private objects
+date:   10 weeks ago
+config: x86_64-sof-customedconfig-mach-driver-defconfig (https://download.01.org/0day-ci/archive/20220607/202206071049.pofHsRih-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=97a1f01b3f2f734bd3982aa5639b2b54632f8f7d
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 97a1f01b3f2f734bd3982aa5639b2b54632f8f7d
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/drm/
 
-  Checking missing-syscalls for N32
-  CALL    scripts/checksyscalls.sh
-  Checking missing-syscalls for O32
-  CALL    scripts/checksyscalls.sh
-  CALL    scripts/checksyscalls.sh
-  CHK     include/generated/compile.h
-  CC [M]  drivers/platform/mips/cpu_hwmon.o
-  Building modules, stage 2.
-  MODPOST 200 modules
-ERROR: "loongson_sysconf" [drivers/platform/mips/cpu_hwmon.ko] undefined!
-ERROR: "loongson_chiptemp" [drivers/platform/mips/cpu_hwmon.ko] undefined!
-make[1]: *** [scripts/Makefile.modpost:92：__modpost] 错误 1
-make: *** [Makefile:1261：modules] 错误 2
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
----
- drivers/platform/mips/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+All errors (new ones prefixed by >>):
 
-diff --git a/drivers/platform/mips/Kconfig b/drivers/platform/mips/Kconfig
-index b3ae30a4c67b..c2f1ede1caca 100644
---- a/drivers/platform/mips/Kconfig
-+++ b/drivers/platform/mips/Kconfig
-@@ -16,7 +16,7 @@ menuconfig MIPS_PLATFORM_DEVICES
- if MIPS_PLATFORM_DEVICES
- 
- config CPU_HWMON
--	tristate "Loongson CPU HWMon Driver"
-+	bool "Loongson CPU HWMon Driver"
- 	depends on LOONGSON_MACH3X
- 	select HWMON
- 	default y
+   drivers/gpu/drm/drm_atomic.c: In function 'drm_atomic_print_new_state':
+>> drivers/gpu/drm/drm_atomic.c:1670:33: error: variable 'obj' set but not used [-Werror=unused-but-set-variable]
+    1670 |         struct drm_private_obj *obj;
+         |                                 ^~~
+   cc1: all warnings being treated as errors
+
+
+vim +/obj +1670 drivers/gpu/drm/drm_atomic.c
+
+  1649	
+  1650	/**
+  1651	 * drm_atomic_print_new_state - prints drm atomic state
+  1652	 * @state: atomic configuration to check
+  1653	 * @p: drm printer
+  1654	 *
+  1655	 * This functions prints the drm atomic state snapshot using the drm printer
+  1656	 * which is passed to it. This snapshot can be used for debugging purposes.
+  1657	 *
+  1658	 * Note that this function looks into the new state objects and hence its not
+  1659	 * safe to be used after the call to drm_atomic_helper_commit_hw_done().
+  1660	 */
+  1661	void drm_atomic_print_new_state(const struct drm_atomic_state *state,
+  1662			struct drm_printer *p)
+  1663	{
+  1664		struct drm_plane *plane;
+  1665		struct drm_plane_state *plane_state;
+  1666		struct drm_crtc *crtc;
+  1667		struct drm_crtc_state *crtc_state;
+  1668		struct drm_connector *connector;
+  1669		struct drm_connector_state *connector_state;
+> 1670		struct drm_private_obj *obj;
+  1671		struct drm_private_state *obj_state;
+  1672		int i;
+  1673	
+  1674		if (!p) {
+  1675			drm_err(state->dev, "invalid drm printer\n");
+  1676			return;
+  1677		}
+  1678	
+  1679		drm_dbg_atomic(state->dev, "checking %p\n", state);
+  1680	
+  1681		for_each_new_plane_in_state(state, plane, plane_state, i)
+  1682			drm_atomic_plane_print_state(p, plane_state);
+  1683	
+  1684		for_each_new_crtc_in_state(state, crtc, crtc_state, i)
+  1685			drm_atomic_crtc_print_state(p, crtc_state);
+  1686	
+  1687		for_each_new_connector_in_state(state, connector, connector_state, i)
+  1688			drm_atomic_connector_print_state(p, connector_state);
+  1689	
+  1690		for_each_new_private_obj_in_state(state, obj, obj_state, i)
+  1691			drm_atomic_private_obj_print_state(p, obj_state);
+  1692	}
+  1693	EXPORT_SYMBOL(drm_atomic_print_new_state);
+  1694	
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
