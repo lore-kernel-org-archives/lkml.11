@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD21ACCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:35:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EF8CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:35:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239636AbiFGJfm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:35:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36346 "EHLO
+        id S239663AbiFGJfp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:35:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233066AbiFGJfD (ORCPT
+        with ESMTP id S239639AbiFGJfG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:35:03 -0400
+        Tue, 7 Jun 2022 05:35:06 -0400
 Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A43FF66C88
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:35:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0E7E64DC
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:35:04 -0700 (PDT)
 Received: by mail-lf1-x130.google.com with SMTP id u26so26655248lfd.8
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 02:35:01 -0700 (PDT)
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 02:35:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+9f9l4kafijy5tF7KMskKmJ/qyS50hfAaTAXJIaHigk=;
-        b=ey+7OYgV7aR8YmkHepSIEIvJD6ppZYccI9v3aTw4hBckRyBQaaRSg35vILfF+tJaT5
-         /ro7BEv3Bwyrw05UTpr1XJeS0spWfXfjSUQ/KXG+Cd+uTs6XXjBfIfLtDhLSYR2ruJjU
-         bIkAQEI2fAZiy4V0/ZB3trU4JizsrP74/d5hDbwMq7OqfRejYA8u8JJzOewMEcq0s8h+
-         j3qo07tSzA9nBl21TqcNuK4+DcaV0xuJ3sj7WuPNFsrXymWZJGJGygjUdaDLs8mqt7lN
-         WwYdAt71DyQPFJjTuRVC4tDx53FvSZMlhyoafCcUMbKDzwMBp8w8IWgJ5ppKQM8wH1Le
-         K/Qg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=1imnAi5xz7HqCapEhh8k4KqTLfM1rDshD69OorDTV3Q=;
+        b=FUe9hoC2gjsIGPJVEps761z94HHtbSP1LOQ6MOwoWAKATBaoen37ggvBdmhCO/1Dum
+         bbL9wrYkQmZn5AFVSvqe7rIa4w9PVKkiXXig9eo+xADy33IXOFhyk8i7zMef75DgfAtF
+         jWLLcPerKOjLVHT/t3gqLFTldCmrOvYRPaBzZMiNcUGk5R+FRdJy1YwX/KhRUom+U2/A
+         DsIG8C52yvsQbR5nK0UpenU11Tf/PharFyrCbvu2QYv3HpGWk6uE6m5Ofoq1vk+hAz1a
+         TsH4UPB9OMAyuBrQXofmV+miPQHfnsjtpErZBJ/kZrFD7q3l26g8RK0tKkPYDTKpM0px
+         U2XQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+9f9l4kafijy5tF7KMskKmJ/qyS50hfAaTAXJIaHigk=;
-        b=Ps3mw++oMGATLyo1ywnldvcC8qMuDfv+Z/TwcrV9kiQHRLIVe2YEEROjVl8R1gNgQR
-         vG6akY5YwI0OFY2DZ7NQvJmon6LfdSFKZAkjYQD+BtSpALphELz8Rg/3zZ+SqQVuVE6V
-         HHx9PxH9TT2AzTmyXP/0sfVMQdz6xyznAS/HliPOUxEEio3cLeu/7bFMZnBWP+IR3Vrd
-         FJ1BCOCIa2oS9RHqKtK9IWKbZbgA8V0X3WKoJwmTSXUx1bfQnDJ2N5MxJpdu7mo45MDQ
-         iTlbISv3yiNGXKhKN3T4Aa+kyOsTvonxw6cE0c4PnhoWhlYPzUpL8diL2f1hRA1JLiJf
-         2xBQ==
-X-Gm-Message-State: AOAM532ZM5nbZBo7/wzVf3SWN6SpM2BKf6Aj/y9t4OU6zcoOlxECVuM6
-        msVr7NOQx6z50bOdd/lTvCs=
-X-Google-Smtp-Source: ABdhPJwAahIn/7ZioTC+h2QdikezWSd6RqDgg9/Kn/YVckplbfBuxn7u4AcL72Pvhor6li8lMY4eSQ==
-X-Received: by 2002:a05:6512:2143:b0:479:9fd:14dc with SMTP id s3-20020a056512214300b0047909fd14dcmr17936064lfr.505.1654594499850;
-        Tue, 07 Jun 2022 02:34:59 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=1imnAi5xz7HqCapEhh8k4KqTLfM1rDshD69OorDTV3Q=;
+        b=tBfkwYozdhQNbrP7hjiCVg9JiBXQQYG63ukq8GR2WVrbj20/XQhwlN5LkrRwgQdUjT
+         XwmqejEorz/7Pp/0Nx7XZpnHbpQTtJjx2p1iI3pUA0qXO1jcz5XT8Z+pMy/LRsYEaxxg
+         wGlSLSYEZfCLRuDG1iyT6TIlhOaeCr4zcMcSXCRf/V7CwcTPc5q874zvBKMO60BYIfDP
+         mYRQK4wvVYlqsYeVofFpu8f8lJvzWlSWXYqxEtTNixnzBZktv2w2k34RNfYn2OIioixH
+         IBb8N4oVvjmT7FY8zCEhgczUyVQR1D1MjhAVPKkIm6zC3eLqpSieEGUm1WcVvhH4X13s
+         scvw==
+X-Gm-Message-State: AOAM531w5E0zeExC/IB9zXKAbTl4k6RIwLK1a5SdM98MHmfnaBpCF1OZ
+        qtXKeB3ufoOC1mHaWGv/EFc=
+X-Google-Smtp-Source: ABdhPJwUtUjYWUsi2A0Gz+SKLSqewTZ8rOUEGsOboyqIoXV8szQIuSCZZkSiPZcSm6rDEt2nEkryUQ==
+X-Received: by 2002:a05:6512:2351:b0:479:6c3b:5d4 with SMTP id p17-20020a056512235100b004796c3b05d4mr526524lfu.87.1654594503595;
+        Tue, 07 Jun 2022 02:35:03 -0700 (PDT)
 Received: from pc638.lan ([155.137.26.201])
-        by smtp.gmail.com with ESMTPSA id r27-20020a2e575b000000b002554a4ebf5fsm2748043ljd.74.2022.06.07.02.34.58
+        by smtp.gmail.com with ESMTPSA id r27-20020a2e575b000000b002554a4ebf5fsm2748043ljd.74.2022.06.07.02.35.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 02:34:59 -0700 (PDT)
+        Tue, 07 Jun 2022 02:35:03 -0700 (PDT)
 From:   "Uladzislau Rezki (Sony)" <urezki@gmail.com>
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
@@ -56,34 +56,64 @@ Cc:     linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
         Nicholas Piggin <npiggin@gmail.com>,
         Uladzislau Rezki <urezki@gmail.com>,
         Oleksiy Avramchenko <oleksiy.avramchenko@sony.com>
-Subject: [PATCH 0/5] Reduce a vmalloc internal lock contention preparation work 
-Date:   Tue,  7 Jun 2022 11:34:44 +0200
-Message-Id: <20220607093449.3100-1-urezki@gmail.com>
+Subject: [PATCH 4/5] mm/vmalloc: Extend __find_vmap_area() with one more argument
+Date:   Tue,  7 Jun 2022 11:34:48 +0200
+Message-Id: <20220607093449.3100-5-urezki@gmail.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220607093449.3100-1-urezki@gmail.com>
+References: <20220607093449.3100-1-urezki@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi.
+__find_vmap_area() finds a "vmap_area" based on passed address.
+It scan the specific "vmap_area_root" rb-tree. Extend the function
+with one extra argument, so any tree can be specified where the
+search has to be done.
 
-This small serias is a preparation work to implement per-cpu vmalloc
-allocation in order to reduce a high internal lock contention. This
-series does not introduce any functional changes, it is only about
-preparation.
+There is no functional change as a result of this patch.
 
-Uladzislau Rezki (Sony) (5):
-  mm/vmalloc: Make link_va()/unlink_va() common to different rb_root
-  mm/vmalloc: Extend __alloc_vmap_area() with extra arguments
-  mm/vmalloc: Initialize VA's list node after unlink
-  mm/vmalloc: Extend __find_vmap_area() with one more argument
-  lib/test_vmalloc: Switch to prandom_u32()
+Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
+---
+ mm/vmalloc.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
- lib/test_vmalloc.c | 15 +++----
- mm/vmalloc.c       | 98 ++++++++++++++++++++++++++++++++--------------
- 2 files changed, 76 insertions(+), 37 deletions(-)
-
+diff --git a/mm/vmalloc.c b/mm/vmalloc.c
+index 82771e555273..b60385101897 100644
+--- a/mm/vmalloc.c
++++ b/mm/vmalloc.c
+@@ -814,9 +814,9 @@ static struct vmap_area *find_vmap_area_exceed_addr(unsigned long addr)
+ 	return va;
+ }
+ 
+-static struct vmap_area *__find_vmap_area(unsigned long addr)
++static struct vmap_area *__find_vmap_area(unsigned long addr, struct rb_root *root)
+ {
+-	struct rb_node *n = vmap_area_root.rb_node;
++	struct rb_node *n = root->rb_node;
+ 
+ 	addr = (unsigned long)kasan_reset_tag((void *)addr);
+ 
+@@ -1840,7 +1840,7 @@ static struct vmap_area *find_vmap_area(unsigned long addr)
+ 	struct vmap_area *va;
+ 
+ 	spin_lock(&vmap_area_lock);
+-	va = __find_vmap_area(addr);
++	va = __find_vmap_area(addr, &vmap_area_root);
+ 	spin_unlock(&vmap_area_lock);
+ 
+ 	return va;
+@@ -2582,7 +2582,7 @@ struct vm_struct *remove_vm_area(const void *addr)
+ 	might_sleep();
+ 
+ 	spin_lock(&vmap_area_lock);
+-	va = __find_vmap_area((unsigned long)addr);
++	va = __find_vmap_area((unsigned long)addr, &vmap_area_root);
+ 	if (va && va->vm) {
+ 		struct vm_struct *vm = va->vm;
+ 
 -- 
 2.30.2
 
