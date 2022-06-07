@@ -2,110 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC4A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:49:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82696CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:49:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356555AbiFGTtT (ORCPT
+        id S1357163AbiFGTtY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:49:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58392 "EHLO
+        Tue, 7 Jun 2022 15:49:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354557AbiFGSrI (ORCPT
+        with ESMTP id S1354556AbiFGSrH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3EF5A150;
-        Tue,  7 Jun 2022 11:02:10 -0700 (PDT)
+        Tue, 7 Jun 2022 14:47:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37EC64F0;
+        Tue,  7 Jun 2022 11:02:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8237DB82343;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D178617B4;
         Tue,  7 Jun 2022 18:02:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2841C34115;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45AB7C385A5;
         Tue,  7 Jun 2022 18:02:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624928;
-        bh=4JI497rn1w5jLXa3fsVUm1N8VcEniotvqADpCf5bPZE=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624928;
+        bh=HAA+wDlDwSyHnAcz4UOAa4YXGGh7T+kkXmmZObcUYQA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZUdihUSYYKT7dqHON1NFeC4ffp73jywxPbv/wLc84bPzk4iWTclhlqR5m152RSXbk
-         iCSC055P7VwKV/VI7lkmb/e7FMeejyauemYB7goRceCkQOwMaN2IKJRexFmD+mY0B4
-         bC9FtOpZJCxr12I/YEHM8aCnfxabisQJNnzZog9Y=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tali Perry <tali.perry1@gmail.com>,
-        Tyrone Ting <kfting@nuvoton.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 504/667] i2c: npcm: Fix timeout calculation
-Date:   Tue,  7 Jun 2022 19:02:49 +0200
-Message-Id: <20220607164949.818395418@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=nRxofZlSWENUi3iEccBrCnfuA7PROLTSUOtWaqnbChUsZSe+FzfMZVbAvUKXSqlq0
+         L9dOxxC08pLXaSlRDTOt13qG8CDhlWe9wtZiuJm5btX//V4hXCp7yIAHia5dELQMu5
+         CuCPtljALw1somNT8n6qg2q7VNEM932YmJFQvSKEGdE8HrHgpJKiJ5UtZ9mTAYi7Xp
+         XDNnBsOBhL95GXMnjxYXIKPv0C1YLCcgkevdS7FvNRIWfNS4XLsPgidrAB7GclddqS
+         CuBg53yg27PI5712TAair8wpL+8Y49yU8bMttiK7I47H2yqs1gq+C3zd9JZIcRQOls
+         5JjEJb06s4/Mg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Wang Cheng <wanngchenng@gmail.com>,
+        syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, Larry.Finger@lwfinger.net,
+        florian.c.schilhabel@googlemail.com, paskripkin@gmail.com,
+        skumark1902@gmail.com, kuba@kernel.org, xkernel.wang@foxmail.com,
+        linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 4.19 15/27] staging: rtl8712: fix uninit-value in r871xu_drv_init()
+Date:   Tue,  7 Jun 2022 14:01:19 -0400
+Message-Id: <20220607180133.481701-15-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180133.481701-1-sashal@kernel.org>
+References: <20220607180133.481701-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tali Perry <tali.perry1@gmail.com>
+From: Wang Cheng <wanngchenng@gmail.com>
 
-[ Upstream commit 288b204492fddf28889cea6dc95a23976632c7a0 ]
+[ Upstream commit 0458e5428e5e959d201a40ffe71d762a79ecedc4 ]
 
-Use adap.timeout for timeout calculation instead of hard-coded
-value of 35ms.
+When 'tmpU1b' returns from r8712_read8(padapter, EE_9346CR) is 0,
+'mac[6]' will not be initialized.
 
-Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
-Signed-off-by: Tali Perry <tali.perry1@gmail.com>
-Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+BUG: KMSAN: uninit-value in r871xu_drv_init+0x2d54/0x3070 drivers/staging/rtl8712/usb_intf.c:541
+ r871xu_drv_init+0x2d54/0x3070 drivers/staging/rtl8712/usb_intf.c:541
+ usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
+ really_probe+0x653/0x14b0 drivers/base/dd.c:596
+ __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
+ driver_probe_device drivers/base/dd.c:782 [inline]
+ __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
+ bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
+ __device_attach+0x593/0x8e0 drivers/base/dd.c:970
+ device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
+ bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
+ device_add+0x1fff/0x26e0 drivers/base/core.c:3405
+ usb_set_configuration+0x37e9/0x3ed0 drivers/usb/core/message.c:2170
+ usb_generic_driver_probe+0x13c/0x300 drivers/usb/core/generic.c:238
+ usb_probe_device+0x309/0x570 drivers/usb/core/driver.c:293
+ really_probe+0x653/0x14b0 drivers/base/dd.c:596
+ __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
+ driver_probe_device drivers/base/dd.c:782 [inline]
+ __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
+ bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
+ __device_attach+0x593/0x8e0 drivers/base/dd.c:970
+ device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
+ bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
+ device_add+0x1fff/0x26e0 drivers/base/core.c:3405
+ usb_new_device+0x1b8e/0x2950 drivers/usb/core/hub.c:2566
+ hub_port_connect drivers/usb/core/hub.c:5358 [inline]
+ hub_port_connect_change drivers/usb/core/hub.c:5502 [inline]
+ port_event drivers/usb/core/hub.c:5660 [inline]
+ hub_event+0x58e3/0x89e0 drivers/usb/core/hub.c:5742
+ process_one_work+0xdb6/0x1820 kernel/workqueue.c:2307
+ worker_thread+0x10b3/0x21e0 kernel/workqueue.c:2454
+ kthread+0x3c7/0x500 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30
+
+Local variable mac created at:
+ r871xu_drv_init+0x1771/0x3070 drivers/staging/rtl8712/usb_intf.c:394
+ usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
+
+KMSAN: uninit-value in r871xu_drv_init
+https://syzkaller.appspot.com/bug?id=3cd92b1d85428b128503bfa7a250294c9ae00bd8
+
+Reported-by: <syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com>
+Tested-by: <syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com>
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Wang Cheng <wanngchenng@gmail.com>
+Link: https://lore.kernel.org/r/14c3886173dfa4597f0704547c414cfdbcd11d16.1652618244.git.wanngchenng@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-npcm7xx.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/staging/rtl8712/usb_intf.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
-index 2ad166355ec9..92fd88a3f415 100644
---- a/drivers/i2c/busses/i2c-npcm7xx.c
-+++ b/drivers/i2c/busses/i2c-npcm7xx.c
-@@ -2047,7 +2047,7 @@ static int npcm_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
- 	u16 nwrite, nread;
- 	u8 *write_data, *read_data;
- 	u8 slave_addr;
--	int timeout;
-+	unsigned long timeout;
- 	int ret = 0;
- 	bool read_block = false;
- 	bool read_PEC = false;
-@@ -2099,13 +2099,13 @@ static int npcm_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
- 	 * 9: bits per transaction (including the ack/nack)
- 	 */
- 	timeout_usec = (2 * 9 * USEC_PER_SEC / bus->bus_freq) * (2 + nread + nwrite);
--	timeout = max(msecs_to_jiffies(35), usecs_to_jiffies(timeout_usec));
-+	timeout = max_t(unsigned long, bus->adap.timeout, usecs_to_jiffies(timeout_usec));
- 	if (nwrite >= 32 * 1024 || nread >= 32 * 1024) {
- 		dev_err(bus->dev, "i2c%d buffer too big\n", bus->num);
- 		return -EINVAL;
- 	}
- 
--	time_left = jiffies + msecs_to_jiffies(DEFAULT_STALL_COUNT) + 1;
-+	time_left = jiffies + timeout + 1;
- 	do {
- 		/*
- 		 * we must clear slave address immediately when the bus is not
-@@ -2269,7 +2269,7 @@ static int npcm_i2c_probe_bus(struct platform_device *pdev)
- 	adap = &bus->adap;
- 	adap->owner = THIS_MODULE;
- 	adap->retries = 3;
--	adap->timeout = HZ;
-+	adap->timeout = msecs_to_jiffies(35);
- 	adap->algo = &npcm_i2c_algo;
- 	adap->quirks = &npcm_i2c_quirks;
- 	adap->algo_data = bus;
+diff --git a/drivers/staging/rtl8712/usb_intf.c b/drivers/staging/rtl8712/usb_intf.c
+index 5e2cdc25401b..2b1ff63913af 100644
+--- a/drivers/staging/rtl8712/usb_intf.c
++++ b/drivers/staging/rtl8712/usb_intf.c
+@@ -569,13 +569,13 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
+ 		} else {
+ 			AutoloadFail = false;
+ 		}
+-		if (((mac[0] == 0xff) && (mac[1] == 0xff) &&
++		if ((!AutoloadFail) ||
++		    ((mac[0] == 0xff) && (mac[1] == 0xff) &&
+ 		     (mac[2] == 0xff) && (mac[3] == 0xff) &&
+ 		     (mac[4] == 0xff) && (mac[5] == 0xff)) ||
+ 		    ((mac[0] == 0x00) && (mac[1] == 0x00) &&
+ 		     (mac[2] == 0x00) && (mac[3] == 0x00) &&
+-		     (mac[4] == 0x00) && (mac[5] == 0x00)) ||
+-		     (!AutoloadFail)) {
++		     (mac[4] == 0x00) && (mac[5] == 0x00))) {
+ 			mac[0] = 0x00;
+ 			mac[1] = 0xe0;
+ 			mac[2] = 0x4c;
 -- 
 2.35.1
-
-
 
