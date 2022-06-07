@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EBBFCCA48F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D27CCA494
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351726AbiFGSQi (ORCPT
+        id S1352604AbiFGSRV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:16:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40166 "EHLO
+        Tue, 7 Jun 2022 14:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348804AbiFGR43 (ORCPT
+        with ESMTP id S1348940AbiFGR5s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:56:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A3BC147835;
-        Tue,  7 Jun 2022 10:40:16 -0700 (PDT)
+        Tue, 7 Jun 2022 13:57:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26192E09C;
+        Tue,  7 Jun 2022 10:40:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2637861529;
-        Tue,  7 Jun 2022 17:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35556C385A5;
-        Tue,  7 Jun 2022 17:40:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 825D86137B;
+        Tue,  7 Jun 2022 17:40:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BA79C385A5;
+        Tue,  7 Jun 2022 17:40:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623615;
-        bh=tnAe93SYP99oq9aPLJXM6HiLXx1WHUx4j4CKjrXLn2s=;
+        s=korg; t=1654623645;
+        bh=4SlgomPlrnsgsFOxlEG6cbiBe2aA10hG0NWQqjJmNQE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DhPhb4WHet+1d179j/QkctuqRC/nVC5BbAFmm4jMg/ZfnUszdInmFfGSbkjXhKXmL
-         AE2YZZHDSZ1lvAlCFDOnZ8Tc2E3mlVUBC6OFUK6IdIHUd4HTWZk3HEG1ow0Okol+Hz
-         W1DErL2jge5S74QJ4hUGosXbn5Elg3fvMHXIB1PI=
+        b=BEHM4Q7e1EJv0E7E48sCD2z4Vm/Knweitw1jWGFIEWHqZLffOgIuDeNHdtHzaSDEO
+         wkoJ+ziSXDOyV/ijZjew1I8woLGmQxpXG7LWx2+HW13Hn1fyugz10qOhvVVj84CK46
+         SBpfeUYu3By5UZLXGAT07IY1v8giSsS/3GZR8HXc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.15 029/667] cifs: when extending a file with falloc we should make files not-sparse
-Date:   Tue,  7 Jun 2022 18:54:54 +0200
-Message-Id: <20220607164935.669191862@linuxfoundation.org>
+        stable@vger.kernel.org, Nikolay Borisov <nborisov@suse.com>,
+        Qu Wenruo <wqu@suse.com>, David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 039/667] btrfs: add "0x" prefix for unsupported optional features
+Date:   Tue,  7 Jun 2022 18:55:04 +0200
+Message-Id: <20220607164935.970108667@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,32 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+From: Qu Wenruo <wqu@suse.com>
 
-commit f66f8b94e7f2f4ac9fffe710be231ca8f25c5057 upstream.
+commit d5321a0fa8bc49f11bea0b470800962c17d92d8f upstream.
 
-as this is the only way to make sure the region is allocated.
-Fix the conditional that was wrong and only tried to make already
-non-sparse files non-sparse.
+The following error message lack the "0x" obviously:
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+  cannot mount because of unsupported optional features (4000)
+
+Add the prefix to make it less confusing. This can happen on older
+kernels that try to mount a filesystem with newer features so it makes
+sense to backport to older trees.
+
+CC: stable@vger.kernel.org # 4.14+
+Reviewed-by: Nikolay Borisov <nborisov@suse.com>
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/smb2ops.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/btrfs/disk-io.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -3791,7 +3791,7 @@ static long smb3_simple_falloc(struct fi
- 		if (rc)
- 			goto out;
- 
--		if ((cifsi->cifsAttrs & FILE_ATTRIBUTE_SPARSE_FILE) == 0)
-+		if (cifsi->cifsAttrs & FILE_ATTRIBUTE_SPARSE_FILE)
- 			smb2_set_sparse(xid, tcon, cfile, inode, false);
- 
- 		eof = cpu_to_le64(off + len);
+--- a/fs/btrfs/disk-io.c
++++ b/fs/btrfs/disk-io.c
+@@ -3370,7 +3370,7 @@ int __cold open_ctree(struct super_block
+ 		~BTRFS_FEATURE_INCOMPAT_SUPP;
+ 	if (features) {
+ 		btrfs_err(fs_info,
+-		    "cannot mount because of unsupported optional features (%llx)",
++		    "cannot mount because of unsupported optional features (0x%llx)",
+ 		    features);
+ 		err = -EINVAL;
+ 		goto fail_alloc;
+@@ -3408,7 +3408,7 @@ int __cold open_ctree(struct super_block
+ 		~BTRFS_FEATURE_COMPAT_RO_SUPP;
+ 	if (!sb_rdonly(sb) && features) {
+ 		btrfs_err(fs_info,
+-	"cannot mount read-write because of unsupported optional features (%llx)",
++	"cannot mount read-write because of unsupported optional features (0x%llx)",
+ 		       features);
+ 		err = -EINVAL;
+ 		goto fail_alloc;
 
 
