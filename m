@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B962CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:04:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 766A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:04:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379241AbiFGWEK (ORCPT
+        id S1379096AbiFGWEV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:04:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50274 "EHLO
+        Tue, 7 Jun 2022 18:04:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378622AbiFGVEM (ORCPT
+        with ESMTP id S1378926AbiFGVDl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:04:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 474FB18C05D;
-        Tue,  7 Jun 2022 11:48:50 -0700 (PDT)
+        Tue, 7 Jun 2022 17:03:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9AB418ADB0;
+        Tue,  7 Jun 2022 11:48:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 755746168E;
-        Tue,  7 Jun 2022 18:48:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DF2EC385A5;
-        Tue,  7 Jun 2022 18:48:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6A6661579;
+        Tue,  7 Jun 2022 18:48:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7ACCC385A2;
+        Tue,  7 Jun 2022 18:48:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627729;
-        bh=zLKqJ7YRx9+AQT3UXBkTEmxLVA2wtgkhaELDhD9VzXs=;
+        s=korg; t=1654627727;
+        bh=EGBFhl10/WxhjBf9f/lkCn81vM2bqbXJhwMAVy/nUBA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=srM6ZS3jlJ0Dwzh9hWoMGJb/d6JQlGSvNLcXyE2m19JV7Cb5BsiAMzVmvVt/x4Kw+
-         gnUlaCuu3XY7IGe48caK4QIt32XzhRzkTcfzE2iqJ98H9EHhHi6n49VY21tgLeVN6A
-         CmR2v1Q2WLNrA5oUo0rCz4Ujhry65kB2HcxC9eRo=
+        b=hVtgxxQo2YGHvagykK4YyIbX1uV/Qhs40p8fMqsjcB3Rm29ca5i0B1dv2MxdPk4yZ
+         Gh2cdtUhfA6pTX4Rq8513sOEmtMNk9MS9Iugx6SAQcXNgPS3G5Dy8MPK5k9Y2VO2wv
+         M/htaDI4n9iiD3hRqr+t0OP4O7eew1SoNx4mPjaI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
-        Niels Dossche <dossche.niels@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 065/879] mwifiex: add mutex lock for call in mwifiex_dfs_chan_sw_work_queue
-Date:   Tue,  7 Jun 2022 18:53:03 +0200
-Message-Id: <20220607165004.579924791@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mathias Nyman <mathias.nyman@linux.intel.com>,
+        Chris Chiu <chris.chiu@canonical.com>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Kishon Vijay Abraham I <kishon@ti.com>
+Subject: [PATCH 5.18 020/879] usb: core: hcd: Add support for deferring roothub registration
+Date:   Tue,  7 Jun 2022 18:52:18 +0200
+Message-Id: <20220607165003.260971198@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,49 +52,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Kishon Vijay Abraham I <kishon@ti.com>
 
-[ Upstream commit 3e12968f6d12a34b540c39cbd696a760cc4616f0 ]
+commit a44623d9279086c89f631201d993aa332f7c9e66 upstream.
 
-cfg80211_ch_switch_notify uses ASSERT_WDEV_LOCK to assert that
-net_device->ieee80211_ptr->mtx (which is the same as priv->wdev.mtx)
-is held during the function's execution.
-mwifiex_dfs_chan_sw_work_queue is one of its callers, which does not
-hold that lock, therefore violating the assertion.
-Add a lock around the call.
+It has been observed with certain PCIe USB cards (like Inateck connected
+to AM64 EVM or J7200 EVM) that as soon as the primary roothub is
+registered, port status change is handled even before xHC is running
+leading to cold plug USB devices not detected. For such cases, registering
+both the root hubs along with the second HCD is required. Add support for
+deferring roothub registration in usb_add_hcd(), so that both primary and
+secondary roothubs are registered along with the second HCD.
 
-Disclaimer:
-I am currently working on a static analyser to detect missing locks.
-This was a reported case. I manually verified the report by looking
-at the code, so that I do not send wrong information or patches.
-After concluding that this seems to be a true positive, I created
-this patch.
-However, as I do not in fact have this particular hardware,
-I was unable to test it.
+This patch has been added and reverted earier as it triggered a race
+in usb device enumeration.
+That race is now fixed in 5.16-rc3, and in stable back to 5.4
+commit 6cca13de26ee ("usb: hub: Fix locking issues with address0_mutex")
+commit 6ae6dc22d2d1 ("usb: hub: Fix usb enumeration issue due to address0
+race")
 
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220321225515.32113-1-dossche.niels@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+CC: stable@vger.kernel.org # 5.4+
+Suggested-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Tested-by: Chris Chiu <chris.chiu@canonical.com>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+Link: https://lore.kernel.org/r/20220510091630.16564-2-kishon@ti.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/marvell/mwifiex/11h.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/core/hcd.c  |   29 +++++++++++++++++++++++------
+ include/linux/usb/hcd.h |    2 ++
+ 2 files changed, 25 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/11h.c b/drivers/net/wireless/marvell/mwifiex/11h.c
-index d2ee6469e67b..3fa25cd64cda 100644
---- a/drivers/net/wireless/marvell/mwifiex/11h.c
-+++ b/drivers/net/wireless/marvell/mwifiex/11h.c
-@@ -303,5 +303,7 @@ void mwifiex_dfs_chan_sw_work_queue(struct work_struct *work)
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -2816,6 +2816,7 @@ int usb_add_hcd(struct usb_hcd *hcd,
+ {
+ 	int retval;
+ 	struct usb_device *rhdev;
++	struct usb_hcd *shared_hcd;
  
- 	mwifiex_dbg(priv->adapter, MSG,
- 		    "indicating channel switch completion to kernel\n");
-+	mutex_lock(&priv->wdev.mtx);
- 	cfg80211_ch_switch_notify(priv->netdev, &priv->dfs_chandef);
-+	mutex_unlock(&priv->wdev.mtx);
- }
--- 
-2.35.1
-
+ 	if (!hcd->skip_phy_initialization && usb_hcd_is_primary_hcd(hcd)) {
+ 		hcd->phy_roothub = usb_phy_roothub_alloc(hcd->self.sysdev);
+@@ -2976,13 +2977,26 @@ int usb_add_hcd(struct usb_hcd *hcd,
+ 		goto err_hcd_driver_start;
+ 	}
+ 
++	/* starting here, usbcore will pay attention to the shared HCD roothub */
++	shared_hcd = hcd->shared_hcd;
++	if (!usb_hcd_is_primary_hcd(hcd) && shared_hcd && HCD_DEFER_RH_REGISTER(shared_hcd)) {
++		retval = register_root_hub(shared_hcd);
++		if (retval != 0)
++			goto err_register_root_hub;
++
++		if (shared_hcd->uses_new_polling && HCD_POLL_RH(shared_hcd))
++			usb_hcd_poll_rh_status(shared_hcd);
++	}
++
+ 	/* starting here, usbcore will pay attention to this root hub */
+-	retval = register_root_hub(hcd);
+-	if (retval != 0)
+-		goto err_register_root_hub;
++	if (!HCD_DEFER_RH_REGISTER(hcd)) {
++		retval = register_root_hub(hcd);
++		if (retval != 0)
++			goto err_register_root_hub;
+ 
+-	if (hcd->uses_new_polling && HCD_POLL_RH(hcd))
+-		usb_hcd_poll_rh_status(hcd);
++		if (hcd->uses_new_polling && HCD_POLL_RH(hcd))
++			usb_hcd_poll_rh_status(hcd);
++	}
+ 
+ 	return retval;
+ 
+@@ -3020,6 +3034,7 @@ EXPORT_SYMBOL_GPL(usb_add_hcd);
+ void usb_remove_hcd(struct usb_hcd *hcd)
+ {
+ 	struct usb_device *rhdev = hcd->self.root_hub;
++	bool rh_registered;
+ 
+ 	dev_info(hcd->self.controller, "remove, state %x\n", hcd->state);
+ 
+@@ -3030,6 +3045,7 @@ void usb_remove_hcd(struct usb_hcd *hcd)
+ 
+ 	dev_dbg(hcd->self.controller, "roothub graceful disconnect\n");
+ 	spin_lock_irq (&hcd_root_hub_lock);
++	rh_registered = hcd->rh_registered;
+ 	hcd->rh_registered = 0;
+ 	spin_unlock_irq (&hcd_root_hub_lock);
+ 
+@@ -3039,7 +3055,8 @@ void usb_remove_hcd(struct usb_hcd *hcd)
+ 	cancel_work_sync(&hcd->died_work);
+ 
+ 	mutex_lock(&usb_bus_idr_lock);
+-	usb_disconnect(&rhdev);		/* Sets rhdev to NULL */
++	if (rh_registered)
++		usb_disconnect(&rhdev);		/* Sets rhdev to NULL */
+ 	mutex_unlock(&usb_bus_idr_lock);
+ 
+ 	/*
+--- a/include/linux/usb/hcd.h
++++ b/include/linux/usb/hcd.h
+@@ -124,6 +124,7 @@ struct usb_hcd {
+ #define HCD_FLAG_RH_RUNNING		5	/* root hub is running? */
+ #define HCD_FLAG_DEAD			6	/* controller has died? */
+ #define HCD_FLAG_INTF_AUTHORIZED	7	/* authorize interfaces? */
++#define HCD_FLAG_DEFER_RH_REGISTER	8	/* Defer roothub registration */
+ 
+ 	/* The flags can be tested using these macros; they are likely to
+ 	 * be slightly faster than test_bit().
+@@ -134,6 +135,7 @@ struct usb_hcd {
+ #define HCD_WAKEUP_PENDING(hcd)	((hcd)->flags & (1U << HCD_FLAG_WAKEUP_PENDING))
+ #define HCD_RH_RUNNING(hcd)	((hcd)->flags & (1U << HCD_FLAG_RH_RUNNING))
+ #define HCD_DEAD(hcd)		((hcd)->flags & (1U << HCD_FLAG_DEAD))
++#define HCD_DEFER_RH_REGISTER(hcd) ((hcd)->flags & (1U << HCD_FLAG_DEFER_RH_REGISTER))
+ 
+ 	/*
+ 	 * Specifies if interfaces are authorized by default
 
 
