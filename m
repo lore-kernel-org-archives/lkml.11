@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 448B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:17:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F4D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230428AbiFHCRe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:17:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46296 "EHLO
+        id S242901AbiFHCR5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:17:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383192AbiFHBtx (ORCPT
+        with ESMTP id S1390383AbiFHBuW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 21:49:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC9B262700;
-        Tue,  7 Jun 2022 12:20:19 -0700 (PDT)
+        Tue, 7 Jun 2022 21:50:22 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB4F11973DA;
+        Tue,  7 Jun 2022 12:20:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 59EB66077B;
-        Tue,  7 Jun 2022 19:20:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67F15C385A2;
-        Tue,  7 Jun 2022 19:20:18 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E0389CE24B7;
+        Tue,  7 Jun 2022 19:20:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7331C385A5;
+        Tue,  7 Jun 2022 19:20:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629618;
-        bh=/nNAardFfiQn0gwg6L9rBRgNKDK5zGiak1Jzhu1Sbq4=;
+        s=korg; t=1654629602;
+        bh=OZOS/pHplCASWNPmT8U8e9P9qYz6jNCQYk6G30jMRTk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1n9vxLrEOS/xa//9rf8g2SImKHjI8uoSEYz/kr6xuyclZflAJdT/O/NC2BEvt+LJP
-         Ju3NeEh0jQZ9djWUVkLC3vrfIfikesJ0HNu8T77HjPSOQfsduTHBjXlNc2QrSM8yUE
-         rYSwwgUIsR227Kqwu/FgIwCfQoCOiphbAk5DOjlU=
+        b=Cl1pK9eSMuqrJ9/hHtniglVrs+VhLlYKsMZcy0QJVHiWDy1OBbVRNMEdYjse0CWoa
+         gmFdN1e8V9V47y5PKgIra01+YYfKmCkYRaU7PGq4jtDHj8NFr/yUX69ffQ7uslch79
+         mroeGuyIXioPgk+/7Srm5lSOA1tsooMfUBhVXBz4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH 5.18 755/879] PCI: qcom: Fix pipe clock imbalance
-Date:   Tue,  7 Jun 2022 19:04:33 +0200
-Message-Id: <20220607165024.776463778@linuxfoundation.org>
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.18 749/879] tracing: Have event format check not flag %p* on __get_dynamic_array()
+Date:   Tue,  7 Jun 2022 19:04:27 +0200
+Message-Id: <20220607165024.602410761@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,44 +48,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit fdf6a2f533115ec5d4d9629178f8196331f1ac50 upstream.
+commit 499f12168aebd6da8fa32c9b7d6203ca9b5eb88d upstream.
 
-Fix a clock imbalance introduced by ed8cc3b1fc84 ("PCI: qcom: Add support
-for SDM845 PCIe controller"), which enables the pipe clock both in init()
-and in post_init() but only disables in post_deinit().
+The print fmt check against trace events to make sure that the format does
+not use pointers that may be freed from the time of the trace to the time
+the event is read, gives a false positive on %pISpc when reading data that
+was saved in __get_dynamic_array() when it is perfectly fine to do so, as
+the data being read is on the ring buffer.
 
-Note that the pipe clock was also never disabled in the init() error
-paths and that enabling the clock before powering up the PHY looks
-questionable.
+Link: https://lore.kernel.org/all/20220407144524.2a592ed6@canb.auug.org.au/
 
-Link: https://lore.kernel.org/r/20220401133351.10113-1-johan+linaro@kernel.org
-Fixes: ed8cc3b1fc84 ("PCI: qcom: Add support for SDM845 PCIe controller")
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: stable@vger.kernel.org      # 5.6
+Cc: stable@vger.kernel.org
+Fixes: 5013f454a352c ("tracing: Add check of trace event print fmts for dereferencing pointers")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/dwc/pcie-qcom.c |    6 ------
- 1 file changed, 6 deletions(-)
+ kernel/trace/trace_events.c |   13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -1238,12 +1238,6 @@ static int qcom_pcie_init_2_7_0(struct q
- 		goto err_disable_clocks;
- 	}
+--- a/kernel/trace/trace_events.c
++++ b/kernel/trace/trace_events.c
+@@ -392,12 +392,6 @@ static void test_event_printk(struct tra
+ 			if (!(dereference_flags & (1ULL << arg)))
+ 				goto next_arg;
  
--	ret = clk_prepare_enable(res->pipe_clk);
--	if (ret) {
--		dev_err(dev, "cannot prepare/enable pipe clock\n");
--		goto err_disable_clocks;
--	}
+-			/* Check for __get_sockaddr */;
+-			if (str_has_prefix(fmt + i, "__get_sockaddr(")) {
+-				dereference_flags &= ~(1ULL << arg);
+-				goto next_arg;
+-			}
 -
- 	/* Wait for reset to complete, required on SM8450 */
- 	usleep_range(1000, 1500);
- 
+ 			/* Find the REC-> in the argument */
+ 			c = strchr(fmt + i, ',');
+ 			r = strstr(fmt + i, "REC->");
+@@ -413,7 +407,14 @@ static void test_event_printk(struct tra
+ 				a = strchr(fmt + i, '&');
+ 				if ((a && (a < r)) || test_field(r, call))
+ 					dereference_flags &= ~(1ULL << arg);
++			} else if ((r = strstr(fmt + i, "__get_dynamic_array(")) &&
++				   (!c || r < c)) {
++				dereference_flags &= ~(1ULL << arg);
++			} else if ((r = strstr(fmt + i, "__get_sockaddr(")) &&
++				   (!c || r < c)) {
++				dereference_flags &= ~(1ULL << arg);
+ 			}
++
+ 		next_arg:
+ 			i--;
+ 			arg++;
 
 
