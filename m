@@ -2,108 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 834C1CCA499
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E749CCA498
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388312AbiFHB1g (ORCPT
+        id S1387987AbiFHB1e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:27:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60946 "EHLO
+        Tue, 7 Jun 2022 21:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1578992AbiFGXjJ (ORCPT
+        with ESMTP id S1382957AbiFGWWv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:39:09 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEDEE22E6A9
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:37 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id d11-20020a170902cecb00b00163fe890197so10005215plg.1
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=NQ0NXcc6zaLq7ONEOxmfQD1Om9k/BwyLb/mU8W7ZfBE=;
-        b=psYIhDQIbOYoDfMgxj9hZcW2N+nnDfFJ5muVwPxGWwXfML0dLWXF9sGEkHhJQoDmFP
-         5ExBSyxrvpuj1yTHNxeYkv2QEs4voLF7o/tmPLCLxcKmQaXuzaPyFwQU4oJkpOsm2Zx2
-         AP5IY8rEIYsZoLE7swfYED4wr9c1vD3MRfCrztDMxwFuUfnYkzPgMueQNGK1V6hXRONP
-         4yvkXyQ6DFG21NGtPby+nm1UIQRl06vjw7Anv5TDAebli3SXZapowg2PuEzEveDd1L2d
-         3U6N9oiHio93I0lk1n83VWY3SdKqQE60ZccbRD2cFT19l0E8NdLc3J9aZGLehAbMGHdK
-         mY6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=NQ0NXcc6zaLq7ONEOxmfQD1Om9k/BwyLb/mU8W7ZfBE=;
-        b=Te7woG4+2NQFfUYllMR1nBUo1/K5jSrwIFse9zp8zGUS/pK4IJ2VZocek9QzkLvaCZ
-         1pqD7SBF8+EoLaqXcPaYzipIeskzqT+74tBnETlI2S2T4gJPXK6wClV88celQCuqZAjq
-         TZgZxSLi+MUP58aJHIR8R/br2mpc3L9JdilZv7TzFkvi1kw09pc/1auHrIRQLhdIzJwl
-         M/+im6XVOnl9zqwPULrbP07yK3Cn0QaCtcn+J6vp4MU+Pa0fw8OlZFsZwsMV0fSIBkBe
-         HlKpR59aUj/u/fdIOB2aCzCLzMS/vve76ISDsO5QiwgTtz3SgmEgxVlOPTB1B0peNhGX
-         27Wg==
-X-Gm-Message-State: AOAM533YKnibyoIaiuOZpfAkW0+TFL8JM1Yio/VmY2d+8jM6EFWklaK9
-        l9UtMKw4yR1sq5ilPFSgRAP2EpX+VyA=
-X-Google-Smtp-Source: ABdhPJwB35ykedAAuBKX8Jf0+rndwi9hRqmJsr0aoHx0x/f2vEZfKa4n3yLn1zl4KS3zxkYRBIpKAiXEMcg=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a62:38d7:0:b0:51c:4c30:3aef with SMTP id
- f206-20020a6238d7000000b0051c4c303aefmr2369470pfa.5.1654637796967; Tue, 07
- Jun 2022 14:36:36 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue,  7 Jun 2022 21:36:00 +0000
-In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
-Message-Id: <20220607213604.3346000-12-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220607213604.3346000-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v5 11/15] KVM: nVMX: Set UMIP bit CR4_FIXED1 MSR when
- emulating UMIP
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
-        David Matlack <dmatlack@google.com>,
-        Oliver Upton <oupton@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 7 Jun 2022 18:22:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C0826D242;
+        Tue,  7 Jun 2022 12:22:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A81DEB823CC;
+        Tue,  7 Jun 2022 19:22:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 086E4C385A5;
+        Tue,  7 Jun 2022 19:22:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629733;
+        bh=HplrpNmY7M+tguF3+6EkcKSnhuhXimBvQS/rGeEEEww=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Il8VDtjZSYUi7aJ7RhxZEziTmzVupytHUIDUp8a0LuG+VAhcRijDOuFlxA3dc4es/
+         KqdnOocdtrxTPtpwpU511Li6qkk1j8Rd2+0emjrX0OriIsPbJGzpLqHG4I0bQXb8yP
+         TbP03tdhcZT4Jvud3dO7AG0KGRaSzcN17WaPEiXo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>
+Subject: [PATCH 5.18 796/879] drm/bridge: analogix_dp: Grab runtime PM reference for DP-AUX
+Date:   Tue,  7 Jun 2022 19:05:14 +0200
+Message-Id: <20220607165025.966692713@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make UMIP an "allowed-1" bit CR4_FIXED1 MSR when KVM is emulating UMIP.
-KVM emulates UMIP for both L1 and L2, and so should enumerate that L2 is
-allowed to have CR4.UMIP=1.  Not setting the bit doesn't immediately
-break nVMX, as KVM does set/clear the bit in CR4_FIXED1 in response to a
-guest CPUID update, i.e. KVM will correctly (dis)allow nested VM-Entry
-based on whether or not UMIP is exposed to L1.
+From: Brian Norris <briannorris@chromium.org>
 
-That said, KVM should enumerate the bit as being allowed from time zero,
-e.g. userspace will see the wrong value if the MSR is read before CPUID
-is written.  And a future patch will quirk KVM's behavior of stuffing
-CR4_FIXED1 in response to guest CPUID changes, as CR4_FIXED1 is not
-strictly required to match the CPUID model exposed to L1.
+commit 8fb6c44fe8468f92ac7b8bbfcca4404a4e88645f upstream.
 
-Fixes: 0367f205a3b7 ("KVM: vmx: add support for emulating UMIP")
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+If the display is not enable()d, then we aren't holding a runtime PM
+reference here. Thus, it's easy to accidentally cause a hang, if user
+space is poking around at /dev/drm_dp_aux0 at the "wrong" time.
+
+Let's get a runtime PM reference, and check that we "see" the panel.
+Don't force any panel power-up, etc., because that can be intrusive, and
+that's not what other drivers do (see
+drivers/gpu/drm/bridge/ti-sn65dsi86.c and
+drivers/gpu/drm/bridge/parade-ps8640.c.)
+
+Fixes: 0d97ad03f422 ("drm/bridge: analogix_dp: Remove duplicated code")
+Cc: <stable@vger.kernel.org>
+Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220301181107.v4.1.I773a08785666ebb236917b0c8e6c05e3de471e75@changeid
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/nested.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/bridge/analogix/analogix_dp_core.c |   13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index dc2f9b06b99a..5533c2474128 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -6781,6 +6781,9 @@ void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
- 	rdmsrl(MSR_IA32_VMX_CR0_FIXED1, msrs->cr0_fixed1);
- 	rdmsrl(MSR_IA32_VMX_CR4_FIXED1, msrs->cr4_fixed1);
+--- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
++++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
+@@ -1632,8 +1632,19 @@ static ssize_t analogix_dpaux_transfer(s
+ 				       struct drm_dp_aux_msg *msg)
+ {
+ 	struct analogix_dp_device *dp = to_dp(aux);
++	int ret;
  
-+	if (vmx_umip_emulated())
-+		msrs->cr4_fixed1 |= X86_CR4_UMIP;
+-	return analogix_dp_transfer(dp, msg);
++	pm_runtime_get_sync(dp->dev);
 +
- 	msrs->vmcs_enum = nested_vmx_calc_vmcs_enum_msr();
++	ret = analogix_dp_detect_hpd(dp);
++	if (ret)
++		goto out;
++
++	ret = analogix_dp_transfer(dp, msg);
++out:
++	pm_runtime_put(dp->dev);
++
++	return ret;
  }
  
--- 
-2.36.1.255.ge46751e96f-goog
+ struct analogix_dp_device *
+
 
