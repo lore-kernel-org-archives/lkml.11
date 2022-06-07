@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6F87C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA4ECCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345538AbiFHBq7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:46:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51768 "EHLO
+        id S230360AbiFHBrK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:47:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385210AbiFGWVV (ORCPT
+        with ESMTP id S1352072AbiFGWGs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:21:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9A1C265FAD;
-        Tue,  7 Jun 2022 12:21:12 -0700 (PDT)
+        Tue, 7 Jun 2022 18:06:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683DE196A8C;
+        Tue,  7 Jun 2022 12:17:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74D6A60906;
-        Tue,  7 Jun 2022 19:21:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85E91C34115;
-        Tue,  7 Jun 2022 19:21:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 02A0461929;
+        Tue,  7 Jun 2022 19:17:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6D14C34115;
+        Tue,  7 Jun 2022 19:17:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629671;
-        bh=a4eiVjuiMdl5Kk9U/T8ygeO3MRd4Li27yrcvZKUmnlo=;
+        s=korg; t=1654629455;
+        bh=rIhcoJ6CXlFY2L4nR6l3Jj4eTV+vu2FtNzEYgveVvdo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=njHr9hm/vVOeGgpJsUREdt7za45em6VZ5GB0rbqvwJjsJXb7s4GPhS00pTR1B1oFM
-         wPKzJY1gssRtJt/gWXenJugAYFAFDGEMG/KUn1ZdTFBcYNMkR0dJ7kl3hRKokvuLb4
-         uwuFN+w4tG5DV+DBsj+k85J/JhLGuU1x7671nJd4=
+        b=pzTSzj92N2oK8H4cF58say7oMdUTRWXPSqkSyFcHnRyS7FbnoJNY/bMVM4QfVEdhN
+         SsAuFlLDPnYIkoDj47aImVsaoL8r06D638whsDFN3q0LudNYSMdp0EXK7om7La+okh
+         bQ/X1hL0QJZxQKbMZUhpMARAzafzl4dSE2V9GDI8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.18 776/879] samples/landlock: Format with clang-format
-Date:   Tue,  7 Jun 2022 19:04:54 +0200
-Message-Id: <20220607165025.393543562@linuxfoundation.org>
+        stable@vger.kernel.org, Joe Mario <jmario@redhat.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 697/879] perf c2c: Use stdio interface if slang is not supported
+Date:   Tue,  7 Jun 2022 19:03:35 +0200
+Message-Id: <20220607165023.079061480@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,205 +55,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@digikod.net>
+From: Leo Yan <leo.yan@linaro.org>
 
-commit 81709f3dccacf4104a4bc2daa80bdd767a9c4c54 upstream.
+[ Upstream commit c4040212bc97d16040712a410335f93bc94d2262 ]
 
-Let's follow a consistent and documented coding style.  Everything may
-not be to our liking but it is better than tacit knowledge.  Moreover,
-this will help maintain style consistency between different developers.
+If the slang lib is not installed on the system, perf c2c tool disables TUI
+mode and roll back to use stdio mode;  but the flag 'c2c.use_stdio' is
+missed to set true and thus it wrongly applies UI quirks in the function
+ui_quirks().
 
-This contains only whitespace changes.
+This commit forces to use stdio interface if slang is not supported, and
+it can avoid to apply the UI quirks and show the correct metric header.
 
-Automatically formatted with:
-clang-format-14 -i samples/landlock/*.[ch]
+Before:
 
-Link: https://lore.kernel.org/r/20220506160513.523257-8-mic@digikod.net
-Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+=================================================
+      Shared Cache Line Distribution Pareto
+=================================================
+  -------------------------------------------------------------------------------
+      0        0        0       99        0        0        0      0xaaaac17d6000
+  -------------------------------------------------------------------------------
+    0.00%    0.00%    6.06%    0.00%    0.00%    0.00%   0x20   N/A       0      0xaaaac17c25ac         0         0        43       375    18469         2  [.] 0x00000000000025ac  memstress         memstress[25ac]   0
+    0.00%    0.00%   93.94%    0.00%    0.00%    0.00%   0x29   N/A       0      0xaaaac17c3e88         0         0       173       180      135         2  [.] 0x0000000000003e88  memstress         memstress[3e88]   0
+
+After:
+
+=================================================
+      Shared Cache Line Distribution Pareto
+=================================================
+  -------------------------------------------------------------------------------
+      0        0        0       99        0        0        0      0xaaaac17d6000
+  -------------------------------------------------------------------------------
+           0.00%    0.00%    6.06%    0.00%    0.00%    0.00%                0x20   N/A       0      0xaaaac17c25ac         0         0        43       375    18469         2  [.] 0x00000000000025ac  memstress         memstress[25ac]   0
+           0.00%    0.00%   93.94%    0.00%    0.00%    0.00%                0x29   N/A       0      0xaaaac17c3e88         0         0       173       180      135         2  [.] 0x0000000000003e88  memstress         memstress[3e88]   0
+
+Fixes: 5a1a99cd2e4e1557 ("perf c2c report: Add main TUI browser")
+Reported-by: Joe Mario <jmario@redhat.com>
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: http://lore.kernel.org/lkml/20220526145400.611249-1-leo.yan@linaro.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- samples/landlock/sandboxer.c |   96 +++++++++++++++++++++++--------------------
- 1 file changed, 52 insertions(+), 44 deletions(-)
+ tools/perf/builtin-c2c.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/samples/landlock/sandboxer.c
-+++ b/samples/landlock/sandboxer.c
-@@ -22,9 +22,9 @@
- #include <unistd.h>
+diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
+index fbbed434014f..8c9ffacbdd28 100644
+--- a/tools/perf/builtin-c2c.c
++++ b/tools/perf/builtin-c2c.c
+@@ -2735,9 +2735,7 @@ static int perf_c2c__report(int argc, const char **argv)
+ 		   "the input file to process"),
+ 	OPT_INCR('N', "node-info", &c2c.node_info,
+ 		 "show extra node info in report (repeat for more info)"),
+-#ifdef HAVE_SLANG_SUPPORT
+ 	OPT_BOOLEAN(0, "stdio", &c2c.use_stdio, "Use the stdio interface"),
+-#endif
+ 	OPT_BOOLEAN(0, "stats", &c2c.stats_only,
+ 		    "Display only statistic tables (implies --stdio)"),
+ 	OPT_BOOLEAN(0, "full-symbols", &c2c.symbol_full,
+@@ -2767,6 +2765,10 @@ static int perf_c2c__report(int argc, const char **argv)
+ 	if (argc)
+ 		usage_with_options(report_c2c_usage, options);
  
- #ifndef landlock_create_ruleset
--static inline int landlock_create_ruleset(
--		const struct landlock_ruleset_attr *const attr,
--		const size_t size, const __u32 flags)
-+static inline int
-+landlock_create_ruleset(const struct landlock_ruleset_attr *const attr,
-+			const size_t size, const __u32 flags)
- {
- 	return syscall(__NR_landlock_create_ruleset, attr, size, flags);
- }
-@@ -32,17 +32,18 @@ static inline int landlock_create_rulese
++#ifndef HAVE_SLANG_SUPPORT
++	c2c.use_stdio = true;
++#endif
++
+ 	if (c2c.stats_only)
+ 		c2c.use_stdio = true;
  
- #ifndef landlock_add_rule
- static inline int landlock_add_rule(const int ruleset_fd,
--		const enum landlock_rule_type rule_type,
--		const void *const rule_attr, const __u32 flags)
-+				    const enum landlock_rule_type rule_type,
-+				    const void *const rule_attr,
-+				    const __u32 flags)
- {
--	return syscall(__NR_landlock_add_rule, ruleset_fd, rule_type,
--			rule_attr, flags);
-+	return syscall(__NR_landlock_add_rule, ruleset_fd, rule_type, rule_attr,
-+		       flags);
- }
- #endif
- 
- #ifndef landlock_restrict_self
- static inline int landlock_restrict_self(const int ruleset_fd,
--		const __u32 flags)
-+					 const __u32 flags)
- {
- 	return syscall(__NR_landlock_restrict_self, ruleset_fd, flags);
- }
-@@ -79,9 +80,8 @@ static int parse_path(char *env_path, co
- 
- /* clang-format on */
- 
--static int populate_ruleset(
--		const char *const env_var, const int ruleset_fd,
--		const __u64 allowed_access)
-+static int populate_ruleset(const char *const env_var, const int ruleset_fd,
-+			    const __u64 allowed_access)
- {
- 	int num_paths, i, ret = 1;
- 	char *env_path_name;
-@@ -111,12 +111,10 @@ static int populate_ruleset(
- 	for (i = 0; i < num_paths; i++) {
- 		struct stat statbuf;
- 
--		path_beneath.parent_fd = open(path_list[i], O_PATH |
--				O_CLOEXEC);
-+		path_beneath.parent_fd = open(path_list[i], O_PATH | O_CLOEXEC);
- 		if (path_beneath.parent_fd < 0) {
- 			fprintf(stderr, "Failed to open \"%s\": %s\n",
--					path_list[i],
--					strerror(errno));
-+				path_list[i], strerror(errno));
- 			goto out_free_name;
- 		}
- 		if (fstat(path_beneath.parent_fd, &statbuf)) {
-@@ -127,9 +125,10 @@ static int populate_ruleset(
- 		if (!S_ISDIR(statbuf.st_mode))
- 			path_beneath.allowed_access &= ACCESS_FILE;
- 		if (landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
--					&path_beneath, 0)) {
--			fprintf(stderr, "Failed to update the ruleset with \"%s\": %s\n",
--					path_list[i], strerror(errno));
-+				      &path_beneath, 0)) {
-+			fprintf(stderr,
-+				"Failed to update the ruleset with \"%s\": %s\n",
-+				path_list[i], strerror(errno));
- 			close(path_beneath.parent_fd);
- 			goto out_free_name;
- 		}
-@@ -171,55 +170,64 @@ int main(const int argc, char *const arg
- 	int ruleset_fd;
- 	struct landlock_ruleset_attr ruleset_attr = {
- 		.handled_access_fs = ACCESS_FS_ROUGHLY_READ |
--			ACCESS_FS_ROUGHLY_WRITE,
-+				     ACCESS_FS_ROUGHLY_WRITE,
- 	};
- 
- 	if (argc < 2) {
--		fprintf(stderr, "usage: %s=\"...\" %s=\"...\" %s <cmd> [args]...\n\n",
--				ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
--		fprintf(stderr, "Launch a command in a restricted environment.\n\n");
-+		fprintf(stderr,
-+			"usage: %s=\"...\" %s=\"...\" %s <cmd> [args]...\n\n",
-+			ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
-+		fprintf(stderr,
-+			"Launch a command in a restricted environment.\n\n");
- 		fprintf(stderr, "Environment variables containing paths, "
- 				"each separated by a colon:\n");
--		fprintf(stderr, "* %s: list of paths allowed to be used in a read-only way.\n",
--				ENV_FS_RO_NAME);
--		fprintf(stderr, "* %s: list of paths allowed to be used in a read-write way.\n",
--				ENV_FS_RW_NAME);
--		fprintf(stderr, "\nexample:\n"
--				"%s=\"/bin:/lib:/usr:/proc:/etc:/dev/urandom\" "
--				"%s=\"/dev/null:/dev/full:/dev/zero:/dev/pts:/tmp\" "
--				"%s bash -i\n",
--				ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
-+		fprintf(stderr,
-+			"* %s: list of paths allowed to be used in a read-only way.\n",
-+			ENV_FS_RO_NAME);
-+		fprintf(stderr,
-+			"* %s: list of paths allowed to be used in a read-write way.\n",
-+			ENV_FS_RW_NAME);
-+		fprintf(stderr,
-+			"\nexample:\n"
-+			"%s=\"/bin:/lib:/usr:/proc:/etc:/dev/urandom\" "
-+			"%s=\"/dev/null:/dev/full:/dev/zero:/dev/pts:/tmp\" "
-+			"%s bash -i\n",
-+			ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
- 		return 1;
- 	}
- 
--	ruleset_fd = landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
-+	ruleset_fd =
-+		landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
- 	if (ruleset_fd < 0) {
- 		const int err = errno;
- 
- 		perror("Failed to create a ruleset");
- 		switch (err) {
- 		case ENOSYS:
--			fprintf(stderr, "Hint: Landlock is not supported by the current kernel. "
--					"To support it, build the kernel with "
--					"CONFIG_SECURITY_LANDLOCK=y and prepend "
--					"\"landlock,\" to the content of CONFIG_LSM.\n");
-+			fprintf(stderr,
-+				"Hint: Landlock is not supported by the current kernel. "
-+				"To support it, build the kernel with "
-+				"CONFIG_SECURITY_LANDLOCK=y and prepend "
-+				"\"landlock,\" to the content of CONFIG_LSM.\n");
- 			break;
- 		case EOPNOTSUPP:
--			fprintf(stderr, "Hint: Landlock is currently disabled. "
--					"It can be enabled in the kernel configuration by "
--					"prepending \"landlock,\" to the content of CONFIG_LSM, "
--					"or at boot time by setting the same content to the "
--					"\"lsm\" kernel parameter.\n");
-+			fprintf(stderr,
-+				"Hint: Landlock is currently disabled. "
-+				"It can be enabled in the kernel configuration by "
-+				"prepending \"landlock,\" to the content of CONFIG_LSM, "
-+				"or at boot time by setting the same content to the "
-+				"\"lsm\" kernel parameter.\n");
- 			break;
- 		}
- 		return 1;
- 	}
- 	if (populate_ruleset(ENV_FS_RO_NAME, ruleset_fd,
--				ACCESS_FS_ROUGHLY_READ)) {
-+			     ACCESS_FS_ROUGHLY_READ)) {
- 		goto err_close_ruleset;
- 	}
- 	if (populate_ruleset(ENV_FS_RW_NAME, ruleset_fd,
--				ACCESS_FS_ROUGHLY_READ | ACCESS_FS_ROUGHLY_WRITE)) {
-+			     ACCESS_FS_ROUGHLY_READ |
-+				     ACCESS_FS_ROUGHLY_WRITE)) {
- 		goto err_close_ruleset;
- 	}
- 	if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)) {
-@@ -236,7 +244,7 @@ int main(const int argc, char *const arg
- 	cmd_argv = argv + 1;
- 	execvpe(cmd_path, cmd_argv, envp);
- 	fprintf(stderr, "Failed to execute \"%s\": %s\n", cmd_path,
--			strerror(errno));
-+		strerror(errno));
- 	fprintf(stderr, "Hint: access to the binary, the interpreter or "
- 			"shared libraries may be denied.\n");
- 	return 1;
+-- 
+2.35.1
+
 
 
