@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BE9EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:11:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD016CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:11:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354967AbiFGTKU (ORCPT
+        id S1355019AbiFGTKm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:10:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46898 "EHLO
+        Tue, 7 Jun 2022 15:10:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350935AbiFGSXM (ORCPT
+        with ESMTP id S1350546AbiFGSXA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:23:12 -0400
+        Tue, 7 Jun 2022 14:23:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA267C5D89;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3245C5D88;
         Tue,  7 Jun 2022 10:54:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 917A5617A8;
-        Tue,  7 Jun 2022 17:54:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CDCBC34119;
-        Tue,  7 Jun 2022 17:54:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C9CD61782;
+        Tue,  7 Jun 2022 17:54:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DED6C34119;
+        Tue,  7 Jun 2022 17:54:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624446;
-        bh=EmkAAJ/Rica/F2qr5EdcipU4Cxr6rxC/TLPXIoWcGtQ=;
+        s=korg; t=1654624457;
+        bh=kIlz6fbgs6kUa12+4YYyDHqgJrft+vKyeXY0ujJmCUc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cUMWBiWeJBMlwR2o20660ACG1WIOSwZpvix5YOQwj3k5LanTFDX+RExHyZWMF9Yub
-         5HT6zID2x61veQmsF/4CEhQLJkq7jZkslDTvogAYxAXkmGUcB8YOgGvVm20ekgizQ/
-         nJE892YzQ0Gjs0phZ1jpapRKoOb0a8L64zf9UOS8=
+        b=PvSPKyCoaF4NjXfzUwP8rjbY7tU/uTo8BY9pEI+fbhJNe4RMfAWni+BQ8VC5zrqly
+         uWRjvGkoHuZ73sPAYbDLWYifY0S+6YhuSo5zXInbKUqlBYWxYHCya/9cwZDkMabe3R
+         xYoxv6xuFkmzsdialoExxS89tnfyrAR4WOjG1MKE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 330/667] Bluetooth: use hdev lock in activate_scan for hci_is_adv_monitoring
-Date:   Tue,  7 Jun 2022 18:59:55 +0200
-Message-Id: <20220607164944.666621309@linuxfoundation.org>
+Subject: [PATCH 5.15 307/667] ASoC: imx-hdmi: Fix refcount leak in imx_hdmi_probe
+Date:   Tue,  7 Jun 2022 18:59:32 +0200
+Message-Id: <20220607164943.984022402@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,46 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 50a3633ae5e98cf1b80ef5b73c9e341aee9ad896 ]
+[ Upstream commit ed46731d8e86c8d65f5fc717671e1f1f6c3146d2 ]
 
-hci_is_adv_monitoring's function documentation states that it must be
-called under the hdev lock. Paths that leads to an unlocked call are:
-discov_update => start_discovery => interleaved_discov => active_scan
-and: discov_update => start_discovery => active_scan
+of_find_device_by_node() takes reference, we should use put_device()
+to release it. when devm_kzalloc() fails, it doesn't have a
+put_device(), it will cause refcount leak.
+Add missing put_device() to fix this.
 
-The solution is to take the lock in active_scan during the duration of
-the call to hci_is_adv_monitoring.
-
-Fixes: c32d624640fd ("Bluetooth: disable filter dup when scan for adv monitor")
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: 6a5f850aa83a ("ASoC: fsl: Add imx-hdmi machine driver")
+Fixes: f670b274f7f6 ("ASoC: imx-hdmi: add put_device() after of_find_device_by_node()")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220511052740.46903-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_request.c | 2 ++
- 1 file changed, 2 insertions(+)
+ sound/soc/fsl/imx-hdmi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index 1d34d330afd3..c2db60ad0f1d 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -3174,6 +3174,7 @@ static int active_scan(struct hci_request *req, unsigned long opt)
- 	if (err < 0)
- 		own_addr_type = ADDR_LE_DEV_PUBLIC;
- 
-+	hci_dev_lock(hdev);
- 	if (hci_is_adv_monitoring(hdev)) {
- 		/* Duplicate filter should be disabled when some advertisement
- 		 * monitor is activated, otherwise AdvMon can only receive one
-@@ -3190,6 +3191,7 @@ static int active_scan(struct hci_request *req, unsigned long opt)
- 		 */
- 		filter_dup = LE_SCAN_FILTER_DUP_DISABLE;
+diff --git a/sound/soc/fsl/imx-hdmi.c b/sound/soc/fsl/imx-hdmi.c
+index ef8d7a65ebc6..d61e3c841e26 100644
+--- a/sound/soc/fsl/imx-hdmi.c
++++ b/sound/soc/fsl/imx-hdmi.c
+@@ -126,6 +126,7 @@ static int imx_hdmi_probe(struct platform_device *pdev)
+ 	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+ 	if (!data) {
+ 		ret = -ENOMEM;
++		put_device(&cpu_pdev->dev);
+ 		goto fail;
  	}
-+	hci_dev_unlock(hdev);
  
- 	hci_req_start_scan(req, LE_SCAN_ACTIVE, interval,
- 			   hdev->le_scan_window_discovery, own_addr_type,
 -- 
 2.35.1
 
