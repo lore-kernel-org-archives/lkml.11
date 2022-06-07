@@ -2,91 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEE5DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:37:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 513E4CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:37:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355993AbiFGTfC (ORCPT
+        id S1356021AbiFGTfH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38386 "EHLO
+        Tue, 7 Jun 2022 15:35:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353587AbiFGSpg (ORCPT
+        with ESMTP id S1353644AbiFGSpv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:45:36 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44861187C3E;
-        Tue,  7 Jun 2022 10:59:12 -0700 (PDT)
+        Tue, 7 Jun 2022 14:45:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A2B3188E90;
+        Tue,  7 Jun 2022 10:59:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5D904CE2428;
-        Tue,  7 Jun 2022 17:59:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0439FC34115;
-        Tue,  7 Jun 2022 17:59:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624748;
-        bh=93RaP5+sjMAjGExeJo5h97vFM+a0K8BZ5IZE4OzmE1U=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA8B0B82377;
+        Tue,  7 Jun 2022 17:59:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18467C385A5;
+        Tue,  7 Jun 2022 17:59:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624758;
+        bh=VRLCUASR/oqI+cloDdoQkBQ9S5qby/dpYc3z8FpKMW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hAvbdtz73Is7OGp+TckSJj5lS0cwMR2Siaj/Mixw8/Wi1/HvxKWFfG1SV1bnLBSy6
-         7iBl+F7rfv8Q0YBJtSKHTRWSrFiRKJzSmrz1p2UfgTshxe4nYauoI2tCES2vzhDHYk
-         9q5dKVHGyZpaaHjgYskgbDEn9naOns9V/DUmb9xSGKboQt6vH5MOecmvapp9vCSY9R
-         DiQwB9Z61ycucnHLI9iNGtNUWrRK1vyVosvJbrvDXhiCkawfcBHn2kxB1dZAqlgbt2
-         WQSxHVXm97GKZYGEnFANBK7VPmJR2wissZmeLpnjs9p6i/pafN76ex7/6LV3Ww87sb
-         IPct/5zvMw3QQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhen Ni <nizhen@uniontech.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, ok@artecdesign.ee,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 09/38] USB: host: isp116x: check return value after calling platform_get_resource()
-Date:   Tue,  7 Jun 2022 13:58:04 -0400
-Message-Id: <20220607175835.480735-9-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
-References: <20220607175835.480735-1-sashal@kernel.org>
+        b=KlV12NJ6WhAj+dwj1mvxTMDXFrnAC5m6gIvRxTojCEcaqUr8+rqaB+j1UTMNaDqan
+         wQ5Sod0+vqnvNO3+i9FoHpkOTe/Jlx+j1wOMPqE9yOFhadbw29rb9YERRlqauYj3PA
+         85uwNW5LP8rz0jum0RrA64JoQ4A8y87hIVCMGae0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 436/667] firmware: arm_ffa: Remove incorrect assignment of driver_data
+Date:   Tue,  7 Jun 2022 19:01:41 +0200
+Message-Id: <20220607164947.799664840@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhen Ni <nizhen@uniontech.com>
+From: Sudeep Holla <sudeep.holla@arm.com>
 
-[ Upstream commit 134a3408c2d3f7e23eb0e4556e0a2d9f36c2614e ]
+[ Upstream commit 00512d2930b338fdd42bd90bbd1793fe212c2d31 ]
 
-It will cause null-ptr-deref if platform_get_resource() returns NULL,
-we need check the return value.
+The ffa core driver currently assigns its own driver information
+to individual ffa device driver_data which is wrong. Firstly, it leaks
+this core driver information to individual ffa_device and hence to
+ffa_driver. Secondly the ffa_device driver_data is for use by individual
+ffa_driver and not for this core driver managing all those devices.
 
-Signed-off-by: Zhen Ni <nizhen@uniontech.com>
-Link: https://lore.kernel.org/r/20220302033716.31272-1-nizhen@uniontech.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220429113946.2087145-2-sudeep.holla@arm.com
+Fixes: d0c0bce83122 ("firmware: arm_ffa: Setup in-kernel users of FFA partitions")
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/isp116x-hcd.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/firmware/arm_ffa/driver.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/usb/host/isp116x-hcd.c b/drivers/usb/host/isp116x-hcd.c
-index 3055d9abfec3..3e5c54742bef 100644
---- a/drivers/usb/host/isp116x-hcd.c
-+++ b/drivers/usb/host/isp116x-hcd.c
-@@ -1541,10 +1541,12 @@ static int isp116x_remove(struct platform_device *pdev)
- 
- 	iounmap(isp116x->data_reg);
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
--	release_mem_region(res->start, 2);
-+	if (res)
-+		release_mem_region(res->start, 2);
- 	iounmap(isp116x->addr_reg);
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	release_mem_region(res->start, 2);
-+	if (res)
-+		release_mem_region(res->start, 2);
- 
- 	usb_put_hcd(hcd);
- 	return 0;
+diff --git a/drivers/firmware/arm_ffa/driver.c b/drivers/firmware/arm_ffa/driver.c
+index 891d7ecf8759..814d3bf32489 100644
+--- a/drivers/firmware/arm_ffa/driver.c
++++ b/drivers/firmware/arm_ffa/driver.c
+@@ -645,8 +645,6 @@ static void ffa_setup_partitions(void)
+ 			       __func__, tpbuf->id);
+ 			continue;
+ 		}
+-
+-		ffa_dev_set_drvdata(ffa_dev, drv_info);
+ 	}
+ 	kfree(pbuf);
+ }
 -- 
 2.35.1
+
+
 
