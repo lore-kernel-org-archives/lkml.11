@@ -2,85 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE138CCA49A
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4CF0CCA483
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384739AbiFHAtw (ORCPT
+        id S1390484AbiFHAvY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43342 "EHLO
+        Tue, 7 Jun 2022 20:51:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383898AbiFGWbB (ORCPT
+        with ESMTP id S1382715AbiFGVvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:31:01 -0400
-Received: from 6.mo575.mail-out.ovh.net (6.mo575.mail-out.ovh.net [46.105.63.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4326E2755B9
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:24:03 -0700 (PDT)
-Received: from player698.ha.ovh.net (unknown [10.110.115.149])
-        by mo575.mail-out.ovh.net (Postfix) with ESMTP id B3F7F22B79
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:24:01 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player698.ha.ovh.net (Postfix) with ESMTPSA id 67A972B48042C;
-        Tue,  7 Jun 2022 19:23:52 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-110S0043a930085-a9b6-4bf1-b62d-4f18fbec254c,
-                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Antonino Daplas <adaplas@gmail.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Helge Deller <deller@gmx.de>, Paul Mackerras <paulus@samba.org>
-Cc:     linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>, dri-devel@lists.freedesktop.org
-Subject: [PATCH 1/7] fbdev: aty128fb: Use backlight helper
-Date:   Tue,  7 Jun 2022 21:23:29 +0200
-Message-Id: <20220607192335.1137249-2-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220607192335.1137249-1-steve@sk2.org>
-References: <20220607192335.1137249-1-steve@sk2.org>
+        Tue, 7 Jun 2022 17:51:45 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E3A1912EE
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:09:19 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id g186so7875317pgc.1
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:09:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Zv6DUaDAW0iYk91AWgt5SeSWK+UTvh87ZNXi8mCkADI=;
+        b=mwjQcID3rvKF93+FfvpOrFV+CjWy6pKoNXnMY/jvTDR27o1WtjtWyytbJp5+ZxSuQG
+         MsV/mGMRqjO6SKY5JLuSafWagoX+C0e3RkwDuP6S6KNJvGq2tllJjGp6Klpc2QstdvEI
+         LGSJKqQFNc9NImfFVyEZdWcd5fcCt4ema/AQU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Zv6DUaDAW0iYk91AWgt5SeSWK+UTvh87ZNXi8mCkADI=;
+        b=3pa6mX7VfXMYT/kHe0SAFNYtyy65QA6/OCJ25ioiCqZln9aVc/gBOCASMHwxlfkO1P
+         qQY1uo+ZUZjHNv+9TMwUhSE7+C+VErIr3jCjju6Ww8dImglI2/qrVvqC0UtzQ9cRAz32
+         jNaHzXiy3WNsxH+a5cBWVrdkZ5pYZQDYlH1Ro8cXkpMKiul/AjqHMpaqTY7PxNKIHBmE
+         GJPOohxNBvucvITzhu0l9r2RN0VUILFhQb+Rx5Fhc5ZbIDdpUwjuGeRXM+UzIYqdWkJP
+         nR4phfQebc7CnLgd7BxooxPW5CphVumGowNryUkMQnzabaoCMNVhDzaHE4P0SpcZijuH
+         BeuA==
+X-Gm-Message-State: AOAM531Hybi3ddqEQpC9EQjZLLjMQ7CaTAcjN33ETUVydfpAgd0UOUHo
+        Ie4kXt5QL1kdHufF4IjC1Wn+bZTRhdnYnQ==
+X-Google-Smtp-Source: ABdhPJxg13/ypCkYzKXsJqhP1fBID2bU68Drc0UUN8dMixPUYyS7csEranmT2FlCgcicHOIGfd4fvQ==
+X-Received: by 2002:a63:e5d:0:b0:3aa:3c53:537e with SMTP id 29-20020a630e5d000000b003aa3c53537emr26718637pgo.622.1654628958136;
+        Tue, 07 Jun 2022 12:09:18 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id g29-20020aa79ddd000000b0050dc762819esm13236084pfq.120.2022.06.07.12.09.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 12:09:17 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Cc:     bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Prashant Malani <pmalani@chromium.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS),
+        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
+Subject: [PATCH 5/7] drm/bridge: anx7625: Register number of Type C switches
+Date:   Tue,  7 Jun 2022 19:00:23 +0000
+Message-Id: <20220607190131.1647511-6-pmalani@chromium.org>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+In-Reply-To: <20220607190131.1647511-1-pmalani@chromium.org>
+References: <20220607190131.1647511-1-pmalani@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 11948331288570660585
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudefiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheejhe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of retrieving the backlight brightness in struct
-backlight_properties manually, and then checking whether the backlight
-should be on at all, use backlight_get_brightness() which does all
-this and insulates this from future changes.
+Parse the "switches" node, if available, and count and store the number
+of Type-C switches within it. Since we currently don't do anything with
+this info, no functional changes are expected from this change.
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: Helge Deller <deller@gmx.de>
-Cc: linux-fbdev@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
+This patch sets a foundation for the actual registering of Type-C
+switches with the Type-C connector class framework.
+
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
 ---
- drivers/video/fbdev/aty/aty128fb.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/bridge/analogix/anx7625.c | 20 ++++++++++++++++++++
+ drivers/gpu/drm/bridge/analogix/anx7625.h |  1 +
+ 2 files changed, 21 insertions(+)
 
-diff --git a/drivers/video/fbdev/aty/aty128fb.c b/drivers/video/fbdev/aty/aty128fb.c
-index b26c81233b6b..a8f9baac3d3f 100644
---- a/drivers/video/fbdev/aty/aty128fb.c
-+++ b/drivers/video/fbdev/aty/aty128fb.c
-@@ -1765,12 +1765,10 @@ static int aty128_bl_update_status(struct backlight_device *bd)
- 	unsigned int reg = aty_ld_le32(LVDS_GEN_CNTL);
- 	int level;
+diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+index 53a5da6c49dd..07ed44c6b839 100644
+--- a/drivers/gpu/drm/bridge/analogix/anx7625.c
++++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+@@ -2581,6 +2581,22 @@ static void anx7625_runtime_disable(void *data)
+ 	pm_runtime_disable(data);
+ }
  
--	if (bd->props.power != FB_BLANK_UNBLANK ||
--	    bd->props.fb_blank != FB_BLANK_UNBLANK ||
--	    !par->lcd_on)
-+	if (!par->lcd_on)
- 		level = 0;
- 	else
--		level = bd->props.brightness;
-+		level = backlight_get_brightness(bd);
++static int anx7625_register_typec_switches(struct device *device, struct anx7625_data *ctx)
++{
++	struct device_node *of = NULL;
++	int ret = 0;
++
++	of = of_get_child_by_name(device->of_node, "switches");
++	if (!of)
++		return -ENODEV;
++
++	ctx->num_typec_switches = of_get_child_count(of);
++	if (ctx->num_typec_switches <= 0)
++		return -ENODEV;
++
++	return ret;
++}
++
+ static int anx7625_i2c_probe(struct i2c_client *client,
+ 			     const struct i2c_device_id *id)
+ {
+@@ -2686,6 +2702,10 @@ static int anx7625_i2c_probe(struct i2c_client *client,
+ 	if (platform->pdata.intp_irq)
+ 		queue_work(platform->workqueue, &platform->work);
  
- 	reg |= LVDS_BL_MOD_EN | LVDS_BLON;
- 	if (level > 0) {
++	ret = anx7625_register_typec_switches(dev, platform);
++	if (ret)
++		dev_info(dev, "Didn't register Type C switches, err: %d\n", ret);
++
+ 	platform->bridge.funcs = &anx7625_bridge_funcs;
+ 	platform->bridge.of_node = client->dev.of_node;
+ 	if (!anx7625_of_panel_on_aux_bus(&client->dev))
+diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.h b/drivers/gpu/drm/bridge/analogix/anx7625.h
+index e257a84db962..d5cbca708842 100644
+--- a/drivers/gpu/drm/bridge/analogix/anx7625.h
++++ b/drivers/gpu/drm/bridge/analogix/anx7625.h
+@@ -473,6 +473,7 @@ struct anx7625_data {
+ 	struct drm_connector *connector;
+ 	struct mipi_dsi_device *dsi;
+ 	struct drm_dp_aux aux;
++	int num_typec_switches;
+ };
+ 
+ #endif  /* __ANX7625_H__ */
 -- 
-2.30.2
+2.36.1.255.ge46751e96f-goog
 
