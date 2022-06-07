@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CDA2CCA48A
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2A5FCCA487
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231795AbiFHAdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38582 "EHLO
+        id S1388859AbiFHAdB (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 20:33:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379210AbiFGWG4 (ORCPT
+        with ESMTP id S1383303AbiFGVxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:06:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67DDB252C3C;
-        Tue,  7 Jun 2022 12:15:57 -0700 (PDT)
+        Tue, 7 Jun 2022 17:53:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6F395F5A;
+        Tue,  7 Jun 2022 12:11:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0406261922;
-        Tue,  7 Jun 2022 19:15:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F010C385A2;
-        Tue,  7 Jun 2022 19:15:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59D10B82182;
+        Tue,  7 Jun 2022 19:11:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF7BDC385A5;
+        Tue,  7 Jun 2022 19:11:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629356;
-        bh=lnzJyWD5Iju1jLJes8+CZ8ONeHKG3GLp2Af/HR1ee1k=;
+        s=korg; t=1654629075;
+        bh=F5vc2z5PopVkJ8A8MZC70EPgQB/h1zcxegZ4uIkJRU4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NdJam4wenxNSfW50uPhfkvytr0feOhE28bZi7UhquzbHwauV0tPVaXQVe96EQUJxi
-         br/76WX7zfh5M5q03PBHgS8eknUI3/N82Z2zLBtHvR4Zyi/4cqYbwplKr9AgjrEARO
-         37u6G08A7lX5eaMdBxJaGE5kqJBPoyUq3N4lWlE0=
+        b=pmTdBiNpeqPYixelxqRPqaUQTFP0fKf+8Nb8tJxfhY6DvjHj7vKEj2hrnDc8vvH2u
+         O23J6JweUkYRCWcqJOe84c4CZXSkQqxqRzLaUxbZuSs+LZtxZ99Ckjv8bAGsukuwfV
+         +1sJyaEa2Xz4d0/x3G2dxipQ5KzYTXViQaOxLMr8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
-        Guo Ren <guoren@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Patrick Delaunay <patrick.delaunay@foss.st.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 661/879] riscv: Fixup difference with defconfig
-Date:   Tue,  7 Jun 2022 19:02:59 +0200
-Message-Id: <20220607165022.034185835@linuxfoundation.org>
+Subject: [PATCH 5.18 561/879] ARM: dts: stm32: Fix PHY post-reset delay on Avenger96
+Date:   Tue,  7 Jun 2022 19:01:19 +0200
+Message-Id: <20220607165019.146590485@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,41 +53,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit 72f045d19f25f19be6d7682d5b1d948e20580817 ]
+[ Upstream commit ef2d90708883f4025a801feb0ba8411a7a4387e1 ]
 
-Let's follow the origin patch's spirit:
+Per KSZ9031RNX PHY datasheet FIGURE 7-5: POWER-UP/POWER-DOWN/RESET TIMING
+Note 2: After the de-assertion of reset, wait a minimum of 100 μs before
+starting programming on the MIIM (MDC/MDIO) interface.
 
-The only difference between rv32_defconfig and defconfig is that
-rv32_defconfig has  CONFIG_ARCH_RV32I=y.
+Add 1ms post-reset delay to guarantee this figure.
 
-This is helpful to compare rv64-compat-rv32 v.s. rv32-linux.
-
-Fixes: 1b937e8faa87ccfb ("RISC-V: Add separate defconfig for 32bit systems")
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Tested-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://lore.kernel.org/r/20220405071314.3225832-9-guoren@kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Fixes: 010ca9fe500bf ("ARM: dts: stm32: Add missing ethernet PHY reset on AV96")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: Patrice Chotard <patrice.chotard@foss.st.com>
+Cc: Patrick Delaunay <patrick.delaunay@foss.st.com>
+Cc: linux-stm32@st-md-mailman.stormreply.com
+To: linux-arm-kernel@lists.infradead.org
+Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/Makefile | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
-index 7d81102cffd4..c6ca1b9cbf71 100644
---- a/arch/riscv/Makefile
-+++ b/arch/riscv/Makefile
-@@ -154,3 +154,7 @@ PHONY += rv64_randconfig
- rv64_randconfig:
- 	$(Q)$(MAKE) KCONFIG_ALLCONFIG=$(srctree)/arch/riscv/configs/64-bit.config \
- 		-f $(srctree)/Makefile randconfig
-+
-+PHONY += rv32_defconfig
-+rv32_defconfig:
-+	$(Q)$(MAKE) -f $(srctree)/Makefile defconfig 32-bit.config
+diff --git a/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi b/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
+index 61e17f44ce81..76c54b006d87 100644
+--- a/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
++++ b/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
+@@ -141,6 +141,7 @@
+ 		compatible = "snps,dwmac-mdio";
+ 		reset-gpios = <&gpioz 2 GPIO_ACTIVE_LOW>;
+ 		reset-delay-us = <1000>;
++		reset-post-delay-us = <1000>;
+ 
+ 		phy0: ethernet-phy@7 {
+ 			reg = <7>;
 -- 
 2.35.1
 
