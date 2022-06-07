@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29C9FCCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9270C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:07:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349086AbiFGSGu (ORCPT
+        id S1349829AbiFGSFC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:06:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40550 "EHLO
+        Tue, 7 Jun 2022 14:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349015AbiFGRql (ORCPT
+        with ESMTP id S1349062AbiFGRqo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:46:41 -0400
+        Tue, 7 Jun 2022 13:46:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CFAE10C339;
-        Tue,  7 Jun 2022 10:36:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A2562BC4;
+        Tue,  7 Jun 2022 10:36:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B9ED061529;
-        Tue,  7 Jun 2022 17:36:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5710C385A5;
-        Tue,  7 Jun 2022 17:35:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 979BF60DB5;
+        Tue,  7 Jun 2022 17:36:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A65A9C385A5;
+        Tue,  7 Jun 2022 17:36:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623360;
-        bh=mTdIDoujXMOK+HqZWo1bcLLznZ0mfsHSUpSPn8Lcwd8=;
+        s=korg; t=1654623382;
+        bh=mLUZPnwtxYepKpeekuKglrgz00FKKljKZilx1rGoNw4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ez04xMnzwwO9hD1MZVmVhXimElY0VDJvApyJP50dZM7F0wZCtzyD9lvSRywyGCUD2
-         93u7WdGl4GPFetvI/AfJMSzYwQD5yFHpJ9f8xONpDbCiGn7TCbdThPocEl7VbKUPZI
-         CJtnIJyjtmlVorum64UuOHwOEZN82ie6jegR2DRM=
+        b=eeOKZbnL95rtuzSKH49pVZALv8rOdyxP41Vh8/HbPkRAcfyzcaszlqbhM2i74fL7w
+         p+bPqkUjT2I3YF37Udt7cp7WRXIefQGcvRLbSZoBeVO9ect5wyHliEfuWQInybuzaH
+         1DTKr95cGn5ETF63DlLQ1V8RpaFFXXzctGkZNopI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, GUO Zihua <guozihua@huawei.com>,
-        Stable@vger.kernel.org, Mimi Zohar <zohar@linux.ibm.com>
-Subject: [PATCH 5.10 390/452] ima: remove the IMA_TEMPLATE Kconfig option
-Date:   Tue,  7 Jun 2022 19:04:07 +0200
-Message-Id: <20220607164920.186246915@linuxfoundation.org>
+        stable@vger.kernel.org, Catrinel Catrinescu <cc@80211.de>,
+        Felix Fietkau <nbd@nbd.name>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.10 397/452] mac80211: upgrade passive scan to active scan on DFS channels after beacon rx
+Date:   Tue,  7 Jun 2022 19:04:14 +0200
+Message-Id: <20220607164920.391930459@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,100 +50,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: GUO Zihua <guozihua@huawei.com>
+From: Felix Fietkau <nbd@nbd.name>
 
-commit 891163adf180bc369b2f11c9dfce6d2758d2a5bd upstream.
+commit b041b7b9de6e1d4362de855ab90f9d03ef323edd upstream.
 
-The original 'ima' measurement list template contains a hash, defined
-as 20 bytes, and a null terminated pathname, limited to 255
-characters.  Other measurement list templates permit both larger hashes
-and longer pathnames.  When the "ima" template is configured as the
-default, a new measurement list template (ima_template=) must be
-specified before specifying a larger hash algorithm (ima_hash=) on the
-boot command line.
+In client mode, we can't connect to hidden SSID APs or SSIDs not advertised
+in beacons on DFS channels, since we're forced to passive scan. Fix this by
+sending out a probe request immediately after the first beacon, if active
+scan was requested by the user.
 
-To avoid this boot command line ordering issue, remove the legacy "ima"
-template configuration option, allowing it to still be specified on the
-boot command line.
-
-The root cause of this issue is that during the processing of ima_hash,
-we would try to check whether the hash algorithm is compatible with the
-template. If the template is not set at the moment we do the check, we
-check the algorithm against the configured default template. If the
-default template is "ima", then we reject any hash algorithm other than
-sha1 and md5.
-
-For example, if the compiled default template is "ima", and the default
-algorithm is sha1 (which is the current default). In the cmdline, we put
-in "ima_hash=sha256 ima_template=ima-ng". The expected behavior would be
-that ima starts with ima-ng as the template and sha256 as the hash
-algorithm. However, during the processing of "ima_hash=",
-"ima_template=" has not been processed yet, and hash_setup would check
-the configured hash algorithm against the compiled default: ima, and
-reject sha256. So at the end, the hash algorithm that is actually used
-will be sha1.
-
-With template "ima" removed from the configured default, we ensure that
-the default tempalte would at least be "ima-ng" which allows for
-basically any hash algorithm.
-
-This change would not break the algorithm compatibility checks for IMA.
-
-Fixes: 4286587dccd43 ("ima: add Kconfig default measurement list template")
-Signed-off-by: GUO Zihua <guozihua@huawei.com>
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Cc: stable@vger.kernel.org
+Reported-by: Catrinel Catrinescu <cc@80211.de>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Link: https://lore.kernel.org/r/20220420104907.36275-1-nbd@nbd.name
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/integrity/ima/Kconfig |   14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ net/mac80211/ieee80211_i.h |    5 +++++
+ net/mac80211/scan.c        |   20 ++++++++++++++++++++
+ 2 files changed, 25 insertions(+)
 
---- a/security/integrity/ima/Kconfig
-+++ b/security/integrity/ima/Kconfig
-@@ -69,10 +69,9 @@ choice
- 	  hash, defined as 20 bytes, and a null terminated pathname,
- 	  limited to 255 characters.  The 'ima-ng' measurement list
- 	  template permits both larger hash digests and longer
--	  pathnames.
-+	  pathnames. The configured default template can be replaced
-+	  by specifying "ima_template=" on the boot command line.
+--- a/net/mac80211/ieee80211_i.h
++++ b/net/mac80211/ieee80211_i.h
+@@ -1103,6 +1103,9 @@ struct tpt_led_trigger {
+  *	a scan complete for an aborted scan.
+  * @SCAN_HW_CANCELLED: Set for our scan work function when the scan is being
+  *	cancelled.
++ * @SCAN_BEACON_WAIT: Set whenever we're passive scanning because of radar/no-IR
++ *	and could send a probe request after receiving a beacon.
++ * @SCAN_BEACON_DONE: Beacon received, we can now send a probe request
+  */
+ enum {
+ 	SCAN_SW_SCANNING,
+@@ -1111,6 +1114,8 @@ enum {
+ 	SCAN_COMPLETED,
+ 	SCAN_ABORTED,
+ 	SCAN_HW_CANCELLED,
++	SCAN_BEACON_WAIT,
++	SCAN_BEACON_DONE,
+ };
  
--	config IMA_TEMPLATE
--		bool "ima"
- 	config IMA_NG_TEMPLATE
- 		bool "ima-ng (default)"
- 	config IMA_SIG_TEMPLATE
-@@ -82,7 +81,6 @@ endchoice
- config IMA_DEFAULT_TEMPLATE
- 	string
- 	depends on IMA
--	default "ima" if IMA_TEMPLATE
- 	default "ima-ng" if IMA_NG_TEMPLATE
- 	default "ima-sig" if IMA_SIG_TEMPLATE
+ /**
+--- a/net/mac80211/scan.c
++++ b/net/mac80211/scan.c
+@@ -277,6 +277,16 @@ void ieee80211_scan_rx(struct ieee80211_
+ 	if (likely(!sdata1 && !sdata2))
+ 		return;
  
-@@ -102,19 +100,19 @@ choice
++	if (test_and_clear_bit(SCAN_BEACON_WAIT, &local->scanning)) {
++		/*
++		 * we were passive scanning because of radar/no-IR, but
++		 * the beacon/proberesp rx gives us an opportunity to upgrade
++		 * to active scan
++		 */
++		 set_bit(SCAN_BEACON_DONE, &local->scanning);
++		 ieee80211_queue_delayed_work(&local->hw, &local->scan_work, 0);
++	}
++
+ 	if (ieee80211_is_probe_resp(mgmt->frame_control)) {
+ 		struct cfg80211_scan_request *scan_req;
+ 		struct cfg80211_sched_scan_request *sched_scan_req;
+@@ -783,6 +793,8 @@ static int __ieee80211_start_scan(struct
+ 						IEEE80211_CHAN_RADAR)) ||
+ 		    !req->n_ssids) {
+ 			next_delay = IEEE80211_PASSIVE_CHANNEL_TIME;
++			if (req->n_ssids)
++				set_bit(SCAN_BEACON_WAIT, &local->scanning);
+ 		} else {
+ 			ieee80211_scan_state_send_probe(local, &next_delay);
+ 			next_delay = IEEE80211_CHANNEL_TIME;
+@@ -994,6 +1006,8 @@ set_channel:
+ 	    !scan_req->n_ssids) {
+ 		*next_delay = IEEE80211_PASSIVE_CHANNEL_TIME;
+ 		local->next_scan_state = SCAN_DECISION;
++		if (scan_req->n_ssids)
++			set_bit(SCAN_BEACON_WAIT, &local->scanning);
+ 		return;
+ 	}
  
- 	config IMA_DEFAULT_HASH_SHA256
- 		bool "SHA256"
--		depends on CRYPTO_SHA256=y && !IMA_TEMPLATE
-+		depends on CRYPTO_SHA256=y
+@@ -1086,6 +1100,8 @@ void ieee80211_scan_work(struct work_str
+ 			goto out;
+ 	}
  
- 	config IMA_DEFAULT_HASH_SHA512
- 		bool "SHA512"
--		depends on CRYPTO_SHA512=y && !IMA_TEMPLATE
-+		depends on CRYPTO_SHA512=y
++	clear_bit(SCAN_BEACON_WAIT, &local->scanning);
++
+ 	/*
+ 	 * as long as no delay is required advance immediately
+ 	 * without scheduling a new work
+@@ -1096,6 +1112,10 @@ void ieee80211_scan_work(struct work_str
+ 			goto out_complete;
+ 		}
  
- 	config IMA_DEFAULT_HASH_WP512
- 		bool "WP512"
--		depends on CRYPTO_WP512=y && !IMA_TEMPLATE
-+		depends on CRYPTO_WP512=y
- 
- 	config IMA_DEFAULT_HASH_SM3
- 		bool "SM3"
--		depends on CRYPTO_SM3=y && !IMA_TEMPLATE
-+		depends on CRYPTO_SM3=y
- endchoice
- 
- config IMA_DEFAULT_HASH
++		if (test_and_clear_bit(SCAN_BEACON_DONE, &local->scanning) &&
++		    local->next_scan_state == SCAN_DECISION)
++			local->next_scan_state = SCAN_SEND_PROBE;
++
+ 		switch (local->next_scan_state) {
+ 		case SCAN_DECISION:
+ 			/* if no more bands/channels left, complete scan */
 
 
