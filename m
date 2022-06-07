@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD151CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96302CCA481
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:56:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349092AbiFGRzg (ORCPT
+        id S1348960AbiFGRzS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
+        Tue, 7 Jun 2022 13:55:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344963AbiFGRgn (ORCPT
+        with ESMTP id S1348657AbiFGRgj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:36:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7CD15FCF;
-        Tue,  7 Jun 2022 10:33:06 -0700 (PDT)
+        Tue, 7 Jun 2022 13:36:39 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F8465AF;
+        Tue,  7 Jun 2022 10:32:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3ABAA614B2;
-        Tue,  7 Jun 2022 17:32:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49DFEC385A5;
-        Tue,  7 Jun 2022 17:32:46 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1652ACE23CE;
+        Tue,  7 Jun 2022 17:32:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CA3CC385A5;
+        Tue,  7 Jun 2022 17:32:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623166;
-        bh=74YDxV6EJGzw+ERnYDk+S6R0DQRX17U16pYX5RQMFaU=;
+        s=korg; t=1654623144;
+        bh=kuJGlq+Dp50ebFzN/dD8Ge6yPh9MXymGfk7L2/1qwBk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jrxBCRN077odYv+PIJlegGHUXJeOzmcKmQsTb0uhSNtw3mMXvAzaLuPoLa5SmZjVH
-         VIESUbWBtXbkENr0tNSNK1P8pdf6ceWfTGLZlnpU+494tfwMZRcoF3MQoDF90GOHUv
-         y/NXS8tf+VVZCVWPDzj2iqhUPjI8TB1gWvfiOTIU=
+        b=UMHhzIE1/a/etFS7y7WQDX7QNK6y5ykTWkPIOwTtJmze2q8zCEXyKKdM1Sbq90pf7
+         Y+aEunDjRlcxKQ9MsSNGDr6Wv+sLoP77yn4WmGNWJYVdsmfrPNE04zQvY2cJEiD/Dw
+         b5rGzSVsF/VJT+4EjvcpylStqLasjBNHB0jZjD9Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
+        stable@vger.kernel.org, Kajol Jain <kjain@linux.ibm.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 318/452] OPP: call of_node_put() on error path in _bandwidth_supported()
-Date:   Tue,  7 Jun 2022 19:02:55 +0200
-Message-Id: <20220607164918.034405219@linuxfoundation.org>
+Subject: [PATCH 5.10 311/452] powerpc/perf: Fix the threshold compare group constraint for power9
+Date:   Tue,  7 Jun 2022 19:02:48 +0200
+Message-Id: <20220607164917.827166709@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,38 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Kajol Jain <kjain@linux.ibm.com>
 
-[ Upstream commit 907ed123b9d096c73e9361f6cd4097f0691497f2 ]
+[ Upstream commit ab0cc6bbf0c812731c703ec757fcc3fc3a457a34 ]
 
-This code does not call of_node_put(opp_np) if of_get_next_available_child()
-returns NULL.  But it should.
+Thresh compare bits for a event is used to program thresh compare
+field in Monitor Mode Control Register A (MMCRA: 9-18 bits for power9).
+When scheduling events as a group, all events in that group should
+match value in threshold bits (like thresh compare, thresh control,
+thresh select). Otherwise event open for the sibling events should fail.
+But in the current code, incase thresh compare bits are not valid,
+we are not failing in group_constraint function which can result
+in invalid group schduling.
 
-Fixes: 45679f9b508f ("opp: Don't parse icc paths unnecessarily")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Fix the issue by returning -1 incase event is threshold and threshold
+compare value is not valid.
+
+Thresh control bits in the event code is used to program thresh_ctl
+field in Monitor Mode Control Register A (MMCRA: 48-55). In below example,
+the scheduling of group events PM_MRK_INST_CMPL (873534401e0) and
+PM_THRESH_MET (8734340101ec) is expected to fail as both event
+request different thresh control bits and invalid thresh compare value.
+
+Result before the patch changes:
+
+[command]# perf stat -e "{r8735340401e0,r8734340101ec}" sleep 1
+
+ Performance counter stats for 'sleep 1':
+
+            11,048      r8735340401e0
+             1,967      r8734340101ec
+
+       1.001354036 seconds time elapsed
+
+       0.001421000 seconds user
+       0.000000000 seconds sys
+
+Result after the patch changes:
+
+[command]# perf stat -e "{r8735340401e0,r8734340101ec}" sleep 1
+Error:
+The sys_perf_event_open() syscall returned with 22 (Invalid argument)
+for event (r8735340401e0).
+/bin/dmesg | grep -i perf may provide additional information.
+
+Fixes: 78a16d9fc1206 ("powerpc/perf: Avoid FAB_*_MATCH checks for power9")
+Signed-off-by: Kajol Jain <kjain@linux.ibm.com>
+Reviewed-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220506061015.43916-2-kjain@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/opp/of.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/perf/isa207-common.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/opp/of.c b/drivers/opp/of.c
-index 5de46aa99d24..3d7adc0de128 100644
---- a/drivers/opp/of.c
-+++ b/drivers/opp/of.c
-@@ -346,11 +346,11 @@ static int _bandwidth_supported(struct device *dev, struct opp_table *opp_table)
- 
- 	/* Checking only first OPP is sufficient */
- 	np = of_get_next_available_child(opp_np, NULL);
-+	of_node_put(opp_np);
- 	if (!np) {
- 		dev_err(dev, "OPP table empty\n");
- 		return -EINVAL;
- 	}
--	of_node_put(opp_np);
- 
- 	prop = of_find_property(np, "opp-peak-kBps", NULL);
- 	of_node_put(np);
+diff --git a/arch/powerpc/perf/isa207-common.c b/arch/powerpc/perf/isa207-common.c
+index 58448f0e4721..52990becbdfc 100644
+--- a/arch/powerpc/perf/isa207-common.c
++++ b/arch/powerpc/perf/isa207-common.c
+@@ -363,7 +363,8 @@ int isa207_get_constraint(u64 event, unsigned long *maskp, unsigned long *valp)
+ 		if (event_is_threshold(event) && is_thresh_cmp_valid(event)) {
+ 			mask  |= CNST_THRESH_MASK;
+ 			value |= CNST_THRESH_VAL(event >> EVENT_THRESH_SHIFT);
+-		}
++		} else if (event_is_threshold(event))
++			return -1;
+ 	} else {
+ 		/*
+ 		 * Special case for PM_MRK_FAB_RSP_MATCH and PM_MRK_FAB_RSP_MATCH_CYC,
 -- 
 2.35.1
 
