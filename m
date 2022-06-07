@@ -2,141 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A1A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 13:57:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C92C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:01:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245007AbiFGN5G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 09:57:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53440 "EHLO
+        id S245055AbiFGOBD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 10:01:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244991AbiFGN5D (ORCPT
+        with ESMTP id S243974AbiFGOAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 09:57:03 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC67EB0A4C
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 06:56:55 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LHX161D8Mz1K9c0;
-        Tue,  7 Jun 2022 21:55:06 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 7 Jun 2022 21:56:53 +0800
-Subject: Re: [PATCH v1 4/5] mm, hwpoison: skip raw hwpoison page in freeing
- 1GB hugepage
-To:     Naoya Horiguchi <naoya.horiguchi@linux.dev>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Liu Shixin <liushixin2@huawei.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        <linux-kernel@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
-References: <20220602050631.771414-1-naoya.horiguchi@linux.dev>
- <20220602050631.771414-5-naoya.horiguchi@linux.dev>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <19981830-a5e6-bdba-4a1c-1cdcea61b93b@huawei.com>
-Date:   Tue, 7 Jun 2022 21:56:52 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Tue, 7 Jun 2022 10:00:54 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75FCC1EC0;
+        Tue,  7 Jun 2022 07:00:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654610454; x=1686146454;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=D7BshuRzvKV/lcPeklXlMOIDPXC7Yjkcl9zS17XOQrM=;
+  b=BQky4QjXbPkXbxFPUgKtoiJo7V5vrYX3fMpIrsKTyxSqRI5eTHZRw4ya
+   UHI66FvwamSe7GsVR+rgLx83vwaF5QZo3aG6AdQn5I/x+fWJ1+1KzwGZD
+   kXpx6+JVjxK7myf5P5h+a9nltLbfIaiJjY54L3q2tnnHx0DuCN7HelvD8
+   k1m8ylgmC677vuBoywVxmdWiSi6n0DNrJdKZiWz+yanofpiIlkdDdu8Gu
+   oYx77GheRvTcgPHx4XgNF5eo+PiS3Kan3eBfU9RihaukuY6GaJ8hZZyas
+   ja6+5PeFQIrf5SWMw6xTCZI2+K5CInxyeS0nE3oI56RPaTj4YJmJTX5kG
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277526544"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="277526544"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:00:50 -0700
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="584208831"
+Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:00:48 -0700
+Date:   Tue, 7 Jun 2022 17:00:45 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 12/36] tty/vt: consolemap: use sizeof(*pointer) instead
+ of sizeof(type)
+In-Reply-To: <20220607104946.18710-12-jslaby@suse.cz>
+Message-ID: <8c809bd0-552d-8027-a1a7-96b77369d06e@linux.intel.com>
+References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-12-jslaby@suse.cz>
 MIME-Version: 1.0
-In-Reply-To: <20220602050631.771414-5-naoya.horiguchi@linux.dev>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/mixed; boundary="8323329-420996245-1654610449=:1622"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/2 13:06, Naoya Horiguchi wrote:
-> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
-> 
-> Currently if memory_failure() (modified to remove blocking code) is called
-> on a page in some 1GB hugepage, memory error handling returns failure and
-> the raw error page gets into undesirable state.  The impact is small in
-> production systems (just leaked single 4kB page), but this limits the test
-> efficiency because unpoison doesn't work for it.  So we can no longer
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-I think I get the point after I have read the above commit log several times and refered to
-the discussion in [1]. The impact is small due to the 1G hugepage is dissolved while memory
-error handling returns failure. So we just leak single 4KB page and unpoison doesn't work for
-it due to page refcnt is 0. Do I get the point?
+--8323329-420996245-1654610449=:1622
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-[1] https://lore.kernel.org/all/20220519021757.GA520829@hori.linux.bs1.fc.nec.co.jp/
+On Tue, 7 Jun 2022, Jiri Slaby wrote:
 
-Although I wonder why __page_handle_poison() fails for 1GB hugepage, the code itself looks good
-to me. Thanks!
+> It is preferred to use sizeof(*pointer) instead of sizeof(type). First,
+> the type of the variable can change and one needs not change the former
+> (unlike the latter). Second, the latter is error-prone due to (u16),
+> (u16 *), and (u16 **) mixture here.
+> 
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-> create 1GB hugepage on the 1GB physical address range with such hwpoison
-> pages, that could be an issue in testing on small systems.
-> 
-> When a hwpoison page in a 1GB hugepage is handled, it's caught by the
-> PageHWPoison check in free_pages_prepare() because the hugepage is broken
-> down into raw error page and order is 0:
-> 
->         if (unlikely(PageHWPoison(page)) && !order) {
->                 ...
->                 return false;
->         }
-> 
-> Then, the page is not sent to buddy and the page refcount is left 0.
-> 
-> Originally this check is supposed to work when the error page is freed from
-> page_handle_poison() (that is called from soft-offline), but now we are
-> opening another path to call it, so the callers of __page_handle_poison()
-> need to handle the case by considering the return value 0 as success. Then
-> page refcount for hwpoison is properly incremented and now unpoison works.
-> 
-> Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+This seems fine but see the comments below which are not directly related 
+to the change itself.
+
 > ---
->  mm/memory-failure.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
+>  drivers/tty/vt/consolemap.c | 23 ++++++++++++-----------
+>  1 file changed, 12 insertions(+), 11 deletions(-)
 > 
-> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-> index f149a7864c81..babeb34f7477 100644
-> --- a/mm/memory-failure.c
-> +++ b/mm/memory-failure.c
-> @@ -1043,7 +1043,6 @@ static int me_huge_page(struct page_state *ps, struct page *p)
->  		res = truncate_error_page(hpage, page_to_pfn(p), mapping);
->  		unlock_page(hpage);
->  	} else {
-> -		res = MF_FAILED;
->  		unlock_page(hpage);
->  		/*
->  		 * migration entry prevents later access on error anonymous
-> @@ -1051,9 +1050,11 @@ static int me_huge_page(struct page_state *ps, struct page *p)
->  		 * save healthy subpages.
->  		 */
->  		put_page(hpage);
-> -		if (__page_handle_poison(p) > 0) {
-> +		if (__page_handle_poison(p) >= 0) {
->  			page_ref_inc(p);
->  			res = MF_RECOVERED;
-> +		} else {
-> +			res = MF_FAILED;
->  		}
+> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+> index 097ab7d01f8b..79a62dcca046 100644
+> --- a/drivers/tty/vt/consolemap.c
+> +++ b/drivers/tty/vt/consolemap.c
+> @@ -251,12 +251,12 @@ static void set_inverse_trans_unicode(struct vc_data *conp,
+>  		return;
+>  	q = p->inverse_trans_unicode;
+>  	if (!q) {
+> -		q = p->inverse_trans_unicode =
+> -			kmalloc_array(MAX_GLYPH, sizeof(u16), GFP_KERNEL);
+> +		q = p->inverse_trans_unicode = kmalloc_array(MAX_GLYPH,
+> +				sizeof(*q), GFP_KERNEL);
+>  		if (!q)
+>  			return;
 >  	}
->  
-> @@ -1601,9 +1602,11 @@ static int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *hugetlb
->  	 */
->  	if (res == 0) {
->  		unlock_page(head);
-> -		if (__page_handle_poison(p) > 0) {
-> +		if (__page_handle_poison(p) >= 0) {
->  			page_ref_inc(p);
->  			res = MF_RECOVERED;
-> +		} else {
-> +			res = MF_FAILED;
->  		}
->  		action_result(pfn, MF_MSG_FREE_HUGE, res);
->  		return res == MF_RECOVERED ? 0 : -EBUSY;
-> 
+> -	memset(q, 0, MAX_GLYPH * sizeof(u16));
+> +	memset(q, 0, MAX_GLYPH * sizeof(*q));
 
+Convert kmalloc_array into kcalloc and place memset() into else branch?
+
+>  	for (i = 0; i < UNI_DIRS; i++) {
+>  		p1 = p->uni_pgdir[i];
+> @@ -478,8 +478,8 @@ static int con_unify_unimap(struct vc_data *conp, struct uni_pagedict *p)
+>  					continue;
+>  				if (!p1[k] || !q1[k])
+>  					break;
+> -				if (memcmp(p1[k], q1[k],
+> -						UNI_ROW_GLYPHS * sizeof(u16)))
+> +				if (memcmp(p1[k], q1[k], UNI_ROW_GLYPHS *
+> +							sizeof(*p1[k])))
+>  					break;
+>  			}
+>  			if (k < UNI_DIR_ROWS)
+> @@ -505,7 +505,7 @@ con_insert_unipair(struct uni_pagedict *p, u_short unicode, u_short fontpos)
+>  	n = UNI_DIR(unicode);
+>  	p1 = p->uni_pgdir[n];
+>  	if (!p1) {
+> -		p1 = p->uni_pgdir[n] = kcalloc(UNI_DIR_ROWS, sizeof(u16 *),
+> +		p1 = p->uni_pgdir[n] = kcalloc(UNI_DIR_ROWS, sizeof(*p1),
+>  				GFP_KERNEL);
+>  		if (!p1)
+>  			return -ENOMEM;
+> @@ -514,11 +514,12 @@ con_insert_unipair(struct uni_pagedict *p, u_short unicode, u_short fontpos)
+>  	n = UNI_ROW(unicode);
+>  	p2 = p1[n];
+>  	if (!p2) {
+> -		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(u16), GFP_KERNEL);
+> +		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(*p2),
+> +				GFP_KERNEL);
+>  		if (!p2)
+>  			return -ENOMEM;
+>  		/* No glyphs for the characters (yet) */
+> -		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(u16));
+> +		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(*p2));
+
+This could have been kcalloc'ed.
+
+
+-- 
+ i.
+
+--8323329-420996245-1654610449=:1622--
