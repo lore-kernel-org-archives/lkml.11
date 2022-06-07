@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08770C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:29:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D11C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:29:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380396AbiFGW3m (ORCPT
+        id S1381758AbiFGW3s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:29:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54730 "EHLO
+        Tue, 7 Jun 2022 18:29:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380859AbiFGVRD (ORCPT
+        with ESMTP id S1380838AbiFGVRB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:17:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 840D1101913;
-        Tue,  7 Jun 2022 11:57:58 -0700 (PDT)
+        Tue, 7 Jun 2022 17:17:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A1425D5C3;
+        Tue,  7 Jun 2022 11:57:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2CCAB82399;
-        Tue,  7 Jun 2022 18:57:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47E65C341C5;
-        Tue,  7 Jun 2022 18:57:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C2F0617D2;
+        Tue,  7 Jun 2022 18:57:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A957C3411F;
+        Tue,  7 Jun 2022 18:57:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628275;
-        bh=F6MgLi6wyMW1BjgCMFvbNnQ3ABKgZyDAaLloeVX9YKs=;
+        s=korg; t=1654628273;
+        bh=3lSHODUJjy7UczJbjszWlmWM73jIhvrMCrcbExh30ZY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yosgPeekt2IzbAta5eMKAErHNRRjgbxnWIB1/zNj09dTQtW6lVVlL/CKH218pezB2
-         D/4uuJtqR7uOcv9tclSy4B/TTHd8AXXG+j57fcbouSXfqJ64fxCZPUKWF8sgQt5yl2
-         5IGReUQQK8mvZyWXqHQvDz5p+ykKd32nVHIV/vVY=
+        b=O0Tb862zTGG4ooiJfDB2aL8FXEFIoNAoE3IloSn5GqmDXmHhTNQoxMPNK2SaURA0o
+         pMMSozzoquh1aJZX3XYkmIBdEYbspARwt8ox4FjU0RavuhEU1UqXuOh3btjfUdTkJD
+         LSE+jXo4fwSwUzzeUVGsaqCufEET9iDgNrEDxyvo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolas Belin <nbelin@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 269/879] drm: bridge: it66121: Fix the register page length
-Date:   Tue,  7 Jun 2022 18:56:27 +0200
-Message-Id: <20220607165010.658226635@linuxfoundation.org>
+Subject: [PATCH 5.18 268/879] ath11k: acquire ab->base_lock in unassign when finding the peer by addr
+Date:   Tue,  7 Jun 2022 18:56:26 +0200
+Message-Id: <20220607165010.628851110@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,36 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Belin <nbelin@baylibre.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 003a1bd6a2a55c16cb2451153533dbedb12bebec ]
+[ Upstream commit 2db80f93869d491be57cbc2b36f30d0d3a0e5bde ]
 
-Set the register page length or window length to
-0x100 according to the documentation.
+ath11k_peer_find_by_addr states via lockdep that ab->base_lock must be
+held when calling that function in order to protect the list. All
+callers except ath11k_mac_op_unassign_vif_chanctx have that lock
+acquired when calling ath11k_peer_find_by_addr. That lock is also not
+transitively held by a path towards ath11k_mac_op_unassign_vif_chanctx.
+The solution is to acquire the lock when calling
+ath11k_peer_find_by_addr inside ath11k_mac_op_unassign_vif_chanctx.
 
-Fixes: 988156dc2fc9 ("drm: bridge: add it66121 driver")
-Signed-off-by: Nicolas Belin <nbelin@baylibre.com>
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220316135733.173950-3-nbelin@baylibre.com
+I am currently working on a static analyser to detect missing locks and
+this was a reported case. I manually verified the report by looking at
+the code, but I do not have real hardware so this is compile tested
+only.
+
+Fixes: 701e48a43e15 ("ath11k: add packet log support for QCA6390")
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220314215253.92658-1-dossche.niels@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/ite-it66121.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath11k/mac.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/ite-it66121.c b/drivers/gpu/drm/bridge/ite-it66121.c
-index 69288cf894b9..e81c106e2c2b 100644
---- a/drivers/gpu/drm/bridge/ite-it66121.c
-+++ b/drivers/gpu/drm/bridge/ite-it66121.c
-@@ -227,7 +227,7 @@ static const struct regmap_range_cfg it66121_regmap_banks[] = {
- 		.selector_mask = 0x1,
- 		.selector_shift = 0,
- 		.window_start = 0x00,
--		.window_len = 0x130,
-+		.window_len = 0x100,
- 	},
- };
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 58ff761393db..2c8d5f2a0517 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -7114,6 +7114,7 @@ ath11k_mac_op_unassign_vif_chanctx(struct ieee80211_hw *hw,
+ 	struct ath11k *ar = hw->priv;
+ 	struct ath11k_base *ab = ar->ab;
+ 	struct ath11k_vif *arvif = (void *)vif->drv_priv;
++	struct ath11k_peer *peer;
+ 	int ret;
  
+ 	mutex_lock(&ar->conf_mutex);
+@@ -7125,9 +7126,13 @@ ath11k_mac_op_unassign_vif_chanctx(struct ieee80211_hw *hw,
+ 	WARN_ON(!arvif->is_started);
+ 
+ 	if (ab->hw_params.vdev_start_delay &&
+-	    arvif->vdev_type == WMI_VDEV_TYPE_MONITOR &&
+-	    ath11k_peer_find_by_addr(ab, ar->mac_addr))
+-		ath11k_peer_delete(ar, arvif->vdev_id, ar->mac_addr);
++	    arvif->vdev_type == WMI_VDEV_TYPE_MONITOR) {
++		spin_lock_bh(&ab->base_lock);
++		peer = ath11k_peer_find_by_addr(ab, ar->mac_addr);
++		spin_unlock_bh(&ab->base_lock);
++		if (peer)
++			ath11k_peer_delete(ar, arvif->vdev_id, ar->mac_addr);
++	}
+ 
+ 	if (arvif->vdev_type == WMI_VDEV_TYPE_MONITOR) {
+ 		ret = ath11k_mac_monitor_stop(ar);
 -- 
 2.35.1
 
