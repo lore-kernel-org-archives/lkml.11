@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A291FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F4048C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:08:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349727AbiFGSHr (ORCPT
+        id S1349896AbiFGSH6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:07:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
+        Tue, 7 Jun 2022 14:07:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349143AbiFGRqr (ORCPT
+        with ESMTP id S1349164AbiFGRqs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:46:47 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 697EA114684;
-        Tue,  7 Jun 2022 10:36:53 -0700 (PDT)
+        Tue, 7 Jun 2022 13:46:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A0B9FF3;
+        Tue,  7 Jun 2022 10:36:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 42171CE23E3;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F3FEB60DB5;
+        Tue,  7 Jun 2022 17:36:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10C39C34115;
         Tue,  7 Jun 2022 17:36:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59475C34115;
-        Tue,  7 Jun 2022 17:36:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623409;
-        bh=4v+cu7e+Xt75WklgaATgEEarc6UDXVoriEbxTMfiz7c=;
+        s=korg; t=1654623412;
+        bh=NSpYyGGJXBbVhvCEmdzTJ3lzz03ll/lczQXkZqe5C3Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zMFGNeqLA6tpS6M4g9x+QOJBiwWE2Lb6D0LKLbc+f/iIG5yfVr1Cp9kM5h938h45E
-         FI4Js1BqefiPN1VsEksUJdDyRtv9X+90ehEkeH2ihQblKPYZrLSF8HYcvuRiDkectU
-         u8DZwRcSJz5VXudqJYyLUdtLvzj+6IE3iHDZ1TVo=
+        b=OZUnBJLRURvWF7w0fn74XVtshmjRCL2cPTIgDFRvIBxoY0K33H4gZCpj7IY8Yj3C4
+         qn21vxIeDpLQAHoTqrDLJ6ez20+RETtt/+edJEMq20yx/GtJmCcxRrR6KqkT5ah2bg
+         DqH1hw8GdANnSbK7mxK22SPqDZnwR0Z7fOjLZbME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, pa@panix.com,
-        Alexander Wetzel <alexander@wetzel-home.de>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.10 406/452] rtl818x: Prevent using not initialized queues
-Date:   Tue,  7 Jun 2022 19:04:23 +0200
-Message-Id: <20220607164920.657605345@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.10 407/452] ASoC: rt5514: Fix event generation for "DSP Voice Wake Up" control
+Date:   Tue,  7 Jun 2022 19:04:24 +0200
+Message-Id: <20220607164920.687855439@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,70 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Wetzel <alexander@wetzel-home.de>
+From: Mark Brown <broonie@kernel.org>
 
-commit 746285cf81dc19502ab238249d75f5990bd2d231 upstream.
+commit 4213ff556740bb45e2d9ff0f50d056c4e7dd0921 upstream.
 
-Using not existing queues can panic the kernel with rtl8180/rtl8185 cards.
-Ignore the skb priority for those cards, they only have one tx queue. Pierre
-Asselin (pa@panix.com) reported the kernel crash in the Gentoo forum:
+The driver has a custom put function for "DSP Voice Wake Up" which does
+not generate event notifications on change, instead returning 0. Since we
+already exit early in the case that there is no change this can be fixed
+by unconditionally returning 1 at the end of the function.
 
-https://forums.gentoo.org/viewtopic-t-1147832-postdays-0-postorder-asc-start-25.html
-
-He also confirmed that this patch fixes the issue. In summary this happened:
-
-After updating wpa_supplicant from 2.9 to 2.10 the kernel crashed with a
-"divide error: 0000" when connecting to an AP. Control port tx now tries to
-use IEEE80211_AC_VO for the priority, which wpa_supplicants starts to use in
-2.10.
-
-Since only the rtl8187se part of the driver supports QoS, the priority
-of the skb is set to IEEE80211_AC_BE (2) by mac80211 for rtl8180/rtl8185
-cards.
-
-rtl8180 is then unconditionally reading out the priority and finally crashes on
-drivers/net/wireless/realtek/rtl818x/rtl8180/dev.c line 544 without this
-patch:
-	idx = (ring->idx + skb_queue_len(&ring->queue)) % ring->entries
-
-"ring->entries" is zero for rtl8180/rtl8185 cards, tx_ring[2] never got
-initialized.
-
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Cc: stable@vger.kernel.org
-Reported-by: pa@panix.com
-Tested-by: pa@panix.com
-Signed-off-by: Alexander Wetzel <alexander@wetzel-home.de>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220422145228.7567-1-alexander@wetzel-home.de
+Link: https://lore.kernel.org/r/20220428162444.3883147-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/realtek/rtl818x/rtl8180/dev.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ sound/soc/codecs/rt5514.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/wireless/realtek/rtl818x/rtl8180/dev.c
-+++ b/drivers/net/wireless/realtek/rtl818x/rtl8180/dev.c
-@@ -460,8 +460,10 @@ static void rtl8180_tx(struct ieee80211_
- 	struct rtl8180_priv *priv = dev->priv;
- 	struct rtl8180_tx_ring *ring;
- 	struct rtl8180_tx_desc *entry;
-+	unsigned int prio = 0;
- 	unsigned long flags;
--	unsigned int idx, prio, hw_prio;
-+	unsigned int idx, hw_prio;
-+
- 	dma_addr_t mapping;
- 	u32 tx_flags;
- 	u8 rc_flags;
-@@ -470,7 +472,9 @@ static void rtl8180_tx(struct ieee80211_
- 	/* do arithmetic and then convert to le16 */
- 	u16 frame_duration = 0;
+--- a/sound/soc/codecs/rt5514.c
++++ b/sound/soc/codecs/rt5514.c
+@@ -419,7 +419,7 @@ static int rt5514_dsp_voice_wake_up_put(
+ 		}
+ 	}
  
--	prio = skb_get_queue_mapping(skb);
-+	/* rtl8180/rtl8185 only has one useable tx queue */
-+	if (dev->queues > IEEE80211_AC_BK)
-+		prio = skb_get_queue_mapping(skb);
- 	ring = &priv->tx_ring[prio];
+-	return 0;
++	return 1;
+ }
  
- 	mapping = dma_map_single(&priv->pdev->dev, skb->data, skb->len,
+ static const struct snd_kcontrol_new rt5514_snd_controls[] = {
 
 
