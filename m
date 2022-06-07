@@ -2,43 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F69ACCA496
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D8ACCA495
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387403AbiFHB1W (ORCPT
+        id S1387035AbiFHB1I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47636 "EHLO
+        Tue, 7 Jun 2022 21:27:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383478AbiFGVxO (ORCPT
+        with ESMTP id S1382473AbiFGVva (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:53:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3937244F66;
-        Tue,  7 Jun 2022 12:11:49 -0700 (PDT)
+        Tue, 7 Jun 2022 17:51:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF9023BC34;
+        Tue,  7 Jun 2022 12:08:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD8CE612EC;
-        Tue,  7 Jun 2022 19:11:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EADE0C385A5;
-        Tue,  7 Jun 2022 19:11:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 627C7618C9;
+        Tue,  7 Jun 2022 19:08:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 482F1C385A2;
+        Tue,  7 Jun 2022 19:08:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629108;
-        bh=yRHFUJLE9xSqVhgzgjZ7u51QhzkbKY04Y0WQF2bXGUQ=;
+        s=korg; t=1654628931;
+        bh=L6/7d3an9St0b/NgFIVefwNBWNQVxznP7DEJrhafcWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ng25k4vZ/GLk4VY8JDxERco6Av8wEzNSqPjpguIn6JZpgcliwM5uFXk6KEl5qZCUu
-         wdfOPCCzcU2Nr6wUQGHd+lExvjWic6GCWlILhBAQ562IC1H9fXdMriZZmtdeeUXbJE
-         B47dlZETzIfO+P8HJP1naZ5fj0hyJmjApjDzbCXw=
+        b=CC1KVpWSPJlnPLj7zH8ldI8mjQ/Q7XH3NIZlkfQ7h+jjE6iaN/vXlJKC7pJ76g6g+
+         OCkPbOygxFxzSURfW8J41yrdLNRy4r0TdxKW6DeNujn/n/xZAylqo/nhjwoj4wbDqU
+         132pAifNo2JM3x1TLihIbI0A29RzpC7uvoB/bMMs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladis Dronov <vdronov@redhat.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Ian Rogers <irogers@google.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Stephane Eranian <eranian@google.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 572/879] hwrng: cn10k - Make check_rng_health() return an error code
-Date:   Tue,  7 Jun 2022 19:01:30 +0200
-Message-Id: <20220607165019.458060752@linuxfoundation.org>
+Subject: [PATCH 5.18 509/879] perf parse-events: Support different format of the topdown event name
+Date:   Tue,  7 Jun 2022 19:00:27 +0200
+Message-Id: <20220607165017.648968928@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,67 +58,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladis Dronov <vdronov@redhat.com>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-[ Upstream commit 32547a6aedda132907fcd15cdc8271429609f216 ]
+[ Upstream commit e7d1374ed5cb346efd9b3df03814dbc0767adb4e ]
 
-Currently check_rng_health() returns zero unconditionally.
-Make it to output an error code and return it.
+The evsel->name may have a different format for a topdown event, a pure
+topdown name (e.g., topdown-fe-bound), or a PMU name + a topdown name
+(e.g., cpu/topdown-fe-bound/). The cpu/topdown-fe-bound/ kind format
+isn't supported by the arch_evlist__leader(). This format is a very
+common format for a hybrid platform, which requires specifying the PMU
+name for each event.
 
-Fixes: 38e9791a0209 ("hwrng: cn10k - Add random number generator support")
-Signed-off-by: Vladis Dronov <vdronov@redhat.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Without the patch,
+
+  $ perf stat -e '{instructions,slots,cpu/topdown-fe-bound/}' -a sleep 1
+
+   Performance counter stats for 'system wide':
+
+       <not counted>      instructions
+       <not counted>      slots
+     <not supported>      cpu/topdown-fe-bound/
+
+         1.003482041 seconds time elapsed
+
+  Some events weren't counted. Try disabling the NMI watchdog:
+          echo 0 > /proc/sys/kernel/nmi_watchdog
+          perf stat ...
+          echo 1 > /proc/sys/kernel/nmi_watchdog
+  The events in group usually have to be from the same PMU. Try reorganizing the group.
+
+With the patch,
+
+  $ perf stat -e '{instructions,slots,cpu/topdown-fe-bound/}' -a sleep 1
+
+  Performance counter stats for 'system wide':
+
+         157,383,996      slots
+          25,011,711      instructions
+          27,441,686      cpu/topdown-fe-bound/
+
+         1.003530890 seconds time elapsed
+
+Fixes: bc355822f0d9623b ("perf parse-events: Move slots only with topdown")
+Reviewed-by: Ian Rogers <irogers@google.com>
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Stephane Eranian <eranian@google.com>
+Cc: Xing Zhengjun <zhengjun.xing@linux.intel.com>
+Link: https://lore.kernel.org/r/20220518143900.1493980-4-kan.liang@linux.intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/hw_random/cn10k-rng.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ tools/perf/arch/x86/util/evlist.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/char/hw_random/cn10k-rng.c b/drivers/char/hw_random/cn10k-rng.c
-index dd226630b67d..a01e9307737c 100644
---- a/drivers/char/hw_random/cn10k-rng.c
-+++ b/drivers/char/hw_random/cn10k-rng.c
-@@ -31,26 +31,23 @@ struct cn10k_rng {
- 
- #define PLAT_OCTEONTX_RESET_RNG_EBG_HEALTH_STATE     0xc2000b0f
- 
--static int reset_rng_health_state(struct cn10k_rng *rng)
-+static unsigned long reset_rng_health_state(struct cn10k_rng *rng)
- {
- 	struct arm_smccc_res res;
- 
- 	/* Send SMC service call to reset EBG health state */
- 	arm_smccc_smc(PLAT_OCTEONTX_RESET_RNG_EBG_HEALTH_STATE, 0, 0, 0, 0, 0, 0, 0, &res);
--	if (res.a0 != 0UL)
--		return -EIO;
--
--	return 0;
-+	return res.a0;
- }
- 
- static int check_rng_health(struct cn10k_rng *rng)
- {
- 	u64 status;
--	int err;
-+	unsigned long err;
- 
- 	/* Skip checking health */
- 	if (!rng->reg_base)
--		return 0;
-+		return -ENODEV;
- 
- 	status = readq(rng->reg_base + RNM_PF_EBG_HEALTH);
- 	if (status & BIT_ULL(20)) {
-@@ -58,7 +55,9 @@ static int check_rng_health(struct cn10k_rng *rng)
- 		if (err) {
- 			dev_err(&rng->pdev->dev, "HWRNG: Health test failed (status=%llx)\n",
- 					status);
--			dev_err(&rng->pdev->dev, "HWRNG: error during reset\n");
-+			dev_err(&rng->pdev->dev, "HWRNG: error during reset (error=%lx)\n",
-+					err);
-+			return -EIO;
- 		}
- 	}
- 	return 0;
+diff --git a/tools/perf/arch/x86/util/evlist.c b/tools/perf/arch/x86/util/evlist.c
+index cfc208d71f00..75564a7df15b 100644
+--- a/tools/perf/arch/x86/util/evlist.c
++++ b/tools/perf/arch/x86/util/evlist.c
+@@ -36,7 +36,7 @@ struct evsel *arch_evlist__leader(struct list_head *list)
+ 				if (slots == first)
+ 					return first;
+ 			}
+-			if (!strncasecmp(evsel->name, "topdown", 7))
++			if (strcasestr(evsel->name, "topdown"))
+ 				has_topdown = true;
+ 			if (slots && has_topdown)
+ 				return slots;
 -- 
 2.35.1
 
