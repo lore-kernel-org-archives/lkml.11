@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83ADFCCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72D97CCA486
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382343AbiFGVvE (ORCPT
+        id S1382324AbiFGVu5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
+        Tue, 7 Jun 2022 17:50:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239238AbiFGUuK (ORCPT
+        with ESMTP id S1377121AbiFGUuM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:50:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0931F77C9;
-        Tue,  7 Jun 2022 11:39:54 -0700 (PDT)
+        Tue, 7 Jun 2022 16:50:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134891F2331;
+        Tue,  7 Jun 2022 11:39:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4208F6160D;
-        Tue,  7 Jun 2022 18:39:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B666C385A5;
-        Tue,  7 Jun 2022 18:39:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D18F461667;
+        Tue,  7 Jun 2022 18:39:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC953C385A2;
+        Tue,  7 Jun 2022 18:39:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627162;
-        bh=Y7bGGQGgAnOtggXaJ/RbS4mp+x0NVOu+MyhGWKdtdRc=;
+        s=korg; t=1654627179;
+        bh=hQLDTp/4gT1tACzdWsoRxpLoseJfIdsqmBXCE368AtQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=foO/Oge4/UPCRB6xpJQ/orMViCCvCnVDthuabE6SbYWo25mSlzOK/flb5s9pkgzG1
-         vBKhMAEPISHAAQR52OfkUhYyldhJ9ffdP76PpoA2acdKAaZfDAK8Axzz+UO6Yf6l3j
-         bZdRYcDFUoXa5EWhism1OK5f1cn0uMvS+b/g1QcI=
+        b=IeyoFJLGjEwvBIswHs8rBZspnXhgcZgRh1nmnpfUkPoXXYrFT9igHGd+oP7UBsMO7
+         sXxSNaJBYB9CADRzKh/cwk5cf+wJ6EKrCfR99gL3lprbOeLPsk7IJjuiE7YO4rTyQ1
+         EYrZ/idwz9HMwk5fC7A7ViXJERLs+sBO82b8twBQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Baokun Li <libaokun1@huawei.com>, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.17 639/772] ext4: fix race condition between ext4_write and ext4_convert_inline_data
-Date:   Tue,  7 Jun 2022 19:03:51 +0200
-Message-Id: <20220607165007.890812659@linuxfoundation.org>
+        stable@vger.kernel.org, Trond Myklebust <trondmy@hammerspace.com>,
+        Benjamin Coddington <bcodding@redhat.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 606/772] NFSv4: Fix free of uninitialized nfs4_label on referral lookup.
+Date:   Tue,  7 Jun 2022 19:03:18 +0200
+Message-Id: <20220607165006.798946039@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,132 +51,203 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Benjamin Coddington <bcodding@redhat.com>
 
-commit f87c7a4b084afc13190cbb263538e444cb2b392a upstream.
+[ Upstream commit c3ed222745d9ad7b69299b349a64ba533c64a34f ]
 
-Hulk Robot reported a BUG_ON:
- ==================================================================
- EXT4-fs error (device loop3): ext4_mb_generate_buddy:805: group 0,
- block bitmap and bg descriptor inconsistent: 25 vs 31513 free clusters
- kernel BUG at fs/ext4/ext4_jbd2.c:53!
- invalid opcode: 0000 [#1] SMP KASAN PTI
- CPU: 0 PID: 25371 Comm: syz-executor.3 Not tainted 5.10.0+ #1
- RIP: 0010:ext4_put_nojournal fs/ext4/ext4_jbd2.c:53 [inline]
- RIP: 0010:__ext4_journal_stop+0x10e/0x110 fs/ext4/ext4_jbd2.c:116
- [...]
- Call Trace:
-  ext4_write_inline_data_end+0x59a/0x730 fs/ext4/inline.c:795
-  generic_perform_write+0x279/0x3c0 mm/filemap.c:3344
-  ext4_buffered_write_iter+0x2e3/0x3d0 fs/ext4/file.c:270
-  ext4_file_write_iter+0x30a/0x11c0 fs/ext4/file.c:520
-  do_iter_readv_writev+0x339/0x3c0 fs/read_write.c:732
-  do_iter_write+0x107/0x430 fs/read_write.c:861
-  vfs_writev fs/read_write.c:934 [inline]
-  do_pwritev+0x1e5/0x380 fs/read_write.c:1031
- [...]
- ==================================================================
+Send along the already-allocated fattr along with nfs4_fs_locations, and
+drop the memcpy of fattr.  We end up growing two more allocations, but this
+fixes up a crash as:
 
-Above issue may happen as follows:
-           cpu1                     cpu2
-__________________________|__________________________
-do_pwritev
- vfs_writev
-  do_iter_write
-   ext4_file_write_iter
-    ext4_buffered_write_iter
-     generic_perform_write
-      ext4_da_write_begin
-                           vfs_fallocate
-                            ext4_fallocate
-                             ext4_convert_inline_data
-                              ext4_convert_inline_data_nolock
-                               ext4_destroy_inline_data_nolock
-                                clear EXT4_STATE_MAY_INLINE_DATA
-                               ext4_map_blocks
-                                ext4_ext_map_blocks
-                                 ext4_mb_new_blocks
-                                  ext4_mb_regular_allocator
-                                   ext4_mb_good_group_nolock
-                                    ext4_mb_init_group
-                                     ext4_mb_init_cache
-                                      ext4_mb_generate_buddy  --> error
-       ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
-                                ext4_restore_inline_data
-                                 set EXT4_STATE_MAY_INLINE_DATA
-       ext4_block_write_begin
-      ext4_da_write_end
-       ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
-       ext4_write_inline_data_end
-        handle=NULL
-        ext4_journal_stop(handle)
-         __ext4_journal_stop
-          ext4_put_nojournal(handle)
-           ref_cnt = (unsigned long)handle
-           BUG_ON(ref_cnt == 0)  ---> BUG_ON
+PID: 790    TASK: ffff88811b43c000  CPU: 0   COMMAND: "ls"
+ #0 [ffffc90000857920] panic at ffffffff81b9bfde
+ #1 [ffffc900008579c0] do_trap at ffffffff81023a9b
+ #2 [ffffc90000857a10] do_error_trap at ffffffff81023b78
+ #3 [ffffc90000857a58] exc_stack_segment at ffffffff81be1f45
+ #4 [ffffc90000857a80] asm_exc_stack_segment at ffffffff81c009de
+ #5 [ffffc90000857b08] nfs_lookup at ffffffffa0302322 [nfs]
+ #6 [ffffc90000857b70] __lookup_slow at ffffffff813a4a5f
+ #7 [ffffc90000857c60] walk_component at ffffffff813a86c4
+ #8 [ffffc90000857cb8] path_lookupat at ffffffff813a9553
+ #9 [ffffc90000857cf0] filename_lookup at ffffffff813ab86b
 
-The lock held by ext4_convert_inline_data is xattr_sem, but the lock
-held by generic_perform_write is i_rwsem. Therefore, the two locks can
-be concurrent.
-
-To solve above issue, we add inode_lock() for ext4_convert_inline_data().
-At the same time, move ext4_convert_inline_data() in front of
-ext4_punch_hole(), remove similar handling from ext4_punch_hole().
-
-Fixes: 0c8d414f163f ("ext4: let fallocate handle inline data correctly")
-Cc: stable@vger.kernel.org
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220428134031.4153381-1-libaokun1@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Suggested-by: Trond Myklebust <trondmy@hammerspace.com>
+Fixes: 9558a007dbc3 ("NFS: Remove the label from the nfs4_lookup_res struct")
+Signed-off-by: Benjamin Coddington <bcodding@redhat.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/extents.c |   10 ++++++----
- fs/ext4/inode.c   |    9 ---------
- 2 files changed, 6 insertions(+), 13 deletions(-)
+ fs/nfs/nfs4namespace.c  |  9 +++++++--
+ fs/nfs/nfs4proc.c       | 15 +++++++--------
+ fs/nfs/nfs4state.c      |  9 ++++++++-
+ fs/nfs/nfs4xdr.c        |  4 ++--
+ include/linux/nfs_xdr.h |  2 +-
+ 5 files changed, 25 insertions(+), 14 deletions(-)
 
---- a/fs/ext4/extents.c
-+++ b/fs/ext4/extents.c
-@@ -4694,15 +4694,17 @@ long ext4_fallocate(struct file *file, i
- 		     FALLOC_FL_INSERT_RANGE))
- 		return -EOPNOTSUPP;
+diff --git a/fs/nfs/nfs4namespace.c b/fs/nfs/nfs4namespace.c
+index 3680c8da510c..f2dbf904c598 100644
+--- a/fs/nfs/nfs4namespace.c
++++ b/fs/nfs/nfs4namespace.c
+@@ -417,6 +417,9 @@ static int nfs_do_refmount(struct fs_context *fc, struct rpc_clnt *client)
+ 	fs_locations = kmalloc(sizeof(struct nfs4_fs_locations), GFP_KERNEL);
+ 	if (!fs_locations)
+ 		goto out_free;
++	fs_locations->fattr = nfs_alloc_fattr();
++	if (!fs_locations->fattr)
++		goto out_free_2;
  
-+	inode_lock(inode);
-+	ret = ext4_convert_inline_data(inode);
-+	inode_unlock(inode);
-+	if (ret)
-+		goto exit;
+ 	/* Get locations */
+ 	dentry = ctx->clone_data.dentry;
+@@ -427,14 +430,16 @@ static int nfs_do_refmount(struct fs_context *fc, struct rpc_clnt *client)
+ 	err = nfs4_proc_fs_locations(client, d_inode(parent), &dentry->d_name, fs_locations, page);
+ 	dput(parent);
+ 	if (err != 0)
+-		goto out_free_2;
++		goto out_free_3;
+ 
+ 	err = -ENOENT;
+ 	if (fs_locations->nlocations <= 0 ||
+ 	    fs_locations->fs_path.ncomponents <= 0)
+-		goto out_free_2;
++		goto out_free_3;
+ 
+ 	err = nfs_follow_referral(fc, fs_locations);
++out_free_3:
++	kfree(fs_locations->fattr);
+ out_free_2:
+ 	kfree(fs_locations);
+ out_free:
+diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
+index 3d307854c650..7d78ace0f025 100644
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -4246,6 +4246,8 @@ static int nfs4_get_referral(struct rpc_clnt *client, struct inode *dir,
+ 	if (locations == NULL)
+ 		goto out;
+ 
++	locations->fattr = fattr;
 +
- 	if (mode & FALLOC_FL_PUNCH_HOLE) {
- 		ret = ext4_punch_hole(file, offset, len);
- 		goto exit;
+ 	status = nfs4_proc_fs_locations(client, dir, name, locations, page);
+ 	if (status != 0)
+ 		goto out;
+@@ -4255,17 +4257,14 @@ static int nfs4_get_referral(struct rpc_clnt *client, struct inode *dir,
+ 	 * referral.  Cause us to drop into the exception handler, which
+ 	 * will kick off migration recovery.
+ 	 */
+-	if (nfs_fsid_equal(&NFS_SERVER(dir)->fsid, &locations->fattr.fsid)) {
++	if (nfs_fsid_equal(&NFS_SERVER(dir)->fsid, &fattr->fsid)) {
+ 		dprintk("%s: server did not return a different fsid for"
+ 			" a referral at %s\n", __func__, name->name);
+ 		status = -NFS4ERR_MOVED;
+ 		goto out;
  	}
- 
--	ret = ext4_convert_inline_data(inode);
--	if (ret)
--		goto exit;
+ 	/* Fixup attributes for the nfs_lookup() call to nfs_fhget() */
+-	nfs_fixup_referral_attributes(&locations->fattr);
 -
- 	if (mode & FALLOC_FL_COLLAPSE_RANGE) {
- 		ret = ext4_collapse_range(file, offset, len);
- 		goto exit;
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -3958,15 +3958,6 @@ int ext4_punch_hole(struct file *file, l
+-	/* replace the lookup nfs_fattr with the locations nfs_fattr */
+-	memcpy(fattr, &locations->fattr, sizeof(struct nfs_fattr));
++	nfs_fixup_referral_attributes(fattr);
+ 	memset(fhandle, 0, sizeof(struct nfs_fh));
+ out:
+ 	if (page)
+@@ -7906,7 +7905,7 @@ static int _nfs4_proc_fs_locations(struct rpc_clnt *client, struct inode *dir,
+ 	else
+ 		bitmask[1] &= ~FATTR4_WORD1_MOUNTED_ON_FILEID;
  
- 	trace_ext4_punch_hole(inode, offset, length, 0);
+-	nfs_fattr_init(&fs_locations->fattr);
++	nfs_fattr_init(fs_locations->fattr);
+ 	fs_locations->server = server;
+ 	fs_locations->nlocations = 0;
+ 	status = nfs4_call_sync(client, server, &msg, &args.seq_args, &res.seq_res, 0);
+@@ -7971,7 +7970,7 @@ static int _nfs40_proc_get_locations(struct nfs_server *server,
+ 	unsigned long now = jiffies;
+ 	int status;
  
--	ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
--	if (ext4_has_inline_data(inode)) {
--		filemap_invalidate_lock(mapping);
--		ret = ext4_convert_inline_data(inode);
--		filemap_invalidate_unlock(mapping);
--		if (ret)
--			return ret;
--	}
--
- 	/*
- 	 * Write out all dirty pages to avoid race conditions
- 	 * Then release them.
+-	nfs_fattr_init(&locations->fattr);
++	nfs_fattr_init(locations->fattr);
+ 	locations->server = server;
+ 	locations->nlocations = 0;
+ 
+@@ -8024,7 +8023,7 @@ static int _nfs41_proc_get_locations(struct nfs_server *server,
+ 	};
+ 	int status;
+ 
+-	nfs_fattr_init(&locations->fattr);
++	nfs_fattr_init(locations->fattr);
+ 	locations->server = server;
+ 	locations->nlocations = 0;
+ 
+diff --git a/fs/nfs/nfs4state.c b/fs/nfs/nfs4state.c
+index 0f4818627ef0..9d312a28b2f0 100644
+--- a/fs/nfs/nfs4state.c
++++ b/fs/nfs/nfs4state.c
+@@ -2097,6 +2097,11 @@ static int nfs4_try_migration(struct nfs_server *server, const struct cred *cred
+ 		dprintk("<-- %s: no memory\n", __func__);
+ 		goto out;
+ 	}
++	locations->fattr = nfs_alloc_fattr();
++	if (locations->fattr == NULL) {
++		dprintk("<-- %s: no memory\n", __func__);
++		goto out;
++	}
+ 
+ 	inode = d_inode(server->super->s_root);
+ 	result = nfs4_proc_get_locations(server, NFS_FH(inode), locations,
+@@ -2111,7 +2116,7 @@ static int nfs4_try_migration(struct nfs_server *server, const struct cred *cred
+ 	if (!locations->nlocations)
+ 		goto out;
+ 
+-	if (!(locations->fattr.valid & NFS_ATTR_FATTR_V4_LOCATIONS)) {
++	if (!(locations->fattr->valid & NFS_ATTR_FATTR_V4_LOCATIONS)) {
+ 		dprintk("<-- %s: No fs_locations data, migration skipped\n",
+ 			__func__);
+ 		goto out;
+@@ -2136,6 +2141,8 @@ static int nfs4_try_migration(struct nfs_server *server, const struct cred *cred
+ out:
+ 	if (page != NULL)
+ 		__free_page(page);
++	if (locations != NULL)
++		kfree(locations->fattr);
+ 	kfree(locations);
+ 	if (result) {
+ 		pr_err("NFS: migration recovery failed (server %s)\n",
+diff --git a/fs/nfs/nfs4xdr.c b/fs/nfs/nfs4xdr.c
+index 8e70b92df4cc..7dbeb13e7d0d 100644
+--- a/fs/nfs/nfs4xdr.c
++++ b/fs/nfs/nfs4xdr.c
+@@ -7051,7 +7051,7 @@ static int nfs4_xdr_dec_fs_locations(struct rpc_rqst *req,
+ 	if (res->migration) {
+ 		xdr_enter_page(xdr, PAGE_SIZE);
+ 		status = decode_getfattr_generic(xdr,
+-					&res->fs_locations->fattr,
++					res->fs_locations->fattr,
+ 					 NULL, res->fs_locations,
+ 					 res->fs_locations->server);
+ 		if (status)
+@@ -7064,7 +7064,7 @@ static int nfs4_xdr_dec_fs_locations(struct rpc_rqst *req,
+ 			goto out;
+ 		xdr_enter_page(xdr, PAGE_SIZE);
+ 		status = decode_getfattr_generic(xdr,
+-					&res->fs_locations->fattr,
++					res->fs_locations->fattr,
+ 					 NULL, res->fs_locations,
+ 					 res->fs_locations->server);
+ 	}
+diff --git a/include/linux/nfs_xdr.h b/include/linux/nfs_xdr.h
+index 728cb0c1f0b6..3091db5732cb 100644
+--- a/include/linux/nfs_xdr.h
++++ b/include/linux/nfs_xdr.h
+@@ -1213,7 +1213,7 @@ struct nfs4_fs_location {
+ 
+ #define NFS4_FS_LOCATIONS_MAXENTRIES 10
+ struct nfs4_fs_locations {
+-	struct nfs_fattr fattr;
++	struct nfs_fattr *fattr;
+ 	const struct nfs_server *server;
+ 	struct nfs4_pathname fs_path;
+ 	int nlocations;
+-- 
+2.35.1
+
 
 
