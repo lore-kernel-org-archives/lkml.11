@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6DECC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 03:18:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A67C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 03:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229703AbiFHDSZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 23:18:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48570 "EHLO
+        id S231929AbiFHDSx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 23:18:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345151AbiFHDOX (ORCPT
+        with ESMTP id S239811AbiFHDNg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 23:14:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079FA272370;
-        Tue,  7 Jun 2022 12:23:34 -0700 (PDT)
+        Tue, 7 Jun 2022 23:13:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06278261459;
+        Tue,  7 Jun 2022 12:20:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57069B823CA;
-        Tue,  7 Jun 2022 19:23:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C59B8C36B00;
-        Tue,  7 Jun 2022 19:23:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1904B823CC;
+        Tue,  7 Jun 2022 19:19:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58949C385A2;
+        Tue,  7 Jun 2022 19:19:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629811;
-        bh=wICu+zwIpk9cOz0cgVef/aClc+PUiwlFhp12DqvOPWM=;
+        s=korg; t=1654629579;
+        bh=9+QnkXRRZzVvsY0NGZ3srNE+JQrSn6L0tCzzSNkv4MU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jWcwJSjkD/FwRDx6Ly8pB3O4hjwc8/dOQPzpg0Q6RipmiqDtj41RxB56iTMUtVIvo
-         QX0Ti87+rEJa9Gu1v8+LGW0SpnPLpMVbyWALbyVUz9af3McyBqvaJOQ3EttfAsZ8RP
-         Pqch06YCUB3jAwyvmExHE/dSbJWJmIPTfIaNc+ZY=
+        b=h/vgi+M7FN3N+9DDeuWsR0QH1fAwWvucGrwxgjfpsRvzqhNNrgcs3IM7N/2UIPnH8
+         iNmua2C532UsLO4NOM16o1hkc7srIcxHh66os+zMNUIaG+Ty8OYGvjxfznsgWGg5XQ
+         uFjyvVs6k9ljLYLOI+Mtf6SA828zHpiRH5EVz6ek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH 5.18 825/879] iommu/msm: Fix an incorrect NULL check on list iterator
-Date:   Tue,  7 Jun 2022 19:05:43 +0200
-Message-Id: <20220607165026.801495263@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Ye Bin <yebin10@huawei.com>, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.18 742/879] ext4: fix bug_on in ext4_writepages
+Date:   Tue,  7 Jun 2022 19:04:20 +0200
+Message-Id: <20220607165024.396007902@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -48,58 +49,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Ye Bin <yebin10@huawei.com>
 
-commit 8b9ad480bd1dd25f4ff4854af5685fa334a2f57a upstream.
+commit ef09ed5d37b84d18562b30cf7253e57062d0db05 upstream.
 
-The bug is here:
-	if (!iommu || iommu->dev->of_node != spec->np) {
+we got issue as follows:
+EXT4-fs error (device loop0): ext4_mb_generate_buddy:1141: group 0, block bitmap and bg descriptor inconsistent: 25 vs 31513 free cls
+------------[ cut here ]------------
+kernel BUG at fs/ext4/inode.c:2708!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
+CPU: 2 PID: 2147 Comm: rep Not tainted 5.18.0-rc2-next-20220413+ #155
+RIP: 0010:ext4_writepages+0x1977/0x1c10
+RSP: 0018:ffff88811d3e7880 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffff88811c098000
+RDX: 0000000000000000 RSI: ffff88811c098000 RDI: 0000000000000002
+RBP: ffff888128140f50 R08: ffffffffb1ff6387 R09: 0000000000000000
+R10: 0000000000000007 R11: ffffed10250281ea R12: 0000000000000001
+R13: 00000000000000a4 R14: ffff88811d3e7bb8 R15: ffff888128141028
+FS:  00007f443aed9740(0000) GS:ffff8883aef00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020007200 CR3: 000000011c2a4000 CR4: 00000000000006e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ do_writepages+0x130/0x3a0
+ filemap_fdatawrite_wbc+0x83/0xa0
+ filemap_flush+0xab/0xe0
+ ext4_alloc_da_blocks+0x51/0x120
+ __ext4_ioctl+0x1534/0x3210
+ __x64_sys_ioctl+0x12c/0x170
+ do_syscall_64+0x3b/0x90
 
-The list iterator value 'iommu' will *always* be set and non-NULL by
-list_for_each_entry(), so it is incorrect to assume that the iterator
-value will be NULL if the list is empty or no element is found (in fact,
-it will point to a invalid structure object containing HEAD).
+It may happen as follows:
+1. write inline_data inode
+vfs_write
+  new_sync_write
+    ext4_file_write_iter
+      ext4_buffered_write_iter
+        generic_perform_write
+          ext4_da_write_begin
+            ext4_da_write_inline_data_begin -> If inline data size too
+            small will allocate block to write, then mapping will has
+            dirty page
+                ext4_da_convert_inline_data_to_extent ->clear EXT4_STATE_MAY_INLINE_DATA
+2. fallocate
+do_vfs_ioctl
+  ioctl_preallocate
+    vfs_fallocate
+      ext4_fallocate
+        ext4_convert_inline_data
+          ext4_convert_inline_data_nolock
+            ext4_map_blocks -> fail will goto restore data
+            ext4_restore_inline_data
+              ext4_create_inline_data
+              ext4_write_inline_data
+              ext4_set_inode_state -> set inode EXT4_STATE_MAY_INLINE_DATA
+3. writepages
+__ext4_ioctl
+  ext4_alloc_da_blocks
+    filemap_flush
+      filemap_fdatawrite_wbc
+        do_writepages
+          ext4_writepages
+            if (ext4_has_inline_data(inode))
+              BUG_ON(ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA))
 
-To fix the bug, use a new value 'iter' as the list iterator, while use
-the old value 'iommu' as a dedicated variable to point to the found one,
-and remove the unneeded check for 'iommu->dev->of_node != spec->np'
-outside the loop.
+The root cause of this issue is we destory inline data until call
+ext4_writepages under delay allocation mode.  But there maybe already
+convert from inline to extent.  To solve this issue, we call
+filemap_flush first..
 
-Cc: stable@vger.kernel.org
-Fixes: f78ebca8ff3d6 ("iommu/msm: Add support for generic master bindings")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220501132823.12714-1-xiam0nd.tong@gmail.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Cc: stable@kernel.org
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220516122634.1690462-1-yebin10@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/msm_iommu.c |   11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ fs/ext4/inline.c |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -610,16 +610,19 @@ static void insert_iommu_master(struct d
- static int qcom_iommu_of_xlate(struct device *dev,
- 			       struct of_phandle_args *spec)
- {
--	struct msm_iommu_dev *iommu;
-+	struct msm_iommu_dev *iommu = NULL, *iter;
- 	unsigned long flags;
- 	int ret = 0;
- 
- 	spin_lock_irqsave(&msm_iommu_lock, flags);
--	list_for_each_entry(iommu, &qcom_iommu_devices, dev_node)
--		if (iommu->dev->of_node == spec->np)
-+	list_for_each_entry(iter, &qcom_iommu_devices, dev_node) {
-+		if (iter->dev->of_node == spec->np) {
-+			iommu = iter;
- 			break;
-+		}
-+	}
- 
--	if (!iommu || iommu->dev->of_node != spec->np) {
-+	if (!iommu) {
- 		ret = -ENODEV;
- 		goto fail;
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -2005,6 +2005,18 @@ int ext4_convert_inline_data(struct inod
+ 	if (!ext4_has_inline_data(inode)) {
+ 		ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
+ 		return 0;
++	} else if (!ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)) {
++		/*
++		 * Inode has inline data but EXT4_STATE_MAY_INLINE_DATA is
++		 * cleared. This means we are in the middle of moving of
++		 * inline data to delay allocated block. Just force writeout
++		 * here to finish conversion.
++		 */
++		error = filemap_flush(inode->i_mapping);
++		if (error)
++			return error;
++		if (!ext4_has_inline_data(inode))
++			return 0;
  	}
+ 
+ 	needed_blocks = ext4_writepage_trans_blocks(inode);
 
 
