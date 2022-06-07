@@ -2,173 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC6AC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAD31CCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:02:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358235AbiFGUAW (ORCPT
+        id S1358255AbiFGUAb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:00:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51508 "EHLO
+        Tue, 7 Jun 2022 16:00:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353086AbiFGSyF (ORCPT
+        with ESMTP id S1352980AbiFGSym (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:54:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B1614ACBF;
-        Tue,  7 Jun 2022 11:03:50 -0700 (PDT)
+        Tue, 7 Jun 2022 14:54:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6258C14AF57;
+        Tue,  7 Jun 2022 11:03:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14F5FB82374;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1ABB0617AE;
+        Tue,  7 Jun 2022 18:03:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8829BC36AFE;
         Tue,  7 Jun 2022 18:03:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74A74C36AFE;
-        Tue,  7 Jun 2022 18:03:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625027;
-        bh=Wze3HKbHNuksjw/5hi2S1t1HcnnFKexwrr/Pq0LX75k=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654625030;
+        bh=ggAdO0Ry7BMKXmTuMezMqaYPVCO6EkL3gl5dGlN1l4U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L6qhySra1LrozpXuSBOA3c6TXSDQjVvlnpCi577VZDO499n8ZDy3Y8QUUdeFQ9PjE
-         pCAFL1dWi249hDNMiT/19CWWCV4DAHI8Z6+r9IsxlgbuQBM2LRCLfP9W9aIp+PYU1E
-         4fgoN+xDrbdY1kW2+W0ZqvdAjp8YtA/ugQCcv9Bw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
-        stable@kernel.org
-Subject: [PATCH 5.15 541/667] ext4: fix use-after-free in ext4_rename_dir_prepare
-Date:   Tue,  7 Jun 2022 19:03:26 +0200
-Message-Id: <20220607164950.924392215@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=mYzzqzK499ET1wsmZnghxVn+BkAe/pEDGWqy/W2I7xJEU5xqQJTla+lzq2EKr57+A
+         xfVn7LLr5SIrULYwxNS4lAsc3WjKAodj/WkunfA5tGXKGD0K7WV5WpVrrMl38KSwCn
+         EVZluW7AscXBLvNHYV1pC4S3olijG37G8o8qpjVC01WXFHIds1fLASG844w3/pz94t
+         JrvU4AjGsLub/rMbcCrx0uPWzg6JWDeyBvT2Tfd84et5+bgKfoXW19ERZrdz7RulCC
+         71jG2j6EtE411PD0EDaSZaqbncwgjH1XWcHmbmNlScus+2x/Xffe/XDbZLFbI9xoGx
+         EBEo9H5aqkCvg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
+        Donald Buczek <buczek@molgen.mpg.de>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        linux-raid@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 15/19] md: protect md_unregister_thread from reentrancy
+Date:   Tue,  7 Jun 2022 14:03:10 -0400
+Message-Id: <20220607180317.482354-15-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180317.482354-1-sashal@kernel.org>
+References: <20220607180317.482354-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
 
-commit 0be698ecbe4471fcad80e81ec6a05001421041b3 upstream.
+[ Upstream commit 1e267742283a4b5a8ca65755c44166be27e9aa0f ]
 
-We got issue as follows:
-EXT4-fs (loop0): mounted filesystem without journal. Opts: ,errors=continue
-ext4_get_first_dir_block: bh->b_data=0xffff88810bee6000 len=34478
-ext4_get_first_dir_block: *parent_de=0xffff88810beee6ae bh->b_data=0xffff88810bee6000
-ext4_rename_dir_prepare: [1] parent_de=0xffff88810beee6ae
-==================================================================
-BUG: KASAN: use-after-free in ext4_rename_dir_prepare+0x152/0x220
-Read of size 4 at addr ffff88810beee6ae by task rep/1895
+Generally, the md_unregister_thread is called with reconfig_mutex, but
+raid_message in dm-raid doesn't hold reconfig_mutex to unregister thread,
+so md_unregister_thread can be called simulitaneously from two call sites
+in theory.
 
-CPU: 13 PID: 1895 Comm: rep Not tainted 5.10.0+ #241
-Call Trace:
- dump_stack+0xbe/0xf9
- print_address_description.constprop.0+0x1e/0x220
- kasan_report.cold+0x37/0x7f
- ext4_rename_dir_prepare+0x152/0x220
- ext4_rename+0xf44/0x1ad0
- ext4_rename2+0x11c/0x170
- vfs_rename+0xa84/0x1440
- do_renameat2+0x683/0x8f0
- __x64_sys_renameat+0x53/0x60
- do_syscall_64+0x33/0x40
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x7f45a6fc41c9
-RSP: 002b:00007ffc5a470218 EFLAGS: 00000246 ORIG_RAX: 0000000000000108
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f45a6fc41c9
-RDX: 0000000000000005 RSI: 0000000020000180 RDI: 0000000000000005
-RBP: 00007ffc5a470240 R08: 00007ffc5a470160 R09: 0000000020000080
-R10: 00000000200001c0 R11: 0000000000000246 R12: 0000000000400bb0
-R13: 00007ffc5a470320 R14: 0000000000000000 R15: 0000000000000000
+Then after previous commit which remove the protection of reconfig_mutex
+for md_unregister_thread completely, the potential issue could be worse
+than before.
 
-The buggy address belongs to the page:
-page:00000000440015ce refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x10beee
-flags: 0x200000000000000()
-raw: 0200000000000000 ffffea00043ff4c8 ffffea0004325608 0000000000000000
-raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
+Let's take pers_lock at the beginning of function to ensure reentrancy.
 
-Memory state around the buggy address:
- ffff88810beee580: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff88810beee600: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
->ffff88810beee680: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-                                  ^
- ffff88810beee700: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff88810beee780: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-==================================================================
-Disabling lock debugging due to kernel taint
-ext4_rename_dir_prepare: [2] parent_de->inode=3537895424
-ext4_rename_dir_prepare: [3] dir=0xffff888124170140
-ext4_rename_dir_prepare: [4] ino=2
-ext4_rename_dir_prepare: ent->dir->i_ino=2 parent=-757071872
-
-Reason is first directory entry which 'rec_len' is 34478, then will get illegal
-parent entry. Now, we do not check directory entry after read directory block
-in 'ext4_get_first_dir_block'.
-To solve this issue, check directory entry in 'ext4_get_first_dir_block'.
-
-[ Trigger an ext4_error() instead of just warning if the directory is
-  missing a '.' or '..' entry.   Also make sure we return an error code
-  if the file system is corrupted.  -TYT ]
-
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220414025223.4113128-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Donald Buczek <buczek@molgen.mpg.de>
+Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/namei.c |   30 +++++++++++++++++++++++++++---
- 1 file changed, 27 insertions(+), 3 deletions(-)
+ drivers/md/md.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -3455,6 +3455,9 @@ static struct buffer_head *ext4_get_firs
- 	struct buffer_head *bh;
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 98c72dd56a2d..d2e2006ed792 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -7252,17 +7252,22 @@ EXPORT_SYMBOL(md_register_thread);
  
- 	if (!ext4_has_inline_data(inode)) {
-+		struct ext4_dir_entry_2 *de;
-+		unsigned int offset;
+ void md_unregister_thread(struct md_thread **threadp)
+ {
+-	struct md_thread *thread = *threadp;
+-	if (!thread)
+-		return;
+-	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+-	/* Locking ensures that mddev_unlock does not wake_up a
++	struct md_thread *thread;
 +
- 		/* The first directory block must not be a hole, so
- 		 * treat it as DIRENT_HTREE
- 		 */
-@@ -3463,9 +3466,30 @@ static struct buffer_head *ext4_get_firs
- 			*retval = PTR_ERR(bh);
- 			return NULL;
- 		}
--		*parent_de = ext4_next_entry(
--					(struct ext4_dir_entry_2 *)bh->b_data,
--					inode->i_sb->s_blocksize);
-+
-+		de = (struct ext4_dir_entry_2 *) bh->b_data;
-+		if (ext4_check_dir_entry(inode, NULL, de, bh, bh->b_data,
-+					 bh->b_size, 0) ||
-+		    le32_to_cpu(de->inode) != inode->i_ino ||
-+		    strcmp(".", de->name)) {
-+			EXT4_ERROR_INODE(inode, "directory missing '.'");
-+			brelse(bh);
-+			*retval = -EFSCORRUPTED;
-+			return NULL;
-+		}
-+		offset = ext4_rec_len_from_disk(de->rec_len,
-+						inode->i_sb->s_blocksize);
-+		de = ext4_next_entry(de, inode->i_sb->s_blocksize);
-+		if (ext4_check_dir_entry(inode, NULL, de, bh, bh->b_data,
-+					 bh->b_size, offset) ||
-+		    le32_to_cpu(de->inode) == 0 || strcmp("..", de->name)) {
-+			EXT4_ERROR_INODE(inode, "directory missing '..'");
-+			brelse(bh);
-+			*retval = -EFSCORRUPTED;
-+			return NULL;
-+		}
-+		*parent_de = de;
-+
- 		return bh;
- 	}
++	/*
++	 * Locking ensures that mddev_unlock does not wake_up a
+ 	 * non-existent thread
+ 	 */
+ 	spin_lock(&pers_lock);
++	thread = *threadp;
++	if (!thread) {
++		spin_unlock(&pers_lock);
++		return;
++	}
+ 	*threadp = NULL;
+ 	spin_unlock(&pers_lock);
  
-
++	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+ 	kthread_stop(thread->tsk);
+ 	kfree(thread);
+ }
+-- 
+2.35.1
 
