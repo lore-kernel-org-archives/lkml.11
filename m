@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DDDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08BB8CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352557AbiFGSRR (ORCPT
+        id S1352888AbiFGSRk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:17:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39640 "EHLO
+        Tue, 7 Jun 2022 14:17:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349030AbiFGR5s (ORCPT
+        with ESMTP id S1348979AbiFGR5i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:57:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC98237F3;
-        Tue,  7 Jun 2022 10:40:49 -0700 (PDT)
+        Tue, 7 Jun 2022 13:57:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D73403D4;
+        Tue,  7 Jun 2022 10:40:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E72761499;
-        Tue,  7 Jun 2022 17:40:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A931C34115;
-        Tue,  7 Jun 2022 17:40:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 493566137B;
+        Tue,  7 Jun 2022 17:40:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5431FC385A5;
+        Tue,  7 Jun 2022 17:40:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623648;
-        bh=lIQbYf0TkVPgHqacQsbXEfI+WghXsnVMfGGAywaL/M8=;
+        s=korg; t=1654623637;
+        bh=ITUahHDwW1gTaJlV8oHzxviHbnKXY4XzaJ5No6iHqSQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mqdVL4N6SJhyoV/x+MYeWEBdINUUhezwH41GcY4qopkA4ot3LSfrs5OYe8a6blITK
-         7W9BGEes4AIJ3xZysuOARQBf99FVvlWfgG9FE/oANR1IdzOXUrO72N/523NH+gd/Mz
-         MsFWkurX8jT1ZMjK0whuo1jyurs32E2Q7oHI/rGU=
+        b=RcKXqVhgi4I76MNFK9UgFE3m8e3FwS9Zay6p95caw9Qzmorf14RcwnzKrjnOdYJd6
+         1JEeqkqk1VNjSA4ZnIIOOflbGKYEuoJvkInIFEBpOF8bXfL8hMb9FomHindZaPdwx6
+         nDIXb4iXzyx6XnoIUuARWp8Nat+popoe1jq3rueQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.15 004/667] parisc/stifb: Keep track of hardware path of graphics card
-Date:   Tue,  7 Jun 2022 18:54:29 +0200
-Message-Id: <20220607164934.909123304@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes@sipsolutions.net>,
+        Kees Cook <keescook@chromium.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.15 036/667] ptrace/um: Replace PT_DTRACE with TIF_SINGLESTEP
+Date:   Tue,  7 Jun 2022 18:55:01 +0200
+Message-Id: <20220607164935.880810460@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -48,113 +51,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit b046f984814af7985f444150ec28716d42d00d9a upstream.
+commit c200e4bb44e80b343c09841e7caaaca0aac5e5fa upstream.
 
-Keep the pa_path (hardware path) of the graphics card in sti_struct and use
-this info to give more useful info which card is currently being used.
+User mode linux is the last user of the PT_DTRACE flag.  Using the flag to indicate
+single stepping is a little confusing and worse changing tsk->ptrace without locking
+could potentionally cause problems.
 
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: stable@vger.kernel.org   # v5.10+
+So use a thread info flag with a better name instead of flag in tsk->ptrace.
+
+Remove the definition PT_DTRACE as uml is the last user.
+
+Cc: stable@vger.kernel.org
+Acked-by: Johannes Berg <johannes@sipsolutions.net>
+Tested-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Oleg Nesterov <oleg@redhat.com>
+Link: https://lkml.kernel.org/r/20220505182645.497868-3-ebiederm@xmission.com
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/console/sticon.c  |    5 ++++-
- drivers/video/console/sticore.c |   15 +++++++--------
- drivers/video/fbdev/sticore.h   |    3 +++
- 3 files changed, 14 insertions(+), 9 deletions(-)
+ arch/um/include/asm/thread_info.h |    2 ++
+ arch/um/kernel/exec.c             |    2 +-
+ arch/um/kernel/process.c          |    2 +-
+ arch/um/kernel/ptrace.c           |    8 ++++----
+ arch/um/kernel/signal.c           |    4 ++--
+ include/linux/ptrace.h            |    1 -
+ 6 files changed, 10 insertions(+), 9 deletions(-)
 
---- a/drivers/video/console/sticon.c
-+++ b/drivers/video/console/sticon.c
-@@ -46,6 +46,7 @@
- #include <linux/slab.h>
- #include <linux/font.h>
- #include <linux/crc32.h>
-+#include <linux/fb.h>
+--- a/arch/um/include/asm/thread_info.h
++++ b/arch/um/include/asm/thread_info.h
+@@ -64,6 +64,7 @@ static inline struct thread_info *curren
+ #define TIF_RESTORE_SIGMASK	7
+ #define TIF_NOTIFY_RESUME	8
+ #define TIF_SECCOMP		9	/* secure computing */
++#define TIF_SINGLESTEP		10	/* single stepping userspace */
  
- #include <asm/io.h>
+ #define _TIF_SYSCALL_TRACE	(1 << TIF_SYSCALL_TRACE)
+ #define _TIF_SIGPENDING		(1 << TIF_SIGPENDING)
+@@ -72,5 +73,6 @@ static inline struct thread_info *curren
+ #define _TIF_MEMDIE		(1 << TIF_MEMDIE)
+ #define _TIF_SYSCALL_AUDIT	(1 << TIF_SYSCALL_AUDIT)
+ #define _TIF_SECCOMP		(1 << TIF_SECCOMP)
++#define _TIF_SINGLESTEP		(1 << TIF_SINGLESTEP)
  
-@@ -392,7 +393,9 @@ static int __init sticonsole_init(void)
-     for (i = 0; i < MAX_NR_CONSOLES; i++)
- 	font_data[i] = STI_DEF_FONT;
- 
--    pr_info("sticon: Initializing STI text console.\n");
-+    pr_info("sticon: Initializing STI text console on %s at [%s]\n",
-+	sticon_sti->sti_data->inq_outptr.dev_name,
-+	sticon_sti->pa_path);
-     console_lock();
-     err = do_take_over_console(&sti_con, 0, MAX_NR_CONSOLES - 1,
- 		PAGE0->mem_cons.cl_class != CL_DUPLEX);
---- a/drivers/video/console/sticore.c
-+++ b/drivers/video/console/sticore.c
-@@ -34,7 +34,7 @@
- 
- #include "../fbdev/sticore.h"
- 
--#define STI_DRIVERVERSION "Version 0.9b"
-+#define STI_DRIVERVERSION "Version 0.9c"
- 
- static struct sti_struct *default_sti __read_mostly;
- 
-@@ -503,7 +503,7 @@ sti_select_fbfont(struct sti_cooked_rom
- 	if (!fbfont)
- 		return NULL;
- 
--	pr_info("STI selected %ux%u framebuffer font %s for sticon\n",
-+	pr_info("    using %ux%u framebuffer font %s\n",
- 			fbfont->width, fbfont->height, fbfont->name);
- 			
- 	bpc = ((fbfont->width+7)/8) * fbfont->height; 
-@@ -947,6 +947,7 @@ out_err:
- 
- static void sticore_check_for_default_sti(struct sti_struct *sti, char *path)
+ #endif
+--- a/arch/um/kernel/exec.c
++++ b/arch/um/kernel/exec.c
+@@ -42,7 +42,7 @@ void start_thread(struct pt_regs *regs,
  {
-+	pr_info("    located at [%s]\n", sti->pa_path);
- 	if (strcmp (path, default_sti_path) == 0)
- 		default_sti = sti;
+ 	PT_REGS_IP(regs) = eip;
+ 	PT_REGS_SP(regs) = esp;
+-	current->ptrace &= ~PT_DTRACE;
++	clear_thread_flag(TIF_SINGLESTEP);
+ #ifdef SUBARCH_EXECVE1
+ 	SUBARCH_EXECVE1(regs->regs);
+ #endif
+--- a/arch/um/kernel/process.c
++++ b/arch/um/kernel/process.c
+@@ -339,7 +339,7 @@ int singlestepping(void * t)
+ {
+ 	struct task_struct *task = t ? t : current;
+ 
+-	if (!(task->ptrace & PT_DTRACE))
++	if (!test_thread_flag(TIF_SINGLESTEP))
+ 		return 0;
+ 
+ 	if (task->thread.singlestep_syscall)
+--- a/arch/um/kernel/ptrace.c
++++ b/arch/um/kernel/ptrace.c
+@@ -12,7 +12,7 @@
+ 
+ void user_enable_single_step(struct task_struct *child)
+ {
+-	child->ptrace |= PT_DTRACE;
++	set_tsk_thread_flag(child, TIF_SINGLESTEP);
+ 	child->thread.singlestep_syscall = 0;
+ 
+ #ifdef SUBARCH_SET_SINGLESTEPPING
+@@ -22,7 +22,7 @@ void user_enable_single_step(struct task
+ 
+ void user_disable_single_step(struct task_struct *child)
+ {
+-	child->ptrace &= ~PT_DTRACE;
++	clear_tsk_thread_flag(child, TIF_SINGLESTEP);
+ 	child->thread.singlestep_syscall = 0;
+ 
+ #ifdef SUBARCH_SET_SINGLESTEPPING
+@@ -121,7 +121,7 @@ static void send_sigtrap(struct uml_pt_r
  }
-@@ -958,7 +959,6 @@ static void sticore_check_for_default_st
+ 
+ /*
+- * XXX Check PT_DTRACE vs TIF_SINGLESTEP for singlestepping check and
++ * XXX Check TIF_SINGLESTEP for singlestepping check and
+  * PT_PTRACED vs TIF_SYSCALL_TRACE for syscall tracing check
   */
- static int __init sticore_pa_init(struct parisc_device *dev)
- {
--	char pa_path[21];
- 	struct sti_struct *sti = NULL;
- 	int hpa = dev->hpa.start;
+ int syscall_trace_enter(struct pt_regs *regs)
+@@ -145,7 +145,7 @@ void syscall_trace_leave(struct pt_regs
+ 	audit_syscall_exit(regs);
  
-@@ -971,8 +971,8 @@ static int __init sticore_pa_init(struct
- 	if (!sti)
- 		return 1;
+ 	/* Fake a debug trap */
+-	if (ptraced & PT_DTRACE)
++	if (test_thread_flag(TIF_SINGLESTEP))
+ 		send_sigtrap(&regs->regs, 0);
  
--	print_pa_hwpath(dev, pa_path);
--	sticore_check_for_default_sti(sti, pa_path);
-+	print_pa_hwpath(dev, sti->pa_path);
-+	sticore_check_for_default_sti(sti, sti->pa_path);
- 	return 0;
- }
+ 	if (!test_thread_flag(TIF_SYSCALL_TRACE))
+--- a/arch/um/kernel/signal.c
++++ b/arch/um/kernel/signal.c
+@@ -53,7 +53,7 @@ static void handle_signal(struct ksignal
+ 	unsigned long sp;
+ 	int err;
  
-@@ -1008,9 +1008,8 @@ static int sticore_pci_init(struct pci_d
+-	if ((current->ptrace & PT_DTRACE) && (current->ptrace & PT_PTRACED))
++	if (test_thread_flag(TIF_SINGLESTEP) && (current->ptrace & PT_PTRACED))
+ 		singlestep = 1;
  
- 	sti = sti_try_rom_generic(rom_base, fb_base, pd);
- 	if (sti) {
--		char pa_path[30];
--		print_pci_hwpath(pd, pa_path);
--		sticore_check_for_default_sti(sti, pa_path);
-+		print_pci_hwpath(pd, sti->pa_path);
-+		sticore_check_for_default_sti(sti, sti->pa_path);
- 	}
- 	
- 	if (!sti) {
---- a/drivers/video/fbdev/sticore.h
-+++ b/drivers/video/fbdev/sticore.h
-@@ -370,6 +370,9 @@ struct sti_struct {
+ 	/* Did we come from a system call? */
+@@ -128,7 +128,7 @@ void do_signal(struct pt_regs *regs)
+ 	 * on the host.  The tracing thread will check this flag and
+ 	 * PTRACE_SYSCALL if necessary.
+ 	 */
+-	if (current->ptrace & PT_DTRACE)
++	if (test_thread_flag(TIF_SINGLESTEP))
+ 		current->thread.singlestep_syscall =
+ 			is_syscall(PT_REGS_IP(&current->thread.regs));
  
- 	/* pointer to all internal data */
- 	struct sti_all_data *sti_data;
-+
-+	/* pa_path of this device */
-+	char pa_path[24];
- };
+--- a/include/linux/ptrace.h
++++ b/include/linux/ptrace.h
+@@ -30,7 +30,6 @@ extern int ptrace_access_vm(struct task_
  
+ #define PT_SEIZED	0x00010000	/* SEIZE used, enable new behavior */
+ #define PT_PTRACED	0x00000001
+-#define PT_DTRACE	0x00000002	/* delayed trace (used on m68k, i386) */
  
+ #define PT_OPT_FLAG_SHIFT	3
+ /* PT_TRACE_* event enable flags */
 
 
