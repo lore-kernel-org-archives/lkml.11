@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E85A5CCA48A
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 773F9CCA48C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359700AbiFGUP6 (ORCPT
+        id S1376267AbiFGUQf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:15:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39806 "EHLO
+        Tue, 7 Jun 2022 16:16:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355356AbiFGTZE (ORCPT
+        with ESMTP id S1355955AbiFGT0O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:25:04 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5390526ACC;
-        Tue,  7 Jun 2022 11:09:18 -0700 (PDT)
+        Tue, 7 Jun 2022 15:26:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06ED819F040;
+        Tue,  7 Jun 2022 11:09:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3FD47CE243C;
-        Tue,  7 Jun 2022 18:09:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F41CBC385A5;
-        Tue,  7 Jun 2022 18:09:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57CD9B82354;
+        Tue,  7 Jun 2022 18:09:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A50F4C385A2;
+        Tue,  7 Jun 2022 18:09:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625355;
-        bh=BjxEpcP2HzpCATkyvGltIMNc7ZP1wLwyAcgCHfjDj8w=;
+        s=korg; t=1654625375;
+        bh=K0bdUzOfeyMkxgs4pOZ4/dubG5F1GljN0qv8FWivZ/Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CvHSYQsQXjUWTkloUfDOalMba3g799WvqZn8WXLsd9EkvvbB4GOYNVHQDpSju3dJM
-         Sf7FKRNbD6s4PrbUDBQnLrg0bPmGJVczyDo6KLGg5Zcu+apAGwVtE/In145N/sLU2j
-         AcEhlv08Sv/g9iI5CEPRMdxuw4/8gkscunpex7eA=
+        b=vFSvHudnWn9LKIgcdiLVgXjdK1seMq28YmaNw6M1loFuaa+wRSLYHRrtMPX1coS+R
+         Tc9CSenlWtSLWjYKSEp2s1uTvnTnOIzshAZqj+3biQIOosuQcsVIUb1r/jgpaaGMox
+         toNgsGzN/26Zo7T6pqSslz0eKkrlZmlbpoaX0yqU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hyunchul Lee <hyc.lee@gmail.com>,
-        Yufan Chen <wiz.chen@gmail.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.15 616/667] ksmbd: fix outstanding credits related bugs
-Date:   Tue,  7 Jun 2022 19:04:41 +0200
-Message-Id: <20220607164953.146624333@linuxfoundation.org>
+        stable@vger.kernel.org, Fine Fan <ffan@redhat.com>,
+        Xiao Ni <xni@redhat.com>, Song Liu <song@kernel.org>
+Subject: [PATCH 5.15 665/667] md: Dont set mddev private to NULL in raid0 pers->free
+Date:   Tue,  7 Jun 2022 19:05:30 +0200
+Message-Id: <20220607164954.585737970@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,73 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hyunchul Lee <hyc.lee@gmail.com>
+From: Xiao Ni <xni@redhat.com>
 
-commit 376b9133826865568167b4091ef92a68c4622b87 upstream.
+commit 0f2571ad7a30ff6b33cde142439f9378669f8b4f upstream.
 
-outstanding credits must be initialized to 0,
-because it means the sum of credits consumed by
-in-flight requests.
-And outstanding credits must be compared with
-total credits in smb2_validate_credit_charge(),
-because total credits are the sum of credits
-granted by ksmbd.
+In normal stop process, it does like this:
+   do_md_stop
+      |
+   __md_stop (pers->free(); mddev->private=NULL)
+      |
+   md_free (free mddev)
+__md_stop sets mddev->private to NULL after pers->free. The raid device
+will be stopped and mddev memory is free. But in reshape, it doesn't
+free the mddev and mddev will still be used in new raid.
 
-This patch fix the following error,
-while frametest with Windows clients:
+In reshape, it first sets mddev->private to new_pers and then runs
+old_pers->free(). Now raid0 sets mddev->private to NULL in raid0_free.
+The new raid can't work anymore. It will panic when dereference
+mddev->private because of NULL pointer dereference.
 
-Limits exceeding the maximum allowable outstanding requests,
-given : 128, pending : 8065
+It can panic like this:
+[63010.814972] kernel BUG at drivers/md/raid10.c:928!
+[63010.819778] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+[63010.825011] CPU: 3 PID: 44437 Comm: md0_resync Kdump: loaded Not tainted 5.14.0-86.el9.x86_64 #1
+[63010.833789] Hardware name: Dell Inc. PowerEdge R6415/07YXFK, BIOS 1.15.0 09/11/2020
+[63010.841440] RIP: 0010:raise_barrier+0x161/0x170 [raid10]
+[63010.865508] RSP: 0018:ffffc312408bbc10 EFLAGS: 00010246
+[63010.870734] RAX: 0000000000000000 RBX: ffffa00bf7d39800 RCX: 0000000000000000
+[63010.877866] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffffa00bf7d39800
+[63010.884999] RBP: 0000000000000000 R08: fffffa4945e74400 R09: 0000000000000000
+[63010.892132] R10: ffffa00eed02f798 R11: 0000000000000000 R12: ffffa00bbc435200
+[63010.899266] R13: ffffa00bf7d39800 R14: 0000000000000400 R15: 0000000000000003
+[63010.906399] FS:  0000000000000000(0000) GS:ffffa00eed000000(0000) knlGS:0000000000000000
+[63010.914485] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[63010.920229] CR2: 00007f5cfbe99828 CR3: 0000000105efe000 CR4: 00000000003506e0
+[63010.927363] Call Trace:
+[63010.929822]  ? bio_reset+0xe/0x40
+[63010.933144]  ? raid10_alloc_init_r10buf+0x60/0xa0 [raid10]
+[63010.938629]  raid10_sync_request+0x756/0x1610 [raid10]
+[63010.943770]  md_do_sync.cold+0x3e4/0x94c
+[63010.947698]  md_thread+0xab/0x160
+[63010.951024]  ? md_write_inc+0x50/0x50
+[63010.954688]  kthread+0x149/0x170
+[63010.957923]  ? set_kthread_struct+0x40/0x40
+[63010.962107]  ret_from_fork+0x22/0x30
 
-Fixes: b589f5db6d4a ("ksmbd: limits exceeding the maximum allowable outstanding requests")
-Cc: stable@vger.kernel.org
-Signed-off-by: Hyunchul Lee <hyc.lee@gmail.com>
-Reported-by: Yufan Chen <wiz.chen@gmail.com>
-Tested-by: Yufan Chen <wiz.chen@gmail.com>
-Acked-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Removing the code that sets mddev->private to NULL in raid0 can fix
+problem.
+
+Fixes: 0c031fd37f69 (md: Move alloc/free acct bioset in to personality)
+Reported-by: Fine Fan <ffan@redhat.com>
+Signed-off-by: Xiao Ni <xni@redhat.com>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ksmbd/connection.c |    2 +-
- fs/ksmbd/smb2misc.c   |    2 +-
- fs/ksmbd/smb_common.c |    4 +++-
- 3 files changed, 5 insertions(+), 3 deletions(-)
+ drivers/md/raid0.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/fs/ksmbd/connection.c
-+++ b/fs/ksmbd/connection.c
-@@ -62,7 +62,7 @@ struct ksmbd_conn *ksmbd_conn_alloc(void
- 	atomic_set(&conn->req_running, 0);
- 	atomic_set(&conn->r_count, 0);
- 	conn->total_credits = 1;
--	conn->outstanding_credits = 1;
-+	conn->outstanding_credits = 0;
- 
- 	init_waitqueue_head(&conn->req_running_q);
- 	INIT_LIST_HEAD(&conn->conns_list);
---- a/fs/ksmbd/smb2misc.c
-+++ b/fs/ksmbd/smb2misc.c
-@@ -339,7 +339,7 @@ static int smb2_validate_credit_charge(s
- 		ret = 1;
- 	}
- 
--	if ((u64)conn->outstanding_credits + credit_charge > conn->vals->max_credits) {
-+	if ((u64)conn->outstanding_credits + credit_charge > conn->total_credits) {
- 		ksmbd_debug(SMB, "Limits exceeding the maximum allowable outstanding requests, given : %u, pending : %u\n",
- 			    credit_charge, conn->outstanding_credits);
- 		ret = 1;
---- a/fs/ksmbd/smb_common.c
-+++ b/fs/ksmbd/smb_common.c
-@@ -140,8 +140,10 @@ int ksmbd_verify_smb_message(struct ksmb
- 
- 	hdr = work->request_buf;
- 	if (*(__le32 *)hdr->Protocol == SMB1_PROTO_NUMBER &&
--	    hdr->Command == SMB_COM_NEGOTIATE)
-+	    hdr->Command == SMB_COM_NEGOTIATE) {
-+		work->conn->outstanding_credits++;
- 		return 0;
-+	}
- 
- 	return -EINVAL;
+--- a/drivers/md/raid0.c
++++ b/drivers/md/raid0.c
+@@ -361,7 +361,6 @@ static void free_conf(struct mddev *mdde
+ 	kfree(conf->strip_zone);
+ 	kfree(conf->devlist);
+ 	kfree(conf);
+-	mddev->private = NULL;
  }
+ 
+ static void raid0_free(struct mddev *mddev, void *priv)
 
 
