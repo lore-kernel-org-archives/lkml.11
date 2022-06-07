@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E5ACCA47E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7014CCA484
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:41:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348224AbiFGRkm (ORCPT
+        id S1348423AbiFGRkt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:40:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39636 "EHLO
+        Tue, 7 Jun 2022 13:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347597AbiFGRaw (ORCPT
+        with ESMTP id S1347555AbiFGRav (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:30:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDAB2F5061;
-        Tue,  7 Jun 2022 10:27:35 -0700 (PDT)
+        Tue, 7 Jun 2022 13:30:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21A92DAB5;
+        Tue,  7 Jun 2022 10:27:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 25316CE23B7;
-        Tue,  7 Jun 2022 17:27:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B1A4C385A5;
-        Tue,  7 Jun 2022 17:27:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B735B822B4;
+        Tue,  7 Jun 2022 17:27:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B550C34115;
+        Tue,  7 Jun 2022 17:27:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622852;
-        bh=rqBM9kpqar2zASvxuCP9/c7RyI/oenR0WjcafSz151Y=;
+        s=korg; t=1654622835;
+        bh=DTpGyTKV+LT/SCUePKuCxICQSzzQPd2s0Y5HqKYS4CU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jOGFPRHWacztQTKdTwd3aEwzAiSr0iqfn/waD6Vgn4AhJ0tW20UmeSuzAi5BWaK57
-         rJFBBmtWzY2KzZ/g8AlFLFyDq8rNMHNhWxu+1EhJ0pGifRRt+kwtstGlM17B4m0eKr
-         Hhk8R3xuI1pmDz4f76DDZgy1gQROIjuCeu+CYatg=
+        b=gK1m2lG64T2RlD/Ncoi4w4FjoyK3iEB8Vk0A7LSGISt4lW5DyJBwm1uYL1gNIcExe
+         B9PvwPHudU+DOxhvTKs9JmkTLVtCH2QTDXcE9/onyKoxo0sgG8WU1ihRl1yCcAmeXv
+         L5vRqhcYwUzSNAYRwPKJ5NSDd1o2S+YcPTgBFt00=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 155/452] ath9k_htc: fix potential out of bounds access with invalid rxstatus->rs_keyix
-Date:   Tue,  7 Jun 2022 19:00:12 +0200
-Message-Id: <20220607164913.178042084@linuxfoundation.org>
+Subject: [PATCH 5.10 198/452] Revert "cpufreq: Fix possible race in cpufreq online error path"
+Date:   Tue,  7 Jun 2022 19:00:55 +0200
+Message-Id: <20220607164914.464475954@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,45 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Viresh Kumar <viresh.kumar@linaro.org>
 
-[ Upstream commit 2dc509305cf956381532792cb8dceef2b1504765 ]
+[ Upstream commit 85f0e42bd65d01b351d561efb38e584d4c596553 ]
 
-The "rxstatus->rs_keyix" eventually gets passed to test_bit() so we need to
-ensure that it is within the bitmap.
+This reverts commit f346e96267cd76175d6c201b40f770c0116a8a04.
 
-drivers/net/wireless/ath/ath9k/common.c:46 ath9k_cmn_rx_accept()
-error: passing untrusted data 'rx_stats->rs_keyix' to 'test_bit()'
+The commit tried to fix a possible real bug but it made it even worse.
+The fix was simply buggy as now an error out to out_offline_policy or
+out_exit_policy will try to release a semaphore which was never taken in
+the first place. This works fine only if we failed late, i.e. via
+out_destroy_policy.
 
-Fixes: 4ed1a8d4a257 ("ath9k_htc: use ath9k_cmn_rx_accept")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220409061225.GA5447@kili
+Fixes: f346e96267cd ("cpufreq: Fix possible race in cpufreq online error path")
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/htc_drv_txrx.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/cpufreq/cpufreq.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
-index 0bdc4dcb7b8f..30ddf333e04d 100644
---- a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
-@@ -1006,6 +1006,14 @@ static bool ath9k_rx_prepare(struct ath9k_htc_priv *priv,
- 		goto rx_next;
- 	}
+diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+index 3540ea93b6f1..30dafe8fc505 100644
+--- a/drivers/cpufreq/cpufreq.c
++++ b/drivers/cpufreq/cpufreq.c
+@@ -1515,6 +1515,8 @@ static int cpufreq_online(unsigned int cpu)
+ 	for_each_cpu(j, policy->real_cpus)
+ 		remove_cpu_dev_symlink(policy, get_cpu_device(j));
  
-+	if (rxstatus->rs_keyix >= ATH_KEYMAX &&
-+	    rxstatus->rs_keyix != ATH9K_RXKEYIX_INVALID) {
-+		ath_dbg(common, ANY,
-+			"Invalid keyix, dropping (keyix: %d)\n",
-+			rxstatus->rs_keyix);
-+		goto rx_next;
-+	}
++	up_write(&policy->rwsem);
 +
- 	/* Get the RX status information */
+ out_offline_policy:
+ 	if (cpufreq_driver->offline)
+ 		cpufreq_driver->offline(policy);
+@@ -1523,9 +1525,6 @@ static int cpufreq_online(unsigned int cpu)
+ 	if (cpufreq_driver->exit)
+ 		cpufreq_driver->exit(policy);
  
- 	memset(rx_status, 0, sizeof(struct ieee80211_rx_status));
+-	cpumask_clear(policy->cpus);
+-	up_write(&policy->rwsem);
+-
+ out_free_policy:
+ 	cpufreq_policy_free(policy);
+ 	return ret;
 -- 
 2.35.1
 
