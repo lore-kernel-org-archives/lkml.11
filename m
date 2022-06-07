@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E5F2CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA725CCA486
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:09:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444946AbiFHBId (ORCPT
+        id S1445025AbiFHBIq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:08:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34988 "EHLO
+        Tue, 7 Jun 2022 21:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380777AbiFGW15 (ORCPT
+        with ESMTP id S1383274AbiFGVxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:27:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A97A4272341;
-        Tue,  7 Jun 2022 12:23:29 -0700 (PDT)
+        Tue, 7 Jun 2022 17:53:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF262431AB;
+        Tue,  7 Jun 2022 12:11:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9FB460B09;
-        Tue,  7 Jun 2022 19:23:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C56F6C385A2;
-        Tue,  7 Jun 2022 19:23:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E9B24B823AF;
+        Tue,  7 Jun 2022 19:10:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55636C385A2;
+        Tue,  7 Jun 2022 19:10:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629808;
-        bh=gdjgGA3jTeWt39F5XYCk+VKfrnsbIggp1l16MZwXDVM=;
+        s=korg; t=1654629058;
+        bh=Dj50xF/Cx05yHTw1UmRpKXoSA61hVVmCLVX9Gzhm0fI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vf2zvPlWej4IcNIOzyS3tYhEcNaqJtIbLVy1w5v8REoAhXEcUMGnLWB43uDWioorV
-         U3TKJ8PxpNjGb8S5AZS5iJ3YeGMD5m29VqcKHJCwe9OS+GUfRlxjwUW385rzWpVYTJ
-         7x/ttEPc2DE2gIYT8v0U/2Xyg0+PcdX7U4VwUlgc=
+        b=lhR0FUnOmPSjIikivBuIWgoUhtO8bsS7w27PfxC7MJSM99GkOqyxFT1kmmkMxbE8g
+         Zgev/R3JeTUr1JT0PRsn/t8TpE6b8mI6ZUVYcNJ/sCN2x7ZNvZ7SM99DdQ52+HiMTK
+         Q1tXZvpmAYEGNHqUfSc6YcmpowaNe1OSVJ+L4uRg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hyunchul Lee <hyc.lee@gmail.com>,
-        Yufan Chen <wiz.chen@gmail.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.18 824/879] ksmbd: fix outstanding credits related bugs
-Date:   Tue,  7 Jun 2022 19:05:42 +0200
-Message-Id: <20220607165026.772893494@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Marco Chiappero <marco.chiappero@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 555/879] crypto: qat - set CIPHER capability for DH895XCC
+Date:   Tue,  7 Jun 2022 19:01:13 +0200
+Message-Id: <20220607165018.975643273@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,73 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hyunchul Lee <hyc.lee@gmail.com>
+From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
 
-commit 376b9133826865568167b4091ef92a68c4622b87 upstream.
+[ Upstream commit 6a23804cb8bcb85c6998bf193d94d4036db26f51 ]
 
-outstanding credits must be initialized to 0,
-because it means the sum of credits consumed by
-in-flight requests.
-And outstanding credits must be compared with
-total credits in smb2_validate_credit_charge(),
-because total credits are the sum of credits
-granted by ksmbd.
+Set the CIPHER capability for QAT DH895XCC devices if the hardware supports
+it. This is done if both the CIPHER and the AUTHENTICATION engines are
+available on the device.
 
-This patch fix the following error,
-while frametest with Windows clients:
-
-Limits exceeding the maximum allowable outstanding requests,
-given : 128, pending : 8065
-
-Fixes: b589f5db6d4a ("ksmbd: limits exceeding the maximum allowable outstanding requests")
-Cc: stable@vger.kernel.org
-Signed-off-by: Hyunchul Lee <hyc.lee@gmail.com>
-Reported-by: Yufan Chen <wiz.chen@gmail.com>
-Tested-by: Yufan Chen <wiz.chen@gmail.com>
-Acked-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ad1332aa67ec ("crypto: qat - add support for capability detection")
+Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Signed-off-by: Marco Chiappero <marco.chiappero@intel.com>
+Reviewed-by: Marco Chiappero <marco.chiappero@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/connection.c |    2 +-
- fs/ksmbd/smb2misc.c   |    2 +-
- fs/ksmbd/smb_common.c |    4 +++-
- 3 files changed, 5 insertions(+), 3 deletions(-)
+ .../crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c   | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
---- a/fs/ksmbd/connection.c
-+++ b/fs/ksmbd/connection.c
-@@ -62,7 +62,7 @@ struct ksmbd_conn *ksmbd_conn_alloc(void
- 	atomic_set(&conn->req_running, 0);
- 	atomic_set(&conn->r_count, 0);
- 	conn->total_credits = 1;
--	conn->outstanding_credits = 1;
-+	conn->outstanding_credits = 0;
+diff --git a/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c b/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c
+index 1e7bed8b011f..8a526badf5bf 100644
+--- a/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c
++++ b/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c
+@@ -60,17 +60,23 @@ static u32 get_accel_cap(struct adf_accel_dev *accel_dev)
  
- 	init_waitqueue_head(&conn->req_running_q);
- 	INIT_LIST_HEAD(&conn->conns_list);
---- a/fs/ksmbd/smb2misc.c
-+++ b/fs/ksmbd/smb2misc.c
-@@ -338,7 +338,7 @@ static int smb2_validate_credit_charge(s
- 		ret = 1;
- 	}
+ 	capabilities = ICP_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC |
+ 		       ICP_ACCEL_CAPABILITIES_CRYPTO_ASYMMETRIC |
+-		       ICP_ACCEL_CAPABILITIES_AUTHENTICATION;
++		       ICP_ACCEL_CAPABILITIES_AUTHENTICATION |
++		       ICP_ACCEL_CAPABILITIES_CIPHER;
  
--	if ((u64)conn->outstanding_credits + credit_charge > conn->vals->max_credits) {
-+	if ((u64)conn->outstanding_credits + credit_charge > conn->total_credits) {
- 		ksmbd_debug(SMB, "Limits exceeding the maximum allowable outstanding requests, given : %u, pending : %u\n",
- 			    credit_charge, conn->outstanding_credits);
- 		ret = 1;
---- a/fs/ksmbd/smb_common.c
-+++ b/fs/ksmbd/smb_common.c
-@@ -140,8 +140,10 @@ int ksmbd_verify_smb_message(struct ksmb
+ 	/* Read accelerator capabilities mask */
+ 	pci_read_config_dword(pdev, ADF_DEVICE_LEGFUSE_OFFSET, &legfuses);
  
- 	hdr = work->request_buf;
- 	if (*(__le32 *)hdr->Protocol == SMB1_PROTO_NUMBER &&
--	    hdr->Command == SMB_COM_NEGOTIATE)
-+	    hdr->Command == SMB_COM_NEGOTIATE) {
-+		work->conn->outstanding_credits++;
- 		return 0;
+-	if (legfuses & ICP_ACCEL_MASK_CIPHER_SLICE)
++	/* A set bit in legfuses means the feature is OFF in this SKU */
++	if (legfuses & ICP_ACCEL_MASK_CIPHER_SLICE) {
+ 		capabilities &= ~ICP_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC;
++		capabilities &= ~ICP_ACCEL_CAPABILITIES_CIPHER;
 +	}
+ 	if (legfuses & ICP_ACCEL_MASK_PKE_SLICE)
+ 		capabilities &= ~ICP_ACCEL_CAPABILITIES_CRYPTO_ASYMMETRIC;
+-	if (legfuses & ICP_ACCEL_MASK_AUTH_SLICE)
++	if (legfuses & ICP_ACCEL_MASK_AUTH_SLICE) {
+ 		capabilities &= ~ICP_ACCEL_CAPABILITIES_AUTHENTICATION;
++		capabilities &= ~ICP_ACCEL_CAPABILITIES_CIPHER;
++	}
+ 	if (legfuses & ICP_ACCEL_MASK_COMPRESS_SLICE)
+ 		capabilities &= ~ICP_ACCEL_CAPABILITIES_COMPRESSION;
  
- 	return -EINVAL;
- }
+-- 
+2.35.1
+
 
 
