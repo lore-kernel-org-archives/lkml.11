@@ -2,82 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83872C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:08:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9B9FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:09:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243536AbiFGMId (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:08:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51764 "EHLO
+        id S243555AbiFGMIh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:08:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243470AbiFGMIF (ORCPT
+        with ESMTP id S243441AbiFGMH4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:08:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AF88BD10;
-        Tue,  7 Jun 2022 05:08:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D57FBB81F6F;
-        Tue,  7 Jun 2022 12:07:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF57EC385A5;
-        Tue,  7 Jun 2022 12:07:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654603678;
-        bh=nHE1DVu+fUv8cZvdfRHSwShQafvIqrXmQrldkvf66xI=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=GVpNCgxf7qma2p57EIyUvU1Gh2gVi9axDW/HpLX3095LCXZHX//UjwBQJZliZ46qo
-         Lnc/QBV6k43CJhH2ggACxmN0BEzWGyFrq1PMKBOvoghz/ZNPXM0Yn1iLuIKRjdnxFy
-         BJ0ftEyBLYHrt/WW/0qdnOxjKsOUKXdKVsq6SI78kfM6haSOw9UJerKV0udljYcuUn
-         tnOr+ALA6tzhbMW9+MfD4AYwJQ3GvNquE/wrg6Fagilk75rzVgmMCL62ssiutdKUia
-         K18LoG/mQLeciSYngVIih1YiDTY9JCyY1JSJHYU38WoHIsUS5qiRUWkemux1aSaTAl
-         txOTKtUalz4MA==
-From:   Mark Brown <broonie@kernel.org>
-To:     robh@kernel.org, briannorris@chromium.org, lee.jones@linaro.org,
-        lgirdwood@gmail.com, acourbot@nvidia.com,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-In-Reply-To: <20220606184310.1057797-1-robh@kernel.org>
-References: <20220606184310.1057797-1-robh@kernel.org>
-Subject: Re: [PATCH] regulator: dt-bindings: Convert pwm-regulator to DT schema
-Message-Id: <165460367660.763141.3678690822911695459.b4-ty@kernel.org>
-Date:   Tue, 07 Jun 2022 13:07:56 +0100
+        Tue, 7 Jun 2022 08:07:56 -0400
+Received: from esa1.hc1455-7.c3s2.iphmx.com (esa1.hc1455-7.c3s2.iphmx.com [207.54.90.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F918A305
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:07:44 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="75590270"
+X-IronPort-AV: E=Sophos;i="5.91,283,1647270000"; 
+   d="scan'208";a="75590270"
+Received: from unknown (HELO oym-r3.gw.nic.fujitsu.com) ([210.162.30.91])
+  by esa1.hc1455-7.c3s2.iphmx.com with ESMTP; 07 Jun 2022 21:07:41 +0900
+Received: from oym-m2.gw.nic.fujitsu.com (oym-nat-oym-m2.gw.nic.fujitsu.com [192.168.87.59])
+        by oym-r3.gw.nic.fujitsu.com (Postfix) with ESMTP id E57B4D63B8;
+        Tue,  7 Jun 2022 21:07:40 +0900 (JST)
+Received: from oym-om4.fujitsu.com (oym-om4.o.css.fujitsu.com [10.85.58.164])
+        by oym-m2.gw.nic.fujitsu.com (Postfix) with ESMTP id 1C6D5BF4BA;
+        Tue,  7 Jun 2022 21:07:40 +0900 (JST)
+Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
+        by oym-om4.fujitsu.com (Postfix) with ESMTP id D44CA40080208;
+        Tue,  7 Jun 2022 21:07:39 +0900 (JST)
+From:   Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
+To:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, rafael@kernel.org, lenb@kernel.org,
+        gregkh@linuxfoundation.org, mchehab+huawei@kernel.org,
+        eugenis@google.com, tony.luck@intel.com, pcc@google.com,
+        peterz@infradead.org, marcos@orca.pet, marcan@marcan.st,
+        linus.walleij@linaro.org, nicolas.ferre@microchip.com,
+        conor.dooley@microchip.com, arnd@arndb.de, ast@kernel.org,
+        peter.chen@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-acpi@vger.kernel.org
+Cc:     tarumizu.kohei@fujitsu.com
+Subject: [PATCH v5 3/6] arm64: Create cache sysfs directory without ACPI PPTT for hardware prefetch control
+Date:   Tue,  7 Jun 2022 21:05:27 +0900
+Message-Id: <20220607120530.2447112-4-tarumizu.kohei@fujitsu.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220607120530.2447112-1-tarumizu.kohei@fujitsu.com>
+References: <20220607120530.2447112-1-tarumizu.kohei@fujitsu.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 6 Jun 2022 13:43:09 -0500, Rob Herring wrote:
-> Convert the pwm-regulator binding to DT schema format.
-> 
-> 
+Create a cache sysfs directory without ACPI PPTT if the CPU model is
+A64FX and CONFIG_ALLOW_INCOMPLETE_CACHE_SYSFS is true. Currentry,
+CONFIG_ALLOW_INCOMPLETE_CACHE_SYSFS is set only when
+CONFIG_A64FX_HWPF_CONTROL is enabled.
 
-Applied to
+Hardware prefetch control driver need cache sysfs directory and cache
+level/type information. In ARM processor, these information can be
+obtained from the register even without PPTT.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
+This patch set the cpu_map_populated to true if the machine doesn't
+have PPTT. It use only the level/type information obtained from
+CLIDR_EL1, and don't use CCSIDR information.
 
-Thanks!
+Signed-off-by: Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
+---
+ arch/arm64/kernel/cacheinfo.c | 27 +++++++++++++++++++++++++++
+ drivers/acpi/pptt.c           | 18 ++++++++++++++++++
+ include/linux/acpi.h          |  5 +++++
+ include/linux/cacheinfo.h     | 10 ++++++++++
+ 4 files changed, 60 insertions(+)
 
-[1/1] regulator: dt-bindings: Convert pwm-regulator to DT schema
-      commit: a9369fd316cf3002642295250b6a52c4554aa74c
+diff --git a/arch/arm64/kernel/cacheinfo.c b/arch/arm64/kernel/cacheinfo.c
+index 587543c6c51c..3b337a425acb 100644
+--- a/arch/arm64/kernel/cacheinfo.c
++++ b/arch/arm64/kernel/cacheinfo.c
+@@ -43,6 +43,30 @@ static void ci_leaf_init(struct cacheinfo *this_leaf,
+ 	this_leaf->type = type;
+ }
+ 
++static const struct midr_range allow_list[] = {
++	MIDR_ALL_VERSIONS(MIDR_FUJITSU_A64FX),
++};
++
++/*
++ * This function works only for FUJITSU A64FX processor.
++ * If CONFIG_ALLOW_INCOMPLETE_CACHE_SYSFS is not defined, do nothing.
++ *
++ * Hardware prefetch functions need cache sysfs directory and cache
++ * level/type information. In ARM processor, these information can be
++ * obtained from registers even without PPTT. Therefore, we set the
++ * cpu_map_populated to true to create cache sysfs directory, if the
++ * machine doesn't have PPTT.
++ */
++static void allow_incomplete_cache_sysfs(struct cpu_cacheinfo *cpu_ci)
++{
++	if (!is_midr_in_range_list(read_cpuid_id(), allow_list))
++		return;
++
++	if (!acpi_disabled)
++		if (!acpi_has_pptt())
++			enable_cpu_map_populated(cpu_ci);
++}
++
+ int init_cache_level(unsigned int cpu)
+ {
+ 	unsigned int ctype, level, leaves, fw_level;
+@@ -95,5 +119,8 @@ int populate_cache_leaves(unsigned int cpu)
+ 			ci_leaf_init(this_leaf++, type, level);
+ 		}
+ 	}
++
++	allow_incomplete_cache_sysfs(this_cpu_ci);
++
+ 	return 0;
+ }
+diff --git a/drivers/acpi/pptt.c b/drivers/acpi/pptt.c
+index 701f61c01359..fcd7295b81d7 100644
+--- a/drivers/acpi/pptt.c
++++ b/drivers/acpi/pptt.c
+@@ -838,3 +838,21 @@ int find_acpi_cpu_topology_hetero_id(unsigned int cpu)
+ 	return find_acpi_cpu_topology_tag(cpu, PPTT_ABORT_PACKAGE,
+ 					  ACPI_PPTT_ACPI_IDENTICAL);
+ }
++
++/**
++ * acpi_has_pptt() - Determine if ACPI has PPTT table or not
++ *
++ * Return: true if ACPI has PPTT, false if ACPI doesn't have PPTT.
++ */
++bool acpi_has_pptt(void)
++{
++	struct acpi_table_header *table;
++	acpi_status status;
++
++	status = acpi_get_table(ACPI_SIG_PPTT, 0, &table);
++	if (ACPI_FAILURE(status))
++		return false;
++
++	acpi_put_table(table);
++	return true;
++}
+diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+index d7136d13aa44..9daea11edad7 100644
+--- a/include/linux/acpi.h
++++ b/include/linux/acpi.h
+@@ -1391,6 +1391,7 @@ int find_acpi_cpu_topology_cluster(unsigned int cpu);
+ int find_acpi_cpu_topology_package(unsigned int cpu);
+ int find_acpi_cpu_topology_hetero_id(unsigned int cpu);
+ int find_acpi_cpu_cache_topology(unsigned int cpu, int level);
++bool acpi_has_pptt(void);
+ #else
+ static inline int acpi_pptt_cpu_is_thread(unsigned int cpu)
+ {
+@@ -1416,6 +1417,10 @@ static inline int find_acpi_cpu_cache_topology(unsigned int cpu, int level)
+ {
+ 	return -EINVAL;
+ }
++static inline bool acpi_has_pptt(void)
++{
++	return false;
++}
+ #endif
+ 
+ #ifdef CONFIG_ACPI_PCC
+diff --git a/include/linux/cacheinfo.h b/include/linux/cacheinfo.h
+index 4ff37cb763ae..71f89da6792b 100644
+--- a/include/linux/cacheinfo.h
++++ b/include/linux/cacheinfo.h
+@@ -99,6 +99,16 @@ static inline int acpi_find_last_cache_level(unsigned int cpu)
+ int acpi_find_last_cache_level(unsigned int cpu);
+ #endif
+ 
++#ifndef CONFIG_ALLOW_INCOMPLETE_CACHE_SYSFS
++#define enable_cpu_map_populated(cpu_ci)
++#else
++static inline void enable_cpu_map_populated(struct cpu_cacheinfo *cpu_ci)
++{
++	cpu_ci->cpu_map_populated = true;
++}
++#endif
++
++
+ const struct attribute_group *cache_get_priv_group(struct cacheinfo *this_leaf);
+ 
+ /*
+-- 
+2.27.0
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
