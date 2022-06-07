@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58A89C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4979DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356876AbiFGTrl (ORCPT
+        id S1356892AbiFGTrt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:47:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58482 "EHLO
+        Tue, 7 Jun 2022 15:47:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347217AbiFGSsZ (ORCPT
+        with ESMTP id S1347175AbiFGSsW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:48:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C92C1C92A;
-        Tue,  7 Jun 2022 11:03:05 -0700 (PDT)
+        Tue, 7 Jun 2022 14:48:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 599632DE4;
+        Tue,  7 Jun 2022 11:03:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC513616B6;
-        Tue,  7 Jun 2022 18:03:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67447C36B01;
-        Tue,  7 Jun 2022 18:03:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3539B82340;
+        Tue,  7 Jun 2022 18:03:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C19FC3411F;
+        Tue,  7 Jun 2022 18:03:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624984;
-        bh=jR+NnDaGTHCgP0rySlQV0yuLMMr5ppYhWj7XwS5nCbE=;
+        s=k20201202; t=1654624987;
+        bh=Vn10bNQPc5pbtkyvWaaTmAUvAzjVuNIpxar3jUlAj00=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UWwfc/DUDGxeecXI+TotGA3uCRUCMxf9rmHDLOnq/rkRlyV1uSIln6UEKthAv3r1O
-         UTo3qhDM8kQi0BRL+UVhFKLlp4rd2fCOyTp4Af7+2IPttLk3S3l5JNNO5Q+Xe2fojW
-         0+cZKZTeqYrYusy1GHZOjkblgV1NbD4U5Fe/0q8kyrrulkl7dpHhAKfHUDDvS1bD2Q
-         7/4MyHAy5QdeAIEvnW1z1VDh3yN1xra5W/7vzcpVXPhU84TLrqcpPtNOfuw82cyLtr
-         YZDNo0HoIIahQohSEg6rP2vexA2RYtU9O/uH0CwINWzpYF/X1ghC53gK8g4XsKUGZk
-         WobkzFWZz434g==
+        b=H/U2drwV55Jl+3c90D7mcjsQeuzSiO6a3gr3jO+mjenQNzoZk0K0waGcZDIsFH3tU
+         b42NNFe46rE86Y4IJH+9sZE/ITnUx381hQf5w6KT+6f5VGzkeurt8pWakDdjb6OX3J
+         QSUBnhIGiYoZZ87NKnHpSqPNUDHa3bIcWFtHip81VS0x2VX6WilOQSYutmK/af34WP
+         6L65L4PXbIgS+bfG+GyuANLZo8lbo9T15EjWF44COKxnv7jR5XGzu3JeGc0oU0g1Zb
+         TT2WOH7cIUmSPSmek2QeNvpnVoHavJk7LEezCqh7Ubb5NB1o3MBUGKPiLeHUo+z5L4
+         YAxuAtxUU9GcA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
-        Donald Buczek <buczek@molgen.mpg.de>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        linux-raid@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 18/25] md: protect md_unregister_thread from reentrancy
-Date:   Tue,  7 Jun 2022 14:02:19 -0400
-Message-Id: <20220607180229.482040-18-sashal@kernel.org>
+Cc:     Gong Yuanjun <ruc_gongyuanjun@163.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.14 20/25] drm/radeon: fix a possible null pointer dereference
+Date:   Tue,  7 Jun 2022 14:02:21 -0400
+Message-Id: <20220607180229.482040-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607180229.482040-1-sashal@kernel.org>
 References: <20220607180229.482040-1-sashal@kernel.org>
@@ -54,61 +54,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
+From: Gong Yuanjun <ruc_gongyuanjun@163.com>
 
-[ Upstream commit 1e267742283a4b5a8ca65755c44166be27e9aa0f ]
+[ Upstream commit a2b28708b645c5632dc93669ab06e97874c8244f ]
 
-Generally, the md_unregister_thread is called with reconfig_mutex, but
-raid_message in dm-raid doesn't hold reconfig_mutex to unregister thread,
-so md_unregister_thread can be called simulitaneously from two call sites
-in theory.
+In radeon_fp_native_mode(), the return value of drm_mode_duplicate()
+is assigned to mode, which will lead to a NULL pointer dereference
+on failure of drm_mode_duplicate(). Add a check to avoid npd.
 
-Then after previous commit which remove the protection of reconfig_mutex
-for md_unregister_thread completely, the potential issue could be worse
-than before.
+The failure status of drm_cvt_mode() on the other path is checked too.
 
-Let's take pers_lock at the beginning of function to ensure reentrancy.
-
-Reported-by: Donald Buczek <buczek@molgen.mpg.de>
-Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
-Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/md.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/radeon/radeon_connectors.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/md/md.c b/drivers/md/md.c
-index 85bccc53fdd1..bdbd62007ee5 100644
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -7588,17 +7588,22 @@ EXPORT_SYMBOL(md_register_thread);
+diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
+index fc021b8e4077..dd7d771d13b5 100644
+--- a/drivers/gpu/drm/radeon/radeon_connectors.c
++++ b/drivers/gpu/drm/radeon/radeon_connectors.c
+@@ -489,6 +489,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 	    native_mode->vdisplay != 0 &&
+ 	    native_mode->clock != 0) {
+ 		mode = drm_mode_duplicate(dev, native_mode);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		drm_mode_set_name(mode);
  
- void md_unregister_thread(struct md_thread **threadp)
- {
--	struct md_thread *thread = *threadp;
--	if (!thread)
--		return;
--	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
--	/* Locking ensures that mddev_unlock does not wake_up a
-+	struct md_thread *thread;
-+
-+	/*
-+	 * Locking ensures that mddev_unlock does not wake_up a
- 	 * non-existent thread
- 	 */
- 	spin_lock(&pers_lock);
-+	thread = *threadp;
-+	if (!thread) {
-+		spin_unlock(&pers_lock);
-+		return;
-+	}
- 	*threadp = NULL;
- 	spin_unlock(&pers_lock);
- 
-+	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
- 	kthread_stop(thread->tsk);
- 	kfree(thread);
- }
+@@ -503,6 +505,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 		 * simpler.
+ 		 */
+ 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
+ 	}
 -- 
 2.35.1
 
