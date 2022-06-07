@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 995E2C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9CECCCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:43:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377601AbiFGUmh (ORCPT
+        id S1377622AbiFGUmk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:42:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54096 "EHLO
+        Tue, 7 Jun 2022 16:42:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357681AbiFGTmP (ORCPT
+        with ESMTP id S1357691AbiFGTmQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:42:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FCD21B6FC6;
-        Tue,  7 Jun 2022 11:15:48 -0700 (PDT)
+        Tue, 7 Jun 2022 15:42:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112DF1B6FC4;
+        Tue,  7 Jun 2022 11:15:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A27B66062B;
-        Tue,  7 Jun 2022 18:15:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3010C385A2;
-        Tue,  7 Jun 2022 18:15:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62E9160B16;
+        Tue,  7 Jun 2022 18:15:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B223C34115;
+        Tue,  7 Jun 2022 18:15:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625747;
-        bh=7Cf6JB2q1A9OGemJDYVSx1pjXiSzVu0Yuw1kwfazgNM=;
+        s=korg; t=1654625749;
+        bh=+u2Yt/xw2sPo6EAVrtuFDGeht+dJf7/yaSqLvJi8jeA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ltwN3Ayl/nhCQ7/eiN0PcMpDFKtrpvA0Uqfv03GNmmU4sa5fnwzKRduXRDyW6A9/E
-         WcruH8OFlVz15oOVh5gT1GjyCJGvzafRArrvXeadu6RxvG/3LMM19W+ARDAmj7oUmy
-         ZYe/qjfKOC1o1377TxdrdQ8wt+D0HmmEt08WkdeM=
+        b=KDCWLtBLVQswD3ieDK61erghmxFVPqZaPNlPf3q00wUNokUt3b/+s6C1Jhsj0pIuW
+         GOOF7MCTgPddCRwM4sawLmaMWKMm9OamnEccm+6Igl9JFUtZWumDY/EgnVxSW17Izn
+         Zh7MprD7hnmuRQY04uLb0H6IRN1wBbLpSBTubobQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 130/772] dma-debug: change allocation mode from GFP_NOWAIT to GFP_ATIOMIC
-Date:   Tue,  7 Jun 2022 18:55:22 +0200
-Message-Id: <20220607164952.874867105@linuxfoundation.org>
+        stable@vger.kernel.org, Zheng Bin <zhengbin13@huawei.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 131/772] ASoC: SOF: amd: add missing platform_device_unregister in acp_pci_rn_probe
+Date:   Tue,  7 Jun 2022 18:55:23 +0200
+Message-Id: <20220607164952.903611355@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,39 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Zheng Bin <zhengbin13@huawei.com>
 
-[ Upstream commit 84bc4f1dbbbb5f8aa68706a96711dccb28b518e5 ]
+[ Upstream commit cbcab8cd737c74c20195c31d647e19f7cb49c9b8 ]
 
-We observed the error "cacheline tracking ENOMEM, dma-debug disabled"
-during a light system load (copying some files). The reason for this error
-is that the dma_active_cacheline radix tree uses GFP_NOWAIT allocation -
-so it can't access the emergency memory reserves and it fails as soon as
-anybody reaches the watermark.
+acp_pci_rn_probe misses a call platform_device_unregister in error path,
+this patch fixes that.
 
-This patch changes GFP_NOWAIT to GFP_ATOMIC, so that it can access the
-emergency memory reserves.
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+Link: https://lore.kernel.org/r/20220512013728.4128903-1-zhengbin13@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/debug.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/sof/amd/pci-rn.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index f8ff598596b8..ac740630c79c 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -448,7 +448,7 @@ void debug_dma_dump_mappings(struct device *dev)
-  * other hand, consumes a single dma_debug_entry, but inserts 'nents'
-  * entries into the tree.
-  */
--static RADIX_TREE(dma_active_cacheline, GFP_NOWAIT);
-+static RADIX_TREE(dma_active_cacheline, GFP_ATOMIC);
- static DEFINE_SPINLOCK(radix_lock);
- #define ACTIVE_CACHELINE_MAX_OVERLAP ((1 << RADIX_TREE_MAX_TAGS) - 1)
- #define CACHELINE_PER_PAGE_SHIFT (PAGE_SHIFT - L1_CACHE_SHIFT)
+diff --git a/sound/soc/sof/amd/pci-rn.c b/sound/soc/sof/amd/pci-rn.c
+index 392ffbdf6417..d809d151a38c 100644
+--- a/sound/soc/sof/amd/pci-rn.c
++++ b/sound/soc/sof/amd/pci-rn.c
+@@ -93,6 +93,7 @@ static int acp_pci_rn_probe(struct pci_dev *pci, const struct pci_device_id *pci
+ 	res = devm_kzalloc(&pci->dev, sizeof(struct resource) * ARRAY_SIZE(renoir_res), GFP_KERNEL);
+ 	if (!res) {
+ 		sof_pci_remove(pci);
++		platform_device_unregister(dmic_dev);
+ 		return -ENOMEM;
+ 	}
+ 
 -- 
 2.35.1
 
