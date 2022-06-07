@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EDFFCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:29:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2770CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:29:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351314AbiFGS25 (ORCPT
+        id S1351347AbiFGS3F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:28:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32880 "EHLO
+        Tue, 7 Jun 2022 14:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351796AbiFGSCW (ORCPT
+        with ESMTP id S1351855AbiFGSCY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:02:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73E52131280;
-        Tue,  7 Jun 2022 10:45:26 -0700 (PDT)
+        Tue, 7 Jun 2022 14:02:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9586810EA55;
+        Tue,  7 Jun 2022 10:45:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20F51B80B66;
-        Tue,  7 Jun 2022 17:45:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D396C385A5;
-        Tue,  7 Jun 2022 17:45:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FB43616B1;
+        Tue,  7 Jun 2022 17:45:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39110C385A5;
+        Tue,  7 Jun 2022 17:45:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623923;
-        bh=wVJOIouwpjt0F5qJWzZespttPe32/0Khj9xgQVTw0xc=;
+        s=korg; t=1654623954;
+        bh=N/XzIBIPBGsPoprPNyfVNMlSGS0iPcyIc1v+bSiAN8o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ydXwIQJzWVUMPtuDOqHMHC5KXjK+ysh2KbBB1KBo+f7eIm+Jrf2NnoQ3Ho/IShVOC
-         w9HkZcOiT32k4y9/9rYZ71AGAmnCGySh7GjkYNnc438XCGdIpzP0fKWoEwPJhS05h7
-         QnC70cAFYs6UjSTGJqLRs9IqdbW3ezgtgANwQ4tk=
+        b=YUgNuPqXwoYR6oDDJBQeZLgVrRzHjYHFRiCRCRYp2v4cc0ymUIg6YJl6tzz+F3jwr
+         KKJfpDrNbR3fur1UBEu84sEaQAtEYeViyMQk19HVxFn6hJYDJO/snCW7Ar8sCeK/Vi
+         unDMrhi3BZkaIUiTGJoXxnSphlFyKUSci+dlMWuQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
-        David Howells <dhowells@redhat.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 142/667] afs: Adjust ACK interpretation to try and cope with NAT
-Date:   Tue,  7 Jun 2022 18:56:47 +0200
-Message-Id: <20220607164939.079364149@linuxfoundation.org>
+Subject: [PATCH 5.15 152/667] arm64: dts: qcom: msm8994: Fix the cont_splash_mem address
+Date:   Tue,  7 Jun 2022 18:56:57 +0200
+Message-Id: <20220607164939.376679985@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,153 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit adc9613ff66c26ebaff9814973181ac178beb90b ]
+[ Upstream commit 049c46f31a726bf8d202ff1681661513447fac84 ]
 
-If a client's address changes, say if it is NAT'd, this can disrupt an in
-progress operation.  For most operations, this is not much of a problem,
-but StoreData can be different as some servers modify the target file as
-the data comes in, so if a store request is disrupted, the file can get
-corrupted on the server.
+The default memory map places cont_splash_mem at 3401000, which was
+overlooked.. Fix it!
 
-The problem is that the server doesn't recognise packets that come after
-the change of address as belonging to the original client and will bounce
-them, either by sending an OUT_OF_SEQUENCE ACK to the apparent new call if
-the packet number falls within the initial sequence number window of a call
-or by sending an EXCEEDS_WINDOW ACK if it falls outside and then aborting
-it.  In both cases, firstPacket will be 1 and previousPacket will be 0 in
-the ACK information.
-
-Fix this by the following means:
-
- (1) If a client call receives an EXCEEDS_WINDOW ACK with firstPacket as 1
-     and previousPacket as 0, assume this indicates that the server saw the
-     incoming packets from a different peer and thus as a different call.
-     Fail the call with error -ENETRESET.
-
- (2) Also fail the call if a similar OUT_OF_SEQUENCE ACK occurs if the
-     first packet has been hard-ACK'd.  If it hasn't been hard-ACK'd, the
-     ACK packet will cause it to get retransmitted, so the call will just
-     be repeated.
-
- (3) Make afs_select_fileserver() treat -ENETRESET as a straight fail of
-     the operation.
-
- (4) Prioritise the error code over things like -ECONNRESET as the server
-     did actually respond.
-
- (5) Make writeback treat -ENETRESET as a retryable error and make it
-     redirty all the pages involved in a write so that the VM will retry.
-
-Note that there is still a circumstance that I can't easily deal with: if
-the operation is fully received and processed by the server, but the reply
-is lost due to address change.  There's no way to know if the op happened.
-We can examine the server, but a conflicting change could have been made by
-a third party - and we can't tell the difference.  In such a case, a
-message like:
-
-    kAFS: vnode modified {100058:146266} b7->b8 YFS.StoreData64 (op=2646a)
-
-will be logged to dmesg on the next op to touch the file and the client
-will reset the inode state, including invalidating clean parts of the
-pagecache.
-
-Reported-by: Marc Dionne <marc.dionne@auristor.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: linux-afs@lists.infradead.org
-Link: http://lists.infradead.org/pipermail/linux-afs/2021-December/004811.html # v1
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220319174645.340379-9-konrad.dybcio@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/afs/misc.c     |  5 ++++-
- fs/afs/rotate.c   |  4 ++++
- fs/afs/write.c    |  1 +
- net/rxrpc/input.c | 27 +++++++++++++++++++++++++++
- 4 files changed, 36 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/msm8994.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/afs/misc.c b/fs/afs/misc.c
-index 1d1a8debe472..933e67fcdab1 100644
---- a/fs/afs/misc.c
-+++ b/fs/afs/misc.c
-@@ -163,8 +163,11 @@ void afs_prioritise_error(struct afs_error *e, int error, u32 abort_code)
- 		return;
+diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+index 5a9a5ed0565f..1165269f059e 100644
+--- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+@@ -183,8 +183,8 @@
+ 			no-map;
+ 		};
  
- 	case -ECONNABORTED:
-+		error = afs_abort_to_error(abort_code);
-+		fallthrough;
-+	case -ENETRESET: /* Responded, but we seem to have changed address */
- 		e->responded = true;
--		e->error = afs_abort_to_error(abort_code);
-+		e->error = error;
- 		return;
- 	}
- }
-diff --git a/fs/afs/rotate.c b/fs/afs/rotate.c
-index 79e1a5f6701b..a840c3588ebb 100644
---- a/fs/afs/rotate.c
-+++ b/fs/afs/rotate.c
-@@ -292,6 +292,10 @@ bool afs_select_fileserver(struct afs_operation *op)
- 		op->error = error;
- 		goto iterate_address;
+-		cont_splash_mem: memory@3800000 {
+-			reg = <0 0x03800000 0 0x2400000>;
++		cont_splash_mem: memory@3401000 {
++			reg = <0 0x03401000 0 0x2200000>;
+ 			no-map;
+ 		};
  
-+	case -ENETRESET:
-+		pr_warn("kAFS: Peer reset %s (op=%x)\n",
-+			op->type ? op->type->name : "???", op->debug_id);
-+		fallthrough;
- 	case -ECONNRESET:
- 		_debug("call reset");
- 		op->error = error;
-diff --git a/fs/afs/write.c b/fs/afs/write.c
-index f24370f5c774..a75c4742062a 100644
---- a/fs/afs/write.c
-+++ b/fs/afs/write.c
-@@ -626,6 +626,7 @@ static ssize_t afs_write_back_from_locked_page(struct address_space *mapping,
- 	case -EKEYEXPIRED:
- 	case -EKEYREJECTED:
- 	case -EKEYREVOKED:
-+	case -ENETRESET:
- 		afs_redirty_pages(wbc, mapping, start, len);
- 		mapping_set_error(mapping, ret);
- 		break;
-diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index dc201363f2c4..67d3eba60dc7 100644
---- a/net/rxrpc/input.c
-+++ b/net/rxrpc/input.c
-@@ -903,6 +903,33 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
- 				  rxrpc_propose_ack_respond_to_ack);
- 	}
- 
-+	/* If we get an EXCEEDS_WINDOW ACK from the server, it probably
-+	 * indicates that the client address changed due to NAT.  The server
-+	 * lost the call because it switched to a different peer.
-+	 */
-+	if (unlikely(buf.ack.reason == RXRPC_ACK_EXCEEDS_WINDOW) &&
-+	    first_soft_ack == 1 &&
-+	    prev_pkt == 0 &&
-+	    rxrpc_is_client_call(call)) {
-+		rxrpc_set_call_completion(call, RXRPC_CALL_REMOTELY_ABORTED,
-+					  0, -ENETRESET);
-+		return;
-+	}
-+
-+	/* If we get an OUT_OF_SEQUENCE ACK from the server, that can also
-+	 * indicate a change of address.  However, we can retransmit the call
-+	 * if we still have it buffered to the beginning.
-+	 */
-+	if (unlikely(buf.ack.reason == RXRPC_ACK_OUT_OF_SEQUENCE) &&
-+	    first_soft_ack == 1 &&
-+	    prev_pkt == 0 &&
-+	    call->tx_hard_ack == 0 &&
-+	    rxrpc_is_client_call(call)) {
-+		rxrpc_set_call_completion(call, RXRPC_CALL_REMOTELY_ABORTED,
-+					  0, -ENETRESET);
-+		return;
-+	}
-+
- 	/* Discard any out-of-order or duplicate ACKs (outside lock). */
- 	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
- 		trace_rxrpc_rx_discard_ack(call->debug_id, ack_serial,
 -- 
 2.35.1
 
