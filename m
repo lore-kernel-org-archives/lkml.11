@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D8A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:48:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4009BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:48:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356915AbiFGTr6 (ORCPT
+        id S1356197AbiFGTsJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:47:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58034 "EHLO
+        Tue, 7 Jun 2022 15:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353908AbiFGSss (ORCPT
+        with ESMTP id S1347427AbiFGStJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:48:48 -0400
+        Tue, 7 Jun 2022 14:49:09 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E665587;
-        Tue,  7 Jun 2022 11:03:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D95419034;
+        Tue,  7 Jun 2022 11:03:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D83AB82343;
-        Tue,  7 Jun 2022 18:03:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 980CCC34115;
-        Tue,  7 Jun 2022 18:03:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8DD7BB82182;
+        Tue,  7 Jun 2022 18:03:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD784C34115;
+        Tue,  7 Jun 2022 18:03:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624989;
-        bh=P0JhZEhnX0JrfUblM9gr7pRAlhvGRIoAzFxWTDmIUCM=;
+        s=korg; t=1654624986;
+        bh=1fnCYEHFdDXiebIMF3JIQlXednadZc3hyC/x3Lsi5wA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BxvWUSuX5tn6J6mNmhRoFhp1CfDAEezRR4tOK72QhrJ8XRfSYfBrXbovfJ3Az6ziz
-         BKGeEMeSE3b3Lp6XuL5gxZyNsqG7OY5+57NbFTN1c5yyaLM0cSuMs8ZZKjn6Swa88C
-         y+m4/YafI2vWvNH+uRQw046+vGvzyjjXEZW8l8P0=
+        b=1DZI2QnCiQ0W34YoiTQT4xDeWfqYIxtmJHJGMKFwSCXUL10DcwOuotwbLmRkrIsIx
+         70pD2fyRhCasoMzJaZE0rmW+AiK9lxpKm1z17/j4iUypgbJbiqNq7djg9r95BBFZHk
+         LA82sTFc/rjL46x/SUSukJRMPonmSrK8tTQ0LPfs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 485/667] i2c: at91: use dma safe buffers
-Date:   Tue,  7 Jun 2022 19:02:30 +0200
-Message-Id: <20220607164949.248469337@linuxfoundation.org>
+        stable@vger.kernel.org, Yunfei Wang <yf.wang@mediatek.com>,
+        Yong Wu <yong.wu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 484/667] iommu/mediatek: Add mutex for m4u_group and m4u_dom in data
+Date:   Tue,  7 Jun 2022 19:02:29 +0200
+Message-Id: <20220607164949.217726478@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,56 +53,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Yong Wu <yong.wu@mediatek.com>
 
-[ Upstream commit 03fbb903c8bf7e53e101e8d9a7b261264317c411 ]
+[ Upstream commit 0e5a3f2e630b28e88e018655548212ef8eb4dfcb ]
 
-The supplied buffer might be on the stack and we get the following error
-message:
-[    3.312058] at91_i2c e0070600.i2c: rejecting DMA map of vmalloc memory
+Add a mutex to protect the data in the structure mtk_iommu_data,
+like ->"m4u_group" ->"m4u_dom". For the internal data, we should
+protect it in ourselves driver. Add a mutex for this.
+This could be a fix for the multi-groups support.
 
-Use i2c_{get,put}_dma_safe_msg_buf() to get a DMA-able memory region if
-necessary.
-
-Fixes: 60937b2cdbf9 ("i2c: at91: add dma support")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Fixes: c3045f39244e ("iommu/mediatek: Support for multi domains")
+Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Link: https://lore.kernel.org/r/20220503071427.2285-8-yong.wu@mediatek.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-at91-master.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/iommu/mtk_iommu.c | 13 +++++++++++--
+ drivers/iommu/mtk_iommu.h |  2 ++
+ 2 files changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-at91-master.c b/drivers/i2c/busses/i2c-at91-master.c
-index b0eae94909f4..5eca3b3bb609 100644
---- a/drivers/i2c/busses/i2c-at91-master.c
-+++ b/drivers/i2c/busses/i2c-at91-master.c
-@@ -656,6 +656,7 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
- 	unsigned int_addr_flag = 0;
- 	struct i2c_msg *m_start = msg;
- 	bool is_read;
-+	u8 *dma_buf;
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index b9d690327eae..9b3ded518f83 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -469,15 +469,16 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 		dom->data = data;
+ 	}
  
- 	dev_dbg(&adap->dev, "at91_xfer: processing %d messages:\n", num);
++	mutex_lock(&data->mutex);
+ 	if (!data->m4u_dom) { /* Initialize the M4U HW */
+ 		ret = pm_runtime_resume_and_get(m4udev);
+ 		if (ret < 0)
+-			return ret;
++			goto err_unlock;
  
-@@ -703,7 +704,17 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
- 	dev->msg = m_start;
- 	dev->recv_len_abort = false;
+ 		ret = mtk_iommu_hw_init(data);
+ 		if (ret) {
+ 			pm_runtime_put(m4udev);
+-			return ret;
++			goto err_unlock;
+ 		}
+ 		data->m4u_dom = dom;
+ 		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
+@@ -485,9 +486,14 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
  
-+	if (dev->use_dma) {
-+		dma_buf = i2c_get_dma_safe_msg_buf(m_start, 1);
-+		if (!dma_buf) {
-+			ret = -ENOMEM;
-+			goto out;
-+		}
-+		dev->buf = dma_buf;
-+	}
+ 		pm_runtime_put(m4udev);
+ 	}
++	mutex_unlock(&data->mutex);
+ 
+ 	mtk_iommu_config(data, dev, true, domid);
+ 	return 0;
 +
- 	ret = at91_do_twi_transfer(dev);
-+	i2c_put_dma_safe_msg_buf(dma_buf, m_start, !ret);
++err_unlock:
++	mutex_unlock(&data->mutex);
++	return ret;
+ }
  
- 	ret = (ret < 0) ? ret : num;
- out:
+ static void mtk_iommu_detach_device(struct iommu_domain *domain,
+@@ -627,6 +633,7 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
+ 	if (domid < 0)
+ 		return ERR_PTR(domid);
+ 
++	mutex_lock(&data->mutex);
+ 	group = data->m4u_group[domid];
+ 	if (!group) {
+ 		group = iommu_group_alloc();
+@@ -635,6 +642,7 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
+ 	} else {
+ 		iommu_group_ref_get(group);
+ 	}
++	mutex_unlock(&data->mutex);
+ 	return group;
+ }
+ 
+@@ -909,6 +917,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	platform_set_drvdata(pdev, data);
++	mutex_init(&data->mutex);
+ 
+ 	ret = iommu_device_sysfs_add(&data->iommu, dev, NULL,
+ 				     "mtk-iommu.%pa", &ioaddr);
+diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+index f81fa8862ed0..f413546ac6e5 100644
+--- a/drivers/iommu/mtk_iommu.h
++++ b/drivers/iommu/mtk_iommu.h
+@@ -80,6 +80,8 @@ struct mtk_iommu_data {
+ 
+ 	struct dma_iommu_mapping	*mapping; /* For mtk_iommu_v1.c */
+ 
++	struct mutex			mutex; /* Protect m4u_group/m4u_dom above */
++
+ 	struct list_head		list;
+ 	struct mtk_smi_larb_iommu	larb_imu[MTK_LARB_NR_MAX];
+ };
 -- 
 2.35.1
 
