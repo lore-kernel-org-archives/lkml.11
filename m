@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D457C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:22:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9AD3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:22:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359368AbiFGUWU (ORCPT
+        id S1359391AbiFGUW2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:22:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60992 "EHLO
+        Tue, 7 Jun 2022 16:22:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356067AbiFGTbS (ORCPT
+        with ESMTP id S1355735AbiFGTam (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:31:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D7E12AE9;
-        Tue,  7 Jun 2022 11:12:14 -0700 (PDT)
+        Tue, 7 Jun 2022 15:30:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 299611A448B;
+        Tue,  7 Jun 2022 11:12:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 237356194C;
-        Tue,  7 Jun 2022 18:12:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D2CFC385A2;
-        Tue,  7 Jun 2022 18:12:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F25D61985;
+        Tue,  7 Jun 2022 18:11:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CAE4C385A2;
+        Tue,  7 Jun 2022 18:11:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625532;
-        bh=bGvWXSsVYE8QDR2oEurh5TCb6bubWjqxrbK4wgMkhpQ=;
+        s=korg; t=1654625518;
+        bh=fu3hKi6Rwo9Qxne+luvdh8GJfotUrWq3TWXXU4Nq7uU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FNJ0yvdSQ/oHB1IWusp/sXXMXC96NDsn/PMsYwvec+TGXHNmg0pEBpI6RIC0+924O
-         MlfnzO7bhp7yZTqlGtwkXshKBhnYnKepJIU32gN7w9upR3ePca0ZLfLVZ7Pbi0b+gr
-         g8OnjVdbpWvcAK1YuPd8E2bJGRgmX7k6p4NAnz+A=
+        b=dot78FOvlmv/ilVTXJx+yRl/MTbo521Jd4kTlLm+aYv2P/iXQ2AE4rym02BrMantN
+         72nvX9WN9pWGklRBD337HrVdr4EYHuYHd+kKRySShbPX9OlRlTacdYkqrCQzFLPCXt
+         x64bTZmhP/6GPmrvLbNc4947Ehhkl3B8jVjSkOxI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wen Gong <quic_wgong@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 052/772] ath11k: fix the warning of dev_wake in mhi_pm_disable_transition()
-Date:   Tue,  7 Jun 2022 18:54:04 +0200
-Message-Id: <20220607164950.572963284@linuxfoundation.org>
+        stable@vger.kernel.org, Pankaj Raghav <p.raghav@samsung.com>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Naohiro Aota <naohiro.aota@wdc.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.17 048/772] btrfs: zoned: finish block group when there are no more allocatable bytes left
+Date:   Tue,  7 Jun 2022 18:54:00 +0200
+Message-Id: <20220607164950.451573343@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,133 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wen Gong <quic_wgong@quicinc.com>
+From: Naohiro Aota <naohiro.aota@wdc.com>
 
-[ Upstream commit 0d7a8a6204ea9271f1d0a8c66a9fd2f54d2e3cbc ]
+commit 8b8a53998caefebfe5c8da7a74c2b601caf5dd48 upstream.
 
-When test device recovery with below command, it has warning in message
-as below.
-echo assert > /sys/kernel/debug/ath11k/wcn6855\ hw2.0/simulate_fw_crash
-echo assert > /sys/kernel/debug/ath11k/qca6390\ hw2.0/simulate_fw_crash
+Currently, btrfs_zone_finish_endio() finishes a block group only when the
+written region reaches the end of the block group. We can also finish the
+block group when no more allocation is possible.
 
-warning message:
-[ 1965.642121] ath11k_pci 0000:06:00.0: simulating firmware assert crash
-[ 1968.471364] ieee80211 phy0: Hardware restart was requested
-[ 1968.511305] ------------[ cut here ]------------
-[ 1968.511368] WARNING: CPU: 3 PID: 1546 at drivers/bus/mhi/core/pm.c:505 mhi_pm_disable_transition+0xb37/0xda0 [mhi]
-[ 1968.511443] Modules linked in: ath11k_pci ath11k mac80211 libarc4 cfg80211 qmi_helpers qrtr_mhi mhi qrtr nvme nvme_core
-[ 1968.511563] CPU: 3 PID: 1546 Comm: kworker/u17:0 Kdump: loaded Tainted: G        W         5.17.0-rc3-wt-ath+ #579
-[ 1968.511629] Hardware name: Intel(R) Client Systems NUC8i7HVK/NUC8i7HVB, BIOS HNKBLi70.86A.0067.2021.0528.1339 05/28/2021
-[ 1968.511704] Workqueue: mhi_hiprio_wq mhi_pm_st_worker [mhi]
-[ 1968.511787] RIP: 0010:mhi_pm_disable_transition+0xb37/0xda0 [mhi]
-[ 1968.511870] Code: a9 fe ff ff 4c 89 ff 44 89 04 24 e8 03 46 f6 e5 44 8b 04 24 41 83 f8 01 0f 84 21 fe ff ff e9 4c fd ff ff 0f 0b e9 af f8 ff ff <0f> 0b e9 5c f8 ff ff 48 89 df e8 da 9e ee e3 e9 12 fd ff ff 4c 89
-[ 1968.511923] RSP: 0018:ffffc900024efbf0 EFLAGS: 00010286
-[ 1968.511969] RAX: 00000000ffffffff RBX: ffff88811d241250 RCX: ffffffffc0176922
-[ 1968.512014] RDX: 0000000000000000 RSI: 0000000000000004 RDI: ffff888118a90a24
-[ 1968.512059] RBP: ffff888118a90800 R08: 0000000000000000 R09: ffff888118a90a27
-[ 1968.512102] R10: ffffed1023152144 R11: 0000000000000001 R12: ffff888118a908ac
-[ 1968.512229] R13: ffff888118a90928 R14: dffffc0000000000 R15: ffff888118a90a24
-[ 1968.512310] FS:  0000000000000000(0000) GS:ffff888234200000(0000) knlGS:0000000000000000
-[ 1968.512405] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 1968.512493] CR2: 00007f5538f443a8 CR3: 000000016dc28001 CR4: 00000000003706e0
-[ 1968.512587] Call Trace:
-[ 1968.512672]  <TASK>
-[ 1968.512751]  ? _raw_spin_unlock_irq+0x1f/0x40
-[ 1968.512859]  mhi_pm_st_worker+0x3ac/0x790 [mhi]
-[ 1968.512959]  ? mhi_pm_mission_mode_transition.isra.0+0x7d0/0x7d0 [mhi]
-[ 1968.513063]  process_one_work+0x86a/0x1400
-[ 1968.513184]  ? pwq_dec_nr_in_flight+0x230/0x230
-[ 1968.513312]  ? move_linked_works+0x125/0x290
-[ 1968.513416]  worker_thread+0x6db/0xf60
-[ 1968.513536]  ? process_one_work+0x1400/0x1400
-[ 1968.513627]  kthread+0x241/0x2d0
-[ 1968.513733]  ? kthread_complete_and_exit+0x20/0x20
-[ 1968.513821]  ret_from_fork+0x22/0x30
-[ 1968.513924]  </TASK>
-
-Reason is mhi_deassert_dev_wake() from mhi_device_put() is called
-but mhi_assert_dev_wake() from __mhi_device_get_sync() is not called
-in progress of recovery. Commit 8e0559921f9a ("bus: mhi: core:
-Skip device wake in error or shutdown state") add check for the
-pm_state of mhi in __mhi_device_get_sync(), and the pm_state is not
-the normal state untill recovery is completed, so it leads the
-dev_wake is not 0 and above warning print in mhi_pm_disable_transition()
-while checking mhi_cntrl->dev_wake.
-
-Add check in ath11k_pci_write32()/ath11k_pci_read32() to skip call
-mhi_device_put() if mhi_device_get_sync() does not really do wake,
-then the warning gone.
-
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03003-QCAHSPSWPL_V1_V2_SILICONZ_LITE-2
-
-Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220228064606.8981-5-quic_wgong@quicinc.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: be1a1d7a5d24 ("btrfs: zoned: finish fully written block group")
+CC: stable@vger.kernel.org # 5.16+
+Reviewed-by: Pankaj Raghav <p.raghav@samsung.com>
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/ath11k/pci.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ fs/btrfs/zoned.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
-index 903758751c99..8a3ff12057e8 100644
---- a/drivers/net/wireless/ath/ath11k/pci.c
-+++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -191,6 +191,7 @@ void ath11k_pci_write32(struct ath11k_base *ab, u32 offset, u32 value)
- {
- 	struct ath11k_pci *ab_pci = ath11k_pci_priv(ab);
- 	u32 window_start;
-+	int ret = 0;
+--- a/fs/btrfs/zoned.c
++++ b/fs/btrfs/zoned.c
+@@ -1961,6 +1961,7 @@ void btrfs_zone_finish_endio(struct btrf
+ 	struct btrfs_block_group *block_group;
+ 	struct map_lookup *map;
+ 	struct btrfs_device *device;
++	u64 min_alloc_bytes;
+ 	u64 physical;
  
- 	/* for offset beyond BAR + 4K - 32, may
- 	 * need to wakeup MHI to access.
-@@ -198,7 +199,7 @@ void ath11k_pci_write32(struct ath11k_base *ab, u32 offset, u32 value)
- 	if (ab->hw_params.wakeup_mhi &&
- 	    test_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
- 	    offset >= ACCESS_ALWAYS_OFF)
--		mhi_device_get_sync(ab_pci->mhi_ctrl->mhi_dev);
-+		ret = mhi_device_get_sync(ab_pci->mhi_ctrl->mhi_dev);
+ 	if (!btrfs_is_zoned(fs_info))
+@@ -1969,7 +1970,15 @@ void btrfs_zone_finish_endio(struct btrf
+ 	block_group = btrfs_lookup_block_group(fs_info, logical);
+ 	ASSERT(block_group);
  
- 	if (offset < WINDOW_START) {
- 		iowrite32(value, ab->mem  + offset);
-@@ -222,7 +223,8 @@ void ath11k_pci_write32(struct ath11k_base *ab, u32 offset, u32 value)
+-	if (logical + length < block_group->start + block_group->zone_capacity)
++	/* No MIXED_BG on zoned btrfs. */
++	if (block_group->flags & BTRFS_BLOCK_GROUP_DATA)
++		min_alloc_bytes = fs_info->sectorsize;
++	else
++		min_alloc_bytes = fs_info->nodesize;
++
++	/* Bail out if we can allocate more data from this block group. */
++	if (logical + length + min_alloc_bytes <=
++	    block_group->start + block_group->zone_capacity)
+ 		goto out;
  
- 	if (ab->hw_params.wakeup_mhi &&
- 	    test_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
--	    offset >= ACCESS_ALWAYS_OFF)
-+	    offset >= ACCESS_ALWAYS_OFF &&
-+	    !ret)
- 		mhi_device_put(ab_pci->mhi_ctrl->mhi_dev);
- }
- 
-@@ -230,6 +232,7 @@ u32 ath11k_pci_read32(struct ath11k_base *ab, u32 offset)
- {
- 	struct ath11k_pci *ab_pci = ath11k_pci_priv(ab);
- 	u32 val, window_start;
-+	int ret = 0;
- 
- 	/* for offset beyond BAR + 4K - 32, may
- 	 * need to wakeup MHI to access.
-@@ -237,7 +240,7 @@ u32 ath11k_pci_read32(struct ath11k_base *ab, u32 offset)
- 	if (ab->hw_params.wakeup_mhi &&
- 	    test_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
- 	    offset >= ACCESS_ALWAYS_OFF)
--		mhi_device_get_sync(ab_pci->mhi_ctrl->mhi_dev);
-+		ret = mhi_device_get_sync(ab_pci->mhi_ctrl->mhi_dev);
- 
- 	if (offset < WINDOW_START) {
- 		val = ioread32(ab->mem + offset);
-@@ -261,7 +264,8 @@ u32 ath11k_pci_read32(struct ath11k_base *ab, u32 offset)
- 
- 	if (ab->hw_params.wakeup_mhi &&
- 	    test_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags) &&
--	    offset >= ACCESS_ALWAYS_OFF)
-+	    offset >= ACCESS_ALWAYS_OFF &&
-+	    !ret)
- 		mhi_device_put(ab_pci->mhi_ctrl->mhi_dev);
- 
- 	return val;
--- 
-2.35.1
-
+ 	spin_lock(&block_group->lock);
 
 
