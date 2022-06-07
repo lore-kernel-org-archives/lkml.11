@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD3D6C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC667CCA47F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:07:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379290AbiFGVFv (ORCPT
+        id S1379639AbiFGVGK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41432 "EHLO
+        Tue, 7 Jun 2022 17:06:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359008AbiFGUGU (ORCPT
+        with ESMTP id S1359080AbiFGUIK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:06:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530131C4248;
-        Tue,  7 Jun 2022 11:25:55 -0700 (PDT)
+        Tue, 7 Jun 2022 16:08:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB09F1C4B28;
+        Tue,  7 Jun 2022 11:26:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86C65B822C0;
-        Tue,  7 Jun 2022 18:25:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3024C385A2;
-        Tue,  7 Jun 2022 18:25:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B4D961295;
+        Tue,  7 Jun 2022 18:26:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69899C385A2;
+        Tue,  7 Jun 2022 18:26:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626351;
-        bh=QJPm2YlDollzSuo4wj5sT5ts8zA9rU3NK1m5esGJIOk=;
+        s=korg; t=1654626367;
+        bh=voKeWoxAo4WPTzbvPo2ODXGQq48NrtB6KBr1akkVLNQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MM2YMJalKp4jicijNS9uGnOXsC8dble4U8y1AhJsEzVNLLcnGqz+pObxUPKdY+L3U
-         1i/N6X6DaQ6lnndY/ImqrgKULW/CK8WYlSRorpsY2x9TQ+p7Or/uxOdfjKBgomjePH
-         ZDlfliQAnDCF/ebbAM835q4tkVlMYPeOdNBkNtkw=
+        b=l5RayMQfdakeSq8RRFWqR/XhIISyG/kJqtk7APeY3X56zZXymeBvv9gPymbxae6Jm
+         zWVqL6sJjfz1T/pwM/UpvcG4Bv26t+cGb4zzdUDtgU9Z7Umuo0druH9jm8dZQCTPJN
+         ADManghmSnlITZ+F8yNXhjqotv1Ii4UeQtDR+t88=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 348/772] Revert "cpufreq: Fix possible race in cpufreq online error path"
-Date:   Tue,  7 Jun 2022 18:59:00 +0200
-Message-Id: <20220607164959.276114706@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 354/772] HID: amd_sfh: Modify the bus name
+Date:   Tue,  7 Jun 2022 18:59:06 +0200
+Message-Id: <20220607164959.450926813@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,49 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Viresh Kumar <viresh.kumar@linaro.org>
+From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
 
-[ Upstream commit 85f0e42bd65d01b351d561efb38e584d4c596553 ]
+[ Upstream commit 206c3c2d85de8847fb732a5fb71443bacd287216 ]
 
-This reverts commit f346e96267cd76175d6c201b40f770c0116a8a04.
+Modifying the amd-sfh bus name to meaningful name.
 
-The commit tried to fix a possible real bug but it made it even worse.
-The fix was simply buggy as now an error out to out_offline_policy or
-out_exit_policy will try to release a semaphore which was never taken in
-the first place. This works fine only if we failed late, i.e. via
-out_destroy_policy.
-
-Fixes: f346e96267cd ("cpufreq: Fix possible race in cpufreq online error path")
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 4b2c53d93a4b ("SFH:Transport Driver to add support of AMD Sensor Fusion Hub (SFH)")
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/cpufreq.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/hid/amd-sfh-hid/amd_sfh_hid.c | 2 +-
+ drivers/hid/amd-sfh-hid/amd_sfh_hid.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-index 233e8af48848..fbaa8e6c7d23 100644
---- a/drivers/cpufreq/cpufreq.c
-+++ b/drivers/cpufreq/cpufreq.c
-@@ -1534,6 +1534,8 @@ static int cpufreq_online(unsigned int cpu)
- 	for_each_cpu(j, policy->real_cpus)
- 		remove_cpu_dev_symlink(policy, get_cpu_device(j));
+diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_hid.c b/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
+index 2bf97b6ac973..6e487e41f4dd 100644
+--- a/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
++++ b/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
+@@ -141,7 +141,7 @@ int amdtp_hid_probe(u32 cur_hid_dev, struct amdtp_cl_data *cli_data)
  
-+	up_write(&policy->rwsem);
-+
- out_offline_policy:
- 	if (cpufreq_driver->offline)
- 		cpufreq_driver->offline(policy);
-@@ -1542,9 +1544,6 @@ static int cpufreq_online(unsigned int cpu)
- 	if (cpufreq_driver->exit)
- 		cpufreq_driver->exit(policy);
+ 	hid->driver_data = hid_data;
+ 	cli_data->hid_sensor_hubs[cur_hid_dev] = hid;
+-	hid->bus = BUS_AMD_AMDTP;
++	hid->bus = BUS_AMD_SFH;
+ 	hid->vendor = AMD_SFH_HID_VENDOR;
+ 	hid->product = AMD_SFH_HID_PRODUCT;
+ 	snprintf(hid->name, sizeof(hid->name), "%s %04X:%04X", "hid-amdtp",
+diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_hid.h b/drivers/hid/amd-sfh-hid/amd_sfh_hid.h
+index c60abd38054c..cb04f47c8648 100644
+--- a/drivers/hid/amd-sfh-hid/amd_sfh_hid.h
++++ b/drivers/hid/amd-sfh-hid/amd_sfh_hid.h
+@@ -12,7 +12,7 @@
+ #define AMDSFH_HID_H
  
--	cpumask_clear(policy->cpus);
--	up_write(&policy->rwsem);
--
- out_free_policy:
- 	cpufreq_policy_free(policy);
- 	return ret;
+ #define MAX_HID_DEVICES		5
+-#define BUS_AMD_AMDTP		0x20
++#define BUS_AMD_SFH		0x20
+ #define AMD_SFH_HID_VENDOR	0x1022
+ #define AMD_SFH_HID_PRODUCT	0x0001
+ 
 -- 
 2.35.1
 
