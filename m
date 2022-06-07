@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F384CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4198DCCA488
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379629AbiFGVKn (ORCPT
+        id S1379679AbiFGVKt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:10:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33622 "EHLO
+        Tue, 7 Jun 2022 17:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359468AbiFGUNE (ORCPT
+        with ESMTP id S1359467AbiFGUNE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:13:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9177F1C7EE2;
-        Tue,  7 Jun 2022 11:28:11 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91A521C7EE3;
+        Tue,  7 Jun 2022 11:28:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5921612EC;
-        Tue,  7 Jun 2022 18:28:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7B26C385A2;
-        Tue,  7 Jun 2022 18:28:09 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2F2EDCE2439;
+        Tue,  7 Jun 2022 18:28:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AED4C385A2;
+        Tue,  7 Jun 2022 18:28:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626490;
-        bh=T6MiXZpB06tcLxMbXmqVOWVYpW3czv+bImNQtA0WiII=;
+        s=korg; t=1654626484;
+        bh=kJImaIrTdnGNJWNnXYrajPYnP1GG0dHB5UOP8/EZ9G4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dAgSdHLEC2J/5tO48ZaTWJUPSHq5U8YNvaZ6cdwW0Rxsh+zeJozH9RI4hTZFZaDVP
-         5ajahaSKtaXZi6ToYTk+Hng6IhUQJi7v6v7YEvImMTwMpCd74eEqljqR+agWvUQGeu
-         Z5XjFDsJppSCJ7+yDH3Y6eGoUY7ezraxekjl+ss4=
+        b=1WVvSGRTJK/6qfQ8GDresksAeu9JJ9BGAntzrNVoijJOiPxewBbhE478e/Lz3TDDW
+         iHelC+nqXINAGb6v213kRzQsYpLrm5MXq5o7RGJ82oHH9hGSdoNXysVkvWzjEx5pJ1
+         Yr8A0TFeFwkZxD3Vvvj1Qx3ulBGLvlPtkTmCtA8I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 398/772] sctp: read sk->sk_bound_dev_if once in sctp_rcv()
-Date:   Tue,  7 Jun 2022 18:59:50 +0200
-Message-Id: <20220607165000.738234353@linuxfoundation.org>
+        stable@vger.kernel.org, Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 396/772] nvme: set dma alignment to dword
+Date:   Tue,  7 Jun 2022 18:59:48 +0200
+Message-Id: <20220607165000.680924542@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,47 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Keith Busch <kbusch@kernel.org>
 
-[ Upstream commit a20ea298071f46effa3aaf965bf9bb34c901db3f ]
+[ Upstream commit 52fde2c07da606f3f120af4f734eadcfb52b04be ]
 
-sctp_rcv() reads sk->sk_bound_dev_if twice while the socket
-is not locked. Another cpu could change this field under us.
+The nvme specification only requires qword alignment for segment
+descriptors, and the driver already guarantees that. The spec has always
+allowed user data to be dword aligned, which is what the queue's
+attribute is for, so relax the alignment requirement to that value.
 
-Fixes: 0fd9a65a76e8 ("[SCTP] Support SO_BINDTODEVICE socket option on incoming packets.")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Neil Horman <nhorman@tuxdriver.com>
-Cc: Vlad Yasevich <vyasevich@gmail.com>
-Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+While we could allow byte alignment for some controllers when using
+SGLs, we still need to support PRP, and that only allows dword.
+
+Fixes: 3b2a1ebceba3 ("nvme: set dma alignment to qword")
+Signed-off-by: Keith Busch <kbusch@kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sctp/input.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/nvme/host/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sctp/input.c b/net/sctp/input.c
-index 90e12bafdd48..4f43afa8678f 100644
---- a/net/sctp/input.c
-+++ b/net/sctp/input.c
-@@ -92,6 +92,7 @@ int sctp_rcv(struct sk_buff *skb)
- 	struct sctp_chunk *chunk;
- 	union sctp_addr src;
- 	union sctp_addr dest;
-+	int bound_dev_if;
- 	int family;
- 	struct sctp_af *af;
- 	struct net *net = dev_net(skb->dev);
-@@ -169,7 +170,8 @@ int sctp_rcv(struct sk_buff *skb)
- 	 * If a frame arrives on an interface and the receiving socket is
- 	 * bound to another interface, via SO_BINDTODEVICE, treat it as OOTB
- 	 */
--	if (sk->sk_bound_dev_if && (sk->sk_bound_dev_if != af->skb_iif(skb))) {
-+	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
-+	if (bound_dev_if && (bound_dev_if != af->skb_iif(skb))) {
- 		if (transport) {
- 			sctp_transport_put(transport);
- 			asoc = NULL;
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 79ef46356d40..e086440a2042 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -1796,7 +1796,7 @@ static void nvme_set_queue_limits(struct nvme_ctrl *ctrl,
+ 		blk_queue_max_segments(q, min_t(u32, max_segments, USHRT_MAX));
+ 	}
+ 	blk_queue_virt_boundary(q, NVME_CTRL_PAGE_SIZE - 1);
+-	blk_queue_dma_alignment(q, 7);
++	blk_queue_dma_alignment(q, 3);
+ 	blk_queue_write_cache(q, vwc, vwc);
+ }
+ 
 -- 
 2.35.1
 
