@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9276CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E146CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379911AbiFGVNK (ORCPT
+        id S1379922AbiFGVNP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:13:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38568 "EHLO
+        Tue, 7 Jun 2022 17:13:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376520AbiFGUQw (ORCPT
+        with ESMTP id S1376629AbiFGUQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:16:52 -0400
+        Tue, 7 Jun 2022 16:16:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1435F1CF147;
-        Tue,  7 Jun 2022 11:29:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EDF1CF173;
+        Tue,  7 Jun 2022 11:29:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CDA6C61435;
-        Tue,  7 Jun 2022 18:29:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF232C36B00;
-        Tue,  7 Jun 2022 18:29:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0B3661435;
+        Tue,  7 Jun 2022 18:29:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CAA8C385A2;
+        Tue,  7 Jun 2022 18:29:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626562;
-        bh=1IX2p0Xpxv3WHP262mcruEcmeQciyNI1BS36P/9r2Oo=;
+        s=korg; t=1654626577;
+        bh=TMGAqEloyoxU4WWgbjXsB23jfVXybmE1fmgBgQzaYfw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K52RZWGzd1hQIRli81cH6E9SxaVODtZiqEAY06Cbz5+/06QD7uDQ3ZhbnJeUdw0c7
-         UR9jvy1txFAfkPwMYIKrhPeNPry5e8d0vuQST+PcvlAA4puFExjahwy6IO1PMklVUU
-         vVr9knHB4YS5ebdGKVfXKdGUfuMoi4DeiFsKwucM=
+        b=rRxtqJhgL6phvhmVpWOhC2pTe8688zRWF9XfuXFQOxshfazEBJGQzJz/HFFsOEh3D
+         mpxv39fWMvT4ZNYU0hZ/f7YIzXfjOvsTzmdSwlm8SGAFebMewllLSLSVByWvlJqpBX
+         CoyMVyEAE5j4/50mQS8gevd+ICNkANm4eIw0fnsc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        stable@vger.kernel.org, Yake Yang <yake.yang@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
         Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 386/772] Bluetooth: protect le accept and resolv lists with hdev->lock
-Date:   Tue,  7 Jun 2022 18:59:38 +0200
-Message-Id: <20220607165000.388874720@linuxfoundation.org>
+Subject: [PATCH 5.17 387/772] Bluetooth: btmtksdio: fix use-after-free at btmtksdio_recv_event
+Date:   Tue,  7 Jun 2022 18:59:39 +0200
+Message-Id: <20220607165000.418114487@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,94 +51,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Sean Wang <sean.wang@mediatek.com>
 
-[ Upstream commit 5e2b6064cbc5fd582396768c5f9583f65085e368 ]
+[ Upstream commit 0fab6361c4ba17d1b43a991bef4238a3c1754d35 ]
 
-Concurrent operations from events on le_{accept,resolv}_list are
-currently unprotected by hdev->lock.
-Most existing code do already protect the lists with that lock.
-This can be observed in hci_debugfs and hci_sync.
-Add the protection for these events too.
+We should not access skb buffer data anymore after hci_recv_frame was
+called.
 
-Fixes: b950aa88638c ("Bluetooth: Add definitions and track LE resolve list modification")
-Fixes: 0f36b589e4ee ("Bluetooth: Track LE white list modification via HCI commands")
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+[   39.634809] BUG: KASAN: use-after-free in btmtksdio_recv_event+0x1b0
+[   39.634855] Read of size 1 at addr ffffff80cf28a60d by task kworker
+[   39.634962] Call trace:
+[   39.634974]  dump_backtrace+0x0/0x3b8
+[   39.634999]  show_stack+0x20/0x2c
+[   39.635016]  dump_stack_lvl+0x60/0x78
+[   39.635040]  print_address_description+0x70/0x2f0
+[   39.635062]  kasan_report+0x154/0x194
+[   39.635079]  __asan_report_load1_noabort+0x44/0x50
+[   39.635099]  btmtksdio_recv_event+0x1b0/0x1c4
+[   39.635129]  btmtksdio_txrx_work+0x6cc/0xac4
+[   39.635157]  process_one_work+0x560/0xc5c
+[   39.635177]  worker_thread+0x7ec/0xcc0
+[   39.635195]  kthread+0x2d0/0x3d0
+[   39.635215]  ret_from_fork+0x10/0x20
+[   39.635247] Allocated by task 0:
+[   39.635260] (stack is not available)
+[   39.635281] Freed by task 2392:
+[   39.635295]  kasan_save_stack+0x38/0x68
+[   39.635319]  kasan_set_track+0x28/0x3c
+[   39.635338]  kasan_set_free_info+0x28/0x4c
+[   39.635357]  ____kasan_slab_free+0x104/0x150
+[   39.635374]  __kasan_slab_free+0x18/0x28
+[   39.635391]  slab_free_freelist_hook+0x114/0x248
+[   39.635410]  kfree+0xf8/0x2b4
+[   39.635427]  skb_free_head+0x58/0x98
+[   39.635447]  skb_release_data+0x2f4/0x410
+[   39.635464]  skb_release_all+0x50/0x60
+[   39.635481]  kfree_skb+0xc8/0x25c
+[   39.635498]  hci_event_packet+0x894/0xca4 [bluetooth]
+[   39.635721]  hci_rx_work+0x1c8/0x68c [bluetooth]
+[   39.635925]  process_one_work+0x560/0xc5c
+[   39.635951]  worker_thread+0x7ec/0xcc0
+[   39.635970]  kthread+0x2d0/0x3d0
+[   39.635990]  ret_from_fork+0x10/0x20
+[   39.636021] The buggy address belongs to the object at ffffff80cf28a600
+                which belongs to the cache kmalloc-512 of size 512
+[   39.636039] The buggy address is located 13 bytes inside of
+                512-byte region [ffffff80cf28a600, ffffff80cf28a800)
+
+Fixes: 9aebfd4a2200 ("Bluetooth: mediatek: add support for MediaTek MT7663S and MT7668S SDIO devices")
+Co-developed-by: Yake Yang <yake.yang@mediatek.com>
+Signed-off-by: Yake Yang <yake.yang@mediatek.com>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
 Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_event.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/bluetooth/btmtksdio.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 75bad1781983..4002a47832bc 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -1835,7 +1835,9 @@ static u8 hci_cc_le_clear_accept_list(struct hci_dev *hdev, void *data,
- 	if (rp->status)
- 		return rp->status;
+diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
+index ecf29cfa7d79..411676ad0c6b 100644
+--- a/drivers/bluetooth/btmtksdio.c
++++ b/drivers/bluetooth/btmtksdio.c
+@@ -368,6 +368,7 @@ static int btmtksdio_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
+ {
+ 	struct btmtksdio_dev *bdev = hci_get_drvdata(hdev);
+ 	struct hci_event_hdr *hdr = (void *)skb->data;
++	u8 evt = hdr->evt;
+ 	int err;
  
-+	hci_dev_lock(hdev);
- 	hci_bdaddr_list_clear(&hdev->le_accept_list);
-+	hci_dev_unlock(hdev);
+ 	/* When someone waits for the WMT event, the skb is being cloned
+@@ -385,7 +386,7 @@ static int btmtksdio_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
+ 	if (err < 0)
+ 		goto err_free_skb;
  
- 	return rp->status;
- }
-@@ -1855,8 +1857,10 @@ static u8 hci_cc_le_add_to_accept_list(struct hci_dev *hdev, void *data,
- 	if (!sent)
- 		return rp->status;
- 
-+	hci_dev_lock(hdev);
- 	hci_bdaddr_list_add(&hdev->le_accept_list, &sent->bdaddr,
- 			    sent->bdaddr_type);
-+	hci_dev_unlock(hdev);
- 
- 	return rp->status;
- }
-@@ -1876,8 +1880,10 @@ static u8 hci_cc_le_del_from_accept_list(struct hci_dev *hdev, void *data,
- 	if (!sent)
- 		return rp->status;
- 
-+	hci_dev_lock(hdev);
- 	hci_bdaddr_list_del(&hdev->le_accept_list, &sent->bdaddr,
- 			    sent->bdaddr_type);
-+	hci_dev_unlock(hdev);
- 
- 	return rp->status;
- }
-@@ -1949,9 +1955,11 @@ static u8 hci_cc_le_add_to_resolv_list(struct hci_dev *hdev, void *data,
- 	if (!sent)
- 		return rp->status;
- 
-+	hci_dev_lock(hdev);
- 	hci_bdaddr_list_add_with_irk(&hdev->le_resolv_list, &sent->bdaddr,
- 				sent->bdaddr_type, sent->peer_irk,
- 				sent->local_irk);
-+	hci_dev_unlock(hdev);
- 
- 	return rp->status;
- }
-@@ -1971,8 +1979,10 @@ static u8 hci_cc_le_del_from_resolv_list(struct hci_dev *hdev, void *data,
- 	if (!sent)
- 		return rp->status;
- 
-+	hci_dev_lock(hdev);
- 	hci_bdaddr_list_del_with_irk(&hdev->le_resolv_list, &sent->bdaddr,
- 			    sent->bdaddr_type);
-+	hci_dev_unlock(hdev);
- 
- 	return rp->status;
- }
-@@ -1987,7 +1997,9 @@ static u8 hci_cc_le_clear_resolv_list(struct hci_dev *hdev, void *data,
- 	if (rp->status)
- 		return rp->status;
- 
-+	hci_dev_lock(hdev);
- 	hci_bdaddr_list_clear(&hdev->le_resolv_list);
-+	hci_dev_unlock(hdev);
- 
- 	return rp->status;
- }
+-	if (hdr->evt == HCI_EV_WMT) {
++	if (evt == HCI_EV_WMT) {
+ 		if (test_and_clear_bit(BTMTKSDIO_TX_WAIT_VND_EVT,
+ 				       &bdev->tx_state)) {
+ 			/* Barrier to sync with other CPUs */
 -- 
 2.35.1
 
