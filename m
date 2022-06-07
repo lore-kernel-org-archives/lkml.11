@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B96CCA494
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99D19C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359811AbiFGUQa (ORCPT
+        id S1356600AbiFGUR2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:16:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43240 "EHLO
+        Tue, 7 Jun 2022 16:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355887AbiFGT0G (ORCPT
+        with ESMTP id S1356662AbiFGT2E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:26:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB0119F05B;
-        Tue,  7 Jun 2022 11:09:32 -0700 (PDT)
+        Tue, 7 Jun 2022 15:28:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA00D6B651;
+        Tue,  7 Jun 2022 11:10:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB61DB81F38;
-        Tue,  7 Jun 2022 18:09:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DDD7C385A2;
-        Tue,  7 Jun 2022 18:09:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67E17B80B66;
+        Tue,  7 Jun 2022 18:10:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA850C385A5;
+        Tue,  7 Jun 2022 18:10:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625369;
-        bh=0zqDnn8AWgneW2psyZRXzX0YIsFeJ0J6TgZN6NpYX3E=;
+        s=korg; t=1654625422;
+        bh=PQpjQG3pFURTCSgJVO1XL5DHQPOIXC4phwjj4OG20fs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aoIe+Es3/3mcgvxn7L7dY7Qk0Zvuy0N9ooxjiStmg2KlGapAbOkjMr16dr4GejD1x
-         37mdzngt8ZOxk9VnrS2688b4MevFdeFuopf6yAMioceUA2Ef5TQ/0qTdSoV0K3wT3r
-         WWrbZgGal6cKoC+sZ4KyBW9HiQeXOdulMNBMjZfk=
+        b=JfpSmkJfEa7LUKKdSZldc82pl4e0Qlksv2eU11VQ/5xOhm9MzVDO+CnDwPGraMAFa
+         m8HMpHph+oxVpkxmBut1Mc4T3Q4WfI6p+imsHICr2dDkr2bpT9+CHhKCzkejMZv4Sc
+         mR3PeWSMkD8v73W5+KXY75/7LK/uLdUfcnlNHtnM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yixing Liu <liuyixing1@huawei.com>,
-        Wenpeng Liang <liangwenpeng@huawei.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.15 655/667] RDMA/hns: Remove the num_cqc_timer variable
-Date:   Tue,  7 Jun 2022 19:05:20 +0200
-Message-Id: <20220607164954.292745089@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Gary van der Merwe <gary.vandermerwe@fnb.co.za>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.17 014/772] USB: serial: pl2303: fix type detection for odd device
+Date:   Tue,  7 Jun 2022 18:53:26 +0200
+Message-Id: <20220607164949.421683229@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,78 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yixing Liu <liuyixing1@huawei.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit db5dfbf5b201df65c1f5332c4d9d5e7c2f42396b upstream.
+commit e82e7c6dde91acd6748d672a44dc1980ce239f86 upstream.
 
-The bt number of cqc_timer of HIP09 increases compared with that of HIP08.
-Therefore, cqc_timer_bt_num and num_cqc_timer do not match. As a result,
-the driver may fail to allocate cqc_timer. So the driver needs to uniquely
-uses cqc_timer_bt_num to represent the bt number of cqc_timer.
+At least one pl2303 device has a bcdUSB of 1.0.1 which most likely was
+was intended as 1.1.
 
-Fixes: 0e40dc2f70cd ("RDMA/hns: Add timer allocation support for hip08")
-Link: https://lore.kernel.org/r/20220429093545.58070-1-liangwenpeng@huawei.com
-Signed-off-by: Yixing Liu <liuyixing1@huawei.com>
-Signed-off-by: Wenpeng Liang <liangwenpeng@huawei.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Allow bcdDevice 1.0.1 but interpret it as 1.1.
+
+Fixes: 1e9faef4d26d ("USB: serial: pl2303: fix HX type detection")
+Cc: stable@vger.kernel.org      # 5.13
+Link: https://lore.kernel.org/linux-usb/CAJixRzqf4a9-ZKZDgWxicc_BpfdZVE9qqGmkiO7xEstOXUbGvQ@mail.gmail.com
+Reported-by: Gary van der Merwe <gary.vandermerwe@fnb.co.za>
+Link: https://lore.kernel.org/r/20220517161736.13313-1-johan@kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/hns/hns_roce_device.h |    1 -
- drivers/infiniband/hw/hns/hns_roce_hw_v2.c  |    3 +--
- drivers/infiniband/hw/hns/hns_roce_hw_v2.h  |    2 +-
- drivers/infiniband/hw/hns/hns_roce_main.c   |    2 +-
- 4 files changed, 3 insertions(+), 5 deletions(-)
+ drivers/usb/serial/pl2303.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/infiniband/hw/hns/hns_roce_device.h
-+++ b/drivers/infiniband/hw/hns/hns_roce_device.h
-@@ -759,7 +759,6 @@ struct hns_roce_caps {
- 	u32		num_pi_qps;
- 	u32		reserved_qps;
- 	int		num_qpc_timer;
--	int		num_cqc_timer;
- 	int		num_srqs;
- 	u32		max_wqes;
- 	u32		max_srq_wrs;
---- a/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
-+++ b/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
-@@ -1973,7 +1973,7 @@ static void set_default_caps(struct hns_
- 	caps->num_mtpts		= HNS_ROCE_V2_MAX_MTPT_NUM;
- 	caps->num_pds		= HNS_ROCE_V2_MAX_PD_NUM;
- 	caps->num_qpc_timer	= HNS_ROCE_V2_MAX_QPC_TIMER_NUM;
--	caps->num_cqc_timer	= HNS_ROCE_V2_MAX_CQC_TIMER_NUM;
-+	caps->cqc_timer_bt_num	= HNS_ROCE_V2_MAX_CQC_TIMER_BT_NUM;
+--- a/drivers/usb/serial/pl2303.c
++++ b/drivers/usb/serial/pl2303.c
+@@ -421,6 +421,9 @@ static int pl2303_detect_type(struct usb
+ 	bcdUSB = le16_to_cpu(desc->bcdUSB);
  
- 	caps->max_qp_init_rdma	= HNS_ROCE_V2_MAX_QP_INIT_RDMA;
- 	caps->max_qp_dest_rdma	= HNS_ROCE_V2_MAX_QP_DEST_RDMA;
-@@ -2267,7 +2267,6 @@ static int hns_roce_query_pf_caps(struct
- 	caps->max_rq_sg = roundup_pow_of_two(caps->max_rq_sg);
- 	caps->max_extend_sg	     = le32_to_cpu(resp_a->max_extend_sg);
- 	caps->num_qpc_timer	     = le16_to_cpu(resp_a->num_qpc_timer);
--	caps->num_cqc_timer	     = le16_to_cpu(resp_a->num_cqc_timer);
- 	caps->max_srq_sges	     = le16_to_cpu(resp_a->max_srq_sges);
- 	caps->max_srq_sges = roundup_pow_of_two(caps->max_srq_sges);
- 	caps->num_aeq_vectors	     = resp_a->num_aeq_vectors;
---- a/drivers/infiniband/hw/hns/hns_roce_hw_v2.h
-+++ b/drivers/infiniband/hw/hns/hns_roce_hw_v2.h
-@@ -51,7 +51,7 @@
- #define HNS_ROCE_V2_MAX_SRQ_WR			0x8000
- #define HNS_ROCE_V2_MAX_SRQ_SGE			64
- #define HNS_ROCE_V2_MAX_CQ_NUM			0x100000
--#define HNS_ROCE_V2_MAX_CQC_TIMER_NUM		0x100
-+#define HNS_ROCE_V2_MAX_CQC_TIMER_BT_NUM	0x100
- #define HNS_ROCE_V2_MAX_SRQ_NUM			0x100000
- #define HNS_ROCE_V2_MAX_CQE_NUM			0x400000
- #define HNS_ROCE_V2_MAX_SRQWQE_NUM		0x8000
---- a/drivers/infiniband/hw/hns/hns_roce_main.c
-+++ b/drivers/infiniband/hw/hns/hns_roce_main.c
-@@ -663,7 +663,7 @@ static int hns_roce_init_hem(struct hns_
- 		ret = hns_roce_init_hem_table(hr_dev, &hr_dev->cqc_timer_table,
- 					      HEM_TYPE_CQC_TIMER,
- 					      hr_dev->caps.cqc_timer_entry_sz,
--					      hr_dev->caps.num_cqc_timer, 1);
-+					      hr_dev->caps.cqc_timer_bt_num, 1);
- 		if (ret) {
- 			dev_err(dev,
- 				"Failed to init CQC timer memory, aborting.\n");
+ 	switch (bcdUSB) {
++	case 0x101:
++		/* USB 1.0.1? Let's assume they meant 1.1... */
++		fallthrough;
+ 	case 0x110:
+ 		switch (bcdDevice) {
+ 		case 0x300:
 
 
