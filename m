@@ -2,43 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB02C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7971C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:38:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347500AbiFGRhz (ORCPT
+        id S1347538AbiFGRiB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:37:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44836 "EHLO
+        Tue, 7 Jun 2022 13:38:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347102AbiFGRaE (ORCPT
+        with ESMTP id S1347026AbiFGR35 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:30:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBCA0102777;
-        Tue,  7 Jun 2022 10:25:40 -0700 (PDT)
+        Tue, 7 Jun 2022 13:29:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCCBC580E0;
+        Tue,  7 Jun 2022 10:25:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B566B8220C;
-        Tue,  7 Jun 2022 17:25:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0D8EC385A5;
-        Tue,  7 Jun 2022 17:25:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 593ED60DD7;
+        Tue,  7 Jun 2022 17:25:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E7E2C385A5;
+        Tue,  7 Jun 2022 17:25:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622738;
-        bh=15Ja3p7ENJbqCyzcI1haqRx8AP01n1gOc5Cb1Y+6SN0=;
+        s=korg; t=1654622724;
+        bh=yWMSUE+b2ncX5czDCiPQY7bzf6YbCvDYDvxWq7W5yjY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TdSPDr00AiV0OGrfeSnm4ULI4qkHN6Shv45hTya/5H009SIZcY94uCnUMigt5cXhB
-         PpdKt3h1FjSF4/b7KYcxD0tMhhLlfZijwhn/N8OEi2PEp/z6ClC8qtesz4JpEh7C5K
-         mNYRI/xdJ781Ukjviqm0gFh14p3/LuN1/1mNSo14=
+        b=DaGZvfZr4BfR/0bb4vKpwXqtt62gIXlmoPURnlnkAL3GLQeHLb7Ti3O5HugOjQ+4D
+         BF5ZkbB0HGXaD76+JZ618NRs8jf64f4u6Ilu/B+FmdsH7yIszz4ARGcZT+6trzPHM+
+         nyrUnJEmKnsrXTkwHa+E51fCJCBaWv0C90QJq8L4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        stable@vger.kernel.org,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 166/452] libbpf: Fix logic for finding matching program for CO-RE relocation
-Date:   Tue,  7 Jun 2022 19:00:23 +0200
-Message-Id: <20220607164913.511023845@linuxfoundation.org>
+Subject: [PATCH 5.10 120/452] drm: fix EDID struct for old ARM OABI format
+Date:   Tue,  7 Jun 2022 18:59:37 +0200
+Message-Id: <20220607164912.134730246@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,41 +57,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit 966a7509325395c51c5f6d89e7352b0585e4804b ]
+[ Upstream commit 47f15561b69e226bfc034e94ff6dbec51a4662af ]
 
-Fix the bug in bpf_object__relocate_core() which can lead to finding
-invalid matching BPF program when processing CO-RE relocation. IF
-matching program is not found, last encountered program will be assumed
-to be correct program and thus error detection won't detect the problem.
+When building the kernel for arm with the "-mabi=apcs-gnu" option, gcc
+will force alignment of all structures and unions to a word boundary
+(see also STRUCTURE_SIZE_BOUNDARY and the "-mstructure-size-boundary=XX"
+option if you're a gcc person), even when the members of said structures
+do not want or need said alignment.
 
-Fixes: 9c82a63cf370 ("libbpf: Fix CO-RE relocs against .text section")
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20220426004511.2691730-4-andrii@kernel.org
+This completely messes up the structure alignment of 'struct edid' on
+those targets, because even though all the embedded structures are
+marked with "__attribute__((packed))", the unions that contain them are
+not.
+
+This was exposed by commit f1e4c916f97f ("drm/edid: add EDID block count
+and size helpers"), but the bug is pre-existing.  That commit just made
+the structure layout problem cause a build failure due to the addition
+of the
+
+        BUILD_BUG_ON(sizeof(*edid) != EDID_LENGTH);
+
+sanity check in drivers/gpu/drm/drm_edid.c:edid_block_data().
+
+This legacy union alignment should probably not be used in the first
+place, but we can fix the layout by adding the packed attribute to the
+union entries even when each member is already packed and it shouldn't
+matter in a sane build environment.
+
+You can see this issue with a trivial test program:
+
+  union {
+	struct {
+		char c[5];
+	};
+	struct {
+		char d;
+		unsigned e;
+	} __attribute__((packed));
+  } a = { "1234" };
+
+where building this with a normal "gcc -S" will result in the expected
+5-byte size of said union:
+
+	.type	a, @object
+	.size	a, 5
+
+but with an ARM compiler and the old ABI:
+
+    arm-linux-gnu-gcc -mabi=apcs-gnu -mfloat-abi=soft -S t.c
+
+you get
+
+	.type	a, %object
+	.size	a, 8
+
+instead, because even though each member of the union is packed, the
+union itself still gets aligned.
+
+This was reported by Sudip for the spear3xx_defconfig target.
+
+Link: https://lore.kernel.org/lkml/YpCUzStDnSgQLNFN@debian/
+Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ include/drm/drm_edid.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index dda8f9cdc652..8fada26529b7 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -5928,9 +5928,10 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
- 		 */
- 		prog = NULL;
- 		for (i = 0; i < obj->nr_programs; i++) {
--			prog = &obj->programs[i];
--			if (strcmp(prog->sec_name, sec_name) == 0)
-+			if (strcmp(obj->programs[i].sec_name, sec_name) == 0) {
-+				prog = &obj->programs[i];
- 				break;
-+			}
- 		}
- 		if (!prog) {
- 			pr_warn("sec '%s': failed to find a BPF program\n", sec_name);
+diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
+index e97daf6ffbb1..4526b6a1e583 100644
+--- a/include/drm/drm_edid.h
++++ b/include/drm/drm_edid.h
+@@ -121,7 +121,7 @@ struct detailed_data_monitor_range {
+ 			u8 supported_scalings;
+ 			u8 preferred_refresh;
+ 		} __attribute__((packed)) cvt;
+-	} formula;
++	} __attribute__((packed)) formula;
+ } __attribute__((packed));
+ 
+ struct detailed_data_wpindex {
+@@ -154,7 +154,7 @@ struct detailed_non_pixel {
+ 		struct detailed_data_wpindex color;
+ 		struct std_timing timings[6];
+ 		struct cvt_timing cvt[4];
+-	} data;
++	} __attribute__((packed)) data;
+ } __attribute__((packed));
+ 
+ #define EDID_DETAIL_EST_TIMINGS 0xf7
+@@ -172,7 +172,7 @@ struct detailed_timing {
+ 	union {
+ 		struct detailed_pixel_timing pixel_data;
+ 		struct detailed_non_pixel other_data;
+-	} data;
++	} __attribute__((packed)) data;
+ } __attribute__((packed));
+ 
+ #define DRM_EDID_INPUT_SERRATION_VSYNC (1 << 0)
 -- 
 2.35.1
 
