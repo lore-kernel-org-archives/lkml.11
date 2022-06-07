@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28440CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C3E1CCA48A
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383649AbiFGWkw (ORCPT
+        id S1384579AbiFGWlH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:40:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50068 "EHLO
+        Tue, 7 Jun 2022 18:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378778AbiFGV1d (ORCPT
+        with ESMTP id S1376813AbiFGV2H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:27:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8125152BB2;
-        Tue,  7 Jun 2022 12:02:04 -0700 (PDT)
+        Tue, 7 Jun 2022 17:28:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B56911C1C;
+        Tue,  7 Jun 2022 12:02:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E484617C8;
-        Tue,  7 Jun 2022 19:02:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1383FC385A2;
-        Tue,  7 Jun 2022 19:02:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4589B822C0;
+        Tue,  7 Jun 2022 19:02:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E8C7C385A2;
+        Tue,  7 Jun 2022 19:02:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628523;
-        bh=4en+cC/nYj++7MgCIJDMIe5jSsByg+LEvsp7KKofpjw=;
+        s=korg; t=1654628534;
+        bh=CnLwyclVVSbwC4oc11KchLvc8sUbiTu2u0ilES9Syzo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CZM0B7O5lsSKl1Mcwn/E2qm5Qu+Wg5iss56J/AxYUW/FKdYBvEYlny1j3Za7iMXei
-         BTOipycdg0dXK4vIcvvh5h/FsjZWM5PTWxXRk8G3bHddjL5Nf9B8/HLB7RRwHn+GMq
-         6ZONYFgYftQNeXfzYAVEEwI6YnGzShavkcvjSTgM=
+        b=QHUfoxGAsCjfP6h4lpKaDRrTEGrhS3oTaP3q2eIjRh7G1DScf+PZ3gEjEFBaipIgX
+         F45uAshu7JcbUuvdw83e1pPfXNCVWYLaZunb7Wz3B79F43DtmH0b/3r2U70KnFfcJ5
+         Z1aIFfe+img/qqD90pfKsFAgdWW/JRQ4zhZXROd0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 359/879] selftests/resctrl: Fix null pointer dereference on open failed
-Date:   Tue,  7 Jun 2022 18:57:57 +0200
-Message-Id: <20220607165013.284404152@linuxfoundation.org>
+Subject: [PATCH 5.18 363/879] mtd: rawnand: cadence: fix possible null-ptr-deref in cadence_nand_dt_probe()
+Date:   Tue,  7 Jun 2022 18:58:01 +0200
+Message-Id: <20220607165013.398131827@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,48 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Ian King <colin.i.king@gmail.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit c7b607fa9325ccc94982774c505176677117689c ]
+[ Upstream commit a28ed09dafee20da51eb26452950839633afd824 ]
 
-Currently if opening /dev/null fails to open then file pointer fp
-is null and further access to fp via fprintf will cause a null
-pointer dereference. Fix this by returning a negative error value
-when a null fp is detected.
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-Detected using cppcheck static analysis:
-tools/testing/selftests/resctrl/fill_buf.c:124:6: note: Assuming
-that condition '!fp' is not redundant
- if (!fp)
-     ^
-tools/testing/selftests/resctrl/fill_buf.c:126:10: note: Null
-pointer dereference
- fprintf(fp, "Sum: %d ", ret);
-
-Fixes: a2561b12fe39 ("selftests/resctrl: Add built in benchmark")
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Fixes: ec4ba01e894d ("mtd: rawnand: Add new Cadence NAND driver to MTD subsystem")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220426084913.4021868-1-yangyingliang@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/resctrl/fill_buf.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/mtd/nand/raw/cadence-nand-controller.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/resctrl/fill_buf.c b/tools/testing/selftests/resctrl/fill_buf.c
-index 51e5cf22632f..56ccbeae0638 100644
---- a/tools/testing/selftests/resctrl/fill_buf.c
-+++ b/tools/testing/selftests/resctrl/fill_buf.c
-@@ -121,8 +121,10 @@ static int fill_cache_read(unsigned char *start_ptr, unsigned char *end_ptr,
+diff --git a/drivers/mtd/nand/raw/cadence-nand-controller.c b/drivers/mtd/nand/raw/cadence-nand-controller.c
+index 7eec60ea9056..0d72672f8b64 100644
+--- a/drivers/mtd/nand/raw/cadence-nand-controller.c
++++ b/drivers/mtd/nand/raw/cadence-nand-controller.c
+@@ -2983,11 +2983,10 @@ static int cadence_nand_dt_probe(struct platform_device *ofdev)
+ 	if (IS_ERR(cdns_ctrl->reg))
+ 		return PTR_ERR(cdns_ctrl->reg);
  
- 	/* Consume read result so that reading memory is not optimized out. */
- 	fp = fopen("/dev/null", "w");
--	if (!fp)
-+	if (!fp) {
- 		perror("Unable to write to /dev/null");
-+		return -1;
-+	}
- 	fprintf(fp, "Sum: %d ", ret);
- 	fclose(fp);
+-	res = platform_get_resource(ofdev, IORESOURCE_MEM, 1);
+-	cdns_ctrl->io.dma = res->start;
+-	cdns_ctrl->io.virt = devm_ioremap_resource(&ofdev->dev, res);
++	cdns_ctrl->io.virt = devm_platform_get_and_ioremap_resource(ofdev, 1, &res);
+ 	if (IS_ERR(cdns_ctrl->io.virt))
+ 		return PTR_ERR(cdns_ctrl->io.virt);
++	cdns_ctrl->io.dma = res->start;
  
+ 	dt->clk = devm_clk_get(cdns_ctrl->dev, "nf_clk");
+ 	if (IS_ERR(dt->clk))
 -- 
 2.35.1
 
