@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F905C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66046C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:51:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347563AbiFGSvU (ORCPT
+        id S1352891AbiFGSvg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:51:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44894 "EHLO
+        Tue, 7 Jun 2022 14:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353041AbiFGSRy (ORCPT
+        with ESMTP id S1353065AbiFGSSI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44565ED70A;
-        Tue,  7 Jun 2022 10:53:03 -0700 (PDT)
+        Tue, 7 Jun 2022 14:18:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B3F5EFF26;
+        Tue,  7 Jun 2022 10:53:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B246B8236C;
-        Tue,  7 Jun 2022 17:52:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED492C34115;
-        Tue,  7 Jun 2022 17:52:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AB5C617B6;
+        Tue,  7 Jun 2022 17:53:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FCDFC341C5;
+        Tue,  7 Jun 2022 17:52:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624377;
-        bh=dJRqQxMventHtaB8HhkRjPA3pkLwNwa/wlZDVozbFSs=;
+        s=korg; t=1654624380;
+        bh=dXmaH2EhwG7tVhCM0Ug3qBDAZYxI98BBHOl8ZMPOHBs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kg7yCi8PCX3XseE6Th+ZjTfMgHMyI8w9VPYtfij7uuj8y7rpjKzM6xg/cT6c414Gh
-         mCteKMmFmPQtEHrXer1TblcAbe4pYP8RmjIiPViMqg0d/UOHUVM+N6iUCCqH/IR3nB
-         Xu6VxmulxH93IC0a1SxUAYX9lnVhCu9Cepo1AaWU=
+        b=JsojjUDAWTfPevtk96ARy6rfViO+YKSO1RVjBaN2d3u+Fp6ZMpaEk9VZge3rISEN4
+         e4bTJQJaT7B/ILe1JczP1JBtgsibf0iBQo+5uFy6FCpUVEkdNXliY9mnhqJ4EMnL2K
+         CYZkTX3hxIv90UCbn+Qmh4fLxeLkSpM0R6hs7YvE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 303/667] HID: amd_sfh: Modify the bus name
-Date:   Tue,  7 Jun 2022 18:59:28 +0200
-Message-Id: <20220607164943.864862512@linuxfoundation.org>
+        stable@vger.kernel.org, Vinod Polimera <quic_vpolimer@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 265/667] drm/msm/disp/dpu1: set vbif hw config to NULL to avoid use after memory free during pm runtime resume
+Date:   Tue,  7 Jun 2022 18:58:50 +0200
+Message-Id: <20220607164942.736571383@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,47 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+From: Vinod Polimera <quic_vpolimer@quicinc.com>
 
-[ Upstream commit 206c3c2d85de8847fb732a5fb71443bacd287216 ]
+[ Upstream commit fa5186b279ecf44b14fb435540d2065be91cb1ed ]
 
-Modifying the amd-sfh bus name to meaningful name.
+BUG: Unable to handle kernel paging request at virtual address 006b6b6b6b6b6be3
 
-Fixes: 4b2c53d93a4b ("SFH:Transport Driver to add support of AMD Sensor Fusion Hub (SFH)")
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Call trace:
+  dpu_vbif_init_memtypes+0x40/0xb8
+  dpu_runtime_resume+0xcc/0x1c0
+  pm_generic_runtime_resume+0x30/0x44
+  __genpd_runtime_resume+0x68/0x7c
+  genpd_runtime_resume+0x134/0x258
+  __rpm_callback+0x98/0x138
+  rpm_callback+0x30/0x88
+  rpm_resume+0x36c/0x49c
+  __pm_runtime_resume+0x80/0xb0
+  dpu_core_irq_uninstall+0x30/0xb0
+  dpu_irq_uninstall+0x18/0x24
+  msm_drm_uninit+0xd8/0x16c
+
+Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
+Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/483255/
+Link: https://lore.kernel.org/r/1650857213-30075-1-git-send-email-quic_vpolimer@quicinc.com
+[DB: fixed Fixes tag]
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/amd-sfh-hid/amd_sfh_hid.c | 2 +-
- drivers/hid/amd-sfh-hid/amd_sfh_hid.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_hid.c b/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
-index 5ad1e7acd294..8b8a7c40ed4e 100644
---- a/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
-+++ b/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
-@@ -139,7 +139,7 @@ int amdtp_hid_probe(u32 cur_hid_dev, struct amdtp_cl_data *cli_data)
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+index 93d916858d5a..33ce6720dfae 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+@@ -728,8 +728,10 @@ static void _dpu_kms_hw_destroy(struct dpu_kms *dpu_kms)
+ 		for (i = 0; i < dpu_kms->catalog->vbif_count; i++) {
+ 			u32 vbif_idx = dpu_kms->catalog->vbif[i].id;
  
- 	hid->driver_data = hid_data;
- 	cli_data->hid_sensor_hubs[cur_hid_dev] = hid;
--	hid->bus = BUS_AMD_AMDTP;
-+	hid->bus = BUS_AMD_SFH;
- 	hid->vendor = AMD_SFH_HID_VENDOR;
- 	hid->product = AMD_SFH_HID_PRODUCT;
- 	snprintf(hid->name, sizeof(hid->name), "%s %04X:%04X", "hid-amdtp",
-diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_hid.h b/drivers/hid/amd-sfh-hid/amd_sfh_hid.h
-index ae2ac9191ba7..741cff350589 100644
---- a/drivers/hid/amd-sfh-hid/amd_sfh_hid.h
-+++ b/drivers/hid/amd-sfh-hid/amd_sfh_hid.h
-@@ -10,7 +10,7 @@
- #define AMDSFH_HID_H
- 
- #define MAX_HID_DEVICES		5
--#define BUS_AMD_AMDTP		0x20
-+#define BUS_AMD_SFH		0x20
- #define AMD_SFH_HID_VENDOR	0x1022
- #define AMD_SFH_HID_PRODUCT	0x0001
+-			if ((vbif_idx < VBIF_MAX) && dpu_kms->hw_vbif[vbif_idx])
++			if ((vbif_idx < VBIF_MAX) && dpu_kms->hw_vbif[vbif_idx]) {
+ 				dpu_hw_vbif_destroy(dpu_kms->hw_vbif[vbif_idx]);
++				dpu_kms->hw_vbif[vbif_idx] = NULL;
++			}
+ 		}
+ 	}
  
 -- 
 2.35.1
