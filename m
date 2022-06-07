@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF008C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:37:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A39E2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:37:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381604AbiFGWhQ (ORCPT
+        id S1380926AbiFGWhZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:37:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38786 "EHLO
+        Tue, 7 Jun 2022 18:37:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378209AbiFGVX4 (ORCPT
+        with ESMTP id S1378743AbiFGVX4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:23:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27FE42271B1;
-        Tue,  7 Jun 2022 12:00:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6AB227CCA;
+        Tue,  7 Jun 2022 12:00:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7F98B823A0;
-        Tue,  7 Jun 2022 19:00:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55743C385A2;
-        Tue,  7 Jun 2022 19:00:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6BC6B8239D;
+        Tue,  7 Jun 2022 19:00:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29D60C385A2;
+        Tue,  7 Jun 2022 19:00:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628453;
-        bh=WOGbrWxzyZjlwEgeZMiKrO6Yp8c0OJ/aqaNZJ65xRjo=;
+        s=korg; t=1654628456;
+        bh=gPNm/Stsz87WXeMK4jr5IewBkETfcfvKl7Nyf7dX7PI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rw7vUjNfbsODbKOI5E6aW8i8a3mOUipAVrM5zZVjRMA0ZA/yWHceuj9CBpBxAyC4Y
-         z0D0j8pXgYVYHSAOvJWl/lg1clrlNv9QlohLMQvg+gi1UvML2BjJfMSgGVOdJzF3Io
-         UIVybriGGfP3dW/a8FaK2eOFPuzZtzo0r1Q9GSM8=
+        b=kNJGTarkdP2oskPrBZbA5eI6ZepXboOyzjsaDUjGGXT6WghVho6tl1AJu68R6K+BT
+         /rDZZ/SHLyvp1dpaLREmBJvrkyqGk5RsSDhlU+imXTsHBsJzKZ9v9xmZoLySOcJN57
+         3ZlP1TaEto3/AzWqn2O1ol2Izh4FFPLjuspENBqw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, John Ogness <john.ogness@linutronix.de>,
         Petr Mladek <pmladek@suse.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 336/879] printk: add missing memory barrier to wake_up_klogd()
-Date:   Tue,  7 Jun 2022 18:57:34 +0200
-Message-Id: <20220607165012.610008844@linuxfoundation.org>
+Subject: [PATCH 5.18 337/879] printk: wake waiters for safe and NMI contexts
+Date:   Tue,  7 Jun 2022 18:57:35 +0200
+Message-Id: <20220607165012.638902023@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,96 +51,93 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: John Ogness <john.ogness@linutronix.de>
 
-[ Upstream commit 1f5d783094cf28b4905f51cad846eb5d1db6673e ]
+[ Upstream commit 5341b93dea8c39d7612f7a227015d4b1d5cf30db ]
 
-It is important that any new records are visible to preparing
-waiters before the waker checks if the wait queue is empty.
-Otherwise it is possible that:
+When printk() is called from safe or NMI contexts, it will directly
+store the record (vprintk_store()) and then defer the console output.
+However, defer_console_output() only causes console printing and does
+not wake any waiters of new records.
 
-- there are new records available
-- the waker sees an empty wait queue and does not wake
-- the preparing waiter sees no new records and begins to wait
+Wake waiters from defer_console_output() so that they also are aware
+of the new records from safe and NMI contexts.
 
-This is exactly the problem that the function description of
-waitqueue_active() warns about.
-
-Use wq_has_sleeper() instead of waitqueue_active() because it
-includes the necessary full memory barrier.
-
+Fixes: 03fc7f9c99c1 ("printk/nmi: Prevent deadlock when accessing the main log buffer in NMI")
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
 Reviewed-by: Petr Mladek <pmladek@suse.com>
 Signed-off-by: Petr Mladek <pmladek@suse.com>
-Link: https://lore.kernel.org/r/20220421212250.565456-4-john.ogness@linutronix.de
+Link: https://lore.kernel.org/r/20220421212250.565456-6-john.ogness@linutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/printk/printk.c | 39 ++++++++++++++++++++++++++++++++++++---
- 1 file changed, 36 insertions(+), 3 deletions(-)
+ kernel/printk/printk.c | 28 ++++++++++++++++------------
+ 1 file changed, 16 insertions(+), 12 deletions(-)
 
 diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index da03c15ecc89..ed6f20992915 100644
+index ed6f20992915..1ead794fc2f4 100644
 --- a/kernel/printk/printk.c
 +++ b/kernel/printk/printk.c
-@@ -746,8 +746,19 @@ static ssize_t devkmsg_read(struct file *file, char __user *buf,
- 			goto out;
- 		}
- 
-+		/*
-+		 * Guarantee this task is visible on the waitqueue before
-+		 * checking the wake condition.
-+		 *
-+		 * The full memory barrier within set_current_state() of
-+		 * prepare_to_wait_event() pairs with the full memory barrier
-+		 * within wq_has_sleeper().
-+		 *
-+		 * This pairs with wake_up_klogd:A.
-+		 */
+@@ -754,7 +754,7 @@ static ssize_t devkmsg_read(struct file *file, char __user *buf,
+ 		 * prepare_to_wait_event() pairs with the full memory barrier
+ 		 * within wq_has_sleeper().
+ 		 *
+-		 * This pairs with wake_up_klogd:A.
++		 * This pairs with __wake_up_klogd:A.
+ 		 */
  		ret = wait_event_interruptible(log_wait,
--				prb_read_valid(prb, atomic64_read(&user->seq), r));
-+				prb_read_valid(prb,
-+					atomic64_read(&user->seq), r)); /* LMM(devkmsg_read:A) */
- 		if (ret)
- 			goto out;
- 	}
-@@ -1513,7 +1524,18 @@ static int syslog_print(char __user *buf, int size)
- 		seq = syslog_seq;
+ 				prb_read_valid(prb,
+@@ -1532,7 +1532,7 @@ static int syslog_print(char __user *buf, int size)
+ 		 * prepare_to_wait_event() pairs with the full memory barrier
+ 		 * within wq_has_sleeper().
+ 		 *
+-		 * This pairs with wake_up_klogd:A.
++		 * This pairs with __wake_up_klogd:A.
+ 		 */
+ 		len = wait_event_interruptible(log_wait,
+ 				prb_read_valid(prb, seq, NULL)); /* LMM(syslog_print:A) */
+@@ -3332,7 +3332,7 @@ static void wake_up_klogd_work_func(struct irq_work *irq_work)
+ static DEFINE_PER_CPU(struct irq_work, wake_up_klogd_work) =
+ 	IRQ_WORK_INIT_LAZY(wake_up_klogd_work_func);
  
- 		mutex_unlock(&syslog_lock);
--		len = wait_event_interruptible(log_wait, prb_read_valid(prb, seq, NULL));
-+		/*
-+		 * Guarantee this task is visible on the waitqueue before
-+		 * checking the wake condition.
-+		 *
-+		 * The full memory barrier within set_current_state() of
-+		 * prepare_to_wait_event() pairs with the full memory barrier
-+		 * within wq_has_sleeper().
-+		 *
-+		 * This pairs with wake_up_klogd:A.
-+		 */
-+		len = wait_event_interruptible(log_wait,
-+				prb_read_valid(prb, seq, NULL)); /* LMM(syslog_print:A) */
- 		mutex_lock(&syslog_lock);
- 
- 		if (len)
-@@ -3316,7 +3338,18 @@ void wake_up_klogd(void)
+-void wake_up_klogd(void)
++static void __wake_up_klogd(int val)
+ {
+ 	if (!printk_percpu_data_ready())
  		return;
- 
- 	preempt_disable();
--	if (waitqueue_active(&log_wait)) {
-+	/*
-+	 * Guarantee any new records can be seen by tasks preparing to wait
-+	 * before this context checks if the wait queue is empty.
-+	 *
-+	 * The full memory barrier within wq_has_sleeper() pairs with the full
-+	 * memory barrier within set_current_state() of
-+	 * prepare_to_wait_event(), which is called after ___wait_event() adds
-+	 * the waiter but before it has checked the wait condition.
-+	 *
-+	 * This pairs with devkmsg_read:A and syslog_print:A.
-+	 */
-+	if (wq_has_sleeper(&log_wait)) { /* LMM(wake_up_klogd:A) */
- 		this_cpu_or(printk_pending, PRINTK_PENDING_WAKEUP);
+@@ -3349,22 +3349,26 @@ void wake_up_klogd(void)
+ 	 *
+ 	 * This pairs with devkmsg_read:A and syslog_print:A.
+ 	 */
+-	if (wq_has_sleeper(&log_wait)) { /* LMM(wake_up_klogd:A) */
+-		this_cpu_or(printk_pending, PRINTK_PENDING_WAKEUP);
++	if (wq_has_sleeper(&log_wait) || /* LMM(__wake_up_klogd:A) */
++	    (val & PRINTK_PENDING_OUTPUT)) {
++		this_cpu_or(printk_pending, val);
  		irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
  	}
+ 	preempt_enable();
+ }
+ 
+-void defer_console_output(void)
++void wake_up_klogd(void)
+ {
+-	if (!printk_percpu_data_ready())
+-		return;
++	__wake_up_klogd(PRINTK_PENDING_WAKEUP);
++}
+ 
+-	preempt_disable();
+-	this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
+-	irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
+-	preempt_enable();
++void defer_console_output(void)
++{
++	/*
++	 * New messages may have been added directly to the ringbuffer
++	 * using vprintk_store(), so wake any waiters as well.
++	 */
++	__wake_up_klogd(PRINTK_PENDING_WAKEUP | PRINTK_PENDING_OUTPUT);
+ }
+ 
+ void printk_trigger_flush(void)
 -- 
 2.35.1
 
