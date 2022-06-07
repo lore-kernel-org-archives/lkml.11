@@ -2,217 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 732B9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 01:54:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8A52C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 01:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229800AbiFGBys (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 21:54:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42012 "EHLO
+        id S235798AbiFGB7I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 21:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235881AbiFGByZ (ORCPT
+        with ESMTP id S230385AbiFGB7H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 21:54:25 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C328AE46
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 18:54:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654566860; x=1686102860;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Cc3wFqrMJRv6xPCEl348Su1E2keWWJ9ZXvnJmuV2PE0=;
-  b=MYM/QN5AqYYlKy+4ZXVCUjk01Q4sR6R2M/7U9GqYCmqngMmKvmx9FIXa
-   YJJIuj02VLywXmGhIsE7Yldv5pbVOzcrE7MtNY+uUcFas4a0xJMbIfekd
-   Yot1HBBQWGpCDvBKVI2T1TAhCLncCu/UKoP34H4bisj9sZzf0iRr/SbTM
-   2CVr4oOJyPRSt66GKZZtYmAXkNfpLNjKYtYFrpML/ERFe5Z8OYnzKo4fp
-   L3dUdtaV9mVRmbccrPU2/LEfD20uiEjfbE/JdFfFoZXlXtFol03r8mqky
-   mSV8J2+8jxQPkhy0Mo7dO4CM79wujY7e1nunvgQKdh0qqmCqHYdDMi74l
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="302064153"
-X-IronPort-AV: E=Sophos;i="5.91,282,1647327600"; 
-   d="scan'208";a="302064153"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 18:54:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,282,1647327600"; 
-   d="scan'208";a="635886352"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga008.fm.intel.com with ESMTP; 06 Jun 2022 18:54:15 -0700
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>
-Cc:     Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v8 11/11] iommu: Rename iommu-sva-lib.{c,h}
-Date:   Tue,  7 Jun 2022 09:49:42 +0800
-Message-Id: <20220607014942.3954894-12-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220607014942.3954894-1-baolu.lu@linux.intel.com>
-References: <20220607014942.3954894-1-baolu.lu@linux.intel.com>
+        Mon, 6 Jun 2022 21:59:07 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D9DB1C04
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 18:59:03 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LHD395lknzRhbn;
+        Tue,  7 Jun 2022 09:55:49 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 7 Jun 2022 09:59:00 +0800
+Received: from [10.67.101.67] (10.67.101.67) by kwepemm600003.china.huawei.com
+ (7.193.23.202) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 7 Jun
+ 2022 09:59:00 +0800
+Subject: Re: [PATCH v6 2/2] Documentation: Add document for UltraSoc SMB
+ drivers
+To:     Suzuki K Poulose <suzuki.poulose@arm.com>,
+        <mathieu.poirier@linaro.org>, <mike.leach@linaro.org>
+CC:     <coresight@lists.linaro.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linuxarm@huawei.com>
+References: <20220606130223.57354-1-liuqi115@huawei.com>
+ <20220606130223.57354-3-liuqi115@huawei.com>
+ <367f8d3d-7890-12bd-6caf-c470b0b4c614@arm.com>
+From:   "liuqi (BA)" <liuqi115@huawei.com>
+Message-ID: <035aba66-ed40-0633-cb31-a64a05b04958@huawei.com>
+Date:   Tue, 7 Jun 2022 09:58:59 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
+In-Reply-To: <367f8d3d-7890-12bd-6caf-c470b0b4c614@arm.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.101.67]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename iommu-sva-lib.c[h] to iommu-sva.c[h] as it contains all code
-for SVA implementation in iommu core.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
----
- drivers/iommu/{iommu-sva-lib.h => iommu-sva.h}  | 6 +++---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 2 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 2 +-
- drivers/iommu/intel/iommu.c                     | 2 +-
- drivers/iommu/intel/svm.c                       | 2 +-
- drivers/iommu/io-pgfault.c                      | 2 +-
- drivers/iommu/{iommu-sva-lib.c => iommu-sva.c}  | 2 +-
- drivers/iommu/iommu.c                           | 2 +-
- drivers/iommu/Makefile                          | 2 +-
- 9 files changed, 11 insertions(+), 11 deletions(-)
- rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (95%)
- rename drivers/iommu/{iommu-sva-lib.c => iommu-sva.c} (99%)
+Hi Suzuki,
 
-diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva.h
-similarity index 95%
-rename from drivers/iommu/iommu-sva-lib.h
-rename to drivers/iommu/iommu-sva.h
-index 1b3ace4b5863..7215a761b962 100644
---- a/drivers/iommu/iommu-sva-lib.h
-+++ b/drivers/iommu/iommu-sva.h
-@@ -2,8 +2,8 @@
- /*
-  * SVA library for IOMMU drivers
-  */
--#ifndef _IOMMU_SVA_LIB_H
--#define _IOMMU_SVA_LIB_H
-+#ifndef _IOMMU_SVA_H
-+#define _IOMMU_SVA_H
- 
- #include <linux/ioasid.h>
- #include <linux/mm_types.h>
-@@ -72,4 +72,4 @@ iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
- 	return IOMMU_PAGE_RESP_INVALID;
- }
- #endif /* CONFIG_IOMMU_SVA */
--#endif /* _IOMMU_SVA_LIB_H */
-+#endif /* _IOMMU_SVA_H */
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index 05973ada63c2..c64845a626b1 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -10,7 +10,7 @@
- #include <linux/slab.h>
- 
- #include "arm-smmu-v3.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- #include "../../io-pgtable-arm.h"
- 
- struct arm_smmu_mmu_notifier {
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 8b9b78c7a67d..79e8991e9181 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -31,7 +31,7 @@
- #include <linux/amba/bus.h>
- 
- #include "arm-smmu-v3.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- 
- static bool disable_bypass = true;
- module_param(disable_bypass, bool, 0444);
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 37d68eda1889..d16ab6d1cc05 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -27,7 +27,7 @@
- #include <linux/tboot.h>
- 
- #include "../irq_remapping.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- #include "pasid.h"
- #include "cap_audit.h"
- 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 1fd019043e71..ef1e132c69f8 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -25,7 +25,7 @@
- 
- #include "pasid.h"
- #include "perf.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
- static void intel_svm_drain_prq(struct device *dev, u32 pasid);
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index 4f24ec703479..91b1c6bd01d4 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -11,7 +11,7 @@
- #include <linux/slab.h>
- #include <linux/workqueue.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- /**
-  * struct iopf_queue - IO Page Fault queue
-diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva.c
-similarity index 99%
-rename from drivers/iommu/iommu-sva-lib.c
-rename to drivers/iommu/iommu-sva.c
-index dee8e2e42e06..1a4897a5697b 100644
---- a/drivers/iommu/iommu-sva-lib.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -6,7 +6,7 @@
- #include <linux/sched/mm.h>
- #include <linux/iommu.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static DEFINE_MUTEX(iommu_sva_lock);
- static DECLARE_IOASID_SET(iommu_sva_pasid);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 1f766006ed21..4f8c2ddde7ab 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -29,7 +29,7 @@
- #include <trace/events/iommu.h>
- #include <linux/sched/mm.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static struct kset *iommu_group_kset;
- static DEFINE_IDA(iommu_group_ida);
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 44475a9b3eea..c1763476162b 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -27,6 +27,6 @@ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
- obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
- obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
- obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
--obj-$(CONFIG_IOMMU_SVA) += iommu-sva-lib.o io-pgfault.o
-+obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o io-pgfault.o
- obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
- obj-$(CONFIG_APPLE_DART) += apple-dart.o
--- 
-2.25.1
+Thanks for your review.
+On 2022/6/6 23:16, Suzuki K Poulose wrote:
+> Hi Qi
+> 
+> Please find my comments below.
+> 
+> On 06/06/2022 14:02, Qi Liu wrote:
+>> This patch bring in a documentation for UltraSoc SMB drivers.
+>> It simple descripts the device, sysfs interface and the
+>> firmware bindings.
+>>
+>> Signed-off-by: Qi Liu <liuqi115@huawei.com>
+>> ---
+>>   .../trace/coresight/ultrasoc-smb.rst          | 80 +++++++++++++++++++
+>>   1 file changed, 80 insertions(+)
+>>   create mode 100644 Documentation/trace/coresight/ultrasoc-smb.rst
+>>
+>> diff --git a/Documentation/trace/coresight/ultrasoc-smb.rst 
+>> b/Documentation/trace/coresight/ultrasoc-smb.rst
+>> new file mode 100644
+>> index 000000000000..b4cfea82deb8
+>> --- /dev/null
+>> +++ b/Documentation/trace/coresight/ultrasoc-smb.rst
+>> @@ -0,0 +1,80 @@
+>> +.. SPDX-License-Identifier: GPL-2.0
+>> +
+>> +======================================
+>> +UltraSoc - HW Assisted Tracing on SoC
+>> +======================================
+>> +   :Author:   Qi Liu <liuqi115@huawei.com>
+>> +   :Date:     March 2022
+>> +
+>> +Introduction
+>> +------------
+>> +
+>> +UltraSoc SMB is a per SCCL(Super CPU Cluster) hardware, and it 
+>> provides a way to buffer and store
+> 
+> minor nit: alignment.
+> 
+thanks, will pay attention to this.
 
+>> +CPU trace messages in a region of shared system memory. SMB is 
+>> plugged as
+>> +a coresight sink device and the corresponding trace generators (ETM) are
+>> +plugged in as source devices.
+>> +
+> 
+> --8>---
+> 
+>> +Sysfs files and directories
+>> +---------------------------
+>> +
+>> +The SMB devices appear on the existing coresight bus alongside the other
+>> +coresight devices::
+>> +
+>> +    $# ls /sys/bus/coresight/devices/
+>> +    ultra_smb0   ultra_smb1   ultra_smb2   ultra_smb3
+>> +
+>> +The ``ultra_smb<N>`` named SMB associated with SCCL.::
+>> +
+>> +    $# ls /sys/bus/coresight/devices/ultra_smb0
+>> +    enable_sink   mgmt
+>> +    $# ls /sys/bus/coresight/devices/ultra_smb0/mgmt
+>> +    buf_size  buf_status  read_pos  write_pos
+>> +
+> 
+> These should also be placed in, with the appropriate format.
+> 
+> Documentation/ABI/testing/sysfs-bus-coresight-devices-ultra_smb
+> 
+
+got it, will add this document, thanks.
+> 
+> 
+>> +*Key file items are:-*
+>> +   * ``read_pos``: Shows the value held by UltraSoc SMB Read Pointer 
+>> register.
+>> +   * ``write_pos``: Shows the value held by UltraSoc SMB Write 
+>> Pointer register.
+>> +   * ``buf_status``: Shows the value held by UltraSoc SMB status 
+>> register.
+>> +             BIT(0) is zero means buffer is empty.
+>> +   * ``buf_size``: Shows the buffer size of each UltraSoc SMB device.
+>> +
+>> +Firmware Bindings
+>> +---------------------------
+>> +
+>> +Firmware binding of SMB device describes SMB device indentifier, 
+>> resource
+>> +information and graph structure.
+> 
+> Please could you mention that this is only supported with ACPI here ?
+> 
+sure, will add this next time.
+>> +
+>> +SMB is platform device and device id is "HISI03A1", resource of 
+>> device is
+>> +declared using the _CRS method. Each SMB must present two base address,
+> 
+> Simply say, the device is identified by ACPI HID "HISI03A1".
+> 
+ok, will modify this.
+>> +the first one is the configuration base address of SMB device, the 
+>> second
+>> +one is the base address of shared system memory.
+>> +
+>> +examples::
+>> +
+>> +    Device(USMB) {                                               \
+>> +      Name(_HID, "HISI03A1")                                     \
+>> +      Name(_CRS, ResourceTemplate() {                            \
+>> +          MEM_RESRC(0x95100000, 0x951FFFFF, 0x100000)            \
+>> +          MEM_RESRC(0x50000000, 0x53FFFFFF, 0x4000000)           \
+>> +      })                                                         \
+>> +      Name(_DSD, Package() {                                     \
+>> +        ToUUID("ab02a46b-74c7-45a2-bd68-f7d344ef2153"),          \
+>> +    /* Use CoreSight Graph ACPI bindings to describe connections 
+>> topology */
+>> +        Package() {                                              \
+>> +          0,                                                     \
+>> +          1,                                                     \
+>> +          Package() {                                            \
+>> +            1,                                                   \
+>> +            ToUUID("3ecbc8b6-1d0e-4fb3-8107-e627f805c6cd"),      \
+>> +            8,                                                   \
+>> +            Package() {0x8, 0, \_SB.S00.SL11.CL28.F008, 0},       \
+>> +            Package() {0x9, 0, \_SB.S00.SL11.CL29.F009, 0},       \
+>> +            Package() {0xa, 0, \_SB.S00.SL11.CL2A.F010, 0},       \
+>> +            Package() {0xb, 0, \_SB.S00.SL11.CL2B.F011, 0},       \
+>> +            Package() {0xc, 0, \_SB.S00.SL11.CL2C.F012, 0},       \
+>> +            Package() {0xd, 0, \_SB.S00.SL11.CL2D.F013, 0},       \
+>> +            Package() {0xe, 0, \_SB.S00.SL11.CL2E.F014, 0},       \
+>> +            Package() {0xf, 0, \_SB.S00.SL11.CL2F.F015, 0},       \
+>> +          }                                                      \
+>> +        }                                                        \
+>> +      })                                                         \
+>> +    }
+> 
+> Rest looks fine to me
+> 
+> Suzuki
+> 
+
+Thanks,
+Qi
+> .
