@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A689CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F1EBCCA48B
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:06:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379237AbiFGVFo (ORCPT
+        id S1379381AbiFGVFy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:05:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47028 "EHLO
+        Tue, 7 Jun 2022 17:05:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359009AbiFGUGU (ORCPT
+        with ESMTP id S1359074AbiFGUGc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:06:20 -0400
+        Tue, 7 Jun 2022 16:06:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 867251C422C;
-        Tue,  7 Jun 2022 11:25:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 714DA1C4256;
+        Tue,  7 Jun 2022 11:25:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D84A61252;
-        Tue,  7 Jun 2022 18:25:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 166EAC385A2;
-        Tue,  7 Jun 2022 18:25:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A90F611B9;
+        Tue,  7 Jun 2022 18:25:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BE96C385A2;
+        Tue,  7 Jun 2022 18:25:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626348;
-        bh=JTXtTL8CRrfCDe19p18Ognw/kqadNEEsvEmu7neYdlY=;
+        s=korg; t=1654626357;
+        bh=m8Sd4aYGwsiu1xHVnWzSw6BMofJn741hGJ0Xt/ZJ+tI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lAcCyu3e4vgLpvKrTvzVulgQLy5z1md5XQcUl+/oU1lDibays4llMm+Hn7gCtVkh6
-         rLW+Wt5JZR0nlUxe0lt+Gt1g/OEH8KrwAVqnIskBXg3LCvXJwppIVtv2CdeJeehwGn
-         68h7RujOAb9Yn8NeFsd0m1ndAcbDJ2xi9vMOT9Rw=
+        b=g6hrbClNf8nqtPEkjHHG1/v7KvAwLz12r7UEv8wqyDo13N3tjkmrlMOGWAj7e/eFO
+         WOiDpE6zcmW8JMuM/3DQ59GkNshn7qzBFb992i4jHNGK9fTu8TJgoXflM/2WCCUSQd
+         rY4OZWE14ad7BCQjmoGFGvHvBudI9ZNr4N4c2vas=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
+        stable@vger.kernel.org, CKI Project <cki-project@redhat.com>,
+        Veronika Kabatova <vkabatov@redhat.com>,
+        Jerome Marchand <jmarchan@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 339/772] drm/msm/dp: fix event thread stuck in wait_event after kthread_stop()
-Date:   Tue,  7 Jun 2022 18:58:51 +0200
-Message-Id: <20220607164959.012708325@linuxfoundation.org>
+Subject: [PATCH 5.17 350/772] samples: bpf: Dont fail for a missing VMLINUX_BTF when VMLINUX_H is provided
+Date:   Tue,  7 Jun 2022 18:59:02 +0200
+Message-Id: <20220607164959.333782726@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,66 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+From: Jerome Marchand <jmarchan@redhat.com>
 
-[ Upstream commit 2f9b5b3ae2eb625b75a898212a76f3b8c6d0d2b0 ]
+[ Upstream commit ec24704492d8791a52a75a39e3ad762b6e017bc6 ]
 
-Event thread supposed to exit from its while loop after kthread_stop().
-However there may has possibility that event thread is pending in the
-middle of wait_event due to condition checking never become true.
-To make sure event thread exit its loop after kthread_stop(), this
-patch OR kthread_should_stop() into wait_event's condition checking
-so that event thread will exit its loop after kernal_stop().
+samples/bpf build currently always fails if it can't generate
+vmlinux.h from vmlinux, even when vmlinux.h is directly provided by
+VMLINUX_H variable, which makes VMLINUX_H pointless.
+Only fails when neither method works.
 
-Changes in v2:
---  correct spelling error at commit title
-
-Changes in v3:
--- remove unnecessary parenthesis
--- while(1) to replace while (!kthread_should_stop())
-
-Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Fixes: 570d3e5d28db ("drm/msm/dp: stop event kernel thread when DP unbind")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/484576/
-Link: https://lore.kernel.org/r/1651595136-24312-1-git-send-email-quic_khsieh@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fixes: 384b6b3bbf0d ("samples: bpf: Add vmlinux.h generation support")
+Reported-by: CKI Project <cki-project@redhat.com>
+Reported-by: Veronika Kabatova <vkabatov@redhat.com>
+Signed-off-by: Jerome Marchand <jmarchan@redhat.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220507161635.2219052-1-jmarchan@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_display.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ samples/bpf/Makefile | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index fb424f8b29e5..2baa1ad54899 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -1065,15 +1065,20 @@ static int hpd_event_thread(void *data)
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index 38638845db9d..72bb85c18804 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -368,16 +368,15 @@ VMLINUX_BTF ?= $(abspath $(firstword $(wildcard $(VMLINUX_BTF_PATHS))))
  
- 	dp_priv = (struct dp_display_private *)data;
+ $(obj)/vmlinux.h: $(VMLINUX_BTF) $(BPFTOOL)
+ ifeq ($(VMLINUX_H),)
++ifeq ($(VMLINUX_BTF),)
++	$(error Cannot find a vmlinux for VMLINUX_BTF at any of "$(VMLINUX_BTF_PATHS)",\
++		build the kernel or set VMLINUX_BTF or VMLINUX_H variable)
++endif
+ 	$(Q)$(BPFTOOL) btf dump file $(VMLINUX_BTF) format c > $@
+ else
+ 	$(Q)cp "$(VMLINUX_H)" $@
+ endif
  
--	while (!kthread_should_stop()) {
-+	while (1) {
- 		if (timeout_mode) {
- 			wait_event_timeout(dp_priv->event_q,
--				(dp_priv->event_pndx == dp_priv->event_gndx),
--						EVENT_TIMEOUT);
-+				(dp_priv->event_pndx == dp_priv->event_gndx) ||
-+					kthread_should_stop(), EVENT_TIMEOUT);
- 		} else {
- 			wait_event_interruptible(dp_priv->event_q,
--				(dp_priv->event_pndx != dp_priv->event_gndx));
-+				(dp_priv->event_pndx != dp_priv->event_gndx) ||
-+					kthread_should_stop());
- 		}
-+
-+		if (kthread_should_stop())
-+			break;
-+
- 		spin_lock_irqsave(&dp_priv->event_lock, flag);
- 		todo = &dp_priv->event_list[dp_priv->event_gndx];
- 		if (todo->delay) {
+-ifeq ($(VMLINUX_BTF),)
+-	$(error Cannot find a vmlinux for VMLINUX_BTF at any of "$(VMLINUX_BTF_PATHS)",\
+-		build the kernel or set VMLINUX_BTF variable)
+-endif
+-
+ clean-files += vmlinux.h
+ 
+ # Get Clang's default includes on this system, as opposed to those seen by
 -- 
 2.35.1
 
