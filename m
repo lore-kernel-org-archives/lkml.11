@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA72DCCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D16CCA487
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384889AbiFHAUj (ORCPT
+        id S1385024AbiFHAUx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:20:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51424 "EHLO
+        Tue, 7 Jun 2022 20:20:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382210AbiFGWMp (ORCPT
+        with ESMTP id S1382771AbiFGVvy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:12:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F090225BC21;
-        Tue,  7 Jun 2022 12:19:23 -0700 (PDT)
+        Tue, 7 Jun 2022 17:51:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B0F31512;
+        Tue,  7 Jun 2022 12:09:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1F78B823CC;
-        Tue,  7 Jun 2022 19:19:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AC26C385A2;
-        Tue,  7 Jun 2022 19:19:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CFC3AB823B1;
+        Tue,  7 Jun 2022 19:09:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CF0EC36B01;
+        Tue,  7 Jun 2022 19:09:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629554;
-        bh=en8hNGfUSc9zRqvaL+iKZSJUvg3jICe8mOKD3yOmTqw=;
+        s=korg; t=1654628967;
+        bh=B0CsIoEyXEN5LtP7h54vXfFTV7az3pTP+cv1ty9bRNk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iMJ/KyJBnXGPOlHwXG1Xu2UGWMpX1oMtr9QgYPArzN+5CvvGUqhxbO9V+vLHY333V
-         t5NkTuEWD7A1/3+0+LuaSaj8rB7QtBERvtpazuevuNxWcdoClilum61c/9mxAQgCi9
-         M3nG/ZxOFdii2hQwGnhOfHB+EnHg6ibESACnpXM0=
+        b=qqxdGIuhokZ55mnPBeyY3/iL1q/6uhUWOvp66koH52TEA8G8I+j6lQvwfgYFHuoWz
+         Gn+dk3VpHfhlGGAvizqlVb52hgYluIT/eeK87OTgxDhZYpi7jHtS7A1CNuYAfpmOhw
+         Fqt7cHBDiLlKJ13+iEHRlCuh1R0xPXf2yqoVZ1zM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.18 734/879] bfq: Get rid of __bio_blkcg() usage
-Date:   Tue,  7 Jun 2022 19:04:12 +0200
-Message-Id: <20220607165024.162469192@linuxfoundation.org>
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 521/879] rxrpc: Fix decision on when to generate an IDLE ACK
+Date:   Tue,  7 Jun 2022 19:00:39 +0200
+Message-Id: <20220607165018.001037642@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,197 +52,170 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: David Howells <dhowells@redhat.com>
 
-commit 4e54a2493e582361adc3bfbf06c7d50d19d18837 upstream.
+[ Upstream commit 9a3dedcf18096e8f7f22b8777d78c4acfdea1651 ]
 
-BFQ usage of __bio_blkcg() is a relict from the past. Furthermore if bio
-would not be associated with any blkcg, the usage of __bio_blkcg() in
-BFQ is prone to races with the task being migrated between cgroups as
-__bio_blkcg() calls at different places could return different blkcgs.
+Fix the decision on when to generate an IDLE ACK by keeping a count of the
+number of packets we've received, but not yet soft-ACK'd, and the number of
+packets we've processed, but not yet hard-ACK'd, rather than trying to keep
+track of which DATA sequence numbers correspond to those points.
 
-Convert BFQ to the new situation where bio->bi_blkg is initialized in
-bio_set_dev() and thus practically always valid. This allows us to save
-blkcg_gq lookup and noticeably simplify the code.
+We then generate an ACK when either counter exceeds 2.  The counters are
+both cleared when we transcribe the information into any sort of ACK packet
+for transmission.  IDLE and DELAY ACKs are skipped if both counters are 0
+(ie. no change).
 
-CC: stable@vger.kernel.org
-Fixes: 0fe061b9f03c ("blkcg: fix ref count issue with bio_blkcg() using task_css")
-Tested-by: "yukuai (C)" <yukuai3@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220401102752.8599-8-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 805b21b929e2 ("rxrpc: Send an ACK after every few DATA packets we receive")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bfq-cgroup.c  |   63 ++++++++++++++++++----------------------------------
- block/bfq-iosched.c |   11 ---------
- block/bfq-iosched.h |    3 --
- 3 files changed, 25 insertions(+), 52 deletions(-)
+ include/trace/events/rxrpc.h |  2 +-
+ net/rxrpc/ar-internal.h      |  4 ++--
+ net/rxrpc/input.c            | 11 +++++++++--
+ net/rxrpc/output.c           | 18 +++++++++++-------
+ net/rxrpc/recvmsg.c          |  8 +++-----
+ 5 files changed, 26 insertions(+), 17 deletions(-)
 
---- a/block/bfq-cgroup.c
-+++ b/block/bfq-cgroup.c
-@@ -586,27 +586,11 @@ static void bfq_group_set_parent(struct
- 	entity->sched_data = &parent->sched_data;
- }
+diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
+index 4a3ab0ed6e06..1c714336b863 100644
+--- a/include/trace/events/rxrpc.h
++++ b/include/trace/events/rxrpc.h
+@@ -1509,7 +1509,7 @@ TRACE_EVENT(rxrpc_call_reset,
+ 		    __entry->call_serial = call->rx_serial;
+ 		    __entry->conn_serial = call->conn->hi_serial;
+ 		    __entry->tx_seq = call->tx_hard_ack;
+-		    __entry->rx_seq = call->ackr_seen;
++		    __entry->rx_seq = call->rx_hard_ack;
+ 			   ),
  
--static struct bfq_group *bfq_lookup_bfqg(struct bfq_data *bfqd,
--					 struct blkcg *blkcg)
-+static void bfq_link_bfqg(struct bfq_data *bfqd, struct bfq_group *bfqg)
+ 	    TP_printk("c=%08x %08x:%08x r=%08x/%08x tx=%08x rx=%08x",
+diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+index 4ba51e6d3d85..f2d593e27b64 100644
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -680,8 +680,8 @@ struct rxrpc_call {
+ 	u8			ackr_reason;	/* reason to ACK */
+ 	rxrpc_serial_t		ackr_serial;	/* serial of packet being ACK'd */
+ 	rxrpc_seq_t		ackr_highest_seq; /* Higest sequence number received */
+-	rxrpc_seq_t		ackr_consumed;	/* Highest packet shown consumed */
+-	rxrpc_seq_t		ackr_seen;	/* Highest packet shown seen */
++	atomic_t		ackr_nr_unacked; /* Number of unacked packets */
++	atomic_t		ackr_nr_consumed; /* Number of packets needing hard ACK */
+ 
+ 	/* RTT management */
+ 	rxrpc_serial_t		rtt_serial[4];	/* Serial number of DATA or PING sent */
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index 680b984ef87f..3521ebd0ee41 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -412,8 +412,8 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
  {
--	struct blkcg_gq *blkg;
--
--	blkg = blkg_lookup(blkcg, bfqd->queue);
--	if (likely(blkg))
--		return blkg_to_bfqg(blkg);
--	return NULL;
--}
--
--struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd,
--				     struct blkcg *blkcg)
--{
--	struct bfq_group *bfqg, *parent;
-+	struct bfq_group *parent;
- 	struct bfq_entity *entity;
- 
--	bfqg = bfq_lookup_bfqg(bfqd, blkcg);
--	if (unlikely(!bfqg))
--		return NULL;
--
- 	/*
- 	 * Update chain of bfq_groups as we might be handling a leaf group
- 	 * which, along with some of its relatives, has not been hooked yet
-@@ -623,8 +607,15 @@ struct bfq_group *bfq_find_set_group(str
- 			bfq_group_set_parent(curr_bfqg, parent);
+ 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
+ 	enum rxrpc_call_state state;
+-	unsigned int j, nr_subpackets;
+-	rxrpc_serial_t serial = sp->hdr.serial, ack_serial = 0;
++	unsigned int j, nr_subpackets, nr_unacked = 0;
++	rxrpc_serial_t serial = sp->hdr.serial, ack_serial = serial;
+ 	rxrpc_seq_t seq0 = sp->hdr.seq, hard_ack;
+ 	bool immediate_ack = false, jumbo_bad = false;
+ 	u8 ack = 0;
+@@ -569,6 +569,8 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 			sp = NULL;
  		}
- 	}
-+}
  
--	return bfqg;
-+struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
-+{
-+	struct blkcg_gq *blkg = bio->bi_blkg;
++		nr_unacked++;
 +
-+	if (!blkg)
-+		return bfqd->root_group;
-+	return blkg_to_bfqg(blkg);
- }
+ 		if (last) {
+ 			set_bit(RXRPC_CALL_RX_LAST, &call->flags);
+ 			if (!ack) {
+@@ -588,9 +590,14 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 			}
+ 			call->rx_expect_next = seq + 1;
+ 		}
++		if (!ack)
++			ack_serial = serial;
+ 	}
  
- /**
-@@ -714,25 +705,15 @@ void bfq_bfqq_move(struct bfq_data *bfqd
-  * Move bic to blkcg, assuming that bfqd->lock is held; which makes
-  * sure that the reference to cgroup is valid across the call (see
-  * comments in bfq_bic_update_cgroup on this issue)
-- *
-- * NOTE: an alternative approach might have been to store the current
-- * cgroup in bfqq and getting a reference to it, reducing the lookup
-- * time here, at the price of slightly more complex code.
-  */
--static struct bfq_group *__bfq_bic_change_cgroup(struct bfq_data *bfqd,
--						struct bfq_io_cq *bic,
--						struct blkcg *blkcg)
-+static void *__bfq_bic_change_cgroup(struct bfq_data *bfqd,
-+				     struct bfq_io_cq *bic,
-+				     struct bfq_group *bfqg)
+ ack:
++	if (atomic_add_return(nr_unacked, &call->ackr_nr_unacked) > 2 && !ack)
++		ack = RXRPC_ACK_IDLE;
++
+ 	if (ack)
+ 		rxrpc_propose_ACK(call, ack, ack_serial,
+ 				  immediate_ack, true,
+diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
+index 46aae9b7006f..9683617db704 100644
+--- a/net/rxrpc/output.c
++++ b/net/rxrpc/output.c
+@@ -74,11 +74,18 @@ static size_t rxrpc_fill_out_ack(struct rxrpc_connection *conn,
+ 				 u8 reason)
  {
- 	struct bfq_queue *async_bfqq = bic_to_bfqq(bic, 0);
- 	struct bfq_queue *sync_bfqq = bic_to_bfqq(bic, 1);
--	struct bfq_group *bfqg;
- 	struct bfq_entity *entity;
+ 	rxrpc_serial_t serial;
++	unsigned int tmp;
+ 	rxrpc_seq_t hard_ack, top, seq;
+ 	int ix;
+ 	u32 mtu, jmax;
+ 	u8 *ackp = pkt->acks;
  
--	bfqg = bfq_find_set_group(bfqd, blkcg);
--
--	if (unlikely(!bfqg))
--		bfqg = bfqd->root_group;
--
- 	if (async_bfqq) {
- 		entity = &async_bfqq->entity;
++	tmp = atomic_xchg(&call->ackr_nr_unacked, 0);
++	tmp |= atomic_xchg(&call->ackr_nr_consumed, 0);
++	if (!tmp && (reason == RXRPC_ACK_DELAY ||
++		     reason == RXRPC_ACK_IDLE))
++		return 0;
++
+ 	/* Barrier against rxrpc_input_data(). */
+ 	serial = call->ackr_serial;
+ 	hard_ack = READ_ONCE(call->rx_hard_ack);
+@@ -223,6 +230,10 @@ int rxrpc_send_ack_packet(struct rxrpc_call *call, bool ping,
+ 	n = rxrpc_fill_out_ack(conn, call, pkt, &hard_ack, &top, reason);
  
-@@ -784,20 +765,24 @@ static struct bfq_group *__bfq_bic_chang
- void bfq_bic_update_cgroup(struct bfq_io_cq *bic, struct bio *bio)
- {
- 	struct bfq_data *bfqd = bic_to_bfqd(bic);
--	struct bfq_group *bfqg = NULL;
-+	struct bfq_group *bfqg = bfq_bio_bfqg(bfqd, bio);
- 	uint64_t serial_nr;
+ 	spin_unlock_bh(&call->lock);
++	if (n == 0) {
++		kfree(pkt);
++		return 0;
++	}
  
--	rcu_read_lock();
--	serial_nr = __bio_blkcg(bio)->css.serial_nr;
-+	serial_nr = bfqg_to_blkg(bfqg)->blkcg->css.serial_nr;
+ 	iov[0].iov_base	= pkt;
+ 	iov[0].iov_len	= sizeof(pkt->whdr) + sizeof(pkt->ack) + n;
+@@ -259,13 +270,6 @@ int rxrpc_send_ack_packet(struct rxrpc_call *call, bool ping,
+ 					  ntohl(pkt->ack.serial),
+ 					  false, true,
+ 					  rxrpc_propose_ack_retry_tx);
+-		} else {
+-			spin_lock_bh(&call->lock);
+-			if (after(hard_ack, call->ackr_consumed))
+-				call->ackr_consumed = hard_ack;
+-			if (after(top, call->ackr_seen))
+-				call->ackr_seen = top;
+-			spin_unlock_bh(&call->lock);
+ 		}
  
- 	/*
- 	 * Check whether blkcg has changed.  The condition may trigger
- 	 * spuriously on a newly created cic but there's no harm.
- 	 */
- 	if (unlikely(!bfqd) || likely(bic->blkcg_serial_nr == serial_nr))
--		goto out;
-+		return;
- 
--	bfqg = __bfq_bic_change_cgroup(bfqd, bic, __bio_blkcg(bio));
-+	/*
-+	 * New cgroup for this process. Make sure it is linked to bfq internal
-+	 * cgroup hierarchy.
-+	 */
-+	bfq_link_bfqg(bfqd, bfqg);
-+	__bfq_bic_change_cgroup(bfqd, bic, bfqg);
- 	/*
- 	 * Update blkg_path for bfq_log_* functions. We cache this
- 	 * path, and update it here, for the following
-@@ -850,8 +835,6 @@ void bfq_bic_update_cgroup(struct bfq_io
- 	 */
- 	blkg_path(bfqg_to_blkg(bfqg), bfqg->blkg_path, sizeof(bfqg->blkg_path));
- 	bic->blkcg_serial_nr = serial_nr;
--out:
--	rcu_read_unlock();
- }
- 
- /**
-@@ -1469,7 +1452,7 @@ void bfq_end_wr_async(struct bfq_data *b
- 	bfq_end_wr_async_queues(bfqd, bfqd->root_group);
- }
- 
--struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd, struct blkcg *blkcg)
-+struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
- {
- 	return bfqd->root_group;
- }
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -5730,14 +5730,7 @@ static struct bfq_queue *bfq_get_queue(s
- 	struct bfq_queue *bfqq;
- 	struct bfq_group *bfqg;
- 
--	rcu_read_lock();
--
--	bfqg = bfq_find_set_group(bfqd, __bio_blkcg(bio));
--	if (!bfqg) {
--		bfqq = &bfqd->oom_bfqq;
--		goto out;
--	}
--
-+	bfqg = bfq_bio_bfqg(bfqd, bio);
- 	if (!is_sync) {
- 		async_bfqq = bfq_async_queue_prio(bfqd, bfqg, ioprio_class,
- 						  ioprio);
-@@ -5783,8 +5776,6 @@ out:
- 
- 	if (bfqq != &bfqd->oom_bfqq && is_sync && !respawn)
- 		bfqq = bfq_do_or_sched_stable_merge(bfqd, bfqq, bic);
--
--	rcu_read_unlock();
- 	return bfqq;
- }
- 
---- a/block/bfq-iosched.h
-+++ b/block/bfq-iosched.h
-@@ -1010,8 +1010,7 @@ void bfq_bfqq_move(struct bfq_data *bfqd
- void bfq_init_entity(struct bfq_entity *entity, struct bfq_group *bfqg);
- void bfq_bic_update_cgroup(struct bfq_io_cq *bic, struct bio *bio);
- void bfq_end_wr_async(struct bfq_data *bfqd);
--struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd,
--				     struct blkcg *blkcg);
-+struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio);
- struct blkcg_gq *bfqg_to_blkg(struct bfq_group *bfqg);
- struct bfq_group *bfqq_group(struct bfq_queue *bfqq);
- struct bfq_group *bfq_create_group_hierarchy(struct bfq_data *bfqd, int node);
+ 		rxrpc_set_keepalive(call);
+diff --git a/net/rxrpc/recvmsg.c b/net/rxrpc/recvmsg.c
+index eca6dda26c77..250f23bc1c07 100644
+--- a/net/rxrpc/recvmsg.c
++++ b/net/rxrpc/recvmsg.c
+@@ -260,11 +260,9 @@ static void rxrpc_rotate_rx_window(struct rxrpc_call *call)
+ 		rxrpc_end_rx_phase(call, serial);
+ 	} else {
+ 		/* Check to see if there's an ACK that needs sending. */
+-		if (after_eq(hard_ack, call->ackr_consumed + 2) ||
+-		    after_eq(top, call->ackr_seen + 2) ||
+-		    (hard_ack == top && after(hard_ack, call->ackr_consumed)))
+-			rxrpc_propose_ACK(call, RXRPC_ACK_DELAY, serial,
+-					  true, true,
++		if (atomic_inc_return(&call->ackr_nr_consumed) > 2)
++			rxrpc_propose_ACK(call, RXRPC_ACK_IDLE, serial,
++					  true, false,
+ 					  rxrpc_propose_ack_rotate_rx);
+ 		if (call->ackr_reason && call->ackr_reason != RXRPC_ACK_DELAY)
+ 			rxrpc_send_ack_packet(call, false, NULL);
+-- 
+2.35.1
+
 
 
