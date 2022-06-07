@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7E37CCA48B
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05AD2CCA491
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384896AbiFGWlX (ORCPT
+        id S1385160AbiFGWlj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:41:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49136 "EHLO
+        Tue, 7 Jun 2022 18:41:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380109AbiFGV2z (ORCPT
+        with ESMTP id S1380053AbiFGVaN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:28:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34C7228F77;
-        Tue,  7 Jun 2022 12:02:19 -0700 (PDT)
+        Tue, 7 Jun 2022 17:30:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21C3B2298FC;
+        Tue,  7 Jun 2022 12:02:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1E9BDB8239D;
-        Tue,  7 Jun 2022 19:02:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85F53C385A5;
-        Tue,  7 Jun 2022 19:02:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C55F617C8;
+        Tue,  7 Jun 2022 19:02:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8808C385A2;
+        Tue,  7 Jun 2022 19:02:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628536;
-        bh=MhY5AKNn21dWYS0iPSQcwo1ibmMkfbI6/CS3dfxBLL8=;
+        s=korg; t=1654628559;
+        bh=nlbDq5Qtba23p9Q/PwoqIirCVA439fgQBmugmYl66yw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X6pAnHB7a3M47GInbc2rhsJqQ/JlOpPTc0EV7348Plg2wSq4CggwI/Wf8uLxoSeHv
-         vhXx8c8pTZZvfz/ktUERuYBOwS77hJo68cenK+/YGpZHmm3AXOjeVJpIno7563xIPq
-         LyJo85Ty9lgua4iT4NuMD3fjg+79I17feXXBi6wA=
+        b=kzQDXL2AbvNT9ApMBvnrRYsf7Ozr9v2nHZCZ3ZCBYyw/no8W2/k+0xa2sWjEUzOX3
+         EjvixDGV6Zr+HOkQzpH/LgYBRGM7h+/uo45bMtYzUpYdSX0r8HHXNR4/YzhBh8HVax
+         elQO51Ql1EOeljlgaj37YOCQcuN3Gh1htbRhphlA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 364/879] mtd: rawnand: intel: fix possible null-ptr-deref in ebu_nand_probe()
-Date:   Tue,  7 Jun 2022 18:58:02 +0200
-Message-Id: <20220607165013.435654905@linuxfoundation.org>
+Subject: [PATCH 5.18 333/879] spi: img-spfi: Fix pm_runtime_get_sync() error checking
+Date:   Tue,  7 Jun 2022 18:57:31 +0200
+Message-Id: <20220607165012.523367630@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,38 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-[ Upstream commit ddf66aefd685fd46500b9917333e1b1e118276dc ]
+[ Upstream commit cc470d55343056d6b2a5c32e10e0aad06f324078 ]
 
-It will cause null-ptr-deref when using 'res', if platform_get_resource()
-returns NULL, so move using 'res' after devm_ioremap_resource() that
-will check it to avoid null-ptr-deref.
+If the device is already in a runtime PM enabled state
+pm_runtime_get_sync() will return 1, so a test for negative
+value should be used to check for errors.
 
-Fixes: 0b1039f016e8 ("mtd: rawnand: Add NAND controller support on Intel LGM SoC")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220426084913.4021868-2-yangyingliang@huawei.com
+Fixes: deba25800a12b ("spi: Add driver for IMG SPFI controller")
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Link: https://lore.kernel.org/r/20220422062641.10486-1-zhengyongjun3@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/intel-nand-controller.c | 2 +-
+ drivers/spi/spi-img-spfi.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mtd/nand/raw/intel-nand-controller.c b/drivers/mtd/nand/raw/intel-nand-controller.c
-index 7c1c80dae826..e91b879b32bd 100644
---- a/drivers/mtd/nand/raw/intel-nand-controller.c
-+++ b/drivers/mtd/nand/raw/intel-nand-controller.c
-@@ -619,9 +619,9 @@ static int ebu_nand_probe(struct platform_device *pdev)
- 	resname = devm_kasprintf(dev, GFP_KERNEL, "nand_cs%d", cs);
- 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, resname);
- 	ebu_host->cs[cs].chipaddr = devm_ioremap_resource(dev, res);
--	ebu_host->cs[cs].nand_pa = res->start;
- 	if (IS_ERR(ebu_host->cs[cs].chipaddr))
- 		return PTR_ERR(ebu_host->cs[cs].chipaddr);
-+	ebu_host->cs[cs].nand_pa = res->start;
+diff --git a/drivers/spi/spi-img-spfi.c b/drivers/spi/spi-img-spfi.c
+index 5f05d519fbbd..71376b6df89d 100644
+--- a/drivers/spi/spi-img-spfi.c
++++ b/drivers/spi/spi-img-spfi.c
+@@ -731,7 +731,7 @@ static int img_spfi_resume(struct device *dev)
+ 	int ret;
  
- 	ebu_host->clk = devm_clk_get(dev, NULL);
- 	if (IS_ERR(ebu_host->clk))
+ 	ret = pm_runtime_get_sync(dev);
+-	if (ret) {
++	if (ret < 0) {
+ 		pm_runtime_put_noidle(dev);
+ 		return ret;
+ 	}
 -- 
 2.35.1
 
