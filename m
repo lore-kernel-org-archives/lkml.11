@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22A38CCA489
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:53:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26850CCA48E
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:53:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390701AbiFHBvN (ORCPT
+        id S1390885AbiFHBvu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:51:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57302 "EHLO
+        Tue, 7 Jun 2022 21:51:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382872AbiFGWAZ (ORCPT
+        with ESMTP id S1357031AbiFGVo0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:00:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8860E24DBCF;
-        Tue,  7 Jun 2022 12:14:16 -0700 (PDT)
+        Tue, 7 Jun 2022 17:44:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28DF82342B7;
+        Tue,  7 Jun 2022 12:07:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FBA861846;
-        Tue,  7 Jun 2022 19:13:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44454C385A2;
-        Tue,  7 Jun 2022 19:13:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C44061874;
+        Tue,  7 Jun 2022 19:07:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19EB3C385A2;
+        Tue,  7 Jun 2022 19:07:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629238;
-        bh=jqHGMCzx24qQKDPktTXW/vu9addVIfjBqKQ83UTvzSY=;
+        s=korg; t=1654628838;
+        bh=wBHxjob7x0XzPX7Nk91SNo2LE9sqgvauDwTuTzLOtjg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YseMfbVCygYPUWfKreiZ9eHvU/RKhoBoQy8a/ur8UzBmNSxaWbVpBELq5IidBNutL
-         oDKi9xMZj5UsbR6M8cy53Dv85AgIX7p6cjfym9TwCSPmqxh0m3kTH5R/FPFuveAPPH
-         50S14spQ8KvsadfGtrDxpwZfvk3HPLN9YXdxR/N0=
+        b=ZFk1LpUG8Yp3dlnvFkOZxbtDyFSvTBjozgJzxJPqeEWMaMnieRTldHdBlTqsRTwWE
+         gQ4QmCM1mRGkPpKZaFGjpk2WjK5Tb7h9M2j9A/KHRIvbcIBFmxn07t1VHZrR+ZkDpR
+         fUEr3AxfIw+zLTqZeFFsjqrsYTnCB6zyzE+8P+aY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Jessica Yu <jeyu@kernel.org>,
-        Matthias Maennich <maennich@google.com>,
+        stable@vger.kernel.org,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 618/879] module.h: simplify MODULE_IMPORT_NS
-Date:   Tue,  7 Jun 2022 19:02:16 +0200
-Message-Id: <20220607165020.786341119@linuxfoundation.org>
+Subject: [PATCH 5.18 475/879] media: rkvdec: Stop overclocking the decoder
+Date:   Tue,  7 Jun 2022 18:59:53 +0200
+Message-Id: <20220607165016.666307078@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,45 +54,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Nicolas Dufresne <nicolas.dufresne@collabora.com>
 
-[ Upstream commit 80140a81f7f833998d732102eea0fea230b88067 ]
+[ Upstream commit 9998943f6dfc5d5472bfab2e38527fb6ba5e9da7 ]
 
-In commit ca321ec74322 ("module.h: allow #define strings to work with
-MODULE_IMPORT_NS") I fixed up the MODULE_IMPORT_NS() macro to allow
-defined strings to work with it.  Unfortunatly I did it in a two-stage
-process, when it could just be done with the __stringify() macro as
-pointed out by Masahiro Yamada.
+While this overclock hack seems to work on some implementations
+(some ChromeBooks, RockPi4) it also causes instability on other
+implementations (notably LibreComputer Renegade, but there were more
+reports in the LibreELEC project, where this has been removed). While
+performance is indeed affected (tested with GStreamer), 4K playback
+still works as long as you don't operate in lock step and keep at
+least 1 frame ahead of time in the decode queue.
 
-Clean this up to only be one macro instead of two steps to achieve the
-same end result.
+After discussion with ChromeOS members, it would seem that their
+implementation indeed used to synchronously decode each frame, so
+this hack was simply compensating for their code being less
+efficient. In my opinion, this hack should not have been included
+upstream.
 
-Fixes: ca321ec74322 ("module.h: allow #define strings to work with MODULE_IMPORT_NS")
-Reported-by: Masahiro Yamada <masahiroy@kernel.org>
-Cc: Luis Chamberlain <mcgrof@kernel.org>
-Cc: Jessica Yu <jeyu@kernel.org>
-Cc: Matthias Maennich <maennich@google.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+Fixes: cd33c830448ba ("media: rkvdec: Add the rkvdec driver")
+Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/module.h | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/staging/media/rkvdec/rkvdec.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/include/linux/module.h b/include/linux/module.h
-index 1e135fd5c076..d5e9066990ca 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -290,8 +290,7 @@ extern typeof(name) __mod_##type##__##name##_device_table		\
-  * files require multiple MODULE_FIRMWARE() specifiers */
- #define MODULE_FIRMWARE(_firmware) MODULE_INFO(firmware, _firmware)
+diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
+index c0cf3488f970..2df8cf4883e2 100644
+--- a/drivers/staging/media/rkvdec/rkvdec.c
++++ b/drivers/staging/media/rkvdec/rkvdec.c
+@@ -1027,12 +1027,6 @@ static int rkvdec_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
  
--#define _MODULE_IMPORT_NS(ns)	MODULE_INFO(import_ns, #ns)
--#define MODULE_IMPORT_NS(ns)	_MODULE_IMPORT_NS(ns)
-+#define MODULE_IMPORT_NS(ns)	MODULE_INFO(import_ns, __stringify(ns))
- 
- struct notifier_block;
- 
+-	/*
+-	 * Bump ACLK to max. possible freq. (500 MHz) to improve performance
+-	 * When 4k video playback.
+-	 */
+-	clk_set_rate(rkvdec->clocks[0].clk, 500 * 1000 * 1000);
+-
+ 	rkvdec->regs = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(rkvdec->regs))
+ 		return PTR_ERR(rkvdec->regs);
 -- 
 2.35.1
 
