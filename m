@@ -2,106 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15E93C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:39:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E092AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:39:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381098AbiFGVji (ORCPT
+        id S1381109AbiFGVjm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:39:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48200 "EHLO
+        Tue, 7 Jun 2022 17:39:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377147AbiFGUuP (ORCPT
+        with ESMTP id S1377275AbiFGUud (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:50:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10601F77CB;
-        Tue,  7 Jun 2022 11:39:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54577B8233E;
-        Tue,  7 Jun 2022 18:39:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2678C385A5;
-        Tue,  7 Jun 2022 18:39:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627193;
-        bh=DIdJhrhMDzys4waQkH84mHqeyCx7EgI+hQjsMXPByAw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GKS484lSYzYwirgdEvDozrB7ZW+xJdJkx7S9zlTNyahXaS1WHN5h1wcauIYUAXb/i
-         Ey21zTqUaz/RWwm7hEPOod8B3sMyW3EpZ6BpCoyw3nhJhwpSghK4/TUlxB6Z8eTS5O
-         CAAqKD4XAAFfh0vtevSbKWgV6bmXrvT4l/B0cozI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Daniel Bristot de Oliveria <bristot@kernel.org>,
-        John Kacur <jkacur@redhat.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 601/772] rtla: Minor grammar fix for rtla README
-Date:   Tue,  7 Jun 2022 19:03:13 +0200
-Message-Id: <20220607165006.651737274@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 16:50:33 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D4A1F77FC;
+        Tue,  7 Jun 2022 11:39:58 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 8FBF65FD02;
+        Tue,  7 Jun 2022 21:39:26 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1654627166;
+        bh=KhjSexn3nEphWw72vrwnNoGa5BPxsszVKS1AlIdu0Pg=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=lKIENIBWdBPmv1/xP3RgrpXxhDDPhM8YsjMNm+rOVxBDZVYiLJpGOC39kZtLb9yNL
+         Fkbu5CemUtyNwX8xWogHNOc7WMlbLTxeVE6kQkxlfZUqR4d+HraVHjca7541oeWEMz
+         r9wgSiVryplcBdJv9C5WHWos1RkdiofcRoDauGXMqz/bvq2w53IUugy6YvbuHm9S6H
+         MGFqpKQ08vo3lxPHCl6vQl8pQB38XOCRQ/EiJgMp9G0rzw57/f+V64ZBTK5CMJXDxL
+         X3oQaZ+PYrcFA3QFdTyvomXMyTWMcUxQcO3pWlhy/4sBzvVb1jYVU+o2bXb+owJI5t
+         ggUd4B+KMApZA==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Tue,  7 Jun 2022 21:39:26 +0300 (MSK)
+From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
+To:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "noname.nuno@gmail.com" <noname.nuno@gmail.com>
+CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "rockosov@gmail.com" <rockosov@gmail.com>,
+        Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Subject: [PATCH v3] iio: trigger: warn about non-registered iio trigger
+ getting attempt
+Thread-Topic: [PATCH v3] iio: trigger: warn about non-registered iio trigger
+ getting attempt
+Thread-Index: AQHYep3lZdCBX5wfLkWR1miHp7T4Og==
+Date:   Tue, 7 Jun 2022 18:39:18 +0000
+Message-ID: <20220607183907.20017-1-ddrokosov@sberdevices.ru>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/06/07 15:55:00 #19701172
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Kacur <jkacur@redhat.com>
+As a part of patch series about wrong trigger register() and get()
+calls order in the some IIO drivers trigger initialization path:
 
-[ Upstream commit 22d146f7c1e97f4870e4497c0202939a031f740c ]
+https://lore.kernel.org/all/20220524181150.9240-1-ddrokosov@sberdevices.ru/
 
-- Change to "The rtla meta-tool includes"
-- Remove an unnecessary "But, "
-- Adjust the formatting of the paragraph resulting from the changes.
-- Simplify the wording for the libraries and tools.
+runtime WARN_ONCE() is added to alarm IIO driver authors who make such
+a mistake.
 
-Link: https://lkml.kernel.org/r/437f0accdde53713ab3cce46f3564be00487e031.1651247710.git.bristot@kernel.org
-Link: https://lore.kernel.org/r/20220408161012.10544-1-jkacur@redhat.com/
+When an IIO driver allocates a new IIO trigger, it should register it
+before calling the get() operation. In other words, each IIO driver
+must abide by IIO trigger alloc()/register()/get() calls order.
 
-Cc: Daniel Bristot de Oliveria <bristot@kernel.org>
-Fixes: 79ce8f43ac5a ("rtla: Real-Time Linux Analysis tool")
-Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: John Kacur <jkacur@redhat.com>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
 ---
- tools/tracing/rtla/README.txt | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+Changes:
+v1 -> v2: totally reworked the patch, used trig->list entry instead of
+          trig->owner as driver registration indicator.
+          It works perfectly for both builtin and built as a module
+          drivers.
 
-diff --git a/tools/tracing/rtla/README.txt b/tools/tracing/rtla/README.txt
-index 6c88446f7e74..0fbad2640b8c 100644
---- a/tools/tracing/rtla/README.txt
-+++ b/tools/tracing/rtla/README.txt
-@@ -1,15 +1,13 @@
- RTLA: Real-Time Linux Analysis tools
- 
--The rtla is a meta-tool that includes a set of commands that
--aims to analyze the real-time properties of Linux. But, instead of
--testing Linux as a black box, rtla leverages kernel tracing
--capabilities to provide precise information about the properties
--and root causes of unexpected results.
-+The rtla meta-tool includes a set of commands that aims to analyze
-+the real-time properties of Linux. Instead of testing Linux as a black box,
-+rtla leverages kernel tracing capabilities to provide precise information
-+about the properties and root causes of unexpected results.
- 
- Installing RTLA
- 
--RTLA depends on some libraries and tools. More precisely, it depends on the
--following libraries:
-+RTLA depends on the following libraries and tools:
- 
-  - libtracefs
-  - libtraceevent
--- 
-2.35.1
+v2 -> v3: changed WARN() call to WARN_ONCE() to avoid warn spamming
+          during deferred probe() as Andy suggested.
+---
+ drivers/iio/industrialio-trigger.c | 2 ++
+ include/linux/iio/trigger.h        | 5 +++++
+ 2 files changed, 7 insertions(+)
 
-
-
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-=
+trigger.c
+index f504ed351b3e..d6277e72d515 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -581,6 +581,8 @@ struct iio_trigger *viio_trigger_alloc(struct device *p=
+arent,
+ 	if (trig->name =3D=3D NULL)
+ 		goto free_descs;
+=20
++	INIT_LIST_HEAD(&trig->list);
++
+ 	trig->subirq_chip.name =3D trig->name;
+ 	trig->subirq_chip.irq_mask =3D &iio_trig_subirqmask;
+ 	trig->subirq_chip.irq_unmask =3D &iio_trig_subirqunmask;
+diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
+index 4c69b144677b..03b1d6863436 100644
+--- a/include/linux/iio/trigger.h
++++ b/include/linux/iio/trigger.h
+@@ -93,6 +93,11 @@ static inline void iio_trigger_put(struct iio_trigger *t=
+rig)
+ static inline struct iio_trigger *iio_trigger_get(struct iio_trigger *trig=
+)
+ {
+ 	get_device(&trig->dev);
++
++	WARN_ONCE(list_empty(&trig->list),
++		  "Getting non-registered iio trigger %s is prohibited\n",
++		  trig->name);
++
+ 	__module_get(trig->owner);
+=20
+ 	return trig;
+--=20
+2.36.0
