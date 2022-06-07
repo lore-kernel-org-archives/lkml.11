@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC037CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:57:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C968AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:58:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354757AbiFGV5v (ORCPT
+        id S1353946AbiFGV6A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:57:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43308 "EHLO
+        Tue, 7 Jun 2022 17:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379300AbiFGVCU (ORCPT
+        with ESMTP id S1379360AbiFGVCX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:02:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BC4F4090B;
-        Tue,  7 Jun 2022 11:47:39 -0700 (PDT)
+        Tue, 7 Jun 2022 17:02:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F91571A1F;
+        Tue,  7 Jun 2022 11:47:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BEADC61794;
-        Tue,  7 Jun 2022 18:47:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB615C341DF;
-        Tue,  7 Jun 2022 18:47:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 74F68B8239C;
+        Tue,  7 Jun 2022 18:47:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD476C385A2;
+        Tue,  7 Jun 2022 18:47:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627658;
-        bh=U8z2EyWlL/EamHjg5K9sUAchR/K3YRrPVDc2avLqNVk=;
+        s=korg; t=1654627666;
+        bh=wH3qr55WQ/dYCTjalZVSGD7peiP6GK3F62IR3pznFRc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wi706HZXK3Svr/WYUcG46JK7w29jM9JH18XK83VmuCtvYNTLAVdYmDA3E0X8jWg+r
-         GcGcTbPO9lbIWNRxt6+6IkkapyUrRbFgFM0H8VzeKHu7aYU0aZaop9TXeQEyDx+S/H
-         ntuMp5cVaZ/oPc+7NDCSTmqyxj1Gp7L+UzhPG2f8=
+        b=sa7UBdp3l9O05HvXQe8Y3H/SkINOmEHJEhF6WrwM3Q9JIw+mwW/Ph9OVWyu4HGLQA
+         uEBAj+MRWvDmH4IVrFoN+Xr1Tq1kBew6+UyQMQg2Nk3Cwhe7rK8ssQwQdsz9wIrw2u
+         IXSMnJhBu4VNHO7acBu2LvxqSR2S7svKonapwX8w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
         David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.18 046/879] btrfs: return correct error number for __extent_writepage_io()
-Date:   Tue,  7 Jun 2022 18:52:44 +0200
-Message-Id: <20220607165004.017527975@linuxfoundation.org>
+Subject: [PATCH 5.18 049/879] btrfs: fix deadlock between concurrent dio writes when low on free data space
+Date:   Tue,  7 Jun 2022 18:52:47 +0200
+Message-Id: <20220607165004.109520324@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,88 +49,348 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Filipe Manana <fdmanana@suse.com>
 
-commit 44e5801fada6925d2bba1987c7b59cbcc9d0d592 upstream.
+commit f5585f4f0ef5b17026bbd60fbff6fcc91b99d5bf upstream.
 
-[BUG]
-If we hit an error from submit_extent_page() inside
-__extent_writepage_io(), we could still return 0 to the caller, and
-even trigger the warning in btrfs_page_assert_not_dirty().
+When reserving data space for a direct IO write we can end up deadlocking
+if we have multiple tasks attempting a write to the same file range, there
+are multiple extents covered by that file range, we are low on available
+space for data and the writes don't expand the inode's i_size.
 
-[CAUSE]
-In __extent_writepage_io(), if we hit an error from
-submit_extent_page(), we will just clean up the range and continue.
+The deadlock can happen like this:
 
-This is completely fine for regular PAGE_SIZE == sectorsize, as we can
-only hit one sector in one page, thus after the error we're ensured to
-exit and @ret will be saved.
+1) We have a file with an i_size of 1M, at offset 0 it has an extent with
+   a size of 128K and at offset 128K it has another extent also with a
+   size of 128K;
 
-But for subpage case, we may have other dirty subpage range in the page,
-and in the next loop, we may succeeded submitting the next range.
+2) Task A does a direct IO write against file range [0, 256K), and because
+   the write is within the i_size boundary, it takes the inode's lock (VFS
+   level) in shared mode;
 
-In that case, @ret will be overwritten, and we return 0 to the caller,
-while we have hit some error.
+3) Task A locks the file range [0, 256K) at btrfs_dio_iomap_begin(), and
+   then gets the extent map for the extent covering the range [0, 128K).
+   At btrfs_get_blocks_direct_write(), it creates an ordered extent for
+   that file range ([0, 128K));
 
-[FIX]
-Introduce @has_error and @saved_ret to record the first error we hit, so
-we will never forget what error we hit.
+4) Before returning from btrfs_dio_iomap_begin(), it unlocks the file
+   range [0, 256K);
 
-CC: stable@vger.kernel.org # 5.15+
-Signed-off-by: Qu Wenruo <wqu@suse.com>
+5) Task A executes btrfs_dio_iomap_begin() again, this time for the file
+   range [128K, 256K), and locks the file range [128K, 256K);
+
+6) Task B starts a direct IO write against file range [0, 256K) as well.
+   It also locks the inode in shared mode, as it's within the i_size limit,
+   and then tries to lock file range [0, 256K). It is able to lock the
+   subrange [0, 128K) but then blocks waiting for the range [128K, 256K),
+   as it is currently locked by task A;
+
+7) Task A enters btrfs_get_blocks_direct_write() and tries to reserve data
+   space. Because we are low on available free space, it triggers the
+   async data reclaim task, and waits for it to reserve data space;
+
+8) The async reclaim task decides to wait for all existing ordered extents
+   to complete (through btrfs_wait_ordered_roots()).
+   It finds the ordered extent previously created by task A for the file
+   range [0, 128K) and waits for it to complete;
+
+9) The ordered extent for the file range [0, 128K) can not complete
+   because it blocks at btrfs_finish_ordered_io() when trying to lock the
+   file range [0, 128K).
+
+   This results in a deadlock, because:
+
+   - task B is holding the file range [0, 128K) locked, waiting for the
+     range [128K, 256K) to be unlocked by task A;
+
+   - task A is holding the file range [128K, 256K) locked and it's waiting
+     for the async data reclaim task to satisfy its space reservation
+     request;
+
+   - the async data reclaim task is waiting for ordered extent [0, 128K)
+     to complete, but the ordered extent can not complete because the
+     file range [0, 128K) is currently locked by task B, which is waiting
+     on task A to unlock file range [128K, 256K) and task A waiting
+     on the async data reclaim task.
+
+   This results in a deadlock between 4 task: task A, task B, the async
+   data reclaim task and the task doing ordered extent completion (a work
+   queue task).
+
+This type of deadlock can sporadically be triggered by the test case
+generic/300 from fstests, and results in a stack trace like the following:
+
+[12084.033689] INFO: task kworker/u16:7:123749 blocked for more than 241 seconds.
+[12084.034877]       Not tainted 5.18.0-rc2-btrfs-next-115 #1
+[12084.035562] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[12084.036548] task:kworker/u16:7   state:D stack:    0 pid:123749 ppid:     2 flags:0x00004000
+[12084.036554] Workqueue: btrfs-flush_delalloc btrfs_work_helper [btrfs]
+[12084.036599] Call Trace:
+[12084.036601]  <TASK>
+[12084.036606]  __schedule+0x3cb/0xed0
+[12084.036616]  schedule+0x4e/0xb0
+[12084.036620]  btrfs_start_ordered_extent+0x109/0x1c0 [btrfs]
+[12084.036651]  ? prepare_to_wait_exclusive+0xc0/0xc0
+[12084.036659]  btrfs_run_ordered_extent_work+0x1a/0x30 [btrfs]
+[12084.036688]  btrfs_work_helper+0xf8/0x400 [btrfs]
+[12084.036719]  ? lock_is_held_type+0xe8/0x140
+[12084.036727]  process_one_work+0x252/0x5a0
+[12084.036736]  ? process_one_work+0x5a0/0x5a0
+[12084.036738]  worker_thread+0x52/0x3b0
+[12084.036743]  ? process_one_work+0x5a0/0x5a0
+[12084.036745]  kthread+0xf2/0x120
+[12084.036747]  ? kthread_complete_and_exit+0x20/0x20
+[12084.036751]  ret_from_fork+0x22/0x30
+[12084.036765]  </TASK>
+[12084.036769] INFO: task kworker/u16:11:153787 blocked for more than 241 seconds.
+[12084.037702]       Not tainted 5.18.0-rc2-btrfs-next-115 #1
+[12084.038540] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[12084.039506] task:kworker/u16:11  state:D stack:    0 pid:153787 ppid:     2 flags:0x00004000
+[12084.039511] Workqueue: events_unbound btrfs_async_reclaim_data_space [btrfs]
+[12084.039551] Call Trace:
+[12084.039553]  <TASK>
+[12084.039557]  __schedule+0x3cb/0xed0
+[12084.039566]  schedule+0x4e/0xb0
+[12084.039569]  schedule_timeout+0xed/0x130
+[12084.039573]  ? mark_held_locks+0x50/0x80
+[12084.039578]  ? _raw_spin_unlock_irq+0x24/0x50
+[12084.039580]  ? lockdep_hardirqs_on+0x7d/0x100
+[12084.039585]  __wait_for_common+0xaf/0x1f0
+[12084.039587]  ? usleep_range_state+0xb0/0xb0
+[12084.039596]  btrfs_wait_ordered_extents+0x3d6/0x470 [btrfs]
+[12084.039636]  btrfs_wait_ordered_roots+0x175/0x240 [btrfs]
+[12084.039670]  flush_space+0x25b/0x630 [btrfs]
+[12084.039712]  btrfs_async_reclaim_data_space+0x108/0x1b0 [btrfs]
+[12084.039747]  process_one_work+0x252/0x5a0
+[12084.039756]  ? process_one_work+0x5a0/0x5a0
+[12084.039758]  worker_thread+0x52/0x3b0
+[12084.039762]  ? process_one_work+0x5a0/0x5a0
+[12084.039765]  kthread+0xf2/0x120
+[12084.039766]  ? kthread_complete_and_exit+0x20/0x20
+[12084.039770]  ret_from_fork+0x22/0x30
+[12084.039783]  </TASK>
+[12084.039800] INFO: task kworker/u16:17:217907 blocked for more than 241 seconds.
+[12084.040709]       Not tainted 5.18.0-rc2-btrfs-next-115 #1
+[12084.041398] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[12084.042404] task:kworker/u16:17  state:D stack:    0 pid:217907 ppid:     2 flags:0x00004000
+[12084.042411] Workqueue: btrfs-endio-write btrfs_work_helper [btrfs]
+[12084.042461] Call Trace:
+[12084.042463]  <TASK>
+[12084.042471]  __schedule+0x3cb/0xed0
+[12084.042485]  schedule+0x4e/0xb0
+[12084.042490]  wait_extent_bit.constprop.0+0x1eb/0x260 [btrfs]
+[12084.042539]  ? prepare_to_wait_exclusive+0xc0/0xc0
+[12084.042551]  lock_extent_bits+0x37/0x90 [btrfs]
+[12084.042601]  btrfs_finish_ordered_io.isra.0+0x3fd/0x960 [btrfs]
+[12084.042656]  ? lock_is_held_type+0xe8/0x140
+[12084.042667]  btrfs_work_helper+0xf8/0x400 [btrfs]
+[12084.042716]  ? lock_is_held_type+0xe8/0x140
+[12084.042727]  process_one_work+0x252/0x5a0
+[12084.042742]  worker_thread+0x52/0x3b0
+[12084.042750]  ? process_one_work+0x5a0/0x5a0
+[12084.042754]  kthread+0xf2/0x120
+[12084.042757]  ? kthread_complete_and_exit+0x20/0x20
+[12084.042763]  ret_from_fork+0x22/0x30
+[12084.042783]  </TASK>
+[12084.042798] INFO: task fio:234517 blocked for more than 241 seconds.
+[12084.043598]       Not tainted 5.18.0-rc2-btrfs-next-115 #1
+[12084.044282] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[12084.045244] task:fio             state:D stack:    0 pid:234517 ppid:234515 flags:0x00004000
+[12084.045248] Call Trace:
+[12084.045250]  <TASK>
+[12084.045254]  __schedule+0x3cb/0xed0
+[12084.045263]  schedule+0x4e/0xb0
+[12084.045266]  wait_extent_bit.constprop.0+0x1eb/0x260 [btrfs]
+[12084.045298]  ? prepare_to_wait_exclusive+0xc0/0xc0
+[12084.045306]  lock_extent_bits+0x37/0x90 [btrfs]
+[12084.045336]  btrfs_dio_iomap_begin+0x336/0xc60 [btrfs]
+[12084.045370]  ? lock_is_held_type+0xe8/0x140
+[12084.045378]  iomap_iter+0x184/0x4c0
+[12084.045383]  __iomap_dio_rw+0x2c6/0x8a0
+[12084.045406]  iomap_dio_rw+0xa/0x30
+[12084.045408]  btrfs_do_write_iter+0x370/0x5e0 [btrfs]
+[12084.045440]  aio_write+0xfa/0x2c0
+[12084.045448]  ? __might_fault+0x2a/0x70
+[12084.045451]  ? kvm_sched_clock_read+0x14/0x40
+[12084.045455]  ? lock_release+0x153/0x4a0
+[12084.045463]  io_submit_one+0x615/0x9f0
+[12084.045467]  ? __might_fault+0x2a/0x70
+[12084.045469]  ? kvm_sched_clock_read+0x14/0x40
+[12084.045478]  __x64_sys_io_submit+0x83/0x160
+[12084.045483]  ? syscall_enter_from_user_mode+0x1d/0x50
+[12084.045489]  do_syscall_64+0x3b/0x90
+[12084.045517]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[12084.045521] RIP: 0033:0x7fa76511af79
+[12084.045525] RSP: 002b:00007ffd6d6b9058 EFLAGS: 00000246 ORIG_RAX: 00000000000000d1
+[12084.045530] RAX: ffffffffffffffda RBX: 00007fa75ba6e760 RCX: 00007fa76511af79
+[12084.045532] RDX: 0000557b304ff3f0 RSI: 0000000000000001 RDI: 00007fa75ba4c000
+[12084.045535] RBP: 00007fa75ba4c000 R08: 00007fa751b76000 R09: 0000000000000330
+[12084.045537] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
+[12084.045540] R13: 0000000000000000 R14: 0000557b304ff3f0 R15: 0000557b30521eb0
+[12084.045561]  </TASK>
+
+Fix this issue by always reserving data space before locking a file range
+at btrfs_dio_iomap_begin(). If we can't reserve the space, then we don't
+error out immediately - instead after locking the file range, check if we
+can do a NOCOW write, and if we can we don't error out since we don't need
+to allocate a data extent, however if we can't NOCOW then error out with
+-ENOSPC. This also implies that we may end up reserving space when it's
+not needed because the write will end up being done in NOCOW mode - in that
+case we just release the space after we noticed we did a NOCOW write - this
+is the same type of logic that is done in the path for buffered IO writes.
+
+Fixes: f0bfa76a11e93d ("btrfs: fix ENOSPC failure when attempting direct IO write into NOCOW range")
+CC: stable@vger.kernel.org # 5.17+
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
 Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/extent_io.c |   13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ fs/btrfs/inode.c |   81 +++++++++++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 64 insertions(+), 17 deletions(-)
 
---- a/fs/btrfs/extent_io.c
-+++ b/fs/btrfs/extent_io.c
-@@ -3920,10 +3920,12 @@ static noinline_for_stack int __extent_w
- 	u64 extent_offset;
- 	u64 block_start;
- 	struct extent_map *em;
-+	int saved_ret = 0;
- 	int ret = 0;
- 	int nr = 0;
- 	u32 opf = REQ_OP_WRITE;
- 	const unsigned int write_flags = wbc_to_write_flags(wbc);
-+	bool has_error = false;
- 	bool compressed;
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -64,6 +64,8 @@ struct btrfs_iget_args {
+ struct btrfs_dio_data {
+ 	ssize_t submitted;
+ 	struct extent_changeset *data_reserved;
++	bool data_space_reserved;
++	bool nocow_done;
+ };
  
- 	ret = btrfs_writepage_cow_fixup(page);
-@@ -3973,6 +3975,9 @@ static noinline_for_stack int __extent_w
- 		if (IS_ERR(em)) {
- 			btrfs_page_set_error(fs_info, page, cur, end - cur + 1);
- 			ret = PTR_ERR_OR_ZERO(em);
-+			has_error = true;
-+			if (!saved_ret)
-+				saved_ret = ret;
- 			break;
+ struct btrfs_rename_ctx {
+@@ -7489,15 +7491,25 @@ static int btrfs_get_blocks_direct_write
+ 			ret = PTR_ERR(em2);
+ 			goto out;
  		}
- 
-@@ -4036,6 +4041,10 @@ static noinline_for_stack int __extent_w
- 					 end_bio_extent_writepage,
- 					 0, 0, false);
- 		if (ret) {
-+			has_error = true;
-+			if (!saved_ret)
-+				saved_ret = ret;
 +
- 			btrfs_page_set_error(fs_info, page, cur, iosize);
- 			if (PageWriteback(page))
- 				btrfs_page_clear_writeback(fs_info, page, cur,
-@@ -4049,8 +4058,10 @@ static noinline_for_stack int __extent_w
- 	 * If we finish without problem, we should not only clear page dirty,
- 	 * but also empty subpage dirty bits
- 	 */
--	if (!ret)
-+	if (!has_error)
- 		btrfs_page_assert_not_dirty(fs_info, page);
-+	else
-+		ret = saved_ret;
- 	*nr_ret = nr;
++		dio_data->nocow_done = true;
+ 	} else {
+ 		/* Our caller expects us to free the input extent map. */
+ 		free_extent_map(em);
+ 		*map = NULL;
+ 
+-		/* We have to COW, so need to reserve metadata and data space. */
+-		ret = btrfs_delalloc_reserve_space(BTRFS_I(inode),
+-						   &dio_data->data_reserved,
+-						   start, len);
++		/*
++		 * If we could not allocate data space before locking the file
++		 * range and we can't do a NOCOW write, then we have to fail.
++		 */
++		if (!dio_data->data_space_reserved)
++			return -ENOSPC;
++
++		/*
++		 * We have to COW and we have already reserved data space before,
++		 * so now we reserve only metadata.
++		 */
++		ret = btrfs_delalloc_reserve_metadata(BTRFS_I(inode), len, len);
+ 		if (ret < 0)
+ 			goto out;
+ 		space_reserved = true;
+@@ -7510,10 +7522,8 @@ static int btrfs_get_blocks_direct_write
+ 		*map = em;
+ 		len = min(len, em->len - (start - em->start));
+ 		if (len < prev_len)
+-			btrfs_delalloc_release_space(BTRFS_I(inode),
+-						     dio_data->data_reserved,
+-						     start + len, prev_len - len,
+-						     true);
++			btrfs_delalloc_release_metadata(BTRFS_I(inode),
++							prev_len - len, true);
+ 	}
+ 
+ 	/*
+@@ -7531,15 +7541,7 @@ static int btrfs_get_blocks_direct_write
+ out:
+ 	if (ret && space_reserved) {
+ 		btrfs_delalloc_release_extents(BTRFS_I(inode), len);
+-		if (can_nocow) {
+-			btrfs_delalloc_release_metadata(BTRFS_I(inode), len, true);
+-		} else {
+-			btrfs_delalloc_release_space(BTRFS_I(inode),
+-						     dio_data->data_reserved,
+-						     start, len, true);
+-			extent_changeset_free(dio_data->data_reserved);
+-			dio_data->data_reserved = NULL;
+-		}
++		btrfs_delalloc_release_metadata(BTRFS_I(inode), len, true);
+ 	}
  	return ret;
  }
+@@ -7556,6 +7558,7 @@ static int btrfs_dio_iomap_begin(struct
+ 	const bool write = !!(flags & IOMAP_WRITE);
+ 	int ret = 0;
+ 	u64 len = length;
++	const u64 data_alloc_len = length;
+ 	bool unlock_extents = false;
+ 
+ 	if (!write)
+@@ -7584,6 +7587,25 @@ static int btrfs_dio_iomap_begin(struct
+ 
+ 	iomap->private = dio_data;
+ 
++	/*
++	 * We always try to allocate data space and must do it before locking
++	 * the file range, to avoid deadlocks with concurrent writes to the same
++	 * range if the range has several extents and the writes don't expand the
++	 * current i_size (the inode lock is taken in shared mode). If we fail to
++	 * allocate data space here we continue and later, after locking the
++	 * file range, we fail with ENOSPC only if we figure out we can not do a
++	 * NOCOW write.
++	 */
++	if (write && !(flags & IOMAP_NOWAIT)) {
++		ret = btrfs_check_data_free_space(BTRFS_I(inode),
++						  &dio_data->data_reserved,
++						  start, data_alloc_len);
++		if (!ret)
++			dio_data->data_space_reserved = true;
++		else if (ret && !(BTRFS_I(inode)->flags &
++				  (BTRFS_INODE_NODATACOW | BTRFS_INODE_PREALLOC)))
++			goto err;
++	}
+ 
+ 	/*
+ 	 * If this errors out it's because we couldn't invalidate pagecache for
+@@ -7658,6 +7680,24 @@ static int btrfs_dio_iomap_begin(struct
+ 		unlock_extents = true;
+ 		/* Recalc len in case the new em is smaller than requested */
+ 		len = min(len, em->len - (start - em->start));
++		if (dio_data->data_space_reserved) {
++			u64 release_offset;
++			u64 release_len = 0;
++
++			if (dio_data->nocow_done) {
++				release_offset = start;
++				release_len = data_alloc_len;
++			} else if (len < data_alloc_len) {
++				release_offset = start + len;
++				release_len = data_alloc_len - len;
++			}
++
++			if (release_len > 0)
++				btrfs_free_reserved_data_space(BTRFS_I(inode),
++							       dio_data->data_reserved,
++							       release_offset,
++							       release_len);
++		}
+ 	} else {
+ 		/*
+ 		 * We need to unlock only the end area that we aren't using.
+@@ -7702,6 +7742,13 @@ unlock_err:
+ 	unlock_extent_cached(&BTRFS_I(inode)->io_tree, lockstart, lockend,
+ 			     &cached_state);
+ err:
++	if (dio_data->data_space_reserved) {
++		btrfs_free_reserved_data_space(BTRFS_I(inode),
++					       dio_data->data_reserved,
++					       start, data_alloc_len);
++		extent_changeset_free(dio_data->data_reserved);
++	}
++
+ 	kfree(dio_data);
+ 
+ 	return ret;
 
 
