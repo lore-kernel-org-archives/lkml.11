@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 291BDCCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F462CCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377949AbiFGUvO (ORCPT
+        id S1378051AbiFGUvW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:51:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50210 "EHLO
+        Tue, 7 Jun 2022 16:51:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358435AbiFGTw3 (ORCPT
+        with ESMTP id S1358455AbiFGTwa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:52:29 -0400
+        Tue, 7 Jun 2022 15:52:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9BC3134E13;
-        Tue,  7 Jun 2022 11:20:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3271313B2C2;
+        Tue,  7 Jun 2022 11:20:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1589460DB7;
-        Tue,  7 Jun 2022 18:20:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2562AC385A2;
-        Tue,  7 Jun 2022 18:20:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B877560DDA;
+        Tue,  7 Jun 2022 18:20:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3513C385A2;
+        Tue,  7 Jun 2022 18:20:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626027;
-        bh=+8F/Tet6mZM8QNlTLNyZ2Z7lnuWP8SnBe/1jqtVQNrg=;
+        s=korg; t=1654626033;
+        bh=g43Q8Fe4f7W0fpxHqctx7ITSHwKZuRrzitHywoPcmfE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yYWHu+bjwns2fhsilxal2je4gHh/HWaxyj4xmPSuIGk+Hz9a/2o5XlRFUrPHSbZLd
-         yvymbNckAQenS0upy/ufe+/15J2gWYZYJjugEMCYXPqRXl50/kvs8Rdf2J4XvdlnhU
-         1H4vA8W5EFAGcTJ93gKN2tnS9QTTyOuk/lov19ME=
+        b=w/uS9yhIgois0zZhVRGTuaI6675m3gDeLcqkzRJSyNb4K3NpSfjyX6UxnTvzB0wmJ
+         CiWoSaJ9FmzXqHbv0my+jbgftbYWnmMTl82Pu2YZRT4BnpK1ObrjWUnVucHmlnvXXx
+         wekuyaU2VbaFTx7t6eky08BbUk1Ler96PzCMK80Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolas Belin <nbelin@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 231/772] drm: bridge: it66121: Fix the register page length
-Date:   Tue,  7 Jun 2022 18:57:03 +0200
-Message-Id: <20220607164955.839858002@linuxfoundation.org>
+Subject: [PATCH 5.17 233/772] drm/edid: fix invalid EDID extension block filtering
+Date:   Tue,  7 Jun 2022 18:57:05 +0200
+Message-Id: <20220607164955.898357456@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,36 +52,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Belin <nbelin@baylibre.com>
+From: Jani Nikula <jani.nikula@intel.com>
 
-[ Upstream commit 003a1bd6a2a55c16cb2451153533dbedb12bebec ]
+[ Upstream commit 3aefc722ff52076407203b6af9713de567993adf ]
 
-Set the register page length or window length to
-0x100 according to the documentation.
+The invalid EDID block filtering uses the number of valid EDID
+extensions instead of all EDID extensions for looping the extensions in
+the copy. This is fine, by coincidence, if all the invalid blocks are at
+the end of the EDID. However, it's completely broken if there are
+invalid extensions in the middle; the invalid blocks are included and
+valid blocks are excluded.
 
-Fixes: 988156dc2fc9 ("drm: bridge: add it66121 driver")
-Signed-off-by: Nicolas Belin <nbelin@baylibre.com>
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220316135733.173950-3-nbelin@baylibre.com
+Fix it by modifying the base block after, not before, the copy.
+
+Fixes: 14544d0937bf ("drm/edid: Only print the bad edid when aborting")
+Reported-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220330170426.349248-1-jani.nikula@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/ite-it66121.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/drm_edid.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/ite-it66121.c b/drivers/gpu/drm/bridge/ite-it66121.c
-index 06b59b422c69..64912b770086 100644
---- a/drivers/gpu/drm/bridge/ite-it66121.c
-+++ b/drivers/gpu/drm/bridge/ite-it66121.c
-@@ -227,7 +227,7 @@ static const struct regmap_range_cfg it66121_regmap_banks[] = {
- 		.selector_mask = 0x1,
- 		.selector_shift = 0,
- 		.window_start = 0x00,
--		.window_len = 0x130,
-+		.window_len = 0x100,
- 	},
- };
+diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
+index 83e5c115e754..502ef71dac68 100644
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -2029,9 +2029,6 @@ struct edid *drm_do_get_edid(struct drm_connector *connector,
  
+ 		connector_bad_edid(connector, edid, edid[0x7e] + 1);
+ 
+-		edid[EDID_LENGTH-1] += edid[0x7e] - valid_extensions;
+-		edid[0x7e] = valid_extensions;
+-
+ 		new = kmalloc_array(valid_extensions + 1, EDID_LENGTH,
+ 				    GFP_KERNEL);
+ 		if (!new)
+@@ -2048,6 +2045,9 @@ struct edid *drm_do_get_edid(struct drm_connector *connector,
+ 			base += EDID_LENGTH;
+ 		}
+ 
++		new[EDID_LENGTH - 1] += new[0x7e] - valid_extensions;
++		new[0x7e] = valid_extensions;
++
+ 		kfree(edid);
+ 		edid = new;
+ 	}
 -- 
 2.35.1
 
