@@ -2,88 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2179CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91AC9CCA47C
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:14:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444138AbiFHCJl (ORCPT
+        id S1444112AbiFHCJ2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:09:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48732 "EHLO
+        Tue, 7 Jun 2022 22:09:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442542AbiFHAz0 (ORCPT
+        with ESMTP id S1442477AbiFHAye (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:55:26 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80CF1271A6
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 17:01:29 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id o7so4955289eja.1
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 17:01:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=BbtiLiOJU0rTXaLM0hDshg4m31VYD4/CJhwA3wxcIfY=;
-        b=UEbSN7CqnGLPUgHOCHUnxVgvcwwH5fIjCRkDU1hMHEOw3O6Crn+zFT4cHbt26zWAIE
-         8N37tZnKa2IQm97YWALddX+9sX5+eUdSGgLUjTzkUqGjd8eF/munkHc/iMXNVyIQulDr
-         RzbvLPuA7QuYsQ2rp6uFK7J90q2o99MR/JxvoP1OAXLS/i1XFkjUHB5dMmTRPvkqrKN1
-         GVlnO15zjvzdRH/a9AZT92GfOjEnw3KTd/XmxNJvNtOd6X7CXsn2ckNAviyYg0+ZlzRg
-         9Ks+ItmnXrzSqHobsOovoV7ncr9CtW9Vq3iZguF++zTcNjSYE725THejD4ccN1rYOdeo
-         eKIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BbtiLiOJU0rTXaLM0hDshg4m31VYD4/CJhwA3wxcIfY=;
-        b=m1HUVYFMtbKA7CTE29olGccbP7GJ6u9A6aAPZljkPGv9Z7Tcwrkpcr6nkLyP+e/JUF
-         b9CUG9PxDhmwIOln52iDX2eJ21qaOqeWkVU0oc18wyNveVqsksVsWztkUy80mz6G0lgo
-         39n70J6RX4nztfmPl+XB/ZW5Q4et7iFDAvTDX2AST1x8ZKz0rP5+j1JGRfO7FLOOdO9A
-         TMSJanEFN6yX466LI8S8rR8CsVKlighhX0oDsjH+Aa5jWo0fDRoEgG3wkMDHPNcwpbGF
-         6gd/npRx1fsUJqCROmEBPx8XFbym1WlkLsJcu7bLMfnxUUryK1EVx975WTnbBGQoo20f
-         t1Fw==
-X-Gm-Message-State: AOAM532Van2HXw3DHotjacilAEhcnkhkq8GTP9A8MsygNoCQxc+m+V19
-        e2J9bsVxDr7QgRWQaZmcx3w=
-X-Google-Smtp-Source: ABdhPJy47AJ9g+udmP2NQVg/F+sAWua/3HNM6FM8/NI+MyAJiUqdrDek1YV+kEU4eBlEYg5lhWQe1Q==
-X-Received: by 2002:a17:906:99c5:b0:6fe:b069:4ab6 with SMTP id s5-20020a17090699c500b006feb0694ab6mr29042371ejn.436.1654646487635;
-        Tue, 07 Jun 2022 17:01:27 -0700 (PDT)
-Received: from mail (239.125-180-91.adsl-dyn.isp.belgacom.be. [91.180.125.239])
-        by smtp.gmail.com with ESMTPSA id z11-20020a05640240cb00b0042e17781fc5sm9790817edb.49.2022.06.07.17.01.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 17:01:26 -0700 (PDT)
-Date:   Wed, 8 Jun 2022 02:01:25 +0200
-From:   Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-To:     Ankur Arora <ankur.a.arora@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org, x86@kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        mike.kravetz@oracle.com, mingo@kernel.org, luto@kernel.org,
-        tglx@linutronix.de, bp@alien8.de, peterz@infradead.org,
-        ak@linux.intel.com, arnd@arndb.de, jgg@nvidia.com,
-        jon.grimm@amd.com, boris.ostrovsky@oracle.com,
-        konrad.wilk@oracle.com, joao.m.martins@oracle.com
-Subject: Re: [PATCH v3 13/21] clear_page: add generic
- clear_user_pages_incoherent()
-Message-ID: <20220608000125.na6z3niyv4ty7xn7@mail>
-References: <20220606202109.1306034-1-ankur.a.arora@oracle.com>
- <20220606203725.1313715-9-ankur.a.arora@oracle.com>
+        Tue, 7 Jun 2022 20:54:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B56B267CEE;
+        Tue,  7 Jun 2022 12:21:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2AAC60906;
+        Tue,  7 Jun 2022 19:21:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0CE7C385A2;
+        Tue,  7 Jun 2022 19:21:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629697;
+        bh=J9tuh9jTQAWUyz1dSmwcnH33w65DBg81WLoe1PgnrLs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=0y7qU7Jp6OZoXmBApXquVt06HrwR5zUJwiJEpmL0yRTR6NRTiDbumFAxblhIwJlc5
+         /tLAbJxoU2ILXn2wQW3czC6MVJ8jFtPrgDcdjAGxqOkQgIzVhDXu8lQ/+JCSvWWymB
+         d1V9Sz47xUeddW43dedAPXztqMe+6pwmyKhFbmy4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
+Subject: [PATCH 5.18 784/879] landlock: Change landlock_add_rule(2) argument check ordering
+Date:   Tue,  7 Jun 2022 19:05:02 +0200
+Message-Id: <20220607165025.626272356@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220606203725.1313715-9-ankur.a.arora@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 06, 2022 at 08:37:17PM +0000, Ankur Arora wrote:
-> +static inline void clear_user_pages_incoherent(__incoherent void *page,
-> +					       unsigned long vaddr,
-> +					       struct page *pg,
-> +					       unsigned int npages)
-> +{
-> +	clear_user_pages((__force void *)page, vaddr, pg, npages);
-> +}
+From: Mickaël Salaün <mic@digikod.net>
 
-Hi,
+commit 589172e5636c4d16c40b90e87543d43defe2d968 upstream.
 
-Please use 'void __incoherent *' and 'void __force *', as it's done
-elsewhere for __force and address spaces.
+This makes more sense to first check the ruleset FD and then the rule
+attribute.  It will be useful to factor out code for other rule types.
 
--- Luc
+Add inval_add_rule_arguments tests, extension of empty_path_beneath_attr
+tests, to also check error ordering for landlock_add_rule(2).
+
+Link: https://lore.kernel.org/r/20220506160820.524344-9-mic@digikod.net
+Cc: stable@vger.kernel.org
+Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ security/landlock/syscalls.c                 |   22 ++++++++++-------
+ tools/testing/selftests/landlock/base_test.c |   34 +++++++++++++++++++++++++--
+ 2 files changed, 45 insertions(+), 11 deletions(-)
+
+--- a/security/landlock/syscalls.c
++++ b/security/landlock/syscalls.c
+@@ -318,20 +318,24 @@ SYSCALL_DEFINE4(landlock_add_rule, const
+ 	if (flags)
+ 		return -EINVAL;
+ 
+-	if (rule_type != LANDLOCK_RULE_PATH_BENEATH)
+-		return -EINVAL;
+-
+-	/* Copies raw user space buffer, only one type for now. */
+-	res = copy_from_user(&path_beneath_attr, rule_attr,
+-			     sizeof(path_beneath_attr));
+-	if (res)
+-		return -EFAULT;
+-
+ 	/* Gets and checks the ruleset. */
+ 	ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
+ 	if (IS_ERR(ruleset))
+ 		return PTR_ERR(ruleset);
+ 
++	if (rule_type != LANDLOCK_RULE_PATH_BENEATH) {
++		err = -EINVAL;
++		goto out_put_ruleset;
++	}
++
++	/* Copies raw user space buffer, only one type for now. */
++	res = copy_from_user(&path_beneath_attr, rule_attr,
++			     sizeof(path_beneath_attr));
++	if (res) {
++		err = -EFAULT;
++		goto out_put_ruleset;
++	}
++
+ 	/*
+ 	 * Informs about useless rule: empty allowed_access (i.e. deny rules)
+ 	 * are ignored in path walks.
+--- a/tools/testing/selftests/landlock/base_test.c
++++ b/tools/testing/selftests/landlock/base_test.c
+@@ -121,20 +121,50 @@ TEST(inval_create_ruleset_flags)
+ 	ASSERT_EQ(EINVAL, errno);
+ }
+ 
+-TEST(empty_path_beneath_attr)
++/* Tests ordering of syscall argument checks. */
++TEST(add_rule_checks_ordering)
+ {
+ 	const struct landlock_ruleset_attr ruleset_attr = {
+ 		.handled_access_fs = LANDLOCK_ACCESS_FS_EXECUTE,
+ 	};
++	struct landlock_path_beneath_attr path_beneath_attr = {
++		.allowed_access = LANDLOCK_ACCESS_FS_EXECUTE,
++		.parent_fd = -1,
++	};
+ 	const int ruleset_fd =
+ 		landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
+ 
+ 	ASSERT_LE(0, ruleset_fd);
+ 
+-	/* Similar to struct landlock_path_beneath_attr.parent_fd = 0 */
++	/* Checks invalid flags. */
++	ASSERT_EQ(-1, landlock_add_rule(-1, 0, NULL, 1));
++	ASSERT_EQ(EINVAL, errno);
++
++	/* Checks invalid ruleset FD. */
++	ASSERT_EQ(-1, landlock_add_rule(-1, 0, NULL, 0));
++	ASSERT_EQ(EBADF, errno);
++
++	/* Checks invalid rule type. */
++	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, 0, NULL, 0));
++	ASSERT_EQ(EINVAL, errno);
++
++	/* Checks invalid rule attr. */
+ 	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
+ 					NULL, 0));
+ 	ASSERT_EQ(EFAULT, errno);
++
++	/* Checks invalid path_beneath.parent_fd. */
++	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
++					&path_beneath_attr, 0));
++	ASSERT_EQ(EBADF, errno);
++
++	/* Checks valid call. */
++	path_beneath_attr.parent_fd =
++		open("/tmp", O_PATH | O_NOFOLLOW | O_DIRECTORY | O_CLOEXEC);
++	ASSERT_LE(0, path_beneath_attr.parent_fd);
++	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
++				       &path_beneath_attr, 0));
++	ASSERT_EQ(0, close(path_beneath_attr.parent_fd));
+ 	ASSERT_EQ(0, close(ruleset_fd));
+ }
+ 
+
+
