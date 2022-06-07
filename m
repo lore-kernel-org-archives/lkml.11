@@ -2,149 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBF38C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:10:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 626D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:11:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240693AbiFGKKX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:10:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55584 "EHLO
+        id S240662AbiFGKLc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:11:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240663AbiFGKKS (ORCPT
+        with ESMTP id S233342AbiFGKL2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:10:18 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C6DEAD2F;
-        Tue,  7 Jun 2022 03:10:17 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id v25so22319399eda.6;
-        Tue, 07 Jun 2022 03:10:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=4j1WzrBW7EoZdlkWo244YU3ttsWs7+lWBx1HTzeeKKc=;
-        b=k23Law+syP+E6x3K0yUQxVdE/9XIFEPWysOg7j2WDeKtBx729T+2Ihex566ccY1NSW
-         /KdeoEC3hiXmTH/xeoPWb+dS/3X3gbA1UG4HPDfxlUBxYQPeDl6mJgPGK6NeyojA6Abf
-         ErtQctSEKZJLfNoSMQAqeTgWzsOMPzlcIP0+VYPspkt+S40YTGXlpT4flmrJqBQ7osXJ
-         vnd68mBSsP1IvdXNDWY+k7St9j9alQ73vVHhMmGuxcMdVjXRGzdPNASQdMlBvsBlPEA6
-         euCRwe1d5v0iFzLTuOvK2OF2P4IGQNI2IANf3P5CAIfr14hElWYUkoOsDp/pUr8axkGo
-         H78g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=4j1WzrBW7EoZdlkWo244YU3ttsWs7+lWBx1HTzeeKKc=;
-        b=wERVlqlSlihFN0mRvrWGXNsWdQnbLJ9kUaxtk1590rmG731fJ5GIn/sD8iltHT++gl
-         +z0GDdxkqp6kwdagqfA6hZvYZyzsv+Ljrmz1f9rD+5/2XmTVNcP8yrS0SWTWIN8AFGBN
-         JMcO7pbJ+FRkDSTGOlEpXsruaTG6Pt46K3AH6dg6lKLDah1r29nrJy+u9GWWAV3zWmbJ
-         PTeBGqn4hc1MU3SfxhmjX2q8uIzeqFIaQvJzzXVqzJzYgyb9DqnSMfAxQBn12H5B+iNv
-         rg3XgMu9O4O6lprZPd56FunrMl30uh85wQYXyGQ1gm30t5tYnKvc2gKeMtYgIwYPzBhw
-         bjpg==
-X-Gm-Message-State: AOAM533WB2kHed3O11e9ts3t4kMXxQGRFL+Idp9xDLhavhRvP+WFYdr5
-        hZ96yji7R47+Gf06ef0YjLWve9PfUDXyTnvC4caETAt8HG524w==
-X-Google-Smtp-Source: ABdhPJxk/YC0FG6cv/TnhxlUpyFDCXO3/z4i+jholBQGddkZmAN56cAZNS/4viDhq29uRNzogOGiMYRPy7QLSNXkEh4=
-X-Received: by 2002:aa7:d303:0:b0:42d:d192:4c41 with SMTP id
- p3-20020aa7d303000000b0042dd1924c41mr32816146edq.178.1654596616279; Tue, 07
- Jun 2022 03:10:16 -0700 (PDT)
+        Tue, 7 Jun 2022 06:11:28 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C9AA30AE;
+        Tue,  7 Jun 2022 03:11:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0B035CE1FFC;
+        Tue,  7 Jun 2022 10:11:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40607C34115;
+        Tue,  7 Jun 2022 10:11:22 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="X2K0Ykj+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1654596680;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1uLp6S7qDm+prOZPlj1/i8axFvtvjD7FOsjnFuZBDPg=;
+        b=X2K0Ykj+oOpHR3dcG5mP2wE0U/B0IWXZSN2cK6HP/+Z47nOzBdxQe/OTHEAUhC2fHzSOmj
+        jIPDtNllmaacdUUfHN2mDFVOK6uPL/GPUeuIT0uRqMSrNlkRWeR5jz3KgsarDoP6l96LeH
+        h9K8wirp3B1eHUKd32vhgbIkA9q9XMM=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d13f70d9 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 7 Jun 2022 10:11:19 +0000 (UTC)
+Date:   Tue, 7 Jun 2022 12:11:14 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Phil Elwell <phil@raspberrypi.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        stable <stable@vger.kernel.org>
+Subject: Re: [PATCH v2] ARM: initialize jump labels before setup_machine_fdt()
+Message-ID: <Yp8kQrBgE3WVqqC5@zx2c4.com>
+References: <8cc7ebe4-442b-a24b-9bb0-fce6e0425ee6@raspberrypi.com>
+ <CAHmME9pL=g7Gz9-QOHnTosLHAL9YSPsW+CnE=9=u3iTQaFzomg@mail.gmail.com>
+ <0f6458d7-037a-fa4d-8387-7de833288fb9@raspberrypi.com>
+ <CAHmME9rJif3ydZuFJcSjPxkGMofZkbu2PXcHBF23OWVgGQ4c+A@mail.gmail.com>
+ <Yp8jQG30OWOG9C4j@arm.com>
 MIME-Version: 1.0
-References: <20220606131124.53394-1-ilpo.jarvinen@linux.intel.com>
- <20220606131124.53394-2-ilpo.jarvinen@linux.intel.com> <fb32bda5-ea44-da8d-493a-a043b8619022@linux.intel.com>
- <CAHp75Ve4t1aF4wDpXPOcOX3MXbn_DaaNWG4S9Ft1jpZ0dGSXzw@mail.gmail.com>
- <97e83f-8011-37fb-d958-2d881fcdbd3@linux.intel.com> <CAHp75Vek_O9MJHGXkgJQZT1w-QbdiU0Bpc_PqcA+P6yEBJcEpA@mail.gmail.com>
- <20220606194046.gbt4ghz2yvazsfo4@pengutronix.de> <CAHp75VdiJFtLnEJfW6KXwaVFsKWSSTSMgKQLvikSEQj7x3tgLA@mail.gmail.com>
- <20220607055810.szkjoitpr3vboymr@pengutronix.de>
-In-Reply-To: <20220607055810.szkjoitpr3vboymr@pengutronix.de>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 7 Jun 2022 12:09:39 +0200
-Message-ID: <CAHp75VcUBOcz_UAx9tVER8cBb8h8NF+NivUH00-B39wwH6ObUQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/6] serial: 8250: Store to lsr_save_flags after lsr read
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>
-Cc:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yp8jQG30OWOG9C4j@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+Cc: Jonathan (some documentation clarification might be needed)
+Hi Catalin,
 
-On Tue, Jun 7, 2022 at 7:58 AM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
-> On Mon, Jun 06, 2022 at 10:38:37PM +0200, Andy Shevchenko wrote:
-> > On Mon, Jun 6, 2022 at 9:40 PM Uwe Kleine-K=C3=B6nig
-> > <u.kleine-koenig@pengutronix.de> wrote:
-> > >
-> > > On Mon, Jun 06, 2022 at 07:01:15PM +0200, Andy Shevchenko wrote:
-> > > > On Mon, Jun 6, 2022 at 6:54 PM Ilpo J=C3=A4rvinen
-> > > > <ilpo.jarvinen@linux.intel.com> wrote:
-> > > > > On Mon, 6 Jun 2022, Andy Shevchenko wrote:
-> > > > > > On Mon, Jun 6, 2022 at 3:55 PM Ilpo J=C3=A4rvinen
-> > > > > > <ilpo.jarvinen@linux.intel.com> wrote:
-> > > >
-> > > > ...
-> > > >
-> > > > > > But more importantly I do not see the reason for the Acked-by t=
-ag when
-> > > > > > SoB of the same person is present.
-> > > > >
-> > > > > I just repeated what Uwe gave me. Maybe he didn't notice he was a=
-lready
-> > > > > there as SoB.
-> > > > >
-> > > > > This situation is anyway a bit more complex than usual. The line =
-I took
-> > > > > was part of Uwe's much larger patch initially (which was fully re=
-verted)
-> > > > > so his SoB was carried over to preserve the authorship. As I made=
- a
-> > > > > non-trivial modification to his original patch by removing almost=
- all of
-> > > > > it, I added my SoB too. Given this situation, I kind of thought h=
-e Acked
-> > > > > (approved) the post-modification version of it.
-> > > >
-> > > > I believe you haven't preserved the authorship that way (since From
-> > > > line is different), but since you have done non-trivial changes and
-> > > > Uwe is okay with them, the straightforward tag chain would be (with
-> > > > your authorship implied):
-> > > > Co-developed-by: Uwe
-> > > > SoB: Uwe
-> > > > SoB: yours
-> > >
-> > > I don't care much, but IMHO the initial set of tags made sense to me.
-> >
-> > > It
-> > > has my S-o-b because the change is (somewhat) taken from me and it ha=
-s
-> > > my ack because the modification looked good to me.
-> >
-> > According to
-> > https://www.kernel.org/doc/html/latest/process/submitting-patches.html#=
-when-to-use-acked-by-cc-and-co-developed-by
-> > the SoB already implies that you developed that, but Ack if not. It
-> > also clarifies Co-developed-by for cases like this.
->
-> That's unintuitive (and wrong) in my opinion.
+On Tue, Jun 07, 2022 at 11:06:56AM +0100, Catalin Marinas wrote:
+> Hi Jason,
+> 
+> On Tue, Jun 07, 2022 at 10:51:41AM +0200, Jason A. Donenfeld wrote:
+> > On Tue, Jun 7, 2022 at 10:47 AM Phil Elwell <phil@raspberrypi.com> wrote:
+> > > Thanks for the quick response, but that doesn't work for me either. Let me say
+> > > again that I'm on a downstream kernel (rpi-5.15.y) so this may not be a
+> > > universal problem, but merging either of these fixing patches would be fatal for us.
+> > 
+> > Alright, thanks. And I'm guessing you don't currently have a problem
+> > *without* either of the fixing patches, because your device tree
+> > doesn't use rng-seed. Is that right?
+> > 
+> > In anycase, I sent in a revert to get all the static branch stuff out
+> > of stable -- https://lore.kernel.org/stable/20220607084005.666059-1-Jason@zx2c4.com/
+> > -- so the "urgency" of this should decrease and we can fix this as
+> > normal during the 5.19 cycle.
+> 
+> Since the above revert got queued in -stable, I assume you don't need
+> commit 73e2d827a501 ("arm64: Initialize jump labels before
+> setup_machine_fdt()") in stable either.
 
-I have the opposite opinion.
+I made the point here:
+https://lore.kernel.org/stable/Yp8i9DH57dRGfTNf@kroah.com/T/#m8f33bc14b677980abe690e5c7a4909b5902010cc
 
-> For me, Acked-by is a
-> confirmation of the respective person, that the patch in question is ok.
-> If I take a hunk of a random reverted patch and add the S-o-b of the big
-> patch's author, can I really assume the original author "acks" the
-> result? I would expect that in most cases they don't. (And if they do,
-> there is no way to record it, because the usual way of adding an Ack is
-> blocked as there is already a S-o-b?)
+> Do you plan to fix the crng_ready() static branch differently? If you
+> do, I'd like to revert the corresponding arm64 commit as well. It seems
+> to be harmless but I'd rather not keep it if no longer needed. So please
+> keep me updated whatever you decide.
 
-It's very logical to me. If you allowed (by not NAKing) the other
-developer to use your SoB you imply Ack for every change they made.
-Otherwise you need explicitly ask for withdrawal of your SoB.
+I sent a "backup commit" for that here: https://lore.kernel.org/all/20220607100210.683136-1-Jason@zx2c4.com/
+But I would like a few days to see if there's some trivial way of not
+needing that on arm32. If it turns out to be easy, then I'd prefer the
+direct fix akin to the arm64 one. If it turns out to be not easy, then
+I'll merge the backup commit. I'll keep you posted (and I assume anyway
+you'll see the arm32 attempts progress or fail here, also).
 
---=20
-With Best Regards,
-Andy Shevchenko
+Jason
