@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B67CCA493
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E97CCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388105AbiFHBhv (ORCPT
+        id S1388383AbiFHBiG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:37:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51164 "EHLO
+        Tue, 7 Jun 2022 21:38:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379288AbiFGWMo (ORCPT
+        with ESMTP id S1382041AbiFGVqK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:12:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65E0225C1EE;
-        Tue,  7 Jun 2022 12:19:33 -0700 (PDT)
+        Tue, 7 Jun 2022 17:46:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F34235B04;
+        Tue,  7 Jun 2022 12:07:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA0086193C;
-        Tue,  7 Jun 2022 19:18:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6125C385A2;
-        Tue,  7 Jun 2022 19:18:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B57DB823AF;
+        Tue,  7 Jun 2022 19:07:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01950C385A2;
+        Tue,  7 Jun 2022 19:07:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629538;
-        bh=e5wNp0liSpCAzGIDVPX0YO5ZBqBeAMUgByib04aqO7g=;
+        s=korg; t=1654628863;
+        bh=CZ/vaZHm91i3CNrD5PGY++BahAhBDENwnCQ7zpnuHDE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1pAtNk5Z6TTYOv1DKz5jGccyfcgXfgVdIRafipAVT3bLwwjllxSq5baWtp09eROCh
-         NVjrF8P9bjBIQbi8ELM7WVbtoLdnTl/kQaIcXIPxUn3k6te36GnXGriFnzkaGP9YGy
-         Wc+/LG4UhE8Xi9N+Z4/fXI5457bMqAxLhPaCqsVw=
+        b=YRAi32sJWZi96KFGoCpnAUvSloR6GyILZ82Yph0vXRJZCfI0woYuoeakRS1fg3Wzh
+         MFMTTty5cTs6Yx24CH6fP67KskuooV7FxFgNHw9BhhKn5RVzZD3+Aupy6hpo7xFOad
+         ZES2HaGfT+Sxkk/linYMYJz7/c7DWAVUCQwzC1Ss=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.18 728/879] bfq: Avoid merging queues with different parents
-Date:   Tue,  7 Jun 2022 19:04:06 +0200
-Message-Id: <20220607165023.987810049@linuxfoundation.org>
+        stable@vger.kernel.org, Rob Clark <robdclark@gmail.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Rob Clark <robdclark@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 483/879] drm/msm/dsi: dont powerup at modeset time for parade-ps8640
+Date:   Tue,  7 Jun 2022 19:00:01 +0200
+Message-Id: <20220607165016.893812695@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,83 +53,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Douglas Anderson <dianders@chromium.org>
 
-commit c1cee4ab36acef271be9101590756ed0c0c374d9 upstream.
+[ Upstream commit ec7981e6c614254937b37ce0af9eac09901c05c5 ]
 
-It can happen that the parent of a bfqq changes between the moment we
-decide two queues are worth to merge (and set bic->stable_merge_bfqq)
-and the moment bfq_setup_merge() is called. This can happen e.g. because
-the process submitted IO for a different cgroup and thus bfqq got
-reparented. It can even happen that the bfqq we are merging with has
-parent cgroup that is already offline and going to be destroyed in which
-case the merge can lead to use-after-free issues such as:
+Commit 7d8e9a90509f ("drm/msm/dsi: move DSI host powerup to modeset
+time") caused sc7180 Chromebooks that use the parade-ps8640 bridge
+chip to fail to turn the display back on after it turns off.
 
-BUG: KASAN: use-after-free in __bfq_deactivate_entity+0x9cb/0xa50
-Read of size 8 at addr ffff88800693c0c0 by task runc:[2:INIT]/10544
+Unfortunately, it doesn't look easy to fix the parade-ps8640 driver to
+handle the new power sequence. The Linux driver has almost nothing in
+it and most of the logic for this bridge chip is in black-box firmware
+that the bridge chip uses.
 
-CPU: 0 PID: 10544 Comm: runc:[2:INIT] Tainted: G            E     5.15.2-0.g5fb85fd-default #1 openSUSE Tumbleweed (unreleased) f1f3b891c72369aebecd2e43e4641a6358867c70
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a-rebuilt.opensuse.org 04/01/2014
-Call Trace:
- <IRQ>
- dump_stack_lvl+0x46/0x5a
- print_address_description.constprop.0+0x1f/0x140
- ? __bfq_deactivate_entity+0x9cb/0xa50
- kasan_report.cold+0x7f/0x11b
- ? __bfq_deactivate_entity+0x9cb/0xa50
- __bfq_deactivate_entity+0x9cb/0xa50
- ? update_curr+0x32f/0x5d0
- bfq_deactivate_entity+0xa0/0x1d0
- bfq_del_bfqq_busy+0x28a/0x420
- ? resched_curr+0x116/0x1d0
- ? bfq_requeue_bfqq+0x70/0x70
- ? check_preempt_wakeup+0x52b/0xbc0
- __bfq_bfqq_expire+0x1a2/0x270
- bfq_bfqq_expire+0xd16/0x2160
- ? try_to_wake_up+0x4ee/0x1260
- ? bfq_end_wr_async_queues+0xe0/0xe0
- ? _raw_write_unlock_bh+0x60/0x60
- ? _raw_spin_lock_irq+0x81/0xe0
- bfq_idle_slice_timer+0x109/0x280
- ? bfq_dispatch_request+0x4870/0x4870
- __hrtimer_run_queues+0x37d/0x700
- ? enqueue_hrtimer+0x1b0/0x1b0
- ? kvm_clock_get_cycles+0xd/0x10
- ? ktime_get_update_offsets_now+0x6f/0x280
- hrtimer_interrupt+0x2c8/0x740
+Also unfortunately, reverting the patch will break "tc358762".
 
-Fix the problem by checking that the parent of the two bfqqs we are
-merging in bfq_setup_merge() is the same.
+The long term solution here is probably Dave Stevenson's series [1]
+that would give more flexibility. However, that is likely not a quick
+fix.
 
-Link: https://lore.kernel.org/linux-block/20211125172809.GC19572@quack2.suse.cz/
-CC: stable@vger.kernel.org
-Fixes: 430a67f9d616 ("block, bfq: merge bursts of newly-created queues")
-Tested-by: "yukuai (C)" <yukuai3@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220401102752.8599-2-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+For the short term, we'll look at the compatible of the next bridge in
+the chain and go back to the old way for the Parade PS8640 bridge
+chip. If it's found that other bridge chips also need this workaround
+then we can add them to the list or consider inverting the
+condition. However, the hope is that the framework will not take too
+much longer to land and we won't have to add anything other than
+ps8640 here.
+
+[1] https://lore.kernel.org/r/cover.1646406653.git.dave.stevenson@raspberrypi.com
+
+Fixes: 7d8e9a90509f ("drm/msm/dsi: move DSI host powerup to modeset time")
+Suggested-by: Rob Clark <robdclark@gmail.com>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Link: https://lore.kernel.org/r/20220513131504.v5.1.Ia196e35ad985059e77b038a41662faae9e26f411@changeid
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bfq-iosched.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/gpu/drm/msm/dsi/dsi_manager.c | 32 ++++++++++++++++++++++++++-
+ 1 file changed, 31 insertions(+), 1 deletion(-)
 
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -2762,6 +2762,14 @@ bfq_setup_merge(struct bfq_queue *bfqq,
- 	if (process_refs == 0 || new_process_refs == 0)
- 		return NULL;
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_manager.c b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+index 1db93e562fe6..84f3b2ebf1b8 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_manager.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+@@ -34,6 +34,32 @@ static struct msm_dsi_manager msm_dsim_glb;
+ #define IS_SYNC_NEEDED()	(msm_dsim_glb.is_sync_needed)
+ #define IS_MASTER_DSI_LINK(id)	(msm_dsim_glb.master_dsi_link_id == id)
  
-+	/*
-+	 * Make sure merged queues belong to the same parent. Parents could
-+	 * have changed since the time we decided the two queues are suitable
-+	 * for merging.
-+	 */
-+	if (new_bfqq->entity.parent != bfqq->entity.parent)
-+		return NULL;
++#ifdef CONFIG_OF
++static bool dsi_mgr_power_on_early(struct drm_bridge *bridge)
++{
++	struct drm_bridge *next_bridge = drm_bridge_get_next_bridge(bridge);
 +
- 	bfq_log_bfqq(bfqq->bfqd, bfqq, "scheduling merge with queue %d",
- 		new_bfqq->pid);
++	/*
++	 * If the next bridge in the chain is the Parade ps8640 bridge chip
++	 * then don't power on early since it seems to violate the expectations
++	 * of the firmware that the bridge chip is running.
++	 *
++	 * NOTE: this is expected to be a temporary special case. It's expected
++	 * that we'll eventually have a framework that allows the next level
++	 * bridge to indicate whether it needs us to power on before it or
++	 * after it. When that framework is in place then we'll use it and
++	 * remove this special case.
++	 */
++	return !(next_bridge && next_bridge->of_node &&
++		 of_device_is_compatible(next_bridge->of_node, "parade,ps8640"));
++}
++#else
++static inline bool dsi_mgr_power_on_early(struct drm_bridge *bridge)
++{
++	return true;
++}
++#endif
++
+ static inline struct msm_dsi *dsi_mgr_get_dsi(int id)
+ {
+ 	return msm_dsim_glb.dsi[id];
+@@ -389,6 +415,9 @@ static void dsi_mgr_bridge_pre_enable(struct drm_bridge *bridge)
+ 	if (is_bonded_dsi && !IS_MASTER_DSI_LINK(id))
+ 		return;
  
++	if (!dsi_mgr_power_on_early(bridge))
++		dsi_mgr_bridge_power_on(bridge);
++
+ 	/* Always call panel functions once, because even for dual panels,
+ 	 * there is only one drm_panel instance.
+ 	 */
+@@ -570,7 +599,8 @@ static void dsi_mgr_bridge_mode_set(struct drm_bridge *bridge,
+ 	if (is_bonded_dsi && other_dsi)
+ 		msm_dsi_host_set_display_mode(other_dsi->host, adjusted_mode);
+ 
+-	dsi_mgr_bridge_power_on(bridge);
++	if (dsi_mgr_power_on_early(bridge))
++		dsi_mgr_bridge_power_on(bridge);
+ }
+ 
+ static const struct drm_connector_funcs dsi_mgr_connector_funcs = {
+-- 
+2.35.1
+
 
 
