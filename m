@@ -2,260 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42A3ECCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3271CCCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:19:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386859AbiFHBTW (ORCPT
+        id S1381076AbiFHBTP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:19:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49882 "EHLO
+        Tue, 7 Jun 2022 21:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385139AbiFGWVB (ORCPT
+        with ESMTP id S1574441AbiFGXZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:21:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F9C9265611;
-        Tue,  7 Jun 2022 12:21:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3857B60906;
-        Tue,  7 Jun 2022 19:21:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4076AC3411F;
-        Tue,  7 Jun 2022 19:21:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629660;
-        bh=lTwTaY+2If4wDUZGmjDJdw8w1OKq1JDGNaMxwCIgRvQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YKizC3a0ReYfNbug4rbMpRqoYUGEalMZD+mrB0u9cOWIGy5vmqqhgWSZQcqWkteuZ
-         A4WB0vpvGNd/JkVKzsqZFMH7fMtYieL0FoC2hgzqFfCpzJ1rzk9gvs8B4c3LjnAZMM
-         Mn+754jBvphEtyhpp8IgDl36Br8zWudbX71lOKUY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.18 772/879] selftests/landlock: Add clang-format exceptions
-Date:   Tue,  7 Jun 2022 19:04:50 +0200
-Message-Id: <20220607165025.269381194@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 7 Jun 2022 19:25:43 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12E722DFB0
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:17 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id s10-20020a170902a50a00b00162359521c9so9972741plq.23
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
+        bh=nx+NHoagUTMXpTWLS6nBCzRagrM6AprX1ic8KXLR0FQ=;
+        b=KtYNddCXipsCxfZPlYIrROqzMf4VfQUpQ7W4eTiQczc1T53T4h7qOXhIIs89QqOWNG
+         LPjzPOO5PTOHfPz22rVbKMRnf7mGiTZwlhzfEvI6mbtzGEkgLSGkO2LEPDtBerkLBOjh
+         D6/zW73UmBBCZyxNHxzie9fQQX0K35UHpIQybHBcF+0WhIlueyc6Fruq6HHXLsxfBCx9
+         EvHgOUKPotMcnYQdIqVG0FBm3EvFSVpg7lOn2sAQFPzXgAtckDr8NltPQcn7LO6JVZM7
+         QyYHMq5pHplrLaksdi0Wp0I8qRyKtJp8r6wWD91qOZP54TuSTe5uS4eiPZSEDNk+/o6e
+         ItqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
+         :from:to:cc;
+        bh=nx+NHoagUTMXpTWLS6nBCzRagrM6AprX1ic8KXLR0FQ=;
+        b=ajyqwZmj5aAT/EQQQM3Pm0SshDYLDUYg0eLAxbkMk+gneH30bq9Ynf7LFn/0NM36Sy
+         gNMXCYnxrMvQxh7i0dmq+JWauO7Aua/Hi8E8YDrGcJzktC86Qb9jI0+1Y8sErTCDkAfc
+         cDFDjwHtEC9OSZguwlkvYZBeciSlUTaQXB5Hsyofb33xVOgQ2Hvj+IIDdiNCC/J7qDQ0
+         kIDirHUQUCifpzeY7ActsWx0RISWscAhnmldwMtHPCqPiLCbkwAgoIj9nVxqmUBjc7hr
+         JC1Wgr3tzTI6kPoIldN76xiFpaB4wCJkONyjUUvWy6Mvu0S8ugUe1g+NAI3rnLEXxY7L
+         E/4w==
+X-Gm-Message-State: AOAM531PUKTen9eyzDoP7h4O99dQ8qotI+KMmE+wyJlcZs1jdh2zrKE3
+        CrF4vUlRNUaHSnP+tfyXJoMX0z6TTt0=
+X-Google-Smtp-Source: ABdhPJzvgfJQivUwNYRvpJCgJfIE60FoBiPf/9jOB7Bo9q3ATZQV+PwKPdSQTp+PMSSeTAfz8mfc6MiODKU=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a63:89c2:0:b0:3fc:8bd2:aa5a with SMTP id
+ v185-20020a6389c2000000b003fc8bd2aa5amr26943571pgd.362.1654637777287; Tue, 07
+ Jun 2022 14:36:17 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Tue,  7 Jun 2022 21:35:49 +0000
+Message-Id: <20220607213604.3346000-1-seanjc@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH v5 00/15]  KVM: nVMX: VMX MSR quirk+fixes, CR4 fixes
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
+        David Matlack <dmatlack@google.com>,
+        Oliver Upton <oupton@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@digikod.net>
+Resurrecting Oliver's series to quirk nVMX's manipulation of the VMX MSRs.
 
-commit 4598d9abf4215e1e371a35683350d50122793c80 upstream.
+KVM has a quirk where nVMX overwrites select VMX MSR bits in response to
+CPUID updates.  Specifically, KVM forces CR{0,4}_FIXED1 bits and the
+VM-Entry/VM-Exit control bits for BNDCFGS and PERF_GLOBAL_CTRL to align
+with the guest vCPU model.  Add a quirk to (a) allow userspace to opt out
+of the existing behavior and (b) make it clear the the existing behavior
+should not be propagated to new features.
 
-In preparation to a following commit, add clang-format on and
-clang-format off stanzas around constant definitions and the TEST_F_FORK
-macro.  This enables to keep aligned values, which is much more readable
-than packed definitions.
+Patches 0-4 are tangentially related fixes for correctly handling CR4
+checks on nested VMXON and VM-Enter.  They are included here because there
+is a subtle dependency created by the fix in patch 02, as it changes the
+resulting behavior of patch 10, "Extend VMX MSRs quirk to CR0/4 fixed1 bits".
 
-Add other clang-format exceptions for FIXTURE() and
-FIXTURE_VARIANT_ADD() declarations to force space before open brace,
-which is reported by checkpatch.pl .
+Patch 05 fixes a bug where KVM forces incoming VMX MSR values to be a
+subset of _current_ value, not of KVM's support valu.  E.g. if userspace
+clears an allowed-1 bit, it can never set that bit back to the original
+value.
 
-Link: https://lore.kernel.org/r/20220506160513.523257-4-mic@digikod.net
-Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- tools/testing/selftests/landlock/common.h      |    2 ++
- tools/testing/selftests/landlock/fs_test.c     |   23 +++++++++++++++++------
- tools/testing/selftests/landlock/ptrace_test.c |   20 +++++++++++++++++++-
- 3 files changed, 38 insertions(+), 7 deletions(-)
+Patch 06, "Keep KVM updates to BNDCFGS ctrl bits across MSR write", fixes
+a related bug where KVM's original quirky behavior kept the VMX MSRs
+up-to-date (almost) all the time.
 
---- a/tools/testing/selftests/landlock/common.h
-+++ b/tools/testing/selftests/landlock/common.h
-@@ -25,6 +25,7 @@
-  * this to be possible, we must not call abort() but instead exit smoothly
-  * (hence the step print).
-  */
-+/* clang-format off */
- #define TEST_F_FORK(fixture_name, test_name) \
- 	static void fixture_name##_##test_name##_child( \
- 		struct __test_metadata *_metadata, \
-@@ -71,6 +72,7 @@
- 		FIXTURE_DATA(fixture_name) __attribute__((unused)) *self, \
- 		const FIXTURE_VARIANT(fixture_name) \
- 			__attribute__((unused)) *variant)
-+/* clang-format on */
- 
- #ifndef landlock_create_ruleset
- static inline int landlock_create_ruleset(
---- a/tools/testing/selftests/landlock/fs_test.c
-+++ b/tools/testing/selftests/landlock/fs_test.c
-@@ -221,8 +221,9 @@ static void remove_layout1(struct __test
- 	EXPECT_EQ(0, remove_path(dir_s3d2));
- }
- 
--FIXTURE(layout1) {
--};
-+/* clang-format off */
-+FIXTURE(layout1) {};
-+/* clang-format on */
- 
- FIXTURE_SETUP(layout1)
- {
-@@ -376,6 +377,8 @@ TEST_F_FORK(layout1, inval)
- 	ASSERT_EQ(0, close(ruleset_fd));
- }
- 
-+/* clang-format off */
-+
- #define ACCESS_FILE ( \
- 	LANDLOCK_ACCESS_FS_EXECUTE | \
- 	LANDLOCK_ACCESS_FS_WRITE_FILE | \
-@@ -396,6 +399,8 @@ TEST_F_FORK(layout1, inval)
- 	LANDLOCK_ACCESS_FS_MAKE_BLOCK | \
- 	ACCESS_LAST)
- 
-+/* clang-format on */
-+
- TEST_F_FORK(layout1, file_access_rights)
- {
- 	__u64 access;
-@@ -452,6 +457,8 @@ struct rule {
- 	__u64 access;
- };
- 
-+/* clang-format off */
-+
- #define ACCESS_RO ( \
- 	LANDLOCK_ACCESS_FS_READ_FILE | \
- 	LANDLOCK_ACCESS_FS_READ_DIR)
-@@ -460,6 +467,8 @@ struct rule {
- 	ACCESS_RO | \
- 	LANDLOCK_ACCESS_FS_WRITE_FILE)
- 
-+/* clang-format on */
-+
- static int create_ruleset(struct __test_metadata *const _metadata,
- 		const __u64 handled_access_fs, const struct rule rules[])
- {
-@@ -2070,8 +2079,9 @@ TEST_F_FORK(layout1, proc_pipe)
- 	ASSERT_EQ(0, close(pipe_fds[1]));
- }
- 
--FIXTURE(layout1_bind) {
--};
-+/* clang-format off */
-+FIXTURE(layout1_bind) {};
-+/* clang-format on */
- 
- FIXTURE_SETUP(layout1_bind)
- {
-@@ -2411,8 +2421,9 @@ static const char (*merge_sub_files[])[]
-  *         └── work
-  */
- 
--FIXTURE(layout2_overlay) {
--};
-+/* clang-format off */
-+FIXTURE(layout2_overlay) {};
-+/* clang-format on */
- 
- FIXTURE_SETUP(layout2_overlay)
- {
---- a/tools/testing/selftests/landlock/ptrace_test.c
-+++ b/tools/testing/selftests/landlock/ptrace_test.c
-@@ -59,7 +59,9 @@ static int test_ptrace_read(const pid_t
- 	return 0;
- }
- 
--FIXTURE(hierarchy) { };
-+/* clang-format off */
-+FIXTURE(hierarchy) {};
-+/* clang-format on */
- 
- FIXTURE_VARIANT(hierarchy) {
- 	const bool domain_both;
-@@ -83,7 +85,9 @@ FIXTURE_VARIANT(hierarchy) {
-  *       \              P2 -> P1 : allow
-  *        'P2
-  */
-+/* clang-format off */
- FIXTURE_VARIANT_ADD(hierarchy, allow_without_domain) {
-+	/* clang-format on */
- 	.domain_both = false,
- 	.domain_parent = false,
- 	.domain_child = false,
-@@ -98,7 +102,9 @@ FIXTURE_VARIANT_ADD(hierarchy, allow_wit
-  *        |  P2  |
-  *        '------'
-  */
-+/* clang-format off */
- FIXTURE_VARIANT_ADD(hierarchy, allow_with_one_domain) {
-+	/* clang-format on */
- 	.domain_both = false,
- 	.domain_parent = false,
- 	.domain_child = true,
-@@ -112,7 +118,9 @@ FIXTURE_VARIANT_ADD(hierarchy, allow_wit
-  *            '
-  *            P2
-  */
-+/* clang-format off */
- FIXTURE_VARIANT_ADD(hierarchy, deny_with_parent_domain) {
-+	/* clang-format on */
- 	.domain_both = false,
- 	.domain_parent = true,
- 	.domain_child = false,
-@@ -127,7 +135,9 @@ FIXTURE_VARIANT_ADD(hierarchy, deny_with
-  *         |  P2  |
-  *         '------'
-  */
-+/* clang-format off */
- FIXTURE_VARIANT_ADD(hierarchy, deny_with_sibling_domain) {
-+	/* clang-format on */
- 	.domain_both = false,
- 	.domain_parent = true,
- 	.domain_child = true,
-@@ -142,7 +152,9 @@ FIXTURE_VARIANT_ADD(hierarchy, deny_with
-  * |         P2  |
-  * '-------------'
-  */
-+/* clang-format off */
- FIXTURE_VARIANT_ADD(hierarchy, allow_sibling_domain) {
-+	/* clang-format on */
- 	.domain_both = true,
- 	.domain_parent = false,
- 	.domain_child = false,
-@@ -158,7 +170,9 @@ FIXTURE_VARIANT_ADD(hierarchy, allow_sib
-  * |        '------' |
-  * '-----------------'
-  */
-+/* clang-format off */
- FIXTURE_VARIANT_ADD(hierarchy, allow_with_nested_domain) {
-+	/* clang-format on */
- 	.domain_both = true,
- 	.domain_parent = false,
- 	.domain_child = true,
-@@ -174,7 +188,9 @@ FIXTURE_VARIANT_ADD(hierarchy, allow_wit
-  * |             P2  |
-  * '-----------------'
-  */
-+/* clang-format off */
- FIXTURE_VARIANT_ADD(hierarchy, deny_with_nested_and_parent_domain) {
-+	/* clang-format on */
- 	.domain_both = true,
- 	.domain_parent = true,
- 	.domain_child = false,
-@@ -192,7 +208,9 @@ FIXTURE_VARIANT_ADD(hierarchy, deny_with
-  * |        '------' |
-  * '-----------------'
-  */
-+/* clang-format off */
- FIXTURE_VARIANT_ADD(hierarchy, deny_with_forked_domain) {
-+	/* clang-format on */
- 	.domain_both = true,
- 	.domain_parent = true,
- 	.domain_child = true,
+This series is technically based on my selftests overhaul[*], but practically
+speaking that only affects the selftests.  The KVM should apply cleanly on
+kvm/queue, 55371f1d0c01 ("KVM: x86/pmu: Update global ...")
 
+I have a KUT test for patch 3 (VMXON fixes) that I'l post separately (yet
+more cleanup involved, ugh).  I spot tested patch 2 by fudging PKU in guest
+CPUID, but I'm not planning on submitting an official test anywhere (though
+it could be done without too much pain in selftests).
+
+v5:
+ - Rebase (see above).
+ - Fix "CR4 valid for nVMX" bugs.
+ - Modify PERF_GLOBAL_CTRL bits iff the MSR exists.
+ - Fix a bug where KVM doesn't allow userspace to restore VMX MSRs to
+   _KVM's_ allowed values.
+ - Fix the UMIP emulation goof.
+ - Extend the quirk to CR0/4_FIXED1 MSRs.
+ - Add a helper to identify if the vCPU has a vPMU.
+ - Rewrote the selftests to more exhaustively test combos, and to test
+   the aforementioned bugs fixed in v5.
+
+v4:
+ - https://lore.kernel.org/all/20220301060351.442881-1-oupton@google.com
+ - Rebased to kvm/queue. Avoids conflicts with new CAPs and commit
+   0bcd556e15f9 ("KVM: nVMX: Refactor PMU refresh to avoid referencing
+   kvm_x86_ops.pmu_ops") on kvm/queue.
+ - Grabbed KVM_CAP_DISABLE_QUIRKS2 patch, since this series also
+   introduces a quirk.
+ - Fix typo in KVM_CAP_DISABLE_QUIRKS2 documentation (Sean)
+ - Eliminated the need to refresh 'load IA32_PGC' bits from PMU refresh.
+ - Use consistent formatting to make test cases more easily readable
+   (David Dunn)
+ - Use correct 'Fixes: ' tag and correct a typo in Patch 2 changelog.
+
+Oliver Upton (4):
+  KVM: nVMX: Keep KVM updates to BNDCFGS ctrl bits across MSR write
+  KVM: nVMX: Keep KVM updates to PERF_GLOBAL_CTRL ctrl bits across MSR
+    write
+  KVM: nVMX: Drop nested_vmx_pmu_refresh()
+  KVM: nVMX: Add a quirk for KVM tweaks to VMX MSRs
+
+Sean Christopherson (11):
+  KVM: x86: Split kvm_is_valid_cr4() and export only the non-vendor bits
+  KVM: nVMX: Account for KVM reserved CR4 bits in consistency checks
+  KVM: nVMX: Inject #UD if VMXON is attempted with incompatible CR0/CR4
+  KVM: nVMX: Rename handle_vm{on,off}() to handle_vmx{on,off}()
+  KVM: nVMX: Let userspace set nVMX MSR to any _host_ supported value
+  KVM: VMX: Add helper to check if the guest PMU has PERF_GLOBAL_CTRL
+  KVM: nVMX: Set UMIP bit CR4_FIXED1 MSR when emulating UMIP
+  KVM: nVMX: Extend VMX MSRs quirk to CR0/4 fixed1 bits
+  KVM: selftests: Add test to verify KVM's VMX MSRs quirk for controls
+  KVM: selftests: Extend VMX MSRs test to cover CR4_FIXED1 (and its
+    quirks)
+  KVM: selftests: Verify VMX MSRs can be restored to KVM-supported
+    values
+
+ Documentation/virt/kvm/api.rst                |  29 ++
+ arch/x86/include/asm/kvm_host.h               |   3 +-
+ arch/x86/include/uapi/asm/kvm.h               |   1 +
+ arch/x86/kvm/svm/nested.c                     |   3 +-
+ arch/x86/kvm/vmx/nested.c                     | 199 ++++++------
+ arch/x86/kvm/vmx/nested.h                     |   5 +-
+ arch/x86/kvm/vmx/pmu_intel.c                  |   7 +-
+ arch/x86/kvm/vmx/vmx.c                        |  23 +-
+ arch/x86/kvm/vmx/vmx.h                        |  14 +
+ arch/x86/kvm/x86.c                            |  12 +-
+ arch/x86/kvm/x86.h                            |   2 +-
+ tools/testing/selftests/kvm/.gitignore        |   1 +
+ tools/testing/selftests/kvm/Makefile          |   1 +
+ .../selftests/kvm/include/x86_64/processor.h  |   8 +
+ .../selftests/kvm/include/x86_64/vmx.h        |   2 +
+ .../selftests/kvm/x86_64/vmx_msrs_test.c      | 287 ++++++++++++++++++
+ 16 files changed, 493 insertions(+), 104 deletions(-)
+ create mode 100644 tools/testing/selftests/kvm/x86_64/vmx_msrs_test.c
+
+
+base-commit: 081ad4bbae8d503c79fae45f463766d28b2f3241
+-- 
+2.36.1.255.ge46751e96f-goog
 
