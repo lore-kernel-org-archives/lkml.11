@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38746CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DFAACCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378031AbiFGVAs (ORCPT
+        id S1378088AbiFGVA5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:00:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50078 "EHLO
+        Tue, 7 Jun 2022 17:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358024AbiFGT4D (ORCPT
+        with ESMTP id S1357511AbiFGT4o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:56:03 -0400
+        Tue, 7 Jun 2022 15:56:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4664AB0CF;
-        Tue,  7 Jun 2022 11:23:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89354AFB2C;
+        Tue,  7 Jun 2022 11:24:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 63D7A60906;
-        Tue,  7 Jun 2022 18:23:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77FEFC34115;
-        Tue,  7 Jun 2022 18:23:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2F7961277;
+        Tue,  7 Jun 2022 18:24:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE45AC385A2;
+        Tue,  7 Jun 2022 18:24:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626229;
-        bh=dbWiRrbUEdq/jShUoMSStxSROdj/mfEgDgb1SJh4nPY=;
+        s=korg; t=1654626243;
+        bh=CnLwyclVVSbwC4oc11KchLvc8sUbiTu2u0ilES9Syzo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J+RWS7Ns48iG6Avhf3lWf7c/u+OltfGHznxbenJd0B8KmhVccSHGFmNQptFroI187
-         uIqLPn4gfZUMnj5ued5hB9SLVamGCNuF6LcjQoCWWF2CYwUO04g9bEvkyAhwQlmrsI
-         ItkI5EjqbTlVf1ukHwG9d0kx08OKCgkh5Y+VMb7g=
+        b=MAZi4iKdMf3xO77hCqU1BSMlExVY/m1kEx2r4gvrTUJSj4GSf5+de3mdpN1N3tWRv
+         ySNRtA/qaT4HpGswyKt9/v65synyNyHNPSBIFskUAlbJzRICDuFycurZOZEfhbetfo
+         /esmCyRwJOSZp9YfuGEXxvorjI8bZGQ0dpsUZcG8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
-        "Juan A. Suarez" <jasuarez@igalia.com>,
-        Melissa Wen <melissa.srw@gmail.com>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 304/772] drm/v3d: Fix null pointer dereference of pointer perfmon
-Date:   Tue,  7 Jun 2022 18:58:16 +0200
-Message-Id: <20220607164957.982995791@linuxfoundation.org>
+Subject: [PATCH 5.17 309/772] mtd: rawnand: cadence: fix possible null-ptr-deref in cadence_nand_dt_probe()
+Date:   Tue,  7 Jun 2022 18:58:21 +0200
+Message-Id: <20220607164958.131972127@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,42 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Ian King <colin.i.king@gmail.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit ce7a1ecf3f9f1fccaf67295307614511d8e11b13 ]
+[ Upstream commit a28ed09dafee20da51eb26452950839633afd824 ]
 
-In the unlikely event that pointer perfmon is null the WARN_ON return path
-occurs after the pointer has already been deferenced. Fix this by only
-dereferencing perfmon after it has been null checked.
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-Fixes: 26a4dc29b74a ("drm/v3d: Expose performance counters to userspace")
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-Reviewed-by: Juan A. Suarez <jasuarez@igalia.com>
-Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220424183512.1365683-1-colin.i.king@gmail.com
+Fixes: ec4ba01e894d ("mtd: rawnand: Add new Cadence NAND driver to MTD subsystem")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220426084913.4021868-1-yangyingliang@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/v3d/v3d_perfmon.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/mtd/nand/raw/cadence-nand-controller.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/v3d/v3d_perfmon.c b/drivers/gpu/drm/v3d/v3d_perfmon.c
-index 0288ef063513..f6a88abccc7d 100644
---- a/drivers/gpu/drm/v3d/v3d_perfmon.c
-+++ b/drivers/gpu/drm/v3d/v3d_perfmon.c
-@@ -25,11 +25,12 @@ void v3d_perfmon_start(struct v3d_dev *v3d, struct v3d_perfmon *perfmon)
- {
- 	unsigned int i;
- 	u32 mask;
--	u8 ncounters = perfmon->ncounters;
-+	u8 ncounters;
+diff --git a/drivers/mtd/nand/raw/cadence-nand-controller.c b/drivers/mtd/nand/raw/cadence-nand-controller.c
+index 7eec60ea9056..0d72672f8b64 100644
+--- a/drivers/mtd/nand/raw/cadence-nand-controller.c
++++ b/drivers/mtd/nand/raw/cadence-nand-controller.c
+@@ -2983,11 +2983,10 @@ static int cadence_nand_dt_probe(struct platform_device *ofdev)
+ 	if (IS_ERR(cdns_ctrl->reg))
+ 		return PTR_ERR(cdns_ctrl->reg);
  
- 	if (WARN_ON_ONCE(!perfmon || v3d->active_perfmon))
- 		return;
+-	res = platform_get_resource(ofdev, IORESOURCE_MEM, 1);
+-	cdns_ctrl->io.dma = res->start;
+-	cdns_ctrl->io.virt = devm_ioremap_resource(&ofdev->dev, res);
++	cdns_ctrl->io.virt = devm_platform_get_and_ioremap_resource(ofdev, 1, &res);
+ 	if (IS_ERR(cdns_ctrl->io.virt))
+ 		return PTR_ERR(cdns_ctrl->io.virt);
++	cdns_ctrl->io.dma = res->start;
  
-+	ncounters = perfmon->ncounters;
- 	mask = GENMASK(ncounters - 1, 0);
- 
- 	for (i = 0; i < ncounters; i++) {
+ 	dt->clk = devm_clk_get(cdns_ctrl->dev, "nf_clk");
+ 	if (IS_ERR(dt->clk))
 -- 
 2.35.1
 
