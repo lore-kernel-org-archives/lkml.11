@@ -2,245 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22373CCA492
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3FF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:42:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235361AbiFHAim (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:38:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50650 "EHLO
+        id S1391088AbiFHAmC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 20:42:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385401AbiFGWVg (ORCPT
+        with ESMTP id S1573473AbiFGXYH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:21:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2855267168;
-        Tue,  7 Jun 2022 12:21:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 797DD609FA;
-        Tue,  7 Jun 2022 19:21:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FF1AC385A5;
-        Tue,  7 Jun 2022 19:21:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629685;
-        bh=9DMQ6JgSqIf8HKJKCjCTfDvP43n2npVk0dYewib4UoM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tghiLop6c8U2C0wkH/ba4INnI0cvi2WKOz4lCgArqKqjaQpTjpoSjzaqHOnXnlivM
-         65aTXDfCBaf93iz1439BrPyjsOSODoFZG3FNb3v68u48fBKe84ByjjWSua/Mqv21/b
-         yM0Lrr6C4SgGzex0nycd+RyNcxGDtP9eeVFOLyCM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        David Teigland <teigland@redhat.com>
-Subject: [PATCH 5.18 763/879] dlm: fix plock invalid read
-Date:   Tue,  7 Jun 2022 19:04:41 +0200
-Message-Id: <20220607165025.011233989@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 19:24:07 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9B413F4A39
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:33:21 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-edeb6c3642so24853953fac.3
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:33:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7WQJ/XtKegsw42WINS+GcmBCB6YzztdG6Y2PPPtUW/w=;
+        b=TrullXJMsk5YwE74aMpxuW61E1Hw1bnKtHsWUuwneaKzbWnpnuR+AjXBZ629aN2OD4
+         K8M0ZQuIVKorAfsPpsBq4P/2IJG0G29TGqlJA0BDh9WZ1T7oHDJej8Pa4GdBM1Px974A
+         cFaCm7tTycbHC+Kgx1dTX3JZv8xASZxwar4EZmTS4r868fstIko0vde6uw7EGmO62bSp
+         k9J9GAkUGTPbdwagbRBagx5TDT9IFym/yPArpVhVR2+zp4iu05KPEYJCDrOwJ5HliovS
+         qmxbar3fOJ/dBtJBu0ZXgJRPAUTqg8kgwHHB5w8d+I2Ivx5MiU5sRuNowWjBNz9bAQIo
+         0yHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7WQJ/XtKegsw42WINS+GcmBCB6YzztdG6Y2PPPtUW/w=;
+        b=wdCi+zWkQwtdoxFEEK/9x3a8iR/J2kUwgXEGSSkFDIOoLYiRnUKhi4jQXpYmf0O/ew
+         V+J8dHod77V/1jondhZaBJ9AKmPZ+v55Ym9QfLbcFnQGi0Z17P5aLLHN5Nq4x/5s+hzO
+         t4sjWsIkRFBpGqkxROSz/GATYa06QVtr75Gy1NBHOX4gzFHXSXSewuT5aLiVadXw7T6X
+         K/SlpkQCfGbqgQZpV/XgDnDVgXATzDEBWXd7tPADurIhLOHU4JCps2IlCNFc9y/+3lFS
+         7zAdEbfNEJ3+2tjzVzk9RTiD9DZ1Dz5Lp+x0MBrFz3OL3+9sOdktl6AxFibz2xc7bHAF
+         SD/w==
+X-Gm-Message-State: AOAM5337/shx/hY79G0hbl/+3icTOSOXv1cIfIEIZkT0NfVByDHgC//0
+        K+mfFZmPaqr7xmEeAXK6Ak+Qlw==
+X-Google-Smtp-Source: ABdhPJyU25K2d0bR0vnpnqOV1y2zdIZ6XN9gCVbMevu5CAiFWeOd1COsOlK9xlawqzqPKGiYAmdkLg==
+X-Received: by 2002:a05:6870:82a2:b0:f5:f1ee:cfdb with SMTP id q34-20020a05687082a200b000f5f1eecfdbmr538939oae.297.1654637599500;
+        Tue, 07 Jun 2022 14:33:19 -0700 (PDT)
+Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id cd24-20020a056808319800b0032e7205619asm4966031oib.15.2022.06.07.14.33.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 14:33:18 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Manu Gautam <mgautam@codeaurora.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/5] phy: qcom: Add SC8280XP UNI and COMBO USB phys
+Date:   Tue,  7 Jun 2022 14:35:38 -0700
+Message-Id: <20220607213543.4057620-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Aring <aahringo@redhat.com>
+The Qualcomm SC8280XP has two pairs of USB phys; a pair of combo phys and a
+pair of uni phys. Introduce support for these.
 
-commit 42252d0d2aa9b94d168241710a761588b3959019 upstream.
+This is based ontop of Dmitry's refactoring of the QMP driver:
+https://lore.kernel.org/all/20220602070909.1666068-1-dmitry.baryshkov@linaro.org/
 
-This patch fixes an invalid read showed by KASAN. A unlock will allocate a
-"struct plock_op" and a followed send_op() will append it to a global
-send_list data structure. In some cases a followed dev_read() moves it
-to recv_list and dev_write() will cast it to "struct plock_xop" and access
-fields which are only available in those structures. At this point an
-invalid read happens by accessing those fields.
+A first version of this series was posted with only the UNI phy, this fixes a
+few comments and add the combo phy as well.
 
-To fix this issue the "callback" field is moved to "struct plock_op" to
-indicate that a cast to "plock_xop" is allowed and does the additional
-"plock_xop" handling if set.
+Bjorn Andersson (5):
+  dt-bindings: phy: qcom,qmp: Add compatible for SC8280XP USB phys
+  phy: qcom-qmp: Add USB3 5NM QMP UNI registers
+  phy: qcom-qmp: Add USB4 5NM QMP combo PHY registers
+  phy: qcom-qmp: Add SC8280XP USB3 UNI phy
+  phy: qcom-qmp: Add sc8280xp USB/DP combo phys
 
-Example of the KASAN output which showed the invalid read:
+ .../devicetree/bindings/phy/qcom,qmp-phy.yaml |    2 +
+ .../bindings/phy/qcom,qmp-usb3-dp-phy.yaml    |    1 +
+ drivers/phy/qualcomm/phy-qcom-qmp-combo.c     |  205 +++
+ drivers/phy/qualcomm/phy-qcom-qmp-usb.c       |  138 ++
+ drivers/phy/qualcomm/phy-qcom-qmp.h           |   13 +
+ .../phy/qualcomm/phy-qcom-usb3-5nm-qmp-uni.h  |  617 +++++++
+ .../qualcomm/phy-qcom-usb4-5nm-qmp-combo.h    | 1547 +++++++++++++++++
+ 7 files changed, 2523 insertions(+)
+ create mode 100644 drivers/phy/qualcomm/phy-qcom-usb3-5nm-qmp-uni.h
+ create mode 100644 drivers/phy/qualcomm/phy-qcom-usb4-5nm-qmp-combo.h
 
-[ 2064.296453] ==================================================================
-[ 2064.304852] BUG: KASAN: slab-out-of-bounds in dev_write+0x52b/0x5a0 [dlm]
-[ 2064.306491] Read of size 8 at addr ffff88800ef227d8 by task dlm_controld/7484
-[ 2064.308168]
-[ 2064.308575] CPU: 0 PID: 7484 Comm: dlm_controld Kdump: loaded Not tainted 5.14.0+ #9
-[ 2064.310292] Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
-[ 2064.311618] Call Trace:
-[ 2064.312218]  dump_stack_lvl+0x56/0x7b
-[ 2064.313150]  print_address_description.constprop.8+0x21/0x150
-[ 2064.314578]  ? dev_write+0x52b/0x5a0 [dlm]
-[ 2064.315610]  ? dev_write+0x52b/0x5a0 [dlm]
-[ 2064.316595]  kasan_report.cold.14+0x7f/0x11b
-[ 2064.317674]  ? dev_write+0x52b/0x5a0 [dlm]
-[ 2064.318687]  dev_write+0x52b/0x5a0 [dlm]
-[ 2064.319629]  ? dev_read+0x4a0/0x4a0 [dlm]
-[ 2064.320713]  ? bpf_lsm_kernfs_init_security+0x10/0x10
-[ 2064.321926]  vfs_write+0x17e/0x930
-[ 2064.322769]  ? __fget_light+0x1aa/0x220
-[ 2064.323753]  ksys_write+0xf1/0x1c0
-[ 2064.324548]  ? __ia32_sys_read+0xb0/0xb0
-[ 2064.325464]  do_syscall_64+0x3a/0x80
-[ 2064.326387]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[ 2064.327606] RIP: 0033:0x7f807e4ba96f
-[ 2064.328470] Code: 89 54 24 18 48 89 74 24 10 89 7c 24 08 e8 39 87 f8 ff 48 8b 54 24 18 48 8b 74 24 10 41 89 c0 8b 7c 24 08 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 31 44 89 c7 48 89 44 24 08 e8 7c 87 f8 ff 48
-[ 2064.332902] RSP: 002b:00007ffd50cfe6e0 EFLAGS: 00000293 ORIG_RAX: 0000000000000001
-[ 2064.334658] RAX: ffffffffffffffda RBX: 000055cc3886eb30 RCX: 00007f807e4ba96f
-[ 2064.336275] RDX: 0000000000000040 RSI: 00007ffd50cfe7e0 RDI: 0000000000000010
-[ 2064.337980] RBP: 00007ffd50cfe7e0 R08: 0000000000000000 R09: 0000000000000001
-[ 2064.339560] R10: 000055cc3886eb30 R11: 0000000000000293 R12: 000055cc3886eb80
-[ 2064.341237] R13: 000055cc3886eb00 R14: 000055cc3886f590 R15: 0000000000000001
-[ 2064.342857]
-[ 2064.343226] Allocated by task 12438:
-[ 2064.344057]  kasan_save_stack+0x1c/0x40
-[ 2064.345079]  __kasan_kmalloc+0x84/0xa0
-[ 2064.345933]  kmem_cache_alloc_trace+0x13b/0x220
-[ 2064.346953]  dlm_posix_unlock+0xec/0x720 [dlm]
-[ 2064.348811]  do_lock_file_wait.part.32+0xca/0x1d0
-[ 2064.351070]  fcntl_setlk+0x281/0xbc0
-[ 2064.352879]  do_fcntl+0x5e4/0xfe0
-[ 2064.354657]  __x64_sys_fcntl+0x11f/0x170
-[ 2064.356550]  do_syscall_64+0x3a/0x80
-[ 2064.358259]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[ 2064.360745]
-[ 2064.361511] Last potentially related work creation:
-[ 2064.363957]  kasan_save_stack+0x1c/0x40
-[ 2064.365811]  __kasan_record_aux_stack+0xaf/0xc0
-[ 2064.368100]  call_rcu+0x11b/0xf70
-[ 2064.369785]  dlm_process_incoming_buffer+0x47d/0xfd0 [dlm]
-[ 2064.372404]  receive_from_sock+0x290/0x770 [dlm]
-[ 2064.374607]  process_recv_sockets+0x32/0x40 [dlm]
-[ 2064.377290]  process_one_work+0x9a8/0x16e0
-[ 2064.379357]  worker_thread+0x87/0xbf0
-[ 2064.381188]  kthread+0x3ac/0x490
-[ 2064.383460]  ret_from_fork+0x22/0x30
-[ 2064.385588]
-[ 2064.386518] Second to last potentially related work creation:
-[ 2064.389219]  kasan_save_stack+0x1c/0x40
-[ 2064.391043]  __kasan_record_aux_stack+0xaf/0xc0
-[ 2064.393303]  call_rcu+0x11b/0xf70
-[ 2064.394885]  dlm_process_incoming_buffer+0x47d/0xfd0 [dlm]
-[ 2064.397694]  receive_from_sock+0x290/0x770 [dlm]
-[ 2064.399932]  process_recv_sockets+0x32/0x40 [dlm]
-[ 2064.402180]  process_one_work+0x9a8/0x16e0
-[ 2064.404388]  worker_thread+0x87/0xbf0
-[ 2064.406124]  kthread+0x3ac/0x490
-[ 2064.408021]  ret_from_fork+0x22/0x30
-[ 2064.409834]
-[ 2064.410599] The buggy address belongs to the object at ffff88800ef22780
-[ 2064.410599]  which belongs to the cache kmalloc-96 of size 96
-[ 2064.416495] The buggy address is located 88 bytes inside of
-[ 2064.416495]  96-byte region [ffff88800ef22780, ffff88800ef227e0)
-[ 2064.422045] The buggy address belongs to the page:
-[ 2064.424635] page:00000000b6bef8bc refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0xef22
-[ 2064.428970] flags: 0xfffffc0000200(slab|node=0|zone=1|lastcpupid=0x1fffff)
-[ 2064.432515] raw: 000fffffc0000200 ffffea0000d68b80 0000001400000014 ffff888001041780
-[ 2064.436110] raw: 0000000000000000 0000000080200020 00000001ffffffff 0000000000000000
-[ 2064.439813] page dumped because: kasan: bad access detected
-[ 2064.442548]
-[ 2064.443310] Memory state around the buggy address:
-[ 2064.445988]  ffff88800ef22680: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
-[ 2064.449444]  ffff88800ef22700: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
-[ 2064.452941] >ffff88800ef22780: 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc fc
-[ 2064.456383]                                                     ^
-[ 2064.459386]  ffff88800ef22800: 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc
-[ 2064.462788]  ffff88800ef22880: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
-[ 2064.466239] ==================================================================
-
-reproducer in python:
-
-import argparse
-import struct
-import fcntl
-import os
-
-parser = argparse.ArgumentParser()
-
-parser.add_argument('-f', '--file',
-		    help='file to use fcntl, must be on dlm lock filesystem e.g. gfs2')
-
-args = parser.parse_args()
-
-f = open(args.file, 'wb+')
-
-lockdata = struct.pack('hhllhh', fcntl.F_WRLCK,0,0,0,0,0)
-fcntl.fcntl(f, fcntl.F_SETLK, lockdata)
-lockdata = struct.pack('hhllhh', fcntl.F_UNLCK,0,0,0,0,0)
-fcntl.fcntl(f, fcntl.F_SETLK, lockdata)
-
-Fixes: 586759f03e2e ("gfs2: nfs lock support for gfs2")
-Cc: stable@vger.kernel.org
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
-Signed-off-by: David Teigland <teigland@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/dlm/plock.c |   12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
-
---- a/fs/dlm/plock.c
-+++ b/fs/dlm/plock.c
-@@ -23,11 +23,11 @@ struct plock_op {
- 	struct list_head list;
- 	int done;
- 	struct dlm_plock_info info;
-+	int (*callback)(struct file_lock *fl, int result);
- };
- 
- struct plock_xop {
- 	struct plock_op xop;
--	int (*callback)(struct file_lock *fl, int result);
- 	void *fl;
- 	void *file;
- 	struct file_lock flc;
-@@ -129,19 +129,18 @@ int dlm_posix_lock(dlm_lockspace_t *lock
- 		/* fl_owner is lockd which doesn't distinguish
- 		   processes on the nfs client */
- 		op->info.owner	= (__u64) fl->fl_pid;
--		xop->callback	= fl->fl_lmops->lm_grant;
-+		op->callback	= fl->fl_lmops->lm_grant;
- 		locks_init_lock(&xop->flc);
- 		locks_copy_lock(&xop->flc, fl);
- 		xop->fl		= fl;
- 		xop->file	= file;
- 	} else {
- 		op->info.owner	= (__u64)(long) fl->fl_owner;
--		xop->callback	= NULL;
- 	}
- 
- 	send_op(op);
- 
--	if (xop->callback == NULL) {
-+	if (!op->callback) {
- 		rv = wait_event_interruptible(recv_wq, (op->done != 0));
- 		if (rv == -ERESTARTSYS) {
- 			log_debug(ls, "dlm_posix_lock: wait killed %llx",
-@@ -203,7 +202,7 @@ static int dlm_plock_callback(struct plo
- 	file = xop->file;
- 	flc = &xop->flc;
- 	fl = xop->fl;
--	notify = xop->callback;
-+	notify = op->callback;
- 
- 	if (op->info.rv) {
- 		notify(fl, op->info.rv);
-@@ -436,10 +435,9 @@ static ssize_t dev_write(struct file *fi
- 		if (op->info.fsid == info.fsid &&
- 		    op->info.number == info.number &&
- 		    op->info.owner == info.owner) {
--			struct plock_xop *xop = (struct plock_xop *)op;
- 			list_del_init(&op->list);
- 			memcpy(&op->info, &info, sizeof(info));
--			if (xop->callback)
-+			if (op->callback)
- 				do_callback = 1;
- 			else
- 				op->done = 1;
-
+-- 
+2.35.1
 
