@@ -2,119 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A10B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:09:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E78CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:09:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358838AbiFGUJK (ORCPT
+        id S1357941AbiFGUJT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:09:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55124 "EHLO
+        Tue, 7 Jun 2022 16:09:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355482AbiFGTQC (ORCPT
+        with ESMTP id S1355942AbiFGTRr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:16:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A533196A9F;
-        Tue,  7 Jun 2022 11:07:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC3EFB82349;
-        Tue,  7 Jun 2022 18:07:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D65F4C385A5;
-        Tue,  7 Jun 2022 18:07:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625250;
-        bh=NC3/9I5CrW1I+k0hMZefr0X4gn8kFk31fzUXfvgDPhw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zCk0Vh9R7yamtX87PYSauQ2MmPvuUB0tR7uAy7LWkFY4lOJjBh7yIlUq9t8u5bcty
-         pw/0YkYwj0dLhU8zWhTWyiC2qgj+34U4pUeWnh0Br5KrPKFIgCVnmM1qRqwAC0OllU
-         wE9sjEoSt9lf2gkvsi2uO2vE2P7rhf4pmQheAYK8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mel Gorman <mgorman@techsingularity.net>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Dave Chinner <dchinner@redhat.com>, Jan Kara <jack@suse.cz>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.15 620/667] mm/page_alloc: always attempt to allocate at least one page during bulk allocation
-Date:   Tue,  7 Jun 2022 19:04:45 +0200
-Message-Id: <20220607164953.265458711@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 15:17:47 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62A2B47573;
+        Tue,  7 Jun 2022 11:08:00 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id k4so6619139qth.8;
+        Tue, 07 Jun 2022 11:08:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:content-transfer-encoding
+         :user-agent:mime-version;
+        bh=vKR0cSCCmBP1D6WayZKCpy0s8vY4JyUCRmxpMEIEI00=;
+        b=b43JnklWo4Oo+Ct6vD+finWX5yg0ZTzlGB3tAqvpQBEN5+5lF76sCKFf5G+mY/pJIw
+         nCKEc50oVMqiE9thfMJNkhAlehCWR53Vpr+wxD7IByxnF3vCMuschCy5vCeQnCkabUz4
+         WHsSb1NkZfxOtojGkN/X+/khJ64QiFkhttT7XFJyauvugNwEaU6kv/kt2wLbiXM63W+A
+         oLe8sw+/D3tbC7+KidjG9MR4LuQZza2J8Pu6oMGOYKvKFsvOr3G+vRQ+0ihkC4YwDEEh
+         nWusMgflFqnXuTHk9zMR5gm8u6xVViF9U5k5AkIt4pxgjkzPQ2iXUWRxi5uOeo7gnHoU
+         e7Tg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=vKR0cSCCmBP1D6WayZKCpy0s8vY4JyUCRmxpMEIEI00=;
+        b=rjUntFnaMvM4JxT5GM0wrCcxxUp+O/sCENe2bvUJSOAqtgUa5acjgbQgM7OHnXb0UP
+         KPF7AmoeOtiyy+1D/DuGGyw8lkTtnCybKcUuSRhrncnS38WFfXdAzWrHcYNXulndiYar
+         nPdILMAJjpNtMzrh2v1YYdCjIlq2snS0kZLYEvJ00OSd9ZlDDYWfOUWI58OaNIY3Nzo1
+         Wn+DaLhuEMM2DIA8r5DI+7hHYg4tzoEOJ0EVJJ/esL+yARqodDX3m5tgogv4t7ZYohQh
+         XBzoIyyMTdAEc3oHsL1rY7VlXPeNa8JzaOx2r/dr7FlBHWcwtt9GrLLmtSrvL3zvyqmt
+         QI6A==
+X-Gm-Message-State: AOAM530YXlhFNCYBB4Ws/QxchlPZJpLUjiYL+EjEjEzmTU4aJ5Ae6+CM
+        GSTvMv1S9NmL2/ZssOd89ls/G8cmXztCnGwu
+X-Google-Smtp-Source: ABdhPJxwNUOzz15qQgSmRRrdY9Lo6MJZ75+8upjPT/tj2PHco4Ec/gQKRUfX9z1FJ1D8jEVjy9TZlw==
+X-Received: by 2002:a05:622a:1905:b0:304:fdb6:a8b6 with SMTP id w5-20020a05622a190500b00304fdb6a8b6mr2618191qtc.645.1654625278378;
+        Tue, 07 Jun 2022 11:07:58 -0700 (PDT)
+Received: from localhost.localdomain (pool-96-250-49-75.nycmny.fios.verizon.net. [96.250.49.75])
+        by smtp.gmail.com with ESMTPSA id e2-20020ac80642000000b002f905347586sm11833999qth.14.2022.06.07.11.07.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 11:07:57 -0700 (PDT)
+Message-ID: <141492344ae13c9842626e696685316ee340d717.camel@gmail.com>
+Subject: [PATCH v2] KEYS: trusted: tpm2: Fix migratable logic
+From:   david.safford@gmail.com
+To:     Jarkko Sakkinen <jarkko@kernel.org>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        James Bottomley <jejb@linux.ibm.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        David Howells <dhowells@redhat.com>,
+        James Morris <jmorris@namei.org>,
+        "SergeE.Hallyn" <serge@hallyn.com>
+Cc:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 07 Jun 2022 14:07:57 -0400
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mel Gorman <mgorman@techsingularity.net>
+When creating (sealing) a new trusted key, migratable
+trusted keys have the FIXED_TPM and FIXED_PARENT attributes
+set, and non-migratable keys don't. This is backwards, and
+also causes creation to fail when creating a migratable key
+under a migratable parent. (The TPM thinks you are trying to
+seal a non-migratable blob under a migratable parent.)
 
-commit c572e4888ad1be123c1516ec577ad30a700bbec4 upstream.
+The following simple patch fixes the logic, and has been
+tested for all four combinations of migratable and non-migratable
+trusted keys and parent storage keys. With this logic, you will
+get a proper failure if you try to create a non-migratable
+trusted key under a migratable parent storage key, and all other
+combinations work correctly.
 
-Peter Pavlisko reported the following problem on kernel bugzilla 216007.
-
-	When I try to extract an uncompressed tar archive (2.6 milion
-	files, 760.3 GiB in size) on newly created (empty) XFS file system,
-	after first low tens of gigabytes extracted the process hangs in
-	iowait indefinitely. One CPU core is 100% occupied with iowait,
-	the other CPU core is idle (on 2-core Intel Celeron G1610T).
-
-It was bisected to c9fa563072e1 ("xfs: use alloc_pages_bulk_array() for
-buffers") but XFS is only the messenger.  The problem is that nothing is
-waking kswapd to reclaim some pages at a time the PCP lists cannot be
-refilled until some reclaim happens.  The bulk allocator checks that there
-are some pages in the array and the original intent was that a bulk
-allocator did not necessarily need all the requested pages and it was best
-to return as quickly as possible.
-
-This was fine for the first user of the API but both NFS and XFS require
-the requested number of pages be available before making progress.  Both
-could be adjusted to call the page allocator directly if a bulk allocation
-fails but it puts a burden on users of the API.  Adjust the semantics to
-attempt at least one allocation via __alloc_pages() before returning so
-kswapd is woken if necessary.
-
-It was reported via bugzilla that the patch addressed the problem and that
-the tar extraction completed successfully.  This may also address bug
-215975 but has yet to be confirmed.
-
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216007
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215975
-Link: https://lkml.kernel.org/r/20220526091210.GC3441@techsingularity.net
-Fixes: 387ba26fb1cb ("mm/page_alloc: add a bulk page allocator")
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-Cc: "Darrick J. Wong" <djwong@kernel.org>
-Cc: Dave Chinner <dchinner@redhat.com>
-Cc: Jan Kara <jack@suse.cz>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-Cc: Chuck Lever <chuck.lever@oracle.com>
-Cc: <stable@vger.kernel.org>	[5.13+]
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: e5fb5d2c5a03 ("security: keys: trusted: Make sealed key properly int=
+eroperable")
+Signed-off-by: David Safford <david.safford@gmail.com>
 ---
- mm/page_alloc.c |    4 ++--
+Changelog:
+ * v2:
+   * added Signed-off-by, Fixes, proper Subject and distribution
+.
+ security/keys/trusted-keys/trusted_tpm2.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -5299,8 +5299,8 @@ unsigned long __alloc_pages_bulk(gfp_t g
- 		page = __rmqueue_pcplist(zone, 0, ac.migratetype, alloc_flags,
- 								pcp, pcp_list);
- 		if (unlikely(!page)) {
--			/* Try and get at least one page */
--			if (!nr_populated)
-+			/* Try and allocate at least one page */
-+			if (!nr_account)
- 				goto failed_irq;
- 			break;
- 		}
+diff --git a/security/keys/trusted-keys/trusted_tpm2.c b/security/keys/trus=
+ted-keys/trusted_tpm2.c
+index 0165da386289..2b2c8eb258d5 100644
+--- a/security/keys/trusted-keys/trusted_tpm2.c
++++ b/security/keys/trusted-keys/trusted_tpm2.c
+@@ -283,8 +283,8 @@ int tpm2_seal_trusted(struct tpm_chip *chip,
+ 	/* key properties */
+ 	flags =3D 0;
+ 	flags |=3D options->policydigest_len ? 0 : TPM2_OA_USER_WITH_AUTH;
+-	flags |=3D payload->migratable ? (TPM2_OA_FIXED_TPM |
+-					TPM2_OA_FIXED_PARENT) : 0;
++	flags |=3D payload->migratable ? 0 : (TPM2_OA_FIXED_TPM |
++					    TPM2_OA_FIXED_PARENT);
+ 	tpm_buf_append_u32(&buf, flags);
 
-
+ 	/* policy */
+--
+2.36.1
