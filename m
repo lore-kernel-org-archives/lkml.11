@@ -2,177 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF752C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:51:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E568C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:52:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240144AbiFGJu6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:50:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42320 "EHLO
+        id S240248AbiFGJwI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:52:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240185AbiFGJtF (ORCPT
+        with ESMTP id S232052AbiFGJv4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:49:05 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0137E8BAB
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:48:36 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id k16so23357733wrg.7
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 02:48:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=52GScXsc3r0EaHze1UuoV0GZvaNkVo4y3j7sOuEIJJg=;
-        b=rfbDySEIkeXsxScHE6waneBGxdkvnI60ZQfnEp5JSr5QC4sE+srEselhgT+QjckgqO
-         6tCrd7AKmTQclOZuFHLyLrBrhuVMroHqP0zmUx+MieYmNYGug4n4s+Ur9luZ71tpZFrp
-         1Nt+YEH1E8xe4mGJq11zLGFiK3mudUMFxMgpU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=52GScXsc3r0EaHze1UuoV0GZvaNkVo4y3j7sOuEIJJg=;
-        b=oVq2dTW438723apHoFmsl3zSc9EcltdkjVJ0hokOQNa9GRxTGSaxwfCH4I/ERkWV52
-         JvjLvJnerQrTyI63hsiRuv/o6kHWWXxIRuYpSPVqFgVi0aZLgbi621x5Ot0CJbsn09Wj
-         GiBTplL1zSaWZ9rBHGLoWE88N1/YfFSbyqugIwUAMfxepx2nWpXNjAsB8pntL66VkXc1
-         hX3R7sYWIjyfhBLOz3IPwNxbJYI0QPKi33z3wrTvVcz92YDOKoqKO8MljXrxSYMyjAN2
-         oONcFqVz9wIadGz5pq7dBXzrLhePLOYmZ6PV6dBemxTRFjsoOU4YA3vRe3rSI3SEO5v4
-         R4Uw==
-X-Gm-Message-State: AOAM533xdqfArqYRDUR/XtPAII1GojxnN8oUF4oHztZm6nUce0lLVqoX
-        3m5LZUQOVp+J8HaKRjSaRxwWTpOH+on/Qg==
-X-Google-Smtp-Source: ABdhPJzaV7KVviwsHCw6xcXPhFjg7QhrHRaAxy2JTpnVmpydEdIsfELh6RDODEriaMU+7gdzBq4oAg==
-X-Received: by 2002:a05:6000:1acc:b0:20f:e35e:450 with SMTP id i12-20020a0560001acc00b0020fe35e0450mr25901221wry.531.1654595316197;
-        Tue, 07 Jun 2022 02:48:36 -0700 (PDT)
-Received: from dario-ThinkPad-T14s-Gen-2i.pdxnet.pdxeng.ch (mob-5-90-137-51.net.vodafone.it. [5.90.137.51])
-        by smtp.gmail.com with ESMTPSA id o4-20020a05600c510400b0039748be12dbsm23200547wms.47.2022.06.07.02.48.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 02:48:35 -0700 (PDT)
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        michael@amarulasolutions.com,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [RFC PATCH 13/13] can: slcan: extend the protocol with CAN state info
-Date:   Tue,  7 Jun 2022 11:47:52 +0200
-Message-Id: <20220607094752.1029295-14-dario.binacchi@amarulasolutions.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
-References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
+        Tue, 7 Jun 2022 05:51:56 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A69ED783
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:50:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=V51MCqxi0VdJWmnfuDPQt2vBU7orKrYz4MHoXseJ8Uc=; b=lpBAKPfTbALftwi2xeDgAO3ehh
+        89/3lBrHiHenx6805RN9wWVwR3WhentuV2zuMFLZyWzx6wnUf0UcqRmi66uhJGFL6A8zCCbvQ5lm2
+        MqIKPjcdNJ2gcBkeKiEj4YQOntFHTsoDxkRaYLNPVjuf+Iki8zNhngnEIW02e0f21yrm51zN19mjK
+        PPqfLGM1llNlEftGJkJ9sHwEqnPbaGBWZJ0MtqdZ0XxBfpR4XPlxQygkJ9J6uTXDCgdNBhN4yJpDs
+        ZkOtNBLFB8gyoIJqtjHbE4PIR8fRskJgZn8cgxKR54IZUpGY7JQ/+4VX7SLuEXK8BKzWdr3OgoYqH
+        oPA5AwcQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nyVqY-006P3h-8g; Tue, 07 Jun 2022 09:49:58 +0000
+Date:   Tue, 7 Jun 2022 02:49:58 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     "Uladzislau Rezki (Sony)" <urezki@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Oleksiy Avramchenko <oleksiy.avramchenko@sony.com>
+Subject: Re: [PATCH 2/5] mm/vmalloc: Extend __alloc_vmap_area() with extra
+ arguments
+Message-ID: <Yp8fRttJPpZ+0+gu@infradead.org>
+References: <20220607093449.3100-1-urezki@gmail.com>
+ <20220607093449.3100-3-urezki@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607093449.3100-3-urezki@gmail.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It extends the protocol to receive the adapter CAN state changes
-(warning, busoff, etc.) and forward them to the netdev upper levels.
+On Tue, Jun 07, 2022 at 11:34:46AM +0200, Uladzislau Rezki (Sony) wrote:
+> It implies that __alloc_vmap_area() allocates only from the
+> global vmap space, therefore a list-head and rb-tree, which
+> represent a free vmap space, are not passed as parameters to
+> this function and are accessed directly from this function.
 
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Yes, which totally makes sense.
 
----
+> Extend the __alloc_vmap_area() and other dependent functions
+> to have a possibility to allocate from different trees making
+> an interface common and not specific.
 
- drivers/net/can/slcan/slcan-core.c | 65 ++++++++++++++++++++++++++++++
- 1 file changed, 65 insertions(+)
-
-diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
-index 02e7c14de45c..ab4c08a7dc81 100644
---- a/drivers/net/can/slcan/slcan-core.c
-+++ b/drivers/net/can/slcan/slcan-core.c
-@@ -78,6 +78,9 @@ MODULE_PARM_DESC(maxdev, "Maximum number of slcan interfaces");
- #define SLC_CMD_LEN 1
- #define SLC_SFF_ID_LEN 3
- #define SLC_EFF_ID_LEN 8
-+#define SLC_STATE_LEN 1
-+#define SLC_STATE_BE_RXCNT_LEN 3
-+#define SLC_STATE_BE_TXCNT_LEN 3
- 
- struct slcan {
- 	struct can_priv         can;
-@@ -182,6 +185,66 @@ int slcan_enable_err_rst_on_open(struct net_device *ndev, bool on)
-   *			STANDARD SLCAN DECAPSULATION			 *
-   ************************************************************************/
- 
-+static void slc_bump_state(struct slcan *sl)
-+{
-+	struct net_device *dev = sl->dev;
-+	struct sk_buff *skb;
-+	struct can_frame *cf;
-+	char *cmd = sl->rbuff;
-+	u32 rxerr, txerr;
-+	enum can_state state, rx_state, tx_state;
-+
-+	if (*cmd != 's')
-+		return;
-+
-+	cmd += SLC_CMD_LEN;
-+	switch (*cmd) {
-+	case 'a':
-+		state = CAN_STATE_ERROR_ACTIVE;
-+		break;
-+	case 'w':
-+		state = CAN_STATE_ERROR_WARNING;
-+		break;
-+	case 'p':
-+		state = CAN_STATE_ERROR_PASSIVE;
-+		break;
-+	case 'f':
-+		state = CAN_STATE_BUS_OFF;
-+		break;
-+	default:
-+		return;
-+	}
-+
-+	if (state == sl->can.state)
-+		return;
-+
-+	cmd += SLC_STATE_BE_RXCNT_LEN + 1;
-+	cmd[SLC_STATE_BE_TXCNT_LEN] = 0;
-+	if (kstrtou32(cmd, 10, &txerr))
-+		return;
-+
-+	*cmd = 0;
-+	cmd -= SLC_STATE_BE_RXCNT_LEN;
-+	if (kstrtou32(cmd, 10, &rxerr))
-+		return;
-+
-+	skb = alloc_can_err_skb(dev, &cf);
-+	if (unlikely(!skb))
-+		return;
-+
-+	cf->data[6] = txerr;
-+	cf->data[7] = rxerr;
-+
-+	tx_state = txerr >= rxerr ? state : 0;
-+	rx_state = txerr <= rxerr ? state : 0;
-+	can_change_state(dev, cf, tx_state, rx_state);
-+
-+	if (state == CAN_STATE_BUS_OFF)
-+		can_bus_off(dev);
-+
-+	netif_rx(skb);
-+}
-+
- static void slc_bump_err(struct slcan *sl)
- {
- 	struct net_device *dev = sl->dev;
-@@ -354,6 +417,8 @@ static void slc_bump(struct slcan *sl)
- 		return slc_bump_frame(sl);
- 	case 'e':
- 		return slc_bump_err(sl);
-+	case 's':
-+		return slc_bump_state(sl);
- 	default:
- 		return;
- 	}
--- 
-2.32.0
-
+Which seems completely pointless.  Why add argument that are always
+passed the same values?
