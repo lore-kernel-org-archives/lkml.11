@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DDC0CCA496
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F6E3CCA498
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352655AbiFGSRZ (ORCPT
+        id S1353072AbiFGSSO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44414 "EHLO
+        Tue, 7 Jun 2022 14:18:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349018AbiFGR5i (ORCPT
+        with ESMTP id S1349093AbiFGR6Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:57:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C599F47AF8;
-        Tue,  7 Jun 2022 10:40:41 -0700 (PDT)
+        Tue, 7 Jun 2022 13:58:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 201935D5CB;
+        Tue,  7 Jun 2022 10:41:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F046E61499;
-        Tue,  7 Jun 2022 17:40:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10A06C385A5;
-        Tue,  7 Jun 2022 17:40:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB423B80B66;
+        Tue,  7 Jun 2022 17:41:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13E40C385A5;
+        Tue,  7 Jun 2022 17:41:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623640;
-        bh=ur/6LP5MdmxKuqnuTWkZfJmKUn3UuwJwFhQ5S813QyM=;
+        s=korg; t=1654623662;
+        bh=KidPKL7CSKLt/gRwD34Zy5/VxtuEN1OY6TljW2bDPrg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pvHxMMl1s3AI0bwwbuWZAq66W7YalJSFyi7doYJb84ig5Noy51/NqpWz2+onOmxr9
-         H7dlaKmzGW9WycLpeMdlKQnUYIv8onQuFOLTlEjp53SLuW85T9xlnOxLPfDFFojCV8
-         auQZbukaZEp4aX9JwfnMuzLQq5UnYFSFCXeEsv5g=
+        b=v7MEC18iYTV/ZL0f3kBD16y5aGuK4yE3EEs7dCZBto7WJWPxBzYdaAKHhhrAxPvkD
+         4RMoM4L8DGWG8YDdPXainUsZCxIAAS4qeQLYQ+oMzQfz+7YirAY0/hrQ11SVqy67OI
+         tbcPPm5sHQkJ8nEJ4OvyRE5riTyEns5slT9xTTY4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.15 037/667] ptrace/xtensa: Replace PT_SINGLESTEP with TIF_SINGLESTEP
-Date:   Tue,  7 Jun 2022 18:55:02 +0200
-Message-Id: <20220607164935.910211288@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.15 009/667] riscv: Move alternative length validation into subsection
+Date:   Tue,  7 Jun 2022 18:54:34 +0200
+Message-Id: <20220607164935.064151961@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,83 +51,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit 4a3d2717d140401df7501a95e454180831a0c5af upstream.
+commit 61114e734ccb804bc12561ab4020745e02c468c2 upstream.
 
-xtensa is the last user of the PT_SINGLESTEP flag.  Changing tsk->ptrace in
-user_enable_single_step and user_disable_single_step without locking could
-potentiallly cause problems.
+After commit 49b290e430d3 ("riscv: prevent compressed instructions in
+alternatives"), builds with LLVM's integrated assembler fail:
 
-So use a thread info flag instead of a flag in tsk->ptrace.  Use TIF_SINGLESTEP
-that xtensa already had defined but unused.
+  In file included from arch/riscv/mm/init.c:10:
+  In file included from ./include/linux/mm.h:29:
+  In file included from ./include/linux/pgtable.h:6:
+  In file included from ./arch/riscv/include/asm/pgtable.h:108:
+  ./arch/riscv/include/asm/tlbflush.h:23:2: error: expected assembly-time absolute expression
+          ALT_FLUSH_TLB_PAGE(__asm__ __volatile__ ("sfence.vma %0" : : "r" (addr) : "memory"));
+          ^
+  ./arch/riscv/include/asm/errata_list.h:33:5: note: expanded from macro 'ALT_FLUSH_TLB_PAGE'
+  asm(ALTERNATIVE("sfence.vma %0", "sfence.vma", SIFIVE_VENDOR_ID,        \
+      ^
+  ./arch/riscv/include/asm/alternative-macros.h:187:2: note: expanded from macro 'ALTERNATIVE'
+          _ALTERNATIVE_CFG(old_content, new_content, vendor_id, errata_id, CONFIG_k)
+          ^
+  ./arch/riscv/include/asm/alternative-macros.h:113:2: note: expanded from macro '_ALTERNATIVE_CFG'
+          __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, IS_ENABLED(CONFIG_k))
+          ^
+  ./arch/riscv/include/asm/alternative-macros.h:110:2: note: expanded from macro '__ALTERNATIVE_CFG'
+          ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c)
+          ^
+  ./arch/riscv/include/asm/alternative-macros.h:99:3: note: expanded from macro 'ALT_NEW_CONTENT'
+          ".org   . - (889b - 888b) + (887b - 886b)\n"                    \
+           ^
+  <inline asm>:26:6: note: instantiated into assembly here
+  .org    . - (889b - 888b) + (887b - 886b)
+          ^
 
-Remove the definitions of PT_SINGLESTEP and PT_BLOCKSTEP as they have no more users.
+This error happens because LLVM's integrated assembler has a one-pass
+design, which means it cannot figure out the instruction lengths when
+the .org directive is outside of the subsection that contains the
+instructions, which was changed by the .option directives added by the
+above change.
 
+Move the .org directives before the .previous directive so that these
+directives are always within the same subsection, which resolves the
+failures and does not introduce any new issues with GNU as. This was
+done for arm64 in commit 966a0acce2fc ("arm64/alternatives: move length
+validation inside the subsection") and commit 22315a2296f4 ("arm64:
+alternatives: Move length validation in alternative_{insn, endif}").
+
+While there is no error from the assembly versions of the macro, they
+appear to have the same problem so just make the same change there as
+well so that there are no problems in the future.
+
+Link: https://github.com/ClangBuiltLinux/linux/issues/1640
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+Tested-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://lore.kernel.org/r/20220516214520.3252074-1-nathan@kernel.org
 Cc: stable@vger.kernel.org
-Acked-by: Max Filippov <jcmvbkbc@gmail.com>
-Tested-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Oleg Nesterov <oleg@redhat.com>
-Link: https://lkml.kernel.org/r/20220505182645.497868-4-ebiederm@xmission.com
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/xtensa/kernel/ptrace.c |    4 ++--
- arch/xtensa/kernel/signal.c |    4 ++--
- include/linux/ptrace.h      |    6 ------
- 3 files changed, 4 insertions(+), 10 deletions(-)
+ arch/riscv/include/asm/alternative-macros.h |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/xtensa/kernel/ptrace.c
-+++ b/arch/xtensa/kernel/ptrace.c
-@@ -226,12 +226,12 @@ const struct user_regset_view *task_user
+--- a/arch/riscv/include/asm/alternative-macros.h
++++ b/arch/riscv/include/asm/alternative-macros.h
+@@ -23,9 +23,9 @@
+ 888 :
+ 	\new_c
+ 889 :
+-	.previous
+ 	.org    . - (889b - 888b) + (887b - 886b)
+ 	.org    . - (887b - 886b) + (889b - 888b)
++	.previous
+ 	.endif
+ .endm
  
- void user_enable_single_step(struct task_struct *child)
- {
--	child->ptrace |= PT_SINGLESTEP;
-+	set_tsk_thread_flag(child, TIF_SINGLESTEP);
- }
+@@ -60,9 +60,9 @@
+ 	"888 :\n"							\
+ 	new_c "\n"							\
+ 	"889 :\n"							\
+-	".previous\n"							\
+ 	".org	. - (887b - 886b) + (889b - 888b)\n"			\
+ 	".org	. - (889b - 888b) + (887b - 886b)\n"			\
++	".previous\n"							\
+ 	".endif\n"
  
- void user_disable_single_step(struct task_struct *child)
- {
--	child->ptrace &= ~PT_SINGLESTEP;
-+	clear_tsk_thread_flag(child, TIF_SINGLESTEP);
- }
- 
- /*
---- a/arch/xtensa/kernel/signal.c
-+++ b/arch/xtensa/kernel/signal.c
-@@ -465,7 +465,7 @@ static void do_signal(struct pt_regs *re
- 		/* Set up the stack frame */
- 		ret = setup_frame(&ksig, sigmask_to_save(), regs);
- 		signal_setup_done(ret, &ksig, 0);
--		if (current->ptrace & PT_SINGLESTEP)
-+		if (test_thread_flag(TIF_SINGLESTEP))
- 			task_pt_regs(current)->icountlevel = 1;
- 
- 		return;
-@@ -491,7 +491,7 @@ static void do_signal(struct pt_regs *re
- 	/* If there's no signal to deliver, we just restore the saved mask.  */
- 	restore_saved_sigmask();
- 
--	if (current->ptrace & PT_SINGLESTEP)
-+	if (test_thread_flag(TIF_SINGLESTEP))
- 		task_pt_regs(current)->icountlevel = 1;
- 	return;
- }
---- a/include/linux/ptrace.h
-+++ b/include/linux/ptrace.h
-@@ -46,12 +46,6 @@ extern int ptrace_access_vm(struct task_
- #define PT_EXITKILL		(PTRACE_O_EXITKILL << PT_OPT_FLAG_SHIFT)
- #define PT_SUSPEND_SECCOMP	(PTRACE_O_SUSPEND_SECCOMP << PT_OPT_FLAG_SHIFT)
- 
--/* single stepping state bits (used on ARM and PA-RISC) */
--#define PT_SINGLESTEP_BIT	31
--#define PT_SINGLESTEP		(1<<PT_SINGLESTEP_BIT)
--#define PT_BLOCKSTEP_BIT	30
--#define PT_BLOCKSTEP		(1<<PT_BLOCKSTEP_BIT)
--
- extern long arch_ptrace(struct task_struct *child, long request,
- 			unsigned long addr, unsigned long data);
- extern int ptrace_readdata(struct task_struct *tsk, unsigned long src, char __user *dst, int len);
+ #define __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, enable) \
 
 
