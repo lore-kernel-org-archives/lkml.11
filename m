@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB2FCC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:24:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A9EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:24:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354607AbiFGVYS (ORCPT
+        id S1377952AbiFGVY3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:24:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60194 "EHLO
+        Tue, 7 Jun 2022 17:24:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377042AbiFGU2W (ORCPT
+        with ESMTP id S1377018AbiFGU2V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:28:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B6A1DAE4A;
-        Tue,  7 Jun 2022 11:33:47 -0700 (PDT)
+        Tue, 7 Jun 2022 16:28:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C6861D9EDA;
+        Tue,  7 Jun 2022 11:33:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91EC9B81AEC;
-        Tue,  7 Jun 2022 18:33:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E058BC385A2;
-        Tue,  7 Jun 2022 18:33:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C44F61507;
+        Tue,  7 Jun 2022 18:33:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B0B1C385A2;
+        Tue,  7 Jun 2022 18:33:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626824;
-        bh=n+ic4T+wFs4qD5yYsGfUnByUbXAWt25GtTmkq8wfrr0=;
+        s=korg; t=1654626821;
+        bh=z6gv72hpwSptSCQ7xX3FHP+uyddk98Y6OKh8o9Pf8MY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y+6qQoTSfGpr65qWG6KuQ/rS/T34SpZMtJc5yqA77bdMkig4SpSdcknrtXCIsnFo/
-         /5tnsQk6vmoZllr1OYYFrNfu8AasXVjeiU11eAP+imUqvIkxIs4IqwArh0kMYXFjSU
-         eKbakmevwbn5auNRsctNHbRt3pIuTP4zy1DvLDPs=
+        b=aUCiYC+1oGJFuGjJwqWQZlR+Y1Wry1zA1FoaRCMrEeCxdmc+fWDKwfz64eUA6XBLr
+         htfZQPngGF/Pb5+WzGKBGVjwA9trV/WPIJOdlpJq38KIpwpg7VK5XVXBjysYWZ7O+8
+         HbSWHVWXUrMqvyIYeJaRkCRow87Cr4TJlkxPFGG0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 476/772] ARM: dts: bcm2835-rpi-zero-w: Fix GPIO line name for Wifi/BT
-Date:   Tue,  7 Jun 2022 19:01:08 +0200
-Message-Id: <20220607165003.020125293@linuxfoundation.org>
+Subject: [PATCH 5.17 475/772] ARM: dts: qcom: sdx55: remove wrong unit address from RPMH RSC clocks
+Date:   Tue,  7 Jun 2022 19:01:07 +0200
+Message-Id: <20220607165002.991491332@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,55 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Elwell <phil@raspberrypi.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 2c663e5e5bbf2a5b85e0f76ccb69663f583c3e33 ]
+[ Upstream commit 97c246c825f73a018169834e56ffa9a89dea37a9 ]
 
-The GPIOs 30 to 39 are connected to the Cypress CYW43438 (Wifi/BT).
-So fix the GPIO line names accordingly.
+The clock controller of RPMH RSC does not have 'reg' property, so should
+not have unit address.
 
-Fixes: 2c7c040c73e9 ("ARM: dts: bcm2835: Add Raspberry Pi Zero W")
-Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Fixes: bae2f5979c6e ("ARM: dts: qcom: Add SDX65 platform and MTP board support")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220411085935.130072-2-krzysztof.kozlowski@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/bcm2835-rpi-zero-w.dts | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ arch/arm/boot/dts/qcom-sdx65.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts b/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
-index 243236bc1e00..8b043ab62dc8 100644
---- a/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
-+++ b/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
-@@ -74,16 +74,18 @@
- 			  "GPIO27",
- 			  "SDA0",
- 			  "SCL0",
--			  "NC", /* GPIO30 */
--			  "NC", /* GPIO31 */
--			  "NC", /* GPIO32 */
--			  "NC", /* GPIO33 */
--			  "NC", /* GPIO34 */
--			  "NC", /* GPIO35 */
--			  "NC", /* GPIO36 */
--			  "NC", /* GPIO37 */
--			  "NC", /* GPIO38 */
--			  "NC", /* GPIO39 */
-+			  /* Used by BT module */
-+			  "CTS0",
-+			  "RTS0",
-+			  "TXD0",
-+			  "RXD0",
-+			  /* Used by Wifi */
-+			  "SD1_CLK",
-+			  "SD1_CMD",
-+			  "SD1_DATA0",
-+			  "SD1_DATA1",
-+			  "SD1_DATA2",
-+			  "SD1_DATA3",
- 			  "CAM_GPIO1", /* GPIO40 */
- 			  "WL_ON", /* GPIO41 */
- 			  "NC", /* GPIO42 */
+diff --git a/arch/arm/boot/dts/qcom-sdx65.dtsi b/arch/arm/boot/dts/qcom-sdx65.dtsi
+index 796641d30e06..0c3f93603adc 100644
+--- a/arch/arm/boot/dts/qcom-sdx65.dtsi
++++ b/arch/arm/boot/dts/qcom-sdx65.dtsi
+@@ -202,7 +202,7 @@
+ 				<WAKE_TCS    2>,
+ 				<CONTROL_TCS 1>;
+ 
+-			rpmhcc: clock-controller@1 {
++			rpmhcc: clock-controller {
+ 				compatible = "qcom,sdx65-rpmh-clk";
+ 				#clock-cells = <1>;
+ 				clock-names = "xo";
 -- 
 2.35.1
 
