@@ -2,133 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BC73C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:04:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF8CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:04:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353258AbiFGTEL (ORCPT
+        id S1353367AbiFGTEV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:04:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51578 "EHLO
+        Tue, 7 Jun 2022 15:04:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351906AbiFGSQr (ORCPT
+        with ESMTP id S1351902AbiFGSQr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:16:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33CDA32E;
-        Tue,  7 Jun 2022 10:50:06 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A2313390E;
+        Tue,  7 Jun 2022 10:50:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD096B8233D;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 75B976146F;
+        Tue,  7 Jun 2022 17:50:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CD20C34115;
         Tue,  7 Jun 2022 17:50:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D197C385A5;
-        Tue,  7 Jun 2022 17:50:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624203;
-        bh=IngnKMZ+OscHJV+j4jZYJ8i4dRZCmcHS/CPfbt0GkV8=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624205;
+        bh=iBHXIOeiRVVBCYsNK7bbGrVtLssRBgvab2AS9555VOM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BpiZwLgowyARPQHYKnT2VyMb/d0n3EbELTeLYWAPv2UDYzapEWlb2zRnkbACa/rrg
-         u0w54cmmrc0qR1y/pP+B8QyS/M66VDnq285ZVQRU1INzM/wqyv0YnlATbIulFyZY7D
-         VD43fBlY1ruq1HYiYJobS/v05efdtv32ddgAjmvY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Amir Goldstein <amir73il@gmail.com>,
-        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 242/667] inotify: show inotify mask flags in proc fdinfo
-Date:   Tue,  7 Jun 2022 18:58:27 +0200
-Message-Id: <20220607164942.041729096@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=dHtcMydmV0YrSBB3YK0pPrF7IKKPHRFCGKJ+NaKr72ypz2DjK/5CVkTbMrHfUHK1B
+         PvJyNBNFgkY5T396yAOTOuuH1duNcMJjXi9dEa+JDTXhScZ7Xfn6JFZa07iaJZaLga
+         FutKE4zwvJJ6xVpf1NaOWzGrXE8NfDXWMfElkI7vVnYy0j312jPrFOx3ch5dHxBc7d
+         L+uf1VsVIpp1HPDJJjbIhmMqI3Ef6sHSsqP/eTvaXz8yiEQ60sjPxQ6q0btL29cyU0
+         tiz7i8Qn5G43/izNpsdswuOMQKi1oUxy1sxHYL8HQPLClB9AmpGGhHKWBTuNNyU1Co
+         KVdWmVBg3k+7g==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, baihaowen@meizu.com,
+        dan.carpenter@oracle.com, wjsota@gmail.com, len.baker@gmx.com,
+        dave@stgolabs.net, edumazet@google.com, yangyingliang@huawei.com,
+        linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.18 12/68] drivers: staging: rtl8192e: Fix deadlock in rtllib_beacons_stop()
+Date:   Tue,  7 Jun 2022 13:47:38 -0400
+Message-Id: <20220607174846.477972-12-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amir Goldstein <amir73il@gmail.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit a32e697cda27679a0327ae2cafdad8c7170f548f ]
+[ Upstream commit 9b6bdbd9337de3917945847bde262a34a87a6303 ]
 
-The inotify mask flags IN_ONESHOT and IN_EXCL_UNLINK are not "internal
-to kernel" and should be exposed in procfs fdinfo so CRIU can restore
-them.
+There is a deadlock in rtllib_beacons_stop(), which is shown
+below:
 
-Fixes: 6933599697c9 ("inotify: hide internal kernel bits from fdinfo")
-Link: https://lore.kernel.org/r/20220422120327.3459282-2-amir73il@gmail.com
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
+   (Thread 1)              |      (Thread 2)
+                           | rtllib_send_beacon()
+rtllib_beacons_stop()      |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | rtllib_send_beacon_cb()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
+
+We hold ieee->beacon_lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need ieee->beacon_lock in position (2) of thread 2.
+As a result, rtllib_beacons_stop() will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417141641.124388-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/notify/fdinfo.c               | 11 ++---------
- fs/notify/inotify/inotify.h      | 12 ++++++++++++
- fs/notify/inotify/inotify_user.c |  2 +-
- 3 files changed, 15 insertions(+), 10 deletions(-)
+ drivers/staging/rtl8192e/rtllib_softmac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/notify/fdinfo.c b/fs/notify/fdinfo.c
-index 57f0d5d9f934..3451708fd035 100644
---- a/fs/notify/fdinfo.c
-+++ b/fs/notify/fdinfo.c
-@@ -83,16 +83,9 @@ static void inotify_fdinfo(struct seq_file *m, struct fsnotify_mark *mark)
- 	inode_mark = container_of(mark, struct inotify_inode_mark, fsn_mark);
- 	inode = igrab(fsnotify_conn_inode(mark->connector));
- 	if (inode) {
--		/*
--		 * IN_ALL_EVENTS represents all of the mask bits
--		 * that we expose to userspace.  There is at
--		 * least one bit (FS_EVENT_ON_CHILD) which is
--		 * used only internally to the kernel.
--		 */
--		u32 mask = mark->mask & IN_ALL_EVENTS;
--		seq_printf(m, "inotify wd:%x ino:%lx sdev:%x mask:%x ignored_mask:%x ",
-+		seq_printf(m, "inotify wd:%x ino:%lx sdev:%x mask:%x ignored_mask:0 ",
- 			   inode_mark->wd, inode->i_ino, inode->i_sb->s_dev,
--			   mask, mark->ignored_mask);
-+			   inotify_mark_user_mask(mark));
- 		show_mark_fhandle(m, inode);
- 		seq_putc(m, '\n');
- 		iput(inode);
-diff --git a/fs/notify/inotify/inotify.h b/fs/notify/inotify/inotify.h
-index 2007e3711916..8f00151eb731 100644
---- a/fs/notify/inotify/inotify.h
-+++ b/fs/notify/inotify/inotify.h
-@@ -22,6 +22,18 @@ static inline struct inotify_event_info *INOTIFY_E(struct fsnotify_event *fse)
- 	return container_of(fse, struct inotify_event_info, fse);
+diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
+index 4b6c2295a3cf..b5a38f0a8d79 100644
+--- a/drivers/staging/rtl8192e/rtllib_softmac.c
++++ b/drivers/staging/rtl8192e/rtllib_softmac.c
+@@ -651,9 +651,9 @@ static void rtllib_beacons_stop(struct rtllib_device *ieee)
+ 	spin_lock_irqsave(&ieee->beacon_lock, flags);
+ 
+ 	ieee->beacon_txing = 0;
+-	del_timer_sync(&ieee->beacon_timer);
+ 
+ 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
++	del_timer_sync(&ieee->beacon_timer);
+ 
  }
  
-+/*
-+ * INOTIFY_USER_FLAGS represents all of the mask bits that we expose to
-+ * userspace.  There is at least one bit (FS_EVENT_ON_CHILD) which is
-+ * used only internally to the kernel.
-+ */
-+#define INOTIFY_USER_MASK (IN_ALL_EVENTS | IN_ONESHOT | IN_EXCL_UNLINK)
-+
-+static inline __u32 inotify_mark_user_mask(struct fsnotify_mark *fsn_mark)
-+{
-+	return fsn_mark->mask & INOTIFY_USER_MASK;
-+}
-+
- extern void inotify_ignored_and_remove_idr(struct fsnotify_mark *fsn_mark,
- 					   struct fsnotify_group *group);
- extern int inotify_handle_inode_event(struct fsnotify_mark *inode_mark,
-diff --git a/fs/notify/inotify/inotify_user.c b/fs/notify/inotify/inotify_user.c
-index 62051247f6d2..9fb7701d2f8a 100644
---- a/fs/notify/inotify/inotify_user.c
-+++ b/fs/notify/inotify/inotify_user.c
-@@ -102,7 +102,7 @@ static inline __u32 inotify_arg_to_mask(struct inode *inode, u32 arg)
- 		mask |= FS_EVENT_ON_CHILD;
- 
- 	/* mask off the flags used to open the fd */
--	mask |= (arg & (IN_ALL_EVENTS | IN_ONESHOT | IN_EXCL_UNLINK));
-+	mask |= (arg & INOTIFY_USER_MASK);
- 
- 	return mask;
- }
 -- 
 2.35.1
-
-
 
