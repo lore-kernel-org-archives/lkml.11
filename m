@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31DD3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26B6DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346486AbiFGR2a (ORCPT
+        id S1346569AbiFGR2e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:28:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45432 "EHLO
+        Tue, 7 Jun 2022 13:28:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346264AbiFGRYN (ORCPT
+        with ESMTP id S1346263AbiFGRYN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:24:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4F7AEAC;
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FEA760E9;
         Tue,  7 Jun 2022 10:22:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82C28608CD;
-        Tue,  7 Jun 2022 17:22:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F410C34119;
-        Tue,  7 Jun 2022 17:22:10 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D59DECE2015;
+        Tue,  7 Jun 2022 17:22:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEADCC34115;
+        Tue,  7 Jun 2022 17:22:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622530;
-        bh=TOAIFvhpai1jwvwsvJWnvuRL7Z/gP01tbou7CfJ96t8=;
+        s=korg; t=1654622528;
+        bh=y268Ia38mDcy8oVClEGS/uTeQtbK8P1DKzIAcwjQsRk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SRk2tUgSdvHYr/Z6++e3F8VpsXa25bgl0aK5KvrKWrLGTAhfrP1vfHANo4rz1dFQm
-         8j+gs7SVRefQN5YgK5AppCJWjg+Bevzyq3OndX7BBZC8j+egFu5mjD9506qoDCufqc
-         +hmPQr5LUR9eTyi2Nge0ETKGBs1/agp2XUOl5TRI=
+        b=2qqYt5rIxB8zewUv6ceMpto59NW7v6+VbrO8IVW/bpOwHlMDNlZBc2Ncdojl7BHt1
+         LpZWLbKGT3CvaHDlYKmqAKT+vRP7DAsktFP+L8J4xKlUS6Nh+GwKdPZ/rYAWxVg7Le
+         C6v4iWKsyZ6POMBP0J6/Fb6jQ4gRe88Rqq52nUu8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
-        David Howells <dhowells@redhat.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michael Schmitz <schmitzmic@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 092/452] rxrpc: Return an error to sendmsg if call failed
-Date:   Tue,  7 Jun 2022 18:59:09 +0200
-Message-Id: <20220607164911.300389180@linuxfoundation.org>
+Subject: [PATCH 5.10 091/452] m68k: atari: Make Atari ROM port I/O write macros return void
+Date:   Tue,  7 Jun 2022 18:59:08 +0200
+Message-Id: <20220607164911.270481433@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -52,82 +52,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 
-[ Upstream commit 4ba68c5192554876bd8c3afd904e3064d2915341 ]
+[ Upstream commit 30b5e6ef4a32ea4985b99200e06d6660a69f9246 ]
 
-If at the end of rxrpc sendmsg() or rxrpc_kernel_send_data() the call that
-was being given data was aborted remotely or otherwise failed, return an
-error rather than returning the amount of data buffered for transmission.
+The macros implementing Atari ROM port I/O writes do not cast away their
+output, unlike similar implementations for other I/O buses.
+When they are combined using conditional expressions in the definitions of
+outb() and friends, this triggers sparse warnings like:
 
-The call (presumably) did not complete, so there's not much point
-continuing with it.  AF_RXRPC considers it "complete" and so will be
-unwilling to do anything else with it - and won't send a notification for
-it, deeming the return from sendmsg sufficient.
+    drivers/net/appletalk/cops.c:382:17: error: incompatible types in conditional expression (different base types):
+    drivers/net/appletalk/cops.c:382:17:    unsigned char
+    drivers/net/appletalk/cops.c:382:17:    void
 
-Not returning an error causes afs to incorrectly handle a StoreData
-operation that gets interrupted by a change of address due to NAT
-reconfiguration.
+Fix this by adding casts to "void".
 
-This doesn't normally affect most operations since their request parameters
-tend to fit into a single UDP packet and afs_make_call() returns before the
-server responds; StoreData is different as it involves transmission of a
-lot of data.
-
-This can be triggered on a client by doing something like:
-
-	dd if=/dev/zero of=/afs/example.com/foo bs=1M count=512
-
-at one prompt, and then changing the network address at another prompt,
-e.g.:
-
-	ifconfig enp6s0 inet 192.168.6.2 && route add 192.168.6.1 dev enp6s0
-
-Tracing packets on an Auristor fileserver looks something like:
-
-192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
-192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
-192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
-192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
-<ARP exchange for 192.168.6.2>
-192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
-192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
-192.168.6.1 -> 192.168.6.2  RX 107 ACK Exceeds Window  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
-192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
-192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 29321  Call: 4  Source Port: 7000  Destination Port: 7001
-
-The Auristor fileserver logs code -453 (RXGEN_SS_UNMARSHAL), but the abort
-code received by kafs is -5 (RX_PROTOCOL_ERROR) as the rx layer sees the
-condition and generates an abort first and the unmarshal error is a
-consequence of that at the application layer.
-
-Reported-by: Marc Dionne <marc.dionne@auristor.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: linux-afs@lists.infradead.org
-Link: http://lists.infradead.org/pipermail/linux-afs/2021-December/004810.html # v1
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Reviewed-by: Michael Schmitz <schmitzmic@gmail.com>
+Link: https://lore.kernel.org/r/c15bedc83d90a14fffcd5b1b6bfb32b8a80282c5.1653057096.git.geert@linux-m68k.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/sendmsg.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/m68k/include/asm/raw_io.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
-index d27140c836cc..aa23ba4e2566 100644
---- a/net/rxrpc/sendmsg.c
-+++ b/net/rxrpc/sendmsg.c
-@@ -461,6 +461,12 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
+diff --git a/arch/m68k/include/asm/raw_io.h b/arch/m68k/include/asm/raw_io.h
+index 80eb2396d01e..3ba40bc1dfaa 100644
+--- a/arch/m68k/include/asm/raw_io.h
++++ b/arch/m68k/include/asm/raw_io.h
+@@ -80,14 +80,14 @@
+ 	({ u16 __v = le16_to_cpu(*(__force volatile u16 *) (addr)); __v; })
  
- success:
- 	ret = copied;
-+	if (READ_ONCE(call->state) == RXRPC_CALL_COMPLETE) {
-+		read_lock_bh(&call->state_lock);
-+		if (call->error < 0)
-+			ret = call->error;
-+		read_unlock_bh(&call->state_lock);
-+	}
- out:
- 	call->tx_pending = skb;
- 	_leave(" = %d", ret);
+ #define rom_out_8(addr, b)	\
+-	({u8 __maybe_unused __w, __v = (b);  u32 _addr = ((u32) (addr)); \
++	(void)({u8 __maybe_unused __w, __v = (b);  u32 _addr = ((u32) (addr)); \
+ 	__w = ((*(__force volatile u8 *)  ((_addr | 0x10000) + (__v<<1)))); })
+ #define rom_out_be16(addr, w)	\
+-	({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
++	(void)({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
+ 	__w = ((*(__force volatile u16 *) ((_addr & 0xFFFF0000UL) + ((__v & 0xFF)<<1)))); \
+ 	__w = ((*(__force volatile u16 *) ((_addr | 0x10000) + ((__v >> 8)<<1)))); })
+ #define rom_out_le16(addr, w)	\
+-	({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
++	(void)({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
+ 	__w = ((*(__force volatile u16 *) ((_addr & 0xFFFF0000UL) + ((__v >> 8)<<1)))); \
+ 	__w = ((*(__force volatile u16 *) ((_addr | 0x10000) + ((__v & 0xFF)<<1)))); })
+ 
 -- 
 2.35.1
 
