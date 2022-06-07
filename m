@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA335CCA486
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:21:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 587FDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379091AbiFGVUA (ORCPT
+        id S1379513AbiFGVUN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:20:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49956 "EHLO
+        Tue, 7 Jun 2022 17:20:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359241AbiFGUWj (ORCPT
+        with ESMTP id S1359352AbiFGUWL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:22:39 -0400
+        Tue, 7 Jun 2022 16:22:11 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF5617C6AA;
-        Tue,  7 Jun 2022 11:31:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D6A146416;
+        Tue,  7 Jun 2022 11:31:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6BABDB82188;
-        Tue,  7 Jun 2022 18:31:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0E89C385A2;
-        Tue,  7 Jun 2022 18:31:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88E02B8233E;
+        Tue,  7 Jun 2022 18:31:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0270EC385A2;
+        Tue,  7 Jun 2022 18:31:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626707;
-        bh=kHhAYoGsPhV9+EArSetHwxqqBlxp/Pw5NoliB/+7KMQ=;
+        s=korg; t=1654626690;
+        bh=iW6pen5y+S3/rYBo8G8g0LNm8PbgL0eXd/FJ8jNTCUU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gw4mitRRJCeCK3iaWD4I5vq2rq7fREJsuCyWUunl6J3lWtG6mEYuMWNGY1b3IbMEm
-         /0cL1tQmXKSYgGgYD4xrxMHMY0xHgqIlKXz1BppeEHTTVmexKXM78FF3rlCqb2odcy
-         YpJXQwPCchsYa5v/uawaydxGh6iHHxn30D/+5S28=
+        b=Y2Wq0MryzBWdDxSH+Yjjzyo4s+QsvM8q285Nl+WTu4khwQ03zd28Qtt1AlF3uqZX7
+         nzI57NCASPGClxuKiaKL4boybNU5afFQNaVccZDUuhXNqSJXhgxYUNLzWhm1f8vCtT
+         5IF8jpudP2zOGLkoggloTAgiPggRousfXAIZJTlE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Marco Chiappero <marco.chiappero@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 435/772] hv_netvsc: Fix potential dereference of NULL pointer
-Date:   Tue,  7 Jun 2022 19:00:27 +0200
-Message-Id: <20220607165001.821144219@linuxfoundation.org>
+Subject: [PATCH 5.17 467/772] crypto: qat - set CIPHER capability for DH895XCC
+Date:   Tue,  7 Jun 2022 19:00:59 +0200
+Message-Id: <20220607165002.759287676@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,40 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
 
-[ Upstream commit eb4c0788964730d12e8dd520bd8f5217ca48321c ]
+[ Upstream commit 6a23804cb8bcb85c6998bf193d94d4036db26f51 ]
 
-The return value of netvsc_devinfo_get()
-needs to be checked to avoid use of NULL
-pointer in case of an allocation failure.
+Set the CIPHER capability for QAT DH895XCC devices if the hardware supports
+it. This is done if both the CIPHER and the AUTHENTICATION engines are
+available on the device.
 
-Fixes: 0efeea5fb153 ("hv_netvsc: Add the support of hibernation")
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
-Link: https://lore.kernel.org/r/1652962188-129281-1-git-send-email-lyz_cs@pku.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: ad1332aa67ec ("crypto: qat - add support for capability detection")
+Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Signed-off-by: Marco Chiappero <marco.chiappero@intel.com>
+Reviewed-by: Marco Chiappero <marco.chiappero@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/hyperv/netvsc_drv.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ .../crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c   | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index fde1c492ca02..b1dece6b9698 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -2671,7 +2671,10 @@ static int netvsc_suspend(struct hv_device *dev)
+diff --git a/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c b/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c
+index 09599fe4d2f3..ff13047772e3 100644
+--- a/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c
++++ b/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c
+@@ -58,17 +58,23 @@ static u32 get_accel_cap(struct adf_accel_dev *accel_dev)
  
- 	/* Save the current config info */
- 	ndev_ctx->saved_netvsc_dev_info = netvsc_devinfo_get(nvdev);
--
-+	if (!ndev_ctx->saved_netvsc_dev_info) {
-+		ret = -ENOMEM;
-+		goto out;
+ 	capabilities = ICP_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC |
+ 		       ICP_ACCEL_CAPABILITIES_CRYPTO_ASYMMETRIC |
+-		       ICP_ACCEL_CAPABILITIES_AUTHENTICATION;
++		       ICP_ACCEL_CAPABILITIES_AUTHENTICATION |
++		       ICP_ACCEL_CAPABILITIES_CIPHER;
+ 
+ 	/* Read accelerator capabilities mask */
+ 	pci_read_config_dword(pdev, ADF_DEVICE_LEGFUSE_OFFSET, &legfuses);
+ 
+-	if (legfuses & ICP_ACCEL_MASK_CIPHER_SLICE)
++	/* A set bit in legfuses means the feature is OFF in this SKU */
++	if (legfuses & ICP_ACCEL_MASK_CIPHER_SLICE) {
+ 		capabilities &= ~ICP_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC;
++		capabilities &= ~ICP_ACCEL_CAPABILITIES_CIPHER;
 +	}
- 	ret = netvsc_detach(net, nvdev);
- out:
- 	rtnl_unlock();
+ 	if (legfuses & ICP_ACCEL_MASK_PKE_SLICE)
+ 		capabilities &= ~ICP_ACCEL_CAPABILITIES_CRYPTO_ASYMMETRIC;
+-	if (legfuses & ICP_ACCEL_MASK_AUTH_SLICE)
++	if (legfuses & ICP_ACCEL_MASK_AUTH_SLICE) {
+ 		capabilities &= ~ICP_ACCEL_CAPABILITIES_AUTHENTICATION;
++		capabilities &= ~ICP_ACCEL_CAPABILITIES_CIPHER;
++	}
+ 	if (legfuses & ICP_ACCEL_MASK_COMPRESS_SLICE)
+ 		capabilities &= ~ICP_ACCEL_CAPABILITIES_COMPRESSION;
+ 
 -- 
 2.35.1
 
