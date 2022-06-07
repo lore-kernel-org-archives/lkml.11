@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6262CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:09:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 906E2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:09:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378615AbiFGVJK (ORCPT
+        id S1379206AbiFGVJT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:09:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56500 "EHLO
+        Tue, 7 Jun 2022 17:09:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358509AbiFGUJj (ORCPT
+        with ESMTP id S1359207AbiFGUJj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:09:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426236362;
-        Tue,  7 Jun 2022 11:27:10 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A41216ABDE;
+        Tue,  7 Jun 2022 11:27:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1E2360906;
-        Tue,  7 Jun 2022 18:27:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3A66C385A2;
-        Tue,  7 Jun 2022 18:27:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EEC72B81FF8;
+        Tue,  7 Jun 2022 18:27:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 508F5C385A2;
+        Tue,  7 Jun 2022 18:27:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626429;
-        bh=gLa8uGy3lTp016CIa3NVUC6HX8oJj8Hj922egc1Hvq8=;
+        s=korg; t=1654626423;
+        bh=/5rQ7ewDoC/Eso2+1Trr7JRLy65QvGDpVxwx+TL4Axk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mztRufIlTjQT1iOEnklH0wlJyxYZiL2mMo2HQMWm+aCFaNcH/Uj+71Rol0fFLxEN7
-         VSNkikZsihT9z7ZKmKwLJpO872oa3z27zymSTw97O6El4TCMX7oHjoQiHETCAa8WVb
-         8mrP0gwlpOk4hzJT7Uzhl63KdBchQB3TwPpLWhNI=
+        b=Pdy3JSqbAkvqkRjl20wwlufD30PxjmwxuQd2C+HvspgtHZz/odxxsWlde1k+xBm1Y
+         tKG4zLGeaVCO2vF38tquM453uKSLnzr/UCQ7F8pTIIruMsmeFvzE1CC0uR99AEjxr0
+         jQqh2SlSpYStka5u6QFvBCslV3h71U/vx/TP6kiU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Chiu <chui-hao.chiu@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 374/772] mt76: mt7915: fix twt table_mask to u16 in mt7915_dev
-Date:   Tue,  7 Jun 2022 18:59:26 +0200
-Message-Id: <20220607165000.035865412@linuxfoundation.org>
+        stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 372/772] mt76: do not attempt to reorder received 802.3 packets without agg session
+Date:   Tue,  7 Jun 2022 18:59:24 +0200
+Message-Id: <20220607164959.976474564@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,33 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Chiu <chui-hao.chiu@mediatek.com>
+From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit 3620c8821ae15902eb995a32918e34b7a0c773a3 ]
+[ Upstream commit 3968a66475b40691c37b5e6c76975f699671e10e ]
 
-mt7915 can support 16 twt stations so modify table_mask to u16.
+Fixes potential latency / packet drop issues in cases where a BA session has
+not (yet) been established.
 
-Fixes: 3782b69d03e7 ("mt76: mt7915: introduce mt7915_mac_add_twt_setup routine")
-Signed-off-by: Peter Chiu <chui-hao.chiu@mediatek.com>
+Fixes: e195dad14115 ("mt76: add support for 802.3 rx frames")
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/mediatek/mt76/agg-rx.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h b/drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h
-index 12ca54566461..4f62dbb936db 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h
-@@ -279,7 +279,7 @@ struct mt7915_dev {
- 	void *cal;
+diff --git a/drivers/net/wireless/mediatek/mt76/agg-rx.c b/drivers/net/wireless/mediatek/mt76/agg-rx.c
+index 72622220051b..6c8b44194579 100644
+--- a/drivers/net/wireless/mediatek/mt76/agg-rx.c
++++ b/drivers/net/wireless/mediatek/mt76/agg-rx.c
+@@ -162,8 +162,9 @@ void mt76_rx_aggr_reorder(struct sk_buff *skb, struct sk_buff_head *frames)
+ 	if (!sta)
+ 		return;
  
- 	struct {
--		u8 table_mask;
-+		u16 table_mask;
- 		u8 n_agrt;
- 	} twt;
- };
+-	if (!status->aggr && !(status->flag & RX_FLAG_8023)) {
+-		mt76_rx_aggr_check_ctl(skb, frames);
++	if (!status->aggr) {
++		if (!(status->flag & RX_FLAG_8023))
++			mt76_rx_aggr_check_ctl(skb, frames);
+ 		return;
+ 	}
+ 
 -- 
 2.35.1
 
