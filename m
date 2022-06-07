@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23DC5CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E10CCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:06:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358894AbiFGUFt (ORCPT
+        id S1358879AbiFGUFl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:05:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59174 "EHLO
+        Tue, 7 Jun 2022 16:05:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353711AbiFGTIk (ORCPT
+        with ESMTP id S1354155AbiFGTJM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:08:40 -0400
+        Tue, 7 Jun 2022 15:09:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9915159C;
-        Tue,  7 Jun 2022 11:06:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB04319225D;
+        Tue,  7 Jun 2022 11:06:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D990B81F38;
-        Tue,  7 Jun 2022 18:06:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBD83C385A5;
-        Tue,  7 Jun 2022 18:06:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1288DB82182;
+        Tue,  7 Jun 2022 18:06:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7500EC385A5;
+        Tue,  7 Jun 2022 18:06:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625164;
-        bh=WFWag3G3r7NILMBL5Q25K81ZLI+l1okE9PH2R2dGTgo=;
+        s=korg; t=1654625166;
+        bh=wJFVW/I+qZbsg4ltQvCNNL+rG+/iesshOHnsxPxAr4k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0jN2tYa86Is1DH8nfp/ZaHza8S8Z1bqGcIpaAs8SYbji0G45nGBWmcAOPRMRQlnQb
-         NNw9aT4iNQNDbmftvqeaxQUVoHHnsew7bStZlsoZw5+r0dqVqOZxhKBE7OTz4k5dEu
-         peln+wGQP1H50EB5HCrxP1TKdY7MT07C5MaZlePs=
+        b=UzG8DLyTPANPtP+fOJ2eI93QB2ckpGWWxlWvOMv30fGdN7LBwYGk+COSJ2nIy6iRZ
+         Zk6KfVYonztfOqx4wbyyVHPXdE3b1LCcL+VzNInd0oE+uKhm2A1CMxeR4jM/O2VldS
+         LrFtsyrMkEJKg8bZgFm0bwxIZOLjQJwkv88b5Ld4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dave Airlie <airlied@redhat.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.15 588/667] drm/amdgpu/cs: make commands with 0 chunks illegal behaviour.
-Date:   Tue,  7 Jun 2022 19:04:13 +0200
-Message-Id: <20220607164952.320906067@linuxfoundation.org>
+        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>
+Subject: [PATCH 5.15 589/667] drm/nouveau/subdev/bus: Ratelimit logging for fault errors
+Date:   Tue,  7 Jun 2022 19:04:14 +0200
+Message-Id: <20220607164952.350301524@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,64 +49,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Airlie <airlied@redhat.com>
+From: Lyude Paul <lyude@redhat.com>
 
-commit 31ab27b14daaa75541a415c6794d6f3567fea44a upstream.
+commit 9887bda0c831df0c044d6de147d002e48024fb4a upstream.
 
-Submitting a cs with 0 chunks, causes an oops later, found trying
-to execute the wrong userspace driver.
+There's plenty of ways to fudge the GPU when developing on nouveau by
+mistake, some of which can result in nouveau seriously spamming dmesg with
+fault errors. This can be somewhat annoying, as it can quickly overrun the
+message buffer (or your terminal emulator's buffer) and get rid of actually
+useful feedback from the driver. While working on my new atomic only MST
+branch, I ran into this issue a couple of times.
 
-MESA_LOADER_DRIVER_OVERRIDE=v3d glxinfo
+So, let's fix this by adding nvkm_error_ratelimited(), and using it to
+ratelimit errors from faults. This should be fine for developers, since
+it's nearly always only the first few faults that we care about seeing.
+Plus, you can turn off rate limiting in the kernel if you really need to.
 
-[172536.665184] BUG: kernel NULL pointer dereference, address: 00000000000001d8
-[172536.665188] #PF: supervisor read access in kernel mode
-[172536.665189] #PF: error_code(0x0000) - not-present page
-[172536.665191] PGD 6712a0067 P4D 6712a0067 PUD 5af9ff067 PMD 0
-[172536.665195] Oops: 0000 [#1] SMP NOPTI
-[172536.665197] CPU: 7 PID: 2769838 Comm: glxinfo Tainted: P           O      5.10.81 #1-NixOS
-[172536.665199] Hardware name: To be filled by O.E.M. To be filled by O.E.M./CROSSHAIR V FORMULA-Z, BIOS 2201 03/23/2015
-[172536.665272] RIP: 0010:amdgpu_cs_ioctl+0x96/0x1ce0 [amdgpu]
-[172536.665274] Code: 75 18 00 00 4c 8b b2 88 00 00 00 8b 46 08 48 89 54 24 68 49 89 f7 4c 89 5c 24 60 31 d2 4c 89 74 24 30 85 c0 0f 85 c0 01 00 00 <48> 83 ba d8 01 00 00 00 48 8b b4 24 90 00 00 00 74 16 48 8b 46 10
-[172536.665276] RSP: 0018:ffffb47c0e81bbe0 EFLAGS: 00010246
-[172536.665277] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-[172536.665278] RDX: 0000000000000000 RSI: ffffb47c0e81be28 RDI: ffffb47c0e81bd68
-[172536.665279] RBP: ffff936524080010 R08: 0000000000000000 R09: ffffb47c0e81be38
-[172536.665281] R10: ffff936524080010 R11: ffff936524080000 R12: ffffb47c0e81bc40
-[172536.665282] R13: ffffb47c0e81be28 R14: ffff9367bc410000 R15: ffffb47c0e81be28
-[172536.665283] FS:  00007fe35e05d740(0000) GS:ffff936c1edc0000(0000) knlGS:0000000000000000
-[172536.665284] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[172536.665286] CR2: 00000000000001d8 CR3: 0000000532e46000 CR4: 00000000000406e0
-[172536.665287] Call Trace:
-[172536.665322]  ? amdgpu_cs_find_mapping+0x110/0x110 [amdgpu]
-[172536.665332]  drm_ioctl_kernel+0xaa/0xf0 [drm]
-[172536.665338]  drm_ioctl+0x201/0x3b0 [drm]
-[172536.665369]  ? amdgpu_cs_find_mapping+0x110/0x110 [amdgpu]
-[172536.665372]  ? selinux_file_ioctl+0x135/0x230
-[172536.665399]  amdgpu_drm_ioctl+0x49/0x80 [amdgpu]
-[172536.665403]  __x64_sys_ioctl+0x83/0xb0
-[172536.665406]  do_syscall_64+0x33/0x40
-[172536.665409]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/2018
-Signed-off-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Reviewed-by: Karol Herbst <kherbst@redhat.com>
 Cc: stable@vger.kernel.org
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220429195350.85620-1-lyude@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h |    2 ++
+ drivers/gpu/drm/nouveau/nvkm/subdev/bus/gf100.c    |   14 +++++++-------
+ drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv31.c     |    6 +++---
+ drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv50.c     |    6 +++---
+ 4 files changed, 15 insertions(+), 13 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-@@ -115,7 +115,7 @@ static int amdgpu_cs_parser_init(struct
- 	int ret;
+--- a/drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h
++++ b/drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h
+@@ -62,4 +62,6 @@ void nvkm_subdev_intr(struct nvkm_subdev
+ #define nvkm_debug(s,f,a...) nvkm_printk((s), DEBUG,   info, f, ##a)
+ #define nvkm_trace(s,f,a...) nvkm_printk((s), TRACE,   info, f, ##a)
+ #define nvkm_spam(s,f,a...)  nvkm_printk((s),  SPAM,    dbg, f, ##a)
++
++#define nvkm_error_ratelimited(s,f,a...) nvkm_printk((s), ERROR, err_ratelimited, f, ##a)
+ #endif
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/gf100.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/gf100.c
+@@ -35,13 +35,13 @@ gf100_bus_intr(struct nvkm_bus *bus)
+ 		u32 addr = nvkm_rd32(device, 0x009084);
+ 		u32 data = nvkm_rd32(device, 0x009088);
  
- 	if (cs->in.num_chunks == 0)
--		return 0;
-+		return -EINVAL;
+-		nvkm_error(subdev,
+-			   "MMIO %s of %08x FAULT at %06x [ %s%s%s]\n",
+-			   (addr & 0x00000002) ? "write" : "read", data,
+-			   (addr & 0x00fffffc),
+-			   (stat & 0x00000002) ? "!ENGINE " : "",
+-			   (stat & 0x00000004) ? "PRIVRING " : "",
+-			   (stat & 0x00000008) ? "TIMEOUT " : "");
++		nvkm_error_ratelimited(subdev,
++				       "MMIO %s of %08x FAULT at %06x [ %s%s%s]\n",
++				       (addr & 0x00000002) ? "write" : "read", data,
++				       (addr & 0x00fffffc),
++				       (stat & 0x00000002) ? "!ENGINE " : "",
++				       (stat & 0x00000004) ? "PRIVRING " : "",
++				       (stat & 0x00000008) ? "TIMEOUT " : "");
  
- 	chunk_array = kvmalloc_array(cs->in.num_chunks, sizeof(uint64_t), GFP_KERNEL);
- 	if (!chunk_array)
+ 		nvkm_wr32(device, 0x009084, 0x00000000);
+ 		nvkm_wr32(device, 0x001100, (stat & 0x0000000e));
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv31.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv31.c
+@@ -45,9 +45,9 @@ nv31_bus_intr(struct nvkm_bus *bus)
+ 		u32 addr = nvkm_rd32(device, 0x009084);
+ 		u32 data = nvkm_rd32(device, 0x009088);
+ 
+-		nvkm_error(subdev, "MMIO %s of %08x FAULT at %06x\n",
+-			   (addr & 0x00000002) ? "write" : "read", data,
+-			   (addr & 0x00fffffc));
++		nvkm_error_ratelimited(subdev, "MMIO %s of %08x FAULT at %06x\n",
++				       (addr & 0x00000002) ? "write" : "read", data,
++				       (addr & 0x00fffffc));
+ 
+ 		stat &= ~0x00000008;
+ 		nvkm_wr32(device, 0x001100, 0x00000008);
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv50.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv50.c
+@@ -60,9 +60,9 @@ nv50_bus_intr(struct nvkm_bus *bus)
+ 		u32 addr = nvkm_rd32(device, 0x009084);
+ 		u32 data = nvkm_rd32(device, 0x009088);
+ 
+-		nvkm_error(subdev, "MMIO %s of %08x FAULT at %06x\n",
+-			   (addr & 0x00000002) ? "write" : "read", data,
+-			   (addr & 0x00fffffc));
++		nvkm_error_ratelimited(subdev, "MMIO %s of %08x FAULT at %06x\n",
++				       (addr & 0x00000002) ? "write" : "read", data,
++				       (addr & 0x00fffffc));
+ 
+ 		stat &= ~0x00000008;
+ 		nvkm_wr32(device, 0x001100, 0x00000008);
 
 
