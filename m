@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B10C7CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:02:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE6EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:03:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358103AbiFGUC4 (ORCPT
+        id S1356076AbiFGUC7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:02:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41772 "EHLO
+        Tue, 7 Jun 2022 16:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353333AbiFGTCB (ORCPT
+        with ESMTP id S1353440AbiFGTCu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:02:01 -0400
+        Tue, 7 Jun 2022 15:02:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04717156468;
-        Tue,  7 Jun 2022 11:05:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8838D157E9E;
+        Tue,  7 Jun 2022 11:05:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A140C616B6;
-        Tue,  7 Jun 2022 18:05:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6747C385A5;
-        Tue,  7 Jun 2022 18:05:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1454161804;
+        Tue,  7 Jun 2022 18:04:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D508C385A5;
+        Tue,  7 Jun 2022 18:04:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625106;
-        bh=6pCZfOF14bBwPJFZpSX3t/6Hfln6Scd7Z7sf8NVSHmg=;
+        s=korg; t=1654625097;
+        bh=aSa0SYQQmIJoAcUp/KPB7tSfEcW5sKv3qHZSZ/MUdGI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TUaMi35we3uVZuatWd8cDlHibNPvObPW8Tkc3zVWEYbNPPC/rnwsAUQSsgaHiE7kI
-         hprsmdW5aFswJmQoYQziwcvoiR3XTq2VSs5gr0Gasdw6jZJQh8ZzA+UTQB7BufLj3z
-         yjCzf+jRh8OB3u8vwtAqYWETZfBFIa7ht3rzQQ40=
+        b=gRdAVxb/VrdPlb0avnjUdsEqaUz08K/h4KfRoiKGYm2LD8cwEo68K/++LCj2K27RV
+         ltQsdu7m//uqitDA7uOY3VO2RmWHBQunccK7wAvxZFIpZS6TsRSCtXjviU6sKknARG
+         fu2A9+6G3G6s7sZxvw5UPWg06LiAAGz3ZKYzvmTk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 566/667] scsi: ufs: qcom: Add a readl() to make sure ref_clk gets enabled
-Date:   Tue,  7 Jun 2022 19:03:51 +0200
-Message-Id: <20220607164951.669266154@linuxfoundation.org>
+        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
+        David Teigland <teigland@redhat.com>
+Subject: [PATCH 5.15 563/667] dlm: fix missing lkb refcount handling
+Date:   Tue,  7 Jun 2022 19:03:48 +0200
+Message-Id: <20220607164951.581883999@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,51 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+From: Alexander Aring <aahringo@redhat.com>
 
-commit 8eecddfca30e1651dc1c74531ed5eef21dcce7e3 upstream.
+commit 1689c169134f4b5a39156122d799b7dca76d8ddb upstream.
 
-In ufs_qcom_dev_ref_clk_ctrl(), it was noted that the ref_clk needs to be
-stable for at least 1us. Even though there is wmb() to make sure the write
-gets "completed", there is no guarantee that the write actually reached the
-UFS device. There is a good chance that the write could be stored in a
-Write Buffer (WB). In that case, even though the CPU waits for 1us, the
-ref_clk might not be stable for that period.
+We always call hold_lkb(lkb) if we increment lkb->lkb_wait_count.
+So, we always need to call unhold_lkb(lkb) if we decrement
+lkb->lkb_wait_count. This patch will add missing unhold_lkb(lkb) if we
+decrement lkb->lkb_wait_count. In case of setting lkb->lkb_wait_count to
+zero we need to countdown until reaching zero and call unhold_lkb(lkb).
+The waiters list unhold_lkb(lkb) can be removed because it's done for
+the last lkb_wait_count decrement iteration as it's done in
+_remove_from_waiters().
 
-So lets do a readl() to make sure that the previous write has reached the
-UFS device before udelay().
+This issue was discovered by a dlm gfs2 test case which use excessively
+dlm_unlock(LKF_CANCEL) feature. Probably the lkb->lkb_wait_count value
+never reached above 1 if this feature isn't used and so it was not
+discovered before.
 
-Also, the wmb() after writel_relaxed() is not really needed. Both writel()
-and readl() are ordered on all architectures and the CPU won't speculate
-instructions after readl() due to the in-built control dependency with read
-value on weakly ordered architectures. So it can be safely removed.
+The testcase ended in a rsb on the rsb keep data structure with a
+refcount of 1 but no lkb was associated with it, which is itself
+an invalid behaviour. A side effect of that was a condition in which
+the dlm was sending remove messages in a looping behaviour. With this
+patch that has not been reproduced.
 
-Link: https://lore.kernel.org/r/20220504084212.11605-4-manivannan.sadhasivam@linaro.org
-Fixes: f06fcc7155dc ("scsi: ufs-qcom: add QUniPro hardware support and power optimizations")
 Cc: stable@vger.kernel.org
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+Signed-off-by: David Teigland <teigland@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/ufs/ufs-qcom.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ fs/dlm/lock.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---- a/drivers/scsi/ufs/ufs-qcom.c
-+++ b/drivers/scsi/ufs/ufs-qcom.c
-@@ -678,8 +678,11 @@ static void ufs_qcom_dev_ref_clk_ctrl(st
+--- a/fs/dlm/lock.c
++++ b/fs/dlm/lock.c
+@@ -1551,6 +1551,7 @@ static int _remove_from_waiters(struct d
+ 		lkb->lkb_wait_type = 0;
+ 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_CANCEL;
+ 		lkb->lkb_wait_count--;
++		unhold_lkb(lkb);
+ 		goto out_del;
+ 	}
  
- 		writel_relaxed(temp, host->dev_ref_clk_ctrl_mmio);
+@@ -1577,6 +1578,7 @@ static int _remove_from_waiters(struct d
+ 		log_error(ls, "remwait error %x reply %d wait_type %d overlap",
+ 			  lkb->lkb_id, mstype, lkb->lkb_wait_type);
+ 		lkb->lkb_wait_count--;
++		unhold_lkb(lkb);
+ 		lkb->lkb_wait_type = 0;
+ 	}
  
--		/* ensure that ref_clk is enabled/disabled before we return */
--		wmb();
-+		/*
-+		 * Make sure the write to ref_clk reaches the destination and
-+		 * not stored in a Write Buffer (WB).
+@@ -5310,11 +5312,16 @@ int dlm_recover_waiters_post(struct dlm_
+ 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_UNLOCK;
+ 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_CANCEL;
+ 		lkb->lkb_wait_type = 0;
+-		lkb->lkb_wait_count = 0;
++		/* drop all wait_count references we still
++		 * hold a reference for this iteration.
 +		 */
-+		readl(host->dev_ref_clk_ctrl_mmio);
++		while (lkb->lkb_wait_count) {
++			lkb->lkb_wait_count--;
++			unhold_lkb(lkb);
++		}
+ 		mutex_lock(&ls->ls_waiters_mutex);
+ 		list_del_init(&lkb->lkb_wait_reply);
+ 		mutex_unlock(&ls->ls_waiters_mutex);
+-		unhold_lkb(lkb); /* for waiters list */
  
- 		/*
- 		 * If we call hibern8 exit after this, we need to make sure that
+ 		if (oc || ou) {
+ 			/* do an unlock or cancel instead of resending */
 
 
