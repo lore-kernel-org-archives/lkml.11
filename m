@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72D69C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:59:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09853CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:59:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382819AbiFGV7N (ORCPT
+        id S1382620AbiFGV7U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:59:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49304 "EHLO
+        Tue, 7 Jun 2022 17:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379327AbiFGVCV (ORCPT
+        with ESMTP id S1357786AbiFGVCd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:02:21 -0400
+        Tue, 7 Jun 2022 17:02:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 588686007C;
-        Tue,  7 Jun 2022 11:47:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD5F1238A2;
+        Tue,  7 Jun 2022 11:48:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C820EB82391;
-        Tue,  7 Jun 2022 18:47:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EA15C385A2;
-        Tue,  7 Jun 2022 18:47:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0347EB82018;
+        Tue,  7 Jun 2022 18:48:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71DA8C385A2;
+        Tue,  7 Jun 2022 18:48:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627663;
-        bh=o+MmL6FMhV0VWrsIVr9yU3DUtLKrFSL2sLS6Om3lkos=;
+        s=korg; t=1654627693;
+        bh=9KHMSISyzzpbZ2PU0Ypgnuo/zuKW0vT9ok+Fw3ha3Ag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PS10GsrfQgqdnWfp0JkXf2nvkP6cGHoj5RF/0px1zpjKc9MF3tZZOivHIeVENXOL4
-         1wnlx55fJITfT4DEASDWr90XqpSNrK/EgI/VY4Jr1LHL3We9O1ECNOFuO+yUyt5Bx1
-         7h78VAQV/iwPaDiPDPDYU2wlDA6Dunp6ASgsmVr0=
+        b=nkFmSwneWX05xWv4RqMWHKEmLJHWzRQx9/tx7g2pMoZaEeJ8BDIir7cYAVdJibbcA
+         AlnvS9w5IJqgeuLe61wkWu0ubL8hmO+jpXuALwuJtNLohqwjJ/YCani9u1aTvntUeT
+         i/ypSy3r+PfOq3mNKz5/uLeuru8YWfqiDmc0YwtY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.18 048/879] btrfs: fix the error handling for submit_extent_page() for btrfs_do_readpage()
-Date:   Tue,  7 Jun 2022 18:52:46 +0200
-Message-Id: <20220607165004.077844875@linuxfoundation.org>
+        stable@vger.kernel.org, Liu Zixian <liuzixian4@huawei.com>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 058/879] drm/virtio: fix NULL pointer dereference in virtio_gpu_conn_get_modes
+Date:   Tue,  7 Jun 2022 18:52:56 +0200
+Message-Id: <20220607165004.374934917@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,71 +50,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Liu Zixian <liuzixian4@huawei.com>
 
-commit 10f7f6f879c28f8368d6516ab1ccf3517a1f5d3d upstream.
+[ Upstream commit 194d250cdc4a40ccbd179afd522a9e9846957402 ]
 
-[BUG]
-Test case generic/475 have a very high chance (almost 100%) to hit a fs
-hang, where a data page will never be unlocked and hang all later
-operations.
+drm_cvt_mode may return NULL and we should check it.
 
-[CAUSE]
-In btrfs_do_readpage(), if we hit an error from submit_extent_page() we
-will try to do the cleanup for our current io range, and exit.
+This bug is found by syzkaller:
 
-This works fine for PAGE_SIZE == sectorsize cases, but not for subpage.
+FAULT_INJECTION stacktrace:
+[  168.567394] FAULT_INJECTION: forcing a failure.
+name failslab, interval 1, probability 0, space 0, times 1
+[  168.567403] CPU: 1 PID: 6425 Comm: syz Kdump: loaded Not tainted 4.19.90-vhulk2201.1.0.h1035.kasan.eulerosv2r10.aarch64 #1
+[  168.567406] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
+[  168.567408] Call trace:
+[  168.567414]  dump_backtrace+0x0/0x310
+[  168.567418]  show_stack+0x28/0x38
+[  168.567423]  dump_stack+0xec/0x15c
+[  168.567427]  should_fail+0x3ac/0x3d0
+[  168.567437]  __should_failslab+0xb8/0x120
+[  168.567441]  should_failslab+0x28/0xc0
+[  168.567445]  kmem_cache_alloc_trace+0x50/0x640
+[  168.567454]  drm_mode_create+0x40/0x90
+[  168.567458]  drm_cvt_mode+0x48/0xc78
+[  168.567477]  virtio_gpu_conn_get_modes+0xa8/0x140 [virtio_gpu]
+[  168.567485]  drm_helper_probe_single_connector_modes+0x3a4/0xd80
+[  168.567492]  drm_mode_getconnector+0x2e0/0xa70
+[  168.567496]  drm_ioctl_kernel+0x11c/0x1d8
+[  168.567514]  drm_ioctl+0x558/0x6d0
+[  168.567522]  do_vfs_ioctl+0x160/0xf30
+[  168.567525]  ksys_ioctl+0x98/0xd8
+[  168.567530]  __arm64_sys_ioctl+0x50/0xc8
+[  168.567536]  el0_svc_common+0xc8/0x320
+[  168.567540]  el0_svc_handler+0xf8/0x160
+[  168.567544]  el0_svc+0x10/0x218
 
-For subpage btrfs_do_readpage() will lock the full page first, which can
-contain several different sectors and extents:
+KASAN stacktrace:
+[  168.567561] BUG: KASAN: null-ptr-deref in virtio_gpu_conn_get_modes+0xb4/0x140 [virtio_gpu]
+[  168.567565] Read of size 4 at addr 0000000000000054 by task syz/6425
+[  168.567566]
+[  168.567571] CPU: 1 PID: 6425 Comm: syz Kdump: loaded Not tainted 4.19.90-vhulk2201.1.0.h1035.kasan.eulerosv2r10.aarch64 #1
+[  168.567573] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
+[  168.567575] Call trace:
+[  168.567578]  dump_backtrace+0x0/0x310
+[  168.567582]  show_stack+0x28/0x38
+[  168.567586]  dump_stack+0xec/0x15c
+[  168.567591]  kasan_report+0x244/0x2f0
+[  168.567594]  __asan_load4+0x58/0xb0
+[  168.567607]  virtio_gpu_conn_get_modes+0xb4/0x140 [virtio_gpu]
+[  168.567612]  drm_helper_probe_single_connector_modes+0x3a4/0xd80
+[  168.567617]  drm_mode_getconnector+0x2e0/0xa70
+[  168.567621]  drm_ioctl_kernel+0x11c/0x1d8
+[  168.567624]  drm_ioctl+0x558/0x6d0
+[  168.567628]  do_vfs_ioctl+0x160/0xf30
+[  168.567632]  ksys_ioctl+0x98/0xd8
+[  168.567636]  __arm64_sys_ioctl+0x50/0xc8
+[  168.567641]  el0_svc_common+0xc8/0x320
+[  168.567645]  el0_svc_handler+0xf8/0x160
+[  168.567649]  el0_svc+0x10/0x218
 
- btrfs_do_readpage()
- |- begin_page_read()
- |  |- btrfs_subpage_start_reader();
- |     Now the page will have PAGE_SIZE / sectorsize reader pending,
- |     and the page is locked.
- |
- |- end_page_read() for different branches
- |  This function will reduce subpage readers, and when readers
- |  reach 0, it will unlock the page.
-
-But when submit_extent_page() failed, we only cleanup the current
-io range, while the remaining io range will never be cleaned up, and the
-page remains locked forever.
-
-[FIX]
-Update the error handling of submit_extent_page() to cleanup all the
-remaining subpage range before exiting the loop.
-
-Please note that, now submit_extent_page() can only fail due to
-sanity check in alloc_new_bio().
-
-Thus regular IO errors are impossible to trigger the error path.
-
-CC: stable@vger.kernel.org # 5.15+
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Liu Zixian <liuzixian4@huawei.com>
+Link: http://patchwork.freedesktop.org/patch/msgid/20220322091730.1653-1-liuzixian4@huawei.com
+Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/extent_io.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/virtio/virtgpu_display.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/btrfs/extent_io.c
-+++ b/fs/btrfs/extent_io.c
-@@ -3743,8 +3743,12 @@ int btrfs_do_readpage(struct page *page,
- 					 this_bio_flag,
- 					 force_bio_submit);
- 		if (ret) {
--			unlock_extent(tree, cur, cur + iosize - 1);
--			end_page_read(page, false, cur, iosize);
-+			/*
-+			 * We have to unlock the remaining range, or the page
-+			 * will never be unlocked.
-+			 */
-+			unlock_extent(tree, cur, end);
-+			end_page_read(page, false, cur, end + 1 - cur);
- 			goto out;
- 		}
- 		cur = cur + iosize;
+diff --git a/drivers/gpu/drm/virtio/virtgpu_display.c b/drivers/gpu/drm/virtio/virtgpu_display.c
+index 5b00310ac4cd..f73352e7b832 100644
+--- a/drivers/gpu/drm/virtio/virtgpu_display.c
++++ b/drivers/gpu/drm/virtio/virtgpu_display.c
+@@ -179,6 +179,8 @@ static int virtio_gpu_conn_get_modes(struct drm_connector *connector)
+ 		DRM_DEBUG("add mode: %dx%d\n", width, height);
+ 		mode = drm_cvt_mode(connector->dev, width, height, 60,
+ 				    false, false, false);
++		if (!mode)
++			return count;
+ 		mode->type |= DRM_MODE_TYPE_PREFERRED;
+ 		drm_mode_probed_add(connector, mode);
+ 		count++;
+-- 
+2.35.1
+
 
 
