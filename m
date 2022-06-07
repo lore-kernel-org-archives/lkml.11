@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B223ECCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8957CCA49A
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351084AbiFGSGp (ORCPT
+        id S1350687AbiFGSGb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:06:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58168 "EHLO
+        Tue, 7 Jun 2022 14:06:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349023AbiFGRqm (ORCPT
+        with ESMTP id S1348493AbiFGRp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:46:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4DF110AE8;
-        Tue,  7 Jun 2022 10:36:07 -0700 (PDT)
+        Tue, 7 Jun 2022 13:45:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A8E131F2E;
+        Tue,  7 Jun 2022 10:35:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E323BB822B1;
-        Tue,  7 Jun 2022 17:36:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 491ACC385A5;
-        Tue,  7 Jun 2022 17:36:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C16F61529;
+        Tue,  7 Jun 2022 17:35:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A81EC385A5;
+        Tue,  7 Jun 2022 17:35:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623365;
-        bh=UXh3PpBZOIoRc8pjCe0PxlCMx9HOwU9VH0FiE42sIEQ=;
+        s=korg; t=1654623332;
+        bh=XAGJ6U13VmkrVh5Zc7zRwbkmBQUzO0nmuegqfoYHRKQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c8/ffwdJdf5u+rAwokpvfiSszHs80FCDVL9glT5bFEB4Bd/DpxvnH6uXgvD71Hobh
-         9SQphz9cgsOG/xk4qKUhj6p4l1qnf2cylw01+Y0re/TGT+yR2XkLxVHmULatyEyP8V
-         p3K1nUG1iJyErcoCyYXCH7RRNbqDabwQYnU14fRs=
+        b=JfYwCZDtEfM0jM8C6KMywolLhbrjdi+30hQb1cOhr1SBgc5snIcD1duU5tvsvTmqF
+         aa4OfzCpYH7JoQbkD0iftJRxtocDMmimPu68RamB7DEvCz/O2V5RszpqqWeqwhwr9K
+         /G7GRDq0UJX5EozZl0dPq0muQx/8X/BP8Hzw9wpo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.10 392/452] RDMA/hfi1: Fix potential integer multiplication overflow errors
-Date:   Tue,  7 Jun 2022 19:04:09 +0200
-Message-Id: <20220607164920.245402475@linuxfoundation.org>
+        stable@vger.kernel.org, Tyrone Ting <kfting@nuvoton.com>,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 339/452] i2c: npcm: Correct register access width
+Date:   Tue,  7 Jun 2022 19:03:16 +0200
+Message-Id: <20220607164918.658664342@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,40 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+From: Tyrone Ting <kfting@nuvoton.com>
 
-commit f93e91a0372c922c20d5bee260b0f43b4b8a1bee upstream.
+[ Upstream commit ea9f8426d17620214ee345ffb77ee6cc196ff14f ]
 
-When multiplying of different types, an overflow is possible even when
-storing the result in a larger type. This is because the conversion is
-done after the multiplication. So arithmetic overflow and thus in
-incorrect value is possible.
+The SMBnCTL3 register is 8-bit wide and the 32-bit access was always
+incorrect, but simply didn't cause a visible error on the 32-bit machine.
 
-Correct an instance of this in the inter packet delay calculation.  Fix by
-ensuring one of the operands is u64 which will promote the other to u64 as
-well ensuring no overflow.
+On the 64-bit machine, the kernel message reports that ESR value is
+0x96000021. Checking Arm Architecture Reference Manual Armv8 suggests that
+it's the alignment fault.
 
-Cc: stable@vger.kernel.org
-Fixes: 7724105686e7 ("IB/hfi1: add driver files")
-Link: https://lore.kernel.org/r/20220520183712.48973.29855.stgit@awfm-01.cornelisnetworks.com
-Reviewed-by: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
-Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+SMBnCTL3's address is 0xE.
+
+Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
+Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
+Reviewed-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/hfi1/init.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/i2c/busses/i2c-npcm7xx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/infiniband/hw/hfi1/init.c
-+++ b/drivers/infiniband/hw/hfi1/init.c
-@@ -530,7 +530,7 @@ void set_link_ipg(struct hfi1_pportdata
- 	u16 shift, mult;
- 	u64 src;
- 	u32 current_egress_rate; /* Mbits /sec */
--	u32 max_pkt_time;
-+	u64 max_pkt_time;
- 	/*
- 	 * max_pkt_time is the maximum packet egress time in units
- 	 * of the fabric clock period 1/(805 MHz).
+diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
+index 92fd88a3f415..cdea7f440a9e 100644
+--- a/drivers/i2c/busses/i2c-npcm7xx.c
++++ b/drivers/i2c/busses/i2c-npcm7xx.c
+@@ -359,14 +359,14 @@ static int npcm_i2c_get_SCL(struct i2c_adapter *_adap)
+ {
+ 	struct npcm_i2c *bus = container_of(_adap, struct npcm_i2c, adap);
+ 
+-	return !!(I2CCTL3_SCL_LVL & ioread32(bus->reg + NPCM_I2CCTL3));
++	return !!(I2CCTL3_SCL_LVL & ioread8(bus->reg + NPCM_I2CCTL3));
+ }
+ 
+ static int npcm_i2c_get_SDA(struct i2c_adapter *_adap)
+ {
+ 	struct npcm_i2c *bus = container_of(_adap, struct npcm_i2c, adap);
+ 
+-	return !!(I2CCTL3_SDA_LVL & ioread32(bus->reg + NPCM_I2CCTL3));
++	return !!(I2CCTL3_SDA_LVL & ioread8(bus->reg + NPCM_I2CCTL3));
+ }
+ 
+ static inline u16 npcm_i2c_get_index(struct npcm_i2c *bus)
+-- 
+2.35.1
+
 
 
