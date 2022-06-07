@@ -2,188 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD31EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:00:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0538ACCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:06:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345322AbiFGRAP (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:00:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39498 "EHLO
+        id S243723AbiFGRGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 13:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345363AbiFGRAJ (ORCPT
+        with ESMTP id S237338AbiFGRGl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:00:09 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0849F338F;
-        Tue,  7 Jun 2022 10:00:03 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id bg6so16635489ejb.0;
-        Tue, 07 Jun 2022 10:00:03 -0700 (PDT)
+        Tue, 7 Jun 2022 13:06:41 -0400
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDE3C54037
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:06:39 -0700 (PDT)
+Received: by mail-il1-x131.google.com with SMTP id y16so14685296ili.13
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:06:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:from:to:cc:subject:date:in-reply-to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=S4VNfIke2KvnIJMRH6f3rNuBXi/ZA3zV6uDJeQjXmuM=;
-        b=XoRM00N+6Fems+DaFXMoRxUfOYcdFfCtH6mFIARABY5BhA6F4rfx2mkxwv01maf96k
-         nTl5lEKoT2wjKMQFXlaUaCF4OGeNAV8zWFfdYk7Q5emAi3v1LD6anMPP/WNhi/5vM0At
-         FT1uPMLYhi8eiavZAe3FPEQstjLibpvEI+G5RMdP29SW+viUozVjvl5n2XY5aJYAdCUd
-         EwCDv6xfyA1l/kqo07ZZ6k3Yp5VmbgNtxjUJamVowAapQc5rS8QfZ7lZblRnnt2UJeRR
-         UNgdyOPV2wVDKRWU0VXGK9OMCe1tM2oCh8SRIMjvEOM6SV0AcJJxVn4zaGMX9SbQM70T
-         wM4Q==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QocnDs5w4TazSvMjzZtEO2lYhuTH55BPpRIi6NIvCgU=;
+        b=dRIKodz4tDRakIwL0rM81s0k+Y6sZzcFymClpndB8u/CNXlwMmEmdV6eO7OFiQEORL
+         RK+hl2KV8qmY2zotWqT9OqXbxCSCqmtKPR2fKLk/Mb0c+F8ZI2wckPqNLd2ds4vZP1jG
+         C/vot/RN14YqPvaWRF8f28nNs5npMlddiM4VpnBfok8fA8fMw/xmkGhAh8qIwpbGG7zA
+         etgWLnPu1MN2lSSOGQzLJHcc+BFtSeWfbom4aOkEuu1b+IVR71PRroP+Quo3BaXb/zMK
+         WLh8pUvlVbF3b6e3ZlxSjOR9QVU+ORoPadn3wP2qQZvV2aTu6gfnZelrf7gUwLUfRxot
+         fCVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version:content-transfer-encoding;
-        bh=S4VNfIke2KvnIJMRH6f3rNuBXi/ZA3zV6uDJeQjXmuM=;
-        b=T9oAYbSY3HpF3HQQznDwRuFpc/LofI4HCXPhIPWnTy09g4a4lZlC00lJuiiZlqpbt/
-         C/pq6QqmYaV3qu4OPcXFzR+X5w+1hkb9RNjQtLMlJ7P0D+d+pSgse9Fsf9zb45PBtWY5
-         TMA1rUQqoid6YFPFrclJNJGTGuZ0eM6vg0WkgObp4Iu+6u8sT+PGbiw9FiqUK2vI2rRv
-         MkmlKURiZECuaarNw+K6PQzJEpOBq7ris+XyFrS02jpaZfaNJS5KA5J/43QG9iRpguSj
-         lC8zPUcg/LkhWwX3YxDC18MTw1XCp3NFwLyrMN93CmDRWkQyKO0UK9mLBc4j/MoVfgxZ
-         4Fyw==
-X-Gm-Message-State: AOAM533f5ibeADo5I9Ktn8koyrnJYnJsFhn69t+EgWF8QUpwTMA69W6h
-        1r6Z87WbpUjdndzY0Kyha4c=
-X-Google-Smtp-Source: ABdhPJzltR9FAeMw59VT6yBMmW6WR18FUMvbw6FRycDCDKYttTuT7QrLC7JP8zVaXstbu0hJmuZIFQ==
-X-Received: by 2002:a17:906:54c3:b0:6ef:d07b:c8ec with SMTP id c3-20020a17090654c300b006efd07bc8ecmr27443327ejp.687.1654621202058;
-        Tue, 07 Jun 2022 10:00:02 -0700 (PDT)
-Received: from localhost (92.40.203.36.threembb.co.uk. [92.40.203.36])
-        by smtp.gmail.com with ESMTPSA id gi5-20020a1709070c8500b006feb8cebbbfsm7904125ejc.6.2022.06.07.10.00.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 10:00:01 -0700 (PDT)
-References: <20220607110525.36922-1-aidanmacdonald.0x0@gmail.com>
- <TC84DR.BXHQAW8NSA8H@crapouillou.net>
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     linus.walleij@linaro.org, linux-mips@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pinctrl: ingenic: Convert to immutable irq chip
-Date:   Tue, 07 Jun 2022 17:47:19 +0100
-In-reply-to: <TC84DR.BXHQAW8NSA8H@crapouillou.net>
-Message-ID: <OUo8utshKyFB2wcmtEAH6jswJGetDRWg@localhost>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QocnDs5w4TazSvMjzZtEO2lYhuTH55BPpRIi6NIvCgU=;
+        b=K/cf37krr3Ubbcjy/CGqy49yFM90Uqod/jZpl6LvXuQDV0fW5eeoI/uS710Ipt3njF
+         57z7rgDh+/nB2tBEkqaD3WIvyTDP+p7c0dS3pAWtXsa2c+BGb0e0FTnWYb5Ijj+pJzLC
+         qpy1eOwlnsmt9OEPl/vcBH/6mOj+IVqQGo72MYTU70h/d+gf7iiBiq/4MpX6mGoesdX+
+         oW4c1qG1w4mGDMqUcrzWJ1Yznd2Kb07DmdD2EunbX/NI/5U4Fkyb/vqAYNMJejDuDueh
+         Z6SlxwFAPS3ugNEKnVyqNy/hY6yNMw7LS4Xr1hTyS0YdmPIRPNdkN0JLf4a8bzOs5jDg
+         GF6w==
+X-Gm-Message-State: AOAM533LT8jlr9QqJRiiA1cFJyrznAg0E3O5frjs3/R6Pl7waNOc/jnw
+        HSJ+BhbV7itSnSoT9b62TUNr0nHlIOScY4poxpyfFA==
+X-Google-Smtp-Source: ABdhPJz9Lg7BSVbItguQd767ICKznx7IEdGBPR3e7oFdkDrucWpyWhc4A+HS6IV9zKDoTqLI78OYvApBCnJGhZImJL0=
+X-Received: by 2002:a05:6e02:1e0b:b0:2d1:b5e8:38a0 with SMTP id
+ g11-20020a056e021e0b00b002d1b5e838a0mr17440930ila.296.1654621598804; Tue, 07
+ Jun 2022 10:06:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220607142337.78458-1-duoming@zju.edu.cn>
+In-Reply-To: <20220607142337.78458-1-duoming@zju.edu.cn>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 7 Jun 2022 10:06:27 -0700
+Message-ID: <CANn89iJoOvG=KrouTpe+bgAVf=mYtxE1D3m542UF96XwxKEVsQ@mail.gmail.com>
+Subject: Re: [PATCH v2] net: ax25: Fix deadlock caused by skb_recv_datagram in ax25_recvmsg
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     LKML <linux-kernel@vger.kernel.org>, jreuter@yaina.de,
+        Ralf Baechle <ralf@linux-mips.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>, linux-hams@vger.kernel.org,
+        thomas@osterried.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-Paul Cercueil <paul@crapouillou.net> writes:
-
-> Hi Aidan,
+On Tue, Jun 7, 2022 at 7:24 AM Duoming Zhou <duoming@zju.edu.cn> wrote:
 >
-> Le mar., juin 7 2022 at 12:05:25 +0100, Aidan MacDonald
-> <aidanmacdonald.0x0@gmail.com> a =C3=A9crit :
->> Update the driver to use an immutable IRQ chip to fix this warning:
->>     "not an immutable chip, please consider fixing it!"
->> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
->> ---
->>  drivers/pinctrl/pinctrl-ingenic.c | 33 ++++++++++++++++++-------------
->>  1 file changed, 19 insertions(+), 14 deletions(-)
->> diff --git a/drivers/pinctrl/pinctrl-ingenic.c
->> b/drivers/pinctrl/pinctrl-ingenic.c
->> index 1ca11616db74..37258fb05be3 100644
->> --- a/drivers/pinctrl/pinctrl-ingenic.c
->> +++ b/drivers/pinctrl/pinctrl-ingenic.c
->> @@ -135,7 +135,6 @@ struct ingenic_pinctrl {
->>  struct ingenic_gpio_chip {
->>  	struct ingenic_pinctrl *jzpc;
->>  	struct gpio_chip gc;
->> -	struct irq_chip irq_chip;
->>  	unsigned int irq, reg_base;
->>  };
->> @@ -3419,6 +3418,8 @@ static void ingenic_gpio_irq_enable(struct irq_data
->> *irqd)
->>  	struct ingenic_gpio_chip *jzgc =3D gpiochip_get_data(gc);
->>  	int irq =3D irqd->hwirq;
->> +	gpiochip_enable_irq(gc, irq);
->> +
->>  	if (is_soc_or_above(jzgc->jzpc, ID_JZ4770))
->>  		ingenic_gpio_set_bit(jzgc, JZ4770_GPIO_INT, irq, true);
->>  	else if (is_soc_or_above(jzgc->jzpc, ID_JZ4740))
->> @@ -3443,6 +3444,8 @@ static void ingenic_gpio_irq_disable(struct irq_da=
-ta
->> *irqd)
->>  		ingenic_gpio_set_bit(jzgc, JZ4740_GPIO_SELECT, irq, false);
->>  	else
->>  		ingenic_gpio_set_bit(jzgc, JZ4730_GPIO_GPIER, irq, false);
->> +
->> +	gpiochip_disable_irq(gc, irq);
->>  }
->>  static void ingenic_gpio_irq_ack(struct irq_data *irqd)
->> @@ -3684,6 +3687,20 @@ static void ingenic_gpio_irq_release(struct irq_d=
-ata
->> *data)
->>  	return gpiochip_relres_irq(gpio_chip, data->hwirq);
->>  }
->> +static const struct irq_chip ingenic_gpio_irqchip =3D {
->> +	.name			=3D "gpio",
->> +	.irq_enable		=3D ingenic_gpio_irq_enable,
->> +	.irq_disable		=3D ingenic_gpio_irq_disable,
->> +	.irq_unmask		=3D ingenic_gpio_irq_unmask,
->> +	.irq_mask		=3D ingenic_gpio_irq_mask,
->> +	.irq_ack		=3D ingenic_gpio_irq_ack,
->> +	.irq_set_type		=3D ingenic_gpio_irq_set_type,
->> +	.irq_set_wake		=3D ingenic_gpio_irq_set_wake,
->> +	.irq_request_resources	=3D ingenic_gpio_irq_request,
->> +	.irq_release_resources	=3D ingenic_gpio_irq_release,
->> +	.flags			=3D IRQCHIP_MASK_ON_SUSPEND | IRQCHIP_IMMUTABLE,
->> +};
->> +
->>  static int ingenic_pinmux_set_pin_fn(struct ingenic_pinctrl *jzpc,
->>  		int pin, int func)
->>  {
->> @@ -4172,20 +4189,8 @@ static int __init ingenic_gpio_probe(struct
->> ingenic_pinctrl *jzpc,
->>  	if (!jzgc->irq)
->>  		return -EINVAL;
->> -	jzgc->irq_chip.name =3D jzgc->gc.label;
->> -	jzgc->irq_chip.irq_enable =3D ingenic_gpio_irq_enable;
->> -	jzgc->irq_chip.irq_disable =3D ingenic_gpio_irq_disable;
->> -	jzgc->irq_chip.irq_unmask =3D ingenic_gpio_irq_unmask;
->> -	jzgc->irq_chip.irq_mask =3D ingenic_gpio_irq_mask;
->> -	jzgc->irq_chip.irq_ack =3D ingenic_gpio_irq_ack;
->> -	jzgc->irq_chip.irq_set_type =3D ingenic_gpio_irq_set_type;
->> -	jzgc->irq_chip.irq_set_wake =3D ingenic_gpio_irq_set_wake;
->> -	jzgc->irq_chip.irq_request_resources =3D ingenic_gpio_irq_request;
->> -	jzgc->irq_chip.irq_release_resources =3D ingenic_gpio_irq_release;
->> -	jzgc->irq_chip.flags =3D IRQCHIP_MASK_ON_SUSPEND;
->> -
->>  	girq =3D &jzgc->gc.irq;
->> -	girq->chip =3D &jzgc->irq_chip;
->> +	gpio_irq_chip_set_chip(girq, &ingenic_gpio_irqchip);
+> The skb_recv_datagram() in ax25_recvmsg() will hold lock_sock
+> and block until it receives a packet from the remote. If the client
+> doesn`t connect to server and calls read() directly, it will not
+> receive any packets forever. As a result, the deadlock will happen.
 >
-> This will change each irq_chip's name to "gpio", do we want that?
+> The fail log caused by deadlock is shown below:
 >
-> You didn't remove jzgc->irq_chip, so maybe what you could do is
-> jzgc->irq_chip =3D ingenic_gpio_irqchip;
-> jzgc->irq_chip.name =3D jzgc->gc.label;
-> gpio_irq_chip_set_chip(girq, &jzgc->irq_chip);
+> [  369.606973] INFO: task ax25_deadlock:157 blocked for more than 245 seconds.
+> [  369.608919] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+> [  369.613058] Call Trace:
+> [  369.613315]  <TASK>
+> [  369.614072]  __schedule+0x2f9/0xb20
+> [  369.615029]  schedule+0x49/0xb0
+> [  369.615734]  __lock_sock+0x92/0x100
+> [  369.616763]  ? destroy_sched_domains_rcu+0x20/0x20
+> [  369.617941]  lock_sock_nested+0x6e/0x70
+> [  369.618809]  ax25_bind+0xaa/0x210
+> [  369.619736]  __sys_bind+0xca/0xf0
+> [  369.620039]  ? do_futex+0xae/0x1b0
+> [  369.620387]  ? __x64_sys_futex+0x7c/0x1c0
+> [  369.620601]  ? fpregs_assert_state_consistent+0x19/0x40
+> [  369.620613]  __x64_sys_bind+0x11/0x20
+> [  369.621791]  do_syscall_64+0x3b/0x90
+> [  369.622423]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> [  369.623319] RIP: 0033:0x7f43c8aa8af7
+> [  369.624301] RSP: 002b:00007f43c8197ef8 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
+> [  369.625756] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f43c8aa8af7
+> [  369.626724] RDX: 0000000000000010 RSI: 000055768e2021d0 RDI: 0000000000000005
+> [  369.628569] RBP: 00007f43c8197f00 R08: 0000000000000011 R09: 00007f43c8198700
+> [  369.630208] R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff845e6afe
+> [  369.632240] R13: 00007fff845e6aff R14: 00007f43c8197fc0 R15: 00007f43c8198700
 >
-> Thoughts?
+> This patch moves the skb_recv_datagram() before lock_sock() in order
+> that other functions that need lock_sock could be executed.
 >
-> Cheers,
-> -Paul
+> Suggested-by: Thomas Osterried <thomas@osterried.de>
+> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+> Reported-by: Thomas Habets <thomas@@habets.se>
+> ---
+> Changes in v2:
+>   - Make commit messages clearer.
 >
+>  net/ax25/af_ax25.c | 11 ++++++-----
+>  1 file changed, 6 insertions(+), 5 deletions(-)
+>
+> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+> index 95393bb2760..02cd6087512 100644
+> --- a/net/ax25/af_ax25.c
+> +++ b/net/ax25/af_ax25.c
+> @@ -1665,6 +1665,11 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>         int copied;
+>         int err = 0;
+>
+> +       /* Now we can treat all alike */
+> +       skb = skb_recv_datagram(sk, flags, &err);
+> +       if (!skb)
+> +               goto done;
+> +
 
-I wondered that myself, but it doesn't seem to affect anything except
-what is displayed in /proc/interrupts. Is the name used anywhere else
-where it might cause confusion?
+So at this point we have skb=something. This means that the following
+branch will leak it.
 
-The only similar case I could find was pinctrl-microchip-sgpio.c where
-microchip_sgpio_register_bank() is called in a loop and registers the
-same irq chip repeatedly, so it's probably(?) okay to do this here. It
-seems to defeat the point of immutable irqchips if they just have to be
-copied anyway...
+if (sk->sk_type == SOCK_SEQPACKET && sk->sk_state != TCP_ESTABLISHED) {
+    err =  -ENOTCONN;
+    goto out;    // skb will be leaked
+}
 
-(btw, I did remove jzgc->irq_chip -- or did I miss something?)
 
-Best regards,
-Aidan
-
->>  	girq->parent_handler =3D ingenic_gpio_irq_handler;
->>  	girq->num_parents =3D 1;
->>  	girq->parents =3D devm_kcalloc(dev, 1, sizeof(*girq->parents),
->> --
->> 2.35.1
->>=20
-
+>         /*
+>          *      This works for seqpacket too. The receiver has ordered the
+> @@ -1675,11 +1680,6 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>                 goto out;
+>         }
+>
+> -       /* Now we can treat all alike */
+> -       skb = skb_recv_datagram(sk, flags, &err);
+> -       if (skb == NULL)
+> -               goto out;
+> -
+>         if (!sk_to_ax25(sk)->pidincl)
+>                 skb_pull(skb, 1);               /* Remove PID */
+>
+> @@ -1725,6 +1725,7 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>  out:
+>         release_sock(sk);
+>
+> +done:
+>         return err;
+>  }
+>
+> --
+> 2.17.1
+>
