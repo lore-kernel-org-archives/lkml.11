@@ -2,101 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D280CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB59DCCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233079AbiFHCOk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:14:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47118 "EHLO
+        id S1359312AbiFHCOy (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:14:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390063AbiFHBGB (ORCPT
+        with ESMTP id S231328AbiFHBWu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 21:06:01 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929D914AC98;
-        Tue,  7 Jun 2022 14:16:12 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id n8so15909274plh.1;
-        Tue, 07 Jun 2022 14:16:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=4ynvHOuA0UQNC2oRu92nWz6l84967KcpkXtkWQovvGY=;
-        b=mTIl9CfWrG+VkaAtrQuOjn2IDncZ/sAU+K6Sv0WHMpCrbrYuncJcRW5kG7Q9uhy2ak
-         Plj5CfsWLG8GtAEv/XmPHw1NJUt/xzg5SaM7RKSCTWvc+1Crks/VDgv8z5dwSyXZ3qGd
-         jXRPIjjth0TPhlImr12DV4mUzetCL1Q1tOU54OQa/hACA9RWdZje4LiD9O+CLYK98li+
-         g3XtL8TAET8eLeSSn9o9AMBa9x/y3ybbx7fwY6zRce/7dytYPUa5VRU4PyxG5WCWFvEw
-         VsHPwTJshGJhU1wB1NCM3FJN9jiL233OXzoYAhRyvImWN5XHtZQMOCSf+UGf92TpoFtg
-         qjCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=4ynvHOuA0UQNC2oRu92nWz6l84967KcpkXtkWQovvGY=;
-        b=C/Z9Ixat/y+Ip1BpklCwYJSDy7COdXNJiUcVMpzsj/Gq4DQRAVdDlVdE5MXHR9zOh2
-         i+k+SfYrdp5sWEjN/04oDRLxAWENgmEYfNObisBYc0CJ4Xh/FX7YdmPVeJ1mz0yE4N2D
-         NUsvfUrKuSpeszIsb0dJ7UoDgr88vOOWRhLN3UzU63aO8kMvf6Tlr3IOJj+kDLwIMH3n
-         /6b1U1FJRZ+oFur4mzpPh3MYr/Rqkqid5XtTR6Ns7ScY7vVb5SzPzlK2pXX7Y+EKsI4w
-         3bbkajV0kUUo4yAffjN1eLT9xq4V0aoG+du3RpRrIOkXG4ea+gi7GK0VB7OJkNCCvec/
-         7eiA==
-X-Gm-Message-State: AOAM533zHwaLZ9KBJo9VTRn6h8hfvENPx3J1IKD1fECPbgXxcQ66oLlH
-        63DTPzHbDIR+XpG6J2wLmPM=
-X-Google-Smtp-Source: ABdhPJwmjbCHibWwnEg/qIGFL8LWHE1mijj1VoqSthY2/03Kk5agVP1W9zKbb4ON/+xsIQKayZGAmA==
-X-Received: by 2002:a17:903:110c:b0:15f:f15:30ec with SMTP id n12-20020a170903110c00b0015f0f1530ecmr30960450plh.162.1654636571800;
-        Tue, 07 Jun 2022 14:16:11 -0700 (PDT)
-Received: from google.com ([2620:15c:202:201:1ce8:21b3:ff45:f42c])
-        by smtp.gmail.com with ESMTPSA id cp14-20020a170902e78e00b00165103c9903sm12904952plb.113.2022.06.07.14.16.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 14:16:10 -0700 (PDT)
-Date:   Tue, 7 Jun 2022 14:16:08 -0700
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
-Subject: [git pull] Input updates for v5.19-rc1
-Message-ID: <Yp/AGMpXXnx9lW6j@google.com>
+        Tue, 7 Jun 2022 21:22:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4AEC1957B6;
+        Tue,  7 Jun 2022 12:18:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BE3961976;
+        Tue,  7 Jun 2022 19:18:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89A80C34115;
+        Tue,  7 Jun 2022 19:18:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629493;
+        bh=ZarOxv6OC6Lb7v0F8skjQkznp1Vq8KrFhn6FrSySwWs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QGEBgJFUsqbipf/tCn/IpzP3HlBfKEunEBlY3Gz88iEvbTzdHB8xVB83OCC2LaMPp
+         zbE+7Z8zu1bz8apvB+tLXsy6q/uhe9VgAvsoPJxmOpINjQggasFk1R66bfY9WhkGCm
+         0Qgc4O4ylbZMFPCslNraHVXOYj+MdUbPNUi4Ptb4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.18 710/879] f2fs: fix to clear dirty inode in f2fs_evict_inode()
+Date:   Tue,  7 Jun 2022 19:03:48 +0200
+Message-Id: <20220607165023.462494488@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+From: Chao Yu <chao@kernel.org>
 
-Please pull from:
+commit f2db71053dc0409fae785096ad19cce4c8a95af7 upstream.
 
-	git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git tags/input-for-v5.19-rc1
+As Yanming reported in bugzilla:
 
-to receive updates for the input subsystem. You will get:
+https://bugzilla.kernel.org/show_bug.cgi?id=215904
 
-- proper annotation of USB buffers in bcm5974 touchpad dirver
+The kernel message is shown below:
 
-- a quirk in SOC button driver to handle Lenovo Yoga Tablet2 1051F
+kernel BUG at fs/f2fs/inode.c:825!
+Call Trace:
+ evict+0x282/0x4e0
+ __dentry_kill+0x2b2/0x4d0
+ shrink_dentry_list+0x17c/0x4f0
+ shrink_dcache_parent+0x143/0x1e0
+ do_one_tree+0x9/0x30
+ shrink_dcache_for_umount+0x51/0x120
+ generic_shutdown_super+0x5c/0x3a0
+ kill_block_super+0x90/0xd0
+ kill_f2fs_super+0x225/0x310
+ deactivate_locked_super+0x78/0xc0
+ cleanup_mnt+0x2b7/0x480
+ task_work_run+0xc8/0x150
+ exit_to_user_mode_prepare+0x14a/0x150
+ syscall_exit_to_user_mode+0x1d/0x40
+ do_syscall_64+0x48/0x90
 
-- a fix for missing dependency in raspberrypi-ts driver to avoid
-  compile breakages with random configs.
+The root cause is: inode node and dnode node share the same nid,
+so during f2fs_evict_inode(), dnode node truncation will invalidate
+its NAT entry, so when truncating inode node, it fails due to
+invalid NAT entry, result in inode is still marked as dirty, fix
+this issue by clearing dirty for inode and setting SBI_NEED_FSCK
+flag in filesystem.
 
-Changelog:
----------
+output from dump.f2fs:
+[print_node_info: 354] Node ID [0xf:15] is inode
+i_nid[0]                      		[0x       f : 15]
 
-Marius Hoch (1):
-      Input: soc_button_array - also add Lenovo Yoga Tablet2 1051F to dmi_use_low_level_irq
+Cc: stable@vger.kernel.org
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/f2fs/inode.c |   16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
-Mathias Nyman (1):
-      Input: bcm5974 - set missing URB_NO_TRANSFER_DMA_MAP urb flag
+--- a/fs/f2fs/inode.c
++++ b/fs/f2fs/inode.c
+@@ -796,8 +796,22 @@ retry:
+ 		f2fs_lock_op(sbi);
+ 		err = f2fs_remove_inode_page(inode);
+ 		f2fs_unlock_op(sbi);
+-		if (err == -ENOENT)
++		if (err == -ENOENT) {
+ 			err = 0;
++
++			/*
++			 * in fuzzed image, another node may has the same
++			 * block address as inode's, if it was truncated
++			 * previously, truncation of inode node will fail.
++			 */
++			if (is_inode_flag_set(inode, FI_DIRTY_INODE)) {
++				f2fs_warn(F2FS_I_SB(inode),
++					"f2fs_evict_inode: inconsistent node id, ino:%lu",
++					inode->i_ino);
++				f2fs_inode_synced(inode);
++				set_sbi_flag(sbi, SBI_NEED_FSCK);
++			}
++		}
+ 	}
+ 
+ 	/* give more chances, if ENOMEM case */
 
-Randy Dunlap (1):
-      Input: raspberrypi-ts - add missing HAS_IOMEM dependency
 
-Diffstat:
---------
-
- drivers/input/joystick/Kconfig        | 1 +
- drivers/input/misc/soc_button_array.c | 4 ++--
- drivers/input/mouse/bcm5974.c         | 7 ++++++-
- 3 files changed, 9 insertions(+), 3 deletions(-)
-
-Thanks.
-
-
--- 
-Dmitry
