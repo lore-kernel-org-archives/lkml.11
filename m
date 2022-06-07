@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A566CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:54:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F303C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:54:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348769AbiFGRyk (ORCPT
+        id S1348794AbiFGRyq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:54:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34048 "EHLO
+        Tue, 7 Jun 2022 13:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347551AbiFGRfU (ORCPT
+        with ESMTP id S1347701AbiFGRfo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:35:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C25CA1105DA;
-        Tue,  7 Jun 2022 10:30:53 -0700 (PDT)
+        Tue, 7 Jun 2022 13:35:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D860F5061;
+        Tue,  7 Jun 2022 10:31:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33EE3614BC;
-        Tue,  7 Jun 2022 17:30:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BF41C385A5;
-        Tue,  7 Jun 2022 17:30:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72A76614AE;
+        Tue,  7 Jun 2022 17:31:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8566FC385A5;
+        Tue,  7 Jun 2022 17:31:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623052;
-        bh=E/YtM1QEvoFa47vJQc7J+m3/JvtSD7J53XHh40VCSew=;
+        s=korg; t=1654623060;
+        bh=UXT6frlTpLfQse3nCoBzL5EmELwi+AfmgLZ/R0K0RmU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X7STmmSARdkmEx30uczdWa5Kau/+kEQsddAODBsbxLcmMUDC5GOcMJqSD6Aio3sWq
-         Fw7Qj0R5NKOGKv8+fVb16L7+/Rx65i3llV9TEkQVMg8wwn3WSWWuGDHhXnUVkqH3XV
-         W0tz0CnlO1JUmMjg7XC/o0z4C4//aArbUqnuSTjI=
+        b=yLKvSrbK8aU8JYNiyDT1LdUKQSgwGcq5t5K9YQcDUKYTzP+ykM0yOUDENlSyhdyYR
+         zNJDwx0uFA/wmtGLL6I2i0v7eWNRxojbcKOkCIcIYAgcVQXC4UaJfxGCXCfFRUL7yp
+         h3SkIcQdDPAS5Wy4Hr0csUKWQC7xkwjAIAaOoknM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 277/452] ARM: dts: bcm2837-rpi-3-b-plus: Fix GPIO line name of power LED
-Date:   Tue,  7 Jun 2022 19:02:14 +0200
-Message-Id: <20220607164916.804595779@linuxfoundation.org>
+Subject: [PATCH 5.10 280/452] crypto: marvell/cesa - ECB does not IV
+Date:   Tue,  7 Jun 2022 19:02:17 +0200
+Message-Id: <20220607164916.893543938@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,35 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Elwell <phil@raspberrypi.com>
+From: Corentin Labbe <clabbe@baylibre.com>
 
-[ Upstream commit 57f718aa4b93392fb1a8c0a874ab882b9e18136a ]
+[ Upstream commit 4ffa1763622ae5752961499588f3f8874315f974 ]
 
-The red LED on the Raspberry Pi 3 B Plus is the power LED.
-So fix the GPIO line name accordingly.
+The DES3 ECB has an IV size set but ECB does not need one.
 
-Fixes: 71c0cd2283f2 ("ARM: dts: bcm2837: Add Raspberry Pi 3 B+")
-Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Fixes: 4ada483978237 ("crypto: marvell/cesa - add Triple-DES support")
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/crypto/marvell/cesa/cipher.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
-index 61010266ca9a..90472e76a313 100644
---- a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
-+++ b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
-@@ -45,7 +45,7 @@
- 		#gpio-cells = <2>;
- 		gpio-line-names = "BT_ON",
- 				  "WL_ON",
--				  "STATUS_LED_R",
-+				  "PWR_LED_R",
- 				  "LAN_RUN",
- 				  "",
- 				  "CAM_GPIO0",
+diff --git a/drivers/crypto/marvell/cesa/cipher.c b/drivers/crypto/marvell/cesa/cipher.c
+index b4a6ff9dd6d5..596a8c74e40a 100644
+--- a/drivers/crypto/marvell/cesa/cipher.c
++++ b/drivers/crypto/marvell/cesa/cipher.c
+@@ -614,7 +614,6 @@ struct skcipher_alg mv_cesa_ecb_des3_ede_alg = {
+ 	.decrypt = mv_cesa_ecb_des3_ede_decrypt,
+ 	.min_keysize = DES3_EDE_KEY_SIZE,
+ 	.max_keysize = DES3_EDE_KEY_SIZE,
+-	.ivsize = DES3_EDE_BLOCK_SIZE,
+ 	.base = {
+ 		.cra_name = "ecb(des3_ede)",
+ 		.cra_driver_name = "mv-ecb-des3-ede",
 -- 
 2.35.1
 
