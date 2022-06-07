@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2458CCA48C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 335E2CCA48D
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385191AbiFGW0f (ORCPT
+        id S1385283AbiFGW0r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:26:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54528 "EHLO
+        Tue, 7 Jun 2022 18:26:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381274AbiFGVRc (ORCPT
+        with ESMTP id S1381452AbiFGVRo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:17:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 066C9222341;
-        Tue,  7 Jun 2022 11:58:40 -0700 (PDT)
+        Tue, 7 Jun 2022 17:17:44 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB6A52228E5;
+        Tue,  7 Jun 2022 11:58:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1641D61787;
-        Tue,  7 Jun 2022 18:58:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F86CC385A2;
-        Tue,  7 Jun 2022 18:58:38 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4BA20CE244E;
+        Tue,  7 Jun 2022 18:58:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10CDAC385A2;
+        Tue,  7 Jun 2022 18:58:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628319;
-        bh=y5FpsC0QGeen2RQowSl2Y0D8H3xk4G0Akqg3acr5AMs=;
+        s=korg; t=1654628330;
+        bh=g8nzPa7JapSk0M9r9c1N9ngg8LkaT/SpLFWBhIgeGHc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mS//OFsqV9x5h/aHKs2099p4bTMlfp5jsxZlerGUbvcefB0A6XvfReiVbbPdUhiNw
-         0tWmYrVXuBJ0GW/+BtjO20mFNHyPMmqSLSPhoGmDTki8WLpdiKG4qL4FlNq3GTWJC8
-         rL+Q+WPrVofq/gOqopgXWX2/cYe+w3MQ7Rko1Wjw=
+        b=155ErHLkdxdMK7taruDYv2uOcxutRlas43S7k+z2IHLdg8iWRcOhkmHX0SQ0xFM4t
+         MeXLTrs99/oUPRfSLFJyBZw3EUK38ooQmHeDBzqQX5eMD1pUgZAl7FG8gYwX+B51gL
+         1lgwFM06Gp3HWI4t6d9rCpDtFx641i3FWGwyMx1E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 245/879] powerpc/powernv: fix missing of_node_put in uv_init()
-Date:   Tue,  7 Jun 2022 18:56:03 +0200
-Message-Id: <20220607165009.964228978@linuxfoundation.org>
+Subject: [PATCH 5.18 283/879] ASoC: mediatek: Fix missing of_node_put in mt2701_wm8960_machine_probe
+Date:   Tue,  7 Jun 2022 18:56:41 +0200
+Message-Id: <20220607165011.062219565@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,33 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 3ffa9fd471f57f365bc54fc87824c530422f64a5 ]
+[ Upstream commit 05654431a18fe24e5e46a375d98904134628a102 ]
 
-of_find_compatible_node() returns node pointer with refcount incremented,
-use of_node_put() on it when done.
+This node pointer is returned by of_parse_phandle() with
+refcount incremented in this function.
+Calling of_node_put() to avoid the refcount leak.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220407090043.2491854-1-lv.ruyi@zte.com.cn
+Fixes: 8625c1dbd876 ("ASoC: mediatek: Add mt2701-wm8960 machine driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220404093526.30004-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/powernv/ultravisor.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/mediatek/mt2701/mt2701-wm8960.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/platforms/powernv/ultravisor.c b/arch/powerpc/platforms/powernv/ultravisor.c
-index e4a00ad06f9d..67c8c4b2d8b1 100644
---- a/arch/powerpc/platforms/powernv/ultravisor.c
-+++ b/arch/powerpc/platforms/powernv/ultravisor.c
-@@ -55,6 +55,7 @@ static int __init uv_init(void)
- 		return -ENODEV;
+diff --git a/sound/soc/mediatek/mt2701/mt2701-wm8960.c b/sound/soc/mediatek/mt2701/mt2701-wm8960.c
+index f56de1b918bf..0cdf2ae36243 100644
+--- a/sound/soc/mediatek/mt2701/mt2701-wm8960.c
++++ b/sound/soc/mediatek/mt2701/mt2701-wm8960.c
+@@ -129,7 +129,8 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
+ 	if (!codec_node) {
+ 		dev_err(&pdev->dev,
+ 			"Property 'audio-codec' missing or invalid\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_platform_node;
+ 	}
+ 	for_each_card_prelinks(card, i, dai_link) {
+ 		if (dai_link->codecs->name)
+@@ -140,7 +141,7 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
+ 	ret = snd_soc_of_parse_audio_routing(card, "audio-routing");
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "failed to parse audio-routing: %d\n", ret);
+-		return ret;
++		goto put_codec_node;
+ 	}
  
- 	uv_memcons = memcons_init(node, "memcons");
-+	of_node_put(node);
- 	if (!uv_memcons)
- 		return -ENOENT;
+ 	ret = devm_snd_soc_register_card(&pdev->dev, card);
+@@ -148,6 +149,10 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
+ 
++put_codec_node:
++	of_node_put(codec_node);
++put_platform_node:
++	of_node_put(platform_node);
+ 	return ret;
+ }
  
 -- 
 2.35.1
