@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99667C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D15C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381776AbiFGWnl (ORCPT
+        id S1385687AbiFGWqT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:43:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53552 "EHLO
+        Tue, 7 Jun 2022 18:46:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381015AbiFGVbd (ORCPT
+        with ESMTP id S1380845AbiFGVgD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:31:33 -0400
+        Tue, 7 Jun 2022 17:36:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3F022CBC0;
-        Tue,  7 Jun 2022 12:03:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E93522E6B2;
+        Tue,  7 Jun 2022 12:04:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FCFE61787;
-        Tue,  7 Jun 2022 19:03:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C0C2C385A2;
-        Tue,  7 Jun 2022 19:03:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CE4F0617CC;
+        Tue,  7 Jun 2022 19:04:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D59E7C385A5;
+        Tue,  7 Jun 2022 19:04:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628631;
-        bh=BDDoZxr1eKu5Wdw7H5zkc4+WOHk5bi0DYo1GO1cBECY=;
+        s=korg; t=1654628681;
+        bh=VtHAmwGWq2JmA7+s917yXycdVl/6usKdMAWjj8/uqLI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NzWubk7529KEiN54RxV6TXk8VbPr/CVbmZjoc81Sw6qC3viIWz/rRfUxKFh5Qy3VP
-         TMFqKLTkoeI19lRJzaK76seAIeGelDr3EwLODdn5KOKKj/K1rUmw2X/mjUBvQ4oOrr
-         RsPbgvKZGL+Q1NVcAyqjIe/KrvqId7eJ5aVv6osY=
+        b=sK4XaoeEOu/kRxtpS7k0GbJCS7lAGZxw+urVen3xUnLNJxmZXpVs9QdzxDtSDCE4w
+         4qRXI7MSjznobAWRf0I/i+w/l49XUq4D1vGd+ry7YE+Mzv2txw8gGP3C0PwmKtTHu3
+         ZuuH8fAkBQFy9waefnyP1gRcTzREoRbT8KsrE5KU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 398/879] drm/msm/dp: fix event thread stuck in wait_event after kthread_stop()
-Date:   Tue,  7 Jun 2022 18:58:36 +0200
-Message-Id: <20220607165014.416736656@linuxfoundation.org>
+Subject: [PATCH 5.18 376/879] drm/msm: add missing include to msm_drv.c
+Date:   Tue,  7 Jun 2022 18:58:14 +0200
+Message-Id: <20220607165013.784905114@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,66 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit 2f9b5b3ae2eb625b75a898212a76f3b8c6d0d2b0 ]
+[ Upstream commit 8123fe83c3a3448bbfa5b5b1cacfdfe7d076fca6 ]
 
-Event thread supposed to exit from its while loop after kthread_stop().
-However there may has possibility that event thread is pending in the
-middle of wait_event due to condition checking never become true.
-To make sure event thread exit its loop after kthread_stop(), this
-patch OR kthread_should_stop() into wait_event's condition checking
-so that event thread will exit its loop after kernal_stop().
+Add explicit include of drm_bridge.h to the msm_drv.c to fix the
+following warning:
 
-Changes in v2:
---  correct spelling error at commit title
+drivers/gpu/drm/msm/msm_drv.c:236:17: error: implicit declaration of function 'drm_bridge_remove'; did you mean 'drm_bridge_detach'? [-Werror=implicit-function-declaration]
 
-Changes in v3:
--- remove unnecessary parenthesis
--- while(1) to replace while (!kthread_should_stop())
-
-Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Fixes: 570d3e5d28db ("drm/msm/dp: stop event kernel thread when DP unbind")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/484576/
-Link: https://lore.kernel.org/r/1651595136-24312-1-git-send-email-quic_khsieh@quicinc.com
+Fixes: d28ea556267c ("drm/msm: properly add and remove internal bridges")
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/484310/
+Link: https://lore.kernel.org/r/20220430180917.3819294-1-dmitry.baryshkov@linaro.org
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_display.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/msm/msm_drv.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index b3bfe9ac9d80..8deb92bddfde 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -1107,15 +1107,20 @@ static int hpd_event_thread(void *data)
+diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+index 71e1b7393f6f..e3d83963ad54 100644
+--- a/drivers/gpu/drm/msm/msm_drv.c
++++ b/drivers/gpu/drm/msm/msm_drv.c
+@@ -11,6 +11,7 @@
+ #include <linux/uaccess.h>
+ #include <uapi/linux/sched/types.h>
  
- 	dp_priv = (struct dp_display_private *)data;
- 
--	while (!kthread_should_stop()) {
-+	while (1) {
- 		if (timeout_mode) {
- 			wait_event_timeout(dp_priv->event_q,
--				(dp_priv->event_pndx == dp_priv->event_gndx),
--						EVENT_TIMEOUT);
-+				(dp_priv->event_pndx == dp_priv->event_gndx) ||
-+					kthread_should_stop(), EVENT_TIMEOUT);
- 		} else {
- 			wait_event_interruptible(dp_priv->event_q,
--				(dp_priv->event_pndx != dp_priv->event_gndx));
-+				(dp_priv->event_pndx != dp_priv->event_gndx) ||
-+					kthread_should_stop());
- 		}
-+
-+		if (kthread_should_stop())
-+			break;
-+
- 		spin_lock_irqsave(&dp_priv->event_lock, flag);
- 		todo = &dp_priv->event_list[dp_priv->event_gndx];
- 		if (todo->delay) {
++#include <drm/drm_bridge.h>
+ #include <drm/drm_drv.h>
+ #include <drm/drm_file.h>
+ #include <drm/drm_ioctl.h>
 -- 
 2.35.1
 
