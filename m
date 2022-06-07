@@ -2,111 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C743C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:54:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3216CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:54:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353294AbiFGSyg (ORCPT
+        id S1353746AbiFGSyu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41768 "EHLO
+        Tue, 7 Jun 2022 14:54:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352980AbiFGSRt (ORCPT
+        with ESMTP id S1352840AbiFGSRg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE4813FD62;
-        Tue,  7 Jun 2022 10:52:53 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F11A60D9F;
+        Tue,  7 Jun 2022 10:52:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EFFC617B9;
-        Tue,  7 Jun 2022 17:52:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FF83C34115;
-        Tue,  7 Jun 2022 17:52:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624371;
-        bh=r9EDQ5XP4BWWPftljU1gZjCWV5NjzuP3vig8WNTJqEs=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E422D6146F;
+        Tue,  7 Jun 2022 17:52:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57B56C36AFF;
+        Tue,  7 Jun 2022 17:52:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624365;
+        bh=8izUmjKo1OhKIvKhyu9R4mftwNwqWzMLwldws7KiUNo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GH6cL98Z1IpbEzRRubfCkw+qbXBKuDWCVNpmk2Kbu/dgwKaTeigMI2K2F2jFt4dpZ
-         ZVywJAjDEk32rLp5ivKVLpnXru/9JLCH6P9nE0ee4LC92Rk6y9ataHHPzJdy9ghhWQ
-         LhvOYx+ScFmRkRA8BIFM0f62r+Aj0LuCDf96nBOY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baochen Qiang <quic_bqiang@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 301/667] ath11k: Dont check arvif->is_started before sending management frames
-Date:   Tue,  7 Jun 2022 18:59:26 +0200
-Message-Id: <20220607164943.805977328@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=ISEENENNzeoxZE8TPTTmtmBe/EbavlgLCFfp+c28u1SGbk4whAkJexOgIQYVGdvfD
+         Pj6U1LAl8FUxM9Pz+M4N/Ea3WSIRobkSDDGrZPNYU7xyVNrzYxnle3kttHrElgaOwj
+         QVnY2AFPXiuAvIU8HsMNbjVxRIOt5Qeb2Qhyv+//XPCtuFHuVhxFenfX+guxM3Cjy4
+         Dj7jjt7Mo2A3JvvcSFWZz/YT8TFwdYbA9HQetqqxP4G97S413nX4wIoxJvlJvou3Rv
+         /oVOZukfQYDPFjJb87+azbrteU5jeEWkSCZ5xUS22KAofgtUeofELiMnGZpK+ibqwT
+         OSNCFo9G+03Dw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Steve French <stfrench@microsoft.com>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
+Subject: [PATCH AUTOSEL 5.18 66/68] cifs: version operations for smb20 unneeded when legacy support disabled
+Date:   Tue,  7 Jun 2022 13:48:32 -0400
+Message-Id: <20220607174846.477972-66-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baochen Qiang <quic_bqiang@quicinc.com>
+From: Steve French <stfrench@microsoft.com>
 
-[ Upstream commit 355333a217541916576351446b5832fec7930566 ]
+[ Upstream commit 7ef93ffccd55fb0ba000ed16ef6a81cd7dee07b5 ]
 
-Commit 66307ca04057 ("ath11k: fix mgmt_tx_wmi cmd sent to FW for
-deleted vdev") wants both of below two conditions are true before
-sending management frames:
+We should not be including unused smb20 specific code when legacy
+support is disabled (CONFIG_CIFS_ALLOW_INSECURE_LEGACY turned
+off).  For example smb2_operations and smb2_values aren't used
+in that case.  Over time we can move more and more SMB1/CIFS and SMB2.0
+code into the insecure legacy ifdefs
 
-1: ar->allocated_vdev_map & (1LL << arvif->vdev_id)
-2: arvif->is_started
-
-Actually the second one is not necessary because with the first one
-we can make sure the vdev is present.
-
-Also use ar->conf_mutex to synchronize vdev delete and mgmt. TX.
-
-This issue is found in case of Passpoint scenario where ath11k
-needs to send action frames before vdev is started.
-
-Fix it by removing the second condition.
-
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-01720.1-QCAHSPSWPL_V1_V2_SILICONZ_LITE-1
-
-Fixes: 66307ca04057 ("ath11k: fix mgmt_tx_wmi cmd sent to FW for deleted vdev")
-Signed-off-by: Baochen Qiang <quic_bqiang@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220506013614.1580274-3-quic_bqiang@quicinc.com
+Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/mac.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ fs/cifs/cifsglob.h | 4 +++-
+ fs/cifs/smb2ops.c  | 7 ++++++-
+ 2 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index bf64ab6e8484..f85fd341557e 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -4266,8 +4266,8 @@ static void ath11k_mgmt_over_wmi_tx_work(struct work_struct *work)
- 		}
+diff --git a/fs/cifs/cifsglob.h b/fs/cifs/cifsglob.h
+index 719d419a0a06..04bdd4412c17 100644
+--- a/fs/cifs/cifsglob.h
++++ b/fs/cifs/cifsglob.h
+@@ -1929,11 +1929,13 @@ extern mempool_t *cifs_mid_poolp;
  
- 		arvif = ath11k_vif_to_arvif(skb_cb->vif);
--		if (ar->allocated_vdev_map & (1LL << arvif->vdev_id) &&
--		    arvif->is_started) {
-+		mutex_lock(&ar->conf_mutex);
-+		if (ar->allocated_vdev_map & (1LL << arvif->vdev_id)) {
- 			ret = ath11k_mac_mgmt_tx_wmi(ar, arvif, skb);
- 			if (ret) {
- 				ath11k_warn(ar->ab, "failed to tx mgmt frame, vdev_id %d :%d\n",
-@@ -4283,6 +4283,7 @@ static void ath11k_mgmt_over_wmi_tx_work(struct work_struct *work)
- 				    arvif->is_started);
- 			ieee80211_free_txskb(ar->hw, skb);
- 		}
-+		mutex_unlock(&ar->conf_mutex);
+ /* Operations for different SMB versions */
+ #define SMB1_VERSION_STRING	"1.0"
++#define SMB20_VERSION_STRING    "2.0"
++#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
+ extern struct smb_version_operations smb1_operations;
+ extern struct smb_version_values smb1_values;
+-#define SMB20_VERSION_STRING	"2.0"
+ extern struct smb_version_operations smb20_operations;
+ extern struct smb_version_values smb20_values;
++#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+ #define SMB21_VERSION_STRING	"2.1"
+ extern struct smb_version_operations smb21_operations;
+ extern struct smb_version_values smb21_values;
+diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+index d6aaeff4a30a..304a3cbd205f 100644
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -4323,11 +4323,13 @@ smb3_set_oplock_level(struct cifsInodeInfo *cinode, __u32 oplock,
  	}
  }
  
++#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
+ static bool
+ smb2_is_read_op(__u32 oplock)
+ {
+ 	return oplock == SMB2_OPLOCK_LEVEL_II;
+ }
++#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+ 
+ static bool
+ smb21_is_read_op(__u32 oplock)
+@@ -5426,7 +5428,7 @@ smb2_make_node(unsigned int xid, struct inode *inode,
+ 	return rc;
+ }
+ 
+-
++#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
+ struct smb_version_operations smb20_operations = {
+ 	.compare_fids = smb2_compare_fids,
+ 	.setup_request = smb2_setup_request,
+@@ -5525,6 +5527,7 @@ struct smb_version_operations smb20_operations = {
+ 	.is_status_io_timeout = smb2_is_status_io_timeout,
+ 	.is_network_name_deleted = smb2_is_network_name_deleted,
+ };
++#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+ 
+ struct smb_version_operations smb21_operations = {
+ 	.compare_fids = smb2_compare_fids,
+@@ -5856,6 +5859,7 @@ struct smb_version_operations smb311_operations = {
+ 	.is_network_name_deleted = smb2_is_network_name_deleted,
+ };
+ 
++#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
+ struct smb_version_values smb20_values = {
+ 	.version_string = SMB20_VERSION_STRING,
+ 	.protocol_id = SMB20_PROT_ID,
+@@ -5876,6 +5880,7 @@ struct smb_version_values smb20_values = {
+ 	.signing_required = SMB2_NEGOTIATE_SIGNING_REQUIRED,
+ 	.create_lease_size = sizeof(struct create_lease),
+ };
++#endif /* ALLOW_INSECURE_LEGACY */
+ 
+ struct smb_version_values smb21_values = {
+ 	.version_string = SMB21_VERSION_STRING,
 -- 
 2.35.1
-
-
 
