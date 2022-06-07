@@ -2,106 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F1CCCA48E
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24E7ECCA491
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441823AbiFHB6n (ORCPT
+        id S1441996AbiFHB7M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48964 "EHLO
+        Tue, 7 Jun 2022 21:59:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1835791AbiFGX5A (ORCPT
+        with ESMTP id S1835888AbiFGX5I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:57:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E61B5FC839
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:21:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E951B8246D
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 23:21:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 180CBC3411C;
-        Tue,  7 Jun 2022 23:21:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1654644089;
-        bh=ymIo+kLBAAc0OcbtfNyqfVnFABqcw4XNx0p6uN0nCIg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CBxSOnoO0TAC1DtNHY8cqYCZ7pnePew9ByeYmSBHi3RynjaUzxzf0OdKKjT1iV23y
-         I4yjFKLKiC8t1e/9qdw1EPVb2CihwC42WgtTFgrVtDoj23B3/UISgAP7XsZejFRvmo
-         xhoIlR5qXfUYDXrIaRv2tanEGqC+A+xlRumFJDt0=
-Date:   Tue, 7 Jun 2022 16:21:28 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Justin Stitt <jstitt007@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Richard Smith <richardsmith@google.com>
-Subject: Re: [PATCH] include/uapi/linux/swab.h: add __u16 cast to __swab16
- conditional
-Message-Id: <20220607162128.b5d4aa70f4a8a7610ce29250@linux-foundation.org>
-In-Reply-To: <CAKwvOdmXeRbFjkHgFXps4pLH6Q6pGWRNOqA85=h2aFnR=uaggg@mail.gmail.com>
-References: <20220607222006.22719-1-jstitt007@gmail.com>
-        <20220607152744.d7c801d092529309500ac9a6@linux-foundation.org>
-        <CAKwvOdmXeRbFjkHgFXps4pLH6Q6pGWRNOqA85=h2aFnR=uaggg@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Tue, 7 Jun 2022 19:57:08 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F382F144BDF;
+        Tue,  7 Jun 2022 16:28:18 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id y85so6858612iof.2;
+        Tue, 07 Jun 2022 16:28:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:in-reply-to:subject:to:cc
+         :content-transfer-encoding;
+        bh=te17bPQlv3f8pwlehZAVfbTbJYH6mrgXuFHtUBqS2jo=;
+        b=HyRkkGxdjb0WMg0vhnNHPdUlU1Acqmjbtwx1qYhshCIVQ7rnsP0EItQU/itNtn4Yfn
+         SRg/Z7ekEPumiW7z/R7KMr2zL1V7Yx7kYJ3s1OhP9eGi5eAIISPYZNM0E6U1Dsbj5vox
+         Pf4q6nrUb3EfDs/2wTrx1YnNipG6P+b6ZCTIvvMHzYZGGMnYb3xLvnkbLsa5SIuel6bi
+         bBIcy3E6zDz3diAOCD8CFJwckC/2ouapSrBG8fVe3Oz2g2ybbQEmEkqyNRDf45c0DP6c
+         C6QXifMAl6DpTtVM/15uy+9Zej9kNUPs9yRDavy/Gj26fAx78FBdhzLxPvEB6e6dQpmP
+         /aZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
+         :content-transfer-encoding;
+        bh=te17bPQlv3f8pwlehZAVfbTbJYH6mrgXuFHtUBqS2jo=;
+        b=gFRGUJbr4YO5mjMd21JyQbod0tUVuou4AjfO6dckOaIXYU6mDfJAfg8L6VZoXdv3Xk
+         +HPEf9uMkGhE7LQyLeouEGUNAY4E4pT4mhfBmZ2z0wsaKH/5iNgOEV7hfnDMAl8svRG2
+         HnSDBhrNSxNUnv7nVKOXmHrtU9Klin7n6js0GmQpzJr6pdUqZZh+CKVKfX0IAd0CqqzO
+         NcLtKW14eJnNZE6U4y2otlgVroYGZaKZ1xA1iUtDtlQI400dQY+IsAa2yE0rmsynnnTL
+         Ue8EfvdFKoESB4PaeXlX0pqU6+gVmFwBLMLybAU1vgZ0Pka10inuODIEfOHh2OYAGMw/
+         /hLg==
+X-Gm-Message-State: AOAM532Dzg+2WH/VZncewRofW959ZceS+wC65AbP5+Yi4ypen5Nw5lkf
+        VtdYXlOkW+iZD/EzsV8LCOoxYxBArQ7fUdkb+Q4=
+X-Google-Smtp-Source: ABdhPJwYZKovJMbWY9dnw7zHN9LCiQVPtg9rmSGHiWGi3j9wW9IPjRxRmdA+a+Zc+cOS7Ituyw1CQg==
+X-Received: by 2002:a5d:850f:0:b0:660:92e:5edc with SMTP id q15-20020a5d850f000000b00660092e5edcmr15041205ion.187.1654644497954;
+        Tue, 07 Jun 2022 16:28:17 -0700 (PDT)
+Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [2605:2700:0:2:a800:ff:fed6:fc0d])
+        by smtp.gmail.com with ESMTPSA id b14-20020a05663805ae00b00331d98c9a7fsm935138jar.40.2022.06.07.16.28.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 16:28:17 -0700 (PDT)
+Message-ID: <629fdf11.1c69fb81.4e241.1bb2@mx.google.com>
+Date:   Tue, 07 Jun 2022 16:28:17 -0700 (PDT)
+X-Google-Original-Date: Tue, 07 Jun 2022 23:28:15 GMT
+From:   Fox Chen <foxhlchen@gmail.com>
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+Subject: RE: [PATCH 5.15 000/667] 5.15.46-rc1 review
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Fox Chen <foxhlchen@gmail.com>
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 7 Jun 2022 15:42:56 -0700 Nick Desaulniers <ndesaulniers@google.com> wrote:
-
-> On Tue, Jun 7, 2022 at 3:27 PM Andrew Morton <akpm@linux-foundation.org> wrote:
-> >
-> > On Tue,  7 Jun 2022 15:20:06 -0700 Justin Stitt <jstitt007@gmail.com> wrote:
-> >
-> > > if __HAVE_BUILTIN_BSWAP16__ is defined then __swab16 utilizes a __u16 cast.
-> > > This same cast should be used if __HAVE_BUILTIN_BSWAP16__ is not defined as
-> > > well. This should fix loads (at least a few) clang -Wformat warnings
-> > > specifically with `ntohs()`
-> > >
-> > > ...
-> > >
-> > > --- a/include/uapi/linux/swab.h
-> > > +++ b/include/uapi/linux/swab.h
-> > > @@ -102,7 +102,7 @@ static inline __attribute_const__ __u32 __fswahb32(__u32 val)
-> > >  #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
-> > >  #else
-> > >  #define __swab16(x)                          \
-> > > -     (__builtin_constant_p((__u16)(x)) ?     \
-> > > +     (__u16)(__builtin_constant_p((__u16)(x)) ?      \
-> > >       ___constant_swab16(x) :                 \
-> > >       __fswab16(x))
-> > >  #endif
-> >
-> > More explanation, please?  Both ___constant_swab16() and __fswab16()
-> > return __u16, so why does this patch have any effect?
-> >
+On Tue,  7 Jun 2022 18:54:25 +0200, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> This is the start of the stable review cycle for the 5.15.46 release.
+> There are 667 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> See this example:
-> https://godbolt.org/z/fzE73jn13
-> And the ImplicitCastExpr nodes adding to the AST:
-> https://godbolt.org/z/oYeYxYdKW
+> Responses should be made by Thu, 09 Jun 2022 16:48:02 +0000.
+> Anything received after that time might be too late.
 > 
-> Both the second and third operand are promoted to int.
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.46-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
 > 
-> C11: https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1548.pdf
+> thanks,
 > 
-> 6.5.15/5
-> >> If both the second and third operands have arithmetic type, the result type that would be determined by the usual arithmetic conversions, were they applied to those two operands, is the type of the result.
-> 6.3.1.8/1
-> >> Otherwise, the integer promotions are performed on both operands.
-> 6.3.1.1/2
-> >> If an int can represent all values of the original type (as restricted by the width, for a bit-field), the value is converted to an int; otherwise, it is converted to an unsigned int. These are called the integer promotions.
+> greg k-h
+> 
 
-Geeze.  Can we please turn this into English and add it to the changelog?
+5.15.46-rc1 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
+                
+Tested-by: Fox Chen <foxhlchen@gmail.com>
 
-Is it saying that an expression
-
-	int ? u16 : u16
-
-has type int?  Or something else?  What did we do wrong here and is it
-possible to correct our types rather than adding a cast?
