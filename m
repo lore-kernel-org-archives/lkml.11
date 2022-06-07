@@ -2,49 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 736B3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:23:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E832DCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:23:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352035AbiFGVXV (ORCPT
+        id S1377184AbiFGVXa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:23:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59690 "EHLO
+        Tue, 7 Jun 2022 17:23:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376871AbiFGU2P (ORCPT
+        with ESMTP id S1377068AbiFGU2Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:28:15 -0400
+        Tue, 7 Jun 2022 16:28:24 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B43041D9B40;
-        Tue,  7 Jun 2022 11:33:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A32061DAE79;
+        Tue,  7 Jun 2022 11:33:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C24C3B82349;
-        Tue,  7 Jun 2022 18:33:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2023BC385A2;
-        Tue,  7 Jun 2022 18:33:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0CAAFB82367;
+        Tue,  7 Jun 2022 18:33:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78372C385A2;
+        Tue,  7 Jun 2022 18:33:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626799;
-        bh=WYUm3IfFlBJsTPpfZgfJ8+0Ib/s2pOnubORdt3YOv3g=;
+        s=korg; t=1654626826;
+        bh=EFmUdl9NrFEx7bbsKO6ZCv5QzcIZLGeHdaaADbLR9TU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CFBHGoPjFfovRJ+lW99pT1m3k5s+A8uLiVPiIq0RB6VzH+hKi+no8ITr1fgZEDEtn
-         hwVqjfc92eETE6LZwLclWNW2F2mjnGrVPiUL9S4GOnnmF6nfom1SlvE7b15MR39P+e
-         nXPzh+NkaUrAREBrK4qvSLUNczxdt9j4hDTL22XE=
+        b=mnnHyDCOvGutB6aatHO/z6Ig57oHIpCG2cGkXYJbxOlkUA9FaM6B1u7g9yjk9ybo9
+         l9GMY6jEwscTBCRpqT8UmoyB8ln5r6WQ+rFax4m2MWw12SSpTVGC75vUMgKUPoiuXU
+         mnZlbj+Jd3p5SnNx+Plw392v97jXC87AQabYGonc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Michal Hocko <mhocko@suse.com>,
-        David Hildenbrand <david@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Scott Cheloha <cheloha@linux.vnet.ibm.com>,
-        Nathan Lynch <nathanl@linux.ibm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 507/772] drivers/base/memory: fix an unlikely reference counting issue in __add_memory_block()
-Date:   Tue,  7 Jun 2022 19:01:39 +0200
-Message-Id: <20220607165003.919479616@linuxfoundation.org>
+Subject: [PATCH 5.17 477/772] ARM: dts: bcm2837-rpi-cm3-io3: Fix GPIO line names for SMPS I2C
+Date:   Tue,  7 Jun 2022 19:01:09 +0200
+Message-Id: <20220607165003.049352180@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -56,50 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Phil Elwell <phil@raspberrypi.com>
 
-[ Upstream commit f47f758cff59c68015d6b9b9c077110df7c2c828 ]
+[ Upstream commit 9fd26fd02749ec964eb0d588a3bab9e09bf77927 ]
 
-__add_memory_block() calls both put_device() and device_unregister() when
-storing the memory block into the xarray.  This is incorrect because
-xarray doesn't take an additional reference and device_unregister()
-already calls put_device().
+The GPIOs 46 & 47 are already used for a I2C interface to a SMPS.
+So fix the GPIO line names accordingly.
 
-Triggering the issue looks really unlikely and its only effect should be
-to log a spurious warning about a ref counted issue.
-
-Link: https://lkml.kernel.org/r/d44c63d78affe844f020dc02ad6af29abc448fc4.1650611702.git.christophe.jaillet@wanadoo.fr
-Fixes: 4fb6eabf1037 ("drivers/base/memory.c: cache memory blocks in xarray to accelerate lookup")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Reviewed-by: David Hildenbrand <david@redhat.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Scott Cheloha <cheloha@linux.vnet.ibm.com>
-Cc: Nathan Lynch <nathanl@linux.ibm.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: a54fe8a6cf66 ("ARM: dts: add Raspberry Pi Compute Module 3 and IO board")
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/memory.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/base/memory.c b/drivers/base/memory.c
-index 60c38f9cf1a7..c0d501a3a714 100644
---- a/drivers/base/memory.c
-+++ b/drivers/base/memory.c
-@@ -634,10 +634,9 @@ int register_memory(struct memory_block *memory)
- 	}
- 	ret = xa_err(xa_store(&memory_blocks, memory->dev.id, memory,
- 			      GFP_KERNEL));
--	if (ret) {
--		put_device(&memory->dev);
-+	if (ret)
- 		device_unregister(&memory->dev);
--	}
-+
- 	return ret;
- }
- 
+diff --git a/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts b/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
+index 588d9411ceb6..3dfce4312dfc 100644
+--- a/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
++++ b/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
+@@ -63,8 +63,8 @@
+ 			  "GPIO43",
+ 			  "GPIO44",
+ 			  "GPIO45",
+-			  "GPIO46",
+-			  "GPIO47",
++			  "SMPS_SCL",
++			  "SMPS_SDA",
+ 			  /* Used by eMMC */
+ 			  "SD_CLK_R",
+ 			  "SD_CMD_R",
 -- 
 2.35.1
 
