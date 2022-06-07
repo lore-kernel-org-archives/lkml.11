@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 212C1CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:51:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 926E1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:51:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241759AbiFGKva (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:51:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43490 "EHLO
+        id S242001AbiFGKvh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:51:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242314AbiFGKuK (ORCPT
+        with ESMTP id S242347AbiFGKuN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:50:10 -0400
+        Tue, 7 Jun 2022 06:50:13 -0400
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82802F5D33;
-        Tue,  7 Jun 2022 03:49:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7975CF6899;
+        Tue,  7 Jun 2022 03:49:57 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 13F0921B79;
-        Tue,  7 Jun 2022 10:49:52 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id B81A221B8D;
+        Tue,  7 Jun 2022 10:49:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1654598992; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1654598995; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=F3O8pK7reIxPoFRnMcI5fdMHJz2FqzvY3j9G6Q+mnLQ=;
-        b=t2QPgyVvjdgXeqXuDziaytbgnFFz5I8nZZInxLQBJXXUq1tjx1SQlY/rXXYAkWxJcOp9Cv
-        9/kRsBx2GYI+9pTTFBbYB6SyOPoCbW9SYLOzZ4zK4D5lkDkDz6zy8QZO8xEKfEchWY8OL2
-        OJLj8XkwUoYZCRUYH9DfsbnqY0e5FRg=
+        bh=7BjPVmtbFq5FUh/IYXJ3D58IxbsAq5TORJTTrDD3fbU=;
+        b=VkAAy1RmE1oWgv3H/cPacGJ/jJB1kSC9snCj8LRUMz2eij1wVId7XPkqWpl+9GrP6drEEu
+        +96JFNGbPYst+/fgjDsYdiohARFqXhy8I770lzkNZE7NAizgJjkDOnzjh0YLvZsDQVsOHS
+        kJjpYrXUvwfd14f68k/jkH3Y+qGQU5k=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1654598992;
+        s=susede2_ed25519; t=1654598995;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=F3O8pK7reIxPoFRnMcI5fdMHJz2FqzvY3j9G6Q+mnLQ=;
-        b=gofPsuTjRg4Rolez1n0h25U+DGKsnt7PRWwcFSkLXoBZ5ms/gy5+M45qqcfAYRtHOktf99
-        M4m7/3IehZ3tudCQ==
+        bh=7BjPVmtbFq5FUh/IYXJ3D58IxbsAq5TORJTTrDD3fbU=;
+        b=J3N3m7w6ZGUGH5IiVGAXq0kBfcxVD+q7vEu4W/saz87rL6FJ6fCB4riavoEXukLZBlu3MJ
+        tcuXQDy7OzyuHRCQ==
 Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id DD8AD2C142;
-        Tue,  7 Jun 2022 10:49:51 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 904A62C141;
+        Tue,  7 Jun 2022 10:49:55 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 12/36] tty/vt: consolemap: use sizeof(*pointer) instead of sizeof(type)
-Date:   Tue,  7 Jun 2022 12:49:22 +0200
-Message-Id: <20220607104946.18710-12-jslaby@suse.cz>
+Subject: [PATCH 30/36] tty/vt: consolemap: saner variable names in con_set_default_unimap()
+Date:   Tue,  7 Jun 2022 12:49:40 +0200
+Message-Id: <20220607104946.18710-30-jslaby@suse.cz>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607104946.18710-1-jslaby@suse.cz>
 References: <20220607104946.18710-1-jslaby@suse.cz>
@@ -57,98 +57,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is preferred to use sizeof(*pointer) instead of sizeof(type). First,
-the type of the variable can change and one needs not change the former
-(unlike the latter). Second, the latter is error-prone due to (u16),
-(u16 *), and (u16 **) mixture here.
+The function uses too vague variable names like i, j, k for iterators, p,
+q, p1, p2 for pointers etc.
+
+Rename all these, so that it is clear what is going on:
+- dict: for dictionaries.
+- d, r, g: for dir, row, glyph iterators -- these are unsigned now.
+- dir, row: for directory and row pointers.
+- glyph: for the glyph.
+- and so on...
+
+This is a lot of shuffling, but the result pays off, IMO.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/consolemap.c | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ drivers/tty/vt/consolemap.c | 43 +++++++++++++++++++------------------
+ 1 file changed, 22 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-index 097ab7d01f8b..79a62dcca046 100644
+index 65c83f9228e9..8abf114b6c68 100644
 --- a/drivers/tty/vt/consolemap.c
 +++ b/drivers/tty/vt/consolemap.c
-@@ -251,12 +251,12 @@ static void set_inverse_trans_unicode(struct vc_data *conp,
- 		return;
- 	q = p->inverse_trans_unicode;
- 	if (!q) {
--		q = p->inverse_trans_unicode =
--			kmalloc_array(MAX_GLYPH, sizeof(u16), GFP_KERNEL);
-+		q = p->inverse_trans_unicode = kmalloc_array(MAX_GLYPH,
-+				sizeof(*q), GFP_KERNEL);
- 		if (!q)
- 			return;
- 	}
--	memset(q, 0, MAX_GLYPH * sizeof(u16));
-+	memset(q, 0, MAX_GLYPH * sizeof(*q));
+@@ -694,49 +694,50 @@ int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list)
+  */
+ int con_set_default_unimap(struct vc_data *vc)
+ {
+-	int i, j, err = 0, err1;
+-	u16 *q;
+-	struct uni_pagedict *p;
++	struct uni_pagedict *dict;
++	unsigned int fontpos, count;
++	int err = 0, err1;
++	u16 *dfont;
  
- 	for (i = 0; i < UNI_DIRS; i++) {
- 		p1 = p->uni_pgdir[i];
-@@ -478,8 +478,8 @@ static int con_unify_unimap(struct vc_data *conp, struct uni_pagedict *p)
- 					continue;
- 				if (!p1[k] || !q1[k])
- 					break;
--				if (memcmp(p1[k], q1[k],
--						UNI_ROW_GLYPHS * sizeof(u16)))
-+				if (memcmp(p1[k], q1[k], UNI_ROW_GLYPHS *
-+							sizeof(*p1[k])))
- 					break;
- 			}
- 			if (k < UNI_DIR_ROWS)
-@@ -505,7 +505,7 @@ con_insert_unipair(struct uni_pagedict *p, u_short unicode, u_short fontpos)
- 	n = UNI_DIR(unicode);
- 	p1 = p->uni_pgdir[n];
- 	if (!p1) {
--		p1 = p->uni_pgdir[n] = kcalloc(UNI_DIR_ROWS, sizeof(u16 *),
-+		p1 = p->uni_pgdir[n] = kcalloc(UNI_DIR_ROWS, sizeof(*p1),
- 				GFP_KERNEL);
- 		if (!p1)
- 			return -ENOMEM;
-@@ -514,11 +514,12 @@ con_insert_unipair(struct uni_pagedict *p, u_short unicode, u_short fontpos)
- 	n = UNI_ROW(unicode);
- 	p2 = p1[n];
- 	if (!p2) {
--		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(u16), GFP_KERNEL);
-+		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(*p2),
-+				GFP_KERNEL);
- 		if (!p2)
- 			return -ENOMEM;
- 		/* No glyphs for the characters (yet) */
--		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(u16));
-+		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(*p2));
- 	}
+ 	if (dflt) {
+-		p = *vc->vc_uni_pagedir_loc;
+-		if (p == dflt)
++		dict = *vc->vc_uni_pagedir_loc;
++		if (dict == dflt)
+ 			return 0;
  
- 	p2[UNI_GLYPH(unicode)] = fontpos;
-@@ -571,7 +572,7 @@ int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list)
- 	if (!ct)
- 		return 0;
- 
--	unilist = vmemdup_user(list, array_size(sizeof(struct unipair), ct));
-+	unilist = vmemdup_user(list, array_size(sizeof(*unilist), ct));
- 	if (IS_ERR(unilist))
- 		return PTR_ERR(unilist);
- 
-@@ -771,7 +772,7 @@ int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct, struct uni
- 	struct uni_pagedict *p;
- 	struct unipair *unilist;
- 
--	unilist = kvmalloc_array(ct, sizeof(struct unipair), GFP_KERNEL);
-+	unilist = kvmalloc_array(ct, sizeof(*unilist), GFP_KERNEL);
- 	if (!unilist)
- 		return -ENOMEM;
- 
-@@ -800,7 +801,7 @@ int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct, struct uni
+ 		dflt->refcount++;
+ 		*vc->vc_uni_pagedir_loc = dflt;
+-		if (p && !--p->refcount) {
+-			con_release_unimap(p);
+-			kfree(p);
++		if (dict && !--dict->refcount) {
++			con_release_unimap(dict);
++			kfree(dict);
  		}
+ 		return 0;
  	}
- 	console_unlock();
--	if (copy_to_user(list, unilist, min(ect, ct) * sizeof(struct unipair)))
-+	if (copy_to_user(list, unilist, min(ect, ct) * sizeof(*unilist)))
- 		ret = -EFAULT;
- 	put_user(ect, uct);
- 	kvfree(unilist);
+-	
++
+ 	/* The default font is always 256 characters */
+ 
+ 	err = con_do_clear_unimap(vc);
+ 	if (err)
+ 		return err;
+-    
+-	p = *vc->vc_uni_pagedir_loc;
+-	q = dfont_unitable;
+-	
+-	for (i = 0; i < 256; i++)
+-		for (j = dfont_unicount[i]; j; j--) {
+-			err1 = con_insert_unipair(p, *(q++), i);
++
++	dict = *vc->vc_uni_pagedir_loc;
++	dfont = dfont_unitable;
++
++	for (fontpos = 0; fontpos < 256U; fontpos++)
++		for (count = dfont_unicount[fontpos]; count; count--) {
++			err1 = con_insert_unipair(dict, *(dfont++), fontpos);
+ 			if (err1)
+ 				err = err1;
+ 		}
+-			
+-	if (con_unify_unimap(vc, p)) {
++
++	if (con_unify_unimap(vc, dict)) {
+ 		dflt = *vc->vc_uni_pagedir_loc;
+ 		return err;
+ 	}
+ 
+ 	for (enum translation_map m = FIRST_MAP; m <= LAST_MAP; m++)
+-		set_inverse_transl(vc, p, m);	/* Update all inverse translations */
+-	set_inverse_trans_unicode(vc, p);
+-	dflt = p;
++		set_inverse_transl(vc, dict, m);
++	set_inverse_trans_unicode(vc, dict);
++	dflt = dict;
+ 	return err;
+ }
+ EXPORT_SYMBOL(con_set_default_unimap);
 -- 
 2.36.1
 
