@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05CEECCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0B93CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:54:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353036AbiFGSyF (ORCPT
+        id S1353650AbiFGSyK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:54:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60734 "EHLO
+        Tue, 7 Jun 2022 14:54:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352998AbiFGSRv (ORCPT
+        with ESMTP id S1350849AbiFGSSe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1CBC13FD7F;
-        Tue,  7 Jun 2022 10:52:55 -0700 (PDT)
+        Tue, 7 Jun 2022 14:18:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F0F6CC145;
+        Tue,  7 Jun 2022 10:53:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CECC617A7;
-        Tue,  7 Jun 2022 17:52:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DBB9C3411F;
-        Tue,  7 Jun 2022 17:52:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0247F617B4;
+        Tue,  7 Jun 2022 17:53:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08D58C385A5;
+        Tue,  7 Jun 2022 17:53:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624374;
-        bh=LbqyjluyiwqorG7sAuTBbY2h6uEWrKDh7XnSBWLGDfw=;
+        s=korg; t=1654624407;
+        bh=G8qUnbTp31LiWUYOdhxaEF0Eo0c93bjPktO+ImQYsLg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fpcRilogoW97qf+eKamCpf7fpwzCI0SI0BLBFkiM9/gbhykNy28bh1K9BYoApu2ag
-         AbJ2Wzmt2l1mNup6G0eSxJRgXjhqRsGTOmIjYqLFfcKaSekmre9m/k35Q0wE7zOWUv
-         P2RXd8HxNM9Jajq85WzJ3Ofsw2daL6HPYlFLyxTw=
+        b=tTOqpTYvjYI4jprySkYWxQKCqErG7Ebnbm2abk3/VAfTnR3xq69Vd3lNIPMGaFl5O
+         QXje1rb820cQqYbM4Lkl5kRxXk2wvM3Cg60000RvMPGKF3skyJwzDF1Ap91j6xgngY
+         5eAG3IoSZR6ruDQwUep3O1fcU7ld0pECOFpwgB3I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ajay Singh <ajay.kathat@microchip.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 302/667] wilc1000: fix crash observed in AP mode with cfg80211_register_netdevice()
-Date:   Tue,  7 Jun 2022 18:59:27 +0200
-Message-Id: <20220607164943.834817510@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 317/667] media: aspeed: Fix an error handling path in aspeed_video_probe()
+Date:   Tue,  7 Jun 2022 18:59:42 +0200
+Message-Id: <20220607164944.279053979@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,46 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ajay Singh <ajay.kathat@microchip.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 868f0e28290c7a33e8cb79bfe97ebdcbb756e048 ]
+[ Upstream commit 310fda622bbd38be17fb444f7f049b137af3bc0d ]
 
-Monitor(mon.) interface is used for handling the AP mode and 'ieee80211_ptr'
-reference is not getting set for it. Like earlier implementation,
-use register_netdevice() instead of cfg80211_register_netdevice() which
-expects valid 'ieee80211_ptr' reference to avoid the possible crash.
+A dma_free_coherent() call is missing in the error handling path of the
+probe, as already done in the remove function.
 
-Fixes: 2fe8ef106238 ("cfg80211: change netdev registration/unregistration semantics")
-Signed-off-by: Ajay Singh <ajay.kathat@microchip.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220504161924.2146601-3-ajay.kathat@microchip.com
+In fact, this call is included in aspeed_video_free_buf(). So use the
+latter both in the error handling path of the probe and in the remove
+function.
+It is easier to see the relation with aspeed_video_alloc_buf() this way.
+
+Fixes: d2b4387f3bdf ("media: platform: Add Aspeed Video Engine driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/microchip/wilc1000/mon.c | 4 ++--
+ drivers/media/platform/aspeed-video.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/microchip/wilc1000/mon.c b/drivers/net/wireless/microchip/wilc1000/mon.c
-index 6bd63934c2d8..b5a1b65c087c 100644
---- a/drivers/net/wireless/microchip/wilc1000/mon.c
-+++ b/drivers/net/wireless/microchip/wilc1000/mon.c
-@@ -233,7 +233,7 @@ struct net_device *wilc_wfi_init_mon_interface(struct wilc *wl,
- 	wl->monitor_dev->netdev_ops = &wilc_wfi_netdev_ops;
- 	wl->monitor_dev->needs_free_netdev = true;
+diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
+index 757a58829a51..9d9124308f6a 100644
+--- a/drivers/media/platform/aspeed-video.c
++++ b/drivers/media/platform/aspeed-video.c
+@@ -1723,6 +1723,7 @@ static int aspeed_video_probe(struct platform_device *pdev)
  
--	if (cfg80211_register_netdevice(wl->monitor_dev)) {
-+	if (register_netdevice(wl->monitor_dev)) {
- 		netdev_err(real_dev, "register_netdevice failed\n");
- 		free_netdev(wl->monitor_dev);
- 		return NULL;
-@@ -251,7 +251,7 @@ void wilc_wfi_deinit_mon_interface(struct wilc *wl, bool rtnl_locked)
- 		return;
+ 	rc = aspeed_video_setup_video(video);
+ 	if (rc) {
++		aspeed_video_free_buf(video, &video->jpeg);
+ 		clk_unprepare(video->vclk);
+ 		clk_unprepare(video->eclk);
+ 		return rc;
+@@ -1748,8 +1749,7 @@ static int aspeed_video_remove(struct platform_device *pdev)
  
- 	if (rtnl_locked)
--		cfg80211_unregister_netdevice(wl->monitor_dev);
-+		unregister_netdevice(wl->monitor_dev);
- 	else
- 		unregister_netdev(wl->monitor_dev);
- 	wl->monitor_dev = NULL;
+ 	v4l2_device_unregister(v4l2_dev);
+ 
+-	dma_free_coherent(video->dev, VE_JPEG_HEADER_SIZE, video->jpeg.virt,
+-			  video->jpeg.dma);
++	aspeed_video_free_buf(video, &video->jpeg);
+ 
+ 	of_reserved_mem_device_release(dev);
+ 
 -- 
 2.35.1
 
