@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F4D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:18:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 411D9C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242901AbiFHCR5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:17:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40720 "EHLO
+        id S232437AbiFHCSI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:18:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390383AbiFHBuW (ORCPT
+        with ESMTP id S1390338AbiFHBuQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 21:50:22 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB4F11973DA;
-        Tue,  7 Jun 2022 12:20:06 -0700 (PDT)
+        Tue, 7 Jun 2022 21:50:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBF5C19D622;
+        Tue,  7 Jun 2022 12:26:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E0389CE24B7;
-        Tue,  7 Jun 2022 19:20:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7331C385A5;
-        Tue,  7 Jun 2022 19:20:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 52E896077B;
+        Tue,  7 Jun 2022 19:26:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62D37C385A5;
+        Tue,  7 Jun 2022 19:26:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629602;
-        bh=OZOS/pHplCASWNPmT8U8e9P9qYz6jNCQYk6G30jMRTk=;
+        s=korg; t=1654629973;
+        bh=fjh0DjFNqa4PrftEH5DvKhHI7w1fRCD7pD5OezHZF+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cl1pK9eSMuqrJ9/hHtniglVrs+VhLlYKsMZcy0QJVHiWDy1OBbVRNMEdYjse0CWoa
-         gmFdN1e8V9V47y5PKgIra01+YYfKmCkYRaU7PGq4jtDHj8NFr/yUX69ffQ7uslch79
-         mroeGuyIXioPgk+/7Srm5lSOA1tsooMfUBhVXBz4=
+        b=zTk4S31R16iaZLWdkBRvVJcV1blXXFe60diEq+8WmqY6A6EAW59CKO1d+5cVMEBbB
+         t0S10ir+QJCU7/9V3O690ivlBfIVwP/vvKpeJD/heQd+wbUZQ/hfmuG/T0qUbaw5nK
+         l4YXIqdDTTAYTL6sKGTtVn0QqnVASAWdAqKYJubc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.18 749/879] tracing: Have event format check not flag %p* on __get_dynamic_array()
-Date:   Tue,  7 Jun 2022 19:04:27 +0200
-Message-Id: <20220607165024.602410761@linuxfoundation.org>
+        stable@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Subject: [PATCH 5.18 855/879] docs/conf.py: Cope with removal of language=None in Sphinx 5.0.0
+Date:   Tue,  7 Jun 2022 19:06:13 +0200
+Message-Id: <20220607165027.672545095@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -48,56 +48,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Akira Yokosawa <akiyks@gmail.com>
 
-commit 499f12168aebd6da8fa32c9b7d6203ca9b5eb88d upstream.
+commit 627f01eab93d8671d4e4afee9b148f9998d20e7c upstream.
 
-The print fmt check against trace events to make sure that the format does
-not use pointers that may be freed from the time of the trace to the time
-the event is read, gives a false positive on %pISpc when reading data that
-was saved in __get_dynamic_array() when it is perfectly fine to do so, as
-the data being read is on the ring buffer.
+One of the changes in Sphinx 5.0.0 [1] says [sic]:
 
-Link: https://lore.kernel.org/all/20220407144524.2a592ed6@canb.auug.org.au/
+    5.0.0 final
 
+     - #10474: language does not accept None as it value.
+       The default value of language becomes to 'en' now.
+
+[1]: https://www.sphinx-doc.org/en/master/changes.html#release-5-0-0-released-may-30-2022
+
+It results in a new warning from Sphinx 5.0.0 [sic]:
+
+    WARNING: Invalid configuration value found: 'language = None'.
+    Update your configuration to a valid langauge code. Falling
+    back to 'en' (English).
+
+Silence the warning by using 'en'.
+It works with all the Sphinx versions required for building
+kernel documentation (1.7.9 or later).
+
+Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+Link: https://lore.kernel.org/r/bd0c2ddc-2401-03cb-4526-79ca664e1cbe@gmail.com
 Cc: stable@vger.kernel.org
-Fixes: 5013f454a352c ("tracing: Add check of trace event print fmts for dereferencing pointers")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Jonathan Corbet <corbet@lwn.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_events.c |   13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ Documentation/conf.py |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/kernel/trace/trace_events.c
-+++ b/kernel/trace/trace_events.c
-@@ -392,12 +392,6 @@ static void test_event_printk(struct tra
- 			if (!(dereference_flags & (1ULL << arg)))
- 				goto next_arg;
+--- a/Documentation/conf.py
++++ b/Documentation/conf.py
+@@ -161,7 +161,7 @@ finally:
+ #
+ # This is also used if you do content translation via gettext catalogs.
+ # Usually you set "language" from the command line for these cases.
+-language = None
++language = 'en'
  
--			/* Check for __get_sockaddr */;
--			if (str_has_prefix(fmt + i, "__get_sockaddr(")) {
--				dereference_flags &= ~(1ULL << arg);
--				goto next_arg;
--			}
--
- 			/* Find the REC-> in the argument */
- 			c = strchr(fmt + i, ',');
- 			r = strstr(fmt + i, "REC->");
-@@ -413,7 +407,14 @@ static void test_event_printk(struct tra
- 				a = strchr(fmt + i, '&');
- 				if ((a && (a < r)) || test_field(r, call))
- 					dereference_flags &= ~(1ULL << arg);
-+			} else if ((r = strstr(fmt + i, "__get_dynamic_array(")) &&
-+				   (!c || r < c)) {
-+				dereference_flags &= ~(1ULL << arg);
-+			} else if ((r = strstr(fmt + i, "__get_sockaddr(")) &&
-+				   (!c || r < c)) {
-+				dereference_flags &= ~(1ULL << arg);
- 			}
-+
- 		next_arg:
- 			i--;
- 			arg++;
+ # There are two options for replacing |today|: either, you set today to some
+ # non-false value, then it is used:
 
 
