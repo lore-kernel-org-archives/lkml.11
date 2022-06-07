@@ -2,244 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F7BCCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:58:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9158C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237130AbiFGJ6B convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:58:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41352 "EHLO
+        id S240375AbiFGJ6N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:58:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240449AbiFGJ5b (ORCPT
+        with ESMTP id S240387AbiFGJ6D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:57:31 -0400
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com [209.85.219.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0998C2C10B;
-        Tue,  7 Jun 2022 02:57:20 -0700 (PDT)
-Received: by mail-yb1-f174.google.com with SMTP id v22so30264846ybd.5;
-        Tue, 07 Jun 2022 02:57:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=1o6qvv4aZHKs7XMCFadyrE8xTLQ95GJxFv1Dwo+Wjzw=;
-        b=o2E8PHTg5OllqDq6GVg33q/MJFloPbC19QCKRSOfJfF71Q0wWb2PNmXZkEd39OsqtY
-         tdyKIbZIyYYhXB629zjafKU/zvsZWBpIe+iqRLozZnjbFY7044poB7LV4XJEnxxfgJA2
-         TaTVDsu4m42Tppiz5c2B99EUaStKjGbLiFm/jAe4cU0TBCVUNUdsMugbO6O2MMslS6qZ
-         xmskxJkB4UC52Me7qqRf2V95kUrzXFduOclSkLkQUFxGpl16ITwp4PpUORl4SUJJdK0j
-         8en05qbE1rcTvcYtbSpVd5KhskefH5C+wvBvT4W6BijR/baZ/wfLpHelvEmtvuq4BCRX
-         xSsQ==
-X-Gm-Message-State: AOAM5332AF0kn+otR+8tcepcrTKPLNVTJ0llqs8xmTQpt8qcFZDdMGbT
-        UAsim0uyVpCw8GzF13TvWNIayJgFFcB6dxUlRYg=
-X-Google-Smtp-Source: ABdhPJzauMa/Ot0U1RgZij3q0h3HTyM94KvNcvA/aLGZgnTSLbgGKZh+P9FTLJm1IVkyPxWffemDBYZqA+0CcqEX7dA=
-X-Received: by 2002:a25:6588:0:b0:65d:57b9:c470 with SMTP id
- z130-20020a256588000000b0065d57b9c470mr29863596ybb.142.1654595840050; Tue, 07
- Jun 2022 02:57:20 -0700 (PDT)
+        Tue, 7 Jun 2022 05:58:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA67C5D66C;
+        Tue,  7 Jun 2022 02:58:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 508EEB81E76;
+        Tue,  7 Jun 2022 09:58:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A077FC34119;
+        Tue,  7 Jun 2022 09:57:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654595879;
+        bh=8DV3QorSxkeJRTn5hPB/RoqUQHP9TqR0CTiN1ZWTd7s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PHF4JmLsS4wcyUwv3x/x5naQH4qzhoLntzhoE4++JsHKkk5oRm1ubNBYHFmUUK4OH
+         iR+S4ZdVd5h1GZj3pDsVb8H3blhhjgI9jxWigqHchP9TvxLtZd1L5LUXq+1McQ1Kjc
+         /TypvtfiL61k+ym5ggOG9nzgpbAYj7dcyUhEIGHwOD5Y3xQIXYszMHYVZYCgwFCYJI
+         D0ylC6ifHylo4JMxwk+FBj/ub/F01XYkl3rr6hx4ouvK7ZRAW6UDz3Z11uGKXW4HVg
+         Zmyfw7qQ1l4DjD5JBk+WFkQCkT6Q+TniyZvbCoxyFB3g/JVkxTTC3RbHYkbwyh19JD
+         2ItrIHMhfSv4A==
+Date:   Tue, 7 Jun 2022 12:56:03 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Alexander Steffen <Alexander.Steffen@infineon.com>
+Cc:     linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
+        peterhuewe@gmx.de, jgg@ziepe.ca, krzysztof.kozlowski+dt@linaro.org,
+        Johannes Holland <johannes.holland@infineon.com>,
+        Amir Mizinski <amirmizi6@gmail.com>
+Subject: Re: [PATCH v5 2/3] tpm: Add tpm_tis_verify_crc to the
+ tpm_tis_phy_ops protocol layer
+Message-ID: <Yp8gsy2vv4Y0luYQ@iki.fi>
+References: <20220603143532.8202-1-Alexander.Steffen@infineon.com>
+ <20220603143532.8202-3-Alexander.Steffen@infineon.com>
 MIME-Version: 1.0
-References: <20220607085654.4178-1-srinivas.neeli@xilinx.com>
- <20220607085654.4178-3-srinivas.neeli@xilinx.com> <20220607091952.gls5bgwplytbhmoq@pengutronix.de>
-In-Reply-To: <20220607091952.gls5bgwplytbhmoq@pengutronix.de>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Tue, 7 Jun 2022 18:57:09 +0900
-Message-ID: <CAMZ6Rq+XjBThwqXK4DmdxChutJp_N8Jm83Bd2b3EdXVQrhO_GA@mail.gmail.com>
-Subject: Re: [PATCH V2 2/2] can: xilinx_can: Add Transmitter delay
- compensation (TDC) feature support
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Srinivas Neeli <srinivas.neeli@xilinx.com>, wg@grandegger.com,
-        davem@davemloft.net, edumazet@google.com,
-        appana.durga.rao@xilinx.com, sgoud@xilinx.com,
-        michal.simek@xilinx.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        git@xilinx.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220603143532.8202-3-Alexander.Steffen@infineon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- On Tue. 7 Jun. 2022 at 18:19, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> Hello Srinivas Neeli,
->
-> thanks for your patch!
->
-> On 07.06.2022 14:26:54, Srinivas Neeli wrote:
-> > Added Transmitter delay compensation (TDC) feature support.
-> > In the case of higher measured loop delay with higher baud rates,
-> > observed bit stuff errors. By enabling the TDC feature in a controller,
-> > will compensate for the measure loop delay in the receive path.
->
-> Wich controllers support TDC?
->
-> XAXI_CANFD doesn't have do_get_auto_tdc assigned, but
-> CAN_CTRLMODE_TDC_AUTO is set.
->
-> > Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
-> > ---
-> >  drivers/net/can/xilinx_can.c | 46 +++++++++++++++++++++++++++++++++---
-> >  1 file changed, 43 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-> > index e179d311aa28..d0edd1bca33c 100644
-> > --- a/drivers/net/can/xilinx_can.c
-> > +++ b/drivers/net/can/xilinx_can.c
-> > @@ -1,7 +1,7 @@
-> >  // SPDX-License-Identifier: GPL-2.0-or-later
-> >  /* Xilinx CAN device driver
-> >   *
-> > - * Copyright (C) 2012 - 2014 Xilinx, Inc.
-> > + * Copyright (C) 2012 - 2022 Xilinx, Inc.
-> >   * Copyright (C) 2009 PetaLogix. All rights reserved.
-> >   * Copyright (C) 2017 - 2018 Sandvik Mining and Construction Oy
-> >   *
-> > @@ -99,6 +99,7 @@ enum xcan_reg {
-> >  #define XCAN_ESR_STER_MASK           0x00000004 /* Stuff error */
-> >  #define XCAN_ESR_FMER_MASK           0x00000002 /* Form error */
-> >  #define XCAN_ESR_CRCER_MASK          0x00000001 /* CRC error */
-> > +#define XCAN_SR_TDCV_MASK            0x007F0000 /* TDCV Value */
-> >  #define XCAN_SR_TXFLL_MASK           0x00000400 /* TX FIFO is full */
-> >  #define XCAN_SR_ESTAT_MASK           0x00000180 /* Error status */
-> >  #define XCAN_SR_ERRWRN_MASK          0x00000040 /* Error warning */
-> > @@ -132,6 +133,8 @@ enum xcan_reg {
-> >  #define XCAN_DLCR_BRS_MASK           0x04000000 /* BRS Mask in DLC */
-> >
-> >  /* CAN register bit shift - XCAN_<REG>_<BIT>_SHIFT */
-> > +#define XCAN_BRPR_TDCO_SHIFT         8  /* Transmitter Delay Compensation Offset */
-> > +#define XCAN_BRPR_TDC_ENABLE         BIT(16) /* Transmitter Delay Compensation (TDC) Enable */
-> >  #define XCAN_BTR_SJW_SHIFT           7  /* Synchronous jump width */
-> >  #define XCAN_BTR_TS2_SHIFT           4  /* Time segment 2 */
-> >  #define XCAN_BTR_SJW_SHIFT_CANFD     16 /* Synchronous jump width */
-> > @@ -140,6 +143,7 @@ enum xcan_reg {
-> >  #define XCAN_IDR_ID2_SHIFT           1  /* Extended Message Identifier */
-> >  #define XCAN_DLCR_DLC_SHIFT          28 /* Data length code */
-> >  #define XCAN_ESR_REC_SHIFT           8  /* Rx Error Count */
-> > +#define XCAN_SR_TDCV_SHIFT           16 /* TDCV Value */
-> >
-> >  /* CAN frame length constants */
-> >  #define XCAN_FRAME_MAX_DATA_LEN              8
-> > @@ -276,6 +280,16 @@ static const struct can_bittiming_const xcan_data_bittiming_const_canfd2 = {
-> >       .brp_inc = 1,
-> >  };
-> >
-> > +/* Transmission Delay Compensation constants for CANFD2.0 and Versal  */
-> > +static const struct can_tdc_const xcan_tdc_const = {
-> > +     .tdcv_min = 0,
-> > +     .tdcv_max = 0, /* Manual mode not supported. */
-> > +     .tdco_min = 0,
-> > +     .tdco_max = 64,
-> > +     .tdcf_min = 0, /* Filter window not supported */
-> > +     .tdcf_max = 0,
-> > +};
-> > +
-> >  /**
-> >   * xcan_write_reg_le - Write a value to the device register little endian
-> >   * @priv:    Driver private data structure
-> > @@ -424,6 +438,11 @@ static int xcan_set_bittiming(struct net_device *ndev)
-> >           priv->devtype.cantype == XAXI_CANFD_2_0) {> >               /* Setting Baud Rate prescalar value in F_BRPR Register */
-                                       ^^^^^^^^^
-Not related to this patch, but this is a typo. prescalar -> prescaler.
+On Fri, Jun 03, 2022 at 04:35:31PM +0200, Alexander Steffen wrote:
+> Some TPMs, e.g. those implementing the I2C variant of TIS, can verify
+> data transfers to/from the FIFO with a CRC. The CRC is calculated over
+> the entirety of the FIFO register. Since the phy_ops layer is not aware
+> when the core layer is done reading/writing the FIFO, CRC verification
+> must be triggered from the core layer. To this end, add an optional
+> phy_ops API call.
+> 
+> Co-developed-by: Johannes Holland <johannes.holland@infineon.com>
+> Signed-off-by: Johannes Holland <johannes.holland@infineon.com>
+> Signed-off-by: Alexander Steffen <Alexander.Steffen@infineon.com>
+> Change-Id: I43716c8d45f62c0fcdaabfc3366f8deb89fd1f32
 
-> >               btr0 = dbt->brp - 1;
-> > +             if (can_tdc_is_enabled(&priv->can)) {
-> > +                     btr0 = btr0 |
->
-> Make use of "|=" and properly indent.
->
-> > +                     priv->can.tdc.tdco << XCAN_BRPR_TDCO_SHIFT |
->
-> Please include <linux/bitfield.h> and make use of "FIELD_PREP".
->
-> > +                     XCAN_BRPR_TDC_ENABLE;
-> > +             }
-> >
-> >               /* Setting Time Segment 1 in BTR Register */
-> >               btr1 = dbt->prop_seg + dbt->phase_seg1 - 1;
-> > @@ -1483,6 +1502,23 @@ static int xcan_get_berr_counter(const struct net_device *ndev,
-> >       return 0;
-> >  }
-> >
-> > +/**
-> > + * xcan_get_auto_tdcv - Get Transmitter Delay Compensation Value
-> > + * @ndev:    Pointer to net_device structure
-> > + * @tdcv:    Pointer to TDCV value
-> > + *
-> > + * Return: 0 on success
-> > + */
-> > +static int xcan_get_auto_tdcv(const struct net_device *ndev, u32 *tdcv)
-> > +{
-> > +     struct xcan_priv *priv = netdev_priv(ndev);
-> > +
-> > +     *tdcv = (priv->read_reg(priv, XCAN_SR_OFFSET) & XCAN_SR_TDCV_MASK) >>
-> > +              XCAN_SR_TDCV_SHIFT;
->
-> Please use FIELD_GET.
->
-> > +
-> > +     return 0;
-> > +}
-> > +
-> >  static const struct net_device_ops xcan_netdev_ops = {
-> >       .ndo_open       = xcan_open,
-> >       .ndo_stop       = xcan_close,
-> > @@ -1734,18 +1770,22 @@ static int xcan_probe(struct platform_device *pdev)
-> >       priv->can.do_get_berr_counter = xcan_get_berr_counter;
-> >       priv->can.ctrlmode_supported = CAN_CTRLMODE_LOOPBACK |
-> >                                       CAN_CTRLMODE_BERR_REPORTING;
-> > +     priv->can.do_get_auto_tdcv = xcan_get_auto_tdcv;
->
-> I'm not sure, if it has any side effects, if you assign do_get_auto_tdc
-> for all controllers, even the ones that don't support it. Vincent can
-> probably clarify this.
+Strip off Change-Id.
 
-It should be fine. can_priv::do_get_auto_tdcv() gets called in one
-single location in can_tdc_fill_info(). c.f.
-https://elixir.bootlin.com/linux/v5.18/source/drivers/net/can/dev/netlink.c#L464
+> ---
+>  drivers/char/tpm/tpm_tis_core.c | 14 ++++++++++++++
+>  drivers/char/tpm/tpm_tis_core.h | 10 ++++++++++
+>  2 files changed, 24 insertions(+)
+> 
+> diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
+> index dc56b976d816..757623bacfd5 100644
+> --- a/drivers/char/tpm/tpm_tis_core.c
+> +++ b/drivers/char/tpm/tpm_tis_core.c
+> @@ -289,6 +289,7 @@ static int tpm_tis_recv(struct tpm_chip *chip, u8 *buf, size_t count)
+>  	int size = 0;
+>  	int status;
+>  	u32 expected;
+> +	int rc;
+>  
+>  	if (count < TPM_HEADER_SIZE) {
+>  		size = -EIO;
+> @@ -328,6 +329,13 @@ static int tpm_tis_recv(struct tpm_chip *chip, u8 *buf, size_t count)
+>  		goto out;
+>  	}
+>  
+> +	rc = tpm_tis_verify_crc(priv, (size_t)size, buf);
+> +	if (rc < 0) {
+> +		dev_err(&chip->dev, "CRC mismatch for response.\n");
+> +		size = rc;
+> +		goto out;
+> +	}
+> +
+>  out:
+>  	tpm_tis_ready(chip);
+>  	return size;
+> @@ -443,6 +451,12 @@ static int tpm_tis_send_main(struct tpm_chip *chip, const u8 *buf, size_t len)
+>  	if (rc < 0)
+>  		return rc;
+>  
+> +	rc = tpm_tis_verify_crc(priv, len, buf);
+> +	if (rc < 0) {
+> +		dev_err(&chip->dev, "CRC mismatch for command.\n");
+> +		return rc;
+> +	}
+> +
+>  	/* go and do it */
+>  	rc = tpm_tis_write8(priv, TPM_STS(priv->locality), TPM_STS_GO);
+>  	if (rc < 0)
+> diff --git a/drivers/char/tpm/tpm_tis_core.h b/drivers/char/tpm/tpm_tis_core.h
+> index 6c203f36b8a1..66a5a13cd1df 100644
+> --- a/drivers/char/tpm/tpm_tis_core.h
+> +++ b/drivers/char/tpm/tpm_tis_core.h
+> @@ -121,6 +121,8 @@ struct tpm_tis_phy_ops {
+>  			  u8 *result, enum tpm_tis_io_mode mode);
+>  	int (*write_bytes)(struct tpm_tis_data *data, u32 addr, u16 len,
+>  			   const u8 *value, enum tpm_tis_io_mode mode);
+> +	int (*verify_crc)(struct tpm_tis_data *data, size_t len,
+> +			  const u8 *value);
+>  };
+>  
+>  static inline int tpm_tis_read_bytes(struct tpm_tis_data *data, u32 addr,
+> @@ -188,6 +190,14 @@ static inline int tpm_tis_write32(struct tpm_tis_data *data, u32 addr,
+>  	return rc;
+>  }
+>  
+> +static inline int tpm_tis_verify_crc(struct tpm_tis_data *data, size_t len,
+> +				     const u8 *value)
+> +{
+> +	if (!data->phy_ops->verify_crc)
+> +		return 0;
 
-can_tdc_fill_info() returns if can_priv::tdc_const is not populated.
-https://elixir.bootlin.com/linux/v5.18/source/drivers/net/can/dev/netlink.c#L438
+I think it would be more readable to have one empty line here.
 
-Below, you only assign tdc_const only for XAXI_CANFD_2_0, so this
-should be safe. *BUT*, I do not think this helps for the code
-readability so I encourage you to only populate
-can_priv::do_get_auto_tdcv() for the controllers which do support TDC.
+> +	return data->phy_ops->verify_crc(data, len, value);
+> +}
+> +
+>  static inline bool is_bsw(void)
+>  {
+>  #ifdef CONFIG_X86
+> -- 
+> 2.25.1
+> 
 
-> >
-> >       if (devtype->cantype == XAXI_CANFD)
-> >               priv->can.data_bittiming_const =
-> >                       &xcan_data_bittiming_const_canfd;
-> >
-> > -     if (devtype->cantype == XAXI_CANFD_2_0)
-> > +     if (devtype->cantype == XAXI_CANFD_2_0) {
-> >               priv->can.data_bittiming_const =
-> >                       &xcan_data_bittiming_const_canfd2;
-> > +             priv->can.tdc_const = &xcan_tdc_const;
+Other than that LGTM.
 
-Here, you only populate tdc_const for XAXI_CANFD_2_0...
-
-> > +     }
-> >
-> >       if (devtype->cantype == XAXI_CANFD ||
-> >           devtype->cantype == XAXI_CANFD_2_0)
-> > -             priv->can.ctrlmode_supported |= CAN_CTRLMODE_FD;
-> > +             priv->can.ctrlmode_supported |= CAN_CTRLMODE_FD |
-> > +                                             CAN_CTRLMODE_TDC_AUTO;
-
-...but here, you set the CAN_CTRLMODE_TDC_AUTO for both XAXI_CANFD and
-XAXI_CANFD_2_0. Isn’t this a mismatch?
-
-I suggest to have a single if block in which you populate all the TDC
-fields at once:
-|         if (devtype->cantype == XAXI_CANFD_2_0) {
-|                 priv->can.data_bittiming_const =
-|                         &xcan_data_bittiming_const_canfd2;
-|                 priv->can.tdc_const = &xcan_tdc_const;
-|                 priv->can.do_get_auto_tdcv = xcan_get_auto_tdcv;
-|                 priv->can.ctrlmode_supported |= CAN_CTRLMODE_TDC_AUTO;
-|         }
-
-> >       priv->reg_base = addr;
-> >       priv->tx_max = tx_max;
-
-
-Yours sincerely,
-Vincent Mailhol
+BR, Jarkko
