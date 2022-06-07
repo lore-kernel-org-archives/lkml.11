@@ -2,48 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8EEBCCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:10:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60773CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:10:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238378AbiFHBJH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47620 "EHLO
+        id S231962AbiFHBJq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:09:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384255AbiFGVyX (ORCPT
+        with ESMTP id S1381977AbiFGWcf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:54:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1439824A1D8;
-        Tue,  7 Jun 2022 12:13:19 -0700 (PDT)
+        Tue, 7 Jun 2022 18:32:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B235F237C7;
+        Tue,  7 Jun 2022 12:25:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 66621618D9;
-        Tue,  7 Jun 2022 19:12:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E574C385A2;
-        Tue,  7 Jun 2022 19:12:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 00B5A608CD;
+        Tue,  7 Jun 2022 19:25:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09F32C385A2;
+        Tue,  7 Jun 2022 19:25:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629174;
-        bh=42ZT3DX00fIum0t1J+6Opa8Rq3Y6zavv3Rpl3Ycz3gg=;
+        s=korg; t=1654629924;
+        bh=7Hyc05dB7HggDCqyOr/0Ew4L0eNH8f0mHMNBq2mHjy8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Syg7k/xgpHVND+7qrDwZ79WEDkMSqSAafXeql+Q0hlmPtd2pQEwzrd3y6iW6P1w40
-         qm0UKmVXX8o5NRkhvk6ytn24USCcZP0fF1SW1oW2P1sD9Shlt/fFq5pbIdK2g0lC3R
-         URPFzKbW3b/+QuubryOItXZVdAUdemt2OTiwYOxY=
+        b=tsuOJP7GVwC0A4fwnejLqf/l5hEMpJab/HflbmV+BvP+qSntblqnx9SVuKnYPIxjv
+         7fOB8uFVBVVGoX3JNCUxnTcnx9r1XhSLiy0RzaJWC64YPaFpaoaMHD2uZeR0pVs7a1
+         qdnstIrzpg0CL3eNV0ZX8wUeVSk5tzBSXxcgbfXU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Michal Hocko <mhocko@suse.com>,
-        David Hildenbrand <david@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Scott Cheloha <cheloha@linux.vnet.ibm.com>,
-        Nathan Lynch <nathanl@linux.ibm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 597/879] drivers/base/memory: fix an unlikely reference counting issue in __add_memory_block()
-Date:   Tue,  7 Jun 2022 19:01:55 +0200
-Message-Id: <20220607165020.182006756@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH 5.18 867/879] staging: r8188eu: delete rtw_wx_read/write32()
+Date:   Tue,  7 Jun 2022 19:06:25 +0200
+Message-Id: <20220607165028.017822896@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -55,52 +47,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit f47f758cff59c68015d6b9b9c077110df7c2c828 ]
+commit 4d0cc9e0e53e9946d7b8dc58279c62dfa7a2191b upstream.
 
-__add_memory_block() calls both put_device() and device_unregister() when
-storing the memory block into the xarray.  This is incorrect because
-xarray doesn't take an additional reference and device_unregister()
-already calls put_device().
+These debugging tools let you call:
 
-Triggering the issue looks really unlikely and its only effect should be
-to log a spurious warning about a ref counted issue.
+	status = usb_control_msg_recv/send(udev, 0, REALTEK_USB_VENQT_CMD_REQ,
+				      REALTEK_USB_VENQT_READ/WRITE, value,
+				      REALTEK_USB_VENQT_CMD_IDX, io_buf,
+				      size, RTW_USB_CONTROL_MSG_TIMEOUT,
+				      GFP_KERNEL);
 
-Link: https://lkml.kernel.org/r/d44c63d78affe844f020dc02ad6af29abc448fc4.1650611702.git.christophe.jaillet@wanadoo.fr
-Fixes: 4fb6eabf1037 ("drivers/base/memory.c: cache memory blocks in xarray to accelerate lookup")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Reviewed-by: David Hildenbrand <david@redhat.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Scott Cheloha <cheloha@linux.vnet.ibm.com>
-Cc: Nathan Lynch <nathanl@linux.ibm.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+with a user controlled "value" in the 0-0xffff range.  It's not a valid
+API.
+
+Fixes: 2b42bd58b321 ("staging: r8188eu: introduce new os_dep dir for RTL8188eu driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/YoXS4OaD1oauPvmj@kili
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/base/memory.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/staging/r8188eu/os_dep/ioctl_linux.c |   86 ---------------------------
+ 1 file changed, 2 insertions(+), 84 deletions(-)
 
-diff --git a/drivers/base/memory.c b/drivers/base/memory.c
-index 7222ff9b5e05..084d67fd55cc 100644
---- a/drivers/base/memory.c
-+++ b/drivers/base/memory.c
-@@ -636,10 +636,9 @@ static int __add_memory_block(struct memory_block *memory)
- 	}
- 	ret = xa_err(xa_store(&memory_blocks, memory->dev.id, memory,
- 			      GFP_KERNEL));
--	if (ret) {
--		put_device(&memory->dev);
-+	if (ret)
- 		device_unregister(&memory->dev);
--	}
-+
- 	return ret;
+--- a/drivers/staging/r8188eu/os_dep/ioctl_linux.c
++++ b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
+@@ -1888,88 +1888,6 @@ static int rtw_wx_get_nick(struct net_de
+ 	return 0;
  }
  
--- 
-2.35.1
-
+-static int rtw_wx_read32(struct net_device *dev,
+-			    struct iw_request_info *info,
+-			    union iwreq_data *wrqu, char *extra)
+-{
+-	struct adapter *padapter;
+-	struct iw_point *p;
+-	u16 len;
+-	u32 addr;
+-	u32 data32;
+-	u32 bytes;
+-	u8 *ptmp;
+-	int ret;
+-
+-	padapter = (struct adapter *)rtw_netdev_priv(dev);
+-	p = &wrqu->data;
+-	len = p->length;
+-	ptmp = memdup_user(p->pointer, len);
+-	if (IS_ERR(ptmp))
+-		return PTR_ERR(ptmp);
+-
+-	bytes = 0;
+-	addr = 0;
+-	sscanf(ptmp, "%d,%x", &bytes, &addr);
+-
+-	switch (bytes) {
+-	case 1:
+-		data32 = rtw_read8(padapter, addr);
+-		sprintf(extra, "0x%02X", data32);
+-		break;
+-	case 2:
+-		data32 = rtw_read16(padapter, addr);
+-		sprintf(extra, "0x%04X", data32);
+-		break;
+-	case 4:
+-		data32 = rtw_read32(padapter, addr);
+-		sprintf(extra, "0x%08X", data32);
+-		break;
+-	default:
+-		ret = -EINVAL;
+-		goto err_free_ptmp;
+-	}
+-
+-	kfree(ptmp);
+-	return 0;
+-
+-err_free_ptmp:
+-	kfree(ptmp);
+-	return ret;
+-}
+-
+-static int rtw_wx_write32(struct net_device *dev,
+-			    struct iw_request_info *info,
+-			    union iwreq_data *wrqu, char *extra)
+-{
+-	struct adapter *padapter = (struct adapter *)rtw_netdev_priv(dev);
+-
+-	u32 addr;
+-	u32 data32;
+-	u32 bytes;
+-
+-	bytes = 0;
+-	addr = 0;
+-	data32 = 0;
+-	sscanf(extra, "%d,%x,%x", &bytes, &addr, &data32);
+-
+-	switch (bytes) {
+-	case 1:
+-		rtw_write8(padapter, addr, (u8)data32);
+-		break;
+-	case 2:
+-		rtw_write16(padapter, addr, (u16)data32);
+-		break;
+-	case 4:
+-		rtw_write32(padapter, addr, data32);
+-		break;
+-	default:
+-		return -EINVAL;
+-	}
+-
+-	return 0;
+-}
+-
+ static int rtw_wx_read_rf(struct net_device *dev,
+ 			    struct iw_request_info *info,
+ 			    union iwreq_data *wrqu, char *extra)
+@@ -3897,8 +3815,8 @@ static const struct iw_priv_args rtw_pri
+ };
+ 
+ static iw_handler rtw_private_handler[] = {
+-rtw_wx_write32,				/* 0x00 */
+-rtw_wx_read32,				/* 0x01 */
++	NULL,				/* 0x00 */
++	NULL,				/* 0x01 */
+ 	NULL,				/* 0x02 */
+ NULL,					/* 0x03 */
+ /*  for MM DTV platform */
 
 
