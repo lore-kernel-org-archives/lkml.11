@@ -2,112 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D4A9CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C0AECCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:46:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381916AbiFGVpk (ORCPT
+        id S1381933AbiFGVpq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:45:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51644 "EHLO
+        Tue, 7 Jun 2022 17:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378749AbiFGUw0 (ORCPT
+        with ESMTP id S1378733AbiFGUwZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:52:26 -0400
-Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206B91ADBF
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:42:58 -0700 (PDT)
-X-ASG-Debug-ID: 1654627376-1cf43917f33965e0001-xx1T2L
-Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with ESMTP id 9IJWbVWe0kxl8Q4W; Tue, 07 Jun 2022 14:42:56 -0400 (EDT)
-X-Barracuda-Envelope-From: tonyb@cybernetics.com
-X-ASG-Whitelist: Client
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=cybernetics.com; s=mail;
-        bh=eQM8tN6t62Fopbgjt8uTQgBSZ1EO2wkhvfxABlFtH9o=;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:Cc:To:From:
-        Content-Language:Subject:MIME-Version:Date:Message-ID; b=IixmWpGiaqvQUprEzkz0
-        RLY8E/16bD+CZb7eDVxwsJJx0WhcGJberWRDEq6vXklSwUFj/Uz/gezadInQpSSObCp8dKbeGiBa7
-        w3Y7jLuYeY+HtSBYaVfbLDLoltgTK+A7YCT6QfatyfhhlsxJVy8j/AsCZzK72KxdoC1mOT995M=
-Received: from [10.157.2.224] (HELO [192.168.200.1])
-  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
-  with ESMTPS id 11859435; Tue, 07 Jun 2022 14:42:56 -0400
-Message-ID: <c918d44b-1822-b076-0833-7645a2079809@cybernetics.com>
-Date:   Tue, 7 Jun 2022 14:42:56 -0400
+        Tue, 7 Jun 2022 16:52:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C7881A06E;
+        Tue,  7 Jun 2022 11:42:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4922B6160D;
+        Tue,  7 Jun 2022 18:42:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56AC6C3411C;
+        Tue,  7 Jun 2022 18:42:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654627375;
+        bh=bNxTvQwfvlCQhLBV5XP5eB24HHOeNW7RiIDKe2u+9rk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PhVuWSJnH1rvvVJvEk2hYveG3OceI2gs+6mCmptxGc4wQWdmUMjt6vD9C8oX7OVDo
+         vBh7oXwwKsNtHRYMZwcvwtPwkgZ9TnHbxbZ7v/YyCWDDDpKfjJ6s8hZYqOOCWTzEXO
+         gUPQl+GfmLHGTSstf83k5DyOY11mOD9AlQMXdemM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.17 717/772] um: Fix out-of-bounds read in LDT setup
+Date:   Tue,  7 Jun 2022 19:05:09 +0200
+Message-Id: <20220607165010.172517425@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: [PATCH v6 05/11] dmapool: improve accuracy of debug statistics
-Content-Language: en-US
-X-ASG-Orig-Subj: [PATCH v6 05/11] dmapool: improve accuracy of debug statistics
-From:   Tony Battersby <tonyb@cybernetics.com>
-To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc:     iommu@lists.linux-foundation.org, kernel-team@fb.com,
-        Matthew Wilcox <willy@infradead.org>,
-        Keith Busch <kbusch@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Tony Lindgren <tony@atomide.com>
-References: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
-In-Reply-To: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Barracuda-Connect: UNKNOWN[10.10.4.126]
-X-Barracuda-Start-Time: 1654627376
-X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
-X-Barracuda-BRTS-Status: 1
-X-Virus-Scanned: by bsmtpd at cybernetics.com
-X-Barracuda-Scan-Msg-Size: 1818
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The "total number of blocks in pool" debug statistic currently does not
-take the boundary value into account, so it diverges from the "total
-number of blocks in use" statistic when a boundary is in effect.  Add a
-calculation for the number of blocks per allocation that takes the
-boundary into account, and use it to replace the inaccurate calculation.
+From: Vincent Whitchurch <vincent.whitchurch@axis.com>
 
-This depends on the patch "dmapool: fix boundary comparison" for the
-calculated blks_per_alloc value to be correct.
+commit 2a4a62a14be1947fa945c5c11ebf67326381a568 upstream.
 
-Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
+syscall_stub_data() expects the data_count parameter to be the number of
+longs, not bytes.
+
+ ==================================================================
+ BUG: KASAN: stack-out-of-bounds in syscall_stub_data+0x70/0xe0
+ Read of size 128 at addr 000000006411f6f0 by task swapper/1
+
+ CPU: 0 PID: 1 Comm: swapper Not tainted 5.18.0+ #18
+ Call Trace:
+  show_stack.cold+0x166/0x2a7
+  __dump_stack+0x3a/0x43
+  dump_stack_lvl+0x1f/0x27
+  print_report.cold+0xdb/0xf81
+  kasan_report+0x119/0x1f0
+  kasan_check_range+0x3a3/0x440
+  memcpy+0x52/0x140
+  syscall_stub_data+0x70/0xe0
+  write_ldt_entry+0xac/0x190
+  init_new_ldt+0x515/0x960
+  init_new_context+0x2c4/0x4d0
+  mm_init.constprop.0+0x5ed/0x760
+  mm_alloc+0x118/0x170
+  0x60033f48
+  do_one_initcall+0x1d7/0x860
+  0x60003e7b
+  kernel_init+0x6e/0x3d4
+  new_thread_handler+0x1e7/0x2c0
+
+ The buggy address belongs to stack of task swapper/1
+  and is located at offset 64 in frame:
+  init_new_ldt+0x0/0x960
+
+ This frame has 2 objects:
+  [32, 40) 'addr'
+  [64, 80) 'desc'
+ ==================================================================
+
+Fixes: 858259cf7d1c443c83 ("uml: maintain own LDT entries")
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
+ arch/x86/um/ldt.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-The added blks_per_alloc value will also be used in the next patch.
+--- a/arch/x86/um/ldt.c
++++ b/arch/x86/um/ldt.c
+@@ -23,9 +23,11 @@ static long write_ldt_entry(struct mm_id
+ {
+ 	long res;
+ 	void *stub_addr;
++
++	BUILD_BUG_ON(sizeof(*desc) % sizeof(long));
++
+ 	res = syscall_stub_data(mm_idp, (unsigned long *)desc,
+-				(sizeof(*desc) + sizeof(long) - 1) &
+-				    ~(sizeof(long) - 1),
++				sizeof(*desc) / sizeof(long),
+ 				addr, &stub_addr);
+ 	if (!res) {
+ 		unsigned long args[] = { func,
 
- mm/dmapool.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/mm/dmapool.c b/mm/dmapool.c
-index 122781fe2c03..d3e5a6151fb4 100644
---- a/mm/dmapool.c
-+++ b/mm/dmapool.c
-@@ -47,6 +47,7 @@ struct dma_pool {		/* the pool */
- 	unsigned int size;
- 	unsigned int allocation;
- 	unsigned int boundary;
-+	unsigned int blks_per_alloc;
- 	char name[32];
- 	struct list_head pools;
- };
-@@ -85,8 +86,7 @@ static ssize_t pools_show(struct device *dev, struct device_attribute *attr, cha
- 		/* per-pool info, no real statistics yet */
- 		size += sysfs_emit_at(buf, size, "%-16s %4zu %4zu %4u %2u\n",
- 				      pool->name, blocks,
--				      (size_t) pages *
--				      (pool->allocation / pool->size),
-+				      (size_t) pages * pool->blks_per_alloc,
- 				      pool->size, pages);
- 	}
- 	mutex_unlock(&pools_lock);
-@@ -159,6 +159,9 @@ struct dma_pool *dma_pool_create(const char *name, struct device *dev,
- 	retval->size = size;
- 	retval->boundary = boundary;
- 	retval->allocation = allocation;
-+	retval->blks_per_alloc =
-+		(allocation / boundary) * (boundary / size) +
-+		(allocation % boundary) / size;
- 
- 	INIT_LIST_HEAD(&retval->pools);
- 
--- 
-2.25.1
 
