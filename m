@@ -2,134 +2,267 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4706C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:58:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E20C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353484AbiFGV6d (ORCPT
+        id S1382376AbiFGV6l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:58:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49900 "EHLO
+        Tue, 7 Jun 2022 17:58:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379454AbiFGVC3 (ORCPT
+        with ESMTP id S1379455AbiFGVC3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:02:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC201208A7;
-        Tue,  7 Jun 2022 11:48:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3911616AF;
-        Tue,  7 Jun 2022 18:48:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFED0C385A2;
-        Tue,  7 Jun 2022 18:48:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627688;
-        bh=s3qNkoIYVWMpejiHT67UNIh/odgE/06E//y1wED6l1c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RdkD928l9xjJw6ej7ZJuLIKEOPOPQNeEytjRTnaalqblOchgJSW1cEoMQ+QMSfP4W
-         iTK3VhBq496WlFjEQnX+GiiLaZNIzKmz4We1hz/MBX1LEaxZjuWgB/SRWjPu33yu/B
-         J1GyCjV/W1Yg7F6oilHehdNGwJtJGH+lkDgA9zZ8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
-        Martin Krastev <krastevm@vmware.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 056/879] drm/vmwgfx: validate the screen formats
-Date:   Tue,  7 Jun 2022 18:52:54 +0200
-Message-Id: <20220607165004.316743392@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 380A5121CDF
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:48:09 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id v19so24141287edd.4
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:48:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ifDxMatAlmHG6+QO/cX43ydwB+XCFucrKlR7RLoJRyk=;
+        b=YwqKVRgDSYc7lhb5EOoK6KWe1n5ItyjnVVXQbxtboJkPu8qknjzCCMP5zI8o6wtucr
+         O8oWZgd7TU+bt1TCM4PqWEfgUdm+mh5jPmqqhHyolyQOZ/aXsknjWebnd2MAVlcITrNC
+         GgdK6YYEsFHFxNGQQjzoPMTWGYcAukmaKm82stLPel+yei+sLZ6CmwoT2uIFPwbZJGQm
+         NBzOlIX5gZlg7Ctb8HBAzEh8w+NiH2SS5qle1ugL6jAsUBMX1mdyt2Owjt2s9wNB3t39
+         izM6HDsttK01IyYzDfonGQ/Zjea48Twd5ku42IdNO/dbD1axrT7c7/jhsyVCmcDMPdmk
+         BPbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ifDxMatAlmHG6+QO/cX43ydwB+XCFucrKlR7RLoJRyk=;
+        b=MzOXTMBjGjFqC3CyAuEElN83pbwHxIa8YItvsZArfdXGLZV7Qyx7Wcl+Kqj/SWIEkT
+         1FDgvIEsr8aFJVRhCF+ihIWBJQFAvo22TS07DaDNPtxOzcg6ekpzizpEsJc+V/Ik7+hq
+         qVsRvngoE7lHbB5CbLdrKKafQc61uMIsuczvnT+scXD88bZo+PMe4gNNpnmK7LsIuQED
+         LiL65WAA6j8RS6UVcCwT5SGZp4SlK7wepZgEpl/WkMtdk3okIrnBO9HW981s/lquQDJx
+         IXr0VGBPYvzpiCbYIj9n+j38cGpwL8WmxmkbECSuqp6JzRqIHPKlJSel9psUzAtT/h0Z
+         OWLg==
+X-Gm-Message-State: AOAM532L8YifjDGB3Afn4QSBjkWr13W4LDcFbHKb99tjsROg2Hv7Rkcx
+        k3alBw6Xw0GcGAiKsTJlyA6eEMN+9QXNxRhjbtGnBw==
+X-Google-Smtp-Source: ABdhPJwG2tPtWu/ZYuhkA19R4quxtR+arcKJxUhS+mfI+LlDrHLpHONsROS5zTRZFP0xm1JWOiTP9BpRUkqW++dYki8=
+X-Received: by 2002:a05:6402:3688:b0:42d:d3ba:4725 with SMTP id
+ ej8-20020a056402368800b0042dd3ba4725mr35557327edb.212.1654627687938; Tue, 07
+ Jun 2022 11:48:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220607145639.2362750-1-tzungbi@kernel.org> <20220607145639.2362750-9-tzungbi@kernel.org>
+In-Reply-To: <20220607145639.2362750-9-tzungbi@kernel.org>
+From:   Guenter Roeck <groeck@google.com>
+Date:   Tue, 7 Jun 2022 11:47:56 -0700
+Message-ID: <CABXOdTdx7jKLbHa3X7aOz3wUMpwWWHkncfKuRyGzonkA92Rg=w@mail.gmail.com>
+Subject: Re: [PATCH v2 08/15] platform/chrome: cros_ec_proto: handle empty
+ payload in getting proto info
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     bleung@chromium.org, groeck@chromium.org,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zack Rusin <zackr@vmware.com>
+On Tue, Jun 7, 2022 at 7:57 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
+>
+> cros_ec_get_proto_info() expects to receive
+> sizeof(struct ec_response_get_protocol_info) from send_command().  The
+> payload is valid only if the return value is positive.
+>
+> Add Kunit tests for returning 0 in send_command() and handle the case in
+> cros_ec_get_proto_info().
+>
+That should be two separate patches.
 
-[ Upstream commit 8bb75aeb58bd688d70827ae179bd3da57b6d975b ]
+> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+> ---
+> No v1.  New in the series.
+>
+>  drivers/platform/chrome/cros_ec_proto.c      |   5 +
+>  drivers/platform/chrome/cros_ec_proto_test.c | 132 +++++++++++++++++++
+>  2 files changed, 137 insertions(+)
+>
+> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+> index 893b76703da6..6f5be9e5ede4 100644
+> --- a/drivers/platform/chrome/cros_ec_proto.c
+> +++ b/drivers/platform/chrome/cros_ec_proto.c
+> @@ -314,6 +314,11 @@ static int cros_ec_get_proto_info(struct cros_ec_device *ec_dev, int devidx)
+>                 goto exit;
+>         }
+>
+> +       if (ret == 0) {
+> +               ret = -EPROTO;
+> +               goto exit;
+> +       }
+> +
 
-The kms code wasn't validating the modifiers and was letting through
-unsupported formats. rgb8 was never properly supported and has no
-matching svga screen target format so remove it.
-This fixes format/modifier failures in kms_addfb_basic from IGT.
+I think you can move that into the if() statement above (which already
+checks for ret >=0),
+making it a special case of that situation.
 
-Signed-off-by: Zack Rusin <zackr@vmware.com>
-Reviewed-by: Martin Krastev <krastevm@vmware.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220318174332.440068-4-zack@kde.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/vmwgfx/vmwgfx_kms.c | 30 +++++++++++++++--------------
- drivers/gpu/drm/vmwgfx/vmwgfx_kms.h |  1 -
- 2 files changed, 16 insertions(+), 15 deletions(-)
+Thanks,
+Guenter
 
-diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
-index 93431e8f6606..9410152f9d6f 100644
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
-@@ -914,6 +914,15 @@ static int vmw_kms_new_framebuffer_surface(struct vmw_private *dev_priv,
- 	 * Sanity checks.
- 	 */
- 
-+	if (!drm_any_plane_has_format(&dev_priv->drm,
-+				      mode_cmd->pixel_format,
-+				      mode_cmd->modifier[0])) {
-+		drm_dbg(&dev_priv->drm,
-+			"unsupported pixel format %p4cc / modifier 0x%llx\n",
-+			&mode_cmd->pixel_format, mode_cmd->modifier[0]);
-+		return -EINVAL;
-+	}
-+
- 	/* Surface must be marked as a scanout. */
- 	if (unlikely(!surface->metadata.scanout))
- 		return -EINVAL;
-@@ -1236,20 +1245,13 @@ static int vmw_kms_new_framebuffer_bo(struct vmw_private *dev_priv,
- 		return -EINVAL;
- 	}
- 
--	/* Limited framebuffer color depth support for screen objects */
--	if (dev_priv->active_display_unit == vmw_du_screen_object) {
--		switch (mode_cmd->pixel_format) {
--		case DRM_FORMAT_XRGB8888:
--		case DRM_FORMAT_ARGB8888:
--			break;
--		case DRM_FORMAT_XRGB1555:
--		case DRM_FORMAT_RGB565:
--			break;
--		default:
--			DRM_ERROR("Invalid pixel format: %p4cc\n",
--				  &mode_cmd->pixel_format);
--			return -EINVAL;
--		}
-+	if (!drm_any_plane_has_format(&dev_priv->drm,
-+				      mode_cmd->pixel_format,
-+				      mode_cmd->modifier[0])) {
-+		drm_dbg(&dev_priv->drm,
-+			"unsupported pixel format %p4cc / modifier 0x%llx\n",
-+			&mode_cmd->pixel_format, mode_cmd->modifier[0]);
-+		return -EINVAL;
- 	}
- 
- 	vfbd = kzalloc(sizeof(*vfbd), GFP_KERNEL);
-diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
-index 4d36e8507380..d9ebd02099a6 100644
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
-@@ -247,7 +247,6 @@ struct vmw_framebuffer_bo {
- static const uint32_t __maybe_unused vmw_primary_plane_formats[] = {
- 	DRM_FORMAT_XRGB1555,
- 	DRM_FORMAT_RGB565,
--	DRM_FORMAT_RGB888,
- 	DRM_FORMAT_XRGB8888,
- 	DRM_FORMAT_ARGB8888,
- };
--- 
-2.35.1
-
-
-
+>         info = (struct ec_response_get_protocol_info *)msg->data;
+>
+>         switch (devidx) {
+> diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
+> index 14a4441a39fc..473714964cf2 100644
+> --- a/drivers/platform/chrome/cros_ec_proto_test.c
+> +++ b/drivers/platform/chrome/cros_ec_proto_test.c
+> @@ -406,6 +406,71 @@ static void cros_ec_proto_test_query_all_no_pd_return_error(struct kunit *test)
+>         }
+>  }
+>
+> +static void cros_ec_proto_test_query_all_no_pd_return0(struct kunit *test)
+> +{
+> +       struct cros_ec_proto_test_priv *priv = test->priv;
+> +       struct cros_ec_device *ec_dev = &priv->ec_dev;
+> +       struct ec_xfer_mock *mock;
+> +       int ret;
+> +
+> +       /* Set some garbage bytes. */
+> +       ec_dev->max_passthru = 0xbf;
+> +
+> +       /* For cros_ec_get_proto_info() without passthru. */
+> +       {
+> +               struct ec_response_get_protocol_info *data;
+> +
+> +               mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +
+> +               /*
+> +                * Although it doesn't check the value, provides valid sizes so that
+> +                * cros_ec_query_all() allocates din and dout correctly.
+> +                */
+> +               data = (struct ec_response_get_protocol_info *)mock->o_data;
+> +               data->max_request_packet_size = 0xbe;
+> +               data->max_response_packet_size = 0xef;
+> +       }
+> +
+> +       /* For cros_ec_get_proto_info() with passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_add(test, 0);
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +       }
+> +
+> +       cros_ec_proto_test_query_all_pretest(test);
+> +       ret = cros_ec_query_all(ec_dev);
+> +       KUNIT_EXPECT_EQ(test, ret, 0);
+> +
+> +       /* For cros_ec_get_proto_info() without passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_PROTOCOL_INFO);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_protocol_info));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
+> +       }
+> +
+> +       /* For cros_ec_get_proto_info() with passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command,
+> +                               EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) |
+> +                               EC_CMD_GET_PROTOCOL_INFO);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_protocol_info));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
+> +
+> +               KUNIT_EXPECT_EQ(test, ec_dev->max_passthru, 0);
+> +       }
+> +}
+> +
+>  static void cros_ec_proto_test_query_all_legacy_normal_v3_return_error(struct kunit *test)
+>  {
+>         struct cros_ec_proto_test_priv *priv = test->priv;
+> @@ -471,6 +536,71 @@ static void cros_ec_proto_test_query_all_legacy_normal_v3_return_error(struct ku
+>         }
+>  }
+>
+> +static void cros_ec_proto_test_query_all_legacy_normal_v3_return0(struct kunit *test)
+> +{
+> +       struct cros_ec_proto_test_priv *priv = test->priv;
+> +       struct cros_ec_device *ec_dev = &priv->ec_dev;
+> +       struct ec_xfer_mock *mock;
+> +       int ret;
+> +
+> +       /* For cros_ec_get_proto_info() without passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_add(test, 0);
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +       }
+> +
+> +       /* For cros_ec_host_command_proto_query_v2(). */
+> +       {
+> +               struct ec_response_hello *data;
+> +
+> +               mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +
+> +               data = (struct ec_response_hello *)mock->o_data;
+> +               data->out_data = 0xa1b2c3d4;
+> +       }
+> +
+> +       cros_ec_proto_test_query_all_pretest(test);
+> +       ret = cros_ec_query_all(ec_dev);
+> +       KUNIT_EXPECT_EQ(test, ret, 0);
+> +
+> +       /* For cros_ec_get_proto_info() without passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_PROTOCOL_INFO);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_protocol_info));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
+> +       }
+> +
+> +       /* For cros_ec_host_command_proto_query_v2(). */
+> +       {
+> +               struct ec_params_hello *data;
+> +
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_HELLO);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize, sizeof(struct ec_response_hello));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(*data));
+> +
+> +               data = (struct ec_params_hello *)mock->i_data;
+> +               KUNIT_EXPECT_EQ(test, data->in_data, 0xa0b0c0d0);
+> +
+> +               KUNIT_EXPECT_EQ(test, ec_dev->proto_version, 2);
+> +               KUNIT_EXPECT_EQ(test, ec_dev->max_request, EC_PROTO2_MAX_PARAM_SIZE);
+> +               KUNIT_EXPECT_EQ(test, ec_dev->max_response, EC_PROTO2_MAX_PARAM_SIZE);
+> +               KUNIT_EXPECT_EQ(test, ec_dev->max_passthru, 0);
+> +               KUNIT_EXPECT_PTR_EQ(test, ec_dev->pkt_xfer, NULL);
+> +               KUNIT_EXPECT_EQ(test, ec_dev->din_size, EC_PROTO2_MSG_BYTES);
+> +               KUNIT_EXPECT_EQ(test, ec_dev->dout_size, EC_PROTO2_MSG_BYTES);
+> +       }
+> +}
+> +
+>  static void cros_ec_proto_test_query_all_legacy_xfer_error(struct kunit *test)
+>  {
+>         struct cros_ec_proto_test_priv *priv = test->priv;
+> @@ -998,7 +1128,9 @@ static struct kunit_case cros_ec_proto_test_cases[] = {
+>         KUNIT_CASE(cros_ec_proto_test_check_result),
+>         KUNIT_CASE(cros_ec_proto_test_query_all_normal),
+>         KUNIT_CASE(cros_ec_proto_test_query_all_no_pd_return_error),
+> +       KUNIT_CASE(cros_ec_proto_test_query_all_no_pd_return0),
+>         KUNIT_CASE(cros_ec_proto_test_query_all_legacy_normal_v3_return_error),
+> +       KUNIT_CASE(cros_ec_proto_test_query_all_legacy_normal_v3_return0),
+>         KUNIT_CASE(cros_ec_proto_test_query_all_legacy_xfer_error),
+>         KUNIT_CASE(cros_ec_proto_test_query_all_legacy_return_error),
+>         KUNIT_CASE(cros_ec_proto_test_query_all_legacy_data_error),
+> --
+> 2.36.1.255.ge46751e96f-goog
+>
