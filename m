@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 327FEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:41:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFADFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:41:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352636AbiFGSlv (ORCPT
+        id S1352808AbiFGSl5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:41:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49664 "EHLO
+        Tue, 7 Jun 2022 14:41:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349742AbiFGSMT (ORCPT
+        with ESMTP id S1349955AbiFGSMs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:12:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF42C8BDE;
-        Tue,  7 Jun 2022 10:48:48 -0700 (PDT)
+        Tue, 7 Jun 2022 14:12:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018CA1157FB;
+        Tue,  7 Jun 2022 10:48:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BD6561731;
-        Tue,  7 Jun 2022 17:48:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 749ABC385A5;
-        Tue,  7 Jun 2022 17:48:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B265B822CD;
+        Tue,  7 Jun 2022 17:48:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E45B8C385A5;
+        Tue,  7 Jun 2022 17:48:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624095;
-        bh=Aq7vSxKcjetfj93aKlRfrOrn3yESDQPRup+E2ckv/ac=;
+        s=korg; t=1654624112;
+        bh=/dbWxOZHy2OewWmHqoNlkYSibashwQ7otUvCVbYc+WE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ffbxixP2r4oBmdiTTce6JCpKU5hfwKUeehY0mEv4ClbcdFr7nssJY4nbnBqNmmopq
-         dbds5TDXA4zfGtQirjDb0nQsNKIZcxdIfF3hXS8dKZkq+W8JddDISDT1ztjZ6NO8xU
-         LJ2H18z8RX/FwgyaSbEZOcb50kQRVFDVMU+8iM9I=
+        b=djWIhkHNa9FCishgVBX/fdmxFYVsWIqsG9T6GXFR2giY5rMP6VSRqZ79/mdyjdKSE
+         tdpXZTdqQT0aBWaMIlX5hzOepH58laSQdeJhXTWM/2jCQEh54yUhNUa0kXvJOpf8p3
+         XqU950RCNctNS7oQ2T8117Kny36uPpAVDwhYo1zg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Brian Starkey <brian.starkey@arm.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 202/667] drm/vc4: txp: Force alpha to be 0xff if its disabled
-Date:   Tue,  7 Jun 2022 18:57:47 +0200
-Message-Id: <20220607164940.859320641@linuxfoundation.org>
+Subject: [PATCH 5.15 208/667] drm: mali-dp: potential dereference of null pointer
+Date:   Tue,  7 Jun 2022 18:57:53 +0200
+Message-Id: <20220607164941.036735941@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,45 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 5453343a88ede8b12812fced81ecd24cb888ccc3 ]
+[ Upstream commit 73c3ed7495c67b8fbdc31cf58e6ca8757df31a33 ]
 
-If we use a format that has padding instead of the alpha component (such
-as XRGB8888), it appears that the Transposer will fill the padding to 0,
-disregarding what was stored in the input buffer padding.
+The return value of kzalloc() needs to be checked.
+To avoid use of null pointer '&state->base' in case of the
+failure of alloc.
 
-This leads to issues with IGT, since it will set the padding to 0xff,
-but will then compare the CRC of the two frames which will thus fail.
-Another nice side effect is that it is now possible to just use the
-buffer as ARGB.
-
-Fixes: 008095e065a8 ("drm/vc4: Add support for the transposer block")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://lore.kernel.org/r/20220328153659.2382206-4-maxime@cerno.tech
+Fixes: 99665d072183 ("drm: mali-dp: add malidp_crtc_state struct")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Brian Starkey <brian.starkey@arm.com>
+Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211214100837.46912-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_txp.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/gpu/drm/arm/malidp_crtc.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_txp.c b/drivers/gpu/drm/vc4/vc4_txp.c
-index ace2d03649ba..82beb8c159f2 100644
---- a/drivers/gpu/drm/vc4/vc4_txp.c
-+++ b/drivers/gpu/drm/vc4/vc4_txp.c
-@@ -304,6 +304,12 @@ static void vc4_txp_connector_atomic_commit(struct drm_connector *conn,
+diff --git a/drivers/gpu/drm/arm/malidp_crtc.c b/drivers/gpu/drm/arm/malidp_crtc.c
+index 494075ddbef6..b5928b52e279 100644
+--- a/drivers/gpu/drm/arm/malidp_crtc.c
++++ b/drivers/gpu/drm/arm/malidp_crtc.c
+@@ -487,7 +487,10 @@ static void malidp_crtc_reset(struct drm_crtc *crtc)
+ 	if (crtc->state)
+ 		malidp_crtc_destroy_state(crtc, crtc->state);
  
- 	if (fb->format->has_alpha)
- 		ctrl |= TXP_ALPHA_ENABLE;
+-	__drm_atomic_helper_crtc_reset(crtc, &state->base);
++	if (state)
++		__drm_atomic_helper_crtc_reset(crtc, &state->base);
 +	else
-+		/*
-+		 * If TXP_ALPHA_ENABLE isn't set and TXP_ALPHA_INVERT is, the
-+		 * hardware will force the output padding to be 0xff.
-+		 */
-+		ctrl |= TXP_ALPHA_INVERT;
++		__drm_atomic_helper_crtc_reset(crtc, NULL);
+ }
  
- 	gem = drm_fb_cma_get_gem_obj(fb, 0);
- 	TXP_WRITE(TXP_DST_PTR, gem->paddr + fb->offsets[0]);
+ static int malidp_crtc_enable_vblank(struct drm_crtc *crtc)
 -- 
 2.35.1
 
