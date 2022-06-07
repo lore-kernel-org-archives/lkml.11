@@ -2,83 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F069DCCA487
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:28:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11116CCA486
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376257AbiFGUZ5 (ORCPT
+        id S1376276AbiFGU0A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58482 "EHLO
+        Tue, 7 Jun 2022 16:26:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355765AbiFGTew (ORCPT
+        with ESMTP id S1356311AbiFGTgG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:34:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991FC1ABFA5;
-        Tue,  7 Jun 2022 11:13:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 7 Jun 2022 15:36:06 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D6B1AA3FD;
+        Tue,  7 Jun 2022 11:13:20 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ADDF560B26;
-        Tue,  7 Jun 2022 18:13:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9E69C385A2;
-        Tue,  7 Jun 2022 18:13:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625588;
-        bh=/bRe3fMWLujieOuRXkmsKWSwKCr2pPGcp3HWPp9ylT8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RHypOqKkTRmfQddo2St5g9wNTCyhZ0MvrA/69+OIBkiMr+PzFLA/M4YbOZLfkRyNs
-         TdyqlQ3CzpcBchuSKiIVK5bXYVQgJGoAbdNocDfzp4q3z4lvNK5u85wNAukWGZFFrz
-         ZG26D5BzfTI0iiEzDXs0BMtO8djZcuHNJ2KrJ0KI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 071/772] rcu: Make TASKS_RUDE_RCU select IRQ_WORK
-Date:   Tue,  7 Jun 2022 18:54:23 +0200
-Message-Id: <20220607164951.133727498@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 925351F8AB;
+        Tue,  7 Jun 2022 18:13:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1654625591; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3y9oQxsxgLQFrSB/OPrvIt+A2m61bGJ7Vng43pViMbo=;
+        b=29P4yZRt6ViS62lTjFMYGu+vcbqJOiMtOfQt3lmbRTdhSWgG4r00CofYzAHbK4eVmlP3x5
+        gj7DMHTU79BCZT6dktEJw+vzV7U473tyY+GWcFoxE/qsXYuNxvreCG7fAGt1oxWHz0RqbF
+        +DoXgklCaKlR/NPhXRzOqDcB2CX3wUI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1654625591;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3y9oQxsxgLQFrSB/OPrvIt+A2m61bGJ7Vng43pViMbo=;
+        b=8bvrjGsUK6CVtP+9scEDo2jd0QG1SFNbQ7R60qz6tX74AiD8zMfzKdP1ZpHw4+fwsWCmeb
+        DbTRokH6KkfmBZDg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 611DC13638;
+        Tue,  7 Jun 2022 18:13:11 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id mbF1FjeVn2KgIwAAMHmgww
+        (envelope-from <jslaby@suse.cz>); Tue, 07 Jun 2022 18:13:11 +0000
+Message-ID: <37ced336-ac77-4c8f-1142-1f55c01383ca@suse.cz>
+Date:   Tue, 7 Jun 2022 20:13:10 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 12/36] tty/vt: consolemap: use sizeof(*pointer) instead of
+ sizeof(type)
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220607104946.18710-1-jslaby@suse.cz>
+ <20220607104946.18710-12-jslaby@suse.cz>
+ <8c809bd0-552d-8027-a1a7-96b77369d06e@linux.intel.com>
+From:   Jiri Slaby <jslaby@suse.cz>
+In-Reply-To: <8c809bd0-552d-8027-a1a7-96b77369d06e@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul E. McKenney <paulmck@kernel.org>
+On 07. 06. 22, 16:00, Ilpo Järvinen wrote:
+> On Tue, 7 Jun 2022, Jiri Slaby wrote:
+> 
+>> It is preferred to use sizeof(*pointer) instead of sizeof(type). First,
+>> the type of the variable can change and one needs not change the former
+>> (unlike the latter). Second, the latter is error-prone due to (u16),
+>> (u16 *), and (u16 **) mixture here.
+>>
+>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> 
+> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> 
+> This seems fine but see the comments below which are not directly related
+> to the change itself.
+> 
+>> ---
+>>   drivers/tty/vt/consolemap.c | 23 ++++++++++++-----------
+>>   1 file changed, 12 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+>> index 097ab7d01f8b..79a62dcca046 100644
+>> --- a/drivers/tty/vt/consolemap.c
+>> +++ b/drivers/tty/vt/consolemap.c
+>> @@ -251,12 +251,12 @@ static void set_inverse_trans_unicode(struct vc_data *conp,
+>>   		return;
+>>   	q = p->inverse_trans_unicode;
+>>   	if (!q) {
+>> -		q = p->inverse_trans_unicode =
+>> -			kmalloc_array(MAX_GLYPH, sizeof(u16), GFP_KERNEL);
+>> +		q = p->inverse_trans_unicode = kmalloc_array(MAX_GLYPH,
+>> +				sizeof(*q), GFP_KERNEL);
+>>   		if (!q)
+>>   			return;
+>>   	}
+>> -	memset(q, 0, MAX_GLYPH * sizeof(u16));
+>> +	memset(q, 0, MAX_GLYPH * sizeof(*q));
+> 
+> Convert kmalloc_array into kcalloc and place memset() into else branch?
 
-[ Upstream commit 46e861be589881e0905b9ade3d8439883858721c ]
+IMO, the way it is now is more obvious.
 
-The TASKS_RUDE_RCU does not select IRQ_WORK, which can result in build
-failures for kernels that do not otherwise select IRQ_WORK.  This commit
-therefore causes the TASKS_RUDE_RCU Kconfig option to select IRQ_WORK.
+>> @@ -514,11 +514,12 @@ con_insert_unipair(struct uni_pagedict *p, u_short unicode, u_short fontpos)
+>>   	n = UNI_ROW(unicode);
+>>   	p2 = p1[n];
+>>   	if (!p2) {
+>> -		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(u16), GFP_KERNEL);
+>> +		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(*p2),
+>> +				GFP_KERNEL);
+>>   		if (!p2)
+>>   			return -ENOMEM;
+>>   		/* No glyphs for the characters (yet) */
+>> -		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(u16));
+>> +		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(*p2));
+> 
+> This could have been kcalloc'ed.
 
-Reported-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/rcu/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+Why would you zero it before setting it to 0xff?
 
-diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
-index bf8e341e75b4..f559870fbf8b 100644
---- a/kernel/rcu/Kconfig
-+++ b/kernel/rcu/Kconfig
-@@ -86,6 +86,7 @@ config TASKS_RCU
- 
- config TASKS_RUDE_RCU
- 	def_bool 0
-+	select IRQ_WORK
- 	help
- 	  This option enables a task-based RCU implementation that uses
- 	  only context switch (including preemption) and user-mode
+thanks,
 -- 
-2.35.1
-
-
-
+js
+suse labs
