@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48AE7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:59:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36443C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:59:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357998AbiFGT7Y (ORCPT
+        id S1358003AbiFGT7h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:59:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50278 "EHLO
+        Tue, 7 Jun 2022 15:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347697AbiFGSxT (ORCPT
+        with ESMTP id S1353690AbiFGSxT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:53:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B61101733;
-        Tue,  7 Jun 2022 11:03:41 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11C014AA4C;
+        Tue,  7 Jun 2022 11:03:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F4211B82343;
-        Tue,  7 Jun 2022 18:03:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C1EFC34119;
-        Tue,  7 Jun 2022 18:03:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C11A761883;
+        Tue,  7 Jun 2022 18:03:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCC56C34115;
+        Tue,  7 Jun 2022 18:03:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625019;
-        bh=WzvN1A/2QTk/kMzoYD1MIT9522XX+Es0Y51WSP4wVDA=;
+        s=korg; t=1654625014;
+        bh=4u7SjdlJyw6xkUuz/qbrSn/2WRJCTAhLEKrs6zEwYwA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yny3Rh6awcsDq3Me40YSkJM4FNOjEtDmmu0aL2J00CSNLieANCbhDYQH4JFxWyZYY
-         yO/Q6D4ozGssdkDV2BWXtqxVP8w9HoYOq7/FtM9ct/JEII61Xxob1TEYvcQP1GGjZ7
-         7kIGSaHRxl1v8baEpMWh3Tiq9/ya+J0D/sT58QHE=
+        b=cu0780Pdjo4H+q/ORwQdn/+qI3bRnCQXLtSdKzSrolQ14YbSSrl4U941jZTiZozoi
+         wad7St8H8/Kv0geLTvrYt5kWPcf7aJB6onLrr8DoXwuNUK9Ic9WjxjOiCpZy16Hfbw
+         u14FAS0UpTU0KrRke1MIe2lqlP0ojcN/UV9pmGeU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
         Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
         Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 538/667] bfq: Get rid of __bio_blkcg() usage
-Date:   Tue,  7 Jun 2022 19:03:23 +0200
-Message-Id: <20220607164950.836477993@linuxfoundation.org>
+Subject: [PATCH 5.15 536/667] bfq: Remove pointless bfq_init_rq() calls
+Date:   Tue,  7 Jun 2022 19:03:21 +0200
+Message-Id: <20220607164950.777019914@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,195 +52,82 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jan Kara <jack@suse.cz>
 
-commit 4e54a2493e582361adc3bfbf06c7d50d19d18837 upstream.
+commit 5f550ede5edf846ecc0067be1ba80514e6fe7f8e upstream.
 
-BFQ usage of __bio_blkcg() is a relict from the past. Furthermore if bio
-would not be associated with any blkcg, the usage of __bio_blkcg() in
-BFQ is prone to races with the task being migrated between cgroups as
-__bio_blkcg() calls at different places could return different blkcgs.
-
-Convert BFQ to the new situation where bio->bi_blkg is initialized in
-bio_set_dev() and thus practically always valid. This allows us to save
-blkcg_gq lookup and noticeably simplify the code.
+We call bfq_init_rq() from request merging functions where requests we
+get should have already gone through bfq_init_rq() during insert and
+anyway we want to do anything only if the request is already tracked by
+BFQ. So replace calls to bfq_init_rq() with RQ_BFQQ() instead to simply
+skip requests untracked by BFQ. We move bfq_init_rq() call in
+bfq_insert_request() a bit earlier to cover request merging and thus
+can transfer FIFO position in case of a merge.
 
 CC: stable@vger.kernel.org
-Fixes: 0fe061b9f03c ("blkcg: fix ref count issue with bio_blkcg() using task_css")
 Tested-by: "yukuai (C)" <yukuai3@huawei.com>
 Signed-off-by: Jan Kara <jack@suse.cz>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220401102752.8599-8-jack@suse.cz
+Link: https://lore.kernel.org/r/20220401102752.8599-6-jack@suse.cz
 Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/bfq-cgroup.c  |   63 ++++++++++++++++++----------------------------------
- block/bfq-iosched.c |   11 ---------
- block/bfq-iosched.h |    3 --
- 3 files changed, 25 insertions(+), 52 deletions(-)
+ block/bfq-iosched.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---- a/block/bfq-cgroup.c
-+++ b/block/bfq-cgroup.c
-@@ -584,27 +584,11 @@ static void bfq_group_set_parent(struct
- 	entity->sched_data = &parent->sched_data;
- }
- 
--static struct bfq_group *bfq_lookup_bfqg(struct bfq_data *bfqd,
--					 struct blkcg *blkcg)
-+static void bfq_link_bfqg(struct bfq_data *bfqd, struct bfq_group *bfqg)
- {
--	struct blkcg_gq *blkg;
--
--	blkg = blkg_lookup(blkcg, bfqd->queue);
--	if (likely(blkg))
--		return blkg_to_bfqg(blkg);
--	return NULL;
--}
--
--struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd,
--				     struct blkcg *blkcg)
--{
--	struct bfq_group *bfqg, *parent;
-+	struct bfq_group *parent;
- 	struct bfq_entity *entity;
- 
--	bfqg = bfq_lookup_bfqg(bfqd, blkcg);
--	if (unlikely(!bfqg))
--		return NULL;
--
- 	/*
- 	 * Update chain of bfq_groups as we might be handling a leaf group
- 	 * which, along with some of its relatives, has not been hooked yet
-@@ -621,8 +605,15 @@ struct bfq_group *bfq_find_set_group(str
- 			bfq_group_set_parent(curr_bfqg, parent);
- 		}
- 	}
-+}
- 
--	return bfqg;
-+struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
-+{
-+	struct blkcg_gq *blkg = bio->bi_blkg;
-+
-+	if (!blkg)
-+		return bfqd->root_group;
-+	return blkg_to_bfqg(blkg);
- }
- 
- /**
-@@ -704,25 +695,15 @@ void bfq_bfqq_move(struct bfq_data *bfqd
-  * Move bic to blkcg, assuming that bfqd->lock is held; which makes
-  * sure that the reference to cgroup is valid across the call (see
-  * comments in bfq_bic_update_cgroup on this issue)
-- *
-- * NOTE: an alternative approach might have been to store the current
-- * cgroup in bfqq and getting a reference to it, reducing the lookup
-- * time here, at the price of slightly more complex code.
-  */
--static struct bfq_group *__bfq_bic_change_cgroup(struct bfq_data *bfqd,
--						struct bfq_io_cq *bic,
--						struct blkcg *blkcg)
-+static void *__bfq_bic_change_cgroup(struct bfq_data *bfqd,
-+				     struct bfq_io_cq *bic,
-+				     struct bfq_group *bfqg)
- {
- 	struct bfq_queue *async_bfqq = bic_to_bfqq(bic, 0);
- 	struct bfq_queue *sync_bfqq = bic_to_bfqq(bic, 1);
--	struct bfq_group *bfqg;
- 	struct bfq_entity *entity;
- 
--	bfqg = bfq_find_set_group(bfqd, blkcg);
--
--	if (unlikely(!bfqg))
--		bfqg = bfqd->root_group;
--
- 	if (async_bfqq) {
- 		entity = &async_bfqq->entity;
- 
-@@ -774,20 +755,24 @@ static struct bfq_group *__bfq_bic_chang
- void bfq_bic_update_cgroup(struct bfq_io_cq *bic, struct bio *bio)
- {
- 	struct bfq_data *bfqd = bic_to_bfqd(bic);
--	struct bfq_group *bfqg = NULL;
-+	struct bfq_group *bfqg = bfq_bio_bfqg(bfqd, bio);
- 	uint64_t serial_nr;
- 
--	rcu_read_lock();
--	serial_nr = __bio_blkcg(bio)->css.serial_nr;
-+	serial_nr = bfqg_to_blkg(bfqg)->blkcg->css.serial_nr;
- 
- 	/*
- 	 * Check whether blkcg has changed.  The condition may trigger
- 	 * spuriously on a newly created cic but there's no harm.
- 	 */
- 	if (unlikely(!bfqd) || likely(bic->blkcg_serial_nr == serial_nr))
--		goto out;
-+		return;
- 
--	bfqg = __bfq_bic_change_cgroup(bfqd, bic, __bio_blkcg(bio));
-+	/*
-+	 * New cgroup for this process. Make sure it is linked to bfq internal
-+	 * cgroup hierarchy.
-+	 */
-+	bfq_link_bfqg(bfqd, bfqg);
-+	__bfq_bic_change_cgroup(bfqd, bic, bfqg);
- 	/*
- 	 * Update blkg_path for bfq_log_* functions. We cache this
- 	 * path, and update it here, for the following
-@@ -840,8 +825,6 @@ void bfq_bic_update_cgroup(struct bfq_io
- 	 */
- 	blkg_path(bfqg_to_blkg(bfqg), bfqg->blkg_path, sizeof(bfqg->blkg_path));
- 	bic->blkcg_serial_nr = serial_nr;
--out:
--	rcu_read_unlock();
- }
- 
- /**
-@@ -1459,7 +1442,7 @@ void bfq_end_wr_async(struct bfq_data *b
- 	bfq_end_wr_async_queues(bfqd, bfqd->root_group);
- }
- 
--struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd, struct blkcg *blkcg)
-+struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
- {
- 	return bfqd->root_group;
- }
 --- a/block/bfq-iosched.c
 +++ b/block/bfq-iosched.c
-@@ -5604,14 +5604,7 @@ static struct bfq_queue *bfq_get_queue(s
- 	struct bfq_queue *bfqq;
- 	struct bfq_group *bfqg;
- 
--	rcu_read_lock();
--
--	bfqg = bfq_find_set_group(bfqd, __bio_blkcg(bio));
--	if (!bfqg) {
--		bfqq = &bfqd->oom_bfqq;
--		goto out;
--	}
--
-+	bfqg = bfq_bio_bfqg(bfqd, bio);
- 	if (!is_sync) {
- 		async_bfqq = bfq_async_queue_prio(bfqd, bfqg, ioprio_class,
- 						  ioprio);
-@@ -5657,8 +5650,6 @@ out:
- 
- 	if (bfqq != &bfqd->oom_bfqq && is_sync && !respawn)
- 		bfqq = bfq_do_or_sched_stable_merge(bfqd, bfqq, bic);
--
--	rcu_read_unlock();
- 	return bfqq;
+@@ -2375,8 +2375,6 @@ static int bfq_request_merge(struct requ
+ 	return ELEVATOR_NO_MERGE;
  }
  
---- a/block/bfq-iosched.h
-+++ b/block/bfq-iosched.h
-@@ -1007,8 +1007,7 @@ void bfq_bfqq_move(struct bfq_data *bfqd
- void bfq_init_entity(struct bfq_entity *entity, struct bfq_group *bfqg);
- void bfq_bic_update_cgroup(struct bfq_io_cq *bic, struct bio *bio);
- void bfq_end_wr_async(struct bfq_data *bfqd);
--struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd,
--				     struct blkcg *blkcg);
-+struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio);
- struct blkcg_gq *bfqg_to_blkg(struct bfq_group *bfqg);
- struct bfq_group *bfqq_group(struct bfq_queue *bfqq);
- struct bfq_group *bfq_create_group_hierarchy(struct bfq_data *bfqd, int node);
+-static struct bfq_queue *bfq_init_rq(struct request *rq);
+-
+ static void bfq_request_merged(struct request_queue *q, struct request *req,
+ 			       enum elv_merge type)
+ {
+@@ -2385,7 +2383,7 @@ static void bfq_request_merged(struct re
+ 	    blk_rq_pos(req) <
+ 	    blk_rq_pos(container_of(rb_prev(&req->rb_node),
+ 				    struct request, rb_node))) {
+-		struct bfq_queue *bfqq = bfq_init_rq(req);
++		struct bfq_queue *bfqq = RQ_BFQQ(req);
+ 		struct bfq_data *bfqd;
+ 		struct request *prev, *next_rq;
+ 
+@@ -2437,8 +2435,8 @@ static void bfq_request_merged(struct re
+ static void bfq_requests_merged(struct request_queue *q, struct request *rq,
+ 				struct request *next)
+ {
+-	struct bfq_queue *bfqq = bfq_init_rq(rq),
+-		*next_bfqq = bfq_init_rq(next);
++	struct bfq_queue *bfqq = RQ_BFQQ(rq),
++		*next_bfqq = RQ_BFQQ(next);
+ 
+ 	if (!bfqq)
+ 		goto remove;
+@@ -5991,6 +5989,8 @@ static inline void bfq_update_insert_sta
+ 					   unsigned int cmd_flags) {}
+ #endif /* CONFIG_BFQ_CGROUP_DEBUG */
+ 
++static struct bfq_queue *bfq_init_rq(struct request *rq);
++
+ static void bfq_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
+ 			       bool at_head)
+ {
+@@ -6006,6 +6006,7 @@ static void bfq_insert_request(struct bl
+ 		bfqg_stats_update_legacy_io(q, rq);
+ #endif
+ 	spin_lock_irq(&bfqd->lock);
++	bfqq = bfq_init_rq(rq);
+ 	if (blk_mq_sched_try_insert_merge(q, rq, &free)) {
+ 		spin_unlock_irq(&bfqd->lock);
+ 		blk_mq_free_requests(&free);
+@@ -6014,7 +6015,6 @@ static void bfq_insert_request(struct bl
+ 
+ 	trace_block_rq_insert(rq);
+ 
+-	bfqq = bfq_init_rq(rq);
+ 	if (!bfqq || at_head) {
+ 		if (at_head)
+ 			list_add(&rq->queuelist, &bfqd->dispatch);
 
 
