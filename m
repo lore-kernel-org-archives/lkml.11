@@ -2,115 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C358EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:42:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2173C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:43:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245747AbiFGOmH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 10:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57394 "EHLO
+        id S245754AbiFGOmf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 10:42:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245741AbiFGOmG (ORCPT
+        with ESMTP id S245703AbiFGOmc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 10:42:06 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C31F1DE301
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 07:42:04 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id y19so35650230ejq.6
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 07:42:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tUW9diLTesI3roFry1o64Px5gNXnYkvb4K3Brj/FaUM=;
-        b=bA8OX150j85ClhlKoLu/Q6RRRIfNsRqHm+iwi9htMQONv9TwxbRHzCvQxXKghpfdG7
-         sVygQMXAJOQvnDTit6sHGOIsiCxOWZSvY4QW05XrpsUypxslSAGwPgUzNdiARBbQDSUK
-         6bdi/WtcOPqcUV3Yt3VMxolq4lWl35bhWxxTd5uS7qZXRUz7dl5MhmMJFesKyJBL5jW6
-         SzH6TqqKqzoS0pplV5LjhN2AaH9vLSRhQnvUwFhgM3a7xecy9K6fPX7bq2UngCsmt8Zu
-         Mh5VMm//VFU2Bf2gqIN3z0qg+y086l7hfx1jeewU6MrME+0LpHjE9wR6h6aSv4Kq8oKI
-         yoDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tUW9diLTesI3roFry1o64Px5gNXnYkvb4K3Brj/FaUM=;
-        b=tq+mmUQd2imOFAJqdpOZoLToSioAsElKjZluEYJUX3vveLLiH/WdkOWn9uhdVapJff
-         Aemb68th567/vcbyW0OfFYvSPb6PgTM2FhiWHBXU4SwFyl8SGdf5RAa0haNaDUARrnWY
-         ir7zhCvCNj3WZFJcBs8PN9u2YFqfgwBHzJgfa/Vtb4Y4oQVhbvr+39T84WPxXJnzjOCD
-         gjD/Q2iYGGkqrzBU4RFeic2lBHbwt56cihN/eu2fFgP5RhYJStW6VfvGB0GvxgjV/jpY
-         GhDAcT/Luia6IUcSH7sybY7yBkkzANmJC+RTa7x3JL6eiWGf/RSdZNVQARfjWXH1Te3o
-         zcEQ==
-X-Gm-Message-State: AOAM530W/GK+jKgJuC6OWJizHGdmXgnY1XSnhvpkoqC31ERUTub0pTJ0
-        yS6dWkpkPtKJsFSCcpwYMsE3zgfDjq13nPGAMOggVg==
-X-Google-Smtp-Source: ABdhPJx43dr01Y8Sr37Uf1HprEWxa+wFWjlbIRhi3oGCU79pp1EpiHwIhDXUEFTRNbQieHln3EPD7tSQ3i0LN75Q3NM=
-X-Received: by 2002:a17:907:1ca8:b0:70c:68ce:dade with SMTP id
- nb40-20020a1709071ca800b0070c68cedademr24194819ejc.723.1654612923085; Tue, 07
- Jun 2022 07:42:03 -0700 (PDT)
+        Tue, 7 Jun 2022 10:42:32 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F96117A9E;
+        Tue,  7 Jun 2022 07:42:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=guGbsi6oQ5yXtvY36/60g5guK2nnm8Y0GIptFeWRFlQ=; b=qpWI3F+WZnevlqACCPvNu6xauF
+        IB3a2y7ZiiMGbm7ySpCd26UyeoH4gVxQcuKSWjoJHDFKS/Kodfpk80w1QlhaCv8dlZoWCAr1bJJrC
+        vzRppARJ1BxpVHzug25b+gxh9OnxWci76flCsRfUncNrPbdk1z1omtyUb6SqSVH5ZtKtsMfiWKomP
+        BATr4sutE5oEYI+cQ+0bCXajldf/aO2davX8436aEzFSjtQDdHOIS54GhcMAnZ5DA+/zXc7tymO4+
+        7vPZdzNhxm4xWkOjvplPguQxvvHKvRVTsNMMGMwkYqlanUpZ7hLUx0cQ0uAfHFaEYOvfZkDW/fMyE
+        uWE1ARFQ==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nyaO5-005kq1-IP; Tue, 07 Jun 2022 14:40:54 +0000
+Message-ID: <96f4cf1f-bd1e-ae5b-172b-fea572a32500@infradead.org>
+Date:   Tue, 7 Jun 2022 07:40:42 -0700
 MIME-Version: 1.0
-References: <20220606201825.763788-1-pmalani@chromium.org> <20220606201825.763788-4-pmalani@chromium.org>
-In-Reply-To: <20220606201825.763788-4-pmalani@chromium.org>
-From:   Guenter Roeck <groeck@google.com>
-Date:   Tue, 7 Jun 2022 07:41:51 -0700
-Message-ID: <CABXOdTeQKPXs5GqGUDusp5S_w0W_Ewzfgge2+_H0nYmUQw3XVw@mail.gmail.com>
-Subject: Re: [PATCH 3/3] platform/chrome: cros_ec_proto: Update size arg types
-To:     Prashant Malani <pmalani@chromium.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
-        Brian Norris <briannorris@chromium.org>,
-        "open list:CHROME HARDWARE PLATFORM SUPPORT" 
-        <chrome-platform@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v5 5/6] x86: Add Kconfig/Makefile to build hardware
+ prefetch control driver
+Content-Language: en-US
+To:     Kohei Tarumizu <tarumizu.kohei@fujitsu.com>,
+        catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, rafael@kernel.org, lenb@kernel.org,
+        gregkh@linuxfoundation.org, mchehab+huawei@kernel.org,
+        eugenis@google.com, tony.luck@intel.com, pcc@google.com,
+        peterz@infradead.org, marcos@orca.pet, marcan@marcan.st,
+        linus.walleij@linaro.org, nicolas.ferre@microchip.com,
+        conor.dooley@microchip.com, arnd@arndb.de, ast@kernel.org,
+        peter.chen@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-acpi@vger.kernel.org
+References: <20220607120530.2447112-1-tarumizu.kohei@fujitsu.com>
+ <20220607120530.2447112-6-tarumizu.kohei@fujitsu.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220607120530.2447112-6-tarumizu.kohei@fujitsu.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 1:20 PM Prashant Malani <pmalani@chromium.org> wrote:
->
-> cros_ec_cmd() takes 2 size arguments. Update them to be of the more
-> appropriate type size_t.
->
-> Suggested-by: Stephen Boyd <swboyd@chromium.org>
-> Signed-off-by: Prashant Malani <pmalani@chromium.org>
 
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
 
-> ---
->  drivers/platform/chrome/cros_ec_proto.c     | 4 ++--
->  include/linux/platform_data/cros_ec_proto.h | 2 +-
->  2 files changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-> index b6bea183ee28..cefabfe45551 100644
-> --- a/drivers/platform/chrome/cros_ec_proto.c
-> +++ b/drivers/platform/chrome/cros_ec_proto.c
-> @@ -958,9 +958,9 @@ int cros_ec_cmd(struct cros_ec_device *ec_dev,
->                 unsigned int version,
->                 int command,
->                 void *outdata,
-> -               int outsize,
-> +               size_t outsize,
->                 void *indata,
-> -               int insize)
-> +               size_t insize)
->  {
->         struct cros_ec_command *msg;
->         int ret;
-> diff --git a/include/linux/platform_data/cros_ec_proto.h b/include/linux/platform_data/cros_ec_proto.h
-> index 816da4eef3e5..85e29300f63d 100644
-> --- a/include/linux/platform_data/cros_ec_proto.h
-> +++ b/include/linux/platform_data/cros_ec_proto.h
-> @@ -232,7 +232,7 @@ bool cros_ec_check_features(struct cros_ec_dev *ec, int feature);
->  int cros_ec_get_sensor_count(struct cros_ec_dev *ec);
->
->  int cros_ec_cmd(struct cros_ec_device *ec_dev, unsigned int version, int command, void *outdata,
-> -                   int outsize, void *indata, int insize);
-> +                   size_t outsize, void *indata, size_t insize);
->
->  /**
->   * cros_ec_get_time_ns() - Return time in ns.
-> --
-> 2.36.1.255.ge46751e96f-goog
->
+On 6/7/22 05:05, Kohei Tarumizu wrote:
+> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> index 4bed3abf444d..3ee173483f9f 100644
+> --- a/arch/x86/Kconfig
+> +++ b/arch/x86/Kconfig
+> @@ -1359,6 +1359,23 @@ config X86_CPUID
+>  	  with major 203 and minors 0 to 31 for /dev/cpu/0/cpuid to
+>  	  /dev/cpu/31/cpuid.
+>  
+> +config X86_HWPF_CONTROL
+> +	tristate "x86 Hardware Prefetch Control support"
+> +	depends on X86_64
+> +	help
+> +	  This provides a sysfs interface to control the Hardware Prefetch
+> +	  behavior for X86.
+> +
+> +	  Some Intel processors have MSR 0x1a4 (MSR_MISC_FEATURE_CONTROL),
+> +	  which can control the hardware prefech behavior. If the processor
+
+	                                 prefetch
+
+> +	  supports this, the module can be loaded with the name x86-pfctl.
+> +
+> +	  Depending on the characteristics of the application, this register
+> +	  parameters improve or degrade performance.
+> +
+> +	  Please see Documentation/ABI/testing/sysfs-devices-system-cpu for
+> +	  more information.
+> +
+
+-- 
+~Randy
