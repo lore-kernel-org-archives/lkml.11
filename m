@@ -2,104 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1984ECCA483
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBED9CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388739AbiFHBpW (ORCPT
+        id S1382464AbiFHBos (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:45:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56726 "EHLO
+        Tue, 7 Jun 2022 21:44:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453353AbiFGXPV (ORCPT
+        with ESMTP id S1385352AbiFGWpx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:15:21 -0400
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93F763B70C3
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:05:22 -0700 (PDT)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-f16a3e0529so24795478fac.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:05:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=hZGYROhtc+r5EuBPRXRPsq3auazBOIHrsoWkHCkus/A=;
-        b=E6z/y3535PwEvaGG/kczDZYWKzEVC6yPiv3C5AOpZUUtDJzOO9teoQRjjnYAXGY/MK
-         kTE/tyJWS3Zrxfva/UTAXkMXotRgAFmuAyFavxkHgbGfgyN9LP3pOizIrjZic/ngk6Cp
-         kufmfKYN+H8sKOKZhCFGm+yOu+ewKoIOUHoyuFimHPlvSoUQBhuP4KYxaOyFwg7D+zMF
-         WOJLKXYglQ+/VHqh5e0vVKVyKEY06n/ZzlR3ybpTbpo1W7vkWXet9QHfkGWCEGJjZHBp
-         XnCXsWkRXca5yIfU/yOLjuJMe5j0nypTixqvhRDiwV15tugZS+I7LOVjsaGkMdZcyjCy
-         bn+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=hZGYROhtc+r5EuBPRXRPsq3auazBOIHrsoWkHCkus/A=;
-        b=dPJPTVMSBvHtl88yydVZWHIahElfuU9Mq80bkhMg++qlcU74RXIr4TnY6V2CXlzX+j
-         H8sZfo620G0sgu6JWVviqEiiSUzYa9gf2L+gZ5WWXrJdvKE8RyxQb3VP8zpg7wj5Df/w
-         nU3Qx4HqlF5DsljBfDPZmh8NavrgExxkQ3doLF/xpm4TkXuIYDK2+/fcdVz4Je3RPkfA
-         NEtiO1f6fvT3dnhHhowroE/XIDTbOA4MG9M0PtDmbA87CAQnmbk2ArG0i2m+VNNYz+Yr
-         ZJucqLynjgYj8r0RL9GIdB/F3EG1XDhNAYavTo4MQhzUSBij8dhgf66B0mHaX1bfNf+U
-         yNUg==
-X-Gm-Message-State: AOAM533aWDYCAeF3So+3gUftdOOQR6UPE185hJXVxbf9JN0Fynb+I7b2
-        PbaQNyM4dK94uScbATqQwPKxYKwRsHE=
-X-Google-Smtp-Source: ABdhPJw0ntHjWYuJvNi+dH0TcqFOGxYGzKyN3xmI9s3cUSfSR64Qm1HKl7eYIQiwkRtnt+5C7f+Bew==
-X-Received: by 2002:a05:6870:b41c:b0:f2:5d2b:9a77 with SMTP id x28-20020a056870b41c00b000f25d2b9a77mr514272oap.62.1654635921154;
-        Tue, 07 Jun 2022 14:05:21 -0700 (PDT)
-Received: from ?IPV6:2603:8090:2005:39b3::100e? (2603-8090-2005-39b3-0000-0000-0000-100e.res6.spectrum.com. [2603:8090:2005:39b3::100e])
-        by smtp.gmail.com with ESMTPSA id g3-20020a056870ea0300b000f33ced2c50sm8519389oap.56.2022.06.07.14.05.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 14:05:20 -0700 (PDT)
-Sender: Larry Finger <larry.finger@gmail.com>
-Message-ID: <69f9ec95-a680-d251-ebfc-1b4c20bfff5e@lwfinger.net>
-Date:   Tue, 7 Jun 2022 16:05:18 -0500
+        Tue, 7 Jun 2022 18:45:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BBCB92997AB
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:35:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654630478;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jzPfLQqqrOOrtPSbwWM44VdH1zcU6PIWuEvhTsmS8xA=;
+        b=YTi1HKoQ+DIya6fl00SLsIfORiTlzes+dtGFWGp4DqnRloJmqBdwpy3tF+nH3dzggxyYdA
+        4sFHNnDg/I+ORWFF5dbO9oKMc2yCTaaP9/gDlsn41yrDLiuWFJDBnHFLvZR0C5kqgl7A9B
+        ykxqT1Bx1qixFrA0GNzv51RYOdlg4aU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-632-XXJsXSB2OnO9ZoOoodX3nQ-1; Tue, 07 Jun 2022 15:34:33 -0400
+X-MC-Unique: XXJsXSB2OnO9ZoOoodX3nQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CD7DD18019F9;
+        Tue,  7 Jun 2022 19:33:02 +0000 (UTC)
+Received: from emerald.redhat.com (unknown [10.22.9.252])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0301D2BB9C88;
+        Tue,  7 Jun 2022 19:32:32 +0000 (UTC)
+From:   Lyude Paul <lyude@redhat.com>
+To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org
+Cc:     Wayne Lin <Wayne.Lin@amd.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Imre Deak <imre.deak@intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RESEND RFC 06/18] drm/display/dp_mst: Add some missing kdocs for atomic MST structs
+Date:   Tue,  7 Jun 2022 15:29:21 -0400
+Message-Id: <20220607192933.1333228-7-lyude@redhat.com>
+In-Reply-To: <20220607192933.1333228-1-lyude@redhat.com>
+References: <20220607192933.1333228-1-lyude@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v4 4/4] MAINTAINERS: add myself as r8188eu reviewer
-Content-Language: en-US
-To:     Pavel Skripkin <paskripkin@gmail.com>, gregkh@linuxfoundation.org,
-        phil@philpotter.co.uk, straube.linux@gmail.com,
-        dan.carpenter@oracle.com
-Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-References: <cover.1654629778.git.paskripkin@gmail.com>
- <d6f6420a0d5ceff6bb50d268023f7d2e117027c5.1654629778.git.paskripkin@gmail.com>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-In-Reply-To: <d6f6420a0d5ceff6bb50d268023f7d2e117027c5.1654629778.git.paskripkin@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/7/22 14:26, Pavel Skripkin wrote:
-> I was reviewing r8188eu patches for a while, but I am missing some of
-> them, since I am not in CC list. I want to be CC'ed to help reviewing
-> and testing more patches.
-> 
-> Acked-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> Acked-by: Phillip Potter <phil@philpotter.co.uk>
-> ---
+Since we're about to start adding some stuff here, we may as well fill in
+any missing documentation that we forgot to write.
 
-Acked-by: Larry Finger <Larry.Finger@lwfinger.net>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Cc: Wayne Lin <Wayne.Lin@amd.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Imre Deak <imre.deak@intel.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Sean Paul <sean@poorly.run>
+---
+ include/drm/display/drm_dp_mst_helper.h | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-Larry
-
->   MAINTAINERS | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index a6d3bd9d2a8d..60e5e4007844 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -18920,6 +18920,7 @@ F:	drivers/staging/olpc_dcon/
->   STAGING - REALTEK RTL8188EU DRIVERS
->   M:	Larry Finger <Larry.Finger@lwfinger.net>
->   M:	Phillip Potter <phil@philpotter.co.uk>
-> +R:	Pavel Skripkin <paskripkin@gmail.com>
->   S:	Supported
->   F:	drivers/staging/r8188eu/
->   
+diff --git a/include/drm/display/drm_dp_mst_helper.h b/include/drm/display/drm_dp_mst_helper.h
+index 8ab4f14f2344..eb0ea578b227 100644
+--- a/include/drm/display/drm_dp_mst_helper.h
++++ b/include/drm/display/drm_dp_mst_helper.h
+@@ -542,19 +542,43 @@ struct drm_dp_payload {
+ 
+ #define to_dp_mst_topology_state(x) container_of(x, struct drm_dp_mst_topology_state, base)
+ 
++/**
++ * struct drm_dp_mst_atomic_payload - Atomic state struct for an MST payload
++ *
++ * The primary atomic state structure for a given MST payload. Stores information like current
++ * bandwidth allocation, intended action for this payload, etc.
++ */
+ struct drm_dp_mst_atomic_payload {
++	/** @port: The MST port assigned to this payload */
+ 	struct drm_dp_mst_port *port;
++	/** @time_slots: The number of timeslots allocated to this payload */
+ 	int time_slots;
++	/** @pbn: The payload bandwidth for this payload */
+ 	int pbn;
++	/** @dsc_enabled: Whether or not this payload has DSC enabled */
+ 	bool dsc_enabled;
++
++	/** @next: The list node for this payload */
+ 	struct list_head next;
+ };
+ 
++/**
++ * struct drm_dp_mst_topology_state - DisplayPort MST topology atomic state
++ *
++ * This struct represents the atomic state of the toplevel DisplayPort MST manager
++ */
+ struct drm_dp_mst_topology_state {
++	/** @base: Base private state for atomic */
+ 	struct drm_private_state base;
++
++	/** @payloads: The list of payloads being created/destroyed in this state */
+ 	struct list_head payloads;
++	/** @mgr: The topology manager */
+ 	struct drm_dp_mst_topology_mgr *mgr;
++
++	/** @total_avail_slots: The total number of slots this topology can handle (63 or 64) */
+ 	u8 total_avail_slots;
++	/** @start_slot: The first usable time slot in this topology (1 or 0) */
+ 	u8 start_slot;
+ };
+ 
+-- 
+2.35.3
 
