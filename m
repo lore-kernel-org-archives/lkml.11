@@ -2,105 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B6ACCA48B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 094C1CCA48C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389480AbiFHBqK (ORCPT
+        id S1389915AbiFHBqe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:46:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36586 "EHLO
+        Tue, 7 Jun 2022 21:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381367AbiFGWmt (ORCPT
+        with ESMTP id S1379188AbiFGWG4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:42:49 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684791A8E38
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:34:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654630464; x=1686166464;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=nMwIYlHjiSDXJfavSznI1rVa27YLpTBuPQ+gIwdpgew=;
-  b=fNF3q5BS0Jfy/plPnCCOEywQ3oF5CXTMWGYRPj/W6QMU98NdkeqqytA8
-   UIpXRZXWyDbdAwaPsGGQlsyoglHeUFpuk8+ZkuPwvqDMxUdv06rqNS3fW
-   9nE6ZRCPDhnEjKic/njDBPzsGTns02UXDWqWqL5f6LVaxjHeKJNGqSDlt
-   SFCvkDM2p/B9a4E4ONjI9FK2oNk6PfyCVjIIbWg8dPno/t9PMwyt29JEB
-   Z6cO9oSPfhr8Jy5JCL8UFx7T8i7GitJjuosW2/WF7kdw2EC4PNNU/AJHU
-   8GkSrc6qwe9zhnlhz/rYDVu0RlF4q2Eh//gGfjDvl4yyCD2DWLYgSjOqE
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="275515315"
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="275515315"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 12:34:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="532755934"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 07 Jun 2022 12:34:02 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nyexm-000DtB-1D;
-        Tue, 07 Jun 2022 19:34:02 +0000
-Date:   Wed, 8 Jun 2022 03:33:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: arch/m68k/coldfire/m523x.c:31:19: sparse: sparse: symbol
- 'm523x_clk_lookup' was not declared. Should it be static?
-Message-ID: <202206080316.wGYMA1Sk-lkp@intel.com>
+        Tue, 7 Jun 2022 18:06:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9B7252C39;
+        Tue,  7 Jun 2022 12:15:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DFFE6192F;
+        Tue,  7 Jun 2022 19:15:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52E99C385A2;
+        Tue,  7 Jun 2022 19:15:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629353;
+        bh=4YDOMqXx4RcoErZe6jqiuMfx+Sf4E1czh/gF3x97jlY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XUDucJMhcbMuN3bxjprPrkgwsijJF5tUYiCgHw2KteGb/fPtoJxp6JFhMokXOvxTA
+         JPVHLiYnlLGAoudeEp4m92urOJk/mr/1895bd+yYGoK90qTUPDvRUWQZEeM82WCbuT
+         1+CBn5P0LR4ye84jGi+Vq1IbB5mojbfwac5PWb5U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
+        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 660/879] f2fs: fix dereference of stale list iterator after loop body
+Date:   Tue,  7 Jun 2022 19:02:58 +0200
+Message-Id: <20220607165022.005037060@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   e71e60cd74df9386c3f684c54888f2367050b831
-commit: 63aadb77669a6856b26d73da85b4f788731524a3 m68k: coldfire: use clkdev_lookup on most coldfire
-date:   12 months ago
-config: m68k-randconfig-s031-20220607 (https://download.01.org/0day-ci/archive/20220608/202206080316.wGYMA1Sk-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-26-gb3cf30ba-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=63aadb77669a6856b26d73da85b4f788731524a3
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 63aadb77669a6856b26d73da85b4f788731524a3
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=m68k SHELL=/bin/bash arch/m68k/coldfire/ fs/
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+[ Upstream commit 2aaf51dd39afb6d01d13f1e6fe20b684733b37d5 ]
 
+The list iterator variable will be a bogus pointer if no break was hit.
+Dereferencing it (cur->page in this case) could load an out-of-bounds/undefined
+value making it unsafe to use that in the comparision to determine if the
+specific element was found.
 
-sparse warnings: (new ones prefixed by >>)
->> arch/m68k/coldfire/m523x.c:31:19: sparse: sparse: symbol 'm523x_clk_lookup' was not declared. Should it be static?
+Since 'cur->page' *can* be out-ouf-bounds it cannot be guaranteed that
+by chance (or intention of an attacker) it matches the value of 'page'
+even though the correct element was not found.
 
-vim +/m523x_clk_lookup +31 arch/m68k/coldfire/m523x.c
+This is fixed by using a separate list iterator variable for the loop
+and only setting the original variable if a suitable element was found.
+Then determing if the element was found is simply checking if the
+variable is set.
 
-    30	
-  > 31	struct clk_lookup m523x_clk_lookup[] = {
-    32		CLKDEV_INIT(NULL, "pll.0", &clk_pll),
-    33		CLKDEV_INIT(NULL, "sys.0", &clk_sys),
-    34		CLKDEV_INIT("mcfpit.0", NULL, &clk_pll),
-    35		CLKDEV_INIT("mcfpit.1", NULL, &clk_pll),
-    36		CLKDEV_INIT("mcfpit.2", NULL, &clk_pll),
-    37		CLKDEV_INIT("mcfpit.3", NULL, &clk_pll),
-    38		CLKDEV_INIT("mcfuart.0", NULL, &clk_sys),
-    39		CLKDEV_INIT("mcfuart.1", NULL, &clk_sys),
-    40		CLKDEV_INIT("mcfuart.2", NULL, &clk_sys),
-    41		CLKDEV_INIT("mcfqspi.0", NULL, &clk_sys),
-    42		CLKDEV_INIT("fec.0", NULL, &clk_sys),
-    43		CLKDEV_INIT("imx1-i2c.0", NULL, &clk_sys),
-    44	};
-    45	
+Fixes: 8c242db9b8c0 ("f2fs: fix stale ATOMIC_WRITTEN_PAGE private pointer")
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Reviewed-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/f2fs/segment.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
+diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+index bd9731cdec56..9dd9f88b75e9 100644
+--- a/fs/f2fs/segment.c
++++ b/fs/f2fs/segment.c
+@@ -355,16 +355,19 @@ void f2fs_drop_inmem_page(struct inode *inode, struct page *page)
+ 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
+ 	struct list_head *head = &fi->inmem_pages;
+ 	struct inmem_pages *cur = NULL;
++	struct inmem_pages *tmp;
+ 
+ 	f2fs_bug_on(sbi, !page_private_atomic(page));
+ 
+ 	mutex_lock(&fi->inmem_lock);
+-	list_for_each_entry(cur, head, list) {
+-		if (cur->page == page)
++	list_for_each_entry(tmp, head, list) {
++		if (tmp->page == page) {
++			cur = tmp;
+ 			break;
++		}
+ 	}
+ 
+-	f2fs_bug_on(sbi, list_empty(head) || cur->page != page);
++	f2fs_bug_on(sbi, !cur);
+ 	list_del(&cur->list);
+ 	mutex_unlock(&fi->inmem_lock);
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
+
+
