@@ -2,82 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E99CCA48A
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2978ACCA490
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443026AbiFHCBl (ORCPT
+        id S1443474AbiFHCCc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:01:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51284 "EHLO
+        Tue, 7 Jun 2022 22:02:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442549AbiFHAE7 (ORCPT
+        with ESMTP id S1841758AbiFHAIO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:04:59 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B92320C05
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 13:01:17 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id 67-20020a1c1946000000b00397382b44f4so10073128wmz.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 13:01:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DI47X6O8WNPdRIaOI5TCI5HzTriGbfEZ08eAVzDNU4k=;
-        b=kzO7xnGCbcxSDemr20z8Nl0/EDcjpHr8qVKEybiy0LKIUcUuR+of2LEPkfnM+Jqgle
-         9vE2l3qCUJMCOSlLnHVK1HJ1H3QAF3hWHSr4/q5AxLcdDizwQ0EVMl4/Vpsu6arIcoZ+
-         anWf4MAlCDasKgZuvNW1YIU0M33K27piqc5Av2r4OUuR9uUpNi29wgA/AiMD9othXh4b
-         K+ojT7xS20whvrQKhkAlgcUpbe7uaL1viZN0LSFNTEzwVUEdmR/kn+12eJ4RTsya4ZPB
-         Frx1r5vzMisQeCKnNKw4DbLotZq6GoRNQ3B76n1NqdKqJo2KGPNQnbRiXkKn71o0Mxqs
-         kCAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DI47X6O8WNPdRIaOI5TCI5HzTriGbfEZ08eAVzDNU4k=;
-        b=IAoK8yB+CvpAOeQ6uJR6LxVWMUMjGcC1nJekrAaNk3CdFaVQQMKqqZht9IcQBRzOGR
-         qrra7ZuW4b/isWisqZ6YHfZjncJiv28hG7aFAwBrfs5G34Rn7tpPeQcaybsfJB3IzSfD
-         adomoYKVmO0mQMFQY3mx3gPBYPtoN4Nn24DJ1TB+aM4Hj36YRcKss5BkSrCSyqVR+Aux
-         EZL7lbNJPzlSbnm22rnWFKqJPqyRoMpa9GjzfyrQV4nuR4peJrgSl7HvRjz3T0WYhLqD
-         O/dcSecXZ6Nx/s8wf9hXT2He3mMt4sENp/UXp+leump+maU8eLQMLAU3s6g4pvTm1vMU
-         nMXQ==
-X-Gm-Message-State: AOAM530h3z+Ij6JPi/OsPt8KhPTsYep9azJj9tQmriXt2eoqrpMplfcl
-        8fwvSllShJp7NuilccW4BsqiR4LW49vlgNjlCuts
-X-Google-Smtp-Source: ABdhPJwWmFFpwbQWJhllmV2/9lG6pi5JxgWQDxcD5Pu+pq89/vsuwtXmAKjpt0yON1i//vRJxXjrGt9vlLWGiTkj91w=
-X-Received: by 2002:a05:600c:3b05:b0:397:54ce:896 with SMTP id
- m5-20020a05600c3b0500b0039754ce0896mr60163408wms.3.1654632075793; Tue, 07 Jun
- 2022 13:01:15 -0700 (PDT)
+        Tue, 7 Jun 2022 20:08:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D28C2534CD;
+        Tue,  7 Jun 2022 12:18:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E21C2B823DC;
+        Tue,  7 Jun 2022 19:18:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 571C6C36B0B;
+        Tue,  7 Jun 2022 19:18:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629496;
+        bh=ibFWBZNYf96bTV+pa3KOvrMz/s+3mgQ+XsQOvLGXtoY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=b6vvhIwyUI45QjjsH5EVcvWXUGIWuCcUOk2fyD+7XgOIL/DFj58/UjE0Nw1dVTgnB
+         06AZA1iRsPc2RHFFAOwG4ZKpx9QLjNQ1zMkR4jtoi008MQ51nytFwNqacrjB7Nfe2c
+         zlpZyBrVX+KjIMad9lpAdjRM0TS50J2fp4twPxhY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.18 711/879] f2fs: fix deadloop in foreground GC
+Date:   Tue,  7 Jun 2022 19:03:49 +0200
+Message-Id: <20220607165023.491299256@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220515073110.304193-1-sshedi@vmware.com> <CAHC9VhQge7uUSwbDUkA9=VCY0dL+UDUjBRT7aSMEEVGU6jQqLg@mail.gmail.com>
-In-Reply-To: <CAHC9VhQge7uUSwbDUkA9=VCY0dL+UDUjBRT7aSMEEVGU6jQqLg@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 7 Jun 2022 16:01:05 -0400
-Message-ID: <CAHC9VhTpBAeEm6U6-=YW7e0JV-WS3MeOjT4g9S-V4ZM2OboBAw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] audit: remove redundant data_len check
-To:     Shreenidhi Shedi <yesshedi@gmail.com>
-Cc:     eparis@redhat.com, linux-kernel@vger.kernel.org,
-        linux-audit@redhat.com, Shreenidhi Shedi <sshedi@vmware.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 15, 2022 at 7:35 PM Paul Moore <paul@paul-moore.com> wrote:
->
-> On Sun, May 15, 2022 at 3:31 AM Shreenidhi Shedi <yesshedi@gmail.com> wrote:
-> >
-> > data_len is already getting checked if it's less than 2 earlier in this
-> > function.
-> >
-> > Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
-> > ---
-> >  kernel/audit.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> Thanks, this patch looks okay, but since we are already at v5.18-rc7
-> this patch will have to wait until after the upcoming merge window as
-> it isn't a critical bug fix.
+From: Chao Yu <chao@kernel.org>
 
-... and it's now merged into audit/next, thanks!
+commit cfd66bb715fd11fde3338d0660cffa1396adc27d upstream.
 
--- 
-paul-moore.com
+As Yanming reported in bugzilla:
+
+https://bugzilla.kernel.org/show_bug.cgi?id=215914
+
+The root cause is: in a very small sized image, it's very easy to
+exceed threshold of foreground GC, if we calculate free space and
+dirty data based on section granularity, in corner case,
+has_not_enough_free_secs() will always return true, result in
+deadloop in f2fs_gc().
+
+So this patch refactors has_not_enough_free_secs() as below to fix
+this issue:
+1. calculate needed space based on block granularity, and separate
+all blocks to two parts, section part, and block part, comparing
+section part to free section, and comparing block part to free space
+in openned log.
+2. account F2FS_DIRTY_NODES, F2FS_DIRTY_IMETA and F2FS_DIRTY_DENTS
+as node block consumer;
+3. account F2FS_DIRTY_DENTS as data block consumer;
+
+Cc: stable@vger.kernel.org
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/f2fs/segment.h |   32 ++++++++++++++++++++------------
+ 1 file changed, 20 insertions(+), 12 deletions(-)
+
+--- a/fs/f2fs/segment.h
++++ b/fs/f2fs/segment.h
+@@ -572,11 +572,10 @@ static inline int reserved_sections(stru
+ 	return GET_SEC_FROM_SEG(sbi, reserved_segments(sbi));
+ }
+ 
+-static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi)
++static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi,
++			unsigned int node_blocks, unsigned int dent_blocks)
+ {
+-	unsigned int node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
+-					get_pages(sbi, F2FS_DIRTY_DENTS);
+-	unsigned int dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
++
+ 	unsigned int segno, left_blocks;
+ 	int i;
+ 
+@@ -602,19 +601,28 @@ static inline bool has_curseg_enough_spa
+ static inline bool has_not_enough_free_secs(struct f2fs_sb_info *sbi,
+ 					int freed, int needed)
+ {
+-	int node_secs = get_blocktype_secs(sbi, F2FS_DIRTY_NODES);
+-	int dent_secs = get_blocktype_secs(sbi, F2FS_DIRTY_DENTS);
+-	int imeta_secs = get_blocktype_secs(sbi, F2FS_DIRTY_IMETA);
++	unsigned int total_node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
++					get_pages(sbi, F2FS_DIRTY_DENTS) +
++					get_pages(sbi, F2FS_DIRTY_IMETA);
++	unsigned int total_dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
++	unsigned int node_secs = total_node_blocks / BLKS_PER_SEC(sbi);
++	unsigned int dent_secs = total_dent_blocks / BLKS_PER_SEC(sbi);
++	unsigned int node_blocks = total_node_blocks % BLKS_PER_SEC(sbi);
++	unsigned int dent_blocks = total_dent_blocks % BLKS_PER_SEC(sbi);
++	unsigned int free, need_lower, need_upper;
+ 
+ 	if (unlikely(is_sbi_flag_set(sbi, SBI_POR_DOING)))
+ 		return false;
+ 
+-	if (free_sections(sbi) + freed == reserved_sections(sbi) + needed &&
+-			has_curseg_enough_space(sbi))
++	free = free_sections(sbi) + freed;
++	need_lower = node_secs + dent_secs + reserved_sections(sbi) + needed;
++	need_upper = need_lower + (node_blocks ? 1 : 0) + (dent_blocks ? 1 : 0);
++
++	if (free > need_upper)
+ 		return false;
+-	return (free_sections(sbi) + freed) <=
+-		(node_secs + 2 * dent_secs + imeta_secs +
+-		reserved_sections(sbi) + needed);
++	else if (free <= need_lower)
++		return true;
++	return !has_curseg_enough_space(sbi, node_blocks, dent_blocks);
+ }
+ 
+ static inline bool f2fs_is_checkpoint_ready(struct f2fs_sb_info *sbi)
+
+
