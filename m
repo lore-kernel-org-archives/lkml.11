@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E5CFCCA490
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B23CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:54:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382744AbiFGVvv (ORCPT
+        id S1382955AbiFGVwH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:51:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34922 "EHLO
+        Tue, 7 Jun 2022 17:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377482AbiFGU6j (ORCPT
+        with ESMTP id S1377501AbiFGU6j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:58:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A93207ED3;
-        Tue,  7 Jun 2022 11:44:31 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73AE1207EFA;
+        Tue,  7 Jun 2022 11:44:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6AE1DB8220B;
-        Tue,  7 Jun 2022 18:44:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D964AC385A5;
-        Tue,  7 Jun 2022 18:44:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0E7E6156D;
+        Tue,  7 Jun 2022 18:44:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB2E1C385A2;
+        Tue,  7 Jun 2022 18:44:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627469;
-        bh=aRlPwxNLkZg+TDcv3cXKRr+RZS2yV2FCDnrg7jiN4go=;
+        s=korg; t=1654627472;
+        bh=h34rondOn47nWzZpl0QqcrreH+sX+3Rn1+rYXxFag80=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kaC/P9oh44RsaEY3tXwiF2UvRgcPYaOxogH6YwXnu2Nm+ijozGpP7UBNwofow+50P
-         ZsnEOkOT6JG9qg+s9cBuwAb7ShU3Cx5JgGnJo+reQibaUNwqePS1jZof5NR+vEXCb4
-         Yum10v2qiIrBQM/Kct4RI/6R/xKdr2iECXG7vTLA=
+        b=kipnKtzbFs7CTJkS4q3zO5Ap6sjZliISHalZS7zRJYKB5PIXwXUE935hoE9+gOfCk
+         jjFZs9tGdGTgpeL7xWVHWVBtd95ibR6lpvEnTq45shxwOELr8Lezww2bHl1XYMspKa
+         N3gkbh/DUGQ+ifUFN32sh6ykX4n8lGrseoxNkkug=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Coly Li <colyli@suse.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 734/772] bcache: improve multithreaded bch_sectors_dirty_init()
-Date:   Tue,  7 Jun 2022 19:05:26 +0200
-Message-Id: <20220607165010.667985567@linuxfoundation.org>
+        stable@vger.kernel.org, Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Mao Jinlong <quic_jinlmao@quicinc.com>
+Subject: [PATCH 5.17 752/772] coresight: core: Fix coresight device probe failure issue
+Date:   Tue,  7 Jun 2022 19:05:44 +0200
+Message-Id: <20220607165011.186497027@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,146 +50,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Coly Li <colyli@suse.de>
+From: Mao Jinlong <quic_jinlmao@quicinc.com>
 
-commit 4dc34ae1b45fe26e772a44379f936c72623dd407 upstream.
+commit 8c1d3f79d9ca48e406b78e90e94cf09a8c076bf2 upstream.
 
-Commit b144e45fc576 ("bcache: make bch_sectors_dirty_init() to be
-multithreaded") makes bch_sectors_dirty_init() to be much faster
-when counting dirty sectors by iterating all dirty keys in the btree.
-But it isn't in ideal shape yet, still can be improved.
+It is possibe that probe failure issue happens when the device
+and its child_device's probe happens at the same time.
+In coresight_make_links, has_conns_grp is true for parent, but
+has_conns_grp is false for child device as has_conns_grp is set
+to true in coresight_create_conns_sysfs_group. The probe of parent
+device will fail at this condition. Add has_conns_grp check for
+child device before make the links and make the process from
+device_register to connection_create be atomic to avoid this
+probe failure issue.
 
-This patch does the following changes to improve current parallel dirty
-keys iteration on the btree,
-- Add read lock to root node when multiple threads iterating the btree,
-  to prevent the root node gets split by I/Os from other registered
-  bcache devices.
-- Remove local variable "char name[32]" and generate kernel thread name
-  string directly when calling kthread_run().
-- Allocate "struct bch_dirty_init_state state" directly on stack and
-  avoid the unnecessary dynamic memory allocation for it.
-- Decrease BCH_DIRTY_INIT_THRD_MAX from 64 to 12 which is enough indeed.
-- Increase &state->started to count created kernel thread after it
-  succeeds to create.
-- When wait for all dirty key counting threads to finish, use
-  wait_event() to replace wait_event_interruptible().
-
-With the above changes, the code is more clear, and some potential error
-conditions are avoided.
-
-Fixes: b144e45fc576 ("bcache: make bch_sectors_dirty_init() to be multithreaded")
-Signed-off-by: Coly Li <colyli@suse.de>
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220524102336.10684-3-colyli@suse.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Suggested-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Suggested-by: Mike Leach <mike.leach@linaro.org>
+Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
+Link: https://lore.kernel.org/r/20220309142206.15632-1-quic_jinlmao@quicinc.com
+[ Added Cc stable ]
+Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/bcache/writeback.c |   60 ++++++++++++++++--------------------------
- drivers/md/bcache/writeback.h |    2 -
- 2 files changed, 25 insertions(+), 37 deletions(-)
+ drivers/hwtracing/coresight/coresight-core.c |   33 ++++++++++++++++++---------
+ 1 file changed, 22 insertions(+), 11 deletions(-)
 
---- a/drivers/md/bcache/writeback.c
-+++ b/drivers/md/bcache/writeback.c
-@@ -945,10 +945,10 @@ void bch_sectors_dirty_init(struct bcach
- 	struct btree_iter iter;
- 	struct sectors_dirty_init op;
- 	struct cache_set *c = d->c;
--	struct bch_dirty_init_state *state;
--	char name[32];
-+	struct bch_dirty_init_state state;
+--- a/drivers/hwtracing/coresight/coresight-core.c
++++ b/drivers/hwtracing/coresight/coresight-core.c
+@@ -1382,7 +1382,7 @@ static int coresight_fixup_device_conns(
+ 			continue;
+ 		conn->child_dev =
+ 			coresight_find_csdev_by_fwnode(conn->child_fwnode);
+-		if (conn->child_dev) {
++		if (conn->child_dev && conn->child_dev->has_conns_grp) {
+ 			ret = coresight_make_links(csdev, conn,
+ 						   conn->child_dev);
+ 			if (ret)
+@@ -1574,6 +1574,7 @@ struct coresight_device *coresight_regis
+ 	int nr_refcnts = 1;
+ 	atomic_t *refcnts = NULL;
+ 	struct coresight_device *csdev;
++	bool registered = false;
  
- 	/* Just count root keys if no leaf node */
-+	rw_lock(0, c->root, c->root->level);
- 	if (c->root->level == 0) {
- 		bch_btree_op_init(&op.op, -1);
- 		op.inode = d->id;
-@@ -958,54 +958,42 @@ void bch_sectors_dirty_init(struct bcach
- 		for_each_key_filter(&c->root->keys,
- 				    k, &iter, bch_ptr_invalid)
- 			sectors_dirty_init_fn(&op.op, c->root, k);
-+		rw_unlock(0, c->root);
- 		return;
+ 	csdev = kzalloc(sizeof(*csdev), GFP_KERNEL);
+ 	if (!csdev) {
+@@ -1594,7 +1595,8 @@ struct coresight_device *coresight_regis
+ 	refcnts = kcalloc(nr_refcnts, sizeof(*refcnts), GFP_KERNEL);
+ 	if (!refcnts) {
+ 		ret = -ENOMEM;
+-		goto err_free_csdev;
++		kfree(csdev);
++		goto err_out;
  	}
  
--	state = kzalloc(sizeof(struct bch_dirty_init_state), GFP_KERNEL);
--	if (!state) {
--		pr_warn("sectors dirty init failed: cannot allocate memory\n");
--		return;
--	}
-+	state.c = c;
-+	state.d = d;
-+	state.total_threads = bch_btre_dirty_init_thread_nr();
-+	state.key_idx = 0;
-+	spin_lock_init(&state.idx_lock);
-+	atomic_set(&state.started, 0);
-+	atomic_set(&state.enough, 0);
-+	init_waitqueue_head(&state.wait);
+ 	csdev->refcnt = refcnts;
+@@ -1619,6 +1621,13 @@ struct coresight_device *coresight_regis
+ 	csdev->dev.fwnode = fwnode_handle_get(dev_fwnode(desc->dev));
+ 	dev_set_name(&csdev->dev, "%s", desc->name);
  
--	state->c = c;
--	state->d = d;
--	state->total_threads = bch_btre_dirty_init_thread_nr();
--	state->key_idx = 0;
--	spin_lock_init(&state->idx_lock);
--	atomic_set(&state->started, 0);
--	atomic_set(&state->enough, 0);
--	init_waitqueue_head(&state->wait);
--
--	for (i = 0; i < state->total_threads; i++) {
--		/* Fetch latest state->enough earlier */
-+	for (i = 0; i < state.total_threads; i++) {
-+		/* Fetch latest state.enough earlier */
- 		smp_mb__before_atomic();
--		if (atomic_read(&state->enough))
-+		if (atomic_read(&state.enough))
- 			break;
++	/*
++	 * Make sure the device registration and the connection fixup
++	 * are synchronised, so that we don't see uninitialised devices
++	 * on the coresight bus while trying to resolve the connections.
++	 */
++	mutex_lock(&coresight_mutex);
++
+ 	ret = device_register(&csdev->dev);
+ 	if (ret) {
+ 		put_device(&csdev->dev);
+@@ -1626,7 +1635,7 @@ struct coresight_device *coresight_regis
+ 		 * All resources are free'd explicitly via
+ 		 * coresight_device_release(), triggered from put_device().
+ 		 */
+-		goto err_out;
++		goto out_unlock;
+ 	}
  
--		state->infos[i].state = state;
--		atomic_inc(&state->started);
--		snprintf(name, sizeof(name), "bch_dirty_init[%d]", i);
--
--		state->infos[i].thread =
--			kthread_run(bch_dirty_init_thread,
--				    &state->infos[i],
--				    name);
--		if (IS_ERR(state->infos[i].thread)) {
-+		state.infos[i].state = &state;
-+		state.infos[i].thread =
-+			kthread_run(bch_dirty_init_thread, &state.infos[i],
-+				    "bch_dirtcnt[%d]", i);
-+		if (IS_ERR(state.infos[i].thread)) {
- 			pr_err("fails to run thread bch_dirty_init[%d]\n", i);
- 			for (--i; i >= 0; i--)
--				kthread_stop(state->infos[i].thread);
-+				kthread_stop(state.infos[i].thread);
- 			goto out;
+ 	if (csdev->type == CORESIGHT_DEV_TYPE_SINK ||
+@@ -1641,11 +1650,11 @@ struct coresight_device *coresight_regis
+ 			 * from put_device(), which is in turn called from
+ 			 * function device_unregister().
+ 			 */
+-			goto err_out;
++			goto out_unlock;
  		}
-+		atomic_inc(&state.started);
+ 	}
+-
+-	mutex_lock(&coresight_mutex);
++	/* Device is now registered */
++	registered = true;
+ 
+ 	ret = coresight_create_conns_sysfs_group(csdev);
+ 	if (!ret)
+@@ -1655,16 +1664,18 @@ struct coresight_device *coresight_regis
+ 	if (!ret && cti_assoc_ops && cti_assoc_ops->add)
+ 		cti_assoc_ops->add(csdev);
+ 
++out_unlock:
+ 	mutex_unlock(&coresight_mutex);
+-	if (ret) {
++	/* Success */
++	if (!ret)
++		return csdev;
++
++	/* Unregister the device if needed */
++	if (registered) {
+ 		coresight_unregister(csdev);
+ 		return ERR_PTR(ret);
  	}
  
--	/*
--	 * Must wait for all threads to stop.
--	 */
--	wait_event_interruptible(state->wait,
--		 atomic_read(&state->started) == 0);
+-	return csdev;
 -
- out:
--	kfree(state);
-+	/* Must wait for all threads to stop. */
-+	wait_event(state.wait, atomic_read(&state.started) == 0);
-+	rw_unlock(0, c->root);
- }
- 
- void bch_cached_dev_writeback_init(struct cached_dev *dc)
---- a/drivers/md/bcache/writeback.h
-+++ b/drivers/md/bcache/writeback.h
-@@ -20,7 +20,7 @@
- #define BCH_WRITEBACK_FRAGMENT_THRESHOLD_MID 57
- #define BCH_WRITEBACK_FRAGMENT_THRESHOLD_HIGH 64
- 
--#define BCH_DIRTY_INIT_THRD_MAX	64
-+#define BCH_DIRTY_INIT_THRD_MAX	12
- /*
-  * 14 (16384ths) is chosen here as something that each backing device
-  * should be a reasonable fraction of the share, and not to blow up
+-err_free_csdev:
+-	kfree(csdev);
+ err_out:
+ 	/* Cleanup the connection information */
+ 	coresight_release_platform_data(NULL, desc->pdata);
 
 
