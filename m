@@ -2,95 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA20CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:38:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2049CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:38:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355792AbiFGTit (ORCPT
+        id S1356304AbiFGTiw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:38:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53894 "EHLO
+        Tue, 7 Jun 2022 15:38:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354244AbiFGSqu (ORCPT
+        with ESMTP id S1354243AbiFGSqu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:46:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D71D1257A5;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DA871257A7;
         Tue,  7 Jun 2022 11:00:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1BCE2B82182;
-        Tue,  7 Jun 2022 18:00:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E560C3411C;
-        Tue,  7 Jun 2022 18:00:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624823;
-        bh=r7AE4TyLCHPSD38SysrDQyTnu+TvKZGuaaI/tTppefc=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 187E1617AE;
+        Tue,  7 Jun 2022 18:00:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2843CC385A5;
+        Tue,  7 Jun 2022 18:00:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624825;
+        bh=b2xI1vAuWumL9Pl1KLY/AKMQ4JmYs0MYUQwUJwyOSvA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ph+ymeQK2T4gi2QhKl+Expv3Ff6nU4XbGMo6U2ZOe8hD4robmTzFM8DCw3WT5/gdV
-         iwGvo71Mx3/KjsUTWx3smVAq+D4xFQtZI5h/NYIsU0hfXN6ihKuMisNdtxTcKF+q6g
-         q/i6GXJsGlSEhoeLrgYiKFvFD3YUmrbMv8htYhtOTCLQZCqsPw6CMur7SMZaaoTqJ0
-         TuHc/GIi+3SQY0RzdakUWJ0+HgzQ9NQQYqvmrj65x1l7B52n0mno5yb79hw/IgRxOp
-         HFd+iFU/g/WDVoe8xRGRJ92Y9DA7i1SQ2bDUE3t4LnzmlGjf1Y3GphoNNbXiKJ4ydO
-         O8MHXww6kSzhg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>, Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        b=j++SylZXrUszwSQ2DKZ7080gUTB+YGOHQ5nBhHIuag2DIcmTS8RgXGEDTAzK7wf1y
+         eAObApVEi591S1mr/tE6ujvO2BisITAmqL5BFcCAPTDdGcayyCZP8/F0n6EBc9x8Bo
+         BtAwFSxsE4/F5hL6Nh/PXKRvFnDxLm5rcvpjoR64=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.4 04/34] tty: synclink_gt: Fix null-pointer-dereference in slgt_clean()
-Date:   Tue,  7 Jun 2022 13:59:39 -0400
-Message-Id: <20220607180011.481266-4-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
-References: <20220607180011.481266-1-sashal@kernel.org>
+Subject: [PATCH 5.15 466/667] macintosh: via-pmu and via-cuda need RTC_LIB
+Date:   Tue,  7 Jun 2022 19:02:11 +0200
+Message-Id: <20220607164948.685062207@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 689ca31c542687709ba21ec2195c1fbce34fd029 ]
+[ Upstream commit 9a9c5ff5fff87eb1a43db0d899473554e408fd7b ]
 
-When the driver fails at alloc_hdlcdev(), and then we remove the driver
-module, we will get the following splat:
+Fix build when RTC_LIB is not set/enabled.
+Eliminates these build errors:
 
-[   25.065966] general protection fault, probably for non-canonical address 0xdffffc0000000182: 0000 [#1] PREEMPT SMP KASAN PTI
-[   25.066914] KASAN: null-ptr-deref in range [0x0000000000000c10-0x0000000000000c17]
-[   25.069262] RIP: 0010:detach_hdlc_protocol+0x2a/0x3e0
-[   25.077709] Call Trace:
-[   25.077924]  <TASK>
-[   25.078108]  unregister_hdlc_device+0x16/0x30
-[   25.078481]  slgt_cleanup+0x157/0x9f0 [synclink_gt]
+m68k-linux-ld: drivers/macintosh/via-pmu.o: in function `pmu_set_rtc_time':
+drivers/macintosh/via-pmu.c:1769: undefined reference to `rtc_tm_to_time64'
+m68k-linux-ld: drivers/macintosh/via-cuda.o: in function `cuda_set_rtc_time':
+drivers/macintosh/via-cuda.c:797: undefined reference to `rtc_tm_to_time64'
 
-Fix this by checking whether the 'info->netdev' is a null pointer first.
-
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220410114814.3920474-1-zheyuma97@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 0792a2c8e0bb ("macintosh: Use common code to access RTC")
+Reported-by: kernel test robot <lkp@intel.com>
+Suggested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220410161035.592-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/synclink_gt.c | 2 ++
+ drivers/macintosh/Kconfig | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
-index ff345a8e0fcc..b72471373c71 100644
---- a/drivers/tty/synclink_gt.c
-+++ b/drivers/tty/synclink_gt.c
-@@ -1752,6 +1752,8 @@ static int hdlcdev_init(struct slgt_info *info)
-  */
- static void hdlcdev_exit(struct slgt_info *info)
- {
-+	if (!info->netdev)
-+		return;
- 	unregister_hdlc_device(info->netdev);
- 	free_netdev(info->netdev);
- 	info->netdev = NULL;
+diff --git a/drivers/macintosh/Kconfig b/drivers/macintosh/Kconfig
+index 3942db15a2b8..539a2ed4e13d 100644
+--- a/drivers/macintosh/Kconfig
++++ b/drivers/macintosh/Kconfig
+@@ -44,6 +44,7 @@ config ADB_IOP
+ config ADB_CUDA
+ 	bool "Support for Cuda/Egret based Macs and PowerMacs"
+ 	depends on (ADB || PPC_PMAC) && !PPC_PMAC64
++	select RTC_LIB
+ 	help
+ 	  This provides support for Cuda/Egret based Macintosh and
+ 	  Power Macintosh systems. This includes most m68k based Macs,
+@@ -57,6 +58,7 @@ config ADB_CUDA
+ config ADB_PMU
+ 	bool "Support for PMU based PowerMacs and PowerBooks"
+ 	depends on PPC_PMAC || MAC
++	select RTC_LIB
+ 	help
+ 	  On PowerBooks, iBooks, and recent iMacs and Power Macintoshes, the
+ 	  PMU is an embedded microprocessor whose primary function is to
 -- 
 2.35.1
+
+
 
