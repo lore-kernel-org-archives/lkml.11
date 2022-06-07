@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA9BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:14:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B502C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:17:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377947AbiFGVOp (ORCPT
+        id S1379127AbiFGVOs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:14:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39706 "EHLO
+        Tue, 7 Jun 2022 17:14:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376794AbiFGURP (ORCPT
+        with ESMTP id S1376531AbiFGUQw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:17:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E894C1D01F2;
-        Tue,  7 Jun 2022 11:29:57 -0700 (PDT)
+        Tue, 7 Jun 2022 16:16:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 524051CF150;
+        Tue,  7 Jun 2022 11:29:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5FFA7B82340;
-        Tue,  7 Jun 2022 18:29:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B086FC34115;
-        Tue,  7 Jun 2022 18:29:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7980B612F2;
+        Tue,  7 Jun 2022 18:29:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80146C385A2;
+        Tue,  7 Jun 2022 18:29:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626596;
-        bh=d6PRW2L/i7S3njKFXoCdPxI1YSkETLyxZT/LUdwxwUA=;
+        s=korg; t=1654626553;
+        bh=7gLmPXzMhNy7D2VimkqVQcs4oFEM8KSRbDToOpCrFlw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bSBfn5hRg1gNMGGaHncUFQJxsZS6bqJbhSLGEnCIxnpuayHk8Hg4wuUDkJ/uDzNoB
-         c+3d8b9Fo1mby44+zCF+BbcXohpW/mT6Xw61KMhUKe3xJKyrQU7ysjDz521j5jh+vO
-         zlDlJRsCldCu0H53zIFaKxAWKKAchfRkOlqIOT3I=
+        b=c51NovJF/cNIhCPpy+IZtGwP3/GjZLTPuBaWWBEEY3oEN9UmjkQM96LkpWmlWMpDS
+         mDYsRgDD6Q5BrhbQvFKAJ2YNzY3R2FNNFzZ9/m9CUlXfvmOAcD+6ZXmE3LQzOwPsVp
+         JL6uW5/Sj7n+idPg0K/lWfeqCudS7ym9IF3a8Dmg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adam Wujek <dev_public@wujek.eu>,
-        Guenter Roeck <linux@roeck-us.net>,
+        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 436/772] hwmon: (pmbus) Check PEC support before reading other registers
-Date:   Tue,  7 Jun 2022 19:00:28 +0200
-Message-Id: <20220607165001.849617281@linuxfoundation.org>
+Subject: [PATCH 5.17 419/772] thermal/drivers/broadcom: Fix potential NULL dereference in sr_thermal_probe
+Date:   Tue,  7 Jun 2022 19:00:11 +0200
+Message-Id: <20220607165001.352967632@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,80 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Wujek <dev_public@wujek.eu>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-[ Upstream commit d1baf7a3a3177d46a7149858beddb88a9eca7a54 ]
+[ Upstream commit e20d136ec7d6f309989c447638365840d3424c8e ]
 
-Make sure that the support of PEC is determined before the read of other
-registers. Otherwise the validation of PEC can trigger an error on the read
-of STATUS_BYTE or STATUS_WORD registers.
+platform_get_resource() may return NULL, add proper check to
+avoid potential NULL dereferencing.
 
-The problematic scenario is the following. A device with enabled PEC
-support is up and running and a kernel driver is loaded.
-Then the driver is unloaded (or device unbound), the HW device
-is reconfigured externally (e.g. by i2cset) to advertise itself as not
-supporting PEC. Without the move of the code, at the second load of
-the driver (or bind) the STATUS_BYTE or STATUS_WORD register is always
-read with PEC enabled, which is likely to cause a read error resulting
-with fail of a driver load (or bind).
-
-Signed-off-by: Adam Wujek <dev_public@wujek.eu>
-Link: https://lore.kernel.org/r/20220519233334.438621-1-dev_public@wujek.eu
-Fixes: 75d2b2b06bd84 ("hwmon: (pmbus) disable PEC if not enabled")
-Fixes: 4e5418f787ec5 ("hwmon: (pmbus_core) Check adapter PEC support")
-[groeck: Added Fixes: tags, dropped continuation line]
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: 250e211057c72 ("thermal: broadcom: Add Stingray thermal driver")
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Link: https://lore.kernel.org/r/20220425092929.90412-1-zhengyongjun3@huawei.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/pmbus/pmbus_core.c | 28 +++++++++++++++-------------
- 1 file changed, 15 insertions(+), 13 deletions(-)
+ drivers/thermal/broadcom/sr-thermal.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
-index 5f8f824d997f..63b616ce3a6e 100644
---- a/drivers/hwmon/pmbus/pmbus_core.c
-+++ b/drivers/hwmon/pmbus/pmbus_core.c
-@@ -2308,6 +2308,21 @@ static int pmbus_init_common(struct i2c_client *client, struct pmbus_data *data,
- 	struct device *dev = &client->dev;
- 	int page, ret;
+diff --git a/drivers/thermal/broadcom/sr-thermal.c b/drivers/thermal/broadcom/sr-thermal.c
+index 475ce2900771..85ab9edd580c 100644
+--- a/drivers/thermal/broadcom/sr-thermal.c
++++ b/drivers/thermal/broadcom/sr-thermal.c
+@@ -60,6 +60,9 @@ static int sr_thermal_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
  
-+	/*
-+	 * Figure out if PEC is enabled before accessing any other register.
-+	 * Make sure PEC is disabled, will be enabled later if needed.
-+	 */
-+	client->flags &= ~I2C_CLIENT_PEC;
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -ENOENT;
 +
-+	/* Enable PEC if the controller and bus supports it */
-+	if (!(data->flags & PMBUS_NO_CAPABILITY)) {
-+		ret = i2c_smbus_read_byte_data(client, PMBUS_CAPABILITY);
-+		if (ret >= 0 && (ret & PB_CAPABILITY_ERROR_CHECK)) {
-+			if (i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_PEC))
-+				client->flags |= I2C_CLIENT_PEC;
-+		}
-+	}
-+
- 	/*
- 	 * Some PMBus chips don't support PMBUS_STATUS_WORD, so try
- 	 * to use PMBUS_STATUS_BYTE instead if that is the case.
-@@ -2326,19 +2341,6 @@ static int pmbus_init_common(struct i2c_client *client, struct pmbus_data *data,
- 		data->has_status_word = true;
- 	}
- 
--	/* Make sure PEC is disabled, will be enabled later if needed */
--	client->flags &= ~I2C_CLIENT_PEC;
--
--	/* Enable PEC if the controller and bus supports it */
--	if (!(data->flags & PMBUS_NO_CAPABILITY)) {
--		ret = i2c_smbus_read_byte_data(client, PMBUS_CAPABILITY);
--		if (ret >= 0 && (ret & PB_CAPABILITY_ERROR_CHECK)) {
--			if (i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_PEC)) {
--				client->flags |= I2C_CLIENT_PEC;
--			}
--		}
--	}
--
- 	/*
- 	 * Check if the chip is write protected. If it is, we can not clear
- 	 * faults, and we should not try it. Also, in that case, writes into
+ 	sr_thermal->regs = (void __iomem *)devm_memremap(&pdev->dev, res->start,
+ 							 resource_size(res),
+ 							 MEMREMAP_WB);
 -- 
 2.35.1
 
