@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96496CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:19:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8610C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359854AbiFGVTZ (ORCPT
+        id S1378166AbiFGVTd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53002 "EHLO
+        Tue, 7 Jun 2022 17:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359309AbiFGUWz (ORCPT
+        with ESMTP id S1359298AbiFGUWz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:22:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7AF01D501B;
-        Tue,  7 Jun 2022 11:31:59 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C2417CCA3;
+        Tue,  7 Jun 2022 11:31:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E8AF961504;
-        Tue,  7 Jun 2022 18:31:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3DDEC385A5;
-        Tue,  7 Jun 2022 18:31:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BCC20B82386;
+        Tue,  7 Jun 2022 18:31:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 333C4C385A2;
+        Tue,  7 Jun 2022 18:31:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626718;
-        bh=TGEP3+wcP3I5eC612IMnC6aIjznzCHpeaDh26azRWDY=;
+        s=korg; t=1654626715;
+        bh=QkOH8aBw7HbsAVaM5zKar+EG2d5a++2v14+Ybugj7nQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mYbolTvwnuJDjkMJUpyhTO3ZOUwEJ3feo4Y4nK6RgY1cBoS0bzMEpzOfGOLdy5RGT
-         lOof4D9fvu1NARGtdVrtYYgoOAC9BK6cvGvT7jyCBg75w4eyMdNZFkTDDZJatfrPSi
-         VTw666i5O9sXOcCKd/MxbGW2bN20hR5ToVCHBusw=
+        b=tjT8vT8VFRBF87kQTk7HrpQV3BwxDap1ChPTfc7J1xad8KZFgfnM5bFLw95PVEDo0
+         Ei5ZK8C8SXspoDv/Z9L2jcCo3/7gMbH6olzikpkSK+71NvnBJEi6jlbFmyJffjAVns
+         /qWUvZDGNnptGfksFN5CAePDwbxzAuhb52jxrr9s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Frederic Barrat <fbarrat@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 480/772] misc: ocxl: fix possible double free in ocxl_file_register_afu
-Date:   Tue,  7 Jun 2022 19:01:12 +0200
-Message-Id: <20220607165003.134910284@linuxfoundation.org>
+Subject: [PATCH 5.17 479/772] ARM: dts: bcm2835-rpi-b: Fix GPIO line names
+Date:   Tue,  7 Jun 2022 19:01:11 +0200
+Message-Id: <20220607165003.106283004@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,40 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
 
-[ Upstream commit 950cf957fe34d40d63dfa3bf3968210430b6491e ]
+[ Upstream commit 97bd8659c1c46c23e4daea7e040befca30939950 ]
 
-info_release() will be called in device_unregister() when info->dev's
-reference count is 0. So there is no need to call ocxl_afu_put() and
-kfree() again.
+Recently this has been fixed in the vendor tree, so upstream this.
 
-Fix this by adding free_minor() and return to err_unregister error path.
-
-Fixes: 75ca758adbaf ("ocxl: Create a clear delineation between ocxl backend & frontend")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Acked-by: Frederic Barrat <fbarrat@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220418085758.38145-1-hbh25y@gmail.com
+Fixes: 731b26a6ac17 ("ARM: bcm2835: Add names for the Raspberry Pi GPIO lines")
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/ocxl/file.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/boot/dts/bcm2835-rpi-b.dts | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/misc/ocxl/file.c b/drivers/misc/ocxl/file.c
-index d881f5e40ad9..6777c419a8da 100644
---- a/drivers/misc/ocxl/file.c
-+++ b/drivers/misc/ocxl/file.c
-@@ -556,7 +556,9 @@ int ocxl_file_register_afu(struct ocxl_afu *afu)
- 
- err_unregister:
- 	ocxl_sysfs_unregister_afu(info); // safe to call even if register failed
-+	free_minor(info);
- 	device_unregister(&info->dev);
-+	return rc;
- err_put:
- 	ocxl_afu_put(afu);
- 	free_minor(info);
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-b.dts b/arch/arm/boot/dts/bcm2835-rpi-b.dts
+index 1b63d6b19750..25d87212cefd 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-b.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-b.dts
+@@ -53,18 +53,17 @@
+ 			  "GPIO18",
+ 			  "NC", /* GPIO19 */
+ 			  "NC", /* GPIO20 */
+-			  "GPIO21",
++			  "CAM_GPIO0",
+ 			  "GPIO22",
+ 			  "GPIO23",
+ 			  "GPIO24",
+ 			  "GPIO25",
+ 			  "NC", /* GPIO26 */
+-			  "CAM_GPIO0",
+-			  /* Binary number representing build/revision */
+-			  "CONFIG0",
+-			  "CONFIG1",
+-			  "CONFIG2",
+-			  "CONFIG3",
++			  "GPIO27",
++			  "GPIO28",
++			  "GPIO29",
++			  "GPIO30",
++			  "GPIO31",
+ 			  "NC", /* GPIO32 */
+ 			  "NC", /* GPIO33 */
+ 			  "NC", /* GPIO34 */
 -- 
 2.35.1
 
