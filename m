@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49758C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D19C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:48:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348325AbiFGRsP (ORCPT
+        id S1348331AbiFGRsX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39614 "EHLO
+        Tue, 7 Jun 2022 13:48:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347733AbiFGRbA (ORCPT
+        with ESMTP id S1347471AbiFGRar (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:31:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F00AC11AFFD;
-        Tue,  7 Jun 2022 10:28:10 -0700 (PDT)
+        Tue, 7 Jun 2022 13:30:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D39B111B98;
+        Tue,  7 Jun 2022 10:26:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9DB30B80B66;
-        Tue,  7 Jun 2022 17:28:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D584C385A5;
-        Tue,  7 Jun 2022 17:28:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BAD3C6141D;
+        Tue,  7 Jun 2022 17:26:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C75D2C34115;
+        Tue,  7 Jun 2022 17:26:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622888;
-        bh=X6xGrTQ19sclz00yUju7tgj46+EC0IZq+CAtfEv2qlk=;
+        s=korg; t=1654622816;
+        bh=yiNOSIgG1rAI1xTaElFhimm4IQ3iGvnoBLt15HG6IWU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y8OtVZjpgSCfaInf21eYzXIQRbcOfx9HJB7HanszmN0TvWfF8xqSeBwQ9P8muz3hv
-         Inaigo3IZIEgTBGjGds4IjlrSloSucLXylscORWG7UPOc2jvShk6MyYI0ZomI+iBz1
-         cVUTDmGehqIi8tWW/M4qKcj41vqal97ZqP9bzgvA=
+        b=vc+kDbs0J+s3ZrePDsjUxwyDET85DXp1UFePh1fOLF2JKqxDgyTGi6w32pE+GkmoA
+         ALNmbFDsg/h+ecZZYp2LkdNoCz9xzT+5fDNBp0oAFXaniO43ju+/7QMCxbPjwfmOUw
+         Jr2w0lizBQI/uvL18XsUNG2hyW/yx8G9KJYMZvEY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Archie Pusaka <apusaka@chromium.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Jessica Zhang <quic_jesszhan@quicinc.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 219/452] Bluetooth: use inclusive language in HCI role comments
-Date:   Tue,  7 Jun 2022 19:01:16 +0200
-Message-Id: <20220607164915.087520648@linuxfoundation.org>
+Subject: [PATCH 5.10 192/452] drm/msm/mdp5: Return error code in mdp5_pipe_release when deadlock is detected
+Date:   Tue,  7 Jun 2022 19:00:49 +0200
+Message-Id: <20220607164914.285730625@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,125 +52,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Archie Pusaka <apusaka@chromium.org>
+From: Jessica Zhang <quic_jesszhan@quicinc.com>
 
-[ Upstream commit 74be523ce6bed0531e4f31c3e1387909589e9bfe ]
+[ Upstream commit d59be579fa932c46b908f37509f319cbd4ca9a68 ]
 
-This patch replaces some non-inclusive terms based on the appropriate
-language mapping table compiled by the Bluetooth SIG:
-https://specificationrefs.bluetooth.com/language-mapping/Appropriate_Language_Mapping_Table.pdf
+mdp5_get_global_state runs the risk of hitting a -EDEADLK when acquiring
+the modeset lock, but currently mdp5_pipe_release doesn't check for if
+an error is returned. Because of this, there is a possibility of
+mdp5_pipe_release hitting a NULL dereference error.
 
-Specifically, these terms are replaced:
-master -> initiator (for smp) or central (everything else)
-slave  -> responder (for smp) or peripheral (everything else)
+To avoid this, let's have mdp5_pipe_release check if
+mdp5_get_global_state returns an error and propogate that error.
 
-The #define preprocessor terms are unchanged for now to not disturb
-dependent APIs.
+Changes since v1:
+- Separated declaration and initialization of *new_state to avoid
+  compiler warning
+- Fixed some spelling mistakes in commit message
 
-Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Changes since v2:
+- Return 0 in case where hwpipe is NULL as this is considered normal
+  behavior
+- Added 2nd patch in series to fix a similar NULL dereference issue in
+  mdp5_mixer_release
+
+Reported-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Signed-off-by: Jessica Zhang <quic_jesszhan@quicinc.com>
+Fixes: 7907a0d77cb4 ("drm/msm/mdp5: Use the new private_obj state")
+Reviewed-by: Rob Clark <robdclark@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/485179/
+Link: https://lore.kernel.org/r/20220505214051.155-1-quic_jesszhan@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_conn.c   | 8 ++++----
- net/bluetooth/hci_event.c  | 6 +++---
- net/bluetooth/l2cap_core.c | 2 +-
- net/bluetooth/smp.c        | 6 +++---
- 4 files changed, 11 insertions(+), 11 deletions(-)
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c  | 15 +++++++++++----
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h  |  2 +-
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c | 20 ++++++++++++++++----
+ 3 files changed, 28 insertions(+), 9 deletions(-)
 
-diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index ecd2ffcf2ba2..140d9764c77e 100644
---- a/net/bluetooth/hci_conn.c
-+++ b/net/bluetooth/hci_conn.c
-@@ -240,7 +240,7 @@ int hci_disconnect(struct hci_conn *conn, __u8 reason)
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
+index ba6695963aa6..a4f5cb90f3e8 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
+@@ -119,18 +119,23 @@ int mdp5_pipe_assign(struct drm_atomic_state *s, struct drm_plane *plane,
+ 	return 0;
+ }
+ 
+-void mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
++int mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
  {
- 	BT_DBG("hcon %p", conn);
+ 	struct msm_drm_private *priv = s->dev->dev_private;
+ 	struct mdp5_kms *mdp5_kms = to_mdp5_kms(to_mdp_kms(priv->kms));
+ 	struct mdp5_global_state *state = mdp5_get_global_state(s);
+-	struct mdp5_hw_pipe_state *new_state = &state->hwpipe;
++	struct mdp5_hw_pipe_state *new_state;
  
--	/* When we are master of an established connection and it enters
-+	/* When we are central of an established connection and it enters
- 	 * the disconnect timeout, then go ahead and try to read the
- 	 * current clock offset.  Processing of the result is done
- 	 * within the event handling and hci_clock_offset_evt function.
-@@ -1065,16 +1065,16 @@ struct hci_conn *hci_connect_le(struct hci_dev *hdev, bdaddr_t *dst,
+ 	if (!hwpipe)
+-		return;
++		return 0;
++
++	if (IS_ERR(state))
++		return PTR_ERR(state);
++
++	new_state = &state->hwpipe;
  
- 	hci_req_init(&req, hdev);
+ 	if (WARN_ON(!new_state->hwpipe_to_plane[hwpipe->idx]))
+-		return;
++		return -EINVAL;
  
--	/* Disable advertising if we're active. For master role
-+	/* Disable advertising if we're active. For central role
- 	 * connections most controllers will refuse to connect if
--	 * advertising is enabled, and for slave role connections we
-+	 * advertising is enabled, and for peripheral role connections we
- 	 * anyway have to disable it in order to start directed
- 	 * advertising.
- 	 */
- 	if (hci_dev_test_flag(hdev, HCI_LE_ADV))
- 		 __hci_req_disable_advertising(&req);
- 
--	/* If requested to connect as slave use directed advertising */
-+	/* If requested to connect as peripheral use directed advertising */
- 	if (conn->role == HCI_ROLE_SLAVE) {
- 		/* If we're active scanning most controllers are unable
- 		 * to initiate advertising. Simply reject the attempt.
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index e926e80d9731..061ef20e135e 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -2759,9 +2759,9 @@ static void hci_conn_request_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 		bacpy(&cp.bdaddr, &ev->bdaddr);
- 
- 		if (lmp_rswitch_capable(hdev) && (mask & HCI_LM_MASTER))
--			cp.role = 0x00; /* Become master */
-+			cp.role = 0x00; /* Become central */
- 		else
--			cp.role = 0x01; /* Remain slave */
-+			cp.role = 0x01; /* Remain peripheral */
- 
- 		hci_send_cmd(hdev, HCI_OP_ACCEPT_CONN_REQ, sizeof(cp), &cp);
- 	} else if (!(flags & HCI_PROTO_DEFER)) {
-@@ -5153,7 +5153,7 @@ static void le_conn_complete_evt(struct hci_dev *hdev, u8 status,
- 		conn->dst_type = bdaddr_type;
- 
- 		/* If we didn't have a hci_conn object previously
--		 * but we're in master role this must be something
-+		 * but we're in central role this must be something
- 		 * initiated using a white list. Since white list based
- 		 * connections are not "first class citizens" we don't
- 		 * have full tracking of them. Therefore, we go ahead
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index ad33c592cde4..6c80e62cea0c 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -1688,7 +1688,7 @@ static void l2cap_le_conn_ready(struct l2cap_conn *conn)
- 	if (hcon->out)
- 		smp_conn_security(hcon, hcon->pending_sec_level);
- 
--	/* For LE slave connections, make sure the connection interval
-+	/* For LE peripheral connections, make sure the connection interval
- 	 * is in the range of the minimum and maximum interval that has
- 	 * been configured for this connection. If not, then trigger
- 	 * the connection update procedure.
-diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
-index 2b7879afc333..b7374dbee23a 100644
---- a/net/bluetooth/smp.c
-+++ b/net/bluetooth/smp.c
-@@ -909,8 +909,8 @@ static int tk_request(struct l2cap_conn *conn, u8 remote_oob, u8 auth,
- 			hcon->pending_sec_level = BT_SECURITY_HIGH;
+ 	DBG("%s: release from plane %s", hwpipe->name,
+ 		new_state->hwpipe_to_plane[hwpipe->idx]->name);
+@@ -141,6 +146,8 @@ void mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
  	}
  
--	/* If both devices have Keyoard-Display I/O, the master
--	 * Confirms and the slave Enters the passkey.
-+	/* If both devices have Keyboard-Display I/O, the initiator
-+	 * Confirms and the responder Enters the passkey.
- 	 */
- 	if (smp->method == OVERLAP) {
- 		if (hcon->role == HCI_ROLE_MASTER)
-@@ -3076,7 +3076,7 @@ static void bredr_pairing(struct l2cap_chan *chan)
- 	if (!test_bit(HCI_CONN_ENCRYPT, &hcon->flags))
- 		return;
+ 	new_state->hwpipe_to_plane[hwpipe->idx] = NULL;
++
++	return 0;
+ }
  
--	/* Only master may initiate SMP over BR/EDR */
-+	/* Only initiator may initiate SMP over BR/EDR */
- 	if (hcon->role != HCI_ROLE_MASTER)
- 		return;
+ void mdp5_pipe_destroy(struct mdp5_hw_pipe *hwpipe)
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h
+index 9b26d0761bd4..cca67938cab2 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h
+@@ -37,7 +37,7 @@ int mdp5_pipe_assign(struct drm_atomic_state *s, struct drm_plane *plane,
+ 		     uint32_t caps, uint32_t blkcfg,
+ 		     struct mdp5_hw_pipe **hwpipe,
+ 		     struct mdp5_hw_pipe **r_hwpipe);
+-void mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe);
++int mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe);
+ 
+ struct mdp5_hw_pipe *mdp5_pipe_init(enum mdp5_pipe pipe,
+ 		uint32_t reg_offset, uint32_t caps);
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
+index da0799333970..0dc23c86747e 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
+@@ -393,12 +393,24 @@ static int mdp5_plane_atomic_check_with_state(struct drm_crtc_state *crtc_state,
+ 				mdp5_state->r_hwpipe = NULL;
+ 
+ 
+-			mdp5_pipe_release(state->state, old_hwpipe);
+-			mdp5_pipe_release(state->state, old_right_hwpipe);
++			ret = mdp5_pipe_release(state->state, old_hwpipe);
++			if (ret)
++				return ret;
++
++			ret = mdp5_pipe_release(state->state, old_right_hwpipe);
++			if (ret)
++				return ret;
++
+ 		}
+ 	} else {
+-		mdp5_pipe_release(state->state, mdp5_state->hwpipe);
+-		mdp5_pipe_release(state->state, mdp5_state->r_hwpipe);
++		ret = mdp5_pipe_release(state->state, mdp5_state->hwpipe);
++		if (ret)
++			return ret;
++
++		ret = mdp5_pipe_release(state->state, mdp5_state->r_hwpipe);
++		if (ret)
++			return ret;
++
+ 		mdp5_state->hwpipe = mdp5_state->r_hwpipe = NULL;
+ 	}
  
 -- 
 2.35.1
