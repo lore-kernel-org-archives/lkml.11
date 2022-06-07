@@ -2,232 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 666DCC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86223C43334
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:42:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379026AbiFHBkW (ORCPT
+        id S1387018AbiFHBlP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:40:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59508 "EHLO
+        Tue, 7 Jun 2022 21:41:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457185AbiFGXV3 (ORCPT
+        with ESMTP id S1385453AbiFGWVj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:21:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 701403E3429
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:26:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654637159;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0P4w0tinrYTQC91laIMkql8G3HbFfeIlttNGpjJORzM=;
-        b=Zs/NQOSXlJ5DzbRsjokXvQhb4Vu9WPzH8HRuCNvMRKAerseHpWR+/l+x0AtoBnb9mzG7fU
-        OKeZ3h1Amb+MCwi6i9U+zKGpFOy0hPJjfodKSROzLygSMp5XhyC4LjtdBE8F9ujFMY4LXf
-        rgnIucSJ9bS/acHvpXlb4cJ31hvnEHc=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-657-cRJ2HjKNPoiAfZBNuWqXSA-1; Tue, 07 Jun 2022 17:25:56 -0400
-X-MC-Unique: cRJ2HjKNPoiAfZBNuWqXSA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 7 Jun 2022 18:21:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665B426A092;
+        Tue,  7 Jun 2022 12:21:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A49C0811E76;
-        Tue,  7 Jun 2022 21:25:55 +0000 (UTC)
-Received: from horse.redhat.com (unknown [10.22.9.106])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F36994010E32;
-        Tue,  7 Jun 2022 21:25:54 +0000 (UTC)
-Received: by horse.redhat.com (Postfix, from userid 10451)
-        id AF713220882; Tue,  7 Jun 2022 17:25:54 -0400 (EDT)
-Date:   Tue, 7 Jun 2022 17:25:54 -0400
-From:   Vivek Goyal <vgoyal@redhat.com>
-To:     Dharmendra Singh <dharamhans87@gmail.com>
-Cc:     miklos@szeredi.hu, linux-fsdevel@vger.kernel.org,
-        fuse-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-        bschubert@ddn.com, Dharmendra Singh <dsingh@ddn.com>
-Subject: Re: [PATCH v4 1/1] Allow non-extending parallel direct writes on the
- same file.
-Message-ID: <Yp/CYjONZHoekSVA@redhat.com>
-References: <20220605072201.9237-1-dharamhans87@gmail.com>
- <20220605072201.9237-2-dharamhans87@gmail.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 982EBB82182;
+        Tue,  7 Jun 2022 19:21:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05FF2C385A2;
+        Tue,  7 Jun 2022 19:21:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629705;
+        bh=XP3Mb+1/rM2xKkSYEbOakwN+wCNqt6xuKKFApfb3IVc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wkSBYn1ItcbpKpiMwRRwA0jyeA7PQTWl1PShCK5dRR4yrEvt3sXl3HsZ5WDmNlzss
+         S5akdo8LxpJgWf14onJ5uEPPaU9yC5+Cn7XssjwTT5CkyCruXzg/2QESIu87pUGMEr
+         TMvdyo7eaSskKE77L0U+cpWGzEf84UBcnrAQSToA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Paul Moore <paul@paul-moore.com>,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
+Subject: [PATCH 5.18 787/879] landlock: Define access_mask_t to enforce a consistent access mask size
+Date:   Tue,  7 Jun 2022 19:05:05 +0200
+Message-Id: <20220607165025.710938021@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220605072201.9237-2-dharamhans87@gmail.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 05, 2022 at 12:52:00PM +0530, Dharmendra Singh wrote:
-> From: Dharmendra Singh <dsingh@ddn.com>
-> 
-> In general, as of now, in FUSE, direct writes on the same file are
-> serialized over inode lock i.e we hold inode lock for the full duration
-> of the write request. I could not found in fuse code a comment which
-> clearly explains why this exclusive lock is taken for direct writes.
-> 
-> Following might be the reasons for acquiring exclusive lock but not
-> limited to
-> 1) Our guess is some USER space fuse implementations might be relying
->    on this lock for seralization.
+From: Mickaël Salaün <mic@digikod.net>
 
-Hi Dharmendra,
+commit 5f2ff33e10843ef51275c8611bdb7b49537aba5d upstream.
 
-I will just try to be devil's advocate. So if this is server side
-limitation, then it is possible that fuse client's isize data in
-cache is stale. For example, filesystem is shared between two 
-clients.
+Create and use the access_mask_t typedef to enforce a consistent access
+mask size and uniformly use a 16-bits type.  This will helps transition
+to a 32-bits value one day.
 
-- File size is 4G as seen by client A.
-- Client B truncates the file to 2G.
-- Two processes in client A, try to do parallel direct writes and will
-  be able to proceed and server will get two parallel writes both
-  extending file size.
+Add a build check to make sure all (filesystem) access rights fit in.
+This will be extended with a following commit.
 
-I can see that this can happen with virtiofs with cache=auto policy.
+Reviewed-by: Paul Moore <paul@paul-moore.com>
+Link: https://lore.kernel.org/r/20220506161102.525323-2-mic@digikod.net
+Cc: stable@vger.kernel.org
+Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ security/landlock/fs.c      |   19 +++++++++++--------
+ security/landlock/fs.h      |    2 +-
+ security/landlock/limits.h  |    2 ++
+ security/landlock/ruleset.c |    6 ++++--
+ security/landlock/ruleset.h |   16 ++++++++++++----
+ 5 files changed, 30 insertions(+), 15 deletions(-)
 
-IOW, if this is a fuse server side limitation, then how do you ensure
-that fuse kernel's i_size definition is not stale.
+--- a/security/landlock/fs.c
++++ b/security/landlock/fs.c
+@@ -152,7 +152,8 @@ retry:
+  * @path: Should have been checked by get_path_from_fd().
+  */
+ int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
+-			    const struct path *const path, u32 access_rights)
++			    const struct path *const path,
++			    access_mask_t access_rights)
+ {
+ 	int err;
+ 	struct landlock_object *object;
+@@ -184,7 +185,8 @@ int landlock_append_fs_rule(struct landl
+ 
+ static inline u64 unmask_layers(const struct landlock_ruleset *const domain,
+ 				const struct path *const path,
+-				const u32 access_request, u64 layer_mask)
++				const access_mask_t access_request,
++				u64 layer_mask)
+ {
+ 	const struct landlock_rule *rule;
+ 	const struct inode *inode;
+@@ -224,7 +226,8 @@ static inline u64 unmask_layers(const st
+ }
+ 
+ static int check_access_path(const struct landlock_ruleset *const domain,
+-			     const struct path *const path, u32 access_request)
++			     const struct path *const path,
++			     const access_mask_t access_request)
+ {
+ 	bool allowed = false;
+ 	struct path walker_path;
+@@ -309,7 +312,7 @@ jump_up:
+ }
+ 
+ static inline int current_check_access_path(const struct path *const path,
+-					    const u32 access_request)
++					    const access_mask_t access_request)
+ {
+ 	const struct landlock_ruleset *const dom =
+ 		landlock_get_current_domain();
+@@ -512,7 +515,7 @@ static int hook_sb_pivotroot(const struc
+ 
+ /* Path hooks */
+ 
+-static inline u32 get_mode_access(const umode_t mode)
++static inline access_mask_t get_mode_access(const umode_t mode)
+ {
+ 	switch (mode & S_IFMT) {
+ 	case S_IFLNK:
+@@ -565,7 +568,7 @@ static int hook_path_link(struct dentry
+ 		get_mode_access(d_backing_inode(old_dentry)->i_mode));
+ }
+ 
+-static inline u32 maybe_remove(const struct dentry *const dentry)
++static inline access_mask_t maybe_remove(const struct dentry *const dentry)
+ {
+ 	if (d_is_negative(dentry))
+ 		return 0;
+@@ -635,9 +638,9 @@ static int hook_path_rmdir(const struct
+ 
+ /* File hooks */
+ 
+-static inline u32 get_file_access(const struct file *const file)
++static inline access_mask_t get_file_access(const struct file *const file)
+ {
+-	u32 access = 0;
++	access_mask_t access = 0;
+ 
+ 	if (file->f_mode & FMODE_READ) {
+ 		/* A directory can only be opened in read mode. */
+--- a/security/landlock/fs.h
++++ b/security/landlock/fs.h
+@@ -66,6 +66,6 @@ __init void landlock_add_fs_hooks(void);
+ 
+ int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
+ 			    const struct path *const path,
+-			    u32 access_hierarchy);
++			    access_mask_t access_hierarchy);
+ 
+ #endif /* _SECURITY_LANDLOCK_FS_H */
+--- a/security/landlock/limits.h
++++ b/security/landlock/limits.h
+@@ -9,6 +9,7 @@
+ #ifndef _SECURITY_LANDLOCK_LIMITS_H
+ #define _SECURITY_LANDLOCK_LIMITS_H
+ 
++#include <linux/bitops.h>
+ #include <linux/limits.h>
+ #include <uapi/linux/landlock.h>
+ 
+@@ -19,6 +20,7 @@
+ 
+ #define LANDLOCK_LAST_ACCESS_FS		LANDLOCK_ACCESS_FS_MAKE_SYM
+ #define LANDLOCK_MASK_ACCESS_FS		((LANDLOCK_LAST_ACCESS_FS << 1) - 1)
++#define LANDLOCK_NUM_ACCESS_FS		__const_hweight64(LANDLOCK_MASK_ACCESS_FS)
+ 
+ /* clang-format on */
+ 
+--- a/security/landlock/ruleset.c
++++ b/security/landlock/ruleset.c
+@@ -45,7 +45,8 @@ static struct landlock_ruleset *create_r
+ 	return new_ruleset;
+ }
+ 
+-struct landlock_ruleset *landlock_create_ruleset(const u32 fs_access_mask)
++struct landlock_ruleset *
++landlock_create_ruleset(const access_mask_t fs_access_mask)
+ {
+ 	struct landlock_ruleset *new_ruleset;
+ 
+@@ -228,7 +229,8 @@ static void build_check_layer(void)
+ 
+ /* @ruleset must be locked by the caller. */
+ int landlock_insert_rule(struct landlock_ruleset *const ruleset,
+-			 struct landlock_object *const object, const u32 access)
++			 struct landlock_object *const object,
++			 const access_mask_t access)
+ {
+ 	struct landlock_layer layers[] = { {
+ 		.access = access,
+--- a/security/landlock/ruleset.h
++++ b/security/landlock/ruleset.h
+@@ -9,13 +9,20 @@
+ #ifndef _SECURITY_LANDLOCK_RULESET_H
+ #define _SECURITY_LANDLOCK_RULESET_H
+ 
++#include <linux/bitops.h>
++#include <linux/build_bug.h>
+ #include <linux/mutex.h>
+ #include <linux/rbtree.h>
+ #include <linux/refcount.h>
+ #include <linux/workqueue.h>
+ 
++#include "limits.h"
+ #include "object.h"
+ 
++typedef u16 access_mask_t;
++/* Makes sure all filesystem access rights can be stored. */
++static_assert(BITS_PER_TYPE(access_mask_t) >= LANDLOCK_NUM_ACCESS_FS);
++
+ /**
+  * struct landlock_layer - Access rights for a given layer
+  */
+@@ -28,7 +35,7 @@ struct landlock_layer {
+ 	 * @access: Bitfield of allowed actions on the kernel object.  They are
+ 	 * relative to the object type (e.g. %LANDLOCK_ACTION_FS_READ).
+ 	 */
+-	u16 access;
++	access_mask_t access;
+ };
+ 
+ /**
+@@ -135,19 +142,20 @@ struct landlock_ruleset {
+ 			 * layers are set once and never changed for the
+ 			 * lifetime of the ruleset.
+ 			 */
+-			u16 fs_access_masks[];
++			access_mask_t fs_access_masks[];
+ 		};
+ 	};
+ };
+ 
+-struct landlock_ruleset *landlock_create_ruleset(const u32 fs_access_mask);
++struct landlock_ruleset *
++landlock_create_ruleset(const access_mask_t fs_access_mask);
+ 
+ void landlock_put_ruleset(struct landlock_ruleset *const ruleset);
+ void landlock_put_ruleset_deferred(struct landlock_ruleset *const ruleset);
+ 
+ int landlock_insert_rule(struct landlock_ruleset *const ruleset,
+ 			 struct landlock_object *const object,
+-			 const u32 access);
++			 const access_mask_t access);
+ 
+ struct landlock_ruleset *
+ landlock_merge_ruleset(struct landlock_ruleset *const parent,
 
-> 2) This lock protects for the issues arising due to file size
->    assumptions.
-> 3) Ruling out any issues arising due to multiple writes where some 
->    writes succeeded and some failed.
-> 
-> This patch relaxes this exclusive lock for non-extending direct writes.
-> 
-> With these changes, we allows non-extending parallel direct writes
-> on the same file with the help of a flag called FOPEN_PARALLEL_WRITES.
-> If this flag is set on the file (flag is passed from libfuse to fuse
-> kernel as part of file open/create), we do not take exclusive lock
-> instead use shared lock so that all non-extending writes can run in 
-> parallel.
-> 
-> Best practise would be to enable parallel direct writes of all kinds
-> including extending writes as well but we see some issues such as
-> 1) When one write completes on one server and other fails on another
-> server, how we should truncate(if needed) the file if underlying file 
-> system does not support holes (For file systems which supports holes,
-> there might be a possibility of enabling parallel writes for all cases).
-> 
-> FUSE implementations which rely on this inode lock for serialisation
-> can continue to do so and this is default behaviour i.e no parallel
-> direct writes.
-> 
-> Signed-off-by: Dharmendra Singh <dsingh@ddn.com>
-> Signed-off-by: Bernd Schubert <bschubert@ddn.com>
-> ---
->  fs/fuse/file.c            | 46 ++++++++++++++++++++++++++++++++++++---
->  include/uapi/linux/fuse.h |  2 ++
->  2 files changed, 45 insertions(+), 3 deletions(-)
-> 
-> diff --git a/fs/fuse/file.c b/fs/fuse/file.c
-> index 829094451774..72524612bd5c 100644
-> --- a/fs/fuse/file.c
-> +++ b/fs/fuse/file.c
-> @@ -1541,14 +1541,50 @@ static ssize_t fuse_direct_read_iter(struct kiocb *iocb, struct iov_iter *to)
->  	return res;
->  }
->  
-> +static bool fuse_direct_write_extending_i_size(struct kiocb *iocb,
-> +					       struct iov_iter *iter)
-> +{
-> +	struct inode *inode = file_inode(iocb->ki_filp);
-> +
-> +	return (iocb->ki_flags & IOCB_APPEND ||
-> +		iocb->ki_pos + iov_iter_count(iter) > i_size_read(inode));
-> +}
-> +
->  static ssize_t fuse_direct_write_iter(struct kiocb *iocb, struct iov_iter *from)
->  {
->  	struct inode *inode = file_inode(iocb->ki_filp);
-> +	struct file *file = iocb->ki_filp;
-> +	struct fuse_file *ff = file->private_data;
->  	struct fuse_io_priv io = FUSE_IO_PRIV_SYNC(iocb);
->  	ssize_t res;
-> +	bool exclusive_lock = !(ff->open_flags & FOPEN_PARALLEL_WRITES ||
-> +			       fuse_direct_write_extending_i_size(iocb, from));
-> +
-> +	/*
-> +	 * Take exclusive lock if
-> +	 * - parallel writes are disabled.
-> +	 * - parallel writes are enabled and i_size is being extended
-> +	 * Take shared lock if
-> +	 * - parallel writes are enabled but i_size does not extend.
-> +	 */
-> +retry:
-> +	if (exclusive_lock)
-> +		inode_lock(inode);
-> +	else {
-> +		inode_lock_shared(inode);
-> +
-> +		/*
-> +		 * Its possible that truncate reduced the file size after the check
-> +		 * but before acquiring shared lock. If its so than drop shared lock and
-> +		 * acquire exclusive lock.
-> +		 */
-> +		if (fuse_direct_write_extending_i_size(iocb, from)) {
-> +			inode_unlock_shared(inode);
-> +			exclusive_lock = true;
-> +			goto retry;
-> +		}
-> +	}
->  
-> -	/* Don't allow parallel writes to the same file */
-> -	inode_lock(inode);
->  	res = generic_write_checks(iocb, from);
->  	if (res > 0) {
->  		if (!is_sync_kiocb(iocb) && iocb->ki_flags & IOCB_DIRECT) {
-> @@ -1559,7 +1595,10 @@ static ssize_t fuse_direct_write_iter(struct kiocb *iocb, struct iov_iter *from)
->  			fuse_write_update_attr(inode, iocb->ki_pos, res);
->  		}
->  	}
-> -	inode_unlock(inode);
-> +	if (exclusive_lock)
-> +		inode_unlock(inode);
-> +	else
-> +		inode_unlock_shared(inode);
->  
->  	return res;
->  }
-> @@ -2901,6 +2940,7 @@ fuse_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
->  
->  	if (iov_iter_rw(iter) == WRITE) {
->  		fuse_write_update_attr(inode, pos, ret);
-> +		/* For extending writes we already hold exclusive lock */
->  		if (ret < 0 && offset + count > i_size)
->  			fuse_do_truncate(file);
->  	}
-> diff --git a/include/uapi/linux/fuse.h b/include/uapi/linux/fuse.h
-> index d6ccee961891..ee5379d41906 100644
-> --- a/include/uapi/linux/fuse.h
-> +++ b/include/uapi/linux/fuse.h
-> @@ -301,6 +301,7 @@ struct fuse_file_lock {
->   * FOPEN_CACHE_DIR: allow caching this directory
->   * FOPEN_STREAM: the file is stream-like (no file position at all)
->   * FOPEN_NOFLUSH: don't flush data cache on close (unless FUSE_WRITEBACK_CACHE)
-> + * FOPEN_PARALLEL_WRITES: Allow concurrent writes on the same inode
->   */
->  #define FOPEN_DIRECT_IO		(1 << 0)
->  #define FOPEN_KEEP_CACHE	(1 << 1)
-> @@ -308,6 +309,7 @@ struct fuse_file_lock {
->  #define FOPEN_CACHE_DIR		(1 << 3)
->  #define FOPEN_STREAM		(1 << 4)
->  #define FOPEN_NOFLUSH		(1 << 5)
-> +#define FOPEN_PARALLEL_WRITES	(1 << 6)
-
-Given you are relaxing this only for DIRECT writes (and not other kind of
-writes), should we call it say "FOPEN_PARALLEL_DIRECT_WRITES" instead?
-
-Thanks
-Vivek
-
->  
->  /**
->   * INIT request/reply flags
-> -- 
-> 2.17.1
-> 
 
