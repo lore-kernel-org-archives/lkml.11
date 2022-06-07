@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB5BCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64CAACCA483
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359260AbiFGUUT (ORCPT
+        id S1359289AbiFGUUf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:20:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51572 "EHLO
+        Tue, 7 Jun 2022 16:20:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356822AbiFGT2N (ORCPT
+        with ESMTP id S1356759AbiFGT2K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:28:13 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537E26A027;
-        Tue,  7 Jun 2022 11:11:01 -0700 (PDT)
+        Tue, 7 Jun 2022 15:28:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1407F71A02;
+        Tue,  7 Jun 2022 11:10:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A5A96CE2439;
-        Tue,  7 Jun 2022 18:10:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFEB5C385A2;
-        Tue,  7 Jun 2022 18:10:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4868661924;
+        Tue,  7 Jun 2022 18:10:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56AEBC385A2;
+        Tue,  7 Jun 2022 18:10:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625458;
-        bh=24/+sW6Sob7YMv6wVRkObr+QQ67G3CdFjp9sCUgysVY=;
+        s=korg; t=1654625441;
+        bh=olJ7lIIHnlUBlLPxAjAKa/zgn327a21xiprbpUtxOYE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ty3EyXE5U+aXqZn3krI/O98oDhJ177LiKwyAqPB0xNjiT5+UzVA6rGap4aJTMYWbj
-         WWMgPQT+qb+1Gs6FiuHrUku5BQ4Fjz0y2uWaixLsv5R9q2wrFfLVvMZLgH1foT8tqH
-         tGbqhbyymfOrG49Z0T4EJuOh0BwmZbzz0/EqiAhM=
+        b=aOB7nOPXWm/XODjT1NDD58pCr44e4OTJerkk8/OeCeh91FrXWRIctdD0rQcTHB3JH
+         TFriGU8pwXyfWoBg5FJVZO5kw7IDtJ1Mz7pwF9kSb5bbUYi8QDknqJC+bXrN+iZHQ9
+         22N6+RfRtKlFTQohKB3g3HNhPIl/Sh88os0Y2+bA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Subject: [PATCH 5.17 026/772] fs/ntfs3: Update i_ctime when xattr is added
-Date:   Tue,  7 Jun 2022 18:53:38 +0200
-Message-Id: <20220607164949.787502692@linuxfoundation.org>
+Subject: [PATCH 5.17 020/772] fs/ntfs3: Update valid size if -EIOCBQUEUED
+Date:   Tue,  7 Jun 2022 18:53:32 +0200
+Message-Id: <20220607164949.606003566@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,29 +51,48 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 
-commit 2d44667c306e7806848a3478820f87343feb5421 upstream.
+commit 52e00ea6b26e45fb8159e3b57cdde8d3f9bdd8e9 upstream.
 
-Ctime wasn't updated after setfacl command.
-This commit fixes xfstest generic/307
-Fixes: be71b5cba2e6 ("fs/ntfs3: Add attrib operations")
+Update valid size if write is still in I/O queue.
+Fixes xfstest generic/240
+Fixes: 82cae269cfa9 ("fs/ntfs3: Add initialization of super block")
 
 Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs3/xattr.c |    3 +++
- 1 file changed, 3 insertions(+)
+ fs/ntfs3/inode.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/fs/ntfs3/xattr.c
-+++ b/fs/ntfs3/xattr.c
-@@ -902,6 +902,9 @@ set_new_fa:
- 	err = ntfs_set_ea(inode, name, name_len, value, size, flags);
+diff --git a/fs/ntfs3/inode.c b/fs/ntfs3/inode.c
+index 859951d785cb..879952254071 100644
+--- a/fs/ntfs3/inode.c
++++ b/fs/ntfs3/inode.c
+@@ -757,6 +757,7 @@ static ssize_t ntfs_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
+ 	loff_t vbo = iocb->ki_pos;
+ 	loff_t end;
+ 	int wr = iov_iter_rw(iter) & WRITE;
++	size_t iter_count = iov_iter_count(iter);
+ 	loff_t valid;
+ 	ssize_t ret;
  
- out:
-+	inode->i_ctime = current_time(inode);
-+	mark_inode_dirty(inode);
-+
- 	return err;
- }
+@@ -770,10 +771,13 @@ static ssize_t ntfs_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
+ 				 wr ? ntfs_get_block_direct_IO_W
+ 				    : ntfs_get_block_direct_IO_R);
  
+-	if (ret <= 0)
++	if (ret > 0)
++		end = vbo + ret;
++	else if (wr && ret == -EIOCBQUEUED)
++		end = vbo + iter_count;
++	else
+ 		goto out;
+ 
+-	end = vbo + ret;
+ 	valid = ni->i_valid;
+ 	if (wr) {
+ 		if (end > valid && !S_ISBLK(inode->i_mode)) {
+-- 
+2.36.1
+
 
 
