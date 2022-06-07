@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E47DCCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7439FCCA487
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:22:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350975AbiFGSUB (ORCPT
+        id S1352946AbiFGSWQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:20:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39770 "EHLO
+        Tue, 7 Jun 2022 14:22:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349168AbiFGR6s (ORCPT
+        with ESMTP id S1349300AbiFGR7I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:58:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCCA766FBD;
-        Tue,  7 Jun 2022 10:41:27 -0700 (PDT)
+        Tue, 7 Jun 2022 13:59:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9126E122967;
+        Tue,  7 Jun 2022 10:41:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E50E5B81F38;
-        Tue,  7 Jun 2022 17:41:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 560DEC385A5;
-        Tue,  7 Jun 2022 17:41:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D92B60BC6;
+        Tue,  7 Jun 2022 17:41:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78696C34115;
+        Tue,  7 Jun 2022 17:41:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623684;
-        bh=RsqfcE3Vlaza98kvhQkeITROjqKHS5OvbTROZhct/dA=;
+        s=korg; t=1654623703;
+        bh=UY9S+VuGqXcFpdEttQ2qEq4LET/6/O6BZwZargR5xLg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AZwYh/OiIwgLV77X3FB0FwV8PRxlsx3NtDj6M0VoBKBYuJP1MWSvSzl/beeRFgOoh
-         J7iO9Edw1fjjAwjKAWQ/eQ8BLfmCjgp+c6+Y2V+g1l87BNU7g1/vI4NmK+k78u10eL
-         YrLNL5RMwW2AaIsV6V4UQdjB6P1HVNfMP0gOhwkc=
+        b=2KHJQs2eHmAcjjxPAb4w0NJQ/jpPnKcaxKHPFaVhQwSJ6Gfc9IIub6ccsTlHmg4RC
+         5fOGGwKnNu1lSCZ8HzuGIN3FKg/NjRfYKGZUe/0tGV8DQW7kvSZF0QrKNEJFJtmPcS
+         MwcKLa3VOAPshaoA1kMUNmqXxL6c+0KLWuQ/8UTE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
+        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 055/667] ACPICA: Avoid cache flush inside virtual machines
-Date:   Tue,  7 Jun 2022 18:55:20 +0200
-Message-Id: <20220607164936.463406492@linuxfoundation.org>
+Subject: [PATCH 5.15 061/667] sfc: ef10: Fix assigning negative value to unsigned variable
+Date:   Tue,  7 Jun 2022 18:55:26 +0200
+Message-Id: <20220607164936.643418607@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -53,69 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+From: Haowen Bai <baihaowen@meizu.com>
 
-[ Upstream commit e2efb6359e620521d1e13f69b2257de8ceaa9475 ]
+[ Upstream commit b8ff3395fbdf3b79a99d0ef410fc34c51044121e ]
 
-While running inside virtual machine, the kernel can bypass cache
-flushing. Changing sleep state in a virtual machine doesn't affect the
-host system sleep state and cannot lead to data loss.
+fix warning reported by smatch:
+251 drivers/net/ethernet/sfc/ef10.c:2259 efx_ef10_tx_tso_desc()
+warn: assigning (-208) to unsigned variable 'ip_tot_len'
 
-Before entering sleep states, the ACPI code flushes caches to prevent
-data loss using the WBINVD instruction.  This mechanism is required on
-bare metal.
-
-But, any use WBINVD inside of a guest is worthless.  Changing sleep
-state in a virtual machine doesn't affect the host system sleep state
-and cannot lead to data loss, so most hypervisors simply ignore it.
-Despite this, the ACPI code calls WBINVD unconditionally anyway.
-It's useless, but also normally harmless.
-
-In TDX guests, though, WBINVD stops being harmless; it triggers a
-virtualization exception (#VE).  If the ACPI cache-flushing WBINVD
-were left in place, TDX guests would need handling to recover from
-the exception.
-
-Avoid using WBINVD whenever running under a hypervisor.  This both
-removes the useless WBINVDs and saves TDX from implementing WBINVD
-handling.
-
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lkml.kernel.org/r/20220405232939.73860-30-kirill.shutemov@linux.intel.com
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Acked-by: Edward Cree <ecree.xilinx@gmail.com>
+Link: https://lore.kernel.org/r/1649640757-30041-1-git-send-email-baihaowen@meizu.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/acenv.h | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/sfc/ef10.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/acenv.h b/arch/x86/include/asm/acenv.h
-index 9aff97f0de7f..d937c55e717e 100644
---- a/arch/x86/include/asm/acenv.h
-+++ b/arch/x86/include/asm/acenv.h
-@@ -13,7 +13,19 @@
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index f5a4d8f4fd11..c1cd1c97f09d 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -2256,7 +2256,7 @@ int efx_ef10_tx_tso_desc(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
+ 	 * guaranteed to satisfy the second as we only attempt TSO if
+ 	 * inner_network_header <= 208.
+ 	 */
+-	ip_tot_len = -EFX_TSO2_MAX_HDRLEN;
++	ip_tot_len = 0x10000 - EFX_TSO2_MAX_HDRLEN;
+ 	EFX_WARN_ON_ONCE_PARANOID(mss + EFX_TSO2_MAX_HDRLEN +
+ 				  (tcp->doff << 2u) > ip_tot_len);
  
- /* Asm macros */
- 
--#define ACPI_FLUSH_CPU_CACHE()	wbinvd()
-+/*
-+ * ACPI_FLUSH_CPU_CACHE() flushes caches on entering sleep states.
-+ * It is required to prevent data loss.
-+ *
-+ * While running inside virtual machine, the kernel can bypass cache flushing.
-+ * Changing sleep state in a virtual machine doesn't affect the host system
-+ * sleep state and cannot lead to data loss.
-+ */
-+#define ACPI_FLUSH_CPU_CACHE()					\
-+do {								\
-+	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))	\
-+		wbinvd();					\
-+} while (0)
- 
- int __acpi_acquire_global_lock(unsigned int *lock);
- int __acpi_release_global_lock(unsigned int *lock);
 -- 
 2.35.1
 
