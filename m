@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A83FCCA490
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F3DFCCA48F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383834AbiFGWGh (ORCPT
+        id S1383854AbiFGWGk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60634 "EHLO
+        Tue, 7 Jun 2022 18:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379656AbiFGVGL (ORCPT
+        with ESMTP id S1379842AbiFGVGa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:06:11 -0400
+        Tue, 7 Jun 2022 17:06:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8923420EEB9;
-        Tue,  7 Jun 2022 11:50:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97AE3211AB2;
+        Tue,  7 Jun 2022 11:50:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0D9C6156D;
-        Tue,  7 Jun 2022 18:49:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7EF1C385A5;
-        Tue,  7 Jun 2022 18:49:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A6F16176D;
+        Tue,  7 Jun 2022 18:50:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9135AC385A2;
+        Tue,  7 Jun 2022 18:50:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627791;
-        bh=NCZ8ENLCATeP2GIJLaAP/xz+MzB5wHdRUTpcdOOL+I4=;
+        s=korg; t=1654627819;
+        bh=MoPv6OhQx7EiRN060osT8VM3jcVMoppKxNbkWMOY8cI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jgwOor5ZznYmNjZbJHwCJmCMCRx/jCeDvPyR2Z/59Q/6ZClXxdbQ0SjEvh59kCmv2
-         EEqTE1H9gjEQAn+cDZ1PriBK8RYvfFFOs1iOlEhBsgJovJ/uwkP+XphULku8/9l20h
-         IXDNW3nERfNVGwcPMTgpSK8G4cXW75ByoC2Y39fU=
+        b=Wyg3jEV5kVEdbhqLgwaquNYfchqfXC7a8uKuqtTlB0V8uGO6f6GP/RQlYi6868iL8
+         h0KGmTWQzOuNTR4nwSfzHMI1Gk4k4umnXNoVfb2ZzjevAOm4c7Ij3CEuHjQHx38QF3
+         XZV5p0i2T5YnKNIQ7RsNt0G0ZVKwRPpOxtdfxPYI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 067/879] b43: Fix assigning negative value to unsigned variable
-Date:   Tue,  7 Jun 2022 18:53:05 +0200
-Message-Id: <20220607165004.636696475@linuxfoundation.org>
+        stable@vger.kernel.org, Vikash Garodia <quic_vgarodia@quicinc.com>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 103/879] media: venus: do not queue internal buffers from previous sequence
+Date:   Tue,  7 Jun 2022 18:53:41 +0200
+Message-Id: <20220607165005.685049958@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,35 +52,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haowen Bai <baihaowen@meizu.com>
+From: Vikash Garodia <quic_vgarodia@quicinc.com>
 
-[ Upstream commit 11800d893b38e0e12d636c170c1abc19c43c730c ]
+[ Upstream commit 73664f107c0fafb59cd91e576b81c986adb74610 ]
 
-fix warning reported by smatch:
-drivers/net/wireless/broadcom/b43/phy_n.c:585 b43_nphy_adjust_lna_gain_table()
-warn: assigning (-2) to unsigned variable '*(lna_gain[0])'
+During reconfig (DRC) event from firmware, it is not guaranteed that
+all the DPB(internal) buffers would be released by the firmware. Some
+buffers might be released gradually while processing frames from the
+new sequence. These buffers now stay idle in the dpblist.
+In subsequent call to queue the DPBs to firmware, these idle buffers
+should not be queued. The fix identifies those buffers and free them.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/1648203315-28093-1-git-send-email-baihaowen@meizu.com
+Signed-off-by: Vikash Garodia <quic_vgarodia@quicinc.com>
+Tested-by: Fritz Koenig <frkoenig@chromium.org>
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/b43/phy_n.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/platform/qcom/venus/helpers.c | 34 +++++++++++++++------
+ 1 file changed, 25 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
-index cf3ccf4ddfe7..aa5c99465674 100644
---- a/drivers/net/wireless/broadcom/b43/phy_n.c
-+++ b/drivers/net/wireless/broadcom/b43/phy_n.c
-@@ -582,7 +582,7 @@ static void b43_nphy_adjust_lna_gain_table(struct b43_wldev *dev)
- 	u16 data[4];
- 	s16 gain[2];
- 	u16 minmax[2];
--	static const u16 lna_gain[4] = { -2, 10, 19, 25 };
-+	static const s16 lna_gain[4] = { -2, 10, 19, 25 };
+diff --git a/drivers/media/platform/qcom/venus/helpers.c b/drivers/media/platform/qcom/venus/helpers.c
+index 0bca95d01650..fa01edd54c03 100644
+--- a/drivers/media/platform/qcom/venus/helpers.c
++++ b/drivers/media/platform/qcom/venus/helpers.c
+@@ -90,12 +90,28 @@ bool venus_helper_check_codec(struct venus_inst *inst, u32 v4l2_pixfmt)
+ }
+ EXPORT_SYMBOL_GPL(venus_helper_check_codec);
  
- 	if (nphy->hang_avoid)
- 		b43_nphy_stay_in_carrier_search(dev, 1);
++static void free_dpb_buf(struct venus_inst *inst, struct intbuf *buf)
++{
++	ida_free(&inst->dpb_ids, buf->dpb_out_tag);
++
++	list_del_init(&buf->list);
++	dma_free_attrs(inst->core->dev, buf->size, buf->va, buf->da,
++		       buf->attrs);
++	kfree(buf);
++}
++
+ int venus_helper_queue_dpb_bufs(struct venus_inst *inst)
+ {
+-	struct intbuf *buf;
++	struct intbuf *buf, *next;
++	unsigned int dpb_size = 0;
+ 	int ret = 0;
+ 
+-	list_for_each_entry(buf, &inst->dpbbufs, list) {
++	if (inst->dpb_buftype == HFI_BUFFER_OUTPUT)
++		dpb_size = inst->output_buf_size;
++	else if (inst->dpb_buftype == HFI_BUFFER_OUTPUT2)
++		dpb_size = inst->output2_buf_size;
++
++	list_for_each_entry_safe(buf, next, &inst->dpbbufs, list) {
+ 		struct hfi_frame_data fdata;
+ 
+ 		memset(&fdata, 0, sizeof(fdata));
+@@ -106,6 +122,12 @@ int venus_helper_queue_dpb_bufs(struct venus_inst *inst)
+ 		if (buf->owned_by == FIRMWARE)
+ 			continue;
+ 
++		/* free buffer from previous sequence which was released later */
++		if (dpb_size > buf->size) {
++			free_dpb_buf(inst, buf);
++			continue;
++		}
++
+ 		fdata.clnt_data = buf->dpb_out_tag;
+ 
+ 		ret = hfi_session_process_buf(inst, &fdata);
+@@ -127,13 +149,7 @@ int venus_helper_free_dpb_bufs(struct venus_inst *inst)
+ 	list_for_each_entry_safe(buf, n, &inst->dpbbufs, list) {
+ 		if (buf->owned_by == FIRMWARE)
+ 			continue;
+-
+-		ida_free(&inst->dpb_ids, buf->dpb_out_tag);
+-
+-		list_del_init(&buf->list);
+-		dma_free_attrs(inst->core->dev, buf->size, buf->va, buf->da,
+-			       buf->attrs);
+-		kfree(buf);
++		free_dpb_buf(inst, buf);
+ 	}
+ 
+ 	if (list_empty(&inst->dpbbufs))
 -- 
 2.35.1
 
