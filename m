@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E56D4CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:54:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 110FECCA482
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382228AbiFGVuQ (ORCPT
+        id S1382236AbiFGVuT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:50:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42110 "EHLO
+        Tue, 7 Jun 2022 17:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377207AbiFGUua (ORCPT
+        with ESMTP id S1378028AbiFGUvV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:50:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BD91F77ED;
-        Tue,  7 Jun 2022 11:39:57 -0700 (PDT)
+        Tue, 7 Jun 2022 16:51:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF921184846;
+        Tue,  7 Jun 2022 11:41:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03B22B8237B;
-        Tue,  7 Jun 2022 18:39:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66728C385A5;
-        Tue,  7 Jun 2022 18:39:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A59961295;
+        Tue,  7 Jun 2022 18:41:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 599D9C385A2;
+        Tue,  7 Jun 2022 18:41:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627173;
-        bh=9+QnkXRRZzVvsY0NGZ3srNE+JQrSn6L0tCzzSNkv4MU=;
+        s=korg; t=1654627284;
+        bh=g87Y1uGDdJzNQpe0rlFlHuESKO6QUlZYQPzLsH/O1Cs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0KuSRZDG9aFVjIqKNjXBx+l25CA1BysX9k18ebeE2poRSBWvXc+PbXSAAdhNAsUha
-         N3FYUvYEQ+Nq03o9ulUWej69YRKKUm5OcS/MdIiKrnMtiI4M4qd6+PZgfaSi/yZB/6
-         kDw7GI9/Dp62TgHpvizU9P77VuDRDmUsezlVPeYg=
+        b=HpoHc3SC9QpWFsLSkpjcFIg6kA6uEzboqgz7puhk3oF71sVxkJtC/abcuvhlnYBRA
+         zkdmyW3zu+1a+Ol6MRaxSs1h1EF+fIwDY5127WkzLMl36nHoQICoUAfEm5K1S0O1Sr
+         8yaMoDIQjhfNJd5q5RAa0Stei3SMxkEchloJjEhE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Ye Bin <yebin10@huawei.com>, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.17 642/772] ext4: fix bug_on in ext4_writepages
-Date:   Tue,  7 Jun 2022 19:03:54 +0200
-Message-Id: <20220607165007.986500012@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
+Subject: [PATCH 5.17 683/772] landlock: Change landlock_restrict_self(2) check ordering
+Date:   Tue,  7 Jun 2022 19:04:35 +0200
+Message-Id: <20220607165009.182986659@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,107 +49,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Mickaël Salaün <mic@digikod.net>
 
-commit ef09ed5d37b84d18562b30cf7253e57062d0db05 upstream.
+commit eba39ca4b155c54adf471a69e91799cc1727873f upstream.
 
-we got issue as follows:
-EXT4-fs error (device loop0): ext4_mb_generate_buddy:1141: group 0, block bitmap and bg descriptor inconsistent: 25 vs 31513 free cls
-------------[ cut here ]------------
-kernel BUG at fs/ext4/inode.c:2708!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
-CPU: 2 PID: 2147 Comm: rep Not tainted 5.18.0-rc2-next-20220413+ #155
-RIP: 0010:ext4_writepages+0x1977/0x1c10
-RSP: 0018:ffff88811d3e7880 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffff88811c098000
-RDX: 0000000000000000 RSI: ffff88811c098000 RDI: 0000000000000002
-RBP: ffff888128140f50 R08: ffffffffb1ff6387 R09: 0000000000000000
-R10: 0000000000000007 R11: ffffed10250281ea R12: 0000000000000001
-R13: 00000000000000a4 R14: ffff88811d3e7bb8 R15: ffff888128141028
-FS:  00007f443aed9740(0000) GS:ffff8883aef00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020007200 CR3: 000000011c2a4000 CR4: 00000000000006e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- do_writepages+0x130/0x3a0
- filemap_fdatawrite_wbc+0x83/0xa0
- filemap_flush+0xab/0xe0
- ext4_alloc_da_blocks+0x51/0x120
- __ext4_ioctl+0x1534/0x3210
- __x64_sys_ioctl+0x12c/0x170
- do_syscall_64+0x3b/0x90
+According to the Landlock goal to be a security feature available to
+unprivileges processes, it makes more sense to first check for
+no_new_privs before checking anything else (i.e. syscall arguments).
 
-It may happen as follows:
-1. write inline_data inode
-vfs_write
-  new_sync_write
-    ext4_file_write_iter
-      ext4_buffered_write_iter
-        generic_perform_write
-          ext4_da_write_begin
-            ext4_da_write_inline_data_begin -> If inline data size too
-            small will allocate block to write, then mapping will has
-            dirty page
-                ext4_da_convert_inline_data_to_extent ->clear EXT4_STATE_MAY_INLINE_DATA
-2. fallocate
-do_vfs_ioctl
-  ioctl_preallocate
-    vfs_fallocate
-      ext4_fallocate
-        ext4_convert_inline_data
-          ext4_convert_inline_data_nolock
-            ext4_map_blocks -> fail will goto restore data
-            ext4_restore_inline_data
-              ext4_create_inline_data
-              ext4_write_inline_data
-              ext4_set_inode_state -> set inode EXT4_STATE_MAY_INLINE_DATA
-3. writepages
-__ext4_ioctl
-  ext4_alloc_da_blocks
-    filemap_flush
-      filemap_fdatawrite_wbc
-        do_writepages
-          ext4_writepages
-            if (ext4_has_inline_data(inode))
-              BUG_ON(ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA))
+Merge inval_fd_enforce and unpriv_enforce_without_no_new_privs tests
+into the new restrict_self_checks_ordering.  This is similar to the
+previous commit checking other syscalls.
 
-The root cause of this issue is we destory inline data until call
-ext4_writepages under delay allocation mode.  But there maybe already
-convert from inline to extent.  To solve this issue, we call
-filemap_flush first..
-
-Cc: stable@kernel.org
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220516122634.1690462-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Link: https://lore.kernel.org/r/20220506160820.524344-10-mic@digikod.net
+Cc: stable@vger.kernel.org
+Signed-off-by: Mickaël Salaün <mic@digikod.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/inline.c |   12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ security/landlock/syscalls.c                 |    8 ++--
+ tools/testing/selftests/landlock/base_test.c |   47 +++++++++++++++++++++------
+ 2 files changed, 41 insertions(+), 14 deletions(-)
 
---- a/fs/ext4/inline.c
-+++ b/fs/ext4/inline.c
-@@ -2005,6 +2005,18 @@ int ext4_convert_inline_data(struct inod
- 	if (!ext4_has_inline_data(inode)) {
- 		ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
- 		return 0;
-+	} else if (!ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)) {
-+		/*
-+		 * Inode has inline data but EXT4_STATE_MAY_INLINE_DATA is
-+		 * cleared. This means we are in the middle of moving of
-+		 * inline data to delay allocated block. Just force writeout
-+		 * here to finish conversion.
-+		 */
-+		error = filemap_flush(inode->i_mapping);
-+		if (error)
-+			return error;
-+		if (!ext4_has_inline_data(inode))
-+			return 0;
- 	}
+--- a/security/landlock/syscalls.c
++++ b/security/landlock/syscalls.c
+@@ -405,10 +405,6 @@ SYSCALL_DEFINE2(landlock_restrict_self,
+ 	if (!landlock_initialized)
+ 		return -EOPNOTSUPP;
  
- 	needed_blocks = ext4_writepage_trans_blocks(inode);
+-	/* No flag for now. */
+-	if (flags)
+-		return -EINVAL;
+-
+ 	/*
+ 	 * Similar checks as for seccomp(2), except that an -EPERM may be
+ 	 * returned.
+@@ -417,6 +413,10 @@ SYSCALL_DEFINE2(landlock_restrict_self,
+ 	    !ns_capable_noaudit(current_user_ns(), CAP_SYS_ADMIN))
+ 		return -EPERM;
+ 
++	/* No flag for now. */
++	if (flags)
++		return -EINVAL;
++
+ 	/* Gets and checks the ruleset. */
+ 	ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_READ);
+ 	if (IS_ERR(ruleset))
+--- a/tools/testing/selftests/landlock/base_test.c
++++ b/tools/testing/selftests/landlock/base_test.c
+@@ -168,22 +168,49 @@ TEST(add_rule_checks_ordering)
+ 	ASSERT_EQ(0, close(ruleset_fd));
+ }
+ 
+-TEST(inval_fd_enforce)
++/* Tests ordering of syscall argument and permission checks. */
++TEST(restrict_self_checks_ordering)
+ {
++	const struct landlock_ruleset_attr ruleset_attr = {
++		.handled_access_fs = LANDLOCK_ACCESS_FS_EXECUTE,
++	};
++	struct landlock_path_beneath_attr path_beneath_attr = {
++		.allowed_access = LANDLOCK_ACCESS_FS_EXECUTE,
++		.parent_fd = -1,
++	};
++	const int ruleset_fd =
++		landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
++
++	ASSERT_LE(0, ruleset_fd);
++	path_beneath_attr.parent_fd =
++		open("/tmp", O_PATH | O_NOFOLLOW | O_DIRECTORY | O_CLOEXEC);
++	ASSERT_LE(0, path_beneath_attr.parent_fd);
++	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
++				       &path_beneath_attr, 0));
++	ASSERT_EQ(0, close(path_beneath_attr.parent_fd));
++
++	/* Checks unprivileged enforcement without no_new_privs. */
++	drop_caps(_metadata);
++	ASSERT_EQ(-1, landlock_restrict_self(-1, -1));
++	ASSERT_EQ(EPERM, errno);
++	ASSERT_EQ(-1, landlock_restrict_self(-1, 0));
++	ASSERT_EQ(EPERM, errno);
++	ASSERT_EQ(-1, landlock_restrict_self(ruleset_fd, 0));
++	ASSERT_EQ(EPERM, errno);
++
+ 	ASSERT_EQ(0, prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0));
+ 
++	/* Checks invalid flags. */
++	ASSERT_EQ(-1, landlock_restrict_self(-1, -1));
++	ASSERT_EQ(EINVAL, errno);
++
++	/* Checks invalid ruleset FD. */
+ 	ASSERT_EQ(-1, landlock_restrict_self(-1, 0));
+ 	ASSERT_EQ(EBADF, errno);
+-}
+-
+-TEST(unpriv_enforce_without_no_new_privs)
+-{
+-	int err;
+ 
+-	drop_caps(_metadata);
+-	err = landlock_restrict_self(-1, 0);
+-	ASSERT_EQ(EPERM, errno);
+-	ASSERT_EQ(err, -1);
++	/* Checks valid call. */
++	ASSERT_EQ(0, landlock_restrict_self(ruleset_fd, 0));
++	ASSERT_EQ(0, close(ruleset_fd));
+ }
+ 
+ TEST(ruleset_fd_io)
 
 
