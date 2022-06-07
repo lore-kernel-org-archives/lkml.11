@@ -2,261 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4711CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB999CCA488
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356986AbiFGTkl (ORCPT
+        id S1357035AbiFGTkx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:40:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58410 "EHLO
+        Tue, 7 Jun 2022 15:40:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354468AbiFGSrD (ORCPT
+        with ESMTP id S1354471AbiFGSrD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:47:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49791612B2;
-        Tue,  7 Jun 2022 11:01:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0FE166AC7;
+        Tue,  7 Jun 2022 11:01:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFFA4617B4;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B433617B0;
+        Tue,  7 Jun 2022 18:01:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B44F9C3411C;
         Tue,  7 Jun 2022 18:01:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC830C34115;
-        Tue,  7 Jun 2022 18:01:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624884;
-        bh=M+wO0gucsAXwhXB5py56e2MHX9Zk2IutE7e7PbRevos=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624885;
+        bh=6TSh7ks8d31tfxWKTP+GZPdfY0cYmR3gEArQPCUHt+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oSZCX1MXeSu17YmK6iNt9mbqoxMzGR6WUGFgMIYrQeRZUth9AOZuzAbNqqsc4uZqg
-         XKF8PbcXXJgN8KIGJNIarRhts3a3aK1pwIOlN9muSGQQ9oN0+PSWVGurmO+YfiOhIn
-         +HAzrnPeqixccYPZatxvaVeyXIA/t/IwDGlK+FI8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhi Li <lizhi01@loongson.cn>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 489/667] MIPS: Loongson: Use hwmon_device_register_with_groups() to register hwmon
-Date:   Tue,  7 Jun 2022 19:02:34 +0200
-Message-Id: <20220607164949.367784512@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=lU7lJhE89GlfLneYpWHreXSHc1cAV9WNQRJnYvyjBoYgcVCj8Mz4XaijT7zcdXQIC
+         gB5YOudHfS7U6Ixb36JGLB0GDgiG+Qk2rRWdSnp76HyIFFGj6nNlxglX3sJuCWPAbH
+         ljbVCEwRTy4o61XkpyawMnn11z5d5UPW18kYqq5LY6+jy2CDszpyMX1fx5ZL/kWHSt
+         p+wEKXPLek8Dl3J0HHJSJo87O7ZmULnPhQCGyoBDFayxV3JMhw5xO9GqmYbpGnWAyW
+         6X/NJnL4xTXtHcPscTMU/wmA4USxx8IDKDd4IQDCVOXH70uDFfKc9XJ32qJ2QwlPvm
+         otL+M4cLde1Vw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Yu Kuai <yukuai3@huawei.com>, Josef Bacik <josef@toxicpanda.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
+        linux-block@vger.kernel.org, nbd@other.debian.org
+Subject: [PATCH AUTOSEL 5.4 31/34] nbd: fix io hung while disconnecting device
+Date:   Tue,  7 Jun 2022 14:00:06 -0400
+Message-Id: <20220607180011.481266-31-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
+References: <20220607180011.481266-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Yu Kuai <yukuai3@huawei.com>
 
-[ Upstream commit abae018a03821be2b65c01ebe2bef06fd7d85a4c ]
+[ Upstream commit 09dadb5985023e27d4740ebd17e6fea4640110e5 ]
 
-Calling hwmon_device_register_with_info() with NULL dev and/or chip
-information parameters is an ABI abuse and not a real conversion to
-the new API. Also, the code creates sysfs attributes _after_ creating
-the hwmon device, which is racy and unsupported to start with. On top
-of that, the removal code tries to remove the name attribute which is
-owned by the hwmon core.
+In our tests, "qemu-nbd" triggers a io hung:
 
-Use hwmon_device_register_with_groups() to register the hwmon device
-instead.
+INFO: task qemu-nbd:11445 blocked for more than 368 seconds.
+      Not tainted 5.18.0-rc3-next-20220422-00003-g2176915513ca #884
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:qemu-nbd        state:D stack:    0 pid:11445 ppid:     1 flags:0x00000000
+Call Trace:
+ <TASK>
+ __schedule+0x480/0x1050
+ ? _raw_spin_lock_irqsave+0x3e/0xb0
+ schedule+0x9c/0x1b0
+ blk_mq_freeze_queue_wait+0x9d/0xf0
+ ? ipi_rseq+0x70/0x70
+ blk_mq_freeze_queue+0x2b/0x40
+ nbd_add_socket+0x6b/0x270 [nbd]
+ nbd_ioctl+0x383/0x510 [nbd]
+ blkdev_ioctl+0x18e/0x3e0
+ __x64_sys_ioctl+0xac/0x120
+ do_syscall_64+0x35/0x80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fd8ff706577
+RSP: 002b:00007fd8fcdfebf8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000040000000 RCX: 00007fd8ff706577
+RDX: 000000000000000d RSI: 000000000000ab00 RDI: 000000000000000f
+RBP: 000000000000000f R08: 000000000000fbe8 R09: 000055fe497c62b0
+R10: 00000002aff20000 R11: 0000000000000246 R12: 000000000000006d
+R13: 0000000000000000 R14: 00007ffe82dc5e70 R15: 00007fd8fcdff9c0
 
-In the future, the hwmon subsystem will reject calls to
-hwmon_device_register_with_info with NULL dev or chip/info parameters.
-Without this patch, the hwmon device will fail to register.
+"qemu-ndb -d" will call ioctl 'NBD_DISCONNECT' first, however, following
+message was found:
 
-Fixes: f59dc5119192 ("MIPS: Loongson: Fix boot warning about hwmon_device_register()")
-Cc: Zhi Li <lizhi01@loongson.cn>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+block nbd0: Send disconnect failed -32
+
+Which indicate that something is wrong with the server. Then,
+"qemu-nbd -d" will call ioctl 'NBD_CLEAR_SOCK', however ioctl can't clear
+requests after commit 2516ab1543fd("nbd: only clear the queue on device
+teardown"). And in the meantime, request can't complete through timeout
+because nbd_xmit_timeout() will always return 'BLK_EH_RESET_TIMER', which
+means such request will never be completed in this situation.
+
+Now that the flag 'NBD_CMD_INFLIGHT' can make sure requests won't
+complete multiple times, switch back to call nbd_clear_sock() in
+nbd_clear_sock_ioctl(), so that inflight requests can be cleared.
+
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Reviewed-by: Josef Bacik <josef@toxicpanda.com>
+Link: https://lore.kernel.org/r/20220521073749.3146892-5-yukuai3@huawei.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/mips/cpu_hwmon.c | 127 ++++++++++--------------------
- 1 file changed, 41 insertions(+), 86 deletions(-)
+ drivers/block/nbd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/platform/mips/cpu_hwmon.c b/drivers/platform/mips/cpu_hwmon.c
-index 386389ffec41..d8c5f9195f85 100644
---- a/drivers/platform/mips/cpu_hwmon.c
-+++ b/drivers/platform/mips/cpu_hwmon.c
-@@ -55,55 +55,6 @@ int loongson3_cpu_temp(int cpu)
- static int nr_packages;
- static struct device *cpu_hwmon_dev;
- 
--static SENSOR_DEVICE_ATTR(name, 0444, NULL, NULL, 0);
--
--static struct attribute *cpu_hwmon_attributes[] = {
--	&sensor_dev_attr_name.dev_attr.attr,
--	NULL
--};
--
--/* Hwmon device attribute group */
--static struct attribute_group cpu_hwmon_attribute_group = {
--	.attrs = cpu_hwmon_attributes,
--};
--
--static ssize_t get_cpu_temp(struct device *dev,
--			struct device_attribute *attr, char *buf);
--static ssize_t cpu_temp_label(struct device *dev,
--			struct device_attribute *attr, char *buf);
--
--static SENSOR_DEVICE_ATTR(temp1_input, 0444, get_cpu_temp, NULL, 1);
--static SENSOR_DEVICE_ATTR(temp1_label, 0444, cpu_temp_label, NULL, 1);
--static SENSOR_DEVICE_ATTR(temp2_input, 0444, get_cpu_temp, NULL, 2);
--static SENSOR_DEVICE_ATTR(temp2_label, 0444, cpu_temp_label, NULL, 2);
--static SENSOR_DEVICE_ATTR(temp3_input, 0444, get_cpu_temp, NULL, 3);
--static SENSOR_DEVICE_ATTR(temp3_label, 0444, cpu_temp_label, NULL, 3);
--static SENSOR_DEVICE_ATTR(temp4_input, 0444, get_cpu_temp, NULL, 4);
--static SENSOR_DEVICE_ATTR(temp4_label, 0444, cpu_temp_label, NULL, 4);
--
--static const struct attribute *hwmon_cputemp[4][3] = {
--	{
--		&sensor_dev_attr_temp1_input.dev_attr.attr,
--		&sensor_dev_attr_temp1_label.dev_attr.attr,
--		NULL
--	},
--	{
--		&sensor_dev_attr_temp2_input.dev_attr.attr,
--		&sensor_dev_attr_temp2_label.dev_attr.attr,
--		NULL
--	},
--	{
--		&sensor_dev_attr_temp3_input.dev_attr.attr,
--		&sensor_dev_attr_temp3_label.dev_attr.attr,
--		NULL
--	},
--	{
--		&sensor_dev_attr_temp4_input.dev_attr.attr,
--		&sensor_dev_attr_temp4_label.dev_attr.attr,
--		NULL
--	}
--};
--
- static ssize_t cpu_temp_label(struct device *dev,
- 			struct device_attribute *attr, char *buf)
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index c8ea0f415304..ff23bb744099 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -1340,7 +1340,7 @@ static int nbd_start_device_ioctl(struct nbd_device *nbd, struct block_device *b
+ static void nbd_clear_sock_ioctl(struct nbd_device *nbd,
+ 				 struct block_device *bdev)
  {
-@@ -121,24 +72,47 @@ static ssize_t get_cpu_temp(struct device *dev,
- 	return sprintf(buf, "%d\n", value);
- }
- 
--static int create_sysfs_cputemp_files(struct kobject *kobj)
--{
--	int i, ret = 0;
--
--	for (i = 0; i < nr_packages; i++)
--		ret = sysfs_create_files(kobj, hwmon_cputemp[i]);
-+static SENSOR_DEVICE_ATTR(temp1_input, 0444, get_cpu_temp, NULL, 1);
-+static SENSOR_DEVICE_ATTR(temp1_label, 0444, cpu_temp_label, NULL, 1);
-+static SENSOR_DEVICE_ATTR(temp2_input, 0444, get_cpu_temp, NULL, 2);
-+static SENSOR_DEVICE_ATTR(temp2_label, 0444, cpu_temp_label, NULL, 2);
-+static SENSOR_DEVICE_ATTR(temp3_input, 0444, get_cpu_temp, NULL, 3);
-+static SENSOR_DEVICE_ATTR(temp3_label, 0444, cpu_temp_label, NULL, 3);
-+static SENSOR_DEVICE_ATTR(temp4_input, 0444, get_cpu_temp, NULL, 4);
-+static SENSOR_DEVICE_ATTR(temp4_label, 0444, cpu_temp_label, NULL, 4);
- 
--	return ret;
--}
-+static struct attribute *cpu_hwmon_attributes[] = {
-+	&sensor_dev_attr_temp1_input.dev_attr.attr,
-+	&sensor_dev_attr_temp1_label.dev_attr.attr,
-+	&sensor_dev_attr_temp2_input.dev_attr.attr,
-+	&sensor_dev_attr_temp2_label.dev_attr.attr,
-+	&sensor_dev_attr_temp3_input.dev_attr.attr,
-+	&sensor_dev_attr_temp3_label.dev_attr.attr,
-+	&sensor_dev_attr_temp4_input.dev_attr.attr,
-+	&sensor_dev_attr_temp4_label.dev_attr.attr,
-+	NULL
-+};
- 
--static void remove_sysfs_cputemp_files(struct kobject *kobj)
-+static umode_t cpu_hwmon_is_visible(struct kobject *kobj,
-+				    struct attribute *attr, int i)
- {
--	int i;
-+	int id = i / 2;
- 
--	for (i = 0; i < nr_packages; i++)
--		sysfs_remove_files(kobj, hwmon_cputemp[i]);
-+	if (id < nr_packages)
-+		return attr->mode;
-+	return 0;
- }
- 
-+static struct attribute_group cpu_hwmon_group = {
-+	.attrs = cpu_hwmon_attributes,
-+	.is_visible = cpu_hwmon_is_visible,
-+};
-+
-+static const struct attribute_group *cpu_hwmon_groups[] = {
-+	&cpu_hwmon_group,
-+	NULL
-+};
-+
- #define CPU_THERMAL_THRESHOLD 90000
- static struct delayed_work thermal_work;
- 
-@@ -159,50 +133,31 @@ static void do_thermal_timer(struct work_struct *work)
- 
- static int __init loongson_hwmon_init(void)
- {
--	int ret;
--
- 	pr_info("Loongson Hwmon Enter...\n");
- 
- 	if (cpu_has_csr())
- 		csr_temp_enable = csr_readl(LOONGSON_CSR_FEATURES) &
- 				  LOONGSON_CSRF_TEMP;
- 
--	cpu_hwmon_dev = hwmon_device_register_with_info(NULL, "cpu_hwmon", NULL, NULL, NULL);
--	if (IS_ERR(cpu_hwmon_dev)) {
--		ret = PTR_ERR(cpu_hwmon_dev);
--		pr_err("hwmon_device_register fail!\n");
--		goto fail_hwmon_device_register;
--	}
--
- 	nr_packages = loongson_sysconf.nr_cpus /
- 		loongson_sysconf.cores_per_package;
- 
--	ret = create_sysfs_cputemp_files(&cpu_hwmon_dev->kobj);
--	if (ret) {
--		pr_err("fail to create cpu temperature interface!\n");
--		goto fail_create_sysfs_cputemp_files;
-+	cpu_hwmon_dev = hwmon_device_register_with_groups(NULL, "cpu_hwmon",
-+							  NULL, cpu_hwmon_groups);
-+	if (IS_ERR(cpu_hwmon_dev)) {
-+		pr_err("hwmon_device_register fail!\n");
-+		return PTR_ERR(cpu_hwmon_dev);
- 	}
- 
- 	INIT_DEFERRABLE_WORK(&thermal_work, do_thermal_timer);
- 	schedule_delayed_work(&thermal_work, msecs_to_jiffies(20000));
- 
--	return ret;
--
--fail_create_sysfs_cputemp_files:
--	sysfs_remove_group(&cpu_hwmon_dev->kobj,
--				&cpu_hwmon_attribute_group);
--	hwmon_device_unregister(cpu_hwmon_dev);
--
--fail_hwmon_device_register:
--	return ret;
-+	return 0;
- }
- 
- static void __exit loongson_hwmon_exit(void)
- {
- 	cancel_delayed_work_sync(&thermal_work);
--	remove_sysfs_cputemp_files(&cpu_hwmon_dev->kobj);
--	sysfs_remove_group(&cpu_hwmon_dev->kobj,
--				&cpu_hwmon_attribute_group);
- 	hwmon_device_unregister(cpu_hwmon_dev);
- }
- 
+-	sock_shutdown(nbd);
++	nbd_clear_sock(nbd);
+ 	__invalidate_device(bdev, true);
+ 	nbd_bdev_reset(bdev);
+ 	if (test_and_clear_bit(NBD_RT_HAS_CONFIG_REF,
 -- 
 2.35.1
-
-
 
