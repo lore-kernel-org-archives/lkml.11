@@ -2,128 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FDD4C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B09CCA481
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:01:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354001AbiFGTAy (ORCPT
+        id S1354070AbiFGTBB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42298 "EHLO
+        Tue, 7 Jun 2022 15:01:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352202AbiFGSQ5 (ORCPT
+        with ESMTP id S1352220AbiFGSQ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED86515FC3;
-        Tue,  7 Jun 2022 10:51:04 -0700 (PDT)
+        Tue, 7 Jun 2022 14:16:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D43333CFD6;
+        Tue,  7 Jun 2022 10:51:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82A97616A3;
-        Tue,  7 Jun 2022 17:51:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 915B3C385A5;
-        Tue,  7 Jun 2022 17:51:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624263;
-        bh=Q0WqdpuerdelIGApzLLq8ngnGEkv8eTzVhis2qaV8ZU=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 84DA6B8234C;
+        Tue,  7 Jun 2022 17:51:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30D32C3411C;
+        Tue,  7 Jun 2022 17:51:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624268;
+        bh=1NDrccUNSF/6uv2W+MpiyQ8aIC7EHlmxH2OYdzZod1U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cK1QBURGx4fH/g6a8HcdkL542VkXi4ypq+kQsTXwS6H5YHjHyDG6p3gy+HLkVzrsx
-         6ZaMiM/5nVUnCmv56l5hXbEX7V5b5kXR7H78IYVZhdOdyZ9XxAcxZojicGQnmVeoox
-         QgTxRA0GokXZL4dFpx3NapgX9dbJpAdBVMAcs0+A=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 223/667] drm/bridge: Fix error handling in analogix_dp_probe
-Date:   Tue,  7 Jun 2022 18:58:08 +0200
-Message-Id: <20220607164941.479482955@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=V8ALIV7kDmNHZn0GgOJ+i9yYnJKtfa+sjl8Mdn15CVzRovL5R8qpw6dYfR1jhhN6R
+         iE7SBOsAb5lKyQp3Izi49K47Sw8TpMcyzVuKOsSkiam+lbbFB/FZFAEtG/scKSAR8u
+         Sm8rmJfj7jwCyXe0K1KWg8aDxzCiJdvs8bQmEfpYGpPponuzoQCcAoyoOUUkBfV1qP
+         b+YIrCYdBQy7kqfErBGqriE+amzc1NHJwH1i0aBI9CsH/EESnsOnmtSNl4p0kn2R+z
+         +22mvvTcbCuVbiUWiIGrttG9C4ai5gUxGCNIaewQ1TOijJIxWXDB2BZsusNymlCqKe
+         BoQE5u83rXu9w==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Hannes Reinecke <hare@suse.de>, Zheyu Ma <zheyuma97@gmail.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, hare@kernel.org,
+        jejb@linux.ibm.com, linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 38/68] scsi: myrb: Fix up null pointer access on myrb_cleanup()
+Date:   Tue,  7 Jun 2022 13:48:04 -0400
+Message-Id: <20220607174846.477972-38-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Hannes Reinecke <hare@suse.de>
 
-[ Upstream commit 9f15930bb2ef9f031d62ffc49629cbae89137733 ]
+[ Upstream commit f9f0a46141e2e39bedb4779c88380d1b5f018c14 ]
 
-In the error handling path, the clk_prepare_enable() function
-call should be balanced by a corresponding 'clk_disable_unprepare()'
-call, as already done in the remove function.
+When myrb_probe() fails the callback might not be set, so we need to
+validate the 'disable_intr' callback in myrb_cleanup() to not cause a null
+pointer exception. And while at it do not call myrb_cleanup() if we cannot
+enable the PCI device at all.
 
-Fixes: 3424e3a4f844 ("drm: bridge: analogix/dp: split exynos dp driver to bridge directory")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220420011644.25730-1-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220523120244.99515-1-hare@suse.de
+Reported-by: Zheyu Ma <zheyuma97@gmail.com>
+Tested-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../gpu/drm/bridge/analogix/analogix_dp_core.c | 18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
+ drivers/scsi/myrb.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-index b7d2e4449cfa..7fe19c56f792 100644
---- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-+++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-@@ -1698,8 +1698,10 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+diff --git a/drivers/scsi/myrb.c b/drivers/scsi/myrb.c
+index 71585528e8db..e885c1dbf61f 100644
+--- a/drivers/scsi/myrb.c
++++ b/drivers/scsi/myrb.c
+@@ -1239,7 +1239,8 @@ static void myrb_cleanup(struct myrb_hba *cb)
+ 	myrb_unmap(cb);
  
- 	dp->reg_base = devm_ioremap_resource(&pdev->dev, res);
--	if (IS_ERR(dp->reg_base))
--		return ERR_CAST(dp->reg_base);
-+	if (IS_ERR(dp->reg_base)) {
-+		ret = PTR_ERR(dp->reg_base);
-+		goto err_disable_clk;
+ 	if (cb->mmio_base) {
+-		cb->disable_intr(cb->io_base);
++		if (cb->disable_intr)
++			cb->disable_intr(cb->io_base);
+ 		iounmap(cb->mmio_base);
+ 	}
+ 	if (cb->irq)
+@@ -3413,9 +3414,13 @@ static struct myrb_hba *myrb_detect(struct pci_dev *pdev,
+ 	mutex_init(&cb->dcmd_mutex);
+ 	mutex_init(&cb->dma_mutex);
+ 	cb->pdev = pdev;
++	cb->host = shost;
+ 
+-	if (pci_enable_device(pdev))
+-		goto failure;
++	if (pci_enable_device(pdev)) {
++		dev_err(&pdev->dev, "Failed to enable PCI device\n");
++		scsi_host_put(shost);
++		return NULL;
 +	}
  
- 	dp->force_hpd = of_property_read_bool(dev->of_node, "force-hpd");
- 
-@@ -1711,7 +1713,8 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
- 	if (IS_ERR(dp->hpd_gpiod)) {
- 		dev_err(dev, "error getting HDP GPIO: %ld\n",
- 			PTR_ERR(dp->hpd_gpiod));
--		return ERR_CAST(dp->hpd_gpiod);
-+		ret = PTR_ERR(dp->hpd_gpiod);
-+		goto err_disable_clk;
- 	}
- 
- 	if (dp->hpd_gpiod) {
-@@ -1731,7 +1734,8 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
- 
- 	if (dp->irq == -ENXIO) {
- 		dev_err(&pdev->dev, "failed to get irq\n");
--		return ERR_PTR(-ENODEV);
-+		ret = -ENODEV;
-+		goto err_disable_clk;
- 	}
- 
- 	ret = devm_request_threaded_irq(&pdev->dev, dp->irq,
-@@ -1740,11 +1744,15 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
- 					irq_flags, "analogix-dp", dp);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to request irq\n");
--		return ERR_PTR(ret);
-+		goto err_disable_clk;
- 	}
- 	disable_irq(dp->irq);
- 
- 	return dp;
-+
-+err_disable_clk:
-+	clk_disable_unprepare(dp->clock);
-+	return ERR_PTR(ret);
- }
- EXPORT_SYMBOL_GPL(analogix_dp_probe);
- 
+ 	if (privdata->hw_init == DAC960_PD_hw_init ||
+ 	    privdata->hw_init == DAC960_P_hw_init) {
 -- 
 2.35.1
-
-
 
