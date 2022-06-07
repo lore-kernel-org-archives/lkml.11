@@ -2,82 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70598C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A402C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382654AbiFHCTZ (ORCPT
+        id S1378801AbiFHCTJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46702 "EHLO
+        Tue, 7 Jun 2022 22:19:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443347AbiFHCCP (ORCPT
+        with ESMTP id S243368AbiFHBzQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:02:15 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2E0345B73F
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 15:11:25 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id v25so24733185eda.6
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 15:11:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jfycHacPY5P1y/1m0oCpwnDJwtHXoUWrUFXkPYiy2lw=;
-        b=Tov7X2dnwSkw2/BPXfCsLem8R5BtxbPWjnRcb5I5neISNNssoSXmPYxcZJuN7aRuLD
-         ziSy0wBW1fgXRVrkRU8YnG4qS4LQCnBfulhISKENZ3UsFzRZ95+wvNwSBIQfPRtlrQVh
-         DRSz1SOqUnOqQn7VILe87XHifzet2YmzByYac=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jfycHacPY5P1y/1m0oCpwnDJwtHXoUWrUFXkPYiy2lw=;
-        b=ct04Btnncyw3Te8QpqdNMD092oLyBVIokr9SKMMjSLb2/HUPbowOe9bMTQYR+KPN3D
-         O4La/oDGNJ75n7k7g5lWiYLZfheeOGBf/YQBGqTHfeyUUDbAIzqzBEhLUdZ9TuaaCDG6
-         Th5Tp0VrAIT/LBF0Ak+0I84qwzhbyg9yvLJj2vaKlcymncVDmOWlj+aBWSIntymvpmAG
-         ajeD+gIyG/AUCBWWEdBunhX7t1FpvNjGy9hCAvC/ngV7SGLIdZrgOG3cf+Ob3/TLeQ7U
-         hv7zIzfbTWLVFnWWvaosljpcVGLOJ9c75ZnGHW4bbQe08JnkAJwjRLAQiLjLurAkTdAv
-         HXnQ==
-X-Gm-Message-State: AOAM530XsL4dlg5qxR0Rn0yjgipL6ASRn+cavbUm0Wd5KCWyS7V5irO8
-        AndrCifvAd2noii2mijRFCCQ95bMe2IRMdOC0cQ=
-X-Google-Smtp-Source: ABdhPJw0zpHAoN4VAQKr3P/Kwh8okNpkhnr8ub6ST8om7xboEze3nU9jdA0NEg0HiYoAvUin1eNTqw==
-X-Received: by 2002:aa7:d143:0:b0:42d:ca9c:aa76 with SMTP id r3-20020aa7d143000000b0042dca9caa76mr36654032edo.163.1654639884081;
-        Tue, 07 Jun 2022 15:11:24 -0700 (PDT)
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com. [209.85.221.51])
-        by smtp.gmail.com with ESMTPSA id v4-20020a170906488400b006fea2035036sm8223713ejq.86.2022.06.07.15.11.23
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 15:11:23 -0700 (PDT)
-Received: by mail-wr1-f51.google.com with SMTP id h5so25964563wrb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 15:11:23 -0700 (PDT)
-X-Received: by 2002:a05:6000:1b0f:b0:210:313a:ef2a with SMTP id
- f15-20020a0560001b0f00b00210313aef2amr29434919wrz.281.1654639883077; Tue, 07
- Jun 2022 15:11:23 -0700 (PDT)
+        Tue, 7 Jun 2022 21:55:16 -0400
+Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [81.169.146.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41531F7DAA;
+        Tue,  7 Jun 2022 13:52:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1654635116;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=JXSiYxgFZZ2tjAxBcyTrI4C3XZX0DeCU5mEV+jv6R6k=;
+    b=tTIXRIwQyepuLXyRIEgr8laM1lqaJ/fmrXqiArmaPMoqiCXCC9HO6/UVS7VAqP3tyf
+    Vvfg+spfS8Cm5h5lUdih2JmXw5jluDL4lUFeB1qpQp3K2x5isOTq+wYHGfHQYo5gLxwA
+    OU/VijO4lXs8jPIFuQB4aGnGyrcuHQ0Zj2qZ3JGOISSO7aSY7GXlI0tQFZ/UpOoPulPm
+    mIQ4fC8b1hbuyCmvdX1MTezHbP+PUoRwMz3VZx6jFc3Y51OUltbeZkk/p1RGCaHV4zpk
+    aYB3UdEu1zQMZMoJ4SaU17Zv9/Eal9EHj+jLOJSaN0mY78t3tCexZXA3TrRj2qs2yNbc
+    JmpA==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1q3DbdV+Ofo7wY7W6Qxgy"
+X-RZG-CLASS-ID: mo00
+Received: from [172.20.10.8]
+    by smtp.strato.de (RZmta 47.45.0 DYNA|AUTH)
+    with ESMTPSA id R0691fy57Kpt8dN
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 7 Jun 2022 22:51:55 +0200 (CEST)
+Subject: Re: [PATCH v5 0/7] can: refactoring of can-dev module and of Kbuild
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+        linux-can <linux-can@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Max Staudt <max@enpas.org>, netdev <netdev@vger.kernel.org>
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
+ <2e8666f3-1bd9-8610-6b72-e56e669d3484@hartkopp.net>
+ <CAMZ6RqKWUyf6dZmxG809-yvjg5wbLwPSLtEfv-MgPpJ5ra=iGQ@mail.gmail.com>
+ <f161fdd0-415a-8ea1-0aad-3a3a19f1bfa8@hartkopp.net>
+ <20220607202706.7fbongzs3ixzpydm@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <44670e69-6d67-c6c7-160c-1ae6e740aabb@hartkopp.net>
+Date:   Tue, 7 Jun 2022 22:51:54 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <Yp/AGMpXXnx9lW6j@google.com>
-In-Reply-To: <Yp/AGMpXXnx9lW6j@google.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 7 Jun 2022 15:11:06 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjcC15LsPS1Nj-e5nC-hR3oGVy+bQumyLD9vz4HzaDWAg@mail.gmail.com>
-Message-ID: <CAHk-=wjcC15LsPS1Nj-e5nC-hR3oGVy+bQumyLD9vz4HzaDWAg@mail.gmail.com>
-Subject: Re: [git pull] Input updates for v5.19-rc1
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-input@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220607202706.7fbongzs3ixzpydm@pengutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 2:16 PM Dmitry Torokhov
-<dmitry.torokhov@gmail.com> wrote:
->
->         git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git tags/input-for-v5.19-rc1
 
-I don't know why pr-tracker-bot hasn't reacted to me pulling this and
-pushing out, so I'll do it manually.
 
-Maybe pr-tracker-bot is just taking a quick nap, and will be back
-shortly. Or maybe it had some odd issues with this pull request. I
-don't know.
+On 07.06.22 22:27, Marc Kleine-Budde wrote:
+> On 07.06.2022 22:12:46, Oliver Hartkopp wrote:
+>> So what about:
+>>
+>>    symbol: CONFIG_NETDEVICES
+>>    |
+>>    +-> CAN Device Drivers
+>>        symbol: CONFIG_CAN_DEV
+>>        |
+>>        +-> software/virtual CAN device drivers
+>>        |   (at time of writing: slcan, vcan, vxcan)
+>>        |
+>>        +-> hardware CAN device drivers with Netlink support
+>>            symbol: CONFIG_CAN_NETLINK (matches previous CONFIG_CAN_DEV)
+>>            |
+>>            +-> CAN bit-timing calculation (optional for all drivers)
+>>            |   symbol: CONFIG_CAN_BITTIMING
+>>            |
+>>            +-> CAN rx offload (optional but selected by some drivers)
+>>            |   symbol: CONFIG_CAN_RX_OFFLOAD
+>>            |
+>>            +-> CAN devices drivers
+>>                (some may select CONFIG_CAN_RX_OFFLOAD)
+>>
+>> (I also added 'hardware' to CAN device drivers with Netlink support) to have
+>> a distinction to 'software/virtual' CAN device drivers)
+> 
+> The line between hardware and software/virtual devices ist blurry, the
+> new can327 driver uses netlink and the slcan is currently being
+> converted....
 
-                      Linus
+Right, which could mean that slcan and can327 should be located in the 
+'usual' CAN device driver section and not in the sw/virtual device section.
+
+The slcan and can327 need some kind of hardware - while vcan and vxcan 
+don't.
+
+Best regards,
+Oliver
