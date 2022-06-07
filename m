@@ -2,51 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46D73CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:18:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B07EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:19:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378109AbiFGVSv (ORCPT
+        id S1378287AbiFGVTA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:18:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47482 "EHLO
+        Tue, 7 Jun 2022 17:19:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359256AbiFGUWO (ORCPT
+        with ESMTP id S1358793AbiFGUWf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:22:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08CE31451CA;
-        Tue,  7 Jun 2022 11:31:37 -0700 (PDT)
+        Tue, 7 Jun 2022 16:22:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3529317B860;
+        Tue,  7 Jun 2022 11:31:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 80A05612EC;
-        Tue,  7 Jun 2022 18:31:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5934FC385A2;
-        Tue,  7 Jun 2022 18:31:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6436B82188;
+        Tue,  7 Jun 2022 18:31:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49B87C385A2;
+        Tue,  7 Jun 2022 18:31:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626695;
-        bh=L6/7d3an9St0b/NgFIVefwNBWNQVxznP7DEJrhafcWc=;
+        s=korg; t=1654626698;
+        bh=Mytd2SzCLUOya9ZKdQUO8kOUQglohpjh14lZeClQtVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DaInAJeWGIdCYXzvl6ZUNwCjU0nFtxXgWSsnbnIHc1t7ak0CL2YvH6TkA61qMee5c
-         r9AZTl7w6efsf3epISH6qfQR0aw5NZ8c/bICzkaqaIT6ocT35FykVl9v8A5nKPKqwm
-         kmbZdtA4gbKK+s2EsikVF3CyI7+lOHQ7Us3NmNCM=
+        b=keyaQt8s+ryIf4jfrdLkNcGCurxxgjJTUd0dqnP0vGVbWPECQqTn+Dd3mWUHsZ/7o
+         ctQfdc/52NsQ5S6UdRYOFdK+/d061fYx5hNs3vQeOWJngKpgJ8W9BbSwNGQExUTdrs
+         V6AcsSPsuIJrjUtPIn2lCHrycZyZBmhnialVBF4E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ian Rogers <irogers@google.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Stephane Eranian <eranian@google.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 431/772] perf parse-events: Support different format of the topdown event name
-Date:   Tue,  7 Jun 2022 19:00:23 +0200
-Message-Id: <20220607165001.702676452@linuxfoundation.org>
+Subject: [PATCH 5.17 432/772] net: stmmac: fix out-of-bounds access in a selftest
+Date:   Tue,  7 Jun 2022 19:00:24 +0200
+Message-Id: <20220607165001.732605384@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -58,79 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit e7d1374ed5cb346efd9b3df03814dbc0767adb4e ]
+[ Upstream commit fe5c5fc145edcf98a759b895f52b646730eeb7be ]
 
-The evsel->name may have a different format for a topdown event, a pure
-topdown name (e.g., topdown-fe-bound), or a PMU name + a topdown name
-(e.g., cpu/topdown-fe-bound/). The cpu/topdown-fe-bound/ kind format
-isn't supported by the arch_evlist__leader(). This format is a very
-common format for a hybrid platform, which requires specifying the PMU
-name for each event.
+GCC 12 points out that struct tc_action is smaller than
+struct tcf_action:
 
-Without the patch,
+drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c: In function ‘stmmac_test_rxp’:
+drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:1132:21: warning: array subscript ‘struct tcf_gact[0]’ is partly outside array bounds of ‘unsigned char[272]’ [-Warray-bounds]
+ 1132 |                 gact->tcf_action = TC_ACT_SHOT;
+      |                     ^~
 
-  $ perf stat -e '{instructions,slots,cpu/topdown-fe-bound/}' -a sleep 1
-
-   Performance counter stats for 'system wide':
-
-       <not counted>      instructions
-       <not counted>      slots
-     <not supported>      cpu/topdown-fe-bound/
-
-         1.003482041 seconds time elapsed
-
-  Some events weren't counted. Try disabling the NMI watchdog:
-          echo 0 > /proc/sys/kernel/nmi_watchdog
-          perf stat ...
-          echo 1 > /proc/sys/kernel/nmi_watchdog
-  The events in group usually have to be from the same PMU. Try reorganizing the group.
-
-With the patch,
-
-  $ perf stat -e '{instructions,slots,cpu/topdown-fe-bound/}' -a sleep 1
-
-  Performance counter stats for 'system wide':
-
-         157,383,996      slots
-          25,011,711      instructions
-          27,441,686      cpu/topdown-fe-bound/
-
-         1.003530890 seconds time elapsed
-
-Fixes: bc355822f0d9623b ("perf parse-events: Move slots only with topdown")
-Reviewed-by: Ian Rogers <irogers@google.com>
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Stephane Eranian <eranian@google.com>
-Cc: Xing Zhengjun <zhengjun.xing@linux.intel.com>
-Link: https://lore.kernel.org/r/20220518143900.1493980-4-kan.liang@linux.intel.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: ccfc639a94f2 ("net: stmmac: selftests: Add a selftest for Flexible RX Parser")
+Link: https://lore.kernel.org/r/20220519004305.2109708-1-kuba@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/arch/x86/util/evlist.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/stmicro/stmmac/stmmac_selftests.c  | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/tools/perf/arch/x86/util/evlist.c b/tools/perf/arch/x86/util/evlist.c
-index cfc208d71f00..75564a7df15b 100644
---- a/tools/perf/arch/x86/util/evlist.c
-+++ b/tools/perf/arch/x86/util/evlist.c
-@@ -36,7 +36,7 @@ struct evsel *arch_evlist__leader(struct list_head *list)
- 				if (slots == first)
- 					return first;
- 			}
--			if (!strncasecmp(evsel->name, "topdown", 7))
-+			if (strcasestr(evsel->name, "topdown"))
- 				has_topdown = true;
- 			if (slots && has_topdown)
- 				return slots;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+index be3cb63675a5..133c5bd2ef45 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+@@ -1084,8 +1084,9 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
+ 	unsigned char addr[ETH_ALEN] = {0xde, 0xad, 0xbe, 0xef, 0x00, 0x00};
+ 	struct tc_cls_u32_offload cls_u32 = { };
+ 	struct stmmac_packet_attrs attr = { };
+-	struct tc_action **actions, *act;
++	struct tc_action **actions;
+ 	struct tc_u32_sel *sel;
++	struct tcf_gact *gact;
+ 	struct tcf_exts *exts;
+ 	int ret, i, nk = 1;
+ 
+@@ -1110,8 +1111,8 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
+ 		goto cleanup_exts;
+ 	}
+ 
+-	act = kcalloc(nk, sizeof(*act), GFP_KERNEL);
+-	if (!act) {
++	gact = kcalloc(nk, sizeof(*gact), GFP_KERNEL);
++	if (!gact) {
+ 		ret = -ENOMEM;
+ 		goto cleanup_actions;
+ 	}
+@@ -1126,9 +1127,7 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
+ 	exts->nr_actions = nk;
+ 	exts->actions = actions;
+ 	for (i = 0; i < nk; i++) {
+-		struct tcf_gact *gact = to_gact(&act[i]);
+-
+-		actions[i] = &act[i];
++		actions[i] = (struct tc_action *)&gact[i];
+ 		gact->tcf_action = TC_ACT_SHOT;
+ 	}
+ 
+@@ -1152,7 +1151,7 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
+ 	stmmac_tc_setup_cls_u32(priv, priv, &cls_u32);
+ 
+ cleanup_act:
+-	kfree(act);
++	kfree(gact);
+ cleanup_actions:
+ 	kfree(actions);
+ cleanup_exts:
 -- 
 2.35.1
 
