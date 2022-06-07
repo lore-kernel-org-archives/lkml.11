@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC59CCCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD3BCCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379884AbiFGVUm (ORCPT
+        id S1379605AbiFGVUV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50904 "EHLO
+        Tue, 7 Jun 2022 17:20:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358973AbiFGUWH (ORCPT
+        with ESMTP id S1359354AbiFGUWL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:22:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 454111451CD;
-        Tue,  7 Jun 2022 11:31:22 -0700 (PDT)
+        Tue, 7 Jun 2022 16:22:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDCC314640A;
+        Tue,  7 Jun 2022 11:31:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D65FBB81FF8;
-        Tue,  7 Jun 2022 18:31:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B5A2C385A2;
-        Tue,  7 Jun 2022 18:31:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A418611B9;
+        Tue,  7 Jun 2022 18:31:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E2B4C385A2;
+        Tue,  7 Jun 2022 18:31:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626679;
-        bh=RBTLMMs5uuzvrAS0Rg4MWupmh3iCzwYIF7EMz2EnGu4=;
+        s=korg; t=1654626693;
+        bh=8yedqsOLfQOkKI3LlACac8hOS/l2lcCrAkfT0hiMeDs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O2aOPA9S+uL4madQkMzeDt6uY/pAh3Q6k4RyOdrKHt0Ume+5V7z6Ouej4+dxA1+4E
-         OWGEE14qtwNPEgyjRlEb6PPT8lotgOp4PnEUwAbtUrbiy7lNiSFZP2ZSN2ScxvieCH
-         jq9L5w3k2t6V3isfyyiV2ZlEarmyKxwFEBLhqW8w=
+        b=UEsvyaICuOr8LBTatZ8/zu3917bQl8mnM8qt6L986gnO5Heoz1DfQ5/ZQZJ+Z4XB7
+         cTP1gj/dTyS8Mbtn2PpIaEmdF0+ttweco6SQauqB7dMB1HeoHHKUl1rh009tLFRtdz
+         gh/lCeBAKH6i2uyHlXneGQdxIluyY3nxx5PPmWZw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Marco Chiappero <marco.chiappero@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 464/772] soc: qcom: llcc: Add MODULE_DEVICE_TABLE()
-Date:   Tue,  7 Jun 2022 19:00:56 +0200
-Message-Id: <20220607165002.672005764@linuxfoundation.org>
+Subject: [PATCH 5.17 468/772] crypto: qat - set COMPRESSION capability for DH895XCC
+Date:   Tue,  7 Jun 2022 19:01:00 +0200
+Message-Id: <20220607165002.788155706@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,36 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
+From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
 
-[ Upstream commit 5334a3b12a7233b31788de60d61bfd890059d783 ]
+[ Upstream commit 0eaa51543273fd0f4ba9bea83638f7033436e5eb ]
 
-The llcc-qcom driver can be compiled as a module, but lacks
-MODULE_DEVICE_TABLE() and will therefore not be loaded automatically.
-Fix this.
+The capability detection logic clears bits for the features that are
+disabled in a certain SKU. For example, if the bit associate to
+compression is not present in the LEGFUSE register, the correspondent
+bit is cleared in the capability mask.
+This change adds the compression capability to the mask as this was
+missing in the commit that enhanced the capability detection logic.
 
-Fixes: a3134fb09e0b ("drivers: soc: Add LLCC driver")
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20220408213336.581661-3-bjorn.andersson@linaro.org
+Fixes: cfe4894eccdc ("crypto: qat - set COMPRESSION capability for QAT GEN2")
+Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Signed-off-by: Marco Chiappero <marco.chiappero@intel.com>
+Reviewed-by: Marco Chiappero <marco.chiappero@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/qcom/llcc-qcom.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/soc/qcom/llcc-qcom.c b/drivers/soc/qcom/llcc-qcom.c
-index ec52f29c8867..73bbe960f144 100644
---- a/drivers/soc/qcom/llcc-qcom.c
-+++ b/drivers/soc/qcom/llcc-qcom.c
-@@ -674,6 +674,7 @@ static const struct of_device_id qcom_llcc_of_match[] = {
- 	{ .compatible = "qcom,sm8350-llcc", .data = &sm8350_cfg },
- 	{ }
- };
-+MODULE_DEVICE_TABLE(of, qcom_llcc_of_match);
+diff --git a/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c b/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c
+index ff13047772e3..61d5467e0d92 100644
+--- a/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c
++++ b/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c
+@@ -59,7 +59,8 @@ static u32 get_accel_cap(struct adf_accel_dev *accel_dev)
+ 	capabilities = ICP_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC |
+ 		       ICP_ACCEL_CAPABILITIES_CRYPTO_ASYMMETRIC |
+ 		       ICP_ACCEL_CAPABILITIES_AUTHENTICATION |
+-		       ICP_ACCEL_CAPABILITIES_CIPHER;
++		       ICP_ACCEL_CAPABILITIES_CIPHER |
++		       ICP_ACCEL_CAPABILITIES_COMPRESSION;
  
- static struct platform_driver qcom_llcc_driver = {
- 	.driver = {
+ 	/* Read accelerator capabilities mask */
+ 	pci_read_config_dword(pdev, ADF_DEVICE_LEGFUSE_OFFSET, &legfuses);
 -- 
 2.35.1
 
