@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46817CCA490
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC69CCA48F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390135AbiFHBqr (ORCPT
+        id S1389973AbiFHBqi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:46:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47620 "EHLO
+        Tue, 7 Jun 2022 21:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383263AbiFGVw7 (ORCPT
+        with ESMTP id S1381207AbiFGVrP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:52:59 -0400
+        Tue, 7 Jun 2022 17:47:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FAC5192C65;
-        Tue,  7 Jun 2022 12:10:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7BF7237CCC;
+        Tue,  7 Jun 2022 12:07:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 283ADB823B0;
-        Tue,  7 Jun 2022 19:10:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80CE3C385A5;
-        Tue,  7 Jun 2022 19:10:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4A483B823B0;
+        Tue,  7 Jun 2022 19:07:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6649C385A5;
+        Tue,  7 Jun 2022 19:07:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629055;
-        bh=wodYFo2wMvMhHO445BgZXawuZ6EgFLtnwJ9b77J/wkg=;
+        s=korg; t=1654628877;
+        bh=hkHudTr7+HZDUSFyvo76FootxauTBlW5cEnlREziy6A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VPH0LqT2e1l4pSqImACUNRmeD3QtsD0JZAYWYzuAjr8eTn2w6mEZiJbAuu2q+pokM
-         ai2O4//nowwWuN033sj8ufs+sdfnjY65e76YEBDh1bGYrGYKjm7iyV3P8Hjz34BUeC
-         4F/261vbDZH0jGROUsV5XyCzA6WuNWc4u3DZlFyw=
+        b=EJohBnxOLBwx3xULgnkwVBeQM8R3OtqKSgMeGoNZf8PUt6o1TSOrK9ONPOwCCFUhg
+         1F+EKAKm86cAIbLKslQ6AZ/B/vkCjP7qwrroQ7DkJY+ST7EZtaGcd+Z+4hEC6lSldr
+         WfLSNWZDWDNeXjtZRDvZoiq8C0jEK/4rC9BUDWN0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-        Mike Leach <Mike.Leach@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
+        stable@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 554/879] arm64: dts: juno: Fix SCMI power domain IDs for ETF and CS funnel
-Date:   Tue,  7 Jun 2022 19:01:12 +0200
-Message-Id: <20220607165018.947400262@linuxfoundation.org>
+Subject: [PATCH 5.18 487/879] drm/msm: dont free the IRQ if it was not requested
+Date:   Tue,  7 Jun 2022 19:00:05 +0200
+Message-Id: <20220607165017.008086635@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,64 +53,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sudeep Holla <sudeep.holla@arm.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit 8dd3cdeaf3032728e30a7ec5e79ca780fc86cf7a ]
+[ Upstream commit 577e2a9dfc8fba7938aaf75db63fae7e328cc3cb ]
 
-The SCMI power domain ID for all the coresight components is 8 while
-the previous/older SCPI domain was 0. When adding SCMI variant, couple
-of instances retained SCPI domain ID by mistake.
+As msm_drm_uninit() is called from the msm_drm_init() error path,
+additional care should be necessary as not to call the free_irq() for
+the IRQ that was not requested before (because an error occured earlier
+than the request_irq() call).
 
-Fix the same by using the correct SCMI power domain ID of 8.
+This fixed the issue reported with the following backtrace:
 
-Link: https://lore.kernel.org/r/20220413093547.1699535-1-sudeep.holla@arm.com
-Fixes: 96bb0954860a ("arm64: dts: juno: Add separate SCMI variants")
-Cc: Robin Murphy <robin.murphy@arm.com>
-Reported-by: Mike Leach <Mike.Leach@arm.com>
-Acked-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+[    8.571329] Trying to free already-free IRQ 187
+[    8.571339] WARNING: CPU: 0 PID: 76 at kernel/irq/manage.c:1895 free_irq+0x1e0/0x35c
+[    8.588746] Modules linked in: pmic_glink pdr_interface fastrpc qrtr_smd snd_soc_hdmi_codec msm fsa4480 gpu_sched drm_dp_aux_bus qrtr i2c_qcom_geni crct10dif_ce qcom_stats qcom_q6v5_pas drm_display_helper gpi qcom_pil_info drm_kms_helper qcom_q6v5 qcom_sysmon qcom_common qcom_glink_smem qcom_rng mdt_loader qmi_helpers phy_qcom_qmp ufs_qcom typec qnoc_sm8350 socinfo rmtfs_mem fuse drm ipv6
+[    8.624154] CPU: 0 PID: 76 Comm: kworker/u16:2 Not tainted 5.18.0-rc5-next-20220506-00033-g6cee8cab6089-dirty #419
+[    8.624161] Hardware name: Qualcomm Technologies, Inc. SM8350 HDK (DT)
+[    8.641496] Workqueue: events_unbound deferred_probe_work_func
+[    8.647510] pstate: 604000c5 (nZCv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    8.654681] pc : free_irq+0x1e0/0x35c
+[    8.658454] lr : free_irq+0x1e0/0x35c
+[    8.662228] sp : ffff800008ab3950
+[    8.665642] x29: ffff800008ab3950 x28: 0000000000000000 x27: ffff16350f56a700
+[    8.672994] x26: ffff1635025df080 x25: ffff16350251badc x24: ffff16350251bb90
+[    8.680343] x23: 0000000000000000 x22: 00000000000000bb x21: ffff16350e8f9800
+[    8.687690] x20: ffff16350251ba00 x19: ffff16350cbd5880 x18: ffffffffffffffff
+[    8.695039] x17: 0000000000000000 x16: ffffa2dd12179434 x15: ffffa2dd1431d02d
+[    8.702391] x14: 0000000000000000 x13: ffffa2dd1431d028 x12: 662d79646165726c
+[    8.709740] x11: ffffa2dd13fd2438 x10: 000000000000000a x9 : 00000000000000bb
+[    8.717111] x8 : ffffa2dd13fd23f0 x7 : ffff800008ab3750 x6 : 00000000fffff202
+[    8.724487] x5 : ffff16377e870a18 x4 : 00000000fffff202 x3 : ffff735a6ae1b000
+[    8.731851] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff1635015f8000
+[    8.739217] Call trace:
+[    8.741755]  free_irq+0x1e0/0x35c
+[    8.745198]  msm_drm_uninit.isra.0+0x14c/0x294 [msm]
+[    8.750548]  msm_drm_bind+0x28c/0x5d0 [msm]
+[    8.755081]  try_to_bring_up_aggregate_device+0x164/0x1d0
+[    8.760657]  __component_add+0xa0/0x170
+[    8.764626]  component_add+0x14/0x20
+[    8.768337]  dp_display_probe+0x2a4/0x464 [msm]
+[    8.773242]  platform_probe+0x68/0xe0
+[    8.777043]  really_probe.part.0+0x9c/0x28c
+[    8.781368]  __driver_probe_device+0x98/0x144
+[    8.785871]  driver_probe_device+0x40/0x140
+[    8.790191]  __device_attach_driver+0xb4/0x120
+[    8.794788]  bus_for_each_drv+0x78/0xd0
+[    8.798751]  __device_attach+0xdc/0x184
+[    8.802713]  device_initial_probe+0x14/0x20
+[    8.807031]  bus_probe_device+0x9c/0xa4
+[    8.810991]  deferred_probe_work_func+0x88/0xc0
+[    8.815667]  process_one_work+0x1d0/0x320
+[    8.819809]  worker_thread+0x14c/0x444
+[    8.823688]  kthread+0x10c/0x110
+[    8.827036]  ret_from_fork+0x10/0x20
+
+Reported-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Fixes: f026e431cf86 ("drm/msm: Convert to Linux IRQ interfaces")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Patchwork: https://patchwork.freedesktop.org/patch/485422/
+Link: https://lore.kernel.org/r/20220507010021.1667700-1-dmitry.baryshkov@linaro.org
+Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/arm/juno-r1-scmi.dts | 4 ++--
- arch/arm64/boot/dts/arm/juno-r2-scmi.dts | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/msm/msm_drv.c | 7 ++++++-
+ drivers/gpu/drm/msm/msm_kms.h | 1 +
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/arm/juno-r1-scmi.dts b/arch/arm64/boot/dts/arm/juno-r1-scmi.dts
-index 190a0fba4ad6..fd1f0d26d751 100644
---- a/arch/arm64/boot/dts/arm/juno-r1-scmi.dts
-+++ b/arch/arm64/boot/dts/arm/juno-r1-scmi.dts
-@@ -7,11 +7,11 @@
- 	};
+diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+index e3d83963ad54..f2c46116df55 100644
+--- a/drivers/gpu/drm/msm/msm_drv.c
++++ b/drivers/gpu/drm/msm/msm_drv.c
+@@ -113,6 +113,8 @@ static int msm_irq_postinstall(struct drm_device *dev)
  
- 	etf@20140000 {
--		power-domains = <&scmi_devpd 0>;
-+		power-domains = <&scmi_devpd 8>;
- 	};
+ static int msm_irq_install(struct drm_device *dev, unsigned int irq)
+ {
++	struct msm_drm_private *priv = dev->dev_private;
++	struct msm_kms *kms = priv->kms;
+ 	int ret;
  
- 	funnel@20150000 {
--		power-domains = <&scmi_devpd 0>;
-+		power-domains = <&scmi_devpd 8>;
- 	};
- };
+ 	if (irq == IRQ_NOTCONNECTED)
+@@ -124,6 +126,8 @@ static int msm_irq_install(struct drm_device *dev, unsigned int irq)
+ 	if (ret)
+ 		return ret;
  
-diff --git a/arch/arm64/boot/dts/arm/juno-r2-scmi.dts b/arch/arm64/boot/dts/arm/juno-r2-scmi.dts
-index dbf13770084f..35e6d4762c46 100644
---- a/arch/arm64/boot/dts/arm/juno-r2-scmi.dts
-+++ b/arch/arm64/boot/dts/arm/juno-r2-scmi.dts
-@@ -7,11 +7,11 @@
- 	};
++	kms->irq_requested = true;
++
+ 	ret = msm_irq_postinstall(dev);
+ 	if (ret) {
+ 		free_irq(irq, dev);
+@@ -139,7 +143,8 @@ static void msm_irq_uninstall(struct drm_device *dev)
+ 	struct msm_kms *kms = priv->kms;
  
- 	etf@20140000 {
--		power-domains = <&scmi_devpd 0>;
-+		power-domains = <&scmi_devpd 8>;
- 	};
+ 	kms->funcs->irq_uninstall(kms);
+-	free_irq(kms->irq, dev);
++	if (kms->irq_requested)
++		free_irq(kms->irq, dev);
+ }
  
- 	funnel@20150000 {
--		power-domains = <&scmi_devpd 0>;
-+		power-domains = <&scmi_devpd 8>;
- 	};
- };
+ struct msm_vblank_work {
+diff --git a/drivers/gpu/drm/msm/msm_kms.h b/drivers/gpu/drm/msm/msm_kms.h
+index 2a4f0526cb98..401d7e19811f 100644
+--- a/drivers/gpu/drm/msm/msm_kms.h
++++ b/drivers/gpu/drm/msm/msm_kms.h
+@@ -148,6 +148,7 @@ struct msm_kms {
  
+ 	/* irq number to be passed on to msm_irq_install */
+ 	int irq;
++	bool irq_requested;
+ 
+ 	/* mapper-id used to request GEM buffer mapped for scanout: */
+ 	struct msm_gem_address_space *aspace;
 -- 
 2.35.1
 
