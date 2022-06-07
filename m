@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E61D4CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01640CCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386200AbiFGWsh (ORCPT
+        id S1385452AbiFGWpz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:48:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41600 "EHLO
+        Tue, 7 Jun 2022 18:45:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381293AbiFGVk0 (ORCPT
+        with ESMTP id S1379988AbiFGVdj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:40:26 -0400
+        Tue, 7 Jun 2022 17:33:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D0DB16FEF1;
-        Tue,  7 Jun 2022 12:06:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEA4E178558;
+        Tue,  7 Jun 2022 12:04:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40657B82182;
-        Tue,  7 Jun 2022 19:06:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD19DC385A2;
-        Tue,  7 Jun 2022 19:06:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 06F5CB823AE;
+        Tue,  7 Jun 2022 19:04:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73ABBC385A2;
+        Tue,  7 Jun 2022 19:04:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628772;
-        bh=2AEIenh73aLoWh9XjJ4hnoXRqQVSDuUQ2rYXV4WjRI4=;
+        s=korg; t=1654628661;
+        bh=uBgdNrI6Lvmcn7xEOlP7LHR9YGf0RBPcrOn+AFFuaAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D985yuVaKE8Okks1lRB7XVMb9Omt/ZM9biuLc1VDAzjOzso0nFfX7icbITcDgcOuw
-         ueEiFEK5w1BN6o1zCKdrFqwmezG6ULbsCnXHM26tATi+glvk1vt8dQlV/M5awF6drv
-         A/gwJNjh00Qngw8FwGiEZRqMC1+kz7ywkXkkdJ08=
+        b=MDrW6jSrwE5Q23XHEb3HQkr/ZuyrRcw7Ab6FH64oZxM0Z2lydW/y3Z0iGuIIe4vZx
+         WNUs+yJnMjHaP1GzJERjBSZL2SWlm1QJ4o8z9kXI23cKZIxpNhmlF/ql+XY51NOyyJ
+         eYfkaO6h3WaudDWB05dfWpPihXETBKLAmwqW5538=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 449/879] media: atmel: atmel-sama5d2-isc: fix wrong mask in YUYV format check
-Date:   Tue,  7 Jun 2022 18:59:27 +0200
-Message-Id: <20220607165015.902057776@linuxfoundation.org>
+Subject: [PATCH 5.18 408/879] regulator: qcom_smd: Fix up PM8950 regulator configuration
+Date:   Tue,  7 Jun 2022 18:58:46 +0200
+Message-Id: <20220607165014.705549407@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,38 +51,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eugen Hristev <eugen.hristev@microchip.com>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit 91f49b80983f7bffdea9498209b2b896231ac776 ]
+[ Upstream commit b11b3d21a94d66bc05d1142e0b210bfa316c62be ]
 
-While this does not happen in production, this check should be done
-versus the mask, as checking with the YCYC value may not include
-some bits that may be set.
-It is correct and safe to check the whole mask.
+Following changes have been made:
 
-Fixes: 123aaf816b95 ("media: atmel: atmel-sama5d2-isc: fix YUYV format")
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+- S5, L4, L18, L20 and L21 were removed (S5 is managed by
+SPMI, whereas the rest seems not to exist [or at least it's blocked
+by Sony Loire /MSM8956/ RPM firmware])
+
+- Supply maps have were adjusted to reflect regulator changes.
+
+Fixes: e44adca5fa25 ("regulator: qcom_smd: Add PM8950 regulators")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Link: https://lore.kernel.org/r/20220430163753.609909-1-konrad.dybcio@somainline.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/atmel/atmel-sama5d2-isc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/regulator/qcom_smd-regulator.c | 35 +++++++++++++-------------
+ 1 file changed, 17 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/media/platform/atmel/atmel-sama5d2-isc.c b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-index e9415495e738..c2d50b0c0e3d 100644
---- a/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-+++ b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-@@ -291,7 +291,7 @@ static void isc_sama5d2_config_rlp(struct isc_device *isc)
- 	 * Thus, if the YCYC mode is selected, replace it with the
- 	 * sama5d2-compliant mode which is YYCC .
- 	 */
--	if ((rlp_mode & ISC_RLP_CFG_MODE_YCYC) == ISC_RLP_CFG_MODE_YCYC) {
-+	if ((rlp_mode & ISC_RLP_CFG_MODE_MASK) == ISC_RLP_CFG_MODE_YCYC) {
- 		rlp_mode &= ~ISC_RLP_CFG_MODE_MASK;
- 		rlp_mode |= ISC_RLP_CFG_MODE_YYCC;
- 	}
+diff --git a/drivers/regulator/qcom_smd-regulator.c b/drivers/regulator/qcom_smd-regulator.c
+index 8490aa8eecb1..7dff94a2eb7e 100644
+--- a/drivers/regulator/qcom_smd-regulator.c
++++ b/drivers/regulator/qcom_smd-regulator.c
+@@ -944,32 +944,31 @@ static const struct rpm_regulator_data rpm_pm8950_regulators[] = {
+ 	{ "s2", QCOM_SMD_RPM_SMPA, 2, &pm8950_hfsmps, "vdd_s2" },
+ 	{ "s3", QCOM_SMD_RPM_SMPA, 3, &pm8950_hfsmps, "vdd_s3" },
+ 	{ "s4", QCOM_SMD_RPM_SMPA, 4, &pm8950_hfsmps, "vdd_s4" },
+-	{ "s5", QCOM_SMD_RPM_SMPA, 5, &pm8950_ftsmps2p5, "vdd_s5" },
++	/* S5 is managed via SPMI. */
+ 	{ "s6", QCOM_SMD_RPM_SMPA, 6, &pm8950_hfsmps, "vdd_s6" },
+ 
+ 	{ "l1", QCOM_SMD_RPM_LDOA, 1, &pm8950_ult_nldo, "vdd_l1_l19" },
+ 	{ "l2", QCOM_SMD_RPM_LDOA, 2, &pm8950_ult_nldo, "vdd_l2_l23" },
+ 	{ "l3", QCOM_SMD_RPM_LDOA, 3, &pm8950_ult_nldo, "vdd_l3" },
+-	{ "l4", QCOM_SMD_RPM_LDOA, 4, &pm8950_ult_pldo, "vdd_l4_l5_l6_l7_l16" },
+-	{ "l5", QCOM_SMD_RPM_LDOA, 5, &pm8950_pldo_lv, "vdd_l4_l5_l6_l7_l16" },
+-	{ "l6", QCOM_SMD_RPM_LDOA, 6, &pm8950_pldo_lv, "vdd_l4_l5_l6_l7_l16" },
+-	{ "l7", QCOM_SMD_RPM_LDOA, 7, &pm8950_pldo_lv, "vdd_l4_l5_l6_l7_l16" },
++	/* L4 seems not to exist. */
++	{ "l5", QCOM_SMD_RPM_LDOA, 5, &pm8950_pldo_lv, "vdd_l5_l6_l7_l16" },
++	{ "l6", QCOM_SMD_RPM_LDOA, 6, &pm8950_pldo_lv, "vdd_l5_l6_l7_l16" },
++	{ "l7", QCOM_SMD_RPM_LDOA, 7, &pm8950_pldo_lv, "vdd_l5_l6_l7_l16" },
+ 	{ "l8", QCOM_SMD_RPM_LDOA, 8, &pm8950_ult_pldo, "vdd_l8_l11_l12_l17_l22" },
+ 	{ "l9", QCOM_SMD_RPM_LDOA, 9, &pm8950_ult_pldo, "vdd_l9_l10_l13_l14_l15_l18" },
+ 	{ "l10", QCOM_SMD_RPM_LDOA, 10, &pm8950_ult_nldo, "vdd_l9_l10_l13_l14_l15_l18"},
+-	{ "l11", QCOM_SMD_RPM_LDOA, 11, &pm8950_ult_pldo, "vdd_l8_l11_l12_l17_l22"},
+-	{ "l12", QCOM_SMD_RPM_LDOA, 12, &pm8950_ult_pldo, "vdd_l8_l11_l12_l17_l22"},
+-	{ "l13", QCOM_SMD_RPM_LDOA, 13, &pm8950_ult_pldo, "vdd_l9_l10_l13_l14_l15_l18"},
+-	{ "l14", QCOM_SMD_RPM_LDOA, 14, &pm8950_ult_pldo, "vdd_l9_l10_l13_l14_l15_l18"},
+-	{ "l15", QCOM_SMD_RPM_LDOA, 15, &pm8950_ult_pldo, "vdd_l9_l10_l13_l14_l15_l18"},
+-	{ "l16", QCOM_SMD_RPM_LDOA, 16, &pm8950_ult_pldo, "vdd_l4_l5_l6_l7_l16"},
+-	{ "l17", QCOM_SMD_RPM_LDOA, 17, &pm8950_ult_pldo, "vdd_l8_l11_l12_l17_l22"},
+-	{ "l18", QCOM_SMD_RPM_LDOA, 18, &pm8950_ult_pldo, "vdd_l9_l10_l13_l14_l15_l18"},
+-	{ "l19", QCOM_SMD_RPM_LDOA, 18, &pm8950_pldo, "vdd_l1_l19"},
+-	{ "l20", QCOM_SMD_RPM_LDOA, 18, &pm8950_pldo, "vdd_l20"},
+-	{ "l21", QCOM_SMD_RPM_LDOA, 18, &pm8950_pldo, "vdd_l21"},
+-	{ "l22", QCOM_SMD_RPM_LDOA, 18, &pm8950_pldo, "vdd_l8_l11_l12_l17_l22"},
+-	{ "l23", QCOM_SMD_RPM_LDOA, 18, &pm8950_pldo, "vdd_l2_l23"},
++	{ "l11", QCOM_SMD_RPM_LDOA, 11, &pm8950_ult_pldo, "vdd_l8_l11_l12_l17_l22" },
++	{ "l12", QCOM_SMD_RPM_LDOA, 12, &pm8950_ult_pldo, "vdd_l8_l11_l12_l17_l22" },
++	{ "l13", QCOM_SMD_RPM_LDOA, 13, &pm8950_ult_pldo, "vdd_l9_l10_l13_l14_l15_l18" },
++	{ "l14", QCOM_SMD_RPM_LDOA, 14, &pm8950_ult_pldo, "vdd_l9_l10_l13_l14_l15_l18" },
++	{ "l15", QCOM_SMD_RPM_LDOA, 15, &pm8950_ult_pldo, "vdd_l9_l10_l13_l14_l15_l18" },
++	{ "l16", QCOM_SMD_RPM_LDOA, 16, &pm8950_ult_pldo, "vdd_l5_l6_l7_l16" },
++	{ "l17", QCOM_SMD_RPM_LDOA, 17, &pm8950_ult_pldo, "vdd_l8_l11_l12_l17_l22" },
++	/* L18 seems not to exist. */
++	{ "l19", QCOM_SMD_RPM_LDOA, 19, &pm8950_pldo, "vdd_l1_l19" },
++	/* L20 & L21 seem not to exist. */
++	{ "l22", QCOM_SMD_RPM_LDOA, 22, &pm8950_pldo, "vdd_l8_l11_l12_l17_l22" },
++	{ "l23", QCOM_SMD_RPM_LDOA, 23, &pm8950_pldo, "vdd_l2_l23" },
+ 	{}
+ };
+ 
 -- 
 2.35.1
 
