@@ -2,209 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF5D3CCA48F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76155CCA492
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378520AbiFGVB2 (ORCPT
+        id S1379155AbiFGVCI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34290 "EHLO
+        Tue, 7 Jun 2022 17:02:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357627AbiFGT6Y (ORCPT
+        with ESMTP id S1357931AbiFGT7C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:58:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74C63186B8B
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:24:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654626230;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=K5asxgZuJ1ujMS5G/D+zRXTIuzzJ85zczcuYLGDdaiU=;
-        b=cGYAoH002C/veCQ1RcFlwj4sigjUWwGjbgrBqaT1QM1EjhMrb434QM6blHzZk3BBUeMm8i
-        3DpvPhnK2lGvUXerHEAB9ynref4SiOnkPKAeHE+GlqOWAaN3EMxrImen1UabZsKHf70Zm0
-        ruznY/e3UE7+IVz8zWbqd9ZEbsmJm4Q=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-157-b1kb1bawN9S1NnpusBYh2Q-1; Tue, 07 Jun 2022 14:23:47 -0400
-X-MC-Unique: b1kb1bawN9S1NnpusBYh2Q-1
-Received: by mail-wm1-f72.google.com with SMTP id be12-20020a05600c1e8c00b0039c506b52a4so1920239wmb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:23:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=K5asxgZuJ1ujMS5G/D+zRXTIuzzJ85zczcuYLGDdaiU=;
-        b=YG9PZG1zE9mQQyCjGvOK5Sxk8AMV0jv3VgAlyLYLRInwCpkJS1kweLX/l8VnAlpoJb
-         ZHfhIQpBglBfxRdv/4gRg7AfNyyMPnFMhaBVU8tpz1kt1bF4TbRVHqROg/5+PuuWYabp
-         Jk1j2gmHLqbuRqSaZwuVaFtA1JKW60djA0ocJs9gWUG8/X6E3jXcLL+1H5Ze26emG/6E
-         MBQ0Ix1gnCtbnc217eWw81QNIrs3dgJaJkEDIk0nN3TFk6/tjh8iw9EJbIYcvFYzo1bq
-         5vSCxPK8aAiOUtazPF0L2Ax0HVMyOfW/xUlk+pUn8pSDKUUtM8FKH7gJbQcUI7SR+Ei0
-         fJew==
-X-Gm-Message-State: AOAM530FqvSZpeOyPjBS5W7Hmwyy1vihwh+ZYfvRG6Rsjd7BA1Pdq4XR
-        P6UijC4cH1X3Yle9dH7vbjNGoxOqFgtpTQIY4Fx9whRBA+vSQUOo9LmaF04CK+tUleogqEpCwCo
-        pqH7rAu/AyelMeK2Ojj7eJF6dRNGMV+UKPSuA7ZFEPFlRlAot472qHkusIBO+wtAk7ss8tgeTLW
-        o=
-X-Received: by 2002:a5d:6085:0:b0:213:b9b5:d985 with SMTP id w5-20020a5d6085000000b00213b9b5d985mr25936183wrt.113.1654626226058;
-        Tue, 07 Jun 2022 11:23:46 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJygUAWU18BEnEUrIRuTGd/XPIJF8uGKTTIOeWs5V/3pu465g0xtNSzJBp6qYlJzCjICEjYCLA==
-X-Received: by 2002:a5d:6085:0:b0:213:b9b5:d985 with SMTP id w5-20020a5d6085000000b00213b9b5d985mr25936143wrt.113.1654626225695;
-        Tue, 07 Jun 2022 11:23:45 -0700 (PDT)
-Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id m8-20020a05600c4f4800b003942a244f51sm28267502wmq.42.2022.06.07.11.23.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 11:23:45 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
+        Tue, 7 Jun 2022 15:59:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF0E1BBAE5;
+        Tue,  7 Jun 2022 11:24:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E7B4611B9;
+        Tue,  7 Jun 2022 18:24:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95B1AC385A2;
+        Tue,  7 Jun 2022 18:24:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654626268;
+        bh=NBK0iamOlMrlXkAP/b4ijtRd6i0U/z+DxuS8kwValWw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Z8mkJGBO+L2NUgwxDO/xTZgAop36ireSD2eVY/zhNDNe0TAUWcOnnWvdNHrepIMQa
+         LRTTzkb4yBoKZB0keX1+IXAdizuTteLEL8K+YO7EVn+NmrtSNJT0kqBA4qvG3vJKZ6
+         B0a4aayHGdwZ/3TH99b4EE79FXGoWaefu01HcHnI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     dri-devel@lists.freedesktop.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Laszlo Ersek <lersek@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Gerd Hoffmann <kraxel@redhat.com>, kvm@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>
-Subject: [PATCH v6 1/5] firmware: sysfb: Make sysfb_create_simplefb() return a pdev pointer
-Date:   Tue,  7 Jun 2022 20:23:34 +0200
-Message-Id: <20220607182338.344270-2-javierm@redhat.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 317/772] drm/msm/dp: reset DP controller before transmit phy test pattern
+Date:   Tue,  7 Jun 2022 18:58:29 +0200
+Message-Id: <20220607164958.367663242@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607182338.344270-1-javierm@redhat.com>
-References: <20220607182338.344270-1-javierm@redhat.com>
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This function just returned 0 on success or an errno code on error, but it
-could be useful for sysfb_init() callers to have a pointer to the device.
+From: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+[ Upstream commit 581d69981159b00f0443d171a4b900089f34ccfe ]
 
----
-
-(no changes since v3)
-
-Changes in v3:
-- Add Thomas Zimmermann's Reviewed-by tag to patch #1.
+DP controller state can not switch from video ready state to
+transmit phy pattern state at run time. DP mainlink has to be
+teared down followed by reset controller to default state to have
+DP controller switch to transmit phy test pattern state and start
+generate specified phy test pattern to sinker once main link setup
+again.
 
 Changes in v2:
-- Rebase on top of latest drm-misc-next and fix conflicts (Daniel Vetter).
+-- correct Fixes's commit id
 
- drivers/firmware/sysfb.c          |  4 ++--
- drivers/firmware/sysfb_simplefb.c | 16 ++++++++--------
- include/linux/sysfb.h             | 10 +++++-----
- 3 files changed, 15 insertions(+), 15 deletions(-)
+Fixes: 52352fe2f866 ("drm/msm/dp: use dp_ctrl_off_link_stream during PHY compliance test run")
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Patchwork: https://patchwork.freedesktop.org/patch/483563/
+Link: https://lore.kernel.org/r/1650995939-28467-2-git-send-email-quic_khsieh@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/msm/dp/dp_ctrl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/firmware/sysfb.c b/drivers/firmware/sysfb.c
-index 2bfbb05f7d89..b032f40a92de 100644
---- a/drivers/firmware/sysfb.c
-+++ b/drivers/firmware/sysfb.c
-@@ -46,8 +46,8 @@ static __init int sysfb_init(void)
- 	/* try to create a simple-framebuffer device */
- 	compatible = sysfb_parse_mode(si, &mode);
- 	if (compatible) {
--		ret = sysfb_create_simplefb(si, &mode);
--		if (!ret)
-+		pd = sysfb_create_simplefb(si, &mode);
-+		if (!IS_ERR(pd))
- 			return 0;
- 	}
- 
-diff --git a/drivers/firmware/sysfb_simplefb.c b/drivers/firmware/sysfb_simplefb.c
-index bda8712bfd8c..a353e27f83f5 100644
---- a/drivers/firmware/sysfb_simplefb.c
-+++ b/drivers/firmware/sysfb_simplefb.c
-@@ -57,8 +57,8 @@ __init bool sysfb_parse_mode(const struct screen_info *si,
- 	return false;
- }
- 
--__init int sysfb_create_simplefb(const struct screen_info *si,
--				 const struct simplefb_platform_data *mode)
-+__init struct platform_device *sysfb_create_simplefb(const struct screen_info *si,
-+						     const struct simplefb_platform_data *mode)
- {
- 	struct platform_device *pd;
- 	struct resource res;
-@@ -76,7 +76,7 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
- 		base |= (u64)si->ext_lfb_base << 32;
- 	if (!base || (u64)(resource_size_t)base != base) {
- 		printk(KERN_DEBUG "sysfb: inaccessible VRAM base\n");
--		return -EINVAL;
-+		return ERR_PTR(-EINVAL);
- 	}
- 
- 	/*
-@@ -93,7 +93,7 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
- 	length = mode->height * mode->stride;
- 	if (length > size) {
- 		printk(KERN_WARNING "sysfb: VRAM smaller than advertised\n");
--		return -EINVAL;
-+		return ERR_PTR(-EINVAL);
- 	}
- 	length = PAGE_ALIGN(length);
- 
-@@ -104,11 +104,11 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
- 	res.start = base;
- 	res.end = res.start + length - 1;
- 	if (res.end <= res.start)
--		return -EINVAL;
-+		return ERR_PTR(-EINVAL);
- 
- 	pd = platform_device_alloc("simple-framebuffer", 0);
- 	if (!pd)
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 
- 	sysfb_apply_efi_quirks(pd);
- 
-@@ -124,10 +124,10 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
- 	if (ret)
- 		goto err_put_device;
- 
--	return 0;
-+	return pd;
- 
- err_put_device:
- 	platform_device_put(pd);
- 
--	return ret;
-+	return ERR_PTR(ret);
- }
-diff --git a/include/linux/sysfb.h b/include/linux/sysfb.h
-index b0dcfa26d07b..708152e9037b 100644
---- a/include/linux/sysfb.h
-+++ b/include/linux/sysfb.h
-@@ -72,8 +72,8 @@ static inline void sysfb_apply_efi_quirks(struct platform_device *pd)
- 
- bool sysfb_parse_mode(const struct screen_info *si,
- 		      struct simplefb_platform_data *mode);
--int sysfb_create_simplefb(const struct screen_info *si,
--			  const struct simplefb_platform_data *mode);
-+struct platform_device *sysfb_create_simplefb(const struct screen_info *si,
-+					      const struct simplefb_platform_data *mode);
- 
- #else /* CONFIG_SYSFB_SIMPLE */
- 
-@@ -83,10 +83,10 @@ static inline bool sysfb_parse_mode(const struct screen_info *si,
- 	return false;
- }
- 
--static inline int sysfb_create_simplefb(const struct screen_info *si,
--					 const struct simplefb_platform_data *mode)
-+static inline struct platform_device *sysfb_create_simplefb(const struct screen_info *si,
-+							    const struct simplefb_platform_data *mode)
- {
--	return -EINVAL;
-+	return ERR_PTR(-EINVAL);
- }
- 
- #endif /* CONFIG_SYSFB_SIMPLE */
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+index 8d1ea694d06c..02372495561a 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+@@ -1519,7 +1519,7 @@ static int dp_ctrl_process_phy_test_request(struct dp_ctrl_private *ctrl)
+ 	 * running. Add the global reset just before disabling the
+ 	 * link clocks and core clocks.
+ 	 */
+-	ret = dp_ctrl_off_link_stream(&ctrl->dp_ctrl);
++	ret = dp_ctrl_off(&ctrl->dp_ctrl);
+ 	if (ret) {
+ 		DRM_ERROR("failed to disable DP controller\n");
+ 		return ret;
 -- 
-2.36.1
+2.35.1
+
+
 
