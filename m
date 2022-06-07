@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 851B8CCA490
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:36:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3753CCCA482
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:36:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380969AbiFGVgS (ORCPT
+        id S1355036AbiFGVgi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:36:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47372 "EHLO
+        Tue, 7 Jun 2022 17:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359741AbiFGUZc (ORCPT
+        with ESMTP id S1376930AbiFGUks (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:25:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E71DA1D687D;
-        Tue,  7 Jun 2022 11:32:27 -0700 (PDT)
+        Tue, 7 Jun 2022 16:40:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0315C1EE6FA;
+        Tue,  7 Jun 2022 11:38:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 144FA60DDA;
-        Tue,  7 Jun 2022 18:32:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21AB2C385A2;
-        Tue,  7 Jun 2022 18:32:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 816D1B8233E;
+        Tue,  7 Jun 2022 18:38:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2769C385A2;
+        Tue,  7 Jun 2022 18:38:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626746;
-        bh=CakWQlkgcTcHycDmYfpLseC+49w5FLguEIomY2Elg2M=;
+        s=korg; t=1654627108;
+        bh=qgIarFfVi30ywsrZa61GfYB3RcK1JjLpu8nUPCGSHOs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0kKpwASrQptcPb8ztDO3B2a0QlvsQM4tlSQ8y2LrcmfURu+g/NF1k/ksb087S3YXG
-         hrQHDRSxi+3KqBqGy6Z5LCDfW8NMx7Dw1qB4HiptSdr6xKjfSdKooMp0cnaCVK1rfc
-         gssmWQfMEGaLnUyV3u8h7YhrrBi4CXfRzHMly92s=
+        b=eEwliN9hiDgfHoWfJPuQZNdPVDoxuUzbyHcioYj7sxOfPVrNSZJR7z+LxB/+4xyhv
+         FX7UzIfGw2n1uBHqCidtBs6IRxLto933vYBCNHo5eadArCKHEPssVS05wIWIfE6YeO
+         xzKKsUkySDBt22lNKZZmPVsrO37namT9f0JQl60o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Caleb Connolly <kc@postmarketos.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Juri Lelli <juri.lelli@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 489/772] pinctrl/rockchip: support deferring other gpio params
-Date:   Tue,  7 Jun 2022 19:01:21 +0200
-Message-Id: <20220607165003.395135404@linuxfoundation.org>
+Subject: [PATCH 5.17 603/772] tracing/timerlat: Notify IRQ new max latency only if stop tracing is set
+Date:   Tue,  7 Jun 2022 19:03:15 +0200
+Message-Id: <20220607165006.709755739@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,212 +53,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Caleb Connolly <kc@postmarketos.org>
+From: Daniel Bristot de Oliveira <bristot@kernel.org>
 
-[ Upstream commit 8ce5ef64546850294b021497046588a7abcebe96 ]
+[ Upstream commit aa748949b4e665f473bc5abdc5f66029cb5f5522 ]
 
-Add support for deferring other params like PIN_CONFIG_INPUT_ENABLE.
-This will be used to add support for PIN_CONFIG_INPUT_ENABLE to the
-driver.
+Currently, the notification of a new max latency is sent from
+timerlat's IRQ handler anytime a new max latency is found.
 
-Fixes: e7165b1dff06 ("pinctrl/rockchip: add a queue for deferred pin output settings on probe")
-Fixes: 59dd178e1d7c ("gpio/rockchip: fetch deferred output settings on probe")
-Signed-off-by: Caleb Connolly <kc@postmarketos.org>
-Link: https://lore.kernel.org/r/20220328005005.72492-2-kc@postmarketos.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+While this behavior is not wrong, the send IPI overhead itself
+will increase the thread latency and that is not the desired
+effect (tracing overhead).
+
+Moreover, the thread will notify a new max latency again because
+the thread latency as it is always higher than the IRQ latency
+that woke it up.
+
+The only case in which it is helpful to notify a new max latency
+from IRQ is when stop tracing (for the IRQ) is set, as in this
+case, the thread will not be dispatched.
+
+Notify a new max latency from the IRQ handler only if stop tracing is
+set for the IRQ handler.
+
+Link: https://lkml.kernel.org/r/2c2d9a56c0886c8402ba320de32856cbbb10c2bb.1652175637.git.bristot@kernel.org
+
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Reported-by: Clark Williams <williams@redhat.com>
+Fixes: a955d7eac177 ("trace: Add timerlat tracer")
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpio-rockchip.c       | 24 ++++++++-----
- drivers/pinctrl/pinctrl-rockchip.c | 54 ++++++++++++++++--------------
- drivers/pinctrl/pinctrl-rockchip.h |  7 ++--
- 3 files changed, 50 insertions(+), 35 deletions(-)
+ kernel/trace/trace_osnoise.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpio/gpio-rockchip.c b/drivers/gpio/gpio-rockchip.c
-index 099e358d2491..bcf5214e3586 100644
---- a/drivers/gpio/gpio-rockchip.c
-+++ b/drivers/gpio/gpio-rockchip.c
-@@ -19,6 +19,7 @@
- #include <linux/of_address.h>
- #include <linux/of_device.h>
- #include <linux/of_irq.h>
-+#include <linux/pinctrl/pinconf-generic.h>
- #include <linux/regmap.h>
+diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
+index 5e3c62a08fc0..61c3fff488bf 100644
+--- a/kernel/trace/trace_osnoise.c
++++ b/kernel/trace/trace_osnoise.c
+@@ -1576,11 +1576,12 @@ static enum hrtimer_restart timerlat_irq(struct hrtimer *timer)
  
- #include "../pinctrl/core.h"
-@@ -706,7 +707,7 @@ static int rockchip_gpio_probe(struct platform_device *pdev)
- 	struct device_node *pctlnp = of_get_parent(np);
- 	struct pinctrl_dev *pctldev = NULL;
- 	struct rockchip_pin_bank *bank = NULL;
--	struct rockchip_pin_output_deferred *cfg;
-+	struct rockchip_pin_deferred *cfg;
- 	static int gpio;
- 	int id, ret;
+ 	trace_timerlat_sample(&s);
  
-@@ -747,15 +748,22 @@ static int rockchip_gpio_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	while (!list_empty(&bank->deferred_output)) {
--		cfg = list_first_entry(&bank->deferred_output,
--				       struct rockchip_pin_output_deferred, head);
-+	while (!list_empty(&bank->deferred_pins)) {
-+		cfg = list_first_entry(&bank->deferred_pins,
-+				       struct rockchip_pin_deferred, head);
- 		list_del(&cfg->head);
- 
--		ret = rockchip_gpio_direction_output(&bank->gpio_chip, cfg->pin, cfg->arg);
--		if (ret)
--			dev_warn(dev, "setting output pin %u to %u failed\n", cfg->pin, cfg->arg);
+-	notify_new_max_latency(diff);
 -
-+		switch (cfg->param) {
-+		case PIN_CONFIG_OUTPUT:
-+			ret = rockchip_gpio_direction_output(&bank->gpio_chip, cfg->pin, cfg->arg);
-+			if (ret)
-+				dev_warn(dev, "setting output pin %u to %u failed\n", cfg->pin,
-+					 cfg->arg);
-+			break;
-+		default:
-+			dev_warn(dev, "unknown deferred config param %d\n", cfg->param);
-+			break;
+-	if (osnoise_data.stop_tracing)
+-		if (time_to_us(diff) >= osnoise_data.stop_tracing)
++	if (osnoise_data.stop_tracing) {
++		if (time_to_us(diff) >= osnoise_data.stop_tracing) {
+ 			osnoise_stop_tracing();
++			notify_new_max_latency(diff);
 +		}
- 		kfree(cfg);
- 	}
++	}
  
-diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
-index 65fa305b5f59..66ed3e4ceb20 100644
---- a/drivers/pinctrl/pinctrl-rockchip.c
-+++ b/drivers/pinctrl/pinctrl-rockchip.c
-@@ -2110,19 +2110,20 @@ static bool rockchip_pinconf_pull_valid(struct rockchip_pin_ctrl *ctrl,
- 	return false;
- }
- 
--static int rockchip_pinconf_defer_output(struct rockchip_pin_bank *bank,
--					 unsigned int pin, u32 arg)
-+static int rockchip_pinconf_defer_pin(struct rockchip_pin_bank *bank,
-+					 unsigned int pin, u32 param, u32 arg)
- {
--	struct rockchip_pin_output_deferred *cfg;
-+	struct rockchip_pin_deferred *cfg;
- 
- 	cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
- 	if (!cfg)
- 		return -ENOMEM;
- 
- 	cfg->pin = pin;
-+	cfg->param = param;
- 	cfg->arg = arg;
- 
--	list_add_tail(&cfg->head, &bank->deferred_output);
-+	list_add_tail(&cfg->head, &bank->deferred_pins);
- 
- 	return 0;
- }
-@@ -2143,6 +2144,25 @@ static int rockchip_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
- 		param = pinconf_to_config_param(configs[i]);
- 		arg = pinconf_to_config_argument(configs[i]);
- 
-+		if (param == (PIN_CONFIG_OUTPUT | PIN_CONFIG_INPUT_ENABLE)) {
-+			/*
-+			 * Check for gpio driver not being probed yet.
-+			 * The lock makes sure that either gpio-probe has completed
-+			 * or the gpio driver hasn't probed yet.
-+			 */
-+			mutex_lock(&bank->deferred_lock);
-+			if (!gpio || !gpio->direction_output) {
-+				rc = rockchip_pinconf_defer_pin(bank, pin - bank->pin_base, param,
-+								arg);
-+				mutex_unlock(&bank->deferred_lock);
-+				if (rc)
-+					return rc;
-+
-+				break;
-+			}
-+			mutex_unlock(&bank->deferred_lock);
-+		}
-+
- 		switch (param) {
- 		case PIN_CONFIG_BIAS_DISABLE:
- 			rc =  rockchip_set_pull(bank, pin - bank->pin_base,
-@@ -2171,22 +2191,6 @@ static int rockchip_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
- 			if (rc != RK_FUNC_GPIO)
- 				return -EINVAL;
- 
--			/*
--			 * Check for gpio driver not being probed yet.
--			 * The lock makes sure that either gpio-probe has completed
--			 * or the gpio driver hasn't probed yet.
--			 */
--			mutex_lock(&bank->deferred_lock);
--			if (!gpio || !gpio->direction_output) {
--				rc = rockchip_pinconf_defer_output(bank, pin - bank->pin_base, arg);
--				mutex_unlock(&bank->deferred_lock);
--				if (rc)
--					return rc;
--
--				break;
--			}
--			mutex_unlock(&bank->deferred_lock);
--
- 			rc = gpio->direction_output(gpio, pin - bank->pin_base,
- 						    arg);
- 			if (rc)
-@@ -2500,7 +2504,7 @@ static int rockchip_pinctrl_register(struct platform_device *pdev,
- 			pdesc++;
- 		}
- 
--		INIT_LIST_HEAD(&pin_bank->deferred_output);
-+		INIT_LIST_HEAD(&pin_bank->deferred_pins);
- 		mutex_init(&pin_bank->deferred_lock);
- 	}
- 
-@@ -2763,7 +2767,7 @@ static int rockchip_pinctrl_remove(struct platform_device *pdev)
- {
- 	struct rockchip_pinctrl *info = platform_get_drvdata(pdev);
- 	struct rockchip_pin_bank *bank;
--	struct rockchip_pin_output_deferred *cfg;
-+	struct rockchip_pin_deferred *cfg;
- 	int i;
- 
- 	of_platform_depopulate(&pdev->dev);
-@@ -2772,9 +2776,9 @@ static int rockchip_pinctrl_remove(struct platform_device *pdev)
- 		bank = &info->ctrl->pin_banks[i];
- 
- 		mutex_lock(&bank->deferred_lock);
--		while (!list_empty(&bank->deferred_output)) {
--			cfg = list_first_entry(&bank->deferred_output,
--					       struct rockchip_pin_output_deferred, head);
-+		while (!list_empty(&bank->deferred_pins)) {
-+			cfg = list_first_entry(&bank->deferred_pins,
-+					       struct rockchip_pin_deferred, head);
- 			list_del(&cfg->head);
- 			kfree(cfg);
- 		}
-diff --git a/drivers/pinctrl/pinctrl-rockchip.h b/drivers/pinctrl/pinctrl-rockchip.h
-index 91f10279d084..98a01a616da6 100644
---- a/drivers/pinctrl/pinctrl-rockchip.h
-+++ b/drivers/pinctrl/pinctrl-rockchip.h
-@@ -171,7 +171,7 @@ struct rockchip_pin_bank {
- 	u32				toggle_edge_mode;
- 	u32				recalced_mask;
- 	u32				route_mask;
--	struct list_head		deferred_output;
-+	struct list_head		deferred_pins;
- 	struct mutex			deferred_lock;
- };
- 
-@@ -247,9 +247,12 @@ struct rockchip_pin_config {
- 	unsigned int		nconfigs;
- };
- 
--struct rockchip_pin_output_deferred {
-+enum pin_config_param;
-+
-+struct rockchip_pin_deferred {
- 	struct list_head head;
- 	unsigned int pin;
-+	enum pin_config_param param;
- 	u32 arg;
- };
+ 	wake_up_process(tlat->kthread);
  
 -- 
 2.35.1
