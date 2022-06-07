@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEC30C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B333C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:23:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239874AbiFHCWm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:22:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41848 "EHLO
+        id S245591AbiFHCXB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:23:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444878AbiFHCLa (ORCPT
+        with ESMTP id S1444868AbiFHCL2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:11:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0CCD2714A;
-        Tue,  7 Jun 2022 12:25:49 -0700 (PDT)
+        Tue, 7 Jun 2022 22:11:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C430927B997;
+        Tue,  7 Jun 2022 12:25:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E905609D0;
-        Tue,  7 Jun 2022 19:25:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C95AC385A2;
-        Tue,  7 Jun 2022 19:25:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C7A2611D3;
+        Tue,  7 Jun 2022 19:25:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2322BC385A2;
+        Tue,  7 Jun 2022 19:25:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629948;
-        bh=K0bdUzOfeyMkxgs4pOZ4/dubG5F1GljN0qv8FWivZ/Q=;
+        s=korg; t=1654629910;
+        bh=whKsu2kQ5R/kSc9mTeCeMK1+7GSKVLf+ZR+OdqXreFQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xA+tovNwnjbKJv+jysR5q66+3Ck3+BwVWGFA7fNAt0h7K6w6b7Iw+qIE7FXC1Hh4B
-         x2Hcr+p0ibXj8UvL+C27WOUlDGCBTzSjvpjN+LfU+tqxtYE44DNcyhkar4MYSYH41p
-         Cu+AIbJV8sgcCt4+sbDKbG6XJ5mf7wBNuGHNi1ug=
+        b=KWjPsuoGwCRGEvVgC4uG5BeESN+lPr5UUY8GjH87popIxkEuHc8jKFddlWQdMJe91
+         TPVCXOBIGWsok+uA9qCL1vM7yo2q89nKBH6/FXDywgcpZhm91MwvaTA6t4oD6L02/3
+         u7nr+VSndhubdTpyikoqQ1ZbDjJ0S68bXV6TZRy4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fine Fan <ffan@redhat.com>,
-        Xiao Ni <xni@redhat.com>, Song Liu <song@kernel.org>
-Subject: [PATCH 5.18 875/879] md: Dont set mddev private to NULL in raid0 pers->free
-Date:   Tue,  7 Jun 2022 19:06:33 +0200
-Message-Id: <20220607165028.255117406@linuxfoundation.org>
+        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.18 862/879] net: ipa: fix page free in ipa_endpoint_replenish_one()
+Date:   Tue,  7 Jun 2022 19:06:20 +0200
+Message-Id: <20220607165027.876591870@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -48,72 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiao Ni <xni@redhat.com>
+From: Alex Elder <elder@linaro.org>
 
-commit 0f2571ad7a30ff6b33cde142439f9378669f8b4f upstream.
+commit 70132763d5d2e94cd185e3aa92ac6a3ba89068fa upstream.
 
-In normal stop process, it does like this:
-   do_md_stop
-      |
-   __md_stop (pers->free(); mddev->private=NULL)
-      |
-   md_free (free mddev)
-__md_stop sets mddev->private to NULL after pers->free. The raid device
-will be stopped and mddev memory is free. But in reshape, it doesn't
-free the mddev and mddev will still be used in new raid.
+Currently the (possibly compound) pages used for receive buffers are
+freed using __free_pages().  But according to this comment above the
+definition of that function, that's wrong:
+    If you want to use the page's reference count to decide
+    when to free the allocation, you should allocate a compound
+    page, and use put_page() instead of __free_pages().
 
-In reshape, it first sets mddev->private to new_pers and then runs
-old_pers->free(). Now raid0 sets mddev->private to NULL in raid0_free.
-The new raid can't work anymore. It will panic when dereference
-mddev->private because of NULL pointer dereference.
+Convert the call to __free_pages() in ipa_endpoint_replenish_one()
+to use put_page() instead.
 
-It can panic like this:
-[63010.814972] kernel BUG at drivers/md/raid10.c:928!
-[63010.819778] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
-[63010.825011] CPU: 3 PID: 44437 Comm: md0_resync Kdump: loaded Not tainted 5.14.0-86.el9.x86_64 #1
-[63010.833789] Hardware name: Dell Inc. PowerEdge R6415/07YXFK, BIOS 1.15.0 09/11/2020
-[63010.841440] RIP: 0010:raise_barrier+0x161/0x170 [raid10]
-[63010.865508] RSP: 0018:ffffc312408bbc10 EFLAGS: 00010246
-[63010.870734] RAX: 0000000000000000 RBX: ffffa00bf7d39800 RCX: 0000000000000000
-[63010.877866] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffffa00bf7d39800
-[63010.884999] RBP: 0000000000000000 R08: fffffa4945e74400 R09: 0000000000000000
-[63010.892132] R10: ffffa00eed02f798 R11: 0000000000000000 R12: ffffa00bbc435200
-[63010.899266] R13: ffffa00bf7d39800 R14: 0000000000000400 R15: 0000000000000003
-[63010.906399] FS:  0000000000000000(0000) GS:ffffa00eed000000(0000) knlGS:0000000000000000
-[63010.914485] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[63010.920229] CR2: 00007f5cfbe99828 CR3: 0000000105efe000 CR4: 00000000003506e0
-[63010.927363] Call Trace:
-[63010.929822]  ? bio_reset+0xe/0x40
-[63010.933144]  ? raid10_alloc_init_r10buf+0x60/0xa0 [raid10]
-[63010.938629]  raid10_sync_request+0x756/0x1610 [raid10]
-[63010.943770]  md_do_sync.cold+0x3e4/0x94c
-[63010.947698]  md_thread+0xab/0x160
-[63010.951024]  ? md_write_inc+0x50/0x50
-[63010.954688]  kthread+0x149/0x170
-[63010.957923]  ? set_kthread_struct+0x40/0x40
-[63010.962107]  ret_from_fork+0x22/0x30
-
-Removing the code that sets mddev->private to NULL in raid0 can fix
-problem.
-
-Fixes: 0c031fd37f69 (md: Move alloc/free acct bioset in to personality)
-Reported-by: Fine Fan <ffan@redhat.com>
-Signed-off-by: Xiao Ni <xni@redhat.com>
-Signed-off-by: Song Liu <song@kernel.org>
+Fixes: 6a606b90153b8 ("net: ipa: allocate transaction in replenish loop")
+Signed-off-by: Alex Elder <elder@linaro.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/raid0.c |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/ipa/ipa_endpoint.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/md/raid0.c
-+++ b/drivers/md/raid0.c
-@@ -361,7 +361,6 @@ static void free_conf(struct mddev *mdde
- 	kfree(conf->strip_zone);
- 	kfree(conf->devlist);
- 	kfree(conf);
--	mddev->private = NULL;
- }
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -1062,7 +1062,7 @@ static int ipa_endpoint_replenish_one(st
  
- static void raid0_free(struct mddev *mddev, void *priv)
+ 	ret = gsi_trans_page_add(trans, page, len, offset);
+ 	if (ret)
+-		__free_pages(page, get_order(buffer_size));
++		put_page(page);
+ 	else
+ 		trans->data = page;	/* transaction owns page now */
+ 
 
 
