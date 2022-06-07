@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D4C8CCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46EC4CCA498
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352081AbiFGSCi (ORCPT
+        id S1349669AbiFGSAV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:02:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
+        Tue, 7 Jun 2022 14:00:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348123AbiFGRof (ORCPT
+        with ESMTP id S1348549AbiFGRlK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:44:35 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E028612FEDC;
-        Tue,  7 Jun 2022 10:35:22 -0700 (PDT)
+        Tue, 7 Jun 2022 13:41:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A0F1207C9;
+        Tue,  7 Jun 2022 10:34:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BF395CE23E8;
-        Tue,  7 Jun 2022 17:35:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0F63C385A5;
-        Tue,  7 Jun 2022 17:35:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0ADB161407;
+        Tue,  7 Jun 2022 17:33:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D6A0C3411C;
+        Tue,  7 Jun 2022 17:33:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623319;
-        bh=eT2rY+egWWLTu5m/rOOkVnZ039w9hgxWfrjwoEbtly4=;
+        s=korg; t=1654623238;
+        bh=b02OKA1A1W0ydsM+LzILpcpHVphl9AfihNQsWT2xcDI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J7AAvxH6B2/l1rMwU3w3JQlKda2NcJR5WdyLJfIDKoskOJIavAeq4L441O7+4rMHG
-         04JUXlXPkLQ/68Lbi16575UGg7Wzk0tt8y9AEUobHjfttUEMlfyxusa3qrtFx/116f
-         7JWtZwUVGKwP7bxpFq3pFw0ei9/LqDeOZaCFiD0w=
+        b=PUvjmD107BID/qgNmYdb8OC9lGB+5kB+EczHF7XRYmAPxvFvJ/9UhLCBL0pKhpSfQ
+         bqEaqLne6T0FzNPEGZODIgymGtvRhViWNz3EtN5oVmXV4O3hgToSwBC3oL7yc9PO0M
+         EBRlKafQHTX6B1A6suq2vgj2kdKqQsZbM3181sZs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Nico Boehr <nrb@linux.ibm.com>
-Subject: [PATCH 5.10 372/452] s390/perf: obtain sie_block from the right address
-Date:   Tue,  7 Jun 2022 19:03:49 +0200
-Message-Id: <20220607164919.650888870@linuxfoundation.org>
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.10 346/452] f2fs: fix to clear dirty inode in f2fs_evict_inode()
+Date:   Tue,  7 Jun 2022 19:03:23 +0200
+Message-Id: <20220607164918.867813844@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -52,46 +49,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nico Boehr <nrb@linux.ibm.com>
+From: Chao Yu <chao@kernel.org>
 
-commit c9bfb460c3e4da2462e16b0f0b200990b36b1dd2 upstream.
+commit f2db71053dc0409fae785096ad19cce4c8a95af7 upstream.
 
-Since commit 1179f170b6f0 ("s390: fix fpu restore in entry.S"), the
-sie_block pointer is located at empty1[1], but in sie_block() it was
-taken from empty1[0].
+As Yanming reported in bugzilla:
 
-This leads to a random pointer being dereferenced, possibly causing
-system crash.
+https://bugzilla.kernel.org/show_bug.cgi?id=215904
 
-This problem can be observed when running a simple guest with an endless
-loop and recording the cpu-clock event:
+The kernel message is shown below:
 
-  sudo perf kvm --guestvmlinux=<guestkernel> --guest top -e cpu-clock
+kernel BUG at fs/f2fs/inode.c:825!
+Call Trace:
+ evict+0x282/0x4e0
+ __dentry_kill+0x2b2/0x4d0
+ shrink_dentry_list+0x17c/0x4f0
+ shrink_dcache_parent+0x143/0x1e0
+ do_one_tree+0x9/0x30
+ shrink_dcache_for_umount+0x51/0x120
+ generic_shutdown_super+0x5c/0x3a0
+ kill_block_super+0x90/0xd0
+ kill_f2fs_super+0x225/0x310
+ deactivate_locked_super+0x78/0xc0
+ cleanup_mnt+0x2b7/0x480
+ task_work_run+0xc8/0x150
+ exit_to_user_mode_prepare+0x14a/0x150
+ syscall_exit_to_user_mode+0x1d/0x40
+ do_syscall_64+0x48/0x90
 
-With this fix, the correct guest address is shown.
+The root cause is: inode node and dnode node share the same nid,
+so during f2fs_evict_inode(), dnode node truncation will invalidate
+its NAT entry, so when truncating inode node, it fails due to
+invalid NAT entry, result in inode is still marked as dirty, fix
+this issue by clearing dirty for inode and setting SBI_NEED_FSCK
+flag in filesystem.
 
-Fixes: 1179f170b6f0 ("s390: fix fpu restore in entry.S")
+output from dump.f2fs:
+[print_node_info: 354] Node ID [0xf:15] is inode
+i_nid[0]                      		[0x       f : 15]
+
 Cc: stable@vger.kernel.org
-Acked-by: Christian Borntraeger <borntraeger@de.ibm.com>
-Acked-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Nico Boehr <nrb@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/kernel/perf_event.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/f2fs/inode.c |   16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
---- a/arch/s390/kernel/perf_event.c
-+++ b/arch/s390/kernel/perf_event.c
-@@ -51,7 +51,7 @@ static struct kvm_s390_sie_block *sie_bl
- 	if (!stack)
- 		return NULL;
+--- a/fs/f2fs/inode.c
++++ b/fs/f2fs/inode.c
+@@ -757,8 +757,22 @@ retry:
+ 		f2fs_lock_op(sbi);
+ 		err = f2fs_remove_inode_page(inode);
+ 		f2fs_unlock_op(sbi);
+-		if (err == -ENOENT)
++		if (err == -ENOENT) {
+ 			err = 0;
++
++			/*
++			 * in fuzzed image, another node may has the same
++			 * block address as inode's, if it was truncated
++			 * previously, truncation of inode node will fail.
++			 */
++			if (is_inode_flag_set(inode, FI_DIRTY_INODE)) {
++				f2fs_warn(F2FS_I_SB(inode),
++					"f2fs_evict_inode: inconsistent node id, ino:%lu",
++					inode->i_ino);
++				f2fs_inode_synced(inode);
++				set_sbi_flag(sbi, SBI_NEED_FSCK);
++			}
++		}
+ 	}
  
--	return (struct kvm_s390_sie_block *) stack->empty1[0];
-+	return (struct kvm_s390_sie_block *)stack->empty1[1];
- }
- 
- static bool is_in_guest(struct pt_regs *regs)
+ 	/* give more chances, if ENOMEM case */
 
 
