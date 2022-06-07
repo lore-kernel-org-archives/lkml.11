@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E9CFCCA48A
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:46:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 025D0CCA491
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:46:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382019AbiFGVqG (ORCPT
+        id S1382106AbiFGVqc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:46:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51526 "EHLO
+        Tue, 7 Jun 2022 17:46:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379005AbiFGUwr (ORCPT
+        with ESMTP id S1378543AbiFGUwO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:52:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D85E606D3;
-        Tue,  7 Jun 2022 11:43:35 -0700 (PDT)
+        Tue, 7 Jun 2022 16:52:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6091021CB;
+        Tue,  7 Jun 2022 11:42:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B294E61295;
-        Tue,  7 Jun 2022 18:43:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDB9DC385A2;
-        Tue,  7 Jun 2022 18:43:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CBFD0B8220B;
+        Tue,  7 Jun 2022 18:42:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26CE6C385A2;
+        Tue,  7 Jun 2022 18:42:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627414;
-        bh=4v+cu7e+Xt75WklgaATgEEarc6UDXVoriEbxTMfiz7c=;
+        s=korg; t=1654627342;
+        bh=bEMjmt/fs8kRVG7tWEi/Vb+6ioSU5XDC+V8l26sZGkg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q6hp4j1ITkWFVki+DWjWBXbP7rj0Qnd+Dj+/6VZyVgpokCciYPW60V97tFxegvLM6
-         u/AOgW6MQzm2sY6BXUFc5+FfdqfeoG7RXuGCVMYQZu+9Q/QIa40E/al+SArZPD2Un6
-         QYtb5e5L2nLIFoy5OyAKIp+1TPd/NTdC/CHt1dKc=
+        b=knVTFDoOUFdizxltrdlrVZ6x/pIAFEjKA5QZIdVa4p5R1vd0sQIk/Kidupq9if3g3
+         /wCNdrkuTRMQGNF29+3jb+ogIEOEi89/hMBwbF3Vom0WtnGrAkl9eH2reBOliSXiXA
+         6ZLsPCzpKx2/EnLrEiZb7Q4fOosFyf3hEKrje0uk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, pa@panix.com,
-        Alexander Wetzel <alexander@wetzel-home.de>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.17 729/772] rtl818x: Prevent using not initialized queues
-Date:   Tue,  7 Jun 2022 19:05:21 +0200
-Message-Id: <20220607165010.522757570@linuxfoundation.org>
+        stable@vger.kernel.org, Bean Huo <beanhuo@micron.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.17 706/772] mmc: core: Allows to override the timeout value for ioctl() path
+Date:   Tue,  7 Jun 2022 19:04:58 +0200
+Message-Id: <20220607165009.851901533@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,70 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Wetzel <alexander@wetzel-home.de>
+From: Bean Huo <beanhuo@micron.com>
 
-commit 746285cf81dc19502ab238249d75f5990bd2d231 upstream.
+commit 23e09be254f95a5b75cd87f91a4014f3b46dda3f upstream.
 
-Using not existing queues can panic the kernel with rtl8180/rtl8185 cards.
-Ignore the skb priority for those cards, they only have one tx queue. Pierre
-Asselin (pa@panix.com) reported the kernel crash in the Gentoo forum:
+Occasionally, user-land applications initiate longer timeout values for certain commands
+through ioctl() system call. But so far we are still using a fixed timeout of 10 seconds
+in mmc_poll_for_busy() on the ioctl() path, even if a custom timeout is specified in the
+userspace application. This patch allows custom timeout values to override this default
+timeout values on the ioctl path.
 
-https://forums.gentoo.org/viewtopic-t-1147832-postdays-0-postorder-asc-start-25.html
-
-He also confirmed that this patch fixes the issue. In summary this happened:
-
-After updating wpa_supplicant from 2.9 to 2.10 the kernel crashed with a
-"divide error: 0000" when connecting to an AP. Control port tx now tries to
-use IEEE80211_AC_VO for the priority, which wpa_supplicants starts to use in
-2.10.
-
-Since only the rtl8187se part of the driver supports QoS, the priority
-of the skb is set to IEEE80211_AC_BE (2) by mac80211 for rtl8180/rtl8185
-cards.
-
-rtl8180 is then unconditionally reading out the priority and finally crashes on
-drivers/net/wireless/realtek/rtl818x/rtl8180/dev.c line 544 without this
-patch:
-	idx = (ring->idx + skb_queue_len(&ring->queue)) % ring->entries
-
-"ring->entries" is zero for rtl8180/rtl8185 cards, tx_ring[2] never got
-initialized.
-
-Cc: stable@vger.kernel.org
-Reported-by: pa@panix.com
-Tested-by: pa@panix.com
-Signed-off-by: Alexander Wetzel <alexander@wetzel-home.de>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220422145228.7567-1-alexander@wetzel-home.de
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Bean Huo <beanhuo@micron.com>
+Acked-by: Avri Altman <avri.altman@wdc.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://lore.kernel.org/r/20220423221623.1074556-3-huobean@gmail.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/realtek/rtl818x/rtl8180/dev.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/mmc/core/block.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/net/wireless/realtek/rtl818x/rtl8180/dev.c
-+++ b/drivers/net/wireless/realtek/rtl818x/rtl8180/dev.c
-@@ -460,8 +460,10 @@ static void rtl8180_tx(struct ieee80211_
- 	struct rtl8180_priv *priv = dev->priv;
- 	struct rtl8180_tx_ring *ring;
- 	struct rtl8180_tx_desc *entry;
-+	unsigned int prio = 0;
- 	unsigned long flags;
--	unsigned int idx, prio, hw_prio;
-+	unsigned int idx, hw_prio;
-+
- 	dma_addr_t mapping;
- 	u32 tx_flags;
- 	u8 rc_flags;
-@@ -470,7 +472,9 @@ static void rtl8180_tx(struct ieee80211_
- 	/* do arithmetic and then convert to le16 */
- 	u16 frame_duration = 0;
+--- a/drivers/mmc/core/block.c
++++ b/drivers/mmc/core/block.c
+@@ -609,11 +609,11 @@ static int __mmc_blk_ioctl_cmd(struct mm
  
--	prio = skb_get_queue_mapping(skb);
-+	/* rtl8180/rtl8185 only has one useable tx queue */
-+	if (dev->queues > IEEE80211_AC_BK)
-+		prio = skb_get_queue_mapping(skb);
- 	ring = &priv->tx_ring[prio];
+ 	if (idata->rpmb || (cmd.flags & MMC_RSP_R1B) == MMC_RSP_R1B) {
+ 		/*
+-		 * Ensure RPMB/R1B command has completed by polling CMD13
+-		 * "Send Status".
++		 * Ensure RPMB/R1B command has completed by polling CMD13 "Send Status". Here we
++		 * allow to override the default timeout value if a custom timeout is specified.
+ 		 */
+-		err = mmc_poll_for_busy(card, MMC_BLK_TIMEOUT_MS, false,
+-					MMC_BUSY_IO);
++		err = mmc_poll_for_busy(card, idata->ic.cmd_timeout_ms ? : MMC_BLK_TIMEOUT_MS,
++					false, MMC_BUSY_IO);
+ 	}
  
- 	mapping = dma_map_single(&priv->pdev->dev, skb->data, skb->len,
+ 	return err;
 
 
