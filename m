@@ -2,90 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED26DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:57:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 288C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:58:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345282AbiFGQ5p (ORCPT
+        id S1345293AbiFGQ64 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 12:57:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56446 "EHLO
+        Tue, 7 Jun 2022 12:58:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344320AbiFGQ5n (ORCPT
+        with ESMTP id S1344095AbiFGQ6z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 12:57:43 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C45EA27FE3
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 09:57:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654621062; x=1686157062;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ByfqHSUyr5zD+LfMcI0HbBfFVGYb2wsqtAn5SPC4XIA=;
-  b=ST4ZrW9kC14ElDA8bJ/yKxuU3LHZxz8YsKNUs1qAV3Gs3VvNimqyNEtV
-   o7Ie87FQ2iU/BXVDtk25lcbUPYxVEfZtDle+jsGV+T4cEUdjko5uznxBz
-   imaipei+FlR2zVKlZrOTds8ucmpQ7v6V2yFsxoAwHW/psbeIskfMC/nYN
-   hAJWctwaJWV/9/MBa+qcFsfpn8WGPRNM/hO+NfB6iwtThtystsKSLh0/X
-   D0H8ITQE2oOb5BmiPZJVEwDEeFuXctL4VtyT1xeiGsENs3ofrwNCZf+a8
-   Y/kE15lUb4Db91T0AKzUcGO/azxfSJx02pOoXPuS5+rc3c9LyJOodHrPq
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="259613232"
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="259613232"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 09:49:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="565504289"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 07 Jun 2022 09:49:35 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id D4D65109; Tue,  7 Jun 2022 19:49:38 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Dan Williams <dan.j.williams@intel.com>, nvdimm@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Cc:     Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH v1 1/1] nvdimm/namespace: drop nested variable in create_namespace_pmem()
-Date:   Tue,  7 Jun 2022 19:49:37 +0300
-Message-Id: <20220607164937.33967-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 7 Jun 2022 12:58:55 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E6DA7F1379;
+        Tue,  7 Jun 2022 09:58:53 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 80A89143D;
+        Tue,  7 Jun 2022 09:58:53 -0700 (PDT)
+Received: from ampere-altra-2-1.usa.Arm.com (ampere-altra-2-1.usa.arm.com [10.118.91.158])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4A9C83F66F;
+        Tue,  7 Jun 2022 09:58:53 -0700 (PDT)
+From:   Yoan Picchi <yoan.picchi@arm.com>
+To:     Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>, qat-linux@intel.com,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Andre Przywara <andre.przywara@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>
+Subject: [PATCH 0/2] Crypto: Remove x86 dependency on QAT drivers
+Date:   Tue,  7 Jun 2022 16:58:38 +0000
+Message-Id: <20220607165840.66931-1-yoan.picchi@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kernel build bot reported:
+The QAT acceleration card can be very helpfull for some tasks like dealing
+with IPSEC but it is currently restricted to be used only on x86 machine.
+Looking at the code we didn't see any reasons why those drivers might not
+work on other architectures. We've successfully built all of them on x86,
+arm64, arm32, mips64, powerpc64, riscv64 and sparc64.
 
-  namespace_devs.c:1991:10: warning: Local variable 'uuid' shadows outer variable [shadowVariable]
+We also have tested the driver with an Intel Corporation C62x Chipset
+QuickAssist Technology (rev 04) PCIe card on an arm64 server. After the numa
+patch, it works with the AF_ALG crypto userland interface, allowing us to
+encrypt some data with cbc for instance. We've also successfully created some
+VF, bound them to DPDK, and used the card this way, thus showing some real
+life usecases of x86 do work on arm64 too.
 
-Refactor create_namespace_pmem() by dropping a nested version of
-the same variable.
+Andre Przywara (1):
+  crypto: qat: replace get_current_node() with numa_node_id()
 
-Fixes: d1c6e08e7503 ("libnvdimm/labels: Add uuid helpers")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/nvdimm/namespace_devs.c | 2 --
- 1 file changed, 2 deletions(-)
+Yoan Picchi (1):
+  Removes the x86 dependency on the QAT drivers
 
-diff --git a/drivers/nvdimm/namespace_devs.c b/drivers/nvdimm/namespace_devs.c
-index 0f863fda56e6..dfade66bab73 100644
---- a/drivers/nvdimm/namespace_devs.c
-+++ b/drivers/nvdimm/namespace_devs.c
-@@ -1704,8 +1704,6 @@ static struct device *create_namespace_pmem(struct nd_region *nd_region,
- 	res->flags = IORESOURCE_MEM;
- 
- 	for (i = 0; i < nd_region->ndr_mappings; i++) {
--		uuid_t uuid;
--
- 		nsl_get_uuid(ndd, nd_label, &uuid);
- 		if (has_uuid_at_pos(nd_region, &uuid, cookie, i))
- 			continue;
+ drivers/crypto/qat/Kconfig                     | 14 +++++++-------
+ drivers/crypto/qat/qat_common/adf_common_drv.h |  5 -----
+ drivers/crypto/qat/qat_common/qat_algs.c       |  4 ++--
+ drivers/crypto/qat/qat_common/qat_asym_algs.c  |  4 ++--
+ 4 files changed, 11 insertions(+), 16 deletions(-)
+
 -- 
-2.35.1
+2.25.1
 
