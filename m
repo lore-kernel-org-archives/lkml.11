@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CAABC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3881C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346849AbiFGRyD (ORCPT
+        id S1348391AbiFGRyJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:54:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60310 "EHLO
+        Tue, 7 Jun 2022 13:54:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348189AbiFGRgH (ORCPT
+        with ESMTP id S1348260AbiFGRgK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:36:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22329119047;
-        Tue,  7 Jun 2022 10:32:19 -0700 (PDT)
+        Tue, 7 Jun 2022 13:36:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A56D6C56F;
+        Tue,  7 Jun 2022 10:32:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2D4E60BC6;
-        Tue,  7 Jun 2022 17:32:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF7A5C385A5;
-        Tue,  7 Jun 2022 17:32:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C2BFB822B7;
+        Tue,  7 Jun 2022 17:32:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67094C385A5;
+        Tue,  7 Jun 2022 17:32:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623136;
-        bh=m4s0WglICdo491eXbZcJ6FwNYedwvtRMrugEDzy/LpQ=;
+        s=korg; t=1654623141;
+        bh=2clv+eIChWCU75Deg8PZdCXvoxeLsnNaYAdk+/FkBa4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YivNSuWw1OjdRnh6zRjA62RImkH0f1MUsYtT+HJ0Ofc6pItvJA3gBuAvcNDXMEwUs
-         kJax9m0yRkn0HSZ4sG9zPFu2dt/350Rxo14p5iLxuHB06S4AhtL9LfN8sPGcVYVWw1
-         icJ9gtArlGIwbeTeI8hw1+7mtr4F0PdHLgKpkbWE=
+        b=ajFGlSpyJZnBrH0jvuC0eJhEFmSQ9aAa74HhvgOs6gHmXRWp0uVNlUMNupM29Ovp8
+         9D+y4gXp0rDZCvz5AEjuN5aC32gb/weMfXuUHjZh4JIDzJ4rY9EMDCx1WvWhXAE1qc
+         yhp7zPSpankficdYKDKkIJnzjqWa+7dJ09Pl+MhY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Badger <ebadger@purestorage.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Ashok Raj <ashok.raj@intel.com>,
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 308/452] PCI/AER: Clear MULTI_ERR_COR/UNCOR_RCV bits
-Date:   Tue,  7 Jun 2022 19:02:45 +0200
-Message-Id: <20220607164917.736481207@linuxfoundation.org>
+Subject: [PATCH 5.10 310/452] powerpc/64: Only WARN if __pa()/__va() called with bad addresses
+Date:   Tue,  7 Jun 2022 19:02:47 +0200
+Message-Id: <20220607164917.796945335@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -53,86 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-[ Upstream commit 203926da2bff8e172200a2f11c758987af112d4a ]
+[ Upstream commit c4bce84d0bd3f396f702d69be2e92bbd8af97583 ]
 
-When a Root Port or Root Complex Event Collector receives an error Message
-e.g., ERR_COR, it sets PCI_ERR_ROOT_COR_RCV in the Root Error Status
-register and logs the Requester ID in the Error Source Identification
-register.  If it receives a second ERR_COR Message before software clears
-PCI_ERR_ROOT_COR_RCV, hardware sets PCI_ERR_ROOT_MULTI_COR_RCV and the
-Requester ID is lost.
+We added checks to __pa() / __va() to ensure they're only called with
+appropriate addresses. But using BUG_ON() is too strong, it means
+virt_addr_valid() will BUG when DEBUG_VIRTUAL is enabled.
 
-In the following scenario, PCI_ERR_ROOT_MULTI_COR_RCV was never cleared:
+Instead switch them to warnings, arm64 does the same.
 
-  - hardware receives ERR_COR message
-  - hardware sets PCI_ERR_ROOT_COR_RCV
-  - aer_irq() entered
-  - aer_irq(): status = pci_read_config_dword(PCI_ERR_ROOT_STATUS)
-  - aer_irq(): now status == PCI_ERR_ROOT_COR_RCV
-  - hardware receives second ERR_COR message
-  - hardware sets PCI_ERR_ROOT_MULTI_COR_RCV
-  - aer_irq(): pci_write_config_dword(PCI_ERR_ROOT_STATUS, status)
-  - PCI_ERR_ROOT_COR_RCV is cleared; PCI_ERR_ROOT_MULTI_COR_RCV is set
-  - aer_irq() entered again
-  - aer_irq(): status = pci_read_config_dword(PCI_ERR_ROOT_STATUS)
-  - aer_irq(): now status == PCI_ERR_ROOT_MULTI_COR_RCV
-  - aer_irq() exits because PCI_ERR_ROOT_COR_RCV not set
-  - PCI_ERR_ROOT_MULTI_COR_RCV is still set
-
-The same problem occurred with ERR_NONFATAL/ERR_FATAL Messages and
-PCI_ERR_ROOT_UNCOR_RCV and PCI_ERR_ROOT_MULTI_UNCOR_RCV.
-
-Fix the problem by queueing an AER event and clearing the Root Error Status
-bits when any of these bits are set:
-
-  PCI_ERR_ROOT_COR_RCV
-  PCI_ERR_ROOT_UNCOR_RCV
-  PCI_ERR_ROOT_MULTI_COR_RCV
-  PCI_ERR_ROOT_MULTI_UNCOR_RCV
-
-See the bugzilla link for details from Eric about how to reproduce this
-problem.
-
-[bhelgaas: commit log, move repro details to bugzilla]
-Fixes: e167bfcaa4cd ("PCI: aerdrv: remove magical ROOT_ERR_STATUS_MASKS")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215992
-Link: https://lore.kernel.org/r/20220418150237.1021519-1-sathyanarayanan.kuppuswamy@linux.intel.com
-Reported-by: Eric Badger <ebadger@purestorage.com>
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Ashok Raj <ashok.raj@intel.com>
+Fixes: 4dd7554a6456 ("powerpc/64: Add VIRTUAL_BUG_ON checks for __va and __pa addresses")
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220406145802.538416-5-mpe@ellerman.id.au
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pcie/aer.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ arch/powerpc/include/asm/page.h | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
-index 65dff5f3457a..c40546eeecb3 100644
---- a/drivers/pci/pcie/aer.c
-+++ b/drivers/pci/pcie/aer.c
-@@ -101,6 +101,11 @@ struct aer_stats {
- #define ERR_COR_ID(d)			(d & 0xffff)
- #define ERR_UNCOR_ID(d)			(d >> 16)
- 
-+#define AER_ERR_STATUS_MASK		(PCI_ERR_ROOT_UNCOR_RCV |	\
-+					PCI_ERR_ROOT_COR_RCV |		\
-+					PCI_ERR_ROOT_MULTI_COR_RCV |	\
-+					PCI_ERR_ROOT_MULTI_UNCOR_RCV)
+diff --git a/arch/powerpc/include/asm/page.h b/arch/powerpc/include/asm/page.h
+index f2c5c26869f1..03ae544eb6cc 100644
+--- a/arch/powerpc/include/asm/page.h
++++ b/arch/powerpc/include/asm/page.h
+@@ -216,6 +216,9 @@ static inline bool pfn_valid(unsigned long pfn)
+ #define __pa(x) ((phys_addr_t)(unsigned long)(x) - VIRT_PHYS_OFFSET)
+ #else
+ #ifdef CONFIG_PPC64
 +
- static int pcie_aer_disable;
- static pci_ers_result_t aer_root_reset(struct pci_dev *dev);
++#define VIRTUAL_WARN_ON(x)	WARN_ON(IS_ENABLED(CONFIG_DEBUG_VIRTUAL) && (x))
++
+ /*
+  * gcc miscompiles (unsigned long)(&static_var) - PAGE_OFFSET
+  * with -mcmodel=medium, so we use & and | instead of - and + on 64-bit.
+@@ -223,13 +226,13 @@ static inline bool pfn_valid(unsigned long pfn)
+  */
+ #define __va(x)								\
+ ({									\
+-	VIRTUAL_BUG_ON((unsigned long)(x) >= PAGE_OFFSET);		\
++	VIRTUAL_WARN_ON((unsigned long)(x) >= PAGE_OFFSET);		\
+ 	(void *)(unsigned long)((phys_addr_t)(x) | PAGE_OFFSET);	\
+ })
  
-@@ -1187,7 +1192,7 @@ static irqreturn_t aer_irq(int irq, void *context)
- 	struct aer_err_source e_src = {};
+ #define __pa(x)								\
+ ({									\
+-	VIRTUAL_BUG_ON((unsigned long)(x) < PAGE_OFFSET);		\
++	VIRTUAL_WARN_ON((unsigned long)(x) < PAGE_OFFSET);		\
+ 	(unsigned long)(x) & 0x0fffffffffffffffUL;			\
+ })
  
- 	pci_read_config_dword(rp, aer + PCI_ERR_ROOT_STATUS, &e_src.status);
--	if (!(e_src.status & (PCI_ERR_ROOT_UNCOR_RCV|PCI_ERR_ROOT_COR_RCV)))
-+	if (!(e_src.status & AER_ERR_STATUS_MASK))
- 		return IRQ_NONE;
- 
- 	pci_read_config_dword(rp, aer + PCI_ERR_ROOT_ERR_SRC, &e_src.id);
 -- 
 2.35.1
 
