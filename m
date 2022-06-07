@@ -2,104 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3FFEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:39:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D94BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:39:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381073AbiFGVj1 (ORCPT
+        id S1381083AbiFGVjb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:39:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37212 "EHLO
+        Tue, 7 Jun 2022 17:39:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376912AbiFGUtD (ORCPT
+        with ESMTP id S1377161AbiFGUuQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:49:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07E3E1F77C3;
-        Tue,  7 Jun 2022 11:39:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 160F7612F2;
-        Tue,  7 Jun 2022 18:39:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23CE6C385A2;
-        Tue,  7 Jun 2022 18:39:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627176;
-        bh=CE9fNNcldNDuuD0Cqy824P8Phcg5NsT9JARyufuV3vQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nThiGnTLpVK1M5ClnjXONw0v4YaZhP6fBwsNdBLzY+sxnI8BFlbUAV8UTYvWBPUAc
-         LOMapejBwme0URouPZyjd1YBKtghw1AJNeLPNQyiX4VzxDrf7MfLz/DzYZa0bc8VXQ
-         vtxuatt3ec6ufPlsgBGMpLvRsVedDO/A0D+U4x1M=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Theodore Tso <tytso@mit.edu>,
-        syzbot+c7358a3cd05ee786eb31@syzkaller.appspotmail.com
-Subject: [PATCH 5.17 643/772] ext4: filter out EXT4_FC_REPLAY from on-disk superblock field s_state
-Date:   Tue,  7 Jun 2022 19:03:55 +0200
-Message-Id: <20220607165008.014707886@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 16:50:16 -0400
+X-Greylist: delayed 61 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 11:39:57 PDT
+Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099651F77E0
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:39:56 -0700 (PDT)
+X-ASG-Debug-ID: 1654627180-1cf43917f33964e0001-xx1T2L
+Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with ESMTP id DY7NxP6F0bNdGTkt; Tue, 07 Jun 2022 14:39:40 -0400 (EDT)
+X-Barracuda-Envelope-From: tonyb@cybernetics.com
+X-ASG-Whitelist: Client
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=cybernetics.com; s=mail;
+        bh=9dUzxpvwws15FcrE4ulKEcPQJF2dj8RsJsfXaNUjy8Y=;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:Cc:To:From:
+        Content-Language:Subject:MIME-Version:Date:Message-ID; b=Ou8kArJXBehA8GyTgqeQ
+        adcuNOIrLO8fMzz0ojoRfoLJz+wpXSuttbZmibRiMkyO4zjv3Cc4jorMTfjLqzNGd4Ra5SNqwUzks
+        CrBOzuZhKxfRzb7xZ87l9rErl5HNWx/eNoZqJ1E4btmP6cEUUNx+veehFLQCr6cAhEojgbXAZs=
+Received: from [10.157.2.224] (HELO [192.168.200.1])
+  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
+  with ESMTPS id 11859391; Tue, 07 Jun 2022 14:39:40 -0400
+Message-ID: <7ba0de95-5f5b-e140-c4ee-ff34e70e2546@cybernetics.com>
+Date:   Tue, 7 Jun 2022 14:39:40 -0400
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: [PATCH v6 01/11] dmapool: remove checks for dev == NULL
+Content-Language: en-US
+X-ASG-Orig-Subj: [PATCH v6 01/11] dmapool: remove checks for dev == NULL
+From:   Tony Battersby <tonyb@cybernetics.com>
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc:     iommu@lists.linux-foundation.org, kernel-team@fb.com,
+        Matthew Wilcox <willy@infradead.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Tony Lindgren <tony@atomide.com>
+References: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
+In-Reply-To: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Barracuda-Connect: UNKNOWN[10.10.4.126]
+X-Barracuda-Start-Time: 1654627180
+X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
+X-Barracuda-BRTS-Status: 1
+X-Virus-Scanned: by bsmtpd at cybernetics.com
+X-Barracuda-Scan-Msg-Size: 3594
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+dmapool originally tried to support pools without a device because
+dma_alloc_coherent() supports allocations without a device.  But nobody
+ended up using dma pools without a device, and trying to do so will
+result in an oops.  So remove the checks for pool->dev == NULL since they
+are unneeded bloat.
 
-commit c878bea3c9d724ddfa05a813f30de3d25a0ba83f upstream.
-
-The EXT4_FC_REPLAY bit in sbi->s_mount_state is used to indicate that
-we are in the middle of replay the fast commit journal.  This was
-actually a mistake, since the sbi->s_mount_info is initialized from
-es->s_state.  Arguably s_mount_state is misleadingly named, but the
-name is historical --- s_mount_state and s_state dates back to ext2.
-
-What should have been used is the ext4_{set,clear,test}_mount_flag()
-inline functions, which sets EXT4_MF_* bits in sbi->s_mount_flags.
-
-The problem with using EXT4_FC_REPLAY is that a maliciously corrupted
-superblock could result in EXT4_FC_REPLAY getting set in
-s_mount_state.  This bypasses some sanity checks, and this can trigger
-a BUG() in ext4_es_cache_extent().  As a easy-to-backport-fix, filter
-out the EXT4_FC_REPLAY bit for now.  We should eventually transition
-away from EXT4_FC_REPLAY to something like EXT4_MF_REPLAY.
-
-Cc: stable@kernel.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Link: https://lore.kernel.org/r/20220420192312.1655305-1-phind.uet@gmail.com
-Link: https://lore.kernel.org/r/20220517174028.942119-1-tytso@mit.edu
-Reported-by: syzbot+c7358a3cd05ee786eb31@syzkaller.appspotmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
 ---
- fs/ext4/super.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ mm/dmapool.c | 42 +++++++++++-------------------------------
+ 1 file changed, 11 insertions(+), 31 deletions(-)
 
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -4874,7 +4874,7 @@ static int __ext4_fill_super(struct fs_c
- 					sbi->s_inodes_per_block;
- 	sbi->s_desc_per_block = blocksize / EXT4_DESC_SIZE(sb);
- 	sbi->s_sbh = bh;
--	sbi->s_mount_state = le16_to_cpu(es->s_state);
-+	sbi->s_mount_state = le16_to_cpu(es->s_state) & ~EXT4_FC_REPLAY;
- 	sbi->s_addr_per_block_bits = ilog2(EXT4_ADDR_PER_BLOCK(sb));
- 	sbi->s_desc_per_block_bits = ilog2(EXT4_DESC_PER_BLOCK(sb));
+diff --git a/mm/dmapool.c b/mm/dmapool.c
+index a7eb5d0eb2da..0f89de408cbe 100644
+--- a/mm/dmapool.c
++++ b/mm/dmapool.c
+@@ -275,7 +275,7 @@ void dma_pool_destroy(struct dma_pool *pool)
+ 	mutex_lock(&pools_reg_lock);
+ 	mutex_lock(&pools_lock);
+ 	list_del(&pool->pools);
+-	if (pool->dev && list_empty(&pool->dev->dma_pools))
++	if (list_empty(&pool->dev->dma_pools))
+ 		empty = true;
+ 	mutex_unlock(&pools_lock);
+ 	if (empty)
+@@ -284,12 +284,8 @@ void dma_pool_destroy(struct dma_pool *pool)
  
-@@ -6437,7 +6437,8 @@ static int __ext4_remount(struct fs_cont
- 				if (err)
- 					goto restore_opts;
+ 	list_for_each_entry_safe(page, tmp, &pool->page_list, page_list) {
+ 		if (is_page_busy(page)) {
+-			if (pool->dev)
+-				dev_err(pool->dev, "%s %s, %p busy\n", __func__,
+-					pool->name, page->vaddr);
+-			else
+-				pr_err("%s %s, %p busy\n", __func__,
+-				       pool->name, page->vaddr);
++			dev_err(pool->dev, "%s %s, %p busy\n", __func__,
++				pool->name, page->vaddr);
+ 			/* leak the still-in-use consistent memory */
+ 			list_del(&page->page_list);
+ 			kfree(page);
+@@ -351,12 +347,8 @@ void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
+ 		for (i = sizeof(page->offset); i < pool->size; i++) {
+ 			if (data[i] == POOL_POISON_FREED)
+ 				continue;
+-			if (pool->dev)
+-				dev_err(pool->dev, "%s %s, %p (corrupted)\n",
+-					__func__, pool->name, retval);
+-			else
+-				pr_err("%s %s, %p (corrupted)\n",
+-					__func__, pool->name, retval);
++			dev_err(pool->dev, "%s %s, %p (corrupted)\n",
++				__func__, pool->name, retval);
+ 
+ 			/*
+ 			 * Dump the first 4 bytes even if they are not
+@@ -411,12 +403,8 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
+ 	page = pool_find_page(pool, dma);
+ 	if (!page) {
+ 		spin_unlock_irqrestore(&pool->lock, flags);
+-		if (pool->dev)
+-			dev_err(pool->dev, "%s %s, %p/%pad (bad dma)\n",
+-				__func__, pool->name, vaddr, &dma);
+-		else
+-			pr_err("%s %s, %p/%pad (bad dma)\n",
+-			       __func__, pool->name, vaddr, &dma);
++		dev_err(pool->dev, "%s %s, %p/%pad (bad dma)\n",
++			__func__, pool->name, vaddr, &dma);
+ 		return;
+ 	}
+ 
+@@ -426,12 +414,8 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
+ #ifdef	DMAPOOL_DEBUG
+ 	if ((dma - page->dma) != offset) {
+ 		spin_unlock_irqrestore(&pool->lock, flags);
+-		if (pool->dev)
+-			dev_err(pool->dev, "%s %s, %p (bad vaddr)/%pad\n",
+-				__func__, pool->name, vaddr, &dma);
+-		else
+-			pr_err("%s %s, %p (bad vaddr)/%pad\n",
+-			       __func__, pool->name, vaddr, &dma);
++		dev_err(pool->dev, "%s %s, %p (bad vaddr)/%pad\n",
++			__func__, pool->name, vaddr, &dma);
+ 		return;
+ 	}
+ 	{
+@@ -442,12 +426,8 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
+ 				continue;
  			}
--			sbi->s_mount_state = le16_to_cpu(es->s_state);
-+			sbi->s_mount_state = (le16_to_cpu(es->s_state) &
-+					      ~EXT4_FC_REPLAY);
- 
- 			err = ext4_setup_super(sb, es, 0);
- 			if (err)
-
+ 			spin_unlock_irqrestore(&pool->lock, flags);
+-			if (pool->dev)
+-				dev_err(pool->dev, "%s %s, dma %pad already free\n",
+-					__func__, pool->name, &dma);
+-			else
+-				pr_err("%s %s, dma %pad already free\n",
+-				       __func__, pool->name, &dma);
++			dev_err(pool->dev, "%s %s, dma %pad already free\n",
++				__func__, pool->name, &dma);
+ 			return;
+ 		}
+ 	}
+-- 
+2.25.1
 
