@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1131DCCA486
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47EC5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385951AbiFGWr0 (ORCPT
+        id S1385862AbiFGWrO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:47:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37732 "EHLO
+        Tue, 7 Jun 2022 18:47:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380851AbiFGViQ (ORCPT
+        with ESMTP id S1380824AbiFGViP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:38:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCEDE1C13A;
-        Tue,  7 Jun 2022 12:05:26 -0700 (PDT)
+        Tue, 7 Jun 2022 17:38:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B9A4E8B97;
+        Tue,  7 Jun 2022 12:05:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 78435617EE;
-        Tue,  7 Jun 2022 19:05:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 849F4C385A2;
-        Tue,  7 Jun 2022 19:05:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 159BB6184D;
+        Tue,  7 Jun 2022 19:05:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C33DC385A2;
+        Tue,  7 Jun 2022 19:05:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628725;
-        bh=Whr85xBJzYK0FWJhwzET+EpOWlc68uR+NHnFIy1/Ln8=;
+        s=korg; t=1654628717;
+        bh=EvHff7RLEks0ueha8CxQImz90j4dNeG3LekJ1DQmmow=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1vHMLFaMAKNoMUmufzO+LZ0KJhvjvNMsg+HtCBwU+a1ObRr+ZpQrAvpv62QMgeW+8
-         lUuREANm2icpYl66d3EssrGGrEdzZwe3bK44iAbXx1wWVLZ8Y672UnFvmHnvBFoJhe
-         gqnUrplXln30JVICLjrxSK9NBQlY6xDwqczDslss=
+        b=P0yoEwurDzUL8X8Y7rd3ppTiNrhZjhoTg7tybB/hf2l3Sn9kFSoicun15qFg+LZPK
+         w8VyODJt/5y7yNVi4fMJPoQptRShhDWhRCU3zpxEQCxgrAjAIKA9wPVakqPirSL5C8
+         8dSPnwIK87nRjGWAzg/Bf3b2skI7VV5pmt8/ipng=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
         Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 433/879] mt76: mt7915: fix possible uninitialized pointer dereference in mt7986_wmac_gpio_setup
-Date:   Tue,  7 Jun 2022 18:59:11 +0200
-Message-Id: <20220607165015.438710968@linuxfoundation.org>
+Subject: [PATCH 5.18 431/879] mt76: mt7915: fix unbounded shift in mt7915_mcu_beacon_mbss
+Date:   Tue,  7 Jun 2022 18:59:09 +0200
+Message-Id: <20220607165015.379960149@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,32 +51,62 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit 9bd6823f5a64b6465708b244eecc9b7dd4b01bfc ]
+[ Upstream commit aa796f12091aa4758366f5171fd9cba2ff574ba3 ]
 
-Add default case for type switch in mt7986_wmac_gpio_setup routine in
-order to avoid a possible uninitialized pointer dereference.
+Fix the following smatch static checker warning:
+	drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:1872 mt7915_mcu_beacon_mbss()
+	error: undefined (user controlled) shift '(((1))) << (data[2])'
 
-Fixes: 99ad32a4ca3a2 ("mt76: mt7915: add support for MT7986")
+Rely on mac80211 definitions for ieee80211_bssid_index subelement.
+
+Fixes: 6b7f9aff7c67 ("mt76: mt7915: introduce 802.11ax multi-bss support")
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/soc.c | 2 ++
- 1 file changed, 2 insertions(+)
+ .../net/wireless/mediatek/mt76/mt7915/mcu.c   | 20 ++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/soc.c b/drivers/net/wireless/mediatek/mt76/mt7915/soc.c
-index 3028c02cb840..be448d471b03 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/soc.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/soc.c
-@@ -210,6 +210,8 @@ static int mt7986_wmac_gpio_setup(struct mt7915_dev *dev)
- 		if (IS_ERR_OR_NULL(state))
- 			return -EINVAL;
- 		break;
-+	default:
-+		return -EINVAL;
- 	}
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+index e7a6f80e7755..736c9c342baa 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+@@ -1854,7 +1854,8 @@ mt7915_mcu_beacon_mbss(struct sk_buff *rskb, struct sk_buff *skb,
+ 			continue;
  
- 	ret = pinctrl_select_state(pinctrl, state);
+ 		for_each_element(sub_elem, elem->data + 1, elem->datalen - 1) {
+-			const u8 *data;
++			const struct ieee80211_bssid_index *idx;
++			const u8 *idx_ie;
+ 
+ 			if (sub_elem->id || sub_elem->datalen < 4)
+ 				continue; /* not a valid BSS profile */
+@@ -1862,14 +1863,19 @@ mt7915_mcu_beacon_mbss(struct sk_buff *rskb, struct sk_buff *skb,
+ 			/* Find WLAN_EID_MULTI_BSSID_IDX
+ 			 * in the merged nontransmitted profile
+ 			 */
+-			data = cfg80211_find_ie(WLAN_EID_MULTI_BSSID_IDX,
+-						sub_elem->data,
+-						sub_elem->datalen);
+-			if (!data || data[1] < 1 || !data[2])
++			idx_ie = cfg80211_find_ie(WLAN_EID_MULTI_BSSID_IDX,
++						  sub_elem->data,
++						  sub_elem->datalen);
++			if (!idx_ie || idx_ie[1] < sizeof(*idx))
+ 				continue;
+ 
+-			mbss->offset[data[2]] = cpu_to_le16(data - skb->data);
+-			mbss->bitmap |= cpu_to_le32(BIT(data[2]));
++			idx = (void *)(idx_ie + 2);
++			if (!idx->bssid_index || idx->bssid_index > 31)
++				continue;
++
++			mbss->offset[idx->bssid_index] =
++				cpu_to_le16(idx_ie - skb->data);
++			mbss->bitmap |= cpu_to_le32(BIT(idx->bssid_index));
+ 		}
+ 	}
+ }
 -- 
 2.35.1
 
