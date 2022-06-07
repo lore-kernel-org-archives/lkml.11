@@ -2,151 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DFD7CCA490
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FA82CCA48F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386764AbiFHB0q (ORCPT
+        id S1386254AbiFHB03 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:26:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58002 "EHLO
+        Tue, 7 Jun 2022 21:26:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382676AbiFGXjF (ORCPT
+        with ESMTP id S1387123AbiFGWt5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:39:05 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68CA16F34A
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:33 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id g3-20020a170902868300b00163cd75c014so10004148plo.14
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=b2y6HIM0yFuupb/Asz+ocPiupQ2BH2KLPsPF8kzjrkw=;
-        b=m9SlpsGTqZNrbbB28kCBcURN1oC2as0iS1/ePdYn+z9eVKChoC0y5YYloYFRM6viLn
-         MwdmyILQveyGVDpO50TdB8AnQZapzqw9WtsZ9c6tol2WHl2eOmthABe6MA9jd0KVU++E
-         uPc51dyF0P2g9keIN2hwDykX7XCJI5GZg1SfKPjrscBSw/U1/4swV3Tnn8MxFbdbocYw
-         ifJr35+TuoVkg2KGklLjtR3nccuVqd2rieEm7huqqv6g82byL4uL2QqnZBFjmUr2Sh/8
-         pioxGoHE/ToGuY4gzekI9l/Llte/+S1BNToib5RDZOD1haOfL7gcI/jvzaqTcHFgIcog
-         /iTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=b2y6HIM0yFuupb/Asz+ocPiupQ2BH2KLPsPF8kzjrkw=;
-        b=cDib4hvp7z9PkiST3lQAq9CSxDpWGMJy+4LiJjZiox2Fm2W4ipl//E7nOTQ/7MqbiE
-         1WCMnMS4pvH44nMTNOyW9OKdHFo9ClcHI2c/N03iKoiSqjdiDa3Rj4H8C6Kb90I8D1M0
-         OKs/OS+IpoVEZpmJmCIPHZ1q9DIcBczBGfoTz0EcOWIVqUhlMc/QgGSU5M1SUPwXCSfT
-         avZ2SfsoZqDq8xuHjeD5yecSIRh/K1oge8vIoZpDihlJf+fd4qst7oxXRnAbuCl33vi0
-         /XC/K6b/vRkucM2DJpjjTIY/v0mszDOH7YIH7uN5Gf02aM0/ISJpgkhczjbDHT9iNf3g
-         TjkA==
-X-Gm-Message-State: AOAM532v/D4GepJ4Fk/jZQxCqSg9WiozJqjg18EDreR8fvHktzuTYaKQ
-        8/oN7Wj2dgMD/hsSoJGYyg9rQsgQGEo=
-X-Google-Smtp-Source: ABdhPJwgtT75q6YVsktniY/VHzibvVaHAIcTz9UivR7D0BpOChyXwBs/01A9v7fwrZCt9bFCGn2ylPNciYw=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:aa7:8890:0:b0:51c:454f:c93f with SMTP id
- z16-20020aa78890000000b0051c454fc93fmr3586124pfe.35.1654637793364; Tue, 07
- Jun 2022 14:36:33 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue,  7 Jun 2022 21:35:58 +0000
-In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
-Message-Id: <20220607213604.3346000-10-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220607213604.3346000-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v5 09/15] KVM: nVMX: Drop nested_vmx_pmu_refresh()
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
-        David Matlack <dmatlack@google.com>,
-        Oliver Upton <oupton@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 7 Jun 2022 18:49:57 -0400
+X-Greylist: delayed 3076 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 12:38:30 PDT
+Received: from 2.mo560.mail-out.ovh.net (2.mo560.mail-out.ovh.net [188.165.53.149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59FF02A90C1
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:38:29 -0700 (PDT)
+Received: from player732.ha.ovh.net (unknown [10.111.208.131])
+        by mo560.mail-out.ovh.net (Postfix) with ESMTP id 5E50D246C9
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:01:08 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player732.ha.ovh.net (Postfix) with ESMTPSA id 5C9AD1D75E8C8;
+        Tue,  7 Jun 2022 19:01:02 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-101G00425171465-c27e-4da5-ab29-ec544616d68f,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Jens Frederich <jfrederich@gmail.com>,
+        Jon Nettleton <jon.nettleton@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>,
+        linux-staging@lists.linux.dev
+Subject: [PATCH] staging: olpc_dcon: Use backlight helper
+Date:   Tue,  7 Jun 2022 21:00:49 +0200
+Message-Id: <20220607190049.1132154-1-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11561866145982154412
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudefvdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejfedvrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheeitd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Upton <oupton@google.com>
+Instead of retrieving the backlight brightness in struct
+backlight_properties manually, and then checking whether the backlight
+should be on at all, use backlight_get_brightness() which does all
+this and insulates this from future changes.
 
-nested_vmx_pmu_refresh() is now unneeded, as the call to
-nested_vmx_entry_exit_ctls_update() in vmx_vcpu_after_set_cpuid()
-guarantees that the VM-{Entry,Exit} control MSR changes are applied
-after setting CPUID. Drop all vestiges of nested_vmx_pmu_refresh().
-
-No functional change intended.
-
-Signed-off-by: Oliver Upton <oupton@google.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Cc: Jens Frederich <jfrederich@gmail.com>
+Cc: Jon Nettleton <jon.nettleton@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-staging@lists.linux.dev
 ---
- arch/x86/kvm/vmx/nested.c    | 22 ----------------------
- arch/x86/kvm/vmx/nested.h    |  2 --
- arch/x86/kvm/vmx/pmu_intel.c |  3 ---
- 3 files changed, 27 deletions(-)
+ drivers/staging/olpc_dcon/olpc_dcon.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index d1c21d387716..4ba0e5540908 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -4847,28 +4847,6 @@ int get_vmx_mem_address(struct kvm_vcpu *vcpu, unsigned long exit_qualification,
- 	return 0;
- }
- 
--void nested_vmx_pmu_refresh(struct kvm_vcpu *vcpu,
--			    bool vcpu_has_perf_global_ctrl)
--{
--	struct vcpu_vmx *vmx;
--
--	if (!nested_vmx_allowed(vcpu))
--		return;
--
--	vmx = to_vmx(vcpu);
--	if (vcpu_has_perf_global_ctrl) {
--		vmx->nested.msrs.entry_ctls_high |=
--				VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL;
--		vmx->nested.msrs.exit_ctls_high |=
--				VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL;
--	} else {
--		vmx->nested.msrs.entry_ctls_high &=
--				~VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL;
--		vmx->nested.msrs.exit_ctls_high &=
--				~VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL;
--	}
--}
--
- static int nested_vmx_get_vmptr(struct kvm_vcpu *vcpu, gpa_t *vmpointer,
- 				int *ret)
+diff --git a/drivers/staging/olpc_dcon/olpc_dcon.c b/drivers/staging/olpc_dcon/olpc_dcon.c
+index 7284cb4ac395..b9d570e9ad3b 100644
+--- a/drivers/staging/olpc_dcon/olpc_dcon.c
++++ b/drivers/staging/olpc_dcon/olpc_dcon.c
+@@ -517,10 +517,7 @@ static struct device_attribute dcon_device_files[] = {
+ static int dcon_bl_update(struct backlight_device *dev)
  {
-diff --git a/arch/x86/kvm/vmx/nested.h b/arch/x86/kvm/vmx/nested.h
-index 129ae4e01f7c..88b00a7359e4 100644
---- a/arch/x86/kvm/vmx/nested.h
-+++ b/arch/x86/kvm/vmx/nested.h
-@@ -32,8 +32,6 @@ int vmx_set_vmx_msr(struct kvm_vcpu *vcpu, u32 msr_index, u64 data);
- int vmx_get_vmx_msr(struct nested_vmx_msrs *msrs, u32 msr_index, u64 *pdata);
- int get_vmx_mem_address(struct kvm_vcpu *vcpu, unsigned long exit_qualification,
- 			u32 vmx_instruction_info, bool wr, int len, gva_t *ret);
--void nested_vmx_pmu_refresh(struct kvm_vcpu *vcpu,
--			    bool vcpu_has_perf_global_ctrl);
- void nested_mark_vmcs12_pages_dirty(struct kvm_vcpu *vcpu);
- bool nested_vmx_check_io_bitmaps(struct kvm_vcpu *vcpu, unsigned int port,
- 				 int size);
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index 6ce3b066f7d9..515ab6594333 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -597,9 +597,6 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
- 	bitmap_set(pmu->all_valid_pmc_idx,
- 		INTEL_PMC_MAX_GENERIC, pmu->nr_arch_fixed_counters);
- 
--	nested_vmx_pmu_refresh(vcpu,
--			       intel_is_valid_msr(vcpu, MSR_CORE_PERF_GLOBAL_CTRL, false));
+ 	struct dcon_priv *dcon = bl_get_data(dev);
+-	u8 level = dev->props.brightness & 0x0F;
 -
- 	if (cpuid_model_is_consistent(vcpu))
- 		x86_perf_get_lbr(&lbr_desc->records);
- 	else
+-	if (dev->props.power != FB_BLANK_UNBLANK)
+-		level = 0;
++	u8 level = backlight_get_brightness(dev) & 0x0F;
+ 
+ 	if (level != dcon->bl_val)
+ 		dcon_set_backlight(dcon, level);
+
+base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
 -- 
-2.36.1.255.ge46751e96f-goog
+2.30.2
 
