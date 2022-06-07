@@ -2,120 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21ED8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:52:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DCA2CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:52:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353172AbiFGSw0 (ORCPT
+        id S1353279AbiFGSwl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:52:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58122 "EHLO
+        Tue, 7 Jun 2022 14:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348852AbiFGSSW (ORCPT
+        with ESMTP id S1348997AbiFGSSY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:18:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39EB8E7338;
-        Tue,  7 Jun 2022 10:53:20 -0700 (PDT)
+        Tue, 7 Jun 2022 14:18:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62EFDE732F;
+        Tue,  7 Jun 2022 10:53:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3810617B4;
-        Tue,  7 Jun 2022 17:53:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75B11C3411C;
-        Tue,  7 Jun 2022 17:53:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624399;
-        bh=uTEg04H4UeGHZAZVp/bvD+TiVLWrnnrWSihosKeUwgw=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8897B8234A;
+        Tue,  7 Jun 2022 17:53:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22BA1C341C0;
+        Tue,  7 Jun 2022 17:53:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624396;
+        bh=iNab9yIrCCieKssBqHt39K2CfW9y3HdUyNf5D2URuPc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lX44tFINdJ2lymCOoYvcn+SSB+E3eUzw8spPZFs6CRid5+KuTHS1zXUf0Pf0qQt7h
-         5HQ/eeq7nsyVPJS9xgZOLY2jRiIvDx1RI9+hPOSyWSImVvxOMmz7iMm6z5xDnBJBlH
-         URiyV6emQ1FFRdpXFdVbQFKlnD8gw9++53NLDWdHV/fpOR7yVfXGoM7HJaxNE/2Muv
-         tC9VxETdimk/CH6GottScPP/xHcmQaPBpOdC/HtOGp800O2j5SCv8h1KWCg2Pf28Jx
-         9d40bYW7iOE0jYO9xdgZydbV5ulBM5DmHoTmgH9z4NCMTkIB3r6B3uBeOIs7Qpw91H
-         isWZm3OJnZUmQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, fabioaiuto83@gmail.com,
-        hdegoede@redhat.com, sevinj.aghayeva@gmail.com,
-        linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.17 05/60] drivers: staging: rtl8723bs: Fix deadlock in rtw_surveydone_event_callback()
-Date:   Tue,  7 Jun 2022 13:52:02 -0400
-Message-Id: <20220607175259.478835-5-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
+        b=X80D5YbNMvu1KH4pFAECmBH/PMaFYWkMkeMSnzrFYWBOPmf54jZELxNLkhFOZSydC
+         +8oERdDcsaJeDtyjRvahvFfm5hG4TZXO0+YEVwWNsKOuIB6Do87Q6K4ohL5HHI6q4I
+         3Dnsgrj7XCmOdlbJukQd+g1xqqMsPSJkFV1LqyrY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 305/667] ASoC: fsl: Use dev_err_probe() helper
+Date:   Tue,  7 Jun 2022 18:59:30 +0200
+Message-Id: <20220607164943.924793050@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
 
-[ Upstream commit cc7ad0d77b51c872d629bcd98aea463a3c4109e7 ]
+[ Upstream commit 2e6f557ca35aa330dbf31c5e1cc8119eff1526fa ]
 
-There is a deadlock in rtw_surveydone_event_callback(),
-which is shown below:
+Use the dev_err_probe() helper, instead of open-coding the same
+operation.
 
-   (Thread 1)                  |      (Thread 2)
-                               | _set_timer()
-rtw_surveydone_event_callback()|  mod_timer()
- spin_lock_bh() //(1)          |  (wait a time)
- ...                           | rtw_scan_timeout_handler()
- del_timer_sync()              |  spin_lock_bh() //(2)
- (wait timer to stop)          |  ...
-
-We hold pmlmepriv->lock in position (1) of thread 1 and use
-del_timer_sync() to wait timer to stop, but timer handler
-also need pmlmepriv->lock in position (2) of thread 2.
-As a result, rtw_surveydone_event_callback() will block forever.
-
-This patch extracts del_timer_sync() from the protection of
-spin_lock_bh(), which could let timer handler to obtain
-the needed lock. What`s more, we change spin_lock_bh() in
-rtw_scan_timeout_handler() to spin_lock_irq(). Otherwise,
-spin_lock_bh() will also cause deadlock() in timer handler.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220409061836.60529-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+Link: https://lore.kernel.org/r/20211214020843.2225831-14-kuninori.morimoto.gx@renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8723bs/core/rtw_mlme.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ sound/soc/fsl/fsl-asoc-card.c |  3 +--
+ sound/soc/fsl/imx-card.c      | 17 ++++++-----------
+ sound/soc/fsl/imx-sgtl5000.c  |  4 +---
+ sound/soc/fsl/imx-spdif.c     |  4 ++--
+ 4 files changed, 10 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme.c b/drivers/staging/rtl8723bs/core/rtw_mlme.c
-index 9202223ebc0c..a6e5f2332e12 100644
---- a/drivers/staging/rtl8723bs/core/rtw_mlme.c
-+++ b/drivers/staging/rtl8723bs/core/rtw_mlme.c
-@@ -751,7 +751,9 @@ void rtw_surveydone_event_callback(struct adapter	*adapter, u8 *pbuf)
+diff --git a/sound/soc/fsl/fsl-asoc-card.c b/sound/soc/fsl/fsl-asoc-card.c
+index 06107ae46e20..95286c839b57 100644
+--- a/sound/soc/fsl/fsl-asoc-card.c
++++ b/sound/soc/fsl/fsl-asoc-card.c
+@@ -842,8 +842,7 @@ static int fsl_asoc_card_probe(struct platform_device *pdev)
+ 
+ 	ret = devm_snd_soc_register_card(&pdev->dev, &priv->card);
+ 	if (ret) {
+-		if (ret != -EPROBE_DEFER)
+-			dev_err(&pdev->dev, "snd_soc_register_card failed (%d)\n", ret);
++		dev_err_probe(&pdev->dev, ret, "snd_soc_register_card failed\n");
+ 		goto asrc_fail;
  	}
  
- 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY)) {
-+		spin_unlock_bh(&pmlmepriv->lock);
- 		del_timer_sync(&pmlmepriv->scan_to_timer);
-+		spin_lock_bh(&pmlmepriv->lock);
- 		_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY);
+diff --git a/sound/soc/fsl/imx-card.c b/sound/soc/fsl/imx-card.c
+index db947180617a..55bc1bb0dbbd 100644
+--- a/sound/soc/fsl/imx-card.c
++++ b/sound/soc/fsl/imx-card.c
+@@ -579,9 +579,8 @@ static int imx_card_parse_of(struct imx_card_data *data)
+ 
+ 		ret = snd_soc_of_get_dai_name(cpu, &link->cpus->dai_name);
+ 		if (ret) {
+-			if (ret != -EPROBE_DEFER)
+-				dev_err(card->dev, "%s: error getting cpu dai name: %d\n",
+-					link->name, ret);
++			dev_err_probe(card->dev, ret,
++				      "%s: error getting cpu dai name\n", link->name);
+ 			goto err;
+ 		}
+ 
+@@ -589,9 +588,8 @@ static int imx_card_parse_of(struct imx_card_data *data)
+ 		if (codec) {
+ 			ret = snd_soc_of_get_dai_link_codecs(dev, codec, link);
+ 			if (ret < 0) {
+-				if (ret != -EPROBE_DEFER)
+-					dev_err(dev, "%s: codec dai not found: %d\n",
+-						link->name, ret);
++				dev_err_probe(dev, ret, "%s: codec dai not found\n",
++						link->name);
+ 				goto err;
+ 			}
+ 
+@@ -830,11 +828,8 @@ static int imx_card_probe(struct platform_device *pdev)
  	}
  
-@@ -1586,11 +1588,11 @@ void rtw_scan_timeout_handler(struct timer_list *t)
- 						  mlmepriv.scan_to_timer);
- 	struct	mlme_priv *pmlmepriv = &adapter->mlmepriv;
+ 	ret = devm_snd_soc_register_card(&pdev->dev, &data->card);
+-	if (ret) {
+-		if (ret != -EPROBE_DEFER)
+-			dev_err(&pdev->dev, "snd_soc_register_card failed (%d)\n", ret);
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(&pdev->dev, ret, "snd_soc_register_card failed\n");
  
--	spin_lock_bh(&pmlmepriv->lock);
-+	spin_lock_irq(&pmlmepriv->lock);
- 
- 	_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY);
- 
--	spin_unlock_bh(&pmlmepriv->lock);
-+	spin_unlock_irq(&pmlmepriv->lock);
- 
- 	rtw_indicate_scan_done(adapter, true);
+ 	return 0;
  }
+diff --git a/sound/soc/fsl/imx-sgtl5000.c b/sound/soc/fsl/imx-sgtl5000.c
+index f45cb4bbb6c4..52bb1844f548 100644
+--- a/sound/soc/fsl/imx-sgtl5000.c
++++ b/sound/soc/fsl/imx-sgtl5000.c
+@@ -173,9 +173,7 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
+ 
+ 	ret = devm_snd_soc_register_card(&pdev->dev, &data->card);
+ 	if (ret) {
+-		if (ret != -EPROBE_DEFER)
+-			dev_err(&pdev->dev, "snd_soc_register_card failed (%d)\n",
+-				ret);
++		dev_err_probe(&pdev->dev, ret, "snd_soc_register_card failed\n");
+ 		goto fail;
+ 	}
+ 
+diff --git a/sound/soc/fsl/imx-spdif.c b/sound/soc/fsl/imx-spdif.c
+index 6c4dadf60355..4446fba755b9 100644
+--- a/sound/soc/fsl/imx-spdif.c
++++ b/sound/soc/fsl/imx-spdif.c
+@@ -70,8 +70,8 @@ static int imx_spdif_audio_probe(struct platform_device *pdev)
+ 		goto end;
+ 
+ 	ret = devm_snd_soc_register_card(&pdev->dev, &data->card);
+-	if (ret && ret != -EPROBE_DEFER)
+-		dev_err(&pdev->dev, "snd_soc_register_card failed: %d\n", ret);
++	if (ret)
++		dev_err_probe(&pdev->dev, ret, "snd_soc_register_card failed\n");
+ 
+ end:
+ 	of_node_put(spdif_np);
 -- 
 2.35.1
+
+
 
