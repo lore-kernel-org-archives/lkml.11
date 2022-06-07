@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C407DCCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A44FBCCA482
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377918AbiFGVA3 (ORCPT
+        id S1377856AbiFGVAX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:00:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50192 "EHLO
+        Tue, 7 Jun 2022 17:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357509AbiFGTzZ (ORCPT
+        with ESMTP id S1357740AbiFGTzr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:55:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A38C9BAC7;
-        Tue,  7 Jun 2022 11:23:41 -0700 (PDT)
+        Tue, 7 Jun 2022 15:55:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B575A980B5;
+        Tue,  7 Jun 2022 11:23:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 355386127C;
-        Tue,  7 Jun 2022 18:23:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45B87C385A2;
-        Tue,  7 Jun 2022 18:23:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94C3FB82383;
+        Tue,  7 Jun 2022 18:23:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED17CC36B02;
+        Tue,  7 Jun 2022 18:23:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626218;
-        bh=1vuZle/aJdf8IXFfMGotKYrT8HQrM8syeDFZeWAjPJM=;
+        s=korg; t=1654626221;
+        bh=3LvubQ/oMd98qexprLQfHhASSsUZesS2fEQgpHx095c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AW6SA2lFoDclCIIhy+oJEk+vpoPdebWfWMbVduJjxud0vDm0zDwxFLeepp4t9L2LT
-         T+tWsEo+rcpiwdmkyINbzmdNcn4Argy5vSNDI3WpXOfXqi9+i345vZdlJ0E0E9vjyH
-         MeZcQmYgkQXkdhUeyc4jtji/O/6bx+4h1eYF4y2M=
+        b=hW1KW84Ha9ORsKCz9P/zSgF9wM3/q0VqYFzUr49NeJQUWRbWGncAgXLuZKfLd6iXH
+         +baIKLdoLT/BV+lqdGgT1xdoxExGb/1HIQEEgT6R0Ysm8C2IiW4aVF5QIxx44L0tBL
+         wAd6j2GSEjG6QFYbwwXSDx5NnrHF1YbzFIEKjSAk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, "Paul E. McKenney" <paulmck@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 259/772] spi: spi-ti-qspi: Fix return value handling of wait_for_completion_timeout
-Date:   Tue,  7 Jun 2022 18:57:31 +0200
-Message-Id: <20220607164956.654518382@linuxfoundation.org>
+Subject: [PATCH 5.17 260/772] scftorture: Fix distribution of short handler delays
+Date:   Tue,  7 Jun 2022 18:57:32 +0200
+Message-Id: <20220607164956.683962777@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,48 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Paul E. McKenney <paulmck@kernel.org>
 
-[ Upstream commit 8b1ea69a63eb62f97cef63e6d816b64ed84e8760 ]
+[ Upstream commit 8106bddbab5f0ba180e6d693c7c1fc6926d57caa ]
 
-wait_for_completion_timeout() returns unsigned long not int.
-It returns 0 if timed out, and positive if completed.
-The check for <= 0 is ambiguous and should be == 0 here
-indicating timeout which is the only error case.
+The scftorture test module's scf_handler() function is supposed to provide
+three different distributions of short delays (including "no delay") and
+one distribution of long delays, if specified by the scftorture.longwait
+module parameter.  However, the second of the two non-zero-wait short delays
+is disabled due to the first such delay's "goto out" not being enclosed in
+the "then" clause with the "udelay()".
 
-Fixes: 5720ec0a6d26 ("spi: spi-ti-qspi: Add DMA support for QSPI mmap read")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220411111034.24447-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This commit therefore adjusts the code to provide the intended set of
+delays.
+
+Fixes: e9d338a0b179 ("scftorture: Add smp_call_function() torture test")
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-ti-qspi.c | 5 +++--
+ kernel/scftorture.c | 5 +++--
  1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/spi/spi-ti-qspi.c b/drivers/spi/spi-ti-qspi.c
-index e06aafe169e0..081da1fd3fd7 100644
---- a/drivers/spi/spi-ti-qspi.c
-+++ b/drivers/spi/spi-ti-qspi.c
-@@ -448,6 +448,7 @@ static int ti_qspi_dma_xfer(struct ti_qspi *qspi, dma_addr_t dma_dst,
- 	enum dma_ctrl_flags flags = DMA_CTRL_ACK | DMA_PREP_INTERRUPT;
- 	struct dma_async_tx_descriptor *tx;
- 	int ret;
-+	unsigned long time_left;
- 
- 	tx = dmaengine_prep_dma_memcpy(chan, dma_dst, dma_src, len, flags);
- 	if (!tx) {
-@@ -467,9 +468,9 @@ static int ti_qspi_dma_xfer(struct ti_qspi *qspi, dma_addr_t dma_dst,
+diff --git a/kernel/scftorture.c b/kernel/scftorture.c
+index dcb0410950e4..5d113aa59e77 100644
+--- a/kernel/scftorture.c
++++ b/kernel/scftorture.c
+@@ -267,9 +267,10 @@ static void scf_handler(void *scfc_in)
  	}
- 
- 	dma_async_issue_pending(chan);
--	ret = wait_for_completion_timeout(&qspi->transfer_complete,
-+	time_left = wait_for_completion_timeout(&qspi->transfer_complete,
- 					  msecs_to_jiffies(len));
--	if (ret <= 0) {
-+	if (time_left == 0) {
- 		dmaengine_terminate_sync(chan);
- 		dev_err(qspi->dev, "DMA wait_for_completion_timeout\n");
- 		return -ETIMEDOUT;
+ 	this_cpu_inc(scf_invoked_count);
+ 	if (longwait <= 0) {
+-		if (!(r & 0xffc0))
++		if (!(r & 0xffc0)) {
+ 			udelay(r & 0x3f);
+-		goto out;
++			goto out;
++		}
+ 	}
+ 	if (r & 0xfff)
+ 		goto out;
 -- 
 2.35.1
 
