@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA907CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7DDACCA48D
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382395AbiFGVvX (ORCPT
+        id S1382493AbiFGVvb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34932 "EHLO
+        Tue, 7 Jun 2022 17:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378197AbiFGUzl (ORCPT
+        with ESMTP id S1376996AbiFGUtC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:55:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93ED812D159;
-        Tue,  7 Jun 2022 11:44:09 -0700 (PDT)
+        Tue, 7 Jun 2022 16:49:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B772E1F6B66;
+        Tue,  7 Jun 2022 11:39:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6B8E8B82182;
-        Tue,  7 Jun 2022 18:44:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D106AC385A2;
-        Tue,  7 Jun 2022 18:44:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EBD66157E;
+        Tue,  7 Jun 2022 18:39:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1923DC385A5;
+        Tue,  7 Jun 2022 18:39:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627447;
-        bh=92uU6VQZ8vRHI63+qTv3k7gUUiysfrjpvmX9xY6PYjY=;
+        s=korg; t=1654627187;
+        bh=6YJj3Pr4M62T8/tVRSdhHw070PZY6VxBRhAxFYA9L3k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TG/IN8F7iN1yRE9scQ/oRW0f7QpHv4AUczYG8d7zYrCqhbw7qGU43GHDkTg3cfy1a
-         rEoNKzbY66Qpl/KosObMfjNe3jJ1jf6xNJBy4e+nnbxe+kx3WTD00NWSXWxwp/ErWo
-         jnBB4msNGA0Rv5hvMphA+RxT1BrOhKYpv1OmoSoM=
+        b=R1qhJ/D0sU9IxK6lMXawEidSf1ttHZWv5OUwICSXn6gpNvw+OHNTMGSdJKqxcmrSv
+         elVbiHnIvb9stZ5vAn4SqU2yffVYOCutN5aNkZ0DgIb+TXiHM3Qy6i0zXf355OFMc7
+         uEwzdW41oKDMIQ333qkAH6oP3+X5q0vPkW+q0PEI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Bakker <xc-racer2@live.ca>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 5.17 744/772] ARM: dts: s5pv210: Remove spi-cs-high on panel in Aries
-Date:   Tue,  7 Jun 2022 19:05:36 +0200
-Message-Id: <20220607165010.955362760@linuxfoundation.org>
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.17 609/772] f2fs: fix to avoid f2fs_bug_on() in dec_valid_node_count()
+Date:   Tue,  7 Jun 2022 19:03:21 +0200
+Message-Id: <20220607165006.886504089@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,33 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Bakker <xc-racer2@live.ca>
+From: Chao Yu <chao@kernel.org>
 
-commit 096f58507374e1293a9e9cff8a1ccd5f37780a20 upstream.
+commit 4d17e6fe9293d57081ffdc11e1cf313e25e8fd9e upstream.
 
-Since commit 766c6b63aa04 ("spi: fix client driver breakages when using
-GPIO descriptors"), the panel has been blank due to an inverted CS GPIO.
-In order to correct this, drop the spi-cs-high from the panel SPI device.
+As Yanming reported in bugzilla:
 
-Fixes: 766c6b63aa04 ("spi: fix client driver breakages when using GPIO descriptors")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
-Link: https://lore.kernel.org/r/CY4PR04MB05670C771062570E911AF3B4CB1C9@CY4PR04MB0567.namprd04.prod.outlook.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+https://bugzilla.kernel.org/show_bug.cgi?id=215897
+
+I have encountered a bug in F2FS file system in kernel v5.17.
+
+The kernel should enable CONFIG_KASAN=y and CONFIG_KASAN_INLINE=y. You can
+reproduce the bug by running the following commands:
+
+The kernel message is shown below:
+
+kernel BUG at fs/f2fs/f2fs.h:2511!
+Call Trace:
+ f2fs_remove_inode_page+0x2a2/0x830
+ f2fs_evict_inode+0x9b7/0x1510
+ evict+0x282/0x4e0
+ do_unlinkat+0x33a/0x540
+ __x64_sys_unlinkat+0x8e/0xd0
+ do_syscall_64+0x3b/0x90
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+The root cause is: .total_valid_block_count or .total_valid_node_count
+could fuzzed to zero, then once dec_valid_node_count() was called, it
+will cause BUG_ON(), this patch fixes to print warning info and set
+SBI_NEED_FSCK into CP instead of panic.
+
+Cc: stable@vger.kernel.org
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/s5pv210-aries.dtsi |    1 -
- 1 file changed, 1 deletion(-)
+ fs/f2fs/f2fs.h |   14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
---- a/arch/arm/boot/dts/s5pv210-aries.dtsi
-+++ b/arch/arm/boot/dts/s5pv210-aries.dtsi
-@@ -564,7 +564,6 @@
- 			reset-gpios = <&mp05 5 GPIO_ACTIVE_LOW>;
- 			vdd3-supply = <&ldo7_reg>;
- 			vci-supply = <&ldo17_reg>;
--			spi-cs-high;
- 			spi-max-frequency = <1200000>;
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -2509,11 +2509,17 @@ static inline void dec_valid_node_count(
+ {
+ 	spin_lock(&sbi->stat_lock);
  
- 			pinctrl-names = "default";
+-	f2fs_bug_on(sbi, !sbi->total_valid_block_count);
+-	f2fs_bug_on(sbi, !sbi->total_valid_node_count);
++	if (unlikely(!sbi->total_valid_block_count ||
++			!sbi->total_valid_node_count)) {
++		f2fs_warn(sbi, "dec_valid_node_count: inconsistent block counts, total_valid_block:%u, total_valid_node:%u",
++			  sbi->total_valid_block_count,
++			  sbi->total_valid_node_count);
++		set_sbi_flag(sbi, SBI_NEED_FSCK);
++	} else {
++		sbi->total_valid_block_count--;
++		sbi->total_valid_node_count--;
++	}
+ 
+-	sbi->total_valid_node_count--;
+-	sbi->total_valid_block_count--;
+ 	if (sbi->reserved_blocks &&
+ 		sbi->current_reserved_blocks < sbi->reserved_blocks)
+ 		sbi->current_reserved_blocks++;
 
 
