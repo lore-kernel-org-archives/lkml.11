@@ -2,159 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C34E8CCA492
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B905CCA496
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358127AbiFGTvu (ORCPT
+        id S1358312AbiFGTwV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58472 "EHLO
+        Tue, 7 Jun 2022 15:52:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354273AbiFGSqv (ORCPT
+        with ESMTP id S1352177AbiFGStK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD58119939;
-        Tue,  7 Jun 2022 11:00:31 -0700 (PDT)
+        Tue, 7 Jun 2022 14:49:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7286FD13;
+        Tue,  7 Jun 2022 11:03:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE021B82182;
-        Tue,  7 Jun 2022 18:00:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04F5BC385A5;
-        Tue,  7 Jun 2022 18:00:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624828;
-        bh=kbOoBDzp3COFExOxK+0ldbz+C6vncqh4vcYv+bx7Ixg=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2F32BB82348;
+        Tue,  7 Jun 2022 18:03:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B222C385A5;
+        Tue,  7 Jun 2022 18:03:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624990;
+        bh=DAYQ0OroB66563gRhhqeAiJCMl89W3TJBKmM10sxpcA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OPfvL6PWfCZIwoQlON/ZAgNaX8xqbBOO+iE5YZdoHPhmSuqHNHOYksWPQEm2TjVKi
-         B6QB1CY9TDvHdgEMWqM8NNA9G4MtHV0tcXuFLpGdKPY5qTGqT0+4M70flAdq27NSui
-         YEQnY8l6jnOGpsL3E+0tU5XZqTmaJy9r+lH83SYw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 467/667] powerpc/xive: Add some error handling code to xive_spapr_init()
-Date:   Tue,  7 Jun 2022 19:02:12 +0200
-Message-Id: <20220607164948.714451475@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=VqrXcIuoLFYLy+7p41h95cQKM+Ebd4g1kp7S34c0AGVgHoio7wPaB8mXj8cN1kSsw
+         ayQaquWZdiftSbtOPgZ7MXOn+xZ2NX1AoFMx8axZGs073q4VSF4ulimKouqJyQWJdR
+         q9iMKgvLY/tbUONNudue8yob34jrmyvvDJsTHTFqn1gCG4zpSkYUCA0QF08NcFE2fk
+         xVMQ1vWuFyev10vDZRJRFmDgDm7FsPQCSA6MxIG9lOB068FnFq49KIMeSwCPXAFGUo
+         H8wDWwc5q53iulw6GS42BCAKvBwUrQbpLA/sEXAcmVdAjcO0fC+LVwwTkDbrQ78NVA
+         CYdOyFOavwT6Q==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Yu Kuai <yukuai3@huawei.com>, Hou Tao <houtao1@huawei.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
+        linux-block@vger.kernel.org, nbd@other.debian.org
+Subject: [PATCH AUTOSEL 4.14 22/25] nbd: call genl_unregister_family() first in nbd_cleanup()
+Date:   Tue,  7 Jun 2022 14:02:23 -0400
+Message-Id: <20220607180229.482040-22-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180229.482040-1-sashal@kernel.org>
+References: <20220607180229.482040-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Yu Kuai <yukuai3@huawei.com>
 
-[ Upstream commit e414e2938ee26e734f19e92a60cd090ebaff37e6 ]
+[ Upstream commit 06c4da89c24e7023ea448cadf8e9daf06a0aae6e ]
 
-'xive_irq_bitmap_add()' can return -ENOMEM.
-In this case, we should free the memory already allocated and return
-'false' to the caller.
+Otherwise there may be race between module removal and the handling of
+netlink command, which can lead to the oops as shown below:
 
-Also add an error path which undoes the 'tima = ioremap(...)'
+  BUG: kernel NULL pointer dereference, address: 0000000000000098
+  Oops: 0002 [#1] SMP PTI
+  CPU: 1 PID: 31299 Comm: nbd-client Tainted: G            E     5.14.0-rc4
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
+  RIP: 0010:down_write+0x1a/0x50
+  Call Trace:
+   start_creating+0x89/0x130
+   debugfs_create_dir+0x1b/0x130
+   nbd_start_device+0x13d/0x390 [nbd]
+   nbd_genl_connect+0x42f/0x748 [nbd]
+   genl_family_rcv_msg_doit.isra.0+0xec/0x150
+   genl_rcv_msg+0xe5/0x1e0
+   netlink_rcv_skb+0x55/0x100
+   genl_rcv+0x29/0x40
+   netlink_unicast+0x1a8/0x250
+   netlink_sendmsg+0x21b/0x430
+   ____sys_sendmsg+0x2a4/0x2d0
+   ___sys_sendmsg+0x81/0xc0
+   __sys_sendmsg+0x62/0xb0
+   __x64_sys_sendmsg+0x1f/0x30
+   do_syscall_64+0x3b/0xc0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+  Modules linked in: nbd(E-)
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Cédric Le Goater <clg@kaod.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/564998101804886b151235c8a9f93020923bfd2c.1643718324.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Reviewed-by: Josef Bacik <josef@toxicpanda.com>
+Link: https://lore.kernel.org/r/20220521073749.3146892-2-yukuai3@huawei.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/xive/spapr.c | 36 +++++++++++++++++++++++++-------
- 1 file changed, 28 insertions(+), 8 deletions(-)
+ drivers/block/nbd.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/sysdev/xive/spapr.c b/arch/powerpc/sysdev/xive/spapr.c
-index 1179632560b8..905dd40bd5cd 100644
---- a/arch/powerpc/sysdev/xive/spapr.c
-+++ b/arch/powerpc/sysdev/xive/spapr.c
-@@ -67,6 +67,17 @@ static int xive_irq_bitmap_add(int base, int count)
- 	return 0;
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index 826b3877a157..1c9f866d9338 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -2319,6 +2319,12 @@ static void __exit nbd_cleanup(void)
+ 	struct nbd_device *nbd;
+ 	LIST_HEAD(del_list);
+ 
++	/*
++	 * Unregister netlink interface prior to waiting
++	 * for the completion of netlink commands.
++	 */
++	genl_unregister_family(&nbd_genl_family);
++
+ 	nbd_dbg_close();
+ 
+ 	mutex_lock(&nbd_index_mutex);
+@@ -2334,7 +2340,6 @@ static void __exit nbd_cleanup(void)
+ 	}
+ 
+ 	idr_destroy(&nbd_index_idr);
+-	genl_unregister_family(&nbd_genl_family);
+ 	unregister_blkdev(NBD_MAJOR, "nbd");
  }
  
-+static void xive_irq_bitmap_remove_all(void)
-+{
-+	struct xive_irq_bitmap *xibm, *tmp;
-+
-+	list_for_each_entry_safe(xibm, tmp, &xive_irq_bitmaps, list) {
-+		list_del(&xibm->list);
-+		kfree(xibm->bitmap);
-+		kfree(xibm);
-+	}
-+}
-+
- static int __xive_irq_bitmap_alloc(struct xive_irq_bitmap *xibm)
- {
- 	int irq;
-@@ -803,7 +814,7 @@ bool __init xive_spapr_init(void)
- 	u32 val;
- 	u32 len;
- 	const __be32 *reg;
--	int i;
-+	int i, err;
- 
- 	if (xive_spapr_disabled())
- 		return false;
-@@ -828,23 +839,26 @@ bool __init xive_spapr_init(void)
- 	}
- 
- 	if (!xive_get_max_prio(&max_prio))
--		return false;
-+		goto err_unmap;
- 
- 	/* Feed the IRQ number allocator with the ranges given in the DT */
- 	reg = of_get_property(np, "ibm,xive-lisn-ranges", &len);
- 	if (!reg) {
- 		pr_err("Failed to read 'ibm,xive-lisn-ranges' property\n");
--		return false;
-+		goto err_unmap;
- 	}
- 
- 	if (len % (2 * sizeof(u32)) != 0) {
- 		pr_err("invalid 'ibm,xive-lisn-ranges' property\n");
--		return false;
-+		goto err_unmap;
- 	}
- 
--	for (i = 0; i < len / (2 * sizeof(u32)); i++, reg += 2)
--		xive_irq_bitmap_add(be32_to_cpu(reg[0]),
--				    be32_to_cpu(reg[1]));
-+	for (i = 0; i < len / (2 * sizeof(u32)); i++, reg += 2) {
-+		err = xive_irq_bitmap_add(be32_to_cpu(reg[0]),
-+					  be32_to_cpu(reg[1]));
-+		if (err < 0)
-+			goto err_mem_free;
-+	}
- 
- 	/* Iterate the EQ sizes and pick one */
- 	of_property_for_each_u32(np, "ibm,xive-eq-sizes", prop, reg, val) {
-@@ -855,10 +869,16 @@ bool __init xive_spapr_init(void)
- 
- 	/* Initialize XIVE core with our backend */
- 	if (!xive_core_init(np, &xive_spapr_ops, tima, TM_QW1_OS, max_prio))
--		return false;
-+		goto err_mem_free;
- 
- 	pr_info("Using %dkB queues\n", 1 << (xive_queue_shift - 10));
- 	return true;
-+
-+err_mem_free:
-+	xive_irq_bitmap_remove_all();
-+err_unmap:
-+	iounmap(tima);
-+	return false;
- }
- 
- machine_arch_initcall(pseries, xive_core_debug_init);
 -- 
 2.35.1
-
-
 
