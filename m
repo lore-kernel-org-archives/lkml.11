@@ -2,45 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4528CCA487
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:51:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38C26C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354080AbiFGSuN (ORCPT
+        id S1354115AbiFGSuU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51608 "EHLO
+        Tue, 7 Jun 2022 14:50:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352848AbiFGSRi (ORCPT
+        with ESMTP id S1352847AbiFGSRi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:17:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED62E13F1E3;
-        Tue,  7 Jun 2022 10:52:44 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475A911C2C;
+        Tue,  7 Jun 2022 10:52:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18ED3617B2;
-        Tue,  7 Jun 2022 17:52:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 237D6C34115;
-        Tue,  7 Jun 2022 17:52:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8DFE6B8234A;
+        Tue,  7 Jun 2022 17:52:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5E10C34115;
+        Tue,  7 Jun 2022 17:52:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624363;
-        bh=2dfON6Y6ocWRPqByUQw4PeL4NX+VEfRC9VTCbKNrOqY=;
+        s=korg; t=1654624366;
+        bh=AJpDc4CRCDEYezNwJ7xnI6htH0qAKgCFMdxiiCckPkE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SNTl0MOBzjSDhUun9iiIVhpchnJQMG5CrSl/tL9AdC9tkRo1M7RVAsJvSz9T1veJ8
-         FuYcxDluaT8LbhozkgE9gmfyJD778yg4msZ5agVVZlXODXY2bodcOdxukoytJZ4RLd
-         JpCiIM/7yT1fmyO5OfeNZD84PWtSSLyWLUha2BnY=
+        b=wDTEmoP1NgkujGmccxEB6fblh/wQyMRYJAlICdgkfKZGCYVE9mvQSrjd5u0gKV3ic
+         Dyn3BPRle46hvCsgJfiBTUAZ1Cmz+FDXmvHVJ1eF/U4LpXS9MEGZHs3tS/8JFguYvm
+         bUVSRh8Z8tkXsUB/Bukopu6C1ITW/okQg4TrotzU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, CKI Project <cki-project@redhat.com>,
-        Veronika Kabatova <vkabatov@redhat.com>,
-        Jerome Marchand <jmarchan@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        stable@vger.kernel.org, Yang Jihong <yangjihong1@huawei.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 299/667] samples: bpf: Dont fail for a missing VMLINUX_BTF when VMLINUX_H is provided
-Date:   Tue,  7 Jun 2022 18:59:24 +0200
-Message-Id: <20220607164943.745928702@linuxfoundation.org>
+Subject: [PATCH 5.15 264/667] perf tools: Add missing headers needed by util/data.h
+Date:   Tue,  7 Jun 2022 18:58:49 +0200
+Message-Id: <20220607164942.700523751@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,51 +57,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jerome Marchand <jmarchan@redhat.com>
+From: Yang Jihong <yangjihong1@huawei.com>
 
-[ Upstream commit ec24704492d8791a52a75a39e3ad762b6e017bc6 ]
+[ Upstream commit 4d27cf1d9de5becfa4d1efb2ea54dba1b9fc962a ]
 
-samples/bpf build currently always fails if it can't generate
-vmlinux.h from vmlinux, even when vmlinux.h is directly provided by
-VMLINUX_H variable, which makes VMLINUX_H pointless.
-Only fails when neither method works.
+'struct perf_data' in util/data.h uses the "u64" data type, which is
+defined in "linux/types.h".
 
-Fixes: 384b6b3bbf0d ("samples: bpf: Add vmlinux.h generation support")
-Reported-by: CKI Project <cki-project@redhat.com>
-Reported-by: Veronika Kabatova <vkabatov@redhat.com>
-Signed-off-by: Jerome Marchand <jmarchan@redhat.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220507161635.2219052-1-jmarchan@redhat.com
+If we only include util/data.h, the following compilation error occurs:
+
+  util/data.h:38:3: error: unknown type name ‘u64’
+     u64    version;
+     ^~~
+
+Solution: include "linux/types.h." to add the needed type definitions.
+
+Fixes: 258031c017c353e8 ("perf header: Add DIR_FORMAT feature to describe directory data")
+Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220429090539.212448-1-yangjihong1@huawei.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- samples/bpf/Makefile | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ tools/perf/util/data.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index c6e38e43c3fd..e2c9ea65df9f 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -365,16 +365,15 @@ VMLINUX_BTF ?= $(abspath $(firstword $(wildcard $(VMLINUX_BTF_PATHS))))
+diff --git a/tools/perf/util/data.h b/tools/perf/util/data.h
+index c9de82af5584..1402d9657ef2 100644
+--- a/tools/perf/util/data.h
++++ b/tools/perf/util/data.h
+@@ -4,6 +4,7 @@
  
- $(obj)/vmlinux.h: $(VMLINUX_BTF) $(BPFTOOL)
- ifeq ($(VMLINUX_H),)
-+ifeq ($(VMLINUX_BTF),)
-+	$(error Cannot find a vmlinux for VMLINUX_BTF at any of "$(VMLINUX_BTF_PATHS)",\
-+		build the kernel or set VMLINUX_BTF or VMLINUX_H variable)
-+endif
- 	$(Q)$(BPFTOOL) btf dump file $(VMLINUX_BTF) format c > $@
- else
- 	$(Q)cp "$(VMLINUX_H)" $@
- endif
+ #include <stdio.h>
+ #include <stdbool.h>
++#include <linux/types.h>
  
--ifeq ($(VMLINUX_BTF),)
--	$(error Cannot find a vmlinux for VMLINUX_BTF at any of "$(VMLINUX_BTF_PATHS)",\
--		build the kernel or set VMLINUX_BTF variable)
--endif
--
- clean-files += vmlinux.h
- 
- # Get Clang's default includes on this system, as opposed to those seen by
+ enum perf_data_mode {
+ 	PERF_DATA_MODE_WRITE,
 -- 
 2.35.1
 
