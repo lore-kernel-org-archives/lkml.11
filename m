@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 072EDCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A476CCCA483
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345626AbiFGRTL (ORCPT
+        id S1345755AbiFGRTN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39034 "EHLO
+        Tue, 7 Jun 2022 13:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345602AbiFGRSs (ORCPT
+        with ESMTP id S1345653AbiFGRS4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:18:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 035BF104CB3;
-        Tue,  7 Jun 2022 10:18:47 -0700 (PDT)
+        Tue, 7 Jun 2022 13:18:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E99F1053D6;
+        Tue,  7 Jun 2022 10:18:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94EB2618E1;
-        Tue,  7 Jun 2022 17:18:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7009C34115;
-        Tue,  7 Jun 2022 17:18:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F0A3B822AF;
+        Tue,  7 Jun 2022 17:18:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A794AC385A5;
+        Tue,  7 Jun 2022 17:18:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622326;
-        bh=pxv9TbrB8vWdbYqBOLEi34GIhzwk4cnrfQy/Xlh+FtI=;
+        s=korg; t=1654622329;
+        bh=ur/6LP5MdmxKuqnuTWkZfJmKUn3UuwJwFhQ5S813QyM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J+F0p966gMTvbWoxgXjNe8kh+NGjmXsOts90IG89beb81UAZDMyIk6hR5wa7JTWnc
-         SrHrUT0BB66e2QRdaerTv4Dw2+uAwDWuuiGcJwIM1XIqGRiqhW2OFTzNNvdk0kJr+K
-         v4bX1A28RVAFcVtaPwyfZZcBHSkOZPeUm7x4Uz2U=
+        b=rHNi/jxlpg2cXpf2ng6/sFbVS/oYLiB2rwGnJlHpi0pzC34MbBJJlyBBk8orz0JZ3
+         HhdajKNZpGVcMLn1YIuajCXMhY7dkxVlJCwKcVZWE5AFkxljWiWdNHhxDFK+qEZYDY
+         fSVgfTFtvXghVhwCdpimz0csQHzG9qlFHj0awtRE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niklas Cassel <niklas.cassel@wdc.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>,
         Kees Cook <keescook@chromium.org>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH 5.10 002/452] binfmt_flat: do not stop relocating GOT entries prematurely on riscv
-Date:   Tue,  7 Jun 2022 18:57:39 +0200
-Message-Id: <20220607164908.602254098@linuxfoundation.org>
+        Oleg Nesterov <oleg@redhat.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.10 020/452] ptrace/xtensa: Replace PT_SINGLESTEP with TIF_SINGLESTEP
+Date:   Tue,  7 Jun 2022 18:57:57 +0200
+Message-Id: <20220607164909.144022713@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,108 +51,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niklas Cassel <niklas.cassel@wdc.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit 6045ab5fea4c849153ebeb0acb532da5f29d69c4 upstream.
+commit 4a3d2717d140401df7501a95e454180831a0c5af upstream.
 
-bFLT binaries are usually created using elf2flt.
+xtensa is the last user of the PT_SINGLESTEP flag.  Changing tsk->ptrace in
+user_enable_single_step and user_disable_single_step without locking could
+potentiallly cause problems.
 
-The linker script used by elf2flt has defined the .data section like the
-following for the last 19 years:
+So use a thread info flag instead of a flag in tsk->ptrace.  Use TIF_SINGLESTEP
+that xtensa already had defined but unused.
 
-.data : {
-	_sdata = . ;
-	__data_start = . ;
-	data_start = . ;
-	*(.got.plt)
-	*(.got)
-	FILL(0) ;
-	. = ALIGN(0x20) ;
-	LONG(-1)
-	. = ALIGN(0x20) ;
-	...
-}
+Remove the definitions of PT_SINGLESTEP and PT_BLOCKSTEP as they have no more users.
 
-It places the .got.plt input section before the .got input section.
-The same is true for the default linker script (ld --verbose) on most
-architectures except x86/x86-64.
-
-The binfmt_flat loader should relocate all GOT entries until it encounters
-a -1 (the LONG(-1) in the linker script).
-
-The problem is that the .got.plt input section starts with a GOTPLT header
-(which has size 16 bytes on elf64-riscv and 8 bytes on elf32-riscv), where
-the first word is set to -1. See the binutils implementation for riscv [1].
-
-This causes the binfmt_flat loader to stop relocating GOT entries
-prematurely and thus causes the application to crash when running.
-
-Fix this by skipping the whole GOTPLT header, since the whole GOTPLT header
-is reserved for the dynamic linker.
-
-The GOTPLT header will only be skipped for bFLT binaries with flag
-FLAT_FLAG_GOTPIC set. This flag is unconditionally set by elf2flt if the
-supplied ELF binary has the symbol _GLOBAL_OFFSET_TABLE_ defined.
-ELF binaries without a .got input section should thus remain unaffected.
-
-Tested on RISC-V Canaan Kendryte K210 and RISC-V QEMU nommu_virt_defconfig.
-
-[1] https://sourceware.org/git/?p=binutils-gdb.git;a=blob;f=bfd/elfnn-riscv.c;hb=binutils-2_38#l3275
-
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Link: https://lore.kernel.org/r/20220414091018.896737-1-niklas.cassel@wdc.com
-Fixed-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/lkml/202204182333.OIUOotK8-lkp@intel.com
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Cc: stable@vger.kernel.org
+Acked-by: Max Filippov <jcmvbkbc@gmail.com>
+Tested-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Oleg Nesterov <oleg@redhat.com>
+Link: https://lkml.kernel.org/r/20220505182645.497868-4-ebiederm@xmission.com
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/binfmt_flat.c |   27 ++++++++++++++++++++++++++-
- 1 file changed, 26 insertions(+), 1 deletion(-)
+ arch/xtensa/kernel/ptrace.c |    4 ++--
+ arch/xtensa/kernel/signal.c |    4 ++--
+ include/linux/ptrace.h      |    6 ------
+ 3 files changed, 4 insertions(+), 10 deletions(-)
 
---- a/fs/binfmt_flat.c
-+++ b/fs/binfmt_flat.c
-@@ -427,6 +427,30 @@ static void old_reloc(unsigned long rl)
+--- a/arch/xtensa/kernel/ptrace.c
++++ b/arch/xtensa/kernel/ptrace.c
+@@ -226,12 +226,12 @@ const struct user_regset_view *task_user
  
- /****************************************************************************/
- 
-+static inline u32 __user *skip_got_header(u32 __user *rp)
-+{
-+	if (IS_ENABLED(CONFIG_RISCV)) {
-+		/*
-+		 * RISC-V has a 16 byte GOT PLT header for elf64-riscv
-+		 * and 8 byte GOT PLT header for elf32-riscv.
-+		 * Skip the whole GOT PLT header, since it is reserved
-+		 * for the dynamic linker (ld.so).
-+		 */
-+		u32 rp_val0, rp_val1;
-+
-+		if (get_user(rp_val0, rp))
-+			return rp;
-+		if (get_user(rp_val1, rp + 1))
-+			return rp;
-+
-+		if (rp_val0 == 0xffffffff && rp_val1 == 0xffffffff)
-+			rp += 4;
-+		else if (rp_val0 == 0xffffffff)
-+			rp += 2;
-+	}
-+	return rp;
-+}
-+
- static int load_flat_file(struct linux_binprm *bprm,
- 		struct lib_info *libinfo, int id, unsigned long *extra_stack)
+ void user_enable_single_step(struct task_struct *child)
  {
-@@ -774,7 +798,8 @@ static int load_flat_file(struct linux_b
- 	 * image.
- 	 */
- 	if (flags & FLAT_FLAG_GOTPIC) {
--		for (rp = (u32 __user *)datapos; ; rp++) {
-+		rp = skip_got_header((u32 __user *) datapos);
-+		for (; ; rp++) {
- 			u32 addr, rp_val;
- 			if (get_user(rp_val, rp))
- 				return -EFAULT;
+-	child->ptrace |= PT_SINGLESTEP;
++	set_tsk_thread_flag(child, TIF_SINGLESTEP);
+ }
+ 
+ void user_disable_single_step(struct task_struct *child)
+ {
+-	child->ptrace &= ~PT_SINGLESTEP;
++	clear_tsk_thread_flag(child, TIF_SINGLESTEP);
+ }
+ 
+ /*
+--- a/arch/xtensa/kernel/signal.c
++++ b/arch/xtensa/kernel/signal.c
+@@ -465,7 +465,7 @@ static void do_signal(struct pt_regs *re
+ 		/* Set up the stack frame */
+ 		ret = setup_frame(&ksig, sigmask_to_save(), regs);
+ 		signal_setup_done(ret, &ksig, 0);
+-		if (current->ptrace & PT_SINGLESTEP)
++		if (test_thread_flag(TIF_SINGLESTEP))
+ 			task_pt_regs(current)->icountlevel = 1;
+ 
+ 		return;
+@@ -491,7 +491,7 @@ static void do_signal(struct pt_regs *re
+ 	/* If there's no signal to deliver, we just restore the saved mask.  */
+ 	restore_saved_sigmask();
+ 
+-	if (current->ptrace & PT_SINGLESTEP)
++	if (test_thread_flag(TIF_SINGLESTEP))
+ 		task_pt_regs(current)->icountlevel = 1;
+ 	return;
+ }
+--- a/include/linux/ptrace.h
++++ b/include/linux/ptrace.h
+@@ -46,12 +46,6 @@ extern int ptrace_access_vm(struct task_
+ #define PT_EXITKILL		(PTRACE_O_EXITKILL << PT_OPT_FLAG_SHIFT)
+ #define PT_SUSPEND_SECCOMP	(PTRACE_O_SUSPEND_SECCOMP << PT_OPT_FLAG_SHIFT)
+ 
+-/* single stepping state bits (used on ARM and PA-RISC) */
+-#define PT_SINGLESTEP_BIT	31
+-#define PT_SINGLESTEP		(1<<PT_SINGLESTEP_BIT)
+-#define PT_BLOCKSTEP_BIT	30
+-#define PT_BLOCKSTEP		(1<<PT_BLOCKSTEP_BIT)
+-
+ extern long arch_ptrace(struct task_struct *child, long request,
+ 			unsigned long addr, unsigned long data);
+ extern int ptrace_readdata(struct task_struct *tsk, unsigned long src, char __user *dst, int len);
 
 
