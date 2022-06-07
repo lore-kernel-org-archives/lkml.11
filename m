@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08319CCA497
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F360CCA496
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379422AbiFGVC1 (ORCPT
+        id S1379453AbiFGVC3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:02:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59830 "EHLO
+        Tue, 7 Jun 2022 17:02:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358095AbiFGT77 (ORCPT
+        with ESMTP id S1358166AbiFGUAB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:59:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645B91BF17B;
-        Tue,  7 Jun 2022 11:24:50 -0700 (PDT)
+        Tue, 7 Jun 2022 16:00:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FD99D4101;
+        Tue,  7 Jun 2022 11:24:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F109960C1A;
-        Tue,  7 Jun 2022 18:24:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 103BCC385A2;
-        Tue,  7 Jun 2022 18:24:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 02286B82384;
+        Tue,  7 Jun 2022 18:24:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 665C0C3411F;
+        Tue,  7 Jun 2022 18:24:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626284;
-        bh=7Z2KxvVJ+3FGQMwdhJnGW+vdnJ6EEGTY368YjwG6vIk=;
+        s=korg; t=1654626259;
+        bh=yjXIabT8CzDQBDlxiw8aaagQ5pPQEpagMKjAQtE30MI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pc3VKcjqjHAV/eYwh2A94acuXhmt4Jl72sbNz+rSSQGN6MDEclk4VZH9wFF3EYzMI
-         EQn1r0ef1WciBqj4AZuTTjlmSiwY+2kMmSXFIT5e/CIz4WajbE03AdVN8ug34wxfXt
-         MpuuIpbLrNkuKYeWiKoEgYln47kotJ7al4ecHcNk=
+        b=KYXClIulsjr7UxRlEqVMxjfrVXfT7Qbm8kCvN02K3+HRfGCrAiEZxSG39LTPk+Bap
+         6V8Um++bHqQDp2S2Xjta2A4lYZ+qxA6YAmUVz4iHco3uohSw8dScfAsmSl0Yl74ujn
+         cOJykrwMKAyRp+wFTJsUOvi0GJs+UvbZ/j6UD/6w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jagan Teki <jagan@amarulasolutions.com>,
-        Robert Foss <robert.foss@linaro.org>,
+        stable@vger.kernel.org, Vinod Polimera <quic_vpolimer@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 323/772] drm/panel: panel-simple: Fix proper bpc for AM-1280800N3TZQW-T00H
-Date:   Tue,  7 Jun 2022 18:58:35 +0200
-Message-Id: <20220607164958.539686608@linuxfoundation.org>
+Subject: [PATCH 5.17 314/772] drm/msm/disp/dpu1: set vbif hw config to NULL to avoid use after memory free during pm runtime resume
+Date:   Tue,  7 Jun 2022 18:58:26 +0200
+Message-Id: <20220607164958.280449517@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,38 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jagan Teki <jagan@amarulasolutions.com>
+From: Vinod Polimera <quic_vpolimer@quicinc.com>
 
-[ Upstream commit 7eafbecd2288c542ea15ea20cf1a7e64a25c21bc ]
+[ Upstream commit fa5186b279ecf44b14fb435540d2065be91cb1ed ]
 
-AM-1280800N3TZQW-T00H panel support 8 bpc not 6 bpc as per
-recent testing in i.MX8MM platform.
+BUG: Unable to handle kernel paging request at virtual address 006b6b6b6b6b6be3
 
-Fix it.
+Call trace:
+  dpu_vbif_init_memtypes+0x40/0xb8
+  dpu_runtime_resume+0xcc/0x1c0
+  pm_generic_runtime_resume+0x30/0x44
+  __genpd_runtime_resume+0x68/0x7c
+  genpd_runtime_resume+0x134/0x258
+  __rpm_callback+0x98/0x138
+  rpm_callback+0x30/0x88
+  rpm_resume+0x36c/0x49c
+  __pm_runtime_resume+0x80/0xb0
+  dpu_core_irq_uninstall+0x30/0xb0
+  dpu_irq_uninstall+0x18/0x24
+  msm_drm_uninit+0xd8/0x16c
 
-Fixes: bca684e69c4c ("drm/panel: simple: Add AM-1280800N3TZQW-T00H")
-Signed-off-by: Jagan Teki <jagan@amarulasolutions.com>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211111094103.494831-1-jagan@amarulasolutions.com
+Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
+Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/483255/
+Link: https://lore.kernel.org/r/1650857213-30075-1-git-send-email-quic_vpolimer@quicinc.com
+[DB: fixed Fixes tag]
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panel/panel-simple.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
-index 7598824ea848..725055edb67e 100644
---- a/drivers/gpu/drm/panel/panel-simple.c
-+++ b/drivers/gpu/drm/panel/panel-simple.c
-@@ -720,7 +720,7 @@ static const struct drm_display_mode ampire_am_1280800n3tzqw_t00h_mode = {
- static const struct panel_desc ampire_am_1280800n3tzqw_t00h = {
- 	.modes = &ampire_am_1280800n3tzqw_t00h_mode,
- 	.num_modes = 1,
--	.bpc = 6,
-+	.bpc = 8,
- 	.size = {
- 		.width = 217,
- 		.height = 136,
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+index 47fe11a84a77..4a8cf33594c3 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+@@ -795,8 +795,10 @@ static void _dpu_kms_hw_destroy(struct dpu_kms *dpu_kms)
+ 		for (i = 0; i < dpu_kms->catalog->vbif_count; i++) {
+ 			u32 vbif_idx = dpu_kms->catalog->vbif[i].id;
+ 
+-			if ((vbif_idx < VBIF_MAX) && dpu_kms->hw_vbif[vbif_idx])
++			if ((vbif_idx < VBIF_MAX) && dpu_kms->hw_vbif[vbif_idx]) {
+ 				dpu_hw_vbif_destroy(dpu_kms->hw_vbif[vbif_idx]);
++				dpu_kms->hw_vbif[vbif_idx] = NULL;
++			}
+ 		}
+ 	}
+ 
 -- 
 2.35.1
 
