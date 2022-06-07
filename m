@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43AEACCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2873ECCA48C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:35:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376609AbiFGUbf (ORCPT
+        id S1377488AbiFGUd1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44610 "EHLO
+        Tue, 7 Jun 2022 16:33:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356696AbiFGTiw (ORCPT
+        with ESMTP id S1357379AbiFGTl5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:38:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A037F8E7A;
-        Tue,  7 Jun 2022 11:14:11 -0700 (PDT)
+        Tue, 7 Jun 2022 15:41:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5496159074;
+        Tue,  7 Jun 2022 11:15:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BBF43CE243A;
-        Tue,  7 Jun 2022 18:14:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3030C385A2;
-        Tue,  7 Jun 2022 18:14:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 174DA60C1A;
+        Tue,  7 Jun 2022 18:15:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DBD8C385A2;
+        Tue,  7 Jun 2022 18:14:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625648;
-        bh=3os4nm//VWdtnukH4DMduEp3AKayG5T+pbN7X5F8Egs=;
+        s=korg; t=1654625700;
+        bh=T9ddK/VDvhMSsfvf3k5nl4oJXUGGQQ7iH45F3BjDN2A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yyIUYaGfTYs8YJKhUmrVl/7J0rHW+gyWRfT6OFHMkt3J3UlreeuoXP16bua9lN7B+
-         bNSaYkEWNocOsZjLbUfLmwhXUn4/FWVffUV6FukMpsHD3ryW6o+7P1ZGSyAE/0Fv4e
-         bCdU+xdaRfL8/1NO/Afvapz2ZPmCXhPQI/CME9Jg=
+        b=0PUF+F+KyWdNbEx38hVEJLzpVMed4wEtnMT6UIe4dvQOh7HLQwuz6blWlpHWIWr8K
+         ZxI/ccQzhwh/jmDEsVLzxdlhb+sf/z8jjjtNWfuO1QWtrbcGCUwlG1Nvo29w7A+sYZ
+         hNoPuAyO/hTcsXHVw24Add48P3pc0Te5LXKFEGGw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vignesh Raghavendra <vigneshr@ti.com>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, Mark Bloch <mbloch@nvidia.com>,
+        Maor Gottlieb <maorg@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 094/772] drivers: mmc: sdhci_am654: Add the quirk to set TESTCD bit
-Date:   Tue,  7 Jun 2022 18:54:46 +0200
-Message-Id: <20220607164951.816594826@linuxfoundation.org>
+Subject: [PATCH 5.17 111/772] net/mlx5: fs, delete the FTE when there are no rules attached to it
+Date:   Tue,  7 Jun 2022 18:55:03 +0200
+Message-Id: <20220607164952.319947004@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,83 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vignesh Raghavendra <vigneshr@ti.com>
+From: Mark Bloch <mbloch@nvidia.com>
 
-[ Upstream commit c7666240ec76422cb7546bd07cc8ae80dc0ccdd2 ]
+[ Upstream commit 7b0c6338597613f465d131bd939a51844a00455a ]
 
-The ARASAN MMC controller on Keystone 3 class of devices need the SDCD
-line to be connected for proper functioning. Similar to the issue pointed
-out in sdhci-of-arasan.c driver, commit 3794c542641f ("mmc:
-sdhci-of-arasan: Set controller to test mode when no CD bit").
+When an FTE has no children is means all the rules where removed
+and the FTE can be deleted regardless of the dests_size value.
+While dests_size should be 0 when there are no children
+be extra careful not to leak memory or get firmware syndrome
+if the proper bookkeeping of dests_size wasn't done.
 
-In cases where this can't be connected, add a quirk to force the
-controller into test mode and set the TESTCD bit. Use the flag
-"ti,fails-without-test-cd", to implement this above quirk when required.
-
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
-Link: https://lore.kernel.org/r/20220425063120.10135-3-a-govindraju@ti.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Mark Bloch <mbloch@nvidia.com>
+Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/sdhci_am654.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/mmc/host/sdhci_am654.c b/drivers/mmc/host/sdhci_am654.c
-index b4891bb26648..a3e62e212631 100644
---- a/drivers/mmc/host/sdhci_am654.c
-+++ b/drivers/mmc/host/sdhci_am654.c
-@@ -147,6 +147,9 @@ struct sdhci_am654_data {
- 	int drv_strength;
- 	int strb_sel;
- 	u32 flags;
-+	u32 quirks;
-+
-+#define SDHCI_AM654_QUIRK_FORCE_CDTEST BIT(0)
- };
- 
- struct sdhci_am654_driver_data {
-@@ -369,6 +372,21 @@ static void sdhci_am654_write_b(struct sdhci_host *host, u8 val, int reg)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+index b6f58d16d145..298c614c631b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+@@ -2064,16 +2064,16 @@ void mlx5_del_flow_rules(struct mlx5_flow_handle *handle)
+ 	down_write_ref_node(&fte->node, false);
+ 	for (i = handle->num_rules - 1; i >= 0; i--)
+ 		tree_remove_node(&handle->rule[i]->node, true);
+-	if (fte->dests_size) {
+-		if (fte->modify_mask)
+-			modify_fte(fte);
+-		up_write_ref_node(&fte->node, false);
+-	} else if (list_empty(&fte->node.children)) {
++	if (list_empty(&fte->node.children)) {
+ 		del_hw_fte(&fte->node);
+ 		/* Avoid double call to del_hw_fte */
+ 		fte->node.del_hw_func = NULL;
+ 		up_write_ref_node(&fte->node, false);
+ 		tree_put_node(&fte->node, false);
++	} else if (fte->dests_size) {
++		if (fte->modify_mask)
++			modify_fte(fte);
++		up_write_ref_node(&fte->node, false);
+ 	} else {
+ 		up_write_ref_node(&fte->node, false);
  	}
- }
- 
-+static void sdhci_am654_reset(struct sdhci_host *host, u8 mask)
-+{
-+	u8 ctrl;
-+	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
-+	struct sdhci_am654_data *sdhci_am654 = sdhci_pltfm_priv(pltfm_host);
-+
-+	sdhci_reset(host, mask);
-+
-+	if (sdhci_am654->quirks & SDHCI_AM654_QUIRK_FORCE_CDTEST) {
-+		ctrl = sdhci_readb(host, SDHCI_HOST_CONTROL);
-+		ctrl |= SDHCI_CTRL_CDTEST_INS | SDHCI_CTRL_CDTEST_EN;
-+		sdhci_writeb(host, ctrl, SDHCI_HOST_CONTROL);
-+	}
-+}
-+
- static int sdhci_am654_execute_tuning(struct mmc_host *mmc, u32 opcode)
- {
- 	struct sdhci_host *host = mmc_priv(mmc);
-@@ -500,7 +518,7 @@ static struct sdhci_ops sdhci_j721e_4bit_ops = {
- 	.set_clock = sdhci_j721e_4bit_set_clock,
- 	.write_b = sdhci_am654_write_b,
- 	.irq = sdhci_am654_cqhci_irq,
--	.reset = sdhci_reset,
-+	.reset = sdhci_am654_reset,
- };
- 
- static const struct sdhci_pltfm_data sdhci_j721e_4bit_pdata = {
-@@ -719,6 +737,9 @@ static int sdhci_am654_get_of_property(struct platform_device *pdev,
- 	device_property_read_u32(dev, "ti,clkbuf-sel",
- 				 &sdhci_am654->clkbuf_sel);
- 
-+	if (device_property_read_bool(dev, "ti,fails-without-test-cd"))
-+		sdhci_am654->quirks |= SDHCI_AM654_QUIRK_FORCE_CDTEST;
-+
- 	sdhci_get_of_property(pdev);
- 
- 	return 0;
 -- 
 2.35.1
 
