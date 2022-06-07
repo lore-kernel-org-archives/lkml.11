@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8F1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:49:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C069C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:49:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377053AbiFGUtw (ORCPT
+        id S1377065AbiFGUt4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46438 "EHLO
+        Tue, 7 Jun 2022 16:49:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357383AbiFGTuK (ORCPT
+        with ESMTP id S1357514AbiFGTu2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:50:10 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF137CB0A;
-        Tue,  7 Jun 2022 11:19:29 -0700 (PDT)
+        Tue, 7 Jun 2022 15:50:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35AFA7E1E5;
+        Tue,  7 Jun 2022 11:19:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BC5CACE2439;
-        Tue,  7 Jun 2022 18:19:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B20BFC385A2;
-        Tue,  7 Jun 2022 18:19:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD0E360A21;
+        Tue,  7 Jun 2022 18:19:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE772C385A5;
+        Tue,  7 Jun 2022 18:19:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625964;
-        bh=r3DLkc6jEcY3i0/3z56pH0qiShiXBiSeWD+DV9othKc=;
+        s=korg; t=1654625972;
+        bh=1FGITE9cSQ7P/XRgO9DxDaKqCo/fkaKYnIe8TByOLMk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FRNyUVjrQtzplj4Xk7QsZBIMZwHYgN0PsT1ZyrY45tm3Lt3n5ifhC6mhKgxRo5Hh0
-         swb957JCiETIk6fuGZHC6aKVHYKC6xG03EiqMYGpZbXbIAWYRcpCzPBxGsmmfFCACR
-         Eza6kWnub55GzY3IzpdTUPJupdUHz3lLyFg6Rh1o=
+        b=GzEWSo8tqmzDXLAym5m9K5cxvPN1TW5IKSF7U+O3imdY92n094kCIsatTFbCLIfzA
+         f9EauPLMWYojKALeMq+jGKv3VyvjldM+SPPckbO4911JTX7TXl8ohrac54t3StAA2i
+         3bbZjdMR8MS/V/WHxuimAgL8sPeRssdviFRKBCwY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Jia-wei Chang <jia-wei.chang@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 206/772] cpufreq: Avoid unnecessary frequency updates due to mismatch
-Date:   Tue,  7 Jun 2022 18:56:38 +0200
-Message-Id: <20220607164955.103958181@linuxfoundation.org>
+Subject: [PATCH 5.17 170/772] net: ipa: ignore endianness if there is no header
+Date:   Tue,  7 Jun 2022 18:56:02 +0200
+Message-Id: <20220607164954.049841462@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,60 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Viresh Kumar <viresh.kumar@linaro.org>
+From: Alex Elder <elder@linaro.org>
 
-[ Upstream commit f55ae08c89873e140c7cac2a7fa161d31a0d60cf ]
+[ Upstream commit 332ef7c814bdd60f08d0d9013d0e1104798b2d23 ]
 
-For some platforms, the frequency returned by hardware may be slightly
-different from what is provided in the frequency table. For example,
-hardware may return 499 MHz instead of 500 MHz. In such cases it is
-better to avoid getting into unnecessary frequency updates, as we may
-end up switching policy->cur between the two and sending unnecessary
-pre/post update notifications, etc.
+If we program an RX endpoint to have no header (header length is 0),
+header-related endpoint configuration values are meaningless and are
+ignored.
 
-This patch has chosen allows the hardware frequency and table frequency
-to deviate by 1 MHz for now, we may want to increase it a bit later on
-if someone still complains.
+The only case we support that defines a header is QMAP endpoints.
+In ipa_endpoint_init_hdr_ext() we set the endianness mask value
+unconditionally, but it should not be done if there is no header
+(meaning it is not configured for QMAP).
 
-Reported-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-Tested-by: Jia-wei Chang <jia-wei.chang@mediatek.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Set the endianness conditionally, and rearrange the logic in that
+function slightly to avoid testing the qmap flag twice.
+
+Delete an incorrect comment in ipa_endpoint_init_aggr().
+
+Signed-off-by: Alex Elder <elder@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/cpufreq.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/net/ipa/ipa_endpoint.c | 32 +++++++++++++++++---------------
+ 1 file changed, 17 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-index 80f535cc8a75..fbaa8e6c7d23 100644
---- a/drivers/cpufreq/cpufreq.c
-+++ b/drivers/cpufreq/cpufreq.c
-@@ -28,6 +28,7 @@
- #include <linux/suspend.h>
- #include <linux/syscore_ops.h>
- #include <linux/tick.h>
-+#include <linux/units.h>
- #include <trace/events/power.h>
+diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+index dde55ccae9d7..b421bb1cc23d 100644
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -571,19 +571,23 @@ static void ipa_endpoint_init_hdr_ext(struct ipa_endpoint *endpoint)
+ 	struct ipa *ipa = endpoint->ipa;
+ 	u32 val = 0;
  
- static LIST_HEAD(cpufreq_policy_list);
-@@ -1707,6 +1708,16 @@ static unsigned int cpufreq_verify_current_freq(struct cpufreq_policy *policy, b
- 		return new_freq;
- 
- 	if (policy->cur != new_freq) {
-+		/*
-+		 * For some platforms, the frequency returned by hardware may be
-+		 * slightly different from what is provided in the frequency
-+		 * table, for example hardware may return 499 MHz instead of 500
-+		 * MHz. In such cases it is better to avoid getting into
-+		 * unnecessary frequency updates.
-+		 */
-+		if (abs(policy->cur - new_freq) < HZ_PER_MHZ)
-+			return policy->cur;
+-	val |= HDR_ENDIANNESS_FMASK;		/* big endian */
+-
+-	/* A QMAP header contains a 6 bit pad field at offset 0.  The RMNet
+-	 * driver assumes this field is meaningful in packets it receives,
+-	 * and assumes the header's payload length includes that padding.
+-	 * The RMNet driver does *not* pad packets it sends, however, so
+-	 * the pad field (although 0) should be ignored.
+-	 */
+-	if (endpoint->data->qmap && !endpoint->toward_ipa) {
+-		val |= HDR_TOTAL_LEN_OR_PAD_VALID_FMASK;
+-		/* HDR_TOTAL_LEN_OR_PAD is 0 (pad, not total_len) */
+-		val |= HDR_PAYLOAD_LEN_INC_PADDING_FMASK;
+-		/* HDR_TOTAL_LEN_OR_PAD_OFFSET is 0 */
++	if (endpoint->data->qmap) {
++		/* We have a header, so we must specify its endianness */
++		val |= HDR_ENDIANNESS_FMASK;	/* big endian */
 +
- 		cpufreq_out_of_sync(policy, new_freq);
- 		if (update)
- 			schedule_work(&policy->update);
++		/* A QMAP header contains a 6 bit pad field at offset 0.
++		 * The RMNet driver assumes this field is meaningful in
++		 * packets it receives, and assumes the header's payload
++		 * length includes that padding.  The RMNet driver does
++		 * *not* pad packets it sends, however, so the pad field
++		 * (although 0) should be ignored.
++		 */
++		if (!endpoint->toward_ipa) {
++			val |= HDR_TOTAL_LEN_OR_PAD_VALID_FMASK;
++			/* HDR_TOTAL_LEN_OR_PAD is 0 (pad, not total_len) */
++			val |= HDR_PAYLOAD_LEN_INC_PADDING_FMASK;
++			/* HDR_TOTAL_LEN_OR_PAD_OFFSET is 0 */
++		}
+ 	}
+ 
+ 	/* HDR_PAYLOAD_LEN_INC_PADDING is 0 */
+@@ -741,8 +745,6 @@ static void ipa_endpoint_init_aggr(struct ipa_endpoint *endpoint)
+ 
+ 			close_eof = endpoint->data->rx.aggr_close_eof;
+ 			val |= aggr_sw_eof_active_encoded(version, close_eof);
+-
+-			/* AGGR_HARD_BYTE_LIMIT_ENABLE is 0 */
+ 		} else {
+ 			val |= u32_encode_bits(IPA_ENABLE_DEAGGR,
+ 					       AGGR_EN_FMASK);
 -- 
 2.35.1
 
