@@ -2,131 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEB17CCA491
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F4B9CCA490
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387339AbiFHBhd (ORCPT
+        id S1386462AbiFHBgx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:37:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54170 "EHLO
+        Tue, 7 Jun 2022 21:36:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453155AbiFGXPA (ORCPT
+        with ESMTP id S1385412AbiFGXjJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:15:00 -0400
-Received: from 17.mo583.mail-out.ovh.net (17.mo583.mail-out.ovh.net [46.105.56.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2EF3B6093
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:05:08 -0700 (PDT)
-Received: from player734.ha.ovh.net (unknown [10.108.4.24])
-        by mo583.mail-out.ovh.net (Postfix) with ESMTP id E6B5123EA6
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 21:04:52 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player734.ha.ovh.net (Postfix) with ESMTPSA id 6B3F02B24C936;
-        Tue,  7 Jun 2022 21:04:40 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-95G001c84ff67f-96bd-453b-ab78-243ac733fd37,
-                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-Date:   Tue, 7 Jun 2022 23:04:38 +0200
-From:   Stephen Kitt <steve@sk2.org>
-To:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drm/bridge: parade-ps8622: Use backlight helper
-Message-ID: <20220607230438.2fdbb3af@heffalump.sk2.org>
-In-Reply-To: <20220607181022.1119546-1-steve@sk2.org>
-References: <20220607181022.1119546-1-steve@sk2.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/xlmM9B3iI4SZbsqiVRvNw=3";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Ovh-Tracer-Id: 13651536371335333510
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudehjecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeffhffvvefukfgjfhfogggtsehgtderreertddvnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeefffeghffgueeufeefjeeifeeifefgfefftefhtddugedvjeeulefhhfefgeejieenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejfeegrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekfe
+        Tue, 7 Jun 2022 19:39:09 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A0922FA01
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:40 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id k73-20020a25244c000000b0065ca88b381aso16139855ybk.2
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=liucOeq+i8wBW37ckX9CitJW/au6CJxD8EZtE2Dscgc=;
+        b=IN4fgLOAlV1KfJqGAahoaf3ef2R61NuhCc8Zcuigfom73c04gZoF4gqmTlUtsMkVpC
+         JJjG5PLhtp0idJcE3GQZIUcLYjAFyliljLpmJEtskP/d9vDA+SUVMTiFr2hP1UxPLYHS
+         l6qT8pIGPWE5c8PmBss+TQAa+aDolxVsk5hpUIWrgBd/eOL+Ni75YM8tBNHcv5KC2108
+         hX4vi4h52X6J7ztyPP6LvuYeEc4Q8rr/3H40NyyOkO82MsQgFndVerbRD480mQnmy87g
+         d0+G/e3Pf8MNkO8RgEMH0iZYVzv21SEneAUSiIpjkqmdtoD+EB3MUXh+XkggzrR2H7DJ
+         wsyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=liucOeq+i8wBW37ckX9CitJW/au6CJxD8EZtE2Dscgc=;
+        b=zsegZb4GazgncRJxM44ROODuyMZQk1AfIT0EdhWQLyJde0kae1a5BQkPoMBlAiU9Sg
+         NWrjTRES58EC3ahhdfyST4RROKOa5XXTprozUqZVmEKtMPGPyw3khYld4GZzbSWaa8Dl
+         tH/6/ZLwnofcqsYwa0i44GPcot6H497phx7Yd1NtOdxb8mN4dPplD0+0vOv8sFOmE08t
+         ELXjpS9tpFZLqlMFcpT0IGSmzioYk3sSqv0pAq4Kf3Heih2ak2uNh/5QnowMlm6DoKmI
+         zj4aLHuYzhLQAyPCMirPcRSSIxEfQ0jd/Yf1V1DaOZrL/ViAld9AhtpGcQZAmQNbAeWn
+         R6lQ==
+X-Gm-Message-State: AOAM5312B8+CO7Bv7eawJT/PFylOFlUj29FnX83mwvFyoJGziJGadmWa
+        xU7tYBjgZkAutNEcQ7DyIJWeCfmU7z0=
+X-Google-Smtp-Source: ABdhPJwaMXUoyu3EtfXs0KZLcGC4hnzNLLKfYxjZfrDEVK3xRQ3CoJWyKoyj8BCWfKvB0yvC4Lb3ZojZyZM=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a81:9d5:0:b0:2f4:dd93:4513 with SMTP id
+ 204-20020a8109d5000000b002f4dd934513mr33067623ywj.54.1654637798700; Tue, 07
+ Jun 2022 14:36:38 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Tue,  7 Jun 2022 21:36:01 +0000
+In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
+Message-Id: <20220607213604.3346000-13-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220607213604.3346000-1-seanjc@google.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH v5 12/15] KVM: nVMX: Extend VMX MSRs quirk to CR0/4 fixed1 bits
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
+        David Matlack <dmatlack@google.com>,
+        Oliver Upton <oupton@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/xlmM9B3iI4SZbsqiVRvNw=3
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Extend the VMX MSRs quirk to the CR0/4_FIXED1 MSRs, i.e. when the quirk
+is disabled, allow userspace to set the MSRs and do not rewrite the MSRs
+during CPUID updates.  The bits that the guest (L2 in this case) is
+allowed to set are not directly tied to CPUID.  Enumerating to L1 that it
+can set reserved CR0/4 bits is nonsensical and will ultimately result in
+a failed nested VM-Entry (KVM enforces guest reserved CR4 bits on top of
+the VMX MSRs), but KVM typically doesn't police the vCPU model except
+when doing so is necessary to protect the host kernel.
 
-On Tue,  7 Jun 2022 20:10:22 +0200, Stephen Kitt <steve@sk2.org> wrote:
-> backlight_properties.fb_blank is deprecated. The states it represents
-> are handled by other properties; but instead of accessing those
-> properties directly, drivers should use the helpers provided by
-> backlight.h.
+Further restricting CR4 bits is however a reasonable thing to do, e.g. to
+work around a bug in nested virtualization, in which case exposing a
+feature to L1 is ok, but letting L2 use the feature is not.  Of course,
+whether or not the L1 hypervisor will actually _check_ the FIXED1 bits is
+another matter entirely, e.g. KVM currently assumes all bits that can be
+set in the host can also be set in the guest.
 
-Apologies for the misleading boilerplate, this patch came about as a result
-of cleaning up fb_blank usage but doesn't involve fb_blank itself.
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ Documentation/virt/kvm/api.rst |  8 ++++++++
+ arch/x86/kvm/vmx/nested.c      | 33 ++++++++++++++++++++++++++++++---
+ arch/x86/kvm/vmx/vmx.c         |  6 +++---
+ 3 files changed, 41 insertions(+), 6 deletions(-)
 
-> Instead of retrieving the backlight brightness in struct
-> backlight_properties manually, and then checking whether the backlight
-> should be on at all, use backlight_get_brightness() which does all
-> this and insulates this from future changes.
->=20
-> Signed-off-by: Stephen Kitt <steve@sk2.org>
-> Cc: Andrzej Hajda <andrzej.hajda@intel.com>
-> Cc: Neil Armstrong <narmstrong@baylibre.com>
-> Cc: Robert Foss <robert.foss@linaro.org>
-> Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
-> Cc: Jonas Karlman <jonas@kwiboo.se>
-> Cc: Jernej Skrabec <jernej.skrabec@gmail.com>
-> Cc: David Airlie <airlied@linux.ie>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Cc: dri-devel@lists.freedesktop.org
-> ---
->  drivers/gpu/drm/bridge/parade-ps8622.c | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
->=20
-> diff --git a/drivers/gpu/drm/bridge/parade-ps8622.c
-> b/drivers/gpu/drm/bridge/parade-ps8622.c index 37b308850b4e..b5750e5f71d7
-> 100644 --- a/drivers/gpu/drm/bridge/parade-ps8622.c
-> +++ b/drivers/gpu/drm/bridge/parade-ps8622.c
-> @@ -324,11 +324,7 @@ static int ps8622_send_config(struct ps8622_bridge
-> *ps8622) static int ps8622_backlight_update(struct backlight_device *bl)
->  {
->  	struct ps8622_bridge *ps8622 =3D dev_get_drvdata(&bl->dev);
-> -	int ret, brightness =3D bl->props.brightness;
-> -
-> -	if (bl->props.power !=3D FB_BLANK_UNBLANK ||
-> -	    bl->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK))
-> -		brightness =3D 0;
-> +	int ret, brightness =3D backlight_get_brightness(bl);
-> =20
->  	if (!ps8622->enabled)
->  		return -EINVAL;
->=20
-> base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
-> --=20
-> 2.30.2
->=20
+diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+index 1095692ddab7..88d1bbae031e 100644
+--- a/Documentation/virt/kvm/api.rst
++++ b/Documentation/virt/kvm/api.rst
+@@ -7391,6 +7391,14 @@ The valid bits in cap.args[0] are:
+                                       IA32_VMX_TRUE_EXIT_CTLS[bit 44]
+                                       ('load IA32_PERF_GLOBAL_CTRL'). Otherwise,
+                                       these corresponding MSR bits are cleared.
++                                    - MSR_IA32_VMX_CR0_FIXED1 is unconditionally
++                                      set to 0xffffffff
++                                    - CR4.PCE is unconditionally set in
++                                      MSR_IA32_VMX_CR4_FIXED1.
++                                    - All CR4 bits with an associated CPUID
++                                      feature flag are set in
++                                      MSR_IA32_VMX_CR4_FIXED1 if the feature is
++                                      reported as supported in guest CPUID.
+ 
+                                     When this quirk is disabled, KVM will not
+                                     change the values of the aformentioned VMX
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index 5533c2474128..abce74cfefc9 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -1385,6 +1385,30 @@ static int vmx_restore_fixed0_msr(struct vcpu_vmx *vmx, u32 msr_index, u64 data)
+ 	return 0;
+ }
+ 
++static u64 *vmx_get_fixed1_msr(struct nested_vmx_msrs *msrs, u32 msr_index)
++{
++	switch (msr_index) {
++	case MSR_IA32_VMX_CR0_FIXED1:
++		return &msrs->cr0_fixed1;
++	case MSR_IA32_VMX_CR4_FIXED1:
++		return &msrs->cr4_fixed1;
++	default:
++		BUG();
++	}
++}
++
++static int vmx_restore_fixed1_msr(struct vcpu_vmx *vmx, u32 msr_index, u64 data)
++{
++	const u64 *msr = vmx_get_fixed1_msr(&vmcs_config.nested, msr_index);
++
++	/* Bits that "must-be-0" must not be set in the restored value. */
++	if (!is_bitwise_subset(*msr, data, -1ULL))
++		return -EINVAL;
++
++	*vmx_get_fixed1_msr(&vmx->nested.msrs, msr_index) = data;
++	return 0;
++}
++
+ /*
+  * Called when userspace is restoring VMX MSRs.
+  *
+@@ -1432,10 +1456,13 @@ int vmx_set_vmx_msr(struct kvm_vcpu *vcpu, u32 msr_index, u64 data)
+ 	case MSR_IA32_VMX_CR0_FIXED1:
+ 	case MSR_IA32_VMX_CR4_FIXED1:
+ 		/*
+-		 * These MSRs are generated based on the vCPU's CPUID, so we
+-		 * do not support restoring them directly.
++		 * These MSRs are generated based on the vCPU's CPUID when KVM
++		 * "owns" the VMX MSRs, do not allow restoring them directly.
+ 		 */
+-		return -EINVAL;
++		if (kvm_check_has_quirk(vmx->vcpu.kvm, KVM_X86_QUIRK_TWEAK_VMX_MSRS))
++			return -EINVAL;
++
++		return vmx_restore_fixed1_msr(vmx, msr_index, data);
+ 	case MSR_IA32_VMX_EPT_VPID_CAP:
+ 		return vmx_restore_vmx_ept_vpid_cap(vmx, data);
+ 	case MSR_IA32_VMX_VMCS_ENUM:
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 4c31c8f24329..139f365ca6bb 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -7520,10 +7520,10 @@ static void vmx_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
+ 			~(FEAT_CTL_VMX_ENABLED_INSIDE_SMX |
+ 			  FEAT_CTL_VMX_ENABLED_OUTSIDE_SMX);
+ 
+-	if (nested_vmx_allowed(vcpu)) {
++	if (nested_vmx_allowed(vcpu) &&
++	    kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_TWEAK_VMX_MSRS)) {
+ 		nested_vmx_cr_fixed1_bits_update(vcpu);
+-		if (kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_TWEAK_VMX_MSRS))
+-			nested_vmx_entry_exit_ctls_update(vcpu);
++		nested_vmx_entry_exit_ctls_update(vcpu);
+ 	}
+ 
+ 	if (boot_cpu_has(X86_FEATURE_INTEL_PT) &&
+-- 
+2.36.1.255.ge46751e96f-goog
 
---Sig_/xlmM9B3iI4SZbsqiVRvNw=3
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEnPVX/hPLkMoq7x0ggNMC9Yhtg5wFAmKfvWYACgkQgNMC9Yht
-g5zxmhAAifjtDEfMHufL81UukZEEcANF6q6pR1WE94nlb8cVE02nkdN5O6WnccTU
-qzbvq1XdFXdY4pupuAlCbBi/4n5kylDOeSnASzZ76Sd9pcpUWhSCRCoCY9Cq7JaV
-CtskknGD1MuIWEA65O1Gpdk4IguOkPoUI+Qa1hEuwr/lSNK64CPnoEx6ipBexTzF
-3PwgycelFtoc7vaXs9lvP0FUfikGw8S3lWG2jxFeM4rU7nIJMts51VP09Jbr7tOp
-usn/lJIcwquzs6tWMO3JVVAuj3E6NlHr342mc8+Z4M8q6s+UhX0QkeXXf+ePUVBJ
-YY/V4i3+aK4lpIj9IZ19NJ406ml84BzeT1Uq5mQCBiT+5v/X3bJiaCu5MMi8n+0W
-tM4Z5Y4SOJf5TM7OBr7Akd04JyO8KM3hZtNUWABuIT0iwsJ8M+l/sO/rYj0qTHKR
-U6ELpEwNOlA4kcbEU/mZYXk1q2AIS2zwnjh94h6ySBztOWB8UHsl80ZawRU0b+6d
-8U2uQtF9f+fUQANizro7vHuEAQgBolVCjfN0g0+GAGRcpkIM7BFnX8iKf3irtIUX
-GaeXLueWeuvKGMysqAna18oQbmwcwnqfvCDlvVXFyiQCcTGSZDbKiVlbgQlCVEjy
-6feJ08yhdd5C+DXyLIIVdZ+jQ3hQlrQ1gk/iUca8gQhrZaVXQNc=
-=vkzR
------END PGP SIGNATURE-----
-
---Sig_/xlmM9B3iI4SZbsqiVRvNw=3--
