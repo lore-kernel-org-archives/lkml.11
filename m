@@ -2,114 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5A7ACCA497
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EADB7CCA499
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442269AbiFHCAA (ORCPT
+        id S1442333AbiFHCAS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:00:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49420 "EHLO
+        Tue, 7 Jun 2022 22:00:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1835760AbiFGX4w (ORCPT
+        with ESMTP id S1837409AbiFGX77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:56:52 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DFC61F61D
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:20:31 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id u26so29866192lfd.8
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 16:20:31 -0700 (PDT)
+        Tue, 7 Jun 2022 19:59:59 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33CEE280B19
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 15:35:05 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id a2so24338531lfg.5
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 15:35:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kJadlcijpEraHCzXfyi7dHvp0N+x8osaIwQlxh9G2bY=;
-        b=Z0ia+eLjj6yYhXvzoGPJY2ac0xIAPYnyriaetuCT3yoo9N/HOqP4XHzBGfMavxNlGQ
-         JLjlyCYB5YLQc1PwQqza+kuCemyXvU+6AdZYjKQaoHP7z2E8K8oFFC5L4Q6cnM5JlFId
-         EYJy6ZGMqU9k/lpBl+tq3yRhcdXnfg4GGxbc6IvuGEofwwTGWi2q0fFdCX4SSnO1btc4
-         LWirHSmpgUAOz3v+bCyo21FfstCG4S0rRaZ/7ZgdLn6nFlBpKLo+JOkIWk87m90vdBE5
-         1Wzkx4tFR26DuHShOoFlyOVaLcTGbfSc22D80wD2jfOVwvttkNKZ0ES6XCvZwi7/1i3F
-         ZvOw==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=qoW1gmVljAUL2+6Knzn6x1gPtTMWpq+iXyTdn9hlFNI=;
+        b=AxPXfe8Xqon4nlX+FDGyThgVp0Nb8SmKaPWlg+LsEItxm+v26x/Q/zKjDd9PdWlC0o
+         Rkyh1ZjBkn+P2P0RRC6C6NFdXQeLsxI2Yo985tlacocLxk7Obpyoa173oDBH/yIjPW/o
+         WkSvmlIfAQRMvMSG0gF3+POYP/X1/SbeVtj6VGXakmpPNElBmtlfytt+9VCHX9ukcGCa
+         42OVURr34xEWPmvTIQ1J6Dn7qsNBN9AnI0lAMKqagsEuxZOXBZscPl3fWji8hXzn1x72
+         TzqIuYdHEWuK+L9AzgIBL2YuI/C1Kzd+W5zOkCny2v9CTz1HR1joCZotKiHQDm7JNeQC
+         pGUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kJadlcijpEraHCzXfyi7dHvp0N+x8osaIwQlxh9G2bY=;
-        b=DNXJeZ27rn0cZSdDpCvibIWEWDknd4elrfVf3+pfUfSbx+VXy7di1vm24VDiGl8gE/
-         Zvt/VMnxcU2URF0QbUd82Clfhf1+62Cws6mR/oT5dOCPhyMWg3dPQoSmrguvm2Uy/x1n
-         UVPbT5jqKL86dtc2Y79PTWM2dTlAWItDIVn5t2JztITWT48kJg6Ouigh6C48++GR3ejG
-         FAFiNVjh59qOt5sPh6E/A0cSCDQDG3MWO0ci6yOUVe8brpnEem9bbT4D86T+qP4wYBc9
-         dE48nn+lyi4AnERE+oFlUV/ON5BgHLkwyaLk/3K+0awZ+4AvDdWaWs2yknb0lLuxIRFl
-         D8bQ==
-X-Gm-Message-State: AOAM533n2LjGFPFBqDqs87D6Eqj7kCdvKNtmioHry/rDuubs9F5nyJzQ
-        0itWZ0jYcxDMCvNwitnzjGnz8D6/ulgqcR8Y5ZweKw==
-X-Google-Smtp-Source: ABdhPJxMM91AMDYynBTs5Q7XtkgbyiYpxCwW9+RLJVrUt/uZz2PBE4EVkez8NfMupZZuHvJ7gQ8aix+PQfB54ft4sBs=
-X-Received: by 2002:a05:6512:3f94:b0:478:7abe:de4a with SMTP id
- x20-20020a0565123f9400b004787abede4amr54322287lfa.401.1654644029597; Tue, 07
- Jun 2022 16:20:29 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qoW1gmVljAUL2+6Knzn6x1gPtTMWpq+iXyTdn9hlFNI=;
+        b=DC4+lq/eb/j1nw0RaeMKsgIenluOar0B23xD/dePJhAYZFjHs4bimaR9ncMg1ohCvl
+         ftT9oPtADnd9LcY3FPlqQ008qJe3fCMJQh4lCkKTNBY1dShDHXKFfY0hsmTSXpDx0UA/
+         NNoJ+gt2NZxqnd8P+i0PC5sq5H7pUgWeh/oYjwILDUFqK9Lg1p0gCr0kJkgSsQPGyKFc
+         1DvdtkpcvFBg/48NxJawLsQj/Af5C6ctHJ89tRlgHBqSYJ9bzRDv8+YUYuqIPmhD5ibD
+         zqHw62RHrdEZ5mnsG+tQtIKU8ta+gN3AhDQZuzNmb1nuQpsSY63jc/X8PadFmHk13I2q
+         /OIw==
+X-Gm-Message-State: AOAM53264LXrNC5KqKWoPlPeyi1H+LGbgWg985esFdee2GG6UaprGr7R
+        jse+QGBpPrEnARDvCJI0cJrTRg==
+X-Google-Smtp-Source: ABdhPJzCfE5fl1O6+eZqnTJpd4HzsWT6PV949KVeMp1srMc//o0rggoboGViIvouXtvg2Af4hURThg==
+X-Received: by 2002:a05:6512:545:b0:479:b15:6671 with SMTP id h5-20020a056512054500b004790b156671mr19852457lfl.579.1654641295093;
+        Tue, 07 Jun 2022 15:34:55 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id p4-20020a056512312400b0047255d211f7sm3418559lfd.294.2022.06.07.15.34.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 15:34:54 -0700 (PDT)
+Message-ID: <9077f91b-0e1d-25bc-56a9-66a500e16ff4@linaro.org>
+Date:   Wed, 8 Jun 2022 01:34:54 +0300
 MIME-Version: 1.0
-References: <20220607222006.22719-1-jstitt007@gmail.com>
-In-Reply-To: <20220607222006.22719-1-jstitt007@gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 7 Jun 2022 16:20:17 -0700
-Message-ID: <CAKwvOd=-NXR5HoHwwEUZMsCt90oaADH6XHifje9n-8S8rj9SFw@mail.gmail.com>
-Subject: Re: [PATCH] include/uapi/linux/swab.h: add __u16 cast to __swab16 conditional
-To:     Justin Stitt <jstitt007@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Nathan Chancellor <nathan@kernel.org>, Tom Rix <trix@redhat.com>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 0/5] phy: qcom: Add SC8280XP UNI and COMBO USB phys
+Content-Language: en-GB
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Manu Gautam <mgautam@codeaurora.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220607213543.4057620-1-bjorn.andersson@linaro.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220607213543.4057620-1-bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 3:20 PM Justin Stitt <jstitt007@gmail.com> wrote:
->
-> if __HAVE_BUILTIN_BSWAP16__ is defined then __swab16 utilizes a __u16 cast.
-> This same cast should be used if __HAVE_BUILTIN_BSWAP16__ is not defined as
-> well. This should fix loads (at least a few) clang -Wformat warnings
-> specifically with `ntohs()`
->
-> Link: https://github.com/ClangBuiltLinux/linux/issues/378
-> Signed-off-by: Justin Stitt <jstitt007@gmail.com>
+On 08/06/2022 00:35, Bjorn Andersson wrote:
+> The Qualcomm SC8280XP has two pairs of USB phys; a pair of combo phys and a
+> pair of uni phys. Introduce support for these.
+> 
+> This is based ontop of Dmitry's refactoring of the QMP driver:
+> https://lore.kernel.org/all/20220602070909.1666068-1-dmitry.baryshkov@linaro.org/
+> 
+> A first version of this series was posted with only the UNI phy, this fixes a
+> few comments and add the combo phy as well.
+> 
+> Bjorn Andersson (5):
+>    dt-bindings: phy: qcom,qmp: Add compatible for SC8280XP USB phys
+>    phy: qcom-qmp: Add USB3 5NM QMP UNI registers
+>    phy: qcom-qmp: Add USB4 5NM QMP combo PHY registers
 
-I wonder why there's a cast inside the __builtin_constant_p parameter
-list? Can't imagine that changing anything. I wonder if this should
-be:
+I've noted, which symbols look close enough to be folded into existing 
+namespaces. Could you please doublecheck my analysis and merge the tables?
 
-diff --git a/include/uapi/linux/swab.h b/include/uapi/linux/swab.h
-index 7272f85d6d6a..0723a9cce747 100644
---- a/include/uapi/linux/swab.h
-+++ b/include/uapi/linux/swab.h
-@@ -102,7 +102,7 @@ static inline __attribute_const__ __u32
-__fswahb32(__u32 val)
- #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
- #else
- #define __swab16(x)                            \
--       (__builtin_constant_p((__u16)(x)) ?     \
-+       (__u16)(__builtin_constant_p(x) ?       \
-        ___constant_swab16(x) :                 \
-        __fswab16(x))
- #endif
-@@ -115,7 +115,7 @@ static inline __attribute_const__ __u32
-__fswahb32(__u32 val)
- #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
- #else
- #define __swab32(x)                            \
--       (__builtin_constant_p((__u32)(x)) ?     \
-+       (__u32)(__builtin_constant_p(x) ?       \
-        ___constant_swab32(x) :                 \
-        __fswab32(x))
- #endif
-@@ -128,7 +128,7 @@ static inline __attribute_const__ __u32
-__fswahb32(__u32 val)
- #define __swab64(x) (__u64)__builtin_bswap64((__u64)(x))
- #else
- #define __swab64(x)                            \
--       (__builtin_constant_p((__u64)(x)) ?     \
-+       (__u64)(__builtin_constant_p(x) ?       \
-        ___constant_swab64(x) :                 \
-        __fswab64(x))
- #endif
---
-Thanks,
-~Nick Desaulniers
+>    phy: qcom-qmp: Add SC8280XP USB3 UNI phy
+>    phy: qcom-qmp: Add sc8280xp USB/DP combo phys
+> 
+>   .../devicetree/bindings/phy/qcom,qmp-phy.yaml |    2 +
+>   .../bindings/phy/qcom,qmp-usb3-dp-phy.yaml    |    1 +
+>   drivers/phy/qualcomm/phy-qcom-qmp-combo.c     |  205 +++
+>   drivers/phy/qualcomm/phy-qcom-qmp-usb.c       |  138 ++
+>   drivers/phy/qualcomm/phy-qcom-qmp.h           |   13 +
+>   .../phy/qualcomm/phy-qcom-usb3-5nm-qmp-uni.h  |  617 +++++++
+>   .../qualcomm/phy-qcom-usb4-5nm-qmp-combo.h    | 1547 +++++++++++++++++
+>   7 files changed, 2523 insertions(+)
+>   create mode 100644 drivers/phy/qualcomm/phy-qcom-usb3-5nm-qmp-uni.h
+>   create mode 100644 drivers/phy/qualcomm/phy-qcom-usb4-5nm-qmp-combo.h
+> 
+
+
+-- 
+With best wishes
+Dmitry
