@@ -2,96 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A2ADCCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ADB4CCA489
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392491AbiFHB6O (ORCPT
+        id S1392522AbiFHB6W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:58:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49312 "EHLO
+        Tue, 7 Jun 2022 21:58:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588736AbiFGXzA (ORCPT
+        with ESMTP id S1588746AbiFGXzB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:55:00 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68FF18219D
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:40:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654645202; x=1686181202;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ZjlOk8azHhDHFFrQPq91H0uTrw45sF8jDpP42SnJxhM=;
-  b=lr1Tn8qWMU9rVd+Y42dc5t+H5lKvlNeyVICMqarzwZPpO2UNVIhtPXCi
-   79zW43Whu5c7soS3d9uBslqzX64TLAfYwKJnKg4WWWR2WIp/DKtl8pSGA
-   azDKKYjZR+kcgMMSiSUdv7HPfqD97oLuzYn7t2pwmos6PWHe2GxU/+wja
-   ltnqALFa0wgpRpicPVlr5Xug4sEnd+ijXl1iiMTREyMPV3+8qQfnAk/tP
-   VPSBfk6UY6sNdXayCJ6sqMbIxeD4appM4N48SevpqhzEEq2xAz9GY1JS7
-   ZD3HH0ftbPv0w9XMUFjdZl7RhuVyIR9jTgNdazUP22hn1ZU6ZrsMOZ9uC
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="276801993"
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="276801993"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 16:40:01 -0700
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="579810172"
-Received: from schen9-mobl.amr.corp.intel.com ([10.251.8.166])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 16:40:01 -0700
-Message-ID: <0c2fac38720710aebe2b667807c647e8a5aa5441.camel@linux.intel.com>
-Subject: Re: [PATCH v5 6/9] mm/demotion: Add support for removing node from
- demotion memory tiers
-From:   Tim Chen <tim.c.chen@linux.intel.com>
-To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        linux-mm@kvack.org, akpm@linux-foundation.org
-Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
-        Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>
-Date:   Tue, 07 Jun 2022 16:40:00 -0700
-In-Reply-To: <20220603134237.131362-7-aneesh.kumar@linux.ibm.com>
-References: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
-         <20220603134237.131362-7-aneesh.kumar@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+        Tue, 7 Jun 2022 19:55:01 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F05291B07A1
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:36:20 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <heiko@sntech.de>)
+        id 1nyik1-00033u-HB; Wed, 08 Jun 2022 01:36:05 +0200
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     Palmer Dabbelt <palmer@rivosinc.com>, Ron Economos <re@w6rz.net>
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [GIT PULL] RISC-V Patches for the 5.19 Merge Window, Part 1
+Date:   Wed, 08 Jun 2022 01:36:02 +0200
+Message-ID: <827324415.0ifERbkFSE@diego>
+In-Reply-To: <d7c8ee82-ce85-5d55-2865-4b610c9d3b9d@w6rz.net>
+References: <mhng-3cfe92b5-a83a-4642-9b9e-8416ae717fd6@palmer-ri-x1c9> <d7c8ee82-ce85-5d55-2865-4b610c9d3b9d@w6rz.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-06-03 at 19:12 +0530, Aneesh Kumar K.V wrote:
-> This patch adds the special string "none" as a supported memtier value
-> that we can use to remove a specific node from being using as demotion target.
+Hi Ron,
 
-And also such node will not participate in promotion.  That is, hot memory in it will
-not be promoted to other nodes.
+Am Dienstag, 7. Juni 2022, 22:46:52 CEST schrieb Ron Economos:
+> On 5/31/22 10:13 AM, Palmer Dabbelt wrote:
+> > The following changes since commit 9282d0996936c5fbf877c0d096a3feb456c878ad:
+> >
+> >    csky: Move to generic ticket-spinlock (2022-05-11 11:50:15 -0700)
+> >
+> > are available in the Git repository at:
+> >
+> >    git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.19-mw0
+> >
+> > for you to fetch changes up to 7699f7aacf3ebfee51c670b6f796b2797f0f7487:
+> >
+> >    RISC-V: Prepare dropping week attribute from arch_kexec_apply_relocations[_add] (2022-05-30 16:04:37 -0700)
+> >
+> > ----------------------------------------------------------------
+> > RISC-V Patches for the 5.19 Merge Window, Part 1
+> >
+> > * Support for the Svpbmt extension, which allows memory attributes to be
+> >    encoded in pages.
+> >
+> >
+> > Heiko Stuebner (12):
+> >        riscv: integrate alternatives better into the main architecture
+> >        riscv: allow different stages with alternatives
+> >        riscv: implement module alternatives
+> >        riscv: implement ALTERNATIVE_2 macro
+> >        riscv: extend concatenated alternatives-lines to the same length
+> >        riscv: prevent compressed instructions in alternatives
+> >        riscv: move boot alternatives to after fill_hwcap
+> >        riscv: Fix accessing pfn bits in PTEs for non-32bit variants
+> >        riscv: add RISC-V Svpbmt extension support
+> >        riscv: remove FIXMAP_PAGE_IO and fall back to its default value
+> >        riscv: don't use global static vars to store alternative data
+> >        riscv: add memory-type errata for T-Head
+> >
+> An issue was found on the HiFive Unmatched with the 5.19-rc1 kernel. The 
+> following warning occurs during boot:
+> 
+> riscv64 kernel: 
+> ----------------------------------------------------------------
+> riscv64 kernel: WARNING: Missing the following errata may cause 
+> potential issues
+> riscv64 kernel:         SiFive Errata[0]:cip-453
+> riscv64 kernel:         SiFive Errata[1]:cip-1200
+> riscv64 kernel: Please enable the corresponding Kconfig to apply them
+> riscv64 kernel: 
+> ----------------------------------------------------------------
+> 
+> I've manually bisected the problem to this commit:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ff689fd21cb13098305bae3f8d0c0065df2e2fc1
 
-> 
-> For ex:
-> :/sys/devices/system/node/node1# cat memtier
-> 1
-> :/sys/devices/system/node/node1# cat ../../memtier/memtier1/nodelist
-> 1-3
-> :/sys/devices/system/node/node1# echo none > memtier
-> :/sys/devices/system/node/node1#
-> :/sys/devices/system/node/node1# cat memtier
-> :/sys/devices/system/node/node1# cat ../../memtier/memtier1/nodelist
-> 2-3
-> :/sys/devices/system/node/node1#
-> 
-> 
+hmm, on first glance I can't really see how that specific commit would
+affect Sifive erratas. Patches directly before this one did change
+alternative / errata things though.
+
+(1) From looking at your output, it seems at least CONFIG_ERRATA_SIFIVE
+is enabled as the general sifive errata code is running, but are the
+individual erratas also still enabled in your config?
+They're default=y forever and weren't touched by the svpbmt series,
+but it'd be nice to know how the config looks, to see if the Kconfig
+settings are strange somewhere
+
+
+(2) Going from the list on
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/log/?h=ff689fd21cb13098305bae3f8d0c0065df2e2fc1
+
+could you maybe check if it's really working with the parent of the
+commit you found. (i.e. patches before the svpbmt addition).
+
+Also just to be sure, it still works correctly with 5.18, right?
+
+
+Thanks
+Heiko
+
 
