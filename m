@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B193CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88531CCA482
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359455AbiFGUPV (ORCPT
+        id S1359536AbiFGUPc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34218 "EHLO
+        Tue, 7 Jun 2022 16:15:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355059AbiFGTWG (ORCPT
+        with ESMTP id S1355125AbiFGTWL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:22:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B838D49F81;
-        Tue,  7 Jun 2022 11:08:58 -0700 (PDT)
+        Tue, 7 Jun 2022 15:22:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0FF67D24;
+        Tue,  7 Jun 2022 11:09:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 492AFB82340;
-        Tue,  7 Jun 2022 18:08:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACD6BC385A5;
-        Tue,  7 Jun 2022 18:08:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 00F686193C;
+        Tue,  7 Jun 2022 18:09:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 141EDC3411C;
+        Tue,  7 Jun 2022 18:09:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625336;
-        bh=t3hrAwWBwsBzAgzMagjHfQFc8tnCTd0Z2UGGpiYnyUE=;
+        s=korg; t=1654625341;
+        bh=ODRQG+sRCqh6RBUSnN70/uOk5euMC1g+MOEckd+VAeA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dEbmHm0SFW1t5FHXevpK6wmsqPX6R2NYUVyz6wQLL+lff6cZRQKAyW3cXV4naFjo/
-         4e3J5oqlt6UXRNgmQjI8Y42hrnNtbF7qwURL5ZZ3u7bVZyDwQAw/I6mbx4ggd9lBjj
-         spJrj1GunVizn+GaRDuMo+w1268PL8ZmbIbPSOAU=
+        b=vpWizjkEnnnK8sBouKrYvdB+viAiM7IKLW3aUxWr5KNDjRIOObJexDGiAIzoSTFNx
+         wTjHPKv0QnKBJhnnf/xwnB53R8FU4nA2DdqYslYqfW9DEcv8pXK/SJlGNg/FyMyiau
+         iTj8y7ixdXrlekCfWh+jMRbvgGeAxTxxVApCh460=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 649/667] net: ipa: fix page free in ipa_endpoint_trans_release()
-Date:   Tue,  7 Jun 2022 19:05:14 +0200
-Message-Id: <20220607164954.118180898@linuxfoundation.org>
+Subject: [PATCH 5.15 650/667] net: ipa: fix page free in ipa_endpoint_replenish_one()
+Date:   Tue,  7 Jun 2022 19:05:15 +0200
+Message-Id: <20220607164954.147888942@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,19 +51,19 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Alex Elder <elder@linaro.org>
 
-commit 155c0c90bca918de6e4327275dfc1d97fd604115 upstream.
+commit 70132763d5d2e94cd185e3aa92ac6a3ba89068fa upstream.
 
-Currently the (possibly compound) page used for receive buffers are
+Currently the (possibly compound) pages used for receive buffers are
 freed using __free_pages().  But according to this comment above the
 definition of that function, that's wrong:
-    If you want to use the page's reference count to decide when
-    to free the allocation, you should allocate a compound page,
-    and use put_page() instead of __free_pages().
+    If you want to use the page's reference count to decide
+    when to free the allocation, you should allocate a compound
+    page, and use put_page() instead of __free_pages().
 
-Convert the call to __free_pages() in ipa_endpoint_trans_release()
+Convert the call to __free_pages() in ipa_endpoint_replenish_one()
 to use put_page() instead.
 
-Fixes: ed23f02680caa ("net: ipa: define per-endpoint receive buffer size")
+Fixes: 6a606b90153b8 ("net: ipa: allocate transaction in replenish loop")
 Signed-off-by: Alex Elder <elder@linaro.org>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -73,14 +73,14 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/drivers/net/ipa/ipa_endpoint.c
 +++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1389,7 +1389,7 @@ void ipa_endpoint_trans_release(struct i
- 		struct page *page = trans->data;
+@@ -1049,7 +1049,7 @@ static int ipa_endpoint_replenish_one(st
+ err_trans_free:
+ 	gsi_trans_free(trans);
+ err_free_pages:
+-	__free_pages(page, get_order(IPA_RX_BUFFER_SIZE));
++	put_page(page);
  
- 		if (page)
--			__free_pages(page, get_order(IPA_RX_BUFFER_SIZE));
-+			put_page(page);
- 	}
+ 	return -ENOMEM;
  }
- 
 
 
