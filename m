@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 369B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22562C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:48:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232822AbiFHBrg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46966 "EHLO
+        id S245144AbiFHBsE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:48:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383315AbiFGVxC (ORCPT
+        with ESMTP id S1383072AbiFGVwQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:53:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4061243B97;
-        Tue,  7 Jun 2022 12:11:24 -0700 (PDT)
+        Tue, 7 Jun 2022 17:52:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CB442408FC;
+        Tue,  7 Jun 2022 12:10:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15BE0612EC;
-        Tue,  7 Jun 2022 19:11:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EDA0C385A2;
-        Tue,  7 Jun 2022 19:11:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 18CDF617DA;
+        Tue,  7 Jun 2022 19:10:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2757DC34115;
+        Tue,  7 Jun 2022 19:10:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629083;
-        bh=z6gv72hpwSptSCQ7xX3FHP+uyddk98Y6OKh8o9Pf8MY=;
+        s=korg; t=1654629025;
+        bh=4JIrRICiYrnw1c2ygg9e+MEN7EFrlrJShWuE87GFz/4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZI620aFVGE/MjpmKX2l62GXJMv1i73pjtYeRr6Si5vT0O1cuzRqLWcz5bM7nLIQJB
-         rwr8kTBjlusyNqfsCKyzjBPFiYZ+lZEoU5WLzm+6DvfK2igm3cRzW+JXn2ICaq/eem
-         GWjDNFA2ERuqOBQWj90Zpc5J0OOmmV9QcQeCYE+M=
+        b=VPf4ouNmZs6EbT8etkn2uKPmn7ASyP1HLH12et8rXhJj8CrL9j77uEbNxbgTrLDDx
+         jfv+/C/IVj2WU7aOpXQvDb+k6NjU7/YR7Vzt1Tayd+n0W2Hc6vpifKwaB6UpKgdT0P
+         LMY9dnqqDJ4GPNr9U/vQXT7qRjgUxtqt/U2Y/fT4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 563/879] ARM: dts: qcom: sdx55: remove wrong unit address from RPMH RSC clocks
-Date:   Tue,  7 Jun 2022 19:01:21 +0200
-Message-Id: <20220607165019.203957963@linuxfoundation.org>
+Subject: [PATCH 5.18 540/879] soc: qcom: smsm: Fix missing of_node_put() in smsm_parse_ipc
+Date:   Tue,  7 Jun 2022 19:00:58 +0200
+Message-Id: <20220607165018.547238284@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,35 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 97c246c825f73a018169834e56ffa9a89dea37a9 ]
+[ Upstream commit aad66a3c78da668f4506356c2fdb70b7a19ecc76 ]
 
-The clock controller of RPMH RSC does not have 'reg' property, so should
-not have unit address.
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-Fixes: bae2f5979c6e ("ARM: dts: qcom: Add SDX65 platform and MTP board support")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Fixes: c97c4090ff72 ("soc: qcom: smsm: Add driver for Qualcomm SMSM")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220411085935.130072-2-krzysztof.kozlowski@linaro.org
+Link: https://lore.kernel.org/r/20220308073648.24634-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-sdx65.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/soc/qcom/smsm.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/qcom-sdx65.dtsi b/arch/arm/boot/dts/qcom-sdx65.dtsi
-index 796641d30e06..0c3f93603adc 100644
---- a/arch/arm/boot/dts/qcom-sdx65.dtsi
-+++ b/arch/arm/boot/dts/qcom-sdx65.dtsi
-@@ -202,7 +202,7 @@
- 				<WAKE_TCS    2>,
- 				<CONTROL_TCS 1>;
+diff --git a/drivers/soc/qcom/smsm.c b/drivers/soc/qcom/smsm.c
+index ef15d014c03a..9df9bba242f3 100644
+--- a/drivers/soc/qcom/smsm.c
++++ b/drivers/soc/qcom/smsm.c
+@@ -374,6 +374,7 @@ static int smsm_parse_ipc(struct qcom_smsm *smsm, unsigned host_id)
+ 		return 0;
  
--			rpmhcc: clock-controller@1 {
-+			rpmhcc: clock-controller {
- 				compatible = "qcom,sdx65-rpmh-clk";
- 				#clock-cells = <1>;
- 				clock-names = "xo";
+ 	host->ipc_regmap = syscon_node_to_regmap(syscon);
++	of_node_put(syscon);
+ 	if (IS_ERR(host->ipc_regmap))
+ 		return PTR_ERR(host->ipc_regmap);
+ 
 -- 
 2.35.1
 
