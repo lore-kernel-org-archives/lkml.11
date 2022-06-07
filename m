@@ -2,204 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8A52C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 01:59:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61604C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 02:05:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235798AbiFGB7I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 21:59:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56834 "EHLO
+        id S235875AbiFGCFT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 22:05:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230385AbiFGB7H (ORCPT
+        with ESMTP id S235891AbiFGCFM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 21:59:07 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D9DB1C04
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 18:59:03 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LHD395lknzRhbn;
-        Tue,  7 Jun 2022 09:55:49 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 7 Jun 2022 09:59:00 +0800
-Received: from [10.67.101.67] (10.67.101.67) by kwepemm600003.china.huawei.com
- (7.193.23.202) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 7 Jun
- 2022 09:59:00 +0800
-Subject: Re: [PATCH v6 2/2] Documentation: Add document for UltraSoc SMB
- drivers
-To:     Suzuki K Poulose <suzuki.poulose@arm.com>,
-        <mathieu.poirier@linaro.org>, <mike.leach@linaro.org>
-CC:     <coresight@lists.linaro.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linuxarm@huawei.com>
-References: <20220606130223.57354-1-liuqi115@huawei.com>
- <20220606130223.57354-3-liuqi115@huawei.com>
- <367f8d3d-7890-12bd-6caf-c470b0b4c614@arm.com>
-From:   "liuqi (BA)" <liuqi115@huawei.com>
-Message-ID: <035aba66-ed40-0633-cb31-a64a05b04958@huawei.com>
-Date:   Tue, 7 Jun 2022 09:58:59 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Mon, 6 Jun 2022 22:05:12 -0400
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 44672B8BDD
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 19:05:02 -0700 (PDT)
+X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
+        LIVER,40,3)
+Received: from 172.28.114.216
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(2334:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Tue, 07 Jun 2022 09:58:35 +0800 (CST)
+From:   Qin Jian <qinjian@cqplus1.com>
+To:     sboyd@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
+        mturquette@baylibre.com, linux@armlinux.org.uk, arnd@arndb.de,
+        olof@lixom.net, soc@kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        Qin Jian <qinjian@cqplus1.com>
+Subject: [PATCH v17 09/10] ARM: sp7021_defconfig: Add Sunplus SP7021 defconfig
+Date:   Tue,  7 Jun 2022 09:58:09 +0800
+Message-Id: <b83cd519c7880835d69fd13cc4c4f5965129486c.1654565776.git.qinjian@cqplus1.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <cover.1654565776.git.qinjian@cqplus1.com>
+References: <cover.1654565776.git.qinjian@cqplus1.com>
 MIME-Version: 1.0
-In-Reply-To: <367f8d3d-7890-12bd-6caf-c470b0b4c614@arm.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.101.67]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add generic Sunplus SP7021 based board defconfig
 
-Hi Suzuki,
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Qin Jian <qinjian@cqplus1.com>
+---
+ MAINTAINERS                         |  1 +
+ arch/arm/configs/multi_v7_defconfig |  1 +
+ arch/arm/configs/sp7021_defconfig   | 59 +++++++++++++++++++++++++++++
+ 3 files changed, 61 insertions(+)
+ create mode 100644 arch/arm/configs/sp7021_defconfig
 
-Thanks for your review.
-On 2022/6/6 23:16, Suzuki K Poulose wrote:
-> Hi Qi
-> 
-> Please find my comments below.
-> 
-> On 06/06/2022 14:02, Qi Liu wrote:
->> This patch bring in a documentation for UltraSoc SMB drivers.
->> It simple descripts the device, sysfs interface and the
->> firmware bindings.
->>
->> Signed-off-by: Qi Liu <liuqi115@huawei.com>
->> ---
->>   .../trace/coresight/ultrasoc-smb.rst          | 80 +++++++++++++++++++
->>   1 file changed, 80 insertions(+)
->>   create mode 100644 Documentation/trace/coresight/ultrasoc-smb.rst
->>
->> diff --git a/Documentation/trace/coresight/ultrasoc-smb.rst 
->> b/Documentation/trace/coresight/ultrasoc-smb.rst
->> new file mode 100644
->> index 000000000000..b4cfea82deb8
->> --- /dev/null
->> +++ b/Documentation/trace/coresight/ultrasoc-smb.rst
->> @@ -0,0 +1,80 @@
->> +.. SPDX-License-Identifier: GPL-2.0
->> +
->> +======================================
->> +UltraSoc - HW Assisted Tracing on SoC
->> +======================================
->> +   :Author:   Qi Liu <liuqi115@huawei.com>
->> +   :Date:     March 2022
->> +
->> +Introduction
->> +------------
->> +
->> +UltraSoc SMB is a per SCCL(Super CPU Cluster) hardware, and it 
->> provides a way to buffer and store
-> 
-> minor nit: alignment.
-> 
-thanks, will pay attention to this.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 9d4cf62eb..4435ec6ca 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2814,6 +2814,7 @@ F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
+ F:	Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+ F:	Documentation/devicetree/bindings/interrupt-controller/sunplus,sp7021-intc.yaml
+ F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
++F:	arch/arm/configs/sp7021_*defconfig
+ F:	arch/arm/mach-sunplus/
+ F:	drivers/clk/clk-sp7021.c
+ F:	drivers/irqchip/irq-sp7021-intc.c
+diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
+index d6a6811f0..6d3f6503c 100644
+--- a/arch/arm/configs/multi_v7_defconfig
++++ b/arch/arm/configs/multi_v7_defconfig
+@@ -90,6 +90,7 @@ CONFIG_MACH_SPEAR1310=y
+ CONFIG_MACH_SPEAR1340=y
+ CONFIG_ARCH_STI=y
+ CONFIG_ARCH_STM32=y
++CONFIG_ARCH_SUNPLUS=y
+ CONFIG_ARCH_SUNXI=y
+ CONFIG_ARCH_TEGRA=y
+ CONFIG_ARCH_UNIPHIER=y
+diff --git a/arch/arm/configs/sp7021_defconfig b/arch/arm/configs/sp7021_defconfig
+new file mode 100644
+index 000000000..703b9aaa4
+--- /dev/null
++++ b/arch/arm/configs/sp7021_defconfig
+@@ -0,0 +1,59 @@
++CONFIG_SYSVIPC=y
++CONFIG_NO_HZ_IDLE=y
++CONFIG_HIGH_RES_TIMERS=y
++CONFIG_PREEMPT=y
++CONFIG_IKCONFIG=y
++CONFIG_IKCONFIG_PROC=y
++CONFIG_LOG_BUF_SHIFT=14
++# CONFIG_RD_GZIP is not set
++# CONFIG_RD_BZIP2 is not set
++# CONFIG_RD_LZMA is not set
++# CONFIG_RD_XZ is not set
++# CONFIG_RD_LZO is not set
++# CONFIG_RD_LZ4 is not set
++CONFIG_CC_OPTIMIZE_FOR_SIZE=y
++CONFIG_PERF_EVENTS=y
++CONFIG_SLAB=y
++CONFIG_ARCH_SUNPLUS=y
++# CONFIG_VDSO is not set
++CONFIG_SMP=y
++CONFIG_THUMB2_KERNEL=y
++CONFIG_FORCE_MAX_ZONEORDER=12
++CONFIG_VFP=y
++CONFIG_NEON=y
++CONFIG_MODULES=y
++CONFIG_MODULE_UNLOAD=y
++CONFIG_MODVERSIONS=y
++# CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
++CONFIG_UEVENT_HELPER=y
++CONFIG_UEVENT_HELPER_PATH="/sbin/hotplug"
++CONFIG_DEVTMPFS=y
++CONFIG_DEVTMPFS_MOUNT=y
++CONFIG_BLK_DEV_LOOP=y
++CONFIG_INPUT_SPARSEKMAP=y
++CONFIG_INPUT_EVDEV=y
++# CONFIG_INPUT_KEYBOARD is not set
++# CONFIG_INPUT_MOUSE is not set
++# CONFIG_LEGACY_PTYS is not set
++# CONFIG_HW_RANDOM is not set
++# CONFIG_HWMON is not set
++# CONFIG_IOMMU_SUPPORT is not set
++CONFIG_RESET_CONTROLLER=y
++CONFIG_EXT4_FS=y
++# CONFIG_DNOTIFY is not set
++CONFIG_FANOTIFY=y
++CONFIG_VFAT_FS=y
++CONFIG_FAT_DEFAULT_IOCHARSET="utf8"
++CONFIG_EXFAT_FS=y
++CONFIG_TMPFS=y
++CONFIG_TMPFS_POSIX_ACL=y
++# CONFIG_MISC_FILESYSTEMS is not set
++CONFIG_NLS_CODEPAGE_437=y
++CONFIG_NLS_ASCII=y
++CONFIG_NLS_ISO8859_1=y
++CONFIG_NLS_UTF8=y
++CONFIG_PRINTK_TIME=y
++CONFIG_DYNAMIC_DEBUG=y
++CONFIG_MAGIC_SYSRQ=y
++CONFIG_DEBUG_FS=y
++CONFIG_DEBUG_USER=y
+-- 
+2.33.1
 
->> +CPU trace messages in a region of shared system memory. SMB is 
->> plugged as
->> +a coresight sink device and the corresponding trace generators (ETM) are
->> +plugged in as source devices.
->> +
-> 
-> --8>---
-> 
->> +Sysfs files and directories
->> +---------------------------
->> +
->> +The SMB devices appear on the existing coresight bus alongside the other
->> +coresight devices::
->> +
->> +    $# ls /sys/bus/coresight/devices/
->> +    ultra_smb0   ultra_smb1   ultra_smb2   ultra_smb3
->> +
->> +The ``ultra_smb<N>`` named SMB associated with SCCL.::
->> +
->> +    $# ls /sys/bus/coresight/devices/ultra_smb0
->> +    enable_sink   mgmt
->> +    $# ls /sys/bus/coresight/devices/ultra_smb0/mgmt
->> +    buf_size  buf_status  read_pos  write_pos
->> +
-> 
-> These should also be placed in, with the appropriate format.
-> 
-> Documentation/ABI/testing/sysfs-bus-coresight-devices-ultra_smb
-> 
-
-got it, will add this document, thanks.
-> 
-> 
->> +*Key file items are:-*
->> +   * ``read_pos``: Shows the value held by UltraSoc SMB Read Pointer 
->> register.
->> +   * ``write_pos``: Shows the value held by UltraSoc SMB Write 
->> Pointer register.
->> +   * ``buf_status``: Shows the value held by UltraSoc SMB status 
->> register.
->> +             BIT(0) is zero means buffer is empty.
->> +   * ``buf_size``: Shows the buffer size of each UltraSoc SMB device.
->> +
->> +Firmware Bindings
->> +---------------------------
->> +
->> +Firmware binding of SMB device describes SMB device indentifier, 
->> resource
->> +information and graph structure.
-> 
-> Please could you mention that this is only supported with ACPI here ?
-> 
-sure, will add this next time.
->> +
->> +SMB is platform device and device id is "HISI03A1", resource of 
->> device is
->> +declared using the _CRS method. Each SMB must present two base address,
-> 
-> Simply say, the device is identified by ACPI HID "HISI03A1".
-> 
-ok, will modify this.
->> +the first one is the configuration base address of SMB device, the 
->> second
->> +one is the base address of shared system memory.
->> +
->> +examples::
->> +
->> +    Device(USMB) {                                               \
->> +      Name(_HID, "HISI03A1")                                     \
->> +      Name(_CRS, ResourceTemplate() {                            \
->> +          MEM_RESRC(0x95100000, 0x951FFFFF, 0x100000)            \
->> +          MEM_RESRC(0x50000000, 0x53FFFFFF, 0x4000000)           \
->> +      })                                                         \
->> +      Name(_DSD, Package() {                                     \
->> +        ToUUID("ab02a46b-74c7-45a2-bd68-f7d344ef2153"),          \
->> +    /* Use CoreSight Graph ACPI bindings to describe connections 
->> topology */
->> +        Package() {                                              \
->> +          0,                                                     \
->> +          1,                                                     \
->> +          Package() {                                            \
->> +            1,                                                   \
->> +            ToUUID("3ecbc8b6-1d0e-4fb3-8107-e627f805c6cd"),      \
->> +            8,                                                   \
->> +            Package() {0x8, 0, \_SB.S00.SL11.CL28.F008, 0},       \
->> +            Package() {0x9, 0, \_SB.S00.SL11.CL29.F009, 0},       \
->> +            Package() {0xa, 0, \_SB.S00.SL11.CL2A.F010, 0},       \
->> +            Package() {0xb, 0, \_SB.S00.SL11.CL2B.F011, 0},       \
->> +            Package() {0xc, 0, \_SB.S00.SL11.CL2C.F012, 0},       \
->> +            Package() {0xd, 0, \_SB.S00.SL11.CL2D.F013, 0},       \
->> +            Package() {0xe, 0, \_SB.S00.SL11.CL2E.F014, 0},       \
->> +            Package() {0xf, 0, \_SB.S00.SL11.CL2F.F015, 0},       \
->> +          }                                                      \
->> +        }                                                        \
->> +      })                                                         \
->> +    }
-> 
-> Rest looks fine to me
-> 
-> Suzuki
-> 
-
-Thanks,
-Qi
-> .
