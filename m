@@ -2,170 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE08CCA49A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62014CCA499
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379052AbiFGVCA (ORCPT
+        id S1379102AbiFGVCE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:02:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59932 "EHLO
+        Tue, 7 Jun 2022 17:02:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357470AbiFGT7C (ORCPT
+        with ESMTP id S1357468AbiFGT7B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:59:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 199421BAEAB
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:24:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654626232;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=s12dM/fUNAK8FcN2HDfoJsYb2JSXAKJ07j+xEpEzvhM=;
-        b=OWsCBO1jS/m8i4Mwi/4aQOsaxNu2Qiy9cQfq9xm9y4nkFn8QhzmL4MiMf75P49Rqwqx6t9
-        K8RH+nsYizEC/bsTt1nioahN2MPM7/dj+R3JgFoK70DXovoPHR5fZbApDvjZbjXVmmqjki
-        L9X9QBpAy2ZnckPputE9M3D9fMQ/NWo=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-591-UqxgHZuVNMaPNu9toCUtJA-1; Tue, 07 Jun 2022 14:23:51 -0400
-X-MC-Unique: UqxgHZuVNMaPNu9toCUtJA-1
-Received: by mail-wm1-f71.google.com with SMTP id k16-20020a7bc310000000b0038e6cf00439so9009027wmj.0
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:23:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=s12dM/fUNAK8FcN2HDfoJsYb2JSXAKJ07j+xEpEzvhM=;
-        b=ZURUtdFG16ifLlpmg1pGxqgewKJk8d9+X36+6In9lGKm1gidi0mS7AltXCQIj/Sbi2
-         h6eI2dBYhLhIrLx8KUkSsnGmk91VrXoq2uWLrSNSh2SOtEOfspCA/V4kCmujZHnmj32v
-         NYRu6cZSGK0zoczBPl67bP7b0TnzSg9Cq0b4Iv0UzC27g2RXmIYglDWspw/suPAbAFzW
-         rq9i3lnA/2Cros6q521q4CnClo6J2kNfwmS+R26zqtjH5nNnaZ5k4na7RVOsHteL3Z6f
-         kliDJdkMxrM2au6YyKq3cQTjMzVRo46Svz75A5efA1em0koVqoNDTN90bVF+Jpd1EXZi
-         B3Jw==
-X-Gm-Message-State: AOAM531Ka4S2uKpoiQlUXOC2pliyZxXkoa9+ePOG0ukHqrKgjh8vttIB
-        0go48i/hYdcoY3QrID+XP+15qRUGbuhNNdYQm8PxSrIk4qBBehVDqL3AkK4qDK8nxutnh04J6Aa
-        z0ogMjhzqP9L5+cpY/skOn8ic+E78AJOd9k3Vp4driiZAC4PjisC/T0LrxqTdWkBYLmjoXXh3rt
-        w=
-X-Received: by 2002:a05:600c:3d1b:b0:39b:1743:4d84 with SMTP id bh27-20020a05600c3d1b00b0039b17434d84mr29741835wmb.118.1654626230467;
-        Tue, 07 Jun 2022 11:23:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyHm5Esw2Ac7SpEx33f/vi2LUTuERvwYyQv2tSJ4Nx4mYKDItiXTPZoaSeRZfdNCayFMtQlEg==
-X-Received: by 2002:a05:600c:3d1b:b0:39b:1743:4d84 with SMTP id bh27-20020a05600c3d1b00b0039b17434d84mr29741791wmb.118.1654626230045;
-        Tue, 07 Jun 2022 11:23:50 -0700 (PDT)
-Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id m8-20020a05600c4f4800b003942a244f51sm28267502wmq.42.2022.06.07.11.23.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 11:23:49 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
+        Tue, 7 Jun 2022 15:59:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D291BAEA4;
+        Tue,  7 Jun 2022 11:24:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F7EF612D6;
+        Tue,  7 Jun 2022 18:24:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CCFCC385A2;
+        Tue,  7 Jun 2022 18:24:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654626262;
+        bh=GCh6kT3IGDooRp7qaYGIFhVHbIrElAMWzQRP3wplR4Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=afZODg0gNUgumCTZvJqF+G6thF0+JfypVMcaZxl4M+lte1Tsroy5ghxQwAuT+UvAQ
+         ep2TeNu8lWsSgb0p+T+/X6sZ5+Sq9n2aFvRCLLLUg8J0bBx7FIKR57ykKbarIZJR7E
+         SHc0lMpIfpKCajhLqvJcfdRXinuXq2hgxmTeXolY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     dri-devel@lists.freedesktop.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Laszlo Ersek <lersek@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Gerd Hoffmann <kraxel@redhat.com>, kvm@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Zack Rusin <zackr@vmware.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Ilya Trukhanov <lahvuun@gmail.com>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Peter Jones <pjones@redhat.com>, linux-fbdev@vger.kernel.org,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH v6 4/5] Revert "fbdev: Prevent probing generic drivers if a FB is already registered"
-Date:   Tue,  7 Jun 2022 20:23:37 +0200
-Message-Id: <20220607182338.344270-5-javierm@redhat.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 315/772] drm/msm/dp: stop event kernel thread when DP unbind
+Date:   Tue,  7 Jun 2022 18:58:27 +0200
+Message-Id: <20220607164958.309529455@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607182338.344270-1-javierm@redhat.com>
-References: <20220607182338.344270-1-javierm@redhat.com>
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Vetter <daniel.vetter@ffwll.ch>
+From: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-This reverts commit fb561bf9abde49f7e00fdbf9ed2ccf2d86cac8ee.
+[ Upstream commit 570d3e5d28db7a94557fa179167a9fb8642fb8a1 ]
 
-With
+Current DP driver implementation, event thread is kept running
+after DP display is unbind. This patch fix this problem by disabling
+DP irq and stop event thread to exit gracefully at dp_display_unbind().
 
-commit 27599aacbaefcbf2af7b06b0029459bbf682000d
-Author: Thomas Zimmermann <tzimmermann@suse.de>
-Date:   Tue Jan 25 10:12:18 2022 +0100
+Changes in v2:
+-- start event thread at dp_display_bind()
 
-    fbdev: Hot-unplug firmware fb devices on forced removal
+Changes in v3:
+-- disable all HDP interrupts at unbind
+-- replace dp_hpd_event_setup() with dp_hpd_event_thread_start()
+-- replace dp_hpd_event_stop() with dp_hpd_event_thread_stop()
+-- move init_waitqueue_head(&dp->event_q) to probe()
+-- move spin_lock_init(&dp->event_lock) to probe()
 
-this should be fixed properly and we can remove this somewhat hackish
-check here (e.g. this won't catch drm drivers if fbdev emulation isn't
-enabled).
+Changes in v4:
+-- relocate both dp_display_bind() and dp_display_unbind() to bottom of file
 
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: Zack Rusin <zackr@vmware.com>
-Cc: Javier Martinez Canillas <javierm@redhat.com>
-Cc: Zack Rusin <zackr@vmware.com>
-Cc: Hans de Goede <hdegoede@redhat.com>
-Cc: Ilya Trukhanov <lahvuun@gmail.com>
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-Cc: Peter Jones <pjones@redhat.com>
-Cc: linux-fbdev@vger.kernel.org
+Changes in v5:
+-- cancel relocation of both dp_display_bind() and dp_display_unbind()
 
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Changes in v6:
+-- move empty event q to dp_event_thread_start()
+
+Changes in v7:
+-- call ktheread_stop() directly instead of dp_hpd_event_thread_stop() function
+
+Changes in v8:
+-- return error immediately if audio registration failed.
+
+Changes in v9:
+-- return error immediately if event thread create failed.
+
+Changes in v10:
+-- delete extra  DRM_ERROR("failed to create DP event thread\n");
+
+Fixes: 8ede2ecc3e5e ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Patchwork: https://patchwork.freedesktop.org/patch/482399/
+Link: https://lore.kernel.org/r/1650318988-17580-1-git-send-email-quic_khsieh@quicinc.com
+[DB: fixed Fixes tag]
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ drivers/gpu/drm/msm/dp/dp_display.c | 39 +++++++++++++++++++++++------
+ 1 file changed, 31 insertions(+), 8 deletions(-)
 
-(no changes since v1)
-
- drivers/video/fbdev/efifb.c    | 11 -----------
- drivers/video/fbdev/simplefb.c | 11 -----------
- 2 files changed, 22 deletions(-)
-
-diff --git a/drivers/video/fbdev/efifb.c b/drivers/video/fbdev/efifb.c
-index ea42ba6445b2..edca3703b964 100644
---- a/drivers/video/fbdev/efifb.c
-+++ b/drivers/video/fbdev/efifb.c
-@@ -351,17 +351,6 @@ static int efifb_probe(struct platform_device *dev)
- 	char *option = NULL;
- 	efi_memory_desc_t md;
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index 1d7f82e6eafe..229c699f6227 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -113,6 +113,7 @@ struct dp_display_private {
+ 	u32 hpd_state;
+ 	u32 event_pndx;
+ 	u32 event_gndx;
++	struct task_struct *ev_tsk;
+ 	struct dp_event event_list[DP_EVENT_Q_MAX];
+ 	spinlock_t event_lock;
  
--	/*
--	 * Generic drivers must not be registered if a framebuffer exists.
--	 * If a native driver was probed, the display hardware was already
--	 * taken and attempting to use the system framebuffer is dangerous.
--	 */
--	if (num_registered_fb > 0) {
--		dev_err(&dev->dev,
--			"efifb: a framebuffer is already registered\n");
--		return -EINVAL;
--	}
+@@ -230,6 +231,8 @@ void dp_display_signal_audio_complete(struct msm_dp *dp_display)
+ 	complete_all(&dp->audio_comp);
+ }
+ 
++static int dp_hpd_event_thread_start(struct dp_display_private *dp_priv);
++
+ static int dp_display_bind(struct device *dev, struct device *master,
+ 			   void *data)
+ {
+@@ -263,9 +266,18 @@ static int dp_display_bind(struct device *dev, struct device *master,
+ 	}
+ 
+ 	rc = dp_register_audio_driver(dev, dp->audio);
+-	if (rc)
++	if (rc) {
+ 		DRM_ERROR("Audio registration Dp failed\n");
++		goto end;
++	}
+ 
++	rc = dp_hpd_event_thread_start(dp);
++	if (rc) {
++		DRM_ERROR("Event thread create failed\n");
++		goto end;
++	}
++
++	return 0;
+ end:
+ 	return rc;
+ }
+@@ -276,6 +288,11 @@ static void dp_display_unbind(struct device *dev, struct device *master,
+ 	struct dp_display_private *dp = dev_get_dp_display_private(dev);
+ 	struct msm_drm_private *priv = dev_get_drvdata(master);
+ 
++	/* disable all HPD interrupts */
++	dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_INT_MASK, false);
++
++	kthread_stop(dp->ev_tsk);
++
+ 	dp_power_client_deinit(dp->power);
+ 	dp_aux_unregister(dp->aux);
+ 	priv->dp[dp->id] = NULL;
+@@ -1048,7 +1065,7 @@ static int hpd_event_thread(void *data)
+ 
+ 	dp_priv = (struct dp_display_private *)data;
+ 
+-	while (1) {
++	while (!kthread_should_stop()) {
+ 		if (timeout_mode) {
+ 			wait_event_timeout(dp_priv->event_q,
+ 				(dp_priv->event_pndx == dp_priv->event_gndx),
+@@ -1126,12 +1143,17 @@ static int hpd_event_thread(void *data)
+ 	return 0;
+ }
+ 
+-static void dp_hpd_event_setup(struct dp_display_private *dp_priv)
++static int dp_hpd_event_thread_start(struct dp_display_private *dp_priv)
+ {
+-	init_waitqueue_head(&dp_priv->event_q);
+-	spin_lock_init(&dp_priv->event_lock);
++	/* set event q to empty */
++	dp_priv->event_gndx = 0;
++	dp_priv->event_pndx = 0;
+ 
+-	kthread_run(hpd_event_thread, dp_priv, "dp_hpd_handler");
++	dp_priv->ev_tsk = kthread_run(hpd_event_thread, dp_priv, "dp_hpd_handler");
++	if (IS_ERR(dp_priv->ev_tsk))
++		return PTR_ERR(dp_priv->ev_tsk);
++
++	return 0;
+ }
+ 
+ static irqreturn_t dp_display_irq_handler(int irq, void *dev_id)
+@@ -1260,7 +1282,10 @@ static int dp_display_probe(struct platform_device *pdev)
+ 		return -EPROBE_DEFER;
+ 	}
+ 
++	/* setup event q */
+ 	mutex_init(&dp->event_mutex);
++	init_waitqueue_head(&dp->event_q);
++	spin_lock_init(&dp->event_lock);
+ 
+ 	/* Store DP audio handle inside DP display */
+ 	dp->dp_display.dp_audio = dp->audio;
+@@ -1435,8 +1460,6 @@ void msm_dp_irq_postinstall(struct msm_dp *dp_display)
+ 
+ 	dp = container_of(dp_display, struct dp_display_private, dp_display);
+ 
+-	dp_hpd_event_setup(dp);
 -
- 	if (screen_info.orig_video_isVGA != VIDEO_TYPE_EFI || pci_dev_disabled)
- 		return -ENODEV;
- 
-diff --git a/drivers/video/fbdev/simplefb.c b/drivers/video/fbdev/simplefb.c
-index 94fc9c6d0411..0ef41173325a 100644
---- a/drivers/video/fbdev/simplefb.c
-+++ b/drivers/video/fbdev/simplefb.c
-@@ -413,17 +413,6 @@ static int simplefb_probe(struct platform_device *pdev)
- 	struct simplefb_par *par;
- 	struct resource *res, *mem;
- 
--	/*
--	 * Generic drivers must not be registered if a framebuffer exists.
--	 * If a native driver was probed, the display hardware was already
--	 * taken and attempting to use the system framebuffer is dangerous.
--	 */
--	if (num_registered_fb > 0) {
--		dev_err(&pdev->dev,
--			"simplefb: a framebuffer is already registered\n");
--		return -EINVAL;
--	}
--
- 	if (fb_get_options("simplefb", NULL))
- 		return -ENODEV;
+ 	dp_add_event(dp, EV_HPD_INIT_SETUP, 0, 100);
+ }
  
 -- 
-2.36.1
+2.35.1
+
+
 
