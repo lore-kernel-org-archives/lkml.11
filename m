@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEFBCC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:27:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB99CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378559AbiFGVZG (ORCPT
+        id S1379294AbiFGVZZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:25:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59334 "EHLO
+        Tue, 7 Jun 2022 17:25:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359600AbiFGU3g (ORCPT
+        with ESMTP id S1359481AbiFGU2v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:29:36 -0400
+        Tue, 7 Jun 2022 16:28:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 129F91DF103;
-        Tue,  7 Jun 2022 11:34:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6121DE2F6;
+        Tue,  7 Jun 2022 11:34:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F9E961578;
-        Tue,  7 Jun 2022 18:34:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94134C385A2;
-        Tue,  7 Jun 2022 18:34:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE5D260906;
+        Tue,  7 Jun 2022 18:34:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCF40C385A2;
+        Tue,  7 Jun 2022 18:34:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626851;
-        bh=UxbhR46gJUd+PJemqjtAXlkwz/NFwLdLTfbOQ5t3pJ4=;
+        s=korg; t=1654626849;
+        bh=jqHGMCzx24qQKDPktTXW/vu9addVIfjBqKQ83UTvzSY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y8Ro7JHv3GdOf1dZ5B03pqk4sMpyatgK1G2iU8JO1x8wnOqKhh3CLFN6cvZWDGdNM
-         gQzfXhQnMJ09tAtQR7djHewNUAxwRDPZL5sX6zc3gcH8z4k2rXdCOCjb4LxtKcvpPr
-         7zbDoQrlwRba5k0bVslfkA1xhzByLWLNxLkyLGJg=
+        b=O1dZTq+Axg4JH7LmSXkOLwjDvGFvKyRQsvDZX+tKo2o+O7OjZwQ15QWGtaM8fz0NF
+         lavxyR1sZtII4IBABz0tla6qxEHqDw0NJx62rY4E0EhSXS0+GRr495fGlUg3T4OVzs
+         FC/OCj7KsnAxUlt92iusQzGR0fUte6VRgQEmNnhU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Dobriyan <adobriyan@gmail.com>,
+        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
         Luis Chamberlain <mcgrof@kernel.org>,
+        Jessica Yu <jeyu@kernel.org>,
+        Matthias Maennich <maennich@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 528/772] module: fix [e_shstrndx].sh_size=0 OOB access
-Date:   Tue,  7 Jun 2022 19:02:00 +0200
-Message-Id: <20220607165004.532150453@linuxfoundation.org>
+Subject: [PATCH 5.17 527/772] module.h: simplify MODULE_IMPORT_NS
+Date:   Tue,  7 Jun 2022 19:01:59 +0200
+Message-Id: <20220607165004.503229394@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,45 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Dobriyan <adobriyan@gmail.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-[ Upstream commit 391e982bfa632b8315235d8be9c0a81374c6a19c ]
+[ Upstream commit 80140a81f7f833998d732102eea0fea230b88067 ]
 
-It is trivial to craft a module to trigger OOB access in this line:
+In commit ca321ec74322 ("module.h: allow #define strings to work with
+MODULE_IMPORT_NS") I fixed up the MODULE_IMPORT_NS() macro to allow
+defined strings to work with it.  Unfortunatly I did it in a two-stage
+process, when it could just be done with the __stringify() macro as
+pointed out by Masahiro Yamada.
 
-	if (info->secstrings[strhdr->sh_size - 1] != '\0') {
+Clean this up to only be one macro instead of two steps to achieve the
+same end result.
 
-BUG: unable to handle page fault for address: ffffc90000aa0fff
-PGD 100000067 P4D 100000067 PUD 100066067 PMD 10436f067 PTE 0
-Oops: 0000 [#1] PREEMPT SMP PTI
-CPU: 7 PID: 1215 Comm: insmod Not tainted 5.18.0-rc5-00007-g9bf578647087-dirty #10
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/01/2014
-RIP: 0010:load_module+0x19b/0x2391
-
-Fixes: ec2a29593c83 ("module: harden ELF info handling")
-Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
-[rebased patch onto modules-next]
+Fixes: ca321ec74322 ("module.h: allow #define strings to work with MODULE_IMPORT_NS")
+Reported-by: Masahiro Yamada <masahiroy@kernel.org>
+Cc: Luis Chamberlain <mcgrof@kernel.org>
+Cc: Jessica Yu <jeyu@kernel.org>
+Cc: Matthias Maennich <maennich@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/module.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ include/linux/module.h | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/kernel/module.c b/kernel/module.c
-index 46a5c2ed1928..740323cff545 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -3033,6 +3033,10 @@ static int elf_validity_check(struct load_info *info)
- 	 * strings in the section safe.
- 	 */
- 	info->secstrings = (void *)info->hdr + strhdr->sh_offset;
-+	if (strhdr->sh_size == 0) {
-+		pr_err("empty section name table\n");
-+		goto no_exec;
-+	}
- 	if (info->secstrings[strhdr->sh_size - 1] != '\0') {
- 		pr_err("ELF Spec violation: section name table isn't null terminated\n");
- 		goto no_exec;
+diff --git a/include/linux/module.h b/include/linux/module.h
+index 1e135fd5c076..d5e9066990ca 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -290,8 +290,7 @@ extern typeof(name) __mod_##type##__##name##_device_table		\
+  * files require multiple MODULE_FIRMWARE() specifiers */
+ #define MODULE_FIRMWARE(_firmware) MODULE_INFO(firmware, _firmware)
+ 
+-#define _MODULE_IMPORT_NS(ns)	MODULE_INFO(import_ns, #ns)
+-#define MODULE_IMPORT_NS(ns)	_MODULE_IMPORT_NS(ns)
++#define MODULE_IMPORT_NS(ns)	MODULE_INFO(import_ns, __stringify(ns))
+ 
+ struct notifier_block;
+ 
 -- 
 2.35.1
 
