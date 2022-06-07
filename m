@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2873ECCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EDF7CCA48E
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:35:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377488AbiFGUd1 (ORCPT
+        id S1377567AbiFGUdq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:33:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55192 "EHLO
+        Tue, 7 Jun 2022 16:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357379AbiFGTl5 (ORCPT
+        with ESMTP id S1357465AbiFGTmB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:41:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5496159074;
-        Tue,  7 Jun 2022 11:15:02 -0700 (PDT)
+        Tue, 7 Jun 2022 15:42:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5145915A742;
+        Tue,  7 Jun 2022 11:15:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 174DA60C1A;
-        Tue,  7 Jun 2022 18:15:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DBD8C385A2;
-        Tue,  7 Jun 2022 18:14:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2ED6CB82368;
+        Tue,  7 Jun 2022 18:15:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96083C385A2;
+        Tue,  7 Jun 2022 18:15:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625700;
-        bh=T9ddK/VDvhMSsfvf3k5nl4oJXUGGQQ7iH45F3BjDN2A=;
+        s=korg; t=1654625709;
+        bh=6Hz5HqIYdJLRIZwRktEAYB4iRCBgmhBAZDeEbAndy0g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0PUF+F+KyWdNbEx38hVEJLzpVMed4wEtnMT6UIe4dvQOh7HLQwuz6blWlpHWIWr8K
-         ZxI/ccQzhwh/jmDEsVLzxdlhb+sf/z8jjjtNWfuO1QWtrbcGCUwlG1Nvo29w7A+sYZ
-         hNoPuAyO/hTcsXHVw24Add48P3pc0Te5LXKFEGGw=
+        b=o+Wxb30UdF8Aqdim/kivVOabdNIA+Yoj3W4khvmHEAL+gPC/ZALbqPqEj9GMH3OD6
+         0OGtbWudQiGzNSzPUL4Y5PizqdQTHmt2/60oKhNsSfELuffS0WHoVvz7HjSsD/icVT
+         rdrXBi0UYJQOrpm4YWH57YQO1vCDFxCSL3PM8jM0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Bloch <mbloch@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Maksym Yaremchuk <maksymy@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 111/772] net/mlx5: fs, delete the FTE when there are no rules attached to it
-Date:   Tue,  7 Jun 2022 18:55:03 +0200
-Message-Id: <20220607164952.319947004@linuxfoundation.org>
+Subject: [PATCH 5.17 114/772] mlxsw: Treat LLDP packets as control
+Date:   Tue,  7 Jun 2022 18:55:06 +0200
+Message-Id: <20220607164952.408419962@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,50 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Bloch <mbloch@nvidia.com>
+From: Petr Machata <petrm@nvidia.com>
 
-[ Upstream commit 7b0c6338597613f465d131bd939a51844a00455a ]
+[ Upstream commit 0106668cd2f91bf913fb78972840dedfba80a3c3 ]
 
-When an FTE has no children is means all the rules where removed
-and the FTE can be deleted regardless of the dests_size value.
-While dests_size should be 0 when there are no children
-be extra careful not to leak memory or get firmware syndrome
-if the proper bookkeeping of dests_size wasn't done.
+When trapping packets for on-CPU processing, Spectrum machines
+differentiate between control and non-control traps. Traffic trapped
+through non-control traps is treated as data and kept in shared buffer in
+pools 0-4. Traffic trapped through control traps is kept in the dedicated
+control buffer 9. The advantage of marking traps as control is that
+pressure in the data plane does not prevent the control traffic to be
+processed.
 
-Signed-off-by: Mark Bloch <mbloch@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+When the LLDP trap was introduced, it was marked as a control trap. But
+then in commit aed4b5721143 ("mlxsw: spectrum: PTP: Hook into packet
+receive path"), PTP traps were introduced. Because Ethernet-encapsulated
+PTP packets look to the Spectrum-1 ASIC as LLDP traffic and are trapped
+under the LLDP trap, this trap was reconfigured as non-control, in sync
+with the PTP traps.
+
+There is however no requirement that PTP traffic be handled as data.
+Besides, the usual encapsulation for PTP traffic is UDP, not bare Ethernet,
+and that is in deployments that even need PTP, which is far less common
+than LLDP. This is reflected by the default policer, which was not bumped
+up to the 19Kpps / 24Kpps that is the expected load of a PTP-enabled
+Spectrum-1 switch.
+
+Marking of LLDP trap as non-control was therefore probably misguided. In
+this patch, change it back to control.
+
+Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index b6f58d16d145..298c614c631b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -2064,16 +2064,16 @@ void mlx5_del_flow_rules(struct mlx5_flow_handle *handle)
- 	down_write_ref_node(&fte->node, false);
- 	for (i = handle->num_rules - 1; i >= 0; i--)
- 		tree_remove_node(&handle->rule[i]->node, true);
--	if (fte->dests_size) {
--		if (fte->modify_mask)
--			modify_fte(fte);
--		up_write_ref_node(&fte->node, false);
--	} else if (list_empty(&fte->node.children)) {
-+	if (list_empty(&fte->node.children)) {
- 		del_hw_fte(&fte->node);
- 		/* Avoid double call to del_hw_fte */
- 		fte->node.del_hw_func = NULL;
- 		up_write_ref_node(&fte->node, false);
- 		tree_put_node(&fte->node, false);
-+	} else if (fte->dests_size) {
-+		if (fte->modify_mask)
-+			modify_fte(fte);
-+		up_write_ref_node(&fte->node, false);
- 	} else {
- 		up_write_ref_node(&fte->node, false);
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+index 47b061b99160..ed4d0d3448f3 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+@@ -864,7 +864,7 @@ static const struct mlxsw_sp_trap_item mlxsw_sp_trap_items_arr[] = {
+ 		.trap = MLXSW_SP_TRAP_CONTROL(LLDP, LLDP, TRAP),
+ 		.listeners_arr = {
+ 			MLXSW_RXL(mlxsw_sp_rx_ptp_listener, LLDP, TRAP_TO_CPU,
+-				  false, SP_LLDP, DISCARD),
++				  true, SP_LLDP, DISCARD),
+ 		},
+ 	},
+ 	{
 -- 
 2.35.1
 
