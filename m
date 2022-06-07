@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9988BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:57:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF7DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357531AbiFGT5E (ORCPT
+        id S1354135AbiFGT5K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:57:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38364 "EHLO
+        Tue, 7 Jun 2022 15:57:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353731AbiFGSp7 (ORCPT
+        with ESMTP id S1353543AbiFGSpQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:45:59 -0400
+        Tue, 7 Jun 2022 14:45:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D737B188EB3;
-        Tue,  7 Jun 2022 10:59:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9D3188E77;
+        Tue,  7 Jun 2022 10:59:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1B75617A7;
-        Tue,  7 Jun 2022 17:59:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1B13C385A5;
-        Tue,  7 Jun 2022 17:59:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72673618E5;
+        Tue,  7 Jun 2022 17:59:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8531EC385A5;
+        Tue,  7 Jun 2022 17:59:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624764;
-        bh=zbZoZDXyPQtH/CA9+JLIhXQbldowgqpgV7bnTEcHvuQ=;
+        s=korg; t=1654624752;
+        bh=WTNl1PL2fKOimLMNxwZdZt2GoXrs5wg13hceQSKvaHU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LkNj3luq54rCZv26jmPawKPeO68FksYz7jDlEzArPM4uxJAsKxBvj2tJmuAcjJnq8
-         rhaJkdON/aHmmEeHHUAw8t9xqb5NiwYVidyK8Pcog3mx11yPbcad2BvwWWY1XQl2GK
-         G9wZBx/r9q2zG48gjNBRzdLlEtLKmkYpVaxCQtn0=
+        b=J+di3p/iQfxtJc9h5GbQyh95n6WZVjFYDcFtTStRMWaEjWaOnDxU6CDsIF+hPb6jm
+         48ugFXS8qefQmYSvmdYrUNGgnz/BdB/Ca6vK7DfkbiHnXLMRpHrAIfKznkiIo68FQ8
+         DyBdCf6YqWb2aUTePDpyaurzDjcBuTSI9of/OwAY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robert.marko@sartura.hr>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        stable@vger.kernel.org,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Marco Chiappero <marco.chiappero@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 446/667] arm64: dts: marvell: espressobin-ultra: fix SPI-NOR config
-Date:   Tue,  7 Jun 2022 19:01:51 +0200
-Message-Id: <20220607164948.094904802@linuxfoundation.org>
+Subject: [PATCH 5.15 400/667] crypto: qat - set CIPHER capability for DH895XCC
+Date:   Tue,  7 Jun 2022 19:01:05 +0200
+Message-Id: <20220607164946.741330794@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,41 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robert.marko@sartura.hr>
+From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
 
-[ Upstream commit 5202f4c3816b42e989f9cad49a73c7e88fba89f4 ]
+[ Upstream commit 6a23804cb8bcb85c6998bf193d94d4036db26f51 ]
 
-SPI config for the SPI-NOR is incorrect and completely breaking
-reading/writing to the onboard SPI-NOR.
+Set the CIPHER capability for QAT DH895XCC devices if the hardware supports
+it. This is done if both the CIPHER and the AUTHENTICATION engines are
+available on the device.
 
-SPI-NOR is connected in the single(x1) IO mode and not in the quad
-(x4) mode.
-Also, there is no need to override the max frequency from the DTSI
-as the mx25u3235f that is used supports 104Mhz.
-
-Fixes: 3404fe15a60f ("arm64: dts: marvell: add DT for ESPRESSObin-Ultra")
-Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Fixes: ad1332aa67ec ("crypto: qat - add support for capability detection")
+Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Signed-off-by: Marco Chiappero <marco.chiappero@intel.com>
+Reviewed-by: Marco Chiappero <marco.chiappero@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts | 4 ----
- 1 file changed, 4 deletions(-)
+ .../crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c   | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-index c5eb3604dd5b..610ff6f385c7 100644
---- a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-@@ -71,10 +71,6 @@
+diff --git a/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c b/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c
+index a61ad6c93632..6499b9a2f38f 100644
+--- a/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c
++++ b/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c
+@@ -86,17 +86,23 @@ static u32 get_accel_cap(struct adf_accel_dev *accel_dev)
  
- &spi0 {
- 	flash@0 {
--		spi-max-frequency = <108000000>;
--		spi-rx-bus-width = <4>;
--		spi-tx-bus-width = <4>;
--
- 		partitions {
- 			compatible = "fixed-partitions";
- 			#address-cells = <1>;
+ 	capabilities = ICP_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC |
+ 		       ICP_ACCEL_CAPABILITIES_CRYPTO_ASYMMETRIC |
+-		       ICP_ACCEL_CAPABILITIES_AUTHENTICATION;
++		       ICP_ACCEL_CAPABILITIES_AUTHENTICATION |
++		       ICP_ACCEL_CAPABILITIES_CIPHER;
+ 
+ 	/* Read accelerator capabilities mask */
+ 	pci_read_config_dword(pdev, ADF_DEVICE_LEGFUSE_OFFSET, &legfuses);
+ 
+-	if (legfuses & ICP_ACCEL_MASK_CIPHER_SLICE)
++	/* A set bit in legfuses means the feature is OFF in this SKU */
++	if (legfuses & ICP_ACCEL_MASK_CIPHER_SLICE) {
+ 		capabilities &= ~ICP_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC;
++		capabilities &= ~ICP_ACCEL_CAPABILITIES_CIPHER;
++	}
+ 	if (legfuses & ICP_ACCEL_MASK_PKE_SLICE)
+ 		capabilities &= ~ICP_ACCEL_CAPABILITIES_CRYPTO_ASYMMETRIC;
+-	if (legfuses & ICP_ACCEL_MASK_AUTH_SLICE)
++	if (legfuses & ICP_ACCEL_MASK_AUTH_SLICE) {
+ 		capabilities &= ~ICP_ACCEL_CAPABILITIES_AUTHENTICATION;
++		capabilities &= ~ICP_ACCEL_CAPABILITIES_CIPHER;
++	}
+ 	if (legfuses & ICP_ACCEL_MASK_COMPRESS_SLICE)
+ 		capabilities &= ~ICP_ACCEL_CAPABILITIES_COMPRESSION;
+ 
 -- 
 2.35.1
 
