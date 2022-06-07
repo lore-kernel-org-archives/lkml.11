@@ -2,92 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBD8FCCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B88BFCCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355567AbiFGTQU (ORCPT
+        id S1355537AbiFGTQK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:16:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47008 "EHLO
+        Tue, 7 Jun 2022 15:16:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350929AbiFGS2S (ORCPT
+        with ESMTP id S1350488AbiFGS1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:28:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6916172C25;
-        Tue,  7 Jun 2022 10:55:06 -0700 (PDT)
+        Tue, 7 Jun 2022 14:27:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25FD0171242;
+        Tue,  7 Jun 2022 10:55:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39259B8236C;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 115D7617AE;
         Tue,  7 Jun 2022 17:54:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AD98C3411C;
-        Tue,  7 Jun 2022 17:54:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624495;
-        bh=fYGuqZCcArABE1nPcf5DlAXAP5PelOBFk1BRqZduQ4U=;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D33DFC385A5;
+        Tue,  7 Jun 2022 17:54:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624496;
+        bh=kvqvrS7aBXFQLen3K2YQokr1nKqkLNmgu1NIMizyz9w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BEKxFHED+YiClkMO9DoM5TcIT44zruEk0HfcDx6BGEg/kNvECRg/ub7U8ajnSJcAV
-         1UK4Lt57uzLG6r7EKg5LD7cK1/S67C6+w0q24FFu8sOuqvPfsapPnYJkPyGDdV9VH+
-         m5fTLWmPvtH9WY9S4mxOLD8NTBuEdj+1L/jlyFcA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 346/667] drm/msm/a6xx: Fix refcount leak in a6xx_gpu_init
-Date:   Tue,  7 Jun 2022 19:00:11 +0200
-Message-Id: <20220607164945.136625459@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=RDnxXDx2zd9BM8btPrJjRtva9NzKukSu+teFYey0FcTpdttR1uoZflyCO3hiNAnhq
+         5a4qyWnAYgpcHNn0W029pkW1v1kPIPhIWEP1z/raH7cXIipDbm2tDp6L9mhV2f6vP2
+         eA6GUdM7rJ7TMTXibbEXbHYBVO7aOJ6Fg4AcgJS53jvK2cTX/cKzB7r4JiI7qAe1/U
+         /Tbc9Fcx9sT15comxLeaj7x5q+ee5cRCkbaYUaA98UqVzqxBuCeQFLrwrHhnwlQNUM
+         7qwG/4bet64d4u00kIw1fObLY7VAn4HtFwOHjgs2UEeM4f4MKmMNmesXjQd3pAUBnY
+         GNEQF00LMa3zw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Lijo Lazar <lijo.lazar@amd.com>,
+        Yang Wang <kevinyang.wang@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, evan.quan@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, kevin1.wang@amd.com, luben.tuikov@amd.com,
+        Stanley.Yang@amd.com, tao.zhou1@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.17 44/60] drm/amd/pm: Fix missing thermal throttler status
+Date:   Tue,  7 Jun 2022 13:52:41 -0400
+Message-Id: <20220607175259.478835-44-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Lijo Lazar <lijo.lazar@amd.com>
 
-[ Upstream commit c56de483093d7ad0782327f95dda7da97bc4c315 ]
+[ Upstream commit b0f4d663fce6a4232d3c20ce820f919111b1c60b ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
+On aldebaran, when thermal throttling happens due to excessive GPU
+temperature, the reason for throttling event is missed in warning
+message. This patch fixes it.
 
-a6xx_gmu_init() passes the node to of_find_device_by_node()
-and of_dma_configure(), of_find_device_by_node() will takes its
-reference, of_dma_configure() doesn't need the node after usage.
-
-Add missing of_node_put() to avoid refcount leak.
-
-Fixes: 4b565ca5a2cb ("drm/msm: Add A6XX device support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
-Link: https://lore.kernel.org/r/20220512121955.56937-1-linmq006@gmail.com
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+Signed-off-by: Lijo Lazar <lijo.lazar@amd.com>
+Reviewed-by: Yang Wang <kevinyang.wang@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 1 +
+ drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index 9b41e2f82fc2..c0dec5b919d4 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -1872,6 +1872,7 @@ struct msm_gpu *a6xx_gpu_init(struct drm_device *dev)
- 	BUG_ON(!node);
- 
- 	ret = a6xx_gmu_init(a6xx_gpu, node);
-+	of_node_put(node);
- 	if (ret) {
- 		a6xx_destroy(&(a6xx_gpu->base.base));
- 		return ERR_PTR(ret);
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
+index 4885c4ae78b7..27a54145d352 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
+@@ -1643,6 +1643,7 @@ static const struct throttling_logging_label {
+ 	uint32_t feature_mask;
+ 	const char *label;
+ } logging_label[] = {
++	{(1U << THROTTLER_TEMP_GPU_BIT), "GPU"},
+ 	{(1U << THROTTLER_TEMP_MEM_BIT), "HBM"},
+ 	{(1U << THROTTLER_TEMP_VR_GFX_BIT), "VR of GFX rail"},
+ 	{(1U << THROTTLER_TEMP_VR_MEM_BIT), "VR of HBM rail"},
 -- 
 2.35.1
-
-
 
