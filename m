@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A845CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 506A5CCA49E
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386723AbiFHAu1 (ORCPT
+        id S1387631AbiFHAuj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:50:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45894 "EHLO
+        Tue, 7 Jun 2022 20:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383090AbiFGVwR (ORCPT
+        with ESMTP id S1381708AbiFGVop (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:52:17 -0400
+        Tue, 7 Jun 2022 17:44:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD8CC12D171;
-        Tue,  7 Jun 2022 12:10:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33EF0234694;
+        Tue,  7 Jun 2022 12:07:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B9725617D0;
-        Tue,  7 Jun 2022 19:10:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB139C385A2;
-        Tue,  7 Jun 2022 19:10:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57E5A618CD;
+        Tue,  7 Jun 2022 19:07:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AD02C385A2;
+        Tue,  7 Jun 2022 19:07:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629028;
-        bh=Sx075wmH+fciBWDGdjmX1WC/G/5JWSZbDGAN7DCYbrk=;
+        s=korg; t=1654628835;
+        bh=dRHqePMObXR8eJs4K4Tet0x1pgou7i/fYauwc8JO4Rc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rKZ28lghH+7pcadtaNzVOSGKkcoPK9Rsebq0aeQOVaJnoi1ucUlGoQZD8S15h5q0u
-         JcC4rEFAB4rK5tJI7SIoUPlMqOR9Gyktdpv3JNpATHkPUGrWjWs/DyqA5s0kUDgsyk
-         KRKQaqLejIHlwaEZ9HMYFuaTgycTmncjp5MdacH4=
+        b=Ql/LTbXxedhL9fgdqVNtFB69MQwP7+FONgPSD32zeVWWBlKLBOesk2dUDnzm8Og4W
+         4wHaW+XkghoccG/K5G6is6h/hOq5CQRcuQr4DibhnkCX+yJlSFwqmiMglUDr9PB6ki
+         Odsh6521eGdJHCnEWBkUO8xwIdfeFmk4QSGRD5Hg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 541/879] arm64: defconfig: reenable SM_DISPCC_8250
-Date:   Tue,  7 Jun 2022 19:00:59 +0200
-Message-Id: <20220607165018.575018970@linuxfoundation.org>
+Subject: [PATCH 5.18 474/879] media: i2c: ov5648: fix wrong pointer passed to IS_ERR() and PTR_ERR()
+Date:   Tue,  7 Jun 2022 18:59:52 +0200
+Message-Id: <20220607165016.638244324@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,37 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit e77817b4953dcf59a83bfab18ca5af80d9231d72 ]
+[ Upstream commit a6dd5265c21c28d0a782befe41a97c347e78f22f ]
 
-CONFIG_SM_DISPCC_8250 is not enabled by default, but it is still
-necessary for the Qualcomm RB5 board. Reenable it (as it was enabled
-before the commit dde8cd786e37 ("arm64: defconfig: rebuild default
-configuration")).
+IS_ERR() and PTR_ERR() use wrong pointer, it should be
+sensor->dovdd, fix it.
 
-Cc: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Fixes: dde8cd786e37 ("arm64: defconfig: rebuild default configuration")
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220404215913.1497172-1-dmitry.baryshkov@linaro.org
+Fixes: e43ccb0a045f ("media: i2c: Add support for the OV5648 image sensor")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/configs/defconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/media/i2c/ov5648.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 50aa3d75ab4f..f30af6e1fe40 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -1029,6 +1029,7 @@ CONFIG_SM_GCC_8350=y
- CONFIG_SM_GCC_8450=y
- CONFIG_SM_GPUCC_8150=y
- CONFIG_SM_GPUCC_8250=y
-+CONFIG_SM_DISPCC_8250=y
- CONFIG_QCOM_HFPLL=y
- CONFIG_CLK_GFM_LPASS_SM8250=m
- CONFIG_CLK_RCAR_USB2_CLOCK_SEL=y
+diff --git a/drivers/media/i2c/ov5648.c b/drivers/media/i2c/ov5648.c
+index 930ff6897044..dfcd33e9ee13 100644
+--- a/drivers/media/i2c/ov5648.c
++++ b/drivers/media/i2c/ov5648.c
+@@ -2498,9 +2498,9 @@ static int ov5648_probe(struct i2c_client *client)
+ 
+ 	/* DOVDD: digital I/O */
+ 	sensor->dovdd = devm_regulator_get(dev, "dovdd");
+-	if (IS_ERR(sensor->dvdd)) {
++	if (IS_ERR(sensor->dovdd)) {
+ 		dev_err(dev, "cannot get DOVDD (digital I/O) regulator\n");
+-		ret = PTR_ERR(sensor->dvdd);
++		ret = PTR_ERR(sensor->dovdd);
+ 		goto error_endpoint;
+ 	}
+ 
 -- 
 2.35.1
 
