@@ -2,108 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0032FCCA499
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC134CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355913AbiFGTRp (ORCPT
+        id S1355861AbiFGTRk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:17:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43712 "EHLO
+        Tue, 7 Jun 2022 15:17:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351264AbiFGS3o (ORCPT
+        with ESMTP id S1351218AbiFGS3o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:29:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F76179C3C;
-        Tue,  7 Jun 2022 10:55:26 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F39917A880;
+        Tue,  7 Jun 2022 10:55:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BDA2861827;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9056617A8;
         Tue,  7 Jun 2022 17:55:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CAE1C385A5;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01C4CC34119;
         Tue,  7 Jun 2022 17:55:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624526;
-        bh=h9I8z9yfCsj9WKik3+U8sz5LvflAmBBSL/fxUrdruoU=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624526;
+        bh=oTUD0gfXlCXXBTlNhj7YdtZdcBIDAMIgu5/THuULMSc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VCMivFLbvGfQnvLUG2ocKSeY/JcfmWr6k1jXTw3VLdFx97IOXWaCFkaIfpGn6YNPt
-         /fxicwqDJ1VhR/3cnpK+BWvFwZ3YK0iC6KgWNwDqoJIw0YE9qUvSoj1z5qQfXDZAVA
-         QCPrwKAOEtwMUO0+ehFuR3nYmVKrF/C5TOV9q0P2e4Q76q65isC4U5Z69p/1WMyiAb
-         rgvZN2UsYj+vSjS6GNtodrJYM0druJxWW4/WP4zLujYppDeqOERDTmrMAfcvCAgOR0
-         plPxmqE8JfjZ7tvBDQX+MGIz03cTEovWYCdcMCr5WBGPO692Kly8OAKw+ahQk3VXZ+
-         Qte+cGt9jl8Mw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Namjae Jeon <linkinjeon@kernel.org>,
-        Gerald Lee <sundaywind2004@gmail.com>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
-        Sasha Levin <sashal@kernel.org>, ntfs3@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.17 52/60] fs/ntfs3: Fix invalid free in log_replay
-Date:   Tue,  7 Jun 2022 13:52:49 -0400
-Message-Id: <20220607175259.478835-52-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
+        b=YbBzIZwfUBTy9WxiVYKWyPGzXG+a91lfowiF++zDbkjMkbX+LeSwnN32elAFodhNh
+         Z+iYxX8xsIomFeGQHmeJzgtH1BwXjJ1JqRLofzHVLyUTvZ8GcGq8tTVj/C2rVQUqGX
+         mIKKlnKM2M6tGl4h8rM5p7cknypWbCjK0VdfGCk8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 360/667] PM: domains: Fix initialization of genpds next_wakeup
+Date:   Tue,  7 Jun 2022 19:00:25 +0200
+Message-Id: <20220607164945.552195634@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit f26967b9f7a830e228bb13fb41bd516ddd9d789d ]
+[ Upstream commit 622d9b5577f19a6472db21df042fea8f5fefe244 ]
 
-log_read_rst() returns ENOMEM error when there is not enough memory.
-In this case, if info is returned without initialization,
-it attempts to kfree the uninitialized info->r_page pointer. This patch
-moves the memset initialization code to before log_read_rst() is called.
+In the genpd governor we walk the list of child-domains to take into
+account their next_wakeup. If the child-domain itself, doesn't have a
+governor assigned to it, we can end up using the next_wakeup value before
+it has been properly initialized. To prevent a possible incorrect behaviour
+in the governor, let's initialize next_wakeup to KTIME_MAX.
 
-Reported-by: Gerald Lee <sundaywind2004@gmail.com>
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Fixes: c79aa080fb0f ("PM: domains: use device's next wakeup to determine domain idle state")
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ntfs3/fslog.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/base/power/domain.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/ntfs3/fslog.c b/fs/ntfs3/fslog.c
-index 06492f088d60..fc36c53b865a 100644
---- a/fs/ntfs3/fslog.c
-+++ b/fs/ntfs3/fslog.c
-@@ -1185,8 +1185,6 @@ static int log_read_rst(struct ntfs_log *log, u32 l_size, bool first,
- 	if (!r_page)
- 		return -ENOMEM;
- 
--	memset(info, 0, sizeof(struct restart_info));
--
- 	/* Determine which restart area we are looking for. */
- 	if (first) {
- 		vbo = 0;
-@@ -3791,10 +3789,11 @@ int log_replay(struct ntfs_inode *ni, bool *initialized)
- 	if (!log)
- 		return -ENOMEM;
- 
-+	memset(&rst_info, 0, sizeof(struct restart_info));
-+
- 	log->ni = ni;
- 	log->l_size = l_size;
- 	log->one_page_buf = kmalloc(page_size, GFP_NOFS);
--
- 	if (!log->one_page_buf) {
- 		err = -ENOMEM;
- 		goto out;
-@@ -3842,6 +3841,7 @@ int log_replay(struct ntfs_inode *ni, bool *initialized)
- 	if (rst_info.vbo)
- 		goto check_restart_area;
- 
-+	memset(&rst_info2, 0, sizeof(struct restart_info));
- 	err = log_read_rst(log, l_size, false, &rst_info2);
- 
- 	/* Determine which restart area to use. */
+diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
+index 7e8039d1884c..0f2e42f36851 100644
+--- a/drivers/base/power/domain.c
++++ b/drivers/base/power/domain.c
+@@ -1978,6 +1978,7 @@ int pm_genpd_init(struct generic_pm_domain *genpd,
+ 	genpd->device_count = 0;
+ 	genpd->max_off_time_ns = -1;
+ 	genpd->max_off_time_changed = true;
++	genpd->next_wakeup = KTIME_MAX;
+ 	genpd->provider = NULL;
+ 	genpd->has_provider = false;
+ 	genpd->accounting_time = ktime_get();
 -- 
 2.35.1
+
+
 
