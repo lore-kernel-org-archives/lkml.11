@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48E25CCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C2BCCA493
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351617AbiFGSQb (ORCPT
+        id S1352308AbiFGSRB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39714 "EHLO
+        Tue, 7 Jun 2022 14:17:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348686AbiFGR42 (ORCPT
+        with ESMTP id S1348594AbiFGR5e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:56:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A8CE147822;
-        Tue,  7 Jun 2022 10:40:14 -0700 (PDT)
+        Tue, 7 Jun 2022 13:57:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC372CC82;
+        Tue,  7 Jun 2022 10:40:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D2526137B;
-        Tue,  7 Jun 2022 17:40:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14B43C385A5;
-        Tue,  7 Jun 2022 17:40:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBDF861499;
+        Tue,  7 Jun 2022 17:40:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB416C385A5;
+        Tue,  7 Jun 2022 17:40:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623604;
-        bh=YONjxaeXJNfdjI6X1ZBJqFnOHU4P3dRFG2L57MY6MtM=;
+        s=korg; t=1654623629;
+        bh=o1eTgFr8QpuxGLZwcL8lmc3ZuwWti26EM0NowvLlMx0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K4Z4Ni/632sVWTFkDnNAd7YyyI6Y20aP1ymyrz44ol1eaOToA0oTfx1prknCw1PIy
-         JqlPr/XiAEC2Yoq/oiRKnf8l5VeTTeiu1wAfxoTws10SFwOBu6JLhiDSaVn33aeWuE
-         69oIjWgUylvkyx4R2y4ie4490z116caySnOhiwQQ=
+        b=zfQV7XnLh1nI6hqtIczbM2WyoAZKGGCzhEHftwq+53gBLswQ29+/oX8bnDSwsnVll
+         8RWQRgozNTjr8N/kweI608Zc4gI8EgkjS/9rNYk9p7d5+yMmQvMLCEhc0CwqpTVOsS
+         1y73Ov0Ald15taAC9vKDwyFAVT7kIp8Owd4veras=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Subject: [PATCH 5.15 025/667] fs/ntfs3: Fix some memory leaks in an error handling path of log_replay()
-Date:   Tue,  7 Jun 2022 18:54:50 +0200
-Message-Id: <20220607164935.552060945@linuxfoundation.org>
+        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: [PATCH 5.15 033/667] perf/x86/intel: Fix event constraints for ICL
+Date:   Tue,  7 Jun 2022 18:54:58 +0200
+Message-Id: <20220607164935.790375161@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,37 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-commit e589f9b7078e1c0191613cd736f598e81d2390de upstream.
+commit 86dca369075b3e310c3c0adb0f81e513c562b5e4 upstream.
 
-All error handling paths lead to 'out' where many resources are freed.
+According to the latest event list, the event encoding 0x55
+INST_DECODED.DECODERS and 0x56 UOPS_DECODED.DEC0 are only available on
+the first 4 counters. Add them into the event constraints table.
 
-Do it as well here instead of a direct return, otherwise 'log', 'ra' and
-'log->one_page_buf' (at least) will leak.
-
-Fixes: b46acd6a6a62 ("fs/ntfs3: Add NTFS journal")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Fixes: 6017608936c1 ("perf/x86/intel: Add Icelake support")
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Acked-by: Peter Zijlstra <peterz@infradead.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220525133952.1660658-1-kan.liang@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs3/fslog.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/x86/events/intel/core.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ntfs3/fslog.c
-+++ b/fs/ntfs3/fslog.c
-@@ -4085,8 +4085,10 @@ process_log:
- 		if (client == LFS_NO_CLIENT_LE) {
- 			/* Insert "NTFS" client LogFile. */
- 			client = ra->client_idx[0];
--			if (client == LFS_NO_CLIENT_LE)
--				return -EINVAL;
-+			if (client == LFS_NO_CLIENT_LE) {
-+				err = -EINVAL;
-+				goto out;
-+			}
- 
- 			t16 = le16_to_cpu(client);
- 			cr = ca + t16;
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -255,7 +255,7 @@ static struct event_constraint intel_icl
+ 	INTEL_EVENT_CONSTRAINT_RANGE(0x03, 0x0a, 0xf),
+ 	INTEL_EVENT_CONSTRAINT_RANGE(0x1f, 0x28, 0xf),
+ 	INTEL_EVENT_CONSTRAINT(0x32, 0xf),	/* SW_PREFETCH_ACCESS.* */
+-	INTEL_EVENT_CONSTRAINT_RANGE(0x48, 0x54, 0xf),
++	INTEL_EVENT_CONSTRAINT_RANGE(0x48, 0x56, 0xf),
+ 	INTEL_EVENT_CONSTRAINT_RANGE(0x60, 0x8b, 0xf),
+ 	INTEL_UEVENT_CONSTRAINT(0x04a3, 0xff),  /* CYCLE_ACTIVITY.STALLS_TOTAL */
+ 	INTEL_UEVENT_CONSTRAINT(0x10a3, 0xff),  /* CYCLE_ACTIVITY.CYCLES_MEM_ANY */
 
 
