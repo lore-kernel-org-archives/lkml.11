@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B66DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:23:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EE5DCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:24:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378496AbiFGVXy (ORCPT
+        id S1377266AbiFGVYC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:23:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35374 "EHLO
+        Tue, 7 Jun 2022 17:24:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377177AbiFGU2d (ORCPT
+        with ESMTP id S1377187AbiFGU2e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:28:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173AA1DBD6E;
-        Tue,  7 Jun 2022 11:33:58 -0700 (PDT)
+        Tue, 7 Jun 2022 16:28:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC011DC857;
+        Tue,  7 Jun 2022 11:34:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A02AF61503;
-        Tue,  7 Jun 2022 18:33:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABC94C385A5;
-        Tue,  7 Jun 2022 18:33:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2830DB82349;
+        Tue,  7 Jun 2022 18:33:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79BE1C3411C;
+        Tue,  7 Jun 2022 18:33:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626835;
-        bh=XHQZI9OkPk6K/bCk7jcoiW2pw77EpolAzp1rHGoHDD8=;
+        s=korg; t=1654626837;
+        bh=TW1TVHmJIGoy6nezueTSKh5wbrNGBopgYLaRDfqALbg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0O/PJgAIxmVLWxBSCp24Va2NUtaQ5DHPZzrRWTzUMW0yS1a+3GnwRq3MZwlRMarUd
-         qx8sA0mXY8yUmebOcH9M0x1i8pBZaApZmni1v8ihYzbdQtszsnAbzwofa5KrfxAcZU
-         kAFRygEUfN+tTBcS69AuXDjM/2/NKrbDrKKjskAI=
+        b=td8InddmPhRBh68ZnCFTSjST+YfqeJCfHnKA0VAgONZlaH3v2x7IZsz0gUpU1SmxU
+         CLbP0ggFhufxtYXmixeJL5RBzawIjrWtbou4fIgqcpAeGu7eB720YODSWNWSyvYel2
+         6UJF/JwYj2rBvQWt8eXY10BycAQeeODPALcau6O8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+        stable@vger.kernel.org, Alexey Dobriyan <adobriyan@gmail.com>,
+        hui li <juanfengpy@gmail.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 514/772] pinctrl: renesas: r8a779a0: Fix GPIO function on I2C-capable pins
-Date:   Tue,  7 Jun 2022 19:01:46 +0200
-Message-Id: <20220607165004.127605139@linuxfoundation.org>
+Subject: [PATCH 5.17 523/772] proc: fix dentry/inode overinstantiating under /proc/${pid}/net
+Date:   Tue,  7 Jun 2022 19:01:55 +0200
+Message-Id: <20220607165004.387928026@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,71 +52,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Alexey Dobriyan <adobriyan@gmail.com>
 
-[ Upstream commit 4288caed9a6319b766dc0adf605c7b401180db34 ]
+[ Upstream commit 7055197705709c59b8ab77e6a5c7d46d61edd96e ]
 
-Unlike on R-Car Gen3 SoCs, setting a bit to zero in a GPIO / Peripheral
-Function Select Register (GPSRn) on R-Car V3U is not always sufficient
-to configure a pin for GPIO.  For I2C-capable pins, the I2C function
-must also be explicitly disabled in the corresponding Module Select
-Register (MODSELn).
+When a process exits, /proc/${pid}, and /proc/${pid}/net dentries are
+flushed.  However some leaf dentries like /proc/${pid}/net/arp_cache
+aren't.  That's because respective PDEs have proc_misc_d_revalidate() hook
+which returns 1 and leaves dentries/inodes in the LRU.
 
-Add the missing FN_SEL_I2Ci_0 function enums to the pinmux_data[] array
-by temporarily overriding the GP_2_j_FN function enum to expand to two
-enums: the original GP_2_j_FN enum to configure the GSPR register bits,
-and the missing FN_SEL_I2Ci_0 enum to configure the MODSEL register
-bits.
+Force revalidation/lookup on everything under /proc/${pid}/net by
+inheriting proc_net_dentry_ops.
 
-Fixes: 741a7370fc3b8b54 ("pinctrl: renesas: Initial R8A779A0 (V3U) PFC support")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/4611e29e7b105513883084c1d6dc39c3ac8b525c.1650610471.git.geert+renesas@glider.be
+[akpm@linux-foundation.org: coding-style cleanups]
+Link: https://lkml.kernel.org/r/YjdVHgildbWO7diJ@localhost.localdomain
+Fixes: c6c75deda813 ("proc: fix lookup in /proc/net subdirectories after setns(2)")
+Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+Reported-by: hui li <juanfengpy@gmail.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/renesas/pfc-r8a779a0.c | 29 ++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ fs/proc/generic.c  | 3 +++
+ fs/proc/proc_net.c | 3 +++
+ 2 files changed, 6 insertions(+)
 
-diff --git a/drivers/pinctrl/renesas/pfc-r8a779a0.c b/drivers/pinctrl/renesas/pfc-r8a779a0.c
-index 83580385c3ca..93bf8ca44e38 100644
---- a/drivers/pinctrl/renesas/pfc-r8a779a0.c
-+++ b/drivers/pinctrl/renesas/pfc-r8a779a0.c
-@@ -629,7 +629,36 @@ enum {
- };
+diff --git a/fs/proc/generic.c b/fs/proc/generic.c
+index f2132407e133..587b91d9d998 100644
+--- a/fs/proc/generic.c
++++ b/fs/proc/generic.c
+@@ -448,6 +448,9 @@ static struct proc_dir_entry *__proc_create(struct proc_dir_entry **parent,
+ 	proc_set_user(ent, (*parent)->uid, (*parent)->gid);
  
- static const u16 pinmux_data[] = {
-+/* Using GP_2_[2-15] requires disabling I2C in MOD_SEL2 */
-+#define GP_2_2_FN	GP_2_2_FN,	FN_SEL_I2C0_0
-+#define GP_2_3_FN	GP_2_3_FN,	FN_SEL_I2C0_0
-+#define GP_2_4_FN	GP_2_4_FN,	FN_SEL_I2C1_0
-+#define GP_2_5_FN	GP_2_5_FN,	FN_SEL_I2C1_0
-+#define GP_2_6_FN	GP_2_6_FN,	FN_SEL_I2C2_0
-+#define GP_2_7_FN	GP_2_7_FN,	FN_SEL_I2C2_0
-+#define GP_2_8_FN	GP_2_8_FN,	FN_SEL_I2C3_0
-+#define GP_2_9_FN	GP_2_9_FN,	FN_SEL_I2C3_0
-+#define GP_2_10_FN	GP_2_10_FN,	FN_SEL_I2C4_0
-+#define GP_2_11_FN	GP_2_11_FN,	FN_SEL_I2C4_0
-+#define GP_2_12_FN	GP_2_12_FN,	FN_SEL_I2C5_0
-+#define GP_2_13_FN	GP_2_13_FN,	FN_SEL_I2C5_0
-+#define GP_2_14_FN	GP_2_14_FN,	FN_SEL_I2C6_0
-+#define GP_2_15_FN	GP_2_15_FN,	FN_SEL_I2C6_0
- 	PINMUX_DATA_GP_ALL(),
-+#undef GP_2_2_FN
-+#undef GP_2_3_FN
-+#undef GP_2_4_FN
-+#undef GP_2_5_FN
-+#undef GP_2_6_FN
-+#undef GP_2_7_FN
-+#undef GP_2_8_FN
-+#undef GP_2_9_FN
-+#undef GP_2_10_FN
-+#undef GP_2_11_FN
-+#undef GP_2_12_FN
-+#undef GP_2_13_FN
-+#undef GP_2_14_FN
-+#undef GP_2_15_FN
+ 	ent->proc_dops = &proc_misc_dentry_ops;
++	/* Revalidate everything under /proc/${pid}/net */
++	if ((*parent)->proc_dops == &proc_net_dentry_ops)
++		pde_force_lookup(ent);
  
- 	PINMUX_SINGLE(MMC_D7),
- 	PINMUX_SINGLE(MMC_D6),
+ out:
+ 	return ent;
+diff --git a/fs/proc/proc_net.c b/fs/proc/proc_net.c
+index e1cfeda397f3..913e5acefbb6 100644
+--- a/fs/proc/proc_net.c
++++ b/fs/proc/proc_net.c
+@@ -376,6 +376,9 @@ static __net_init int proc_net_ns_init(struct net *net)
+ 
+ 	proc_set_user(netd, uid, gid);
+ 
++	/* Seed dentry revalidation for /proc/${pid}/net */
++	pde_force_lookup(netd);
++
+ 	err = -EEXIST;
+ 	net_statd = proc_net_mkdir(net, "stat", netd);
+ 	if (!net_statd)
 -- 
 2.35.1
 
