@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A9A8CCA498
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F34BCCA494
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:52:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350101AbiFGRvx (ORCPT
+        id S1349585AbiFGRvX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:51:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53232 "EHLO
+        Tue, 7 Jun 2022 13:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347610AbiFGRf1 (ORCPT
+        with ESMTP id S1347056AbiFGReW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:35:27 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6D2DED4;
-        Tue,  7 Jun 2022 10:30:59 -0700 (PDT)
+        Tue, 7 Jun 2022 13:34:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F98109180;
+        Tue,  7 Jun 2022 10:30:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2FF53CE23D0;
-        Tue,  7 Jun 2022 17:30:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FBE3C385A5;
-        Tue,  7 Jun 2022 17:30:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DECA3614B5;
+        Tue,  7 Jun 2022 17:30:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAE5DC34119;
+        Tue,  7 Jun 2022 17:30:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623041;
-        bh=G+VmD+Gd+6D+I0VXQN+nuqorCTGsJh90QPeQSS1lKOo=;
+        s=korg; t=1654623030;
+        bh=tG1zL6GalKriyQc71pB4vzEjNZy47Fpf0YjX5DFgr5g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t/JS70GK3Ar+KTYVye2sQPWN2kd8LXbdvSu3mECJ11EoRs4HgcAKUVLF+Qm/mz7fx
-         smoz6SkxJ/qtU5YQ6K/0B82eTQzz7VNO3IX6PgyLyuXJqFoR3fq1RNSr/VuV8YP8kh
-         2Y2MZo/Ia4UvyMxOiaYIPilvAeDXABCBIpsWkvvY=
+        b=g9I4vEx/1JKOnMcAxv0TsE//wqU0o4BhxYkhYTeC3ts3x0+d4PHVnjfusEh//MpxC
+         zYAWdxyWNV3tbd/T3NQV1B8UsfnBZAhBKeOsgSjVm+cyNdR2t0xb7KmWkmLEO4CiHi
+         BfcLGDCHqGKge3ozOOrqe3r6R9mMcJF716OmvHPE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
-        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Prashant Malani <pmalani@chromium.org>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 273/452] can: xilinx_can: mark bit timing constants as const
-Date:   Tue,  7 Jun 2022 19:02:10 +0200
-Message-Id: <20220607164916.685878302@linuxfoundation.org>
+Subject: [PATCH 5.10 270/452] platform/chrome: cros_ec: fix error handling in cros_ec_register()
+Date:   Tue,  7 Jun 2022 19:02:07 +0200
+Message-Id: <20220607164916.597407000@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -52,44 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: Tzung-Bi Shih <tzungbi@kernel.org>
 
-[ Upstream commit ae38fda02996d43d9fb09f16e81e0008704dd524 ]
+[ Upstream commit 2cd01bd6b117df07b1bc2852f08694fdd29e40ed ]
 
-This patch marks the bit timing constants as const.
+Fix cros_ec_register() to unregister platform devices if
+blocking_notifier_chain_register() fails.
 
-Fixes: c223da689324 ("can: xilinx_can: Add support for CANFD FD frames")
-Link: https://lore.kernel.org/all/20220317203119.792552-1-mkl@pengutronix.de
-Cc: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
-Cc: Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Also use the single exit path to handle the platform device
+unregistration.
+
+Fixes: 42cd0ab476e2 ("platform/chrome: cros_ec: Query EC protocol version if EC transitions between RO/RW")
+Reviewed-by: Prashant Malani <pmalani@chromium.org>
+Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/xilinx_can.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/platform/chrome/cros_ec.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-index 375998263af7..1c42417810fc 100644
---- a/drivers/net/can/xilinx_can.c
-+++ b/drivers/net/can/xilinx_can.c
-@@ -239,7 +239,7 @@ static const struct can_bittiming_const xcan_bittiming_const_canfd = {
- };
+diff --git a/drivers/platform/chrome/cros_ec.c b/drivers/platform/chrome/cros_ec.c
+index 3104680b7485..979f92194e81 100644
+--- a/drivers/platform/chrome/cros_ec.c
++++ b/drivers/platform/chrome/cros_ec.c
+@@ -175,6 +175,8 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
+ 	ec_dev->max_request = sizeof(struct ec_params_hello);
+ 	ec_dev->max_response = sizeof(struct ec_response_get_protocol_info);
+ 	ec_dev->max_passthru = 0;
++	ec_dev->ec = NULL;
++	ec_dev->pd = NULL;
  
- /* AXI CANFD Data Bittiming constants as per AXI CANFD 1.0 specs */
--static struct can_bittiming_const xcan_data_bittiming_const_canfd = {
-+static const struct can_bittiming_const xcan_data_bittiming_const_canfd = {
- 	.name = DRIVER_NAME,
- 	.tseg1_min = 1,
- 	.tseg1_max = 16,
-@@ -265,7 +265,7 @@ static const struct can_bittiming_const xcan_bittiming_const_canfd2 = {
- };
+ 	ec_dev->din = devm_kzalloc(dev, ec_dev->din_size, GFP_KERNEL);
+ 	if (!ec_dev->din)
+@@ -231,18 +233,16 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
+ 		if (IS_ERR(ec_dev->pd)) {
+ 			dev_err(ec_dev->dev,
+ 				"Failed to create CrOS PD platform device\n");
+-			platform_device_unregister(ec_dev->ec);
+-			return PTR_ERR(ec_dev->pd);
++			err = PTR_ERR(ec_dev->pd);
++			goto exit;
+ 		}
+ 	}
  
- /* AXI CANFD 2.0 Data Bittiming constants as per AXI CANFD 2.0 spec */
--static struct can_bittiming_const xcan_data_bittiming_const_canfd2 = {
-+static const struct can_bittiming_const xcan_data_bittiming_const_canfd2 = {
- 	.name = DRIVER_NAME,
- 	.tseg1_min = 1,
- 	.tseg1_max = 32,
+ 	if (IS_ENABLED(CONFIG_OF) && dev->of_node) {
+ 		err = devm_of_platform_populate(dev);
+ 		if (err) {
+-			platform_device_unregister(ec_dev->pd);
+-			platform_device_unregister(ec_dev->ec);
+ 			dev_err(dev, "Failed to register sub-devices\n");
+-			return err;
++			goto exit;
+ 		}
+ 	}
+ 
+@@ -264,12 +264,16 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
+ 		err = blocking_notifier_chain_register(&ec_dev->event_notifier,
+ 						      &ec_dev->notifier_ready);
+ 		if (err)
+-			return err;
++			goto exit;
+ 	}
+ 
+ 	dev_info(dev, "Chrome EC device registered\n");
+ 
+ 	return 0;
++exit:
++	platform_device_unregister(ec_dev->ec);
++	platform_device_unregister(ec_dev->pd);
++	return err;
+ }
+ EXPORT_SYMBOL(cros_ec_register);
+ 
 -- 
 2.35.1
 
