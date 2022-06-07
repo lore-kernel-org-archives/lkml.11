@@ -2,91 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35CDFCCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D7BDCCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357248AbiFGTuB (ORCPT
+        id S1357283AbiFGTuH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:50:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43128 "EHLO
+        Tue, 7 Jun 2022 15:50:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354531AbiFGSrG (ORCPT
+        with ESMTP id S1354534AbiFGSrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:47:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B53A0D3B;
-        Tue,  7 Jun 2022 11:01:51 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FDEA26F7;
+        Tue,  7 Jun 2022 11:01:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 343A5B8236E;
-        Tue,  7 Jun 2022 18:01:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AF87C34115;
-        Tue,  7 Jun 2022 18:01:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624908;
-        bh=f6QZ+SPNI4r8Yv2jvsCfPHvPvXZ7GqngSb1lVKTLw/k=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EDB0617B0;
+        Tue,  7 Jun 2022 18:01:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B593C385A5;
+        Tue,  7 Jun 2022 18:01:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624911;
+        bh=HLX7pPoGn8AZ3p6Ae+pqSRxqIuL7yut+DcoPlzH7TiM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MRkvunFNwrKonbg5kkqraiyB1ABUp+j8wGLUI/6Da6tQTfW10c2YlteyjRzvKvr/g
-         zexf/I2jNyRCbqvrepZ//Ydm2YlzPH14dcbx/0vWLCnIRWUi5WFDIiqVQY3LblX1Ro
-         Rz0o+BrgnUe8pxB5jOHKuRBUFF42yZfVPn2WIjoU9p+Zi/iUWrCSa4eClDdiaoW1c1
-         JKodVJZdDpZncH9/TrqMs6wDsiN83s/A6H+ATeMdkAJHXW0mr8YHxNOyNeB3c5WQA7
-         pP5wHXwMCSmF49U8MsW8MU+3jR2NREzuXzO2aYRnF0EaVT7VvF8VCXVvnHTy8K2f3i
-         0uSEujIOr/bhw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhen Ni <nizhen@uniontech.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, ok@artecdesign.ee,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 07/27] USB: host: isp116x: check return value after calling platform_get_resource()
-Date:   Tue,  7 Jun 2022 14:01:11 -0400
-Message-Id: <20220607180133.481701-7-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180133.481701-1-sashal@kernel.org>
-References: <20220607180133.481701-1-sashal@kernel.org>
+        b=M53Eu4j6mLnZmtEfB1wzJRZoPo1NZ2OAogGRFR/aBY0rPCI1YVn/KwW5/DZphH0Lv
+         4Qi3/rMyYCiZWfIYQ71sXL2bNihMA/hXKGTAEiVND+sZ6I7lhSubB79wqN5z+yi8qd
+         Xe6AfvGDZfA8+80VY9NJY4O9dc4ec6Va8zzSfb/4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yong Wu <yong.wu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 481/667] iommu/mediatek: Fix 2 HW sharing pgtable issue
+Date:   Tue,  7 Jun 2022 19:02:26 +0200
+Message-Id: <20220607164949.127136234@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhen Ni <nizhen@uniontech.com>
+From: Yong Wu <yong.wu@mediatek.com>
 
-[ Upstream commit 134a3408c2d3f7e23eb0e4556e0a2d9f36c2614e ]
+[ Upstream commit 645b87c190c959e9bb4f216b8c4add4ee880451a ]
 
-It will cause null-ptr-deref if platform_get_resource() returns NULL,
-we need check the return value.
+In the commit 4f956c97d26b ("iommu/mediatek: Move domain_finalise into
+attach_device"), I overlooked the sharing pgtable case.
+After that commit, the "data" in the mtk_iommu_domain_finalise always is
+the data of the current IOMMU HW. Fix this for the sharing pgtable case.
 
-Signed-off-by: Zhen Ni <nizhen@uniontech.com>
-Link: https://lore.kernel.org/r/20220302033716.31272-1-nizhen@uniontech.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Only affect mt2712 which is the only SoC that share pgtable currently.
+
+Fixes: 4f956c97d26b ("iommu/mediatek: Move domain_finalise into attach_device")
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Link: https://lore.kernel.org/r/20220503071427.2285-5-yong.wu@mediatek.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/isp116x-hcd.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/iommu/mtk_iommu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/host/isp116x-hcd.c b/drivers/usb/host/isp116x-hcd.c
-index 74da136d322a..361327012c78 100644
---- a/drivers/usb/host/isp116x-hcd.c
-+++ b/drivers/usb/host/isp116x-hcd.c
-@@ -1541,10 +1541,12 @@ static int isp116x_remove(struct platform_device *pdev)
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 5971a1168666..cf4e33db6a2d 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -451,7 +451,7 @@ static void mtk_iommu_domain_free(struct iommu_domain *domain)
+ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 				   struct device *dev)
+ {
+-	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
++	struct mtk_iommu_data *data = dev_iommu_priv_get(dev), *frstdata;
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+ 	struct device *m4udev = data->dev;
+ 	int ret, domid;
+@@ -461,7 +461,10 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 		return domid;
  
- 	iounmap(isp116x->data_reg);
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
--	release_mem_region(res->start, 2);
-+	if (res)
-+		release_mem_region(res->start, 2);
- 	iounmap(isp116x->addr_reg);
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	release_mem_region(res->start, 2);
-+	if (res)
-+		release_mem_region(res->start, 2);
- 
- 	usb_put_hcd(hcd);
- 	return 0;
+ 	if (!dom->data) {
+-		if (mtk_iommu_domain_finalise(dom, data, domid))
++		/* Data is in the frstdata in sharing pgtable case. */
++		frstdata = mtk_iommu_get_m4u_data();
++
++		if (mtk_iommu_domain_finalise(dom, frstdata, domid))
+ 			return -ENODEV;
+ 		dom->data = data;
+ 	}
 -- 
 2.35.1
+
+
 
