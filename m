@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 802D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:23:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79DB0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:23:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346095AbiFGRXC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:23:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43016 "EHLO
+        id S244817AbiFGRXH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 13:23:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346088AbiFGRUV (ORCPT
+        with ESMTP id S1346124AbiFGRUb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:20:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1664104CB2;
-        Tue,  7 Jun 2022 10:20:19 -0700 (PDT)
+        Tue, 7 Jun 2022 13:20:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 029CF1053CB;
+        Tue,  7 Jun 2022 10:20:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2CF9B822AF;
-        Tue,  7 Jun 2022 17:20:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 000B7C385A5;
-        Tue,  7 Jun 2022 17:20:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA81FB82239;
+        Tue,  7 Jun 2022 17:20:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 010E3C385A5;
+        Tue,  7 Jun 2022 17:20:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622417;
-        bh=8fyaHLfs66JSD8DWARG4Vmw9VaXoP4pQwZnrSrmzxME=;
+        s=korg; t=1654622428;
+        bh=J11CO3pogeGFoR+jzuE6Z5/TLYchrXLjnu5sq2WeMEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w4NmNzc4Sq3Oviy8q3AG7BsNybW8cBTUYuqpWHkt6XxzAao/OOJr3RCLnQ6X419H4
-         +8Vjf8RacfRD0ComFfwHvLh0eBIQIHhfMU9ZwG8Em0SUAOLlP+qrhPoyvYvKw9zekr
-         NgimN60j2y2hD6YcpVyuiSovOseMK2sVLu3X9+Rk=
+        b=f01gRDdshMmKcnEcGTdDtLg0JFehACtsOMNqcgtK2dHLyrLfhHyL8RzMK+jSbgA0m
+         sRtpMBSr1LK0flBsPEaP27XVbvFY+RhwWpxTk+25RQdVpz1kJbwJyY2Ic8uR7xd50O
+         cznr3BxwSPqOL80Lzs/xFcVwqI8If7IDi7LrBOwI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 051/452] scsi: ufs: Use pm_runtime_resume_and_get() instead of pm_runtime_get_sync()
-Date:   Tue,  7 Jun 2022 18:58:28 +0200
-Message-Id: <20220607164910.069151299@linuxfoundation.org>
+Subject: [PATCH 5.10 054/452] ASoC: Intel: bytcr_rt5640: Add quirk for the HP Pro Tablet 408
+Date:   Tue,  7 Jun 2022 18:58:31 +0200
+Message-Id: <20220607164910.158352775@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,41 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 75b8715e20a20bc7b4844835e4035543a2674200 ]
+[ Upstream commit ce216cfa84a4e1c23b105e652c550bdeaac9e922 ]
 
-Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync() and
-pm_runtime_put_noidle(). This change is just to simplify the code, no
-actual functional changes.
+Add a quirk for the HP Pro Tablet 408, this BYTCR tablet has no CHAN
+package in its ACPI tables and uses SSP0-AIF1 rather then SSP0-AIF2 which
+is the default for BYTCR devices.
 
-Link: https://lore.kernel.org/r/20220420090353.2588804-1-chi.minghao@zte.com.cn
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+It also uses DMIC1 for the internal mic rather then the default IN3
+and it uses JD2 rather then the default JD1 for jack-detect.
+
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=211485
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220427134918.527381-1-hdegoede@redhat.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ti-j721e-ufs.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ sound/soc/intel/boards/bytcr_rt5640.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/scsi/ufs/ti-j721e-ufs.c b/drivers/scsi/ufs/ti-j721e-ufs.c
-index eafe0db98d54..122d650d0810 100644
---- a/drivers/scsi/ufs/ti-j721e-ufs.c
-+++ b/drivers/scsi/ufs/ti-j721e-ufs.c
-@@ -29,11 +29,9 @@ static int ti_j721e_ufs_probe(struct platform_device *pdev)
- 		return PTR_ERR(regbase);
- 
- 	pm_runtime_enable(dev);
--	ret = pm_runtime_get_sync(dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(dev);
-+	ret = pm_runtime_resume_and_get(dev);
-+	if (ret < 0)
- 		goto disable_pm;
--	}
- 
- 	/* Select MPHY refclk frequency */
- 	clk = devm_clk_get(dev, NULL);
+diff --git a/sound/soc/intel/boards/bytcr_rt5640.c b/sound/soc/intel/boards/bytcr_rt5640.c
+index 43ee3d095a1b..3020a993f6ef 100644
+--- a/sound/soc/intel/boards/bytcr_rt5640.c
++++ b/sound/soc/intel/boards/bytcr_rt5640.c
+@@ -615,6 +615,18 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
+ 					BYT_RT5640_OVCD_SF_0P75 |
+ 					BYT_RT5640_MCLK_EN),
+ 	},
++	{	/* HP Pro Tablet 408 */
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "HP Pro Tablet 408"),
++		},
++		.driver_data = (void *)(BYT_RT5640_DMIC1_MAP |
++					BYT_RT5640_JD_SRC_JD2_IN4N |
++					BYT_RT5640_OVCD_TH_1500UA |
++					BYT_RT5640_OVCD_SF_0P75 |
++					BYT_RT5640_SSP0_AIF1 |
++					BYT_RT5640_MCLK_EN),
++	},
+ 	{	/* HP Stream 7 */
+ 		.matches = {
+ 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
 -- 
 2.35.1
 
