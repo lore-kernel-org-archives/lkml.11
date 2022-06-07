@@ -2,125 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4DEFCCA488
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD90CCA48A
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354625AbiFGTGS (ORCPT
+        id S1354711AbiFGTG3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:06:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42104 "EHLO
+        Tue, 7 Jun 2022 15:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352034AbiFGSUt (ORCPT
+        with ESMTP id S1352464AbiFGSVM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:20:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9134DA76C0;
-        Tue,  7 Jun 2022 10:53:45 -0700 (PDT)
+        Tue, 7 Jun 2022 14:21:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC1C3191E;
+        Tue,  7 Jun 2022 10:53:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 542EDB8236C;
-        Tue,  7 Jun 2022 17:53:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25EADC34119;
-        Tue,  7 Jun 2022 17:53:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624403;
-        bh=BBbKxzBTSgGkElDL5HOf2Rr4T8+XctVQOFZU15enauU=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id B25AFB82366;
+        Tue,  7 Jun 2022 17:53:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27638C36AFF;
+        Tue,  7 Jun 2022 17:53:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624429;
+        bh=21hBvAqjWgZPVZ41EoxFTaicryQRjHH9kB2zenjleVY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sw8fTKqsJ6aizKfLvZOjzSOGF9oTcJ91EZdzI/CmvANPib86KYjjuM+K7w92FkSZ7
-         wXN48JCBtPqe6CRTMl59Q38+xNPuAXLUBxHkaQLErQOQMb7UNJKm9sqBGlMR2wV1oE
-         y+mUiYvFsDyBwu0LVBUG/0RyOkjKPnUCT1lJouyPazUvl/3quCYcHFaqoDPr/ecA5g
-         xeUtpLPRCe0WgjOD/+LK2e55nTV/9s+qJcYT33PbMZ+0iZdWGbB/KXMOWgmhlDrKtL
-         I40dy6R5YHFkEObutDqHx30KmVdw6gKqvsSf1mZK0qRSpYCcvVfbR2jnKys1yqXcU6
-         WjHbwCVTrOusQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, fabioaiuto83@gmail.com,
-        hdegoede@redhat.com, sevinj.aghayeva@gmail.com,
-        linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.17 06/60] drivers: staging: rtl8192bs: Fix deadlock in rtw_joinbss_event_prehandle()
-Date:   Tue,  7 Jun 2022 13:52:03 -0400
-Message-Id: <20220607175259.478835-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
+        b=kZmRam3DTKrOiINls+eI4YbNbT6+n+sqQNoEl1rcnuow4s5gM0aMimP2vWvq7UOpv
+         twAWV9FfLz/oMcPyidquWAZudjnvkdxyUhzHJ9UI7PuOutPdykzWNreKv/sivfECvI
+         UlZ1kLGRy76fgKOlOj3I17356kjpastWJZMmnJBs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 324/667] media: exynos4-is: Change clk_disable to clk_disable_unprepare
+Date:   Tue,  7 Jun 2022 18:59:49 +0200
+Message-Id: <20220607164944.487258214@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 041879b12ddb0c6c83ed9c0bdd10dc82a056f2fc ]
+[ Upstream commit 9fadab72a6916c7507d7fedcd644859eef995078 ]
 
-There is a deadlock in rtw_joinbss_event_prehandle(), which is shown
-below:
+The corresponding API for clk_prepare_enable is clk_disable_unprepare,
+other than clk_disable.
 
-   (Thread 1)                |      (Thread 2)
-                             | _set_timer()
-rtw_joinbss_event_prehandle()|  mod_timer()
- spin_lock_bh() //(1)        |  (wait a time)
- ...                         | _rtw_join_timeout_handler()
- del_timer_sync()            |  spin_lock_bh() //(2)
- (wait timer to stop)        |  ...
+Fix this by changing clk_disable to clk_disable_unprepare.
 
-We hold pmlmepriv->lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need pmlmepriv->lock in position (2) of thread 2.
-As a result, rtw_joinbss_event_prehandle() will block forever.
-
-This patch extracts del_timer_sync() from the protection of
-spin_lock_bh(), which could let timer handler to obtain
-the needed lock. What`s more, we change spin_lock_bh() to
-spin_lock_irq() in _rtw_join_timeout_handler() in order to
-prevent deadlock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220409064953.67420-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: b4155d7d5b2c ("[media] exynos4-is: Ensure fimc-is clocks are not enabled until properly configured")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8723bs/core/rtw_mlme.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/media/platform/exynos4-is/fimc-is.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme.c b/drivers/staging/rtl8723bs/core/rtw_mlme.c
-index a6e5f2332e12..c29e3c68e61e 100644
---- a/drivers/staging/rtl8723bs/core/rtw_mlme.c
-+++ b/drivers/staging/rtl8723bs/core/rtw_mlme.c
-@@ -1240,8 +1240,10 @@ void rtw_joinbss_event_prehandle(struct adapter *adapter, u8 *pbuf)
- 
- 			spin_unlock_bh(&pmlmepriv->scanned_queue.lock);
- 
-+			spin_unlock_bh(&pmlmepriv->lock);
- 			/* s5. Cancel assoc_timer */
- 			del_timer_sync(&pmlmepriv->assoc_timer);
-+			spin_lock_bh(&pmlmepriv->lock);
- 		} else {
- 			spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
+diff --git a/drivers/media/platform/exynos4-is/fimc-is.c b/drivers/media/platform/exynos4-is/fimc-is.c
+index 81b290dace3a..e3072d69c49f 100644
+--- a/drivers/media/platform/exynos4-is/fimc-is.c
++++ b/drivers/media/platform/exynos4-is/fimc-is.c
+@@ -140,7 +140,7 @@ static int fimc_is_enable_clocks(struct fimc_is *is)
+ 			dev_err(&is->pdev->dev, "clock %s enable failed\n",
+ 				fimc_is_clocks[i]);
+ 			for (--i; i >= 0; i--)
+-				clk_disable(is->clocks[i]);
++				clk_disable_unprepare(is->clocks[i]);
+ 			return ret;
  		}
-@@ -1547,7 +1549,7 @@ void _rtw_join_timeout_handler(struct timer_list *t)
- 	if (adapter->bDriverStopped || adapter->bSurpriseRemoved)
- 		return;
- 
--	spin_lock_bh(&pmlmepriv->lock);
-+	spin_lock_irq(&pmlmepriv->lock);
- 
- 	if (rtw_to_roam(adapter) > 0) { /* join timeout caused by roaming */
- 		while (1) {
-@@ -1575,7 +1577,7 @@ void _rtw_join_timeout_handler(struct timer_list *t)
- 
- 	}
- 
--	spin_unlock_bh(&pmlmepriv->lock);
-+	spin_unlock_irq(&pmlmepriv->lock);
- }
- 
- /*
+ 		pr_debug("enabled clock: %s\n", fimc_is_clocks[i]);
 -- 
 2.35.1
+
+
 
