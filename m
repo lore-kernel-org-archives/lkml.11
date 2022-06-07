@@ -2,154 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 449E1CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91FD5CCA48C
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392429AbiFHB54 (ORCPT
+        id S1392541AbiFHB61 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:57:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49608 "EHLO
+        Tue, 7 Jun 2022 21:58:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588582AbiFGXys (ORCPT
+        with ESMTP id S1835732AbiFGX4u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:54:48 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E43F41B828A
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:43:45 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id w20so8999817lfa.11
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 16:43:45 -0700 (PDT)
+        Tue, 7 Jun 2022 19:56:50 -0400
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBC235878
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:18:09 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id z10so388658qta.2
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 16:18:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=BsJ4E/n6E6WEYC3xGqcJLEMCmh5wzfUdFOjfQObwoo0=;
-        b=MiLDd7q0UzhgPqtULsC28miEBwaRcoPU5dgYwC8Vnb3XkpW6tvL29D9H61eOW5mkU7
-         RtydIL+wpjs3qQwcBNDZrTRSNEfNeLR4ECa2gln2u/GCeQgaBoKORAuAN3akCT3pUIce
-         C04A4X1xY6BG5tDDEXmSV3c8OFFspxcjkkWOk+yUJRtgKYgQ/Ph5TrkL2THDj6D42B2H
-         TscnQy/usJ58iOhHOuoDeeOFTvps9u8Wz4RdtyK4cCwu6zLxdOFGOxrTBp7Se+/r2EkI
-         XzYlUI/kTG5IP2+O0uu8+suzgo4VnVGpttk/9STP++GmrvKOp17sZojssv7ryL6Edcqu
-         fOAw==
+        bh=K7/gzK+9zEAB7m+URXpWPKFV8Md7lwbStbXqUp9N1Lw=;
+        b=kD7H9kmH0TOh5IRdxAaVmdhiPL9BuO0CGy9mJpJnw8mQDcrCA/O7nS9XO4O0K/Hjpc
+         2VZB+xlv+DN2kYxk2NJWqLqp8xLprTQ3FjA7xiHLSbCLjUxvIpCopvsz9mAaO664Nu3e
+         mJ1v72wx4cPChKaqrwmhtD7SSvRpL5N8YOXWCfw7QwyvyiAm+g/Z9FOwXAY5YPf3gzkc
+         jKLBcXA30soO2y2k5vRIFLE5gJ1nsDuh7XJxwp2mqt3eUNZNREHdkEVIxjXDDVetw29Z
+         Dy6R8zsmcORzvM/epQqyUn8bcIB6SNaGjDNgqzwlFWMkqIXufBR+9ch8T84OxAplWDCH
+         L2FA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BsJ4E/n6E6WEYC3xGqcJLEMCmh5wzfUdFOjfQObwoo0=;
-        b=lnjJ9gV4iRCWNLTuMfZFmSozubQ1ENbYiy4vNjc5Vvt7NXIrAXtiHaL+ewN46ugc2x
-         5VrLC/7pQeqsCtPPZbdRND6MfpQyTv/HVIQsfNIsMKxsV3Gv6iy8YrIENzre/xm8wl5G
-         oYR7T6Qew1B92edu4shiTaKM74fQpcB3gB44QKRH7wNq06ywH2pg0Gn1S6suZv3nH2qL
-         PJW38fgeMnbgvw6U/eUvzBKVek7a2vWSKzmXzRYTK3wLZy8SJo8gsF7SwJrcBMxeFeJM
-         Xg8tPcZ4QGgXTPEFEVA/BA9EqQGBkuFrNty72VEKzFgxQzkyMKJODOYrhAHMF+ZNsjcm
-         3nwg==
-X-Gm-Message-State: AOAM5309eiQZPLnsjtxqVerFOgBYuuBfkWma4bRV0yFBNLlAjI48JCLC
-        3X3e4/EzIXzSrZDMSsISAxYBHsH+UnaMFmI5Xhgfvg==
-X-Google-Smtp-Source: ABdhPJxMSdiKma4gy0XJ31Ei7YNJtDAZetRdNPGU1knDY0iRcPr5fqk/dczy94U1kwwpxw5G9qq8r/um7sgG9zZftLI=
-X-Received: by 2002:a05:6512:3f94:b0:478:7abe:de4a with SMTP id
- x20-20020a0565123f9400b004787abede4amr54365154lfa.401.1654645423956; Tue, 07
- Jun 2022 16:43:43 -0700 (PDT)
+        bh=K7/gzK+9zEAB7m+URXpWPKFV8Md7lwbStbXqUp9N1Lw=;
+        b=xM5OKdxcnaYY1s5E8JFL1rHT66ziCXC3S/puoCMOsASj3psA7x9SIUQZgPTglziKx2
+         G9Bu6XsvQ2xJs6USORteqmWKHBU9j4M+DNXau/EdJSVz2+pmaWhgUBbVB9EzzN/dd2BG
+         05MGyEaiz84jp2jMwAta4B+WZSprOzcd9p/HNIoC+PJMNJIJmsYAO2VqH9ZykRwIHwiP
+         OpsBWObg0HJgMZYxdXbo6IXtUkuDTvGu8JYyu5hV9Bd+hyntHvZYoyd5rZNhUI+hzlid
+         p5CLrcFZVoJYIhwcZyQaBUHCllPOXovrTttqqV0nJL8k4ZjWUzBdzicRgp+FwN1oG0P6
+         3Ifw==
+X-Gm-Message-State: AOAM533uY0nxMHQfeNrBmqzuGH0rZPe6rKFgaW5TkCkl2reYmldaeUBd
+        3W+aNyXqYffe1FkhVLGEccs3DRA0rC8PsWTR6ZwW+w==
+X-Google-Smtp-Source: ABdhPJwWaEMpZd6sm7MREATgjYhP0WVx5ZHG+STuqGDMV32g2q4lA/btHLzN3suLQfbF0mlblinbGfcb3VQRH13J6mQ=
+X-Received: by 2002:ac8:5990:0:b0:304:c8d6:3147 with SMTP id
+ e16-20020ac85990000000b00304c8d63147mr25556691qte.370.1654643888839; Tue, 07
+ Jun 2022 16:18:08 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220607222006.22719-1-jstitt007@gmail.com> <20220607152744.d7c801d092529309500ac9a6@linux-foundation.org>
- <CAKwvOdmXeRbFjkHgFXps4pLH6Q6pGWRNOqA85=h2aFnR=uaggg@mail.gmail.com> <20220607162128.b5d4aa70f4a8a7610ce29250@linux-foundation.org>
-In-Reply-To: <20220607162128.b5d4aa70f4a8a7610ce29250@linux-foundation.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 7 Jun 2022 16:43:32 -0700
-Message-ID: <CAKwvOd=KxY5PBgedkerrL_3BAV_ri8N4F-=piJ6tQXHwFDSr3g@mail.gmail.com>
-Subject: Re: [PATCH] include/uapi/linux/swab.h: add __u16 cast to __swab16 conditional
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Justin Stitt <jstitt007@gmail.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>, Tom Rix <trix@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        Richard Smith <richardsmith@google.com>
+References: <20220607213543.4057620-1-bjorn.andersson@linaro.org>
+ <20220607213543.4057620-3-bjorn.andersson@linaro.org> <f16657a3-15e5-f7d6-1f2b-58e2ea83dddc@linaro.org>
+ <Yp/VCg3UznbLKLuk@ripper>
+In-Reply-To: <Yp/VCg3UznbLKLuk@ripper>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Wed, 8 Jun 2022 02:17:57 +0300
+Message-ID: <CAA8EJporMU9b42cuBfCBSw4yAakUcj47d6bY5yZRLkW-2Ciq_w@mail.gmail.com>
+Subject: Re: [PATCH v2 2/5] phy: qcom-qmp: Add USB3 5NM QMP UNI registers
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Manu Gautam <mgautam@codeaurora.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 4:21 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+On Wed, 8 Jun 2022 at 01:43, Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
 >
-> On Tue, 7 Jun 2022 15:42:56 -0700 Nick Desaulniers <ndesaulniers@google.com> wrote:
->
-> > On Tue, Jun 7, 2022 at 3:27 PM Andrew Morton <akpm@linux-foundation.org> wrote:
-> > >
-> > > On Tue,  7 Jun 2022 15:20:06 -0700 Justin Stitt <jstitt007@gmail.com> wrote:
-> > >
-> > > > if __HAVE_BUILTIN_BSWAP16__ is defined then __swab16 utilizes a __u16 cast.
-> > > > This same cast should be used if __HAVE_BUILTIN_BSWAP16__ is not defined as
-> > > > well. This should fix loads (at least a few) clang -Wformat warnings
-> > > > specifically with `ntohs()`
-> > > >
-> > > > ...
-> > > >
-> > > > --- a/include/uapi/linux/swab.h
-> > > > +++ b/include/uapi/linux/swab.h
-> > > > @@ -102,7 +102,7 @@ static inline __attribute_const__ __u32 __fswahb32(__u32 val)
-> > > >  #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
-> > > >  #else
-> > > >  #define __swab16(x)                          \
-> > > > -     (__builtin_constant_p((__u16)(x)) ?     \
-> > > > +     (__u16)(__builtin_constant_p((__u16)(x)) ?      \
-> > > >       ___constant_swab16(x) :                 \
-> > > >       __fswab16(x))
-> > > >  #endif
-> > >
-> > > More explanation, please?  Both ___constant_swab16() and __fswab16()
-> > > return __u16, so why does this patch have any effect?
-> > >
+> On Tue 07 Jun 14:58 PDT 2022, Dmitry Baryshkov wrote:
+> > On 08/06/2022 00:35, Bjorn Andersson wrote:
+> [..]
+> > > +#define USB3_V5_5NM_UNI_QSERDES_COM_BIN_VCOCAL_CMP_CODE2_MODE0     0x1b0
+> > > +#define USB3_V5_5NM_UNI_QSERDES_COM_BIN_VCOCAL_CMP_CODE1_MODE1     0x1b4
+> > > +#define USB3_V5_5NM_UNI_QSERDES_COM_BIN_VCOCAL_CMP_CODE2_MODE1     0x1b8
+> > > +#define USB3_V5_5NM_UNI_QSERDES_COM_BIN_VCOCAL_HSCLK_SEL           0x1bc
+> > > +#define USB3_V5_5NM_UNI_QSERDES_COM_RESERVED_1                     0x1c0
+> > > +#define USB3_V5_5NM_UNI_QSERDES_COM_MODE_OPERATION_STATUS          0x1c4
 > >
-> > See this example:
-> > https://godbolt.org/z/fzE73jn13
-> > And the ImplicitCastExpr nodes adding to the AST:
-> > https://godbolt.org/z/oYeYxYdKW
+> > These defines look completely compatible with the existing ones in the
+> > QSERDES_V5_COM_ namespace. Please use them instead.
 > >
-> > Both the second and third operand are promoted to int.
+>
+> Can you please confirm that all these constants are exactly the same as
+> the existing V5 entries?
+
+The only difference that I see is the phy-qcom-qmp.h defining
+QSERDES_V5_COM_CMN_MODE to 0x1a4, which should be 0x1a0. This is
+clearly a mistake on the upstream side (confirmed by the msm-5.10).
+Could you please send a patch for it?
+
+
+>
+> [..]
+> > > +/* Module: USB3_UNI_PCS_USB3_PCIE_USB3_UNI_PCS_USB3 */
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_POWER_STATE_CONFIG1               0x00
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_AUTONOMOUS_MODE_STATUS            0x04
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_AUTONOMOUS_MODE_CTRL              0x08
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_AUTONOMOUS_MODE_CTRL2             0x0c
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_RXTERM_IRQ_SOURCE_STATUS     0x10
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_RXTERM_IRQ_CLEAR             0x14
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_DET_HIGH_COUNT_VAL           0x18
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_TX_ECSTART                   0x1c
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_PER_TIMER_VAL                0x20
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_TX_END_CNT_U3_START          0x24
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_CONFIG1                      0x28
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_LOCK_TIME            0x2c
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_WAIT_TIME            0x30
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_CTLE_TIME            0x34
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_WAIT_TIME_S2         0x38
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_DFE_TIME_S2          0x3c
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_RCVR_DTCT_DLY_U3_L                0x40
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_RCVR_DTCT_DLY_U3_H                0x44
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_ARCVR_DTCT_EN_PERIOD              0x48
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_ARCVR_DTCT_CM_DLY                 0x4c
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_TXONESZEROS_RUN_LENGTH            0x50
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_ALFPS_DEGLITCH_VAL                0x54
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_SIGDET_STARTUP_TIMER_VAL          0x58
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_TEST_CONTROL                      0x5c
+> > > +#define USB3_V5_5NM_UNI_PCS_USB3_RXTERMINATION_DLY_SEL             0x60
 > >
-> > C11: https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1548.pdf
+> > These look like QPHY_V5_PCS_USB3, but without additional 0x300 offset. I'd
+> > suggest modifying qcom-qmp-phy-usb.c to allocate another register space for
+> > pcs_usb and updating QPHY_V4_PCS_USB3_foo / QPHY_V5_PCS_USB3_foo defines to
+> > remove this offset.
 > >
-> > 6.5.15/5
-> > >> If both the second and third operands have arithmetic type, the result type that would be determined by the usual arithmetic conversions, were they applied to those two operands, is the type of the result.
-> > 6.3.1.8/1
-> > >> Otherwise, the integer promotions are performed on both operands.
-> > 6.3.1.1/2
-> > >> If an int can represent all values of the original type (as restricted by the width, for a bit-field), the value is converted to an int; otherwise, it is converted to an unsigned int. These are called the integer promotions.
+> > Afterwards most if not all constants from this header can be merged into
+> > phy-qcom-qmp.h I do not think that it makes sense to split this header at
+> > this moment. The QSERDES_COM/_TX/_RX/_PCS defines are common to all PHY
+> > types.
+> >
 >
-> Geeze.  Can we please turn this into English and add it to the changelog?
+> You might be right, but I spent considerable time debugging the combo
+> phy (which is version 5.0.0) and in the end it turned out that it's not
+> the same offsets.
 >
-> Is it saying that an expression
->
->         int ? u16 : u16
->
-> has type int?
+> I really would prefer that we stop haphazardly try to fit things into
+> the phy-qcom-qmp.h with version numbers that we essentially make up
+> base, when Qualcomm dumps the register layout for each generation in
+> their downstream kernel.
 
-Yep.
+Well... Let's come up with a better versioning/naming scheme. But I
+don't think we should dump repeatable symbol headers, which are in
+reality common between different PHYs. This would make things harder
+to understand and harder to maintain.
 
-> Or something else?
-
-Technically, the `int` in your example (the first operand) doesn't
-matter. Could be a `long long` or a `char` and it would not matter.
-
-> What did we do wrong here and is it
-
-Perhaps the simplest English explanation would be "ternary expressions
-with then/else clauses with types smaller than int undergo implicit
-promotion to int."
-
-> possible to correct our types rather than adding a cast?
-
-I think the cast is the explicit cast back to __u16 way to go here,
-IMO.  I don't think anything within the ternary could be changed to
-avoid implicit promotions.
-
-
-Justin, can you please send a v2 removing the casts withing
-__builtin_constant_p (as in the diff I posted previously in this
-thread) and with the below text added to the commit message:
-
-Ternary expressions with then/else clauses with types smaller than int
-undergo implicit promotion to int. Cast the result of the ternary back
-to the expected __u16 to match the type when __HAVE_BUILTIN_BSWAP16__
-is defined.
-
-Also remove pointless casts within __builtin_constant_p argument lists.
---
-Thanks,
-~Nick Desaulniers
+-- 
+With best wishes
+Dmitry
