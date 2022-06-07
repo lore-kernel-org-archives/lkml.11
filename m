@@ -2,91 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE441C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:03:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 476CFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:04:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240613AbiFGKDy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:03:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
+        id S240609AbiFGKED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:04:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239176AbiFGKDn (ORCPT
+        with ESMTP id S240623AbiFGKDz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:03:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4762DC0E09;
-        Tue,  7 Jun 2022 03:03:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D03C561373;
-        Tue,  7 Jun 2022 10:03:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF87BC34119;
-        Tue,  7 Jun 2022 10:03:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654596219;
-        bh=u1B8uxzMCkFey7cgXnz/vr+zToHpWFs1K5+BWxxYloU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=K26BYJKPorCQqVcj8VFZH7g9DPuMkA/G8siXvq9Rkg3Q2HYIh8PuG+u/cFCKsjBYY
-         gNaYErecq/8WR+Oi6yHa8vmhhQmSAFgAcgTiFGlp934idTcwd6gg83YBH6bfwFRfuk
-         /XqYUH88dY44xe56sijpmV9e06rHlp0vC0PannW61RJZ9Y9WjTGsNwkMIU09Lv29jj
-         wJ/C0UDg/U+Rq1OZ+mgy46Gd/DD4W5RK/aPXs6RXjcqg6ltHNpux6aH8qsYY1snSHx
-         HOLGQj6AEsxuCU29cx+NfqEuqGNQnVtmCB10ZSDNeaYVtmu4vAuXqpDsv8jua93gV5
-         CoLlhPJTAwRag==
-Date:   Tue, 7 Jun 2022 13:01:44 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     David Howells <dhowells@redhat.com>
-Cc:     torvalds@linux-foundation.org,
-        =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@linux.microsoft.com>,
-        keyrings@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] certs: Convert spaces in certs/Makefile to a tab
-Message-ID: <Yp8iCErgXDFBvhzJ@iki.fi>
-References: <165451871967.1941436.17828809503267245815.stgit@warthog.procyon.org.uk>
+        Tue, 7 Jun 2022 06:03:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 09948D02A3
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 03:03:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654596232;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ap/ea5Xnr5bNkYBc/gjvXLi7f8rQXdBfxSXXArkzhjs=;
+        b=Cj4lH2wLIL1d/CAIbZEZZEQD7/IKOMAK9RfVYykWZvzeMBtFs7sIiYKAT9vJSc0iL1k/xO
+        2X4I7+flB8H+TzkEN3v1gAsHrSAXVzeizmrXrjNexdnw3N08bZ5PkMEt8moZ91GvSx+VUN
+        FcxykPYtElkpMXFGx9c+APNutPKcFn8=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-349-7RpuEZibMSehyPzWQnZJnQ-1; Tue, 07 Jun 2022 06:03:51 -0400
+X-MC-Unique: 7RpuEZibMSehyPzWQnZJnQ-1
+Received: by mail-qk1-f198.google.com with SMTP id bs39-20020a05620a472700b006a6772a6cb3so11730188qkb.14
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 03:03:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=Ap/ea5Xnr5bNkYBc/gjvXLi7f8rQXdBfxSXXArkzhjs=;
+        b=p9kCUVfnKMYZ5zg90ftWUrMde7IONKOICXOvShUvc5bAZRTsJEsLHfs0ai1bUt6zVH
+         d58CEVEZLTnqYC6qAy9JEoztgmg01FhlJunTrTgXLxxGCdAsUH4DkIkTB+PY5SKY9Eja
+         YM+tp/tlBhl42Cuqb0sOfdYFunT3VTfhvesdTdolZt3gtFETq+MqWBP2XjsUaGJp7lb8
+         hNQ4DVl4fT6IfPwbOtBbFMKoPoC0o9J4Lu5TQeEjYfYeTw4+hiHBkhLfwbgmC2BfjDGT
+         4AQ3L/lh4q7fvmiUQwR94PpeQVs3vHz93eVPy6dYtHqIF+qEq8V3BRr0+U5XdVaEXiJ3
+         B94A==
+X-Gm-Message-State: AOAM530eagzFqkaQjSMLBDYpMoaPc6tvZbLnFZ/ZGICetmmpgAhYQWEV
+        I7nbzTHe1Bmkf9D4nEhvujScZw/tPdcn1PCOIOZW/wn1f924mRA6fhP4PR3trUpZMSKMks0MGQT
+        TO+42aGnSPc4GEV+KOK/Zom7y
+X-Received: by 2002:a05:620a:1672:b0:6a6:b0de:88ae with SMTP id d18-20020a05620a167200b006a6b0de88aemr9502579qko.191.1654596230527;
+        Tue, 07 Jun 2022 03:03:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwL+Lux3U2smt/hKL3cajilOIB0if6MIVkVQu0anbpTi9HYKO5N42NE8prEF5fx5vOtIZXOyg==
+X-Received: by 2002:a05:620a:1672:b0:6a6:b0de:88ae with SMTP id d18-20020a05620a167200b006a6b0de88aemr9502564qko.191.1654596230302;
+        Tue, 07 Jun 2022 03:03:50 -0700 (PDT)
+Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
+        by smtp.gmail.com with ESMTPSA id h10-20020a05620a284a00b006a6e13e2b4bsm794500qkp.24.2022.06.07.03.03.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 03:03:49 -0700 (PDT)
+Message-ID: <42de55976d158eb34fe97595d4509c4de28771b7.camel@redhat.com>
+Subject: Re: [PATCH v6 26/38] KVM: selftests: Move the function doing
+ Hyper-V hypercall to a common header
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        Yuan Yao <yuan.yao@linux.intel.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 07 Jun 2022 13:03:46 +0300
+In-Reply-To: <20220606083655.2014609-27-vkuznets@redhat.com>
+References: <20220606083655.2014609-1-vkuznets@redhat.com>
+         <20220606083655.2014609-27-vkuznets@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-2.fc34) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <165451871967.1941436.17828809503267245815.stgit@warthog.procyon.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 06, 2022 at 01:31:59PM +0100, David Howells wrote:
-> There's a rule in certs/Makefile for which the command begins with eight
-> spaces.  This results in:
+On Mon, 2022-06-06 at 10:36 +0200, Vitaly Kuznetsov wrote:
+> All Hyper-V specific tests issuing hypercalls need this.
 > 
-> 	../certs/Makefile:21: FORCE prerequisite is missing
-> 	../certs/Makefile:21: *** missing separator.  Stop.
-> 
-> Fix this by turning the spaces into a tab.
-> 
-> Fixes: addf466389d9 ("certs: Check that builtin blacklist hashes are valid")
-> Signed-off-by: David Howells <dhowells@redhat.com>
-> cc: Micka�l Sala�n <mic@linux.microsoft.com>
-> cc: Jarkko Sakkinen <jarkko@kernel.org>
-> cc: keyrings@vger.kernel.org
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 > ---
+>  .../selftests/kvm/include/x86_64/hyperv.h       | 15 +++++++++++++++
+>  .../selftests/kvm/x86_64/hyperv_features.c      | 17 +----------------
+>  2 files changed, 16 insertions(+), 16 deletions(-)
 > 
->  certs/Makefile |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/certs/Makefile b/certs/Makefile
-> index bb904f90f139..cb1a9da3fc58 100644
-> --- a/certs/Makefile
-> +++ b/certs/Makefile
-> @@ -18,7 +18,7 @@ CFLAGS_blacklist_hashes.o += -I$(srctree)
->  
->  targets += blacklist_hashes_checked
->  $(obj)/blacklist_hashes_checked: $(SYSTEM_BLACKLIST_HASH_LIST_SRCPREFIX)$(SYSTEM_BLACKLIST_HASH_LIST_FILENAME) scripts/check-blacklist-hashes.awk FORCE
-> -       $(call if_changed,check_blacklist_hashes,$(SYSTEM_BLACKLIST_HASH_LIST_SRCPREFIX)$(CONFIG_SYSTEM_BLACKLIST_HASH_LIST))
-> +	$(call if_changed,check_blacklist_hashes,$(SYSTEM_BLACKLIST_HASH_LIST_SRCPREFIX)$(CONFIG_SYSTEM_BLACKLIST_HASH_LIST))
->  obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist_hashes.o
->  else
->  obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist_nohashes.o
-> 
-> 
+> diff --git a/tools/testing/selftests/kvm/include/x86_64/hyperv.h b/tools/testing/selftests/kvm/include/x86_64/hyperv.h
+> index f0a8a93694b2..e0a1b4c2fbbc 100644
+> --- a/tools/testing/selftests/kvm/include/x86_64/hyperv.h
+> +++ b/tools/testing/selftests/kvm/include/x86_64/hyperv.h
+> @@ -185,6 +185,21 @@
+>  /* hypercall options */
+>  #define HV_HYPERCALL_FAST_BIT          BIT(16)
+>  
+> +static inline u64 hyperv_hypercall(u64 control, vm_vaddr_t input_address,
+> +                          vm_vaddr_t output_address)
+> +{
+> +       u64 hv_status;
+> +
+> +       asm volatile("mov %3, %%r8\n"
+> +                    "vmcall"
+> +                    : "=a" (hv_status),
+> +                      "+c" (control), "+d" (input_address)
+> +                    :  "r" (output_address)
+> +                    : "cc", "memory", "r8", "r9", "r10", "r11");
+> +
+> +       return hv_status;
+> +}
+> +
+>  /* Proper HV_X64_MSR_GUEST_OS_ID value */
+>  #define HYPERV_LINUX_OS_ID ((u64)0x8100 << 48)
+>  
+> diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_features.c b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
+> index 98c020356925..788d570e991e 100644
+> --- a/tools/testing/selftests/kvm/x86_64/hyperv_features.c
+> +++ b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
+> @@ -48,21 +48,6 @@ static void do_wrmsr(u32 idx, u64 val)
+>  static int nr_gp;
+>  static int nr_ud;
+>  
+> -static inline u64 hypercall(u64 control, vm_vaddr_t input_address,
+> -                           vm_vaddr_t output_address)
+> -{
+> -       u64 hv_status;
+> -
+> -       asm volatile("mov %3, %%r8\n"
+> -                    "vmcall"
+> -                    : "=a" (hv_status),
+> -                      "+c" (control), "+d" (input_address)
+> -                    :  "r" (output_address)
+> -                    : "cc", "memory", "r8", "r9", "r10", "r11");
+> -
+> -       return hv_status;
+> -}
+> -
+>  static void guest_gp_handler(struct ex_regs *regs)
+>  {
+>         unsigned char *rip = (unsigned char *)regs->rip;
+> @@ -138,7 +123,7 @@ static void guest_hcall(vm_vaddr_t pgs_gpa, struct hcall_data *hcall)
+>                         input = output = 0;
+>                 }
+>  
+> -               res = hypercall(hcall->control, input, output);
+> +               res = hyperv_hypercall(hcall->control, input, output);
+>                 if (hcall->ud_expected)
+>                         GUEST_ASSERT(nr_ud == 1);
+>                 else
 
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Best regards,
+	Maxim Levitsky
 
-BR, Jarkko
