@@ -2,114 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3EE9CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B832CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:11:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355046AbiFGTKs (ORCPT
+        id S1355067AbiFGTK4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35196 "EHLO
+        Tue, 7 Jun 2022 15:10:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350995AbiFGSXO (ORCPT
+        with ESMTP id S1351355AbiFGSXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:23:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FBB3C9EED;
-        Tue,  7 Jun 2022 10:54:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE8DC6E46;
+        Tue,  7 Jun 2022 10:54:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62C0B617A5;
-        Tue,  7 Jun 2022 17:54:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00303C385A5;
-        Tue,  7 Jun 2022 17:54:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624441;
-        bh=wH7/90BcNZzwB2bJOgzMEcaResWqJwE5uqhLmPT9ENA=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F3F3617B4;
+        Tue,  7 Jun 2022 17:54:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E38CC341C0;
+        Tue,  7 Jun 2022 17:53:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624440;
+        bh=LjIQQHdcsPNJjZ0Z2E4ildPKtZJSSNuzjswYamyI6tw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gjEFQKBCHo5R2E8o6Yp+g740/z6I8C5FqWkd5Jz5buDTfbNYHxJIipy2JeLVN87lt
-         0ZHYSf/ARLKru4K1Jx3ASj63xCdyiCiL7vMSnOpXxQ10UUgBn/1X/E+GRYGRmxH71m
-         57fP2Y8Nj/ZkrSPFEg8k9U5Y99wmaDBMyhIKJyRk4oF6QITFXWeLfPEeO6cbmMSN97
-         hMzewIHcpvYLy+VLgCrmUFvxFgMQB5lYRpOCOP3E05tzSTdN3E29+kLvESlLsJYg1V
-         U2ciy6r/Lztmy269mqM8/+l+6BkTERe2eAofqFX/tj1KYPl6s3yfEDUUYAr6/yWyO6
-         I/pdEu1RvdQLg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andre Przywara <andre.przywara@arm.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de
-Subject: [PATCH AUTOSEL 5.17 24/60] clocksource/drivers/sp804: Avoid error on multiple instances
-Date:   Tue,  7 Jun 2022 13:52:21 -0400
-Message-Id: <20220607175259.478835-24-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
+        b=We51GThjV+oLwsCqJzCIdpQY8/ahvCJmW/3dtheRvLNJl7K1P/VFMRTalSlHCx1QY
+         jzXDfE8l468EsHfxM1XANC5tMRYtlpr6Xmzx5of/UJPDgE11gfOuR8sYYV19vT5r+8
+         JeX0MBwLjVfA1Dy3r/1ROfpEWn4qTVU/ZDP1ESpA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 328/667] media: hantro: HEVC: Fix tile info buffer value computation
+Date:   Tue,  7 Jun 2022 18:59:53 +0200
+Message-Id: <20220607164944.605760477@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 
-[ Upstream commit a98399cbc1e05f7b977419f03905501d566cf54e ]
+[ Upstream commit d7f4149df818463c1d7094b35db6ebd79f46c7bd ]
 
-When a machine sports more than one SP804 timer instance, we only bring
-up the first one, since multiple timers of the same kind are not useful
-to Linux. As this is intentional behaviour, we should not return an
-error message, as we do today:
-===============
-[    0.000800] Failed to initialize '/bus@8000000/motherboard-bus@8000000/iofpga-bus@300000000/timer@120000': -22
-===============
+Use pps->column_width_minus1[j] + 1 as value for the tile info buffer
+instead of pps->column_width_minus1[j + 1].
+The patch fixes DBLK_E_VIXS_2, DBLK_F_VIXS_2, DBLK_G_VIXS_2,
+SAO_B_MediaTek_5, TILES_A_Cisco_2 and TILES_B_Cisco_1 tests in fluster.
 
-Replace the -EINVAL return with a debug message and return 0 instead.
-
-Also we do not reach the init function anymore if the DT node is
-disabled (as this is now handled by OF_DECLARE), so remove the explicit
-check for that case.
-
-This fixes a long standing bogus error when booting ARM's fastmodels.
-
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/20220506162522.3675399-1-andre.przywara@arm.com
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Fixes: cb5dd5a0fa51 ("media: hantro: Introduce G2/HEVC decoder")
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/timer-sp804.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clocksource/timer-sp804.c b/drivers/clocksource/timer-sp804.c
-index 401d592e85f5..e6a87f4af2b5 100644
---- a/drivers/clocksource/timer-sp804.c
-+++ b/drivers/clocksource/timer-sp804.c
-@@ -259,6 +259,11 @@ static int __init sp804_of_init(struct device_node *np, struct sp804_timer *time
- 	struct clk *clk1, *clk2;
- 	const char *name = of_get_property(np, "compatible", NULL);
- 
-+	if (initialized) {
-+		pr_debug("%pOF: skipping further SP804 timer device\n", np);
-+		return 0;
-+	}
-+
- 	base = of_iomap(np, 0);
- 	if (!base)
- 		return -ENXIO;
-@@ -270,11 +275,6 @@ static int __init sp804_of_init(struct device_node *np, struct sp804_timer *time
- 	writel(0, timer1_base + timer->ctrl);
- 	writel(0, timer2_base + timer->ctrl);
- 
--	if (initialized || !of_device_is_available(np)) {
--		ret = -EINVAL;
--		goto err;
--	}
--
- 	clk1 = of_clk_get(np, 0);
- 	if (IS_ERR(clk1))
- 		clk1 = NULL;
+diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+index ee069564205a..e63b777d4266 100644
+--- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
++++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+@@ -74,7 +74,7 @@ static void prepare_tile_info_buffer(struct hantro_ctx *ctx)
+ 					no_chroma = 1;
+ 				for (j = 0, tmp_w = 0; j < num_tile_cols - 1; j++) {
+ 					tmp_w += pps->column_width_minus1[j] + 1;
+-					*p++ = pps->column_width_minus1[j + 1];
++					*p++ = pps->column_width_minus1[j] + 1;
+ 					*p++ = h;
+ 					if (i == 0 && h == 1 && ctb_size == 16)
+ 						no_chroma = 1;
 -- 
 2.35.1
+
+
 
