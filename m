@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE30CCA499
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CA78CCA49E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352000AbiFGSZ2 (ORCPT
+        id S1352394AbiFGS0I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:25:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60966 "EHLO
+        Tue, 7 Jun 2022 14:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350921AbiFGSBa (ORCPT
+        with ESMTP id S1351287AbiFGSB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:01:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76EF814CDF3;
-        Tue,  7 Jun 2022 10:43:38 -0700 (PDT)
+        Tue, 7 Jun 2022 14:01:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C6C12E321;
+        Tue,  7 Jun 2022 10:44:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CB8561529;
-        Tue,  7 Jun 2022 17:43:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42B8AC385A5;
-        Tue,  7 Jun 2022 17:43:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9026861480;
+        Tue,  7 Jun 2022 17:44:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0A03C3411C;
+        Tue,  7 Jun 2022 17:44:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623810;
-        bh=K2Ct8v612oBd7AGh9aMx4iuQ2nz0lA2eVt8p+V/mDAU=;
+        s=korg; t=1654623849;
+        bh=AmtNEIONDz4TR6XNEOBdkvo95XyT+gqj55BrSboz7xA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QvTzfbUkpoqz10WP1oZ2b521HC2cpNZfGX7WW5Jionngaak0fdOVI6ok9Vs2uSGhv
-         QfQFxeF1hDW5KXrKZicq6Ev/1C7cPim/FjJ7pbwoXv1TmevJWQ+tlRZgJ5ghx9IU8A
-         6eiYIFuklMqsRiizTCeqz6VDIh6MZfptu7I2kHo4=
+        b=hCVshE5KRihnjmiLuyuJbaEcyHHeNexQA7Djq8YbwHwVbXkTItfGNW2Y92NdBJlxV
+         xEWq92NF3gmVJnnFjaWc9wXRmYn5S9c1HE3sN/525mRLR2+TYHxCyGfuNrUQMGhz0x
+         /mR6n76dP/1ys0SI+Wg1zrBxC3JVsDjAdVDTs8UE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhen Lei <thunder.leizhen@huawei.com>,
-        Rob Herring <robh@kernel.org>, Baoquan He <bhe@redhat.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 101/667] of: Support more than one crash kernel regions for kexec -s
-Date:   Tue,  7 Jun 2022 18:56:06 +0200
-Message-Id: <20220607164937.851752212@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Evan Quan <evan.quan@amd.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 087/667] drm/amd/pm: fix the compile warning
+Date:   Tue,  7 Jun 2022 18:55:52 +0200
+Message-Id: <20220607164937.428946484@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,48 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhen Lei <thunder.leizhen@huawei.com>
+From: Evan Quan <evan.quan@amd.com>
 
-[ Upstream commit 8af6b91f58341325bf74ecb0389ddc0039091d84 ]
+[ Upstream commit 555238d92ac32dbad2d77ad2bafc48d17391990c ]
 
-When "crashkernel=X,high" is used, there may be two crash regions:
-high=crashk_res and low=crashk_low_res. But now the syscall
-kexec_file_load() only add crashk_res into "linux,usable-memory-range",
-this may cause the second kernel to have no available dma memory.
+Fix the compile warning below:
+drivers/gpu/drm/amd/amdgpu/../pm/legacy-dpm/kv_dpm.c:1641
+kv_get_acp_boot_level() warn: always true condition '(table->entries[i]->clk >= 0) => (0-u32max >= 0)'
 
-Fix it like kexec-tools does for option -c, add both 'high' and 'low'
-regions into the dtb.
-
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Acked-by: Baoquan He <bhe@redhat.com>
-Link: https://lore.kernel.org/r/20220506114402.365-6-thunder.leizhen@huawei.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Reported-by: kernel test robot <lkp@intel.com>
+CC: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/of/kexec.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/gpu/drm/amd/pm/powerplay/kv_dpm.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
-diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
-index 761fd870d1db..72c790a3c910 100644
---- a/drivers/of/kexec.c
-+++ b/drivers/of/kexec.c
-@@ -386,6 +386,15 @@ void *of_kexec_alloc_and_setup_fdt(const struct kimage *image,
- 				crashk_res.end - crashk_res.start + 1);
- 		if (ret)
- 			goto out;
-+
-+		if (crashk_low_res.end) {
-+			ret = fdt_appendprop_addrrange(fdt, 0, chosen_node,
-+					"linux,usable-memory-range",
-+					crashk_low_res.start,
-+					crashk_low_res.end - crashk_low_res.start + 1);
-+			if (ret)
-+				goto out;
-+		}
- 	}
+diff --git a/drivers/gpu/drm/amd/pm/powerplay/kv_dpm.c b/drivers/gpu/drm/amd/pm/powerplay/kv_dpm.c
+index bcae42cef374..6ba4c2ae69a6 100644
+--- a/drivers/gpu/drm/amd/pm/powerplay/kv_dpm.c
++++ b/drivers/gpu/drm/amd/pm/powerplay/kv_dpm.c
+@@ -1609,19 +1609,7 @@ static int kv_update_samu_dpm(struct amdgpu_device *adev, bool gate)
  
- 	/* add bootargs */
+ static u8 kv_get_acp_boot_level(struct amdgpu_device *adev)
+ {
+-	u8 i;
+-	struct amdgpu_clock_voltage_dependency_table *table =
+-		&adev->pm.dpm.dyn_state.acp_clock_voltage_dependency_table;
+-
+-	for (i = 0; i < table->count; i++) {
+-		if (table->entries[i].clk >= 0) /* XXX */
+-			break;
+-	}
+-
+-	if (i >= table->count)
+-		i = table->count - 1;
+-
+-	return i;
++	return 0;
+ }
+ 
+ static void kv_update_acp_boot_level(struct amdgpu_device *adev)
 -- 
 2.35.1
 
