@@ -2,140 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 298DCCCA490
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19EB0CCA48E
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356102AbiFGT0f (ORCPT
+        id S1356075AbiFGT03 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:26:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39788 "EHLO
+        Tue, 7 Jun 2022 15:26:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352019AbiFGSdJ (ORCPT
+        with ESMTP id S1352005AbiFGSdJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:33:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F622DF3;
-        Tue,  7 Jun 2022 10:57:13 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AFD7E45;
+        Tue,  7 Jun 2022 10:57:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C591617A8;
-        Tue,  7 Jun 2022 17:57:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D29DC385A5;
-        Tue,  7 Jun 2022 17:57:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624632;
-        bh=bV924xHDvYXj0TBQhpB/6GrV/r97XENKruel7CiVDTk=;
+        by sin.source.kernel.org (Postfix) with ESMTPS id C7178CE2422;
+        Tue,  7 Jun 2022 17:57:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1996C3411C;
+        Tue,  7 Jun 2022 17:57:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624629;
+        bh=e78sSn6tXbYpiOQJQUghVopGsX48IMqHG0LCvyMggys=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F4nB+Lk02Rg2uFQ105fEPKZTwtCnyuO12XnUm8us2sgTQiNyECfLMBdXkIqEQO7yc
-         D0nJFPgXiKYEwDSVVKNJ/eybB5WEZcsq9AQTORVwz22nb/tXk7w9SmslSUB6nTvLVw
-         4KcdunZUDkIomqmz/JMgix5x7hlpmfqc1Qd0iyFE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 357/667] bfq: Relax waker detection for shared queues
-Date:   Tue,  7 Jun 2022 19:00:22 +0200
-Message-Id: <20220607164945.462356134@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=aJQHwwshn9jKO4MjOvvpEnpK5T9YliHa1ExAvcJaXzC/Jb+DfWUuavEdGOczJr8TO
+         HJdJwe0c3/t7QElnFndljQNBHUCGjkBolPnXCbls3WWzsWnH+d8ZdLaag+0J8Nt1qf
+         ekvixjijTSK9XHpKlQjwQKoRnz38KpsF+uYj3xiASw9CF7toBvg6qR2KdmvaIBmihR
+         YFWcnT1LUAmHfh2teOKvHYnvD6urP2tAuN8+KoKKG7zqAK5So9xKMxmVEIOHJVM1me
+         OueIE7Q7n+Sd/YtmgmLDkUTbiZ24m48PSeDUk6o9DVlycUpT2vfD3JpGppCG7Svric
+         ZISkdRv9sTrDA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Soumya Negi <soumya.negi97@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, fabioaiuto83@gmail.com,
+        hdegoede@redhat.com, straube.linux@gmail.com, linux@roeck-us.net,
+        linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.15 24/51] staging: rtl8723bs: Fix alignment to match open parenthesis
+Date:   Tue,  7 Jun 2022 13:55:23 -0400
+Message-Id: <20220607175552.479948-24-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
+References: <20220607175552.479948-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Soumya Negi <soumya.negi97@gmail.com>
 
-[ Upstream commit f950667356ce90a41b446b726d4595a10cb65415 ]
+[ Upstream commit f722d67fad290b0c960f27062adc8cf59488d0a7 ]
 
-Currently we look for waker only if current queue has no requests. This
-makes sense for bfq queues with a single process however for shared
-queues when there is a larger number of processes the condition that
-queue has no requests is difficult to meet because often at least one
-process has some request in flight although all the others are waiting
-for the waker to do the work and this harms throughput. Relax the "no
-queued request for bfq queue" condition to "the current task has no
-queued requests yet". For this, we also need to start tracking number of
-requests in flight for each task.
+Adhere to Linux coding style. Fixes checkpatch warnings:
+CHECK: Alignment should match open parenthesis
+CHECK: line length of 101 exceeds 100 columns
 
-This patch (together with the following one) restores the performance
-for dbench with 128 clients that regressed with commit c65e6fd460b4
-("bfq: Do not let waker requests skip proper accounting") because
-this commit makes requests of wakers properly enter BFQ queues and thus
-these queues become ineligible for the old waker detection logic.
-Dbench results:
-
-         Vanilla 5.18-rc3        5.18-rc3 + revert      5.18-rc3 patched
-Mean     1237.36 (   0.00%)      950.16 *  23.21%*      988.35 *  20.12%*
-
-Numbers are time to complete workload so lower is better.
-
-Fixes: c65e6fd460b4 ("bfq: Do not let waker requests skip proper accounting")
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220519105235.31397-1-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
+Link: https://lore.kernel.org/r/20220513025553.13634-1-soumya.negi97@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bfq-iosched.c | 5 +++--
- block/bfq-iosched.h | 1 +
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ drivers/staging/rtl8723bs/core/rtw_ap.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 63d2d66dece5..a2aefb4a1e2e 100644
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -2022,7 +2022,6 @@ static void bfq_check_waker(struct bfq_data *bfqd, struct bfq_queue *bfqq,
- 	if (!bfqd->last_completed_rq_bfqq ||
- 	    bfqd->last_completed_rq_bfqq == bfqq ||
- 	    bfq_bfqq_has_short_ttime(bfqq) ||
--	    bfqq->dispatched > 0 ||
- 	    now_ns - bfqd->last_completion >= 4 * NSEC_PER_MSEC ||
- 	    bfqd->last_completed_rq_bfqq == bfqq->waker_bfqq)
- 		return;
-@@ -2084,7 +2083,7 @@ static void bfq_add_request(struct request *rq)
- 	bfqq->queued[rq_is_sync(rq)]++;
- 	bfqd->queued++;
+diff --git a/drivers/staging/rtl8723bs/core/rtw_ap.c b/drivers/staging/rtl8723bs/core/rtw_ap.c
+index 6064dd6a76b4..43cd90dc9017 100644
+--- a/drivers/staging/rtl8723bs/core/rtw_ap.c
++++ b/drivers/staging/rtl8723bs/core/rtw_ap.c
+@@ -519,12 +519,12 @@ void update_sta_info_apmode(struct adapter *padapter, struct sta_info *psta)
  
--	if (RB_EMPTY_ROOT(&bfqq->sort_list) && bfq_bfqq_sync(bfqq)) {
-+	if (bfq_bfqq_sync(bfqq) && RQ_BIC(rq)->requests <= 1) {
- 		bfq_check_waker(bfqd, bfqq, now_ns);
+ 		/*  B0 Config LDPC Coding Capability */
+ 		if (TEST_FLAG(phtpriv_ap->ldpc_cap, LDPC_HT_ENABLE_TX) &&
+-			      GET_HT_CAPABILITY_ELE_LDPC_CAP((u8 *)(&phtpriv_sta->ht_cap)))
++		    GET_HT_CAPABILITY_ELE_LDPC_CAP((u8 *)(&phtpriv_sta->ht_cap)))
+ 			SET_FLAG(cur_ldpc_cap, (LDPC_HT_ENABLE_TX | LDPC_HT_CAP_TX));
  
- 		/*
-@@ -6422,6 +6421,7 @@ static void bfq_finish_requeue_request(struct request *rq)
- 		bfq_completed_request(bfqq, bfqd);
+ 		/*  B7 B8 B9 Config STBC setting */
+ 		if (TEST_FLAG(phtpriv_ap->stbc_cap, STBC_HT_ENABLE_TX) &&
+-			      GET_HT_CAPABILITY_ELE_RX_STBC((u8 *)(&phtpriv_sta->ht_cap)))
++		    GET_HT_CAPABILITY_ELE_RX_STBC((u8 *)(&phtpriv_sta->ht_cap)))
+ 			SET_FLAG(cur_stbc_cap, (STBC_HT_ENABLE_TX | STBC_HT_CAP_TX));
+ 	} else {
+ 		phtpriv_sta->ampdu_enable = false;
+@@ -1064,10 +1064,12 @@ int rtw_check_beacon_data(struct adapter *padapter, u8 *pbuf,  int len)
+ 		);
+ 
+ 		if ((psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_CCMP) ||
+-		     (psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_CCMP)) {
+-			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY & (0x07 << 2));
++		    (psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_CCMP)) {
++			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY &
++						       (0x07 << 2));
+ 		} else {
+-			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY & 0x00);
++			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY &
++						       0x00);
+ 		}
+ 
+ 		rtw_hal_get_def_var(
+@@ -1115,7 +1117,7 @@ int rtw_check_beacon_data(struct adapter *padapter, u8 *pbuf,  int len)
+ 	pmlmepriv->htpriv.ht_option = false;
+ 
+ 	if ((psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_TKIP) ||
+-	     (psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_TKIP)) {
++	    (psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_TKIP)) {
+ 		/* todo: */
+ 		/* ht_cap = false; */
  	}
- 	bfq_finish_requeue_request_body(bfqq);
-+	RQ_BIC(rq)->requests--;
- 	spin_unlock_irqrestore(&bfqd->lock, flags);
+@@ -1724,7 +1726,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
+ 			pmlmepriv->num_sta_no_short_preamble--;
  
- 	/*
-@@ -6643,6 +6643,7 @@ static struct bfq_queue *bfq_init_rq(struct request *rq)
+ 			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
+-				(pmlmepriv->num_sta_no_short_preamble == 0)) {
++			    (pmlmepriv->num_sta_no_short_preamble == 0)) {
+ 				beacon_updated = true;
+ 				update_beacon(padapter, 0xFF, NULL, true);
+ 			}
+@@ -1762,7 +1764,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
+ 			pmlmepriv->num_sta_no_short_slot_time++;
  
- 	bfqq->allocated++;
- 	bfqq->ref++;
-+	bic->requests++;
- 	bfq_log_bfqq(bfqd, bfqq, "get_request %p: bfqq %p, %d",
- 		     rq, bfqq, bfqq->ref);
+ 			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
+-				 (pmlmepriv->num_sta_no_short_slot_time == 1)) {
++			    (pmlmepriv->num_sta_no_short_slot_time == 1)) {
+ 				beacon_updated = true;
+ 				update_beacon(padapter, 0xFF, NULL, true);
+ 			}
+@@ -1774,7 +1776,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
+ 			pmlmepriv->num_sta_no_short_slot_time--;
  
-diff --git a/block/bfq-iosched.h b/block/bfq-iosched.h
-index a73488eec8a4..9dc87d3c40c3 100644
---- a/block/bfq-iosched.h
-+++ b/block/bfq-iosched.h
-@@ -466,6 +466,7 @@ struct bfq_io_cq {
- 	struct bfq_queue *stable_merge_bfqq;
+ 			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
+-				 (pmlmepriv->num_sta_no_short_slot_time == 0)) {
++			    (pmlmepriv->num_sta_no_short_slot_time == 0)) {
+ 				beacon_updated = true;
+ 				update_beacon(padapter, 0xFF, NULL, true);
+ 			}
+@@ -2023,7 +2025,7 @@ void rtw_ap_restore_network(struct adapter *padapter)
+ 	start_bss_network(padapter);
  
- 	bool stably_merged;	/* non splittable if true */
-+	unsigned int requests;	/* Number of requests this process has in flight */
- };
- 
- /**
+ 	if ((padapter->securitypriv.dot11PrivacyAlgrthm == _TKIP_) ||
+-		(padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)) {
++	    (padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)) {
+ 		/* restore group key, WEP keys is restored in ips_leave() */
+ 		rtw_set_key(
+ 			padapter,
+@@ -2061,7 +2063,7 @@ void rtw_ap_restore_network(struct adapter *padapter)
+ 			/* pairwise key */
+ 			/* per sta pairwise key and settings */
+ 			if ((psecuritypriv->dot11PrivacyAlgrthm == _TKIP_) ||
+-				(psecuritypriv->dot11PrivacyAlgrthm == _AES_)) {
++			    (psecuritypriv->dot11PrivacyAlgrthm == _AES_)) {
+ 				rtw_setstakey_cmd(padapter, psta, true, false);
+ 			}
+ 		}
 -- 
 2.35.1
-
-
 
