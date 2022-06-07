@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24C7ECCA498
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBDECCCA494
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378898AbiFGUwk (ORCPT
+        id S1378633AbiFGUwT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:52:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46438 "EHLO
+        Tue, 7 Jun 2022 16:52:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358480AbiFGTwc (ORCPT
+        with ESMTP id S1358580AbiFGTwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:52:32 -0400
+        Tue, 7 Jun 2022 15:52:44 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5BB15C8A0;
-        Tue,  7 Jun 2022 11:20:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA05245A5;
+        Tue,  7 Jun 2022 11:21:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89B0DB8237D;
-        Tue,  7 Jun 2022 18:20:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E05BCC385A2;
-        Tue,  7 Jun 2022 18:20:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 802F4B82239;
+        Tue,  7 Jun 2022 18:21:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE441C385A2;
+        Tue,  7 Jun 2022 18:21:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626041;
-        bh=wlau1dshHNRQvKJUZTXil8xlx3EVVAG/4k/WKwapXEA=;
+        s=korg; t=1654626071;
+        bh=mns8rmwQw/CMrB31Feqgsy5ilPI03o9mbO4LP2pdbVo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mUXyPmXgPQM8s3EWKiINmmnaycYK37+buthsMYKEGe7DFYKqZzYU2LPmZZJFGzqdS
-         jhsPA1RXmvbxKK2QfbO1g9jI4dV61bbQN0zcc6XDgF57ZJ9gqdGvY1br2H8qyYCZcL
-         ugcCm9wIy6UECgUq/nJt38DQmOg/r1NYgepZ6cYg=
+        b=YuPMivDV0xMpySL+9brk1us17FJvntKvxSL5ebh7VK3DdfVKIy0sKId5TvYCyWOl6
+         tSc3G1Hn5x+ATWpVayLuG8+O/VyuPZpoZWHa+nxvSc0g1wxaVOqDoBdc2TW7SrIKuw
+         WbFVqi6tLOMf3kFBjZEQCu+lnqCoMh6K/cTouf9g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Marek Vasut <marex@denx.de>,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
         Thomas Zimmermann <tzimmermann@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 236/772] drm: bridge: icn6211: Fix HFP_HSW_HBP_HI and HFP_MIN handling
-Date:   Tue,  7 Jun 2022 18:57:08 +0200
-Message-Id: <20220607164955.986367106@linuxfoundation.org>
+Subject: [PATCH 5.17 246/772] drm/vc4: hvs: Fix frame count register readout
+Date:   Tue,  7 Jun 2022 18:57:18 +0200
+Message-Id: <20220607164956.276023818@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -54,92 +50,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit c0ff7a649d62105a9308cc3ac36e52a4669d9cb4 ]
+[ Upstream commit b51cd7ad143d2eb31a6df81c2183128920e47c2b ]
 
-The HFP_HSW_HBP_HI register must be programmed with 2 LSbits of each
-Horizontal Front Porch/Sync/Back Porch. Currently the driver programs
-this register to 0, which breaks displays with either value above 255.
+In order to get the field currently being output, the driver has been
+using the display FIFO frame count in the HVS, reading a 6-bit field at
+the offset 12 in the DISPSTATx register.
 
-The HFP_MIN register must be set to the same value as HFP_LI, otherwise
-there is visible image distortion, usually in the form of missing lines
-at the bottom of the panel.
+While that field is indeed at that location for the FIFO 1 and 2, the
+one for the FIFO0 is actually in the DISPSTAT1 register, at the offset
+18.
 
-Fix this by correctly programming the HFP_HSW_HBP_HI and HFP_MIN registers.
-
-Acked-by: Maxime Ripard <maxime@cerno.tech>
-Fixes: ce517f18944e3 ("drm: bridge: Add Chipone ICN6211 MIPI-DSI to RGB bridge")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Jagan Teki <jagan@amarulasolutions.com>
-Cc: Maxime Ripard <maxime@cerno.tech>
-Cc: Robert Foss <robert.foss@linaro.org>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-To: dri-devel@lists.freedesktop.org
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220331150509.9838-3-marex@denx.de
+Fixes: e538092cb15c ("drm/vc4: Enable precise vblank timestamping for interlaced modes.")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://lore.kernel.org/r/20220331143744.777652-3-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/chipone-icn6211.c | 23 ++++++++++++++++-------
- 1 file changed, 16 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/vc4/vc4_crtc.c |  2 +-
+ drivers/gpu/drm/vc4/vc4_drv.h  |  1 +
+ drivers/gpu/drm/vc4/vc4_hvs.c  | 23 +++++++++++++++++++++++
+ drivers/gpu/drm/vc4/vc4_regs.h | 12 ++++++++++--
+ 4 files changed, 35 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/chipone-icn6211.c b/drivers/gpu/drm/bridge/chipone-icn6211.c
-index eb26615b2993..d7eedf35e841 100644
---- a/drivers/gpu/drm/bridge/chipone-icn6211.c
-+++ b/drivers/gpu/drm/bridge/chipone-icn6211.c
-@@ -34,6 +34,9 @@
- #define HSYNC_LI		0x24
- #define HBP_LI			0x25
- #define HFP_HSW_HBP_HI		0x26
-+#define HFP_HSW_HBP_HI_HFP(n)		(((n) & 0x300) >> 4)
-+#define HFP_HSW_HBP_HI_HS(n)		(((n) & 0x300) >> 6)
-+#define HFP_HSW_HBP_HI_HBP(n)		(((n) & 0x300) >> 8)
- #define VFP			0x27
- #define VSYNC			0x28
- #define VBP			0x29
-@@ -165,6 +168,7 @@ static void chipone_enable(struct drm_bridge *bridge)
+diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
+index 783890e8d43a..477b3c5ad089 100644
+--- a/drivers/gpu/drm/vc4/vc4_crtc.c
++++ b/drivers/gpu/drm/vc4/vc4_crtc.c
+@@ -123,7 +123,7 @@ static bool vc4_crtc_get_scanout_position(struct drm_crtc *crtc,
+ 		*vpos /= 2;
+ 
+ 		/* Use hpos to correct for field offset in interlaced mode. */
+-		if (VC4_GET_FIELD(val, SCALER_DISPSTATX_FRAME_COUNT) % 2)
++		if (vc4_hvs_get_fifo_frame_count(dev, vc4_crtc_state->assigned_channel) % 2)
+ 			*hpos += mode->crtc_htotal / 2;
+ 	}
+ 
+diff --git a/drivers/gpu/drm/vc4/vc4_drv.h b/drivers/gpu/drm/vc4/vc4_drv.h
+index 4329e09d357c..801da3e8ebdb 100644
+--- a/drivers/gpu/drm/vc4/vc4_drv.h
++++ b/drivers/gpu/drm/vc4/vc4_drv.h
+@@ -935,6 +935,7 @@ void vc4_irq_reset(struct drm_device *dev);
+ extern struct platform_driver vc4_hvs_driver;
+ void vc4_hvs_stop_channel(struct drm_device *dev, unsigned int output);
+ int vc4_hvs_get_fifo_from_output(struct drm_device *dev, unsigned int output);
++u8 vc4_hvs_get_fifo_frame_count(struct drm_device *dev, unsigned int fifo);
+ int vc4_hvs_atomic_check(struct drm_crtc *crtc, struct drm_atomic_state *state);
+ void vc4_hvs_atomic_begin(struct drm_crtc *crtc, struct drm_atomic_state *state);
+ void vc4_hvs_atomic_enable(struct drm_crtc *crtc, struct drm_atomic_state *state);
+diff --git a/drivers/gpu/drm/vc4/vc4_hvs.c b/drivers/gpu/drm/vc4/vc4_hvs.c
+index 604933e20e6a..c8cae10500b9 100644
+--- a/drivers/gpu/drm/vc4/vc4_hvs.c
++++ b/drivers/gpu/drm/vc4/vc4_hvs.c
+@@ -197,6 +197,29 @@ static void vc4_hvs_update_gamma_lut(struct drm_crtc *crtc)
+ 	vc4_hvs_lut_load(crtc);
+ }
+ 
++u8 vc4_hvs_get_fifo_frame_count(struct drm_device *dev, unsigned int fifo)
++{
++	struct vc4_dev *vc4 = to_vc4_dev(dev);
++	u8 field = 0;
++
++	switch (fifo) {
++	case 0:
++		field = VC4_GET_FIELD(HVS_READ(SCALER_DISPSTAT1),
++				      SCALER_DISPSTAT1_FRCNT0);
++		break;
++	case 1:
++		field = VC4_GET_FIELD(HVS_READ(SCALER_DISPSTAT1),
++				      SCALER_DISPSTAT1_FRCNT1);
++		break;
++	case 2:
++		field = VC4_GET_FIELD(HVS_READ(SCALER_DISPSTAT2),
++				      SCALER_DISPSTAT2_FRCNT2);
++		break;
++	}
++
++	return field;
++}
++
+ int vc4_hvs_get_fifo_from_output(struct drm_device *dev, unsigned int output)
  {
- 	struct chipone *icn = bridge_to_chipone(bridge);
- 	struct drm_display_mode *mode = bridge_to_mode(bridge);
-+	u16 hfp, hbp, hsync;
+ 	struct vc4_dev *vc4 = to_vc4_dev(dev);
+diff --git a/drivers/gpu/drm/vc4/vc4_regs.h b/drivers/gpu/drm/vc4/vc4_regs.h
+index 7538b84a6dca..e3761ffbac7b 100644
+--- a/drivers/gpu/drm/vc4/vc4_regs.h
++++ b/drivers/gpu/drm/vc4/vc4_regs.h
+@@ -379,8 +379,6 @@
+ # define SCALER_DISPSTATX_MODE_EOF		3
+ # define SCALER_DISPSTATX_FULL			BIT(29)
+ # define SCALER_DISPSTATX_EMPTY			BIT(28)
+-# define SCALER_DISPSTATX_FRAME_COUNT_MASK	VC4_MASK(17, 12)
+-# define SCALER_DISPSTATX_FRAME_COUNT_SHIFT	12
+ # define SCALER_DISPSTATX_LINE_MASK		VC4_MASK(11, 0)
+ # define SCALER_DISPSTATX_LINE_SHIFT		0
  
- 	ICN6211_DSI(icn, MIPI_CFG_PW, MIPI_CFG_PW_CONFIG_DSI);
- 
-@@ -180,13 +184,18 @@ static void chipone_enable(struct drm_bridge *bridge)
- 		    ((mode->hdisplay >> 8) & 0xf) |
- 		    (((mode->vdisplay >> 8) & 0xf) << 4));
- 
--	ICN6211_DSI(icn, HFP_LI, mode->hsync_start - mode->hdisplay);
-+	hfp = mode->hsync_start - mode->hdisplay;
-+	hsync = mode->hsync_end - mode->hsync_start;
-+	hbp = mode->htotal - mode->hsync_end;
- 
--	ICN6211_DSI(icn, HSYNC_LI, mode->hsync_end - mode->hsync_start);
--
--	ICN6211_DSI(icn, HBP_LI, mode->htotal - mode->hsync_end);
--
--	ICN6211_DSI(icn, HFP_HSW_HBP_HI, 0x00);
-+	ICN6211_DSI(icn, HFP_LI, hfp & 0xff);
-+	ICN6211_DSI(icn, HSYNC_LI, hsync & 0xff);
-+	ICN6211_DSI(icn, HBP_LI, hbp & 0xff);
-+	/* Top two bits of Horizontal Front porch/Sync/Back porch */
-+	ICN6211_DSI(icn, HFP_HSW_HBP_HI,
-+		    HFP_HSW_HBP_HI_HFP(hfp) |
-+		    HFP_HSW_HBP_HI_HS(hsync) |
-+		    HFP_HSW_HBP_HI_HBP(hbp));
- 
- 	ICN6211_DSI(icn, VFP, mode->vsync_start - mode->vdisplay);
- 
-@@ -196,7 +205,7 @@ static void chipone_enable(struct drm_bridge *bridge)
- 
- 	/* dsi specific sequence */
- 	ICN6211_DSI(icn, SYNC_EVENT_DLY, 0x80);
--	ICN6211_DSI(icn, HFP_MIN, 0x28);
-+	ICN6211_DSI(icn, HFP_MIN, hfp & 0xff);
- 	ICN6211_DSI(icn, MIPI_PD_CK_LANE, 0xa0);
- 	ICN6211_DSI(icn, PLL_CTRL(12), 0xff);
- 	ICN6211_DSI(icn, BIST_POL, BIST_POL_DE_POL);
+@@ -403,9 +401,15 @@
+ 						 (x) * (SCALER_DISPBKGND1 - \
+ 							SCALER_DISPBKGND0))
+ #define SCALER_DISPSTAT1                        0x00000058
++# define SCALER_DISPSTAT1_FRCNT0_MASK		VC4_MASK(23, 18)
++# define SCALER_DISPSTAT1_FRCNT0_SHIFT		18
++# define SCALER_DISPSTAT1_FRCNT1_MASK		VC4_MASK(17, 12)
++# define SCALER_DISPSTAT1_FRCNT1_SHIFT		12
++
+ #define SCALER_DISPSTATX(x)			(SCALER_DISPSTAT0 +        \
+ 						 (x) * (SCALER_DISPSTAT1 - \
+ 							SCALER_DISPSTAT0))
++
+ #define SCALER_DISPBASE1                        0x0000005c
+ #define SCALER_DISPBASEX(x)			(SCALER_DISPBASE0 +        \
+ 						 (x) * (SCALER_DISPBASE1 - \
+@@ -415,7 +419,11 @@
+ 						 (x) * (SCALER_DISPCTRL1 - \
+ 							SCALER_DISPCTRL0))
+ #define SCALER_DISPBKGND2                       0x00000064
++
+ #define SCALER_DISPSTAT2                        0x00000068
++# define SCALER_DISPSTAT2_FRCNT2_MASK		VC4_MASK(17, 12)
++# define SCALER_DISPSTAT2_FRCNT2_SHIFT		12
++
+ #define SCALER_DISPBASE2                        0x0000006c
+ #define SCALER_DISPALPHA2                       0x00000070
+ #define SCALER_GAMADDR                          0x00000078
 -- 
 2.35.1
 
