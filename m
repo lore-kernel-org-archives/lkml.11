@@ -2,84 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55890CCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95F36CCA48B
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355821AbiFGTZx (ORCPT
+        id S1355870AbiFGT0E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:25:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35214 "EHLO
+        Tue, 7 Jun 2022 15:26:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351290AbiFGScE (ORCPT
+        with ESMTP id S1351953AbiFGSdF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:32:04 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8314117DDE6;
-        Tue,  7 Jun 2022 10:56:59 -0700 (PDT)
+        Tue, 7 Jun 2022 14:33:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0819A17EC33;
+        Tue,  7 Jun 2022 10:57:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8C9C0CE240C;
-        Tue,  7 Jun 2022 17:56:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8850DC3411C;
-        Tue,  7 Jun 2022 17:56:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624615;
-        bh=4JIrRICiYrnw1c2ygg9e+MEN7EFrlrJShWuE87GFz/4=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5713DB82368;
+        Tue,  7 Jun 2022 17:57:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F93AC34119;
+        Tue,  7 Jun 2022 17:57:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624623;
+        bh=9SZb2OlcDWkzks0xoNShZDQ/ZyVUi3/K0dKgoFwWqt0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vkf9rwCqRuZ4hQOM87UBIGLA3gbBkxhu1RTzfeEWkeYBw4fl1zCN8jg5LkH5LH4B8
-         /aRXBOoa7iSbmHbwYbZmfsPqXH4RAcuFSjUq686J/ryLOe1TONVdDlCg4NZJ4gBN7e
-         1nzj/hIRR74zXcSfF82rmrHNoiOdlrcRDJZbyRCw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 389/667] soc: qcom: smsm: Fix missing of_node_put() in smsm_parse_ipc
-Date:   Tue,  7 Jun 2022 19:00:54 +0200
-Message-Id: <20220607164946.413420535@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=EgwW/8PinEysEnkTMydUGFAKfOF+JuNzWYhPYr+Zp4S8lSKuRE8VDCfvh9FTZeSm/
+         joIaW6ferSjYjO6GT9LEsvceH1Kq+rgGXozqzMxLJMKjrIUQe4lYYphGQqK0hhcbT+
+         Yitb7mPqqSZle7isizFWH1decRMD3OoCVrVJR+m5sm3Bam2UtNZCi8mYcpsv+QoxkU
+         5GUrfiJlneKWalmYmyx4XpyC3ZvlLVjS9Kqm6JDPEfso36cSLDwrlJU0C8aVjZfn2A
+         7lVhr/LPk/mIyctbH0nMw9FhmR6WREhI4WrPzVE1FGPd/v+embonQruF1bUkcCtORa
+         QQuN93lP4oZ0Q==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     bumwoo lee <bw365.lee@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Sasha Levin <sashal@kernel.org>, myungjoo.ham@samsung.com
+Subject: [PATCH AUTOSEL 5.15 22/51] extcon: Modify extcon device to be created after driver data is set
+Date:   Tue,  7 Jun 2022 13:55:21 -0400
+Message-Id: <20220607175552.479948-22-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
+References: <20220607175552.479948-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: bumwoo lee <bw365.lee@samsung.com>
 
-[ Upstream commit aad66a3c78da668f4506356c2fdb70b7a19ecc76 ]
+[ Upstream commit 5dcc2afe716d69f5112ce035cb14f007461ff189 ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+Currently, someone can invoke the sysfs such as state_show()
+intermittently before dev_set_drvdata() is done.
+And it can be a cause of kernel Oops because of edev is Null at that time.
+So modified the driver registration to after setting drviver data.
 
-Fixes: c97c4090ff72 ("soc: qcom: smsm: Add driver for Qualcomm SMSM")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220308073648.24634-1-linmq006@gmail.com
+- Oops's backtrace.
+
+Backtrace:
+[<c067865c>] (state_show) from [<c05222e8>] (dev_attr_show)
+[<c05222c0>] (dev_attr_show) from [<c02c66e0>] (sysfs_kf_seq_show)
+[<c02c6648>] (sysfs_kf_seq_show) from [<c02c496c>] (kernfs_seq_show)
+[<c02c4938>] (kernfs_seq_show) from [<c025e2a0>] (seq_read)
+[<c025e11c>] (seq_read) from [<c02c50a0>] (kernfs_fop_read)
+[<c02c5064>] (kernfs_fop_read) from [<c0231cac>] (__vfs_read)
+[<c0231c5c>] (__vfs_read) from [<c0231ee0>] (vfs_read)
+[<c0231e34>] (vfs_read) from [<c0232464>] (ksys_read)
+[<c02323f0>] (ksys_read) from [<c02324fc>] (sys_read)
+[<c02324e4>] (sys_read) from [<c00091d0>] (__sys_trace_return)
+
+Signed-off-by: bumwoo lee <bw365.lee@samsung.com>
+Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/qcom/smsm.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/extcon/extcon.c | 29 +++++++++++++++++------------
+ 1 file changed, 17 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/soc/qcom/smsm.c b/drivers/soc/qcom/smsm.c
-index ef15d014c03a..9df9bba242f3 100644
---- a/drivers/soc/qcom/smsm.c
-+++ b/drivers/soc/qcom/smsm.c
-@@ -374,6 +374,7 @@ static int smsm_parse_ipc(struct qcom_smsm *smsm, unsigned host_id)
- 		return 0;
+diff --git a/drivers/extcon/extcon.c b/drivers/extcon/extcon.c
+index 9eb92997f3ae..f305503ec27e 100644
+--- a/drivers/extcon/extcon.c
++++ b/drivers/extcon/extcon.c
+@@ -1232,19 +1232,14 @@ int extcon_dev_register(struct extcon_dev *edev)
+ 		edev->dev.type = &edev->extcon_dev_type;
+ 	}
  
- 	host->ipc_regmap = syscon_node_to_regmap(syscon);
-+	of_node_put(syscon);
- 	if (IS_ERR(host->ipc_regmap))
- 		return PTR_ERR(host->ipc_regmap);
+-	ret = device_register(&edev->dev);
+-	if (ret) {
+-		put_device(&edev->dev);
+-		goto err_dev;
+-	}
+-
+ 	spin_lock_init(&edev->lock);
+-	edev->nh = devm_kcalloc(&edev->dev, edev->max_supported,
+-				sizeof(*edev->nh), GFP_KERNEL);
+-	if (!edev->nh) {
+-		ret = -ENOMEM;
+-		device_unregister(&edev->dev);
+-		goto err_dev;
++	if (edev->max_supported) {
++		edev->nh = kcalloc(edev->max_supported, sizeof(*edev->nh),
++				GFP_KERNEL);
++		if (!edev->nh) {
++			ret = -ENOMEM;
++			goto err_alloc_nh;
++		}
+ 	}
  
+ 	for (index = 0; index < edev->max_supported; index++)
+@@ -1255,6 +1250,12 @@ int extcon_dev_register(struct extcon_dev *edev)
+ 	dev_set_drvdata(&edev->dev, edev);
+ 	edev->state = 0;
+ 
++	ret = device_register(&edev->dev);
++	if (ret) {
++		put_device(&edev->dev);
++		goto err_dev;
++	}
++
+ 	mutex_lock(&extcon_dev_list_lock);
+ 	list_add(&edev->entry, &extcon_dev_list);
+ 	mutex_unlock(&extcon_dev_list_lock);
+@@ -1262,6 +1263,9 @@ int extcon_dev_register(struct extcon_dev *edev)
+ 	return 0;
+ 
+ err_dev:
++	if (edev->max_supported)
++		kfree(edev->nh);
++err_alloc_nh:
+ 	if (edev->max_supported)
+ 		kfree(edev->extcon_dev_type.groups);
+ err_alloc_groups:
+@@ -1322,6 +1326,7 @@ void extcon_dev_unregister(struct extcon_dev *edev)
+ 	if (edev->max_supported) {
+ 		kfree(edev->extcon_dev_type.groups);
+ 		kfree(edev->cables);
++		kfree(edev->nh);
+ 	}
+ 
+ 	put_device(&edev->dev);
 -- 
 2.35.1
-
-
 
