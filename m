@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A433CCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 292B4CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351193AbiFGSBw (ORCPT
+        id S1351289AbiFGSB4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:01:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60504 "EHLO
+        Tue, 7 Jun 2022 14:01:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347669AbiFGRmg (ORCPT
+        with ESMTP id S1347851AbiFGRmj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:42:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E59612B01C;
-        Tue,  7 Jun 2022 10:34:59 -0700 (PDT)
+        Tue, 7 Jun 2022 13:42:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052AD12E305;
+        Tue,  7 Jun 2022 10:35:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6322B822CD;
-        Tue,  7 Jun 2022 17:34:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37C09C341C5;
-        Tue,  7 Jun 2022 17:34:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CC286159B;
+        Tue,  7 Jun 2022 17:34:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87FB5C36AFF;
+        Tue,  7 Jun 2022 17:34:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623274;
-        bh=KITF080HglxN5AzB2BU/A8itvTQUXKIvYIZS6LlOGvM=;
+        s=korg; t=1654623257;
+        bh=NJJ+Nkarf9LFJX66CXV++Zsx5I6VyYCOdtWPcYpe+9Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1ZartB6R6bNrTRMtxY7hrOejLjEfVDItdoNRj1mOxTtPaHOTMEt2ycYP15t5l6A9f
-         oP9o7UiZCvW8mJuBxdBPw7JBW/CHN32dRBIY30pzB5ZwFAChuSX3vtwIXQ28HKNr13
-         kJEw/bWQlPVGDg0dlrFWLyxUmNp10CPSoUr4fWYU=
+        b=sbrnd3mbld83pfyKyBx5jEixNxbzK91mo5OlmQZmNnImOymMAhDjngt9QK+iDYKXM
+         1UU9UWX+wYHZ//pqB9UTXZYI6iOdGRKGhqHJyvCvev32sTtldYrYC1f+edt7lPdTcn
+         e1VUcV5UjEcYQ5nRKBMoHr/L1Bbe0VSx1OAutdmE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 358/452] bfq: Track whether bfq_group is still online
-Date:   Tue,  7 Jun 2022 19:03:35 +0200
-Message-Id: <20220607164919.231706205@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.10 352/452] wifi: mac80211: fix use-after-free in chanctx code
+Date:   Tue,  7 Jun 2022 19:03:29 +0200
+Message-Id: <20220607164919.047331076@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,65 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit 09f871868080c33992cd6a9b72a5ca49582578fa upstream.
+commit 2965c4cdf7ad9ce0796fac5e57debb9519ea721e upstream.
 
-Track whether bfq_group is still online. We cannot rely on
-blkcg_gq->online because that gets cleared only after all policies are
-offlined and we need something that gets updated already under
-bfqd->lock when we are cleaning up our bfq_group to be able to guarantee
-that when we see online bfq_group, it will stay online while we are
-holding bfqd->lock lock.
+In ieee80211_vif_use_reserved_context(), when we have an
+old context and the new context's replace_state is set to
+IEEE80211_CHANCTX_REPLACE_NONE, we free the old context
+in ieee80211_vif_use_reserved_reassign(). Therefore, we
+cannot check the old_ctx anymore, so we should set it to
+NULL after this point.
 
-CC: stable@vger.kernel.org
-Tested-by: "yukuai (C)" <yukuai3@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220401102752.8599-7-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+However, since the new_ctx replace state is clearly not
+IEEE80211_CHANCTX_REPLACES_OTHER, we're not going to do
+anything else in this function and can just return to
+avoid accessing the freed old_ctx.
+
+Cc: stable@vger.kernel.org
+Fixes: 5bcae31d9cb1 ("mac80211: implement multi-vif in-place reservations")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220601091926.df419d91b165.I17a9b3894ff0b8323ce2afdb153b101124c821e5@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/bfq-cgroup.c  |    3 ++-
- block/bfq-iosched.h |    2 ++
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ net/mac80211/chan.c |    7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
---- a/block/bfq-cgroup.c
-+++ b/block/bfq-cgroup.c
-@@ -553,6 +553,7 @@ static void bfq_pd_init(struct blkg_poli
- 				   */
- 	bfqg->bfqd = bfqd;
- 	bfqg->active_entities = 0;
-+	bfqg->online = true;
- 	bfqg->rq_pos_tree = RB_ROOT;
- }
+--- a/net/mac80211/chan.c
++++ b/net/mac80211/chan.c
+@@ -1652,12 +1652,9 @@ int ieee80211_vif_use_reserved_context(s
  
-@@ -599,7 +600,6 @@ struct bfq_group *bfq_find_set_group(str
- 	struct bfq_entity *entity;
+ 	if (new_ctx->replace_state == IEEE80211_CHANCTX_REPLACE_NONE) {
+ 		if (old_ctx)
+-			err = ieee80211_vif_use_reserved_reassign(sdata);
+-		else
+-			err = ieee80211_vif_use_reserved_assign(sdata);
++			return ieee80211_vif_use_reserved_reassign(sdata);
  
- 	bfqg = bfq_lookup_bfqg(bfqd, blkcg);
--
- 	if (unlikely(!bfqg))
- 		return NULL;
+-		if (err)
+-			return err;
++		return ieee80211_vif_use_reserved_assign(sdata);
+ 	}
  
-@@ -961,6 +961,7 @@ static void bfq_pd_offline(struct blkg_p
- 
- put_async_queues:
- 	bfq_put_async_queues(bfqd, bfqg);
-+	bfqg->online = false;
- 
- 	spin_unlock_irqrestore(&bfqd->lock, flags);
  	/*
---- a/block/bfq-iosched.h
-+++ b/block/bfq-iosched.h
-@@ -901,6 +901,8 @@ struct bfq_group {
- 
- 	/* reference counter (see comments in bfq_bic_update_cgroup) */
- 	int ref;
-+	/* Is bfq_group still online? */
-+	bool online;
- 
- 	struct bfq_entity entity;
- 	struct bfq_sched_data sched_data;
 
 
