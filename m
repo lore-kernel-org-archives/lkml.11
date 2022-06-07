@@ -2,97 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB5BCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:20:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A31CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:20:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345863AbiFGRUn (ORCPT
+        id S1345914AbiFGRUt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:20:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39792 "EHLO
+        Tue, 7 Jun 2022 13:20:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345695AbiFGRTE (ORCPT
+        with ESMTP id S1345690AbiFGRTE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:19:04 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 392761059C4
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:19:02 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id kq6so23529187ejb.11
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:19:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=csyCE0Ob47wjhHNAVvg56QOFgF3Z5EUZtR/Uys+YVVE=;
-        b=hOf6w9EVAYIQzT9X+s6hlk8MU7l4KDMIyWM3na6s57c7oz0ebPWlRD8bN3ISYULBAm
-         RU/cxgFP98aC5QHGPIqMu6aV/g4yTYpfRu2/LV0hpgzCHoB0+w4r3HgMbSoTJVUcOro1
-         Whv2Op6Rq68Loyw1L1Wb1hc3AIPefTZe1S1ihkLoCXFiVDreyVdv3fk/68flH0/hGB1P
-         dtzq51oCnofKxYOdohJZivZBCq9pTWeKWQrleUKT5TfBb+O7wDMUpDLK90YzdBtJGO4W
-         XWkWSCzDpQ13DzFHrfMEruf1dMHFIvGvNbiaetQ3RnAQYfwiuD00H3ZZxnfo80ezaNXH
-         gm1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=csyCE0Ob47wjhHNAVvg56QOFgF3Z5EUZtR/Uys+YVVE=;
-        b=0+pjo7cEzM/1qjXt3ReJNJijF0cbROhsGS6RMG3wqhijWJBTP5yL+Qn0vdxkm4tUfq
-         33JCKY2pZP12hRSrzWwdoVoTNuBSe3zLSom1TIglH35d1q9eO5Gr7D3BZriYCeRJHED2
-         U9pP4lZFHVol16Zhn3i8fPlLkSYcnElhmre8KQa4sx6Y5A/gxR8MZkotdmyUYDU4Vn+a
-         LxkTkfkkFYc5peusHg5DXSO0E0ECnyRhAifrCjN/ce8o4/nyo6lBftnCkHBQqNQEM/DA
-         K8vkzbEYzFxeCy5O8aZ4EUIMX1oBfa1rCkXwm00Ivy1UUHg13ymgnvKEMNXE06wY2NVg
-         Q60A==
-X-Gm-Message-State: AOAM531aJI+k739/rg3VEifaMnSB2mdp1M8cz0TILdeRCyYXrb5PrJ/c
-        yoM71ec695a6hLyqbVBZiHV23A==
-X-Google-Smtp-Source: ABdhPJw1cGOn5vbz5JcbHCWGoDHgn+tubzNQr0bZoZGrSPxYlhfwNAVhnOCrVVZtsrHGSg/p3vonrA==
-X-Received: by 2002:a17:907:3e0d:b0:711:dbff:b830 with SMTP id hp13-20020a1709073e0d00b00711dbffb830mr6553739ejc.601.1654622341683;
-        Tue, 07 Jun 2022 10:19:01 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id i7-20020a170906444700b0070e238ff66fsm5876540ejp.96.2022.06.07.10.19.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 10:19:01 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Brian Masney <masneyb@onstation.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 10/14] arm64: dts: qcom: sc7180: add dedicated IMEM and syscon compatibles
-Date:   Tue,  7 Jun 2022 19:18:44 +0200
-Message-Id: <20220607171848.535128-10-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220607171848.535128-1-krzysztof.kozlowski@linaro.org>
-References: <20220607171848.535128-1-krzysztof.kozlowski@linaro.org>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B421053D6;
+        Tue,  7 Jun 2022 10:19:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1536618D2;
+        Tue,  7 Jun 2022 17:19:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0F9CC36AFF;
+        Tue,  7 Jun 2022 17:19:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654622341;
+        bh=OQNA3pbhO751SWW63OLtmzQBzHLEIHa7GSdyG62NU3k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=E9eebfuhIetQ6x3asgmU4z2poKION1WJtKFKyCGYyakO3K9NaIQccvhRzk9J/HEJX
+         oxW7PNkSREWx0Yf1lJSVy5eMPkB6lWlDJ/FbHNkcKa5dDKPaXGkMdl5GDyTFih/AoA
+         hg0mKUt40yvUDzV5fIATJer696tMKW/6ld71A7yQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.10 003/452] parisc/stifb: Implement fb_is_primary_device()
+Date:   Tue,  7 Jun 2022 18:57:40 +0200
+Message-Id: <20220607164908.631554091@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
+References: <20220607164908.521895282@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add proper compatibles to the IMEM device node:
-1. syscon to allow accessing memory from other devices,
-2. dedicated compatible as required for syscon and simple-mfd nodes.
+From: Helge Deller <deller@gmx.de>
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+commit cf936af790a3ef5f41ff687ec91bfbffee141278 upstream.
+
+Implement fb_is_primary_device() function, so that fbcon detects if this
+framebuffer belongs to the default graphics card which was used to start
+the system.
+
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: stable@vger.kernel.org   # v5.10+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/qcom/sc7180.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/parisc/include/asm/fb.h    |    4 ++++
+ drivers/video/console/sticore.c |   17 +++++++++++++++++
+ drivers/video/fbdev/stifb.c     |    4 ++--
+ 3 files changed, 23 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-index 496fc2857d92..6dae8a9ac196 100644
---- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-@@ -3248,7 +3248,7 @@ spmi_bus: spmi@c440000 {
- 		};
+--- a/arch/parisc/include/asm/fb.h
++++ b/arch/parisc/include/asm/fb.h
+@@ -12,9 +12,13 @@ static inline void fb_pgprotect(struct f
+ 	pgprot_val(vma->vm_page_prot) |= _PAGE_NO_CACHE;
+ }
  
- 		sram@146aa000 {
--			compatible = "simple-mfd";
-+			compatible = "qcom,sc7180-imem", "syscon", "simple-mfd";
- 			reg = <0 0x146aa000 0 0x2000>;
++#if defined(CONFIG_STI_CONSOLE) || defined(CONFIG_FB_STI)
++int fb_is_primary_device(struct fb_info *info);
++#else
+ static inline int fb_is_primary_device(struct fb_info *info)
+ {
+ 	return 0;
+ }
++#endif
  
- 			#address-cells = <1>;
--- 
-2.34.1
+ #endif /* _ASM_FB_H_ */
+--- a/drivers/video/console/sticore.c
++++ b/drivers/video/console/sticore.c
+@@ -30,6 +30,7 @@
+ #include <asm/pdc.h>
+ #include <asm/cacheflush.h>
+ #include <asm/grfioctl.h>
++#include <asm/fb.h>
+ 
+ #include "../fbdev/sticore.h"
+ 
+@@ -1127,6 +1128,22 @@ int sti_call(const struct sti_struct *st
+ 	return ret;
+ }
+ 
++/* check if given fb_info is the primary device */
++int fb_is_primary_device(struct fb_info *info)
++{
++	struct sti_struct *sti;
++
++	sti = sti_get_rom(0);
++
++	/* if no built-in graphics card found, allow any fb driver as default */
++	if (!sti)
++		return true;
++
++	/* return true if it's the default built-in framebuffer driver */
++	return (sti->info == info);
++}
++EXPORT_SYMBOL(fb_is_primary_device);
++
+ MODULE_AUTHOR("Philipp Rumpf, Helge Deller, Thomas Bogendoerfer");
+ MODULE_DESCRIPTION("Core STI driver for HP's NGLE series graphics cards in HP PARISC machines");
+ MODULE_LICENSE("GPL v2");
+--- a/drivers/video/fbdev/stifb.c
++++ b/drivers/video/fbdev/stifb.c
+@@ -1317,11 +1317,11 @@ static int __init stifb_init_fb(struct s
+ 		goto out_err3;
+ 	}
+ 
++	/* save for primary gfx device detection & unregister_framebuffer() */
++	sti->info = info;
+ 	if (register_framebuffer(&fb->info) < 0)
+ 		goto out_err4;
+ 
+-	sti->info = info; /* save for unregister_framebuffer() */
+-
+ 	fb_info(&fb->info, "%s %dx%d-%d frame buffer device, %s, id: %04x, mmio: 0x%04lx\n",
+ 		fix->id,
+ 		var->xres, 
+
 
