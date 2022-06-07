@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7069FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:48:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94988C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:49:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380234AbiFGVsx (ORCPT
+        id S1382029AbiFGVtA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:48:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51464 "EHLO
+        Tue, 7 Jun 2022 17:49:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377906AbiFGUvM (ORCPT
+        with ESMTP id S1377925AbiFGUvM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:51:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE8161FD9E0;
-        Tue,  7 Jun 2022 11:40:56 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 165A91FD9F1;
+        Tue,  7 Jun 2022 11:40:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68E0CB82399;
-        Tue,  7 Jun 2022 18:40:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDE78C385A2;
-        Tue,  7 Jun 2022 18:40:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7918460B3D;
+        Tue,  7 Jun 2022 18:40:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88AA3C385A5;
+        Tue,  7 Jun 2022 18:40:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627254;
-        bh=Xj4t98qVdkLPZQTS7OXQAoSx8M/pu0ePvUGCBZ8pXgU=;
+        s=korg; t=1654627256;
+        bh=54fPIN8G1JovSP05z2k3xNR+dvWsXyhzfXkHCXyejmo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BmpqtEe7H/iG/zaeu35skaFqOmNEydoBNtgb95gZwZVFtY5WWo5QHECXnKdG5scqf
-         srH5Nq0xcTvkA/TswvlHK8815J38xzFIyfVcbDjv5TtL9d0oMsuuWOJaD8zOYuBg0U
-         srNEVIobWOy5EWDYzdsXVs1ue8nklZ0HHoCzN6mQ=
+        b=NITToR77fQ1HHQxhFqZonpx4EsqD/ZPFHCDUCCcXP8BOisaTqQf0giiEDzUSRYkm7
+         EqBz3qDLhsr/IrBNfr//tlX5aqV9RcsIDwKu0Dp2Y1OdrbIuvb8EJ6LoCk+AngfVpB
+         MT1cFGWKrsAvNrCs6gbM4Ya/gjOZiKmxU1Uzivvw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.17 673/772] samples/landlock: Add clang-format exceptions
-Date:   Tue,  7 Jun 2022 19:04:25 +0200
-Message-Id: <20220607165008.892482355@linuxfoundation.org>
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.17 647/772] ACPI: property: Release subnode properties with data nodes
+Date:   Tue,  7 Jun 2022 19:03:59 +0200
+Message-Id: <20220607165008.130213600@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,58 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@digikod.net>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-commit 9805a722db071e1772b80e6e0ff33f35355639ac upstream.
+commit 3bd561e1572ee02a50cd1a5be339abf1a5b78d56 upstream.
 
-In preparation to a following commit, add clang-format on and
-clang-format off stanzas around constant definitions.  This enables to
-keep aligned values, which is much more readable than packed
-definitions.
+struct acpi_device_properties describes one source of properties present
+on either struct acpi_device or struct acpi_data_node. When properties are
+parsed, both are populated but when released, only those properties that
+are associated with the device node are freed.
 
-Link: https://lore.kernel.org/r/20220506160513.523257-7-mic@digikod.net
-Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Fix this by also releasing memory of the data node properties.
+
+Fixes: 5f5e4890d57a ("ACPI / property: Allow multiple property compatible _DSD entries")
+Cc: 4.20+ <stable@vger.kernel.org> # 4.20+
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- samples/landlock/sandboxer.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/acpi/property.c |   18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
---- a/samples/landlock/sandboxer.c
-+++ b/samples/landlock/sandboxer.c
-@@ -70,11 +70,15 @@ static int parse_path(char *env_path, co
- 	return num_paths;
+--- a/drivers/acpi/property.c
++++ b/drivers/acpi/property.c
+@@ -433,6 +433,16 @@ void acpi_init_properties(struct acpi_de
+ 		acpi_extract_apple_properties(adev);
  }
  
-+/* clang-format off */
++static void acpi_free_device_properties(struct list_head *list)
++{
++	struct acpi_device_properties *props, *tmp;
 +
- #define ACCESS_FILE ( \
- 	LANDLOCK_ACCESS_FS_EXECUTE | \
- 	LANDLOCK_ACCESS_FS_WRITE_FILE | \
- 	LANDLOCK_ACCESS_FS_READ_FILE)
- 
-+/* clang-format on */
++	list_for_each_entry_safe(props, tmp, list, list) {
++		list_del(&props->list);
++		kfree(props);
++	}
++}
 +
- static int populate_ruleset(
- 		const char *const env_var, const int ruleset_fd,
- 		const __u64 allowed_access)
-@@ -139,6 +143,8 @@ out_free_name:
- 	return ret;
- }
- 
-+/* clang-format off */
-+
- #define ACCESS_FS_ROUGHLY_READ ( \
- 	LANDLOCK_ACCESS_FS_EXECUTE | \
- 	LANDLOCK_ACCESS_FS_READ_FILE | \
-@@ -156,6 +162,8 @@ out_free_name:
- 	LANDLOCK_ACCESS_FS_MAKE_BLOCK | \
- 	LANDLOCK_ACCESS_FS_MAKE_SYM)
- 
-+/* clang-format on */
-+
- int main(const int argc, char *const argv[], char *const *const envp)
+ static void acpi_destroy_nondev_subnodes(struct list_head *list)
  {
- 	const char *cmd_path;
+ 	struct acpi_data_node *dn, *next;
+@@ -445,22 +455,18 @@ static void acpi_destroy_nondev_subnodes
+ 		wait_for_completion(&dn->kobj_done);
+ 		list_del(&dn->sibling);
+ 		ACPI_FREE((void *)dn->data.pointer);
++		acpi_free_device_properties(&dn->data.properties);
+ 		kfree(dn);
+ 	}
+ }
+ 
+ void acpi_free_properties(struct acpi_device *adev)
+ {
+-	struct acpi_device_properties *props, *tmp;
+-
+ 	acpi_destroy_nondev_subnodes(&adev->data.subnodes);
+ 	ACPI_FREE((void *)adev->data.pointer);
+ 	adev->data.of_compatible = NULL;
+ 	adev->data.pointer = NULL;
+-	list_for_each_entry_safe(props, tmp, &adev->data.properties, list) {
+-		list_del(&props->list);
+-		kfree(props);
+-	}
++	acpi_free_device_properties(&adev->data.properties);
+ }
+ 
+ /**
 
 
