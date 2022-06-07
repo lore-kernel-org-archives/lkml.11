@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7466CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:12:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53D29C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:12:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379744AbiFGVMR (ORCPT
+        id S1379761AbiFGVM3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
+        Tue, 7 Jun 2022 17:12:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359572AbiFGUPk (ORCPT
+        with ESMTP id S1359515AbiFGUP3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:15:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29DC91C8665;
-        Tue,  7 Jun 2022 11:28:28 -0700 (PDT)
+        Tue, 7 Jun 2022 16:15:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9AEF1C8A16;
+        Tue,  7 Jun 2022 11:28:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6770C6131C;
-        Tue,  7 Jun 2022 18:28:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70437C3411C;
-        Tue,  7 Jun 2022 18:28:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51657B82340;
+        Tue,  7 Jun 2022 18:28:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC384C385A2;
+        Tue,  7 Jun 2022 18:28:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626506;
-        bh=PGpBVVFXYWAfjYtRkA7TYJ3yh3f7UZ35lMQ9PxdCqxo=;
+        s=korg; t=1654626504;
+        bh=z9mF0vJTOcJM8P1H/x/lKWNpzNoK2T2OoNZu9lJkCpw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U51kyZZAvRSgMUilEWK6kin7vYFp4229vTUFOfTZ37hRXxxShcqwcRiWUwHFzBPdJ
-         dYNj3jwtz7oA+XC2CoeHQiZ2ZQ/20etTlJiSC/WGZtoVKVD3WPvGVzFF5LQYTgBGOV
-         lBAvfse9S8ZZjigW1GkWORLhNUcpzyPSFmJ6h+jc=
+        b=Zcd02FogVB+CswnfhtE6oJFaXVFkfhlQOxUgAiBuTLfQTvT1sgiuHwS4+hBXp3ddl
+         XFnagWzeoVFSmJycNFhS7jm+pSvNBz4WZAEjKMYJiZ55ZMChrg3k4ZVsrfG6LAPTE/
+         rBo8IJfArvk9EnfCRU8usQlUBrXNVNPx8AbF/djw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
+        stable@vger.kernel.org, Dongliang Mu <mudongliangabcd@gmail.com>,
         Sakari Ailus <sakari.ailus@linux.intel.com>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 403/772] media: i2c: ov5648: fix wrong pointer passed to IS_ERR() and PTR_ERR()
-Date:   Tue,  7 Jun 2022 18:59:55 +0200
-Message-Id: <20220607165000.885405602@linuxfoundation.org>
+Subject: [PATCH 5.17 402/772] media: ov7670: remove ov7670_power_off from ov7670_remove
+Date:   Tue,  7 Jun 2022 18:59:54 +0200
+Message-Id: <20220607165000.856480982@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,38 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit a6dd5265c21c28d0a782befe41a97c347e78f22f ]
+[ Upstream commit 5bf19572e31375368f19edd2dbb2e0789518bb99 ]
 
-IS_ERR() and PTR_ERR() use wrong pointer, it should be
-sensor->dovdd, fix it.
+In ov7670_probe, it always invokes ov7670_power_off() no matter
+the execution is successful or failed. So we cannot invoke it
+agiain in ov7670_remove().
 
-Fixes: e43ccb0a045f ("media: i2c: Add support for the OV5648 image sensor")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Fix this by removing ov7670_power_off from ov7670_remove.
+
+Fixes: 030f9f682e66 ("media: ov7670: control clock along with power")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
 Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/ov5648.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/media/i2c/ov7670.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/media/i2c/ov5648.c b/drivers/media/i2c/ov5648.c
-index ef8b52dc9401..bb3666fc5618 100644
---- a/drivers/media/i2c/ov5648.c
-+++ b/drivers/media/i2c/ov5648.c
-@@ -2498,9 +2498,9 @@ static int ov5648_probe(struct i2c_client *client)
- 
- 	/* DOVDD: digital I/O */
- 	sensor->dovdd = devm_regulator_get(dev, "dovdd");
--	if (IS_ERR(sensor->dvdd)) {
-+	if (IS_ERR(sensor->dovdd)) {
- 		dev_err(dev, "cannot get DOVDD (digital I/O) regulator\n");
--		ret = PTR_ERR(sensor->dvdd);
-+		ret = PTR_ERR(sensor->dovdd);
- 		goto error_endpoint;
- 	}
+diff --git a/drivers/media/i2c/ov7670.c b/drivers/media/i2c/ov7670.c
+index 196746423116..1be2c0e5bdc1 100644
+--- a/drivers/media/i2c/ov7670.c
++++ b/drivers/media/i2c/ov7670.c
+@@ -2017,7 +2017,6 @@ static int ov7670_remove(struct i2c_client *client)
+ 	v4l2_async_unregister_subdev(sd);
+ 	v4l2_ctrl_handler_free(&info->hdl);
+ 	media_entity_cleanup(&info->sd.entity);
+-	ov7670_power_off(sd);
+ 	return 0;
+ }
  
 -- 
 2.35.1
