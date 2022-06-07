@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 695E0CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E33C3F2D4
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:11:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355119AbiFGTLJ (ORCPT
+        id S1355176AbiFGTLT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:11:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54028 "EHLO
+        Tue, 7 Jun 2022 15:11:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350623AbiFGSXm (ORCPT
+        with ESMTP id S1351429AbiFGSQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:23:42 -0400
+        Tue, 7 Jun 2022 14:16:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E94CC16B;
-        Tue,  7 Jun 2022 10:54:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C558C15FE05;
+        Tue,  7 Jun 2022 10:49:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E37060DBA;
-        Tue,  7 Jun 2022 17:54:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E199C3411C;
-        Tue,  7 Jun 2022 17:54:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A31D61732;
+        Tue,  7 Jun 2022 17:49:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45C14C34115;
+        Tue,  7 Jun 2022 17:49:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624462;
-        bh=Q224vtITk0d/tz032JMgEBEMMV9rpIBeSBHpFkpXEq8=;
+        s=korg; t=1654624167;
+        bh=qoPbMV8oPXml9N7dYYeY2+90OzfkkdGHN6XcgA1S0kQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XJUl3P78iCUh92pwv1atzSpiJzyZQMSLqX4rzqAYayhzOaUDcGLn0s8bkiaMmF/KW
-         jbazQzpYtvSQvRLbkQaEPuVXcTFNmzWV2299gKyUNlQhu3GVrPMP//yZVqPpPTwKDu
-         G5qVUkbjKPA5lILSYuIENcXKuz+KPAxjDpexEeIY=
+        b=wpcqDoEi0bn2NFKOADe4XcBWZDekxS3PyoE2Ys7xb6SD+aOB1dCQsOmRV0fd6KjOP
+         /uQYmH6zSuORYKxflmlvC1HQMjEpax5zLlrN492hgKnBC/k6kY729BoRsMVe+hgV3M
+         KICtGoxMZoHVdVFFhIukFjA+IlLC23uptQLTzIV4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheng Bin <zhengbin13@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 335/667] net: hinic: add missing destroy_workqueue in hinic_pf_to_mgmt_init
-Date:   Tue,  7 Jun 2022 19:00:00 +0200
-Message-Id: <20220607164944.814152952@linuxfoundation.org>
+Subject: [PATCH 5.15 230/667] cpufreq: Fix possible race in cpufreq online error path
+Date:   Tue,  7 Jun 2022 18:58:15 +0200
+Message-Id: <20220607164941.686333872@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,41 +50,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Bin <zhengbin13@huawei.com>
+From: Schspa Shi <schspa@gmail.com>
 
-[ Upstream commit 382d917bfc1e92339dae3c8a636b2730e8bb5132 ]
+[ Upstream commit f346e96267cd76175d6c201b40f770c0116a8a04 ]
 
-hinic_pf_to_mgmt_init misses destroy_workqueue in error path,
-this patch fixes that.
+When cpufreq online fails, the policy->cpus mask is not cleared and
+policy->rwsem is released too early, so the driver can be invoked
+via the cpuinfo_cur_freq sysfs attribute while its ->offline() or
+->exit() callbacks are being run.
 
-Fixes: 6dbb89014dc3 ("hinic: fix sending mailbox timeout in aeq event work")
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Take policy->clk as an example:
+
+static int cpufreq_online(unsigned int cpu)
+{
+  ...
+  // policy->cpus != 0 at this time
+  down_write(&policy->rwsem);
+  ret = cpufreq_add_dev_interface(policy);
+  up_write(&policy->rwsem);
+
+  return 0;
+
+out_destroy_policy:
+	for_each_cpu(j, policy->real_cpus)
+		remove_cpu_dev_symlink(policy, get_cpu_device(j));
+    up_write(&policy->rwsem);
+...
+out_exit_policy:
+  if (cpufreq_driver->exit)
+    cpufreq_driver->exit(policy);
+      clk_put(policy->clk);
+      // policy->clk is a wild pointer
+...
+                                    ^
+                                    |
+                            Another process access
+                            __cpufreq_get
+                              cpufreq_verify_current_freq
+                                cpufreq_generic_get
+                                  // acces wild pointer of policy->clk;
+                                    |
+                                    |
+out_offline_policy:                 |
+  cpufreq_policy_free(policy);      |
+    // deleted here, and will wait for no body reference
+    cpufreq_policy_put_kobj(policy);
+}
+
+Address this by modifying cpufreq_online() to release policy->rwsem
+in the error path after the driver callbacks have run and to clear
+policy->cpus before releasing the semaphore.
+
+Fixes: 7106e02baed4 ("cpufreq: release policy->rwsem on error")
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+[ rjw: Subject and changelog edits ]
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/cpufreq/cpufreq.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-index ebc77771f5da..4aa1f433ed24 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-@@ -643,6 +643,7 @@ int hinic_pf_to_mgmt_init(struct hinic_pf_to_mgmt *pf_to_mgmt,
- 	err = alloc_msg_buf(pf_to_mgmt);
- 	if (err) {
- 		dev_err(&pdev->dev, "Failed to allocate msg buffers\n");
-+		destroy_workqueue(pf_to_mgmt->workq);
- 		hinic_health_reporters_destroy(hwdev->devlink_dev);
- 		return err;
- 	}
-@@ -650,6 +651,7 @@ int hinic_pf_to_mgmt_init(struct hinic_pf_to_mgmt *pf_to_mgmt,
- 	err = hinic_api_cmd_init(pf_to_mgmt->cmd_chain, hwif);
- 	if (err) {
- 		dev_err(&pdev->dev, "Failed to initialize cmd chains\n");
-+		destroy_workqueue(pf_to_mgmt->workq);
- 		hinic_health_reporters_destroy(hwdev->devlink_dev);
- 		return err;
- 	}
+diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+index cddf7e13c232..502245710ee0 100644
+--- a/drivers/cpufreq/cpufreq.c
++++ b/drivers/cpufreq/cpufreq.c
+@@ -1528,8 +1528,6 @@ static int cpufreq_online(unsigned int cpu)
+ 	for_each_cpu(j, policy->real_cpus)
+ 		remove_cpu_dev_symlink(policy, get_cpu_device(j));
+ 
+-	up_write(&policy->rwsem);
+-
+ out_offline_policy:
+ 	if (cpufreq_driver->offline)
+ 		cpufreq_driver->offline(policy);
+@@ -1538,6 +1536,9 @@ static int cpufreq_online(unsigned int cpu)
+ 	if (cpufreq_driver->exit)
+ 		cpufreq_driver->exit(policy);
+ 
++	cpumask_clear(policy->cpus);
++	up_write(&policy->rwsem);
++
+ out_free_policy:
+ 	cpufreq_policy_free(policy);
+ 	return ret;
 -- 
 2.35.1
 
