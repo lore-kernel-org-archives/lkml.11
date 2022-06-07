@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7943BCCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DBEBCCA482
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386816AbiFGWt3 (ORCPT
+        id S1385785AbiFGWqq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52070 "EHLO
+        Tue, 7 Jun 2022 18:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381302AbiFGVk0 (ORCPT
+        with ESMTP id S1381124AbiFGVgc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:40:26 -0400
+        Tue, 7 Jun 2022 17:36:32 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B272218B7;
-        Tue,  7 Jun 2022 12:06:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44772163F4C;
+        Tue,  7 Jun 2022 12:04:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5360B822C0;
-        Tue,  7 Jun 2022 19:06:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01947C385A2;
-        Tue,  7 Jun 2022 19:06:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8F65B8233E;
+        Tue,  7 Jun 2022 19:04:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CB14C34115;
+        Tue,  7 Jun 2022 19:04:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628788;
-        bh=ij/4hImqJWkFdktGF0byICBrtQSl52EtTpSPV326/W8=;
+        s=korg; t=1654628689;
+        bh=pGs7DucsfOyXb3V7w2Exptx3i43BThzarD4FoLRpck0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pbD0MHilah+LAGYx7JEivV/ObuZZUWUDrGOclS35aeiXjDddj6vQHEdtxxb1JtpT5
-         OD47yjfyxWVZTwGnX/PuTonTP8BIk0biuFtqFXOaq4MKeXqs82X6u5JFlo+ghBEEQf
-         6h0acvOj8de4+jdk4EB3v9ua9OexPCsvnGLG8vAg=
+        b=pm43wSLkfAMCnxjKG27kyl364CM5RAcjuJhsECzPNGScuMZZWcWGr6uC1I+C73Lud
+         05CimDAQyl1XsOpMto3fZuzYkpEt1185mq45XVu7zkF6rEmYJz2AIC9sWu2ycUkC+P
+         ewyJpzSDpxtmuGY95pzD5uwuQrJgaUJrgswSnSdY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 454/879] Bluetooth: use hdev lock for accept_list and reject_list in conn req
-Date:   Tue,  7 Jun 2022 18:59:32 +0200
-Message-Id: <20220607165016.048605042@linuxfoundation.org>
+Subject: [PATCH 5.18 413/879] scsi: lpfc: Fix dmabuf ptr assignment in lpfc_ct_reject_event()
+Date:   Tue,  7 Jun 2022 18:58:51 +0200
+Message-Id: <20220607165014.849610239@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,81 +51,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit fb048cae51bacdfbbda2954af3c213fdb1d484f4 ]
+[ Upstream commit 596fc8adb171dce3751a359018e2ade612af8d97 ]
 
-All accesses (both reads and modifications) to
-hdev->{accept,reject}_list are protected by hdev lock,
-except the ones in hci_conn_request_evt. This can cause a race
-condition in the form of a list corruption.
-The solution is to protect these lists in hci_conn_request_evt as well.
+Upon driver receipt of a CT cmd for type = 0xFA (Management Server) and
+subtype = 0x11 (Fabric Device Management Interface), the driver is
+responding with garbage CT cmd data when it should send a properly formed
+RJT.
 
-I was unable to find the exact commit that introduced the issue for the
-reject list, I was only able to find it for the accept list.
+The __lpfc_prep_xmit_seq64_s4() routine was using the wrong buffer for the
+reject.
 
-Fixes: a55bd29d5227 ("Bluetooth: Add white list lookup for incoming connection requests")
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fix by converting the routine to use the buffer specified in the bde within
+the wqe rather than the ill-set bmp element.
+
+Link: https://lore.kernel.org/r/20220506035519.50908-6-jsmart2021@gmail.com
+Fixes: 61910d6a5243 ("scsi: lpfc: SLI path split: Refactor CT paths")
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_event.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ drivers/scsi/lpfc/lpfc_sli.c | 15 +++------------
+ 1 file changed, 3 insertions(+), 12 deletions(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 66451661283c..a835ce6f8430 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -3225,10 +3225,12 @@ static void hci_conn_request_evt(struct hci_dev *hdev, void *data,
- 		return;
- 	}
+diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
+index c307f551d114..331241a71452 100644
+--- a/drivers/scsi/lpfc/lpfc_sli.c
++++ b/drivers/scsi/lpfc/lpfc_sli.c
+@@ -10800,24 +10800,15 @@ __lpfc_sli_prep_xmit_seq64_s4(struct lpfc_iocbq *cmdiocbq,
+ {
+ 	union lpfc_wqe128 *wqe;
+ 	struct ulp_bde64 *bpl;
+-	struct ulp_bde64_le *bde;
  
-+	hci_dev_lock(hdev);
-+
- 	if (hci_bdaddr_list_lookup(&hdev->reject_list, &ev->bdaddr,
- 				   BDADDR_BREDR)) {
- 		hci_reject_conn(hdev, &ev->bdaddr);
--		return;
-+		goto unlock;
- 	}
+ 	wqe = &cmdiocbq->wqe;
+ 	memset(wqe, 0, sizeof(*wqe));
  
- 	/* Require HCI_CONNECTABLE or an accept list entry to accept the
-@@ -3240,13 +3242,11 @@ static void hci_conn_request_evt(struct hci_dev *hdev, void *data,
- 	    !hci_bdaddr_list_lookup_with_flags(&hdev->accept_list, &ev->bdaddr,
- 					       BDADDR_BREDR)) {
- 		hci_reject_conn(hdev, &ev->bdaddr);
--		return;
-+		goto unlock;
- 	}
+ 	/* Words 0 - 2 */
+ 	bpl = (struct ulp_bde64 *)bmp->virt;
+-	if (cmdiocbq->cmd_flag & (LPFC_IO_LIBDFC | LPFC_IO_LOOPBACK)) {
+-		wqe->xmit_sequence.bde.addrHigh = bpl->addrHigh;
+-		wqe->xmit_sequence.bde.addrLow = bpl->addrLow;
+-		wqe->xmit_sequence.bde.tus.w = bpl->tus.w;
+-	} else {
+-		bde = (struct ulp_bde64_le *)&wqe->xmit_sequence.bde;
+-		bde->addr_low = cpu_to_le32(putPaddrLow(bmp->phys));
+-		bde->addr_high = cpu_to_le32(putPaddrHigh(bmp->phys));
+-		bde->type_size = cpu_to_le32(bpl->tus.f.bdeSize);
+-		bde->type_size |= cpu_to_le32(ULP_BDE64_TYPE_BDE_64);
+-	}
++	wqe->xmit_sequence.bde.addrHigh = bpl->addrHigh;
++	wqe->xmit_sequence.bde.addrLow = bpl->addrLow;
++	wqe->xmit_sequence.bde.tus.w = bpl->tus.w;
  
- 	/* Connection accepted */
- 
--	hci_dev_lock(hdev);
--
- 	ie = hci_inquiry_cache_lookup(hdev, &ev->bdaddr);
- 	if (ie)
- 		memcpy(ie->data.dev_class, ev->dev_class, 3);
-@@ -3258,8 +3258,7 @@ static void hci_conn_request_evt(struct hci_dev *hdev, void *data,
- 				    HCI_ROLE_SLAVE);
- 		if (!conn) {
- 			bt_dev_err(hdev, "no memory for new connection");
--			hci_dev_unlock(hdev);
--			return;
-+			goto unlock;
- 		}
- 	}
- 
-@@ -3299,6 +3298,10 @@ static void hci_conn_request_evt(struct hci_dev *hdev, void *data,
- 		conn->state = BT_CONNECT2;
- 		hci_connect_cfm(conn, 0);
- 	}
-+
-+	return;
-+unlock:
-+	hci_dev_unlock(hdev);
- }
- 
- static u8 hci_to_mgmt_reason(u8 err)
+ 	/* Word 5 */
+ 	bf_set(wqe_ls, &wqe->xmit_sequence.wge_ctl, last_seq);
 -- 
 2.35.1
 
