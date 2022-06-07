@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 958EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:46:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ACF6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376769AbiFGUq1 (ORCPT
+        id S1376773AbiFGUq3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:46:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47526 "EHLO
+        Tue, 7 Jun 2022 16:46:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356136AbiFGTnD (ORCPT
+        with ESMTP id S1356215AbiFGTnD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 15:43:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE6493968C;
-        Tue,  7 Jun 2022 11:18:01 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE92C4926A;
+        Tue,  7 Jun 2022 11:18:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B4E2B82368;
-        Tue,  7 Jun 2022 18:18:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBEBAC385A2;
-        Tue,  7 Jun 2022 18:17:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C7FE60AD9;
+        Tue,  7 Jun 2022 18:18:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79239C385A5;
+        Tue,  7 Jun 2022 18:18:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625879;
-        bh=cYbqQ0dMuwCZflYozzYeRbTkmB9Hzvvc14PryXL08Gw=;
+        s=korg; t=1654625884;
+        bh=Zrt900o5cYMo+ynOgzrFGO1QlfXt5yTMcsGnfUvtbpU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B8F2/JqIzE7XWZ6J5u43cqw75YO9CUZGqKfP+y/qd+93/arr9OMcPElQh2y+FUAiU
-         /M60bLCTv2dUnk8B0a1wP1UDoKGcXXz0OHCP66ytpLnvEBy2OrwsxBbKsL2wHjuDIK
-         XmqwpnsrjZqaTFLkBtuJ2GWHxo52JuyBn+4IcXEs=
+        b=LQLuv+ab4g5cpBasXtbQtm4dm4r6NImQOmDec6CcE355zrk2KCsh+KFCNaASMlD4b
+         /kWezRqVAflymiPhuEmObLOVfKAqKVMM/Qe7oyCFxEl01Z4DK2fjvIwjJpgUGo/TTU
+         06zxM0F/niwGdZ7XhHpxLi4SEJLOxwuXyegg/DRQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mykola Lysenko <mykolal@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Bodo Stroesser <bostroesser@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 178/772] selftests/bpf: fix btf_dump/btf_dump due to recent clang change
-Date:   Tue,  7 Jun 2022 18:56:10 +0200
-Message-Id: <20220607164954.284507696@linuxfoundation.org>
+Subject: [PATCH 5.17 180/772] scsi: target: tcmu: Avoid holding XArray lock when calling lock_page
+Date:   Tue,  7 Jun 2022 18:56:12 +0200
+Message-Id: <20220607164954.342623174@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,87 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yonghong Song <yhs@fb.com>
+From: Bodo Stroesser <bostroesser@gmail.com>
 
-[ Upstream commit 4050764cbaa25760aab40857f723393c07898474 ]
+[ Upstream commit 325d5c5fb216674296f3902a8902b942da3adc5b ]
 
-Latest llvm-project upstream had a change of behavior
-related to qualifiers on function return type ([1]).
-This caused selftests btf_dump/btf_dump failure.
-The following example shows what changed.
+In tcmu_blocks_release(), lock_page() is called to prevent a race causing
+possible data corruption. Since lock_page() might sleep, calling it while
+holding XArray lock is a bug.
 
-  $ cat t.c
-  typedef const char * const (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
-  struct t {
-    int a;
-    fn_ptr_arr2_t l;
-  };
-  int foo(struct t *arg) {
-    return arg->a;
-  }
+To fix this, replace the xas_for_each() call with xa_for_each_range().
+Since the latter does its own handling of XArray locking, the xas_lock()
+and xas_unlock() calls around the original loop are no longer necessary.
 
-Compiled with latest upstream llvm15,
-  $ clang -O2 -g -target bpf -S -emit-llvm t.c
-The related generated debuginfo IR looks like:
-  !16 = !DIDerivedType(tag: DW_TAG_typedef, name: "fn_ptr_arr2_t", file: !1, line: 1, baseType: !17)
-  !17 = !DICompositeType(tag: DW_TAG_array_type, baseType: !18, size: 320, elements: !32)
-  !18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !19)
-  !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
-  !20 = !DISubroutineType(types: !21)
-  !21 = !{!22, null}
-  !22 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !23, size: 64)
-  !23 = !DISubroutineType(types: !24)
-  !24 = !{!25, !28}
-  !25 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !26, size: 64)
-  !26 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !27)
-  !27 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
-You can see two intermediate const qualifier to pointer are dropped in debuginfo IR.
+The switch to xa_for_each_range() slows down the loop slightly. This is
+acceptable since tcmu_blocks_release() is not relevant for performance.
 
-With llvm14, we have following debuginfo IR:
-  !16 = !DIDerivedType(tag: DW_TAG_typedef, name: "fn_ptr_arr2_t", file: !1, line: 1, baseType: !17)
-  !17 = !DICompositeType(tag: DW_TAG_array_type, baseType: !18, size: 320, elements: !34)
-  !18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !19)
-  !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
-  !20 = !DISubroutineType(types: !21)
-  !21 = !{!22, null}
-  !22 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !23)
-  !23 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !24, size: 64)
-  !24 = !DISubroutineType(types: !25)
-  !25 = !{!26, !30}
-  !26 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !27)
-  !27 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !28, size: 64)
-  !28 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !29)
-  !29 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
-All const qualifiers are preserved.
-
-To adapt the selftest to both old and new llvm, this patch removed
-the intermediate const qualifier in const-to-ptr types, to make the
-test succeed again.
-
-  [1] https://reviews.llvm.org/D125919
-
-Reported-by: Mykola Lysenko <mykolal@fb.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/r/20220523152044.3905809-1-yhs@fb.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/r/20220517192913.21405-1-bostroesser@gmail.com
+Fixes: bb9b9eb0ae2e ("scsi: target: tcmu: Fix possible data corruption")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Bodo Stroesser <bostroesser@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/target/target_core_user.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-index 1c7105fcae3c..4ee4748133fe 100644
---- a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-+++ b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-@@ -94,7 +94,7 @@ typedef void (* (*signal_t)(int, void (*)(int)))(int);
+diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
+index f26767a55d38..826b55caa17f 100644
+--- a/drivers/target/target_core_user.c
++++ b/drivers/target/target_core_user.c
+@@ -1660,13 +1660,14 @@ static int tcmu_check_and_free_pending_cmd(struct tcmu_cmd *cmd)
+ static u32 tcmu_blocks_release(struct tcmu_dev *udev, unsigned long first,
+ 				unsigned long last)
+ {
+-	XA_STATE(xas, &udev->data_pages, first * udev->data_pages_per_blk);
+ 	struct page *page;
++	unsigned long dpi;
+ 	u32 pages_freed = 0;
  
- typedef char * (*fn_ptr_arr1_t[10])(int **);
+-	xas_lock(&xas);
+-	xas_for_each(&xas, page, (last + 1) * udev->data_pages_per_blk - 1) {
+-		xas_store(&xas, NULL);
++	first = first * udev->data_pages_per_blk;
++	last = (last + 1) * udev->data_pages_per_blk - 1;
++	xa_for_each_range(&udev->data_pages, dpi, page, first, last) {
++		xa_erase(&udev->data_pages, dpi);
+ 		/*
+ 		 * While reaching here there may be page faults occurring on
+ 		 * the to-be-released pages. A race condition may occur if
+@@ -1690,7 +1691,6 @@ static u32 tcmu_blocks_release(struct tcmu_dev *udev, unsigned long first,
+ 		__free_page(page);
+ 		pages_freed++;
+ 	}
+-	xas_unlock(&xas);
  
--typedef char * (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
-+typedef char * (* (* const fn_ptr_arr2_t[5])())(char * (*)(int));
+ 	atomic_sub(pages_freed, &global_page_count);
  
- struct struct_w_typedefs {
- 	int_t a;
 -- 
 2.35.1
 
