@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BE4CCCA485
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC602C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:43:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377113AbiFGUlR (ORCPT
+        id S1377363AbiFGUl7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:41:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
+        Tue, 7 Jun 2022 16:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357829AbiFGTmY (ORCPT
+        with ESMTP id S1357723AbiFGTmR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:42:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C77EF15AB17;
-        Tue,  7 Jun 2022 11:16:34 -0700 (PDT)
+        Tue, 7 Jun 2022 15:42:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F421B6FE4;
+        Tue,  7 Jun 2022 11:16:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 610E260C1A;
-        Tue,  7 Jun 2022 18:16:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 714C1C385A2;
-        Tue,  7 Jun 2022 18:16:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0EB92B81F38;
+        Tue,  7 Jun 2022 18:16:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75781C385A2;
+        Tue,  7 Jun 2022 18:16:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625793;
-        bh=4kOCYh6aEID/+O+eKHAI2+opl1Varwr+QK9vIOeuhOc=;
+        s=korg; t=1654625760;
+        bh=O/cCnmDC0+HiYEH7R5Qp6f1XM/22h+N2T5KYNs2lq7s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NfE8Hezoh1863/froRB9b82xiQP9+pn4aHY/1MdOzyElpQsp7xs6o4LerKgcU26Qm
-         aQftyNBT/Iy/9CN1Vn4owtq5z3WYk/fh9yMb41Gn4Nrhl9kNQ8vWBR+IZgCSHJ0adA
-         Noz+V/NPqdDJ5EkoQrZPkI075xpuUSLdLsZz3h1k=
+        b=R+vXACZ7Y4n/QhHKc0AyBaThoBNRcAbCyBXdnP6tq01bbn5n18kk8SeQizZp6sl1l
+         UyLs+08I5DvGK+DzdZIw6wPb1RLttmqksUn1wGZz4Oso4cxj/Dd3pe+/9p/lMxgpID
+         XFH2U9JF1bTNYVR9rdK+PkVSYsVblTRAiZ/uIg4Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
-        Oliver Neukum <oneukum@suse.com>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Ferry Toth <fntoth@gmail.com>
-Subject: [PATCH 5.17 146/772] usbnet: Run unregister_netdev() before unbind() again
-Date:   Tue,  7 Jun 2022 18:55:38 +0200
-Message-Id: <20220607164953.346263332@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Corey Minyard <cminyard@mvista.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 135/772] ipmi: Fix pr_fmt to avoid compilation issues
+Date:   Tue,  7 Jun 2022 18:55:27 +0200
+Message-Id: <20220607164953.022373734@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -55,104 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Corey Minyard <cminyard@mvista.com>
 
-[ Upstream commit d1408f6b4dd78fb1b9e26bcf64477984e5f85409 ]
+[ Upstream commit 2ebaf18a0b7fb764bba6c806af99fe868cee93de ]
 
-Commit 2c9d6c2b871d ("usbnet: run unbind() before unregister_netdev()")
-sought to fix a use-after-free on disconnect of USB Ethernet adapters.
+The was it was wouldn't work in some situations, simplify it.  What was
+there was unnecessary complexity.
 
-It turns out that a different fix is necessary to address the issue:
-https://lore.kernel.org/netdev/18b3541e5372bc9b9fc733d422f4e698c089077c.1650177997.git.lukas@wunner.de/
-
-So the commit was not necessary.
-
-The commit made binding and unbinding of USB Ethernet asymmetrical:
-Before, usbnet_probe() first invoked the ->bind() callback and then
-register_netdev().  usbnet_disconnect() mirrored that by first invoking
-unregister_netdev() and then ->unbind().
-
-Since the commit, the order in usbnet_disconnect() is reversed and no
-longer mirrors usbnet_probe().
-
-One consequence is that a PHY disconnected (and stopped) in ->unbind()
-is afterwards stopped once more by unregister_netdev() as it closes the
-netdev before unregistering.  That necessitates a contortion in ->stop()
-because the PHY may only be stopped if it hasn't already been
-disconnected.
-
-Reverting the commit allows making the call to phy_stop() unconditional
-in ->stop().
-
-Tested-by: Oleksij Rempel <o.rempel@pengutronix.de> # LAN9514/9512/9500
-Tested-by: Ferry Toth <fntoth@gmail.com> # LAN9514
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Acked-by: Oliver Neukum <oneukum@suse.com>
-Cc: Martyn Welch <martyn.welch@collabora.com>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Corey Minyard <cminyard@mvista.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/asix_devices.c | 6 +-----
- drivers/net/usb/smsc95xx.c     | 3 +--
- drivers/net/usb/usbnet.c       | 6 +++---
- 3 files changed, 5 insertions(+), 10 deletions(-)
+ drivers/char/ipmi/ipmi_msghandler.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index 6b2fbdf4e0fd..34854ee537dc 100644
---- a/drivers/net/usb/asix_devices.c
-+++ b/drivers/net/usb/asix_devices.c
-@@ -799,11 +799,7 @@ static int ax88772_stop(struct usbnet *dev)
- {
- 	struct asix_common_private *priv = dev->driver_priv;
+diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
+index f1827257ef0e..2610e809c802 100644
+--- a/drivers/char/ipmi/ipmi_msghandler.c
++++ b/drivers/char/ipmi/ipmi_msghandler.c
+@@ -11,8 +11,8 @@
+  * Copyright 2002 MontaVista Software Inc.
+  */
  
--	/* On unplugged USB, we will get MDIO communication errors and the
--	 * PHY will be set in to PHY_HALTED state.
--	 */
--	if (priv->phydev->state != PHY_HALTED)
--		phy_stop(priv->phydev);
-+	phy_stop(priv->phydev);
+-#define pr_fmt(fmt) "%s" fmt, "IPMI message handler: "
+-#define dev_fmt pr_fmt
++#define pr_fmt(fmt) "IPMI message handler: " fmt
++#define dev_fmt(fmt) pr_fmt(fmt)
  
- 	return 0;
- }
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index a0f29482294d..d81485cd7e90 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -1218,8 +1218,7 @@ static int smsc95xx_start_phy(struct usbnet *dev)
- 
- static int smsc95xx_stop(struct usbnet *dev)
- {
--	if (dev->net->phydev)
--		phy_stop(dev->net->phydev);
-+	phy_stop(dev->net->phydev);
- 
- 	return 0;
- }
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index 9a6450f796dc..36b24ec11650 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -1616,9 +1616,6 @@ void usbnet_disconnect (struct usb_interface *intf)
- 		   xdev->bus->bus_name, xdev->devpath,
- 		   dev->driver_info->description);
- 
--	if (dev->driver_info->unbind)
--		dev->driver_info->unbind(dev, intf);
--
- 	net = dev->net;
- 	unregister_netdev (net);
- 
-@@ -1626,6 +1623,9 @@ void usbnet_disconnect (struct usb_interface *intf)
- 
- 	usb_scuttle_anchored_urbs(&dev->deferred);
- 
-+	if (dev->driver_info->unbind)
-+		dev->driver_info->unbind(dev, intf);
-+
- 	usb_kill_urb(dev->interrupt);
- 	usb_free_urb(dev->interrupt);
- 	kfree(dev->padding_pkt);
+ #include <linux/module.h>
+ #include <linux/errno.h>
 -- 
 2.35.1
 
