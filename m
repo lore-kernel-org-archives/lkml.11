@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B333C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:23:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 491A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:23:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245591AbiFHCXB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41534 "EHLO
+        id S238022AbiFHCX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:23:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444868AbiFHCL2 (ORCPT
+        with ESMTP id S1444862AbiFHCLY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:11:28 -0400
+        Tue, 7 Jun 2022 22:11:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C430927B997;
-        Tue,  7 Jun 2022 12:25:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3DE25A818;
+        Tue,  7 Jun 2022 12:24:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C7A2611D3;
-        Tue,  7 Jun 2022 19:25:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2322BC385A2;
-        Tue,  7 Jun 2022 19:25:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04F4D6077B;
+        Tue,  7 Jun 2022 19:24:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C548C385A2;
+        Tue,  7 Jun 2022 19:24:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629910;
-        bh=whKsu2kQ5R/kSc9mTeCeMK1+7GSKVLf+ZR+OdqXreFQ=;
+        s=korg; t=1654629882;
+        bh=SOVgZGmxox99chUL0j/dLJdoiw+f0+Ci7SsA5C0yofA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KWjPsuoGwCRGEvVgC4uG5BeESN+lPr5UUY8GjH87popIxkEuHc8jKFddlWQdMJe91
-         TPVCXOBIGWsok+uA9qCL1vM7yo2q89nKBH6/FXDywgcpZhm91MwvaTA6t4oD6L02/3
-         u7nr+VSndhubdTpyikoqQ1ZbDjJ0S68bXV6TZRy4=
+        b=fIKEqwJ9JY35nTCOAossBxhSiCDoORh09P8h7/Omfe2LvJRX8wKOKghtMS6/h7sm4
+         Kk7kKAYF5v0p2S1K5Ee/yvVmiRUl2F3efG8CwGdqlw7p0evLqQoV/nSp1DFBSP9qX8
+         Dwq1VtFSGXmvyAOmGG7aaoPjDfcyzp0ANQIsNOJ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 862/879] net: ipa: fix page free in ipa_endpoint_replenish_one()
-Date:   Tue,  7 Jun 2022 19:06:20 +0200
-Message-Id: <20220607165027.876591870@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 5.18 810/879] irqchip/armada-370-xp: Do not touch Performance Counter Overflow on A375, A38x, A39x
+Date:   Tue,  7 Jun 2022 19:05:28 +0200
+Message-Id: <20220607165026.369091113@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -48,38 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Pali Rohár <pali@kernel.org>
 
-commit 70132763d5d2e94cd185e3aa92ac6a3ba89068fa upstream.
+commit a3d66a76348daf559873f19afc912a2a7c2ccdaf upstream.
 
-Currently the (possibly compound) pages used for receive buffers are
-freed using __free_pages().  But according to this comment above the
-definition of that function, that's wrong:
-    If you want to use the page's reference count to decide
-    when to free the allocation, you should allocate a compound
-    page, and use put_page() instead of __free_pages().
+Register ARMADA_370_XP_INT_FABRIC_MASK_OFFS is Armada 370 and XP specific
+and on new Armada platforms it has different meaning. It does not configure
+Performance Counter Overflow interrupt masking. So do not touch this
+register on non-A370/XP platforms (A375, A38x and A39x).
 
-Convert the call to __free_pages() in ipa_endpoint_replenish_one()
-to use put_page() instead.
-
-Fixes: 6a606b90153b8 ("net: ipa: allocate transaction in replenish loop")
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: 28da06dfd9e4 ("irqchip: armada-370-xp: Enable the PMU interrupts")
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220425113706.29310-1-pali@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ipa/ipa_endpoint.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/irqchip/irq-armada-370-xp.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1062,7 +1062,7 @@ static int ipa_endpoint_replenish_one(st
+--- a/drivers/irqchip/irq-armada-370-xp.c
++++ b/drivers/irqchip/irq-armada-370-xp.c
+@@ -308,7 +308,16 @@ static inline int armada_370_xp_msi_init
  
- 	ret = gsi_trans_page_add(trans, page, len, offset);
- 	if (ret)
--		__free_pages(page, get_order(buffer_size));
-+		put_page(page);
- 	else
- 		trans->data = page;	/* transaction owns page now */
+ static void armada_xp_mpic_perf_init(void)
+ {
+-	unsigned long cpuid = cpu_logical_map(smp_processor_id());
++	unsigned long cpuid;
++
++	/*
++	 * This Performance Counter Overflow interrupt is specific for
++	 * Armada 370 and XP. It is not available on Armada 375, 38x and 39x.
++	 */
++	if (!of_machine_is_compatible("marvell,armada-370-xp"))
++		return;
++
++	cpuid = cpu_logical_map(smp_processor_id());
  
+ 	/* Enable Performance Counter Overflow interrupts */
+ 	writel(ARMADA_370_XP_INT_CAUSE_PERF(cpuid),
 
 
