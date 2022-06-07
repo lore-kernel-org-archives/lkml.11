@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76155CCA492
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9659ECCA493
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379155AbiFGVCI (ORCPT
+        id S1379268AbiFGVCS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:02:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34230 "EHLO
+        Tue, 7 Jun 2022 17:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357931AbiFGT7C (ORCPT
+        with ESMTP id S1357761AbiFGT7l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:59:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF0E1BBAE5;
-        Tue,  7 Jun 2022 11:24:28 -0700 (PDT)
+        Tue, 7 Jun 2022 15:59:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 872D91BE64F;
+        Tue,  7 Jun 2022 11:24:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E7B4611B9;
-        Tue,  7 Jun 2022 18:24:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95B1AC385A2;
-        Tue,  7 Jun 2022 18:24:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05B88B8237C;
+        Tue,  7 Jun 2022 18:24:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57CADC34115;
+        Tue,  7 Jun 2022 18:24:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626268;
-        bh=NBK0iamOlMrlXkAP/b4ijtRd6i0U/z+DxuS8kwValWw=;
+        s=korg; t=1654626270;
+        bh=yboQIaY6PTBoi0rZ+lJYMhrkJI5XJ60q6zy4qWRh4Pw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z8mkJGBO+L2NUgwxDO/xTZgAop36ireSD2eVY/zhNDNe0TAUWcOnnWvdNHrepIMQa
-         LRTTzkb4yBoKZB0keX1+IXAdizuTteLEL8K+YO7EVn+NmrtSNJT0kqBA4qvG3vJKZ6
-         B0a4aayHGdwZ/3TH99b4EE79FXGoWaefu01HcHnI=
+        b=j/YYyOvyZ608HsTqZCE3tRJU/KI/dStKC1PqCcjWRB6dFeYu0dFbVHj0hLM8YOkHV
+         HxcriKQpaozeYknfmuOQbmiFwIEzk50FXlmQqxTSw5sY39nBAzgbDNLIT5a3vCBIcc
+         E8e3vYa1lMa+rgYUh1yJWl5LJY9Woggr92dSd1Ss=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Stephen Boyd <swboyd@chromium.org>,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 317/772] drm/msm/dp: reset DP controller before transmit phy test pattern
-Date:   Tue,  7 Jun 2022 18:58:29 +0200
-Message-Id: <20220607164958.367663242@linuxfoundation.org>
+Subject: [PATCH 5.17 318/772] drm/msm/dp: do not stop transmitting phy test pattern during DP phy compliance test
+Date:   Tue,  7 Jun 2022 18:58:30 +0200
+Message-Id: <20220607164958.395890956@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,42 +53,76 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-[ Upstream commit 581d69981159b00f0443d171a4b900089f34ccfe ]
+[ Upstream commit 2788b4efa60c1e03ac10a156f3fdbd3be0f9198c ]
 
-DP controller state can not switch from video ready state to
-transmit phy pattern state at run time. DP mainlink has to be
-teared down followed by reset controller to default state to have
-DP controller switch to transmit phy test pattern state and start
-generate specified phy test pattern to sinker once main link setup
-again.
+At normal operation, transmit phy test pattern has to be terminated before
+DP controller switch to video ready state. However during phy compliance
+testing, transmit phy test pattern should not be terminated until end of
+compliance test which usually indicated by unplugged interrupt.
+
+Only stop sending the train pattern in dp_ctrl_on_stream() if we're not
+doing compliance testing. We also no longer reset 'p_level' and
+'v_level' within dp_ctrl_on_link() due to both 'p_level' and 'v_level'
+are acquired from link status at previous dpcd read and we like to use
+those level to start link training.
 
 Changes in v2:
--- correct Fixes's commit id
+-- add more details commit text
+-- correct Fixes
 
-Fixes: 52352fe2f866 ("drm/msm/dp: use dp_ctrl_off_link_stream during PHY compliance test run")
+Changes in v3:
+-- drop unnecessary braces
+
+Fixes: 2e0adc765d88 ("drm/msm/dp: do not end dp link training until video is ready")
 Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
 Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/483563/
-Link: https://lore.kernel.org/r/1650995939-28467-2-git-send-email-quic_khsieh@quicinc.com
+Patchwork: https://patchwork.freedesktop.org/patch/483564/
+Link: https://lore.kernel.org/r/1650995939-28467-3-git-send-email-quic_khsieh@quicinc.com
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_ctrl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/msm/dp/dp_ctrl.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-index 8d1ea694d06c..02372495561a 100644
+index 02372495561a..6eb176872a17 100644
 --- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
 +++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-@@ -1519,7 +1519,7 @@ static int dp_ctrl_process_phy_test_request(struct dp_ctrl_private *ctrl)
- 	 * running. Add the global reset just before disabling the
- 	 * link clocks and core clocks.
- 	 */
--	ret = dp_ctrl_off_link_stream(&ctrl->dp_ctrl);
-+	ret = dp_ctrl_off(&ctrl->dp_ctrl);
+@@ -1686,8 +1686,6 @@ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl)
+ 		ctrl->link->link_params.rate,
+ 		ctrl->link->link_params.num_lanes, ctrl->dp_ctrl.pixel_rate);
+ 
+-	ctrl->link->phy_params.p_level = 0;
+-	ctrl->link->phy_params.v_level = 0;
+ 
+ 	rc = dp_ctrl_enable_mainlink_clocks(ctrl);
+ 	if (rc)
+@@ -1809,12 +1807,6 @@ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
+ 		}
+ 	}
+ 
+-	if (!dp_ctrl_channel_eq_ok(ctrl))
+-		dp_ctrl_link_retrain(ctrl);
+-
+-	/* stop txing train pattern to end link training */
+-	dp_ctrl_clear_training_pattern(ctrl);
+-
+ 	ret = dp_ctrl_enable_stream_clocks(ctrl);
  	if (ret) {
- 		DRM_ERROR("failed to disable DP controller\n");
- 		return ret;
+ 		DRM_ERROR("Failed to start pixel clocks. ret=%d\n", ret);
+@@ -1826,6 +1818,12 @@ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
+ 		return 0;
+ 	}
+ 
++	if (!dp_ctrl_channel_eq_ok(ctrl))
++		dp_ctrl_link_retrain(ctrl);
++
++	/* stop txing train pattern to end link training */
++	dp_ctrl_clear_training_pattern(ctrl);
++
+ 	/*
+ 	 * Set up transfer unit values and set controller state to send
+ 	 * video.
 -- 
 2.35.1
 
