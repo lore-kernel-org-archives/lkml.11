@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C44CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B482AC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:32:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383335AbiFGWaw (ORCPT
+        id S1383182AbiFGWan (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
+        Tue, 7 Jun 2022 18:30:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380794AbiFGVQ7 (ORCPT
+        with ESMTP id S1380807AbiFGVQ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:16:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B179C2982C;
-        Tue,  7 Jun 2022 11:57:25 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738981CFF9;
+        Tue,  7 Jun 2022 11:57:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E76EB8233E;
-        Tue,  7 Jun 2022 18:57:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D72C9C385A2;
-        Tue,  7 Jun 2022 18:57:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E57E6176D;
+        Tue,  7 Jun 2022 18:57:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17A41C34115;
+        Tue,  7 Jun 2022 18:57:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628243;
-        bh=l+KNCHbgVMmd/yIZZbjqm8gJi4yhr1wcah02wTfDYYw=;
+        s=korg; t=1654628259;
+        bh=5x9rPzB2VVz92YlALq//O6CF/mu6mIhkuZuW8AeZanY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZNV031xN9tKDoklMlydq2Q2J6KlmDYQn9609QGRwJfsCEZqlwCJAGa9E+UN2k+GPQ
-         6yBSnWiPx2+0Ba58plVWGE9lEx9fvY3J3QbUWM5ghqbrFE3FZCubePZa1HTtm0nbRY
-         6oodKPSgSLi/Pb1hHSHk5zCYnjO24cj0cl8z1prU=
+        b=M1EQ+6DNZDpd6mArIc4lyfhVmCb+KjQra5NnoljBuvL4bGOFjrbE911LJUY4VToSk
+         BJ05b3LKMBv/racdkcCwa68QxlFbshbSWwJs0rJIu2+qRHuP2peMvCTgwh6z7B9mVI
+         huUzLRzmh20t0QeGuhTSk3MVoR10y4CNk0zfZgx8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Robert Foss <robert.foss@linaro.org>,
+        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 258/879] drm/bridge: anx7625: check the return on anx7625_aux_trans
-Date:   Tue,  7 Jun 2022 18:56:16 +0200
-Message-Id: <20220607165010.338124319@linuxfoundation.org>
+Subject: [PATCH 5.18 264/879] drm/ssd130x: Fix rectangle updates
+Date:   Tue,  7 Jun 2022 18:56:22 +0200
+Message-Id: <20220607165010.513065628@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,46 +50,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 
-[ Upstream commit d583e752732421b26fef0d65020565f3bef12248 ]
+[ Upstream commit a97e753fd358e23155ae42c61292dfd57eb54c4a ]
 
-Clang static analysis reports this issue
-anx7625.c:876:13: warning: The left operand of '&' is
-  a garbage value
-  if (!(bcap & 0xOA01)) {
-        ~~~~ ^
+The rectangle update functions ssd130x_fb_blit_rect() and
+ssd130x_update_rect() do not behave correctly when x1 != 0 or y1 !=
+0, or when y1 or y2 are not aligned to display page boundaries.
+E.g. when used as a text console, only the first line of text is shown
+on the display.
 
-bcap is only set by a successful call to
-anx7625_aux_trans().  So check.
+  1. The buffer passed by ssd130x_fb_blit_rect() points to the first
+     byte of monochrome bitmap data, and thus has its origin at (x1,
+     y1), while ssd130x_update_rect() assumes it is at (0, 0).
+     Fix ssd130x_update_rect() by changing the vertical and horizontal
+     loop ranges, and adding the offsets only when needed.
 
-Fixes: cd1637c7e480 ("drm/bridge: anx7625: add HDCP support")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Fixes: adca62ec370c ("drm/bridge: anx7625: Support reading edid through aux channel")
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220303201943.501746-1-trix@redhat.com
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
+  2. In ssd130x_fb_blit_rect(), align y1 and y2 to the display page
+     boundaries before doing the color conversion, so the full page
+     is converted and updated.
+     Remove the correction for an unaligned y1 from
+     ssd130x_update_rect(), and add a check to make sure y1 is aligned.
+
+Fixes: a61732e808672cfa ("drm: Add driver for Solomon SSD130x OLED displays")
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Javier Martinez Canillas <javierm@redhat.com>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220317081830.1211400-4-geert@linux-m68k.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/analogix/anx7625.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/solomon/ssd130x.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index 31ecf5626f1d..8e1851a57638 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-@@ -874,7 +874,10 @@ static int anx7625_hdcp_enable(struct anx7625_data *ctx)
- 	}
+diff --git a/drivers/gpu/drm/solomon/ssd130x.c b/drivers/gpu/drm/solomon/ssd130x.c
+index caee851efd57..7c99af4ce9dd 100644
+--- a/drivers/gpu/drm/solomon/ssd130x.c
++++ b/drivers/gpu/drm/solomon/ssd130x.c
+@@ -355,11 +355,14 @@ static int ssd130x_update_rect(struct ssd130x_device *ssd130x, u8 *buf,
+ 	unsigned int width = drm_rect_width(rect);
+ 	unsigned int height = drm_rect_height(rect);
+ 	unsigned int line_length = DIV_ROUND_UP(width, 8);
+-	unsigned int pages = DIV_ROUND_UP(y % 8 + height, 8);
++	unsigned int pages = DIV_ROUND_UP(height, 8);
++	struct drm_device *drm = &ssd130x->drm;
+ 	u32 array_idx = 0;
+ 	int ret, i, j, k;
+ 	u8 *data_array = NULL;
  
- 	/* Read downstream capability */
--	anx7625_aux_trans(ctx, DP_AUX_NATIVE_READ, 0x68028, 1, &bcap);
-+	ret = anx7625_aux_trans(ctx, DP_AUX_NATIVE_READ, 0x68028, 1, &bcap);
-+	if (ret < 0)
-+		return ret;
++	drm_WARN_ONCE(drm, y % 8 != 0, "y must be aligned to screen page\n");
 +
- 	if (!(bcap & 0x01)) {
- 		pr_warn("downstream not support HDCP 1.4, cap(%x).\n", bcap);
- 		return 0;
+ 	data_array = kcalloc(width, pages, GFP_KERNEL);
+ 	if (!data_array)
+ 		return -ENOMEM;
+@@ -401,13 +404,13 @@ static int ssd130x_update_rect(struct ssd130x_device *ssd130x, u8 *buf,
+ 	if (ret < 0)
+ 		goto out_free;
+ 
+-	for (i = y / 8; i < y / 8 + pages; i++) {
++	for (i = 0; i < pages; i++) {
+ 		int m = 8;
+ 
+ 		/* Last page may be partial */
+-		if (8 * (i + 1) > ssd130x->height)
++		if (8 * (y / 8 + i + 1) > ssd130x->height)
+ 			m = ssd130x->height % 8;
+-		for (j = x; j < x + width; j++) {
++		for (j = 0; j < width; j++) {
+ 			u8 data = 0;
+ 
+ 			for (k = 0; k < m; k++) {
+@@ -454,6 +457,10 @@ static int ssd130x_fb_blit_rect(struct drm_framebuffer *fb, const struct iosys_m
+ 	int ret = 0;
+ 	u8 *buf = NULL;
+ 
++	/* Align y to display page boundaries */
++	rect->y1 = round_down(rect->y1, 8);
++	rect->y2 = min_t(unsigned int, round_up(rect->y2, 8), ssd130x->height);
++
+ 	buf = kcalloc(fb->width, fb->height, GFP_KERNEL);
+ 	if (!buf)
+ 		return -ENOMEM;
 -- 
 2.35.1
 
