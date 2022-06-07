@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5AB2C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05459CCA482
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386539AbiFGWtD (ORCPT
+        id S1386172AbiFGWsT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:49:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52156 "EHLO
+        Tue, 7 Jun 2022 18:48:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381329AbiFGVk1 (ORCPT
+        with ESMTP id S1381285AbiFGVkY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:40:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9761318FF18;
-        Tue,  7 Jun 2022 12:06:46 -0700 (PDT)
+        Tue, 7 Jun 2022 17:40:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60A0616FEEC;
+        Tue,  7 Jun 2022 12:06:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AFF5D61846;
-        Tue,  7 Jun 2022 19:06:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8E73C341D3;
-        Tue,  7 Jun 2022 19:06:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EFB48617DA;
+        Tue,  7 Jun 2022 19:06:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F44DC385A2;
+        Tue,  7 Jun 2022 19:06:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628805;
-        bh=o2wbFfEQvs2eiY4N0Y272HxREAh16iSWwNULUjZBAAI=;
+        s=korg; t=1654628769;
+        bh=/LaCpluMEeShuvIrMiUNHXDWu5sar2QacCl1BpBcrRM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ut2oZ1PyvOy77mRkIebEpifkzaHXJQQai0720S7jQBo3Rl3D3OWlIPKLBPwL0szC4
-         R0NE0j5fgBxek64XsYs0pAPk4MB55qsyGSpedqdPA4UPaJwLaV25pHkRssIJeODH83
-         j5qpqTOMYp+DC9xr98qzgFH/M4GG6uTkCKyB1Kjw=
+        b=DMDbfDbchsYrYAb2frUDigqtdocfe9MlSEqkZIUx3zgVZEPCri2UXlOecnESeCc2D
+         yQFJyuongZk8VT//uewKgxgJ9AEckb8p5fs2fh2cXFeOR1sO+fsZjPnyfnvvPNo2dg
+         LlmoNqvnO8ddNJwgJZB8DJaWCOLCIdUSlXzU0/l8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Pierre Gondois <pierre.gondois@arm.com>,
-        Vincent Donnefort <vincent.donnefort@arm.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Michael Rodin <mrodin@de.adit-jv.com>,
+        LUU HOAI <hoai.luu.ub@renesas.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 421/879] PM: EM: Decrement policy counter
-Date:   Tue,  7 Jun 2022 18:58:59 +0200
-Message-Id: <20220607165015.084278018@linuxfoundation.org>
+Subject: [PATCH 5.18 448/879] media: vsp1: Fix offset calculation for plane cropping
+Date:   Tue,  7 Jun 2022 18:59:26 +0200
+Message-Id: <20220607165015.873509496@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,40 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre Gondois <Pierre.Gondois@arm.com>
+From: Michael Rodin <mrodin@de.adit-jv.com>
 
-[ Upstream commit c9d8923bfbcb63f15ea6cb2b5c8426fc3d96f643 ]
+[ Upstream commit 5f25abec8f21b7527c1223a354d23c270befddb3 ]
 
-In commit e458716a92b57 ("PM: EM: Mark inefficiencies in CPUFreq"),
-cpufreq_cpu_get() is called without a cpufreq_cpu_put(), permanently
-increasing the reference counts of the policy struct.
+The vertical subsampling factor is currently not considered in the
+offset calculation for plane cropping done in rpf_configure_partition.
+This causes a distortion (shift of the color plane) when formats with
+the vsub factor larger than 1 are used (e.g. NV12, see
+vsp1_video_formats in vsp1_pipe.c). This commit considers vsub factor
+for all planes except plane 0 (luminance).
 
-Decrement the reference count once the policy struct is not used
-anymore.
+Drop generalization of the offset calculation to reduce the binary size.
 
-Fixes: e458716a92b57 ("PM: EM: Mark inefficiencies in CPUFreq")
-Tested-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: Pierre Gondois <pierre.gondois@arm.com>
-Reviewed-by: Vincent Donnefort <vincent.donnefort@arm.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: e5ad37b64de9 ("[media] v4l: vsp1: Add cropping support")
+Signed-off-by: Michael Rodin <mrodin@de.adit-jv.com>
+Signed-off-by: LUU HOAI <hoai.luu.ub@renesas.com>
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/power/energy_model.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/media/platform/renesas/vsp1/vsp1_rpf.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/power/energy_model.c b/kernel/power/energy_model.c
-index 0153b0ca7b23..6219aaa454b5 100644
---- a/kernel/power/energy_model.c
-+++ b/kernel/power/energy_model.c
-@@ -259,6 +259,8 @@ static void em_cpufreq_update_efficiencies(struct device *dev)
- 			found++;
+diff --git a/drivers/media/platform/renesas/vsp1/vsp1_rpf.c b/drivers/media/platform/renesas/vsp1/vsp1_rpf.c
+index 85587c1b6a37..75083cb234fe 100644
+--- a/drivers/media/platform/renesas/vsp1/vsp1_rpf.c
++++ b/drivers/media/platform/renesas/vsp1/vsp1_rpf.c
+@@ -291,11 +291,11 @@ static void rpf_configure_partition(struct vsp1_entity *entity,
+ 		     + crop.left * fmtinfo->bpp[0] / 8;
+ 
+ 	if (format->num_planes > 1) {
++		unsigned int bpl = format->plane_fmt[1].bytesperline;
+ 		unsigned int offset;
+ 
+-		offset = crop.top * format->plane_fmt[1].bytesperline
+-		       + crop.left / fmtinfo->hsub
+-		       * fmtinfo->bpp[1] / 8;
++		offset = crop.top / fmtinfo->vsub * bpl
++		       + crop.left / fmtinfo->hsub * fmtinfo->bpp[1] / 8;
+ 		mem.addr[1] += offset;
+ 		mem.addr[2] += offset;
  	}
- 
-+	cpufreq_cpu_put(policy);
-+
- 	if (!found)
- 		return;
- 
 -- 
 2.35.1
 
