@@ -2,178 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA76C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:46:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10B27C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:46:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241531AbiFGKqF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:46:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41612 "EHLO
+        id S241595AbiFGKqO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:46:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241459AbiFGKpf (ORCPT
+        with ESMTP id S241482AbiFGKpp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:45:35 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C0B61E3E7;
-        Tue,  7 Jun 2022 03:45:28 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id v1so23651420ejg.13;
-        Tue, 07 Jun 2022 03:45:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:from:to:cc:subject:date:in-reply-to:message-id
-         :mime-version;
-        bh=5iMSi5NreryGR8izdeYc2rW3YzGt+AHDIAmvUOT38HA=;
-        b=mUGaFDf9Gq0PSdRL0ePEpqPTGkc1KrPolQlTAYyeymOzOnlEIgzV3lIifZX+vORBp4
-         aPyi3xOaoTHuTDpvRYxKep8i1RKNnJYRIgY5tBNcScV9B7KDzNgI90XHeDYh39IVbeOm
-         16vSzWm/lkp6CP+owW9BVb6RLwQzLyt8C3F2yEumydUgagXiWzN9PVOyHBdcnrfVOn1O
-         bP7ZQOiYH9lJ5HYmQwV0OEfZ3ofCnzj5ei0Bbgw0TNWlmb6yeFsGHiqK/jvz+JeQ/++R
-         oOKpuNnTlQmbT0RrXb3m6K0MJDn0oDuHvSeYPrPle0WJmKDTGM3bmwvA6DW28RkBRquX
-         lbBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=5iMSi5NreryGR8izdeYc2rW3YzGt+AHDIAmvUOT38HA=;
-        b=MUO3LlOndnL+/OWB0NnHXS1pW2x9/C30lrB7SXlOen6nTsA3pSuNBXP2xT14se8ZD2
-         loFv00cBfZEqcCOI0E1E8gNPjZzBqlePs+v28e09v6GQedB16RgkKtEh0l8mHWfIcwj6
-         S9Od37U+9rPfXRKiIlAUxfUBCQ2r+qMgl3TgCgSvNtqOc9sUqNPoVnwY7bp8XNOoVk3j
-         YqwoiQHtIggpGJnLfdjRb0BBTu84+qov3MB4jLCxj7yo6aqE6AqpgmROI2CVRiy3wv0o
-         2gjHKQybw0VQ1NMIgm/2aPq/jgV6cJUn2HtLxgVbJ1MHFPYEb2X1D6zyw/AExsiDTLHr
-         CnGg==
-X-Gm-Message-State: AOAM5303tLabLlVHJ4R0GEmgB/tIZFHJMgZ2gpQ6pY4Jt8S2mOuTNr/F
-        eVAvbdROVHIw+E9uPDI3FeQ=
-X-Google-Smtp-Source: ABdhPJyC3axRmTgpQLe92bAYa+ea9uBIxBbgw9QtK8HQMRAK5klP6mYvkHGZslsJ56KeVDZNNFEhww==
-X-Received: by 2002:a17:907:761c:b0:6d6:e553:7bd1 with SMTP id jx28-20020a170907761c00b006d6e5537bd1mr25471613ejc.5.1654598726651;
-        Tue, 07 Jun 2022 03:45:26 -0700 (PDT)
-Received: from localhost (92.40.203.111.threembb.co.uk. [92.40.203.111])
-        by smtp.gmail.com with ESMTPSA id p4-20020a170906784400b00702d8b43df3sm7369536ejm.167.2022.06.07.03.45.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 03:45:25 -0700 (PDT)
-References: <20220603135714.12007-1-aidanmacdonald.0x0@gmail.com>
- <20220603135714.12007-6-aidanmacdonald.0x0@gmail.com>
- <20220605225504.GA3678983-robh@kernel.org>
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     linus.walleij@linaro.org, brgl@bgdev.pl,
-        krzysztof.kozlowski+dt@linaro.org, wens@csie.org, jic23@kernel.org,
-        lee.jones@linaro.org, sre@kernel.org, broonie@kernel.org,
-        gregkh@linuxfoundation.org, lgirdwood@gmail.com, lars@metafoo.de,
-        rafael@kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 05/10] dt-bindings: gpio: Add AXP192 GPIO bindings
-Date:   Tue, 07 Jun 2022 11:34:19 +0100
-In-reply-to: <20220605225504.GA3678983-robh@kernel.org>
-Message-ID: <7w5P7NKqcSgfwmILB1hRmmdtkmw7UXrH@localhost>
+        Tue, 7 Jun 2022 06:45:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CED7ED734
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 03:45:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1275AB81F05
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:45:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34022C34119;
+        Tue,  7 Jun 2022 10:45:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654598737;
+        bh=VWwzCqMXrN/G0KyRMlKG4MamL4lgLmSXarbHCk4VCkA=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=bgS3geV/mOzLet2UKYeM0PnA/8Xmll1Djy9ySD6xUZ+i+sR+WpVZIRkahpn4Mdo3a
+         cAVRmDT8n0CigHgEDKNvLHkjsKiyPEfpZpcU8fiFLH7hpICXKUuN7nBOjWWLFad4WN
+         vFSY+y9Ps3+fRN5sYJDjizcz4ZzDPaZ5WywyI04soPjf3ZGC7vqha5YhOXLRQ7oXwG
+         kV1sr8hQhJBN0TmyFAbM40CAl9smif3NBJN95EVkB6vv1l95KimNOB7a0ZRG4J9pYC
+         w8DPldUPG9BzMsBMP7GONGRUZqdsZQjPveFamdbhT+BJa5TdPsWIpRu1tQN5Ym7Qgz
+         mH9BBfKjcaFxg==
+From:   Mark Brown <broonie@kernel.org>
+To:     rdunlap@infradead.org, linux-kernel@vger.kernel.org
+Cc:     Liam Girdwood <lgirdwood@gmail.com>, Takashi Iwai <tiwai@suse.com>,
+        lkp@intel.com, steve.lee.analog@gmail.com,
+        Jaroslav Kysela <perex@perex.cz>, alsa-devel@alsa-project.org
+In-Reply-To: <20220605163123.23537-1-rdunlap@infradead.org>
+References: <20220605163123.23537-1-rdunlap@infradead.org>
+Subject: Re: [PATCH] ASoC: max98390: use linux/gpio/consumer.h to fix build
+Message-Id: <165459873591.301808.2566417791038246308.b4-ty@kernel.org>
+Date:   Tue, 07 Jun 2022 11:45:35 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sun, 5 Jun 2022 09:31:23 -0700, Randy Dunlap wrote:
+> Change the header file to fix build errors in max98390.c:
+> 
+> ../sound/soc/codecs/max98390.c: In function 'max98390_i2c_probe':
+> ../sound/soc/codecs/max98390.c:1076:22: error: implicit declaration of function 'devm_gpiod_get_optional'; did you mean 'devm_regulator_get_optional'? [-Werror=implicit-function-declaration]
+>  1076 |         reset_gpio = devm_gpiod_get_optional(&i2c->dev,
+> ../sound/soc/codecs/max98390.c:1077:55: error: 'GPIOD_OUT_HIGH' undeclared (first use in this function); did you mean 'GPIOF_INIT_HIGH'?
+>  1077 |                                              "reset", GPIOD_OUT_HIGH);
+> ../sound/soc/codecs/max98390.c:1077:55: note: each undeclared identifier is reported only once for each function it appears in
+> ../sound/soc/codecs/max98390.c:1083:17: error: implicit declaration of function 'gpiod_set_value_cansleep'; did you mean 'gpio_set_value_cansleep'? [-Werror=implicit-function-declaration]
+>  1083 |                 gpiod_set_value_cansleep(reset_gpio, 0);
+> 
+> [...]
 
-Rob Herring <robh@kernel.org> writes:
+Applied to
 
-> On Fri, Jun 03, 2022 at 02:57:09PM +0100, Aidan MacDonald wrote:
->> The AXP192 PMIC is different enough from the PMICs supported by
->> the AXP20x GPIO driver to warrant a separate driver. The AXP192
->> driver also supports interrupts and pinconf settings.
->> 
->> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
->> ---
->>  .../bindings/gpio/x-powers,axp192-gpio.yaml   | 59 +++++++++++++++++++
->>  1 file changed, 59 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/gpio/x-powers,axp192-gpio.yaml
->> 
->> diff --git a/Documentation/devicetree/bindings/gpio/x-powers,axp192-gpio.yaml b/Documentation/devicetree/bindings/gpio/x-powers,axp192-gpio.yaml
->> new file mode 100644
->> index 000000000000..7a985640ade8
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/gpio/x-powers,axp192-gpio.yaml
->> @@ -0,0 +1,59 @@
->> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
->> +%YAML 1.2
->> +---
->> +$id: "http://devicetree.org/schemas/gpio/x-powers,axp192-gpio.yaml#"
->> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
->> +
->> +title: X-Powers AXP192 GPIO Device Tree Bindings
->> +
->> +maintainers:
->> +  - Chen-Yu Tsai <wens@csie.org>
->> +
->> +properties:
->> +  "#gpio-cells":
->> +    const: 2
->> +    description: >
->> +      The first cell is the pin number and the second is the GPIO flags.
->> +
->> +  compatible:
->> +    oneOf:
->> +      - enum:
->
-> No need for 'oneOf' with only 1 entry.
->
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-Got it.
+Thanks!
 
->> +          - x-powers,axp192-gpio
->> +
->> +  gpio-controller: true
->> +
->> +patternProperties:
->> +  "^.*-pins?$":
->
-> You can omit '^.*'
->
-> Why does 's' need to be optional?
->
+[1/1] ASoC: max98390: use linux/gpio/consumer.h to fix build
+      commit: aa7407f807b250eca7697e5fe9a699bc6c2fab71
 
-TBH I just copied this from x-powers,axp209-gpio.yaml. A similar pattern
-is used in a few other bindings, eg. allwinner,sun4i-a10-pinctrl.yaml.
-I guess it's to allow the node names to sound more natural when there's
-only one pin.
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
-I am going to send a v2 with '-pins?$' but if you would prefer to have
-'-pins$' that's fine. I don't mind either way.
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
-Regards,
-Aidan
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
->> +    $ref: /schemas/pinctrl/pinmux-node.yaml#
->> +
->> +    properties:
->> +      pins:
->> +        items:
->> +          enum:
->> +            - GPIO0
->> +            - GPIO1
->> +            - GPIO2
->> +            - GPIO3
->> +            - GPIO4
->> +            - N_RSTO
->> +
->> +      function:
->> +        enum:
->> +          - output
->> +          - input
->> +          - ldo
->> +          - pwm
->> +          - adc
->> +          - low_output
->> +          - floating
->> +          - ext_chg_ctl
->> +          - ldo_status
->> +
->> +required:
->> +  - compatible
->> +  - "#gpio-cells"
->> +  - gpio-controller
->> +
->> +additionalProperties: false
->> +
->> +...
->> -- 
->> 2.35.1
->> 
->> 
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
 
+Thanks,
+Mark
