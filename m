@@ -2,200 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76781C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:31:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D58CCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:46:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231194AbiFHCbU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:31:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40162 "EHLO
+        id S1359184AbiFHCqd (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:46:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238794AbiFHC3G (ORCPT
+        with ESMTP id S1390486AbiFHCka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:29:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75E79874C;
-        Tue,  7 Jun 2022 12:20:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C07CEB823CA;
-        Tue,  7 Jun 2022 19:20:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B017C385A2;
-        Tue,  7 Jun 2022 19:19:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629599;
-        bh=6XuCpoL494tMHj5PjWws+l+PxKw3BZQmZdyQYxQwgsc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1JoRJoa1PjBxT8Uk5HzHqv4nB2G4spUy/kpquOq5iHqa5FsrhN+DAy5Uexq0Y9u+J
-         tCKXrsNe/YgPlOUTpXmF0YZ+la9vbkxsR4Cy6xcbcNbDOa7laPUP1FK+ocKm0yT4em
-         WCnz0PPEk8mPQk9SOpabG3L77whd94c2eDWvnjMk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Laurent Vivier <laurent@vivier.eu>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH 5.18 748/879] tty: goldfish: Introduce gf_ioread32()/gf_iowrite32()
-Date:   Tue,  7 Jun 2022 19:04:26 +0200
-Message-Id: <20220607165024.567536376@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 22:40:30 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF4B2533F5
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:22:46 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id 67-20020a1c1946000000b00397382b44f4so10157394wmz.2
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:22:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=I0TYj0aY/TkdqOtA53I+eFE0LIyvHOAIiCLx8hJBREw=;
+        b=e40+dm/Z0W0bIfob5pTvP0J2RyA4XpxF11pWtEW7puVHQEiUnWvd2CVD5XctVds9Bn
+         PShLixF5Z4+GFBxqf2YR+q4TKyj0YAyTh8B08UoCUcVGBEeXJw3LB3TDHcgY0OphiaBw
+         BeuKOWXH2i+K+No4ln5jeT/AJUK5T9VEOcG8dUQckKV3KbXWODCdTYeGYur0rCBwOLoT
+         rKutET82TgGy2BgoaxPWUnW8sGs6P4YskJacxjyO7dDtvzcbFv1zJoPmg+MuHPjFSbt/
+         RweF/zHNN6q+a6d0MWPovexRLYenU/ASh1h0PWKSbW10Qc96jNP5Nk2Ls3O4zqDzQnL6
+         fOZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=I0TYj0aY/TkdqOtA53I+eFE0LIyvHOAIiCLx8hJBREw=;
+        b=urrRMNjwJGTk0IaEctLoYSkvtax23HVD8gpiUOwmgtkrn0ZKea4fJcQUi0m4sn5bCX
+         vD3qAatM7uOfGmVD+9Cg6N4+UpY7CPaq6Vl8Nzhw+fq56QLYXdferH7IkpQ+Et/rqMjr
+         hxl1bah84FEZU0sJxTAFuFhAA3iz+RxQncAX28U7x6j4E5lvFHWU2NNyXrY/0DtxH51o
+         7rjL527Lf0wzYSgBwjx5qvJKmANRdYd5qVss93nftm8nRScqvNxqitR2KHnMsXAJKMLL
+         QYRSYgubuwMqhorYdp48TuUg+fcrLfmtg8r+pdFYdK6BIPjLhHJsmQfn03KrztQLDYuJ
+         lPZQ==
+X-Gm-Message-State: AOAM5312ewyS9UQl6gpQDvoPeiwQCXJljBBMkoSMi4awBStKRJfz7owV
+        N18s2y9T5i6LWhbmjhKvUVZzCk/DFTXICX4xqkQY
+X-Google-Smtp-Source: ABdhPJyYw/U5+gWoypUqkMl2O59z0OyPFHm7PAW4ahOWZ6+WyOnqtBiiwAIn75Yllh4b0x6DATOkqoiYJsazfLTYCeU=
+X-Received: by 2002:a05:600c:414e:b0:397:55aa:ccc0 with SMTP id
+ h14-20020a05600c414e00b0039755aaccc0mr61566727wmm.51.1654636964669; Tue, 07
+ Jun 2022 14:22:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220217142133.72205-1-cgzones@googlemail.com> <20220217142133.72205-4-cgzones@googlemail.com>
+In-Reply-To: <20220217142133.72205-4-cgzones@googlemail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 7 Jun 2022 17:22:34 -0400
+Message-ID: <CAHC9VhRatc13ZsBSsjZeGtBfz0ouUGL9n0LTjbQtuZtYv2M43w@mail.gmail.com>
+Subject: Re: [PATCH 5/5] selinux: drop unnecessary NULL check
+To:     =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>
+Cc:     selinux@vger.kernel.org,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        Serge Hallyn <serge@hallyn.com>,
+        Austin Kim <austin.kim@lge.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Laurent Vivier <laurent@vivier.eu>
+On Thu, Feb 17, 2022 at 9:22 AM Christian G=C3=B6ttsche
+<cgzones@googlemail.com> wrote:
+>
+> Commit e3489f8974e1 ("selinux: kill selinux_sb_get_mnt_opts()")
+> introduced a NULL check on the context after a successful call to
+> security_sid_to_context().  This is on the one hand redundant after
+> checking for success and on the other hand insufficient on an actual
+> NULL pointer, since the context is passed to seq_escape() leading to a
+> call of strlen() on it.
+>
+> Reported by Clang analyzer:
+>
+>     In file included from security/selinux/hooks.c:28:
+>     In file included from ./include/linux/tracehook.h:50:
+>     In file included from ./include/linux/memcontrol.h:13:
+>     In file included from ./include/linux/cgroup.h:18:
+>     ./include/linux/seq_file.h:136:25: warning: Null pointer passed as 1s=
+t argument to string length function [unix.cstring.NullArg]
+>             seq_escape_mem(m, src, strlen(src), flags, esc);
+>                                    ^~~~~~~~~~~
+>
+> Signed-off-by: Christian G=C3=B6ttsche <cgzones@googlemail.com>
+> ---
+>  security/selinux/hooks.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 2e2ac4a3327479f7e2744cdd88a5c823f2057bad upstream.
+I was waiting for Nick to reply, but he never did, and this looks good
+to me so I just merged it into selinux/next.  Thanks for your patience
+Christian.
 
-The goldfish TTY device was clearly defined as having little-endian
-registers, but the switch to __raw_{read,write}l(() broke its driver
-when running on big-endian kernels (if anyone ever tried this).
-
-The m68k qemu implementation got this wrong, and assumed native-endian
-registers.  While this is a bug in qemu, it is probably impossible to
-fix that since there is no way of knowing which other operating systems
-have started relying on that bug over the years.
-
-Hence revert commit da31de35cd2f ("tty: goldfish: use
-__raw_writel()/__raw_readl()", and define gf_ioread32()/gf_iowrite32()
-to be able to use accessors defined by the architecture.
-
-Cc: stable@vger.kernel.org # v5.11+
-Fixes: da31de35cd2fb78f ("tty: goldfish: use __raw_writel()/__raw_readl()")
-Signed-off-by: Laurent Vivier <laurent@vivier.eu>
-Link: https://lore.kernel.org/r/20220406201523.243733-2-laurent@vivier.eu
-[geert: Add rationale based on Arnd's comments]
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/goldfish.c   |   20 ++++++++++----------
- include/linux/goldfish.h |   15 +++++++++++----
- 2 files changed, 21 insertions(+), 14 deletions(-)
-
---- a/drivers/tty/goldfish.c
-+++ b/drivers/tty/goldfish.c
-@@ -61,13 +61,13 @@ static void do_rw_io(struct goldfish_tty
- 	spin_lock_irqsave(&qtty->lock, irq_flags);
- 	gf_write_ptr((void *)address, base + GOLDFISH_TTY_REG_DATA_PTR,
- 		     base + GOLDFISH_TTY_REG_DATA_PTR_HIGH);
--	__raw_writel(count, base + GOLDFISH_TTY_REG_DATA_LEN);
-+	gf_iowrite32(count, base + GOLDFISH_TTY_REG_DATA_LEN);
- 
- 	if (is_write)
--		__raw_writel(GOLDFISH_TTY_CMD_WRITE_BUFFER,
-+		gf_iowrite32(GOLDFISH_TTY_CMD_WRITE_BUFFER,
- 		       base + GOLDFISH_TTY_REG_CMD);
- 	else
--		__raw_writel(GOLDFISH_TTY_CMD_READ_BUFFER,
-+		gf_iowrite32(GOLDFISH_TTY_CMD_READ_BUFFER,
- 		       base + GOLDFISH_TTY_REG_CMD);
- 
- 	spin_unlock_irqrestore(&qtty->lock, irq_flags);
-@@ -142,7 +142,7 @@ static irqreturn_t goldfish_tty_interrup
- 	unsigned char *buf;
- 	u32 count;
- 
--	count = __raw_readl(base + GOLDFISH_TTY_REG_BYTES_READY);
-+	count = gf_ioread32(base + GOLDFISH_TTY_REG_BYTES_READY);
- 	if (count == 0)
- 		return IRQ_NONE;
- 
-@@ -159,7 +159,7 @@ static int goldfish_tty_activate(struct
- {
- 	struct goldfish_tty *qtty = container_of(port, struct goldfish_tty,
- 									port);
--	__raw_writel(GOLDFISH_TTY_CMD_INT_ENABLE, qtty->base + GOLDFISH_TTY_REG_CMD);
-+	gf_iowrite32(GOLDFISH_TTY_CMD_INT_ENABLE, qtty->base + GOLDFISH_TTY_REG_CMD);
- 	return 0;
- }
- 
-@@ -167,7 +167,7 @@ static void goldfish_tty_shutdown(struct
- {
- 	struct goldfish_tty *qtty = container_of(port, struct goldfish_tty,
- 									port);
--	__raw_writel(GOLDFISH_TTY_CMD_INT_DISABLE, qtty->base + GOLDFISH_TTY_REG_CMD);
-+	gf_iowrite32(GOLDFISH_TTY_CMD_INT_DISABLE, qtty->base + GOLDFISH_TTY_REG_CMD);
- }
- 
- static int goldfish_tty_open(struct tty_struct *tty, struct file *filp)
-@@ -202,7 +202,7 @@ static unsigned int goldfish_tty_chars_i
- {
- 	struct goldfish_tty *qtty = &goldfish_ttys[tty->index];
- 	void __iomem *base = qtty->base;
--	return __raw_readl(base + GOLDFISH_TTY_REG_BYTES_READY);
-+	return gf_ioread32(base + GOLDFISH_TTY_REG_BYTES_READY);
- }
- 
- static void goldfish_tty_console_write(struct console *co, const char *b,
-@@ -355,7 +355,7 @@ static int goldfish_tty_probe(struct pla
- 	 * on Ranchu emulator (qemu2) returns 1 here and
- 	 * driver will use physical addresses.
- 	 */
--	qtty->version = __raw_readl(base + GOLDFISH_TTY_REG_VERSION);
-+	qtty->version = gf_ioread32(base + GOLDFISH_TTY_REG_VERSION);
- 
- 	/*
- 	 * Goldfish TTY device on Ranchu emulator (qemu2)
-@@ -374,7 +374,7 @@ static int goldfish_tty_probe(struct pla
- 		}
- 	}
- 
--	__raw_writel(GOLDFISH_TTY_CMD_INT_DISABLE, base + GOLDFISH_TTY_REG_CMD);
-+	gf_iowrite32(GOLDFISH_TTY_CMD_INT_DISABLE, base + GOLDFISH_TTY_REG_CMD);
- 
- 	ret = request_irq(irq, goldfish_tty_interrupt, IRQF_SHARED,
- 			  "goldfish_tty", qtty);
-@@ -436,7 +436,7 @@ static int goldfish_tty_remove(struct pl
- #ifdef CONFIG_GOLDFISH_TTY_EARLY_CONSOLE
- static void gf_early_console_putchar(struct uart_port *port, unsigned char ch)
- {
--	__raw_writel(ch, port->membase);
-+	gf_iowrite32(ch, port->membase);
- }
- 
- static void gf_early_write(struct console *con, const char *s, unsigned int n)
---- a/include/linux/goldfish.h
-+++ b/include/linux/goldfish.h
-@@ -8,14 +8,21 @@
- 
- /* Helpers for Goldfish virtual platform */
- 
-+#ifndef gf_ioread32
-+#define gf_ioread32 ioread32
-+#endif
-+#ifndef gf_iowrite32
-+#define gf_iowrite32 iowrite32
-+#endif
-+
- static inline void gf_write_ptr(const void *ptr, void __iomem *portl,
- 				void __iomem *porth)
- {
- 	const unsigned long addr = (unsigned long)ptr;
- 
--	__raw_writel(lower_32_bits(addr), portl);
-+	gf_iowrite32(lower_32_bits(addr), portl);
- #ifdef CONFIG_64BIT
--	__raw_writel(upper_32_bits(addr), porth);
-+	gf_iowrite32(upper_32_bits(addr), porth);
- #endif
- }
- 
-@@ -23,9 +30,9 @@ static inline void gf_write_dma_addr(con
- 				     void __iomem *portl,
- 				     void __iomem *porth)
- {
--	__raw_writel(lower_32_bits(addr), portl);
-+	gf_iowrite32(lower_32_bits(addr), portl);
- #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
--	__raw_writel(upper_32_bits(addr), porth);
-+	gf_iowrite32(upper_32_bits(addr), porth);
- #endif
- }
- 
-
-
+--=20
+paul-moore.com
