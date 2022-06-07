@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70010C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:12:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8664BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:12:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379391AbiFGVMA (ORCPT
+        id S1379693AbiFGVME (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:12:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58242 "EHLO
+        Tue, 7 Jun 2022 17:12:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358546AbiFGUOa (ORCPT
+        with ESMTP id S1358987AbiFGUOq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:14:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7D216BE11;
-        Tue,  7 Jun 2022 11:28:18 -0700 (PDT)
+        Tue, 7 Jun 2022 16:14:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95258170673;
+        Tue,  7 Jun 2022 11:28:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2E5AB8237F;
-        Tue,  7 Jun 2022 18:28:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61065C385A2;
-        Tue,  7 Jun 2022 18:28:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD720612EC;
+        Tue,  7 Jun 2022 18:28:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4A38C385A2;
+        Tue,  7 Jun 2022 18:28:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626495;
-        bh=LjG7GLH5U5DTD6yJQ2XCBG03jPKBoVWPy+6OfYakH0U=;
+        s=korg; t=1654626501;
+        bh=fBS2BidZn5RqdMjmAq72Xd9LzbXKHWPaJR3JL95dGIc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aEAZbQ5S7OhItLtzZSz+VTliF3iF7xqIUtGzqnMxn+x98IKzt3wtaRycBY4OO7o7C
-         aHPBPtIZWTyMlnsTe/tGamRrbTmQpjIZ3IZsKFDbCOxmcWOZhzVpllOXpjIW7+PjNF
-         yFYt4hmPWJKIlmIfSVLdaT23cHxKnM1hI6+v4mCI=
+        b=UNyCHjXLE5v2PBKf04/SiZzBGtKDyoLXJgBVUTO3ZFCPNVnVwF0078mKjy269sacV
+         KrEUDLaiHxTYcO7d0/6FvVAC54leR/KeCXSaFKuJDT9qbpB5KC5/T9oXtjWphgfqIN
+         wZ6KqESqMmlnGXycu0Z+39jVEn+vlL165E7TDp7w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 400/772] ASoC: ti: j721e-evm: Fix refcount leak in j721e_soc_probe_*
-Date:   Tue,  7 Jun 2022 18:59:52 +0200
-Message-Id: <20220607165000.798054758@linuxfoundation.org>
+Subject: [PATCH 5.17 384/772] Bluetooth: use hdev lock in activate_scan for hci_is_adv_monitoring
+Date:   Tue,  7 Jun 2022 18:59:36 +0200
+Message-Id: <20220607165000.331262660@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,134 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit a34840c4eb3278a7c29c9c57a65ce7541c66f9f2 ]
+[ Upstream commit 50a3633ae5e98cf1b80ef5b73c9e341aee9ad896 ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not needed anymore.
-Add missing of_node_put() to avoid refcount leak.
+hci_is_adv_monitoring's function documentation states that it must be
+called under the hdev lock. Paths that leads to an unlocked call are:
+discov_update => start_discovery => interleaved_discov => active_scan
+and: discov_update => start_discovery => active_scan
 
-Fixes: 6748d0559059 ("ASoC: ti: Add custom machine driver for j721e EVM (CPB and IVI)")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220512111331.44774-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+The solution is to take the lock in active_scan during the duration of
+the call to hci_is_adv_monitoring.
+
+Fixes: c32d624640fd ("Bluetooth: disable filter dup when scan for adv monitor")
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/ti/j721e-evm.c | 44 ++++++++++++++++++++++++++++++----------
- 1 file changed, 33 insertions(+), 11 deletions(-)
+ net/bluetooth/hci_request.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/sound/soc/ti/j721e-evm.c b/sound/soc/ti/j721e-evm.c
-index 4077e15ec48b..6a969874c927 100644
---- a/sound/soc/ti/j721e-evm.c
-+++ b/sound/soc/ti/j721e-evm.c
-@@ -630,17 +630,18 @@ static int j721e_soc_probe_cpb(struct j721e_priv *priv, int *link_idx,
- 	codec_node = of_parse_phandle(node, "ti,cpb-codec", 0);
- 	if (!codec_node) {
- 		dev_err(priv->dev, "CPB codec node is not provided\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_dai_node;
+diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+index 42c8047a9897..f4afe482e300 100644
+--- a/net/bluetooth/hci_request.c
++++ b/net/bluetooth/hci_request.c
+@@ -2260,6 +2260,7 @@ static int active_scan(struct hci_request *req, unsigned long opt)
+ 	if (err < 0)
+ 		own_addr_type = ADDR_LE_DEV_PUBLIC;
+ 
++	hci_dev_lock(hdev);
+ 	if (hci_is_adv_monitoring(hdev)) {
+ 		/* Duplicate filter should be disabled when some advertisement
+ 		 * monitor is activated, otherwise AdvMon can only receive one
+@@ -2276,6 +2277,7 @@ static int active_scan(struct hci_request *req, unsigned long opt)
+ 		 */
+ 		filter_dup = LE_SCAN_FILTER_DUP_DISABLE;
  	}
++	hci_dev_unlock(hdev);
  
- 	domain = &priv->audio_domains[J721E_AUDIO_DOMAIN_CPB];
- 	ret = j721e_get_clocks(priv->dev, &domain->codec, "cpb-codec-scki");
- 	if (ret)
--		return ret;
-+		goto put_codec_node;
- 
- 	ret = j721e_get_clocks(priv->dev, &domain->mcasp, "cpb-mcasp-auxclk");
- 	if (ret)
--		return ret;
-+		goto put_codec_node;
- 
- 	/*
- 	 * Common Processor Board, two links
-@@ -650,8 +651,10 @@ static int j721e_soc_probe_cpb(struct j721e_priv *priv, int *link_idx,
- 	comp_count = 6;
- 	compnent = devm_kzalloc(priv->dev, comp_count * sizeof(*compnent),
- 				GFP_KERNEL);
--	if (!compnent)
--		return -ENOMEM;
-+	if (!compnent) {
-+		ret = -ENOMEM;
-+		goto put_codec_node;
-+	}
- 
- 	comp_idx = 0;
- 	priv->dai_links[*link_idx].cpus = &compnent[comp_idx++];
-@@ -702,6 +705,12 @@ static int j721e_soc_probe_cpb(struct j721e_priv *priv, int *link_idx,
- 	(*conf_idx)++;
- 
- 	return 0;
-+
-+put_codec_node:
-+	of_node_put(codec_node);
-+put_dai_node:
-+	of_node_put(dai_node);
-+	return ret;
- }
- 
- static int j721e_soc_probe_ivi(struct j721e_priv *priv, int *link_idx,
-@@ -726,23 +735,25 @@ static int j721e_soc_probe_ivi(struct j721e_priv *priv, int *link_idx,
- 	codeca_node = of_parse_phandle(node, "ti,ivi-codec-a", 0);
- 	if (!codeca_node) {
- 		dev_err(priv->dev, "IVI codec-a node is not provided\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_dai_node;
- 	}
- 
- 	codecb_node = of_parse_phandle(node, "ti,ivi-codec-b", 0);
- 	if (!codecb_node) {
- 		dev_warn(priv->dev, "IVI codec-b node is not provided\n");
--		return 0;
-+		ret = 0;
-+		goto put_codeca_node;
- 	}
- 
- 	domain = &priv->audio_domains[J721E_AUDIO_DOMAIN_IVI];
- 	ret = j721e_get_clocks(priv->dev, &domain->codec, "ivi-codec-scki");
- 	if (ret)
--		return ret;
-+		goto put_codecb_node;
- 
- 	ret = j721e_get_clocks(priv->dev, &domain->mcasp, "ivi-mcasp-auxclk");
- 	if (ret)
--		return ret;
-+		goto put_codecb_node;
- 
- 	/*
- 	 * IVI extension, two links
-@@ -754,8 +765,10 @@ static int j721e_soc_probe_ivi(struct j721e_priv *priv, int *link_idx,
- 	comp_count = 8;
- 	compnent = devm_kzalloc(priv->dev, comp_count * sizeof(*compnent),
- 				GFP_KERNEL);
--	if (!compnent)
--		return -ENOMEM;
-+	if (!compnent) {
-+		ret = -ENOMEM;
-+		goto put_codecb_node;
-+	}
- 
- 	comp_idx = 0;
- 	priv->dai_links[*link_idx].cpus = &compnent[comp_idx++];
-@@ -816,6 +829,15 @@ static int j721e_soc_probe_ivi(struct j721e_priv *priv, int *link_idx,
- 	(*conf_idx)++;
- 
- 	return 0;
-+
-+
-+put_codecb_node:
-+	of_node_put(codecb_node);
-+put_codeca_node:
-+	of_node_put(codeca_node);
-+put_dai_node:
-+	of_node_put(dai_node);
-+	return ret;
- }
- 
- static int j721e_soc_probe(struct platform_device *pdev)
+ 	hci_req_start_scan(req, LE_SCAN_ACTIVE, interval,
+ 			   hdev->le_scan_window_discovery, own_addr_type,
 -- 
 2.35.1
 
