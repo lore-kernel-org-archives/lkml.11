@@ -2,84 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98809CCA482
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:03:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E98ACCA487
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:03:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443752AbiFHBAs (ORCPT
+        id S1444495AbiFHBBv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:00:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35082 "EHLO
+        Tue, 7 Jun 2022 21:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383758AbiFGWa7 (ORCPT
+        with ESMTP id S1381525AbiFGWb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:30:59 -0400
-Received: from 3.mo575.mail-out.ovh.net (3.mo575.mail-out.ovh.net [46.105.58.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 721F7276231
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:24:12 -0700 (PDT)
-Received: from player698.ha.ovh.net (unknown [10.111.208.67])
-        by mo575.mail-out.ovh.net (Postfix) with ESMTP id D605A221A1
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:24:10 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player698.ha.ovh.net (Postfix) with ESMTPSA id B606E2B48045A;
-        Tue,  7 Jun 2022 19:24:01 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-110S004d7b27d34-57c0-47a2-9129-0e4370540f4a,
-                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Antonino Daplas <adaplas@gmail.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Helge Deller <deller@gmx.de>, Paul Mackerras <paulus@samba.org>
-Cc:     linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>, dri-devel@lists.freedesktop.org
-Subject: [PATCH 2/7] fbdev: atyfb: Use backlight helper
-Date:   Tue,  7 Jun 2022 21:23:30 +0200
-Message-Id: <20220607192335.1137249-3-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220607192335.1137249-1-steve@sk2.org>
-References: <20220607192335.1137249-1-steve@sk2.org>
+        Tue, 7 Jun 2022 18:31:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42BDD27C24B;
+        Tue,  7 Jun 2022 12:25:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EDF63B823CA;
+        Tue,  7 Jun 2022 19:25:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60B49C385A5;
+        Tue,  7 Jun 2022 19:25:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629929;
+        bh=4pNNSTUd2ZJDIkV5UTFgoNifM2igfy8EKigtrAPUaF0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=2ovCPK5cGXPj8fXzDf4KWE40Swg46F35CA+8A3FYp9JiXD3B66pgV1fTNcuNuxO69
+         p1Xrerk5Afmn18jodO8jn14wU+9LaJWVEE4RyNFGvs/LDao+Fc1n8CEmCBOfPPMggH
+         bcFQ+IwkTA4YiPEi7y5TYVZDAj488ttLK+kWmNPk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Christopher Ferris <cferris@google.com>,
+        Carlos Llamas <cmllamas@google.com>,
+        Todd Kjos <tkjos@google.com>, Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.18 868/879] binder: fix sender_euid type in uapi header
+Date:   Tue,  7 Jun 2022 19:06:26 +0200
+Message-Id: <20220607165028.048490141@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 11950864561937417961
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudefiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheejhe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of retrieving the backlight brightness in struct
-backlight_properties manually, and then checking whether the backlight
-should be on at all, use backlight_get_brightness() which does all
-this and insulates this from future changes.
+From: Carlos Llamas <cmllamas@google.com>
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
-Cc: Helge Deller <deller@gmx.de>
-Cc: linux-fbdev@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
+commit 8cc5b032240ae5220b62c689c20459d3e1825b2d upstream.
+
+The {pid,uid}_t fields of struct binder_transaction were recently
+replaced to use kernel types in commit 169adc2b6b3c ("android/binder.h:
+add linux/android/binder(fs).h to UAPI compile-test coverage").
+
+However, using __kernel_uid_t here breaks backwards compatibility in
+architectures using 16-bits for this type, since glibc and some others
+still expect a 32-bit uid_t. Instead, let's use __kernel_uid32_t which
+avoids this compatibility problem.
+
+Fixes: 169adc2b6b3c ("android/binder.h: add linux/android/binder(fs).h to UAPI compile-test coverage")
+Reported-by: Christopher Ferris <cferris@google.com>
+Signed-off-by: Carlos Llamas <cmllamas@google.com>
+Acked-by: Todd Kjos <tkjos@google.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/aty/atyfb_base.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ include/uapi/linux/android/binder.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/aty/atyfb_base.c b/drivers/video/fbdev/aty/atyfb_base.c
-index a3e6faed7745..bec2d0c22fb2 100644
---- a/drivers/video/fbdev/aty/atyfb_base.c
-+++ b/drivers/video/fbdev/aty/atyfb_base.c
-@@ -2218,13 +2218,7 @@ static int aty_bl_update_status(struct backlight_device *bd)
- {
- 	struct atyfb_par *par = bl_get_data(bd);
- 	unsigned int reg = aty_ld_lcd(LCD_MISC_CNTL, par);
--	int level;
--
--	if (bd->props.power != FB_BLANK_UNBLANK ||
--	    bd->props.fb_blank != FB_BLANK_UNBLANK)
--		level = 0;
--	else
--		level = bd->props.brightness;
-+	int level = backlight_get_brightness(bd);
+--- a/include/uapi/linux/android/binder.h
++++ b/include/uapi/linux/android/binder.h
+@@ -289,7 +289,7 @@ struct binder_transaction_data {
+ 	/* General information about the transaction. */
+ 	__u32	        flags;
+ 	__kernel_pid_t	sender_pid;
+-	__kernel_uid_t	sender_euid;
++	__kernel_uid32_t	sender_euid;
+ 	binder_size_t	data_size;	/* number of bytes of data */
+ 	binder_size_t	offsets_size;	/* number of bytes of offsets */
  
- 	reg |= (BLMOD_EN | BIASMOD_EN);
- 	if (level > 0) {
--- 
-2.30.2
+
 
