@@ -2,233 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08E81CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:27:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41811C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:27:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385828AbiFHAZl (ORCPT
+        id S1386387AbiFHAZv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:25:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57890 "EHLO
+        Tue, 7 Jun 2022 20:25:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385920AbiFGWmP (ORCPT
+        with ESMTP id S1383305AbiFGVxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:42:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36F9F290B24
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:33:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654630421;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=x0L+WDYL2ErSdyIk/wXgdKER6Al4H5aQXP9OvHKSvcc=;
-        b=ZW8ya4pWtENVlsEIoNfEwkFPHrvL2zFfR3ERsLPH0fciTBpnUIrmZKSK+rf6dELlUq6WUR
-        Gux3SW6a8ufvjzmVzuBIgMG+GtdDlq03nGFf576OrR49dbV2pz0vGbEeKvRGGLkMZwbG11
-        vCx6ZX5twaH7oWIoaMu7IJ6p4ipfxTc=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-335-QkFO80RyM62Il9JS0DAv-w-1; Tue, 07 Jun 2022 15:33:37 -0400
-X-MC-Unique: QkFO80RyM62Il9JS0DAv-w-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 7 Jun 2022 17:53:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81D6D2432FE;
+        Tue,  7 Jun 2022 12:11:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 143933C11056;
-        Tue,  7 Jun 2022 19:30:55 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.9.252])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B61852143A29;
-        Tue,  7 Jun 2022 19:29:54 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org
-Cc:     Wayne Lin <Wayne.Lin@amd.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Mikita Lipski <mikita.lipski@amd.com>,
-        Claudio Suarez <cssk@net-c.es>, Roman Li <Roman.Li@amd.com>,
-        Ian Chen <ian.chen@amd.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Wenjing Liu <wenjing.liu@amd.com>, Jun Lei <Jun.Lei@amd.com>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Jimmy Kizito <Jimmy.Kizito@amd.com>,
-        Meenakshikumar Somasundaram <meenakshikumar.somasundaram@amd.com>,
-        Eric Yang <Eric.Yang2@amd.com>, jinzh <jinzh@github.amd.com>,
-        Alex Hung <alex.hung@amd.com>,
-        Michael Strauss <michael.strauss@amd.com>,
-        "Shen, George" <George.Shen@amd.com>,
-        "Leo (Hanghong) Ma" <hanghong.ma@amd.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [RESEND RFC 01/18] drm/amdgpu/dc/mst: Rename dp_mst_stream_allocation(_table)
-Date:   Tue,  7 Jun 2022 15:29:16 -0400
-Message-Id: <20220607192933.1333228-2-lyude@redhat.com>
-In-Reply-To: <20220607192933.1333228-1-lyude@redhat.com>
-References: <20220607192933.1333228-1-lyude@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B43DB823AF;
+        Tue,  7 Jun 2022 19:11:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82087C385A2;
+        Tue,  7 Jun 2022 19:11:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629077;
+        bh=BLFFKabw1uBbk566mu6bjmsWa8miu+GSa++UAqziYfI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rVe8qlM1XW1QZCASjLU2X2B2UjMDljWeNCkXZzc3wGLQ2MOnGit/iw/U2L7vySvkL
+         o8FGAojz1haE25itUzpR4Yew040YZFfAynWybsq7jW9FoegerMsTCOkSVkwChre+Fy
+         IEUI5THnKRIJIp4S8hcsvpI8tRvDXC/nY05TjBG8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 562/879] dt-bindings: soc: qcom: smd-rpm: Fix missing MSM8936 compatible
+Date:   Tue,  7 Jun 2022 19:01:20 +0200
+Message-Id: <20220607165019.175092916@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Just to make this more clear to outside contributors that these are
-DC-specific structs, as this also threw me into a loop a number of times
-before I figured out the purpose of this.
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: Wayne Lin <Wayne.Lin@amd.com>
-Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
+[ Upstream commit e930244918092d44b60a7b538cf60d737010ceef ]
+
+Add compatible msm8936. msm8936 covers both msm8936 and msm8939.
+The relevant driver already has the compat string but, we haven't
+documented it.
+
+Fixes: d6e52482f5ab ("drivers: soc: Add MSM8936 SMD RPM compatible")
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220418231857.3061053-1-bryan.odonoghue@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c |  9 ++++-----
- drivers/gpu/drm/amd/display/dc/core/dc_link.c         | 10 +++++-----
- drivers/gpu/drm/amd/display/dc/dm_helpers.h           |  4 ++--
- .../gpu/drm/amd/display/include/link_service_types.h  | 11 ++++++++---
- 4 files changed, 19 insertions(+), 15 deletions(-)
+ Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
-index 7c799ddc1d27..1bd70d306c22 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
-@@ -153,9 +153,8 @@ enum dc_edid_status dm_helpers_parse_edid_caps(
- 	return result;
- }
- 
--static void get_payload_table(
--		struct amdgpu_dm_connector *aconnector,
--		struct dp_mst_stream_allocation_table *proposed_table)
-+static void get_payload_table(struct amdgpu_dm_connector *aconnector,
-+			      struct dc_dp_mst_stream_allocation_table *proposed_table)
- {
- 	int i;
- 	struct drm_dp_mst_topology_mgr *mst_mgr =
-@@ -177,7 +176,7 @@ static void get_payload_table(
- 			mst_mgr->payloads[i].payload_state ==
- 					DP_PAYLOAD_REMOTE) {
- 
--			struct dp_mst_stream_allocation *sa =
-+			struct dc_dp_mst_stream_allocation *sa =
- 					&proposed_table->stream_allocations[
- 						proposed_table->stream_count];
- 
-@@ -201,7 +200,7 @@ void dm_helpers_dp_update_branch_info(
- bool dm_helpers_dp_mst_write_payload_allocation_table(
- 		struct dc_context *ctx,
- 		const struct dc_stream_state *stream,
--		struct dp_mst_stream_allocation_table *proposed_table,
-+		struct dc_dp_mst_stream_allocation_table *proposed_table,
- 		bool enable)
- {
- 	struct amdgpu_dm_connector *aconnector;
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link.c b/drivers/gpu/drm/amd/display/dc/core/dc_link.c
-index a789ea8af27f..db0f5158a0c2 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc_link.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_link.c
-@@ -3424,7 +3424,7 @@ static void update_mst_stream_alloc_table(
- 	struct dc_link *link,
- 	struct stream_encoder *stream_enc,
- 	struct hpo_dp_stream_encoder *hpo_dp_stream_enc, // TODO: Rename stream_enc to dio_stream_enc?
--	const struct dp_mst_stream_allocation_table *proposed_table)
-+	const struct dc_dp_mst_stream_allocation_table *proposed_table)
- {
- 	struct link_mst_stream_allocation work_table[MAX_CONTROLLER_NUM] = { 0 };
- 	struct link_mst_stream_allocation *dc_alloc;
-@@ -3586,7 +3586,7 @@ enum dc_status dc_link_allocate_mst_payload(struct pipe_ctx *pipe_ctx)
- {
- 	struct dc_stream_state *stream = pipe_ctx->stream;
- 	struct dc_link *link = stream->link;
--	struct dp_mst_stream_allocation_table proposed_table = {0};
-+	struct dc_dp_mst_stream_allocation_table proposed_table = {0};
- 	struct fixed31_32 avg_time_slots_per_mtp;
- 	struct fixed31_32 pbn;
- 	struct fixed31_32 pbn_per_slot;
-@@ -3691,7 +3691,7 @@ enum dc_status dc_link_reduce_mst_payload(struct pipe_ctx *pipe_ctx, uint32_t bw
- 	struct fixed31_32 avg_time_slots_per_mtp;
- 	struct fixed31_32 pbn;
- 	struct fixed31_32 pbn_per_slot;
--	struct dp_mst_stream_allocation_table proposed_table = {0};
-+	struct dc_dp_mst_stream_allocation_table proposed_table = {0};
- 	uint8_t i;
- 	enum act_return_status ret;
- 	const struct link_hwss *link_hwss = get_link_hwss(link, &pipe_ctx->link_res);
-@@ -3779,7 +3779,7 @@ enum dc_status dc_link_increase_mst_payload(struct pipe_ctx *pipe_ctx, uint32_t
- 	struct fixed31_32 pbn;
- 	struct fixed31_32 pbn_per_slot;
- 	struct link_encoder *link_encoder = link->link_enc;
--	struct dp_mst_stream_allocation_table proposed_table = {0};
-+	struct dc_dp_mst_stream_allocation_table proposed_table = {0};
- 	uint8_t i;
- 	enum act_return_status ret;
- 	const struct link_hwss *link_hwss = get_link_hwss(link, &pipe_ctx->link_res);
-@@ -3855,7 +3855,7 @@ static enum dc_status deallocate_mst_payload(struct pipe_ctx *pipe_ctx)
- {
- 	struct dc_stream_state *stream = pipe_ctx->stream;
- 	struct dc_link *link = stream->link;
--	struct dp_mst_stream_allocation_table proposed_table = {0};
-+	struct dc_dp_mst_stream_allocation_table proposed_table = {0};
- 	struct fixed31_32 avg_time_slots_per_mtp = dc_fixpt_from_int(0);
- 	int i;
- 	bool mst_mode = (link->type == dc_connection_mst_branch);
-diff --git a/drivers/gpu/drm/amd/display/dc/dm_helpers.h b/drivers/gpu/drm/amd/display/dc/dm_helpers.h
-index fb6a2d7b6470..8173f4b80424 100644
---- a/drivers/gpu/drm/amd/display/dc/dm_helpers.h
-+++ b/drivers/gpu/drm/amd/display/dc/dm_helpers.h
-@@ -33,7 +33,7 @@
- #include "dc_types.h"
- #include "dc.h"
- 
--struct dp_mst_stream_allocation_table;
-+struct dc_dp_mst_stream_allocation_table;
- struct aux_payload;
- enum aux_return_code_type;
- 
-@@ -77,7 +77,7 @@ void dm_helpers_dp_update_branch_info(
- bool dm_helpers_dp_mst_write_payload_allocation_table(
- 		struct dc_context *ctx,
- 		const struct dc_stream_state *stream,
--		struct dp_mst_stream_allocation_table *proposed_table,
-+		struct dc_dp_mst_stream_allocation_table *proposed_table,
- 		bool enable);
- 
- /*
-diff --git a/drivers/gpu/drm/amd/display/include/link_service_types.h b/drivers/gpu/drm/amd/display/include/link_service_types.h
-index 447a56286dd0..91bffc5bf52c 100644
---- a/drivers/gpu/drm/amd/display/include/link_service_types.h
-+++ b/drivers/gpu/drm/amd/display/include/link_service_types.h
-@@ -245,8 +245,13 @@ union dpcd_training_lane_set {
- };
- 
- 
-+/* AMD's copy of various payload data for MST. We have two copies of the payload table (one in DRM,
-+ * one in DC) since DRM's MST helpers can't be accessed here. This stream allocation table should
-+ * _ONLY_ be filled out from DM and then passed to DC, do NOT use these for _any_ kind of atomic
-+ * state calculations in DM, or you will break something.
-+ */
- /* DP MST stream allocation (payload bandwidth number) */
--struct dp_mst_stream_allocation {
-+struct dc_dp_mst_stream_allocation {
- 	uint8_t vcp_id;
- 	/* number of slots required for the DP stream in
- 	 * transport packet */
-@@ -254,11 +259,11 @@ struct dp_mst_stream_allocation {
- };
- 
- /* DP MST stream allocation table */
--struct dp_mst_stream_allocation_table {
-+struct dc_dp_mst_stream_allocation_table {
- 	/* number of DP video streams */
- 	int stream_count;
- 	/* array of stream allocations */
--	struct dp_mst_stream_allocation stream_allocations[MAX_CONTROLLER_NUM];
-+	struct dc_dp_mst_stream_allocation stream_allocations[MAX_CONTROLLER_NUM];
- };
- 
- #endif /*__DAL_LINK_SERVICE_TYPES_H__*/
+diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml
+index b32457c2fc0b..3361218e278f 100644
+--- a/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml
++++ b/Documentation/devicetree/bindings/soc/qcom/qcom,smd-rpm.yaml
+@@ -34,6 +34,7 @@ properties:
+       - qcom,rpm-ipq6018
+       - qcom,rpm-msm8226
+       - qcom,rpm-msm8916
++      - qcom,rpm-msm8936
+       - qcom,rpm-msm8953
+       - qcom,rpm-msm8974
+       - qcom,rpm-msm8976
 -- 
-2.35.3
+2.35.1
+
+
 
