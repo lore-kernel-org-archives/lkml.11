@@ -2,94 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4722C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 06:39:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A2F5CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 06:39:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237090AbiFGGjT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 02:39:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40628 "EHLO
+        id S237100AbiFGGj0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 02:39:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237051AbiFGGjP (ORCPT
+        with ESMTP id S237119AbiFGGjV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 02:39:15 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F48AFADA;
-        Mon,  6 Jun 2022 23:39:13 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id 25so21353824edw.8;
-        Mon, 06 Jun 2022 23:39:13 -0700 (PDT)
+        Tue, 7 Jun 2022 02:39:21 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35BB3B0A7B
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 23:39:20 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id y19so33137878ejq.6
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 23:39:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=DhVbPa5JD/NCAPIDfgE7j6St2qeisk9kSNwgf4Fl99c=;
-        b=GMaEKUFbn+aH2o0C8GzroJhWj06s5tKA/rK8dCUAKGrNaf5UFH6QgYSMQiAteuVjgF
-         yFI5qyq2PjHlTpKb1zE69kTIpJjTPNnQnfE+SijcjQp+U8HWBKQZ/O4gs8iPyTs7uVKI
-         HjFngo1ZzO3pmuuiUUoqMhO6e0oYgdCJs9GW0yQQgEg+jsnFe5ap5Uz2gcJxWg1dpU/T
-         6s7QcHHj6kTbaaPE2Lt55hhvGDWMKKqsPqOKOy/j8+PuDeBsrAcNQz3HAMQCGfieLPRr
-         gkkMcnoAcrBU6mdY683Q8MwOKaJfrW+Czzz5e0uyJaZTWcT/d2rtyFvwpe8xUv+4xZt1
-         wKAg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=+6eJuTNYhenhOtSy0mpWdMyC3zMMcmWC680KdPh5O/c=;
+        b=HYozM8kFiTcwqKrVxYDLCrX0493cz93zCKZJ+f8P4vW52obPXnTq6NV3kh1FoHfz/G
+         X7fCON7a3YXvLmCYLMb+5TKI6U8CRoyGk1XVbE+v2dqJZU4GmCu7YVFqieiSRxDesBBv
+         EnCAKtz9K9i+BZiMcySVBRAt5VYZiUFrgSciSMlfiDD+pJsVjpI5akEzEcegUZ5wFBvw
+         JyxMduaLcnkgClGEdFK7A82CrDWTQvLxJKe4jDuWXaS1lO4J+IpQitElubvTUunFLq4/
+         X4UXNzx72E7wcm3vvgo+19Mc1hGGRqsjDGQxY7tiZXGAxaojashVw2hVrZ7AWz77Q663
+         FxXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=DhVbPa5JD/NCAPIDfgE7j6St2qeisk9kSNwgf4Fl99c=;
-        b=siNzBXzwuXdfdiZAcD9B0mvI7Dadb78y4na/SQdpAI5kk++y5xTA8GueczjRV7Qp5+
-         tm2Mx2MFvPV2c+/G2TMA4LGGONeavLBbgojKSMbbCryplOvnTq0fdIvqn6E6G3aKQBgh
-         uCBCdh1qpiHL60J7M9Hn3VhBO5rO19i+B1gN4XEcGJKP8jfGf7myjTumsENycbV8B1Pi
-         ldVIKToHm0wfZBc0ALkeKWfwTwjPERlObBJdZdL9L8fR7HzAaybhZi1akmhoBgf+w1ew
-         ePFnU01KKFLp6eOMgA/KrN8HolUj3V4LrGfBtsNMTC19tT69w4fGD+gT9fq+r+nio0Ph
-         zgAw==
-X-Gm-Message-State: AOAM532DS+U/Pzs63phZyq9B6Wf9CypQ/QeuBtcpWmxNCo10B3TrHj/s
-        GtdbSpQsfldB/EaG4U9MkRo=
-X-Google-Smtp-Source: ABdhPJwso8u2gUVGYAfvtXiqZjs3JrvdBEQntAn3TPnL/iDpiO6kkqbnerZdiO7xHOaIV9nSGWhBjQ==
-X-Received: by 2002:a05:6402:1f0f:b0:42d:d4a5:a38c with SMTP id b15-20020a0564021f0f00b0042dd4a5a38cmr30730996edb.140.1654583951528;
-        Mon, 06 Jun 2022 23:39:11 -0700 (PDT)
-Received: from felia.fritz.box (200116b8261d85004489eb5274e8e310.dip.versatel-1u1.de. [2001:16b8:261d:8500:4489:eb52:74e8:e310])
-        by smtp.gmail.com with ESMTPSA id g3-20020aa7dd83000000b0042bc5a536edsm9631538edv.28.2022.06.06.23.39.10
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+6eJuTNYhenhOtSy0mpWdMyC3zMMcmWC680KdPh5O/c=;
+        b=jVv8mSHIYOA1e29jLbjgplG0d/x6uXDDhZ2zWFjx7+kmhXOlZRLYocrz7wsYgiqdpz
+         wiAadGevlvf9VHHbcQak1CqL+6UVqwOL7pjddx6Vp0h8KrVpJc7Zbx5AqK7OlDtpynbI
+         IoQk80FnBwxQHwl9U6FP24UVWYLvNiVauHJO7nEGtFdwQw4JywdCL4ljDSQaIVKudjBC
+         orGx0d82Lcc5Pjy7oam05+bTpvB4wmvszHlNBOKaIPgP/MMXMIM45c2m/UG6fIe/Ak4a
+         KZ4RUz+9aNNlBfccGp/9edJqi0m0md9i+0b5N8CDzbMotnDudAEhj/c6kMIqPyYAU6ne
+         s7vQ==
+X-Gm-Message-State: AOAM533zEJdX6C/QCRPPnik4EoEJ5UoYn44FM/36fXhGrzaEdADPUptw
+        0HQTsWQEAaBJUh83o+QdY9f/ew==
+X-Google-Smtp-Source: ABdhPJxJC6R9vm7E7RbQ7imv1QtZeFxdBWu2Z8oRZQhCapGo8C6J6E4SBIOg2hjT2XFEC6lAoeIJAw==
+X-Received: by 2002:a17:907:2d29:b0:70e:8b1c:c3f0 with SMTP id gs41-20020a1709072d2900b0070e8b1cc3f0mr18729905ejc.37.1654583958428;
+        Mon, 06 Jun 2022 23:39:18 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id jo13-20020a170906f6cd00b006febc86b8besm7016888ejb.117.2022.06.06.23.39.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 23:39:10 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     "Liam R . Howlett" <Liam.Howlett@oracle.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-mm@kvack.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: remove an obvious typo in MAPLE TREE
-Date:   Tue,  7 Jun 2022 08:38:34 +0200
-Message-Id: <20220607063834.7004-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 06 Jun 2022 23:39:18 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     linux-arm-kernel@lists.infradead.org,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        Alim Akhtar <alim.akhtar@samsung.com>
+Cc:     Chanho Park <chanho61.park@samsung.com>
+Subject: Re: (subset) [PATCH v3 3/8] ARM: dts: s5pv210: use local header for pinctrl register values
+Date:   Tue,  7 Jun 2022 08:39:11 +0200
+Message-Id: <165458395109.7886.10195566966608207927.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220605160508.134075-4-krzysztof.kozlowski@linaro.org>
+References: <20220605160508.134075-1-krzysztof.kozlowski@linaro.org> <20220605160508.134075-4-krzysztof.kozlowski@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit c6e2362e9289 ("Maple Tree: add new data structure") adds the maple
-tree and a corresponding MAINTAINERS section, but slips in an obvious typo.
+On Sun, 5 Jun 2022 18:05:03 +0200, Krzysztof Kozlowski wrote:
+> The DTS uses hardware register values directly in pin controller pin
+> configuration.  These are not some IDs or other abstraction layer but
+> raw numbers used in the registers.
+> 
+> These numbers were previously put in the bindings header to avoid code
+> duplication and to provide some context meaning (name), but they do not
+> fit the purpose of bindings.  It is also quite confusing to use
+> constants prefixed with Exynos for other SoC, because there is actually
+> nothing here in common, except the actual value.
+> 
+> [...]
 
-Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
-broken reference.
+Applied, thanks!
 
-Remove this obvious typo in MAPLE TREE.
+[3/8] ARM: dts: s5pv210: use local header for pinctrl register values
+      https://git.kernel.org/krzk/linux/c/7fd554de160eed060e7819aa42ca0478c9e0f4cb
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
-Liam, Matthew, please ack.
-Andrew, please pick this minor non-urgent fix into your mm-next tree.
-
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 8eaf234d663c..572f50739fb2 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11792,7 +11792,7 @@ F:	include/linux/maple_tree.h
- F:	include/trace/events/maple_tree.h
- F:	lib/maple_tree.c
- F:	lib/test_maple_tree.c
--F:	tools/testing/_adix-tree/linux/maple_tree.h
-+F:	tools/testing/radix-tree/linux/maple_tree.h
- F:	tools/testing/radix-tree/maple.c
- 
- MARDUK (CREATOR CI40) DEVICE TREE SUPPORT
+Best regards,
 -- 
-2.17.1
-
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
