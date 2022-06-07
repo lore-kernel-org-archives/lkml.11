@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C795CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C55BC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385594AbiFGWl4 (ORCPT
+        id S1385772AbiFGWmE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:41:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51484 "EHLO
+        Tue, 7 Jun 2022 18:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380503AbiFGVaz (ORCPT
+        with ESMTP id S1380533AbiFGVa5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:30:55 -0400
+        Tue, 7 Jun 2022 17:30:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2306922A461;
-        Tue,  7 Jun 2022 12:02:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B38C4152DBA;
+        Tue,  7 Jun 2022 12:03:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B77EB822C0;
-        Tue,  7 Jun 2022 19:02:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8E00C385A2;
-        Tue,  7 Jun 2022 19:02:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39182B822C0;
+        Tue,  7 Jun 2022 19:02:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9643AC385A2;
+        Tue,  7 Jun 2022 19:02:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628575;
-        bh=4crKvbaRKfRDh58CHafqCLlcae/1alFJ2GNdRhB1c08=;
+        s=korg; t=1654628578;
+        bh=w3e8wwqSf2IJK2TlKn/ftOI+LXVaqh+1NGePEZ9+3fM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z9i+hifyZtqav6ixGuvbAkFXToSY8ox2el4cASvBg6jR8F5A+U2p1ND/RackOhGSk
-         SKZ0veo6jsYQn63YYDbQbNx/U9FyV4gFZhtsBfE6PYRoPXuyEYsR/SPWP6u1YRNSgu
-         XzuVctP+681GPuDREZwEecEaP3HpGXQnVd5TGXgg=
+        b=W71qUd7JWPrYF0YtnlV2ce4o8a6MlDXc3jD9KCuCzNgwQoyiXARx2AaKmVgmgMbxP
+         4eJ6DkHeOm1GGMHW35c/lxAVW9glsZVeby49Sbuxk8oAImCKEMOZM6IMw+hnMSRvNc
+         rvP5ad8xuMI/1NlPQU1DklpA9KY3sMRHtxgwz/Sc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Latypov <dlatypov@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Heiko Stuebner <heiko@sntech.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 380/879] kunit: fix debugfs code to use enum kunit_status, not bool
-Date:   Tue,  7 Jun 2022 18:58:18 +0200
-Message-Id: <20220607165013.899263914@linuxfoundation.org>
+Subject: [PATCH 5.18 381/879] drm/rockchip: vop: fix possible null-ptr-deref in vop_bind()
+Date:   Tue,  7 Jun 2022 18:58:19 +0200
+Message-Id: <20220607165013.927700716@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,39 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Latypov <dlatypov@google.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 38289a26e1b8a37755f3e07056ca416c1ee2a2e8 ]
+[ Upstream commit f8c242908ad15bbd604d3bcb54961b7d454c43f8 ]
 
-Commit 6d2426b2f258 ("kunit: Support skipped tests") switched to using
-`enum kunit_status` to track the result of running a test/suite since we
-now have more than just pass/fail.
+It will cause null-ptr-deref in resource_size(), if platform_get_resource()
+returns NULL, move calling resource_size() after devm_ioremap_resource() that
+will check 'res' to avoid null-ptr-deref.
 
-This callsite wasn't updated, silently converting to enum to a bool and
-then back.
-
-Fixes: 6d2426b2f258 ("kunit: Support skipped tests")
-Signed-off-by: Daniel Latypov <dlatypov@google.com>
-Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Fixes: 2048e3286f34 ("drm: rockchip: Add basic drm driver")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220422032854.2995175-1-yangyingliang@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/kunit/debugfs.c | 2 +-
+ drivers/gpu/drm/rockchip/rockchip_drm_vop.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/lib/kunit/debugfs.c b/lib/kunit/debugfs.c
-index b71db0abc12b..1048ef1b8d6e 100644
---- a/lib/kunit/debugfs.c
-+++ b/lib/kunit/debugfs.c
-@@ -52,7 +52,7 @@ static void debugfs_print_result(struct seq_file *seq,
- static int debugfs_print_results(struct seq_file *seq, void *v)
- {
- 	struct kunit_suite *suite = (struct kunit_suite *)seq->private;
--	bool success = kunit_suite_has_succeeded(suite);
-+	enum kunit_status success = kunit_suite_has_succeeded(suite);
- 	struct kunit_case *test_case;
+diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+index 3e8d9e2d1b67..d53037531f40 100644
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+@@ -2118,10 +2118,10 @@ static int vop_bind(struct device *dev, struct device *master, void *data)
+ 	vop_win_init(vop);
  
- 	if (!suite || !suite->log)
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	vop->len = resource_size(res);
+ 	vop->regs = devm_ioremap_resource(dev, res);
+ 	if (IS_ERR(vop->regs))
+ 		return PTR_ERR(vop->regs);
++	vop->len = resource_size(res);
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+ 	if (res) {
 -- 
 2.35.1
 
