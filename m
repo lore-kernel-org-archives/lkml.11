@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28028C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:28:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38355C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:28:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380612AbiFGW22 (ORCPT
+        id S1381790AbiFGW2h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:28:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54916 "EHLO
+        Tue, 7 Jun 2022 18:28:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377921AbiFGVTB (ORCPT
+        with ESMTP id S1381077AbiFGVRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:19:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB2A224441;
-        Tue,  7 Jun 2022 11:59:29 -0700 (PDT)
+        Tue, 7 Jun 2022 17:17:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4263BC1EC8;
+        Tue,  7 Jun 2022 11:58:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 699DFB823A1;
-        Tue,  7 Jun 2022 18:59:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC5CAC385A2;
-        Tue,  7 Jun 2022 18:59:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A1D261768;
+        Tue,  7 Jun 2022 18:58:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17749C34115;
+        Tue,  7 Jun 2022 18:58:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628366;
-        bh=B1mGJDCgUMNLtQ+ObxvdZWb5V/Djv7GIn7G0SDoX2cM=;
+        s=korg; t=1654628297;
+        bh=Chb73ZYLXdHRVkDpmNtakm3BbqknUBSfsjD/jO4aXgc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZotGOdSyVxZ06yYKLS/kboY38Zgc+iFDQdKSUmvWFyv/nxavpuBbRdrZ6LaVYxZAT
-         oumi/aVpxnBuWTsaqYaQPNAMdTMHOuItQ+YoRW2TmRQtW5ZB78L3gntpZIfSdkBO0M
-         sW0wJLRtKrWRd/kUyvw/v1nVnnhsRxR+94jl4rT0=
+        b=rppU1N1vDvpJw41lWxSmD+jRDZw8Gy8Neuz1+0qdEsbfORJanTcG1JKKtKPtqDQEa
+         gt4pjyaY7R0tCdIt6PMi5AVMnvZjiuy+TQ7NoUbHpZhrJfABsF2Ed9iJGUIGfKnNfM
+         YM+FzVBVJ4WZ6WlndDUbH/e1J3CY2u7B+RfUydCA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Yongqiang Sun <yongqiang.sun@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Chuanhong Guo <gch981213@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 303/879] drm/amd/amdgpu: Fix asm/hypervisor.h build error.
-Date:   Tue,  7 Jun 2022 18:57:01 +0200
-Message-Id: <20220607165011.644122781@linuxfoundation.org>
+Subject: [PATCH 5.18 277/879] mtd: spinand: gigadevice: fix Quad IO for GD5F1GQ5UExxG
+Date:   Tue,  7 Jun 2022 18:56:35 +0200
+Message-Id: <20220607165010.889114213@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,49 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongqiang Sun <yongqiang.sun@amd.com>
+From: Chuanhong Guo <gch981213@gmail.com>
 
-[ Upstream commit d9e50239a9611b9a1759e007e9a810c8d178da28 ]
+[ Upstream commit a4f9dd55c5e1bb951db6f1dee20e62e0103f3438 ]
 
-Add CONFIG_X86 check to fix the build error.
+Read From Cache Quad IO (EBH) uses 2 dummy bytes on this chip according
+to page 23 of the datasheet[0].
 
-Fixes: 49aa98ca30cd18 ("drm/amd/amdgpu: Only reserve vram for firmware with vega9 MS_HYPERV host.")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Yongqiang Sun <yongqiang.sun@amd.com>
-Acked-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+[0]: https://www.gigadevice.com/datasheet/gd5f1gq5xexxg/
+
+Fixes: 469b99248985 ("mtd: spinand: gigadevice: Support GD5F1GQ5UExxG")
+Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220320100001.247905-2-gch981213@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_gmc.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/mtd/nand/spi/gigadevice.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_gmc.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_gmc.c
-index 3e9582c245bb..88b852b3a2cb 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_gmc.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_gmc.c
-@@ -25,7 +25,9 @@
-  */
+diff --git a/drivers/mtd/nand/spi/gigadevice.c b/drivers/mtd/nand/spi/gigadevice.c
+index 1dd1c5898093..da77ab20296e 100644
+--- a/drivers/mtd/nand/spi/gigadevice.c
++++ b/drivers/mtd/nand/spi/gigadevice.c
+@@ -39,6 +39,14 @@ static SPINAND_OP_VARIANTS(read_cache_variants_f,
+ 		SPINAND_PAGE_READ_FROM_CACHE_OP_3A(true, 0, 1, NULL, 0),
+ 		SPINAND_PAGE_READ_FROM_CACHE_OP_3A(false, 0, 0, NULL, 0));
  
- #include <linux/io-64-nonatomic-lo-hi.h>
-+#ifdef CONFIG_X86
- #include <asm/hypervisor.h>
-+#endif
- 
- #include "amdgpu.h"
- #include "amdgpu_gmc.h"
-@@ -650,10 +652,12 @@ void amdgpu_gmc_get_vbios_allocations(struct amdgpu_device *adev)
- 		/*
- 		 * VEGA10 SRIOV VF with MS_HYPERV host needs some firmware reserved area.
- 		 */
-+#ifdef CONFIG_X86
- 		if (amdgpu_sriov_vf(adev) && hypervisor_is_type(X86_HYPER_MS_HYPERV)) {
- 			adev->mman.stolen_reserved_offset = 0x500000;
- 			adev->mman.stolen_reserved_size = 0x200000;
- 		}
-+#endif
- 		break;
- 	case CHIP_RAVEN:
- 	case CHIP_RENOIR:
++static SPINAND_OP_VARIANTS(read_cache_variants_1gq5,
++		SPINAND_PAGE_READ_FROM_CACHE_QUADIO_OP(0, 2, NULL, 0),
++		SPINAND_PAGE_READ_FROM_CACHE_X4_OP(0, 1, NULL, 0),
++		SPINAND_PAGE_READ_FROM_CACHE_DUALIO_OP(0, 1, NULL, 0),
++		SPINAND_PAGE_READ_FROM_CACHE_X2_OP(0, 1, NULL, 0),
++		SPINAND_PAGE_READ_FROM_CACHE_OP(true, 0, 1, NULL, 0),
++		SPINAND_PAGE_READ_FROM_CACHE_OP(false, 0, 1, NULL, 0));
++
+ static SPINAND_OP_VARIANTS(write_cache_variants,
+ 		SPINAND_PROG_LOAD_X4(true, 0, NULL, 0),
+ 		SPINAND_PROG_LOAD(true, 0, NULL, 0));
+@@ -339,7 +347,7 @@ static const struct spinand_info gigadevice_spinand_table[] = {
+ 		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0x51),
+ 		     NAND_MEMORG(1, 2048, 128, 64, 1024, 20, 1, 1, 1),
+ 		     NAND_ECCREQ(4, 512),
+-		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
++		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants_1gq5,
+ 					      &write_cache_variants,
+ 					      &update_cache_variants),
+ 		     SPINAND_HAS_QE_BIT,
 -- 
 2.35.1
 
