@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45A8FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:42:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A91A1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:42:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346426AbiFGSmD (ORCPT
+        id S1349411AbiFGSmH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:42:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47142 "EHLO
+        Tue, 7 Jun 2022 14:42:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350045AbiFGSMv (ORCPT
+        with ESMTP id S1350082AbiFGSMx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:12:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F02D8110997;
-        Tue,  7 Jun 2022 10:48:49 -0700 (PDT)
+        Tue, 7 Jun 2022 14:12:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EEC0110985;
+        Tue,  7 Jun 2022 10:48:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31E19B82348;
-        Tue,  7 Jun 2022 17:48:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E2B2C34115;
-        Tue,  7 Jun 2022 17:48:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 14A0961789;
+        Tue,  7 Jun 2022 17:48:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F4B6C3411C;
+        Tue,  7 Jun 2022 17:48:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624106;
-        bh=Ujay51iKi4cTMP7WgK2aVL4Nd3W9LroU5p20nAXMDZE=;
+        s=korg; t=1654624101;
+        bh=OfpDucA+meciRfZXXHe2/e6CRQkH5VCUTVwXmkHiZOA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VvZ8sLXM5Vjfv5nDApgfz+GNPTK7Bk3mX6+jMA6rXCgaXedyK8VxEFOvf4e1Dkh+B
-         C3utCjWjW48EN70ib5md/NI4t92dgcnvnwyjkjTkTn6MXbyyRwIXOt/iVTxQXC6Zda
-         hi/zxUuNN7TtX5ZzdZSwIniujEQ4t5sk1DY/4wVs=
+        b=pVASiZUts9IoiTPWq2lQE+cAdS+X360wGBUpzg0pu06d9fQ43lRVHoOI52CkNpLlB
+         a0/xPDSmu9FBmoXRDBEuCrHskRETUTQrvTMrE3/5Srs+QAHDcdPYfDlfV/zyvtliXQ
+         4Vi6gxu4+d/K6oBZIjUh98MQdEnvE+bAmnZy3uWY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 206/667] nl80211: show SSID for P2P_GO interfaces
-Date:   Tue,  7 Jun 2022 18:57:51 +0200
-Message-Id: <20220607164940.977591558@linuxfoundation.org>
+Subject: [PATCH 5.15 204/667] x86/PCI: Fix ALi M1487 (IBC) PIRQ router link value interpretation
+Date:   Tue,  7 Jun 2022 18:57:49 +0200
+Message-Id: <20220607164940.917403992@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,35 +50,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-[ Upstream commit a75971bc2b8453630e9f85e0beaa4da8db8277a3 ]
+[ Upstream commit 4969e223b109754c2340a26bba9b1cf44f0cba9b ]
 
-There's no real reason not to send the SSID to userspace
-when it requests information about P2P_GO, it is, in that
-respect, exactly the same as AP interfaces. Fix that.
+Fix an issue with commit 1ce849c75534 ("x86/PCI: Add support for the ALi
+M1487 (IBC) PIRQ router") and correct ALi M1487 (IBC) PIRQ router link
+value (`pirq' cookie) interpretation according to findings in the BIOS.
 
-Fixes: 44905265bc15 ("nl80211: don't expose wdev->ssid for most interfaces")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20220318134656.14354ae223f0.Ia25e85a512281b92e1645d4160766a4b1a471597@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Credit to Nikolai Zhubr for the detective work as to the bit layout.
+
+Fixes: 1ce849c75534 ("x86/PCI: Add support for the ALi M1487 (IBC) PIRQ router")
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2203310013270.44113@angie.orcam.me.uk
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/nl80211.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/pci/irq.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 7c65ad17bf50..dafa2c5b71a4 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -3626,6 +3626,7 @@ static int nl80211_send_iface(struct sk_buff *msg, u32 portid, u32 seq, int flag
- 	wdev_lock(wdev);
- 	switch (wdev->iftype) {
- 	case NL80211_IFTYPE_AP:
-+	case NL80211_IFTYPE_P2P_GO:
- 		if (wdev->ssid_len &&
- 		    nla_put(msg, NL80211_ATTR_SSID, wdev->ssid_len, wdev->ssid))
- 			goto nla_put_failure_locked;
+diff --git a/arch/x86/pci/irq.c b/arch/x86/pci/irq.c
+index 97b63e35e152..21c4bc41741f 100644
+--- a/arch/x86/pci/irq.c
++++ b/arch/x86/pci/irq.c
+@@ -253,6 +253,15 @@ static void write_pc_conf_nybble(u8 base, u8 index, u8 val)
+ 	pc_conf_set(reg, x);
+ }
+ 
++/*
++ * FinALi pirq rules are as follows:
++ *
++ * - bit 0 selects between INTx Routing Table Mapping Registers,
++ *
++ * - bit 3 selects the nibble within the INTx Routing Table Mapping Register,
++ *
++ * - bits 7:4 map to bits 3:0 of the PCI INTx Sensitivity Register.
++ */
+ static int pirq_finali_get(struct pci_dev *router, struct pci_dev *dev,
+ 			   int pirq)
+ {
+@@ -260,11 +269,13 @@ static int pirq_finali_get(struct pci_dev *router, struct pci_dev *dev,
+ 		0, 9, 3, 10, 4, 5, 7, 6, 0, 11, 0, 12, 0, 14, 0, 15
+ 	};
+ 	unsigned long flags;
++	u8 index;
+ 	u8 x;
+ 
++	index = (pirq & 1) << 1 | (pirq & 8) >> 3;
+ 	raw_spin_lock_irqsave(&pc_conf_lock, flags);
+ 	pc_conf_set(PC_CONF_FINALI_LOCK, PC_CONF_FINALI_LOCK_KEY);
+-	x = irqmap[read_pc_conf_nybble(PC_CONF_FINALI_PCI_INTX_RT1, pirq - 1)];
++	x = irqmap[read_pc_conf_nybble(PC_CONF_FINALI_PCI_INTX_RT1, index)];
+ 	pc_conf_set(PC_CONF_FINALI_LOCK, 0);
+ 	raw_spin_unlock_irqrestore(&pc_conf_lock, flags);
+ 	return x;
+@@ -278,13 +289,15 @@ static int pirq_finali_set(struct pci_dev *router, struct pci_dev *dev,
+ 	};
+ 	u8 val = irqmap[irq];
+ 	unsigned long flags;
++	u8 index;
+ 
+ 	if (!val)
+ 		return 0;
+ 
++	index = (pirq & 1) << 1 | (pirq & 8) >> 3;
+ 	raw_spin_lock_irqsave(&pc_conf_lock, flags);
+ 	pc_conf_set(PC_CONF_FINALI_LOCK, PC_CONF_FINALI_LOCK_KEY);
+-	write_pc_conf_nybble(PC_CONF_FINALI_PCI_INTX_RT1, pirq - 1, val);
++	write_pc_conf_nybble(PC_CONF_FINALI_PCI_INTX_RT1, index, val);
+ 	pc_conf_set(PC_CONF_FINALI_LOCK, 0);
+ 	raw_spin_unlock_irqrestore(&pc_conf_lock, flags);
+ 	return 1;
+@@ -293,7 +306,7 @@ static int pirq_finali_set(struct pci_dev *router, struct pci_dev *dev,
+ static int pirq_finali_lvl(struct pci_dev *router, struct pci_dev *dev,
+ 			   int pirq, int irq)
+ {
+-	u8 mask = ~(1u << (pirq - 1));
++	u8 mask = ~((pirq & 0xf0u) >> 4);
+ 	unsigned long flags;
+ 	u8 trig;
+ 
 -- 
 2.35.1
 
