@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07169CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:57:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95B9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:57:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348911AbiFGR5O (ORCPT
+        id S1348501AbiFGR5a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:57:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34072 "EHLO
+        Tue, 7 Jun 2022 13:57:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347741AbiFGRfq (ORCPT
+        with ESMTP id S1347729AbiFGRfp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:35:46 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C940E1078A1;
-        Tue,  7 Jun 2022 10:31:15 -0700 (PDT)
+        Tue, 7 Jun 2022 13:35:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9927101733;
+        Tue,  7 Jun 2022 10:31:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1B132CE23CF;
-        Tue,  7 Jun 2022 17:31:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00B67C385A5;
-        Tue,  7 Jun 2022 17:31:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99E6E6141D;
+        Tue,  7 Jun 2022 17:31:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1281C385A5;
+        Tue,  7 Jun 2022 17:31:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623066;
-        bh=Ut+bZrRoeLbuyeDLyw/oRKMIW9n1SnNA9eXj6UzrNTg=;
+        s=korg; t=1654623072;
+        bh=bYutRTyCZx340hOqd5JJwkoFAuQUP33ThESNoJBGSPQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rNEPhAw2UO9o8PVW/G4Wk2fwykygn3hmdUfWbQ/nFONRGG9CbEt8Jv03L6LN1VdOz
-         QZ9OT9tXCJjf2YheHJJ8wUiKNuvBrwXZ9eh0khkRoR/wvK318XZ3uWT6tykQpvA8Rd
-         Hlts6bcMrqoqsaL/NVYtkXkwUvBzkt5v8hj1zPFw=
+        b=sBquOTSOFusKPkZglPP/kOBqVxuhuEmrwZbGYOIvLnO/YszKmT9W73m/qbT2qaxuG
+         jzl4iZdmNh9tY1AoaZZy+S87ODNoLwTZGczJAo2rEZaHxvAnuhgNW70luPx0vIV68u
+         Cx3+NCsYFnP/Q655HzyvN0ab6oNlrWgLnUxxjyl8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Chuanhong Guo <gch981213@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 282/452] pinctrl: bcm2835: implement hook for missing gpio-ranges
-Date:   Tue,  7 Jun 2022 19:02:19 +0200
-Message-Id: <20220607164916.953420462@linuxfoundation.org>
+Subject: [PATCH 5.10 283/452] arm: mediatek: select arch timer for mt7629
+Date:   Tue,  7 Jun 2022 19:02:20 +0200
+Message-Id: <20220607164916.984007283@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,72 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Wahren <stefan.wahren@i2se.com>
+From: Chuanhong Guo <gch981213@gmail.com>
 
-[ Upstream commit d2b67744fd99b06555b7e4d67302ede6c7c6a638 ]
+[ Upstream commit d66aea197d534e23d4989eb72fca9c0c114b97c9 ]
 
-The commit c8013355ead6 ("ARM: dts: gpio-ranges property is now required")
-fixed the GPIO probing issues caused by "pinctrl: bcm2835: Change init
-order for gpio hogs". This changed only the kernel DTS files. Unfortunately
-it isn't guaranteed that these files are shipped to all users.
+This chip has an armv7 arch timer according to the dts. Select it in
+Kconfig to enforce the support for it.
+Otherwise the system time is just completely wrong if user forget to
+enable ARM_ARCH_TIMER in kernel config.
 
-So implement the necessary backward compatibility for BCM2835 and
-BCM2711 platform.
-
-Fixes: 266423e60ea1 ("pinctrl: bcm2835: Change init order for gpio hogs")
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220409095129.45786-3-stefan.wahren@i2se.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: a43379dddf1b ("arm: mediatek: add MT7629 smp bring up code")
+Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
+Link: https://lore.kernel.org/r/20220409091347.2473449-1-gch981213@gmail.com
+Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/bcm/pinctrl-bcm2835.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ arch/arm/mach-mediatek/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pinctrl/bcm/pinctrl-bcm2835.c b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
-index 6768b2f03d68..39d2024dc2ee 100644
---- a/drivers/pinctrl/bcm/pinctrl-bcm2835.c
-+++ b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
-@@ -351,6 +351,22 @@ static int bcm2835_gpio_direction_output(struct gpio_chip *chip,
- 	return pinctrl_gpio_direction_output(chip->base + offset);
- }
+diff --git a/arch/arm/mach-mediatek/Kconfig b/arch/arm/mach-mediatek/Kconfig
+index 9e0f592d87d8..35a3430c7942 100644
+--- a/arch/arm/mach-mediatek/Kconfig
++++ b/arch/arm/mach-mediatek/Kconfig
+@@ -30,6 +30,7 @@ config MACH_MT7623
+ config MACH_MT7629
+ 	bool "MediaTek MT7629 SoCs support"
+ 	default ARCH_MEDIATEK
++	select HAVE_ARM_ARCH_TIMER
  
-+static int bcm2835_of_gpio_ranges_fallback(struct gpio_chip *gc,
-+					   struct device_node *np)
-+{
-+	struct pinctrl_dev *pctldev = of_pinctrl_get(np);
-+
-+	of_node_put(np);
-+
-+	if (!pctldev)
-+		return 0;
-+
-+	gpiochip_add_pin_range(gc, pinctrl_dev_get_devname(pctldev), 0, 0,
-+			       gc->ngpio);
-+
-+	return 0;
-+}
-+
- static const struct gpio_chip bcm2835_gpio_chip = {
- 	.label = MODULE_NAME,
- 	.owner = THIS_MODULE,
-@@ -365,6 +381,7 @@ static const struct gpio_chip bcm2835_gpio_chip = {
- 	.base = -1,
- 	.ngpio = BCM2835_NUM_GPIOS,
- 	.can_sleep = false,
-+	.of_gpio_ranges_fallback = bcm2835_of_gpio_ranges_fallback,
- };
- 
- static const struct gpio_chip bcm2711_gpio_chip = {
-@@ -381,6 +398,7 @@ static const struct gpio_chip bcm2711_gpio_chip = {
- 	.base = -1,
- 	.ngpio = BCM2711_NUM_GPIOS,
- 	.can_sleep = false,
-+	.of_gpio_ranges_fallback = bcm2835_of_gpio_ranges_fallback,
- };
- 
- static void bcm2835_gpio_irq_handle_bank(struct bcm2835_pinctrl *pc,
+ config MACH_MT8127
+ 	bool "MediaTek MT8127 SoCs support"
 -- 
 2.35.1
 
