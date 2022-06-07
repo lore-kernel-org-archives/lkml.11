@@ -2,113 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B9D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50A35CCA49D
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357478AbiFGTmC (ORCPT
+        id S1357601AbiFGTmJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:42:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57914 "EHLO
+        Tue, 7 Jun 2022 15:42:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354364AbiFGSq5 (ORCPT
+        with ESMTP id S1354515AbiFGSrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6762C237FF;
-        Tue,  7 Jun 2022 11:00:56 -0700 (PDT)
+        Tue, 7 Jun 2022 14:47:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6227890F;
+        Tue,  7 Jun 2022 11:01:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EA897B82182;
-        Tue,  7 Jun 2022 18:00:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48C83C34115;
-        Tue,  7 Jun 2022 18:00:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624853;
-        bh=d7M/rrGTQxwwpheykmHfdAUrTOWJWEeOlwizrmgwhOo=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0D51B82366;
+        Tue,  7 Jun 2022 18:01:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B031DC341C0;
+        Tue,  7 Jun 2022 18:01:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624897;
+        bh=AtKyLk4BiFsIqRWGyl1nwWQq4lHZmuu9we5aZeGxtcY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QSMqcAvx/YVtkoq6fWKyobII3QM4Fsb0FEah+3pPJqVXLDO2hObhLVRvEoKu8Gk3C
-         1F5+ZzUrA9Ko+9/0Nj0lsmdiRfqk6AyZXO2dyeWic5IQLrYIERi1CrZIYzAkjslXf+
-         g7dAO2JfBy+xZeoeEgpBRJ1v6rAJ42Bnwj1DUxZs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        b=gE5PUfAayVVpoIespY+H5gTEVv1BQU/iUd4PWpuXPjv5gEfepFBfXbVpS6NL+0UfO
+         4QW4JKXcKZoig6VyADdIq8rf9vgjxYfy4w7C0TbhSg2ywICbnm6uHu57/bfBe0KdtF
+         QciAuY1Lz610KqRtjU9P1+O2i4n9jCENqNPw2a2v6ukWA8AKkscgSScD3khHux7mcd
+         kRqesbeppW3FWn1T1EMF+mKlvW4C5P4MQrw/vXvsgg9dKei4hG1oceSdpROEV27x7t
+         0dFPuVXA61V1pKY1Vdc2VuXWGv7XrKIwkFbpURvucoTZMb6tjd92Q83SuERoaQZQy5
+         nXMHbPfDDzsvg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Kees Cook <keescook@chromium.org>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 475/667] Input: stmfts - do not leave device disabled in stmfts_input_open
-Date:   Tue,  7 Jun 2022 19:02:20 +0200
-Message-Id: <20220607164948.949856048@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+Subject: [PATCH AUTOSEL 4.19 02/27] lkdtm/usercopy: Expand size of "out of frame" object
+Date:   Tue,  7 Jun 2022 14:01:06 -0400
+Message-Id: <20220607180133.481701-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180133.481701-1-sashal@kernel.org>
+References: <20220607180133.481701-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit 5f76955ab1e43e5795a9631b22ca4f918a0ae986 ]
+[ Upstream commit f387e86d3a74407bdd9c5815820ac9d060962840 ]
 
-The commit 26623eea0da3 attempted to deal with potential leak of runtime
-PM counter when opening the touchscreen device, however it ended up
-erroneously dropping the counter in the case of successfully enabling the
-device.
+To be sufficiently out of range for the usercopy test to see the lifetime
+mismatch, expand the size of the "bad" buffer, which will let it be
+beyond current_stack_pointer regardless of stack growth direction.
+Paired with the recent addition of stack depth checking under
+CONFIG_HARDENED_USERCOPY=y, this will correctly start tripping again.
 
-Let's address this by using pm_runtime_resume_and_get() and then executing
-pm_runtime_put_sync() only when we fail to send "sense on" command to the
-device.
-
-Fixes: 26623eea0da3 ("Input: stmfts - fix reference leak in stmfts_input_open")
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Reported-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Link: https://lore.kernel.org/lkml/762faf1b-0443-5ddf-4430-44a20cf2ec4d@collabora.com/
+Signed-off-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/touchscreen/stmfts.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/misc/lkdtm/usercopy.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/input/touchscreen/stmfts.c b/drivers/input/touchscreen/stmfts.c
-index 72e0b767e1ba..c175d44c52f3 100644
---- a/drivers/input/touchscreen/stmfts.c
-+++ b/drivers/input/touchscreen/stmfts.c
-@@ -337,13 +337,15 @@ static int stmfts_input_open(struct input_dev *dev)
- 	struct stmfts_data *sdata = input_get_drvdata(dev);
- 	int err;
- 
--	err = pm_runtime_get_sync(&sdata->client->dev);
--	if (err < 0)
--		goto out;
-+	err = pm_runtime_resume_and_get(&sdata->client->dev);
-+	if (err)
-+		return err;
- 
- 	err = i2c_smbus_write_byte(sdata->client, STMFTS_MS_MT_SENSE_ON);
--	if (err)
--		goto out;
-+	if (err) {
-+		pm_runtime_put_sync(&sdata->client->dev);
-+		return err;
-+	}
- 
- 	mutex_lock(&sdata->mutex);
- 	sdata->running = true;
-@@ -366,9 +368,7 @@ static int stmfts_input_open(struct input_dev *dev)
- 				 "failed to enable touchkey\n");
- 	}
- 
--out:
--	pm_runtime_put_noidle(&sdata->client->dev);
--	return err;
-+	return 0;
+diff --git a/drivers/misc/lkdtm/usercopy.c b/drivers/misc/lkdtm/usercopy.c
+index 9725aed305bb..b0e020372d11 100644
+--- a/drivers/misc/lkdtm/usercopy.c
++++ b/drivers/misc/lkdtm/usercopy.c
+@@ -30,12 +30,12 @@ static const unsigned char test_text[] = "This is a test.\n";
+  */
+ static noinline unsigned char *trick_compiler(unsigned char *stack)
+ {
+-	return stack + 0;
++	return stack + unconst;
  }
  
- static void stmfts_input_close(struct input_dev *dev)
+ static noinline unsigned char *do_usercopy_stack_callee(int value)
+ {
+-	unsigned char buf[32];
++	unsigned char buf[128];
+ 	int i;
+ 
+ 	/* Exercise stack to avoid everything living in registers. */
+@@ -43,7 +43,12 @@ static noinline unsigned char *do_usercopy_stack_callee(int value)
+ 		buf[i] = value & 0xff;
+ 	}
+ 
+-	return trick_compiler(buf);
++	/*
++	 * Put the target buffer in the middle of stack allocation
++	 * so that we don't step on future stack users regardless
++	 * of stack growth direction.
++	 */
++	return trick_compiler(&buf[(128/2)-32]);
+ }
+ 
+ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
+@@ -66,6 +71,12 @@ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
+ 		bad_stack -= sizeof(unsigned long);
+ 	}
+ 
++#ifdef ARCH_HAS_CURRENT_STACK_POINTER
++	pr_info("stack     : %px\n", (void *)current_stack_pointer);
++#endif
++	pr_info("good_stack: %px-%px\n", good_stack, good_stack + sizeof(good_stack));
++	pr_info("bad_stack : %px-%px\n", bad_stack, bad_stack + sizeof(good_stack));
++
+ 	user_addr = vm_mmap(NULL, 0, PAGE_SIZE,
+ 			    PROT_READ | PROT_WRITE | PROT_EXEC,
+ 			    MAP_ANONYMOUS | MAP_PRIVATE, 0);
 -- 
 2.35.1
-
-
 
