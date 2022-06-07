@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C04FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:06:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF793CCA488
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349501AbiFGSEy (ORCPT
+        id S1349906AbiFGSFO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:04:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57852 "EHLO
+        Tue, 7 Jun 2022 14:05:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348988AbiFGRqk (ORCPT
+        with ESMTP id S1349063AbiFGRqo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:46:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F39310A625;
-        Tue,  7 Jun 2022 10:36:00 -0700 (PDT)
+        Tue, 7 Jun 2022 13:46:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 840EA6833A;
+        Tue,  7 Jun 2022 10:36:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE353B80B66;
-        Tue,  7 Jun 2022 17:35:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 409D3C385A5;
-        Tue,  7 Jun 2022 17:35:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CB7E60DB5;
+        Tue,  7 Jun 2022 17:36:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6081DC385A5;
+        Tue,  7 Jun 2022 17:36:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623354;
-        bh=aU3zrLYmymIAdYy2fuVlTps5DfqjXpxaacT0WP+d338=;
+        s=korg; t=1654623384;
+        bh=yBMfBMsenoejD3SJApeyaIR+DRPPPmmkDIHXMUaPI6E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LxcW/SxT2Gsr3X01UIU17Dqx4hNemiW7FHC6txRsrPR4tmHH3Ysl/5S8PchXCnUB1
-         uOASsm62vbJ59hCTngImsNLMxhMgJG9zgvu4fqBJjLMT2FfBwvPQYJiHnfIL5e+9aa
-         +foNUdVVIAf0BDT4iHFeU+U0Tlj9ISptNfLu+EP4=
+        b=093OFRn2v9FG/OHeLKJz5XxtuSQk3aaE/2kx7vyOigiWbjh6EqIGzj34m1c+jOC6W
+         7nFH4YJxpHNMq4MP5RetKkGlNtJvjfxKJJjssVdQd3VcxOSLglbVUqYiOMlOR4LC/9
+         8jC2sJiLhHjfaCKc7sfd7tWvmAfAgHOajs9eBgek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Ezequiel Garcia <ezequiel@collabora.com>,
-        Pascal Speck <kernel@iktek.de>,
-        Fabio Estevam <festevam@denx.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.10 388/452] media: coda: Fix reported H264 profile
-Date:   Tue,  7 Jun 2022 19:04:05 +0200
-Message-Id: <20220607164920.127624240@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Richard Weinberger <richard@nod.at>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH 5.10 398/452] um: chan_user: Fix winch_tramp() return value
+Date:   Tue,  7 Jun 2022 19:04:15 +0200
+Message-Id: <20220607164920.420938754@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -55,56 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit 7110c08ea71953a7fc342f0b76046f72442cf26c upstream.
+commit 57ae0b67b747031bc41fb44643aa5344ab58607e upstream.
 
-The CODA960 manual states that ASO/FMO features of baseline are not
-supported, so for this reason this driver should only report
-constrained baseline support.
+The previous fix here was only partially correct, it did
+result in returning a proper error value in case of error,
+but it also clobbered the pid that we need to return from
+this function (not just zero for success).
 
-This fixes negotiation issue with constrained baseline content
-on GStreamer 1.17.1.
+As a result, it returned 0 here, but later this is treated
+as a pid and used to kill the process, but since it's now
+0 we kill(0, SIGKILL), which makes UML kill itself rather
+than just the helper thread.
 
-ASO/FMO features are unsupported for the encoder and untested for the
-decoder because there is currently no userspace support. Neither GStreamer
-parsers nor FFMPEG parsers support ASO/FMO.
+Fix that and make it more obvious by using a separate
+variable for the pid.
 
+Fixes: ccf1236ecac4 ("um: fix error return code in winch_tramp()")
+Reported-and-tested-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Cc: stable@vger.kernel.org
-Fixes: 42a68012e67c2 ("media: coda: add read-only h.264 decoder profile/level controls")
-Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
-Tested-by: Pascal Speck <kernel@iktek.de>
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/coda/coda-common.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/um/drivers/chan_user.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/drivers/media/platform/coda/coda-common.c
-+++ b/drivers/media/platform/coda/coda-common.c
-@@ -2343,8 +2343,8 @@ static void coda_encode_ctrls(struct cod
- 		V4L2_CID_MPEG_VIDEO_H264_CHROMA_QP_INDEX_OFFSET, -12, 12, 1, 0);
- 	v4l2_ctrl_new_std_menu(&ctx->ctrls, &coda_ctrl_ops,
- 		V4L2_CID_MPEG_VIDEO_H264_PROFILE,
--		V4L2_MPEG_VIDEO_H264_PROFILE_BASELINE, 0x0,
--		V4L2_MPEG_VIDEO_H264_PROFILE_BASELINE);
-+		V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_BASELINE, 0x0,
-+		V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_BASELINE);
- 	if (ctx->dev->devtype->product == CODA_HX4 ||
- 	    ctx->dev->devtype->product == CODA_7541) {
- 		v4l2_ctrl_new_std_menu(&ctx->ctrls, &coda_ctrl_ops,
-@@ -2425,7 +2425,7 @@ static void coda_decode_ctrls(struct cod
- 	ctx->h264_profile_ctrl = v4l2_ctrl_new_std_menu(&ctx->ctrls,
- 		&coda_ctrl_ops, V4L2_CID_MPEG_VIDEO_H264_PROFILE,
- 		V4L2_MPEG_VIDEO_H264_PROFILE_HIGH,
--		~((1 << V4L2_MPEG_VIDEO_H264_PROFILE_BASELINE) |
-+		~((1 << V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_BASELINE) |
- 		  (1 << V4L2_MPEG_VIDEO_H264_PROFILE_MAIN) |
- 		  (1 << V4L2_MPEG_VIDEO_H264_PROFILE_HIGH)),
- 		V4L2_MPEG_VIDEO_H264_PROFILE_HIGH);
+--- a/arch/um/drivers/chan_user.c
++++ b/arch/um/drivers/chan_user.c
+@@ -220,7 +220,7 @@ static int winch_tramp(int fd, struct tt
+ 		       unsigned long *stack_out)
+ {
+ 	struct winch_data data;
+-	int fds[2], n, err;
++	int fds[2], n, err, pid;
+ 	char c;
+ 
+ 	err = os_pipe(fds, 1, 1);
+@@ -238,8 +238,9 @@ static int winch_tramp(int fd, struct tt
+ 	 * problem with /dev/net/tun, which if held open by this
+ 	 * thread, prevents the TUN/TAP device from being reused.
+ 	 */
+-	err = run_helper_thread(winch_thread, &data, CLONE_FILES, stack_out);
+-	if (err < 0) {
++	pid = run_helper_thread(winch_thread, &data, CLONE_FILES, stack_out);
++	if (pid < 0) {
++		err = pid;
+ 		printk(UM_KERN_ERR "fork of winch_thread failed - errno = %d\n",
+ 		       -err);
+ 		goto out_close;
+@@ -263,7 +264,7 @@ static int winch_tramp(int fd, struct tt
+ 		goto out_close;
+ 	}
+ 
+-	return err;
++	return pid;
+ 
+  out_close:
+ 	close(fds[1]);
 
 
