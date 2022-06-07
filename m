@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 639FECCA491
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F0AECCA492
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351425AbiFGSCC (ORCPT
+        id S1351559AbiFGSCI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:02:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56746 "EHLO
+        Tue, 7 Jun 2022 14:02:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347903AbiFGRnJ (ORCPT
+        with ESMTP id S1347790AbiFGRnf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:43:09 -0400
+        Tue, 7 Jun 2022 13:43:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7FB12E31B;
-        Tue,  7 Jun 2022 10:35:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCDF412FEC9;
+        Tue,  7 Jun 2022 10:35:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5CDC9B822B3;
-        Tue,  7 Jun 2022 17:34:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5AE5C36B00;
-        Tue,  7 Jun 2022 17:34:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69DD8B822B4;
+        Tue,  7 Jun 2022 17:34:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE1E4C385A5;
+        Tue,  7 Jun 2022 17:34:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623283;
-        bh=TfGOvyIwaEoLDHC69Z6PPXCHD8kR3jJhdj6r89QSPQ0=;
+        s=korg; t=1654623294;
+        bh=VSNRocQhDDDUcvIekDIsol8CXd90HwV3uuX00VTZKEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R/16cZ3v9oE6plmsFVD0EFyzGOBm28lbWfhiKETB0coVcydTLBB57FrC1cNgg+15J
-         uVq5DCRiajC3YumDc+FD2Il95uEXj8sTRJj/RNUy3ouRJxg3uQry4PHGb/BQ891e4G
-         kqNmeUJ9l2c5K22yhYBPbY/KO6gXZ6+bgBf4dVdc=
+        b=RIZkTsSKwFIAJUM7ewhjMfhGKLZh3tuGg5Cpxmqf2VjSEF3uYRg+5rUr+lNhJ8/Kq
+         y8z9+bO8HmGQ+BugcIcCgWDBsq2ZUVbGFENUoTlPanD2OHSBWANXAXDhMb7e0tIEUh
+         5dMGIWbIsYyAZMysbjeSC4BMiMtqYge7vzCLSpWg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 334/452] dmaengine: stm32-mdma: remove GISR1 register
-Date:   Tue,  7 Jun 2022 19:03:11 +0200
-Message-Id: <20220607164918.512235259@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.10 364/452] ext4: verify dir block before splitting it
+Date:   Tue,  7 Jun 2022 19:03:41 +0200
+Message-Id: <20220607164919.411106748@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,73 +49,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amelie Delaunay <amelie.delaunay@foss.st.com>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit 9d6a2d92e450926c483e45eaf426080a19219f4e ]
+commit 46c116b920ebec58031f0a78c5ea9599b0d2a371 upstream.
 
-GISR1 was described in a not up-to-date documentation when the stm32-mdma
-driver has been developed. This register has not been added in reference
-manual of STM32 SoC with MDMA, which have only 32 MDMA channels.
-So remove it from stm32-mdma driver.
+Before splitting a directory block verify its directory entries are sane
+so that the splitting code does not access memory it should not.
 
-Fixes: a4ffb13c8946 ("dmaengine: Add STM32 MDMA driver")
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Link: https://lore.kernel.org/r/20220504155322.121431-2-amelie.delaunay@foss.st.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220518093332.13986-1-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/stm32-mdma.c | 21 +++++----------------
- 1 file changed, 5 insertions(+), 16 deletions(-)
+ fs/ext4/namei.c |   32 +++++++++++++++++++++-----------
+ 1 file changed, 21 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/dma/stm32-mdma.c b/drivers/dma/stm32-mdma.c
-index fe36738f2dd7..cd394624085a 100644
---- a/drivers/dma/stm32-mdma.c
-+++ b/drivers/dma/stm32-mdma.c
-@@ -40,7 +40,6 @@
- 					 STM32_MDMA_SHIFT(mask))
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -280,9 +280,9 @@ static struct dx_frame *dx_probe(struct
+ 				 struct dx_hash_info *hinfo,
+ 				 struct dx_frame *frame);
+ static void dx_release(struct dx_frame *frames);
+-static int dx_make_map(struct inode *dir, struct ext4_dir_entry_2 *de,
+-		       unsigned blocksize, struct dx_hash_info *hinfo,
+-		       struct dx_map_entry map[]);
++static int dx_make_map(struct inode *dir, struct buffer_head *bh,
++		       struct dx_hash_info *hinfo,
++		       struct dx_map_entry *map_tail);
+ static void dx_sort_map(struct dx_map_entry *map, unsigned count);
+ static struct ext4_dir_entry_2 *dx_move_dirents(char *from, char *to,
+ 		struct dx_map_entry *offsets, int count, unsigned blocksize);
+@@ -1208,15 +1208,23 @@ static inline int search_dirblock(struct
+  * Create map of hash values, offsets, and sizes, stored at end of block.
+  * Returns number of entries mapped.
+  */
+-static int dx_make_map(struct inode *dir, struct ext4_dir_entry_2 *de,
+-		       unsigned blocksize, struct dx_hash_info *hinfo,
++static int dx_make_map(struct inode *dir, struct buffer_head *bh,
++		       struct dx_hash_info *hinfo,
+ 		       struct dx_map_entry *map_tail)
+ {
+ 	int count = 0;
+-	char *base = (char *) de;
++	struct ext4_dir_entry_2 *de = (struct ext4_dir_entry_2 *)bh->b_data;
++	unsigned int buflen = bh->b_size;
++	char *base = bh->b_data;
+ 	struct dx_hash_info h = *hinfo;
  
- #define STM32_MDMA_GISR0		0x0000 /* MDMA Int Status Reg 1 */
--#define STM32_MDMA_GISR1		0x0004 /* MDMA Int Status Reg 2 */
- 
- /* MDMA Channel x interrupt/status register */
- #define STM32_MDMA_CISR(x)		(0x40 + 0x40 * (x)) /* x = 0..62 */
-@@ -196,7 +195,7 @@
- 
- #define STM32_MDMA_MAX_BUF_LEN		128
- #define STM32_MDMA_MAX_BLOCK_LEN	65536
--#define STM32_MDMA_MAX_CHANNELS		63
-+#define STM32_MDMA_MAX_CHANNELS		32
- #define STM32_MDMA_MAX_REQUESTS		256
- #define STM32_MDMA_MAX_BURST		128
- #define STM32_MDMA_VERY_HIGH_PRIORITY	0x11
-@@ -1350,21 +1349,11 @@ static irqreturn_t stm32_mdma_irq_handler(int irq, void *devid)
- 
- 	/* Find out which channel generates the interrupt */
- 	status = readl_relaxed(dmadev->base + STM32_MDMA_GISR0);
--	if (status) {
--		id = __ffs(status);
--	} else {
--		status = readl_relaxed(dmadev->base + STM32_MDMA_GISR1);
--		if (!status) {
--			dev_dbg(mdma2dev(dmadev), "spurious it\n");
--			return IRQ_NONE;
--		}
--		id = __ffs(status);
--		/*
--		 * As GISR0 provides status for channel id from 0 to 31,
--		 * so GISR1 provides status for channel id from 32 to 62
--		 */
--		id += 32;
-+	if (!status) {
-+		dev_dbg(mdma2dev(dmadev), "spurious it\n");
-+		return IRQ_NONE;
+-	while ((char *) de < base + blocksize) {
++	if (ext4_has_metadata_csum(dir->i_sb))
++		buflen -= sizeof(struct ext4_dir_entry_tail);
++
++	while ((char *) de < base + buflen) {
++		if (ext4_check_dir_entry(dir, NULL, de, bh, base, buflen,
++					 ((char *)de) - base))
++			return -EFSCORRUPTED;
+ 		if (de->name_len && de->inode) {
+ 			ext4fs_dirhash(dir, de->name, de->name_len, &h);
+ 			map_tail--;
+@@ -1226,8 +1234,7 @@ static int dx_make_map(struct inode *dir
+ 			count++;
+ 			cond_resched();
+ 		}
+-		/* XXX: do we need to check rec_len == 0 case? -Chris */
+-		de = ext4_next_entry(de, blocksize);
++		de = ext4_next_entry(de, dir->i_sb->s_blocksize);
  	}
-+	id = __ffs(status);
+ 	return count;
+ }
+@@ -1853,8 +1860,11 @@ static struct ext4_dir_entry_2 *do_split
  
- 	chan = &dmadev->chan[id];
- 	if (!chan) {
--- 
-2.35.1
-
+ 	/* create map in the end of data2 block */
+ 	map = (struct dx_map_entry *) (data2 + blocksize);
+-	count = dx_make_map(dir, (struct ext4_dir_entry_2 *) data1,
+-			     blocksize, hinfo, map);
++	count = dx_make_map(dir, *bh, hinfo, map);
++	if (count < 0) {
++		err = count;
++		goto journal_error;
++	}
+ 	map -= count;
+ 	dx_sort_map(map, count);
+ 	/* Ensure that neither split block is over half full */
 
 
