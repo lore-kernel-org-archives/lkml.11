@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 833AFC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3531CCA482
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:03:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444392AbiFHBBo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:01:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
+        id S230412AbiFHBDB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:03:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379238AbiFGWLy (ORCPT
+        with ESMTP id S1385263AbiFGWVX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:11:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5CD259F4F;
-        Tue,  7 Jun 2022 12:19:08 -0700 (PDT)
+        Tue, 7 Jun 2022 18:21:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E7026714C;
+        Tue,  7 Jun 2022 12:21:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A0D96194F;
-        Tue,  7 Jun 2022 19:19:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84148C385A2;
-        Tue,  7 Jun 2022 19:19:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BB23600E1;
+        Tue,  7 Jun 2022 19:21:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AE22C385A5;
+        Tue,  7 Jun 2022 19:21:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629543;
-        bh=07dGVDfzvZJmA12SM98FMPiVikR3yZALXl/WHor0dGU=;
+        s=korg; t=1654629674;
+        bh=YIivGeXXRfB6Sue+gelH2WioHvR7o0hxg8DWNPtEYV4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i9fCZJ9ru9BaR+A76Zaw2L6jMkvXbyUARaDAF6NW0ZoExcab42zgvTZqLlA0e4SKp
-         anEWxFU3QhCxAAjF+EmKY5cfRJNcRsHwz8deBw15O877bHgQHSqahIyLjwh8O/B6vF
-         OZgxCHxVD/ZtZ9SA45ZYUmkxv7NP5M/Qsf7GHCVc=
+        b=J/thVNzVhAbi0odMCe5GYZAmHOvM53KLft4PVcS2xcc7Lxw9OfS0cqeHm1lUE499J
+         OJd/Z6lUzekGjXqrqvhITJdw+RCv+vCJ+gKjpB/CN5fqEnmbjEK/idIWXXUNVpbmRG
+         ukvkjfsAi2NMRqk0bkzOVOH/jBvVDaapmkT2r79o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.18 730/879] bfq: Update cgroup information before merging bio
-Date:   Tue,  7 Jun 2022 19:04:08 +0200
-Message-Id: <20220607165024.045284505@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
+Subject: [PATCH 5.18 777/879] landlock: Fix landlock_add_rule(2) documentation
+Date:   Tue,  7 Jun 2022 19:04:55 +0200
+Message-Id: <20220607165025.424498434@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,51 +48,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Mickaël Salaün <mic@digikod.net>
 
-commit ea591cd4eb270393810e7be01feb8fde6a34fbbe upstream.
+commit a13e248ff90e81e9322406c0e618cf2168702f4e upstream.
 
-When the process is migrated to a different cgroup (or in case of
-writeback just starts submitting bios associated with a different
-cgroup) bfq_merge_bio() can operate with stale cgroup information in
-bic. Thus the bio can be merged to a request from a different cgroup or
-it can result in merging of bfqqs for different cgroups or bfqqs of
-already dead cgroups and causing possible use-after-free issues. Fix the
-problem by updating cgroup information in bfq_merge_bio().
+It is not mandatory to pass a file descriptor obtained with the O_PATH
+flag.  Also, replace rule's accesses with ruleset's accesses.
 
-CC: stable@vger.kernel.org
-Fixes: e21b7a0b9887 ("block, bfq: add full hierarchical scheduling and cgroups support")
-Tested-by: "yukuai (C)" <yukuai3@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220401102752.8599-4-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Link: https://lore.kernel.org/r/20220506160820.524344-2-mic@digikod.net
+Cc: stable@vger.kernel.org
+Signed-off-by: Mickaël Salaün <mic@digikod.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/bfq-iosched.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ include/uapi/linux/landlock.h |    5 +++--
+ security/landlock/syscalls.c  |    7 +++----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -2461,10 +2461,17 @@ static bool bfq_bio_merge(struct request
- 
- 	spin_lock_irq(&bfqd->lock);
- 
--	if (bic)
-+	if (bic) {
-+		/*
-+		 * Make sure cgroup info is uptodate for current process before
-+		 * considering the merge.
-+		 */
-+		bfq_bic_update_cgroup(bic, bio);
-+
- 		bfqd->bio_bfqq = bic_to_bfqq(bic, op_is_sync(bio->bi_opf));
--	else
-+	} else {
- 		bfqd->bio_bfqq = NULL;
-+	}
- 	bfqd->bio_bic = bic;
- 
- 	ret = blk_mq_sched_try_merge(q, bio, nr_segs, &free);
+--- a/include/uapi/linux/landlock.h
++++ b/include/uapi/linux/landlock.h
+@@ -62,8 +62,9 @@ struct landlock_path_beneath_attr {
+ 	 */
+ 	__u64 allowed_access;
+ 	/**
+-	 * @parent_fd: File descriptor, open with ``O_PATH``, which identifies
+-	 * the parent directory of a file hierarchy, or just a file.
++	 * @parent_fd: File descriptor, preferably opened with ``O_PATH``,
++	 * which identifies the parent directory of a file hierarchy, or just a
++	 * file.
+ 	 */
+ 	__s32 parent_fd;
+ 	/*
+--- a/security/landlock/syscalls.c
++++ b/security/landlock/syscalls.c
+@@ -292,14 +292,13 @@ out_fdput:
+  *
+  * - EOPNOTSUPP: Landlock is supported by the kernel but disabled at boot time;
+  * - EINVAL: @flags is not 0, or inconsistent access in the rule (i.e.
+- *   &landlock_path_beneath_attr.allowed_access is not a subset of the rule's
+- *   accesses);
++ *   &landlock_path_beneath_attr.allowed_access is not a subset of the
++ *   ruleset handled accesses);
+  * - ENOMSG: Empty accesses (e.g. &landlock_path_beneath_attr.allowed_access);
+  * - EBADF: @ruleset_fd is not a file descriptor for the current thread, or a
+  *   member of @rule_attr is not a file descriptor as expected;
+  * - EBADFD: @ruleset_fd is not a ruleset file descriptor, or a member of
+- *   @rule_attr is not the expected file descriptor type (e.g. file open
+- *   without O_PATH);
++ *   @rule_attr is not the expected file descriptor type;
+  * - EPERM: @ruleset_fd has no write access to the underlying ruleset;
+  * - EFAULT: @rule_attr inconsistency.
+  */
 
 
