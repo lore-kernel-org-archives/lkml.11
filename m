@@ -2,95 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D9FFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:53:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA351C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:53:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353265AbiFGSxO (ORCPT
+        id S1352094AbiFGSxZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:53:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44986 "EHLO
+        Tue, 7 Jun 2022 14:53:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350560AbiFGSS0 (ORCPT
+        with ESMTP id S1349728AbiFGSSY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:18:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 056DCCE5F9;
-        Tue,  7 Jun 2022 10:53:25 -0700 (PDT)
+        Tue, 7 Jun 2022 14:18:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45EBAEAD02;
+        Tue,  7 Jun 2022 10:53:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D30D5616A3;
-        Tue,  7 Jun 2022 17:53:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C004C3411F;
-        Tue,  7 Jun 2022 17:53:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624404;
-        bh=EbHpsNQsZRgTMF45CSYfLlirVAaStJQ+cyuj+aVwgLI=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id CDDAEB8236A;
+        Tue,  7 Jun 2022 17:53:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34F7EC385A5;
+        Tue,  7 Jun 2022 17:53:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624385;
+        bh=PygfPU/z7XNVtfQxiD1wD6JRJ9E8aEGCYg1AFsbUJJk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EYzKgFhW/zlMMedwjuWsruIYK/6rk/pGf3p4fJFgI2uYpGpVDTZQqYvxry+b26jVx
-         QWG4vQbjOaotrERzkho5ssBU5SBd3b79PkHK1zkuAMJVf5Bf8REe8q8ynysfRUvoAj
-         s6YEjSp2W8zGspYXT/3eP0KZq6Q5BvgrejsNRpaH6Bx3F1b+FCWpL76rCgC8fZxp7B
-         xjBS1g4imqWF2iUdm+5ieoQot9iwloWa3mxwpOHHVjhdCJXFsyCThexfcXC9G/V/GC
-         u0jigqd7hojQOBX+jSBenuSqmsR8KdhCug0uCE6AV1b0kNsc4mPCmcPkrxIp/SF/Kq
-         F3WvWVpERufaw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>, Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        b=EvwQiYZpknz65ic+J/Sgs2SzHKzJjyY2Er2U/v5Hl/cpf3B8Tyi3pSnyDzGMT65Lh
+         oMMU0hGec5av3iCDnvvVK2zus9WAB5A82ynJmPnXyiuwx6p+EZU6ILffMaazD+Bk37
+         JDmBGVYbOYk6LAiurD7H38pxxO4ABCBB8yyo9mJU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.17 07/60] tty: synclink_gt: Fix null-pointer-dereference in slgt_clean()
-Date:   Tue,  7 Jun 2022 13:52:04 -0400
-Message-Id: <20220607175259.478835-7-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
+Subject: [PATCH 5.15 267/667] drm/msm/dp: fix error check return value of irq_of_parse_and_map()
+Date:   Tue,  7 Jun 2022 18:58:52 +0200
+Message-Id: <20220607164942.795571067@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 689ca31c542687709ba21ec2195c1fbce34fd029 ]
+[ Upstream commit e92d0d93f86699b7b25c7906613fdc374d66c8ca ]
 
-When the driver fails at alloc_hdlcdev(), and then we remove the driver
-module, we will get the following splat:
+The irq_of_parse_and_map() function returns 0 on failure, and does not
+return an negative value.
 
-[   25.065966] general protection fault, probably for non-canonical address 0xdffffc0000000182: 0000 [#1] PREEMPT SMP KASAN PTI
-[   25.066914] KASAN: null-ptr-deref in range [0x0000000000000c10-0x0000000000000c17]
-[   25.069262] RIP: 0010:detach_hdlc_protocol+0x2a/0x3e0
-[   25.077709] Call Trace:
-[   25.077924]  <TASK>
-[   25.078108]  unregister_hdlc_device+0x16/0x30
-[   25.078481]  slgt_cleanup+0x157/0x9f0 [synclink_gt]
-
-Fix this by checking whether the 'info->netdev' is a null pointer first.
-
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220410114814.3920474-1-zheyuma97@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 8ede2ecc3e5e ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/483176/
+Link: https://lore.kernel.org/r/20220424032418.3173632-1-lv.ruyi@zte.com.cn
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/synclink_gt.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/msm/dp/dp_display.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
-index 25c558e65ece..9bc2a9265277 100644
---- a/drivers/tty/synclink_gt.c
-+++ b/drivers/tty/synclink_gt.c
-@@ -1746,6 +1746,8 @@ static int hdlcdev_init(struct slgt_info *info)
-  */
- static void hdlcdev_exit(struct slgt_info *info)
- {
-+	if (!info->netdev)
-+		return;
- 	unregister_hdlc_device(info->netdev);
- 	free_netdev(info->netdev);
- 	info->netdev = NULL;
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index 5648c1eb5fa8..00e7d9db6199 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -1216,10 +1216,9 @@ int dp_display_request_irq(struct msm_dp *dp_display)
+ 	dp = container_of(dp_display, struct dp_display_private, dp_display);
+ 
+ 	dp->irq = irq_of_parse_and_map(dp->pdev->dev.of_node, 0);
+-	if (dp->irq < 0) {
+-		rc = dp->irq;
+-		DRM_ERROR("failed to get irq: %d\n", rc);
+-		return rc;
++	if (!dp->irq) {
++		DRM_ERROR("failed to get irq\n");
++		return -EINVAL;
+ 	}
+ 
+ 	rc = devm_request_irq(&dp->pdev->dev, dp->irq,
 -- 
 2.35.1
+
+
 
