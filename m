@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AE38C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA9BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:14:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379752AbiFGVOg (ORCPT
+        id S1377947AbiFGVOp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:14:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39332 "EHLO
+        Tue, 7 Jun 2022 17:14:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376561AbiFGUQy (ORCPT
+        with ESMTP id S1376794AbiFGURP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:16:54 -0400
+        Tue, 7 Jun 2022 16:17:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB45172C14;
-        Tue,  7 Jun 2022 11:29:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E894C1D01F2;
+        Tue,  7 Jun 2022 11:29:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 66D21B8237C;
-        Tue,  7 Jun 2022 18:29:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D28FFC385A5;
-        Tue,  7 Jun 2022 18:29:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5FFA7B82340;
+        Tue,  7 Jun 2022 18:29:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B086FC34115;
+        Tue,  7 Jun 2022 18:29:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626565;
-        bh=3xOZY2rZbOX3Q/5YOONZrsu9wJxQTj1y2E9gwJ19t04=;
+        s=korg; t=1654626596;
+        bh=d6PRW2L/i7S3njKFXoCdPxI1YSkETLyxZT/LUdwxwUA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OapB7OXBQu3rmJaaWomxLq/VJA0gNYWEEqMVGP+9QNSlq64LF5KKupyX5aBvQ5UQu
-         /KE852lcqYt7r9Qqsp0TJ2jT00vWEFXIQ6/XFMzPRDe8mv2t1XdXiFOJgrdWRHqA84
-         FN2YTaCpM8H/C1k6mf5K6Ts6oAbohJk9HVuirSaY=
+        b=bSBfn5hRg1gNMGGaHncUFQJxsZS6bqJbhSLGEnCIxnpuayHk8Hg4wuUDkJ/uDzNoB
+         c+3d8b9Fo1mby44+zCF+BbcXohpW/mT6Xw61KMhUKe3xJKyrQU7ysjDz521j5jh+vO
+         zlDlJRsCldCu0H53zIFaKxAWKKAchfRkOlqIOT3I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 422/772] bfq: Relax waker detection for shared queues
-Date:   Tue,  7 Jun 2022 19:00:14 +0200
-Message-Id: <20220607165001.439896878@linuxfoundation.org>
+        stable@vger.kernel.org, Adam Wujek <dev_public@wujek.eu>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 436/772] hwmon: (pmbus) Check PEC support before reading other registers
+Date:   Tue,  7 Jun 2022 19:00:28 +0200
+Message-Id: <20220607165001.849617281@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,91 +50,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Adam Wujek <dev_public@wujek.eu>
 
-[ Upstream commit f950667356ce90a41b446b726d4595a10cb65415 ]
+[ Upstream commit d1baf7a3a3177d46a7149858beddb88a9eca7a54 ]
 
-Currently we look for waker only if current queue has no requests. This
-makes sense for bfq queues with a single process however for shared
-queues when there is a larger number of processes the condition that
-queue has no requests is difficult to meet because often at least one
-process has some request in flight although all the others are waiting
-for the waker to do the work and this harms throughput. Relax the "no
-queued request for bfq queue" condition to "the current task has no
-queued requests yet". For this, we also need to start tracking number of
-requests in flight for each task.
+Make sure that the support of PEC is determined before the read of other
+registers. Otherwise the validation of PEC can trigger an error on the read
+of STATUS_BYTE or STATUS_WORD registers.
 
-This patch (together with the following one) restores the performance
-for dbench with 128 clients that regressed with commit c65e6fd460b4
-("bfq: Do not let waker requests skip proper accounting") because
-this commit makes requests of wakers properly enter BFQ queues and thus
-these queues become ineligible for the old waker detection logic.
-Dbench results:
+The problematic scenario is the following. A device with enabled PEC
+support is up and running and a kernel driver is loaded.
+Then the driver is unloaded (or device unbound), the HW device
+is reconfigured externally (e.g. by i2cset) to advertise itself as not
+supporting PEC. Without the move of the code, at the second load of
+the driver (or bind) the STATUS_BYTE or STATUS_WORD register is always
+read with PEC enabled, which is likely to cause a read error resulting
+with fail of a driver load (or bind).
 
-         Vanilla 5.18-rc3        5.18-rc3 + revert      5.18-rc3 patched
-Mean     1237.36 (   0.00%)      950.16 *  23.21%*      988.35 *  20.12%*
-
-Numbers are time to complete workload so lower is better.
-
-Fixes: c65e6fd460b4 ("bfq: Do not let waker requests skip proper accounting")
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220519105235.31397-1-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Adam Wujek <dev_public@wujek.eu>
+Link: https://lore.kernel.org/r/20220519233334.438621-1-dev_public@wujek.eu
+Fixes: 75d2b2b06bd84 ("hwmon: (pmbus) disable PEC if not enabled")
+Fixes: 4e5418f787ec5 ("hwmon: (pmbus_core) Check adapter PEC support")
+[groeck: Added Fixes: tags, dropped continuation line]
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bfq-iosched.c | 5 +++--
- block/bfq-iosched.h | 1 +
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ drivers/hwmon/pmbus/pmbus_core.c | 28 +++++++++++++++-------------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
 
-diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 963f9f549232..047368c23984 100644
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -2133,7 +2133,6 @@ static void bfq_check_waker(struct bfq_data *bfqd, struct bfq_queue *bfqq,
- 	if (!bfqd->last_completed_rq_bfqq ||
- 	    bfqd->last_completed_rq_bfqq == bfqq ||
- 	    bfq_bfqq_has_short_ttime(bfqq) ||
--	    bfqq->dispatched > 0 ||
- 	    now_ns - bfqd->last_completion >= 4 * NSEC_PER_MSEC ||
- 	    bfqd->last_completed_rq_bfqq == bfqq->waker_bfqq)
- 		return;
-@@ -2210,7 +2209,7 @@ static void bfq_add_request(struct request *rq)
- 	bfqq->queued[rq_is_sync(rq)]++;
- 	bfqd->queued++;
+diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+index 5f8f824d997f..63b616ce3a6e 100644
+--- a/drivers/hwmon/pmbus/pmbus_core.c
++++ b/drivers/hwmon/pmbus/pmbus_core.c
+@@ -2308,6 +2308,21 @@ static int pmbus_init_common(struct i2c_client *client, struct pmbus_data *data,
+ 	struct device *dev = &client->dev;
+ 	int page, ret;
  
--	if (RB_EMPTY_ROOT(&bfqq->sort_list) && bfq_bfqq_sync(bfqq)) {
-+	if (bfq_bfqq_sync(bfqq) && RQ_BIC(rq)->requests <= 1) {
- 		bfq_check_waker(bfqd, bfqq, now_ns);
- 
- 		/*
-@@ -6563,6 +6562,7 @@ static void bfq_finish_requeue_request(struct request *rq)
- 		bfq_completed_request(bfqq, bfqd);
- 	}
- 	bfq_finish_requeue_request_body(bfqq);
-+	RQ_BIC(rq)->requests--;
- 	spin_unlock_irqrestore(&bfqd->lock, flags);
- 
++	/*
++	 * Figure out if PEC is enabled before accessing any other register.
++	 * Make sure PEC is disabled, will be enabled later if needed.
++	 */
++	client->flags &= ~I2C_CLIENT_PEC;
++
++	/* Enable PEC if the controller and bus supports it */
++	if (!(data->flags & PMBUS_NO_CAPABILITY)) {
++		ret = i2c_smbus_read_byte_data(client, PMBUS_CAPABILITY);
++		if (ret >= 0 && (ret & PB_CAPABILITY_ERROR_CHECK)) {
++			if (i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_PEC))
++				client->flags |= I2C_CLIENT_PEC;
++		}
++	}
++
  	/*
-@@ -6796,6 +6796,7 @@ static struct bfq_queue *bfq_init_rq(struct request *rq)
+ 	 * Some PMBus chips don't support PMBUS_STATUS_WORD, so try
+ 	 * to use PMBUS_STATUS_BYTE instead if that is the case.
+@@ -2326,19 +2341,6 @@ static int pmbus_init_common(struct i2c_client *client, struct pmbus_data *data,
+ 		data->has_status_word = true;
+ 	}
  
- 	bfqq_request_allocated(bfqq);
- 	bfqq->ref++;
-+	bic->requests++;
- 	bfq_log_bfqq(bfqd, bfqq, "get_request %p: bfqq %p, %d",
- 		     rq, bfqq, bfqq->ref);
- 
-diff --git a/block/bfq-iosched.h b/block/bfq-iosched.h
-index 07288b9da389..a1ec70af64c8 100644
---- a/block/bfq-iosched.h
-+++ b/block/bfq-iosched.h
-@@ -469,6 +469,7 @@ struct bfq_io_cq {
- 	struct bfq_queue *stable_merge_bfqq;
- 
- 	bool stably_merged;	/* non splittable if true */
-+	unsigned int requests;	/* Number of requests this process has in flight */
- };
- 
- /**
+-	/* Make sure PEC is disabled, will be enabled later if needed */
+-	client->flags &= ~I2C_CLIENT_PEC;
+-
+-	/* Enable PEC if the controller and bus supports it */
+-	if (!(data->flags & PMBUS_NO_CAPABILITY)) {
+-		ret = i2c_smbus_read_byte_data(client, PMBUS_CAPABILITY);
+-		if (ret >= 0 && (ret & PB_CAPABILITY_ERROR_CHECK)) {
+-			if (i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_PEC)) {
+-				client->flags |= I2C_CLIENT_PEC;
+-			}
+-		}
+-	}
+-
+ 	/*
+ 	 * Check if the chip is write protected. If it is, we can not clear
+ 	 * faults, and we should not try it. Also, in that case, writes into
 -- 
 2.35.1
 
