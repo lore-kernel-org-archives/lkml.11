@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6726CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51AA8CCA485
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385349AbiFGWpx (ORCPT
+        id S1385940AbiFGWrV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:45:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34240 "EHLO
+        Tue, 7 Jun 2022 18:47:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379767AbiFGVdJ (ORCPT
+        with ESMTP id S1380683AbiFGViQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:33:09 -0400
+        Tue, 7 Jun 2022 17:38:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3215C22CEFD;
-        Tue,  7 Jun 2022 12:04:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13EDB17FC0E;
+        Tue,  7 Jun 2022 12:05:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 814C3B823AF;
-        Tue,  7 Jun 2022 19:04:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8E76C385A2;
-        Tue,  7 Jun 2022 19:04:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D5B6B823AF;
+        Tue,  7 Jun 2022 19:05:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE920C385A2;
+        Tue,  7 Jun 2022 19:05:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628656;
-        bh=QJPm2YlDollzSuo4wj5sT5ts8zA9rU3NK1m5esGJIOk=;
+        s=korg; t=1654628723;
+        bh=S3TbxDKomXjqsFipStdTUFmVt6naxHpuRLRutjjre40=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jovxa03Vr+cgqw3zhq+F0Xm8eMWoRGbBYdedqLwe2Tv8bYK1ppBCdOX5e3yWj7H/F
-         Ep6qu3+b2FR5f6cFnJRlcjwrGzS8VCzZA5rcuB7upZe1WopzF9XHeQbbm7pt2ljdli
-         YS7aSF4SQbCKM8X4Z3sHrBQWJejwTgSYSl4HtnxA=
+        b=PeLgcj2uYENw4sH9cJ2l8EapWR9igAQqjgxLkBXALWRbmAtEwfAo9/xFw6y/B6Tfm
+         S7116BVb3bRFxnyb15RoDGX7oh0FJZJQNTdYBVKCqyqdycwGZiAPl1Z1k3eh1zjNDr
+         /9W1w0KYqtOWp36rSjdGkIsjMdqm7r1VTozhy6mc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 407/879] Revert "cpufreq: Fix possible race in cpufreq online error path"
-Date:   Tue,  7 Jun 2022 18:58:45 +0200
-Message-Id: <20220607165014.676893477@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 432/879] mt76: mt7921: Fix the error handling path of mt7921_pci_probe()
+Date:   Tue,  7 Jun 2022 18:59:10 +0200
+Message-Id: <20220607165015.410054029@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,49 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Viresh Kumar <viresh.kumar@linaro.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 85f0e42bd65d01b351d561efb38e584d4c596553 ]
+[ Upstream commit 4e90db5e21eb3bb272fe47386dc3506755e209e9 ]
 
-This reverts commit f346e96267cd76175d6c201b40f770c0116a8a04.
+In case of error, some resources must be freed, as already done above and
+below the devm_kmemdup() and __mt7921e_mcu_drv_pmctrl() calls added in the
+commit in Fixes:.
 
-The commit tried to fix a possible real bug but it made it even worse.
-The fix was simply buggy as now an error out to out_offline_policy or
-out_exit_policy will try to release a semaphore which was never taken in
-the first place. This works fine only if we failed late, i.e. via
-out_destroy_policy.
-
-Fixes: f346e96267cd ("cpufreq: Fix possible race in cpufreq online error path")
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 602cc0c9618a ("mt76: mt7921e: fix possible probe failure after reboot")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/cpufreq.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/pci.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-index 233e8af48848..fbaa8e6c7d23 100644
---- a/drivers/cpufreq/cpufreq.c
-+++ b/drivers/cpufreq/cpufreq.c
-@@ -1534,6 +1534,8 @@ static int cpufreq_online(unsigned int cpu)
- 	for_each_cpu(j, policy->real_cpus)
- 		remove_cpu_dev_symlink(policy, get_cpu_device(j));
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+index 1a01d025bbe5..062e2b422478 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+@@ -302,8 +302,10 @@ static int mt7921_pci_probe(struct pci_dev *pdev,
+ 	dev->bus_ops = dev->mt76.bus;
+ 	bus_ops = devm_kmemdup(dev->mt76.dev, dev->bus_ops, sizeof(*bus_ops),
+ 			       GFP_KERNEL);
+-	if (!bus_ops)
+-		return -ENOMEM;
++	if (!bus_ops) {
++		ret = -ENOMEM;
++		goto err_free_dev;
++	}
  
-+	up_write(&policy->rwsem);
-+
- out_offline_policy:
- 	if (cpufreq_driver->offline)
- 		cpufreq_driver->offline(policy);
-@@ -1542,9 +1544,6 @@ static int cpufreq_online(unsigned int cpu)
- 	if (cpufreq_driver->exit)
- 		cpufreq_driver->exit(policy);
+ 	bus_ops->rr = mt7921_rr;
+ 	bus_ops->wr = mt7921_wr;
+@@ -312,7 +314,7 @@ static int mt7921_pci_probe(struct pci_dev *pdev,
  
--	cpumask_clear(policy->cpus);
--	up_write(&policy->rwsem);
--
- out_free_policy:
- 	cpufreq_policy_free(policy);
- 	return ret;
+ 	ret = __mt7921e_mcu_drv_pmctrl(dev);
+ 	if (ret)
+-		return ret;
++		goto err_free_dev;
+ 
+ 	mdev->rev = (mt7921_l1_rr(dev, MT_HW_CHIPID) << 16) |
+ 		    (mt7921_l1_rr(dev, MT_HW_REV) & 0xff);
 -- 
 2.35.1
 
