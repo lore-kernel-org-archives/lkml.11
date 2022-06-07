@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD34CCA483
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:26:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54DAAC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:27:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379961AbiFHAYa (ORCPT
+        id S1383555AbiFHAY5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:24:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
+        Tue, 7 Jun 2022 20:24:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381531AbiFGVoQ (ORCPT
+        with ESMTP id S1384331AbiFGVy1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:44:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A01712342B2;
-        Tue,  7 Jun 2022 12:07:19 -0700 (PDT)
+        Tue, 7 Jun 2022 17:54:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134B424AEE1;
+        Tue,  7 Jun 2022 12:13:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 94236B823B0;
-        Tue,  7 Jun 2022 19:07:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF61CC34115;
-        Tue,  7 Jun 2022 19:07:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB8CB618E1;
+        Tue,  7 Jun 2022 19:12:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBCF1C385A5;
+        Tue,  7 Jun 2022 19:12:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628830;
-        bh=z9mF0vJTOcJM8P1H/x/lKWNpzNoK2T2OoNZu9lJkCpw=;
+        s=korg; t=1654629169;
+        bh=/atc0+gFpH0rsZcqQNrfsag5GHjaKYkPOJ5HwXSCjX8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ENb4RzGBtmtee3HHqTmPfCilphWLllFTqpQrf4KF2IHOqL12/iHDSqBCkPZJVLHPV
-         +H+/sAbT0Uadx80BS5NMBy2xqz4+i8TwBgqiGy5uEgAwwfZph9Dtv11qznbHBk+hjI
-         2SV5LDjgCGwRhdtsoHFgblzO9lmGFJyS+4Bw1fYo=
+        b=FE0/aY98Er5LvEKg4AMeU7+0xD2I5oGEyMOiwxuduvaqUm2ljrhOvvTVi8Ucohm+n
+         dGsYXVODkbiqqLG6IoH8B41oNzKcBKVcp0lWiqIUp8NXN3pwPp5YHpBhoVdIGctMjK
+         5DciXl/5zYpx2MnBF/q2TuI99O1HUElFD8aDlX00=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dongliang Mu <mudongliangabcd@gmail.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 472/879] media: ov7670: remove ov7670_power_off from ov7670_remove
-Date:   Tue,  7 Jun 2022 18:59:50 +0200
-Message-Id: <20220607165016.580398159@linuxfoundation.org>
+Subject: [PATCH 5.18 587/879] arm64: dts: ti: k3-am64-mcu: remove incorrect UART base clock rates
+Date:   Tue,  7 Jun 2022 19:01:45 +0200
+Message-Id: <20220607165019.890475391@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,37 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 
-[ Upstream commit 5bf19572e31375368f19edd2dbb2e0789518bb99 ]
+[ Upstream commit 439677d416b17dd39964d5f7d64b742a2e51da5b ]
 
-In ov7670_probe, it always invokes ov7670_power_off() no matter
-the execution is successful or failed. So we cannot invoke it
-agiain in ov7670_remove().
+We found that (at least some versions of) the sci-fw set the base clock
+rate for UARTs in the MCU domain to 96 MHz instead of the expected 48 MHz,
+leading to incorrect baud rates when used from Linux.
 
-Fix this by removing ov7670_power_off from ov7670_remove.
+As the 8250_omap driver will query the actual clock rate from the clk
+driver when clock-frequency is unset, removing the incorrect property is
+sufficient to fix the baud rate.
 
-Fixes: 030f9f682e66 ("media: ov7670: control clock along with power")
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 8abae9389bdb ("arm64: dts: ti: Add support for AM642 SoC")
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+Reviewed-by: Vignesh Raghavendra <vigneshr@ti.com>
+Link: https://lore.kernel.org/r/20220419075157.189347-1-matthias.schiffer@ew.tq-group.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/ov7670.c | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/media/i2c/ov7670.c b/drivers/media/i2c/ov7670.c
-index 196746423116..1be2c0e5bdc1 100644
---- a/drivers/media/i2c/ov7670.c
-+++ b/drivers/media/i2c/ov7670.c
-@@ -2017,7 +2017,6 @@ static int ov7670_remove(struct i2c_client *client)
- 	v4l2_async_unregister_subdev(sd);
- 	v4l2_ctrl_handler_free(&info->hdl);
- 	media_entity_cleanup(&info->sd.entity);
--	ov7670_power_off(sd);
- 	return 0;
- }
- 
+diff --git a/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi b/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi
+index 2bb5c9ff172c..02d4285acbb8 100644
+--- a/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi
+@@ -10,7 +10,6 @@
+ 		compatible = "ti,am64-uart", "ti,am654-uart";
+ 		reg = <0x00 0x04a00000 0x00 0x100>;
+ 		interrupts = <GIC_SPI 185 IRQ_TYPE_LEVEL_HIGH>;
+-		clock-frequency = <48000000>;
+ 		current-speed = <115200>;
+ 		power-domains = <&k3_pds 149 TI_SCI_PD_EXCLUSIVE>;
+ 		clocks = <&k3_clks 149 0>;
+@@ -21,7 +20,6 @@
+ 		compatible = "ti,am64-uart", "ti,am654-uart";
+ 		reg = <0x00 0x04a10000 0x00 0x100>;
+ 		interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>;
+-		clock-frequency = <48000000>;
+ 		current-speed = <115200>;
+ 		power-domains = <&k3_pds 160 TI_SCI_PD_EXCLUSIVE>;
+ 		clocks = <&k3_clks 160 0>;
 -- 
 2.35.1
 
