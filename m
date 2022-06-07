@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2488FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:43:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C398C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:43:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347430AbiFGRnQ (ORCPT
+        id S1347664AbiFGRnW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:43:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39736 "EHLO
+        Tue, 7 Jun 2022 13:43:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347866AbiFGRbU (ORCPT
+        with ESMTP id S1347825AbiFGRbS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:31:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012E410A63F;
-        Tue,  7 Jun 2022 10:28:38 -0700 (PDT)
+        Tue, 7 Jun 2022 13:31:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C2B10A630;
+        Tue,  7 Jun 2022 10:28:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92B1A60906;
-        Tue,  7 Jun 2022 17:28:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A18F5C385A5;
-        Tue,  7 Jun 2022 17:28:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E89456145D;
+        Tue,  7 Jun 2022 17:28:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2635C34115;
+        Tue,  7 Jun 2022 17:28:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622917;
-        bh=b9T2ytWkws7EL7G3oLxeMYXBSBUH+aLsHZbV06loISc=;
+        s=korg; t=1654622911;
+        bh=wgil/TspLU/IoPr0ptWLutstO43Ee6qM15+0zCrW37E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k3M+Vsai+sZefGe8rxImIalKZltYxanheDUAEIK4KW9H+ti76lJD4LJ66Atv8HM6F
-         9G8gaRPWfit5zAGfPPfsydx5yz69v0HwdP8mGU/q/OCCBEeWV5fmNbfP1S7fvefmj8
-         OTXFQQ6lZjE3B4tmXXvX+LboRqNFpCh05Il+UL7Y=
+        b=K0hgBuPRFTDXAoyLtL8N1PrFWbba80mn7boFEFChYZvMxjuhMk5+Co27wGkbTIou5
+         kjOiHjuxDk2pRn9we8V0ueOOh5nn5rmXln1ucZlU2OWYc2m3AErzmDcNYP8ODwTm8N
+         KbGC01H6wRky3vp2/QpbdRRwJEu5eu743O+ufQJI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Fabio Estevam <festevam@gmail.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 202/452] ASoC: fsl: Fix refcount leak in imx_sgtl5000_probe
-Date:   Tue,  7 Jun 2022 19:00:59 +0200
-Message-Id: <20220607164914.583496888@linuxfoundation.org>
+Subject: [PATCH 5.10 227/452] ASoC: ti: j721e-evm: Fix refcount leak in j721e_soc_probe_*
+Date:   Tue,  7 Jun 2022 19:01:24 +0200
+Message-Id: <20220607164915.327688477@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -53,80 +52,132 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 41cd312dfe980af869c3503b4d38e62ed20dd3b7 ]
+[ Upstream commit a34840c4eb3278a7c29c9c57a65ce7541c66f9f2 ]
 
-of_find_i2c_device_by_node() takes a reference,
-In error paths, we should call put_device() to drop
-the reference to aviod refount leak.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not needed anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: 81e8e4926167 ("ASoC: fsl: add sgtl5000 clock support for imx-sgtl5000")
+Fixes: 6748d0559059 ("ASoC: ti: Add custom machine driver for j721e EVM (CPB and IVI)")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
-Link: https://lore.kernel.org/r/20220511065803.3957-1-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220512111331.44774-1-linmq006@gmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/imx-sgtl5000.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ sound/soc/ti/j721e-evm.c | 44 ++++++++++++++++++++++++++++++----------
+ 1 file changed, 33 insertions(+), 11 deletions(-)
 
-diff --git a/sound/soc/fsl/imx-sgtl5000.c b/sound/soc/fsl/imx-sgtl5000.c
-index f45cb4bbb6c4..5997bb5acb73 100644
---- a/sound/soc/fsl/imx-sgtl5000.c
-+++ b/sound/soc/fsl/imx-sgtl5000.c
-@@ -120,19 +120,19 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
- 	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
- 	if (!data) {
- 		ret = -ENOMEM;
--		goto fail;
-+		goto put_device;
+diff --git a/sound/soc/ti/j721e-evm.c b/sound/soc/ti/j721e-evm.c
+index 265bbc5a2f96..756cd9694cbe 100644
+--- a/sound/soc/ti/j721e-evm.c
++++ b/sound/soc/ti/j721e-evm.c
+@@ -631,17 +631,18 @@ static int j721e_soc_probe_cpb(struct j721e_priv *priv, int *link_idx,
+ 	codec_node = of_parse_phandle(node, "ti,cpb-codec", 0);
+ 	if (!codec_node) {
+ 		dev_err(priv->dev, "CPB codec node is not provided\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_dai_node;
  	}
  
- 	comp = devm_kzalloc(&pdev->dev, 3 * sizeof(*comp), GFP_KERNEL);
- 	if (!comp) {
- 		ret = -ENOMEM;
--		goto fail;
-+		goto put_device;
- 	}
- 
- 	data->codec_clk = clk_get(&codec_dev->dev, NULL);
- 	if (IS_ERR(data->codec_clk)) {
- 		ret = PTR_ERR(data->codec_clk);
--		goto fail;
-+		goto put_device;
- 	}
- 
- 	data->clk_frequency = clk_get_rate(data->codec_clk);
-@@ -158,10 +158,10 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
- 	data->card.dev = &pdev->dev;
- 	ret = snd_soc_of_parse_card_name(&data->card, "model");
+ 	domain = &priv->audio_domains[J721E_AUDIO_DOMAIN_CPB];
+ 	ret = j721e_get_clocks(priv->dev, &domain->codec, "cpb-codec-scki");
  	if (ret)
--		goto fail;
-+		goto put_device;
- 	ret = snd_soc_of_parse_audio_routing(&data->card, "audio-routing");
- 	if (ret)
--		goto fail;
-+		goto put_device;
- 	data->card.num_links = 1;
- 	data->card.owner = THIS_MODULE;
- 	data->card.dai_link = &data->dai;
-@@ -176,7 +176,7 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
- 		if (ret != -EPROBE_DEFER)
- 			dev_err(&pdev->dev, "snd_soc_register_card failed (%d)\n",
- 				ret);
--		goto fail;
-+		goto put_device;
- 	}
+-		return ret;
++		goto put_codec_node;
  
- 	of_node_put(ssi_np);
-@@ -184,6 +184,8 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
+ 	ret = j721e_get_clocks(priv->dev, &domain->mcasp, "cpb-mcasp-auxclk");
+ 	if (ret)
+-		return ret;
++		goto put_codec_node;
+ 
+ 	/*
+ 	 * Common Processor Board, two links
+@@ -651,8 +652,10 @@ static int j721e_soc_probe_cpb(struct j721e_priv *priv, int *link_idx,
+ 	comp_count = 6;
+ 	compnent = devm_kzalloc(priv->dev, comp_count * sizeof(*compnent),
+ 				GFP_KERNEL);
+-	if (!compnent)
+-		return -ENOMEM;
++	if (!compnent) {
++		ret = -ENOMEM;
++		goto put_codec_node;
++	}
+ 
+ 	comp_idx = 0;
+ 	priv->dai_links[*link_idx].cpus = &compnent[comp_idx++];
+@@ -703,6 +706,12 @@ static int j721e_soc_probe_cpb(struct j721e_priv *priv, int *link_idx,
+ 	(*conf_idx)++;
  
  	return 0;
++
++put_codec_node:
++	of_node_put(codec_node);
++put_dai_node:
++	of_node_put(dai_node);
++	return ret;
+ }
  
-+put_device:
-+	put_device(&codec_dev->dev);
- fail:
- 	if (data && !IS_ERR(data->codec_clk))
- 		clk_put(data->codec_clk);
+ static int j721e_soc_probe_ivi(struct j721e_priv *priv, int *link_idx,
+@@ -727,23 +736,25 @@ static int j721e_soc_probe_ivi(struct j721e_priv *priv, int *link_idx,
+ 	codeca_node = of_parse_phandle(node, "ti,ivi-codec-a", 0);
+ 	if (!codeca_node) {
+ 		dev_err(priv->dev, "IVI codec-a node is not provided\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_dai_node;
+ 	}
+ 
+ 	codecb_node = of_parse_phandle(node, "ti,ivi-codec-b", 0);
+ 	if (!codecb_node) {
+ 		dev_warn(priv->dev, "IVI codec-b node is not provided\n");
+-		return 0;
++		ret = 0;
++		goto put_codeca_node;
+ 	}
+ 
+ 	domain = &priv->audio_domains[J721E_AUDIO_DOMAIN_IVI];
+ 	ret = j721e_get_clocks(priv->dev, &domain->codec, "ivi-codec-scki");
+ 	if (ret)
+-		return ret;
++		goto put_codecb_node;
+ 
+ 	ret = j721e_get_clocks(priv->dev, &domain->mcasp, "ivi-mcasp-auxclk");
+ 	if (ret)
+-		return ret;
++		goto put_codecb_node;
+ 
+ 	/*
+ 	 * IVI extension, two links
+@@ -755,8 +766,10 @@ static int j721e_soc_probe_ivi(struct j721e_priv *priv, int *link_idx,
+ 	comp_count = 8;
+ 	compnent = devm_kzalloc(priv->dev, comp_count * sizeof(*compnent),
+ 				GFP_KERNEL);
+-	if (!compnent)
+-		return -ENOMEM;
++	if (!compnent) {
++		ret = -ENOMEM;
++		goto put_codecb_node;
++	}
+ 
+ 	comp_idx = 0;
+ 	priv->dai_links[*link_idx].cpus = &compnent[comp_idx++];
+@@ -817,6 +830,15 @@ static int j721e_soc_probe_ivi(struct j721e_priv *priv, int *link_idx,
+ 	(*conf_idx)++;
+ 
+ 	return 0;
++
++
++put_codecb_node:
++	of_node_put(codecb_node);
++put_codeca_node:
++	of_node_put(codeca_node);
++put_dai_node:
++	of_node_put(dai_node);
++	return ret;
+ }
+ 
+ static int j721e_soc_probe(struct platform_device *pdev)
 -- 
 2.35.1
 
