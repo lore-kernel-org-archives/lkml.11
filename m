@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B629C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:45:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66983C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:46:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376631AbiFGUps (ORCPT
+        id S1376607AbiFGUqA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55192 "EHLO
+        Tue, 7 Jun 2022 16:46:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354465AbiFGTmy (ORCPT
+        with ESMTP id S1357980AbiFGTmi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:42:54 -0400
+        Tue, 7 Jun 2022 15:42:38 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2EA31344;
-        Tue,  7 Jun 2022 11:17:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F405275D7;
+        Tue,  7 Jun 2022 11:17:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55784B82368;
-        Tue,  7 Jun 2022 18:17:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4B05C385A2;
-        Tue,  7 Jun 2022 18:17:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 141D3B82368;
+        Tue,  7 Jun 2022 18:17:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83D25C385A2;
+        Tue,  7 Jun 2022 18:17:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625871;
-        bh=jZEgMm0KNJeI+GnzujA/0rjwS4NentbhatM0X+GZL3I=;
+        s=korg; t=1654625862;
+        bh=OiuAQG3BrJbwqcLIwcvhXNkXPjIkvPVxMQwHSHsuVqM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FETS2suReT1lEvYVTKakZ6nlnJ3GiagOAcpKeKu/CaceERzovndqi8TmfIFh34wb/
-         vPogD6+3tIC1N/f22YbCOr3OeTFBOkK5SEOhi3YPMbS+uk08l8CK7sXZE1CoDhx0B4
-         lvRB4DOKgLb1u/lTtIK0pGD49soKsZbIc8mjwLLs=
+        b=wO5wLpluHc750Wt8BjRl0+U0XDs/jtiL23zAdkFdXh4Mmv9KxAzR0JAf9bK6kZEKX
+         ju4vjGarUZP8ObL9MqKwBmxJhuKLshBh9pk/zENsC79W74faUmB0mVipsm8ptDb9TG
+         QduDUH0sx0esQOAi0FPMniyQUXa3AzYC7/LvQYdI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
-        David Howells <dhowells@redhat.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, kernel test robot <yujie.liu@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 175/772] afs: Adjust ACK interpretation to try and cope with NAT
-Date:   Tue,  7 Jun 2022 18:56:07 +0200
-Message-Id: <20220607164954.197584538@linuxfoundation.org>
+Subject: [PATCH 5.17 164/772] ASoC: max98357a: remove dependency on GPIOLIB
+Date:   Tue,  7 Jun 2022 18:55:56 +0200
+Message-Id: <20220607164953.873356233@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,153 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit adc9613ff66c26ebaff9814973181ac178beb90b ]
+[ Upstream commit 21ca3274333f5c1cbbf9d91e5b33f4f2463859b2 ]
 
-If a client's address changes, say if it is NAT'd, this can disrupt an in
-progress operation.  For most operations, this is not much of a problem,
-but StoreData can be different as some servers modify the target file as
-the data comes in, so if a store request is disrupted, the file can get
-corrupted on the server.
+commit dcc2c012c7691 ("ASoC: Fix gpiolib dependencies") removed a
+series of unnecessary dependencies on GPIOLIB when the gpio was
+optional.
 
-The problem is that the server doesn't recognise packets that come after
-the change of address as belonging to the original client and will bounce
-them, either by sending an OUT_OF_SEQUENCE ACK to the apparent new call if
-the packet number falls within the initial sequence number window of a call
-or by sending an EXCEEDS_WINDOW ACK if it falls outside and then aborting
-it.  In both cases, firstPacket will be 1 and previousPacket will be 0 in
-the ACK information.
+A similar simplification seems valid for max98357a, so remove the
+dependency as well. This will avoid the following warning
 
-Fix this by the following means:
+   WARNING: unmet direct dependencies detected for SND_SOC_MAX98357A
+     Depends on [n]: SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] && GPIOLIB [=n]
+     Selected by [y]:
+     - SND_SOC_INTEL_SOF_CS42L42_MACH [=y] && SOUND [=y] && !UML &&
+       SND [=y] && SND_SOC [=y] && SND_SOC_INTEL_MACH [=y] &&
+       (SND_SOC_SOF_HDA_LINK [=y] || SND_SOC_SOF_BAYTRAIL [=n]) && I2C
+       [=y] && ACPI [=y] && SND_HDA_CODEC_HDMI [=y] &&
+       SND_SOC_SOF_HDA_AUDIO_CODEC [=y] && (MFD_INTEL_LPSS [=y] ||
+       COMPILE_TEST [=n])
 
- (1) If a client call receives an EXCEEDS_WINDOW ACK with firstPacket as 1
-     and previousPacket as 0, assume this indicates that the server saw the
-     incoming packets from a different peer and thus as a different call.
-     Fail the call with error -ENETRESET.
-
- (2) Also fail the call if a similar OUT_OF_SEQUENCE ACK occurs if the
-     first packet has been hard-ACK'd.  If it hasn't been hard-ACK'd, the
-     ACK packet will cause it to get retransmitted, so the call will just
-     be repeated.
-
- (3) Make afs_select_fileserver() treat -ENETRESET as a straight fail of
-     the operation.
-
- (4) Prioritise the error code over things like -ECONNRESET as the server
-     did actually respond.
-
- (5) Make writeback treat -ENETRESET as a retryable error and make it
-     redirty all the pages involved in a write so that the VM will retry.
-
-Note that there is still a circumstance that I can't easily deal with: if
-the operation is fully received and processed by the server, but the reply
-is lost due to address change.  There's no way to know if the op happened.
-We can examine the server, but a conflicting change could have been made by
-a third party - and we can't tell the difference.  In such a case, a
-message like:
-
-    kAFS: vnode modified {100058:146266} b7->b8 YFS.StoreData64 (op=2646a)
-
-will be logged to dmesg on the next op to touch the file and the client
-will reset the inode state, including invalidating clean parts of the
-pagecache.
-
-Reported-by: Marc Dionne <marc.dionne@auristor.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: linux-afs@lists.infradead.org
-Link: http://lists.infradead.org/pipermail/linux-afs/2021-December/004811.html # v1
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: kernel test robot <yujie.liu@intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://lore.kernel.org/r/20220517172647.468244-2-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/afs/misc.c     |  5 ++++-
- fs/afs/rotate.c   |  4 ++++
- fs/afs/write.c    |  1 +
- net/rxrpc/input.c | 27 +++++++++++++++++++++++++++
- 4 files changed, 36 insertions(+), 1 deletion(-)
+ sound/soc/codecs/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/fs/afs/misc.c b/fs/afs/misc.c
-index 1d1a8debe472..933e67fcdab1 100644
---- a/fs/afs/misc.c
-+++ b/fs/afs/misc.c
-@@ -163,8 +163,11 @@ void afs_prioritise_error(struct afs_error *e, int error, u32 abort_code)
- 		return;
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index 30c00380499c..a8c6c2bfd5a7 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -943,7 +943,6 @@ config SND_SOC_MAX98095
  
- 	case -ECONNABORTED:
-+		error = afs_abort_to_error(abort_code);
-+		fallthrough;
-+	case -ENETRESET: /* Responded, but we seem to have changed address */
- 		e->responded = true;
--		e->error = afs_abort_to_error(abort_code);
-+		e->error = error;
- 		return;
- 	}
- }
-diff --git a/fs/afs/rotate.c b/fs/afs/rotate.c
-index 79e1a5f6701b..a840c3588ebb 100644
---- a/fs/afs/rotate.c
-+++ b/fs/afs/rotate.c
-@@ -292,6 +292,10 @@ bool afs_select_fileserver(struct afs_operation *op)
- 		op->error = error;
- 		goto iterate_address;
+ config SND_SOC_MAX98357A
+ 	tristate "Maxim MAX98357A CODEC"
+-	depends on GPIOLIB
  
-+	case -ENETRESET:
-+		pr_warn("kAFS: Peer reset %s (op=%x)\n",
-+			op->type ? op->type->name : "???", op->debug_id);
-+		fallthrough;
- 	case -ECONNRESET:
- 		_debug("call reset");
- 		op->error = error;
-diff --git a/fs/afs/write.c b/fs/afs/write.c
-index f447c902318d..07454b1ed240 100644
---- a/fs/afs/write.c
-+++ b/fs/afs/write.c
-@@ -638,6 +638,7 @@ static ssize_t afs_write_back_from_locked_folio(struct address_space *mapping,
- 	case -EKEYEXPIRED:
- 	case -EKEYREJECTED:
- 	case -EKEYREVOKED:
-+	case -ENETRESET:
- 		afs_redirty_pages(wbc, mapping, start, len);
- 		mapping_set_error(mapping, ret);
- 		break;
-diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index dc201363f2c4..67d3eba60dc7 100644
---- a/net/rxrpc/input.c
-+++ b/net/rxrpc/input.c
-@@ -903,6 +903,33 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
- 				  rxrpc_propose_ack_respond_to_ack);
- 	}
- 
-+	/* If we get an EXCEEDS_WINDOW ACK from the server, it probably
-+	 * indicates that the client address changed due to NAT.  The server
-+	 * lost the call because it switched to a different peer.
-+	 */
-+	if (unlikely(buf.ack.reason == RXRPC_ACK_EXCEEDS_WINDOW) &&
-+	    first_soft_ack == 1 &&
-+	    prev_pkt == 0 &&
-+	    rxrpc_is_client_call(call)) {
-+		rxrpc_set_call_completion(call, RXRPC_CALL_REMOTELY_ABORTED,
-+					  0, -ENETRESET);
-+		return;
-+	}
-+
-+	/* If we get an OUT_OF_SEQUENCE ACK from the server, that can also
-+	 * indicate a change of address.  However, we can retransmit the call
-+	 * if we still have it buffered to the beginning.
-+	 */
-+	if (unlikely(buf.ack.reason == RXRPC_ACK_OUT_OF_SEQUENCE) &&
-+	    first_soft_ack == 1 &&
-+	    prev_pkt == 0 &&
-+	    call->tx_hard_ack == 0 &&
-+	    rxrpc_is_client_call(call)) {
-+		rxrpc_set_call_completion(call, RXRPC_CALL_REMOTELY_ABORTED,
-+					  0, -ENETRESET);
-+		return;
-+	}
-+
- 	/* Discard any out-of-order or duplicate ACKs (outside lock). */
- 	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
- 		trace_rxrpc_rx_discard_ack(call->debug_id, ack_serial,
+ config SND_SOC_MAX98371
+ 	tristate
 -- 
 2.35.1
 
