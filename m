@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 715D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:51:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2B48C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:51:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353666AbiFGSuA (ORCPT
+        id S1354028AbiFGSuI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:50:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41776 "EHLO
+        Tue, 7 Jun 2022 14:50:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352690AbiFGSR2 (ORCPT
+        with ESMTP id S1352738AbiFGSR3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 102B413C0B8;
-        Tue,  7 Jun 2022 10:52:34 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:29 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3939513C377;
+        Tue,  7 Jun 2022 10:52:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE622B82371;
-        Tue,  7 Jun 2022 17:52:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 620C1C3411F;
-        Tue,  7 Jun 2022 17:52:31 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0A8A1CE2422;
+        Tue,  7 Jun 2022 17:52:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23B0CC3411F;
+        Tue,  7 Jun 2022 17:52:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624351;
-        bh=G8cOy9opC++/jeFHI9IHaHvrRk/EWeG8r/xbYD0mqw0=;
+        s=korg; t=1654624354;
+        bh=h52zxNpYYU8WCZXmj5zjTKIXV+j+MQqMSEZmLGWkZrc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZLlHTBDG19D5Y5YNVxfaV9UvaV56NCXSxxXSB1L4VIdk5FuU9G2jHD7JcVdAgYSDF
-         wFB0TdLqug4LUc3mM9qHYodVDtAgatwe07F1BOUhEcsSOSDy/U+WeJwFqKkETYVqmF
-         dXht1/SoKR/zVK/d2vcWylwYnB2uZlJeBWaoCdF4=
+        b=fo4vxwNs1yUNoyvu5Abv+WYv7fAs4QPF13RowMmpLrRuIUgkdq5RHeecskITBHYC+
+         XKLHcjRJDpY/0miaTlZ8Yg7nFkX4OCLwj5UAfXgf6CP7+P7kQuPmHzt99w2lA2fuN8
+         KdKgddgy64TGzh8oEE5CFYZ0z2LHRutEzMdaTMn4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 295/667] iomap: iomap_write_failed fix
-Date:   Tue,  7 Jun 2022 18:59:20 +0200
-Message-Id: <20220607164943.627600307@linuxfoundation.org>
+Subject: [PATCH 5.15 296/667] spi: spi-fsl-qspi: check return value after calling platform_get_resource_byname()
+Date:   Tue,  7 Jun 2022 18:59:21 +0200
+Message-Id: <20220607164943.656664107@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,36 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Gruenbacher <agruenba@redhat.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit b71450e2cc4b3c79f33c5bd276d152af9bd54f79 ]
+[ Upstream commit a2b331ac11e1cac56f5b7d367e9f3c5796deaaed ]
 
-The @lend parameter of truncate_pagecache_range() should be the offset
-of the last byte of the hole, not the first byte beyond it.
+It will cause null-ptr-deref if platform_get_resource_byname() returns NULL,
+we need check the return value.
 
-Fixes: ae259a9c8593 ("fs: introduce iomap infrastructure")
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Fixes: 858e26a515c2 ("spi: spi-fsl-qspi: Reduce devm_ioremap size to 4 times AHB buffer size")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220505093954.1285615-1-yangyingliang@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/iomap/buffered-io.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/spi/spi-fsl-qspi.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/fs/iomap/buffered-io.c b/fs/iomap/buffered-io.c
-index fe10d8a30f6b..87a4f5a2ded0 100644
---- a/fs/iomap/buffered-io.c
-+++ b/fs/iomap/buffered-io.c
-@@ -525,7 +525,8 @@ iomap_write_failed(struct inode *inode, loff_t pos, unsigned len)
- 	 * write started inside the existing inode size.
- 	 */
- 	if (pos + len > i_size)
--		truncate_pagecache_range(inode, max(pos, i_size), pos + len);
-+		truncate_pagecache_range(inode, max(pos, i_size),
-+					 pos + len - 1);
- }
+diff --git a/drivers/spi/spi-fsl-qspi.c b/drivers/spi/spi-fsl-qspi.c
+index 9851551ebbe0..46ae46a944c5 100644
+--- a/drivers/spi/spi-fsl-qspi.c
++++ b/drivers/spi/spi-fsl-qspi.c
+@@ -876,6 +876,10 @@ static int fsl_qspi_probe(struct platform_device *pdev)
  
- static int
+ 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
+ 					"QuadSPI-memory");
++	if (!res) {
++		ret = -EINVAL;
++		goto err_put_ctrl;
++	}
+ 	q->memmap_phy = res->start;
+ 	/* Since there are 4 cs, map size required is 4 times ahb_buf_size */
+ 	q->ahb_addr = devm_ioremap(dev, q->memmap_phy,
 -- 
 2.35.1
 
