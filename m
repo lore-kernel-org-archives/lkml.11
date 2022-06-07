@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58222CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E5F2CCA47C
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:09:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444919AbiFHBI1 (ORCPT
+        id S1444946AbiFHBId (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:08:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35130 "EHLO
+        Tue, 7 Jun 2022 21:08:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385281AbiFGW0r (ORCPT
+        with ESMTP id S1380777AbiFGW15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:26:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB0927043B;
-        Tue,  7 Jun 2022 12:23:09 -0700 (PDT)
+        Tue, 7 Jun 2022 18:27:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A97A4272341;
+        Tue,  7 Jun 2022 12:23:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CC8A60B01;
-        Tue,  7 Jun 2022 19:23:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78837C385A2;
-        Tue,  7 Jun 2022 19:23:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9FB460B09;
+        Tue,  7 Jun 2022 19:23:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C56F6C385A2;
+        Tue,  7 Jun 2022 19:23:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629788;
-        bh=yBMfBMsenoejD3SJApeyaIR+DRPPPmmkDIHXMUaPI6E=;
+        s=korg; t=1654629808;
+        bh=gdjgGA3jTeWt39F5XYCk+VKfrnsbIggp1l16MZwXDVM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v3dAg5pVbhizNsaW6/3KjHNsEyInK3GJ1O7sx827T+WK+HWKJI9XHLjDrBbGvVsbP
-         pB2tn9Sr6YpGgGu/FSi/HbfVWBKYM5tw/NG7j1VUNwDjX/2TljJu1tBj2HSb3Qq6ah
-         sj8rrRtOW6bsQu1/J1kKdi9b/gw0i4fXQ/7WSzhw=
+        b=vf2zvPlWej4IcNIOzyS3tYhEcNaqJtIbLVy1w5v8REoAhXEcUMGnLWB43uDWioorV
+         U3TKJ8PxpNjGb8S5AZS5iJ3YeGMD5m29VqcKHJCwe9OS+GUfRlxjwUW385rzWpVYTJ
+         7x/ttEPc2DE2gIYT8v0U/2Xyg0+PcdX7U4VwUlgc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 5.18 818/879] um: chan_user: Fix winch_tramp() return value
-Date:   Tue,  7 Jun 2022 19:05:36 +0200
-Message-Id: <20220607165026.597219329@linuxfoundation.org>
+        stable@vger.kernel.org, Hyunchul Lee <hyc.lee@gmail.com>,
+        Yufan Chen <wiz.chen@gmail.com>,
+        Namjae Jeon <linkinjeon@kernel.org>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.18 824/879] ksmbd: fix outstanding credits related bugs
+Date:   Tue,  7 Jun 2022 19:05:42 +0200
+Message-Id: <20220607165026.772893494@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,64 +51,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Hyunchul Lee <hyc.lee@gmail.com>
 
-commit 57ae0b67b747031bc41fb44643aa5344ab58607e upstream.
+commit 376b9133826865568167b4091ef92a68c4622b87 upstream.
 
-The previous fix here was only partially correct, it did
-result in returning a proper error value in case of error,
-but it also clobbered the pid that we need to return from
-this function (not just zero for success).
+outstanding credits must be initialized to 0,
+because it means the sum of credits consumed by
+in-flight requests.
+And outstanding credits must be compared with
+total credits in smb2_validate_credit_charge(),
+because total credits are the sum of credits
+granted by ksmbd.
 
-As a result, it returned 0 here, but later this is treated
-as a pid and used to kill the process, but since it's now
-0 we kill(0, SIGKILL), which makes UML kill itself rather
-than just the helper thread.
+This patch fix the following error,
+while frametest with Windows clients:
 
-Fix that and make it more obvious by using a separate
-variable for the pid.
+Limits exceeding the maximum allowable outstanding requests,
+given : 128, pending : 8065
 
-Fixes: ccf1236ecac4 ("um: fix error return code in winch_tramp()")
-Reported-and-tested-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: b589f5db6d4a ("ksmbd: limits exceeding the maximum allowable outstanding requests")
 Cc: stable@vger.kernel.org
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Hyunchul Lee <hyc.lee@gmail.com>
+Reported-by: Yufan Chen <wiz.chen@gmail.com>
+Tested-by: Yufan Chen <wiz.chen@gmail.com>
+Acked-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/um/drivers/chan_user.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ fs/ksmbd/connection.c |    2 +-
+ fs/ksmbd/smb2misc.c   |    2 +-
+ fs/ksmbd/smb_common.c |    4 +++-
+ 3 files changed, 5 insertions(+), 3 deletions(-)
 
---- a/arch/um/drivers/chan_user.c
-+++ b/arch/um/drivers/chan_user.c
-@@ -220,7 +220,7 @@ static int winch_tramp(int fd, struct tt
- 		       unsigned long *stack_out)
- {
- 	struct winch_data data;
--	int fds[2], n, err;
-+	int fds[2], n, err, pid;
- 	char c;
+--- a/fs/ksmbd/connection.c
++++ b/fs/ksmbd/connection.c
+@@ -62,7 +62,7 @@ struct ksmbd_conn *ksmbd_conn_alloc(void
+ 	atomic_set(&conn->req_running, 0);
+ 	atomic_set(&conn->r_count, 0);
+ 	conn->total_credits = 1;
+-	conn->outstanding_credits = 1;
++	conn->outstanding_credits = 0;
  
- 	err = os_pipe(fds, 1, 1);
-@@ -238,8 +238,9 @@ static int winch_tramp(int fd, struct tt
- 	 * problem with /dev/net/tun, which if held open by this
- 	 * thread, prevents the TUN/TAP device from being reused.
- 	 */
--	err = run_helper_thread(winch_thread, &data, CLONE_FILES, stack_out);
--	if (err < 0) {
-+	pid = run_helper_thread(winch_thread, &data, CLONE_FILES, stack_out);
-+	if (pid < 0) {
-+		err = pid;
- 		printk(UM_KERN_ERR "fork of winch_thread failed - errno = %d\n",
- 		       -err);
- 		goto out_close;
-@@ -263,7 +264,7 @@ static int winch_tramp(int fd, struct tt
- 		goto out_close;
+ 	init_waitqueue_head(&conn->req_running_q);
+ 	INIT_LIST_HEAD(&conn->conns_list);
+--- a/fs/ksmbd/smb2misc.c
++++ b/fs/ksmbd/smb2misc.c
+@@ -338,7 +338,7 @@ static int smb2_validate_credit_charge(s
+ 		ret = 1;
  	}
  
--	return err;
-+	return pid;
+-	if ((u64)conn->outstanding_credits + credit_charge > conn->vals->max_credits) {
++	if ((u64)conn->outstanding_credits + credit_charge > conn->total_credits) {
+ 		ksmbd_debug(SMB, "Limits exceeding the maximum allowable outstanding requests, given : %u, pending : %u\n",
+ 			    credit_charge, conn->outstanding_credits);
+ 		ret = 1;
+--- a/fs/ksmbd/smb_common.c
++++ b/fs/ksmbd/smb_common.c
+@@ -140,8 +140,10 @@ int ksmbd_verify_smb_message(struct ksmb
  
-  out_close:
- 	close(fds[1]);
+ 	hdr = work->request_buf;
+ 	if (*(__le32 *)hdr->Protocol == SMB1_PROTO_NUMBER &&
+-	    hdr->Command == SMB_COM_NEGOTIATE)
++	    hdr->Command == SMB_COM_NEGOTIATE) {
++		work->conn->outstanding_credits++;
+ 		return 0;
++	}
+ 
+ 	return -EINVAL;
+ }
 
 
