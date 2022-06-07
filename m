@@ -2,117 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ADB4CCA489
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 060DDCCA48F
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392522AbiFHB6W (ORCPT
+        id S1441921AbiFHB66 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49066 "EHLO
+        Tue, 7 Jun 2022 21:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588746AbiFGXzB (ORCPT
+        with ESMTP id S1835816AbiFGX5C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:55:01 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F05291B07A1
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:36:20 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1nyik1-00033u-HB; Wed, 08 Jun 2022 01:36:05 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Palmer Dabbelt <palmer@rivosinc.com>, Ron Economos <re@w6rz.net>
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [GIT PULL] RISC-V Patches for the 5.19 Merge Window, Part 1
-Date:   Wed, 08 Jun 2022 01:36:02 +0200
-Message-ID: <827324415.0ifERbkFSE@diego>
-In-Reply-To: <d7c8ee82-ce85-5d55-2865-4b610c9d3b9d@w6rz.net>
-References: <mhng-3cfe92b5-a83a-4642-9b9e-8416ae717fd6@palmer-ri-x1c9> <d7c8ee82-ce85-5d55-2865-4b610c9d3b9d@w6rz.net>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+        Tue, 7 Jun 2022 19:57:02 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE6667E1FA
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:23:58 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id r10-20020a632b0a000000b003fcb4af0273so8811489pgr.1
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 16:23:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=7BEMJCReDvWYRKLhlInIZ1OFpFjx1quNIbfK5hEhej4=;
+        b=NkgordnQuuAVc31UeJpYQYToToDAsNS1qL4WUn+TkIFlIEfUpGIbU4rTmpOmS9Rkyn
+         H5jZdL7P9KCG+61Cs3FRM1mEWhyKhkOl4hKqQqA29qa8+hs3jVTGALzrQ9QQyG68gjhA
+         5XesWEK1k1vi3J+iWPZxg0MeELXLa1RIFxMSuN0EIKPP/HSD1MPBVoaTwhMA6pKBeRGp
+         pTz+Js9Q3laKX18zRENswO6LLmTOnQ5zETw82uIktLilDZ8f0IUqk4g2pFMJj+cG2a9o
+         04PIUH/iUhjVIiSCaL1lxwaLD4PWvykFJHrbLN3ZtTJAs4neY5ahOTpKYXsO0a+FaKzn
+         AdHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=7BEMJCReDvWYRKLhlInIZ1OFpFjx1quNIbfK5hEhej4=;
+        b=M9h6kyjeYvWMYVmPxIiX22KUqq/BfXQJt7wIrjYLK9XceBSuaCqlU5QoygEBAlSgnV
+         dB9NIl+MBTxcr6AE3wt40288kCHCXervkeko/T+hI9X5TjSXhRD1zyb9p1mU5tEWqRHU
+         VTckbhFkeU90LNC6r1Ihvb1bnkCh+ZUAB6VNLzbBrAGOUlbhrQ2coaAqfRIiBmIZ17uu
+         Riodcz6aybYXJ1wEZkHpmzMzJJC/YacPPjWEoVzp2kr+NKMuv5WRFWYiTYOw9R1DtDEG
+         Wfu9jPkiZ5uwHW4a6cRMDftbJMKCEdcVXz1SC8RBpybCkDNXCCOIuLCbC3WDpsKgsdw0
+         GFrg==
+X-Gm-Message-State: AOAM531FbPi4s/O2B4LfPfZvNpHyNWnrNDHjBF9St90IUjdMEewDbjXR
+        aMaKFuQjikk2NPeMzI0V3lAzAcZIDJU=
+X-Google-Smtp-Source: ABdhPJwKUS2rXe4ZMRGjiGGfUOn8NT8M/vx1ChFdkFHaTIAOt6gmH867C8Af6ZFHbfa0UQNuE8DP+0nAHVo=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a17:903:234b:b0:166:4459:c43a with SMTP id
+ c11-20020a170903234b00b001664459c43amr28857631plh.35.1654644238156; Tue, 07
+ Jun 2022 16:23:58 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Tue,  7 Jun 2022 23:23:51 +0000
+In-Reply-To: <20220607232353.3375324-1-seanjc@google.com>
+Message-Id: <20220607232353.3375324-2-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220607232353.3375324-1-seanjc@google.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH 1/3] KVM: VMX: Allow userspace to set all supported
+ FEATURE_CONTROL bits
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ron,
+Allow userspace to set all supported bits in MSR IA32_FEATURE_CONTROL
+irrespective of the guest CPUID model, e.g. via KVM_SET_MSRS.  KVM's ABI
+is that userspace is allowed to set MSRs before CPUID, i.e. can set MSRs
+to values that would fault according to the guest CPUID model.
 
-Am Dienstag, 7. Juni 2022, 22:46:52 CEST schrieb Ron Economos:
-> On 5/31/22 10:13 AM, Palmer Dabbelt wrote:
-> > The following changes since commit 9282d0996936c5fbf877c0d096a3feb456c878ad:
-> >
-> >    csky: Move to generic ticket-spinlock (2022-05-11 11:50:15 -0700)
-> >
-> > are available in the Git repository at:
-> >
-> >    git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.19-mw0
-> >
-> > for you to fetch changes up to 7699f7aacf3ebfee51c670b6f796b2797f0f7487:
-> >
-> >    RISC-V: Prepare dropping week attribute from arch_kexec_apply_relocations[_add] (2022-05-30 16:04:37 -0700)
-> >
-> > ----------------------------------------------------------------
-> > RISC-V Patches for the 5.19 Merge Window, Part 1
-> >
-> > * Support for the Svpbmt extension, which allows memory attributes to be
-> >    encoded in pages.
-> >
-> >
-> > Heiko Stuebner (12):
-> >        riscv: integrate alternatives better into the main architecture
-> >        riscv: allow different stages with alternatives
-> >        riscv: implement module alternatives
-> >        riscv: implement ALTERNATIVE_2 macro
-> >        riscv: extend concatenated alternatives-lines to the same length
-> >        riscv: prevent compressed instructions in alternatives
-> >        riscv: move boot alternatives to after fill_hwcap
-> >        riscv: Fix accessing pfn bits in PTEs for non-32bit variants
-> >        riscv: add RISC-V Svpbmt extension support
-> >        riscv: remove FIXMAP_PAGE_IO and fall back to its default value
-> >        riscv: don't use global static vars to store alternative data
-> >        riscv: add memory-type errata for T-Head
-> >
-> An issue was found on the HiFive Unmatched with the 5.19-rc1 kernel. The 
-> following warning occurs during boot:
-> 
-> riscv64 kernel: 
-> ----------------------------------------------------------------
-> riscv64 kernel: WARNING: Missing the following errata may cause 
-> potential issues
-> riscv64 kernel:         SiFive Errata[0]:cip-453
-> riscv64 kernel:         SiFive Errata[1]:cip-1200
-> riscv64 kernel: Please enable the corresponding Kconfig to apply them
-> riscv64 kernel: 
-> ----------------------------------------------------------------
-> 
-> I've manually bisected the problem to this commit:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ff689fd21cb13098305bae3f8d0c0065df2e2fc1
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ arch/x86/kvm/vmx/vmx.c | 36 +++++++++++++++++++++++++++++++-----
+ 1 file changed, 31 insertions(+), 5 deletions(-)
 
-hmm, on first glance I can't really see how that specific commit would
-affect Sifive erratas. Patches directly before this one did change
-alternative / errata things though.
-
-(1) From looking at your output, it seems at least CONFIG_ERRATA_SIFIVE
-is enabled as the general sifive errata code is running, but are the
-individual erratas also still enabled in your config?
-They're default=y forever and weren't touched by the svpbmt series,
-but it'd be nice to know how the config looks, to see if the Kconfig
-settings are strange somewhere
-
-
-(2) Going from the list on
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/log/?h=ff689fd21cb13098305bae3f8d0c0065df2e2fc1
-
-could you maybe check if it's really working with the parent of the
-commit you found. (i.e. patches before the svpbmt addition).
-
-Also just to be sure, it still works correctly with 5.18, right?
-
-
-Thanks
-Heiko
-
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index fd2e707faf2b..8e83e12373c5 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -1741,12 +1741,38 @@ bool nested_vmx_allowed(struct kvm_vcpu *vcpu)
+ 	return nested && guest_cpuid_has(vcpu, X86_FEATURE_VMX);
+ }
+ 
+-static inline bool vmx_feature_control_msr_valid(struct kvm_vcpu *vcpu,
+-						 uint64_t val)
++/*
++ * Userspace is allowed to set any supported IA32_FEATURE_CONTROL regardless of
++ * guest CPUID.  Note, KVM allows userspace to set "VMX in SMX" to maintain
++ * backwards compatibility even though KVM doesn't support emulating SMX.  And
++ * because userspace set "VMX in SMX", the guest must also be allowed to set it,
++ * e.g. if the MSR is left unlocked and the guest does a RMW operation.
++ */
++#define KVM_SUPPORTED_FEATURE_CONTROL  (FEAT_CTL_LOCKED			 | \
++					FEAT_CTL_VMX_ENABLED_INSIDE_SMX	 | \
++					FEAT_CTL_VMX_ENABLED_OUTSIDE_SMX | \
++					FEAT_CTL_SGX_LC_ENABLED		 | \
++					FEAT_CTL_SGX_ENABLED		 | \
++					FEAT_CTL_LMCE_ENABLED)
++
++static inline bool vmx_feature_control_msr_valid(struct vcpu_vmx *vmx,
++						 struct msr_data *msr)
+ {
+-	uint64_t valid_bits = to_vmx(vcpu)->msr_ia32_feature_control_valid_bits;
++	uint64_t valid_bits;
+ 
+-	return !(val & ~valid_bits);
++	/*
++	 * Ensure KVM_SUPPORTED_FEATURE_CONTROL is updated when new bits are
++	 * exposed to the guest.
++	 */
++	WARN_ON_ONCE(vmx->msr_ia32_feature_control_valid_bits &
++		     ~KVM_SUPPORTED_FEATURE_CONTROL);
++
++	if (msr->host_initiated)
++		valid_bits = KVM_SUPPORTED_FEATURE_CONTROL;
++	else
++		valid_bits = vmx->msr_ia32_feature_control_valid_bits;
++
++	return !(msr->data & ~valid_bits);
+ }
+ 
+ static int vmx_get_msr_feature(struct kvm_msr_entry *msr)
+@@ -2139,7 +2165,7 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 		vcpu->arch.mcg_ext_ctl = data;
+ 		break;
+ 	case MSR_IA32_FEAT_CTL:
+-		if (!vmx_feature_control_msr_valid(vcpu, data) ||
++		if (!vmx_feature_control_msr_valid(vmx, msr_info) ||
+ 		    (to_vmx(vcpu)->msr_ia32_feature_control &
+ 		     FEAT_CTL_LOCKED && !msr_info->host_initiated))
+ 			return 1;
+-- 
+2.36.1.255.ge46751e96f-goog
 
