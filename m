@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7749FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:48:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C19DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:48:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348304AbiFGRr7 (ORCPT
+        id S1348307AbiFGRsI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:47:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40766 "EHLO
+        Tue, 7 Jun 2022 13:48:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347548AbiFGRau (ORCPT
+        with ESMTP id S1347716AbiFGRa7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:30:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B8267D06;
-        Tue,  7 Jun 2022 10:27:22 -0700 (PDT)
+        Tue, 7 Jun 2022 13:30:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 543B511AFDC;
+        Tue,  7 Jun 2022 10:28:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E10066143F;
-        Tue,  7 Jun 2022 17:27:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB632C385A5;
-        Tue,  7 Jun 2022 17:27:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DC3F6141D;
+        Tue,  7 Jun 2022 17:28:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DC9EC34115;
+        Tue,  7 Jun 2022 17:28:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622841;
-        bh=IMgI6uceHhFh8lhaGYlZSulYoA0Q5CINB5VcpWKhQfI=;
+        s=korg; t=1654622882;
+        bh=rV5ATrQzgw5+uUp6EFkXrz+X1dUuzqSLwh7plizy/QE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F+AEd0CdWn5gLh/fIR1o3jT6auX8V8IviNnJ7EJp3YAfyy7CTXGZ1XZVCXQkp5nnk
-         EZKIWj9gkCBEolPeF+I5vlZULJu2IoLCN9E/CfuibFsP/zwqm8jhycOTXMyLqhslb3
-         sp/0qw+9pYpevpmBi26+VDaf2q5opONN+NQOPL/s=
+        b=pnHENhbC43+mtaZ72JtOnD90KJvvB6jjDvgshI9STmD2V2VNiYd1me87Tehzrt7yx
+         /6mUAs8CmO/+V0fkPfnXnDjMjIQ49KlS1AS8Mqf5bRo5SwuAoT9gakcQI39r5423q/
+         aD0wf0DDZSIC+BiERSMtDA6Ulqkz596B+CCxxuwM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 161/452] of: overlay: do not break notify on NOTIFY_{OK|STOP}
-Date:   Tue,  7 Jun 2022 19:00:18 +0200
-Message-Id: <20220607164913.359447378@linuxfoundation.org>
+        Sathish Narasimman <sathish.narasimman@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 218/452] Bluetooth: LL privacy allow RPA
+Date:   Tue,  7 Jun 2022 19:01:15 +0200
+Message-Id: <20220607164915.057399563@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,38 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nuno Sá <nuno.sa@analog.com>
+From: Sathish Narasimman <sathish.narasimman@intel.com>
 
-[ Upstream commit 5f756a2eaa4436d7d3dc1e040147f5e992ae34b5 ]
+[ Upstream commit 8ce85ada0a05e21a5386ba5c417c52ab00fcd0d1 ]
 
-We should not break overlay notifications on NOTIFY_{OK|STOP}
-otherwise we might break on the first fragment. We should only stop
-notifications if a *real* errno is returned by one of the listeners.
+allow RPA to add bd address to whitelist
 
-Fixes: a1d19bd4cf1fe ("of: overlay: pr_err from return NOTIFY_OK to overlay apply/remove")
-Signed-off-by: Nuno Sá <nuno.sa@analog.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220420130205.89435-1-nuno.sa@analog.com
+Signed-off-by: Sathish Narasimman <sathish.narasimman@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/of/overlay.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ net/bluetooth/hci_request.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/of/overlay.c b/drivers/of/overlay.c
-index 43a77d720008..c8a0c0e9dec1 100644
---- a/drivers/of/overlay.c
-+++ b/drivers/of/overlay.c
-@@ -170,9 +170,7 @@ static int overlay_notify(struct overlay_changeset *ovcs,
+diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+index 2405e1ffebbd..eb4c1c18eb01 100644
+--- a/net/bluetooth/hci_request.c
++++ b/net/bluetooth/hci_request.c
+@@ -842,6 +842,10 @@ static u8 update_white_list(struct hci_request *req)
+ 	 */
+ 	bool allow_rpa = hdev->suspended;
  
- 		ret = blocking_notifier_call_chain(&overlay_notify_chain,
- 						   action, &nd);
--		if (ret == NOTIFY_OK || ret == NOTIFY_STOP)
--			return 0;
--		if (ret) {
-+		if (notifier_to_errno(ret)) {
- 			ret = notifier_to_errno(ret);
- 			pr_err("overlay changeset %s notifier error %d, target: %pOF\n",
- 			       of_overlay_action_name[action], ret, nd.target);
++	if (use_ll_privacy(hdev) &&
++	    hci_dev_test_flag(hdev, HCI_ENABLE_LL_PRIVACY))
++		allow_rpa = true;
++
+ 	/* Go through the current white list programmed into the
+ 	 * controller one by one and check if that address is still
+ 	 * in the list of pending connections or list of devices to
 -- 
 2.35.1
 
