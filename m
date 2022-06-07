@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FBCCCCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 802A1C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381243AbiFGVbu (ORCPT
+        id S1381200AbiFGVbo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:31:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45122 "EHLO
+        Tue, 7 Jun 2022 17:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356411AbiFGUe6 (ORCPT
+        with ESMTP id S1377943AbiFGUek (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DADC91EB431;
-        Tue,  7 Jun 2022 11:37:47 -0700 (PDT)
+        Tue, 7 Jun 2022 16:34:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2406B17FC06;
+        Tue,  7 Jun 2022 11:36:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C59D66157B;
-        Tue,  7 Jun 2022 18:37:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC498C385A2;
-        Tue,  7 Jun 2022 18:37:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7164F60B3D;
+        Tue,  7 Jun 2022 18:36:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81CFEC385A2;
+        Tue,  7 Jun 2022 18:36:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627066;
-        bh=7GVSzPHphQc2+Ish2I4eyvamIhqbHAOrOfl/h31fIe0=;
+        s=korg; t=1654627013;
+        bh=WXLvoDEgOURHcqxi5b70GJyTNlEI6Sj6KOIHstgFnBk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NSScwCHZyDQ6sBQsGROV1A7fYwMrQR9ARtuUj/cCCTygXGkUslAM/BYecMyXvOfO0
-         Qtf2pWNqwp7uqzhYvFPmM18mVsjugAykCvOlWBXSESHwosa1cPEweCFspMDGGGonrp
-         xdGfWe/AY7HDICbGrII6p2X3gHsNCJYq66o9p6RE=
+        b=evtZEGj0vIL7DIGRH+8wGZQiQaDsHI7vSnuBvI9rF2LErS2iTJxRVvftc/ORSOubw
+         tgFVyRvhBDnw0Qn6Tq/FdpGgm/dQkbPbx2ZNzoM8nNzGZUuPW5K0O8iWXN06aPwbTL
+         qSu8FSdRrvBVarzxc5OGNsv+mufD+meumUrKIRMw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wenqing Liu <wenqingliu0120@gmail.com>,
-        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org, Olga Kornievskaia <aglo@umich.edu>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 564/772] f2fs: fix to do sanity check on inline_dots inode
-Date:   Tue,  7 Jun 2022 19:02:36 +0200
-Message-Id: <20220607165005.575873327@linuxfoundation.org>
+Subject: [PATCH 5.17 586/772] NFS: Further fixes to the writeback error handling
+Date:   Tue,  7 Jun 2022 19:02:58 +0200
+Message-Id: <20220607165006.215044926@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,71 +51,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 12662d19467b391b5b509ac5e9ab4f583c6dde16 ]
+[ Upstream commit c6fd3511c3397dd9cbc6dc5d105bbedb69bf4061 ]
 
-As Wenqing reported in bugzilla:
+When we handle an error by redirtying the page, we're not corrupting the
+mapping, so we don't want the error to be recorded in the mapping.
+If the caller has specified a sync_mode of WB_SYNC_NONE, we can just
+return AOP_WRITEPAGE_ACTIVATE. However if we're dealing with
+WB_SYNC_ALL, we need to ensure that retries happen when the errors are
+non-fatal.
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215765
-
-It will cause a kernel panic with steps:
-- mkdir mnt
-- mount tmp40.img mnt
-- ls mnt
-
-folio_mark_dirty+0x33/0x50
-f2fs_add_regular_entry+0x541/0xad0 [f2fs]
-f2fs_add_dentry+0x6c/0xb0 [f2fs]
-f2fs_do_add_link+0x182/0x230 [f2fs]
-__recover_dot_dentries+0x2d6/0x470 [f2fs]
-f2fs_lookup+0x5af/0x6a0 [f2fs]
-__lookup_slow+0xac/0x200
-lookup_slow+0x45/0x70
-walk_component+0x16c/0x250
-path_lookupat+0x8b/0x1f0
-filename_lookup+0xef/0x250
-user_path_at_empty+0x46/0x70
-vfs_statx+0x98/0x190
-__do_sys_newlstat+0x41/0x90
-__x64_sys_newlstat+0x1a/0x30
-do_syscall_64+0x37/0xb0
-entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The root cause is for special file: e.g. character, block, fifo or
-socket file, f2fs doesn't assign address space operations pointer array
-for mapping->a_ops field, so, in a fuzzed image, if inline_dots flag was
-tagged in special file, during lookup(), when f2fs runs into
-__recover_dot_dentries(), it will cause NULL pointer access once
-f2fs_add_regular_entry() calls a_ops->set_dirty_page().
-
-Fixes: 510022a85839 ("f2fs: add F2FS_INLINE_DOTS to recover missing dot dentries")
-Reported-by: Wenqing Liu <wenqingliu0120@gmail.com>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Reported-by: Olga Kornievskaia <aglo@umich.edu>
+Fixes: 8fc75bed96bb ("NFS: Fix up return value on fatal errors in nfs_page_async_flush()")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/namei.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ fs/nfs/write.c | 39 ++++++++++++++++++---------------------
+ 1 file changed, 18 insertions(+), 21 deletions(-)
 
-diff --git a/fs/f2fs/namei.c b/fs/f2fs/namei.c
-index 5f213f05556d..53273aec2627 100644
---- a/fs/f2fs/namei.c
-+++ b/fs/f2fs/namei.c
-@@ -460,6 +460,13 @@ static int __recover_dot_dentries(struct inode *dir, nid_t pino)
- 		return 0;
+diff --git a/fs/nfs/write.c b/fs/nfs/write.c
+index b28be2582c90..477162d2e8a2 100644
+--- a/fs/nfs/write.c
++++ b/fs/nfs/write.c
+@@ -603,8 +603,9 @@ static void nfs_write_error(struct nfs_page *req, int error)
+  * Find an associated nfs write request, and prepare to flush it out
+  * May return an error if the user signalled nfs_wait_on_request().
+  */
+-static int nfs_page_async_flush(struct nfs_pageio_descriptor *pgio,
+-				struct page *page)
++static int nfs_page_async_flush(struct page *page,
++				struct writeback_control *wbc,
++				struct nfs_pageio_descriptor *pgio)
+ {
+ 	struct nfs_page *req;
+ 	int ret = 0;
+@@ -630,11 +631,11 @@ static int nfs_page_async_flush(struct nfs_pageio_descriptor *pgio,
+ 		/*
+ 		 * Remove the problematic req upon fatal errors on the server
+ 		 */
+-		if (nfs_error_is_fatal(ret)) {
+-			if (nfs_error_is_fatal_on_server(ret))
+-				goto out_launder;
+-		} else
+-			ret = -EAGAIN;
++		if (nfs_error_is_fatal_on_server(ret))
++			goto out_launder;
++		if (wbc->sync_mode == WB_SYNC_NONE)
++			ret = AOP_WRITEPAGE_ACTIVATE;
++		redirty_page_for_writepage(wbc, page);
+ 		nfs_redirty_request(req);
+ 		pgio->pg_error = 0;
+ 	} else
+@@ -650,15 +651,8 @@ static int nfs_page_async_flush(struct nfs_pageio_descriptor *pgio,
+ static int nfs_do_writepage(struct page *page, struct writeback_control *wbc,
+ 			    struct nfs_pageio_descriptor *pgio)
+ {
+-	int ret;
+-
+ 	nfs_pageio_cond_complete(pgio, page_index(page));
+-	ret = nfs_page_async_flush(pgio, page);
+-	if (ret == -EAGAIN) {
+-		redirty_page_for_writepage(wbc, page);
+-		ret = AOP_WRITEPAGE_ACTIVATE;
+-	}
+-	return ret;
++	return nfs_page_async_flush(page, wbc, pgio);
+ }
+ 
+ /*
+@@ -725,12 +719,15 @@ int nfs_writepages(struct address_space *mapping, struct writeback_control *wbc)
+ 		priority = wb_priority(wbc);
  	}
  
-+	if (!S_ISDIR(dir->i_mode)) {
-+		f2fs_err(sbi, "inconsistent inode status, skip recovering inline_dots inode (ino:%lu, i_mode:%u, pino:%u)",
-+			  dir->i_ino, dir->i_mode, pino);
-+		set_sbi_flag(sbi, SBI_NEED_FSCK);
-+		return -ENOTDIR;
-+	}
-+
- 	err = f2fs_dquot_initialize(dir);
- 	if (err)
- 		return err;
+-	nfs_pageio_init_write(&pgio, inode, priority, false,
+-				&nfs_async_write_completion_ops);
+-	pgio.pg_io_completion = ioc;
+-	err = write_cache_pages(mapping, wbc, nfs_writepages_callback, &pgio);
+-	pgio.pg_error = 0;
+-	nfs_pageio_complete(&pgio);
++	do {
++		nfs_pageio_init_write(&pgio, inode, priority, false,
++				      &nfs_async_write_completion_ops);
++		pgio.pg_io_completion = ioc;
++		err = write_cache_pages(mapping, wbc, nfs_writepages_callback,
++					&pgio);
++		pgio.pg_error = 0;
++		nfs_pageio_complete(&pgio);
++	} while (err < 0 && !nfs_error_is_fatal(err));
+ 	nfs_io_completion_put(ioc);
+ 
+ 	if (err < 0)
 -- 
 2.35.1
 
