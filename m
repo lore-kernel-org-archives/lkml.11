@@ -2,123 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 855E6C2BBE5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AEB4CCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:57:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354312AbiFGS4B (ORCPT
+        id S1354362AbiFGS4G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:56:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42266 "EHLO
+        Tue, 7 Jun 2022 14:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352634AbiFGSRY (ORCPT
+        with ESMTP id S1352635AbiFGSRY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:17:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5F913AF2C;
-        Tue,  7 Jun 2022 10:52:27 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13BF13B8C9;
+        Tue,  7 Jun 2022 10:52:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 132BE617C3;
-        Tue,  7 Jun 2022 17:52:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60BBFC385A5;
-        Tue,  7 Jun 2022 17:52:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624346;
-        bh=j3uNHWslQx2TMq4plPlTP9lh0uFCqJRr0z3ou4Fl1Z8=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3EF2CB82376;
+        Tue,  7 Jun 2022 17:52:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFA44C341C4;
+        Tue,  7 Jun 2022 17:52:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624349;
+        bh=8Y/51mrXNmV49ZMynNUCASj5slODYsCjvZeCMz1zKvk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I+Nn2ut0W7CqlXeze/AoCN1AiZ7Tfh3dKZfFw2wEVUF6RdN2miM/1pTzpFed8YKnL
-         mBIRywyQBmVMDMkaG2ZlwlG17zqYChYfHBEvXoh5r+RTEp+3S5/ESYDrrKW/KUkKL8
-         qgKQVIqQrt3hpd7DHg55NqwomFvSC8avfpeG79RiUTSq+F+Rn+NwWEhReuKy61gxVU
-         SSzQ4NG5dFZ1HecvpGjLBreaE3YJ2+CpZ7IbBtL/UiBzyRmkeoHBmwAZkuEV/nryGm
-         LCDY1KUmkXO0G4D9wcm76vOu0MpTE1toZgEQ9jC+b/s8TxaN5wu1cCtBmu8LAFHysM
-         NRHup8QzaYdxQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yu Kuai <yukuai3@huawei.com>, Hou Tao <houtao1@huawei.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        linux-block@vger.kernel.org, nbd@other.debian.org
-Subject: [PATCH AUTOSEL 5.18 56/68] nbd: call genl_unregister_family() first in nbd_cleanup()
-Date:   Tue,  7 Jun 2022 13:48:22 -0400
-Message-Id: <20220607174846.477972-56-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+        b=ePSWDhF8YNe6iA7vbyRbzVZoI0CegENGK7njmQK/KYO7xIeFtwj0khZ+ARVAHuYzI
+         NSpH7c6XrLjWevq2flXt27ueqgN72bmp7rtZSfOgry1KTUO0nZ8FDNZTdMPUW7cem6
+         6LZHzwb5pn8EHdddRYj8VOMUNd8M2za5+Ng5vm3g=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Alexander Popov <alex.popov@linux.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Kees Cook <keescook@chromium.org>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 294/667] arm64: stackleak: fix current_top_of_stack()
+Date:   Tue,  7 Jun 2022 18:59:19 +0200
+Message-Id: <20220607164943.596456571@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+From: Mark Rutland <mark.rutland@arm.com>
 
-[ Upstream commit 06c4da89c24e7023ea448cadf8e9daf06a0aae6e ]
+[ Upstream commit e85094c31ddb794ac41c299a5a7a68243148f829 ]
 
-Otherwise there may be race between module removal and the handling of
-netlink command, which can lead to the oops as shown below:
+Due to some historical confusion, arm64's current_top_of_stack() isn't
+what the stackleak code expects. This could in theory result in a number
+of problems, and practically results in an unnecessary performance hit.
+We can avoid this by aligning the arm64 implementation with the x86
+implementation.
 
-  BUG: kernel NULL pointer dereference, address: 0000000000000098
-  Oops: 0002 [#1] SMP PTI
-  CPU: 1 PID: 31299 Comm: nbd-client Tainted: G            E     5.14.0-rc4
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
-  RIP: 0010:down_write+0x1a/0x50
-  Call Trace:
-   start_creating+0x89/0x130
-   debugfs_create_dir+0x1b/0x130
-   nbd_start_device+0x13d/0x390 [nbd]
-   nbd_genl_connect+0x42f/0x748 [nbd]
-   genl_family_rcv_msg_doit.isra.0+0xec/0x150
-   genl_rcv_msg+0xe5/0x1e0
-   netlink_rcv_skb+0x55/0x100
-   genl_rcv+0x29/0x40
-   netlink_unicast+0x1a8/0x250
-   netlink_sendmsg+0x21b/0x430
-   ____sys_sendmsg+0x2a4/0x2d0
-   ___sys_sendmsg+0x81/0xc0
-   __sys_sendmsg+0x62/0xb0
-   __x64_sys_sendmsg+0x1f/0x30
-   do_syscall_64+0x3b/0xc0
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
-  Modules linked in: nbd(E-)
+The arm64 implementation of current_top_of_stack() was added
+specifically for stackleak in commit:
 
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Link: https://lore.kernel.org/r/20220521073749.3146892-2-yukuai3@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+  0b3e336601b82c6a ("arm64: Add support for STACKLEAK gcc plugin")
+
+This was intended to be equivalent to the x86 implementation, but the
+implementation, semantics, and performance characteristics differ
+wildly:
+
+* On x86, current_top_of_stack() returns the top of the current task's
+  task stack, regardless of which stack is in active use.
+
+  The implementation accesses a percpu variable which the x86 entry code
+  maintains, and returns the location immediately above the pt_regs on
+  the task stack (above which x86 has some padding).
+
+* On arm64 current_top_of_stack() returns the top of the stack in active
+  use (i.e. the one which is currently being used).
+
+  The implementation checks the SP against a number of
+  potentially-accessible stacks, and will BUG() if no stack is found.
+
+The core stackleak_erase() code determines the upper bound of stack to
+erase with:
+
+| if (on_thread_stack())
+|         boundary = current_stack_pointer;
+| else
+|         boundary = current_top_of_stack();
+
+On arm64 stackleak_erase() is always called on a task stack, and
+on_thread_stack() should always be true. On x86, stackleak_erase() is
+mostly called on a trampoline stack, and is sometimes called on a task
+stack.
+
+Currently, this results in a lot of unnecessary code being generated for
+arm64 for the impossible !on_thread_stack() case. Some of this is
+inlined, bloating stackleak_erase(), while portions of this are left
+out-of-line and permitted to be instrumented (which would be a
+functional problem if that code were reachable).
+
+As a first step towards improving this, this patch aligns arm64's
+implementation of current_top_of_stack() with x86's, always returning
+the top of the current task's stack. With GCC 11.1.0 this results in the
+bulk of the unnecessary code being removed, including all of the
+out-of-line instrumentable code.
+
+While I don't believe there's a functional problem in practice I've
+marked this as a fix since the semantic was clearly wrong, the fix
+itself is simple, and other code might rely upon this in future.
+
+Fixes: 0b3e336601b82c6a ("arm64: Add support for STACKLEAK gcc plugin")
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Cc: Alexander Popov <alex.popov@linux.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Will Deacon <will@kernel.org>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220427173128.2603085-2-mark.rutland@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/nbd.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ arch/arm64/include/asm/processor.h | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index 5a1f98494ddd..9dc27f9e9ddc 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -2529,6 +2529,12 @@ static void __exit nbd_cleanup(void)
- 	struct nbd_device *nbd;
- 	LIST_HEAD(del_list);
+diff --git a/arch/arm64/include/asm/processor.h b/arch/arm64/include/asm/processor.h
+index ee2bdc1b9f5b..5e73d7f7d1e7 100644
+--- a/arch/arm64/include/asm/processor.h
++++ b/arch/arm64/include/asm/processor.h
+@@ -335,12 +335,10 @@ long get_tagged_addr_ctrl(struct task_struct *task);
+  * of header definitions for the use of task_stack_page.
+  */
  
-+	/*
-+	 * Unregister netlink interface prior to waiting
-+	 * for the completion of netlink commands.
-+	 */
-+	genl_unregister_family(&nbd_genl_family);
-+
- 	nbd_dbg_close();
+-#define current_top_of_stack()								\
+-({											\
+-	struct stack_info _info;							\
+-	BUG_ON(!on_accessible_stack(current, current_stack_pointer, 1, &_info));	\
+-	_info.high;									\
+-})
++/*
++ * The top of the current task's task stack
++ */
++#define current_top_of_stack()	((unsigned long)current->stack + THREAD_SIZE)
+ #define on_thread_stack()	(on_task_stack(current, current_stack_pointer, 1, NULL))
  
- 	mutex_lock(&nbd_index_mutex);
-@@ -2547,7 +2553,6 @@ static void __exit nbd_cleanup(void)
- 	destroy_workqueue(nbd_del_wq);
- 
- 	idr_destroy(&nbd_index_idr);
--	genl_unregister_family(&nbd_genl_family);
- 	unregister_blkdev(NBD_MAJOR, "nbd");
- }
- 
+ #endif /* __ASSEMBLY__ */
 -- 
 2.35.1
+
+
 
