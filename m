@@ -2,93 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1AACCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB448CCA485
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:37:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356353AbiFGTgN (ORCPT
+        id S1356327AbiFGTgK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:36:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43262 "EHLO
+        Tue, 7 Jun 2022 15:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353807AbiFGSqG (ORCPT
+        with ESMTP id S1353776AbiFGSqF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72CB18AD98;
-        Tue,  7 Jun 2022 10:59:33 -0700 (PDT)
+        Tue, 7 Jun 2022 14:46:05 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C2018A852;
+        Tue,  7 Jun 2022 10:59:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0527B617A7;
-        Tue,  7 Jun 2022 17:59:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11367C34115;
-        Tue,  7 Jun 2022 17:59:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624772;
-        bh=ahpB3z3e2xSNZkK8vXSnKkUONv9J/XSv9U0JcNldZX8=;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 26AE5CE243D;
+        Tue,  7 Jun 2022 17:59:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97A0EC36B01;
+        Tue,  7 Jun 2022 17:59:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624762;
+        bh=h7UYClL8BFxTUfuluO+uWklEN6MlHrRRXDG3XZPPlLc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oP/zlZSq8X689qNk5j3AqL2siRKFOqKo22CcmWj9fW9qTWjT4kgaW8bQhlNzqWHJ/
-         90BajUqrfHkBYa3qSOHeq9wFCQByYN5q1aKKm5ZDhzhNePTa7r7GbDQ44g6Z6fcnSH
-         JSdLrZXM90+IdwEcKXzbKY0eCxvFKU76RRzxD5eo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 449/667] ASoC: atmel-classd: Remove endianness flag on class d component
-Date:   Tue,  7 Jun 2022 19:01:54 +0200
-Message-Id: <20220607164948.184127856@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=g8s6aA1uMkDrx0HMcZTJ66Kac3kscKJE5pTZpY0hfu4hXLe8U8UF/NiUDG/5WaZTs
+         QTHF1ab+qhcM5oTIdm10MfSu+JcBLPnbAKL0v4gVI9I6e4iFtkGpFLqZgYyx5P5ocn
+         asAbFv68jIPMv32TVu7Kh8z9cwWfyR8dPBrH5m/TKmH5Lh2+JQ1xlQtZm30vJjMLcq
+         sieOTppOEKvnRXP//4/N92N8fwiPS8r11pstVuYi7adM7oUaOEZCvkbiULaafxQmoj
+         C/1NeL91aR+Q2n9a7iZGD1ImXMYgDBNkSDiohJn1xUBwrt+BVCi9rN1naX9foU0CHZ
+         Ssj0oYWnMJATw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, hminas@synopsys.com,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 14/38] usb: dwc2: gadget: don't reset gadget's driver->bus
+Date:   Tue,  7 Jun 2022 13:58:09 -0400
+Message-Id: <20220607175835.480735-14-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
+References: <20220607175835.480735-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
 
-[ Upstream commit 0104d52a6a69b06b0e8167f7c1247e8c76aca070 ]
+[ Upstream commit 3120aac6d0ecd9accf56894aeac0e265f74d3d5a ]
 
-The endianness flag should have been removed when the driver was
-ported across from having both a CODEC and CPU side component, to
-just having a CPU component and using the dummy for the CODEC. The
-endianness flag is used to indicate that the device is completely
-ambivalent to the endianness of the data, typically due to the
-endianness being lost over the hardware link (ie. the link defines
-bit ordering). It's usage didn't have any effect when the driver
-had both a CPU and CODEC component, since the union of those equals
-the CPU side settings, but now causes the driver to falsely report
-it supports big endian. Correct this by removing the flag.
+UDC driver should not touch gadget's driver internals, especially it
+should not reset driver->bus. This wasn't harmful so far, but since
+commit fc274c1e9973 ("USB: gadget: Add a new bus for gadgets") gadget
+subsystem got it's own bus and messing with ->bus triggers the
+following NULL pointer dereference:
 
-Fixes: 1dfdbe73ccf9 ("ASoC: atmel-classd: remove codec component")
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220504170905.332415-4-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+dwc2 12480000.hsotg: bound driver g_ether
+8<--- cut here ---
+Unable to handle kernel NULL pointer dereference at virtual address 00000000
+[00000000] *pgd=00000000
+Internal error: Oops: 5 [#1] SMP ARM
+Modules linked in: ...
+CPU: 0 PID: 620 Comm: modprobe Not tainted 5.18.0-rc5-next-20220504 #11862
+Hardware name: Samsung Exynos (Flattened Device Tree)
+PC is at module_add_driver+0x44/0xe8
+LR is at sysfs_do_create_link_sd+0x84/0xe0
+...
+Process modprobe (pid: 620, stack limit = 0x(ptrval))
+...
+ module_add_driver from bus_add_driver+0xf4/0x1e4
+ bus_add_driver from driver_register+0x78/0x10c
+ driver_register from usb_gadget_register_driver_owner+0x40/0xb4
+ usb_gadget_register_driver_owner from do_one_initcall+0x44/0x1e0
+ do_one_initcall from do_init_module+0x44/0x1c8
+ do_init_module from load_module+0x19b8/0x1b9c
+ load_module from sys_finit_module+0xdc/0xfc
+ sys_finit_module from ret_fast_syscall+0x0/0x54
+Exception stack(0xf1771fa8 to 0xf1771ff0)
+...
+dwc2 12480000.hsotg: new device is high-speed
+---[ end trace 0000000000000000 ]---
+
+Fix this by removing driver->bus entry reset.
+
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Link: https://lore.kernel.org/r/20220505104618.22729-1-m.szyprowski@samsung.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/atmel/atmel-classd.c | 1 -
+ drivers/usb/dwc2/gadget.c | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/sound/soc/atmel/atmel-classd.c b/sound/soc/atmel/atmel-classd.c
-index a9f9f449c48c..74b7b2611aa7 100644
---- a/sound/soc/atmel/atmel-classd.c
-+++ b/sound/soc/atmel/atmel-classd.c
-@@ -458,7 +458,6 @@ static const struct snd_soc_component_driver atmel_classd_cpu_dai_component = {
- 	.num_controls		= ARRAY_SIZE(atmel_classd_snd_controls),
- 	.idle_bias_on		= 1,
- 	.use_pmdown_time	= 1,
--	.endianness		= 1,
- };
+diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
+index ec54971063f8..64485f82dc5b 100644
+--- a/drivers/usb/dwc2/gadget.c
++++ b/drivers/usb/dwc2/gadget.c
+@@ -4518,7 +4518,6 @@ static int dwc2_hsotg_udc_start(struct usb_gadget *gadget,
  
- /* ASoC sound card */
+ 	WARN_ON(hsotg->driver);
+ 
+-	driver->driver.bus = NULL;
+ 	hsotg->driver = driver;
+ 	hsotg->gadget.dev.of_node = hsotg->dev->of_node;
+ 	hsotg->gadget.speed = USB_SPEED_UNKNOWN;
 -- 
 2.35.1
-
-
 
