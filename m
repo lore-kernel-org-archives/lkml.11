@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7BB4C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:43:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A554CCCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:43:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356755AbiFGTn1 (ORCPT
+        id S1356824AbiFGTnf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:43:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57878 "EHLO
+        Tue, 7 Jun 2022 15:43:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354565AbiFGSrJ (ORCPT
+        with ESMTP id S1354567AbiFGSrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:47:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED2276A015;
-        Tue,  7 Jun 2022 11:02:12 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43E61106357;
+        Tue,  7 Jun 2022 11:02:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A080BB82349;
-        Tue,  7 Jun 2022 18:02:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E00FC34119;
-        Tue,  7 Jun 2022 18:02:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D342A61883;
+        Tue,  7 Jun 2022 18:02:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34F01C34119;
+        Tue,  7 Jun 2022 18:02:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624930;
-        bh=LfWAWhbVjUE7KSVQYTqbDlcBwnnnhFqtXBohBmzGMuI=;
+        s=k20201202; t=1654624933;
+        bh=SoOs0xFu8dYzYt4VC6dwXPDq9LiTWWp69Fkb5wXgRAs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ocQxog95iXHvvt73VRJy1hipY5KlmEYjoYpIKrslabcxIMvIhcw87O52hr6S8TNZY
-         GiihRlpVqXr130WYY+gd+ofnc6GL5kS6yicA9tLvs+21gVx93OyuHY0D7rR++PgmOR
-         m8yIs01k2ACr8Jm24OvbYO3bXMYLIibW7K5ejn3g+frBJdbpEi4WS6LHgfld7oxRCD
-         bMQFaWpOHHvi45A+6Lt6qt3sHMarZGXbtvRMsfE3zxnOXw0x7Sq5tysZhYnsXCG3wd
-         BYNTf0zBceDoRvZ66uZD9EuGQkRZgSi7741ovrsFPJEJ7aWIoPPCBG00UWN4EbSCFV
-         l+2uRRkPn6Phg==
+        b=SKIFFiBBy14IoQCwqGppsZGsgtQf7hEm5cuAKHM8luvHCPtj3q2/yQeyD+u1qUQia
+         G3JVgriy8ES4viiEJmYAdpQSsgWexxc8nvxPn/pg1Ep36K443n4CD/6SBAyG2thzUV
+         hmdPO8OiWsljZp0mndZa8QAZ4Y5Qxx83NbwNHxzMTfVwHBe3M3NXYQ7syWC83nUul/
+         T41iFWbr7Bi8HcgJVj2uQrBVR4TdcFh4Sh/6Kb3PR+GvHfNDjpmUo1ZFtYCEcvSsdH
+         jjCQVI1d4ynF9fG0dnQt92XvTK6cnKkkvKlB6YYWl95zDD8grmAYpV1PdU5LKXL2fT
+         o1glbtOFYQATQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        bjorn.andersson@linaro.org, jirislaby@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 16/27] serial: msm_serial: disable interrupts in __msm_console_write()
-Date:   Tue,  7 Jun 2022 14:01:20 -0400
-Message-Id: <20220607180133.481701-16-sashal@kernel.org>
+Cc:     Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
+        Donald Buczek <buczek@molgen.mpg.de>,
+        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        agk@redhat.com, snitzer@kernel.org, dm-devel@redhat.com,
+        linux-raid@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 18/27] md: don't unregister sync_thread with reconfig_mutex held
+Date:   Tue,  7 Jun 2022 14:01:22 -0400
+Message-Id: <20220607180133.481701-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607180133.481701-1-sashal@kernel.org>
 References: <20220607180133.481701-1-sashal@kernel.org>
@@ -56,57 +54,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Ogness <john.ogness@linutronix.de>
+From: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
 
-[ Upstream commit aabdbb1b7a5819e18c403334a31fb0cc2c06ad41 ]
+[ Upstream commit 8b48ec23cc51a4e7c8dbaef5f34ebe67e1a80934 ]
 
-__msm_console_write() assumes that interrupts are disabled, but
-with threaded console printers it is possible that the write()
-callback of the console is called with interrupts enabled.
+Unregister sync_thread doesn't need to hold reconfig_mutex since it
+doesn't reconfigure array.
 
-Explicitly disable interrupts using local_irq_save() to preserve
-the assumed context.
+And it could cause deadlock problem for raid5 as follows:
 
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Link: https://lore.kernel.org/r/20220506213324.470461-1-john.ogness@linutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+1. process A tried to reap sync thread with reconfig_mutex held after echo
+   idle to sync_action.
+2. raid5 sync thread was blocked if there were too many active stripes.
+3. SB_CHANGE_PENDING was set (because of write IO comes from upper layer)
+   which causes the number of active stripes can't be decreased.
+4. SB_CHANGE_PENDING can't be cleared since md_check_recovery was not able
+   to hold reconfig_mutex.
+
+More details in the link:
+https://lore.kernel.org/linux-raid/5ed54ffc-ce82-bf66-4eff-390cb23bc1ac@molgen.mpg.de/T/#t
+
+And add one parameter to md_reap_sync_thread since it could be called by
+dm-raid which doesn't hold reconfig_mutex.
+
+Reported-and-tested-by: Donald Buczek <buczek@molgen.mpg.de>
+Signed-off-by: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/msm_serial.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/md/dm-raid.c |  2 +-
+ drivers/md/md.c      | 14 +++++++++-----
+ drivers/md/md.h      |  2 +-
+ 3 files changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index a40827956bd1..d248c43db36a 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -1579,6 +1579,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
- static void __msm_console_write(struct uart_port *port, const char *s,
- 				unsigned int count, bool is_uartdm)
- {
-+	unsigned long flags;
- 	int i;
- 	int num_newlines = 0;
- 	bool replaced = false;
-@@ -1596,6 +1597,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
- 			num_newlines++;
- 	count += num_newlines;
+diff --git a/drivers/md/dm-raid.c b/drivers/md/dm-raid.c
+index b16332917220..0be03123d6a2 100644
+--- a/drivers/md/dm-raid.c
++++ b/drivers/md/dm-raid.c
+@@ -3710,7 +3710,7 @@ static int raid_message(struct dm_target *ti, unsigned int argc, char **argv,
+ 	if (!strcasecmp(argv[0], "idle") || !strcasecmp(argv[0], "frozen")) {
+ 		if (mddev->sync_thread) {
+ 			set_bit(MD_RECOVERY_INTR, &mddev->recovery);
+-			md_reap_sync_thread(mddev);
++			md_reap_sync_thread(mddev, false);
+ 		}
+ 	} else if (decipher_sync_action(mddev, mddev->recovery) != st_idle)
+ 		return -EBUSY;
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 7e0477e883c7..da7954eff4d7 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -4611,7 +4611,7 @@ action_store(struct mddev *mddev, const char *page, size_t len)
+ 			flush_workqueue(md_misc_wq);
+ 			if (mddev->sync_thread) {
+ 				set_bit(MD_RECOVERY_INTR, &mddev->recovery);
+-				md_reap_sync_thread(mddev);
++				md_reap_sync_thread(mddev, true);
+ 			}
+ 			mddev_unlock(mddev);
+ 		}
+@@ -5871,7 +5871,7 @@ static void __md_stop_writes(struct mddev *mddev)
+ 	flush_workqueue(md_misc_wq);
+ 	if (mddev->sync_thread) {
+ 		set_bit(MD_RECOVERY_INTR, &mddev->recovery);
+-		md_reap_sync_thread(mddev);
++		md_reap_sync_thread(mddev, true);
+ 	}
  
-+	local_irq_save(flags);
-+
- 	if (port->sysrq)
- 		locked = 0;
- 	else if (oops_in_progress)
-@@ -1641,6 +1644,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
- 
- 	if (locked)
- 		spin_unlock(&port->lock);
-+
-+	local_irq_restore(flags);
+ 	del_timer_sync(&mddev->safemode_timer);
+@@ -8893,7 +8893,7 @@ void md_check_recovery(struct mddev *mddev)
+ 			 * ->spare_active and clear saved_raid_disk
+ 			 */
+ 			set_bit(MD_RECOVERY_INTR, &mddev->recovery);
+-			md_reap_sync_thread(mddev);
++			md_reap_sync_thread(mddev, true);
+ 			clear_bit(MD_RECOVERY_RECOVER, &mddev->recovery);
+ 			clear_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
+ 			clear_bit(MD_SB_CHANGE_PENDING, &mddev->sb_flags);
+@@ -8928,7 +8928,7 @@ void md_check_recovery(struct mddev *mddev)
+ 			goto unlock;
+ 		}
+ 		if (mddev->sync_thread) {
+-			md_reap_sync_thread(mddev);
++			md_reap_sync_thread(mddev, true);
+ 			goto unlock;
+ 		}
+ 		/* Set RUNNING before clearing NEEDED to avoid
+@@ -9001,12 +9001,16 @@ void md_check_recovery(struct mddev *mddev)
  }
+ EXPORT_SYMBOL(md_check_recovery);
  
- static void msm_console_write(struct console *co, const char *s,
+-void md_reap_sync_thread(struct mddev *mddev)
++void md_reap_sync_thread(struct mddev *mddev, bool reconfig_mutex_held)
+ {
+ 	struct md_rdev *rdev;
+ 
++	if (reconfig_mutex_held)
++		mddev_unlock(mddev);
+ 	/* resync has finished, collect result */
+ 	md_unregister_thread(&mddev->sync_thread);
++	if (reconfig_mutex_held)
++		mddev_lock_nointr(mddev);
+ 	if (!test_bit(MD_RECOVERY_INTR, &mddev->recovery) &&
+ 	    !test_bit(MD_RECOVERY_REQUESTED, &mddev->recovery) &&
+ 	    mddev->degraded != mddev->raid_disks) {
+diff --git a/drivers/md/md.h b/drivers/md/md.h
+index cce62bbc2bcb..027b220dec14 100644
+--- a/drivers/md/md.h
++++ b/drivers/md/md.h
+@@ -674,7 +674,7 @@ extern struct md_thread *md_register_thread(
+ extern void md_unregister_thread(struct md_thread **threadp);
+ extern void md_wakeup_thread(struct md_thread *thread);
+ extern void md_check_recovery(struct mddev *mddev);
+-extern void md_reap_sync_thread(struct mddev *mddev);
++extern void md_reap_sync_thread(struct mddev *mddev, bool reconfig_mutex_held);
+ extern int mddev_init_writes_pending(struct mddev *mddev);
+ extern bool md_write_start(struct mddev *mddev, struct bio *bi);
+ extern void md_write_inc(struct mddev *mddev, struct bio *bi);
 -- 
 2.35.1
 
