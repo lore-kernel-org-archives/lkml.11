@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CEEEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:42:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF991C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:42:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346463AbiFGSmb (ORCPT
+        id S1346380AbiFGSmq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:42:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48248 "EHLO
+        Tue, 7 Jun 2022 14:42:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348770AbiFGSMy (ORCPT
+        with ESMTP id S1349083AbiFGSMy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:12:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE98132A07;
-        Tue,  7 Jun 2022 10:48:57 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC0D158955;
+        Tue,  7 Jun 2022 10:48:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 729C7616A3;
-        Tue,  7 Jun 2022 17:48:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B408C34119;
-        Tue,  7 Jun 2022 17:48:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7AE3BB8234F;
+        Tue,  7 Jun 2022 17:48:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC844C385A5;
+        Tue,  7 Jun 2022 17:48:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624117;
-        bh=5HXEquSx+6XgksZqZLBYyVj8yyh/LjzyzFSCCpQ5/f8=;
+        s=korg; t=1654624134;
+        bh=j/FHXUNXxbjTglfxsp6+7UF8NtOZAH48oMNxpP2zr5U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h0g9bBzAtIeXPrwwFP+F7yUegzixXeEOKHZWSI1yHH/h+a/ZLOYgzi4pJ7grKNy8P
-         Tq8LWSjLTxR0i7OA697mKwONYHiT8VfF+edchRI1v9WZN9jLvcaiqZ6Lwn9k37yXLZ
-         kUQBBLl5MEnJCry9TyGWdq5Ib8ltvfQO9+e2C22k=
+        b=izFe7LlTtZVTx6B6OCVafKKWuY+AwjfSIofgpYUYlRpO7qPO/RNcV5nxTJDhJjgTE
+         lLg+nye3NWdFPDJKJdz4wqM9Uc1bavmC7noxME1iHYWWL4EaX1OhqySC4wG/xUSpv9
+         PGnNEUkfktvKJ3AENb4VLgc44Afpn5mgdNjHgpZ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Paul E. McKenney" <paulmck@kernel.org>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Daniel Scally <djrscally@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 210/667] scftorture: Fix distribution of short handler delays
-Date:   Tue,  7 Jun 2022 18:57:55 +0200
-Message-Id: <20220607164941.095950734@linuxfoundation.org>
+Subject: [PATCH 5.15 215/667] device property: Check fwnode->secondary when finding properties
+Date:   Tue,  7 Jun 2022 18:58:00 +0200
+Message-Id: <20220607164941.242849283@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,44 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul E. McKenney <paulmck@kernel.org>
+From: Daniel Scally <djrscally@gmail.com>
 
-[ Upstream commit 8106bddbab5f0ba180e6d693c7c1fc6926d57caa ]
+[ Upstream commit c097af1d0a8483b44fa30e86b311991d76b6ae67 ]
 
-The scftorture test module's scf_handler() function is supposed to provide
-three different distributions of short delays (including "no delay") and
-one distribution of long delays, if specified by the scftorture.longwait
-module parameter.  However, the second of the two non-zero-wait short delays
-is disabled due to the first such delay's "goto out" not being enclosed in
-the "then" clause with the "udelay()".
+fwnode_property_get_reference_args() searches for named properties
+against a fwnode_handle, but these could instead be against the fwnode's
+secondary. If the property isn't found against the primary, check the
+secondary to see if it's there instead.
 
-This commit therefore adjusts the code to provide the intended set of
-delays.
-
-Fixes: e9d338a0b179 ("scftorture: Add smp_call_function() torture test")
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Daniel Scally <djrscally@gmail.com>
+Link: https://lore.kernel.org/r/20211128232455.39332-1-djrscally@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/scftorture.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/base/property.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/scftorture.c b/kernel/scftorture.c
-index 64a08288b1a6..27286d99e0c2 100644
---- a/kernel/scftorture.c
-+++ b/kernel/scftorture.c
-@@ -271,9 +271,10 @@ static void scf_handler(void *scfc_in)
- 	}
- 	this_cpu_inc(scf_invoked_count);
- 	if (longwait <= 0) {
--		if (!(r & 0xffc0))
-+		if (!(r & 0xffc0)) {
- 			udelay(r & 0x3f);
--		goto out;
-+			goto out;
-+		}
- 	}
- 	if (r & 0xfff)
- 		goto out;
+diff --git a/drivers/base/property.c b/drivers/base/property.c
+index 4c77837769c6..c29fa92be1fd 100644
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -479,8 +479,17 @@ int fwnode_property_get_reference_args(const struct fwnode_handle *fwnode,
+ 				       unsigned int nargs, unsigned int index,
+ 				       struct fwnode_reference_args *args)
+ {
+-	return fwnode_call_int_op(fwnode, get_reference_args, prop, nargs_prop,
+-				  nargs, index, args);
++	int ret;
++
++	ret = fwnode_call_int_op(fwnode, get_reference_args, prop, nargs_prop,
++				 nargs, index, args);
++
++	if (ret < 0 && !IS_ERR_OR_NULL(fwnode) &&
++	    !IS_ERR_OR_NULL(fwnode->secondary))
++		ret = fwnode_call_int_op(fwnode->secondary, get_reference_args,
++					 prop, nargs_prop, nargs, index, args);
++
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(fwnode_property_get_reference_args);
+ 
 -- 
 2.35.1
 
