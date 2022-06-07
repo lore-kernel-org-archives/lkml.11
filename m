@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25911C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0EB0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377027AbiFGUtj (ORCPT
+        id S1377034AbiFGUtn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:49:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38568 "EHLO
+        Tue, 7 Jun 2022 16:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357337AbiFGTsc (ORCPT
+        with ESMTP id S1357108AbiFGTs2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:48:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B60C7B9E5;
-        Tue,  7 Jun 2022 11:19:27 -0700 (PDT)
+        Tue, 7 Jun 2022 15:48:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B34A7522F;
+        Tue,  7 Jun 2022 11:19:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B25F60DD7;
-        Tue,  7 Jun 2022 18:19:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66E01C385A5;
-        Tue,  7 Jun 2022 18:19:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF0FDB8237C;
+        Tue,  7 Jun 2022 18:19:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45D12C385A2;
+        Tue,  7 Jun 2022 18:19:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625966;
-        bh=CEB7zLhOIcLwSOQl4CUWTYbGqt5Qvom65s0Ym0hUi8w=;
+        s=korg; t=1654625958;
+        bh=A5qnA9C+kP6l+c9zYf7PMXtikJHUSGvTK8q0Jfa21Ks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XuZkudGcgUTnI55H639MJVm+RLkN/BVffQqnot5y6uAYyliYyGAPIEh3s7BJ6IAvL
-         tP5HhFcSc3MrjoUi+jGSBkdGsZvcNfs7hy25k6KcffVKrTfhJH79zvAL20zvBsyVf1
-         hnXkEX202LVo+ct1uAsYhO1+CtK1UEGXEeLjRRFw=
+        b=nYe/RhXbVKCmGMk5pQk8YEfl1fD5UiBA1V+tJCYKqVi3xINzUUo+u92R4ubKEnfem
+         vc+62RF5jXR7WlhClGH0xE0oqsonsau2pE98AULbXbePQ/S5TrqU3kRvSYx2xRaHPp
+         gOU1xb6YrxJIpACf9AU7YatJFEMgbt034hVquMz4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        kernel test robot <lkp@intel.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 5.17 168/772] can: mcp251xfd: silence clangs -Wunaligned-access warning
-Date:   Tue,  7 Jun 2022 18:56:00 +0200
-Message-Id: <20220607164953.991436307@linuxfoundation.org>
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 204/772] arm64: dts: qcom: sc7280-idp: Configure CTS pin to bias-bus-hold for bluetooth
+Date:   Tue,  7 Jun 2022 18:56:36 +0200
+Message-Id: <20220607164955.044737521@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,62 +52,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
 
-[ Upstream commit 1a6dd9996699889313327be03981716a8337656b ]
+[ Upstream commit 497b272759986af1aa5a25b5e903d082c67bd8f6 ]
 
-clang emits a -Wunaligned-access warning on union
-mcp251xfd_tx_ojb_load_buf.
+WLAN rail was leaking power during RBSC/sleep even after turning BT off.
+Change active and sleep pinctrl configurations to handle same.
 
-The reason is that field hw_tx_obj (not declared as packed) is being
-packed right after a 16 bits field inside a packed struct:
-
-| union mcp251xfd_tx_obj_load_buf {
-| 	struct __packed {
-| 		struct mcp251xfd_buf_cmd cmd;
-| 		  /* ^ 16 bits fields */
-| 		struct mcp251xfd_hw_tx_obj_raw hw_tx_obj;
-| 		  /* ^ not declared as packed */
-| 	} nocrc;
-| 	struct __packed {
-| 		struct mcp251xfd_buf_cmd_crc cmd;
-| 		struct mcp251xfd_hw_tx_obj_raw hw_tx_obj;
-| 		__be16 crc;
-| 	} crc;
-| } ____cacheline_aligned;
-
-Starting from LLVM 14, having an unpacked struct nested in a packed
-struct triggers a warning. c.f. [1].
-
-This is a false positive because the field is always being accessed
-with the relevant put_unaligned_*() function. Adding __packed to the
-structure declaration silences the warning.
-
-[1] https://github.com/llvm/llvm-project/issues/55520
-
-Link: https://lore.kernel.org/all/20220518114357.55452-1-mailhol.vincent@wanadoo.fr
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Reported-by: kernel test robot <lkp@intel.com>
-Tested-by: Nathan Chancellor <nathan@kernel.org> # build
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/1650556567-4995-2-git-send-email-quic_vnivarth@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/spi/mcp251xfd/mcp251xfd.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd.h b/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
-index f551c900803e..aed6e9d47517 100644
---- a/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
-+++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
-@@ -434,7 +434,7 @@ struct mcp251xfd_hw_tef_obj {
- /* The tx_obj_raw version is used in spi async, i.e. without
-  * regmap. We have to take care of endianness ourselves.
-  */
--struct mcp251xfd_hw_tx_obj_raw {
-+struct __packed mcp251xfd_hw_tx_obj_raw {
- 	__le32 id;
- 	__le32 flags;
- 	u8 data[sizeof_field(struct canfd_frame, data)];
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+index d623d71d8bd4..dd6dac0e1784 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+@@ -462,10 +462,13 @@
+ 
+ &qup_uart7_cts {
+ 	/*
+-	 * Configure a pull-down on CTS to match the pull of
+-	 * the Bluetooth module.
++	 * Configure a bias-bus-hold on CTS to lower power
++	 * usage when Bluetooth is turned off. Bus hold will
++	 * maintain a low power state regardless of whether
++	 * the Bluetooth module drives the pin in either
++	 * direction or leaves the pin fully unpowered.
+ 	 */
+-	bias-pull-down;
++	bias-bus-hold;
+ };
+ 
+ &qup_uart7_rts {
+@@ -516,10 +519,13 @@
+ 		pins = "gpio28";
+ 		function = "gpio";
+ 		/*
+-		 * Configure a pull-down on CTS to match the pull of
+-		 * the Bluetooth module.
++		 * Configure a bias-bus-hold on CTS to lower power
++		 * usage when Bluetooth is turned off. Bus hold will
++		 * maintain a low power state regardless of whether
++		 * the Bluetooth module drives the pin in either
++		 * direction or leaves the pin fully unpowered.
+ 		 */
+-		bias-pull-down;
++		bias-bus-hold;
+ 	};
+ 
+ 	qup_uart7_sleep_rts: qup-uart7-sleep-rts {
 -- 
 2.35.1
 
