@@ -2,125 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D031EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 04:56:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB52FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 04:57:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236650AbiFGE45 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 00:56:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34026 "EHLO
+        id S236661AbiFGE5M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 00:57:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236621AbiFGE4t (ORCPT
+        with ESMTP id S236663AbiFGE5H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 00:56:49 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95748D412B;
-        Mon,  6 Jun 2022 21:56:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654577807; x=1686113807;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=qEYLlVyw0msAfVi+gJ8kYAT2VCGgymTRLm5YaRSAAWc=;
-  b=erz3kNXgNjzjJK3dLPMT73NTWC83ZDwJBlEEwhet6EFZdy2oS1BcDxrO
-   LvBKBIXUqDWhtdFUNrKYHPtgyp59+9dTWa+R2GLS1/ZPs8G6w5c35QmxA
-   V6EP+KnVVDCP4nH41qJhEOtzV0GNpQQXbsC7HZeY7+yucCJxG/XfHRINX
-   s=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 06 Jun 2022 21:56:47 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 21:56:47 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 6 Jun 2022 21:56:46 -0700
-Received: from [10.47.233.232] (10.49.16.6) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 6 Jun 2022
- 21:56:46 -0700
-Subject: Re: [RESEND PATCH V6 00/10] A bunch of fix and optimization patches
- in spmi-pmic-arb.c
-To:     <sboyd@kernel.org>
-CC:     Fenglin Wu <quic_fenglinw@quicinc.com>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_collinsd@quicinc.com>, <tglx@linutronix.de>, <maz@kernel.org>
-References: <1651108369-11059-1-git-send-email-quic_fenglinw@quicinc.com>
-From:   Subbaraman Narayanamurthy <quic_subbaram@quicinc.com>
-Message-ID: <c89c775f-cae2-fd1e-a223-1e1e46f33d7f@quicinc.com>
-Date:   Mon, 6 Jun 2022 21:55:43 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Tue, 7 Jun 2022 00:57:07 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F56D4137;
+        Mon,  6 Jun 2022 21:57:04 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2574v0PI026471;
+        Mon, 6 Jun 2022 23:57:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1654577820;
+        bh=4Z/SWcBdgq7gJXZF6aYCxpS+F1uJ0waLtD4QLHJH0F4=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=Q3shm+6vCzVgcbYDe2xbK9YyOxSYwUt5IYFwwhRVXVRgNsu+MFAB50yupILinyoqb
+         y5ecjWHC1UvyrsV22fPTZ6J4cSVRc2jOvtVt4e4HulNL0DY78adsligL4FZTNQ63bb
+         nvrq4Vd8ACSTpc80F8EG7AKF8fYVbiYXbf4KQnhI=
+Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2574v0jC030391
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 6 Jun 2022 23:57:00 -0500
+Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 6
+ Jun 2022 23:57:00 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 6 Jun 2022 23:57:00 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2574uxxP025473;
+        Mon, 6 Jun 2022 23:56:59 -0500
+From:   Puranjay Mohan <p-mohan@ti.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
+        <p-mohan@ti.com>, <linux-arm-kernel@lists.infradead.org>,
+        <rogerq@kernel.org>, <grygorii.strashko@ti.com>, <vigneshr@ti.com>,
+        <kishon@ti.com>, <robh@kernel.org>
+Subject: [PATCH v5 3/6] remoteproc: pru: Make sysfs entries read-only for PRU client driven boots
+Date:   Tue, 7 Jun 2022 10:26:47 +0530
+Message-ID: <20220607045650.4999-4-p-mohan@ti.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220607045650.4999-1-p-mohan@ti.com>
+References: <20220607045650.4999-1-p-mohan@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <1651108369-11059-1-git-send-email-quic_fenglinw@quicinc.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.49.16.6]
-X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/27/22 6:12 PM, Fenglin Wu wrote:
-> Changes in v6:
->   Rebased [v5 08/10] on
->     https://lore.kernel.org/linux-arm-msm/20211227170151.73116-1-david@ixit.cz/#t
->
-> Changes in v5:
->   Drop [v4 11/11] because of a similar change is under review:
->     https://lore.kernel.org/linux-arm-msm/YdRJcv2kpp1vgUTb@robh.at.kernel.org/T/#t
->
-> Changes in v4:
->   In [v4 02/11], separated spurious interrupt handling.
->   In [v4 03/11], added Fixes tag for ("spmi: pmic-arb: do not ack and clear peripheral").
->   In [v4 11/11], updated the binding to address few warnings in "make dtbs_check"
->
-> Changes in v3:
->   Drop [v2 07/10] as this is no longer needed after this change:
->                 50fc4c8cd240 ("spmi: spmi-pmic-arb: fix irq_set_type race condition")
->   In [v3 07/10], updated the author email to match with Signed-off-by.
->   In [v3 10/10], added the binding change in this series, and addressed issues in "make dt_binding_check"
->
-> Changes in v2:
->   In [v2 01/10], added code to handle spurious interrupt.
->   In [v2 03/10], adressed minor comments to update the code logic.
->   In [v2 04/10], minor update to detect spurious interrupt.
->   In [v2 05/10], added Fixes tag.
->   In [v2 07/10], added Fixes tag and updated commit text to explain the problem.
->   In [v2 08/10], added binding change to make interrupt properties as optional.
->   In [v2 09/10], updated to check presence of "interrupt-controller" property.
->
->
-> Abhijeet Dharmapurikar (1):
->   spmi: pmic-arb: add a print in cleanup_irq
->
-> Ashay Jaiswal (1):
->   spmi: pmic-arb: add support to dispatch interrupt based on IRQ status
->
-> David Collins (6):
->   spmi: pmic-arb: check apid against limits before calling irq handler
->   spmi: pmic-arb: correct duplicate APID to PPID mapping logic
->   spmi: pmic-arb: block access for invalid PMIC arbiter v5 SPMI writes
->   dt-bindings: spmi: spmi-pmic-arb: make interrupt properties as
->     optional
->   spmi: pmic-arb: make interrupt support optional
->   spmi: pmic-arb: increase SPMI transaction timeout delay
->
-> Fenglin Wu (1):
->   spmi: pmic-arb: handle spurious interrupt
->
-> Subbaraman Narayanamurthy (1):
->   spmi: pmic-arb: do not ack and clear peripheral interrupts in
->     cleanup_irq
->
->  .../bindings/spmi/qcom,spmi-pmic-arb.yaml          |   3 -
->  drivers/spmi/spmi-pmic-arb.c                       | 136 +++++++++++++++------
->  2 files changed, 96 insertions(+), 43 deletions(-)
->
+From: Suman Anna <s-anna@ti.com>
 
-Hi Stephen,
-Is there any problem with the patch series format? If not, can you please review these changes as they've been pending for a while?
+The PRU remoteproc driver is not configured for 'auto-boot' by default,
+and allows to be booted either by in-kernel PRU client drivers or by
+userspace using the generic remoteproc sysfs interfaces. The sysfs
+interfaces should not be permitted to change the remoteproc firmwares
+or states when a PRU is being managed by an in-kernel client driver.
+Use the newly introduced remoteproc generic 'sysfs_read_only' flag to
+provide these restrictions by setting and clearing it appropriately
+during the PRU acquire and release steps.
 
-Thanks,
-Subbaraman
+Signed-off-by: Suman Anna <s-anna@ti.com>
+Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+---
+ drivers/remoteproc/pru_rproc.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/remoteproc/pru_rproc.c b/drivers/remoteproc/pru_rproc.c
+index 7a35b400287a..9fed3e0372d3 100644
+--- a/drivers/remoteproc/pru_rproc.c
++++ b/drivers/remoteproc/pru_rproc.c
+@@ -231,6 +231,7 @@ struct rproc *pru_rproc_get(struct device_node *np, int index,
+ 	}
+ 
+ 	pru->client_np = np;
++	rproc->sysfs_read_only = true;
+ 
+ 	mutex_unlock(&pru->lock);
+ 
+@@ -265,6 +266,7 @@ void pru_rproc_put(struct rproc *rproc)
+ 	}
+ 
+ 	pru->client_np = NULL;
++	rproc->sysfs_read_only = false;
+ 	mutex_unlock(&pru->lock);
+ 
+ 	put_device(&rproc->dev);
+-- 
+2.17.1
+
