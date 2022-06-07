@@ -2,115 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DBEBCCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5399FCCA486
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385785AbiFGWqq (ORCPT
+        id S1386157AbiFGWsQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:46:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41338 "EHLO
+        Tue, 7 Jun 2022 18:48:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381124AbiFGVgc (ORCPT
+        with ESMTP id S1381297AbiFGVk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:36:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44772163F4C;
-        Tue,  7 Jun 2022 12:04:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8F65B8233E;
-        Tue,  7 Jun 2022 19:04:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CB14C34115;
-        Tue,  7 Jun 2022 19:04:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628689;
-        bh=pGs7DucsfOyXb3V7w2Exptx3i43BThzarD4FoLRpck0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pm43wSLkfAMCnxjKG27kyl364CM5RAcjuJhsECzPNGScuMZZWcWGr6uC1I+C73Lud
-         05CimDAQyl1XsOpMto3fZuzYkpEt1185mq45XVu7zkF6rEmYJz2AIC9sWu2ycUkC+P
-         ewyJpzSDpxtmuGY95pzD5uwuQrJgaUJrgswSnSdY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 413/879] scsi: lpfc: Fix dmabuf ptr assignment in lpfc_ct_reject_event()
-Date:   Tue,  7 Jun 2022 18:58:51 +0200
-Message-Id: <20220607165014.849610239@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:40:26 -0400
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7D218F2FC
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:06:17 -0700 (PDT)
+Received: by mail-qv1-xf2b.google.com with SMTP id ca19so5940221qvb.10
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:06:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=kEh88sbKY2YcFyazQQTZq8kRQuf4NWYNl5prd+A7y48=;
+        b=gYX6KtqMiH3fY8cMln5DLy0EX4vHtjVqoAYzI6Vksz+6WrELrfbEFY0Bb7m9oBxg1T
+         VRWjrY5E5cTjKdK5wJlCK3Jp7kECqZtMksp6HbJegpfMonchOSIiRekIWXQT+9L/Rv73
+         8lRqQv5Y4Pg8c+L+mEYyQqRMEIAcerryv6QHI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=kEh88sbKY2YcFyazQQTZq8kRQuf4NWYNl5prd+A7y48=;
+        b=6c09pQLVRc6PCG7eiAfOe79AmD1tSD4rjUQYUFzX7UGdP7/bW7OyAD43UdCM89xmOF
+         jt1harpx51L0p+lt2L/L9U/l8hvmbRNY/Z+qNOeNNKh7ghdv9nBYS9eZ00DGLmjBxtUn
+         o7GBK0f7bOA/rEHcuC+MX5LJSHCIy9++H1aC5GCsS5jhJrRHvKnRGy1dgMj1EZHbYsrU
+         RbQWnEHIn8w4RsJ8FQIIekV1E5oudN0M4HpWcDDx7AE1ghUv/f6XLOLb33SmNB3qG97A
+         Q+YPBnCS0bg95urF+eERnUf8gL+9GfT9sAIpFSRtknCOm+fFPxYarMKGc+TDfyi4V1Rk
+         xBMw==
+X-Gm-Message-State: AOAM530RWBNhxdqFTGHEmTmLCnVb4a7JvmjCUtDnOxTWLOyvMHHOomPX
+        aWJbgLKaSI3iE1VM+n6r6B4xpA==
+X-Google-Smtp-Source: ABdhPJwU3d8oEkz5X5lKa+Lm36JdssARY1Af5Ux3+KI/0zWJyOPBsWDSAAOCUA57rRSoxhn10Jn12g==
+X-Received: by 2002:a05:6214:1110:b0:46b:a979:d63 with SMTP id e16-20020a056214111000b0046ba9790d63mr7180252qvs.100.1654628776157;
+        Tue, 07 Jun 2022 12:06:16 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id i21-20020a05620a405500b006a6ac4e7ab4sm8577017qko.112.2022.06.07.12.06.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 12:06:15 -0700 (PDT)
+Message-ID: <8012a613-91ea-466e-f77e-6fc5453724f5@ieee.org>
+Date:   Tue, 7 Jun 2022 14:06:14 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] staging: greybus: audio: fix loop cursor use after
+ iteration
+Content-Language: en-US
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Jared Kangas <kangas.jd@gmail.com>
+Cc:     vaibhav.sr@gmail.com, mgreer@animalcreek.com, elder@kernel.org,
+        gregkh@linuxfoundation.org, greybus-dev@lists.linaro.org,
+        johan@kernel.org, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev
+References: <20220605231806.720085-1-kangas.jd@gmail.com>
+ <20220606130626.GX2146@kadam> <Yp9/kqBUzpArfPdn@fedora>
+ <20220607183921.GQ2168@kadam>
+From:   Alex Elder <elder@ieee.org>
+In-Reply-To: <20220607183921.GQ2168@kadam>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+On 6/7/22 1:39 PM, Dan Carpenter wrote:
+> On Tue, Jun 07, 2022 at 09:40:50AM -0700, Jared Kangas wrote:
+>> Thanks for catching that! Is there anything I need to do to add the
+>> 'Fixes:' tag to the patch? From my understanding, adding tags is done by
+>> a maintainer later on, but I'm new to the patch submission process so I
+>> want to make sure I'm not missing anything.
+> 
+> No, it's up to the person sending the patch to add the fixes tag.
 
-[ Upstream commit 596fc8adb171dce3751a359018e2ade612af8d97 ]
+And FYI, "git blame" can be your friend here.
 
-Upon driver receipt of a CT cmd for type = 0xFA (Management Server) and
-subtype = 0x11 (Fabric Device Management Interface), the driver is
-responding with garbage CT cmd data when it should send a properly formed
-RJT.
+     git blame drivers/staging/greybus/audio_helper.c
 
-The __lpfc_prep_xmit_seq64_s4() routine was using the wrong buffer for the
-reject.
+It looks like commit 510e340efe0cbd is a possible
+candidate, but I'll leave it up to you to determine
+that.
 
-Fix by converting the routine to use the buffer specified in the bde within
-the wqe rather than the ill-set bmp element.
+					-Alex
 
-Link: https://lore.kernel.org/r/20220506035519.50908-6-jsmart2021@gmail.com
-Fixes: 61910d6a5243 ("scsi: lpfc: SLI path split: Refactor CT paths")
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/scsi/lpfc/lpfc_sli.c | 15 +++------------
- 1 file changed, 3 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
-index c307f551d114..331241a71452 100644
---- a/drivers/scsi/lpfc/lpfc_sli.c
-+++ b/drivers/scsi/lpfc/lpfc_sli.c
-@@ -10800,24 +10800,15 @@ __lpfc_sli_prep_xmit_seq64_s4(struct lpfc_iocbq *cmdiocbq,
- {
- 	union lpfc_wqe128 *wqe;
- 	struct ulp_bde64 *bpl;
--	struct ulp_bde64_le *bde;
- 
- 	wqe = &cmdiocbq->wqe;
- 	memset(wqe, 0, sizeof(*wqe));
- 
- 	/* Words 0 - 2 */
- 	bpl = (struct ulp_bde64 *)bmp->virt;
--	if (cmdiocbq->cmd_flag & (LPFC_IO_LIBDFC | LPFC_IO_LOOPBACK)) {
--		wqe->xmit_sequence.bde.addrHigh = bpl->addrHigh;
--		wqe->xmit_sequence.bde.addrLow = bpl->addrLow;
--		wqe->xmit_sequence.bde.tus.w = bpl->tus.w;
--	} else {
--		bde = (struct ulp_bde64_le *)&wqe->xmit_sequence.bde;
--		bde->addr_low = cpu_to_le32(putPaddrLow(bmp->phys));
--		bde->addr_high = cpu_to_le32(putPaddrHigh(bmp->phys));
--		bde->type_size = cpu_to_le32(bpl->tus.f.bdeSize);
--		bde->type_size |= cpu_to_le32(ULP_BDE64_TYPE_BDE_64);
--	}
-+	wqe->xmit_sequence.bde.addrHigh = bpl->addrHigh;
-+	wqe->xmit_sequence.bde.addrLow = bpl->addrLow;
-+	wqe->xmit_sequence.bde.tus.w = bpl->tus.w;
- 
- 	/* Word 5 */
- 	bf_set(wqe_ls, &wqe->xmit_sequence.wge_ctl, last_seq);
--- 
-2.35.1
-
-
+> regards,
+> dan carpenter
+> 
 
