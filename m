@@ -2,120 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AADE5CCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:11:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 136C8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:11:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355194AbiFGTLZ (ORCPT
+        id S1350935AbiFGTLb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:11:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48306 "EHLO
+        Tue, 7 Jun 2022 15:11:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351395AbiFGSQT (ORCPT
+        with ESMTP id S1351389AbiFGSQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:16:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98461611C3;
-        Tue,  7 Jun 2022 10:49:33 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C2F15EA47;
+        Tue,  7 Jun 2022 10:49:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EEE486174D;
-        Tue,  7 Jun 2022 17:49:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EF0FC34115;
-        Tue,  7 Jun 2022 17:49:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624164;
-        bh=UUqfrO9tkAxiVWeETgPMgTcjkhd0rSmhrqnbOtnL9k8=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7431EB8233D;
+        Tue,  7 Jun 2022 17:49:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDDCFC34115;
+        Tue,  7 Jun 2022 17:49:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624159;
+        bh=j3NkU+9R+MsTVefqY9wmm2az7atQ/kicaRlYli+uGtQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EfsyAkrj0XVeJ4KCwc8WIc+Nwff9S7uIdyiswR5NEQRoJx6Fj8W33V4ZPMF/BQEB7
-         5q6lPilHLSANb390EtCvU42ohKWrx/GxJhXLFcxyC2PAv3ap21TXIZxPI3ySIdf+Bq
-         GBBkO9RrZEfnGZqkMCnkpGPu2uNoespywY3HtYu7AT28lAZS/h6q/7Cc7Rp7EbZWRn
-         dnHWhq1Ll47j8Dc7k/0KO8n6NVeveCy4HR8Uvo5BtZFUwWbhbxlQpRUC4L6fZNhpf+
-         RE2JnFk6CxPOqRCiz/Y++ds5E19QFJK28XZcDFMUFTcZDuGwF3pBLsWXdh7ft4S3i+
-         WiNIWzAnX1tsw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, fabioaiuto83@gmail.com,
-        hdegoede@redhat.com, sevinj.aghayeva@gmail.com,
-        linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.18 05/68] drivers: staging: rtl8723bs: Fix deadlock in rtw_surveydone_event_callback()
-Date:   Tue,  7 Jun 2022 13:47:31 -0400
-Message-Id: <20220607174846.477972-5-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+        b=F6r98+5AexaWkrhvSlksutT3UP01L5wRmf+DgnG4Qn3J9snVgu/82hz6nB25gEz4x
+         ixmceuQUAvjGg3po5h6G3g5tXbbJIlt+oHU2Zm1uitJSxDdUY4JuPwf0EnwbNtumZJ
+         LjIvXTABS8R2JPbBaZL7h2Lw5hg+Hp8cUHtxbN60=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Chengming Zhou <zhouchengming@bytedance.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Ben Segall <bsegall@google.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 227/667] sched/fair: Fix cfs_rq_clock_pelt() for throttled cfs_rq
+Date:   Tue,  7 Jun 2022 18:58:12 +0200
+Message-Id: <20220607164941.597874590@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Chengming Zhou <zhouchengming@bytedance.com>
 
-[ Upstream commit cc7ad0d77b51c872d629bcd98aea463a3c4109e7 ]
+[ Upstream commit 64eaf50731ac0a8c76ce2fedd50ef6652aabc5ff ]
 
-There is a deadlock in rtw_surveydone_event_callback(),
-which is shown below:
+Since commit 23127296889f ("sched/fair: Update scale invariance of PELT")
+change to use rq_clock_pelt() instead of rq_clock_task(), we should also
+use rq_clock_pelt() for throttled_clock_task_time and throttled_clock_task
+accounting to get correct cfs_rq_clock_pelt() of throttled cfs_rq. And
+rename throttled_clock_task(_time) to be clock_pelt rather than clock_task.
 
-   (Thread 1)                  |      (Thread 2)
-                               | _set_timer()
-rtw_surveydone_event_callback()|  mod_timer()
- spin_lock_bh() //(1)          |  (wait a time)
- ...                           | rtw_scan_timeout_handler()
- del_timer_sync()              |  spin_lock_bh() //(2)
- (wait timer to stop)          |  ...
-
-We hold pmlmepriv->lock in position (1) of thread 1 and use
-del_timer_sync() to wait timer to stop, but timer handler
-also need pmlmepriv->lock in position (2) of thread 2.
-As a result, rtw_surveydone_event_callback() will block forever.
-
-This patch extracts del_timer_sync() from the protection of
-spin_lock_bh(), which could let timer handler to obtain
-the needed lock. What`s more, we change spin_lock_bh() in
-rtw_scan_timeout_handler() to spin_lock_irq(). Otherwise,
-spin_lock_bh() will also cause deadlock() in timer handler.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220409061836.60529-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 23127296889f ("sched/fair: Update scale invariance of PELT")
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Ben Segall <bsegall@google.com>
+Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
+Link: https://lore.kernel.org/r/20220408115309.81603-1-zhouchengming@bytedance.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8723bs/core/rtw_mlme.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ kernel/sched/fair.c  | 8 ++++----
+ kernel/sched/pelt.h  | 4 ++--
+ kernel/sched/sched.h | 4 ++--
+ 3 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme.c b/drivers/staging/rtl8723bs/core/rtw_mlme.c
-index ed2d3b7d44d9..62f140985e3f 100644
---- a/drivers/staging/rtl8723bs/core/rtw_mlme.c
-+++ b/drivers/staging/rtl8723bs/core/rtw_mlme.c
-@@ -751,7 +751,9 @@ void rtw_surveydone_event_callback(struct adapter	*adapter, u8 *pbuf)
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 9a4fa22a69ed..fcbacc35d2b9 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -4812,8 +4812,8 @@ static int tg_unthrottle_up(struct task_group *tg, void *data)
+ 
+ 	cfs_rq->throttle_count--;
+ 	if (!cfs_rq->throttle_count) {
+-		cfs_rq->throttled_clock_task_time += rq_clock_task(rq) -
+-					     cfs_rq->throttled_clock_task;
++		cfs_rq->throttled_clock_pelt_time += rq_clock_pelt(rq) -
++					     cfs_rq->throttled_clock_pelt;
+ 
+ 		/* Add cfs_rq with load or one or more already running entities to the list */
+ 		if (!cfs_rq_is_decayed(cfs_rq) || cfs_rq->nr_running)
+@@ -4830,7 +4830,7 @@ static int tg_throttle_down(struct task_group *tg, void *data)
+ 
+ 	/* group is entering throttled state, stop time */
+ 	if (!cfs_rq->throttle_count) {
+-		cfs_rq->throttled_clock_task = rq_clock_task(rq);
++		cfs_rq->throttled_clock_pelt = rq_clock_pelt(rq);
+ 		list_del_leaf_cfs_rq(cfs_rq);
  	}
+ 	cfs_rq->throttle_count++;
+@@ -5274,7 +5274,7 @@ static void sync_throttle(struct task_group *tg, int cpu)
+ 	pcfs_rq = tg->parent->cfs_rq[cpu];
  
- 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY)) {
-+		spin_unlock_bh(&pmlmepriv->lock);
- 		del_timer_sync(&pmlmepriv->scan_to_timer);
-+		spin_lock_bh(&pmlmepriv->lock);
- 		_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY);
- 	}
- 
-@@ -1586,11 +1588,11 @@ void rtw_scan_timeout_handler(struct timer_list *t)
- 						  mlmepriv.scan_to_timer);
- 	struct	mlme_priv *pmlmepriv = &adapter->mlmepriv;
- 
--	spin_lock_bh(&pmlmepriv->lock);
-+	spin_lock_irq(&pmlmepriv->lock);
- 
- 	_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY);
- 
--	spin_unlock_bh(&pmlmepriv->lock);
-+	spin_unlock_irq(&pmlmepriv->lock);
- 
- 	rtw_indicate_scan_done(adapter, true);
+ 	cfs_rq->throttle_count = pcfs_rq->throttle_count;
+-	cfs_rq->throttled_clock_task = rq_clock_task(cpu_rq(cpu));
++	cfs_rq->throttled_clock_pelt = rq_clock_pelt(cpu_rq(cpu));
  }
+ 
+ /* conditionally throttle active cfs_rq's from put_prev_entity() */
+diff --git a/kernel/sched/pelt.h b/kernel/sched/pelt.h
+index c336f5f481bc..4ff2ed4f8fa1 100644
+--- a/kernel/sched/pelt.h
++++ b/kernel/sched/pelt.h
+@@ -145,9 +145,9 @@ static inline u64 rq_clock_pelt(struct rq *rq)
+ static inline u64 cfs_rq_clock_pelt(struct cfs_rq *cfs_rq)
+ {
+ 	if (unlikely(cfs_rq->throttle_count))
+-		return cfs_rq->throttled_clock_task - cfs_rq->throttled_clock_task_time;
++		return cfs_rq->throttled_clock_pelt - cfs_rq->throttled_clock_pelt_time;
+ 
+-	return rq_clock_pelt(rq_of(cfs_rq)) - cfs_rq->throttled_clock_task_time;
++	return rq_clock_pelt(rq_of(cfs_rq)) - cfs_rq->throttled_clock_pelt_time;
+ }
+ #else
+ static inline u64 cfs_rq_clock_pelt(struct cfs_rq *cfs_rq)
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index d30dc55e6cee..f386c6c2b198 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -615,8 +615,8 @@ struct cfs_rq {
+ 	s64			runtime_remaining;
+ 
+ 	u64			throttled_clock;
+-	u64			throttled_clock_task;
+-	u64			throttled_clock_task_time;
++	u64			throttled_clock_pelt;
++	u64			throttled_clock_pelt_time;
+ 	int			throttled;
+ 	int			throttle_count;
+ 	struct list_head	throttled_list;
 -- 
 2.35.1
+
+
 
