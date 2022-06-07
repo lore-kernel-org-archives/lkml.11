@@ -2,140 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70EDDCCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51296CCA48B
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385735AbiFGWqb (ORCPT
+        id S1386652AbiFGWtR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:46:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36542 "EHLO
+        Tue, 7 Jun 2022 18:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381123AbiFGVgc (ORCPT
+        with ESMTP id S1381305AbiFGVk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:36:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0971522FE7A;
-        Tue,  7 Jun 2022 12:04:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5413B8220B;
-        Tue,  7 Jun 2022 19:04:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0848DC385A2;
-        Tue,  7 Jun 2022 19:04:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628692;
-        bh=kF4kMchGAIVVerdQTWUJCIU85/BMwDOMfqbIBpFUo7w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eiU8clSXklayVr4frDpLwqiY8jckIWoHcIYzNy1YvpErFN/wzk5j+h0BL8dPNiZGP
-         YYYTfNlQ6LfkEZ/9tUKEkW3fov9uwXM42JiX+vAULl5S/RbnOu62rVyOO5ftmTwPOB
-         TcNw87bsDNYfoZlkKtZg2ani0H9Oq9qBhtrvTjWo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark ONeill <mao@tumblingdice.co.uk>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 422/879] dma-direct: dont fail on highmem CMA pages in dma_direct_alloc_pages
-Date:   Tue,  7 Jun 2022 18:59:00 +0200
-Message-Id: <20220607165015.114227959@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:40:26 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587C723237C
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:06:36 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id m20so37030865ejj.10
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:06:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=w2QZmGlPpLOzdlgHh0fr/nfB07cOe+2+UZeFoODP9j8=;
+        b=tnZsRIW4pQq3fgXUojHZ+AHCEF5QhfhOfKDFybj3uoeoAdOhUsrmY4xqoWNhi4W1ew
+         fKaMyNa8bXnE7I01eQFjlECwbeEQpigVfc6azZow6P82xHiTjigT11EBQ6dAyTPvTdej
+         ZPuZlZ4hf0Mf7Yky1Fm8IQtVl9ikuGkX4uHB7Ia1isGQO282ZiASud1X0XKYFb8f1e9/
+         uBxMVVgAz63HkNGfMFIiQgo70NCj2M78GZuoJv7vjqkWQ03riOPUzCDlmdROfQy0Abhc
+         2uMB41x7VdTXdizkLrWmLDi0NYy+zXBDhFUsf5L1unvrVEaLkKDKkGzBawaw4uA0sxgu
+         uZYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=w2QZmGlPpLOzdlgHh0fr/nfB07cOe+2+UZeFoODP9j8=;
+        b=MDjg7Ej1sS4yB/KX5TbgNPVtrfc8NHrW8eHGya3sGGV2VX+aHyI5dRkPrsbeH4m1gf
+         6tPRu5IKxC7lBWwfK4JEGZuM84nBmByixgmra6bAiHZzBJnJVarConqbjebY0JEY2M6w
+         HlPBWUgQ1bXY0wOQBWEMj6CkFVR7abXUoJ3EHJk4bh+cepRguBJPKTiWEQatOSEi1LTi
+         l/NHRxaOda+j8v2Y7bF93jxg/3j5IFd/CTZgB5FtxeGG6Qnq2heud7R8KGYxcx7R3W2p
+         +mmJu7TsXv36evqKhtgDowNMWcLQh6Su7uKptuq0b/r5SkqakrMZsshAupqpMEgSoZBk
+         6uiQ==
+X-Gm-Message-State: AOAM532pRymzTI38pobmoAlVN0072KAfjamyOQOpJb0UT/rDnLFcIr29
+        Vt15X3qeAUeACrUqzIppXY8KhQRxhBeC1qpmOGjtnWAQnWM=
+X-Google-Smtp-Source: ABdhPJxwxoKemimG4FVD7JPomt4SvqMKZJD8lrv1Td3YH0u0u8j+KI2ylVm8voE78xcmqu39D4M35gypCcJ3hi6eJM4=
+X-Received: by 2002:a17:907:8689:b0:6fe:e525:ea9c with SMTP id
+ qa9-20020a170907868900b006fee525ea9cmr28498152ejc.720.1654628794660; Tue, 07
+ Jun 2022 12:06:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220607145639.2362750-1-tzungbi@kernel.org> <20220607145639.2362750-13-tzungbi@kernel.org>
+In-Reply-To: <20220607145639.2362750-13-tzungbi@kernel.org>
+From:   Guenter Roeck <groeck@google.com>
+Date:   Tue, 7 Jun 2022 12:06:23 -0700
+Message-ID: <CABXOdTebXS3c823jWYx9r8mU4LwNfhLo833s7_krK4JW0fSgUw@mail.gmail.com>
+Subject: Re: [PATCH v2 12/15] platform/chrome: use krealloc() for `din` and `dout`
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     bleung@chromium.org, groeck@chromium.org,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+On Tue, Jun 7, 2022 at 7:57 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
+>
+> Use krealloc() to re-allocate `din` and `dout`.  Don't use devm variant
+> because the two buffers could be re-allocated multiple times during
+> runtime.  Their life cycles aren't quite aligned to the device's.
 
-[ Upstream commit 92826e967535db2eb117db227b1191aaf98e4bb3 ]
+While this saves a few lines of code, it is runtime-expensive:
+krealloc() copies the old data, which is a waste of time/resources.
+Maybe it would be better to just use kfree() followed by kzalloc().
 
-When dma_direct_alloc_pages encounters a highmem page it just gives up
-currently.  But what we really should do is to try memory using the
-page allocator instead - without this platforms with a global highmem
-CMA pool will fail all dma_alloc_pages allocations.
+>
+> Free the memory in cros_ec_unregister() if any.
+>
+> No need to free memory if krealloc() fails.  They will be freed
+> eventually in either of the following:
+> - Error handling path in cros_ec_register().
+> - In cros_ec_unregister().
+> - Next krealloc() in cros_ec_query_all().
+>
+> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+> ---
+> Changes from v1:
+> - Don't use devm.
+> - Free in cros_ec_unregister().
+>
+>  drivers/platform/chrome/cros_ec.c            |  4 +++
+>  drivers/platform/chrome/cros_ec_proto.c      | 29 +++++++-------------
+>  drivers/platform/chrome/cros_ec_proto_test.c |  3 +-
+>  3 files changed, 15 insertions(+), 21 deletions(-)
+>
+> diff --git a/drivers/platform/chrome/cros_ec.c b/drivers/platform/chrome/cros_ec.c
+> index 29d3b544dafb..fb8cb8a73295 100644
+> --- a/drivers/platform/chrome/cros_ec.c
+> +++ b/drivers/platform/chrome/cros_ec.c
+> @@ -285,6 +285,8 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
+>  exit:
+>         platform_device_unregister(ec_dev->ec);
+>         platform_device_unregister(ec_dev->pd);
+> +       kfree(ec_dev->din);
+> +       kfree(ec_dev->dout);
+>         return err;
+>  }
+>  EXPORT_SYMBOL(cros_ec_register);
+> @@ -302,6 +304,8 @@ void cros_ec_unregister(struct cros_ec_device *ec_dev)
+>         if (ec_dev->pd)
+>                 platform_device_unregister(ec_dev->pd);
+>         platform_device_unregister(ec_dev->ec);
+> +       kfree(ec_dev->din);
+> +       kfree(ec_dev->dout);
+>  }
+>  EXPORT_SYMBOL(cros_ec_unregister);
+>
+> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+> index 473654f50bca..de6bc457e496 100644
+> --- a/drivers/platform/chrome/cros_ec_proto.c
+> +++ b/drivers/platform/chrome/cros_ec_proto.c
+> @@ -469,9 +469,9 @@ static int cros_ec_get_host_command_version_mask(struct cros_ec_device *ec_dev,
+>   */
+>  int cros_ec_query_all(struct cros_ec_device *ec_dev)
+>  {
+> -       struct device *dev = ec_dev->dev;
+>         u32 ver_mask = 0;
+>         int ret;
+> +       u8 *din, *dout;
+>
+>         /* First try sending with proto v3. */
+>         if (!cros_ec_get_proto_info(ec_dev, CROS_EC_DEV_EC_INDEX)) {
+> @@ -492,21 +492,15 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+>                 }
+>         }
+>
+> -       devm_kfree(dev, ec_dev->din);
+> -       devm_kfree(dev, ec_dev->dout);
+> -
+> -       ec_dev->din = devm_kzalloc(dev, ec_dev->din_size, GFP_KERNEL);
+> -       if (!ec_dev->din) {
+> -               ret = -ENOMEM;
+> -               goto exit;
+> -       }
+> +       din = krealloc(ec_dev->din, ec_dev->din_size, GFP_KERNEL);
+> +       if (!din)
+> +               return -ENOMEM;
 
-Fixes: efa70f2fdc84 ("dma-mapping: add a new dma_alloc_pages API")
-Reported-by: Mark O'Neill <mao@tumblingdice.co.uk>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/dma/direct.c | 27 ++++++++++-----------------
- 1 file changed, 10 insertions(+), 17 deletions(-)
+I would suggest assigning the values directly; the new variables don't
+really add value.
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 9743c6ccce1a..3e7f4aab740e 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -115,7 +115,7 @@ static struct page *dma_direct_alloc_swiotlb(struct device *dev, size_t size)
- }
- 
- static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
--		gfp_t gfp)
-+		gfp_t gfp, bool allow_highmem)
- {
- 	int node = dev_to_node(dev);
- 	struct page *page = NULL;
-@@ -129,9 +129,12 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 	gfp |= dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
- 					   &phys_limit);
- 	page = dma_alloc_contiguous(dev, size, gfp);
--	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
--		dma_free_contiguous(dev, page, size);
--		page = NULL;
-+	if (page) {
-+		if (!dma_coherent_ok(dev, page_to_phys(page), size) ||
-+		    (!allow_highmem && PageHighMem(page))) {
-+			dma_free_contiguous(dev, page, size);
-+			page = NULL;
-+		}
- 	}
- again:
- 	if (!page)
-@@ -189,7 +192,7 @@ static void *dma_direct_alloc_no_mapping(struct device *dev, size_t size,
- {
- 	struct page *page;
- 
--	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO);
-+	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO, true);
- 	if (!page)
- 		return NULL;
- 
-@@ -262,7 +265,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- 		return dma_direct_alloc_from_pool(dev, size, dma_handle, gfp);
- 
- 	/* we always manually zero the memory once we are done */
--	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO);
-+	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO, true);
- 	if (!page)
- 		return NULL;
- 
-@@ -370,19 +373,9 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
- 	if (force_dma_unencrypted(dev) && dma_direct_use_pool(dev, gfp))
- 		return dma_direct_alloc_from_pool(dev, size, dma_handle, gfp);
- 
--	page = __dma_direct_alloc_pages(dev, size, gfp);
-+	page = __dma_direct_alloc_pages(dev, size, gfp, false);
- 	if (!page)
- 		return NULL;
--	if (PageHighMem(page)) {
--		/*
--		 * Depending on the cma= arguments and per-arch setup
--		 * dma_alloc_contiguous could return highmem pages.
--		 * Without remapping there is no way to return them here,
--		 * so log an error and fail.
--		 */
--		dev_info(dev, "Rejecting highmem page from CMA.\n");
--		goto out_free_pages;
--	}
- 
- 	ret = page_address(page);
- 	if (dma_set_decrypted(dev, ret, size))
--- 
-2.35.1
+Thanks,
+Guenter
 
-
-
+> +       ec_dev->din = din;
+>
+> -       ec_dev->dout = devm_kzalloc(dev, ec_dev->dout_size, GFP_KERNEL);
+> -       if (!ec_dev->dout) {
+> -               devm_kfree(dev, ec_dev->din);
+> -               ret = -ENOMEM;
+> -               goto exit;
+> -       }
+> +       dout = krealloc(ec_dev->dout, ec_dev->dout_size, GFP_KERNEL);
+> +       if (!dout)
+> +               return -ENOMEM;
+> +       ec_dev->dout = dout;
+>
+>         /* Probe if MKBP event is supported */
+>         ret = cros_ec_get_host_command_version_mask(ec_dev,
+> @@ -555,10 +549,7 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+>                                 "failed to retrieve wake mask: %d\n", ret);
+>         }
+>
+> -       ret = 0;
+> -
+> -exit:
+> -       return ret;
+> +       return 0;
+>  }
+>  EXPORT_SYMBOL(cros_ec_query_all);
+>
+> diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
+> index 730248be42a7..27b81a5a9880 100644
+> --- a/drivers/platform/chrome/cros_ec_proto_test.c
+> +++ b/drivers/platform/chrome/cros_ec_proto_test.c
+> @@ -180,8 +180,7 @@ static void cros_ec_proto_test_query_all_pretest(struct kunit *test)
+>
+>         /*
+>          * cros_ec_query_all() will free din and dout and allocate them again to fit the usage by
+> -        * calling devm_kfree() and devm_kzalloc().  Set them to NULL as they aren't managed by
+> -        * ec_dev->dev.
+> +        * calling krealloc().  Set them to NULL as they aren't allocated by kalloc().
+>          */
+>         ec_dev->din = NULL;
+>         ec_dev->dout = NULL;
+> --
+> 2.36.1.255.ge46751e96f-goog
+>
