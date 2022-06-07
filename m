@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67C8BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:12:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C829C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:12:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349920AbiFGSMr (ORCPT
+        id S1350049AbiFGSMw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:12:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47748 "EHLO
+        Tue, 7 Jun 2022 14:12:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349659AbiFGRv0 (ORCPT
+        with ESMTP id S1349648AbiFGRv0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:51:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB5013C08E;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3D813C1C4;
         Tue,  7 Jun 2022 10:38:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2311AB80B66;
-        Tue,  7 Jun 2022 17:38:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8811EC385A5;
-        Tue,  7 Jun 2022 17:38:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D6606157B;
+        Tue,  7 Jun 2022 17:37:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B026C385A5;
+        Tue,  7 Jun 2022 17:37:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623488;
-        bh=hDCiPEacoCm4kd0iu071/ZJvY3zZhf4KDgFQjIIqAsM=;
+        s=korg; t=1654623477;
+        bh=jqBp+YTbylwh1DJj9yoGKwUK3G1UP5qserMh8zArCPc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=td4OQds9+6+pz6g0lVhnCY3xBMtIlUafSxb78bnKVzhLmA17fv/8OLFOZytO95fHc
-         Ar7ZIX/PR2Tkfk3Bd4mn15JJ0jyFnLtgjeeJjZ1jR1d9/v+qkUXjJXJzqUUJoP7oQP
-         JcTNG2bhU5yG8GBZSCzfD/d+78cMxqW1CYQv4p/s=
+        b=G13WpNndJKnjHTlWz5crhcQyQLLpQ1ujCIAqj2PF2mC8DaZTvZkW2LFtLR1FowzEo
+         OSMHOUsZZYvNYQ2ede2UQbRLDGVto5aT7m/4xUaOP1Ljd0FabdTCJeWq+ViyLAKoB9
+         AxG9ZljwvAWiQJsA5TsawNDeInSoNJQ5DHqpyt6k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dave Chinner <dchinner@redhat.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Dave Chinner <david@fromorbit.com>,
+        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
+        Brian Foster <bfoster@redhat.com>,
+        Chandan Babu R <chandanrlinux@gmail.com>,
         Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH 5.10 437/452] xfs: assert in xfs_btree_del_cursor should take into account error
-Date:   Tue,  7 Jun 2022 19:04:54 +0200
-Message-Id: <20220607164921.582897883@linuxfoundation.org>
+Subject: [PATCH 5.10 433/452] xfs: fix incorrect root dquot corruption error when switching group/project quota types
+Date:   Tue,  7 Jun 2022 19:04:50 +0200
+Message-Id: <20220607164921.460244852@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -52,79 +51,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Chinner <dchinner@redhat.com>
+From: "Darrick J. Wong" <djwong@kernel.org>
 
-commit 56486f307100e8fc66efa2ebd8a71941fa10bf6f upstream.
+commit 45068063efb7dd0a8d115c106aa05d9ab0946257 upstream.
 
-xfs/538 on a 1kB block filesystem failed with this assert:
+While writing up a regression test for broken behavior when a chprojid
+request fails, I noticed that we were logging corruption notices about
+the root dquot of the group/project quota file at mount time when
+testing V4 filesystems.
 
-XFS: Assertion failed: cur->bc_btnum != XFS_BTNUM_BMAP || cur->bc_ino.allocated == 0 || xfs_is_shutdown(cur->bc_mp), file: fs/xfs/libxfs/xfs_btree.c, line: 448
+In commit afeda6000b0c, I was trying to improve ondisk dquot validation
+by making sure that when we load an ondisk dquot into memory on behalf
+of an incore dquot, the dquot id and type matches.  Unfortunately, I
+forgot that V4 filesystems only have two quota files, and can switch
+that file between group and project quota types at mount time.  When we
+perform that switch, we'll try to load the default quota limits from the
+root dquot prior to running quotacheck and log a corruption error when
+the types don't match.
 
-The problem was that an allocation failed unexpectedly in
-xfs_bmbt_alloc_block() after roughly 150,000 minlen allocation error
-injections, resulting in an EFSCORRUPTED error being returned to
-xfs_bmapi_write(). The error occurred on extent-to-btree format
-conversion allocating the new root block:
+This is inconsequential because quotacheck will reset the second quota
+file as part of doing the switch, but we shouldn't leave scary messages
+in the kernel log.
 
- RIP: 0010:xfs_bmbt_alloc_block+0x177/0x210
- Call Trace:
-  <TASK>
-  xfs_btree_new_iroot+0xdf/0x520
-  xfs_btree_make_block_unfull+0x10d/0x1c0
-  xfs_btree_insrec+0x364/0x790
-  xfs_btree_insert+0xaa/0x210
-  xfs_bmap_add_extent_hole_real+0x1fe/0x9a0
-  xfs_bmapi_allocate+0x34c/0x420
-  xfs_bmapi_write+0x53c/0x9c0
-  xfs_alloc_file_space+0xee/0x320
-  xfs_file_fallocate+0x36b/0x450
-  vfs_fallocate+0x148/0x340
-  __x64_sys_fallocate+0x3c/0x70
-  do_syscall_64+0x35/0x80
-  entry_SYSCALL_64_after_hwframe+0x44/0xa
-
-Why the allocation failed at this point is unknown, but is likely
-that we ran the transaction out of reserved space and filesystem out
-of space with bmbt blocks because of all the minlen allocations
-being done causing worst case fragmentation of a large allocation.
-
-Regardless of the cause, we've then called xfs_bmapi_finish() which
-calls xfs_btree_del_cursor(cur, error) to tear down the cursor.
-
-So we have a failed operation, error != 0, cur->bc_ino.allocated > 0
-and the filesystem is still up. The assert fails to take into
-account that allocation can fail with an error and the transaction
-teardown will shut the filesystem down if necessary. i.e. the
-assert needs to check "|| error != 0" as well, because at this point
-shutdown is pending because the current transaction is dirty....
-
-Signed-off-by: Dave Chinner <dchinner@redhat.com>
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Dave Chinner <david@fromorbit.com>
+Fixes: afeda6000b0c ("xfs: validate ondisk/incore dquot flags")
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Brian Foster <bfoster@redhat.com>
+Reviewed-by: Chandan Babu R <chandanrlinux@gmail.com>
 Signed-off-by: Amir Goldstein <amir73il@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/libxfs/xfs_btree.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ fs/xfs/xfs_dquot.c |   39 +++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 37 insertions(+), 2 deletions(-)
 
---- a/fs/xfs/libxfs/xfs_btree.c
-+++ b/fs/xfs/libxfs/xfs_btree.c
-@@ -372,8 +372,14 @@ xfs_btree_del_cursor(
- 			break;
- 	}
+--- a/fs/xfs/xfs_dquot.c
++++ b/fs/xfs/xfs_dquot.c
+@@ -500,6 +500,42 @@ xfs_dquot_alloc(
+ 	return dqp;
+ }
  
++/* Check the ondisk dquot's id and type match what the incore dquot expects. */
++static bool
++xfs_dquot_check_type(
++	struct xfs_dquot	*dqp,
++	struct xfs_disk_dquot	*ddqp)
++{
++	uint8_t			ddqp_type;
++	uint8_t			dqp_type;
++
++	ddqp_type = ddqp->d_type & XFS_DQTYPE_REC_MASK;
++	dqp_type = xfs_dquot_type(dqp);
++
++	if (be32_to_cpu(ddqp->d_id) != dqp->q_id)
++		return false;
++
 +	/*
-+	 * If we are doing a BMBT update, the number of unaccounted blocks
-+	 * allocated during this cursor life time should be zero. If it's not
-+	 * zero, then we should be shut down or on our way to shutdown due to
-+	 * cancelling a dirty transaction on error.
++	 * V5 filesystems always expect an exact type match.  V4 filesystems
++	 * expect an exact match for user dquots and for non-root group and
++	 * project dquots.
 +	 */
- 	ASSERT(cur->bc_btnum != XFS_BTNUM_BMAP || cur->bc_ino.allocated == 0 ||
--	       XFS_FORCED_SHUTDOWN(cur->bc_mp));
-+	       XFS_FORCED_SHUTDOWN(cur->bc_mp) || error != 0);
- 	if (unlikely(cur->bc_flags & XFS_BTREE_STAGING))
- 		kmem_free(cur->bc_ops);
- 	kmem_cache_free(xfs_btree_cur_zone, cur);
++	if (xfs_sb_version_hascrc(&dqp->q_mount->m_sb) ||
++	    dqp_type == XFS_DQTYPE_USER || dqp->q_id != 0)
++		return ddqp_type == dqp_type;
++
++	/*
++	 * V4 filesystems support either group or project quotas, but not both
++	 * at the same time.  The non-user quota file can be switched between
++	 * group and project quota uses depending on the mount options, which
++	 * means that we can encounter the other type when we try to load quota
++	 * defaults.  Quotacheck will soon reset the the entire quota file
++	 * (including the root dquot) anyway, but don't log scary corruption
++	 * reports to dmesg.
++	 */
++	return ddqp_type == XFS_DQTYPE_GROUP || ddqp_type == XFS_DQTYPE_PROJ;
++}
++
+ /* Copy the in-core quota fields in from the on-disk buffer. */
+ STATIC int
+ xfs_dquot_from_disk(
+@@ -512,8 +548,7 @@ xfs_dquot_from_disk(
+ 	 * Ensure that we got the type and ID we were looking for.
+ 	 * Everything else was checked by the dquot buffer verifier.
+ 	 */
+-	if ((ddqp->d_type & XFS_DQTYPE_REC_MASK) != xfs_dquot_type(dqp) ||
+-	    be32_to_cpu(ddqp->d_id) != dqp->q_id) {
++	if (!xfs_dquot_check_type(dqp, ddqp)) {
+ 		xfs_alert_tag(bp->b_mount, XFS_PTAG_VERIFIER_ERROR,
+ 			  "Metadata corruption detected at %pS, quota %u",
+ 			  __this_address, dqp->q_id);
 
 
