@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8871CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86474C43334
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385089AbiFGW0W (ORCPT
+        id S1385067AbiFGW0S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:26:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54690 "EHLO
+        Tue, 7 Jun 2022 18:26:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380740AbiFGVQz (ORCPT
+        with ESMTP id S1380715AbiFGVQt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:16:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C90414B2CD;
-        Tue,  7 Jun 2022 11:57:02 -0700 (PDT)
+        Tue, 7 Jun 2022 17:16:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D561521F9C5;
+        Tue,  7 Jun 2022 11:56:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 24DB86159D;
-        Tue,  7 Jun 2022 18:57:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E1CAC385A5;
-        Tue,  7 Jun 2022 18:57:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67C28B8220B;
+        Tue,  7 Jun 2022 18:56:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C76CAC385A2;
+        Tue,  7 Jun 2022 18:56:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628221;
-        bh=+Eu7a/01Gm0vvkEXgIQO9gAsjJXm9bL/OnGxnrNXiSo=;
+        s=korg; t=1654628194;
+        bh=s4KO1UgUY/B996K+l2DBDtuWNiu3YWMyS23OqCyZMqk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FtjCq7GiMDxGfYpzMh4P/dQsrrOcsbx69a0CmEd+pGu79qmoRZwb/l6uJrzmxDvp5
-         fOuLJjzgY5cY6j/PhH82D5zNSqm6n/dcr1hTPAURpj1aQWfuEUXHoZpz1mzq4ZIjkJ
-         VKaqMRx/nZyQVLQc+OjrazDh8o5OwCLQfA1gievw=
+        b=dChu9tR9YvUg0HCi9mBz1PQnZyV4ubTVx9AqJRbaTtxUDVSnLsvQyUM8Mmgz20UoV
+         96r6Fq8xNZRKCCdbDs5ljk8QUt8Mme8rqz476eL1IOgzbA+t7ON51CqsbCR4Q8kOdU
+         g6mc4rSn7R2QePEF9cVYIPTpXFMVAt2ulUFgbId4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
+        David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 251/879] cifs: do not use tcpStatus after negotiate completes
-Date:   Tue,  7 Jun 2022 18:56:09 +0200
-Message-Id: <20220607165010.135030627@linuxfoundation.org>
+Subject: [PATCH 5.18 199/879] rxrpc: Return an error to sendmsg if call failed
+Date:   Tue,  7 Jun 2022 18:55:17 +0200
+Message-Id: <20220607165008.621633343@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,114 +52,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shyam Prasad N <sprasad@microsoft.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 1a6a41d4cedd9b302e2200e6f0e3c44dbbe13689 ]
+[ Upstream commit 4ba68c5192554876bd8c3afd904e3064d2915341 ]
 
-Recent changes to multichannel to allow channel reconnects to
-work in parallel and independent of each other did so by
-making use of tcpStatus for the connection, and status for the
-session. However, this did not take into account the multiuser
-scenario, where same connection is used by multiple connections.
+If at the end of rxrpc sendmsg() or rxrpc_kernel_send_data() the call that
+was being given data was aborted remotely or otherwise failed, return an
+error rather than returning the amount of data buffered for transmission.
 
-However, tcpStatus should be tracked only till the end of
-negotiate exchange, and not used for session setup. This change
-fixes this.
+The call (presumably) did not complete, so there's not much point
+continuing with it.  AF_RXRPC considers it "complete" and so will be
+unwilling to do anything else with it - and won't send a notification for
+it, deeming the return from sendmsg sufficient.
 
-Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Not returning an error causes afs to incorrectly handle a StoreData
+operation that gets interrupted by a change of address due to NAT
+reconfiguration.
+
+This doesn't normally affect most operations since their request parameters
+tend to fit into a single UDP packet and afs_make_call() returns before the
+server responds; StoreData is different as it involves transmission of a
+lot of data.
+
+This can be triggered on a client by doing something like:
+
+	dd if=/dev/zero of=/afs/example.com/foo bs=1M count=512
+
+at one prompt, and then changing the network address at another prompt,
+e.g.:
+
+	ifconfig enp6s0 inet 192.168.6.2 && route add 192.168.6.1 dev enp6s0
+
+Tracing packets on an Auristor fileserver looks something like:
+
+192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
+192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
+192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+<ARP exchange for 192.168.6.2>
+192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
+192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
+192.168.6.1 -> 192.168.6.2  RX 107 ACK Exceeds Window  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 29321  Call: 4  Source Port: 7000  Destination Port: 7001
+
+The Auristor fileserver logs code -453 (RXGEN_SS_UNMARSHAL), but the abort
+code received by kafs is -5 (RX_PROTOCOL_ERROR) as the rx layer sees the
+condition and generates an abort first and the unmarshal error is a
+consequence of that at the application layer.
+
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lists.infradead.org/pipermail/linux-afs/2021-December/004810.html # v1
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/connect.c       | 23 +++++++++++------------
- fs/cifs/smb2pdu.c       |  3 ++-
- fs/cifs/smb2transport.c |  3 ++-
- 3 files changed, 15 insertions(+), 14 deletions(-)
+ net/rxrpc/sendmsg.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
-index b28b1ff39fed..aa2d4c49e2a5 100644
---- a/fs/cifs/connect.c
-+++ b/fs/cifs/connect.c
-@@ -3956,7 +3956,7 @@ cifs_negotiate_protocol(const unsigned int xid, struct cifs_ses *ses,
- 	if (rc == 0) {
- 		spin_lock(&cifs_tcp_ses_lock);
- 		if (server->tcpStatus == CifsInNegotiate)
--			server->tcpStatus = CifsNeedSessSetup;
-+			server->tcpStatus = CifsGood;
- 		else
- 			rc = -EHOSTDOWN;
- 		spin_unlock(&cifs_tcp_ses_lock);
-@@ -3979,19 +3979,18 @@ cifs_setup_session(const unsigned int xid, struct cifs_ses *ses,
- 	bool is_binding = false;
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index af8ad6c30b9f..1d38e279e2ef 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -444,6 +444,12 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
  
- 	/* only send once per connect */
-+	spin_lock(&ses->chan_lock);
-+	is_binding = !CIFS_ALL_CHANS_NEED_RECONNECT(ses);
-+	spin_unlock(&ses->chan_lock);
-+
- 	spin_lock(&cifs_tcp_ses_lock);
--	if ((server->tcpStatus != CifsNeedSessSetup) &&
--	    (ses->status == CifsGood)) {
-+	if (ses->status == CifsExiting) {
- 		spin_unlock(&cifs_tcp_ses_lock);
- 		return 0;
- 	}
--	server->tcpStatus = CifsInSessSetup;
-+	ses->status = CifsInSessSetup;
- 	spin_unlock(&cifs_tcp_ses_lock);
- 
--	spin_lock(&ses->chan_lock);
--	is_binding = !CIFS_ALL_CHANS_NEED_RECONNECT(ses);
--	spin_unlock(&ses->chan_lock);
--
- 	if (!is_binding) {
- 		ses->capabilities = server->capabilities;
- 		if (!linuxExtEnabled)
-@@ -4015,13 +4014,13 @@ cifs_setup_session(const unsigned int xid, struct cifs_ses *ses,
- 	if (rc) {
- 		cifs_server_dbg(VFS, "Send error in SessSetup = %d\n", rc);
- 		spin_lock(&cifs_tcp_ses_lock);
--		if (server->tcpStatus == CifsInSessSetup)
--			server->tcpStatus = CifsNeedSessSetup;
-+		if (ses->status == CifsInSessSetup)
-+			ses->status = CifsNeedSessSetup;
- 		spin_unlock(&cifs_tcp_ses_lock);
- 	} else {
- 		spin_lock(&cifs_tcp_ses_lock);
--		if (server->tcpStatus == CifsInSessSetup)
--			server->tcpStatus = CifsGood;
-+		if (ses->status == CifsInSessSetup)
-+			ses->status = CifsGood;
- 		/* Even if one channel is active, session is in good state */
- 		ses->status = CifsGood;
- 		spin_unlock(&cifs_tcp_ses_lock);
-diff --git a/fs/cifs/smb2pdu.c b/fs/cifs/smb2pdu.c
-index 1b7ad0c09566..f5321a3500f3 100644
---- a/fs/cifs/smb2pdu.c
-+++ b/fs/cifs/smb2pdu.c
-@@ -3899,7 +3899,8 @@ SMB2_echo(struct TCP_Server_Info *server)
- 	cifs_dbg(FYI, "In echo request for conn_id %lld\n", server->conn_id);
- 
- 	spin_lock(&cifs_tcp_ses_lock);
--	if (server->tcpStatus == CifsNeedNegotiate) {
-+	if (server->ops->need_neg &&
-+	    server->ops->need_neg(server)) {
- 		spin_unlock(&cifs_tcp_ses_lock);
- 		/* No need to send echo on newly established connections */
- 		mod_delayed_work(cifsiod_wq, &server->reconnect, 0);
-diff --git a/fs/cifs/smb2transport.c b/fs/cifs/smb2transport.c
-index 2af79093b78b..01b732641edb 100644
---- a/fs/cifs/smb2transport.c
-+++ b/fs/cifs/smb2transport.c
-@@ -641,7 +641,8 @@ smb2_sign_rqst(struct smb_rqst *rqst, struct TCP_Server_Info *server)
- 	if (!is_signed)
- 		return 0;
- 	spin_lock(&cifs_tcp_ses_lock);
--	if (server->tcpStatus == CifsNeedNegotiate) {
-+	if (server->ops->need_neg &&
-+	    server->ops->need_neg(server)) {
- 		spin_unlock(&cifs_tcp_ses_lock);
- 		return 0;
- 	}
+ success:
+ 	ret = copied;
++	if (READ_ONCE(call->state) == RXRPC_CALL_COMPLETE) {
++		read_lock_bh(&call->state_lock);
++		if (call->error < 0)
++			ret = call->error;
++		read_unlock_bh(&call->state_lock);
++	}
+ out:
+ 	call->tx_pending = skb;
+ 	_leave(" = %d", ret);
 -- 
 2.35.1
 
