@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC0AECCA487
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A717CCA48D
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381588AbiFHBZh (ORCPT
+        id S1385748AbiFHB0O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:25:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49346 "EHLO
+        Tue, 7 Jun 2022 21:26:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383449AbiFGWZF (ORCPT
+        with ESMTP id S1383219AbiFGVwq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:25:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1686726E3AE;
-        Tue,  7 Jun 2022 12:22:42 -0700 (PDT)
+        Tue, 7 Jun 2022 17:52:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A11862431A2;
+        Tue,  7 Jun 2022 12:10:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C48F960907;
-        Tue,  7 Jun 2022 19:22:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CDFCC385A2;
-        Tue,  7 Jun 2022 19:22:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2712CB823B1;
+        Tue,  7 Jun 2022 19:10:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70CF6C385A2;
+        Tue,  7 Jun 2022 19:10:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629761;
-        bh=lCWrCZpXnrVPvvReCV0rDHoW0MLUbLtzzPP6kZd4AFs=;
+        s=korg; t=1654629041;
+        bh=EbUndU5aN6FSHQ/Au1vWjV4N7TDNpgYntN0GGYXZbew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zP7POkNp9FO99TZcOJqTJ72jZSUz1uyj8KNw7JfbPQ7LBhwj6iK3RfD+bZvQfrtCk
-         Gb6J89ghwyjMEVdP4J/JYRdWsJ4WU+2xFoy6bF/MrAxlmarVOTkl97DtP6ksf8owGW
-         uYz5ASUy+rQ+NqJEF4P4vsShhoEmw9QtdMHxC5H4=
+        b=XviRhwEdy0Ut62+yizNm7QJAck2dpDv4TV+1aZMiYJvr5HpEPs+BjeYb9GJ+xEV6s
+         s1pDVfxENANqpjmasRw8pSFus4P7iOdl6EAUNMgfCn8rUwaTp+Y9jF2zxkmGTaTCju
+         b7OFMXH247njx33DlEHJxowJUjzxMToCaG5q3H8Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Junxiao Bi <junxiao.bi@oracle.com>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Joseph Qi <jiangqi903@gmail.com>,
-        Changwei Ge <gechangwei@live.cn>, Gang He <ghe@suse.com>,
-        Jun Piao <piaojun@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.18 767/879] ocfs2: dlmfs: fix error handling of user_dlm_destroy_lock
-Date:   Tue,  7 Jun 2022 19:04:45 +0200
-Message-Id: <20220607165025.127088054@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+92beb3d46aab498710fa@syzkaller.appspotmail.com,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 507/879] bonding: fix missed rcu protection
+Date:   Tue,  7 Jun 2022 19:00:25 +0200
+Message-Id: <20220607165017.592202504@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -55,189 +53,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Junxiao Bi via Ocfs2-devel <ocfs2-devel@oss.oracle.com>
+From: Hangbin Liu <liuhangbin@gmail.com>
 
-commit 863e0d81b6683c4cbc588ad831f560c90e494bef upstream.
+[ Upstream commit 9b80ccda233fa6c59de411bf889cc4d0e028f2c7 ]
 
-When user_dlm_destroy_lock failed, it didn't clean up the flags it set
-before exit.  For USER_LOCK_IN_TEARDOWN, if this function fails because of
-lock is still in used, next time when unlink invokes this function, it
-will return succeed, and then unlink will remove inode and dentry if lock
-is not in used(file closed), but the dlm lock is still linked in dlm lock
-resource, then when bast come in, it will trigger a panic due to
-user-after-free.  See the following panic call trace.  To fix this,
-USER_LOCK_IN_TEARDOWN should be reverted if fail.  And also error should
-be returned if USER_LOCK_IN_TEARDOWN is set to let user know that unlink
-fail.
+When removing the rcu_read_lock in bond_ethtool_get_ts_info() as
+discussed [1], I didn't notice it could be called via setsockopt,
+which doesn't hold rcu lock, as syzbot pointed:
 
-For the case of ocfs2_dlm_unlock failure, besides USER_LOCK_IN_TEARDOWN,
-USER_LOCK_BUSY is also required to be cleared.  Even though spin lock is
-released in between, but USER_LOCK_IN_TEARDOWN is still set, for
-USER_LOCK_BUSY, if before every place that waits on this flag,
-USER_LOCK_IN_TEARDOWN is checked to bail out, that will make sure no flow
-waits on the busy flag set by user_dlm_destroy_lock(), then we can
-simplely revert USER_LOCK_BUSY when ocfs2_dlm_unlock fails.  Fix
-user_dlm_cluster_lock() which is the only function not following this.
+  stack backtrace:
+  CPU: 0 PID: 3599 Comm: syz-executor317 Not tainted 5.18.0-rc5-syzkaller-01392-g01f4685797a5 #0
+  Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+  Call Trace:
+   <TASK>
+   __dump_stack lib/dump_stack.c:88 [inline]
+   dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+   bond_option_active_slave_get_rcu include/net/bonding.h:353 [inline]
+   bond_ethtool_get_ts_info+0x32c/0x3a0 drivers/net/bonding/bond_main.c:5595
+   __ethtool_get_ts_info+0x173/0x240 net/ethtool/common.c:554
+   ethtool_get_phc_vclocks+0x99/0x110 net/ethtool/common.c:568
+   sock_timestamping_bind_phc net/core/sock.c:869 [inline]
+   sock_set_timestamping+0x3a3/0x7e0 net/core/sock.c:916
+   sock_setsockopt+0x543/0x2ec0 net/core/sock.c:1221
+   __sys_setsockopt+0x55e/0x6a0 net/socket.c:2223
+   __do_sys_setsockopt net/socket.c:2238 [inline]
+   __se_sys_setsockopt net/socket.c:2235 [inline]
+   __x64_sys_setsockopt+0xba/0x150 net/socket.c:2235
+   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+  RIP: 0033:0x7f8902c8eb39
 
-[  941.336392] (python,26174,16):dlmfs_unlink:562 ERROR: unlink
-004fb0000060000b5a90b8c847b72e1, error -16 from destroy
-[  989.757536] ------------[ cut here ]------------
-[  989.757709] kernel BUG at fs/ocfs2/dlmfs/userdlm.c:173!
-[  989.757876] invalid opcode: 0000 [#1] SMP
-[  989.758027] Modules linked in: ksplice_2zhuk2jr_ib_ipoib_new(O)
-ksplice_2zhuk2jr(O) mptctl mptbase xen_netback xen_blkback xen_gntalloc
-xen_gntdev xen_evtchn cdc_ether usbnet mii ocfs2 jbd2 rpcsec_gss_krb5
-auth_rpcgss nfsv4 nfsv3 nfs_acl nfs fscache lockd grace ocfs2_dlmfs
-ocfs2_stack_o2cb ocfs2_dlm ocfs2_nodemanager ocfs2_stackglue configfs bnx2fc
-fcoe libfcoe libfc scsi_transport_fc sunrpc ipmi_devintf bridge stp llc
-rds_rdma rds bonding ib_sdp ib_ipoib rdma_ucm ib_ucm ib_uverbs ib_umad
-rdma_cm ib_cm iw_cm falcon_lsm_serviceable(PE) falcon_nf_netcontain(PE)
-mlx4_vnic falcon_kal(E) falcon_lsm_pinned_13402(E) mlx4_ib ib_sa ib_mad
-ib_core ib_addr xenfs xen_privcmd dm_multipath iTCO_wdt iTCO_vendor_support
-pcspkr sb_edac edac_core i2c_i801 lpc_ich mfd_core ipmi_ssif i2c_core ipmi_si
-ipmi_msghandler
-[  989.760686]  ioatdma sg ext3 jbd mbcache sd_mod ahci libahci ixgbe dca ptp
-pps_core vxlan udp_tunnel ip6_udp_tunnel megaraid_sas mlx4_core crc32c_intel
-be2iscsi bnx2i cnic uio cxgb4i cxgb4 cxgb3i libcxgbi ipv6 cxgb3 mdio
-libiscsi_tcp qla4xxx iscsi_boot_sysfs libiscsi scsi_transport_iscsi wmi
-dm_mirror dm_region_hash dm_log dm_mod [last unloaded:
-ksplice_2zhuk2jr_ib_ipoib_old]
-[  989.761987] CPU: 10 PID: 19102 Comm: dlm_thread Tainted: P           OE
-4.1.12-124.57.1.el6uek.x86_64 #2
-[  989.762290] Hardware name: Oracle Corporation ORACLE SERVER
-X5-2/ASM,MOTHERBOARD,1U, BIOS 30350100 06/17/2021
-[  989.762599] task: ffff880178af6200 ti: ffff88017f7c8000 task.ti:
-ffff88017f7c8000
-[  989.762848] RIP: e030:[<ffffffffc07d4316>]  [<ffffffffc07d4316>]
-__user_dlm_queue_lockres.part.4+0x76/0x80 [ocfs2_dlmfs]
-[  989.763185] RSP: e02b:ffff88017f7cbcb8  EFLAGS: 00010246
-[  989.763353] RAX: 0000000000000000 RBX: ffff880174d48008 RCX:
-0000000000000003
-[  989.763565] RDX: 0000000000120012 RSI: 0000000000000003 RDI:
-ffff880174d48170
-[  989.763778] RBP: ffff88017f7cbcc8 R08: ffff88021f4293b0 R09:
-0000000000000000
-[  989.763991] R10: ffff880179c8c000 R11: 0000000000000003 R12:
-ffff880174d48008
-[  989.764204] R13: 0000000000000003 R14: ffff880179c8c000 R15:
-ffff88021db7a000
-[  989.764422] FS:  0000000000000000(0000) GS:ffff880247480000(0000)
-knlGS:ffff880247480000
-[  989.764685] CS:  e033 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  989.764865] CR2: ffff8000007f6800 CR3: 0000000001ae0000 CR4:
-0000000000042660
-[  989.765081] Stack:
-[  989.765167]  0000000000000003 ffff880174d48040 ffff88017f7cbd18
-ffffffffc07d455f
-[  989.765442]  ffff88017f7cbd88 ffffffff816fb639 ffff88017f7cbd38
-ffff8800361b5600
-[  989.765717]  ffff88021db7a000 ffff88021f429380 0000000000000003
-ffffffffc0453020
-[  989.765991] Call Trace:
-[  989.766093]  [<ffffffffc07d455f>] user_bast+0x5f/0xf0 [ocfs2_dlmfs]
-[  989.766287]  [<ffffffff816fb639>] ? schedule_timeout+0x169/0x2d0
-[  989.766475]  [<ffffffffc0453020>] ? o2dlm_lock_ast_wrapper+0x20/0x20
-[ocfs2_stack_o2cb]
-[  989.766738]  [<ffffffffc045303a>] o2dlm_blocking_ast_wrapper+0x1a/0x20
-[ocfs2_stack_o2cb]
-[  989.767010]  [<ffffffffc0864ec6>] dlm_do_local_bast+0x46/0xe0 [ocfs2_dlm]
-[  989.767217]  [<ffffffffc084f5cc>] ? dlm_lockres_calc_usage+0x4c/0x60
-[ocfs2_dlm]
-[  989.767466]  [<ffffffffc08501f1>] dlm_thread+0xa31/0x1140 [ocfs2_dlm]
-[  989.767662]  [<ffffffff816f78da>] ? __schedule+0x24a/0x810
-[  989.767834]  [<ffffffff816f78ce>] ? __schedule+0x23e/0x810
-[  989.768006]  [<ffffffff816f78da>] ? __schedule+0x24a/0x810
-[  989.768178]  [<ffffffff816f78ce>] ? __schedule+0x23e/0x810
-[  989.768349]  [<ffffffff816f78da>] ? __schedule+0x24a/0x810
-[  989.768521]  [<ffffffff816f78ce>] ? __schedule+0x23e/0x810
-[  989.768693]  [<ffffffff816f78da>] ? __schedule+0x24a/0x810
-[  989.768893]  [<ffffffff816f78ce>] ? __schedule+0x23e/0x810
-[  989.769067]  [<ffffffff816f78da>] ? __schedule+0x24a/0x810
-[  989.769241]  [<ffffffff810ce4d0>] ? wait_woken+0x90/0x90
-[  989.769411]  [<ffffffffc084f7c0>] ? dlm_kick_thread+0x80/0x80 [ocfs2_dlm]
-[  989.769617]  [<ffffffff810a8bbb>] kthread+0xcb/0xf0
-[  989.769774]  [<ffffffff816f78da>] ? __schedule+0x24a/0x810
-[  989.769945]  [<ffffffff816f78da>] ? __schedule+0x24a/0x810
-[  989.770117]  [<ffffffff810a8af0>] ? kthread_create_on_node+0x180/0x180
-[  989.770321]  [<ffffffff816fdaa1>] ret_from_fork+0x61/0x90
-[  989.770492]  [<ffffffff810a8af0>] ? kthread_create_on_node+0x180/0x180
-[  989.770689] Code: d0 00 00 00 f0 45 7d c0 bf 00 20 00 00 48 89 83 c0 00 00
-00 48 89 83 c8 00 00 00 e8 55 c1 8c c0 83 4b 04 10 48 83 c4 08 5b 5d c3 <0f>
-0b 0f 1f 84 00 00 00 00 00 55 48 89 e5 41 55 41 54 53 48 83
-[  989.771892] RIP  [<ffffffffc07d4316>]
-__user_dlm_queue_lockres.part.4+0x76/0x80 [ocfs2_dlmfs]
-[  989.772174]  RSP <ffff88017f7cbcb8>
-[  989.772704] ---[ end trace ebd1e38cebcc93a8 ]---
-[  989.772907] Kernel panic - not syncing: Fatal exception
-[  989.773173] Kernel Offset: disabled
+Fix it by adding rcu_read_lock and take a ref on the real_dev.
+Since dev_hold() and dev_put() can take NULL these days, we can
+skip checking if real_dev exist.
 
-Link: https://lkml.kernel.org/r/20220518235224.87100-2-junxiao.bi@oracle.com
-Signed-off-by: Junxiao Bi <junxiao.bi@oracle.com>
-Reviewed-by: Joseph Qi <joseph.qi@linux.alibaba.com>
-Cc: Mark Fasheh <mark@fasheh.com>
-Cc: Joel Becker <jlbec@evilplan.org>
-Cc: Joseph Qi <jiangqi903@gmail.com>
-Cc: Changwei Ge <gechangwei@live.cn>
-Cc: Gang He <ghe@suse.com>
-Cc: Jun Piao <piaojun@huawei.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[1] https://lore.kernel.org/netdev/27565.1642742439@famine/
+
+Reported-by: syzbot+92beb3d46aab498710fa@syzkaller.appspotmail.com
+Fixes: aa6034678e87 ("bonding: use rcu_dereference_rtnl when get bonding active slave")
+Suggested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/r/20220519020148.1058344-1-liuhangbin@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ocfs2/dlmfs/userdlm.c |   16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ drivers/net/bonding/bond_main.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
---- a/fs/ocfs2/dlmfs/userdlm.c
-+++ b/fs/ocfs2/dlmfs/userdlm.c
-@@ -433,6 +433,11 @@ again:
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 38e152548126..b5c5196e03ee 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -5591,16 +5591,23 @@ static int bond_ethtool_get_ts_info(struct net_device *bond_dev,
+ 	const struct ethtool_ops *ops;
+ 	struct net_device *real_dev;
+ 	struct phy_device *phydev;
++	int ret = 0;
+ 
++	rcu_read_lock();
+ 	real_dev = bond_option_active_slave_get_rcu(bond);
++	dev_hold(real_dev);
++	rcu_read_unlock();
++
+ 	if (real_dev) {
+ 		ops = real_dev->ethtool_ops;
+ 		phydev = real_dev->phydev;
+ 
+ 		if (phy_has_tsinfo(phydev)) {
+-			return phy_ts_info(phydev, info);
++			ret = phy_ts_info(phydev, info);
++			goto out;
+ 		} else if (ops->get_ts_info) {
+-			return ops->get_ts_info(real_dev, info);
++			ret = ops->get_ts_info(real_dev, info);
++			goto out;
+ 		}
  	}
  
- 	spin_lock(&lockres->l_lock);
-+	if (lockres->l_flags & USER_LOCK_IN_TEARDOWN) {
-+		spin_unlock(&lockres->l_lock);
-+		status = -EAGAIN;
-+		goto bail;
-+	}
+@@ -5608,7 +5615,9 @@ static int bond_ethtool_get_ts_info(struct net_device *bond_dev,
+ 				SOF_TIMESTAMPING_SOFTWARE;
+ 	info->phc_index = -1;
  
- 	/* We only compare against the currently granted level
- 	 * here. If the lock is blocked waiting on a downconvert,
-@@ -595,7 +600,7 @@ int user_dlm_destroy_lock(struct user_lo
- 	spin_lock(&lockres->l_lock);
- 	if (lockres->l_flags & USER_LOCK_IN_TEARDOWN) {
- 		spin_unlock(&lockres->l_lock);
--		return 0;
-+		goto bail;
- 	}
+-	return 0;
++out:
++	dev_put(real_dev);
++	return ret;
+ }
  
- 	lockres->l_flags |= USER_LOCK_IN_TEARDOWN;
-@@ -609,12 +614,17 @@ int user_dlm_destroy_lock(struct user_lo
- 	}
- 
- 	if (lockres->l_ro_holders || lockres->l_ex_holders) {
-+		lockres->l_flags &= ~USER_LOCK_IN_TEARDOWN;
- 		spin_unlock(&lockres->l_lock);
- 		goto bail;
- 	}
- 
- 	status = 0;
- 	if (!(lockres->l_flags & USER_LOCK_ATTACHED)) {
-+		/*
-+		 * lock is never requested, leave USER_LOCK_IN_TEARDOWN set
-+		 * to avoid new lock request coming in.
-+		 */
- 		spin_unlock(&lockres->l_lock);
- 		goto bail;
- 	}
-@@ -625,6 +635,10 @@ int user_dlm_destroy_lock(struct user_lo
- 
- 	status = ocfs2_dlm_unlock(conn, &lockres->l_lksb, DLM_LKF_VALBLK);
- 	if (status) {
-+		spin_lock(&lockres->l_lock);
-+		lockres->l_flags &= ~USER_LOCK_IN_TEARDOWN;
-+		lockres->l_flags &= ~USER_LOCK_BUSY;
-+		spin_unlock(&lockres->l_lock);
- 		user_log_dlm_error("ocfs2_dlm_unlock", status, lockres);
- 		goto bail;
- 	}
+ static const struct ethtool_ops bond_ethtool_ops = {
+-- 
+2.35.1
+
 
 
