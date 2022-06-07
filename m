@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D83E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5819ACCA492
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387213AbiFHBh2 (ORCPT
+        id S1386768AbiFHBhQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:37:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38598 "EHLO
+        Tue, 7 Jun 2022 21:37:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382686AbiFGWEb (ORCPT
+        with ESMTP id S1383296AbiFGVxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:04:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D453025025A;
-        Tue,  7 Jun 2022 12:14:55 -0700 (PDT)
+        Tue, 7 Jun 2022 17:53:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6C022432CC;
+        Tue,  7 Jun 2022 12:11:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87236B823C6;
-        Tue,  7 Jun 2022 19:14:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6906C385A5;
-        Tue,  7 Jun 2022 19:14:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5743D612EC;
+        Tue,  7 Jun 2022 19:11:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A0BDC385A2;
+        Tue,  7 Jun 2022 19:11:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629291;
-        bh=Qf0riGe9jag1RYINbAwIoHFgerM8YVcYGRZBgOZVPGE=;
+        s=korg; t=1654629066;
+        bh=THnhl6EqQFhS3geuRLyG54hpkwuwb34QL3RX6SGZLlM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R0q1OAIDTASiJVC6Fb3FK8+5VPgj6Yn33g7vq8d0FtLaj8OOUenBIJoOBP3UzxEgE
-         /DAMTDTnP4wUQT333YTYP/2owt/pCZqoWe/D6y/eKepZpkzg2CwuJBOm5VPmuK2H0y
-         Q24VuAkGsmFGEQplPbh+RvHyY+CIa9UcYsAGzkDc=
+        b=B0K632xHXkEqqZuFuvJq6dD/BEBphIc4i+7Th2OsCBQCUz/uIbw9vAX7d8rBT7MUH
+         j7eLbousgbcopVW5RfJvolQQatX79wVIoshPloW5DAoJeE5lHW5nI1/gBM8J//syJM
+         pCXRoojG3rPLXPXSmMA3XLlWYcJJ0YixeJ5lj5SM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabiano Rosas <farosas@linux.ibm.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org,
+        Max Krummenacher <max.krummenacher@toradex.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 631/879] KVM: PPC: Book3S HV: Fix vcore_blocked tracepoint
-Date:   Tue,  7 Jun 2022 19:02:29 +0200
-Message-Id: <20220607165021.164568507@linuxfoundation.org>
+Subject: [PATCH 5.18 558/879] ARM: dts: imx6dl-colibri: Fix I2C pinmuxing
+Date:   Tue,  7 Jun 2022 19:01:16 +0200
+Message-Id: <20220607165019.060174621@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,83 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabiano Rosas <farosas@linux.ibm.com>
+From: Max Krummenacher <max.krummenacher@toradex.com>
 
-[ Upstream commit ad55bae7dc364417434b69dd6c30104f20d0f84d ]
+[ Upstream commit 5f5c579a34a87117c20b411df583ae816c1ec84f ]
 
-We removed most of the vcore logic from the P9 path but there's still
-a tracepoint that tried to dereference vc->runner.
+Fix names of extra pingroup node and property for gpio bus recovery.
+Without the change i2c2 is not functional.
 
-Fixes: ecb6a7207f92 ("KVM: PPC: Book3S HV P9: Remove most of the vcore logic")
-Signed-off-by: Fabiano Rosas <farosas@linux.ibm.com>
-Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220328215831.320409-1-farosas@linux.ibm.com
+Fixes: 56f0df6b6b58 ("ARM: dts: imx*(colibri|apalis): add missing recovery modes to i2c")
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kvm/book3s_hv.c | 8 ++++----
- arch/powerpc/kvm/trace_hv.h  | 8 ++++----
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ arch/arm/boot/dts/imx6qdl-colibri.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
-index 43af871383c2..aef0a6b423d8 100644
---- a/arch/powerpc/kvm/book3s_hv.c
-+++ b/arch/powerpc/kvm/book3s_hv.c
-@@ -4233,13 +4233,13 @@ static void kvmppc_vcore_blocked(struct kvmppc_vcore *vc)
- 	start_wait = ktime_get();
+diff --git a/arch/arm/boot/dts/imx6qdl-colibri.dtsi b/arch/arm/boot/dts/imx6qdl-colibri.dtsi
+index 4e2a309c93fa..1e86b3814708 100644
+--- a/arch/arm/boot/dts/imx6qdl-colibri.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-colibri.dtsi
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0+ OR MIT
+ /*
+- * Copyright 2014-2020 Toradex
++ * Copyright 2014-2022 Toradex
+  * Copyright 2012 Freescale Semiconductor, Inc.
+  * Copyright 2011 Linaro Ltd.
+  */
+@@ -132,7 +132,7 @@
+ 	clock-frequency = <100000>;
+ 	pinctrl-names = "default", "gpio";
+ 	pinctrl-0 = <&pinctrl_i2c2>;
+-	pinctrl-0 = <&pinctrl_i2c2_gpio>;
++	pinctrl-1 = <&pinctrl_i2c2_gpio>;
+ 	scl-gpios = <&gpio2 30 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+ 	sda-gpios = <&gpio3 16 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+ 	status = "okay";
+@@ -488,7 +488,7 @@
+ 		>;
+ 	};
  
- 	vc->vcore_state = VCORE_SLEEPING;
--	trace_kvmppc_vcore_blocked(vc, 0);
-+	trace_kvmppc_vcore_blocked(vc->runner, 0);
- 	spin_unlock(&vc->lock);
- 	schedule();
- 	finish_rcuwait(&vc->wait);
- 	spin_lock(&vc->lock);
- 	vc->vcore_state = VCORE_INACTIVE;
--	trace_kvmppc_vcore_blocked(vc, 1);
-+	trace_kvmppc_vcore_blocked(vc->runner, 1);
- 	++vc->runner->stat.halt_successful_wait;
- 
- 	cur = ktime_get();
-@@ -4619,9 +4619,9 @@ int kvmhv_run_single_vcpu(struct kvm_vcpu *vcpu, u64 time_limit,
- 			if (kvmppc_vcpu_check_block(vcpu))
- 				break;
- 
--			trace_kvmppc_vcore_blocked(vc, 0);
-+			trace_kvmppc_vcore_blocked(vcpu, 0);
- 			schedule();
--			trace_kvmppc_vcore_blocked(vc, 1);
-+			trace_kvmppc_vcore_blocked(vcpu, 1);
- 		}
- 		finish_rcuwait(wait);
- 	}
-diff --git a/arch/powerpc/kvm/trace_hv.h b/arch/powerpc/kvm/trace_hv.h
-index 38cd0ed0a617..32e2cb5811cc 100644
---- a/arch/powerpc/kvm/trace_hv.h
-+++ b/arch/powerpc/kvm/trace_hv.h
-@@ -409,9 +409,9 @@ TRACE_EVENT(kvmppc_run_core,
- );
- 
- TRACE_EVENT(kvmppc_vcore_blocked,
--	TP_PROTO(struct kvmppc_vcore *vc, int where),
-+	TP_PROTO(struct kvm_vcpu *vcpu, int where),
- 
--	TP_ARGS(vc, where),
-+	TP_ARGS(vcpu, where),
- 
- 	TP_STRUCT__entry(
- 		__field(int,	n_runnable)
-@@ -421,8 +421,8 @@ TRACE_EVENT(kvmppc_vcore_blocked,
- 	),
- 
- 	TP_fast_assign(
--		__entry->runner_vcpu = vc->runner->vcpu_id;
--		__entry->n_runnable  = vc->n_runnable;
-+		__entry->runner_vcpu = vcpu->vcpu_id;
-+		__entry->n_runnable  = vcpu->arch.vcore->n_runnable;
- 		__entry->where       = where;
- 		__entry->tgid	     = current->tgid;
- 	),
+-	pinctrl_i2c2_gpio: i2c2grp {
++	pinctrl_i2c2_gpio: i2c2gpiogrp {
+ 		fsl,pins = <
+ 			MX6QDL_PAD_EIM_EB2__GPIO2_IO30 0x4001b8b1
+ 			MX6QDL_PAD_EIM_D16__GPIO3_IO16 0x4001b8b1
 -- 
 2.35.1
 
