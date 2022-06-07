@@ -2,97 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4845DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:37:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF53C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:40:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239795AbiFGJho (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39864 "EHLO
+        id S239823AbiFGJkW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239794AbiFGJhg (ORCPT
+        with ESMTP id S232685AbiFGJkQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:37:36 -0400
-Received: from mail-sz.amlogic.com (mail-sz.amlogic.com [211.162.65.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C64042A404
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:37:34 -0700 (PDT)
-Received: from [10.28.39.121] (10.28.39.121) by mail-sz.amlogic.com
- (10.28.11.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 7 Jun 2022
- 17:37:32 +0800
-Message-ID: <e06acb65-50fe-46e6-a302-0238c902d1a2@amlogic.com>
-Date:   Tue, 7 Jun 2022 17:37:31 +0800
+        Tue, 7 Jun 2022 05:40:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 489EDCEBA8;
+        Tue,  7 Jun 2022 02:40:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 070A0B81E77;
+        Tue,  7 Jun 2022 09:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B45B8C385A5;
+        Tue,  7 Jun 2022 09:40:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654594812;
+        bh=0SyMDivUzEu0tDvgyTj2GJcUW+vtwcWEcGy75q++O74=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=p/OPreIcuOwdsWc/MggVL/2zkf+gFgZldCm3LTmtaH92P5L2/oBEV0AJ7kebIM/ba
+         +8+I6y17KRGwd522dcGxtWf/xpHdeqJBtHMyD4sXe2u0pdZjTc5oZTbTSRqBSxoeBt
+         +2xjvt0wEeMihAgLECaCxHhflEr/74/h3YNvuxyvI/BBA1DNe8C5Fm3DoMrtzhBf22
+         5sIe9r0wi8Ru9NHRD1EwFjOOM5XJalU/GFPsJnJOGwLfs+TEgJMSbdR24JbjRqnuVv
+         XZK52m97u3BR7zTyf1l+XpNfnePZP9HL/PXC9oIxXDTGgdHGmj9JUaPsHrPO+A1xY8
+         k9DSuKnTyAGjw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9BD69E737EE;
+        Tue,  7 Jun 2022 09:40:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.1; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v6 5/5] mtd: rawnand: meson: not support legacy clock
-Content-Language: en-US
-To:     Neil Armstrong <narmstrong@baylibre.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        <linux-mtd@lists.infradead.org>
-CC:     kernel test robot <lkp@intel.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jianxin Pan <jianxin.pan@amlogic.com>,
-        Victor Wan <victor.wan@amlogic.com>,
-        XianWei Zhao <xianwei.zhao@amlogic.com>,
-        Kelvin Zhang <kelvin.zhang@amlogic.com>,
-        BiChao Zheng <bichao.zheng@amlogic.com>,
-        YongHui Yu <yonghui.yu@amlogic.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-References: <20220607064731.13367-1-liang.yang@amlogic.com>
- <20220607064731.13367-6-liang.yang@amlogic.com>
- <791b3e4e-7348-997a-0ead-136739ec10bf@baylibre.com>
-From:   Liang Yang <liang.yang@amlogic.com>
-In-Reply-To: <791b3e4e-7348-997a-0ead-136739ec10bf@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.28.39.121]
-X-ClientProxiedBy: mail-sz.amlogic.com (10.28.11.5) To mail-sz.amlogic.com
- (10.28.11.5)
+Subject: Re: [PATCH] net: altera: Replace kernel.h with the necessary inclusions
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165459481263.20204.14162751087523664869.git-patchwork-notify@kernel.org>
+Date:   Tue, 07 Jun 2022 09:40:12 +0000
+References: <18731e4f6430100d6500d6c4732ee028a729c085.1654325651.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <18731e4f6430100d6500d6c4732ee028a729c085.1654325651.git.christophe.jaillet@wanadoo.fr>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     joyce.ooi@intel.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Neil,
+Hello:
 
-On 2022/6/7 15:12, Neil Armstrong wrote:
-> [ EXTERNAL EMAIL ]
-> 
-> Hi,
-> 
-> On 07/06/2022 08:47, Liang Yang wrote:
->> meson NFC driver use common clock interfaces. so the test robot report
->> some errors once using the legacy clock with HAVE_LEGACY_CLK on.
->>
->> Reported-by: kernel test robot <lkp@intel.com>
->> Signed-off-by: Liang Yang <liang.yang@amlogic.com>
->> ---
->>   drivers/mtd/nand/raw/Kconfig | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/mtd/nand/raw/Kconfig b/drivers/mtd/nand/raw/Kconfig
->> index 67b7cb67c030..5169412a4af4 100644
->> --- a/drivers/mtd/nand/raw/Kconfig
->> +++ b/drivers/mtd/nand/raw/Kconfig
->> @@ -395,7 +395,7 @@ config MTD_NAND_STM32_FMC2
->>   config MTD_NAND_MESON
->>       tristate "Support for NAND controller on Amlogic's Meson SoCs"
->> -    depends on ARCH_MESON || COMPILE_TEST
->> +    depends on ARCH_MESON || COMPILE_TEST || !HAVE_LEGACY_CLK
-> 
-> I think depending on CCF would be better than excluding legacy clock.
->
-indeed. i will use COMMON_CLK later. thanks.
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
->>       select MFD_SYSCON
->>       help
->>         Enables support for NAND controller on Amlogic's Meson SoCs.
+On Sat,  4 Jun 2022 08:54:20 +0200 you wrote:
+> When kernel.h is used in the headers it adds a lot into dependency hell,
+> especially when there are circular dependencies are involved.
 > 
-> Neil
+> Replace kernel.h inclusion with the list of what is really being used.
 > 
-> .
+> While at it, move these includes below the include guard.
+> 
+> [...]
+
+Here is the summary with links:
+  - net: altera: Replace kernel.h with the necessary inclusions
+    https://git.kernel.org/netdev/net-next/c/12de1ebd2ae3
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
