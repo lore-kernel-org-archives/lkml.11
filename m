@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A3AACCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BA18C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:13:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379287AbiFGWNG (ORCPT
+        id S1383151AbiFGWNO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:13:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60634 "EHLO
+        Tue, 7 Jun 2022 18:13:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379661AbiFGVKt (ORCPT
+        with ESMTP id S1379768AbiFGVK6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:10:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F93215642;
-        Tue,  7 Jun 2022 11:51:52 -0700 (PDT)
+        Tue, 7 Jun 2022 17:10:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A171215E52;
+        Tue,  7 Jun 2022 11:52:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0AA6B8239A;
-        Tue,  7 Jun 2022 18:51:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 572E9C34115;
-        Tue,  7 Jun 2022 18:51:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1277B8237F;
+        Tue,  7 Jun 2022 18:52:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 260A9C385A5;
+        Tue,  7 Jun 2022 18:51:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627909;
-        bh=uGxBakii2rIG+iogD6UuanWdzvcp4zMwBqkxmY5yAyg=;
+        s=korg; t=1654627920;
+        bh=HQF46pET341uvIM6dclJ+MRdmoa7RzWaMYRR/mwcVOs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v0bQCRNgfsZSybwt68ZlUs6vE97giCM52jIXzkEPvj3A/f8eIl7U38zHIkP0L4ZHp
-         07PyAio2o1VvD7DBDQVq4UQQh9uW1qGxKyLP37RjDU5cu1+W7SaiMwc8OkK1TsXhU0
-         zvPb0Gvi2SDl2NtVQc9IpvQi5z4MhSOAwAO4/Pg0=
+        b=VnDG7HyPl5g42GvOliHIztOCHbdTUroNXrMUqieUdSsbNCjvoAH4nnfPrRVYeo/E+
+         FKaVTRH73EepeDH/zebGXbWXMUYJRh2BgFnCr27IDlH+6earYqVAb4vprrV/jKGHrH
+         rCMguWbF9rmE5r55w0VqFd/YXF73FVmugUJpH3Pg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Haohui Mai <ricetons@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Gavin Li <gavinl@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 110/879] drm/amdgpu/sdma: Fix incorrect calculations of the wptr of the doorbells
-Date:   Tue,  7 Jun 2022 18:53:48 +0200
-Message-Id: <20220607165005.890594916@linuxfoundation.org>
+Subject: [PATCH 5.18 140/879] net/mlx5: Increase FW pre-init timeout for health recovery
+Date:   Tue,  7 Jun 2022 18:54:18 +0200
+Message-Id: <20220607165006.769133227@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,97 +52,196 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haohui Mai <ricetons@gmail.com>
+From: Gavin Li <gavinl@nvidia.com>
 
-[ Upstream commit 7dba6e838e741caadcf27ef717b6dcb561e77f89 ]
+[ Upstream commit 37ca95e62ee23fa6d2c2c64e3dc40b4a0c0146dc ]
 
-This patch fixes the issue where the driver miscomputes the 64-bit
-values of the wptr of the SDMA doorbell when initializing the
-hardware. SDMA engines v4 and later on have full 64-bit registers for
-wptr thus they should be set properly.
+Currently, health recovery will reload driver to recover it from fatal
+errors. During the driver's load process, it would wait for FW to set the
+pre-init bit for up to 120 seconds, beyond this threshold it would abort
+the load process. In some cases, such as a FW upgrade on the DPU, this
+timeout period is insufficient, and the user has no way to recover the
+host device.
 
-Older generation hardwares like CIK / SI have only 16 / 20 / 24bits
-for the WPTR, where the calls of lower_32_bits() will be removed in a
-following patch.
+To solve this issue, introduce a new FW pre-init timeout for health
+recovery, which is set to 2 hours.
 
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Haohui Mai <ricetons@gmail.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+The timeout for devlink reload and probe will use the original one because
+they are user triggered flows, and therefore should not have a
+significantly long timeout, during which the user command would hang.
+
+Signed-off-by: Gavin Li <gavinl@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Reviewed-by: Shay Drory <shayd@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c | 4 ++--
- drivers/gpu/drm/amd/amdgpu/sdma_v5_0.c | 8 ++++----
- drivers/gpu/drm/amd/amdgpu/sdma_v5_2.c | 8 ++++----
- 3 files changed, 10 insertions(+), 10 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/devlink.c |  4 ++--
+ .../ethernet/mellanox/mlx5/core/fw_reset.c    |  2 +-
+ .../ethernet/mellanox/mlx5/core/lib/tout.c    |  1 +
+ .../ethernet/mellanox/mlx5/core/lib/tout.h    |  1 +
+ .../net/ethernet/mellanox/mlx5/core/main.c    | 23 +++++++++++--------
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  2 +-
+ 6 files changed, 20 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c b/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
-index d7e8f7232364..ff86c43b63d1 100644
---- a/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
-@@ -772,8 +772,8 @@ static void sdma_v4_0_ring_set_wptr(struct amdgpu_ring *ring)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+index 057dde6f4417..9401127fb0ec 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -178,13 +178,13 @@ static int mlx5_devlink_reload_up(struct devlink *devlink, enum devlink_reload_a
+ 	*actions_performed = BIT(action);
+ 	switch (action) {
+ 	case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
+-		return mlx5_load_one(dev);
++		return mlx5_load_one(dev, false);
+ 	case DEVLINK_RELOAD_ACTION_FW_ACTIVATE:
+ 		if (limit == DEVLINK_RELOAD_LIMIT_NO_RESET)
+ 			break;
+ 		/* On fw_activate action, also driver is reloaded and reinit performed */
+ 		*actions_performed |= BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT);
+-		return mlx5_load_one(dev);
++		return mlx5_load_one(dev, false);
+ 	default:
+ 		/* Unsupported action should not get to this function */
+ 		WARN_ON(1);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+index 81eb67fb95b0..052af4901c0b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+@@ -149,7 +149,7 @@ static void mlx5_fw_reset_complete_reload(struct mlx5_core_dev *dev)
+ 	if (test_bit(MLX5_FW_RESET_FLAGS_PENDING_COMP, &fw_reset->reset_flags)) {
+ 		complete(&fw_reset->done);
+ 	} else {
+-		mlx5_load_one(dev);
++		mlx5_load_one(dev, false);
+ 		devlink_remote_reload_actions_performed(priv_to_devlink(dev), 0,
+ 							BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
+ 							BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE));
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
+index c1df0d3595d8..d758848d34d0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
+@@ -10,6 +10,7 @@ struct mlx5_timeouts {
  
- 		DRM_DEBUG("Using doorbell -- "
- 				"wptr_offs == 0x%08x "
--				"lower_32_bits(ring->wptr) << 2 == 0x%08x "
--				"upper_32_bits(ring->wptr) << 2 == 0x%08x\n",
-+				"lower_32_bits(ring->wptr << 2) == 0x%08x "
-+				"upper_32_bits(ring->wptr << 2) == 0x%08x\n",
- 				ring->wptr_offs,
- 				lower_32_bits(ring->wptr << 2),
- 				upper_32_bits(ring->wptr << 2));
-diff --git a/drivers/gpu/drm/amd/amdgpu/sdma_v5_0.c b/drivers/gpu/drm/amd/amdgpu/sdma_v5_0.c
-index a8d49c005f73..627eb1f147c2 100644
---- a/drivers/gpu/drm/amd/amdgpu/sdma_v5_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/sdma_v5_0.c
-@@ -394,8 +394,8 @@ static void sdma_v5_0_ring_set_wptr(struct amdgpu_ring *ring)
- 	if (ring->use_doorbell) {
- 		DRM_DEBUG("Using doorbell -- "
- 				"wptr_offs == 0x%08x "
--				"lower_32_bits(ring->wptr) << 2 == 0x%08x "
--				"upper_32_bits(ring->wptr) << 2 == 0x%08x\n",
-+				"lower_32_bits(ring->wptr << 2) == 0x%08x "
-+				"upper_32_bits(ring->wptr << 2) == 0x%08x\n",
- 				ring->wptr_offs,
- 				lower_32_bits(ring->wptr << 2),
- 				upper_32_bits(ring->wptr << 2));
-@@ -774,9 +774,9 @@ static int sdma_v5_0_gfx_resume(struct amdgpu_device *adev)
+ static const u32 tout_def_sw_val[MAX_TIMEOUT_TYPES] = {
+ 	[MLX5_TO_FW_PRE_INIT_TIMEOUT_MS] = 120000,
++	[MLX5_TO_FW_PRE_INIT_ON_RECOVERY_TIMEOUT_MS] = 7200000,
+ 	[MLX5_TO_FW_PRE_INIT_WARN_MESSAGE_INTERVAL_MS] = 20000,
+ 	[MLX5_TO_FW_PRE_INIT_WAIT_MS] = 2,
+ 	[MLX5_TO_FW_INIT_MS] = 2000,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
+index 1c42ead782fa..257c03eeab36 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
+@@ -7,6 +7,7 @@
+ enum mlx5_timeouts_types {
+ 	/* pre init timeouts (not read from FW) */
+ 	MLX5_TO_FW_PRE_INIT_TIMEOUT_MS,
++	MLX5_TO_FW_PRE_INIT_ON_RECOVERY_TIMEOUT_MS,
+ 	MLX5_TO_FW_PRE_INIT_WARN_MESSAGE_INTERVAL_MS,
+ 	MLX5_TO_FW_PRE_INIT_WAIT_MS,
  
- 		if (!amdgpu_sriov_vf(adev)) { /* only bare-metal use register write for wptr */
- 			WREG32(sdma_v5_0_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR),
--			       lower_32_bits(ring->wptr) << 2);
-+			       lower_32_bits(ring->wptr << 2));
- 			WREG32(sdma_v5_0_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR_HI),
--			       upper_32_bits(ring->wptr) << 2);
-+			       upper_32_bits(ring->wptr << 2));
- 		}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index ef196cb764e2..8b5263699994 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1014,7 +1014,7 @@ static void mlx5_cleanup_once(struct mlx5_core_dev *dev)
+ 	mlx5_devcom_unregister_device(dev->priv.devcom);
+ }
  
- 		doorbell = RREG32_SOC15_IP(GC, sdma_v5_0_get_reg_offset(adev, i, mmSDMA0_GFX_DOORBELL));
-diff --git a/drivers/gpu/drm/amd/amdgpu/sdma_v5_2.c b/drivers/gpu/drm/amd/amdgpu/sdma_v5_2.c
-index 824eace69884..a5eb82bfeaa8 100644
---- a/drivers/gpu/drm/amd/amdgpu/sdma_v5_2.c
-+++ b/drivers/gpu/drm/amd/amdgpu/sdma_v5_2.c
-@@ -295,8 +295,8 @@ static void sdma_v5_2_ring_set_wptr(struct amdgpu_ring *ring)
- 	if (ring->use_doorbell) {
- 		DRM_DEBUG("Using doorbell -- "
- 				"wptr_offs == 0x%08x "
--				"lower_32_bits(ring->wptr) << 2 == 0x%08x "
--				"upper_32_bits(ring->wptr) << 2 == 0x%08x\n",
-+				"lower_32_bits(ring->wptr << 2) == 0x%08x "
-+				"upper_32_bits(ring->wptr << 2) == 0x%08x\n",
- 				ring->wptr_offs,
- 				lower_32_bits(ring->wptr << 2),
- 				upper_32_bits(ring->wptr << 2));
-@@ -672,8 +672,8 @@ static int sdma_v5_2_gfx_resume(struct amdgpu_device *adev)
- 		WREG32_SOC15_IP(GC, sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_MINOR_PTR_UPDATE), 1);
+-static int mlx5_function_setup(struct mlx5_core_dev *dev, bool boot)
++static int mlx5_function_setup(struct mlx5_core_dev *dev, u64 timeout)
+ {
+ 	int err;
  
- 		if (!amdgpu_sriov_vf(adev)) { /* only bare-metal use register write for wptr */
--			WREG32(sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR), lower_32_bits(ring->wptr) << 2);
--			WREG32(sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR_HI), upper_32_bits(ring->wptr) << 2);
-+			WREG32(sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR), lower_32_bits(ring->wptr << 2));
-+			WREG32(sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_RB_WPTR_HI), upper_32_bits(ring->wptr << 2));
- 		}
+@@ -1029,11 +1029,11 @@ static int mlx5_function_setup(struct mlx5_core_dev *dev, bool boot)
  
- 		doorbell = RREG32_SOC15_IP(GC, sdma_v5_2_get_reg_offset(adev, i, mmSDMA0_GFX_DOORBELL));
+ 	/* wait for firmware to accept initialization segments configurations
+ 	 */
+-	err = wait_fw_init(dev, mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT),
++	err = wait_fw_init(dev, timeout,
+ 			   mlx5_tout_ms(dev, FW_PRE_INIT_WARN_MESSAGE_INTERVAL));
+ 	if (err) {
+ 		mlx5_core_err(dev, "Firmware over %llu MS in pre-initializing state, aborting\n",
+-			      mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT));
++			      timeout);
+ 		return err;
+ 	}
+ 
+@@ -1296,7 +1296,7 @@ int mlx5_init_one(struct mlx5_core_dev *dev)
+ 	mutex_lock(&dev->intf_state_mutex);
+ 	dev->state = MLX5_DEVICE_STATE_UP;
+ 
+-	err = mlx5_function_setup(dev, true);
++	err = mlx5_function_setup(dev, mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT));
+ 	if (err)
+ 		goto err_function;
+ 
+@@ -1360,9 +1360,10 @@ void mlx5_uninit_one(struct mlx5_core_dev *dev)
+ 	mutex_unlock(&dev->intf_state_mutex);
+ }
+ 
+-int mlx5_load_one(struct mlx5_core_dev *dev)
++int mlx5_load_one(struct mlx5_core_dev *dev, bool recovery)
+ {
+ 	int err = 0;
++	u64 timeout;
+ 
+ 	mutex_lock(&dev->intf_state_mutex);
+ 	if (test_bit(MLX5_INTERFACE_STATE_UP, &dev->intf_state)) {
+@@ -1372,7 +1373,11 @@ int mlx5_load_one(struct mlx5_core_dev *dev)
+ 	/* remove any previous indication of internal error */
+ 	dev->state = MLX5_DEVICE_STATE_UP;
+ 
+-	err = mlx5_function_setup(dev, false);
++	if (recovery)
++		timeout = mlx5_tout_ms(dev, FW_PRE_INIT_ON_RECOVERY_TIMEOUT);
++	else
++		timeout = mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT);
++	err = mlx5_function_setup(dev, timeout);
+ 	if (err)
+ 		goto err_function;
+ 
+@@ -1746,7 +1751,7 @@ static void mlx5_pci_resume(struct pci_dev *pdev)
+ 
+ 	mlx5_pci_trace(dev, "Enter, loading driver..\n");
+ 
+-	err = mlx5_load_one(dev);
++	err = mlx5_load_one(dev, false);
+ 
+ 	mlx5_pci_trace(dev, "Done, err = %d, device %s\n", err,
+ 		       !err ? "recovered" : "Failed");
+@@ -1833,7 +1838,7 @@ static int mlx5_resume(struct pci_dev *pdev)
+ {
+ 	struct mlx5_core_dev *dev = pci_get_drvdata(pdev);
+ 
+-	return mlx5_load_one(dev);
++	return mlx5_load_one(dev, false);
+ }
+ 
+ static const struct pci_device_id mlx5_core_pci_table[] = {
+@@ -1878,7 +1883,7 @@ int mlx5_recover_device(struct mlx5_core_dev *dev)
+ 			return -EIO;
+ 	}
+ 
+-	return mlx5_load_one(dev);
++	return mlx5_load_one(dev, true);
+ }
+ 
+ static struct pci_driver mlx5_core_driver = {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+index a9b2d6ead542..9026be1d6223 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+@@ -290,7 +290,7 @@ void mlx5_mdev_uninit(struct mlx5_core_dev *dev);
+ int mlx5_init_one(struct mlx5_core_dev *dev);
+ void mlx5_uninit_one(struct mlx5_core_dev *dev);
+ void mlx5_unload_one(struct mlx5_core_dev *dev);
+-int mlx5_load_one(struct mlx5_core_dev *dev);
++int mlx5_load_one(struct mlx5_core_dev *dev, bool recovery);
+ 
+ int mlx5_vport_get_other_func_cap(struct mlx5_core_dev *dev, u16 function_id, void *out);
+ 
 -- 
 2.35.1
 
