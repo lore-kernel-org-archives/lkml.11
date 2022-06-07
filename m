@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D58C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 816A6CCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:27:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387249AbiFHAZ5 (ORCPT
+        id S1387299AbiFHA0D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57420 "EHLO
+        Tue, 7 Jun 2022 20:26:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382481AbiFGWCi (ORCPT
+        with ESMTP id S1383712AbiFGVxb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:02:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB20024F7AE;
-        Tue,  7 Jun 2022 12:14:40 -0700 (PDT)
+        Tue, 7 Jun 2022 17:53:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFCE6245FB7;
+        Tue,  7 Jun 2022 12:12:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38C746187F;
-        Tue,  7 Jun 2022 19:14:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49F31C385A5;
-        Tue,  7 Jun 2022 19:14:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9354E618DE;
+        Tue,  7 Jun 2022 19:12:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98784C385A2;
+        Tue,  7 Jun 2022 19:12:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629274;
-        bh=1rY7bqasLjyT2TBe+kiOEacP0hDZYUDWD+Gxh39GZZ4=;
+        s=korg; t=1654629125;
+        bh=WQHpy/iU/siyqieeM4pNHtO/G4v3Nt8Y8hxGLslrmgA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZpjzhzSan+KfMMSJnQ9tPmM1b+0Uzb7WAwOfNH68JFo6wktWHyFO0RB7068itistp
-         zk8SfaPyiAsG4iz2UhvDjX0I3gwJR5Rk86AwfxEURRuSrqMAk2WrkfBBu36qF90Qvn
-         cTYlOZcNgNMBrJRpXa5gOmKftb06jvFbYFUP0fvs=
+        b=p26KRl1fZtmXLqdBzYPECyJ3H35EOQT+uPptzLOhTc5IAiLiNlcgd2SPQPEsswUww
+         aaHna/X89OSP/QrnuJvNqK0OAchxN5cYPmfzPbJMlZfNvDiVUOf/y3GSjUIYkZnBOk
+         ilqIS62NrDHfYTsuN/dtP8GcBGDfPm8AsOwhAr+Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
+        stable@vger.kernel.org, Chia-I Wu <olvaffe@gmail.com>,
+        Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 591/879] nvdimm: Fix firmware activation deadlock scenarios
-Date:   Tue,  7 Jun 2022 19:01:49 +0200
-Message-Id: <20220607165020.007358082@linuxfoundation.org>
+Subject: [PATCH 5.18 577/879] drm/msm: return the average load over the polling period
+Date:   Tue,  7 Jun 2022 19:01:35 +0200
+Message-Id: <20220607165019.603252514@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,110 +50,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+From: Chia-I Wu <olvaffe@gmail.com>
 
-[ Upstream commit e6829d1bd3c4b58296ee9e412f7ed4d6cb390192 ]
+[ Upstream commit 78f815c1cf8fc5f05dc5cec29eb1895cb53470e9 ]
 
-Lockdep reports the following deadlock scenarios for CXL root device
-power-management, device_prepare(), operations, and device_shutdown()
-operations for 'nd_region' devices:
+simple_ondemand interacts poorly with clamp_to_idle.  It only looks at
+the load since the last get_dev_status call, while it should really look
+at the load over polling_ms.  When clamp_to_idle true, it almost always
+picks the lowest frequency on active because the gpu is idle between
+msm_devfreq_idle/msm_devfreq_active.
 
- Chain exists of:
-   &nvdimm_region_key --> &nvdimm_bus->reconfig_mutex --> system_transition_mutex
+This logic could potentially be moved into devfreq core.
 
-  Possible unsafe locking scenario:
-
-        CPU0                    CPU1
-        ----                    ----
-   lock(system_transition_mutex);
-                                lock(&nvdimm_bus->reconfig_mutex);
-                                lock(system_transition_mutex);
-   lock(&nvdimm_region_key);
-
- Chain exists of:
-   &cxl_nvdimm_bridge_key --> acpi_scan_lock --> &cxl_root_key
-
-  Possible unsafe locking scenario:
-
-        CPU0                    CPU1
-        ----                    ----
-   lock(&cxl_root_key);
-                                lock(acpi_scan_lock);
-                                lock(&cxl_root_key);
-   lock(&cxl_nvdimm_bridge_key);
-
-These stem from holding nvdimm_bus_lock() over hibernate_quiet_exec()
-which walks the entire system device topology taking device_lock() along
-the way. The nvdimm_bus_lock() is protecting against unregistration,
-multiple simultaneous ops callers, and preventing activate_show() from
-racing activate_store(). For the first 2, the lock is redundant.
-Unregistration already flushes all ops users, and sysfs already prevents
-multiple threads to be active in an ops handler at the same time. For
-the last userspace should already be waiting for its last
-activate_store() to complete, and does not need activate_show() to flush
-the write side, so this lock usage can be deleted in these attributes.
-
-Fixes: 48001ea50d17 ("PM, libnvdimm: Add runtime firmware activation support")
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-Link: https://lore.kernel.org/r/165074883800.4116052.10737040861825806582.stgit@dwillia2-desk3.amr.corp.intel.com
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Fixes: 7c0ffcd40b16 ("drm/msm/gpu: Respect PM QoS constraints")
+Signed-off-by: Chia-I Wu <olvaffe@gmail.com>
+Cc: Rob Clark <robdclark@chromium.org>
+Link: https://lore.kernel.org/r/20220416003314.59211-3-olvaffe@gmail.com
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvdimm/core.c | 9 ---------
- 1 file changed, 9 deletions(-)
+ drivers/gpu/drm/msm/msm_gpu.h         |  3 ++
+ drivers/gpu/drm/msm/msm_gpu_devfreq.c | 60 ++++++++++++++++++++++++++-
+ 2 files changed, 62 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/nvdimm/core.c b/drivers/nvdimm/core.c
-index 69a03358817f..681cc28703a3 100644
---- a/drivers/nvdimm/core.c
-+++ b/drivers/nvdimm/core.c
-@@ -368,9 +368,7 @@ static ssize_t capability_show(struct device *dev,
- 	if (!nd_desc->fw_ops)
- 		return -EOPNOTSUPP;
+diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
+index 389c6dab751b..143c56f5185b 100644
+--- a/drivers/gpu/drm/msm/msm_gpu.h
++++ b/drivers/gpu/drm/msm/msm_gpu.h
+@@ -9,6 +9,7 @@
  
--	nvdimm_bus_lock(dev);
- 	cap = nd_desc->fw_ops->capability(nd_desc);
--	nvdimm_bus_unlock(dev);
+ #include <linux/adreno-smmu-priv.h>
+ #include <linux/clk.h>
++#include <linux/devfreq.h>
+ #include <linux/interconnect.h>
+ #include <linux/pm_opp.h>
+ #include <linux/regulator/consumer.h>
+@@ -117,6 +118,8 @@ struct msm_gpu_devfreq {
+ 	/** idle_time: Time of last transition to idle: */
+ 	ktime_t idle_time;
  
- 	switch (cap) {
- 	case NVDIMM_FWA_CAP_QUIESCE:
-@@ -395,10 +393,8 @@ static ssize_t activate_show(struct device *dev,
- 	if (!nd_desc->fw_ops)
- 		return -EOPNOTSUPP;
++	struct devfreq_dev_status average_status;
++
+ 	/**
+ 	 * idle_work:
+ 	 *
+diff --git a/drivers/gpu/drm/msm/msm_gpu_devfreq.c b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
+index d2b4c646a0ae..c7dbaa4b1926 100644
+--- a/drivers/gpu/drm/msm/msm_gpu_devfreq.c
++++ b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
+@@ -9,6 +9,7 @@
  
--	nvdimm_bus_lock(dev);
- 	cap = nd_desc->fw_ops->capability(nd_desc);
- 	state = nd_desc->fw_ops->activate_state(nd_desc);
--	nvdimm_bus_unlock(dev);
+ #include <linux/devfreq.h>
+ #include <linux/devfreq_cooling.h>
++#include <linux/math64.h>
+ #include <linux/units.h>
  
- 	if (cap < NVDIMM_FWA_CAP_QUIESCE)
- 		return -EOPNOTSUPP;
-@@ -443,7 +439,6 @@ static ssize_t activate_store(struct device *dev,
- 	else
- 		return -EINVAL;
+ /*
+@@ -75,12 +76,69 @@ static void get_raw_dev_status(struct msm_gpu *gpu,
+ 	status->busy_time = busy_time;
+ }
  
--	nvdimm_bus_lock(dev);
- 	state = nd_desc->fw_ops->activate_state(nd_desc);
++static void update_average_dev_status(struct msm_gpu *gpu,
++		const struct devfreq_dev_status *raw)
++{
++	struct msm_gpu_devfreq *df = &gpu->devfreq;
++	const u32 polling_ms = df->devfreq->profile->polling_ms;
++	const u32 max_history_ms = polling_ms * 11 / 10;
++	struct devfreq_dev_status *avg = &df->average_status;
++	u64 avg_freq;
++
++	/* simple_ondemand governor interacts poorly with gpu->clamp_to_idle.
++	 * When we enforce the constraint on idle, it calls get_dev_status
++	 * which would normally reset the stats.  When we remove the
++	 * constraint on active, it calls get_dev_status again where busy_time
++	 * would be 0.
++	 *
++	 * To remedy this, we always return the average load over the past
++	 * polling_ms.
++	 */
++
++	/* raw is longer than polling_ms or avg has no history */
++	if (div_u64(raw->total_time, USEC_PER_MSEC) >= polling_ms ||
++	    !avg->total_time) {
++		*avg = *raw;
++		return;
++	}
++
++	/* Truncate the oldest history first.
++	 *
++	 * Because we keep the history with a single devfreq_dev_status,
++	 * rather than a list of devfreq_dev_status, we have to assume freq
++	 * and load are the same over avg->total_time.  We can scale down
++	 * avg->busy_time and avg->total_time by the same factor to drop
++	 * history.
++	 */
++	if (div_u64(avg->total_time + raw->total_time, USEC_PER_MSEC) >=
++			max_history_ms) {
++		const u32 new_total_time = polling_ms * USEC_PER_MSEC -
++			raw->total_time;
++		avg->busy_time = div_u64(
++				mul_u32_u32(avg->busy_time, new_total_time),
++				avg->total_time);
++		avg->total_time = new_total_time;
++	}
++
++	/* compute the average freq over avg->total_time + raw->total_time */
++	avg_freq = mul_u32_u32(avg->current_frequency, avg->total_time);
++	avg_freq += mul_u32_u32(raw->current_frequency, raw->total_time);
++	do_div(avg_freq, avg->total_time + raw->total_time);
++
++	avg->current_frequency = avg_freq;
++	avg->busy_time += raw->busy_time;
++	avg->total_time += raw->total_time;
++}
++
+ static int msm_devfreq_get_dev_status(struct device *dev,
+ 		struct devfreq_dev_status *status)
+ {
+ 	struct msm_gpu *gpu = dev_to_gpu(dev);
++	struct devfreq_dev_status raw;
  
- 	switch (state) {
-@@ -461,7 +456,6 @@ static ssize_t activate_store(struct device *dev,
- 	default:
- 		rc = -ENXIO;
- 	}
--	nvdimm_bus_unlock(dev);
+-	get_raw_dev_status(gpu, status);
++	get_raw_dev_status(gpu, &raw);
++	update_average_dev_status(gpu, &raw);
++	*status = gpu->devfreq.average_status;
  
- 	if (rc == 0)
- 		rc = len;
-@@ -484,10 +478,7 @@ static umode_t nvdimm_bus_firmware_visible(struct kobject *kobj, struct attribut
- 	if (!nd_desc->fw_ops)
- 		return 0;
- 
--	nvdimm_bus_lock(dev);
- 	cap = nd_desc->fw_ops->capability(nd_desc);
--	nvdimm_bus_unlock(dev);
--
- 	if (cap < NVDIMM_FWA_CAP_QUIESCE)
- 		return 0;
- 
+ 	return 0;
+ }
 -- 
 2.35.1
 
