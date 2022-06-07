@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B75ABC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:21:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C7CAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346038AbiFGRVd (ORCPT
+        id S1346057AbiFGRVo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:21:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40184 "EHLO
+        Tue, 7 Jun 2022 13:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345750AbiFGRTN (ORCPT
+        with ESMTP id S1345748AbiFGRTN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:19:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5AD104CB2;
-        Tue,  7 Jun 2022 10:19:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13DD11059D8;
+        Tue,  7 Jun 2022 10:19:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 882DCB82239;
-        Tue,  7 Jun 2022 17:19:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0ACAC385A5;
-        Tue,  7 Jun 2022 17:19:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD9A8B82239;
+        Tue,  7 Jun 2022 17:19:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 201B5C34115;
+        Tue,  7 Jun 2022 17:19:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622349;
-        bh=zpv29um/dWI23YVZluNHBcHbfAfuGpB5TvtabHfD68o=;
+        s=korg; t=1654622346;
+        bh=sN1Kk7yA6tgJ56jtZ7RfRBdgp59iuwFaAZOanZaTchg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dN8/yTJ1lE/GrUAAVUJ1/FrDo1weKSVl7OWIEVfjHPHlIyur0XOuP1kKic/A+bkxE
-         HiuDPa8LZZwkS1kcVnjlM3AI8qfBeI3KOAnV/fEMsgarr3unuqd6UzUjrTvCP03F9q
-         ZCGYguG+OoXf9Vdw6bhy9N4/q2tPKH3g3/dO9eWk=
+        b=lsTKQAD4ph0U5mGKx7//4MpuDy2zISm/xcYVt+YdlkBRNYpvIUUjR5VkwMTvt3QBG
+         hr224BwMKaomasD4slaSIs07lWQDqWhLkV1XI0SWUz1SXA9AOJ2Lhrfm8bArXqdY61
+         CtuNrGpVhtfrCWiYC6TwPftJRms5YApJlPRAbtxI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rik van der Kemp <rik@upto11.nl>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 006/452] ALSA: hda/realtek: Enable 4-speaker output for Dell XPS 15 9520 laptop
-Date:   Tue,  7 Jun 2022 18:57:43 +0200
-Message-Id: <20220607164908.721449000@linuxfoundation.org>
+        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.10 005/452] riscv: Fix irq_work when SMP is disabled
+Date:   Tue,  7 Jun 2022 18:57:42 +0200
+Message-Id: <20220607164908.693223778@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,35 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rik van der Kemp <rik@upto11.nl>
+From: Samuel Holland <samuel@sholland.org>
 
-commit 15dad62f4bdb5dc0f0efde8181d680db9963544c upstream.
+commit 2273272823db6f67d57761df8116ae32e7f05bed upstream.
 
-The 2022-model XPS 15 appears to use the same 4-speakers-on-ALC289
-audio setup as the Dell XPS 15 9510, so requires the same quirk to
-enable woofer output. Tested on my own 9520.
+irq_work is triggered via an IPI, but the IPI infrastructure is not
+included in uniprocessor kernels. As a result, irq_work never runs.
+Fall back to the tick-based irq_work implementation on uniprocessor
+configurations.
 
-[ Move the entry to the right position in the SSID order -- tiwai ]
-
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216035
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Rik van der Kemp <rik@upto11.nl>
-Link: https://lore.kernel.org/r/181056a137b.d14baf90133058.8425453735588429828@upto11.nl
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: 298447928bb1 ("riscv: Support irq_work via self IPIs")
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://lore.kernel.org/r/20220430030025.58405-1-samuel@sholland.org
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/riscv/include/asm/irq_work.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -8651,6 +8651,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1028, 0x0a62, "Dell Precision 5560", ALC289_FIXUP_DUAL_SPK),
- 	SND_PCI_QUIRK(0x1028, 0x0a9d, "Dell Latitude 5430", ALC269_FIXUP_DELL4_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1028, 0x0a9e, "Dell Latitude 5430", ALC269_FIXUP_DELL4_MIC_NO_PRESENCE),
-+	SND_PCI_QUIRK(0x1028, 0x0b19, "Dell XPS 15 9520", ALC289_FIXUP_DUAL_SPK),
- 	SND_PCI_QUIRK(0x1028, 0x164a, "Dell", ALC293_FIXUP_DELL1_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1028, 0x164b, "Dell", ALC293_FIXUP_DELL1_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x103c, 0x1586, "HP", ALC269_FIXUP_HP_MUTE_LED_MIC2),
+--- a/arch/riscv/include/asm/irq_work.h
++++ b/arch/riscv/include/asm/irq_work.h
+@@ -4,7 +4,7 @@
+ 
+ static inline bool arch_irq_work_has_interrupt(void)
+ {
+-	return true;
++	return IS_ENABLED(CONFIG_SMP);
+ }
+ extern void arch_irq_work_raise(void);
+ #endif /* _ASM_RISCV_IRQ_WORK_H */
 
 
