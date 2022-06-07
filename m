@@ -2,212 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B70C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:51:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4E4ECCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:51:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354562AbiFGSvB (ORCPT
+        id S1354647AbiFGSvL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:51:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60848 "EHLO
+        Tue, 7 Jun 2022 14:51:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352176AbiFGSQ5 (ORCPT
+        with ESMTP id S1352287AbiFGSRB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:57 -0400
+        Tue, 7 Jun 2022 14:17:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FD9011A0D;
-        Tue,  7 Jun 2022 10:50:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D9257CB02;
+        Tue,  7 Jun 2022 10:51:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 19C0861650;
-        Tue,  7 Jun 2022 17:50:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25493C3411C;
-        Tue,  7 Jun 2022 17:50:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624255;
-        bh=S1lgrw7es+1iaSG8sPE+ps5nYfaUYVrwLHDTd6hP3e4=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EBAC5617A6;
+        Tue,  7 Jun 2022 17:51:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73121C341C0;
+        Tue,  7 Jun 2022 17:51:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624278;
+        bh=GJNqqOKr0NBTjxoklh0NXy0vOn2yoYx8voMPjGc1T3A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sDs4ZNqso8cnTjJMqLf+z+ULpDkAk1ddWkCOOPouH8fahgCp696S3MxwrQ1YHGBQL
-         PBu8ncZFqwTnqGa+eStMGVIBAncKn6RJLSj/sxU0ItBLcHb4BdDK/py1xU1oLhScfQ
-         gub1CC7wAshaWI+vzeMUDeg5c8MR8XBqrENGAqfE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Borislav Petkov <bp@suse.de>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 259/667] x86/pm: Fix false positive kmemleak report in msr_build_context()
-Date:   Tue,  7 Jun 2022 18:58:44 +0200
-Message-Id: <20220607164942.550643672@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=t/eaIiZrpxwFiZ9E47qYT9MYNl9dizMZtMDfd4pXenG2B8iXssijQ/ZhYvAHB5PjK
+         hBxXyDiplbO3wSTE8FpOokUjy7c6d9yyoywL8KnR78M1QpixbYw4ILkuN50SwKoZvA
+         3B6kYe2okADzwSKR2QSK6RzBID4dOczWJuw/hadNxflK4mldSWKIf+CiRdm3kDfzfD
+         Nfmh/L2RHVMPbTe+Yn9GumU6mjDjo+1SAy1cZhm50UYiwSz2VctfDNNQjecMEHkGO7
+         HCRehk7noHGdlarmZ7kPXklFOlS3D4e5UkJRJ1c8MfiOSax/zn3slrCHxTQHK3YLp+
+         cjeXidV/TbSuQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Xiubo Li <xiubli@redhat.com>, Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 43/68] ceph: fix possible deadlock when holding Fwb to get inline_data
+Date:   Tue,  7 Jun 2022 13:48:09 -0400
+Message-Id: <20220607174846.477972-43-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthieu Baerts <matthieu.baerts@tessares.net>
+From: Xiubo Li <xiubli@redhat.com>
 
-[ Upstream commit b0b592cf08367719e1d1ef07c9f136e8c17f7ec3 ]
+[ Upstream commit 825978fd6a0defc3c29d8a38b6cea76a0938d21e ]
 
-Since
+1, mount with wsync.
+2, create a file with O_RDWR, and the request was sent to mds.0:
 
-  e2a1256b17b1 ("x86/speculation: Restore speculation related MSRs during S3 resume")
+   ceph_atomic_open()-->
+     ceph_mdsc_do_request(openc)
+     finish_open(file, dentry, ceph_open)-->
+       ceph_open()-->
+         ceph_init_file()-->
+           ceph_init_file_info()-->
+             ceph_uninline_data()-->
+             {
+               ...
+               if (inline_version == 1 || /* initial version, no data */
+                   inline_version == CEPH_INLINE_NONE)
+                     goto out_unlock;
+               ...
+             }
 
-kmemleak reports this issue:
+The inline_version will be 1, which is the initial version for the
+new create file. And here the ci->i_inline_version will keep with 1,
+it's buggy.
 
-  unreferenced object 0xffff888009cedc00 (size 256):
-    comm "swapper/0", pid 1, jiffies 4294693823 (age 73.764s)
-    hex dump (first 32 bytes):
-      00 00 00 00 00 00 00 00 48 00 00 00 00 00 00 00  ........H.......
-      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    backtrace:
-      msr_build_context (include/linux/slab.h:621)
-      pm_check_save_msr (arch/x86/power/cpu.c:520)
-      do_one_initcall (init/main.c:1298)
-      kernel_init_freeable (init/main.c:1370)
-      kernel_init (init/main.c:1504)
-      ret_from_fork (arch/x86/entry/entry_64.S:304)
+3, buffer write to the file immediately:
 
-Reproducer:
+   ceph_write_iter()-->
+     ceph_get_caps(file, need=Fw, want=Fb, ...);
+     generic_perform_write()-->
+       a_ops->write_begin()-->
+         ceph_write_begin()-->
+           netfs_write_begin()-->
+             netfs_begin_read()-->
+               netfs_rreq_submit_slice()-->
+                 netfs_read_from_server()-->
+                   rreq->netfs_ops->issue_read()-->
+                     ceph_netfs_issue_read()-->
+                     {
+                       ...
+                       if (ci->i_inline_version != CEPH_INLINE_NONE &&
+                           ceph_netfs_issue_op_inline(subreq))
+                         return;
+                       ...
+                     }
+     ceph_put_cap_refs(ci, Fwb);
 
-  - boot the VM with a debug kernel config (see
-    https://github.com/multipath-tcp/mptcp_net-next/issues/268)
-  - wait ~1 minute
-  - start a kmemleak scan
+The ceph_netfs_issue_op_inline() will send a getattr(Fsr) request to
+mds.1.
 
-The root cause here is alignment within the packed struct saved_context
-(from suspend_64.h). Kmemleak only searches for pointers that are
-aligned (see how pointers are scanned in kmemleak.c), but pahole shows
-that the saved_msrs struct member and all members after it in the
-structure are unaligned:
+4, then the mds.1 will request the rd lock for CInode::filelock from
+the auth mds.0, the mds.0 will do the CInode::filelock state transation
+from excl --> sync, but it need to revoke the Fxwb caps back from the
+clients.
 
-  struct saved_context {
-    struct pt_regs             regs;                 /*     0   168 */
-    /* --- cacheline 2 boundary (128 bytes) was 40 bytes ago --- */
-    u16                        ds;                   /*   168     2 */
+While the kernel client has aleady held the Fwb caps and waiting for
+the getattr(Fsr).
 
-    ...
+It's deadlock!
 
-    u64                        misc_enable;          /*   232     8 */
-    bool                       misc_enable_saved;    /*   240     1 */
-
-   /* Note below odd offset values for the remainder of this struct */
-
-    struct saved_msrs          saved_msrs;           /*   241    16 */
-    /* --- cacheline 4 boundary (256 bytes) was 1 bytes ago --- */
-    long unsigned int          efer;                 /*   257     8 */
-    u16                        gdt_pad;              /*   265     2 */
-    struct desc_ptr            gdt_desc;             /*   267    10 */
-    u16                        idt_pad;              /*   277     2 */
-    struct desc_ptr            idt;                  /*   279    10 */
-    u16                        ldt;                  /*   289     2 */
-    u16                        tss;                  /*   291     2 */
-    long unsigned int          tr;                   /*   293     8 */
-    long unsigned int          safety;               /*   301     8 */
-    long unsigned int          return_address;       /*   309     8 */
-
-    /* size: 317, cachelines: 5, members: 25 */
-    /* last cacheline: 61 bytes */
-  } __attribute__((__packed__));
-
-Move misc_enable_saved to the end of the struct declaration so that
-saved_msrs fits in before the cacheline 4 boundary.
-
-The comment above the saved_context declaration says to fix wakeup_64.S
-file and __save/__restore_processor_state() if the struct is modified:
-it looks like all the accesses in wakeup_64.S are done through offsets
-which are computed at build-time. Update that comment accordingly.
-
-At the end, the false positive kmemleak report is due to a limitation
-from kmemleak but it is always good to avoid unaligned members for
-optimisation purposes.
-
-Please note that it looks like this issue is not new, e.g.
-
-  https://lore.kernel.org/all/9f1bb619-c4ee-21c4-a251-870bd4db04fa@lwfinger.net/
-  https://lore.kernel.org/all/94e48fcd-1dbd-ebd2-4c91-f39941735909@molgen.mpg.de/
-
-  [ bp: Massage + cleanup commit message. ]
-
-Fixes: 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume")
-Suggested-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Link: https://lore.kernel.org/r/20220426202138.498310-1-matthieu.baerts@tessares.net
+URL: https://tracker.ceph.com/issues/55377
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/suspend_32.h |  2 +-
- arch/x86/include/asm/suspend_64.h | 12 ++++++++----
- 2 files changed, 9 insertions(+), 5 deletions(-)
+ fs/ceph/addr.c | 33 +++++++++++++++++++--------------
+ 1 file changed, 19 insertions(+), 14 deletions(-)
 
-diff --git a/arch/x86/include/asm/suspend_32.h b/arch/x86/include/asm/suspend_32.h
-index 7b132d0312eb..a800abb1a992 100644
---- a/arch/x86/include/asm/suspend_32.h
-+++ b/arch/x86/include/asm/suspend_32.h
-@@ -19,7 +19,6 @@ struct saved_context {
- 	u16 gs;
- 	unsigned long cr0, cr2, cr3, cr4;
- 	u64 misc_enable;
--	bool misc_enable_saved;
- 	struct saved_msrs saved_msrs;
- 	struct desc_ptr gdt_desc;
- 	struct desc_ptr idt;
-@@ -28,6 +27,7 @@ struct saved_context {
- 	unsigned long tr;
- 	unsigned long safety;
- 	unsigned long return_address;
-+	bool misc_enable_saved;
- } __attribute__((packed));
+diff --git a/fs/ceph/addr.c b/fs/ceph/addr.c
+index b6edcf89a429..adef10a6e5c7 100644
+--- a/fs/ceph/addr.c
++++ b/fs/ceph/addr.c
+@@ -1644,7 +1644,7 @@ int ceph_uninline_data(struct file *file)
+ 	struct inode *inode = file_inode(file);
+ 	struct ceph_inode_info *ci = ceph_inode(inode);
+ 	struct ceph_fs_client *fsc = ceph_inode_to_client(inode);
+-	struct ceph_osd_request *req;
++	struct ceph_osd_request *req = NULL;
+ 	struct ceph_cap_flush *prealloc_cf;
+ 	struct folio *folio = NULL;
+ 	u64 inline_version = CEPH_INLINE_NONE;
+@@ -1652,10 +1652,23 @@ int ceph_uninline_data(struct file *file)
+ 	int err = 0;
+ 	u64 len;
  
- /* routines for saving/restoring kernel state */
-diff --git a/arch/x86/include/asm/suspend_64.h b/arch/x86/include/asm/suspend_64.h
-index 35bb35d28733..54df06687d83 100644
---- a/arch/x86/include/asm/suspend_64.h
-+++ b/arch/x86/include/asm/suspend_64.h
-@@ -14,9 +14,13 @@
-  * Image of the saved processor state, used by the low level ACPI suspend to
-  * RAM code and by the low level hibernation code.
-  *
-- * If you modify it, fix arch/x86/kernel/acpi/wakeup_64.S and make sure that
-- * __save/__restore_processor_state(), defined in arch/x86/kernel/suspend_64.c,
-- * still work as required.
-+ * If you modify it, check how it is used in arch/x86/kernel/acpi/wakeup_64.S
-+ * and make sure that __save/__restore_processor_state(), defined in
-+ * arch/x86/power/cpu.c, still work as required.
-+ *
-+ * Because the structure is packed, make sure to avoid unaligned members. For
-+ * optimisation purposes but also because tools like kmemleak only search for
-+ * pointers that are aligned.
-  */
- struct saved_context {
- 	struct pt_regs regs;
-@@ -36,7 +40,6 @@ struct saved_context {
++	spin_lock(&ci->i_ceph_lock);
++	inline_version = ci->i_inline_version;
++	spin_unlock(&ci->i_ceph_lock);
++
++	dout("uninline_data %p %llx.%llx inline_version %llu\n",
++	     inode, ceph_vinop(inode), inline_version);
++
++	if (inline_version == CEPH_INLINE_NONE)
++		return 0;
++
+ 	prealloc_cf = ceph_alloc_cap_flush();
+ 	if (!prealloc_cf)
+ 		return -ENOMEM;
  
- 	unsigned long cr0, cr2, cr3, cr4;
- 	u64 misc_enable;
--	bool misc_enable_saved;
- 	struct saved_msrs saved_msrs;
- 	unsigned long efer;
- 	u16 gdt_pad; /* Unused */
-@@ -48,6 +51,7 @@ struct saved_context {
- 	unsigned long tr;
- 	unsigned long safety;
- 	unsigned long return_address;
-+	bool misc_enable_saved;
- } __attribute__((packed));
++	if (inline_version == 1) /* initial version, no data */
++		goto out_uninline;
++
+ 	folio = read_mapping_folio(inode->i_mapping, 0, file);
+ 	if (IS_ERR(folio)) {
+ 		err = PTR_ERR(folio);
+@@ -1664,17 +1677,6 @@ int ceph_uninline_data(struct file *file)
  
- #define loaddebug(thread,register) \
+ 	folio_lock(folio);
+ 
+-	spin_lock(&ci->i_ceph_lock);
+-	inline_version = ci->i_inline_version;
+-	spin_unlock(&ci->i_ceph_lock);
+-
+-	dout("uninline_data %p %llx.%llx inline_version %llu\n",
+-	     inode, ceph_vinop(inode), inline_version);
+-
+-	if (inline_version == 1 || /* initial version, no data */
+-	    inline_version == CEPH_INLINE_NONE)
+-		goto out_unlock;
+-
+ 	len = i_size_read(inode);
+ 	if (len > folio_size(folio))
+ 		len = folio_size(folio);
+@@ -1739,6 +1741,7 @@ int ceph_uninline_data(struct file *file)
+ 	ceph_update_write_metrics(&fsc->mdsc->metric, req->r_start_latency,
+ 				  req->r_end_latency, len, err);
+ 
++out_uninline:
+ 	if (!err) {
+ 		int dirty;
+ 
+@@ -1757,8 +1760,10 @@ int ceph_uninline_data(struct file *file)
+ 	if (err == -ECANCELED)
+ 		err = 0;
+ out_unlock:
+-	folio_unlock(folio);
+-	folio_put(folio);
++	if (folio) {
++		folio_unlock(folio);
++		folio_put(folio);
++	}
+ out:
+ 	ceph_free_cap_flush(prealloc_cf);
+ 	dout("uninline_data %p %llx.%llx inline_version %llu = %d\n",
 -- 
 2.35.1
-
-
 
