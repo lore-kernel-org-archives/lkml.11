@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EE9BCCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:18:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CAA5CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:18:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376503AbiFGVSh (ORCPT
+        id S1377870AbiFGVSn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:18:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47442 "EHLO
+        Tue, 7 Jun 2022 17:18:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359203AbiFGUWL (ORCPT
+        with ESMTP id S1359344AbiFGUWL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:22:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 091AD1451FD;
-        Tue,  7 Jun 2022 11:31:26 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5F2144FFB;
+        Tue,  7 Jun 2022 11:31:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97FC461295;
-        Tue,  7 Jun 2022 18:31:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4232C385A5;
-        Tue,  7 Jun 2022 18:31:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFE05B82349;
+        Tue,  7 Jun 2022 18:31:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50087C385A2;
+        Tue,  7 Jun 2022 18:31:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626685;
-        bh=dJUCVa4nIa8YINdSoor1J/gc2l6XzUX9TFZT4NQvPgc=;
+        s=korg; t=1654626687;
+        bh=3/Sd1TFgFMuNHHWqfNjOIDCUnuVWqpZeYGhR3MVlMEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gGBcaAcT52IwaiFpdplmUD7TZPpWKAk3cG7lQtl4qcJ4NkqQq3bqaB5W3r8rvoPzv
-         MHQRNqMwz3jmCNISdT8scqtrRNj6XB6hq1u9+p//p6MUyxrU8eQxEV21iGZ/EjUcA4
-         r5U667Xv3skpMKnWKoraK855RWJLijqkn+181UGo=
+        b=yX6hh1Sqm0rpTrf/VSw1Sf5i60uCFiIhLoModFCLqEmtWFiLxO3nBRC9g9dGlNgFy
+         wUDSSVMy+kXEX0AV0PUQRQ4DqjrUwAwUvHTs1OyvLGRoebk5j1TsSIUA/CkOi/rV9z
+         QuHP1RI55LxA7uhG5ZHQ0hjef8Xj2a/OwBy9lPdM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Chenyi Qiang <chenyi.qiang@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 430/772] ASoC: max98090: Move check for invalid values before casting in max98090_put_enab_tlv()
-Date:   Tue,  7 Jun 2022 19:00:22 +0200
-Message-Id: <20220607165001.673831982@linuxfoundation.org>
+Subject: [PATCH 5.17 466/772] KVM: nVMX: Clear IDT vectoring on nested VM-Exit for double/triple fault
+Date:   Tue,  7 Jun 2022 19:00:58 +0200
+Message-Id: <20220607165002.730503757@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,49 +51,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Khoroshilov <khoroshilov@ispras.ru>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit f7a344468105ef8c54086dfdc800e6f5a8417d3e ]
+[ Upstream commit 9bd1f0efa859b61950d109b32ff8d529cc33a3ad ]
 
-Validation of signed input should be done before casting to unsigned int.
+Clear the IDT vectoring field in vmcs12 on next VM-Exit due to a double
+or triple fault.  Per the SDM, a VM-Exit isn't considered to occur during
+event delivery if the exit is due to an intercepted double fault or a
+triple fault.  Opportunistically move the default clearing (no event
+"pending") into the helper so that it's more obvious that KVM does indeed
+handle this case.
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
+Note, the double fault case is worded rather wierdly in the SDM:
 
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Suggested-by: Mark Brown <broonie@kernel.org>
-Fixes: 2fbe467bcbfc ("ASoC: max98090: Reject invalid values in custom control put()")
-Link: https://lore.kernel.org/r/1652999486-29653-1-git-send-email-khoroshilov@ispras.ru
-Signed-off-by: Mark Brown <broonie@kernel.org>
+  The original event results in a double-fault exception that causes the
+  VM exit directly.
+
+Temporarily ignoring injected events, double faults can _only_ occur if
+an exception occurs while attempting to deliver a different exception,
+i.e. there's _always_ an original event.  And for injected double fault,
+while there's no original event, injected events are never subject to
+interception.
+
+Presumably the SDM is calling out that a the vectoring info will be valid
+if a different exit occurs after a double fault, e.g. if a #PF occurs and
+is intercepted while vectoring #DF, then the vectoring info will show the
+double fault.  In other words, the clause can simply be read as:
+
+  The VM exit is caused by a double-fault exception.
+
+Fixes: 4704d0befb07 ("KVM: nVMX: Exiting from L2 to L1")
+Cc: Chenyi Qiang <chenyi.qiang@intel.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220407002315.78092-4-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/max98090.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/x86/kvm/vmx/nested.c | 32 ++++++++++++++++++++++++++++----
+ arch/x86/kvm/vmx/vmcs.h   |  5 +++++
+ 2 files changed, 33 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
-index 62b41ca050a2..5513acd360b8 100644
---- a/sound/soc/codecs/max98090.c
-+++ b/sound/soc/codecs/max98090.c
-@@ -393,7 +393,8 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
- 	struct soc_mixer_control *mc =
- 		(struct soc_mixer_control *)kcontrol->private_value;
- 	unsigned int mask = (1 << fls(mc->max)) - 1;
--	unsigned int sel = ucontrol->value.integer.value[0];
-+	int sel_unchecked = ucontrol->value.integer.value[0];
-+	unsigned int sel;
- 	unsigned int val = snd_soc_component_read(component, mc->reg);
- 	unsigned int *select;
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index 2992db28c644..d795ac816aec 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -3695,12 +3695,34 @@ vmcs12_guest_cr4(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12)
+ }
  
-@@ -413,8 +414,9 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+ static void vmcs12_save_pending_event(struct kvm_vcpu *vcpu,
+-				      struct vmcs12 *vmcs12)
++				      struct vmcs12 *vmcs12,
++				      u32 vm_exit_reason, u32 exit_intr_info)
+ {
+ 	u32 idt_vectoring;
+ 	unsigned int nr;
  
- 	val = (val >> mc->shift) & mask;
+-	if (vcpu->arch.exception.injected) {
++	/*
++	 * Per the SDM, VM-Exits due to double and triple faults are never
++	 * considered to occur during event delivery, even if the double/triple
++	 * fault is the result of an escalating vectoring issue.
++	 *
++	 * Note, the SDM qualifies the double fault behavior with "The original
++	 * event results in a double-fault exception".  It's unclear why the
++	 * qualification exists since exits due to double fault can occur only
++	 * while vectoring a different exception (injected events are never
++	 * subject to interception), i.e. there's _always_ an original event.
++	 *
++	 * The SDM also uses NMI as a confusing example for the "original event
++	 * causes the VM exit directly" clause.  NMI isn't special in any way,
++	 * the same rule applies to all events that cause an exit directly.
++	 * NMI is an odd choice for the example because NMIs can only occur on
++	 * instruction boundaries, i.e. they _can't_ occur during vectoring.
++	 */
++	if ((u16)vm_exit_reason == EXIT_REASON_TRIPLE_FAULT ||
++	    ((u16)vm_exit_reason == EXIT_REASON_EXCEPTION_NMI &&
++	     is_double_fault(exit_intr_info))) {
++		vmcs12->idt_vectoring_info_field = 0;
++	} else if (vcpu->arch.exception.injected) {
+ 		nr = vcpu->arch.exception.nr;
+ 		idt_vectoring = nr | VECTORING_INFO_VALID_MASK;
  
--	if (sel < 0 || sel > mc->max)
-+	if (sel_unchecked < 0 || sel_unchecked > mc->max)
- 		return -EINVAL;
-+	sel = sel_unchecked;
+@@ -3733,6 +3755,8 @@ static void vmcs12_save_pending_event(struct kvm_vcpu *vcpu,
+ 			idt_vectoring |= INTR_TYPE_EXT_INTR;
  
- 	*select = sel;
+ 		vmcs12->idt_vectoring_info_field = idt_vectoring;
++	} else {
++		vmcs12->idt_vectoring_info_field = 0;
+ 	}
+ }
  
+@@ -4219,8 +4243,8 @@ static void prepare_vmcs12(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
+ 		 * Transfer the event that L0 or L1 may wanted to inject into
+ 		 * L2 to IDT_VECTORING_INFO_FIELD.
+ 		 */
+-		vmcs12->idt_vectoring_info_field = 0;
+-		vmcs12_save_pending_event(vcpu, vmcs12);
++		vmcs12_save_pending_event(vcpu, vmcs12,
++					  vm_exit_reason, exit_intr_info);
+ 
+ 		vmcs12->vm_exit_intr_info = exit_intr_info;
+ 		vmcs12->vm_exit_instruction_len = vmcs_read32(VM_EXIT_INSTRUCTION_LEN);
+diff --git a/arch/x86/kvm/vmx/vmcs.h b/arch/x86/kvm/vmx/vmcs.h
+index e325c290a816..2b9d7a7e83f7 100644
+--- a/arch/x86/kvm/vmx/vmcs.h
++++ b/arch/x86/kvm/vmx/vmcs.h
+@@ -104,6 +104,11 @@ static inline bool is_breakpoint(u32 intr_info)
+ 	return is_exception_n(intr_info, BP_VECTOR);
+ }
+ 
++static inline bool is_double_fault(u32 intr_info)
++{
++	return is_exception_n(intr_info, DF_VECTOR);
++}
++
+ static inline bool is_page_fault(u32 intr_info)
+ {
+ 	return is_exception_n(intr_info, PF_VECTOR);
 -- 
 2.35.1
 
