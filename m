@@ -2,103 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F050CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A229CCA47F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:42:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381375AbiFGVkk (ORCPT
+        id S1381353AbiFGVka (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51876 "EHLO
+        Tue, 7 Jun 2022 17:40:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377764AbiFGUu4 (ORCPT
+        with ESMTP id S1377683AbiFGUux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:50:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A572A1FC8DC;
-        Tue,  7 Jun 2022 11:40:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DC8060B3D;
-        Tue,  7 Jun 2022 18:40:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D72BC385A5;
-        Tue,  7 Jun 2022 18:40:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627234;
-        bh=2WAbyoW4m/eJ6y/kM/aiUzPDM+za6FHT5ZnRdYK0iaM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GNMy14nmnm5KNly1EVhoKe5KNmZlsYMvsPhRlzw0SBJlh0nTUe13ckONE6jgnOlZQ
-         u9DFeYgfnFTCtjpysqRqT73nqwIluBJB0eX8g8cd5P7rw9yQ/hsfYGL3Ozz796hZIV
-         xgDR8dMo2WE8aSrt9eVd2pHplO47W4cDFlgXvXHg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.17 666/772] scsi: dc395x: Fix a missing check on list iterator
-Date:   Tue,  7 Jun 2022 19:04:18 +0200
-Message-Id: <20220607165008.685440359@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 16:50:53 -0400
+Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7EF18484F
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:40:29 -0700 (PDT)
+X-ASG-Debug-ID: 1654627227-1cf43917f3396520001-xx1T2L
+Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with ESMTP id 7q8f4i5VB5tulwTq; Tue, 07 Jun 2022 14:40:27 -0400 (EDT)
+X-Barracuda-Envelope-From: tonyb@cybernetics.com
+X-ASG-Whitelist: Client
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=cybernetics.com; s=mail;
+        bh=cPbWsHAkkEQ/IV9PNOMIz+rmz60KjJDA9BYZCB0e3iI=;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:Cc:To:From:
+        Content-Language:Subject:MIME-Version:Date:Message-ID; b=J61v7CvSfK8dXjZ+w6d6
+        8xsL1vF77oaGreuBYU7E3kJZx8xX3v0D3QVShQw+LlGqoqmzsxMRHMWmX0lcshWXQX6z4NcKT9bI+
+        q8x408aTjLn4GMLHAA6WESTFy6mRrWzbZH1Xax48DUgHMZxC7lO4zW3Q1Hp8lmRcXny/TJ7c6w=
+Received: from [10.157.2.224] (HELO [192.168.200.1])
+  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
+  with ESMTPS id 11859402; Tue, 07 Jun 2022 14:40:26 -0400
+Message-ID: <6c627beb-eb61-5baa-484a-e35567f05e89@cybernetics.com>
+Date:   Tue, 7 Jun 2022 14:40:27 -0400
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: [PATCH v6 02/11] dmapool: use sysfs_emit() instead of scnprintf()
+Content-Language: en-US
+X-ASG-Orig-Subj: [PATCH v6 02/11] dmapool: use sysfs_emit() instead of scnprintf()
+From:   Tony Battersby <tonyb@cybernetics.com>
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc:     iommu@lists.linux-foundation.org, kernel-team@fb.com,
+        Matthew Wilcox <willy@infradead.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Tony Lindgren <tony@atomide.com>
+References: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
+In-Reply-To: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Barracuda-Connect: UNKNOWN[10.10.4.126]
+X-Barracuda-Start-Time: 1654627227
+X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
+X-Barracuda-BRTS-Status: 1
+X-Virus-Scanned: by bsmtpd at cybernetics.com
+X-Barracuda-Scan-Msg-Size: 1630
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
-commit 036a45aa587a10fa2abbd50fbd0f6c4cfc44f69f upstream.
-
-The bug is here:
-
-	p->target_id, p->target_lun);
-
-The list iterator 'p' will point to a bogus position containing HEAD if the
-list is empty or no element is found. This case must be checked before any
-use of the iterator, otherwise it will lead to an invalid memory access.
-
-To fix this bug, add a check. Use a new variable 'iter' as the list
-iterator, and use the original variable 'p' as a dedicated pointer to point
-to the found element.
-
-Link: https://lore.kernel.org/r/20220414040231.2662-1-xiam0nd.tong@gmail.com
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Cc: stable@vger.kernel.org
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
 ---
- drivers/scsi/dc395x.c |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
 
---- a/drivers/scsi/dc395x.c
-+++ b/drivers/scsi/dc395x.c
-@@ -3588,10 +3588,19 @@ static struct DeviceCtlBlk *device_alloc
- #endif
- 	if (dcb->target_lun != 0) {
- 		/* Copy settings */
--		struct DeviceCtlBlk *p;
--		list_for_each_entry(p, &acb->dcb_list, list)
--			if (p->target_id == dcb->target_id)
-+		struct DeviceCtlBlk *p = NULL, *iter;
-+
-+		list_for_each_entry(iter, &acb->dcb_list, list)
-+			if (iter->target_id == dcb->target_id) {
-+				p = iter;
- 				break;
-+			}
-+
-+		if (!p) {
-+			kfree(dcb);
-+			return NULL;
-+		}
-+
- 		dprintkdbg(DBG_1, 
- 		       "device_alloc: <%02i-%i> copy from <%02i-%i>\n",
- 		       dcb->target_id, dcb->target_lun,
+Changes since v5:
+This patch was not in v5.
 
+ mm/dmapool.c | 23 +++++++----------------
+ 1 file changed, 7 insertions(+), 16 deletions(-)
+
+diff --git a/mm/dmapool.c b/mm/dmapool.c
+index 0f89de408cbe..1829291f5d70 100644
+--- a/mm/dmapool.c
++++ b/mm/dmapool.c
+@@ -64,18 +64,11 @@ static DEFINE_MUTEX(pools_reg_lock);
+ 
+ static ssize_t pools_show(struct device *dev, struct device_attribute *attr, char *buf)
+ {
+-	unsigned temp;
+-	unsigned size;
+-	char *next;
++	int size;
+ 	struct dma_page *page;
+ 	struct dma_pool *pool;
+ 
+-	next = buf;
+-	size = PAGE_SIZE;
+-
+-	temp = scnprintf(next, size, "poolinfo - 0.1\n");
+-	size -= temp;
+-	next += temp;
++	size = sysfs_emit(buf, "poolinfo - 0.1\n");
+ 
+ 	mutex_lock(&pools_lock);
+ 	list_for_each_entry(pool, &dev->dma_pools, pools) {
+@@ -90,16 +83,14 @@ static ssize_t pools_show(struct device *dev, struct device_attribute *attr, cha
+ 		spin_unlock_irq(&pool->lock);
+ 
+ 		/* per-pool info, no real statistics yet */
+-		temp = scnprintf(next, size, "%-16s %4u %4zu %4zu %2u\n",
+-				 pool->name, blocks,
+-				 pages * (pool->allocation / pool->size),
+-				 pool->size, pages);
+-		size -= temp;
+-		next += temp;
++		size += sysfs_emit_at(buf, size, "%-16s %4u %4zu %4zu %2u\n",
++				      pool->name, blocks,
++				      pages * (pool->allocation / pool->size),
++				      pool->size, pages);
+ 	}
+ 	mutex_unlock(&pools_lock);
+ 
+-	return PAGE_SIZE - size;
++	return size;
+ }
+ 
+ static DEVICE_ATTR_RO(pools);
+-- 
+2.25.1
 
