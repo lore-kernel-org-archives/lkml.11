@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D8FCCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44618C43334
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350210AbiFGSAs (ORCPT
+        id S1350043AbiFGSAm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:00:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60536 "EHLO
+        Tue, 7 Jun 2022 14:00:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348586AbiFGRlL (ORCPT
+        with ESMTP id S1348638AbiFGRlN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:41:11 -0400
+        Tue, 7 Jun 2022 13:41:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3926212089F;
-        Tue,  7 Jun 2022 10:34:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39638122B7B;
+        Tue,  7 Jun 2022 10:34:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 149D661579;
-        Tue,  7 Jun 2022 17:34:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24711C385A5;
-        Tue,  7 Jun 2022 17:34:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB9FE61582;
+        Tue,  7 Jun 2022 17:34:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C369AC385A5;
+        Tue,  7 Jun 2022 17:34:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623263;
-        bh=SV0IECVPnc9/xR8YY8B9n2LFgv4bXGrudOLScsdWmN0=;
+        s=korg; t=1654623244;
+        bh=8MtkBhfFoEzjUtG7SMEOmQNgxmCT6+7cEhuUCQAMNt8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=11Wj4nI7tZAiWsNEFD0/G3xyOYgBojWVaBLu9LhhiYAsnMDyjuVMzkQ+Y2QPQl55a
-         n4bvNzUiocY/KLmiwPKeorlJbaTTQuYMI4PWGwQh3mlX74MUyI8zfWPEydYsHZHf80
-         euSuI7fJo9oU6cXNoFtYBKahj7dwanFpxgUhPd6g=
+        b=V2rUhfupnTmu1zgstzpuJv6eCf5u7byNBF/XLf5ewI6qSq7qaOqUmI53qT6h23GI4
+         jd6PMsxVef1/4LkFuaI9kQo1iW+nagiHe/I6WEpXmDLpKGfgH/MjF8Rej4Yfc9Ed51
+         D3cOSe+ydjfP3hvqPMG1egCbDAovsE7UOTwpQbIA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: =?UTF-8?q?=5BPATCH=205=2E10=20354/452=5D=20fs-writeback=3A=20writeback=5Fsb=5Finodes=EF=BC=9ARecalculate=20wrote=20according=20skipped=20pages?=
-Date:   Tue,  7 Jun 2022 19:03:31 +0200
-Message-Id: <20220607164919.109947445@linuxfoundation.org>
+        stable@vger.kernel.org, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.10 348/452] f2fs: dont need inode lock for system hidden quota
+Date:   Tue,  7 Jun 2022 19:03:25 +0200
+Message-Id: <20220607164918.928442901@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,151 +48,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Jaegeuk Kim <jaegeuk@kernel.org>
 
-commit 68f4c6eba70df70a720188bce95c85570ddfcc87 upstream.
+commit 6213f5d4d23c50d393a31dc8e351e63a1fd10dbe upstream.
 
-Commit 505a666ee3fc ("writeback: plug writeback in wb_writeback() and
-writeback_inodes_wb()") has us holding a plug during wb_writeback, which
-may cause a potential ABBA dead lock:
+Let's avoid false-alarmed lockdep warning.
 
-    wb_writeback		fat_file_fsync
-blk_start_plug(&plug)
-for (;;) {
-  iter i-1: some reqs have been added into plug->mq_list  // LOCK A
-  iter i:
-    progress = __writeback_inodes_wb(wb, work)
-    . writeback_sb_inodes // fat's bdev
-    .   __writeback_single_inode
-    .   . generic_writepages
-    .   .   __block_write_full_page
-    .   .   . . 	    __generic_file_fsync
-    .   .   . . 	      sync_inode_metadata
-    .   .   . . 	        writeback_single_inode
-    .   .   . . 		  __writeback_single_inode
-    .   .   . . 		    fat_write_inode
-    .   .   . . 		      __fat_write_inode
-    .   .   . . 		        sync_dirty_buffer	// fat's bdev
-    .   .   . . 			  lock_buffer(bh)	// LOCK B
-    .   .   . . 			    submit_bh
-    .   .   . . 			      blk_mq_get_tag	// LOCK A
-    .   .   . trylock_buffer(bh)  // LOCK B
-    .   .   .   redirty_page_for_writepage
-    .   .   .     wbc->pages_skipped++
-    .   .   --wbc->nr_to_write
-    .   wrote += write_chunk - wbc.nr_to_write  // wrote > 0
-    .   requeue_inode
-    .     redirty_tail_locked
-    if (progress)    // progress > 0
-      continue;
-  iter i+1:
-      queue_io
-      // similar process with iter i, infinite for-loop !
-}
-blk_finish_plug(&plug)   // flush plug won't be called
+[   58.914674] [T1501146] -> #2 (&sb->s_type->i_mutex_key#20){+.+.}-{3:3}:
+[   58.915975] [T1501146] system_server:        down_write+0x7c/0xe0
+[   58.916738] [T1501146] system_server:        f2fs_quota_sync+0x60/0x1a8
+[   58.917563] [T1501146] system_server:        block_operations+0x16c/0x43c
+[   58.918410] [T1501146] system_server:        f2fs_write_checkpoint+0x114/0x318
+[   58.919312] [T1501146] system_server:        f2fs_issue_checkpoint+0x178/0x21c
+[   58.920214] [T1501146] system_server:        f2fs_sync_fs+0x48/0x6c
+[   58.920999] [T1501146] system_server:        f2fs_do_sync_file+0x334/0x738
+[   58.921862] [T1501146] system_server:        f2fs_sync_file+0x30/0x48
+[   58.922667] [T1501146] system_server:        __arm64_sys_fsync+0x84/0xf8
+[   58.923506] [T1501146] system_server:        el0_svc_common.llvm.12821150825140585682+0xd8/0x20c
+[   58.924604] [T1501146] system_server:        do_el0_svc+0x28/0xa0
+[   58.925366] [T1501146] system_server:        el0_svc+0x24/0x38
+[   58.926094] [T1501146] system_server:        el0_sync_handler+0x88/0xec
+[   58.926920] [T1501146] system_server:        el0_sync+0x1b4/0x1c0
 
-Above process triggers a hungtask like:
-[  399.044861] INFO: task bb:2607 blocked for more than 30 seconds.
-[  399.046824]       Not tainted 5.18.0-rc1-00005-gefae4d9eb6a2-dirty
-[  399.051539] task:bb              state:D stack:    0 pid: 2607 ppid:
-2426 flags:0x00004000
-[  399.051556] Call Trace:
-[  399.051570]  __schedule+0x480/0x1050
-[  399.051592]  schedule+0x92/0x1a0
-[  399.051602]  io_schedule+0x22/0x50
-[  399.051613]  blk_mq_get_tag+0x1d3/0x3c0
-[  399.051640]  __blk_mq_alloc_requests+0x21d/0x3f0
-[  399.051657]  blk_mq_submit_bio+0x68d/0xca0
-[  399.051674]  __submit_bio+0x1b5/0x2d0
-[  399.051708]  submit_bio_noacct+0x34e/0x720
-[  399.051718]  submit_bio+0x3b/0x150
-[  399.051725]  submit_bh_wbc+0x161/0x230
-[  399.051734]  __sync_dirty_buffer+0xd1/0x420
-[  399.051744]  sync_dirty_buffer+0x17/0x20
-[  399.051750]  __fat_write_inode+0x289/0x310
-[  399.051766]  fat_write_inode+0x2a/0xa0
-[  399.051783]  __writeback_single_inode+0x53c/0x6f0
-[  399.051795]  writeback_single_inode+0x145/0x200
-[  399.051803]  sync_inode_metadata+0x45/0x70
-[  399.051856]  __generic_file_fsync+0xa3/0x150
-[  399.051880]  fat_file_fsync+0x1d/0x80
-[  399.051895]  vfs_fsync_range+0x40/0xb0
-[  399.051929]  __x64_sys_fsync+0x18/0x30
+[   58.927681] [T1501146] -> #1 (&sbi->cp_global_sem){+.+.}-{3:3}:
+[   58.928889] [T1501146] system_server:        down_write+0x7c/0xe0
+[   58.929650] [T1501146] system_server:        f2fs_write_checkpoint+0xbc/0x318
+[   58.930541] [T1501146] system_server:        f2fs_issue_checkpoint+0x178/0x21c
+[   58.931443] [T1501146] system_server:        f2fs_sync_fs+0x48/0x6c
+[   58.932226] [T1501146] system_server:        sync_filesystem+0xac/0x130
+[   58.933053] [T1501146] system_server:        generic_shutdown_super+0x38/0x150
+[   58.933958] [T1501146] system_server:        kill_block_super+0x24/0x58
+[   58.934791] [T1501146] system_server:        kill_f2fs_super+0xcc/0x124
+[   58.935618] [T1501146] system_server:        deactivate_locked_super+0x90/0x120
+[   58.936529] [T1501146] system_server:        deactivate_super+0x74/0xac
+[   58.937356] [T1501146] system_server:        cleanup_mnt+0x128/0x168
+[   58.938150] [T1501146] system_server:        __cleanup_mnt+0x18/0x28
+[   58.938944] [T1501146] system_server:        task_work_run+0xb8/0x14c
+[   58.939749] [T1501146] system_server:        do_notify_resume+0x114/0x1e8
+[   58.940595] [T1501146] system_server:        work_pending+0xc/0x5f0
 
-In my test, 'need_resched()' (which is imported by 590dca3a71 "fs-writeback:
-unplug before cond_resched in writeback_sb_inodes") in function
-'writeback_sb_inodes()' seldom comes true, unless cond_resched() is deleted
-from write_cache_pages().
+[   58.941375] [T1501146] -> #0 (&sbi->gc_lock){+.+.}-{3:3}:
+[   58.942519] [T1501146] system_server:        __lock_acquire+0x1270/0x2868
+[   58.943366] [T1501146] system_server:        lock_acquire+0x114/0x294
+[   58.944169] [T1501146] system_server:        down_write+0x7c/0xe0
+[   58.944930] [T1501146] system_server:        f2fs_issue_checkpoint+0x13c/0x21c
+[   58.945831] [T1501146] system_server:        f2fs_sync_fs+0x48/0x6c
+[   58.946614] [T1501146] system_server:        f2fs_do_sync_file+0x334/0x738
+[   58.947472] [T1501146] system_server:        f2fs_ioc_commit_atomic_write+0xc8/0x14c
+[   58.948439] [T1501146] system_server:        __f2fs_ioctl+0x674/0x154c
+[   58.949253] [T1501146] system_server:        f2fs_ioctl+0x54/0x88
+[   58.950018] [T1501146] system_server:        __arm64_sys_ioctl+0xa8/0x110
+[   58.950865] [T1501146] system_server:        el0_svc_common.llvm.12821150825140585682+0xd8/0x20c
+[   58.951965] [T1501146] system_server:        do_el0_svc+0x28/0xa0
+[   58.952727] [T1501146] system_server:        el0_svc+0x24/0x38
+[   58.953454] [T1501146] system_server:        el0_sync_handler+0x88/0xec
+[   58.954279] [T1501146] system_server:        el0_sync+0x1b4/0x1c0
 
-Fix it by correcting wrote number according number of skipped pages
-in writeback_sb_inodes().
-
-Goto Link to find a reproducer.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215837
-Cc: stable@vger.kernel.org # v4.3
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220510133805.1988292-1-chengzhihao1@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Cc: stable@vger.kernel.org
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/fs-writeback.c |   13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ fs/f2fs/super.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/fs/fs-writeback.c
-+++ b/fs/fs-writeback.c
-@@ -1650,11 +1650,12 @@ static long writeback_sb_inodes(struct s
- 	};
- 	unsigned long start_time = jiffies;
- 	long write_chunk;
--	long wrote = 0;  /* count both pages and inodes */
-+	long total_wrote = 0;  /* count both pages and inodes */
+--- a/fs/f2fs/super.c
++++ b/fs/f2fs/super.c
+@@ -2292,7 +2292,8 @@ int f2fs_quota_sync(struct super_block *
+ 		if (!sb_has_quota_active(sb, cnt))
+ 			continue;
  
- 	while (!list_empty(&wb->b_io)) {
- 		struct inode *inode = wb_inode(wb->b_io.prev);
- 		struct bdi_writeback *tmp_wb;
-+		long wrote;
+-		inode_lock(dqopt->files[cnt]);
++		if (!f2fs_sb_has_quota_ino(sbi))
++			inode_lock(dqopt->files[cnt]);
  
- 		if (inode->i_sb != sb) {
- 			if (work->sb) {
-@@ -1730,7 +1731,9 @@ static long writeback_sb_inodes(struct s
+ 		/*
+ 		 * do_quotactl
+@@ -2311,7 +2312,8 @@ int f2fs_quota_sync(struct super_block *
+ 		up_read(&sbi->quota_sem);
+ 		f2fs_unlock_op(sbi);
  
- 		wbc_detach_inode(&wbc);
- 		work->nr_pages -= write_chunk - wbc.nr_to_write;
--		wrote += write_chunk - wbc.nr_to_write;
-+		wrote = write_chunk - wbc.nr_to_write - wbc.pages_skipped;
-+		wrote = wrote < 0 ? 0 : wrote;
-+		total_wrote += wrote;
+-		inode_unlock(dqopt->files[cnt]);
++		if (!f2fs_sb_has_quota_ino(sbi))
++			inode_unlock(dqopt->files[cnt]);
  
- 		if (need_resched()) {
- 			/*
-@@ -1752,7 +1755,7 @@ static long writeback_sb_inodes(struct s
- 		tmp_wb = inode_to_wb_and_lock_list(inode);
- 		spin_lock(&inode->i_lock);
- 		if (!(inode->i_state & I_DIRTY_ALL))
--			wrote++;
-+			total_wrote++;
- 		requeue_inode(inode, tmp_wb, &wbc);
- 		inode_sync_complete(inode);
- 		spin_unlock(&inode->i_lock);
-@@ -1766,14 +1769,14 @@ static long writeback_sb_inodes(struct s
- 		 * bail out to wb_writeback() often enough to check
- 		 * background threshold and other termination conditions.
- 		 */
--		if (wrote) {
-+		if (total_wrote) {
- 			if (time_is_before_jiffies(start_time + HZ / 10UL))
- 				break;
- 			if (work->nr_pages <= 0)
- 				break;
- 		}
- 	}
--	return wrote;
-+	return total_wrote;
- }
- 
- static long __writeback_inodes_wb(struct bdi_writeback *wb,
+ 		if (ret)
+ 			break;
 
 
