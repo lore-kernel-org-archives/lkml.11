@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78324C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:13:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB5CAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376629AbiFGVNv (ORCPT
+        id S1379860AbiFGVN5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:13:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38256 "EHLO
+        Tue, 7 Jun 2022 17:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376618AbiFGUQ5 (ORCPT
+        with ESMTP id S1376741AbiFGURF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:16:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E09681CF16A;
-        Tue,  7 Jun 2022 11:29:36 -0700 (PDT)
+        Tue, 7 Jun 2022 16:17:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D68178551;
+        Tue,  7 Jun 2022 11:29:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04294B82381;
-        Tue,  7 Jun 2022 18:29:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A902C385A2;
-        Tue,  7 Jun 2022 18:29:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FABE60906;
+        Tue,  7 Jun 2022 18:29:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42531C385A5;
+        Tue,  7 Jun 2022 18:29:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626573;
-        bh=oTUD0gfXlCXXBTlNhj7YdtZdcBIDAMIgu5/THuULMSc=;
+        s=korg; t=1654626590;
+        bh=ehigRDV6aEkOO9FKdsssfVJZiCfIdcxMdf6rVapXAdM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ae7TWTrSsGWDYgX+ESGpjGsYJeuKxExGV5FsWyWldpm8BhA00b6ZqxbWMwk4K1KEw
-         AhJY5+0SVEWQ5AI5rwEwE74BTkRsaG+bHwvijFec3E9fXAocprUeE5buBv35H2jN9P
-         ZdhdCws0CjOqHIsGqrbvcvG2byyQ/5S6fGcWog/E=
+        b=IttNesU8sboTU0FX+nCtoJelAbMNC5SvA1iA4FyLVWep7MqswO+ynk7tXv5TJHiKX
+         fvpFk174iuRTQmM0NkhhlLFjUV/pycuKPhstBKZnlMO6UpsMiMGbXxOeS+1wCaTje3
+         RhHfvVbY99XnbLQLWzW5As9XnGhaDNY7eSW4zB2c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 425/772] PM: domains: Fix initialization of genpds next_wakeup
-Date:   Tue,  7 Jun 2022 19:00:17 +0200
-Message-Id: <20220607165001.527041472@linuxfoundation.org>
+Subject: [PATCH 5.17 382/772] media: hantro: HEVC: Fix tile info buffer value computation
+Date:   Tue,  7 Jun 2022 18:59:34 +0200
+Message-Id: <20220607165000.272882696@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,36 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 
-[ Upstream commit 622d9b5577f19a6472db21df042fea8f5fefe244 ]
+[ Upstream commit d7f4149df818463c1d7094b35db6ebd79f46c7bd ]
 
-In the genpd governor we walk the list of child-domains to take into
-account their next_wakeup. If the child-domain itself, doesn't have a
-governor assigned to it, we can end up using the next_wakeup value before
-it has been properly initialized. To prevent a possible incorrect behaviour
-in the governor, let's initialize next_wakeup to KTIME_MAX.
+Use pps->column_width_minus1[j] + 1 as value for the tile info buffer
+instead of pps->column_width_minus1[j + 1].
+The patch fixes DBLK_E_VIXS_2, DBLK_F_VIXS_2, DBLK_G_VIXS_2,
+SAO_B_MediaTek_5, TILES_A_Cisco_2 and TILES_B_Cisco_1 tests in fluster.
 
-Fixes: c79aa080fb0f ("PM: domains: use device's next wakeup to determine domain idle state")
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: cb5dd5a0fa51 ("media: hantro: Introduce G2/HEVC decoder")
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/power/domain.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-index 7e8039d1884c..0f2e42f36851 100644
---- a/drivers/base/power/domain.c
-+++ b/drivers/base/power/domain.c
-@@ -1978,6 +1978,7 @@ int pm_genpd_init(struct generic_pm_domain *genpd,
- 	genpd->device_count = 0;
- 	genpd->max_off_time_ns = -1;
- 	genpd->max_off_time_changed = true;
-+	genpd->next_wakeup = KTIME_MAX;
- 	genpd->provider = NULL;
- 	genpd->has_provider = false;
- 	genpd->accounting_time = ktime_get();
+diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+index fab326389261..13602e051a06 100644
+--- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
++++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+@@ -60,7 +60,7 @@ static void prepare_tile_info_buffer(struct hantro_ctx *ctx)
+ 					no_chroma = 1;
+ 				for (j = 0, tmp_w = 0; j < num_tile_cols - 1; j++) {
+ 					tmp_w += pps->column_width_minus1[j] + 1;
+-					*p++ = pps->column_width_minus1[j + 1];
++					*p++ = pps->column_width_minus1[j] + 1;
+ 					*p++ = h;
+ 					if (i == 0 && h == 1 && ctb_size == 16)
+ 						no_chroma = 1;
 -- 
 2.35.1
 
