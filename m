@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C99ACCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4897CCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385713AbiFGWmA (ORCPT
+        id S1385858AbiFGWmK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:42:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51082 "EHLO
+        Tue, 7 Jun 2022 18:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380379AbiFGVax (ORCPT
+        with ESMTP id S1380551AbiFGVa7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:30:53 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F67229B75;
-        Tue,  7 Jun 2022 12:02:50 -0700 (PDT)
+        Tue, 7 Jun 2022 17:30:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1CB154B35;
+        Tue,  7 Jun 2022 12:03:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E062FCE2424;
-        Tue,  7 Jun 2022 19:02:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5731C385A2;
-        Tue,  7 Jun 2022 19:02:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B76E1617CC;
+        Tue,  7 Jun 2022 19:03:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4ADBC385A2;
+        Tue,  7 Jun 2022 19:03:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628567;
-        bh=bTxqzaCwIkZOunONRNJEGMBbJbWENtOBNXkA+CRq77k=;
+        s=korg; t=1654628586;
+        bh=T5STTtyW4R4KbfMVKwxvsNAtIg3deHMdgKgDEqm/3c8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EGSQDnhHvXFajQKhxI4VHTiDnYA4w4Flvbg+Ab/dCqFsUYs4sZDDp1hYzdCStTOR9
-         tHLU3H4kYGj2oK58gag/nfByK12LSV6GOdRoQdh5b9g9Ti9Mfbv/obTfstNMoC5H0+
-         cgIGBmyz0pRIwUOmbF8iBy/qvOi46DhMumNE4cg8=
+        b=TYLziXsmijxyFCI0MHswKpmxjAlwKy8EAqaj4Rck0yzUDG1HqsFtNbe4VPtqv8Nc4
+         /Cbzd/IbdOM1dd26Mzrbc8P1B3s+xjYQqX/4bRKSwfngqcDOGX92Vp7M5nLJvEuTHY
+         xaUK7bzUDgzb+kEsV6zbCChx+/WF2XRpUUop5O8s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 369/879] drm/msm/dp: stop event kernel thread when DP unbind
-Date:   Tue,  7 Jun 2022 18:58:07 +0200
-Message-Id: <20220607165013.583683640@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 384/879] virtio_blk: fix the discard_granularity and discard_alignment queue limits
+Date:   Tue,  7 Jun 2022 18:58:22 +0200
+Message-Id: <20220607165014.012996069@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,162 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit 570d3e5d28db7a94557fa179167a9fb8642fb8a1 ]
+[ Upstream commit 62952cc5bccd89b76d710de1d0b43244af0f2903 ]
 
-Current DP driver implementation, event thread is kept running
-after DP display is unbind. This patch fix this problem by disabling
-DP irq and stop event thread to exit gracefully at dp_display_unbind().
+The discard_alignment queue limit is named a bit misleading means the
+offset into the block device at which the discard granularity starts.
 
-Changes in v2:
--- start event thread at dp_display_bind()
+On the other hand the discard_sector_alignment from the virtio 1.1 looks
+similar to what Linux uses as discard granularity (even if not very well
+described):
 
-Changes in v3:
--- disable all HDP interrupts at unbind
--- replace dp_hpd_event_setup() with dp_hpd_event_thread_start()
--- replace dp_hpd_event_stop() with dp_hpd_event_thread_stop()
--- move init_waitqueue_head(&dp->event_q) to probe()
--- move spin_lock_init(&dp->event_lock) to probe()
+  "discard_sector_alignment can be used by OS when splitting a request
+   based on alignment. "
 
-Changes in v4:
--- relocate both dp_display_bind() and dp_display_unbind() to bottom of file
+And at least qemu does set it to the discard granularity.
 
-Changes in v5:
--- cancel relocation of both dp_display_bind() and dp_display_unbind()
+So stop setting the discard_alignment and use the virtio
+discard_sector_alignment to set the discard granularity.
 
-Changes in v6:
--- move empty event q to dp_event_thread_start()
-
-Changes in v7:
--- call ktheread_stop() directly instead of dp_hpd_event_thread_stop() function
-
-Changes in v8:
--- return error immediately if audio registration failed.
-
-Changes in v9:
--- return error immediately if event thread create failed.
-
-Changes in v10:
--- delete extra  DRM_ERROR("failed to create DP event thread\n");
-
-Fixes: 8ede2ecc3e5e ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/482399/
-Link: https://lore.kernel.org/r/1650318988-17580-1-git-send-email-quic_khsieh@quicinc.com
-[DB: fixed Fixes tag]
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fixes: 1f23816b8eb8 ("virtio_blk: add discard and write zeroes support")
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Martin K. Petersen <martin.petersen@oracle.com>
+Link: https://lore.kernel.org/r/20220418045314.360785-5-hch@lst.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_display.c | 39 +++++++++++++++++++++++------
- 1 file changed, 31 insertions(+), 8 deletions(-)
+ drivers/block/virtio_blk.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 178b774a5fbd..332065b882af 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -113,6 +113,7 @@ struct dp_display_private {
- 	u32 hpd_state;
- 	u32 event_pndx;
- 	u32 event_gndx;
-+	struct task_struct *ev_tsk;
- 	struct dp_event event_list[DP_EVENT_Q_MAX];
- 	spinlock_t event_lock;
+diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
+index a8bcf3f664af..10bba1e00f2b 100644
+--- a/drivers/block/virtio_blk.c
++++ b/drivers/block/virtio_blk.c
+@@ -867,11 +867,12 @@ static int virtblk_probe(struct virtio_device *vdev)
+ 		blk_queue_io_opt(q, blk_size * opt_io_size);
  
-@@ -249,6 +250,8 @@ void dp_display_signal_audio_complete(struct msm_dp *dp_display)
- 	complete_all(&dp->audio_comp);
- }
- 
-+static int dp_hpd_event_thread_start(struct dp_display_private *dp_priv);
-+
- static int dp_display_bind(struct device *dev, struct device *master,
- 			   void *data)
- {
-@@ -282,9 +285,18 @@ static int dp_display_bind(struct device *dev, struct device *master,
- 	}
- 
- 	rc = dp_register_audio_driver(dev, dp->audio);
--	if (rc)
-+	if (rc) {
- 		DRM_ERROR("Audio registration Dp failed\n");
-+		goto end;
-+	}
- 
-+	rc = dp_hpd_event_thread_start(dp);
-+	if (rc) {
-+		DRM_ERROR("Event thread create failed\n");
-+		goto end;
-+	}
-+
-+	return 0;
- end:
- 	return rc;
- }
-@@ -295,6 +307,11 @@ static void dp_display_unbind(struct device *dev, struct device *master,
- 	struct dp_display_private *dp = dev_get_dp_display_private(dev);
- 	struct msm_drm_private *priv = dev_get_drvdata(master);
- 
-+	/* disable all HPD interrupts */
-+	dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_INT_MASK, false);
-+
-+	kthread_stop(dp->ev_tsk);
-+
- 	dp_power_client_deinit(dp->power);
- 	dp_aux_unregister(dp->aux);
- 	priv->dp[dp->id] = NULL;
-@@ -1090,7 +1107,7 @@ static int hpd_event_thread(void *data)
- 
- 	dp_priv = (struct dp_display_private *)data;
- 
--	while (1) {
-+	while (!kthread_should_stop()) {
- 		if (timeout_mode) {
- 			wait_event_timeout(dp_priv->event_q,
- 				(dp_priv->event_pndx == dp_priv->event_gndx),
-@@ -1168,12 +1185,17 @@ static int hpd_event_thread(void *data)
- 	return 0;
- }
- 
--static void dp_hpd_event_setup(struct dp_display_private *dp_priv)
-+static int dp_hpd_event_thread_start(struct dp_display_private *dp_priv)
- {
--	init_waitqueue_head(&dp_priv->event_q);
--	spin_lock_init(&dp_priv->event_lock);
-+	/* set event q to empty */
-+	dp_priv->event_gndx = 0;
-+	dp_priv->event_pndx = 0;
- 
--	kthread_run(hpd_event_thread, dp_priv, "dp_hpd_handler");
-+	dp_priv->ev_tsk = kthread_run(hpd_event_thread, dp_priv, "dp_hpd_handler");
-+	if (IS_ERR(dp_priv->ev_tsk))
-+		return PTR_ERR(dp_priv->ev_tsk);
-+
-+	return 0;
- }
- 
- static irqreturn_t dp_display_irq_handler(int irq, void *dev_id)
-@@ -1303,7 +1325,10 @@ static int dp_display_probe(struct platform_device *pdev)
- 		return -EPROBE_DEFER;
- 	}
- 
-+	/* setup event q */
- 	mutex_init(&dp->event_mutex);
-+	init_waitqueue_head(&dp->event_q);
-+	spin_lock_init(&dp->event_lock);
- 
- 	/* Store DP audio handle inside DP display */
- 	dp->dp_display.dp_audio = dp->audio;
-@@ -1483,8 +1508,6 @@ void msm_dp_irq_postinstall(struct msm_dp *dp_display)
- 
- 	dp = container_of(dp_display, struct dp_display_private, dp_display);
- 
--	dp_hpd_event_setup(dp);
+ 	if (virtio_has_feature(vdev, VIRTIO_BLK_F_DISCARD)) {
+-		q->limits.discard_granularity = blk_size;
 -
- 	dp_add_event(dp, EV_HPD_INIT_SETUP, 0, 100);
- }
+ 		virtio_cread(vdev, struct virtio_blk_config,
+ 			     discard_sector_alignment, &v);
+-		q->limits.discard_alignment = v ? v << SECTOR_SHIFT : 0;
++		if (v)
++			q->limits.discard_granularity = v << SECTOR_SHIFT;
++		else
++			q->limits.discard_granularity = blk_size;
  
+ 		virtio_cread(vdev, struct virtio_blk_config,
+ 			     max_discard_sectors, &v);
 -- 
 2.35.1
 
