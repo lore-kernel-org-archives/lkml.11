@@ -2,87 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6921ECCA492
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 808C4CCA495
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384127AbiFHBEn (ORCPT
+        id S1386261AbiFHBFA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:04:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45778 "EHLO
+        Tue, 7 Jun 2022 21:05:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382966AbiFGVwI (ORCPT
+        with ESMTP id S1382627AbiFGVz5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:52:08 -0400
-X-Greylist: delayed 538 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 12:10:08 PDT
-Received: from 3.mo575.mail-out.ovh.net (3.mo575.mail-out.ovh.net [46.105.58.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21170434A4
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:10:08 -0700 (PDT)
-Received: from player797.ha.ovh.net (unknown [10.109.138.131])
-        by mo575.mail-out.ovh.net (Postfix) with ESMTP id 60A9224473
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:10:06 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player797.ha.ovh.net (Postfix) with ESMTPSA id 4E982273DCAD8;
-        Tue,  7 Jun 2022 19:09:57 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-102R004f66d6445-5b4d-4b53-8766-d6f361bee8fc,
-                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Helge Deller <deller@gmx.de>
-Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
-Subject: [PATCH 2/4] backlight: arcxcnn: Use backlight helper
-Date:   Tue,  7 Jun 2022 21:09:23 +0200
-Message-Id: <20220607190925.1134737-3-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220607190925.1134737-1-steve@sk2.org>
-References: <20220607190925.1134737-1-steve@sk2.org>
+        Tue, 7 Jun 2022 17:55:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8772524CC86;
+        Tue,  7 Jun 2022 12:13:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09916B8233E;
+        Tue,  7 Jun 2022 19:13:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BACDC385A2;
+        Tue,  7 Jun 2022 19:13:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629224;
+        bh=TW1TVHmJIGoy6nezueTSKh5wbrNGBopgYLaRDfqALbg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=iCWviPm4wvS8/WFxS79uFNePmUqArOPMC2LcAUnUYRoVYSqz+yWxsS5G69lklOxef
+         HWKoVCE7po1cq14tONJcU8hKZidehOS0y0yGbW877IIx0G9JWzsA4Poe3HQBzdVGta
+         XmWY+CqUbFaFWHuRoKE9/2xCtWw5rIlirbGvqEv8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Alexey Dobriyan <adobriyan@gmail.com>,
+        hui li <juanfengpy@gmail.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 614/879] proc: fix dentry/inode overinstantiating under /proc/${pid}/net
+Date:   Tue,  7 Jun 2022 19:02:12 +0200
+Message-Id: <20220607165020.670979168@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 11713299682955658886
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudeffecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejleejrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheejhe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of retrieving the backlight brightness in struct
-backlight_properties manually, and then checking whether the backlight
-should be on at all, use backlight_get_brightness() which does all
-this and insulates this from future changes.
+From: Alexey Dobriyan <adobriyan@gmail.com>
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Jingoo Han <jingoohan1@gmail.com>
-Cc: Helge Deller <deller@gmx.de>
-Cc: dri-devel@lists.freedesktop.org
-Cc: linux-fbdev@vger.kernel.org
+[ Upstream commit 7055197705709c59b8ab77e6a5c7d46d61edd96e ]
+
+When a process exits, /proc/${pid}, and /proc/${pid}/net dentries are
+flushed.  However some leaf dentries like /proc/${pid}/net/arp_cache
+aren't.  That's because respective PDEs have proc_misc_d_revalidate() hook
+which returns 1 and leaves dentries/inodes in the LRU.
+
+Force revalidation/lookup on everything under /proc/${pid}/net by
+inheriting proc_net_dentry_ops.
+
+[akpm@linux-foundation.org: coding-style cleanups]
+Link: https://lkml.kernel.org/r/YjdVHgildbWO7diJ@localhost.localdomain
+Fixes: c6c75deda813 ("proc: fix lookup in /proc/net subdirectories after setns(2)")
+Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+Reported-by: hui li <juanfengpy@gmail.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/backlight/arcxcnn_bl.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ fs/proc/generic.c  | 3 +++
+ fs/proc/proc_net.c | 3 +++
+ 2 files changed, 6 insertions(+)
 
-diff --git a/drivers/video/backlight/arcxcnn_bl.c b/drivers/video/backlight/arcxcnn_bl.c
-index 7b1c0a0e6cad..a706899eb7ac 100644
---- a/drivers/video/backlight/arcxcnn_bl.c
-+++ b/drivers/video/backlight/arcxcnn_bl.c
-@@ -130,12 +130,9 @@ static int arcxcnn_set_brightness(struct arcxcnn *lp, u32 brightness)
- static int arcxcnn_bl_update_status(struct backlight_device *bl)
- {
- 	struct arcxcnn *lp = bl_get_data(bl);
--	u32 brightness = bl->props.brightness;
-+	u32 brightness = backlight_get_brightness(bl);
- 	int ret;
+diff --git a/fs/proc/generic.c b/fs/proc/generic.c
+index f2132407e133..587b91d9d998 100644
+--- a/fs/proc/generic.c
++++ b/fs/proc/generic.c
+@@ -448,6 +448,9 @@ static struct proc_dir_entry *__proc_create(struct proc_dir_entry **parent,
+ 	proc_set_user(ent, (*parent)->uid, (*parent)->gid);
  
--	if (bl->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK))
--		brightness = 0;
--
- 	ret = arcxcnn_set_brightness(lp, brightness);
- 	if (ret)
- 		return ret;
+ 	ent->proc_dops = &proc_misc_dentry_ops;
++	/* Revalidate everything under /proc/${pid}/net */
++	if ((*parent)->proc_dops == &proc_net_dentry_ops)
++		pde_force_lookup(ent);
+ 
+ out:
+ 	return ent;
+diff --git a/fs/proc/proc_net.c b/fs/proc/proc_net.c
+index e1cfeda397f3..913e5acefbb6 100644
+--- a/fs/proc/proc_net.c
++++ b/fs/proc/proc_net.c
+@@ -376,6 +376,9 @@ static __net_init int proc_net_ns_init(struct net *net)
+ 
+ 	proc_set_user(netd, uid, gid);
+ 
++	/* Seed dentry revalidation for /proc/${pid}/net */
++	pde_force_lookup(netd);
++
+ 	err = -EEXIST;
+ 	net_statd = proc_net_mkdir(net, "stat", netd);
+ 	if (!net_statd)
 -- 
-2.30.2
+2.35.1
+
+
 
