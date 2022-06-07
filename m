@@ -2,127 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 604A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:49:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 053F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:51:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344319AbiFGPta (ORCPT
+        id S1344331AbiFGPvf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 11:49:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41824 "EHLO
+        Tue, 7 Jun 2022 11:51:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344308AbiFGPtN (ORCPT
+        with ESMTP id S1344334AbiFGPva (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 11:49:13 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A8A8F33A0;
-        Tue,  7 Jun 2022 08:49:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654616952; x=1686152952;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=48gb7mAGbeYhtSJ293emSdKyHKxm0Jm2EjcSJnSpD8Y=;
-  b=n5qWRIJhU/zAcNCgs027VlkEar+6FauiinVEu+bJjgrQac4JdT/6Ij9Y
-   8rX8kn0w/jizDNB2JCzYPJ6DTCMuR0oI4WBCe6qtzD4GjB4rzx1A4Bpkm
-   nRgxRlKNCwfCKCQJe2aEaMQzaxYE+f9YW/iSQgxgYJARoVvvrNiUnel2P
-   /wlBM6e9dE2S7kh1wKvQaywoPx3OwbJZC1XkWO11xOx+24H7B6dvjyIP+
-   Lty15KuytxDG//AJZ21+IFGDG9zCX9vJX30hrvxuNMeyW2W3QWGVOt3Pl
-   ozkYRFMk63u7ah9WXkVG6fSmm34jx6gmNiHljW0eTX9p8Ql7Xmlv0JOuW
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277578306"
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="277578306"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 08:31:58 -0700
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="584245532"
-Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 08:31:56 -0700
-Date:   Tue, 7 Jun 2022 18:31:54 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 33/36] tty/vt: consolemap: change refcount only if needed
- in con_do_clear_unimap()
-In-Reply-To: <20220607104946.18710-33-jslaby@suse.cz>
-Message-ID: <ce9f52c5-4b46-77a8-8dd4-1de787e5b8b@linux.intel.com>
-References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-33-jslaby@suse.cz>
+        Tue, 7 Jun 2022 11:51:30 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E812F33B2
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:51:27 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id u8so20428364wrm.13
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 08:51:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=raspberrypi.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=K5CuqGvNcDyd9yi9QoNJfMD+eVto/9nC9r6LjdgJwPQ=;
+        b=ot/s7RX/JBxW4UYpGFOQ9SUMALLp6FYPSxhJoMGZ0iIHsnn08a8LkP7T517suEvX4t
+         JGSLTlCGIOpWqkT/T6cpPTY+Ey7cy/7Mo6rQg89XDFb79NMkFrWmBqnK5eWAKVsJi6Ru
+         HeU2LZKRa87uYCbSOV9hjANMwctX2Wmq0F3tXU+cQwTD52+cOC6Je9Ag9uXjd0NE32Ur
+         wlCe/2WETAJ63fomkIBHEqzswV02xjVKDgwIU7uN5+6I1u6uKmFxJNpcdiHhUUntvQoZ
+         oR9C+JhWLlzIz170SLsu1btpxLPQ4NaQZX6P4QtM+6i3TpxbAXPWoAfXLO2fChAFKL/S
+         FFSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=K5CuqGvNcDyd9yi9QoNJfMD+eVto/9nC9r6LjdgJwPQ=;
+        b=TdXWaMVV2gB8Q3byRTwyhfPKE1/N+gaQk8YnyFpCePSdYrszCwT2ze9EBgq5qNRGcn
+         sz3htsCZyax61MG0sjLLOacq/QykVldzeBYQwBjkMddAxFu5PoQH1muv7Ek0M5pJk6zb
+         eIAAsItm4u4U6+fFZFFWKvUj3lMgOlAbKeUac5/rfnv2MeZCW2ZOaQDrWwUW6s0D9Qnx
+         38lwwBohKlO8AYXvs5jaip5Nfo4N91Geqn17siFDueiiTecdAK/dAnLh/N2v9MXCKU78
+         Mj+yEZkjShQ1nTcIKU+NSfNfUjJYBzPeAeUn9zmMztuxbffl/FH9CrBAIGQulWLEhf7C
+         r9RQ==
+X-Gm-Message-State: AOAM533FkoUzIs57RiplqmVRQjipjs1j35sSv8fwnS7GRet0TrA3C9hC
+        /m23INOKvQsfQKV5RXgz5y/Oww==
+X-Google-Smtp-Source: ABdhPJyEcO3tLwsW37kFBKhU2cLcNbI8JHPKRItBuLBMVhHZcRPY1PLYXUTx4FXd9LwMN6oTCY2txg==
+X-Received: by 2002:a5d:6d84:0:b0:217:e7af:224b with SMTP id l4-20020a5d6d84000000b00217e7af224bmr13602300wrs.512.1654617087049;
+        Tue, 07 Jun 2022 08:51:27 -0700 (PDT)
+Received: from [192.168.187.211] ([86.12.200.143])
+        by smtp.gmail.com with ESMTPSA id y6-20020a5d6146000000b0020d106c0386sm18671940wrt.89.2022.06.07.08.51.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 08:51:26 -0700 (PDT)
+Message-ID: <5bf38235-39f4-6275-9047-f645cd25fc93@raspberrypi.com>
+Date:   Tue, 7 Jun 2022 16:51:24 +0100
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1422709916-1654615917=:1622"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:91.0)
+ Gecko/20100101 Thunderbird/91.10.0
+Subject: Re: [PATCH v2] ARM: initialize jump labels before setup_machine_fdt()
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        stable <stable@vger.kernel.org>
+References: <8cc7ebe4-442b-a24b-9bb0-fce6e0425ee6@raspberrypi.com>
+ <CAHmME9o6R2RRdwzB9f+464xH+Aw-9wx2dm=ZsQYFbTk_-66yJw@mail.gmail.com>
+ <8c3fe744-0181-043a-3af9-dd00165a6356@raspberrypi.com>
+ <Yp9rc1G6xfTSSUjF@zx2c4.com>
+ <25c1a57e-af67-ebc8-ab13-6532bf6e6e75@raspberrypi.com>
+ <Yp9yUqHNNaAxZ/5y@zx2c4.com>
+From:   Phil Elwell <phil@raspberrypi.com>
+In-Reply-To: <Yp9yUqHNNaAxZ/5y@zx2c4.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1422709916-1654615917=:1622
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-
-On Tue, 7 Jun 2022, Jiri Slaby wrote:
-
-> con_do_clear_unimap() currently decreases and increases refcount of old
-> dictionary in a back and forth fashion. This makes the code really hard
-> to follow. Decrease the refcount only if everything went well and we
-> really allocated a new one and decoupled from the old dictionary.
+On 07/06/2022 16:44, Jason A. Donenfeld wrote:
+> Hi Phil,
 > 
-> I sincerelly hope I did not make a mistake in this (ill) logic.
+> On Tue, Jun 07, 2022 at 04:35:32PM +0100, Phil Elwell wrote:
+>> Jason,
+>>
+>> On 07/06/2022 16:14, Jason A. Donenfeld wrote:
+>>> Hey again,
+>>>
+>>> On Tue, Jun 07, 2022 at 10:15:27AM +0100, Phil Elwell wrote:
+>>>> On 07/06/2022 09:43, Jason A. Donenfeld wrote:
+>>>>> Hi Phil,
+>>>>>
+>>>>> On Tue, Jun 7, 2022 at 10:29 AM Phil Elwell <phil@raspberrypi.com> wrote:
+>>>>>>
+>>>>>> This patch is fatal for me in the downstream Raspberry Pi kernel - it locks up
+>>>>>> on boot even before the earlycon output is available. Hacking jump_label_init to
+>>>>>> skip the jump_entry for "crng_is_ready" allows it to boot, but is likely to have
+>>>>>> consequences further down the line.
+>>>>>
+>>>>> Also, reading this a few times, I'm not 100% sure I understand what
+>>>>> you did to hack around this and why that works. Think you could paste
+>>>>> your hackpatch just out of interest to the discussion (but obviously
+>>>>> not to be applied)?
+>>>>
+>>>> This is the minimal version of my workaround patch that at least allows the
+>>>> board to boot. Bear in mind that it was written with no previous knowledge of
+>>>> jump labels and was arrived at by iteratively bisecting the list of jump_labels
+>>>> until the first dangerous one was found, then later working out that there was
+>>>> only one.
+>>>
+>>> Looks like this patch fails due to CONFIG_STRICT_KERNEL_RWX.
+>>> Investigating deeper now, but that for starters seems to be the
+>>> differentiating factor between my prior test rig and one that reproduces
+>>> the error. I assume your raspi also sets CONFIG_STRICT_KERNEL_RWX.
+>>
+>> Yes, it does, as does multi_v7_defconfig.
 > 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-
-It seems fine:
-
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
-One unrelated comment below for additional cleanup opportunity.
-
-> ---
->  drivers/tty/vt/consolemap.c | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
+> Oh good. Adjusting my CI now to have that.
 > 
-> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-> index 01b7e49f1f91..4d8efe74315c 100644
-> --- a/drivers/tty/vt/consolemap.c
-> +++ b/drivers/tty/vt/consolemap.c
-> @@ -535,22 +535,23 @@ static int con_do_clear_unimap(struct vc_data *vc)
->  {
->  	struct uni_pagedict *old = *vc->vc_uni_pagedir_loc;
->  
-> -	if (!old || --old->refcount) {
-> +	if (!old || old->refcount > 1) {
->  		struct uni_pagedict *new = kzalloc(sizeof(*new), GFP_KERNEL);
-> -		if (!new) {
-> -			if (old)
-> -				old->refcount++;
-> +		if (!new)
->  			return -ENOMEM;
-> -		}
-> +
->  		new->refcount = 1;
->  		*vc->vc_uni_pagedir_loc = new;
-> +
-> +		if (old)
-> +			old->refcount--;
->  	} else {
->  		if (old == dflt)
->  			dflt = NULL;
-
-This seems unnecessary as con_release_unimap() already does it.
-
-> -		old->refcount++;
->  		old->sum = 0;
->  		con_release_unimap(old);
->  	}
-> +
->  	return 0;
->  }
->  
+> Having tickled arch/arm/ a little bit now, this is looking sort of
+> complicated. So I think I might be leaning toward giving up and just
+> rolling with <https://git.zx2c4.com/linux-rng/commit/?id=78f79dda>.
 > 
+> Unless of course somebody has some ARM chops and can think of a quick
+> easy fix.
 
--- 
- i.
+I've not looked at the performance implications (if any), but in terms of when the RNG initilialization completes and the lack of a WARN I'm happy with that patch, a.k.a. [1].
 
---8323329-1422709916-1654615917=:1622--
+Phil
+
+[1] https://lore.kernel.org/lkml/20220607100210.683136-1-Jason@zx2c4.com/
