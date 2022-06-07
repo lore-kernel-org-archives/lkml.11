@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D89C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:23:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB132C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:23:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359156AbiFGUXW (ORCPT
+        id S1359022AbiFGUXd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59708 "EHLO
+        Tue, 7 Jun 2022 16:23:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355770AbiFGTao (ORCPT
+        with ESMTP id S1356680AbiFGTbx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:30:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B5081A43C8;
-        Tue,  7 Jun 2022 11:12:01 -0700 (PDT)
+        Tue, 7 Jun 2022 15:31:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24D821A8827;
+        Tue,  7 Jun 2022 11:12:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7418FB81F38;
-        Tue,  7 Jun 2022 18:11:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C46CDC385A5;
-        Tue,  7 Jun 2022 18:11:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41F8160A1D;
+        Tue,  7 Jun 2022 18:12:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 512B2C385A2;
+        Tue,  7 Jun 2022 18:12:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625516;
-        bh=GHSWOLtaRIxGcfDoMTvsX1OVEgJYxZloovcbfd7Oric=;
+        s=korg; t=1654625546;
+        bh=zLKqJ7YRx9+AQT3UXBkTEmxLVA2wtgkhaELDhD9VzXs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mr+3p2Pnv/hkhS0l5Sw/rcjk4YGIyMf9JQ75pTkDj67kP/2otndFwMKBc9rn9etqK
-         IqXs3fUcfTsE0l0gCE5s02vUYxjZcoyUCzg+wylGzCL5k3jCR+NTwIn9MSpcPrrNOO
-         3s4VylXWpuul0n9/BMt0QE61aCUZ0hd3cQ30zGU4=
+        b=DXDReznt5T20Mdfrmlxpnj31qCzWtEObegSD/LAswvp38GpQ/szlqcZrzEkm7bSKg
+         EKTfVW6Bhel0SIP+j8I/DhdTQ+HlWFfaoqHf7nR45lVKxLfvGo4Db7SulYQLGqdRf3
+         uLqMZ8pquSbGpISIfgOUwAvCbSrkHrob0YRdeOto=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.17 047/772] btrfs: zoned: zone finish unused block group
-Date:   Tue,  7 Jun 2022 18:53:59 +0200
-Message-Id: <20220607164950.422368315@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Niels Dossche <dossche.niels@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 057/772] mwifiex: add mutex lock for call in mwifiex_dfs_chan_sw_work_queue
+Date:   Tue,  7 Jun 2022 18:54:09 +0200
+Message-Id: <20220607164950.720372565@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,49 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naohiro Aota <naohiro.aota@wdc.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-commit 74e91b12b11560f01d120751d99d91d54b265d3d upstream.
+[ Upstream commit 3e12968f6d12a34b540c39cbd696a760cc4616f0 ]
 
-While the active zones within an active block group are reset, and their
-active resource is released, the block group itself is kept in the active
-block group list and marked as active. As a result, the list will contain
-more than max_active_zones block groups. That itself is not fatal for the
-device as the zones are properly reset.
+cfg80211_ch_switch_notify uses ASSERT_WDEV_LOCK to assert that
+net_device->ieee80211_ptr->mtx (which is the same as priv->wdev.mtx)
+is held during the function's execution.
+mwifiex_dfs_chan_sw_work_queue is one of its callers, which does not
+hold that lock, therefore violating the assertion.
+Add a lock around the call.
 
-However, that inflated list is, of course, strange. Also, a to-appear
-patch series, which deactivates an active block group on demand, gets
-confused with the wrong list.
+Disclaimer:
+I am currently working on a static analyser to detect missing locks.
+This was a reported case. I manually verified the report by looking
+at the code, so that I do not send wrong information or patches.
+After concluding that this seems to be a true positive, I created
+this patch.
+However, as I do not in fact have this particular hardware,
+I was unable to test it.
 
-So, fix the issue by finishing the unused block group once it gets
-read-only, so that we can release the active resource in an early stage.
-
-Fixes: be1a1d7a5d24 ("btrfs: zoned: finish fully written block group")
-CC: stable@vger.kernel.org # 5.16+
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220321225515.32113-1-dossche.niels@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/block-group.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/wireless/marvell/mwifiex/11h.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/btrfs/block-group.c
-+++ b/fs/btrfs/block-group.c
-@@ -1367,6 +1367,14 @@ void btrfs_delete_unused_bgs(struct btrf
- 			goto next;
- 		}
+diff --git a/drivers/net/wireless/marvell/mwifiex/11h.c b/drivers/net/wireless/marvell/mwifiex/11h.c
+index d2ee6469e67b..3fa25cd64cda 100644
+--- a/drivers/net/wireless/marvell/mwifiex/11h.c
++++ b/drivers/net/wireless/marvell/mwifiex/11h.c
+@@ -303,5 +303,7 @@ void mwifiex_dfs_chan_sw_work_queue(struct work_struct *work)
  
-+		ret = btrfs_zone_finish(block_group);
-+		if (ret < 0) {
-+			btrfs_dec_block_group_ro(block_group);
-+			if (ret == -EAGAIN)
-+				ret = 0;
-+			goto next;
-+		}
-+
- 		/*
- 		 * Want to do this before we do anything else so we can recover
- 		 * properly if we fail to join the transaction.
+ 	mwifiex_dbg(priv->adapter, MSG,
+ 		    "indicating channel switch completion to kernel\n");
++	mutex_lock(&priv->wdev.mtx);
+ 	cfg80211_ch_switch_notify(priv->netdev, &priv->dfs_chandef);
++	mutex_unlock(&priv->wdev.mtx);
+ }
+-- 
+2.35.1
+
 
 
