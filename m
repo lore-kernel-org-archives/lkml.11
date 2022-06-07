@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9220C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:38:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E152AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:38:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380518AbiFGWih (ORCPT
+        id S1351539AbiFGWiu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:38:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41386 "EHLO
+        Tue, 7 Jun 2022 18:38:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378941AbiFGVZK (ORCPT
+        with ESMTP id S1378915AbiFGVZK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:25:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DF0227CEE;
-        Tue,  7 Jun 2022 12:01:25 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522E2150B55;
+        Tue,  7 Jun 2022 12:01:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E978E61787;
-        Tue,  7 Jun 2022 19:01:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F4091C385A2;
-        Tue,  7 Jun 2022 19:01:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D382BB82391;
+        Tue,  7 Jun 2022 19:01:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33704C385A2;
+        Tue,  7 Jun 2022 19:01:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628484;
-        bh=+hczqrVV9QRUroM1CK7I7IRBPGHFmeEUds3FThURv7A=;
+        s=korg; t=1654628481;
+        bh=lhnAK8GVnElKCHUghsb5MIHXsJdX26TqwL3hlYiF/f4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FBT/phw+i57k7PnKxod6J7JDPPHmpM2LkhZ0hGwt3sV7snAfWuNrEFmOQKjqdkCAV
-         d35Qc4X5LawFk4ALHnvVqMz17FkT3h54th7FuW6ovSYJx4BJYd2wnBG8ciDq+AAqD3
-         lN2ofmbQAI3iwJfVXTy7qC2QJoazLlUMfP1ihdoY=
+        b=fACDrYqZjxAjwZ9InRmmxeVld22sJLIMeXJS4SXzv2oJTrQoBttx4y09OrBAslYCw
+         bvhHAUaX+TUX7P5eCDxQAABxTTXrBHZW5uQyEeLuvvEhcL7IY+5TS6XPklZe+Z7+RU
+         B6tMfTsPBuu6gTTV7WjfVtBLCUxWZeXhYN9FpA7c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 346/879] ALSA: pcm: Check for null pointer of pointer substream before dereferencing it
-Date:   Tue,  7 Jun 2022 18:57:44 +0200
-Message-Id: <20220607165012.904143979@linuxfoundation.org>
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Christoph Fritz <chf.fritz@googlemail.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 345/879] drm/panel: simple: Add missing bus flags for Innolux G070Y2-L01
+Date:   Tue,  7 Jun 2022 18:57:43 +0200
+Message-Id: <20220607165012.874995703@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,45 +54,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Ian King <colin.i.king@gmail.com>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit 011b559be832194f992f73d6c0d5485f5925a10b ]
+[ Upstream commit 0f73a559f916b618c0c05186bd644c90cc9e9695 ]
 
-Pointer substream is being dereferenced on the assignment of pointer card
-before substream is being null checked with the macro PCM_RUNTIME_CHECK.
-Although PCM_RUNTIME_CHECK calls BUG_ON, it still is useful to perform the
-the pointer check before card is assigned.
+The DE signal is active high on this display, fill in the missing bus_flags.
+This aligns panel_desc with its display_timing .
 
-Fixes: d4cfb30fce03 ("ALSA: pcm: Set per-card upper limit of PCM buffer allocations")
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-Link: https://lore.kernel.org/r/20220424205945.1372247-1-colin.i.king@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: a5d2ade627dca ("drm/panel: simple: Add support for Innolux G070Y2-L01")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Christoph Fritz <chf.fritz@googlemail.com>
+Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
+Cc: Maxime Ripard <maxime@cerno.tech>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220406093627.18011-1-marex@denx.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/core/pcm_memory.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/panel/panel-simple.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/core/pcm_memory.c b/sound/core/pcm_memory.c
-index 8848d2f3160d..b8296b6eb2c1 100644
---- a/sound/core/pcm_memory.c
-+++ b/sound/core/pcm_memory.c
-@@ -453,7 +453,6 @@ EXPORT_SYMBOL(snd_pcm_lib_malloc_pages);
-  */
- int snd_pcm_lib_free_pages(struct snd_pcm_substream *substream)
- {
--	struct snd_card *card = substream->pcm->card;
- 	struct snd_pcm_runtime *runtime;
+diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
+index a34f4198a534..00b9e1d22087 100644
+--- a/drivers/gpu/drm/panel/panel-simple.c
++++ b/drivers/gpu/drm/panel/panel-simple.c
+@@ -2029,6 +2029,7 @@ static const struct panel_desc innolux_g070y2_l01 = {
+ 		.unprepare = 800,
+ 	},
+ 	.bus_format = MEDIA_BUS_FMT_RGB888_1X7X4_SPWG,
++	.bus_flags = DRM_BUS_FLAG_DE_HIGH,
+ 	.connector_type = DRM_MODE_CONNECTOR_LVDS,
+ };
  
- 	if (PCM_RUNTIME_CHECK(substream))
-@@ -462,6 +461,8 @@ int snd_pcm_lib_free_pages(struct snd_pcm_substream *substream)
- 	if (runtime->dma_area == NULL)
- 		return 0;
- 	if (runtime->dma_buffer_p != &substream->dma_buffer) {
-+		struct snd_card *card = substream->pcm->card;
-+
- 		/* it's a newly allocated buffer.  release it now. */
- 		do_free_pages(card, runtime->dma_buffer_p);
- 		kfree(runtime->dma_buffer_p);
 -- 
 2.35.1
 
