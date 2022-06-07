@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A49CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:49:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FCC5C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:49:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381874AbiFGVtO (ORCPT
+        id S1381543AbiFGVtR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51954 "EHLO
+        Tue, 7 Jun 2022 17:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377801AbiFGUu5 (ORCPT
+        with ESMTP id S1377700AbiFGUux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:50:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2E91FD291;
-        Tue,  7 Jun 2022 11:40:41 -0700 (PDT)
+        Tue, 7 Jun 2022 16:50:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE791FBF68;
+        Tue,  7 Jun 2022 11:40:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97B6E612EC;
-        Tue,  7 Jun 2022 18:40:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0DFFC385A5;
-        Tue,  7 Jun 2022 18:40:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD46CB8233E;
+        Tue,  7 Jun 2022 18:40:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14351C385A2;
+        Tue,  7 Jun 2022 18:40:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627240;
-        bh=jAfyJdtY7AW8Hezy+hcbPYqE7q7fX2MgEkIpU715TEs=;
+        s=korg; t=1654627226;
+        bh=wVbbGLDEgiHbwO+8ceB4LaEgkGTDRdVe8SWyZV+ln8w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KE2sGfqweShAsVoN34p3U2QR5GTHyk5mAwkEzBEIOJIw3gIENd6fyeSzoxkaGOdt8
-         iUDkuD/+ZCZ797ZkVaBEYLshbGIS0xfMCJ3fzsGmlUljZpFmfvYGAM+oUynCvn8JON
-         Z06pPYZDz6bDXXDDfTnrvpldCnHJuUTQDjDLYZhY=
+        b=IwC6N6lnkKFE0rRfDyjTsiIoFZJ760EsMO5sftiZcKuy1cGbAKfksL0MrnELNUQ7Z
+         hGzPdZ6UBN85/NqIJ7tMfJHTVioIJL/PBWEg1DoJtLwBmkS6TkRD+OHB4pdhdvBApL
+         ZzSgGRkgkvutZECvTZfBshxxm+YUMfu6Z5GA0sis=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.17 668/772] landlock: Add clang-format exceptions
-Date:   Tue,  7 Jun 2022 19:04:20 +0200
-Message-Id: <20220607165008.744018940@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.17 646/772] ext4: avoid cycles in directory h-tree
+Date:   Tue,  7 Jun 2022 19:03:58 +0200
+Message-Id: <20220607165008.100029731@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,83 +49,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@digikod.net>
+From: Jan Kara <jack@suse.cz>
 
-commit 6cc2df8e3a3967e7c13a424f87f6efb1d4a62d80 upstream.
+commit 3ba733f879c2a88910744647e41edeefbc0d92b2 upstream.
 
-In preparation to a following commit, add clang-format on and
-clang-format off stanzas around constant definitions.  This enables to
-keep aligned values, which is much more readable than packed
-definitions.
+A maliciously corrupted filesystem can contain cycles in the h-tree
+stored inside a directory. That can easily lead to the kernel corrupting
+tree nodes that were already verified under its hands while doing a node
+split and consequently accessing unallocated memory. Fix the problem by
+verifying traversed block numbers are unique.
 
-Link: https://lore.kernel.org/r/20220506160513.523257-2-mic@digikod.net
 Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220518093332.13986-2-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/uapi/linux/landlock.h |    4 ++++
- security/landlock/fs.c        |    2 ++
- security/landlock/limits.h    |    4 ++++
- 3 files changed, 10 insertions(+)
+ fs/ext4/namei.c |   22 +++++++++++++++++++---
+ 1 file changed, 19 insertions(+), 3 deletions(-)
 
---- a/include/uapi/linux/landlock.h
-+++ b/include/uapi/linux/landlock.h
-@@ -33,7 +33,9 @@ struct landlock_ruleset_attr {
-  * - %LANDLOCK_CREATE_RULESET_VERSION: Get the highest supported Landlock ABI
-  *   version.
-  */
-+/* clang-format off */
- #define LANDLOCK_CREATE_RULESET_VERSION			(1U << 0)
-+/* clang-format on */
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -777,12 +777,14 @@ static struct dx_frame *
+ dx_probe(struct ext4_filename *fname, struct inode *dir,
+ 	 struct dx_hash_info *hinfo, struct dx_frame *frame_in)
+ {
+-	unsigned count, indirect;
++	unsigned count, indirect, level, i;
+ 	struct dx_entry *at, *entries, *p, *q, *m;
+ 	struct dx_root *root;
+ 	struct dx_frame *frame = frame_in;
+ 	struct dx_frame *ret_err = ERR_PTR(ERR_BAD_DX_DIR);
+ 	u32 hash;
++	ext4_lblk_t block;
++	ext4_lblk_t blocks[EXT4_HTREE_LEVEL];
  
- /**
-  * enum landlock_rule_type - Landlock rule type
-@@ -120,6 +122,7 @@ struct landlock_path_beneath_attr {
-  *   :manpage:`access(2)`.
-  *   Future Landlock evolutions will enable to restrict them.
-  */
-+/* clang-format off */
- #define LANDLOCK_ACCESS_FS_EXECUTE			(1ULL << 0)
- #define LANDLOCK_ACCESS_FS_WRITE_FILE			(1ULL << 1)
- #define LANDLOCK_ACCESS_FS_READ_FILE			(1ULL << 2)
-@@ -133,5 +136,6 @@ struct landlock_path_beneath_attr {
- #define LANDLOCK_ACCESS_FS_MAKE_FIFO			(1ULL << 10)
- #define LANDLOCK_ACCESS_FS_MAKE_BLOCK			(1ULL << 11)
- #define LANDLOCK_ACCESS_FS_MAKE_SYM			(1ULL << 12)
-+/* clang-format on */
+ 	memset(frame_in, 0, EXT4_HTREE_LEVEL * sizeof(frame_in[0]));
+ 	frame->bh = ext4_read_dirblock(dir, 0, INDEX);
+@@ -854,6 +856,8 @@ dx_probe(struct ext4_filename *fname, st
+ 	}
  
- #endif /* _UAPI_LINUX_LANDLOCK_H */
---- a/security/landlock/fs.c
-+++ b/security/landlock/fs.c
-@@ -141,10 +141,12 @@ retry:
- }
- 
- /* All access rights that can be tied to files. */
-+/* clang-format off */
- #define ACCESS_FILE ( \
- 	LANDLOCK_ACCESS_FS_EXECUTE | \
- 	LANDLOCK_ACCESS_FS_WRITE_FILE | \
- 	LANDLOCK_ACCESS_FS_READ_FILE)
-+/* clang-format on */
- 
- /*
-  * @path: Should have been checked by get_path_from_fd().
---- a/security/landlock/limits.h
-+++ b/security/landlock/limits.h
-@@ -12,10 +12,14 @@
- #include <linux/limits.h>
- #include <uapi/linux/landlock.h>
- 
-+/* clang-format off */
+ 	dxtrace(printk("Look up %x", hash));
++	level = 0;
++	blocks[0] = 0;
+ 	while (1) {
+ 		count = dx_get_count(entries);
+ 		if (!count || count > dx_get_limit(entries)) {
+@@ -882,15 +886,27 @@ dx_probe(struct ext4_filename *fname, st
+ 			       dx_get_block(at)));
+ 		frame->entries = entries;
+ 		frame->at = at;
+-		if (!indirect--)
 +
- #define LANDLOCK_MAX_NUM_LAYERS		64
- #define LANDLOCK_MAX_NUM_RULES		U32_MAX
- 
- #define LANDLOCK_LAST_ACCESS_FS		LANDLOCK_ACCESS_FS_MAKE_SYM
- #define LANDLOCK_MASK_ACCESS_FS		((LANDLOCK_LAST_ACCESS_FS << 1) - 1)
- 
-+/* clang-format on */
++		block = dx_get_block(at);
++		for (i = 0; i <= level; i++) {
++			if (blocks[i] == block) {
++				ext4_warning_inode(dir,
++					"dx entry: tree cycle block %u points back to block %u",
++					blocks[level], block);
++				goto fail;
++			}
++		}
++		if (++level > indirect)
+ 			return frame;
++		blocks[level] = block;
+ 		frame++;
+-		frame->bh = ext4_read_dirblock(dir, dx_get_block(at), INDEX);
++		frame->bh = ext4_read_dirblock(dir, block, INDEX);
+ 		if (IS_ERR(frame->bh)) {
+ 			ret_err = (struct dx_frame *) frame->bh;
+ 			frame->bh = NULL;
+ 			goto fail;
+ 		}
 +
- #endif /* _SECURITY_LANDLOCK_LIMITS_H */
+ 		entries = ((struct dx_node *) frame->bh->b_data)->entries;
+ 
+ 		if (dx_get_limit(entries) != dx_node_limit(dir)) {
 
 
