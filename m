@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4176CCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:29:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D023DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:29:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382199AbiFGW3T (ORCPT
+        id S1378874AbiFGW30 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:29:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56430 "EHLO
+        Tue, 7 Jun 2022 18:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378769AbiFGVTD (ORCPT
+        with ESMTP id S1380908AbiFGVRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:19:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC63223BF6;
-        Tue,  7 Jun 2022 11:59:34 -0700 (PDT)
+        Tue, 7 Jun 2022 17:17:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3DF721FBFF;
+        Tue,  7 Jun 2022 11:58:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCB44B823A2;
-        Tue,  7 Jun 2022 18:59:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FA29C385A2;
-        Tue,  7 Jun 2022 18:59:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 52523617DA;
+        Tue,  7 Jun 2022 18:58:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 620AFC385A2;
+        Tue,  7 Jun 2022 18:58:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628371;
-        bh=3LvubQ/oMd98qexprLQfHhASSsUZesS2fEQgpHx095c=;
+        s=korg; t=1654628283;
+        bh=iOb0nUWMNLkduNeH44/8s0eyZ5TAcg1492StEU120iE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Oqv34f4JDU4kGfW+T3YVnDbWwTks4wZEa87G/eRZLUdBB+PeFOUeYbqdMQ6eTQeD3
-         qP1VDDR16jCiBgndcrwMEOib0b/Vl7EfnefCMxplBezLG6maNA0r2SmpOdaymE1WiY
-         IudlWvUtjQjsJG7MGNgTgbVX0FBVCGDSLY9XG1Io=
+        b=SICEqomvNZa0SqCfmfKaRBZve9/LNvmxP+7stDvlWjbZ/W3VgQrZCgt7CljKHUn8J
+         tnN/gw3H12wCViVmEaXkRHwAV5Z2FB0JUuAgaRsb6GGqGK2VbyVDGtz+7Qc8Kg4P7f
+         Mlrd/y2MEZaHD8tjKX8HWvIUkQKchihxLYPU8XNo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Paul E. McKenney" <paulmck@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 305/879] scftorture: Fix distribution of short handler delays
-Date:   Tue,  7 Jun 2022 18:57:03 +0200
-Message-Id: <20220607165011.701923598@linuxfoundation.org>
+Subject: [PATCH 5.18 272/879] drm/edid: fix invalid EDID extension block filtering
+Date:   Tue,  7 Jun 2022 18:56:30 +0200
+Message-Id: <20220607165010.745218657@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,44 +52,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul E. McKenney <paulmck@kernel.org>
+From: Jani Nikula <jani.nikula@intel.com>
 
-[ Upstream commit 8106bddbab5f0ba180e6d693c7c1fc6926d57caa ]
+[ Upstream commit 3aefc722ff52076407203b6af9713de567993adf ]
 
-The scftorture test module's scf_handler() function is supposed to provide
-three different distributions of short delays (including "no delay") and
-one distribution of long delays, if specified by the scftorture.longwait
-module parameter.  However, the second of the two non-zero-wait short delays
-is disabled due to the first such delay's "goto out" not being enclosed in
-the "then" clause with the "udelay()".
+The invalid EDID block filtering uses the number of valid EDID
+extensions instead of all EDID extensions for looping the extensions in
+the copy. This is fine, by coincidence, if all the invalid blocks are at
+the end of the EDID. However, it's completely broken if there are
+invalid extensions in the middle; the invalid blocks are included and
+valid blocks are excluded.
 
-This commit therefore adjusts the code to provide the intended set of
-delays.
+Fix it by modifying the base block after, not before, the copy.
 
-Fixes: e9d338a0b179 ("scftorture: Add smp_call_function() torture test")
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Fixes: 14544d0937bf ("drm/edid: Only print the bad edid when aborting")
+Reported-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220330170426.349248-1-jani.nikula@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/scftorture.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/drm_edid.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/scftorture.c b/kernel/scftorture.c
-index dcb0410950e4..5d113aa59e77 100644
---- a/kernel/scftorture.c
-+++ b/kernel/scftorture.c
-@@ -267,9 +267,10 @@ static void scf_handler(void *scfc_in)
+diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
+index cc7bd58369df..c5b86414873e 100644
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -2031,9 +2031,6 @@ struct edid *drm_do_get_edid(struct drm_connector *connector,
+ 
+ 		connector_bad_edid(connector, edid, edid[0x7e] + 1);
+ 
+-		edid[EDID_LENGTH-1] += edid[0x7e] - valid_extensions;
+-		edid[0x7e] = valid_extensions;
+-
+ 		new = kmalloc_array(valid_extensions + 1, EDID_LENGTH,
+ 				    GFP_KERNEL);
+ 		if (!new)
+@@ -2050,6 +2047,9 @@ struct edid *drm_do_get_edid(struct drm_connector *connector,
+ 			base += EDID_LENGTH;
+ 		}
+ 
++		new[EDID_LENGTH - 1] += new[0x7e] - valid_extensions;
++		new[0x7e] = valid_extensions;
++
+ 		kfree(edid);
+ 		edid = new;
  	}
- 	this_cpu_inc(scf_invoked_count);
- 	if (longwait <= 0) {
--		if (!(r & 0xffc0))
-+		if (!(r & 0xffc0)) {
- 			udelay(r & 0x3f);
--		goto out;
-+			goto out;
-+		}
- 	}
- 	if (r & 0xfff)
- 		goto out;
 -- 
 2.35.1
 
