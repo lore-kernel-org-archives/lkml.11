@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B493ECCA489
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3046CCA486
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385596AbiFGWqF (ORCPT
+        id S1443995AbiFHAE7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:46:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34012 "EHLO
+        Tue, 7 Jun 2022 20:04:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380214AbiFGVet (ORCPT
+        with ESMTP id S1357201AbiFGVq5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:34:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1690176D55;
-        Tue,  7 Jun 2022 12:04:31 -0700 (PDT)
+        Tue, 7 Jun 2022 17:46:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18A26237C8F;
+        Tue,  7 Jun 2022 12:07:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5EAACB822C0;
-        Tue,  7 Jun 2022 19:04:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2DB8C385A5;
-        Tue,  7 Jun 2022 19:04:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2585861768;
+        Tue,  7 Jun 2022 19:07:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AD9EC385A5;
+        Tue,  7 Jun 2022 19:07:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628670;
-        bh=wEKKenlvPb1mVxBs0kYMNPZMdqG1HK4ATWQH0fnv72Q=;
+        s=korg; t=1654628871;
+        bh=VW9StuK/MuTT44RE+bcIPvKLk3UTKI9aPZ2cW+nfRCw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DfQ84Bg0EVX0xxJak6MMQXbJ+X0k5rZqckIhnQ2QVTrCkFvjhSCcZdcc/xnqBscWB
-         VjgwW5TSDvA/DZT8N2rgHdaIgtslrNdgXqR/hqoRC2o5bylxgSxIB9NrjmEDAwXD+D
-         6P5VqBd1/uQc8l3wJuSBX/p4ka+J3BaBZZpcYWLo=
+        b=y3GAtwy4pV+bhVp7pdzTgyU8gMy/HYCrEQjAADpenWKwnWrgrc8gdQljlSny4ErzR
+         14v1HkO3WwwmA1SEESMQzFoCQcDmEAFHOfdLjwjJekcpHykseAqt/Sx/YJZJzYJYL9
+         rMdf0/Gjjz3DEpQrQOPOJ4cuLjJIykYNUsTHpxto=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baochen Qiang <quic_bqiang@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Yunfei Dong <yunfei.dong@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 411/879] ath11k: Dont check arvif->is_started before sending management frames
-Date:   Tue,  7 Jun 2022 18:58:49 +0200
-Message-Id: <20220607165014.793023265@linuxfoundation.org>
+Subject: [PATCH 5.18 459/879] media: mediatek: vcodec: Fix v4l2 compliance decoder cmd test fail
+Date:   Tue,  7 Jun 2022 18:59:37 +0200
+Message-Id: <20220607165016.196501276@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,61 +53,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baochen Qiang <quic_bqiang@quicinc.com>
+From: Yunfei Dong <yunfei.dong@mediatek.com>
 
-[ Upstream commit 355333a217541916576351446b5832fec7930566 ]
+[ Upstream commit 08a83828825cbf3bc2c9f582a4cd4da9f40c77d6 ]
 
-Commit 66307ca04057 ("ath11k: fix mgmt_tx_wmi cmd sent to FW for
-deleted vdev") wants both of below two conditions are true before
-sending management frames:
+Will return -EINVAL using standard framework api when test stateless
+decoder with cmd VIDIOC_(TRY)DECODER_CMD. Disable them to adjust v4l2
+compliance test for user driver(GStreamer/Chrome) won't use decoder cmd.
 
-1: ar->allocated_vdev_map & (1LL << arvif->vdev_id)
-2: arvif->is_started
-
-Actually the second one is not necessary because with the first one
-we can make sure the vdev is present.
-
-Also use ar->conf_mutex to synchronize vdev delete and mgmt. TX.
-
-This issue is found in case of Passpoint scenario where ath11k
-needs to send action frames before vdev is started.
-
-Fix it by removing the second condition.
-
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-01720.1-QCAHSPSWPL_V1_V2_SILICONZ_LITE-1
-
-Fixes: 66307ca04057 ("ath11k: fix mgmt_tx_wmi cmd sent to FW for deleted vdev")
-Signed-off-by: Baochen Qiang <quic_bqiang@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220506013614.1580274-3-quic_bqiang@quicinc.com
+Fixes: 8cdc3794b2e3 ("media: mtk-vcodec: vdec: support stateless API")
+Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/mac.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ .../media/platform/mediatek/vcodec/mtk_vcodec_dec.c | 13 +------------
+ .../platform/mediatek/vcodec/mtk_vcodec_dec_drv.c   |  3 +++
+ 2 files changed, 4 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 2c8d5f2a0517..54d738bdee0e 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5520,8 +5520,8 @@ static void ath11k_mgmt_over_wmi_tx_work(struct work_struct *work)
- 		}
- 
- 		arvif = ath11k_vif_to_arvif(skb_cb->vif);
--		if (ar->allocated_vdev_map & (1LL << arvif->vdev_id) &&
--		    arvif->is_started) {
-+		mutex_lock(&ar->conf_mutex);
-+		if (ar->allocated_vdev_map & (1LL << arvif->vdev_id)) {
- 			ret = ath11k_mac_mgmt_tx_wmi(ar, arvif, skb);
- 			if (ret) {
- 				ath11k_warn(ar->ab, "failed to tx mgmt frame, vdev_id %d :%d\n",
-@@ -5539,6 +5539,7 @@ static void ath11k_mgmt_over_wmi_tx_work(struct work_struct *work)
- 				    arvif->is_started);
- 			ath11k_mgmt_over_wmi_tx_drop(ar, skb);
- 		}
-+		mutex_unlock(&ar->conf_mutex);
- 	}
+diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
+index 130ecef2e766..c8ee5e2b4f69 100644
+--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
++++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
+@@ -47,14 +47,7 @@ static struct mtk_q_data *mtk_vdec_get_q_data(struct mtk_vcodec_ctx *ctx,
+ static int vidioc_try_decoder_cmd(struct file *file, void *priv,
+ 				struct v4l2_decoder_cmd *cmd)
+ {
+-	struct mtk_vcodec_ctx *ctx = fh_to_ctx(priv);
+-
+-	/* Use M2M stateless helper if relevant */
+-	if (ctx->dev->vdec_pdata->uses_stateless_api)
+-		return v4l2_m2m_ioctl_stateless_try_decoder_cmd(file, priv,
+-								cmd);
+-	else
+-		return v4l2_m2m_ioctl_try_decoder_cmd(file, priv, cmd);
++	return v4l2_m2m_ioctl_try_decoder_cmd(file, priv, cmd);
  }
  
+ 
+@@ -69,10 +62,6 @@ static int vidioc_decoder_cmd(struct file *file, void *priv,
+ 	if (ret)
+ 		return ret;
+ 
+-	/* Use M2M stateless helper if relevant */
+-	if (ctx->dev->vdec_pdata->uses_stateless_api)
+-		return v4l2_m2m_ioctl_stateless_decoder_cmd(file, priv, cmd);
+-
+ 	mtk_v4l2_debug(1, "decoder cmd=%u", cmd->cmd);
+ 	dst_vq = v4l2_m2m_get_vq(ctx->m2m_ctx,
+ 				V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
+diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
+index 128edcf541e1..fe7b2f1739b1 100644
+--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
++++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
+@@ -400,6 +400,9 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	if (dev->vdec_pdata->uses_stateless_api) {
++		v4l2_disable_ioctl(vfd_dec, VIDIOC_DECODER_CMD);
++		v4l2_disable_ioctl(vfd_dec, VIDIOC_TRY_DECODER_CMD);
++
+ 		dev->mdev_dec.dev = &pdev->dev;
+ 		strscpy(dev->mdev_dec.model, MTK_VCODEC_DEC_NAME,
+ 			sizeof(dev->mdev_dec.model));
 -- 
 2.35.1
 
