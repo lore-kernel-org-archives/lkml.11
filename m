@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B5E6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:34:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3353C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:34:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382319AbiFGWeB (ORCPT
+        id S1381311AbiFGWeF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:34:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35472 "EHLO
+        Tue, 7 Jun 2022 18:34:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378188AbiFGVWK (ORCPT
+        with ESMTP id S1378213AbiFGVWN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:22:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D201A15D33E;
-        Tue,  7 Jun 2022 12:00:02 -0700 (PDT)
+        Tue, 7 Jun 2022 17:22:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA974133269;
+        Tue,  7 Jun 2022 12:00:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A1029B823A5;
-        Tue,  7 Jun 2022 18:59:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E71E2C385A2;
-        Tue,  7 Jun 2022 18:59:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 939E1617DA;
+        Tue,  7 Jun 2022 19:00:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3658C385A5;
+        Tue,  7 Jun 2022 19:00:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628374;
-        bh=iCzqAaDlEauDmKFP1NvQj5z/6UrWCL92RGzlJmskS8E=;
+        s=korg; t=1654628402;
+        bh=58lJsLP5IalNjhnV2OFb+wisSpm/oUI8y24iln421mA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d/eMWXYtGJKRePo8EWG8kMfv/8skxSc0Occ93nxEiStwpfGHXhcMkaOo0GnzgWEya
-         PqO0gBNKP1jkfO59bQin892Bp9BJ2VWlTIUA7MPpgioUtD0szCOhEFgL/9xuZCfwYV
-         J6WIcRBWKEFWLyBnaWvBoCe69ms6BzyjEQ7wckZM=
+        b=g51XDyPCOASv1tUZNxx1sSRp3BtWiBq/kMEXGUKZvoiauNajvdPzC0wiCstLtinsO
+         j0I4dTexYmsXddEPRjqaiLhOn0Ve5OdyEecQ6GUKhiCShGideNJcoXKowSIzvn9cAG
+         7Bzv5IuCPxoTE5o01DqFIys+twAJjDM3t4juJxKg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, YueHaibing <yuehaibing@huawei.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Ansuel Smith <ansuelsmth@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 306/879] net: ethernet: ti: am65-cpsw: Fix build error without PHYLINK
-Date:   Tue,  7 Jun 2022 18:57:04 +0200
-Message-Id: <20220607165011.730721057@linuxfoundation.org>
+Subject: [PATCH 5.18 315/879] net: dsa: qca8k: correctly handle mdio read error
+Date:   Tue,  7 Jun 2022 18:57:13 +0200
+Message-Id: <20220607165011.991520585@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,43 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+From: Ansuel Smith <ansuelsmth@gmail.com>
 
-[ Upstream commit bfa323c659b1016c8e896920ba08cd6914cc3b0c ]
+[ Upstream commit 6cfc03b602200c5cbbd8d906fd905547814e83df ]
 
-If PHYLINK is n, build fails:
+Restore original way to handle mdio read error by returning 0xffff.
+This was wrongly changed when the internal_mdio_read was introduced,
+now that both legacy and internal use the same function, make sure that
+they behave the same way.
 
-drivers/net/ethernet/ti/am65-cpsw-ethtool.o: In function `am65_cpsw_set_link_ksettings':
-am65-cpsw-ethtool.c:(.text+0x118): undefined reference to `phylink_ethtool_ksettings_set'
-drivers/net/ethernet/ti/am65-cpsw-ethtool.o: In function `am65_cpsw_get_link_ksettings':
-am65-cpsw-ethtool.c:(.text+0x138): undefined reference to `phylink_ethtool_ksettings_get'
-drivers/net/ethernet/ti/am65-cpsw-ethtool.o: In function `am65_cpsw_set_eee':
-am65-cpsw-ethtool.c:(.text+0x158): undefined reference to `phylink_ethtool_set_eee'
-
-Select PHYLINK for TI_K3_AM65_CPSW_NUSS to fix this.
-
-Fixes: e8609e69470f ("net: ethernet: ti: am65-cpsw: Convert to PHYLINK")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Link: https://lore.kernel.org/r/20220409105931.9080-1-yuehaibing@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: ce062a0adbfe ("net: dsa: qca8k: fix kernel panic with legacy mdio mapping")
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ti/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/dsa/qca8k.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
-index affcf92cd3aa..fb30bc5d56cb 100644
---- a/drivers/net/ethernet/ti/Kconfig
-+++ b/drivers/net/ethernet/ti/Kconfig
-@@ -94,6 +94,7 @@ config TI_K3_AM65_CPSW_NUSS
- 	depends on ARCH_K3 && OF && TI_K3_UDMA_GLUE_LAYER
- 	select NET_DEVLINK
- 	select TI_DAVINCI_MDIO
-+	select PHYLINK
- 	imply PHY_TI_GMII_SEL
- 	depends on TI_K3_AM65_CPTS || !TI_K3_AM65_CPTS
- 	help
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index d3ed0a7f8077..22b328bd7cd5 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -1287,7 +1287,12 @@ qca8k_internal_mdio_read(struct mii_bus *slave_bus, int phy, int regnum)
+ 	if (ret >= 0)
+ 		return ret;
+ 
+-	return qca8k_mdio_read(priv, phy, regnum);
++	ret = qca8k_mdio_read(priv, phy, regnum);
++
++	if (ret < 0)
++		return 0xffff;
++
++	return ret;
+ }
+ 
+ static int
 -- 
 2.35.1
 
