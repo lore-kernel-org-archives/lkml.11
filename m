@@ -2,92 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA89CCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40784CCA48F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353927AbiFGSqR (ORCPT
+        id S1354054AbiFGSq3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:46:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40054 "EHLO
+        Tue, 7 Jun 2022 14:46:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352094AbiFGSQx (ORCPT
+        with ESMTP id S1352088AbiFGSQx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:16:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1CDDEA3;
-        Tue,  7 Jun 2022 10:50:31 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6F3513393A;
+        Tue,  7 Jun 2022 10:50:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E62E6146F;
-        Tue,  7 Jun 2022 17:50:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C24EC385A5;
-        Tue,  7 Jun 2022 17:50:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624230;
-        bh=JGu5/sJQWhxYWpYIMKgqESsrp3SFHjGVwap1IYN4MQY=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 850F5B82340;
+        Tue,  7 Jun 2022 17:50:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55BD8C3411C;
+        Tue,  7 Jun 2022 17:50:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624223;
+        bh=jGr8WXM1jdPMD04g4tRJ+Sq3zW2YgJpdz6hJ9tysoig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s8pag7z1wDW3ZbzhY7LEG+ehMxdDea8AeAoaiks4U/GRRpzDaz0eD7Pz4pcRD7cpV
-         hSqCFQEA4IBrkDIKlmO/x1RNhs+I3Bq1Hpw9sVUgbQMNkzVykwmusQmspCFY0QXG5B
-         Pg2wSllvMMZWs5dBOVeQS6fySuFcVy1LG3yvBV8Q=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 251/667] drm/msm/dpu: adjust display_v_end for eDP and DP
-Date:   Tue,  7 Jun 2022 18:58:36 +0200
-Message-Id: <20220607164942.312261844@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=mAcUeu7QSnJjSR2faZQyjEwvrjDalVv2ZSN+cFIG/RTE1nVk3MuacFmVW655vVIJE
+         GTho+AFPcq2Qq49Qv51+CBOZyjNndhxFG4N8x8sRREan/y/E4iA2FJgGvZGG0DHuz0
+         8DPsKJnH9i0UGqEJtamlpTtv8IVx0WNVBdJwkoSQyaA1d1a+KGgzHgURGeCX6GZSoD
+         vQyjKEwkpB27sd286cr2ULOTBYQzO8T3C7rlXNElYZByr6DIZkXC8wfUlAbPnm+Wz1
+         m8PZVWfqmS3P3WogXojaQKf63GlYbKg22VZJqgFL2JaJ7tmmANdLAcPFvi7NpCScM5
+         SmXDHBTWqq44A==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 20/68] usb: dwc3: host: Stop setting the ACPI companion
+Date:   Tue,  7 Jun 2022 13:47:46 -0400
+Message-Id: <20220607174846.477972-20-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-[ Upstream commit e18aeea7f5efb9508722c8c7fd4d32e6f8cdfe50 ]
+[ Upstream commit 7fd069d65da2e20b1caec3b7bcf9dfbe28c04bb2 ]
 
-The “DP timing” requires the active region to be defined in the
-bottom-right corner of the frame dimensions which is different
-with DSI. Therefore both display_h_end and display_v_end need
-to be adjusted accordingly. However current implementation has
-only display_h_end adjusted.
+It is no longer needed. The sysdev pointer is now used when
+assigning the ACPI companions to the xHCI ports and USB
+devices.
 
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+Assigning the ACPI companion here resulted in the
+fwnode->secondary pointer to be replaced also for the parent
+dwc3 device since the primary fwnode (the ACPI companion)
+was shared. That was unintentional and it created potential
+side effects like resource leaks.
 
-Fixes: fc3a69ec68d3 ("drm/msm/dpu: intf timing path for displayport")
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/476277/
-Link: https://lore.kernel.org/r/1645824192-29670-2-git-send-email-quic_khsieh@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Link: https://lore.kernel.org/r/20220428111056.3558-3-heikki.krogerus@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/dwc3/host.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
-index 116e2b5b1a90..284f5610dc35 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
-@@ -148,6 +148,7 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
- 		active_v_end = active_v_start + (p->yres * hsync_period) - 1;
+diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
+index eda871973d6c..f56c30cf151e 100644
+--- a/drivers/usb/dwc3/host.c
++++ b/drivers/usb/dwc3/host.c
+@@ -7,7 +7,6 @@
+  * Authors: Felipe Balbi <balbi@ti.com>,
+  */
  
- 		display_v_start += p->hsync_pulse_width + p->h_back_porch;
-+		display_v_end   -= p->h_front_porch; 
+-#include <linux/acpi.h>
+ #include <linux/irq.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+@@ -83,7 +82,6 @@ int dwc3_host_init(struct dwc3 *dwc)
+ 	}
  
- 		active_hctl = (active_h_end << 16) | active_h_start;
- 		display_hctl = active_hctl;
+ 	xhci->dev.parent	= dwc->dev;
+-	ACPI_COMPANION_SET(&xhci->dev, ACPI_COMPANION(dwc->dev));
+ 
+ 	dwc->xhci = xhci;
+ 
 -- 
 2.35.1
-
-
 
