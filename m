@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21826C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:44:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAB21C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345441AbiFGRoU (ORCPT
+        id S1348114AbiFGRoZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:44:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
+        Tue, 7 Jun 2022 13:44:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347936AbiFGRbX (ORCPT
+        with ESMTP id S1348031AbiFGRb3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:31:23 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062EB11CB48;
-        Tue,  7 Jun 2022 10:28:51 -0700 (PDT)
+        Tue, 7 Jun 2022 13:31:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0872B11E1E5;
+        Tue,  7 Jun 2022 10:29:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 75CCDCE23D0;
-        Tue,  7 Jun 2022 17:28:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BB6CC385A5;
-        Tue,  7 Jun 2022 17:28:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D788B80B66;
+        Tue,  7 Jun 2022 17:29:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECE3CC34115;
+        Tue,  7 Jun 2022 17:29:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622927;
-        bh=GZ1iR0fIvOKJSYdWQ6afDonHcNyO9EnM5YTlpgdNY/A=;
+        s=korg; t=1654622944;
+        bh=xBv6tJDlch4Q+R44u/yc6uFBFpYzdy9GWDdo29+6hIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JWudSFdGuh7gJPaFDNY/Zr5UcBcDP+HcZUtFOApffyBcSDkKrsKSiASnJILkTYU8F
-         z+4UoQwuWqZ8+wnNZKM2wkw7NtljOklnA0C8BP14pa4mlmGKeeKqwr/CKsJD34Tarf
-         45G4k8vqJlGp0LFkp7/6xwkNc+kWr052NBYbhSWg=
+        b=uJ+FPFha2qY8pYXtiz//cffG9Qe/InT0kLtKWaX+onCcDUfVCn4DACyoiP/1x4zM/
+         k4UgSWtkHQEHZ53YM1Rp5VUudZlaBUPkVspHdK3Dm6Qt56ODiaUkZzthNWLrU1P0TS
+         85y7R5du0tDvpy7irRa5lGd7uUWvgngIyMUdUX3g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonas Karlman <jonas@kwiboo.se>,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Ezequiel Garcia <ezequiel@collabora.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 232/452] media: rkvdec: h264: Fix bit depth wrap in pps packet
-Date:   Tue,  7 Jun 2022 19:01:29 +0200
-Message-Id: <20220607164915.475815365@linuxfoundation.org>
+Subject: [PATCH 5.10 238/452] drm/i915: Fix CFI violation with show_dynamic_id()
+Date:   Tue,  7 Jun 2022 19:01:35 +0200
+Message-Id: <20220607164915.652871599@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -53,43 +53,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonas Karlman <jonas@kwiboo.se>
+From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit a074aa4760d1dad0bd565c0f66e7250f5f219ab0 ]
+[ Upstream commit 58606220a2f1407a7516c547f09a1ba7b4350a73 ]
 
-The luma and chroma bit depth fields in the pps packet are 3 bits wide.
-8 is wrongly added to the bit depth values written to these 3 bit fields.
-Because only the 3 LSB are written, the hardware was configured
-correctly.
+When an attribute group is created with sysfs_create_group(), the
+->sysfs_ops() callback is set to kobj_sysfs_ops, which sets the ->show()
+callback to kobj_attr_show(). kobj_attr_show() uses container_of() to
+get the ->show() callback from the attribute it was passed, meaning the
+->show() callback needs to be the same type as the ->show() callback in
+'struct kobj_attribute'.
 
-Correct this by not adding 8 to the luma and chroma bit depth value.
+However, show_dynamic_id() has the type of the ->show() callback in
+'struct device_attribute', which causes a CFI violation when opening the
+'id' sysfs node under drm/card0/metrics. This happens to work because
+the layout of 'struct kobj_attribute' and 'struct device_attribute' are
+the same, so the container_of() cast happens to allow the ->show()
+callback to still work.
 
-Fixes: cd33c830448ba ("media: rkvdec: Add the rkvdec driver")
-Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
-Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@collabora.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Change the type of show_dynamic_id() to match the ->show() callback in
+'struct kobj_attributes' and update the type of sysfs_metric_id to
+match, which resolves the CFI violation.
+
+Fixes: f89823c21224 ("drm/i915/perf: Implement I915_PERF_ADD/REMOVE_CONFIG interface")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Sami Tolvanen <samitolvanen@google.com>
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220513075136.1027007-1-tvrtko.ursulin@linux.intel.com
+(cherry picked from commit 18fb42db05a0b93ab5dd5eab5315e50eaa3ca620)
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/rkvdec/rkvdec-h264.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/i915/i915_perf.c       | 4 ++--
+ drivers/gpu/drm/i915/i915_perf_types.h | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-index 52ffa31f08ac..7013f7ce3678 100644
---- a/drivers/staging/media/rkvdec/rkvdec-h264.c
-+++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
-@@ -662,8 +662,8 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
- 	WRITE_PPS(0xff, PROFILE_IDC);
- 	WRITE_PPS(1, CONSTRAINT_SET3_FLAG);
- 	WRITE_PPS(sps->chroma_format_idc, CHROMA_FORMAT_IDC);
--	WRITE_PPS(sps->bit_depth_luma_minus8 + 8, BIT_DEPTH_LUMA);
--	WRITE_PPS(sps->bit_depth_chroma_minus8 + 8, BIT_DEPTH_CHROMA);
-+	WRITE_PPS(sps->bit_depth_luma_minus8, BIT_DEPTH_LUMA);
-+	WRITE_PPS(sps->bit_depth_chroma_minus8, BIT_DEPTH_CHROMA);
- 	WRITE_PPS(0, QPPRIME_Y_ZERO_TRANSFORM_BYPASS_FLAG);
- 	WRITE_PPS(sps->log2_max_frame_num_minus4, LOG2_MAX_FRAME_NUM_MINUS4);
- 	WRITE_PPS(sps->max_num_ref_frames, MAX_NUM_REF_FRAMES);
+diff --git a/drivers/gpu/drm/i915/i915_perf.c b/drivers/gpu/drm/i915/i915_perf.c
+index 74e66dea5708..5e670aace59f 100644
+--- a/drivers/gpu/drm/i915/i915_perf.c
++++ b/drivers/gpu/drm/i915/i915_perf.c
+@@ -3964,8 +3964,8 @@ static struct i915_oa_reg *alloc_oa_regs(struct i915_perf *perf,
+ 	return ERR_PTR(err);
+ }
+ 
+-static ssize_t show_dynamic_id(struct device *dev,
+-			       struct device_attribute *attr,
++static ssize_t show_dynamic_id(struct kobject *kobj,
++			       struct kobj_attribute *attr,
+ 			       char *buf)
+ {
+ 	struct i915_oa_config *oa_config =
+diff --git a/drivers/gpu/drm/i915/i915_perf_types.h b/drivers/gpu/drm/i915/i915_perf_types.h
+index a36a455ae336..534951ff38bb 100644
+--- a/drivers/gpu/drm/i915/i915_perf_types.h
++++ b/drivers/gpu/drm/i915/i915_perf_types.h
+@@ -54,7 +54,7 @@ struct i915_oa_config {
+ 
+ 	struct attribute_group sysfs_metric;
+ 	struct attribute *attrs[2];
+-	struct device_attribute sysfs_metric_id;
++	struct kobj_attribute sysfs_metric_id;
+ 
+ 	struct kref ref;
+ 	struct rcu_head rcu;
 -- 
 2.35.1
 
