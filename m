@@ -2,124 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B7FCCA493
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44CECCCA494
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:46:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382161AbiFGVqj (ORCPT
+        id S1382189AbiFGVqp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:46:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
+        Tue, 7 Jun 2022 17:46:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379038AbiFGUwt (ORCPT
+        with ESMTP id S1378356AbiFGUvk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:52:49 -0400
-Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AADF6C0FD
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:43:42 -0700 (PDT)
-X-ASG-Debug-ID: 1654627420-1cf43917f3396640001-xx1T2L
-Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with ESMTP id 6i000wcOepKFgepC; Tue, 07 Jun 2022 14:43:40 -0400 (EDT)
-X-Barracuda-Envelope-From: tonyb@cybernetics.com
-X-ASG-Whitelist: Client
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=cybernetics.com; s=mail;
-        bh=PTdmYDYQtaJrowq+CO1r9NBKL5iWIOZcs9cyzc3ahus=;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:Cc:To:From:
-        Content-Language:Subject:MIME-Version:Date:Message-ID; b=eFhH/8oZoQRI6kwNblqq
-        GO5bRSb+r01mmH471kRl9m4M/4VIu+CfaebGobYNsjfg2fnazTi3XAKgI8m7tUKWYNLACdWIB6xn1
-        VaxxNPgygaNxZbPv24YRGmXC9TWyOMflOFNoBQif05lIe4+grirAT5xh3/y5RRsrnZO8H3xzgs=
-Received: from [10.157.2.224] (HELO [192.168.200.1])
-  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
-  with ESMTPS id 11859449; Tue, 07 Jun 2022 14:43:40 -0400
-Message-ID: <568967ea-13a7-4a09-6846-0891032e6cfe@cybernetics.com>
-Date:   Tue, 7 Jun 2022 14:43:39 -0400
+        Tue, 7 Jun 2022 16:51:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E7461FE8F9;
+        Tue,  7 Jun 2022 11:42:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 348836168A;
+        Tue,  7 Jun 2022 18:42:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 425FEC385A2;
+        Tue,  7 Jun 2022 18:42:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654627325;
+        bh=TTRLeWP585qaTBuHxBSbgoJsnhHfO1Vaib0ioqTE8Y0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tXhMA1AgnhzLYGlGrq2b/CBWLSTaL7m5fBA/Nf0kepV/DtBpFgQo9AKtv2z5JbxxC
+         1qOHAL5Q3eLLLNJCa8qe1yRMRGt0Jilq14dRGAVpE/w8kJ9bCZwgM3ywbv+dKwSKam
+         cfj7uLp4ortn2p0xNa2HAZlbuQDvdZQPGYK+wqro=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Ezequiel Garcia <ezequiel@collabora.com>,
+        Pascal Speck <kernel@iktek.de>,
+        Fabio Estevam <festevam@denx.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.17 700/772] media: coda: Fix reported H264 profile
+Date:   Tue,  7 Jun 2022 19:04:52 +0200
+Message-Id: <20220607165009.677034602@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: [PATCH v6 06/11] dmapool: debug: prevent endless loop in case of
- corruption
-Content-Language: en-US
-X-ASG-Orig-Subj: [PATCH v6 06/11] dmapool: debug: prevent endless loop in case of
- corruption
-From:   Tony Battersby <tonyb@cybernetics.com>
-To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc:     iommu@lists.linux-foundation.org, kernel-team@fb.com,
-        Matthew Wilcox <willy@infradead.org>,
-        Keith Busch <kbusch@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Tony Lindgren <tony@atomide.com>
-References: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
-In-Reply-To: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Barracuda-Connect: UNKNOWN[10.10.4.126]
-X-Barracuda-Start-Time: 1654627420
-X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
-X-Barracuda-BRTS-Status: 1
-X-Virus-Scanned: by bsmtpd at cybernetics.com
-X-Barracuda-Scan-Msg-Size: 1849
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Prevent a possible endless loop with DMAPOOL_DEBUG enabled if a buggy
-driver corrupts DMA pool memory.
+From: Nicolas Dufresne <nicolas.dufresne@collabora.com>
 
-Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
+commit 7110c08ea71953a7fc342f0b76046f72442cf26c upstream.
+
+The CODA960 manual states that ASO/FMO features of baseline are not
+supported, so for this reason this driver should only report
+constrained baseline support.
+
+This fixes negotiation issue with constrained baseline content
+on GStreamer 1.17.1.
+
+ASO/FMO features are unsupported for the encoder and untested for the
+decoder because there is currently no userspace support. Neither GStreamer
+parsers nor FFMPEG parsers support ASO/FMO.
+
+Cc: stable@vger.kernel.org
+Fixes: 42a68012e67c2 ("media: coda: add read-only h.264 decoder profile/level controls")
+Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
+Tested-by: Pascal Speck <kernel@iktek.de>
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/dmapool.c | 37 ++++++++++++++++++++++++++++++-------
- 1 file changed, 30 insertions(+), 7 deletions(-)
+ drivers/media/platform/coda/coda-common.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/mm/dmapool.c b/mm/dmapool.c
-index d3e5a6151fb4..facdb3571976 100644
---- a/mm/dmapool.c
-+++ b/mm/dmapool.c
-@@ -417,16 +417,39 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
- 	}
- 	{
- 		unsigned int chain = page->offset;
-+		unsigned int free_blks = 0;
-+
- 		while (chain < pool->allocation) {
--			if (chain != offset) {
--				chain = *(int *)(page->vaddr + chain);
--				continue;
-+			if (unlikely(chain == offset)) {
-+				spin_unlock_irqrestore(&pool->lock, flags);
-+				dev_err(pool->dev,
-+					"%s %s, dma %pad already free\n",
-+					__func__, pool->name, &dma);
-+				return;
- 			}
--			spin_unlock_irqrestore(&pool->lock, flags);
--			dev_err(pool->dev, "%s %s, dma %pad already free\n",
--				__func__, pool->name, &dma);
--			return;
-+
-+			/*
-+			 * A buggy driver could corrupt the freelist by
-+			 * use-after-free, buffer overflow, etc.  Besides
-+			 * checking for corruption, this also prevents an
-+			 * endless loop in case corruption causes a circular
-+			 * loop in the freelist.
-+			 */
-+			if (unlikely(++free_blks + page->in_use >
-+				     pool->blks_per_alloc)) {
-+ freelist_corrupt:
-+				spin_unlock_irqrestore(&pool->lock, flags);
-+				dev_err(pool->dev,
-+					"%s %s, freelist corrupted\n",
-+					__func__, pool->name);
-+				return;
-+			}
-+
-+			chain = *(int *)(page->vaddr + chain);
- 		}
-+		if (unlikely(free_blks + page->in_use !=
-+			     pool->blks_per_alloc))
-+			goto freelist_corrupt;
- 	}
- 	memset(vaddr, POOL_POISON_FREED, pool->size);
- #endif
--- 
-2.25.1
+--- a/drivers/media/platform/coda/coda-common.c
++++ b/drivers/media/platform/coda/coda-common.c
+@@ -2352,8 +2352,8 @@ static void coda_encode_ctrls(struct cod
+ 		V4L2_CID_MPEG_VIDEO_H264_CHROMA_QP_INDEX_OFFSET, -12, 12, 1, 0);
+ 	v4l2_ctrl_new_std_menu(&ctx->ctrls, &coda_ctrl_ops,
+ 		V4L2_CID_MPEG_VIDEO_H264_PROFILE,
+-		V4L2_MPEG_VIDEO_H264_PROFILE_BASELINE, 0x0,
+-		V4L2_MPEG_VIDEO_H264_PROFILE_BASELINE);
++		V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_BASELINE, 0x0,
++		V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_BASELINE);
+ 	if (ctx->dev->devtype->product == CODA_HX4 ||
+ 	    ctx->dev->devtype->product == CODA_7541) {
+ 		v4l2_ctrl_new_std_menu(&ctx->ctrls, &coda_ctrl_ops,
+@@ -2434,7 +2434,7 @@ static void coda_decode_ctrls(struct cod
+ 	ctx->h264_profile_ctrl = v4l2_ctrl_new_std_menu(&ctx->ctrls,
+ 		&coda_ctrl_ops, V4L2_CID_MPEG_VIDEO_H264_PROFILE,
+ 		V4L2_MPEG_VIDEO_H264_PROFILE_HIGH,
+-		~((1 << V4L2_MPEG_VIDEO_H264_PROFILE_BASELINE) |
++		~((1 << V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_BASELINE) |
+ 		  (1 << V4L2_MPEG_VIDEO_H264_PROFILE_MAIN) |
+ 		  (1 << V4L2_MPEG_VIDEO_H264_PROFILE_HIGH)),
+ 		V4L2_MPEG_VIDEO_H264_PROFILE_HIGH);
+
 
