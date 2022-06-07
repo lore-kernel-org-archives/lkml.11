@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B84E9CCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32584C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383870AbiFGWos (ORCPT
+        id S1383241AbiFGWo3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:44:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55846 "EHLO
+        Tue, 7 Jun 2022 18:44:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380806AbiFGVbT (ORCPT
+        with ESMTP id S1381074AbiFGVbf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:31:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A4A22AE6D;
-        Tue,  7 Jun 2022 12:03:30 -0700 (PDT)
+        Tue, 7 Jun 2022 17:31:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E00322CBDA;
+        Tue,  7 Jun 2022 12:04:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E199617CC;
-        Tue,  7 Jun 2022 19:03:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F5F5C385A2;
-        Tue,  7 Jun 2022 19:03:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20E3FB822C0;
+        Tue,  7 Jun 2022 19:04:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78455C385A2;
+        Tue,  7 Jun 2022 19:03:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628608;
-        bh=n7mdJGl0agHnUCSyXIFfvAF7u5JxOgJlNavYdXtgUdg=;
+        s=korg; t=1654628639;
+        bh=6X4d72LwQTIc+6PTx5vEOmfhb6pBrV/KYQO5s5tQhc4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zl2x56pAyqpcOi5S9SW+s87jA5mMl0Jmpk1VPUKriPHxrCctVnXDV/NUPh6i+5LfO
-         LJCqGk8Gx4pDMzOVG8/W6y8BUTMbIZOf0QTEdiY9zAxa1H9I0/HaCfS1NCA8b449RU
-         0m/MDRGyFdBed4uNT4WyWCgSdVmQFrqqIFFDix/4=
+        b=tcOLTucFpB7oKXo8+0/TBNh/1OdWv1v2dnf9PXnFiGWcJnK2/467dmbjs6QTNFIu9
+         c21TanQf/b2w7BjGlA/XEs3AcWfS8mTQ/eQnMrXhOosk/VFVlRtL1gu3AP3BfPp9xG
+         XqYlOdInJYdKwbOr4pb7bCvbmf4/fODKH477R18Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tong Tiangen <tongtiangen@huawei.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 391/879] arm64: fix types in copy_highpage()
-Date:   Tue,  7 Jun 2022 18:58:29 +0200
-Message-Id: <20220607165014.214376232@linuxfoundation.org>
+Subject: [PATCH 5.18 401/879] drm/msm: return an error pointer in msm_gem_prime_get_sg_table()
+Date:   Tue,  7 Jun 2022 18:58:39 +0200
+Message-Id: <20220607165014.502970283@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,48 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tong Tiangen <tongtiangen@huawei.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 921d161f15d6b090599f6a8c23f131969edbd1fa ]
+[ Upstream commit cf575e31611eb6dccf08fad02e57e35b2187704d ]
 
-In copy_highpage() the `kto` and `kfrom` local variables are pointers to
-struct page, but these are used to hold arbitrary pointers to kernel memory
-. Each call to page_address() returns a void pointer to memory associated
-with the relevant page, and copy_page() expects void pointers to this
-memory.
+The msm_gem_prime_get_sg_table() needs to return error pointers on
+error.  This is called from drm_gem_map_dma_buf() and returning a
+NULL will lead to a crash in that function.
 
-This inconsistency was introduced in commit 2563776b41c3 ("arm64: mte:
-Tags-aware copy_{user_,}highpage() implementations") and while this
-doesn't appear to be harmful in practice it is clearly wrong.
-
-Correct this by making `kto` and `kfrom` void pointers.
-
-Fixes: 2563776b41c3 ("arm64: mte: Tags-aware copy_{user_,}highpage() implementations")
-Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
-Acked-by: Mark Rutland <mark.rutland@arm.com>
-Reviewed-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-Link: https://lore.kernel.org/r/20220420030418.3189040-3-tongtiangen@huawei.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Fixes: ac45146733b0 ("drm/msm: fix msm_gem_prime_get_sg_table()")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/485023/
+Link: https://lore.kernel.org/r/YnOmtS5tfENywR9m@kili
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/mm/copypage.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/msm_gem_prime.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/mm/copypage.c b/arch/arm64/mm/copypage.c
-index b5447e53cd73..0dea80bf6de4 100644
---- a/arch/arm64/mm/copypage.c
-+++ b/arch/arm64/mm/copypage.c
-@@ -16,8 +16,8 @@
+diff --git a/drivers/gpu/drm/msm/msm_gem_prime.c b/drivers/gpu/drm/msm/msm_gem_prime.c
+index e8f1b7a2ca9c..94ab705e9b8a 100644
+--- a/drivers/gpu/drm/msm/msm_gem_prime.c
++++ b/drivers/gpu/drm/msm/msm_gem_prime.c
+@@ -17,7 +17,7 @@ struct sg_table *msm_gem_prime_get_sg_table(struct drm_gem_object *obj)
+ 	int npages = obj->size >> PAGE_SHIFT;
  
- void copy_highpage(struct page *to, struct page *from)
- {
--	struct page *kto = page_address(to);
--	struct page *kfrom = page_address(from);
-+	void *kto = page_address(to);
-+	void *kfrom = page_address(from);
+ 	if (WARN_ON(!msm_obj->pages))  /* should have already pinned! */
+-		return NULL;
++		return ERR_PTR(-ENOMEM);
  
- 	copy_page(kto, kfrom);
- 
+ 	return drm_prime_pages_to_sg(obj->dev, msm_obj->pages, npages);
+ }
 -- 
 2.35.1
 
