@@ -2,98 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB229CCA489
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40120CCA48D
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357880AbiFGTvG (ORCPT
+        id S1357986AbiFGTvW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58468 "EHLO
+        Tue, 7 Jun 2022 15:51:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354496AbiFGSrF (ORCPT
+        with ESMTP id S1354354AbiFGSq4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86927737A3;
-        Tue,  7 Jun 2022 11:01:33 -0700 (PDT)
+        Tue, 7 Jun 2022 14:46:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3669A12AC4;
+        Tue,  7 Jun 2022 11:00:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22707618DF;
-        Tue,  7 Jun 2022 18:01:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C6A9C385A5;
-        Tue,  7 Jun 2022 18:01:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624892;
-        bh=54oShyB5o9LvImQ36NGWJacrxO3osSvxe7sccidCXN8=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2D64B82182;
+        Tue,  7 Jun 2022 18:00:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECDCBC385A5;
+        Tue,  7 Jun 2022 18:00:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624850;
+        bh=1VUA0cPwHrZpHe5xpepOfsqAMeMYOWh+2QgQ3qGUM4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gILe+Nsnl5Wh4eTXtDazydRcCIjWSXM7YpGBiyvNpLrHv/EMdqrjBjs0EkfdCRCOb
-         DNUglTFHGzK2mEXS9Hhe/A8gTJ+WPxLhU605YD7N1KF1c4eaADOMWZlI7q4yYHqbLj
-         YGZz5TYIQ9iXZEms94sm2oVrvKEv2s3kO64tWk88=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 492/667] dmaengine: idxd: Fix the error handling path in idxd_cdev_register()
-Date:   Tue,  7 Jun 2022 19:02:37 +0200
-Message-Id: <20220607164949.454750031@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=r+f/0hWrZBPrdvOeSbphkI2h24nQjGVLrLlhzZ4Qx0Z28qQdKrnupLJ+N2j3Dn/t3
+         OhTbEkEKmhvki2l4NGmTt4ZNqFpmrBL96mO5ZKLOZQ7Shww7vp+3dfrZTTi3ZZsuzl
+         vAJ67VvcyA1i62sHVETmLY9jAskmU4k5bLCZAGDDgylNRhb4F6tOYtMhxZ4l3Lp8/T
+         D/JriKS85qdNGMCfVgtrt3eM30aOkzOLy0Dic3qYkQzhRp+Rldm/UWJQdQgc/pTjQ0
+         gHw1LrZqJIXh/gXTLK6pAzE02wfJVwhw5t+6+WonlP0VOjtV3+uqrbClnFN2pKLzfs
+         5xhxuhMFbiIug==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 13/34] misc: rtsx: set NULL intfdata when probe fails
+Date:   Tue,  7 Jun 2022 13:59:48 -0400
+Message-Id: <20220607180011.481266-13-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
+References: <20220607180011.481266-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Shuah Khan <skhan@linuxfoundation.org>
 
-[ Upstream commit aab08c1aac01097815fbcf10fce7021d2396a31f ]
+[ Upstream commit f861d36e021e1ac4a0a2a1f6411d623809975d63 ]
 
-If a call to alloc_chrdev_region() fails, the already allocated resources
-are leaking.
+rtsx_usb_probe() doesn't call usb_set_intfdata() to null out the
+interface pointer when probe fails. This leaves a stale pointer.
+Noticed the missing usb_set_intfdata() while debugging an unrelated
+invalid DMA mapping problem.
 
-Add the needed error handling path to fix the leak.
+Fix it with a call to usb_set_intfdata(..., NULL).
 
-Fixes: 42d279f9137a ("dmaengine: idxd: add char driver to expose submission portal to userland")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Dave Jiang <dave.jiang@intel.com>
-Link: https://lore.kernel.org/r/1b5033dcc87b5f2a953c413f0306e883e6114542.1650521591.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220429210913.46804-1-skhan@linuxfoundation.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/idxd/cdev.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/misc/cardreader/rtsx_usb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/dma/idxd/cdev.c b/drivers/dma/idxd/cdev.c
-index b9b2b4a4124e..033df43db0ce 100644
---- a/drivers/dma/idxd/cdev.c
-+++ b/drivers/dma/idxd/cdev.c
-@@ -369,10 +369,16 @@ int idxd_cdev_register(void)
- 		rc = alloc_chrdev_region(&ictx[i].devt, 0, MINORMASK,
- 					 ictx[i].name);
- 		if (rc)
--			return rc;
-+			goto err_free_chrdev_region;
- 	}
- 
+diff --git a/drivers/misc/cardreader/rtsx_usb.c b/drivers/misc/cardreader/rtsx_usb.c
+index a328cab11014..4aef33d07cc3 100644
+--- a/drivers/misc/cardreader/rtsx_usb.c
++++ b/drivers/misc/cardreader/rtsx_usb.c
+@@ -667,6 +667,7 @@ static int rtsx_usb_probe(struct usb_interface *intf,
  	return 0;
-+
-+err_free_chrdev_region:
-+	for (i--; i >= 0; i--)
-+		unregister_chrdev_region(ictx[i].devt, MINORMASK);
-+
-+	return rc;
- }
  
- void idxd_cdev_remove(void)
+ out_init_fail:
++	usb_set_intfdata(ucr->pusb_intf, NULL);
+ 	usb_free_coherent(ucr->pusb_dev, IOBUF_SIZE, ucr->iobuf,
+ 			ucr->iobuf_dma);
+ 	return ret;
 -- 
 2.35.1
-
-
 
