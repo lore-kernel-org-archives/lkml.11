@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDD92CCA487
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D8BECCA486
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443154AbiFHA5m (ORCPT
+        id S1443024AbiFHA5c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:57:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50596 "EHLO
+        Tue, 7 Jun 2022 20:57:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385395AbiFGWVg (ORCPT
+        with ESMTP id S1383030AbiFGVwL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:21:36 -0400
+        Tue, 7 Jun 2022 17:52:11 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D87B25696B;
-        Tue,  7 Jun 2022 12:21:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D0F92408CE;
+        Tue,  7 Jun 2022 12:10:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74E2DB8233E;
-        Tue,  7 Jun 2022 19:21:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA788C385A5;
-        Tue,  7 Jun 2022 19:21:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59FFDB82182;
+        Tue,  7 Jun 2022 19:10:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C10C3C385A2;
+        Tue,  7 Jun 2022 19:10:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629683;
-        bh=a6TL4JGMCf1l+ghTXObmrd74SYUyO4vsE8A7pjANyUU=;
+        s=korg; t=1654629017;
+        bh=liNhd+rQWFOn1syJrUOicb3uykE30jaLc4TMIIZdHug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vH4HMBROnKa3KtHPzjtwkwS2/ZV5jYqF1+ny9o+4in0ESgy98KP+WasEuq4Y2ov5f
-         CzvoZuU2zso08QtdvR20eSYpGo0BgwvZV3eVFUdkRZinI2Is2INe/sd5WnroMporya
-         OHz+I2JGjpcPc4jtWX4irNdJ5U2eirAExc2dQhU8=
+        b=yWIenax208psdePA8y4S4y0s6gH0Hc3vXYyVIU9ZtVknpruqnnUQZHtmWoZ3DspaI
+         rX5Hyzn9MA3fJEhKt6ZpM9nSEcUYv60Nc0l7407rse7yuSVZhPjjUpK67YnK/tiCXj
+         ptMI0akawWTvSzTp01ro30LFIHPKaJqdkMNjqKHI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.18 780/879] selftests/landlock: Add tests for unknown access rights
-Date:   Tue,  7 Jun 2022 19:04:58 +0200
-Message-Id: <20220607165025.513081951@linuxfoundation.org>
+        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 538/879] ARM: dts: suniv: F1C100: fix watchdog compatible
+Date:   Tue,  7 Jun 2022 19:00:56 +0200
+Message-Id: <20220607165018.487992000@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,45 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@digikod.net>
+From: Andre Przywara <andre.przywara@arm.com>
 
-commit c56b3bf566da5a0dd3b58ad97a614b0928b06ebf upstream.
+[ Upstream commit 01a850ee61cbf0ab77dcbf26bb133fec2dd640d6 ]
 
-Make sure that trying to use unknown access rights returns an error.
+The F1C100 series of SoCs actually have their watchdog IP being
+compatible with the newer Allwinner generation, not the older one.
 
-Cc: Shuah Khan <shuah@kernel.org>
-Link: https://lore.kernel.org/r/20220506160820.524344-5-mic@digikod.net
-Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The currently described sun4i-a10-wdt actually does not work, neither
+the watchdog functionality (just never fires), nor the reset part
+(reboot hangs).
+
+Replace the compatible string with the one used by the newer generation.
+Verified to work with both the watchdog and reboot functionality on a
+LicheePi Nano.
+
+Also add the missing interrupt line and clock source, to make it binding
+compliant.
+
+Fixes: 4ba16d17efdd ("ARM: dts: suniv: add initial DTSI file for F1C100s")
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Acked-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/20220317162349.739636-4-andre.przywara@arm.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/landlock/fs_test.c |   16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ arch/arm/boot/dts/suniv-f1c100s.dtsi | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/tools/testing/selftests/landlock/fs_test.c
-+++ b/tools/testing/selftests/landlock/fs_test.c
-@@ -448,6 +448,22 @@ TEST_F_FORK(layout1, file_access_rights)
- 	ASSERT_EQ(0, close(path_beneath.parent_fd));
- }
+diff --git a/arch/arm/boot/dts/suniv-f1c100s.dtsi b/arch/arm/boot/dts/suniv-f1c100s.dtsi
+index 6100d3b75f61..def830101448 100644
+--- a/arch/arm/boot/dts/suniv-f1c100s.dtsi
++++ b/arch/arm/boot/dts/suniv-f1c100s.dtsi
+@@ -104,8 +104,10 @@
  
-+TEST_F_FORK(layout1, unknown_access_rights)
-+{
-+	__u64 access_mask;
-+
-+	for (access_mask = 1ULL << 63; access_mask != ACCESS_LAST;
-+	     access_mask >>= 1) {
-+		struct landlock_ruleset_attr ruleset_attr = {
-+			.handled_access_fs = access_mask,
-+		};
-+
-+		ASSERT_EQ(-1, landlock_create_ruleset(&ruleset_attr,
-+						      sizeof(ruleset_attr), 0));
-+		ASSERT_EQ(EINVAL, errno);
-+	}
-+}
-+
- static void add_path_beneath(struct __test_metadata *const _metadata,
- 			     const int ruleset_fd, const __u64 allowed_access,
- 			     const char *const path)
+ 		wdt: watchdog@1c20ca0 {
+ 			compatible = "allwinner,suniv-f1c100s-wdt",
+-				     "allwinner,sun4i-a10-wdt";
++				     "allwinner,sun6i-a31-wdt";
+ 			reg = <0x01c20ca0 0x20>;
++			interrupts = <16>;
++			clocks = <&osc32k>;
+ 		};
+ 
+ 		uart0: serial@1c25000 {
+-- 
+2.35.1
+
 
 
