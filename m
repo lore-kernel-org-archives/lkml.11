@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32BA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:33:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50E2DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:33:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382096AbiFGWdq (ORCPT
+        id S1382162AbiFGWdt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:33:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54904 "EHLO
+        Tue, 7 Jun 2022 18:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379113AbiFGVUC (ORCPT
+        with ESMTP id S1377759AbiFGVWF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:20:02 -0400
+        Tue, 7 Jun 2022 17:22:05 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B9FC169DC9;
-        Tue,  7 Jun 2022 11:59:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66164164981;
+        Tue,  7 Jun 2022 11:59:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 469EB617A0;
-        Tue,  7 Jun 2022 18:59:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5859EC385A2;
-        Tue,  7 Jun 2022 18:59:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DF6D617E0;
+        Tue,  7 Jun 2022 18:59:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33926C385A2;
+        Tue,  7 Jun 2022 18:59:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628382;
-        bh=W6/rJm2x4jEKbutBT4nzL4yNQLM+3X+Q8xBE+50Ah1c=;
+        s=korg; t=1654628396;
+        bh=eACbbb4eKif5aUj/4zy3O0VV6wup17lsEmwBQlI9Rxo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c+0Fi51KFV/dGD1VrGEWbqZk7R1g0ItMthNe3NfbWbP1HOMmY8yZIw/MIJ2ioW1nn
-         RXvzy7gaXmn5qUK2W65Pxn26B4IKts4Sfj6KfvhQ/enw8VCFiOIGx0f3Ktap9NCwyi
-         1M14d9IluYi4H9bpgyC+Z2PA876oGleUF8vM5IuQ=
+        b=IKtY2fxIuDbey5ws160C6m5QVvu4f76rT4I97Df41cYNkCTvRnYBu1BCHrj294yIG
+         4CYjqa5rOjdKvxfHCc5EmjFp7b64MEjqN4IE3Ac84rRvQe8XYF6e/hg/Vv66Ukmu27
+         f52P2d+pvNSJ4KvEwcbheSCzODUkcJFIdmhYnmLc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Michael Walle <michael@walle.cc>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 309/879] NFC: NULL out the dev->rfkill to prevent UAF
-Date:   Tue,  7 Jun 2022 18:57:07 +0200
-Message-Id: <20220607165011.816702356@linuxfoundation.org>
+Subject: [PATCH 5.18 313/879] device property: Allow error pointer to be passed to fwnode APIs
+Date:   Tue,  7 Jun 2022 18:57:11 +0200
+Message-Id: <20220607165011.932842425@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,148 +55,256 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit 1b0e81416a24d6e9b8c2341e22e8bf48f8b8bfc9 ]
+[ Upstream commit 002752af7b89b74c64fe6bec8c5fde3d3a7810d8 ]
 
-Commit 3e3b5dfcd16a ("NFC: reorder the logic in nfc_{un,}register_device")
-assumes the device_is_registered() in function nfc_dev_up() will help
-to check when the rfkill is unregistered. However, this check only
-take effect when device_del(&dev->dev) is done in nfc_unregister_device().
-Hence, the rfkill object is still possible be dereferenced.
+Some of the fwnode APIs might return an error pointer instead of NULL
+or valid fwnode handle. The result of such API call may be considered
+optional and hence the test for it is usually done in a form of
 
-The crash trace in latest kernel (5.18-rc2):
+	fwnode = fwnode_find_reference(...);
+	if (IS_ERR(fwnode))
+		...error handling...
 
-[   68.760105] ==================================================================
-[   68.760330] BUG: KASAN: use-after-free in __lock_acquire+0x3ec1/0x6750
-[   68.760756] Read of size 8 at addr ffff888009c93018 by task fuzz/313
-[   68.760756]
-[   68.760756] CPU: 0 PID: 313 Comm: fuzz Not tainted 5.18.0-rc2 #4
-[   68.760756] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
-[   68.760756] Call Trace:
-[   68.760756]  <TASK>
-[   68.760756]  dump_stack_lvl+0x57/0x7d
-[   68.760756]  print_report.cold+0x5e/0x5db
-[   68.760756]  ? __lock_acquire+0x3ec1/0x6750
-[   68.760756]  kasan_report+0xbe/0x1c0
-[   68.760756]  ? __lock_acquire+0x3ec1/0x6750
-[   68.760756]  __lock_acquire+0x3ec1/0x6750
-[   68.760756]  ? lockdep_hardirqs_on_prepare+0x410/0x410
-[   68.760756]  ? register_lock_class+0x18d0/0x18d0
-[   68.760756]  lock_acquire+0x1ac/0x4f0
-[   68.760756]  ? rfkill_blocked+0xe/0x60
-[   68.760756]  ? lockdep_hardirqs_on_prepare+0x410/0x410
-[   68.760756]  ? mutex_lock_io_nested+0x12c0/0x12c0
-[   68.760756]  ? nla_get_range_signed+0x540/0x540
-[   68.760756]  ? _raw_spin_lock_irqsave+0x4e/0x50
-[   68.760756]  _raw_spin_lock_irqsave+0x39/0x50
-[   68.760756]  ? rfkill_blocked+0xe/0x60
-[   68.760756]  rfkill_blocked+0xe/0x60
-[   68.760756]  nfc_dev_up+0x84/0x260
-[   68.760756]  nfc_genl_dev_up+0x90/0xe0
-[   68.760756]  genl_family_rcv_msg_doit+0x1f4/0x2f0
-[   68.760756]  ? genl_family_rcv_msg_attrs_parse.constprop.0+0x230/0x230
-[   68.760756]  ? security_capable+0x51/0x90
-[   68.760756]  genl_rcv_msg+0x280/0x500
-[   68.760756]  ? genl_get_cmd+0x3c0/0x3c0
-[   68.760756]  ? lock_acquire+0x1ac/0x4f0
-[   68.760756]  ? nfc_genl_dev_down+0xe0/0xe0
-[   68.760756]  ? lockdep_hardirqs_on_prepare+0x410/0x410
-[   68.760756]  netlink_rcv_skb+0x11b/0x340
-[   68.760756]  ? genl_get_cmd+0x3c0/0x3c0
-[   68.760756]  ? netlink_ack+0x9c0/0x9c0
-[   68.760756]  ? netlink_deliver_tap+0x136/0xb00
-[   68.760756]  genl_rcv+0x1f/0x30
-[   68.760756]  netlink_unicast+0x430/0x710
-[   68.760756]  ? memset+0x20/0x40
-[   68.760756]  ? netlink_attachskb+0x740/0x740
-[   68.760756]  ? __build_skb_around+0x1f4/0x2a0
-[   68.760756]  netlink_sendmsg+0x75d/0xc00
-[   68.760756]  ? netlink_unicast+0x710/0x710
-[   68.760756]  ? netlink_unicast+0x710/0x710
-[   68.760756]  sock_sendmsg+0xdf/0x110
-[   68.760756]  __sys_sendto+0x19e/0x270
-[   68.760756]  ? __ia32_sys_getpeername+0xa0/0xa0
-[   68.760756]  ? fd_install+0x178/0x4c0
-[   68.760756]  ? fd_install+0x195/0x4c0
-[   68.760756]  ? kernel_fpu_begin_mask+0x1c0/0x1c0
-[   68.760756]  __x64_sys_sendto+0xd8/0x1b0
-[   68.760756]  ? lockdep_hardirqs_on+0xbf/0x130
-[   68.760756]  ? syscall_enter_from_user_mode+0x1d/0x50
-[   68.760756]  do_syscall_64+0x3b/0x90
-[   68.760756]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   68.760756] RIP: 0033:0x7f67fb50e6b3
-...
-[   68.760756] RSP: 002b:00007f67fa91fe90 EFLAGS: 00000293 ORIG_RAX: 000000000000002c
-[   68.760756] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f67fb50e6b3
-[   68.760756] RDX: 000000000000001c RSI: 0000559354603090 RDI: 0000000000000003
-[   68.760756] RBP: 00007f67fa91ff00 R08: 00007f67fa91fedc R09: 000000000000000c
-[   68.760756] R10: 0000000000000000 R11: 0000000000000293 R12: 00007ffe824d496e
-[   68.760756] R13: 00007ffe824d496f R14: 00007f67fa120000 R15: 0000000000000003
+Nevertheless the resulting fwnode may have bumped the reference count
+and hence caller of the above API is obliged to call fwnode_handle_put().
+Since fwnode may be not valid either as NULL or error pointer the check
+has to be performed there. This approach uglifies the code and adds
+a point of making a mistake, i.e. forgetting about error point case.
 
-[   68.760756]  </TASK>
-[   68.760756]
-[   68.760756] Allocated by task 279:
-[   68.760756]  kasan_save_stack+0x1e/0x40
-[   68.760756]  __kasan_kmalloc+0x81/0xa0
-[   68.760756]  rfkill_alloc+0x7f/0x280
-[   68.760756]  nfc_register_device+0xa3/0x1a0
-[   68.760756]  nci_register_device+0x77a/0xad0
-[   68.760756]  nfcmrvl_nci_register_dev+0x20b/0x2c0
-[   68.760756]  nfcmrvl_nci_uart_open+0xf2/0x1dd
-[   68.760756]  nci_uart_tty_ioctl+0x2c3/0x4a0
-[   68.760756]  tty_ioctl+0x764/0x1310
-[   68.760756]  __x64_sys_ioctl+0x122/0x190
-[   68.760756]  do_syscall_64+0x3b/0x90
-[   68.760756]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   68.760756]
-[   68.760756] Freed by task 314:
-[   68.760756]  kasan_save_stack+0x1e/0x40
-[   68.760756]  kasan_set_track+0x21/0x30
-[   68.760756]  kasan_set_free_info+0x20/0x30
-[   68.760756]  __kasan_slab_free+0x108/0x170
-[   68.760756]  kfree+0xb0/0x330
-[   68.760756]  device_release+0x96/0x200
-[   68.760756]  kobject_put+0xf9/0x1d0
-[   68.760756]  nfc_unregister_device+0x77/0x190
-[   68.760756]  nfcmrvl_nci_unregister_dev+0x88/0xd0
-[   68.760756]  nci_uart_tty_close+0xdf/0x180
-[   68.760756]  tty_ldisc_kill+0x73/0x110
-[   68.760756]  tty_ldisc_hangup+0x281/0x5b0
-[   68.760756]  __tty_hangup.part.0+0x431/0x890
-[   68.760756]  tty_release+0x3a8/0xc80
-[   68.760756]  __fput+0x1f0/0x8c0
-[   68.760756]  task_work_run+0xc9/0x170
-[   68.760756]  exit_to_user_mode_prepare+0x194/0x1a0
-[   68.760756]  syscall_exit_to_user_mode+0x19/0x50
-[   68.760756]  do_syscall_64+0x48/0x90
-[   68.760756]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+To prevent this, allow an error pointer to be passed to the fwnode APIs.
 
-This patch just add the null out of dev->rfkill to make sure such
-dereference cannot happen. This is safe since the device_lock() already
-protect the check/write from data race.
-
-Fixes: 3e3b5dfcd16a ("NFC: reorder the logic in nfc_{un,}register_device")
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 83b34afb6b79 ("device property: Introduce fwnode_find_reference()")
+Reported-by: Nuno Sá <nuno.sa@analog.com>
+Tested-by: Nuno Sá <nuno.sa@analog.com>
+Acked-by: Nuno Sá <nuno.sa@analog.com>
+Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Tested-by: Michael Walle <michael@walle.cc>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/nfc/core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/base/property.c | 89 +++++++++++++++++++++++------------------
+ include/linux/fwnode.h  | 10 ++---
+ 2 files changed, 56 insertions(+), 43 deletions(-)
 
-diff --git a/net/nfc/core.c b/net/nfc/core.c
-index 5b286e1e0a6f..6ff3e10ff8e3 100644
---- a/net/nfc/core.c
-+++ b/net/nfc/core.c
-@@ -1166,6 +1166,7 @@ void nfc_unregister_device(struct nfc_dev *dev)
- 	if (dev->rfkill) {
- 		rfkill_unregister(dev->rfkill);
- 		rfkill_destroy(dev->rfkill);
-+		dev->rfkill = NULL;
- 	}
- 	dev->shutting_down = true;
- 	device_unlock(&dev->dev);
+diff --git a/drivers/base/property.c b/drivers/base/property.c
+index c0e94cce9c29..2f6843c9612b 100644
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -47,12 +47,14 @@ bool fwnode_property_present(const struct fwnode_handle *fwnode,
+ {
+ 	bool ret;
+ 
++	if (IS_ERR_OR_NULL(fwnode))
++		return false;
++
+ 	ret = fwnode_call_bool_op(fwnode, property_present, propname);
+-	if (ret == false && !IS_ERR_OR_NULL(fwnode) &&
+-	    !IS_ERR_OR_NULL(fwnode->secondary))
+-		ret = fwnode_call_bool_op(fwnode->secondary, property_present,
+-					 propname);
+-	return ret;
++	if (ret)
++		return ret;
++
++	return fwnode_call_bool_op(fwnode->secondary, property_present, propname);
+ }
+ EXPORT_SYMBOL_GPL(fwnode_property_present);
+ 
+@@ -232,15 +234,16 @@ static int fwnode_property_read_int_array(const struct fwnode_handle *fwnode,
+ {
+ 	int ret;
+ 
++	if (IS_ERR_OR_NULL(fwnode))
++		return -EINVAL;
++
+ 	ret = fwnode_call_int_op(fwnode, property_read_int_array, propname,
+ 				 elem_size, val, nval);
+-	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
+-	    !IS_ERR_OR_NULL(fwnode->secondary))
+-		ret = fwnode_call_int_op(
+-			fwnode->secondary, property_read_int_array, propname,
+-			elem_size, val, nval);
++	if (ret != -EINVAL)
++		return ret;
+ 
+-	return ret;
++	return fwnode_call_int_op(fwnode->secondary, property_read_int_array, propname,
++				  elem_size, val, nval);
+ }
+ 
+ /**
+@@ -371,14 +374,16 @@ int fwnode_property_read_string_array(const struct fwnode_handle *fwnode,
+ {
+ 	int ret;
+ 
++	if (IS_ERR_OR_NULL(fwnode))
++		return -EINVAL;
++
+ 	ret = fwnode_call_int_op(fwnode, property_read_string_array, propname,
+ 				 val, nval);
+-	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
+-	    !IS_ERR_OR_NULL(fwnode->secondary))
+-		ret = fwnode_call_int_op(fwnode->secondary,
+-					 property_read_string_array, propname,
+-					 val, nval);
+-	return ret;
++	if (ret != -EINVAL)
++		return ret;
++
++	return fwnode_call_int_op(fwnode->secondary, property_read_string_array, propname,
++				  val, nval);
+ }
+ EXPORT_SYMBOL_GPL(fwnode_property_read_string_array);
+ 
+@@ -480,15 +485,19 @@ int fwnode_property_get_reference_args(const struct fwnode_handle *fwnode,
+ {
+ 	int ret;
+ 
++	if (IS_ERR_OR_NULL(fwnode))
++		return -ENOENT;
++
+ 	ret = fwnode_call_int_op(fwnode, get_reference_args, prop, nargs_prop,
+ 				 nargs, index, args);
++	if (ret == 0)
++		return ret;
+ 
+-	if (ret < 0 && !IS_ERR_OR_NULL(fwnode) &&
+-	    !IS_ERR_OR_NULL(fwnode->secondary))
+-		ret = fwnode_call_int_op(fwnode->secondary, get_reference_args,
+-					 prop, nargs_prop, nargs, index, args);
++	if (IS_ERR_OR_NULL(fwnode->secondary))
++		return ret;
+ 
+-	return ret;
++	return fwnode_call_int_op(fwnode->secondary, get_reference_args, prop, nargs_prop,
++				  nargs, index, args);
+ }
+ EXPORT_SYMBOL_GPL(fwnode_property_get_reference_args);
+ 
+@@ -635,12 +644,13 @@ EXPORT_SYMBOL_GPL(fwnode_count_parents);
+ struct fwnode_handle *fwnode_get_nth_parent(struct fwnode_handle *fwnode,
+ 					    unsigned int depth)
+ {
+-	unsigned int i;
+-
+ 	fwnode_handle_get(fwnode);
+ 
+-	for (i = 0; i < depth && fwnode; i++)
++	do {
++		if (depth-- == 0)
++			break;
+ 		fwnode = fwnode_get_next_parent(fwnode);
++	} while (fwnode);
+ 
+ 	return fwnode;
+ }
+@@ -659,17 +669,17 @@ EXPORT_SYMBOL_GPL(fwnode_get_nth_parent);
+ bool fwnode_is_ancestor_of(struct fwnode_handle *test_ancestor,
+ 				  struct fwnode_handle *test_child)
+ {
+-	if (!test_ancestor)
++	if (IS_ERR_OR_NULL(test_ancestor))
+ 		return false;
+ 
+ 	fwnode_handle_get(test_child);
+-	while (test_child) {
++	do {
+ 		if (test_child == test_ancestor) {
+ 			fwnode_handle_put(test_child);
+ 			return true;
+ 		}
+ 		test_child = fwnode_get_next_parent(test_child);
+-	}
++	} while (test_child);
+ 	return false;
+ }
+ 
+@@ -698,7 +708,7 @@ fwnode_get_next_available_child_node(const struct fwnode_handle *fwnode,
+ {
+ 	struct fwnode_handle *next_child = child;
+ 
+-	if (!fwnode)
++	if (IS_ERR_OR_NULL(fwnode))
+ 		return NULL;
+ 
+ 	do {
+@@ -722,16 +732,16 @@ struct fwnode_handle *device_get_next_child_node(struct device *dev,
+ 	const struct fwnode_handle *fwnode = dev_fwnode(dev);
+ 	struct fwnode_handle *next;
+ 
++	if (IS_ERR_OR_NULL(fwnode))
++		return NULL;
++
+ 	/* Try to find a child in primary fwnode */
+ 	next = fwnode_get_next_child_node(fwnode, child);
+ 	if (next)
+ 		return next;
+ 
+ 	/* When no more children in primary, continue with secondary */
+-	if (fwnode && !IS_ERR_OR_NULL(fwnode->secondary))
+-		next = fwnode_get_next_child_node(fwnode->secondary, child);
+-
+-	return next;
++	return fwnode_get_next_child_node(fwnode->secondary, child);
+ }
+ EXPORT_SYMBOL_GPL(device_get_next_child_node);
+ 
+@@ -798,6 +808,9 @@ EXPORT_SYMBOL_GPL(fwnode_handle_put);
+  */
+ bool fwnode_device_is_available(const struct fwnode_handle *fwnode)
+ {
++	if (IS_ERR_OR_NULL(fwnode))
++		return false;
++
+ 	if (!fwnode_has_op(fwnode, device_is_available))
+ 		return true;
+ 
+@@ -988,14 +1001,14 @@ fwnode_graph_get_next_endpoint(const struct fwnode_handle *fwnode,
+ 		parent = fwnode_graph_get_port_parent(prev);
+ 	else
+ 		parent = fwnode;
++	if (IS_ERR_OR_NULL(parent))
++		return NULL;
+ 
+ 	ep = fwnode_call_ptr_op(parent, graph_get_next_endpoint, prev);
++	if (ep)
++		return ep;
+ 
+-	if (IS_ERR_OR_NULL(ep) &&
+-	    !IS_ERR_OR_NULL(parent) && !IS_ERR_OR_NULL(parent->secondary))
+-		ep = fwnode_graph_get_next_endpoint(parent->secondary, NULL);
+-
+-	return ep;
++	return fwnode_graph_get_next_endpoint(parent->secondary, NULL);
+ }
+ EXPORT_SYMBOL_GPL(fwnode_graph_get_next_endpoint);
+ 
+diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
+index 3a532ba66f6c..7defac04f9a3 100644
+--- a/include/linux/fwnode.h
++++ b/include/linux/fwnode.h
+@@ -148,12 +148,12 @@ struct fwnode_operations {
+ 	int (*add_links)(struct fwnode_handle *fwnode);
+ };
+ 
+-#define fwnode_has_op(fwnode, op)				\
+-	((fwnode) && (fwnode)->ops && (fwnode)->ops->op)
++#define fwnode_has_op(fwnode, op)					\
++	(!IS_ERR_OR_NULL(fwnode) && (fwnode)->ops && (fwnode)->ops->op)
++
+ #define fwnode_call_int_op(fwnode, op, ...)				\
+-	(fwnode ? (fwnode_has_op(fwnode, op) ?				\
+-		   (fwnode)->ops->op(fwnode, ## __VA_ARGS__) : -ENXIO) : \
+-	 -EINVAL)
++	(fwnode_has_op(fwnode, op) ?					\
++	 (fwnode)->ops->op(fwnode, ## __VA_ARGS__) : (IS_ERR_OR_NULL(fwnode) ? -EINVAL : -ENXIO))
+ 
+ #define fwnode_call_bool_op(fwnode, op, ...)		\
+ 	(fwnode_has_op(fwnode, op) ?			\
 -- 
 2.35.1
 
