@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B88E0CCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDFC3CCA48C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350585AbiFGSLR (ORCPT
+        id S1350611AbiFGSLW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:11:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48872 "EHLO
+        Tue, 7 Jun 2022 14:11:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349996AbiFGRvp (ORCPT
+        with ESMTP id S1348770AbiFGRuI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:51:45 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2022E13FD4E;
-        Tue,  7 Jun 2022 10:39:19 -0700 (PDT)
+        Tue, 7 Jun 2022 13:50:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D0A135698;
+        Tue,  7 Jun 2022 10:37:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E4073CE23D2;
-        Tue,  7 Jun 2022 17:38:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C689DC385A5;
-        Tue,  7 Jun 2022 17:38:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E0B4B822B1;
+        Tue,  7 Jun 2022 17:37:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FB01C34115;
+        Tue,  7 Jun 2022 17:37:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623538;
-        bh=NPzztyR7b44cUvuneeFYeVat9mq5XqmouMwa3Rm8oL0=;
+        s=korg; t=1654623425;
+        bh=I5nZunaTSI1APA6FR1bB73DzLc+c/CmY6KplBJR3EAE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nXpcOWUuHF7KQxQoHpITF2BWXrFn5F0E3KS3tw2jvPLUvJalplDi63tuf1zQanvgs
-         PPQPIESoaxXPlI5djM0OIUUuR8ndhngUXk1mCROeSdoQ4+yaxLvgpPp67NksHfldrR
-         JvaRjsC2PI3dwAjc8PX02pkJaImGToGhqxIxx7o4=
+        b=wvunafkCoiFXSNy3vd2eM1s3HR5JN0bk1lFUN1uPGnNt64f7ZfWiSSfBhj+FgA3sY
+         HmSecKXW22R+ErvDw3NHA5ItExoahK8r53/z+hJ2X8Di9VPJRz87ayfdEPv0RRSQFk
+         7T0O9xrOvG5Y3p2h6iEPi2G7CG4PhhjMn7WHzUrs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH 5.10 422/452] docs/conf.py: Cope with removal of language=None in Sphinx 5.0.0
-Date:   Tue,  7 Jun 2022 19:04:39 +0200
-Message-Id: <20220607164921.131275293@linuxfoundation.org>
+        stable@vger.kernel.org, Coly Li <colyli@suse.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 412/452] bcache: remove incremental dirty sector counting for bch_sectors_dirty_init()
+Date:   Tue,  7 Jun 2022 19:04:29 +0200
+Message-Id: <20220607164920.834307822@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,48 +49,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Akira Yokosawa <akiyks@gmail.com>
+From: Coly Li <colyli@suse.de>
 
-commit 627f01eab93d8671d4e4afee9b148f9998d20e7c upstream.
+commit 80db4e4707e78cb22287da7d058d7274bd4cb370 upstream.
 
-One of the changes in Sphinx 5.0.0 [1] says [sic]:
+After making bch_sectors_dirty_init() being multithreaded, the existing
+incremental dirty sector counting in bch_root_node_dirty_init() doesn't
+release btree occupation after iterating 500000 (INIT_KEYS_EACH_TIME)
+bkeys. Because a read lock is added on btree root node to prevent the
+btree to be split during the dirty sectors counting, other I/O requester
+has no chance to gain the write lock even restart bcache_btree().
 
-    5.0.0 final
+That is to say, the incremental dirty sectors counting is incompatible
+to the multhreaded bch_sectors_dirty_init(). We have to choose one and
+drop another one.
 
-     - #10474: language does not accept None as it value.
-       The default value of language becomes to 'en' now.
+In my testing, with 512 bytes random writes, I generate 1.2T dirty data
+and a btree with 400K nodes. With single thread and incremental dirty
+sectors counting, it takes 30+ minites to register the backing device.
+And with multithreaded dirty sectors counting, the backing device
+registration can be accomplished within 2 minutes.
 
-[1]: https://www.sphinx-doc.org/en/master/changes.html#release-5-0-0-released-may-30-2022
+The 30+ minutes V.S. 2- minutes difference makes me decide to keep
+multithreaded bch_sectors_dirty_init() and drop the incremental dirty
+sectors counting. This is what this patch does.
 
-It results in a new warning from Sphinx 5.0.0 [sic]:
+But INIT_KEYS_EACH_TIME is kept, in sectors_dirty_init_fn() the CPU
+will be released by cond_resched() after every INIT_KEYS_EACH_TIME keys
+iterated. This is to avoid the watchdog reports a bogus soft lockup
+warning.
 
-    WARNING: Invalid configuration value found: 'language = None'.
-    Update your configuration to a valid langauge code. Falling
-    back to 'en' (English).
-
-Silence the warning by using 'en'.
-It works with all the Sphinx versions required for building
-kernel documentation (1.7.9 or later).
-
-Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-Link: https://lore.kernel.org/r/bd0c2ddc-2401-03cb-4526-79ca664e1cbe@gmail.com
+Fixes: b144e45fc576 ("bcache: make bch_sectors_dirty_init() to be multithreaded")
+Signed-off-by: Coly Li <colyli@suse.de>
 Cc: stable@vger.kernel.org
-Signed-off-by: Jonathan Corbet <corbet@lwn.net>
+Link: https://lore.kernel.org/r/20220524102336.10684-4-colyli@suse.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/conf.py |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/bcache/writeback.c |   39 ++++++++++++---------------------------
+ 1 file changed, 12 insertions(+), 27 deletions(-)
 
---- a/Documentation/conf.py
-+++ b/Documentation/conf.py
-@@ -176,7 +176,7 @@ finally:
- #
- # This is also used if you do content translation via gettext catalogs.
- # Usually you set "language" from the command line for these cases.
--language = None
-+language = 'en'
+--- a/drivers/md/bcache/writeback.c
++++ b/drivers/md/bcache/writeback.c
+@@ -756,13 +756,11 @@ static int bch_writeback_thread(void *ar
  
- # There are two options for replacing |today|: either, you set today to some
- # non-false value, then it is used:
+ /* Init */
+ #define INIT_KEYS_EACH_TIME	500000
+-#define INIT_KEYS_SLEEP_MS	100
+ 
+ struct sectors_dirty_init {
+ 	struct btree_op	op;
+ 	unsigned int	inode;
+ 	size_t		count;
+-	struct bkey	start;
+ };
+ 
+ static int sectors_dirty_init_fn(struct btree_op *_op, struct btree *b,
+@@ -778,11 +776,8 @@ static int sectors_dirty_init_fn(struct
+ 					     KEY_START(k), KEY_SIZE(k));
+ 
+ 	op->count++;
+-	if (atomic_read(&b->c->search_inflight) &&
+-	    !(op->count % INIT_KEYS_EACH_TIME)) {
+-		bkey_copy_key(&op->start, k);
+-		return -EAGAIN;
+-	}
++	if (!(op->count % INIT_KEYS_EACH_TIME))
++		cond_resched();
+ 
+ 	return MAP_CONTINUE;
+ }
+@@ -797,24 +792,16 @@ static int bch_root_node_dirty_init(stru
+ 	bch_btree_op_init(&op.op, -1);
+ 	op.inode = d->id;
+ 	op.count = 0;
+-	op.start = KEY(op.inode, 0, 0);
+ 
+-	do {
+-		ret = bcache_btree(map_keys_recurse,
+-				   k,
+-				   c->root,
+-				   &op.op,
+-				   &op.start,
+-				   sectors_dirty_init_fn,
+-				   0);
+-		if (ret == -EAGAIN)
+-			schedule_timeout_interruptible(
+-				msecs_to_jiffies(INIT_KEYS_SLEEP_MS));
+-		else if (ret < 0) {
+-			pr_warn("sectors dirty init failed, ret=%d!\n", ret);
+-			break;
+-		}
+-	} while (ret == -EAGAIN);
++	ret = bcache_btree(map_keys_recurse,
++			   k,
++			   c->root,
++			   &op.op,
++			   &KEY(op.inode, 0, 0),
++			   sectors_dirty_init_fn,
++			   0);
++	if (ret < 0)
++		pr_warn("sectors dirty init failed, ret=%d!\n", ret);
+ 
+ 	return ret;
+ }
+@@ -858,7 +845,6 @@ static int bch_dirty_init_thread(void *a
+ 				goto out;
+ 			}
+ 			skip_nr--;
+-			cond_resched();
+ 		}
+ 
+ 		if (p) {
+@@ -868,7 +854,6 @@ static int bch_dirty_init_thread(void *a
+ 
+ 		p = NULL;
+ 		prev_idx = cur_idx;
+-		cond_resched();
+ 	}
+ 
+ out:
+@@ -907,11 +892,11 @@ void bch_sectors_dirty_init(struct bcach
+ 		bch_btree_op_init(&op.op, -1);
+ 		op.inode = d->id;
+ 		op.count = 0;
+-		op.start = KEY(op.inode, 0, 0);
+ 
+ 		for_each_key_filter(&c->root->keys,
+ 				    k, &iter, bch_ptr_invalid)
+ 			sectors_dirty_init_fn(&op.op, c->root, k);
++
+ 		rw_unlock(0, c->root);
+ 		return;
+ 	}
 
 
