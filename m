@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D0A0CCA497
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D4C8CCA481
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350523AbiFGSBR (ORCPT
+        id S1352081AbiFGSCi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35244 "EHLO
+        Tue, 7 Jun 2022 14:02:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348394AbiFGRks (ORCPT
+        with ESMTP id S1348123AbiFGRof (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:40:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23FAE11CA16;
-        Tue,  7 Jun 2022 10:34:11 -0700 (PDT)
+        Tue, 7 Jun 2022 13:44:35 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E028612FEDC;
+        Tue,  7 Jun 2022 10:35:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6F27B822B8;
-        Tue,  7 Jun 2022 17:33:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26081C385A5;
-        Tue,  7 Jun 2022 17:33:38 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BF395CE23E8;
+        Tue,  7 Jun 2022 17:35:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0F63C385A5;
+        Tue,  7 Jun 2022 17:35:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623219;
-        bh=nrQeSr+/kkhagHCqcL77mMePp0hOtwF9X5zPz7U52e4=;
+        s=korg; t=1654623319;
+        bh=eT2rY+egWWLTu5m/rOOkVnZ039w9hgxWfrjwoEbtly4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hn298LwsUn7ZvYr1shfwhwQ9KXgs5wuGQ3uRveDLQhG6KyFQm2DLSJlakElmctHGw
-         AkZq6CjMgjSZI9ZfxIdWXiMbQWC/+VmQsXXnEBJel8MTq7znAv3DFKSd5s/fbINiRP
-         dGOsbWXZvE/FfQ7MPkqNIkMib2nXP/ScKlbJJesg=
+        b=J7AAvxH6B2/l1rMwU3w3JQlKda2NcJR5WdyLJfIDKoskOJIavAeq4L441O7+4rMHG
+         04JUXlXPkLQ/68Lbi16575UGg7Wzk0tt8y9AEUobHjfttUEMlfyxusa3qrtFx/116f
+         7JWtZwUVGKwP7bxpFq3pFw0ei9/LqDeOZaCFiD0w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 287/452] firmware: arm_scmi: Fix list protocols enumeration in the base protocol
-Date:   Tue,  7 Jun 2022 19:02:24 +0200
-Message-Id: <20220607164917.103701260@linuxfoundation.org>
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Nico Boehr <nrb@linux.ibm.com>
+Subject: [PATCH 5.10 372/452] s390/perf: obtain sie_block from the right address
+Date:   Tue,  7 Jun 2022 19:03:49 +0200
+Message-Id: <20220607164919.650888870@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,43 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cristian Marussi <cristian.marussi@arm.com>
+From: Nico Boehr <nrb@linux.ibm.com>
 
-[ Upstream commit 8009120e0354a67068e920eb10dce532391361d0 ]
+commit c9bfb460c3e4da2462e16b0f0b200990b36b1dd2 upstream.
 
-While enumerating protocols implemented by the SCMI platform using
-BASE_DISCOVER_LIST_PROTOCOLS, the number of returned protocols is
-currently validated in an improper way since the check employs a sum
-between unsigned integers that could overflow and cause the check itself
-to be silently bypassed if the returned value 'loop_num_ret' is big
-enough.
+Since commit 1179f170b6f0 ("s390: fix fpu restore in entry.S"), the
+sie_block pointer is located at empty1[1], but in sie_block() it was
+taken from empty1[0].
 
-Fix the validation avoiding the addition.
+This leads to a random pointer being dereferenced, possibly causing
+system crash.
 
-Link: https://lore.kernel.org/r/20220330150551.2573938-4-cristian.marussi@arm.com
-Fixes: b6f20ff8bd94 ("firmware: arm_scmi: add common infrastructure and support for base protocol")
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This problem can be observed when running a simple guest with an endless
+loop and recording the cpu-clock event:
+
+  sudo perf kvm --guestvmlinux=<guestkernel> --guest top -e cpu-clock
+
+With this fix, the correct guest address is shown.
+
+Fixes: 1179f170b6f0 ("s390: fix fpu restore in entry.S")
+Cc: stable@vger.kernel.org
+Acked-by: Christian Borntraeger <borntraeger@de.ibm.com>
+Acked-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Nico Boehr <nrb@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/arm_scmi/base.c | 2 +-
+ arch/s390/kernel/perf_event.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/firmware/arm_scmi/base.c b/drivers/firmware/arm_scmi/base.c
-index 017e5d8bd869..e51d28ba2833 100644
---- a/drivers/firmware/arm_scmi/base.c
-+++ b/drivers/firmware/arm_scmi/base.c
-@@ -188,7 +188,7 @@ static int scmi_base_implementation_list_get(const struct scmi_handle *handle,
- 			break;
+--- a/arch/s390/kernel/perf_event.c
++++ b/arch/s390/kernel/perf_event.c
+@@ -51,7 +51,7 @@ static struct kvm_s390_sie_block *sie_bl
+ 	if (!stack)
+ 		return NULL;
  
- 		loop_num_ret = le32_to_cpu(*num_ret);
--		if (tot_num_ret + loop_num_ret > MAX_PROTOCOLS_IMP) {
-+		if (loop_num_ret > MAX_PROTOCOLS_IMP - tot_num_ret) {
- 			dev_err(dev, "No. of Protocol > MAX_PROTOCOLS_IMP");
- 			break;
- 		}
--- 
-2.35.1
-
+-	return (struct kvm_s390_sie_block *) stack->empty1[0];
++	return (struct kvm_s390_sie_block *)stack->empty1[1];
+ }
+ 
+ static bool is_in_guest(struct pt_regs *regs)
 
 
