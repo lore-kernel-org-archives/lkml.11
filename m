@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EB5FCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EE9BCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359622AbiFGVSV (ORCPT
+        id S1376503AbiFGVSh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:18:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47378 "EHLO
+        Tue, 7 Jun 2022 17:18:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358855AbiFGUVz (ORCPT
+        with ESMTP id S1359203AbiFGUWL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:21:55 -0400
+        Tue, 7 Jun 2022 16:22:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04AB51451CB;
-        Tue,  7 Jun 2022 11:31:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 091AD1451FD;
+        Tue,  7 Jun 2022 11:31:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 71A52612E9;
-        Tue,  7 Jun 2022 18:31:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81D56C385A2;
-        Tue,  7 Jun 2022 18:31:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97FC461295;
+        Tue,  7 Jun 2022 18:31:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4232C385A5;
+        Tue,  7 Jun 2022 18:31:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626676;
-        bh=2jA/GTMKTJHBY2Oc4pOOiy4bZGaqPB82S9nyCCUHw2Y=;
+        s=korg; t=1654626685;
+        bh=dJUCVa4nIa8YINdSoor1J/gc2l6XzUX9TFZT4NQvPgc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HIINgUgiLEQZRaGulCp8fFNWIQl8jNkMouoraWxQ86ki+9Vid32RmYvfVIQJ6bU/E
-         y1IVZxw5lVSEgEJdmkzoZxRCxa7cZxMotuvCd8G2z636RJr8q3qhYNjkrhBSpkoJkH
-         ghDGrZqLyZDEuRuUCh0otuoZ/L2QsbZSHtq4kPNo=
+        b=gGBcaAcT52IwaiFpdplmUD7TZPpWKAk3cG7lQtl4qcJ4NkqQq3bqaB5W3r8rvoPzv
+         MHQRNqMwz3jmCNISdT8scqtrRNj6XB6hq1u9+p//p6MUyxrU8eQxEV21iGZ/EjUcA4
+         r5U667Xv3skpMKnWKoraK855RWJLijqkn+181UGo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thorsten Scherer <t.scherer@eckelmann.de>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 463/772] ARM: dts: ci4x10: Adapt to changes in imx6qdl.dtsi regarding fec clocks
-Date:   Tue,  7 Jun 2022 19:00:55 +0200
-Message-Id: <20220607165002.643383622@linuxfoundation.org>
+Subject: [PATCH 5.17 430/772] ASoC: max98090: Move check for invalid values before casting in max98090_put_enab_tlv()
+Date:   Tue,  7 Jun 2022 19:00:22 +0200
+Message-Id: <20220607165001.673831982@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,47 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thorsten Scherer <t.scherer@eckelmann.de>
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
 
-[ Upstream commit 3d397a1277853498e8b7b305f2610881357c033f ]
+[ Upstream commit f7a344468105ef8c54086dfdc800e6f5a8417d3e ]
 
-Commit f3e7dae323ab ("ARM: dts: imx6qdl: add enet_out clk
-support") added another item to the list of clocks for the fec
-device. As imx6dl-eckelmann-ci4x10.dts only overwrites clocks,
-but not clock-names this resulted in an inconsistency with
-clocks having one item more than clock-names.
+Validation of signed input should be done before casting to unsigned int.
 
-Also overwrite clock-names with the same value as in
-imx6qdl.dtsi. This is a no-op today, but prevents similar
-inconsistencies if the soc file will be changed in a similar way
-in the future.
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-Signed-off-by: Thorsten Scherer <t.scherer@eckelmann.de>
-Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Fixes: f3e7dae323ab ("ARM: dts: imx6qdl: add enet_out clk support")
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Suggested-by: Mark Brown <broonie@kernel.org>
+Fixes: 2fbe467bcbfc ("ASoC: max98090: Reject invalid values in custom control put()")
+Link: https://lore.kernel.org/r/1652999486-29653-1-git-send-email-khoroshilov@ispras.ru
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dts | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ sound/soc/codecs/max98090.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dts b/arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dts
-index b4a9523e325b..864dc5018451 100644
---- a/arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dts
-+++ b/arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dts
-@@ -297,7 +297,11 @@
- 	phy-mode = "rmii";
- 	phy-reset-gpios = <&gpio1 18 GPIO_ACTIVE_LOW>;
- 	phy-handle = <&phy>;
--	clocks = <&clks IMX6QDL_CLK_ENET>, <&clks IMX6QDL_CLK_ENET>, <&rmii_clk>;
-+	clocks = <&clks IMX6QDL_CLK_ENET>,
-+		 <&clks IMX6QDL_CLK_ENET>,
-+		 <&rmii_clk>,
-+		 <&clks IMX6QDL_CLK_ENET_REF>;
-+	clock-names = "ipg", "ahb", "ptp", "enet_out";
- 	status = "okay";
+diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
+index 62b41ca050a2..5513acd360b8 100644
+--- a/sound/soc/codecs/max98090.c
++++ b/sound/soc/codecs/max98090.c
+@@ -393,7 +393,8 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+ 	struct soc_mixer_control *mc =
+ 		(struct soc_mixer_control *)kcontrol->private_value;
+ 	unsigned int mask = (1 << fls(mc->max)) - 1;
+-	unsigned int sel = ucontrol->value.integer.value[0];
++	int sel_unchecked = ucontrol->value.integer.value[0];
++	unsigned int sel;
+ 	unsigned int val = snd_soc_component_read(component, mc->reg);
+ 	unsigned int *select;
  
- 	mdio {
+@@ -413,8 +414,9 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+ 
+ 	val = (val >> mc->shift) & mask;
+ 
+-	if (sel < 0 || sel > mc->max)
++	if (sel_unchecked < 0 || sel_unchecked > mc->max)
+ 		return -EINVAL;
++	sel = sel_unchecked;
+ 
+ 	*select = sel;
+ 
 -- 
 2.35.1
 
