@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20E68CCA49B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06F46C19F55
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390496AbiFHBGR (ORCPT
+        id S1444248AbiFHBHY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:06:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40260 "EHLO
+        Tue, 7 Jun 2022 21:07:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382571AbiFGWEa (ORCPT
+        with ESMTP id S1383452AbiFGWa6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:04:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 453481957BD;
-        Tue,  7 Jun 2022 12:15:37 -0700 (PDT)
+        Tue, 7 Jun 2022 18:30:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A83DA275599;
+        Tue,  7 Jun 2022 12:23:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C49E9B8233E;
-        Tue,  7 Jun 2022 19:15:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D053C385A5;
-        Tue,  7 Jun 2022 19:15:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 189A160B89;
+        Tue,  7 Jun 2022 19:23:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 241D7C385A2;
+        Tue,  7 Jun 2022 19:23:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629334;
-        bh=Ok82NdQlu5FkySxI5+3ZGfOpXbcVehWXEJPOChoCMOA=;
+        s=korg; t=1654629838;
+        bh=e5c3CxGrpbc0Jirl6dkEelSrmn2mfAXYagN8IL4SVRg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W7epv/ZIYwKQMBH15ysTGucpcUQ2czS0BMEeLh+5F5T+f3IxF2nJQ7j+LWGgoJLNz
-         wcPg54H8L8yoiRc/z2AsWtVbeRwKvX5TDgAOQ9nfYJcfpyyKHVkC3jF1QE8b3Jr7rB
-         CsGhXrgjyGdO/d6E38/nWHmA563wXfLZ8vLJ+kmA=
+        b=O+gNpg1jbThA3toFtdPFCSqFr7B7qOMjJSF+YPKr72zVxx7OTcQHraBA95qUB7Jd4
+         eyQ/osmLU+iyayajwA0wsaElYblHF7vAJw+TJFX9Tq2mHwBMDWCtzSc2F7YT13KXy4
+         MLPeH60iLDLkr+DHMItYheNQmKnpCpFHNBdmlnrY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hector Martin <marcan@marcan.st>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 654/879] pinctrl: apple: Use a raw spinlock for the regmap
-Date:   Tue,  7 Jun 2022 19:02:52 +0200
-Message-Id: <20220607165021.829606310@linuxfoundation.org>
+        stable@vger.kernel.org, Yi Yang <yiyang13@huawei.com>,
+        Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH 5.18 834/879] xtensa/simdisk: fix proc_read_simdisk()
+Date:   Tue,  7 Jun 2022 19:05:52 +0200
+Message-Id: <20220607165027.064347224@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,55 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Yi Yang <yiyang13@huawei.com>
 
-[ Upstream commit 83969805cc716a7dc6b296c3fb1bc7e5cd7ca321 ]
+commit b011946d039d66bbc7102137e98cc67e1356aa87 upstream.
 
-The irqchip ops are called with a raw spinlock held, so the subsequent
-regmap usage cannot use a plain spinlock.
+The commit a69755b18774 ("xtensa simdisk: switch to proc_create_data()")
+split read operation into two parts, first retrieving the path when it's
+non-null and second retrieving the trailing '\n'. However when the path
+is non-null the first simple_read_from_buffer updates ppos, and the
+second simple_read_from_buffer returns 0 if ppos is greater than 1 (i.e.
+almost always). As a result reading from that proc file is almost always
+empty.
 
-spi-hid-apple-of spi0.0: spihid_apple_of_probe:74
+Fix it by making a temporary copy of the path with the trailing '\n' and
+using simple_read_from_buffer on that copy.
 
-=============================
-[ BUG: Invalid wait context ]
-5.18.0-asahi-00176-g0fa3ab03bdea #1337 Not tainted
------------------------------
-kworker/u20:3/86 is trying to lock:
-ffff8000166b5018 (pinctrl_apple_gpio:462:(&regmap_config)->lock){....}-{3:3}, at: regmap_lock_spinlock+0x18/0x30
-other info that might help us debug this:
-context-{5:5}
-7 locks held by kworker/u20:3/86:
- #0: ffff800017725d48 ((wq_completion)events_unbound){+.+.}-{0:0}, at: process_one_work+0x1c8/0x670
- #1: ffff80001e33bdd0 (deferred_probe_work){+.+.}-{0:0}, at: process_one_work+0x1c8/0x670
- #2: ffff800017d629a0 (&dev->mutex){....}-{4:4}, at: __device_attach+0x30/0x17c
- #3: ffff80002414e618 (&ctlr->add_lock){+.+.}-{4:4}, at: spi_add_device+0x40/0x80
- #4: ffff800024116990 (&dev->mutex){....}-{4:4}, at: __device_attach+0x30/0x17c
- #5: ffff800022d4be58 (request_class){+.+.}-{4:4}, at: __setup_irq+0xa8/0x720
- #6: ffff800022d4bcc8 (lock_class){....}-{2:2}, at: __setup_irq+0xcc/0x720
-
-Fixes: a0f160ffcb83 ("pinctrl: add pinctrl/GPIO driver for Apple SoCs")
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Link: https://lore.kernel.org/r/20220524142206.18833-1-marcan@marcan.st
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: a69755b18774 ("xtensa simdisk: switch to proc_create_data()")
+Signed-off-by: Yi Yang <yiyang13@huawei.com>
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/pinctrl-apple-gpio.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/xtensa/platforms/iss/simdisk.c |   18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/pinctrl/pinctrl-apple-gpio.c b/drivers/pinctrl/pinctrl-apple-gpio.c
-index 72f4dd2466e1..6d1bff9588d9 100644
---- a/drivers/pinctrl/pinctrl-apple-gpio.c
-+++ b/drivers/pinctrl/pinctrl-apple-gpio.c
-@@ -72,6 +72,7 @@ struct regmap_config regmap_config = {
- 	.max_register = 512 * sizeof(u32),
- 	.num_reg_defaults_raw = 512,
- 	.use_relaxed_mmio = true,
-+	.use_raw_spinlock = true,
- };
- 
- /* No locking needed to mask/unmask IRQs as the interrupt mode is per pin-register. */
--- 
-2.35.1
-
+--- a/arch/xtensa/platforms/iss/simdisk.c
++++ b/arch/xtensa/platforms/iss/simdisk.c
+@@ -211,12 +211,18 @@ static ssize_t proc_read_simdisk(struct
+ 	struct simdisk *dev = pde_data(file_inode(file));
+ 	const char *s = dev->filename;
+ 	if (s) {
+-		ssize_t n = simple_read_from_buffer(buf, size, ppos,
+-							s, strlen(s));
+-		if (n < 0)
+-			return n;
+-		buf += n;
+-		size -= n;
++		ssize_t len = strlen(s);
++		char *temp = kmalloc(len + 2, GFP_KERNEL);
++
++		if (!temp)
++			return -ENOMEM;
++
++		len = scnprintf(temp, len + 2, "%s\n", s);
++		len = simple_read_from_buffer(buf, size, ppos,
++					      temp, len);
++
++		kfree(temp);
++		return len;
+ 	}
+ 	return simple_read_from_buffer(buf, size, ppos, "\n", 1);
+ }
 
 
