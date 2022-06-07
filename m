@@ -2,231 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C8D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E939AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:24:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239329AbiFGJXv convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:23:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59814 "EHLO
+        id S239352AbiFGJYM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239008AbiFGJXp (ORCPT
+        with ESMTP id S237984AbiFGJYK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:23:45 -0400
-X-Greylist: delayed 519 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 02:23:43 PDT
-Received: from einhorn-mail-out.in-berlin.de (einhorn.in-berlin.de [192.109.42.8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 331BE37BE7
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:23:42 -0700 (PDT)
-X-Envelope-From: thomas@osterried.de
-Received: from x-berg.in-berlin.de (x-change.in-berlin.de [217.197.86.40])
-        by einhorn.in-berlin.de  with ESMTPS id 2579Eat51498908
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 7 Jun 2022 11:14:36 +0200
-Received: from x-berg.in-berlin.de ([217.197.86.42] helo=smtpclient.apple)
-        by x-berg.in-berlin.de with esmtpa (Exim 4.94.2)
-        (envelope-from <thomas@osterried.de>)
-        id 1nyVIJ-0001s8-OQ; Tue, 07 Jun 2022 11:14:35 +0200
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
-Subject: Re: [PATCH net-next] ax25: Fix deadlock caused by skb_recv_datagram
- in ax25_recvmsg
-From:   Thomas Osterried <thomas@osterried.de>
-In-Reply-To: <CANn89i+HbdWS4JU0odCbRApuCTGFAt9_NSUoCSFo-b4-z0uWCQ@mail.gmail.com>
-Date:   Tue, 7 Jun 2022 11:14:34 +0200
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        LKML <linux-kernel@vger.kernel.org>, jreuter@yaina.de,
-        =?utf-8?Q?Ralf_B=C3=A4chle_DL5RB?= <ralf@linux-mips.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>, linux-hams@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <E5F82D12-56D3-4040-A92B-C658772FD8DD@osterried.de>
-References: <20220606162138.81505-1-duoming@zju.edu.cn>
- <CANn89i+HbdWS4JU0odCbRApuCTGFAt9_NSUoCSFo-b4-z0uWCQ@mail.gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-X-Mailer: Apple Mail (2.3696.100.31)
+        Tue, 7 Jun 2022 05:24:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B4C4F9C8;
+        Tue,  7 Jun 2022 02:24:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A55FB81DA6;
+        Tue,  7 Jun 2022 09:24:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7274C385A5;
+        Tue,  7 Jun 2022 09:24:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654593845;
+        bh=DdNFbVgj+RerkJzb/e0YuyvLEVDENII8I/0PFtZOPtI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=2EJCwNMFvohw2zeZUDxHA/u6HOOzIVka5AmAScjO0LSy5pz7vB8LmRFFAU6jZI7/l
+         rBKrrstYNqZ5eOhUA+LKrxh3IgkIDOCPwgtojw8N1kSMKh2iZEr+MYDEackD8IRu7g
+         o/rRqICu6IrcvIhhmbDwapfuda7ixiPkhF8mCsOY=
+Date:   Tue, 7 Jun 2022 11:24:00 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jason@zx2c4.com, stable-commits@vger.kernel.org
+Subject: Re: Patch "Revert "random: use static branch for crng_ready()"" has
+ been added to the 4.14-stable tree
+Message-ID: <Yp8ZMJ/X2b2OmQXi@kroah.com>
+References: <20220607084005.666059-1-Jason@zx2c4.com>
+ <165459326824547@kroah.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <165459326824547@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-> Am 06.06.2022 um 19:31 schrieb Eric Dumazet <edumazet@google.com>:
+On Tue, Jun 07, 2022 at 11:14:28AM +0200, gregkh@linuxfoundation.org wrote:
 > 
-> On Mon, Jun 6, 2022 at 9:21 AM Duoming Zhou <duoming@zju.edu.cn> wrote:
->> 
->> The skb_recv_datagram() in ax25_recvmsg() will hold lock_sock
->> and block until it receives a packet from the remote. If the client
->> doesn`t connect to server and calls read() directly, it will not
->> receive any packets forever. As a result, the deadlock will happen.
->> 
->> The fail log caused by deadlock is shown below:
->> 
->> [  861.122612] INFO: task ax25_deadlock:148 blocked for more than 737 seconds.
->> [  861.124543] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
->> [  861.127764] Call Trace:
->> [  861.129688]  <TASK>
->> [  861.130743]  __schedule+0x2f9/0xb20
->> [  861.131526]  schedule+0x49/0xb0
->> [  861.131640]  __lock_sock+0x92/0x100
->> [  861.131640]  ? destroy_sched_domains_rcu+0x20/0x20
->> [  861.131640]  lock_sock_nested+0x6e/0x70
->> [  861.131640]  ax25_sendmsg+0x46/0x420
->> [  861.134383]  ? ax25_recvmsg+0x1e0/0x1e0
->> [  861.135658]  sock_sendmsg+0x59/0x60
->> [  861.136791]  __sys_sendto+0xe9/0x150
->> [  861.137212]  ? __schedule+0x301/0xb20
->> [  861.137710]  ? __do_softirq+0x4a2/0x4fd
->> [  861.139153]  __x64_sys_sendto+0x20/0x30
->> [  861.140330]  do_syscall_64+0x3b/0x90
->> [  861.140731]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
->> [  861.141249] RIP: 0033:0x7fdf05ee4f64
->> [  861.141249] RSP: 002b:00007ffe95772fc0 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
->> [  861.141249] RAX: ffffffffffffffda RBX: 0000565303a013f0 RCX: 00007fdf05ee4f64
->> [  861.141249] RDX: 0000000000000005 RSI: 0000565303a01678 RDI: 0000000000000005
->> [  861.141249] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
->> [  861.141249] R10: 0000000000000000 R11: 0000000000000246 R12: 0000565303a00cf0
->> [  861.141249] R13: 00007ffe957730e0 R14: 0000000000000000 R15: 0000000000000000
->> 
->> This patch moves the skb_recv_datagram() before lock_sock() in order
->> that other functions that need lock_sock could be executed.
->> 
+> This is a note to let you know that I've just added the patch titled
 > 
+>     Revert "random: use static branch for crng_ready()"
 > 
-> Why is this targeting net-next tree ?
-
-Off-topic question for better understanding: when patches go to netdev,
-when to net-next tree? Ah, found explanation it here (mentioning it
-for our readers at linux-hams@):
-  https://www.kernel.org/doc/Documentation/networking/netdev-FAQ.txt
-
-> 1) A fix should target net tree
-> 2) It should include a Fixes: tag
-
-tnx for info. "Fix" in subject is not enough?
-
-
-> Also:
-> - this patch bypasses tests in ax25_recvmsg()
-> - This might break applications depending on blocking read() operations.
-
-We have discussed and verified it.
-
-We had a deadlock problem (during concurrent read/write),
-found by Thomas Habets, in
-  https://marc.info/?l=linux-hams&m=159319049624305&w=2
-Duoming found a second problem with current ax.25 implementation, that causes
-deadlock not only for the userspace program Thomas had, but also in the kernel.
-
-Thomas' patch did not made it to the git kernel net, because the testing bot
-complained that there was no "goto out:" left, for label "out:".
-
-Furhermore, before the test
-          if (sk->sk_type == SOCK_SEQPACKET && sk->sk_state != TCP_ESTABLISHED) {
-it's useful to do lock_sock(sk);
-
-After reading through the documentation in the code above the skb_recv_datagram()
-function, it should be safe to use this function without locking.
-That's why we moved it to the top of ax25_recvmsg().
-
-
-> I feel a real fix is going to be slightly more difficult than that.
-
-It's interesting to see how other kernel drivers use skb_recv_datagram().
-Many have copied the code of others. But in the end, there are various variants:
-
-
-
-af_x25.c (for X.25) does it this way:
-
-	lock_sock(sk);
-if (x25->neighbour == NULL)
-goto out;
-..
-if (sk->sk_state != TCP_ESTABLISHED)
-goto out;
-..
-release_sock(sk);
-skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT,
-flags & MSG_DONTWAIT, &rc);
-lock_sock(sk);
-
--> They lock for sk->sk_state tests, and then
-release lock for skb_recv_datagram()
-
-
-
-unix.c does it with a local lock in the unix socket struct:
-
-mutex_lock(&u->iolock);
-skb = skb_recv_datagram(sk, 0, 1, &err);
-mutex_unlock(&u->iolock);
-if (!skb)
-return err;
-
-
-
-netrom/af_netrom.c: It may have the same "deadlog hang" like af_ax25.c that Thomas observed.
--> may also be needed to fix.
-
-
-rose/af_rose.c: does not use any locks (!)
-
-
-vy 73,
-	- Thomas  dl9sau
-
-
+> to the 4.14-stable tree which can be found at:
+>     http://www.kernel.org/git/?p=linux/kernel/git/stable/stable-queue.git;a=summary
 > 
+> The filename of the patch is:
+>      revert-random-use-static-branch-for-crng_ready.patch
+> and it can be found in the queue-4.14 subdirectory.
 > 
-> Thank you
-> 
->> Reported-by: Thomas Habets <thomas@@habets.se>
->> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
->> ---
->> net/ax25/af_ax25.c | 11 ++++++-----
->> 1 file changed, 6 insertions(+), 5 deletions(-)
->> 
->> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
->> index 95393bb2760..02cd6087512 100644
->> --- a/net/ax25/af_ax25.c
->> +++ b/net/ax25/af_ax25.c
->> @@ -1665,6 +1665,11 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
->>        int copied;
->>        int err = 0;
->> 
->> +       /* Now we can treat all alike */
->> +       skb = skb_recv_datagram(sk, flags, &err);
->> +       if (!skb)
->> +               goto done;
->> +
->>        lock_sock(sk);
->>        /*
->>         *      This works for seqpacket too. The receiver has ordered the
->> @@ -1675,11 +1680,6 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
->>                goto out;
->>        }
->> 
->> -       /* Now we can treat all alike */
->> -       skb = skb_recv_datagram(sk, flags, &err);
->> -       if (skb == NULL)
->> -               goto out;
->> -
->>        if (!sk_to_ax25(sk)->pidincl)
->>                skb_pull(skb, 1);               /* Remove PID */
->> 
->> @@ -1725,6 +1725,7 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
->> out:
->>        release_sock(sk);
->> 
->> +done:
->>        return err;
->> }
->> 
->> --
->> 2.17.1
->> 
-> 
+> If you, or anyone else, feels it should not be added to the stable tree,
+> please let <stable@vger.kernel.org> know about it.
 
+Oops, nope, it didn't apply here, sorry, scripts went crazy for a
+minute...
+
+greg k-h
