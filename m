@@ -2,297 +2,494 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12097CCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF2DECCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388588AbiFHAca (ORCPT
+        id S1388489AbiFHAcV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:32:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35100 "EHLO
+        Tue, 7 Jun 2022 20:32:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385597AbiFGWbj (ORCPT
+        with ESMTP id S1383388AbiFGVxJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:31:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A4A279E64;
-        Tue,  7 Jun 2022 12:24:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B60360B01;
-        Tue,  7 Jun 2022 19:24:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D8E7C385A5;
-        Tue,  7 Jun 2022 19:24:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629890;
-        bh=AHNEXZwikHidMQUXxHOeTmmZF/1ZRuNnStOSrm8aeiQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G9cNoLdKDqrRuhKvd8QoAk1Nt/tjhiR+P/4SM6fge2S9HsPO69vX5kAAOqULHBb1K
-         zXDwuvUX0mSei5eMvJpDQxhsPFNy7fgdmE/Rr9QuqO4r+oHWWPvt/fuOuFdzHkysWx
-         ju10leeebG+6CswMRnEFNtPWsEQUrK+lLK6FN7Sw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>
-Subject: [PATCH 5.18 813/879] mt76: fix use-after-free by removing a non-RCU wcid pointer
-Date:   Tue,  7 Jun 2022 19:05:31 +0200
-Message-Id: <20220607165026.456558699@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:53:09 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BDAB289B8
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:11:38 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id c2so24206205edf.5
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:11:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hV3xEmz3VLxIR9I3qG4yWszU0CvP4zSv4bB50jhgWQY=;
+        b=FsOTpaCNvMmctTnP+zSEnTxCEQrRXWsITIdWtaHz5VCwaCh5RKGXylUsssMJ85p6wQ
+         sb2Hjkscx9prhO++TxwhhysL4Z5n3qHt1c4c92Wc4qWs7HHu1pu6Z9V0Q2qU579iu5Lm
+         PlBvFDeoEfE/D6RQ4VyRR+Jrn5X+GjXT9PVR7o+1N0E/cyeosjHoDIb8TGiZ7kXDMY0r
+         aweTDpAuGXVX4QypEnIq90r0MYBiFO329pOeu5R73LKQj7eW4nw6x3UteyRo+UP3p7ux
+         WeYoL9A+hCUhumITWwg4yBG0VI5zmlgmk8nmXpe56osIMet5WGsOMQ5oTIeSbrsLGlUc
+         NLtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hV3xEmz3VLxIR9I3qG4yWszU0CvP4zSv4bB50jhgWQY=;
+        b=U8hAefEOwaqD8x9fm1U51LxAPJH3gmpL4BqTp/5CgPwkppcgFEQNON5BAn8nYbn7Gd
+         jHV0tHfr8jTNBUX4L49jidcJaM0biXvA+5e8xDiFlEdt3JqdloSX9gfP87Z30a5xyN1T
+         hHGeQS3zSj56RoKZfWi/VKo9auFsRU+yLP/4Xyos2L0lpNMXhA8LVuqqm3wEeOyC1LB3
+         UJAQwb9GauMHRxc3lVaIlwRyu2rhNL/QdSYiO+wadxSXACYNd0QHKJLyuIVj3wDyI4mt
+         lGGV5laKZPrD49ggH7l+nHp7wBtM3M0UX19/S63n9pAfdSQ/FU1dAhrR6gQ2W47X1CYO
+         Tz5g==
+X-Gm-Message-State: AOAM532bNLmGpROUBbvvZFm81umPeU2GqbpfvASmFN6mWy+sO49fakvr
+        KZUTfY4o5S4SOwfjbtXgCcAhvKYI9rbrmzrqfcg8nA==
+X-Google-Smtp-Source: ABdhPJyR7w9fy1LybVL5JIIyJDc27TBl5rRQHyNxOHpEx3LkHY5wY1AXTQ/vuTD24Ix9wW5/Jqy0z0KQXMq4BdQi7Gw=
+X-Received: by 2002:a05:6402:2405:b0:431:6ef1:e2a with SMTP id
+ t5-20020a056402240500b004316ef10e2amr11282812eda.26.1654629095871; Tue, 07
+ Jun 2022 12:11:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220607145639.2362750-1-tzungbi@kernel.org> <20220607145639.2362750-15-tzungbi@kernel.org>
+In-Reply-To: <20220607145639.2362750-15-tzungbi@kernel.org>
+From:   Guenter Roeck <groeck@google.com>
+Date:   Tue, 7 Jun 2022 12:11:23 -0700
+Message-ID: <CABXOdTcBauEYxOokg3PHGwYfgjAHNPGzf9mHnNFTyhcucv+rzg@mail.gmail.com>
+Subject: Re: [PATCH v2 14/15] platform/chrome: cros_ec_proto: return 0 on
+ getting version mask success
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     bleung@chromium.org, groeck@chromium.org,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+On Tue, Jun 7, 2022 at 7:57 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
+>
+> cros_ec_get_host_command_version_mask() used to return value from
+> send_command() which is number of bytes for input payload on success
+> (i.e. sizeof(struct ec_response_get_cmd_versions)).
+>
+> However, the callers don't need to know how many bytes are available.
+>
+> - Fix cros_ec_get_host_command_version_mask() to return 0 on success;
+>   negative integers on error.
+>
+> - Remove the unneeded `ver_mask` initialization as the callers should
+>   take it only if cros_ec_get_host_command_version_mask() returns 0.
+>
+> - Add a Kunit test: `ver_mask` has some garbage bytes from previous
+>   EC_CMD_GET_NEXT_EVENT but there is no host sleep to make sure the
+>   caller checks the return values correctly.
+>
+This should be separate patches.
 
-commit 51fb1278aa57ae0fc54adaa786e1965362bed4fb upstream.
-
-Fixes an issue caught by KASAN about use-after-free in mt76_txq_schedule
-by protecting mtxq->wcid with rcu_lock between mt76_txq_schedule and
-sta_info_[alloc, free].
-
-[18853.876689] ==================================================================
-[18853.876751] BUG: KASAN: use-after-free in mt76_txq_schedule+0x204/0xaf8 [mt76]
-[18853.876773] Read of size 8 at addr ffffffaf989a2138 by task mt76-tx phy0/883
-[18853.876786]
-[18853.876810] CPU: 5 PID: 883 Comm: mt76-tx phy0 Not tainted 5.10.100-fix-510-56778d365941-kasan #5 0b01fbbcf41a530f52043508fec2e31a4215
-
-[18853.876840] Call trace:
-[18853.876861]  dump_backtrace+0x0/0x3ec
-[18853.876878]  show_stack+0x20/0x2c
-[18853.876899]  dump_stack+0x11c/0x1ac
-[18853.876918]  print_address_description+0x74/0x514
-[18853.876934]  kasan_report+0x134/0x174
-[18853.876948]  __asan_report_load8_noabort+0x44/0x50
-[18853.876976]  mt76_txq_schedule+0x204/0xaf8 [mt76 074e03e4640e97fe7405ee1fab547b81c4fa45d2]
-[18853.877002]  mt76_txq_schedule_all+0x2c/0x48 [mt76 074e03e4640e97fe7405ee1fab547b81c4fa45d2]
-[18853.877030]  mt7921_tx_worker+0xa0/0x1cc [mt7921_common f0875ebac9d7b4754e1010549e7db50fbd90a047]
-[18853.877054]  __mt76_worker_fn+0x190/0x22c [mt76 074e03e4640e97fe7405ee1fab547b81c4fa45d2]
-[18853.877071]  kthread+0x2f8/0x3b8
-[18853.877087]  ret_from_fork+0x10/0x30
-[18853.877098]
-[18853.877112] Allocated by task 941:
-[18853.877131]  kasan_save_stack+0x38/0x68
-[18853.877147]  __kasan_kmalloc+0xd4/0xfc
-[18853.877163]  kasan_kmalloc+0x10/0x1c
-[18853.877177]  __kmalloc+0x264/0x3c4
-[18853.877294]  sta_info_alloc+0x460/0xf88 [mac80211]
-[18853.877410]  ieee80211_prep_connection+0x204/0x1ee0 [mac80211]
-[18853.877523]  ieee80211_mgd_auth+0x6c4/0xa4c [mac80211]
-[18853.877635]  ieee80211_auth+0x20/0x2c [mac80211]
-[18853.877733]  rdev_auth+0x7c/0x438 [cfg80211]
-[18853.877826]  cfg80211_mlme_auth+0x26c/0x390 [cfg80211]
-[18853.877919]  nl80211_authenticate+0x6d4/0x904 [cfg80211]
-[18853.877938]  genl_rcv_msg+0x748/0x93c
-[18853.877954]  netlink_rcv_skb+0x160/0x2a8
-[18853.877969]  genl_rcv+0x3c/0x54
-[18853.877985]  netlink_unicast_kernel+0x104/0x1ec
-[18853.877999]  netlink_unicast+0x178/0x268
-[18853.878015]  netlink_sendmsg+0x3cc/0x5f0
-[18853.878030]  sock_sendmsg+0xb4/0xd8
-[18853.878043]  ____sys_sendmsg+0x2f8/0x53c
-[18853.878058]  ___sys_sendmsg+0xe8/0x150
-[18853.878071]  __sys_sendmsg+0xc4/0x1f4
-[18853.878087]  __arm64_compat_sys_sendmsg+0x88/0x9c
-[18853.878101]  el0_svc_common+0x1b4/0x390
-[18853.878115]  do_el0_svc_compat+0x8c/0xdc
-[18853.878131]  el0_svc_compat+0x10/0x1c
-[18853.878146]  el0_sync_compat_handler+0xa8/0xcc
-[18853.878161]  el0_sync_compat+0x188/0x1c0
-[18853.878171]
-[18853.878183] Freed by task 10927:
-[18853.878200]  kasan_save_stack+0x38/0x68
-[18853.878215]  kasan_set_track+0x28/0x3c
-[18853.878228]  kasan_set_free_info+0x24/0x48
-[18853.878244]  __kasan_slab_free+0x11c/0x154
-[18853.878259]  kasan_slab_free+0x14/0x24
-[18853.878273]  slab_free_freelist_hook+0xac/0x1b0
-[18853.878287]  kfree+0x104/0x390
-[18853.878402]  sta_info_free+0x198/0x210 [mac80211]
-[18853.878515]  __sta_info_destroy_part2+0x230/0x2d4 [mac80211]
-[18853.878628]  __sta_info_flush+0x300/0x37c [mac80211]
-[18853.878740]  ieee80211_set_disassoc+0x2cc/0xa7c [mac80211]
-[18853.878851]  ieee80211_mgd_deauth+0x4a4/0x10a0 [mac80211]
-[18853.878962]  ieee80211_deauth+0x20/0x2c [mac80211]
-[18853.879057]  rdev_deauth+0x7c/0x438 [cfg80211]
-[18853.879150]  cfg80211_mlme_deauth+0x274/0x414 [cfg80211]
-[18853.879243]  cfg80211_mlme_down+0xe4/0x118 [cfg80211]
-[18853.879335]  cfg80211_disconnect+0x218/0x2d8 [cfg80211]
-[18853.879427]  __cfg80211_leave+0x17c/0x240 [cfg80211]
-[18853.879519]  cfg80211_leave+0x3c/0x58 [cfg80211]
-[18853.879611]  wiphy_suspend+0xdc/0x200 [cfg80211]
-[18853.879628]  dpm_run_callback+0x58/0x408
-[18853.879642]  __device_suspend+0x4cc/0x864
-[18853.879658]  async_suspend+0x34/0xf4
-[18853.879673]  async_run_entry_fn+0xe0/0x37c
-[18853.879689]  process_one_work+0x508/0xb98
-[18853.879702]  worker_thread+0x7f4/0xcd4
-[18853.879717]  kthread+0x2f8/0x3b8
-[18853.879731]  ret_from_fork+0x10/0x30
-[18853.879741]
-[18853.879757] The buggy address belongs to the object at ffffffaf989a2000
-[18853.879757]  which belongs to the cache kmalloc-8k of size 8192
-[18853.879774] The buggy address is located 312 bytes inside of
-[18853.879774]  8192-byte region [ffffffaf989a2000, ffffffaf989a4000)
-[18853.879787] The buggy address belongs to the page:
-[18853.879807] page:000000004bda2a59 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1d89a0
-[18853.879823] head:000000004bda2a59 order:3 compound_mapcount:0 compound_pincount:0
-[18853.879839] flags: 0x8000000000010200(slab|head)
-[18853.879857] raw: 8000000000010200 ffffffffbc89e208 ffffffffb7fb5208 ffffffaec000cc80
-[18853.879873] raw: 0000000000000000 0000000000010001 00000001ffffffff 0000000000000000
-[18853.879885] page dumped because: kasan: bad access detected
-[18853.879896]
-[18853.879907] Memory state around the buggy address:
-[18853.879922]  ffffffaf989a2000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[18853.879935]  ffffffaf989a2080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[18853.879948] >ffffffaf989a2100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[18853.879961]                                         ^
-[18853.879973]  ffffffaf989a2180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[18853.879986]  ffffffaf989a2200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[18853.879998] ==================================================================
-
-Cc: stable@vger.kernel.org
-Reported-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/wireless/mediatek/mt76/mac80211.c     |    2 +-
- drivers/net/wireless/mediatek/mt76/mt76.h         |    2 +-
- drivers/net/wireless/mediatek/mt76/mt7603/main.c  |    2 +-
- drivers/net/wireless/mediatek/mt76/mt7615/main.c  |    2 +-
- drivers/net/wireless/mediatek/mt76/mt76x02_util.c |    4 +++-
- drivers/net/wireless/mediatek/mt76/mt7915/main.c  |    2 +-
- drivers/net/wireless/mediatek/mt76/mt7921/main.c  |    2 +-
- drivers/net/wireless/mediatek/mt76/tx.c           |    9 ++++-----
- 8 files changed, 13 insertions(+), 12 deletions(-)
-
---- a/drivers/net/wireless/mediatek/mt76/mac80211.c
-+++ b/drivers/net/wireless/mediatek/mt76/mac80211.c
-@@ -1303,7 +1303,7 @@ mt76_sta_add(struct mt76_dev *dev, struc
- 			continue;
- 
- 		mtxq = (struct mt76_txq *)sta->txq[i]->drv_priv;
--		mtxq->wcid = wcid;
-+		mtxq->wcid = wcid->idx;
- 	}
- 
- 	ewma_signal_init(&wcid->rssi);
---- a/drivers/net/wireless/mediatek/mt76/mt76.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt76.h
-@@ -275,7 +275,7 @@ struct mt76_wcid {
- };
- 
- struct mt76_txq {
--	struct mt76_wcid *wcid;
-+	u16 wcid;
- 
- 	u16 agg_ssn;
- 	bool send_bar;
---- a/drivers/net/wireless/mediatek/mt76/mt7603/main.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7603/main.c
-@@ -75,7 +75,7 @@ mt7603_add_interface(struct ieee80211_hw
- 	mt7603_wtbl_init(dev, idx, mvif->idx, bc_addr);
- 
- 	mtxq = (struct mt76_txq *)vif->txq->drv_priv;
--	mtxq->wcid = &mvif->sta.wcid;
-+	mtxq->wcid = idx;
- 	rcu_assign_pointer(dev->mt76.wcid[idx], &mvif->sta.wcid);
- 
- out:
---- a/drivers/net/wireless/mediatek/mt76/mt7615/main.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
-@@ -234,7 +234,7 @@ static int mt7615_add_interface(struct i
- 	rcu_assign_pointer(dev->mt76.wcid[idx], &mvif->sta.wcid);
- 	if (vif->txq) {
- 		mtxq = (struct mt76_txq *)vif->txq->drv_priv;
--		mtxq->wcid = &mvif->sta.wcid;
-+		mtxq->wcid = idx;
- 	}
- 
- 	ret = mt7615_mcu_add_dev_info(phy, vif, true);
---- a/drivers/net/wireless/mediatek/mt76/mt76x02_util.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76x02_util.c
-@@ -292,7 +292,8 @@ mt76x02_vif_init(struct mt76x02_dev *dev
- 	mt76_packet_id_init(&mvif->group_wcid);
- 
- 	mtxq = (struct mt76_txq *)vif->txq->drv_priv;
--	mtxq->wcid = &mvif->group_wcid;
-+	rcu_assign_pointer(dev->mt76.wcid[MT_VIF_WCID(idx)], &mvif->group_wcid);
-+	mtxq->wcid = MT_VIF_WCID(idx);
- }
- 
- int
-@@ -345,6 +346,7 @@ void mt76x02_remove_interface(struct iee
- 	struct mt76x02_vif *mvif = (struct mt76x02_vif *)vif->drv_priv;
- 
- 	dev->mt76.vif_mask &= ~BIT(mvif->idx);
-+	rcu_assign_pointer(dev->mt76.wcid[mvif->group_wcid.idx], NULL);
- 	mt76_packet_id_flush(&dev->mt76, &mvif->group_wcid);
- }
- EXPORT_SYMBOL_GPL(mt76x02_remove_interface);
---- a/drivers/net/wireless/mediatek/mt76/mt7915/main.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/main.c
-@@ -246,7 +246,7 @@ static int mt7915_add_interface(struct i
- 	rcu_assign_pointer(dev->mt76.wcid[idx], &mvif->sta.wcid);
- 	if (vif->txq) {
- 		mtxq = (struct mt76_txq *)vif->txq->drv_priv;
--		mtxq->wcid = &mvif->sta.wcid;
-+		mtxq->wcid = idx;
- 	}
- 
- 	if (vif->type != NL80211_IFTYPE_AP &&
---- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-@@ -330,7 +330,7 @@ static int mt7921_add_interface(struct i
- 	rcu_assign_pointer(dev->mt76.wcid[idx], &mvif->sta.wcid);
- 	if (vif->txq) {
- 		mtxq = (struct mt76_txq *)vif->txq->drv_priv;
--		mtxq->wcid = &mvif->sta.wcid;
-+		mtxq->wcid = idx;
- 	}
- 
- out:
---- a/drivers/net/wireless/mediatek/mt76/tx.c
-+++ b/drivers/net/wireless/mediatek/mt76/tx.c
-@@ -436,12 +436,11 @@ mt76_txq_stopped(struct mt76_queue *q)
- 
- static int
- mt76_txq_send_burst(struct mt76_phy *phy, struct mt76_queue *q,
--		    struct mt76_txq *mtxq)
-+		    struct mt76_txq *mtxq, struct mt76_wcid *wcid)
- {
- 	struct mt76_dev *dev = phy->dev;
- 	struct ieee80211_txq *txq = mtxq_to_txq(mtxq);
- 	enum mt76_txq_id qid = mt76_txq_get_qid(txq);
--	struct mt76_wcid *wcid = mtxq->wcid;
- 	struct ieee80211_tx_info *info;
- 	struct sk_buff *skb;
- 	int n_frames = 1;
-@@ -521,8 +520,8 @@ mt76_txq_schedule_list(struct mt76_phy *
- 			break;
- 
- 		mtxq = (struct mt76_txq *)txq->drv_priv;
--		wcid = mtxq->wcid;
--		if (wcid && test_bit(MT_WCID_FLAG_PS, &wcid->flags))
-+		wcid = rcu_dereference(dev->wcid[mtxq->wcid]);
-+		if (!wcid || test_bit(MT_WCID_FLAG_PS, &wcid->flags))
- 			continue;
- 
- 		spin_lock_bh(&q->lock);
-@@ -541,7 +540,7 @@ mt76_txq_schedule_list(struct mt76_phy *
- 		}
- 
- 		if (!mt76_txq_stopped(q))
--			n_frames = mt76_txq_send_burst(phy, q, mtxq);
-+			n_frames = mt76_txq_send_burst(phy, q, mtxq, wcid);
- 
- 		spin_unlock_bh(&q->lock);
- 
+Thanks,
+Guenter
 
 
+> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+> ---
+> Changes from v1:
+> - Return 0 on success; otherwise, negative intergers.
+>
+>  drivers/platform/chrome/cros_ec_proto.c      |  37 ++-
+>  drivers/platform/chrome/cros_ec_proto_test.c | 286 +++++++++++++++++++
+>  2 files changed, 308 insertions(+), 15 deletions(-)
+>
+> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+> index ee15a73eee38..9d96ed16244f 100644
+> --- a/drivers/platform/chrome/cros_ec_proto.c
+> +++ b/drivers/platform/chrome/cros_ec_proto.c
+> @@ -428,13 +428,12 @@ static int cros_ec_get_proto_info_legacy(struct cros_ec_device *ec_dev)
+>   * the caller has ec_dev->lock mutex or the caller knows there is
+>   * no other command in progress.
+>   */
+> -static int cros_ec_get_host_command_version_mask(struct cros_ec_device *ec_dev,
+> -       u16 cmd, u32 *mask)
+> +static int cros_ec_get_host_command_version_mask(struct cros_ec_device *ec_dev, u16 cmd, u32 *mask)
+>  {
+>         struct ec_params_get_cmd_versions *pver;
+>         struct ec_response_get_cmd_versions *rver;
+>         struct cros_ec_command *msg;
+> -       int ret;
+> +       int ret, mapped;
+>
+>         msg = kmalloc(sizeof(*msg) + max(sizeof(*rver), sizeof(*pver)),
+>                       GFP_KERNEL);
+> @@ -450,13 +449,25 @@ static int cros_ec_get_host_command_version_mask(struct cros_ec_device *ec_dev,
+>         pver->cmd = cmd;
+>
+>         ret = send_command(ec_dev, msg);
+> -       if (ret > 0) {
+> -               rver = (struct ec_response_get_cmd_versions *)msg->data;
+> -               *mask = rver->version_mask;
+> +       if (ret < 0)
+> +               goto exit;
+> +
+> +       mapped = cros_ec_map_error(msg->result);
+> +       if (mapped) {
+> +               ret = mapped;
+> +               goto exit;
+>         }
+>
+> -       kfree(msg);
+> +       if (ret == 0) {
+> +               ret = -EPROTO;
+> +               goto exit;
+> +       }
+>
+> +       rver = (struct ec_response_get_cmd_versions *)msg->data;
+> +       *mask = rver->version_mask;
+> +       ret = 0;
+> +exit:
+> +       kfree(msg);
+>         return ret;
+>  }
+>
+> @@ -469,7 +480,7 @@ static int cros_ec_get_host_command_version_mask(struct cros_ec_device *ec_dev,
+>   */
+>  int cros_ec_query_all(struct cros_ec_device *ec_dev)
+>  {
+> -       u32 ver_mask = 0;
+> +       u32 ver_mask;
+>         int ret;
+>         u8 *din, *dout;
+>
+> @@ -503,9 +514,7 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+>         ec_dev->dout = dout;
+>
+>         /* Probe if MKBP event is supported */
+> -       ret = cros_ec_get_host_command_version_mask(ec_dev,
+> -                                                   EC_CMD_GET_NEXT_EVENT,
+> -                                                   &ver_mask);
+> +       ret = cros_ec_get_host_command_version_mask(ec_dev, EC_CMD_GET_NEXT_EVENT, &ver_mask);
+>         if (ret < 0 || ver_mask == 0) {
+>                 ec_dev->mkbp_event_supported = 0;
+>         } else {
+> @@ -515,10 +524,8 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+>         }
+>
+>         /* Probe if host sleep v1 is supported for S0ix failure detection. */
+> -       ret = cros_ec_get_host_command_version_mask(ec_dev,
+> -                                                   EC_CMD_HOST_SLEEP_EVENT,
+> -                                                   &ver_mask);
+> -       ec_dev->host_sleep_v1 = (ret >= 0 && (ver_mask & EC_VER_MASK(1)));
+> +       ret = cros_ec_get_host_command_version_mask(ec_dev, EC_CMD_HOST_SLEEP_EVENT, &ver_mask);
+> +       ec_dev->host_sleep_v1 = (ret == 0 && (ver_mask & EC_VER_MASK(1)));
+>
+>         /* Get host event wake mask. */
+>         ret = cros_ec_get_host_event_wake_mask(ec_dev, &ec_dev->host_event_wake_mask);
+> diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
+> index 27b81a5a9880..af69410f2978 100644
+> --- a/drivers/platform/chrome/cros_ec_proto_test.c
+> +++ b/drivers/platform/chrome/cros_ec_proto_test.c
+> @@ -890,6 +890,182 @@ static void cros_ec_proto_test_query_all_no_mkbp(struct kunit *test)
+>         }
+>  }
+>
+> +static void cros_ec_proto_test_query_all_no_mkbp_return_error(struct kunit *test)
+> +{
+> +       struct cros_ec_proto_test_priv *priv = test->priv;
+> +       struct cros_ec_device *ec_dev = &priv->ec_dev;
+> +       struct ec_xfer_mock *mock;
+> +       int ret;
+> +
+> +       /* Set some garbage bytes. */
+> +       ec_dev->mkbp_event_supported = 0xbf;
+> +
+> +       /* For cros_ec_get_proto_info() without passthru. */
+> +       {
+> +               struct ec_response_get_protocol_info *data;
+> +
+> +               mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +
+> +               /*
+> +                * Although it doesn't check the value, provides valid sizes so that
+> +                * cros_ec_query_all() allocates din and dout correctly.
+> +                */
+> +               data = (struct ec_response_get_protocol_info *)mock->o_data;
+> +               data->max_request_packet_size = 0xbe;
+> +               data->max_response_packet_size = 0xef;
+> +       }
+> +
+> +       /* For cros_ec_get_proto_info() with passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +       }
+> +
+> +       /* For cros_ec_get_host_command_version_mask() for MKBP. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +       }
+> +
+> +       cros_ec_proto_test_query_all_pretest(test);
+> +       ret = cros_ec_query_all(ec_dev);
+> +       KUNIT_EXPECT_EQ(test, ret, 0);
+> +
+> +       /* For cros_ec_get_proto_info() without passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_PROTOCOL_INFO);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_protocol_info));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
+> +       }
+> +
+> +       /* For cros_ec_get_proto_info() with passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command,
+> +                               EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) |
+> +                               EC_CMD_GET_PROTOCOL_INFO);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_protocol_info));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
+> +       }
+> +
+> +       /* For cros_ec_get_host_command_version_mask() for MKBP. */
+> +       {
+> +               struct ec_params_get_cmd_versions *data;
+> +
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_CMD_VERSIONS);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_cmd_versions));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(*data));
+> +
+> +               data = (struct ec_params_get_cmd_versions *)mock->i_data;
+> +               KUNIT_EXPECT_EQ(test, data->cmd, EC_CMD_GET_NEXT_EVENT);
+> +
+> +               KUNIT_EXPECT_EQ(test, ec_dev->mkbp_event_supported, 0);
+> +       }
+> +}
+> +
+> +static void cros_ec_proto_test_query_all_no_mkbp_return0(struct kunit *test)
+> +{
+> +       struct cros_ec_proto_test_priv *priv = test->priv;
+> +       struct cros_ec_device *ec_dev = &priv->ec_dev;
+> +       struct ec_xfer_mock *mock;
+> +       int ret;
+> +
+> +       /* Set some garbage bytes. */
+> +       ec_dev->mkbp_event_supported = 0xbf;
+> +
+> +       /* For cros_ec_get_proto_info() without passthru. */
+> +       {
+> +               struct ec_response_get_protocol_info *data;
+> +
+> +               mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +
+> +               /*
+> +                * Although it doesn't check the value, provides valid sizes so that
+> +                * cros_ec_query_all() allocates din and dout correctly.
+> +                */
+> +               data = (struct ec_response_get_protocol_info *)mock->o_data;
+> +               data->max_request_packet_size = 0xbe;
+> +               data->max_response_packet_size = 0xef;
+> +       }
+> +
+> +       /* For cros_ec_get_proto_info() with passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +       }
+> +
+> +       /* For cros_ec_get_host_command_version_mask() for MKBP. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_add(test, 0);
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +       }
+> +
+> +       cros_ec_proto_test_query_all_pretest(test);
+> +       ret = cros_ec_query_all(ec_dev);
+> +       KUNIT_EXPECT_EQ(test, ret, 0);
+> +
+> +       /* For cros_ec_get_proto_info() without passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_PROTOCOL_INFO);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_protocol_info));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
+> +       }
+> +
+> +       /* For cros_ec_get_proto_info() with passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command,
+> +                               EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) |
+> +                               EC_CMD_GET_PROTOCOL_INFO);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_protocol_info));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
+> +       }
+> +
+> +       /* For cros_ec_get_host_command_version_mask() for MKBP. */
+> +       {
+> +               struct ec_params_get_cmd_versions *data;
+> +
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_CMD_VERSIONS);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_cmd_versions));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(*data));
+> +
+> +               data = (struct ec_params_get_cmd_versions *)mock->i_data;
+> +               KUNIT_EXPECT_EQ(test, data->cmd, EC_CMD_GET_NEXT_EVENT);
+> +
+> +               KUNIT_EXPECT_EQ(test, ec_dev->mkbp_event_supported, 0);
+> +       }
+> +}
+> +
+>  static void cros_ec_proto_test_query_all_no_host_sleep(struct kunit *test)
+>  {
+>         struct cros_ec_proto_test_priv *priv = test->priv;
+> @@ -996,6 +1172,113 @@ static void cros_ec_proto_test_query_all_no_host_sleep(struct kunit *test)
+>         }
+>  }
+>
+> +static void cros_ec_proto_test_query_all_no_host_sleep_return0(struct kunit *test)
+> +{
+> +       struct cros_ec_proto_test_priv *priv = test->priv;
+> +       struct cros_ec_device *ec_dev = &priv->ec_dev;
+> +       struct ec_xfer_mock *mock;
+> +       int ret;
+> +
+> +       /* Set some garbage bytes. */
+> +       ec_dev->host_sleep_v1 = true;
+> +
+> +       /* For cros_ec_get_proto_info() without passthru. */
+> +       {
+> +               struct ec_response_get_protocol_info *data;
+> +
+> +               mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +
+> +               /*
+> +                * Although it doesn't check the value, provides valid sizes so that
+> +                * cros_ec_query_all() allocates din and dout correctly.
+> +                */
+> +               data = (struct ec_response_get_protocol_info *)mock->o_data;
+> +               data->max_request_packet_size = 0xbe;
+> +               data->max_response_packet_size = 0xef;
+> +       }
+> +
+> +       /* For cros_ec_get_proto_info() with passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +       }
+> +
+> +       /* For cros_ec_get_host_command_version_mask() for MKBP. */
+> +       {
+> +               struct ec_response_get_cmd_versions *data;
+> +
+> +               mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +
+> +               /* In order to pollute next cros_ec_get_host_command_version_mask(). */
+> +               data = (struct ec_response_get_cmd_versions *)mock->o_data;
+> +               data->version_mask = 0xbeef;
+> +       }
+> +
+> +       /* For cros_ec_get_host_command_version_mask() for host sleep v1. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_add(test, 0);
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +       }
+> +
+> +       cros_ec_proto_test_query_all_pretest(test);
+> +       ret = cros_ec_query_all(ec_dev);
+> +       KUNIT_EXPECT_EQ(test, ret, 0);
+> +
+> +       /* For cros_ec_get_proto_info() without passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_PROTOCOL_INFO);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_protocol_info));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
+> +       }
+> +
+> +       /* For cros_ec_get_proto_info() with passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command,
+> +                               EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) |
+> +                               EC_CMD_GET_PROTOCOL_INFO);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_protocol_info));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
+> +       }
+> +
+> +       /* For cros_ec_get_host_command_version_mask() for MKBP. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_CMD_VERSIONS);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_cmd_versions));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_get_cmd_versions));
+> +       }
+> +
+> +       /* For cros_ec_get_host_command_version_mask() for host sleep v1. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_CMD_VERSIONS);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_cmd_versions));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_get_cmd_versions));
+> +
+> +               KUNIT_EXPECT_FALSE(test, ec_dev->host_sleep_v1);
+> +       }
+> +}
+> +
+>  static void cros_ec_proto_test_query_all_default_wake_mask_return_error(struct kunit *test)
+>  {
+>         struct cros_ec_proto_test_priv *priv = test->priv;
+> @@ -1183,7 +1466,10 @@ static struct kunit_case cros_ec_proto_test_cases[] = {
+>         KUNIT_CASE(cros_ec_proto_test_query_all_legacy_data_error),
+>         KUNIT_CASE(cros_ec_proto_test_query_all_legacy_return0),
+>         KUNIT_CASE(cros_ec_proto_test_query_all_no_mkbp),
+> +       KUNIT_CASE(cros_ec_proto_test_query_all_no_mkbp_return_error),
+> +       KUNIT_CASE(cros_ec_proto_test_query_all_no_mkbp_return0),
+>         KUNIT_CASE(cros_ec_proto_test_query_all_no_host_sleep),
+> +       KUNIT_CASE(cros_ec_proto_test_query_all_no_host_sleep_return0),
+>         KUNIT_CASE(cros_ec_proto_test_query_all_default_wake_mask_return_error),
+>         {}
+>  };
+> --
+> 2.36.1.255.ge46751e96f-goog
+>
