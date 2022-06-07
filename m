@@ -2,184 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4F1BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:42:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04552CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:43:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345141AbiFGQma (ORCPT
+        id S1345150AbiFGQnn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 12:42:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46020 "EHLO
+        Tue, 7 Jun 2022 12:43:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345139AbiFGQm2 (ORCPT
+        with ESMTP id S237151AbiFGQnj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 12:42:28 -0400
-Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9CA21826;
-        Tue,  7 Jun 2022 09:42:25 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-09.nifty.com with ESMTP id 257Ge4L0032527;
-        Wed, 8 Jun 2022 01:40:04 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 257Ge4L0032527
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1654620005;
-        bh=KIQsPoYwJl2iHAlLQ3N6FDhBbmcoJ7MxPCwB4wOjf9k=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Yk7vi2La1zL4Tvi/uHEi9Ftav84vUtcysbVtd4AYUTjaQPRTS5/EuHa9qKhI7ip4U
-         effPPofbrLiBTmdtoGW33Gt5nFEBmSXMjy0cegNqMhC2CF6yHb2w4JSwv8yR/PQy2i
-         mQu9IdjtkNhlnJv+PiOukZGTOoSMDjlfO+toKa1Kc2ebi4Vwi8KNkqfy9tTMUe3+eu
-         WEhZ03vfegdMEDki/5daPNjuEiFJWsDpwxIoy4Tqn9MIXVDyjAipReKy3icpzZf/lJ
-         lfWYb8P++4EgFMGiO5XIz2gh4TsGngsJQrfzcRXpXlcKTZrneHNE77y6UjC7v0ozRQ
-         OpdZ78+/YGF+A==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Wang Yugui <wangyugui@e16-tech.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH v2] scripts/check-local-export: avoid 'wait $!' for process substitution
-Date:   Wed,  8 Jun 2022 01:40:00 +0900
-Message-Id: <20220607164000.447941-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        Tue, 7 Jun 2022 12:43:39 -0400
+Received: from mail-io1-f41.google.com (mail-io1-f41.google.com [209.85.166.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E5EB36C0;
+        Tue,  7 Jun 2022 09:43:38 -0700 (PDT)
+Received: by mail-io1-f41.google.com with SMTP id q76so10855080iod.8;
+        Tue, 07 Jun 2022 09:43:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KQhN2bCw2qzHzEfViF9RH6IaU2tqDjbhZaw77rQjUj8=;
+        b=OCB+dnI5IN7FO5ybiN90ipNOZOwukyvWjrLaV9cATXZkL4R/3yitkfqugVxbI/273W
+         gkly7Ey8PmU4mubLtYbILSlYzG/plbgjcEt36SefnWtqdHa0gV4hJLLdtnEi00RB084+
+         YDkaE2pfuhxX8yvN6Mk8DPD7WlL+Med5QRiyeoU+Q8vp1ItLdhgIB4mxvyfyGnKeTzSX
+         A8UHMb8PbzZcV+OLvB1gjIuzc8NSWWTklwrwJUOaJy8fNV0H++bR9EbZL0PAaIVtvz1b
+         H5ByQqY9mzqJ8NYrPai5G51QGGcfqWxZhZBY7dzZOyy3/Q1J7n58XuD6JL3JNOUguUTQ
+         g5hw==
+X-Gm-Message-State: AOAM5306kN5iGxR1vFMlRz/M98xFmTprhFtIyNiErxy+rvOp7GD6qjp4
+        NrUibXP8aCCZgJkmGb7d1A==
+X-Google-Smtp-Source: ABdhPJyJ2L0oQIGdzZg1DvKHr4FFEhIlqyV/wjzoCkNQxGXJJFfSgVxrTPgvLeSYaY/OCk76B5bIOg==
+X-Received: by 2002:a05:6638:371e:b0:331:bc34:c3b1 with SMTP id k30-20020a056638371e00b00331bc34c3b1mr4629870jav.68.1654620217640;
+        Tue, 07 Jun 2022 09:43:37 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id z9-20020a921a49000000b002d396d6a2b4sm7456318ill.13.2022.06.07.09.43.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 09:43:37 -0700 (PDT)
+Received: (nullmailer pid 3412797 invoked by uid 1000);
+        Tue, 07 Jun 2022 16:43:35 -0000
+Date:   Tue, 7 Jun 2022 10:43:35 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Luca Weiss <luca@z3ntu.xyz>
+Cc:     linux-arm-msm@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: remoteproc: qcom: q6v5: fix example
+Message-ID: <20220607164335.GA3409694-robh@kernel.org>
+References: <20220606132324.1497349-1-luca@z3ntu.xyz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220606132324.1497349-1-luca@z3ntu.xyz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Bash>=4.4 supports 'wait $!' to check the exit status of a process
-substitution, but some people using older bash versions reported an
-error like this:
+On Mon, Jun 06, 2022 at 03:23:24PM +0200, Luca Weiss wrote:
+> Use the node in the examples that is present in msm8974.dtsi, which uses
+> proper flags for the interrupts and add required 'xo' clock among
+> others.
+> 
+> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+> ---
+>  .../bindings/remoteproc/qcom,q6v5.txt         | 41 +++++++++++--------
+>  1 file changed, 23 insertions(+), 18 deletions(-)
 
-  ./scripts/check-local-export: line 54: wait: pid 17328 is not a child of this shell
+Please consider just converting this to schema instead. Then we actually 
+check the example.
 
-I used the process substitution because a pipeline executes each command
-in a subshell; variables modified within the while-loop in the subshell
-context would be lost after the subshell terminates.
-
-Fortunately, Bash>=4.2 supports the 'lastpipe' option, which runs the
-last element of a pipeline in the current shell process.
-
-Also, set 'pipefail' to catch errors from ${NM}.
-
-Bash 4.2, released in 2011, is 5 years older than Bash 4.4.
-
-Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Reported-by: Michael Ellerman <mpe@ellerman.id.au>
-Reported-by: Wang Yugui <wangyugui@e16-tech.com>
-Tested-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Tested-by: Jon Hunter <jonathanh@nvidia.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
-
-Changes in v2:
-  - Add bash to Documentation/process/changes.rst
-
- Documentation/process/changes.rst | 12 +++++++++++
- scripts/check-local-export        | 35 ++++++++++++++++++-------------
- 2 files changed, 32 insertions(+), 15 deletions(-)
-
-diff --git a/Documentation/process/changes.rst b/Documentation/process/changes.rst
-index 34415ae1af1b..19c286c23786 100644
---- a/Documentation/process/changes.rst
-+++ b/Documentation/process/changes.rst
-@@ -32,6 +32,7 @@ you probably needn't concern yourself with pcmciautils.
- GNU C                  5.1              gcc --version
- Clang/LLVM (optional)  11.0.0           clang --version
- GNU make               3.81             make --version
-+bash                   4.2              bash --version
- binutils               2.23             ld -v
- flex                   2.5.35           flex --version
- bison                  2.0              bison --version
-@@ -84,6 +85,12 @@ Make
- 
- You will need GNU make 3.81 or later to build the kernel.
- 
-+Bash
-+----
-+
-+Some bash scripts are used for the kernel build.
-+Bash 4.2 or newer is needed.
-+
- Binutils
- --------
- 
-@@ -362,6 +369,11 @@ Make
- 
- - <ftp://ftp.gnu.org/gnu/make/>
- 
-+Bash
-+----
-+
-+- <ftp://ftp.gnu.org/gnu/bash/>
-+
- Binutils
- --------
- 
-diff --git a/scripts/check-local-export b/scripts/check-local-export
-index da745e2743b7..e21c7b54885d 100755
---- a/scripts/check-local-export
-+++ b/scripts/check-local-export
-@@ -8,11 +8,30 @@
- 
- set -e
- 
-+# catch errors from ${NM}
-+set -o pipefail
-+
-+# Run the last element of a pipeline in the current shell.
-+# Without this, the while-loop would be executed in a subshell, and
-+# the changes made to 'symbol_types' and 'export_symbols' would be lost.
-+shopt -s lastpipe
-+
- declare -A symbol_types
- declare -a export_symbols
- 
- exit_code=0
- 
-+# If there is no symbol in the object, ${NM} (both GNU nm and llvm-nm) shows
-+# 'no symbols' diagnostic (but exits with 0). It is harmless and hidden by
-+# '2>/dev/null'. However, it suppresses real error messages as well. Add a
-+# hand-crafted error message here.
-+#
-+# Use --quiet instead of 2>/dev/null when we upgrade the minimum version of
-+# binutils to 2.37, llvm to 13.0.0.
-+#
-+# Then, the following line will be really simple:
-+#   ${NM} --quiet ${1} |
-+{ ${NM} ${1} 2>/dev/null || { echo "${0}: ${NM} failed" >&2; false; } } |
- while read value type name
- do
- 	# Skip the line if the number of fields is less than 3.
-@@ -37,21 +56,7 @@ do
- 	if [[ ${name} == __ksymtab_* ]]; then
- 		export_symbols+=(${name#__ksymtab_})
- 	fi
--
--	# If there is no symbol in the object, ${NM} (both GNU nm and llvm-nm)
--	# shows 'no symbols' diagnostic (but exits with 0). It is harmless and
--	# hidden by '2>/dev/null'. However, it suppresses real error messages
--	# as well. Add a hand-crafted error message here.
--	#
--	# Use --quiet instead of 2>/dev/null when we upgrade the minimum version
--	# of binutils to 2.37, llvm to 13.0.0.
--	#
--	# Then, the following line will be really simple:
--	#   done < <(${NM} --quiet ${1})
--done < <(${NM} ${1} 2>/dev/null || { echo "${0}: ${NM} failed" >&2; false; } )
--
--# Catch error in the process substitution
--wait $!
-+done
- 
- for name in "${export_symbols[@]}"
- do
--- 
-2.32.0
-
+Rob
