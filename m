@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AA1DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:39:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B132C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:39:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347489AbiFGRj3 (ORCPT
+        id S1347553AbiFGRjl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:39:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44836 "EHLO
+        Tue, 7 Jun 2022 13:39:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347367AbiFGRal (ORCPT
+        with ESMTP id S1347358AbiFGRal (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:30:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A1AF110998;
-        Tue,  7 Jun 2022 10:26:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C36A11098D;
+        Tue,  7 Jun 2022 10:26:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AAC396127C;
-        Tue,  7 Jun 2022 17:26:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1CD6C34115;
-        Tue,  7 Jun 2022 17:26:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6CB660C7C;
+        Tue,  7 Jun 2022 17:26:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B99BDC34115;
+        Tue,  7 Jun 2022 17:26:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622788;
-        bh=dR/THZNtWL+NiVqBxd1fBR0kBiqITc3LcBx/INTW/dI=;
+        s=korg; t=1654622785;
+        bh=jCaW6LClPnj/5rx9gWl3M6iDgCeuonhtA+fLeVdnJsc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rjMY/2dVLIqPI7seJS3hcW7TUaKnzZQAP25WLAJcVMP0AKXdzOZdmK3QB1+dhFLgj
-         c4ti72yNfCe/Hgu1wFoxHQjs7GQr9yyYp+ux95UylLH/UQBz/E1J1taw1MlTeUjidV
-         McOZU7o/iMyMqnGcZC/4BqMpqjlOvBKKxOf0OIfI=
+        b=LU88kO6GXeWfXgmweZxrQuHTLK5fxcZpMVpcdtmyQJyadDgnVImvOtg1JLrTWNvnA
+         8gSVxaJ8WveNNG+37K3u8nD5pxPynd+va76tA7SH+vuJMsq6xbw4Q037O+7xGtBlpS
+         CRNbUw9TnQC/e0+KCMwezJD/aKVKrQJktEzt5zQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 183/452] virtio_blk: fix the discard_granularity and discard_alignment queue limits
-Date:   Tue,  7 Jun 2022 19:00:40 +0200
-Message-Id: <20220607164914.013469070@linuxfoundation.org>
+        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 182/452] perf tools: Use Python devtools for version autodetection rather than runtime
+Date:   Tue,  7 Jun 2022 19:00:39 +0200
+Message-Id: <20220607164913.984431805@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,55 +54,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: James Clark <james.clark@arm.com>
 
-[ Upstream commit 62952cc5bccd89b76d710de1d0b43244af0f2903 ]
+[ Upstream commit 630af16eee495f583db5202c3613d1b191f10694 ]
 
-The discard_alignment queue limit is named a bit misleading means the
-offset into the block device at which the discard granularity starts.
+This fixes the issue where the build will fail if only the Python2
+runtime is installed but the Python3 devtools are installed. Currently
+the workaround is 'make PYTHON=python3'.
 
-On the other hand the discard_sector_alignment from the virtio 1.1 looks
-similar to what Linux uses as discard granularity (even if not very well
-described):
+Fix it by autodetecting Python based on whether python[x]-config exists
+rather than just python[x] because both are needed for the build. Then
+-config is stripped to find the Python runtime.
 
-  "discard_sector_alignment can be used by OS when splitting a request
-   based on alignment. "
+Testing
+=======
 
-And at least qemu does set it to the discard granularity.
+ * Auto detect links with Python3 when the v3 devtools are installed
+   and only Python 2 runtime is installed
+ * Auto detect links with Python2 when both devtools are installed
+ * Sensible warning is printed if no Python devtools are installed
+ * 'make PYTHON=x' still automatically sets PYTHON_CONFIG=x-config
+ * 'make PYTHON=x' fails if x-config doesn't exist
+ * 'make PYTHON=python3' overrides Python2 devtools
+ * 'make PYTHON=python2' overrides Python3 devtools
+ * 'make PYTHON_CONFIG=x-config' works
+ * 'make PYTHON=x PYTHON_CONFIG=x' works
+ * 'make PYTHON=missing' reports an error
+ * 'make PYTHON_CONFIG=missing' reports an error
 
-So stop setting the discard_alignment and use the virtio
-discard_sector_alignment to set the discard granularity.
-
-Fixes: 1f23816b8eb8 ("virtio_blk: add discard and write zeroes support")
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Martin K. Petersen <martin.petersen@oracle.com>
-Link: https://lore.kernel.org/r/20220418045314.360785-5-hch@lst.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 79373082fa9de8be ("perf python: Autodetect python3 binary")
+Signed-off-by: James Clark <james.clark@arm.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: James Clark <james.clark@arm.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Link: https://lore.kernel.org/r/20220309194313.3350126-2-james.clark@arm.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/virtio_blk.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ tools/perf/Makefile.config | 39 ++++++++++++++++++++++++++------------
+ 1 file changed, 27 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
-index 02e2056780ad..9b54eec9b17e 100644
---- a/drivers/block/virtio_blk.c
-+++ b/drivers/block/virtio_blk.c
-@@ -865,11 +865,12 @@ static int virtblk_probe(struct virtio_device *vdev)
- 		blk_queue_io_opt(q, blk_size * opt_io_size);
+diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
+index 41dff8d38448..5ee3c4d1fbb2 100644
+--- a/tools/perf/Makefile.config
++++ b/tools/perf/Makefile.config
+@@ -222,18 +222,33 @@ ifdef PARSER_DEBUG
+ endif
  
- 	if (virtio_has_feature(vdev, VIRTIO_BLK_F_DISCARD)) {
--		q->limits.discard_granularity = blk_size;
--
- 		virtio_cread(vdev, struct virtio_blk_config,
- 			     discard_sector_alignment, &v);
--		q->limits.discard_alignment = v ? v << SECTOR_SHIFT : 0;
-+		if (v)
-+			q->limits.discard_granularity = v << SECTOR_SHIFT;
-+		else
-+			q->limits.discard_granularity = blk_size;
+ # Try different combinations to accommodate systems that only have
+-# python[2][-config] in weird combinations but always preferring
+-# python2 and python2-config as per pep-0394. If python2 or python
+-# aren't found, then python3 is used.
+-PYTHON_AUTO := python
+-PYTHON_AUTO := $(if $(call get-executable,python3),python3,$(PYTHON_AUTO))
+-PYTHON_AUTO := $(if $(call get-executable,python),python,$(PYTHON_AUTO))
+-PYTHON_AUTO := $(if $(call get-executable,python2),python2,$(PYTHON_AUTO))
+-override PYTHON := $(call get-executable-or-default,PYTHON,$(PYTHON_AUTO))
+-PYTHON_AUTO_CONFIG := \
+-  $(if $(call get-executable,$(PYTHON)-config),$(PYTHON)-config,python-config)
+-override PYTHON_CONFIG := \
+-  $(call get-executable-or-default,PYTHON_CONFIG,$(PYTHON_AUTO_CONFIG))
++# python[2][3]-config in weird combinations in the following order of
++# priority from lowest to highest:
++#   * python3-config
++#   * python-config
++#   * python2-config as per pep-0394.
++#   * $(PYTHON)-config (If PYTHON is user supplied but PYTHON_CONFIG isn't)
++#
++PYTHON_AUTO := python-config
++PYTHON_AUTO := $(if $(call get-executable,python3-config),python3-config,$(PYTHON_AUTO))
++PYTHON_AUTO := $(if $(call get-executable,python-config),python-config,$(PYTHON_AUTO))
++PYTHON_AUTO := $(if $(call get-executable,python2-config),python2-config,$(PYTHON_AUTO))
++
++# If PYTHON is defined but PYTHON_CONFIG isn't, then take $(PYTHON)-config as if it was the user
++# supplied value for PYTHON_CONFIG. Because it's "user supplied", error out if it doesn't exist.
++ifdef PYTHON
++  ifndef PYTHON_CONFIG
++    PYTHON_CONFIG_AUTO := $(call get-executable,$(PYTHON)-config)
++    PYTHON_CONFIG := $(if $(PYTHON_CONFIG_AUTO),$(PYTHON_CONFIG_AUTO),\
++                          $(call $(error $(PYTHON)-config not found)))
++  endif
++endif
++
++# Select either auto detected python and python-config or use user supplied values if they are
++# defined. get-executable-or-default fails with an error if the first argument is supplied but
++# doesn't exist.
++override PYTHON_CONFIG := $(call get-executable-or-default,PYTHON_CONFIG,$(PYTHON_AUTO))
++override PYTHON := $(call get-executable-or-default,PYTHON,$(subst -config,,$(PYTHON_AUTO)))
  
- 		virtio_cread(vdev, struct virtio_blk_config,
- 			     max_discard_sectors, &v);
+ grep-libs  = $(filter -l%,$(1))
+ strip-libs  = $(filter-out -l%,$(1))
 -- 
 2.35.1
 
