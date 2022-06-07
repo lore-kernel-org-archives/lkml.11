@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8E0CCA497
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 498D1CCA493
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350466AbiFGSGG (ORCPT
+        id S1350277AbiFGSFt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57666 "EHLO
+        Tue, 7 Jun 2022 14:05:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349095AbiFGRqp (ORCPT
+        with ESMTP id S1349055AbiFGRqo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:46:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A360764A;
-        Tue,  7 Jun 2022 10:36:45 -0700 (PDT)
+        Tue, 7 Jun 2022 13:46:44 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F5260B97;
+        Tue,  7 Jun 2022 10:36:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D36EE614D8;
-        Tue,  7 Jun 2022 17:36:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6193C385A5;
-        Tue,  7 Jun 2022 17:36:43 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0BD0ECE23E3;
+        Tue,  7 Jun 2022 17:36:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0550BC385A5;
+        Tue,  7 Jun 2022 17:36:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623404;
-        bh=c5+zOy+1lyAaxZtwws/4oxbj2X7+DJiWWXy825tMdNI=;
+        s=korg; t=1654623379;
+        bh=+3e4woYPj1YYXK+ih5wW15uzJg6CSLuSkjVNKXFyNM0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zBPkegn/p9JTu/0gCmtEBNv008rR3qKwiBD4WaUu7XqzIeh5FC296QsqtzQ8LDCof
-         D+IL/dBRjRY5o3aLw0bXsVmXGKEfNrvU+V+uZDVQ4s0RN32RAzyhwJasEEEr+TQL0T
-         QIBvQg+6p6vYtwtu/XnRiin447VQtHzQPpNrvDQM=
+        b=Rww6uB1xEmwElgJw/2TJI+MI4FkcUpMNGmX4dip3cCTpTfeewaz/F1yyFDFjZE/sk
+         2AqZzgGml7gBDStYPngFPmhZ1qjPMFxiQH68pv6yZO9SyzrXarnROLIP2dJ+lhIVdC
+         5r027rqo0RTucFHpnwikBVvu4kLsFs8v9v9RZQzA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.10 404/452] hugetlb: fix huge_pmd_unshare address update
-Date:   Tue,  7 Jun 2022 19:04:21 +0200
-Message-Id: <20220607164920.599354616@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dimitri John Ledkov <dimitri.ledkov@canonical.com>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.10 396/452] cfg80211: declare MODULE_FIRMWARE for regulatory.db
+Date:   Tue,  7 Jun 2022 19:04:13 +0200
+Message-Id: <20220607164920.362594817@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,47 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Kravetz <mike.kravetz@oracle.com>
+From: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
 
-commit 48381273f8734d28ef56a5bdf1966dd8530111bc upstream.
+commit 7bc7981eeebe1b8e603ad2ffc5e84f4df76920dd upstream.
 
-The routine huge_pmd_unshare() is passed a pointer to an address
-associated with an area which may be unshared.  If unshare is successful
-this address is updated to 'optimize' callers iterating over huge page
-addresses.  For the optimization to work correctly, address should be
-updated to the last huge page in the unmapped/unshared area.  However, in
-the common case where the passed address is PUD_SIZE aligned, the address
-is incorrectly updated to the address of the preceding huge page.  That
-wastes CPU cycles as the unmapped/unshared range is scanned twice.
+Add MODULE_FIRMWARE declarations for regulatory.db and
+regulatory.db.p7s such that userspace tooling can discover and include
+these files.
 
-Link: https://lkml.kernel.org/r/20220524205003.126184-1-mike.kravetz@oracle.com
-Fixes: 39dde65c9940 ("shared page table for hugetlb page")
-Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
-Acked-by: Muchun Song <songmuchun@bytedance.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
+Link: https://lore.kernel.org/r/20220414125004.267819-1-dimitri.ledkov@canonical.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/hugetlb.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ net/wireless/reg.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -5465,7 +5465,14 @@ int huge_pmd_unshare(struct mm_struct *m
- 	pud_clear(pud);
- 	put_page(virt_to_page(ptep));
- 	mm_dec_nr_pmds(mm);
--	*addr = ALIGN(*addr, HPAGE_SIZE * PTRS_PER_PTE) - HPAGE_SIZE;
-+	/*
-+	 * This update of passed address optimizes loops sequentially
-+	 * processing addresses in increments of huge page size (PMD_SIZE
-+	 * in this case).  By clearing the pud, a PUD_SIZE area is unmapped.
-+	 * Update address to the 'last page' in the cleared area so that
-+	 * calling loop can move to first page past this area.
-+	 */
-+	*addr |= PUD_SIZE - PMD_SIZE;
- 	return 1;
+--- a/net/wireless/reg.c
++++ b/net/wireless/reg.c
+@@ -787,6 +787,8 @@ static int __init load_builtin_regdb_key
+ 	return 0;
  }
- #define want_pmd_share()	(1)
+ 
++MODULE_FIRMWARE("regulatory.db.p7s");
++
+ static bool regdb_has_valid_signature(const u8 *data, unsigned int size)
+ {
+ 	const struct firmware *sig;
+@@ -1058,6 +1060,8 @@ static void regdb_fw_cb(const struct fir
+ 	release_firmware(fw);
+ }
+ 
++MODULE_FIRMWARE("regulatory.db");
++
+ static int query_regdb_file(const char *alpha2)
+ {
+ 	ASSERT_RTNL();
 
 
