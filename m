@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F98FC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B8D1CCA485
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351002AbiFGSPP (ORCPT
+        id S1351120AbiFGSPo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:15:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47928 "EHLO
+        Tue, 7 Jun 2022 14:15:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348834AbiFGRyR (ORCPT
+        with ESMTP id S1348993AbiFGRzU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:54:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67548144789;
-        Tue,  7 Jun 2022 10:39:49 -0700 (PDT)
+        Tue, 7 Jun 2022 13:55:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D0E1455AC;
+        Tue,  7 Jun 2022 10:39:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9359B822AD;
-        Tue,  7 Jun 2022 17:39:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF32CC385A5;
-        Tue,  7 Jun 2022 17:39:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 892D161534;
+        Tue,  7 Jun 2022 17:39:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99DF9C385A5;
+        Tue,  7 Jun 2022 17:39:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623571;
-        bh=PQpjQG3pFURTCSgJVO1XL5DHQPOIXC4phwjj4OG20fs=;
+        s=korg; t=1654623599;
+        bh=CDdGFTqDcjOgUxt3mRGxFG+Aw9GKRvDcRCv+eL0Xggs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fo8uD9Eo7cVZG9s0xaEvI1lUrir5RKl2HF/WzsAzLhKRi0P2rTreqyRWhau1FRctA
-         fwOKByaG6PqVO89jp+UKxdXZKsNlVOZLwSS72Lnv8udoCFzBHj8U4Cx737Xx+JndHu
-         cIJI/EN2th46jvJOaItIO/ylH+eguAZnWAGA+qQY=
+        b=ENYKz1QogbJdFGiJg4pEIasQc2x+HIhrpOPIwyc58VhgxGbn60K+nAAmVvw5u+ZAu
+         XObOZ1eUQsh2ir2juUGH3E/O3ampudUMz7b/iuwX8yMsqTs+ePWKYFUS+S0pPA4+59
+         t8JuQI+z88uaMsdEEzJlztvnze6O2rWRQB4BCC2k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Gary van der Merwe <gary.vandermerwe@fnb.co.za>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.15 014/667] USB: serial: pl2303: fix type detection for odd device
-Date:   Tue,  7 Jun 2022 18:54:39 +0200
-Message-Id: <20220607164935.217889587@linuxfoundation.org>
+        Kari Argillander <kari.argillander@gmail.com>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH 5.15 023/667] fs/ntfs3: Check new size for limits
+Date:   Tue,  7 Jun 2022 18:54:48 +0200
+Message-Id: <20220607164935.491753269@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,37 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 
-commit e82e7c6dde91acd6748d672a44dc1980ce239f86 upstream.
+commit 114346978cf61de02832cc3cc68432a3de70fb38 upstream.
 
-At least one pl2303 device has a bcdUSB of 1.0.1 which most likely was
-was intended as 1.1.
+We must check size before trying to allocate.
+Size can be set for example by "ulimit -f".
+Fixes xfstest generic/228
+Fixes: 4342306f0f0d ("fs/ntfs3: Add file operations and implementation")
 
-Allow bcdDevice 1.0.1 but interpret it as 1.1.
-
-Fixes: 1e9faef4d26d ("USB: serial: pl2303: fix HX type detection")
-Cc: stable@vger.kernel.org      # 5.13
-Link: https://lore.kernel.org/linux-usb/CAJixRzqf4a9-ZKZDgWxicc_BpfdZVE9qqGmkiO7xEstOXUbGvQ@mail.gmail.com
-Reported-by: Gary van der Merwe <gary.vandermerwe@fnb.co.za>
-Link: https://lore.kernel.org/r/20220517161736.13313-1-johan@kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Reviewed-by: Kari Argillander <kari.argillander@gmail.com>
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/pl2303.c |    3 +++
- 1 file changed, 3 insertions(+)
+ fs/ntfs3/file.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/drivers/usb/serial/pl2303.c
-+++ b/drivers/usb/serial/pl2303.c
-@@ -421,6 +421,9 @@ static int pl2303_detect_type(struct usb
- 	bcdUSB = le16_to_cpu(desc->bcdUSB);
+--- a/fs/ntfs3/file.c
++++ b/fs/ntfs3/file.c
+@@ -661,7 +661,13 @@ static long ntfs_fallocate(struct file *
+ 		/*
+ 		 * Normal file: Allocate clusters, do not change 'valid' size.
+ 		 */
+-		err = ntfs_set_size(inode, max(end, i_size));
++		loff_t new_size = max(end, i_size);
++
++		err = inode_newsize_ok(inode, new_size);
++		if (err)
++			goto out;
++
++		err = ntfs_set_size(inode, new_size);
+ 		if (err)
+ 			goto out;
  
- 	switch (bcdUSB) {
-+	case 0x101:
-+		/* USB 1.0.1? Let's assume they meant 1.1... */
-+		fallthrough;
- 	case 0x110:
- 		switch (bcdDevice) {
- 		case 0x300:
 
 
