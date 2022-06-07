@@ -2,50 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38C26C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:51:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E464DCCA487
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:51:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354115AbiFGSuU (ORCPT
+        id S1354174AbiFGSua (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51586 "EHLO
+        Tue, 7 Jun 2022 14:50:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352847AbiFGSRi (ORCPT
+        with ESMTP id S1352949AbiFGSRr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475A911C2C;
-        Tue,  7 Jun 2022 10:52:47 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEFDB13F432;
+        Tue,  7 Jun 2022 10:52:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8DFE6B8234A;
-        Tue,  7 Jun 2022 17:52:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5E10C34115;
-        Tue,  7 Jun 2022 17:52:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE431617B4;
+        Tue,  7 Jun 2022 17:52:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B96A8C385A5;
+        Tue,  7 Jun 2022 17:52:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624366;
-        bh=AJpDc4CRCDEYezNwJ7xnI6htH0qAKgCFMdxiiCckPkE=;
+        s=korg; t=1654624369;
+        bh=4FWVvpGIVHGySV3NM6oA2OJC61WladjaOASJ3N08TN0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wDTEmoP1NgkujGmccxEB6fblh/wQyMRYJAlICdgkfKZGCYVE9mvQSrjd5u0gKV3ic
-         Dyn3BPRle46hvCsgJfiBTUAZ1Cmz+FDXmvHVJ1eF/U4LpXS9MEGZHs3tS/8JFguYvm
-         bUVSRh8Z8tkXsUB/Bukopu6C1ITW/okQg4TrotzU=
+        b=RR8pgZcK1C5Y3Hf7xZQqaWOCwoxv/rt/NToXOAFIHaie6LUVM4mc3cQ8tvgYX+9H1
+         1iX8ieRTMRSD5Bh+aeL72vUMP0Zt28bk0CL7vWCAh4jY0oifpdRshGa9QKwgNaX2l5
+         cUh30Jp1ps8R7vxijuIeU/z65eoSbDy93Nxvq59c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Jihong <yangjihong1@huawei.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
+        stable@vger.kernel.org,
+        Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>,
         Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Ravi Bangoria <ravi.bangoria@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 264/667] perf tools: Add missing headers needed by util/data.h
-Date:   Tue,  7 Jun 2022 18:58:49 +0200
-Message-Id: <20220607164942.700523751@linuxfoundation.org>
+Subject: [PATCH 5.15 300/667] perf/amd/ibs: Use interrupt regs ip for stack unwinding
+Date:   Tue,  7 Jun 2022 18:59:25 +0200
+Message-Id: <20220607164943.775825567@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -57,50 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Jihong <yangjihong1@huawei.com>
+From: Ravi Bangoria <ravi.bangoria@amd.com>
 
-[ Upstream commit 4d27cf1d9de5becfa4d1efb2ea54dba1b9fc962a ]
+[ Upstream commit 3d47083b9ff46863e8374ad3bb5edb5e464c75f8 ]
 
-'struct perf_data' in util/data.h uses the "u64" data type, which is
-defined in "linux/types.h".
+IbsOpRip is recorded when IBS interrupt is triggered. But there is
+a skid from the time IBS interrupt gets triggered to the time the
+interrupt is presented to the core. Meanwhile processor would have
+moved ahead and thus IbsOpRip will be inconsistent with rsp and rbp
+recorded as part of the interrupt regs. This causes issues while
+unwinding stack using the ORC unwinder as it needs consistent rip,
+rsp and rbp. Fix this by using rip from interrupt regs instead of
+IbsOpRip for stack unwinding.
 
-If we only include util/data.h, the following compilation error occurs:
-
-  util/data.h:38:3: error: unknown type name ‘u64’
-     u64    version;
-     ^~~
-
-Solution: include "linux/types.h." to add the needed type definitions.
-
-Fixes: 258031c017c353e8 ("perf header: Add DIR_FORMAT feature to describe directory data")
-Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220429090539.212448-1-yangjihong1@huawei.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: ee9f8fce99640 ("x86/unwind: Add the ORC unwinder")
+Reported-by: Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220429051441.14251-1-ravi.bangoria@amd.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/data.h | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/events/amd/ibs.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/tools/perf/util/data.h b/tools/perf/util/data.h
-index c9de82af5584..1402d9657ef2 100644
---- a/tools/perf/util/data.h
-+++ b/tools/perf/util/data.h
-@@ -4,6 +4,7 @@
+diff --git a/arch/x86/events/amd/ibs.c b/arch/x86/events/amd/ibs.c
+index 367ca899e6e8..2704ec1e42a3 100644
+--- a/arch/x86/events/amd/ibs.c
++++ b/arch/x86/events/amd/ibs.c
+@@ -304,6 +304,16 @@ static int perf_ibs_init(struct perf_event *event)
+ 	hwc->config_base = perf_ibs->msr;
+ 	hwc->config = config;
  
- #include <stdio.h>
- #include <stdbool.h>
-+#include <linux/types.h>
++	/*
++	 * rip recorded by IbsOpRip will not be consistent with rsp and rbp
++	 * recorded as part of interrupt regs. Thus we need to use rip from
++	 * interrupt regs while unwinding call stack. Setting _EARLY flag
++	 * makes sure we unwind call-stack before perf sample rip is set to
++	 * IbsOpRip.
++	 */
++	if (event->attr.sample_type & PERF_SAMPLE_CALLCHAIN)
++		event->attr.sample_type |= __PERF_SAMPLE_CALLCHAIN_EARLY;
++
+ 	return 0;
+ }
  
- enum perf_data_mode {
- 	PERF_DATA_MODE_WRITE,
+@@ -687,6 +697,14 @@ static int perf_ibs_handle_irq(struct perf_ibs *perf_ibs, struct pt_regs *iregs)
+ 		data.raw = &raw;
+ 	}
+ 
++	/*
++	 * rip recorded by IbsOpRip will not be consistent with rsp and rbp
++	 * recorded as part of interrupt regs. Thus we need to use rip from
++	 * interrupt regs while unwinding call stack.
++	 */
++	if (event->attr.sample_type & PERF_SAMPLE_CALLCHAIN)
++		data.callchain = perf_callchain(event, iregs);
++
+ 	throttle = perf_event_overflow(event, &data, &regs);
+ out:
+ 	if (throttle) {
 -- 
 2.35.1
 
