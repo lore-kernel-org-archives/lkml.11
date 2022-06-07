@@ -2,128 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB516CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9A6BCCA486
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443964AbiFHCHT (ORCPT
+        id S1443906AbiFHCHK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:07:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53556 "EHLO
+        Tue, 7 Jun 2022 22:07:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389487AbiFHAfw (ORCPT
+        with ESMTP id S1587899AbiFGXxt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:35:52 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A10BA59B8D;
-        Tue,  7 Jun 2022 16:59:38 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Tue, 7 Jun 2022 19:53:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E57C47ACD;
+        Tue,  7 Jun 2022 12:18:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LHnQc41TJz4xD9;
-        Wed,  8 Jun 2022 09:59:36 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1654646377;
-        bh=qMAL1jVBkcRNa7CuXLedIvQH7GZUdyMOYdDM3XQ6o8E=;
-        h=Date:From:To:Cc:Subject:From;
-        b=V8jjSVrVKRxsBz2Ar5yvxoDzEXe2NEZ4RtEsehU2OBVJHycdwDsU5AQMkLfYEliTL
-         4MaIQ040AVnj3hh4MD7IwLcE05vQMYZkImX/a8FY0XwhgbWBFEYe5sDOQIBnbUUaUJ
-         cmZHyBdtlAF5CNra4tsXUghBO7TCxg3B4id3nVZNZGPzC4d06etFVfZqKfDDD5iLf5
-         BcxSa0T+bbadM+En9EXf+KsUUqJjGsqY9FjkWKSRUNhLFCpdLQqfzqXd7f19hyhaUi
-         yrA0SubKFMDcoR1Sj/4YbZi4MUif0wHCCOLe2f1m/9ILqgz4MfJwbcjUxptv2UfOrb
-         G/wkwTYPwDSHw==
-Date:   Wed, 8 Jun 2022 09:59:35 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>
-Cc:     Intel Graphics <intel-gfx@lists.freedesktop.org>,
-        DRI <dri-devel@lists.freedesktop.org>,
-        Anshuman Gupta <anshuman.gupta@intel.com>,
-        Ashutosh Dixit <ashutosh.dixit@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Subject: linux-next: manual merge of the drm-intel tree with Linus' tree
-Message-ID: <20220608095935.2265208c@canb.auug.org.au>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A8606192F;
+        Tue,  7 Jun 2022 19:18:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65238C385A2;
+        Tue,  7 Jun 2022 19:18:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629485;
+        bh=g10tgBCU4nK06ieljtTtonaZNc/pXE05inLmApIGgfA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=a719OzZiVmwiy4FG7Q87KHlX5cmcfQRPSHzJT7HwitScRkm5AspD/mE51DCpDUfl/
+         kFe1eF5y4tDybtWni0lUUxPDxHR5hvjBMlEEzGucIanP8zzsP6CZnFDT5OkA1XPghz
+         5fhLN4ue0QcO5+uMD+A5XzRyjT3afBWewNFFbEsg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 707/879] NFSv4.1 mark qualified async operations as MOVEABLE tasks
+Date:   Tue,  7 Jun 2022 19:03:45 +0200
+Message-Id: <20220607165023.377418735@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/TOyBKbYeeW.Z63VLYgIRDgG";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/TOyBKbYeeW.Z63VLYgIRDgG
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Olga Kornievskaia <kolga@netapp.com>
 
-Hi all,
+[ Upstream commit 118f09eda21d392e1eeb9f8a4bee044958cccf20 ]
 
-Today's linux-next merge of the drm-intel tree got a conflict in:
+Mark async operations such as RENAME, REMOVE, COMMIT MOVEABLE
+for the nfsv4.1+ sessions.
 
-  drivers/gpu/drm/i915/gt/intel_rps.c
+Fixes: 85e39feead948 ("NFSv4.1 identify and mark RPC tasks that can move between transports")
+Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/nfs/nfs4proc.c         | 26 ++++++++++++++------------
+ fs/nfs/pagelist.c         |  3 +++
+ fs/nfs/unlink.c           |  8 ++++++++
+ fs/nfs/write.c            |  4 ++++
+ include/linux/nfs_fs_sb.h |  1 +
+ 5 files changed, 30 insertions(+), 12 deletions(-)
 
-between commit:
+diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
+index 0600f85b6016..8c5907287c16 100644
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -1162,7 +1162,7 @@ static int nfs4_call_sync_sequence(struct rpc_clnt *clnt,
+ {
+ 	unsigned short task_flags = 0;
+ 
+-	if (server->nfs_client->cl_minorversion)
++	if (server->caps & NFS_CAP_MOVEABLE)
+ 		task_flags = RPC_TASK_MOVEABLE;
+ 	return nfs4_do_call_sync(clnt, server, msg, args, res, task_flags);
+ }
+@@ -2568,7 +2568,7 @@ static int nfs4_run_open_task(struct nfs4_opendata *data,
+ 	};
+ 	int status;
+ 
+-	if (server->nfs_client->cl_minorversion)
++	if (nfs_server_capable(dir, NFS_CAP_MOVEABLE))
+ 		task_setup_data.flags |= RPC_TASK_MOVEABLE;
+ 
+ 	kref_get(&data->kref);
+@@ -3733,7 +3733,7 @@ int nfs4_do_close(struct nfs4_state *state, gfp_t gfp_mask, int wait)
+ 	};
+ 	int status = -ENOMEM;
+ 
+-	if (server->nfs_client->cl_minorversion)
++	if (nfs_server_capable(state->inode, NFS_CAP_MOVEABLE))
+ 		task_setup_data.flags |= RPC_TASK_MOVEABLE;
+ 
+ 	nfs4_state_protect(server->nfs_client, NFS_SP4_MACH_CRED_CLEANUP,
+@@ -4403,7 +4403,7 @@ static int _nfs4_proc_lookup(struct rpc_clnt *clnt, struct inode *dir,
+ 	};
+ 	unsigned short task_flags = 0;
+ 
+-	if (server->nfs_client->cl_minorversion)
++	if (nfs_server_capable(dir, NFS_CAP_MOVEABLE))
+ 		task_flags = RPC_TASK_MOVEABLE;
+ 
+ 	/* Is this is an attribute revalidation, subject to softreval? */
+@@ -6611,10 +6611,13 @@ static int _nfs4_proc_delegreturn(struct inode *inode, const struct cred *cred,
+ 		.rpc_client = server->client,
+ 		.rpc_message = &msg,
+ 		.callback_ops = &nfs4_delegreturn_ops,
+-		.flags = RPC_TASK_ASYNC | RPC_TASK_TIMEOUT | RPC_TASK_MOVEABLE,
++		.flags = RPC_TASK_ASYNC | RPC_TASK_TIMEOUT,
+ 	};
+ 	int status = 0;
+ 
++	if (nfs_server_capable(inode, NFS_CAP_MOVEABLE))
++		task_setup_data.flags |= RPC_TASK_MOVEABLE;
++
+ 	data = kzalloc(sizeof(*data), GFP_KERNEL);
+ 	if (data == NULL)
+ 		return -ENOMEM;
+@@ -6928,10 +6931,8 @@ static struct rpc_task *nfs4_do_unlck(struct file_lock *fl,
+ 		.workqueue = nfsiod_workqueue,
+ 		.flags = RPC_TASK_ASYNC,
+ 	};
+-	struct nfs_client *client =
+-		NFS_SERVER(lsp->ls_state->inode)->nfs_client;
+ 
+-	if (client->cl_minorversion)
++	if (nfs_server_capable(lsp->ls_state->inode, NFS_CAP_MOVEABLE))
+ 		task_setup_data.flags |= RPC_TASK_MOVEABLE;
+ 
+ 	nfs4_state_protect(NFS_SERVER(lsp->ls_state->inode)->nfs_client,
+@@ -7202,9 +7203,8 @@ static int _nfs4_do_setlk(struct nfs4_state *state, int cmd, struct file_lock *f
+ 		.flags = RPC_TASK_ASYNC | RPC_TASK_CRED_NOREF,
+ 	};
+ 	int ret;
+-	struct nfs_client *client = NFS_SERVER(state->inode)->nfs_client;
+ 
+-	if (client->cl_minorversion)
++	if (nfs_server_capable(state->inode, NFS_CAP_MOVEABLE))
+ 		task_setup_data.flags |= RPC_TASK_MOVEABLE;
+ 
+ 	data = nfs4_alloc_lockdata(fl, nfs_file_open_context(fl->fl_file),
+@@ -10390,7 +10390,8 @@ static const struct nfs4_minor_version_ops nfs_v4_1_minor_ops = {
+ 		| NFS_CAP_POSIX_LOCK
+ 		| NFS_CAP_STATEID_NFSV41
+ 		| NFS_CAP_ATOMIC_OPEN_V1
+-		| NFS_CAP_LGOPEN,
++		| NFS_CAP_LGOPEN
++		| NFS_CAP_MOVEABLE,
+ 	.init_client = nfs41_init_client,
+ 	.shutdown_client = nfs41_shutdown_client,
+ 	.match_stateid = nfs41_match_stateid,
+@@ -10425,7 +10426,8 @@ static const struct nfs4_minor_version_ops nfs_v4_2_minor_ops = {
+ 		| NFS_CAP_LAYOUTSTATS
+ 		| NFS_CAP_CLONE
+ 		| NFS_CAP_LAYOUTERROR
+-		| NFS_CAP_READ_PLUS,
++		| NFS_CAP_READ_PLUS
++		| NFS_CAP_MOVEABLE,
+ 	.init_client = nfs41_init_client,
+ 	.shutdown_client = nfs41_shutdown_client,
+ 	.match_stateid = nfs41_match_stateid,
+diff --git a/fs/nfs/pagelist.c b/fs/nfs/pagelist.c
+index 9157dd19b8b4..317cedfa52bf 100644
+--- a/fs/nfs/pagelist.c
++++ b/fs/nfs/pagelist.c
+@@ -767,6 +767,9 @@ int nfs_initiate_pgio(struct rpc_clnt *clnt, struct nfs_pgio_header *hdr,
+ 		.flags = RPC_TASK_ASYNC | flags,
+ 	};
+ 
++	if (nfs_server_capable(hdr->inode, NFS_CAP_MOVEABLE))
++		task_setup_data.flags |= RPC_TASK_MOVEABLE;
++
+ 	hdr->rw_ops->rw_initiate(hdr, &msg, rpc_ops, &task_setup_data, how);
+ 
+ 	dprintk("NFS: initiated pgio call "
+diff --git a/fs/nfs/unlink.c b/fs/nfs/unlink.c
+index 6f325e10056c..9697cd5d2561 100644
+--- a/fs/nfs/unlink.c
++++ b/fs/nfs/unlink.c
+@@ -102,6 +102,10 @@ static void nfs_do_call_unlink(struct inode *inode, struct nfs_unlinkdata *data)
+ 	};
+ 	struct rpc_task *task;
+ 	struct inode *dir = d_inode(data->dentry->d_parent);
++
++	if (nfs_server_capable(inode, NFS_CAP_MOVEABLE))
++		task_setup_data.flags |= RPC_TASK_MOVEABLE;
++
+ 	nfs_sb_active(dir->i_sb);
+ 	data->args.fh = NFS_FH(dir);
+ 	nfs_fattr_init(data->res.dir_attr);
+@@ -344,6 +348,10 @@ nfs_async_rename(struct inode *old_dir, struct inode *new_dir,
+ 		.flags = RPC_TASK_ASYNC | RPC_TASK_CRED_NOREF,
+ 	};
+ 
++	if (nfs_server_capable(old_dir, NFS_CAP_MOVEABLE) &&
++	    nfs_server_capable(new_dir, NFS_CAP_MOVEABLE))
++		task_setup_data.flags |= RPC_TASK_MOVEABLE;
++
+ 	data = kzalloc(sizeof(*data), GFP_KERNEL);
+ 	if (data == NULL)
+ 		return ERR_PTR(-ENOMEM);
+diff --git a/fs/nfs/write.c b/fs/nfs/write.c
+index 2f41659e232e..1c706465d090 100644
+--- a/fs/nfs/write.c
++++ b/fs/nfs/write.c
+@@ -1709,6 +1709,10 @@ int nfs_initiate_commit(struct rpc_clnt *clnt, struct nfs_commit_data *data,
+ 		.flags = RPC_TASK_ASYNC | flags,
+ 		.priority = priority,
+ 	};
++
++	if (nfs_server_capable(data->inode, NFS_CAP_MOVEABLE))
++		task_setup_data.flags |= RPC_TASK_MOVEABLE;
++
+ 	/* Set up the initial task struct.  */
+ 	nfs_ops->commit_setup(data, &msg, &task_setup_data.rpc_client);
+ 	trace_nfs_initiate_commit(data);
+diff --git a/include/linux/nfs_fs_sb.h b/include/linux/nfs_fs_sb.h
+index 157d2bd6b241..ea2f7e6b1b0b 100644
+--- a/include/linux/nfs_fs_sb.h
++++ b/include/linux/nfs_fs_sb.h
+@@ -287,4 +287,5 @@ struct nfs_server {
+ #define NFS_CAP_XATTR		(1U << 28)
+ #define NFS_CAP_READ_PLUS	(1U << 29)
+ #define NFS_CAP_FS_LOCATIONS	(1U << 30)
++#define NFS_CAP_MOVEABLE	(1U << 31)
+ #endif
+-- 
+2.35.1
 
-  56758cc45955 ("drm/i915/rps: Centralize computation of freq caps")
 
-from Linus' tree and commit:
 
-  ee421bb4cb95 ("drm/i915/pcode: Extend pcode functions for multiple gt's")
-
-from the drm-intel tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc drivers/gpu/drm/i915/gt/intel_rps.c
-index 3476a11f294c,ce61ceb07114..000000000000
---- a/drivers/gpu/drm/i915/gt/intel_rps.c
-+++ b/drivers/gpu/drm/i915/gt/intel_rps.c
-@@@ -1138,15 -1095,13 +1138,16 @@@ static void gen6_rps_init(struct intel_
-  	if (IS_HASWELL(i915) || IS_BROADWELL(i915) ||
-  	    IS_GEN9_BC(i915) || GRAPHICS_VER(i915) >=3D 11) {
-  		u32 ddcc_status =3D 0;
- +		u32 mult =3D 1;
- =20
- +		if (IS_GEN9_BC(i915) || GRAPHICS_VER(i915) >=3D 11)
- +			mult =3D GEN9_FREQ_SCALER;
-- 		if (snb_pcode_read(i915, HSW_PCODE_DYNAMIC_DUTY_CYCLE_CONTROL,
-+ 		if (snb_pcode_read(rps_to_gt(rps)->uncore,
-+ 				   HSW_PCODE_DYNAMIC_DUTY_CYCLE_CONTROL,
-  				   &ddcc_status, NULL) =3D=3D 0)
-  			rps->efficient_freq =3D
- -				clamp_t(u8,
- -					(ddcc_status >> 8) & 0xff,
- +				clamp_t(u32,
- +					((ddcc_status >> 8) & 0xff) * mult,
-  					rps->min_freq,
-  					rps->max_freq);
-  	}
-
---Sig_/TOyBKbYeeW.Z63VLYgIRDgG
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKf5mcACgkQAVBC80lX
-0GyXQgf7BX8DnOO0GivgnVtHilyjOsd3SssG+71vVW0GOiXtJkJi3pkbgTGaQ3DG
-bmco/k94IAKLipqDqLx6YmN8MSh+fyJeJCLA3FyGEJEiNGi47DLje4YGo0OwGmxK
-J/cpqwFHgQ8j1sIKK8rbAVeORJ+M/pPBHCNeZbseDG1gi2eJlRwzTlHJdFgNdMWk
-nTrI/FkTzxykW/K7YhJf5bUarrvDvKJkqfeJhZXb6nsSfU3RZylnXsztkh7xk5lm
-HS8VqEirKLuCK8N5M2JlPkO1+tj1SIAEQSzhUYkTUc2rr52U+zTdplZDSxpbSr/s
-b+iqHl61jVrgNk+hPC3LSW4yEilQmQ==
-=W50a
------END PGP SIGNATURE-----
-
---Sig_/TOyBKbYeeW.Z63VLYgIRDgG--
