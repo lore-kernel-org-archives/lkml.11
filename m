@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99C8CCCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE9B3C43334
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359323AbiFGUUo (ORCPT
+        id S1359535AbiFGUUy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:20:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47280 "EHLO
+        Tue, 7 Jun 2022 16:20:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356669AbiFGT2G (ORCPT
+        with ESMTP id S1356608AbiFGT2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:28:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E00166FA14;
-        Tue,  7 Jun 2022 11:10:25 -0700 (PDT)
+        Tue, 7 Jun 2022 15:28:01 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 061A01A075D;
+        Tue,  7 Jun 2022 11:10:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B06B61929;
-        Tue,  7 Jun 2022 18:10:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8593DC385A2;
-        Tue,  7 Jun 2022 18:10:24 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0D265CE243C;
+        Tue,  7 Jun 2022 18:10:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8796C385A2;
+        Tue,  7 Jun 2022 18:10:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625424;
-        bh=TOJbzG2XZoI2WrokbFQt+q9q4+105c+y04J+e5RILtI=;
+        s=korg; t=1654625405;
+        bh=CF1OYT/6hu84v23WiJVn6PJJgYfVTJks605qnPgpgcg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=htikj+esIUZipE3FNsYbeqf7XOG5t7zYodH1Yr+ufh2E11E5r56yh+gj2AM2ngx9O
-         FslfuIldkrmkyCb3oZvJHS45o+9cS6mZB2Khvh/Jb5Ao9U2ezYZz0THxfKsf7nIOfp
-         aLreJJcDiIJjNR8ow9bBPnCl/hXFzdLoxdpdKXJ4=
+        b=WF+2ops4kowVWe4wCd3Ki165kF08M5/y9N4SCRtP13BJJMQGqGaX0r6JwckMV3Bm8
+         HLHFzIlTAox2csQcVk6q4ZxYLBL6bZalxBQfafloKeuK+VkFmxL2N+OkNd3RadcCwg
+         FV++2KdXy4sE28DhkOZBki1oGBPkv/Amxf68A4vY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Carl Yin <carl.yin@quectel.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.17 015/772] USB: serial: option: add Quectel BG95 modem
-Date:   Tue,  7 Jun 2022 18:53:27 +0200
-Message-Id: <20220607164949.452924864@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH 5.15 654/667] staging: r8188eu: delete rtw_wx_read/write32()
+Date:   Tue,  7 Jun 2022 19:05:19 +0200
+Message-Id: <20220607164954.263835379@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,114 +48,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Carl Yin(殷张成) <carl.yin@quectel.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 33b7af2f459df453feb0d44628d820c47fefe7a8 upstream.
+commit 4d0cc9e0e53e9946d7b8dc58279c62dfa7a2191b upstream.
 
-The BG95 modem has 3 USB configurations that are configurable via the AT
-command AT+QCFGEXT="usbnet",["ecm"|"modem"|"rmnet"] which make the modem
-enumerate with the following interfaces, respectively:
+These debugging tools let you call:
 
-"modem": Diag + GNSS + Modem + Modem
-"ecm"  : Diag + GNSS + Modem + ECM
-"rmnet": Diag + GNSS + Modem + QMI
-         Don't support Full QMI messages (e.g WDS_START_NETWORK_INTERFACE)
+	status = usb_control_msg_recv/send(udev, 0, REALTEK_USB_VENQT_CMD_REQ,
+				      REALTEK_USB_VENQT_READ/WRITE, value,
+				      REALTEK_USB_VENQT_CMD_IDX, io_buf,
+				      size, RTW_USB_CONTROL_MSG_TIMEOUT,
+				      GFP_KERNEL);
 
-A detailed description of the USB configuration for each mode follows:
+with a user controlled "value" in the 0-0xffff range.  It's not a valid
+API.
 
-+QCFGEXT: "usbnet","modem"
---------------------------
-T:  Bus=01 Lev=02 Prnt=02 Port=01 Cnt=01 Dev#=  3 Spd=480  MxCh= 0
-D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
-P:  Vendor=2c7c ProdID=0700 Rev= 0.00
-S:  Manufacturer=Quectel, Incorporated
-S:  Product=Quectel LPWA Module
-S:  SerialNumber=884328a2
-C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
-I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=fe Prot=ff Driver=option
-E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-
-+QCFGEXT: "usbnet","ecm"
-------------------------
-T:  Bus=01 Lev=02 Prnt=02 Port=01 Cnt=01 Dev#=  4 Spd=480  MxCh= 0
-D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=2c7c ProdID=0700 Rev= 0.00
-S:  Manufacturer=Quectel, Incorporated
-S:  Product=Quectel LPWA Module
-S:  SerialNumber=884328a2
-C:* #Ifs= 5 Cfg#= 1 Atr=e0 MxPwr=500mA
-A:  FirstIf#= 3 IfCount= 2 Cls=02(comm.) Sub=00 Prot=00
-I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 3 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
-E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-I:  If#= 4 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
-I:* If#= 4 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
-E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-
-+QCFGEXT: "usbnet","rmnet"
---------------------------
-T:  Bus=01 Lev=02 Prnt=02 Port=01 Cnt=01 Dev#=  4 Spd=480  MxCh= 0
-D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
-P:  Vendor=2c7c ProdID=0700 Rev= 0.00
-S:  Manufacturer=Quectel, Incorporated
-S:  Product=Quectel LPWA Module
-S:  SerialNumber=884328a2
-C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
-I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-
-Signed-off-by: Carl Yin <carl.yin@quectel.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Fixes: 2b42bd58b321 ("staging: r8188eu: introduce new os_dep dir for RTL8188eu driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/YoXS4OaD1oauPvmj@kili
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/option.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/staging/r8188eu/os_dep/ioctl_linux.c |   97 ---------------------------
+ 1 file changed, 2 insertions(+), 95 deletions(-)
 
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -1137,6 +1137,8 @@ static const struct usb_device_id option
- 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EM12, 0xff, 0, 0) },
- 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, 0x0620, 0xff, 0xff, 0x30) },	/* EM160R-GL */
- 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, 0x0620, 0xff, 0, 0) },
-+	{ USB_DEVICE_INTERFACE_CLASS(QUECTEL_VENDOR_ID, 0x0700, 0xff), /* BG95 */
-+	  .driver_info = RSVD(3) | ZLP },
- 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500Q, 0xff, 0xff, 0x30) },
- 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500Q, 0xff, 0, 0) },
- 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500Q, 0xff, 0xff, 0x10),
+--- a/drivers/staging/r8188eu/os_dep/ioctl_linux.c
++++ b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
+@@ -2052,99 +2052,6 @@ static int rtw_wx_get_nick(struct net_de
+ 	return 0;
+ }
+ 
+-static int rtw_wx_read32(struct net_device *dev,
+-			    struct iw_request_info *info,
+-			    union iwreq_data *wrqu, char *extra)
+-{
+-	struct adapter *padapter;
+-	struct iw_point *p;
+-	u16 len;
+-	u32 addr;
+-	u32 data32;
+-	u32 bytes;
+-	u8 *ptmp;
+-	int ret;
+-
+-	padapter = (struct adapter *)rtw_netdev_priv(dev);
+-	p = &wrqu->data;
+-	len = p->length;
+-	ptmp = kmalloc(len, GFP_KERNEL);
+-	if (!ptmp)
+-		return -ENOMEM;
+-
+-	if (copy_from_user(ptmp, p->pointer, len)) {
+-		kfree(ptmp);
+-		return -EFAULT;
+-	}
+-
+-	bytes = 0;
+-	addr = 0;
+-	sscanf(ptmp, "%d,%x", &bytes, &addr);
+-
+-	switch (bytes) {
+-	case 1:
+-		data32 = rtw_read8(padapter, addr);
+-		sprintf(extra, "0x%02X", data32);
+-		break;
+-	case 2:
+-		data32 = rtw_read16(padapter, addr);
+-		sprintf(extra, "0x%04X", data32);
+-		break;
+-	case 4:
+-		data32 = rtw_read32(padapter, addr);
+-		sprintf(extra, "0x%08X", data32);
+-		break;
+-	default:
+-		DBG_88E(KERN_INFO "%s: usage> read [bytes],[address(hex)]\n", __func__);
+-		ret = -EINVAL;
+-		goto err_free_ptmp;
+-	}
+-	DBG_88E(KERN_INFO "%s: addr = 0x%08X data =%s\n", __func__, addr, extra);
+-
+-	kfree(ptmp);
+-	return 0;
+-
+-err_free_ptmp:
+-	kfree(ptmp);
+-	return ret;
+-}
+-
+-static int rtw_wx_write32(struct net_device *dev,
+-			    struct iw_request_info *info,
+-			    union iwreq_data *wrqu, char *extra)
+-{
+-	struct adapter *padapter = (struct adapter *)rtw_netdev_priv(dev);
+-
+-	u32 addr;
+-	u32 data32;
+-	u32 bytes;
+-
+-	bytes = 0;
+-	addr = 0;
+-	data32 = 0;
+-	sscanf(extra, "%d,%x,%x", &bytes, &addr, &data32);
+-
+-	switch (bytes) {
+-	case 1:
+-		rtw_write8(padapter, addr, (u8)data32);
+-		DBG_88E(KERN_INFO "%s: addr = 0x%08X data = 0x%02X\n", __func__, addr, (u8)data32);
+-		break;
+-	case 2:
+-		rtw_write16(padapter, addr, (u16)data32);
+-		DBG_88E(KERN_INFO "%s: addr = 0x%08X data = 0x%04X\n", __func__, addr, (u16)data32);
+-		break;
+-	case 4:
+-		rtw_write32(padapter, addr, data32);
+-		DBG_88E(KERN_INFO "%s: addr = 0x%08X data = 0x%08X\n", __func__, addr, data32);
+-		break;
+-	default:
+-		DBG_88E(KERN_INFO "%s: usage> write [bytes],[address(hex)],[data(hex)]\n", __func__);
+-		return -EINVAL;
+-	}
+-
+-	return 0;
+-}
+-
+ static int rtw_wx_read_rf(struct net_device *dev,
+ 			    struct iw_request_info *info,
+ 			    union iwreq_data *wrqu, char *extra)
+@@ -6579,8 +6486,8 @@ static const struct iw_priv_args rtw_pri
+ };
+ 
+ static iw_handler rtw_private_handler[] = {
+-rtw_wx_write32,				/* 0x00 */
+-rtw_wx_read32,				/* 0x01 */
++	NULL,				/* 0x00 */
++	NULL,				/* 0x01 */
+ rtw_drvext_hdl,				/* 0x02 */
+ rtw_mp_ioctl_hdl,			/* 0x03 */
+ 
 
 
