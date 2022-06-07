@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B35A0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:34:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD4BCCA483
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:34:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344803AbiFGReJ (ORCPT
+        id S1347051AbiFGReQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:34:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44942 "EHLO
+        Tue, 7 Jun 2022 13:34:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346416AbiFGRZA (ORCPT
+        with ESMTP id S1346795AbiFGRZ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:25:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF06DF5D09;
-        Tue,  7 Jun 2022 10:22:42 -0700 (PDT)
+        Tue, 7 Jun 2022 13:25:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFFA1105F0;
+        Tue,  7 Jun 2022 10:23:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E49D6009B;
-        Tue,  7 Jun 2022 17:22:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A236C385A5;
-        Tue,  7 Jun 2022 17:22:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9AC5860906;
+        Tue,  7 Jun 2022 17:23:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE45BC34115;
+        Tue,  7 Jun 2022 17:23:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622561;
-        bh=VZt2nOdWMwFzurUHIONWPqfBKwllbRhQspuztDZ+FDA=;
+        s=korg; t=1654622592;
+        bh=9FbQtXO0L8JxJMcpmuh7ZMfZkX+/jwdeHsLIxezS240=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lc9LMoKlBy0HJ6bzz19JNGSY8LOEHTsQrNoYHN2rQ61AJK9+qv74wH/pKB+fpeRXY
-         dN8Hh4XxNP16jIgve0VVe1Kk4G0YyetWNQ+hcE90L7WIu+e5vkX2Sjzq2ThMY8ECxM
-         dMhQCyDupY1Sa1y8zDEi4wylixhZkJv2SmezfqIg=
+        b=tGqQhp9v/7THIBa5yy6sODQt2dnRFSF5AP6fwoVRsYhnEUM4dGLLaOreKw5NdskIb
+         l+tWs6Go/emnSP2rF1gIaAdK8ZjD//4g5IXIbG41lk/4UXl1dOZl2lRuK4A3ymZvIv
+         ERcpym8seRwYUi4m1ogKg3vF5MIufFEC0oFsE5Sk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gilad Ben-Yossef <gilad@benyossef.com>,
-        Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
+        Corey Minyard <cminyard@mvista.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 102/452] crypto: ccree - use fine grained DMA mapping dir
-Date:   Tue,  7 Jun 2022 18:59:19 +0200
-Message-Id: <20220607164911.595991172@linuxfoundation.org>
+Subject: [PATCH 5.10 074/452] ipmi:ssif: Check for NULL msg when handling events and messages
+Date:   Tue,  7 Jun 2022 18:58:51 +0200
+Message-Id: <20220607164910.758319218@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,115 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gilad Ben-Yossef <gilad@benyossef.com>
+From: Corey Minyard <cminyard@mvista.com>
 
-[ Upstream commit a260436c98171cd825955a84a7f6e62bc8f4f00d ]
+[ Upstream commit 7602b957e2404e5f98d9a40b68f1fd27f0028712 ]
 
-Use a fine grained specification of DMA mapping directions
-in certain cases, allowing both a more optimized operation
-as well as shushing out a harmless, though persky
-dma-debug warning.
+Even though it's not possible to get into the SSIF_GETTING_MESSAGES and
+SSIF_GETTING_EVENTS states without a valid message in the msg field,
+it's probably best to be defensive here and check and print a log, since
+that means something else went wrong.
 
-Signed-off-by: Gilad Ben-Yossef <gilad@benyossef.com>
-Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Also add a default clause to that switch statement to release the lock
+and print a log, in case the state variable gets messed up somehow.
+
+Reported-by: Haowen Bai <baihaowen@meizu.com>
+Signed-off-by: Corey Minyard <cminyard@mvista.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/ccree/cc_buffer_mgr.c | 27 +++++++++++++++------------
- 1 file changed, 15 insertions(+), 12 deletions(-)
+ drivers/char/ipmi/ipmi_ssif.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/drivers/crypto/ccree/cc_buffer_mgr.c b/drivers/crypto/ccree/cc_buffer_mgr.c
-index 11e0278c8631..6140e4927322 100644
---- a/drivers/crypto/ccree/cc_buffer_mgr.c
-+++ b/drivers/crypto/ccree/cc_buffer_mgr.c
-@@ -356,12 +356,14 @@ void cc_unmap_cipher_request(struct device *dev, void *ctx,
- 			      req_ctx->mlli_params.mlli_dma_addr);
- 	}
+diff --git a/drivers/char/ipmi/ipmi_ssif.c b/drivers/char/ipmi/ipmi_ssif.c
+index 3de679723648..477139749513 100644
+--- a/drivers/char/ipmi/ipmi_ssif.c
++++ b/drivers/char/ipmi/ipmi_ssif.c
+@@ -840,6 +840,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
+ 		break;
  
--	dma_unmap_sg(dev, src, req_ctx->in_nents, DMA_BIDIRECTIONAL);
--	dev_dbg(dev, "Unmapped req->src=%pK\n", sg_virt(src));
--
- 	if (src != dst) {
--		dma_unmap_sg(dev, dst, req_ctx->out_nents, DMA_BIDIRECTIONAL);
-+		dma_unmap_sg(dev, src, req_ctx->in_nents, DMA_TO_DEVICE);
-+		dma_unmap_sg(dev, dst, req_ctx->out_nents, DMA_FROM_DEVICE);
- 		dev_dbg(dev, "Unmapped req->dst=%pK\n", sg_virt(dst));
-+		dev_dbg(dev, "Unmapped req->src=%pK\n", sg_virt(src));
-+	} else {
-+		dma_unmap_sg(dev, src, req_ctx->in_nents, DMA_BIDIRECTIONAL);
-+		dev_dbg(dev, "Unmapped req->src=%pK\n", sg_virt(src));
- 	}
- }
+ 	case SSIF_GETTING_EVENTS:
++		if (!msg) {
++			/* Should never happen, but just in case. */
++			dev_warn(&ssif_info->client->dev,
++				 "No message set while getting events\n");
++			ipmi_ssif_unlock_cond(ssif_info, flags);
++			break;
++		}
++
+ 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
+ 			/* Error getting event, probably done. */
+ 			msg->done(msg);
+@@ -864,6 +872,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
+ 		break;
  
-@@ -377,6 +379,7 @@ int cc_map_cipher_request(struct cc_drvdata *drvdata, void *ctx,
- 	u32 dummy = 0;
- 	int rc = 0;
- 	u32 mapped_nents = 0;
-+	int src_direction = (src != dst ? DMA_TO_DEVICE : DMA_BIDIRECTIONAL);
- 
- 	req_ctx->dma_buf_type = CC_DMA_BUF_DLLI;
- 	mlli_params->curr_pool = NULL;
-@@ -399,7 +402,7 @@ int cc_map_cipher_request(struct cc_drvdata *drvdata, void *ctx,
- 	}
- 
- 	/* Map the src SGL */
--	rc = cc_map_sg(dev, src, nbytes, DMA_BIDIRECTIONAL, &req_ctx->in_nents,
-+	rc = cc_map_sg(dev, src, nbytes, src_direction, &req_ctx->in_nents,
- 		       LLI_MAX_NUM_OF_DATA_ENTRIES, &dummy, &mapped_nents);
- 	if (rc)
- 		goto cipher_exit;
-@@ -416,7 +419,7 @@ int cc_map_cipher_request(struct cc_drvdata *drvdata, void *ctx,
+ 	case SSIF_GETTING_MESSAGES:
++		if (!msg) {
++			/* Should never happen, but just in case. */
++			dev_warn(&ssif_info->client->dev,
++				 "No message set while getting messages\n");
++			ipmi_ssif_unlock_cond(ssif_info, flags);
++			break;
++		}
++
+ 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
+ 			/* Error getting event, probably done. */
+ 			msg->done(msg);
+@@ -887,6 +903,13 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
+ 			deliver_recv_msg(ssif_info, msg);
  		}
- 	} else {
- 		/* Map the dst sg */
--		rc = cc_map_sg(dev, dst, nbytes, DMA_BIDIRECTIONAL,
-+		rc = cc_map_sg(dev, dst, nbytes, DMA_FROM_DEVICE,
- 			       &req_ctx->out_nents, LLI_MAX_NUM_OF_DATA_ENTRIES,
- 			       &dummy, &mapped_nents);
- 		if (rc)
-@@ -456,6 +459,7 @@ void cc_unmap_aead_request(struct device *dev, struct aead_request *req)
- 	struct aead_req_ctx *areq_ctx = aead_request_ctx(req);
- 	unsigned int hw_iv_size = areq_ctx->hw_iv_size;
- 	struct cc_drvdata *drvdata = dev_get_drvdata(dev);
-+	int src_direction = (req->src != req->dst ? DMA_TO_DEVICE : DMA_BIDIRECTIONAL);
- 
- 	if (areq_ctx->mac_buf_dma_addr) {
- 		dma_unmap_single(dev, areq_ctx->mac_buf_dma_addr,
-@@ -514,13 +518,11 @@ void cc_unmap_aead_request(struct device *dev, struct aead_request *req)
- 		sg_virt(req->src), areq_ctx->src.nents, areq_ctx->assoc.nents,
- 		areq_ctx->assoclen, req->cryptlen);
- 
--	dma_unmap_sg(dev, req->src, areq_ctx->src.mapped_nents,
--		     DMA_BIDIRECTIONAL);
-+	dma_unmap_sg(dev, req->src, areq_ctx->src.mapped_nents, src_direction);
- 	if (req->src != req->dst) {
- 		dev_dbg(dev, "Unmapping dst sgl: req->dst=%pK\n",
- 			sg_virt(req->dst));
--		dma_unmap_sg(dev, req->dst, areq_ctx->dst.mapped_nents,
--			     DMA_BIDIRECTIONAL);
-+		dma_unmap_sg(dev, req->dst, areq_ctx->dst.mapped_nents, DMA_FROM_DEVICE);
- 	}
- 	if (drvdata->coherent &&
- 	    areq_ctx->gen_ctx.op_type == DRV_CRYPTO_DIRECTION_DECRYPT &&
-@@ -843,7 +845,7 @@ static int cc_aead_chain_data(struct cc_drvdata *drvdata,
- 		else
- 			size_for_map -= authsize;
- 
--		rc = cc_map_sg(dev, req->dst, size_for_map, DMA_BIDIRECTIONAL,
-+		rc = cc_map_sg(dev, req->dst, size_for_map, DMA_FROM_DEVICE,
- 			       &areq_ctx->dst.mapped_nents,
- 			       LLI_MAX_NUM_OF_DATA_ENTRIES, &dst_last_bytes,
- 			       &dst_mapped_nents);
-@@ -1056,7 +1058,8 @@ int cc_map_aead_request(struct cc_drvdata *drvdata, struct aead_request *req)
- 		size_to_map += authsize;
+ 		break;
++
++	default:
++		/* Should never happen, but just in case. */
++		dev_warn(&ssif_info->client->dev,
++			 "Invalid state in message done handling: %d\n",
++			 ssif_info->ssif_state);
++		ipmi_ssif_unlock_cond(ssif_info, flags);
  	}
  
--	rc = cc_map_sg(dev, req->src, size_to_map, DMA_BIDIRECTIONAL,
-+	rc = cc_map_sg(dev, req->src, size_to_map,
-+		       (req->src != req->dst ? DMA_TO_DEVICE : DMA_BIDIRECTIONAL),
- 		       &areq_ctx->src.mapped_nents,
- 		       (LLI_MAX_NUM_OF_ASSOC_DATA_ENTRIES +
- 			LLI_MAX_NUM_OF_DATA_ENTRIES),
+ 	flags = ipmi_ssif_lock_cond(ssif_info, &oflags);
 -- 
 2.35.1
 
