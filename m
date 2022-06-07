@@ -2,98 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3FF4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:42:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4FDBC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391088AbiFHAmC (ORCPT
+        id S1386804AbiFHAkm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:42:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37168 "EHLO
+        Tue, 7 Jun 2022 20:40:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573473AbiFGXYH (ORCPT
+        with ESMTP id S1455541AbiFGXSr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:24:07 -0400
-Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9B413F4A39
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:33:21 -0700 (PDT)
-Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-edeb6c3642so24853953fac.3
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:33:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7WQJ/XtKegsw42WINS+GcmBCB6YzztdG6Y2PPPtUW/w=;
-        b=TrullXJMsk5YwE74aMpxuW61E1Hw1bnKtHsWUuwneaKzbWnpnuR+AjXBZ629aN2OD4
-         K8M0ZQuIVKorAfsPpsBq4P/2IJG0G29TGqlJA0BDh9WZ1T7oHDJej8Pa4GdBM1Px974A
-         cFaCm7tTycbHC+Kgx1dTX3JZv8xASZxwar4EZmTS4r868fstIko0vde6uw7EGmO62bSp
-         k9J9GAkUGTPbdwagbRBagx5TDT9IFym/yPArpVhVR2+zp4iu05KPEYJCDrOwJ5HliovS
-         qmxbar3fOJ/dBtJBu0ZXgJRPAUTqg8kgwHHB5w8d+I2Ivx5MiU5sRuNowWjBNz9bAQIo
-         0yHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7WQJ/XtKegsw42WINS+GcmBCB6YzztdG6Y2PPPtUW/w=;
-        b=wdCi+zWkQwtdoxFEEK/9x3a8iR/J2kUwgXEGSSkFDIOoLYiRnUKhi4jQXpYmf0O/ew
-         V+J8dHod77V/1jondhZaBJ9AKmPZ+v55Ym9QfLbcFnQGi0Z17P5aLLHN5Nq4x/5s+hzO
-         t4sjWsIkRFBpGqkxROSz/GATYa06QVtr75Gy1NBHOX4gzFHXSXSewuT5aLiVadXw7T6X
-         K/SlpkQCfGbqgQZpV/XgDnDVgXATzDEBWXd7tPADurIhLOHU4JCps2IlCNFc9y/+3lFS
-         7zAdEbfNEJ3+2tjzVzk9RTiD9DZ1Dz5Lp+x0MBrFz3OL3+9sOdktl6AxFibz2xc7bHAF
-         SD/w==
-X-Gm-Message-State: AOAM5337/shx/hY79G0hbl/+3icTOSOXv1cIfIEIZkT0NfVByDHgC//0
-        K+mfFZmPaqr7xmEeAXK6Ak+Qlw==
-X-Google-Smtp-Source: ABdhPJyU25K2d0bR0vnpnqOV1y2zdIZ6XN9gCVbMevu5CAiFWeOd1COsOlK9xlawqzqPKGiYAmdkLg==
-X-Received: by 2002:a05:6870:82a2:b0:f5:f1ee:cfdb with SMTP id q34-20020a05687082a200b000f5f1eecfdbmr538939oae.297.1654637599500;
-        Tue, 07 Jun 2022 14:33:19 -0700 (PDT)
-Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id cd24-20020a056808319800b0032e7205619asm4966031oib.15.2022.06.07.14.33.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 14:33:18 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Manu Gautam <mgautam@codeaurora.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/5] phy: qcom: Add SC8280XP UNI and COMBO USB phys
-Date:   Tue,  7 Jun 2022 14:35:38 -0700
-Message-Id: <20220607213543.4057620-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.35.1
+        Tue, 7 Jun 2022 19:18:47 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11DC13D11F0
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:20:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654636837; x=1686172837;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=yqRAsG56rYYj2A4jgXo6P8t9HyyNEcw84/HV/XhestQ=;
+  b=Ag2tCaixSVe9VF9vz5k2b/Qqnl/CRlnuKnfwU2nak2JNMOZWCBQKmUxW
+   IY2uFkx8/jLzr9TLHWYTyNbR+Pgc/iPgV14I+GKvLKvCzBFtlM5B4/eJa
+   50FKJT/03hxQ3llEy5eEaFU9GNhsU2xeXEvPzhIt2cU+bVa4Ml5fHB8y/
+   7fl9KzHufkvAIk6M9dYFa/mFYmGmYtNFMIm87R2DTcABXhtn+QHX02sD8
+   9OyUVPLHNOmL4Hpn4DJt9IDXk9F0Gl/6KBpYricIxq8ejoBy224TemeH3
+   VnYxa1fbPLC2Pj8AskuW/wYs8t3cZWuxYPaWlSQVvyk8TlwrrKqLDh7xw
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="363091753"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="363091753"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 14:20:21 -0700
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="826558517"
+Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 14:20:21 -0700
+From:   Tony Luck <tony.luck@intel.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        patches@lists.linux.dev, Tony Luck <tony.luck@intel.com>
+Subject: [PATCH] RAS/CEC: Reduce default threshold to offline a page to "2"
+Date:   Tue,  7 Jun 2022 14:20:15 -0700
+Message-Id: <20220607212015.175591-1-tony.luck@intel.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Qualcomm SC8280XP has two pairs of USB phys; a pair of combo phys and a
-pair of uni phys. Introduce support for these.
+A large scale study of memory errors in data centers showed that it is
+best to aggressively take pages with corrected errors offline. This is
+the best strategy of using corrected errors as a predictor of future
+uncorrected errors.
 
-This is based ontop of Dmitry's refactoring of the QMP driver:
-https://lore.kernel.org/all/20220602070909.1666068-1-dmitry.baryshkov@linaro.org/
+Signed-off-by: Tony Luck <tony.luck@intel.com>
 
-A first version of this series was posted with only the UNI phy, this fixes a
-few comments and add the combo phy as well.
+---
+Here's the link to the study. I thought of putting into the code
+comment, or the commit comment. But these links are sometimes changed
+as website is re-organised, making the link stale.
 
-Bjorn Andersson (5):
-  dt-bindings: phy: qcom,qmp: Add compatible for SC8280XP USB phys
-  phy: qcom-qmp: Add USB3 5NM QMP UNI registers
-  phy: qcom-qmp: Add USB4 5NM QMP combo PHY registers
-  phy: qcom-qmp: Add SC8280XP USB3 UNI phy
-  phy: qcom-qmp: Add sc8280xp USB/DP combo phys
+https://www.intel.com/content/dam/www/public/us/en/documents/intel-and-samsung-mrt-improving-memory-reliability-at-data-centers.pdf
 
- .../devicetree/bindings/phy/qcom,qmp-phy.yaml |    2 +
- .../bindings/phy/qcom,qmp-usb3-dp-phy.yaml    |    1 +
- drivers/phy/qualcomm/phy-qcom-qmp-combo.c     |  205 +++
- drivers/phy/qualcomm/phy-qcom-qmp-usb.c       |  138 ++
- drivers/phy/qualcomm/phy-qcom-qmp.h           |   13 +
- .../phy/qualcomm/phy-qcom-usb3-5nm-qmp-uni.h  |  617 +++++++
- .../qualcomm/phy-qcom-usb4-5nm-qmp-combo.h    | 1547 +++++++++++++++++
- 7 files changed, 2523 insertions(+)
- create mode 100644 drivers/phy/qualcomm/phy-qcom-usb3-5nm-qmp-uni.h
- create mode 100644 drivers/phy/qualcomm/phy-qcom-usb4-5nm-qmp-combo.h
+The paper has two recommendations:
+1) Change threshold to "2".
+2) Do very smart platform dependent things
 
+This commit only addresses the first :-)
+---
+ drivers/ras/cec.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/ras/cec.c b/drivers/ras/cec.c
+index 42f2fc0bc8a9..5d614c383ccf 100644
+--- a/drivers/ras/cec.c
++++ b/drivers/ras/cec.c
+@@ -125,8 +125,11 @@ static struct ce_array {
+ static DEFINE_MUTEX(ce_mutex);
+ static u64 dfs_pfn;
+ 
+-/* Amount of errors after which we offline */
+-static u64 action_threshold = COUNT_MASK;
++/*
++ * Number of errors after which we offline. Default is to aggressively
++ * offline the page when a second error is seen.
++ */
++static u64 action_threshold = 2;
+ 
+ /* Each element "decays" each decay_interval which is 24hrs by default. */
+ #define CEC_DECAY_DEFAULT_INTERVAL	24 * 60 * 60	/* 24 hrs */
 -- 
-2.35.1
+2.35.3
 
