@@ -2,178 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC668CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:04:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D936C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:05:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238831AbiFGJE3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:04:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34896 "EHLO
+        id S232696AbiFGJFm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:05:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231714AbiFGJE1 (ORCPT
+        with ESMTP id S238875AbiFGJFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:04:27 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205ADCA3F9;
-        Tue,  7 Jun 2022 02:04:19 -0700 (PDT)
-X-UUID: 59a7452825b544c7b63f26518729eefd-20220607
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:8ac88e8f-7228-48bc-8820-aa1287e00cf3,OB:0,LO
-        B:30,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:50
-X-CID-INFO: VERSION:1.1.5,REQID:8ac88e8f-7228-48bc-8820-aa1287e00cf3,OB:0,LOB:
-        30,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:50
-X-CID-META: VersionHash:2a19b09,CLOUDID:2068ece4-2ba2-4dc1-b6c5-11feb6c769e0,C
-        OID:85e7ce479c59,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:0,BEC:nil
-X-UUID: 59a7452825b544c7b63f26518729eefd-20220607
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 459881593; Tue, 07 Jun 2022 17:04:15 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 7 Jun 2022 17:04:13 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 7 Jun 2022 17:04:13 +0800
-Message-ID: <77cdd43716b49aaffd9e052f4fe2c88e198ea7ff.camel@mediatek.com>
-Subject: Re: [PATCH v10 18/21] drm/mediatek: Add mt8195 Embedded DisplayPort
- driver
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Guillaume Ranquet <granquet@baylibre.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        "Daniel Vetter" <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        "Kishon Vijay Abraham I" <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, "Helge Deller" <deller@gmx.de>,
-        Jitao shi <jitao.shi@mediatek.com>
-CC:     Markus Schneider-Pargmann <msp@baylibre.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-phy@lists.infradead.org>, <linux-fbdev@vger.kernel.org>
-Date:   Tue, 7 Jun 2022 17:04:13 +0800
-In-Reply-To: <20220523104758.29531-19-granquet@baylibre.com>
-References: <20220523104758.29531-1-granquet@baylibre.com>
-         <20220523104758.29531-19-granquet@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 7 Jun 2022 05:05:11 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20120CA3FC;
+        Tue,  7 Jun 2022 02:05:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1654592710; x=1686128710;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=y0b/gx80TGhLtYHMOPQ93yc4whRx4q+feLOznlFnaV4=;
+  b=fVIo2ecWBSqz5ud4pjMdfpB7b8OaNejoR3+j/SSlBMeGz/NzBTx9DsKe
+   L4ZvAwgUEeFtBnI9n14N/gi1+mwYgc2QBwL0P0G29ET5KPEGOM5n7Ib3X
+   +QmzgHEZvvt5XHgb3zNwwWt78AvehA4Jimfq3xi2KxmbLkeOFpzCzeWvS
+   nTbiixa7jeZpAP+xZTt7WqB/sPjByMDsNcw4TZgjeDGkarmHveCFv+ZDv
+   jDdWXVGYq0Jxi5+GdpMXE6izUGt6VirfAp2vq6LL+9aliKNm3a1K9DA52
+   FE8PfhlM+bZHMObc8K40s7xeULeGGslT6Sv+v+4DbNFcGsFx83qytCj2e
+   g==;
+X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
+   d="scan'208";a="167384994"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Jun 2022 02:05:09 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 7 Jun 2022 02:05:08 -0700
+Received: from ROB-ULT-M18282.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 7 Jun 2022 02:05:06 -0700
+From:   Eugen Hristev <eugen.hristev@microchip.com>
+To:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <linux-kernel@vger.kernel.org>, <claudiu.beznea@microchip.com>,
+        <nicolas.ferre@microchip.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>
+Subject: [PATCH 2/2] ARM: dts: at91: sama5d2_icp: fix eeprom compatibles
+Date:   Tue, 7 Jun 2022 12:04:55 +0300
+Message-ID: <20220607090455.80433-2-eugen.hristev@microchip.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220607090455.80433-1-eugen.hristev@microchip.com>
+References: <20220607090455.80433-1-eugen.hristev@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Rex:
+The eeprom memories on the board are microchip 24aa025e48, which are 2 Kbits
+and are compatible with at24c02 not at24c32.
 
-On Mon, 2022-05-23 at 12:47 +0200, Guillaume Ranquet wrote:
-> From: Markus Schneider-Pargmann <msp@baylibre.com>
-> 
-> This patch adds a DisplayPort driver for the Mediatek mt8195 SoC.
-> 
-> It supports the mt8195, the embedded DisplayPort units. It offers
-> DisplayPort 1.4 with up to 4 lanes.
-> 
-> The driver creates a child device for the phy. The child device will
-> never exist without the parent being active. As they are sharing a
-> register range, the parent passes a regmap pointer to the child so
-> that
-> both can work with the same register range. The phy driver sets
-> device
-> data that is read by the parent to get the phy device that can be
-> used
-> to control the phy properties.
-> 
-> This driver is based on an initial version by
-> Jason-JH.Lin <jason-jh.lin@mediatek.com>.
-> 
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> ---
+Fixes: 68a95ef72cefe ("ARM: dts: at91: sama5d2-icp: add SAMA5D2-ICP")
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+---
+ arch/arm/boot/dts/at91-sama5d2_icp.dts | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-[snip]
-
-> +
-> +static irqreturn_t mtk_dp_hpd_event_thread(int hpd, void *dev)
-> +{
-> +	struct mtk_dp *mtk_dp = dev;
-> +	int event;
-> +	u8 buf[DP_RECEIVER_CAP_SIZE] = {};
-> +
-> +	event = mtk_dp_plug_state(mtk_dp) ? connector_status_connected
-> :
-> +						  connector_status_disc
-> onnected;
-> +
-> +	if (event < 0)
-> +		return IRQ_HANDLED;
-> +
-> +	if (mtk_dp->drm_dev) {
-> +		dev_info(mtk_dp->dev, "drm_helper_hpd_irq_event\n");
-> +		drm_helper_hpd_irq_event(mtk_dp->bridge.dev);
-> +	}
-> +
-> +	if (mtk_dp->train_info.cable_state_change) {
-> +		mtk_dp->train_info.cable_state_change = false;
-> +
-> +		mtk_dp->train_state = MTK_DP_TRAIN_STATE_STARTUP;
-> +
-> +		if (!mtk_dp->train_info.cable_plugged_in ||
-> +		    !mtk_dp_plug_state(mtk_dp)) {
-> +			mtk_dp_video_mute(mtk_dp, true);
-
-For eDP, when does 'unplug' happen? Explain this or move unplug
-processing to DP patch.
-
-Regards,
-CK
-
-> +
-> +			mtk_dp_initialize_priv_data(mtk_dp);
-> +			mtk_dp_set_idle_pattern(mtk_dp, true);
-> +			if (mtk_dp->has_fec)
-> +				mtk_dp_fec_enable(mtk_dp, false);
-> +
-> +			mtk_dp_update_bits(mtk_dp,
-> MTK_DP_TOP_PWR_STATE,
-> +					   DP_PWR_STATE_BANDGAP_TPLL,
-> +					   DP_PWR_STATE_MASK);
-> +		} else {
-> +			mtk_dp_update_bits(mtk_dp,
-> MTK_DP_TOP_PWR_STATE,
-> +					   DP_PWR_STATE_BANDGAP_TPLL_LA
-> NE,
-> +					   DP_PWR_STATE_MASK);
-> +			drm_dp_read_dpcd_caps(&mtk_dp->aux, buf);
-> +			mtk_dp->train_info.link_rate =
-> +				min_t(int, mtk_dp->max_linkrate,
-> +				      buf[mtk_dp->max_linkrate]);
-> +			mtk_dp->train_info.lane_count =
-> +				min_t(int, mtk_dp->max_lanes,
-> +				      drm_dp_max_lane_count(buf));
-> +		}
-> +	}
-> +
-> +	if (mtk_dp->train_info.irq_status & MTK_DP_HPD_INTERRUPT) {
-> +		dev_dbg(mtk_dp->dev, "MTK_DP_HPD_INTERRUPT\n");
-> +		mtk_dp->train_info.irq_status &= ~MTK_DP_HPD_INTERRUPT;
-> +		mtk_dp_hpd_sink_event(mtk_dp);
-> +	}
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
+diff --git a/arch/arm/boot/dts/at91-sama5d2_icp.dts b/arch/arm/boot/dts/at91-sama5d2_icp.dts
+index 806eb1d911d7c..164201a8fbf2d 100644
+--- a/arch/arm/boot/dts/at91-sama5d2_icp.dts
++++ b/arch/arm/boot/dts/at91-sama5d2_icp.dts
+@@ -329,21 +329,21 @@ &i2c1 {
+ 	status = "okay";
+ 
+ 	eeprom@50 {
+-		compatible = "atmel,24c32";
++		compatible = "atmel,24c02";
+ 		reg = <0x50>;
+ 		pagesize = <16>;
+ 		status = "okay";
+ 	};
+ 
+ 	eeprom@52 {
+-		compatible = "atmel,24c32";
++		compatible = "atmel,24c02";
+ 		reg = <0x52>;
+ 		pagesize = <16>;
+ 		status = "disabled";
+ 	};
+ 
+ 	eeprom@53 {
+-		compatible = "atmel,24c32";
++		compatible = "atmel,24c02";
+ 		reg = <0x53>;
+ 		pagesize = <16>;
+ 		status = "disabled";
+-- 
+2.25.1
 
