@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8923FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:01:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B0B3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:01:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352202AbiFGTBr (ORCPT
+        id S1352739AbiFGTBv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42262 "EHLO
+        Tue, 7 Jun 2022 15:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352168AbiFGSQ5 (ORCPT
+        with ESMTP id S1352145AbiFGSQ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:57 -0400
+        Tue, 7 Jun 2022 14:16:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA07A11141;
-        Tue,  7 Jun 2022 10:50:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CDF11451;
+        Tue,  7 Jun 2022 10:50:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8465161650;
-        Tue,  7 Jun 2022 17:50:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A3CDC34115;
-        Tue,  7 Jun 2022 17:50:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 79BC961650;
+        Tue,  7 Jun 2022 17:50:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C377BC385A5;
+        Tue,  7 Jun 2022 17:50:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624253;
-        bh=b0y7kcZVJHUzbw5GlGaRG2weKRKicsuh66ywd8v6S5I=;
+        s=k20201202; t=1654624238;
+        bh=9Lp2n8TAUiczV7Wk1h+S5aJI43ikGeidpwIOf4ToTRI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q7hStlKvc5btCB3Cj473dwObUBZ2TZOPM9ak5lbryL+4EPwjK35YYnoU+oPoO5ln6
-         353X49dV26sf7xI6SRGLv8pcNtopGJPuXakj85O9zUPUAMyj/V/h1Y0fFtKj3lwCYG
-         J8UQM9wtcuE1jAWZi5RbiPqhADTayCMSBZy4GdHw+BwclUju3PlRKrit+k5Z5J16dR
-         j6vvBOkEZgwANi+NbgtK4XdoJCRtWe9/EWZ0pxlIOheIVh/iqfo7P9d+GCG5ps9OLf
-         nihEoj0VMN+g8dqH5XGQ3rCRxrNmUPANlKbQ5XJEe0zIBV1bZud+C7nY48qjE5P+Tc
-         BkTTNcbtJmTHg==
+        b=pNUDm40c8RKWhrD6I+oVn5djbceqUm04u5D03qiKMx4u/7QNet4RBnGd4PVoUJxK0
+         6YezoPtDemVCDK/nYLkaGgzjq0TtF14FPfTzV+PpTXkGOGWDzI4RmPMDwnfQ4n5Piz
+         BhtJWh0fhYQahybZ7xQCHShpyFLCASVJws2kgSwR1q+UrcSqXzrOQEytpXH8QdXbTb
+         SYJvHaQQ8LynThTO60qdq88ZRwcCh7O3UmPI35sC3y5k4y8IthBWAEyuAufu2xkd2b
+         x0gbiE9FMSfIhCC0oBXWyzh4FBwBjJzx7tJmvz8urep72kJcpmqwQ0GcC31JXmiYPt
+         JZS2iLi/7RToQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheng Bin <zhengbin13@huawei.com>,
+Cc:     Soumya Negi <soumya.negi97@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, w.d.hubbs@gmail.com,
-        chris@the-brannons.com, kirk@reisers.ca,
-        samuel.thibault@ens-lyon.org, trix@redhat.com,
-        salah.triki@gmail.com, speakup@linux-speakup.org
-Subject: [PATCH AUTOSEL 5.18 31/68] accessiblity: speakup: Add missing misc_deregister in softsynth_probe
-Date:   Tue,  7 Jun 2022 13:47:57 -0400
-Message-Id: <20220607174846.477972-31-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, fabioaiuto83@gmail.com,
+        hdegoede@redhat.com, straube.linux@gmail.com,
+        linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.18 27/68] staging: rtl8723bs: Fix alignment to match open parenthesis
+Date:   Tue,  7 Jun 2022 13:47:53 -0400
+Message-Id: <20220607174846.477972-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
 References: <20220607174846.477972-1-sashal@kernel.org>
@@ -55,33 +54,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Bin <zhengbin13@huawei.com>
+From: Soumya Negi <soumya.negi97@gmail.com>
 
-[ Upstream commit 106101303eda8f93c65158e5d72b2cc6088ed034 ]
+[ Upstream commit f722d67fad290b0c960f27062adc8cf59488d0a7 ]
 
-softsynth_probe misses a call misc_deregister() in an error path, this
-patch fixes that.
+Adhere to Linux coding style. Fixes checkpatch warnings:
+CHECK: Alignment should match open parenthesis
+CHECK: line length of 101 exceeds 100 columns
 
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
-Link: https://lore.kernel.org/r/20220511032937.2736738-1-zhengbin13@huawei.com
+Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
+Link: https://lore.kernel.org/r/20220513025553.13634-1-soumya.negi97@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/accessibility/speakup/speakup_soft.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/staging/rtl8723bs/core/rtw_ap.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/accessibility/speakup/speakup_soft.c b/drivers/accessibility/speakup/speakup_soft.c
-index 19824e7006fe..786dc5d080f3 100644
---- a/drivers/accessibility/speakup/speakup_soft.c
-+++ b/drivers/accessibility/speakup/speakup_soft.c
-@@ -397,6 +397,7 @@ static int softsynth_probe(struct spk_synth *synth)
- 	synthu_device.name = "softsynthu";
- 	synthu_device.fops = &softsynthu_fops;
- 	if (misc_register(&synthu_device)) {
-+		misc_deregister(&synth_device);
- 		pr_warn("Couldn't initialize miscdevice /dev/softsynthu.\n");
- 		return -ENODEV;
+diff --git a/drivers/staging/rtl8723bs/core/rtw_ap.c b/drivers/staging/rtl8723bs/core/rtw_ap.c
+index 5478188be991..d30d6e6bcd07 100644
+--- a/drivers/staging/rtl8723bs/core/rtw_ap.c
++++ b/drivers/staging/rtl8723bs/core/rtw_ap.c
+@@ -520,12 +520,12 @@ void update_sta_info_apmode(struct adapter *padapter, struct sta_info *psta)
+ 
+ 		/*  B0 Config LDPC Coding Capability */
+ 		if (TEST_FLAG(phtpriv_ap->ldpc_cap, LDPC_HT_ENABLE_TX) &&
+-			      GET_HT_CAPABILITY_ELE_LDPC_CAP((u8 *)(&phtpriv_sta->ht_cap)))
++		    GET_HT_CAPABILITY_ELE_LDPC_CAP((u8 *)(&phtpriv_sta->ht_cap)))
+ 			SET_FLAG(cur_ldpc_cap, (LDPC_HT_ENABLE_TX | LDPC_HT_CAP_TX));
+ 
+ 		/*  B7 B8 B9 Config STBC setting */
+ 		if (TEST_FLAG(phtpriv_ap->stbc_cap, STBC_HT_ENABLE_TX) &&
+-			      GET_HT_CAPABILITY_ELE_RX_STBC((u8 *)(&phtpriv_sta->ht_cap)))
++		    GET_HT_CAPABILITY_ELE_RX_STBC((u8 *)(&phtpriv_sta->ht_cap)))
+ 			SET_FLAG(cur_stbc_cap, (STBC_HT_ENABLE_TX | STBC_HT_CAP_TX));
+ 	} else {
+ 		phtpriv_sta->ampdu_enable = false;
+@@ -1065,10 +1065,12 @@ int rtw_check_beacon_data(struct adapter *padapter, u8 *pbuf,  int len)
+ 		);
+ 
+ 		if ((psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_CCMP) ||
+-		     (psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_CCMP)) {
+-			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY & (0x07 << 2));
++		    (psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_CCMP)) {
++			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY &
++						       (0x07 << 2));
+ 		} else {
+-			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY & 0x00);
++			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY &
++						       0x00);
+ 		}
+ 
+ 		rtw_hal_get_def_var(
+@@ -1116,7 +1118,7 @@ int rtw_check_beacon_data(struct adapter *padapter, u8 *pbuf,  int len)
+ 	pmlmepriv->htpriv.ht_option = false;
+ 
+ 	if ((psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_TKIP) ||
+-	     (psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_TKIP)) {
++	    (psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_TKIP)) {
+ 		/* todo: */
+ 		/* ht_cap = false; */
  	}
+@@ -1725,7 +1727,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
+ 			pmlmepriv->num_sta_no_short_preamble--;
+ 
+ 			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
+-				(pmlmepriv->num_sta_no_short_preamble == 0)) {
++			    (pmlmepriv->num_sta_no_short_preamble == 0)) {
+ 				beacon_updated = true;
+ 				update_beacon(padapter, 0xFF, NULL, true);
+ 			}
+@@ -1763,7 +1765,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
+ 			pmlmepriv->num_sta_no_short_slot_time++;
+ 
+ 			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
+-				 (pmlmepriv->num_sta_no_short_slot_time == 1)) {
++			    (pmlmepriv->num_sta_no_short_slot_time == 1)) {
+ 				beacon_updated = true;
+ 				update_beacon(padapter, 0xFF, NULL, true);
+ 			}
+@@ -1775,7 +1777,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
+ 			pmlmepriv->num_sta_no_short_slot_time--;
+ 
+ 			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
+-				 (pmlmepriv->num_sta_no_short_slot_time == 0)) {
++			    (pmlmepriv->num_sta_no_short_slot_time == 0)) {
+ 				beacon_updated = true;
+ 				update_beacon(padapter, 0xFF, NULL, true);
+ 			}
+@@ -2024,7 +2026,7 @@ void rtw_ap_restore_network(struct adapter *padapter)
+ 	start_bss_network(padapter);
+ 
+ 	if ((padapter->securitypriv.dot11PrivacyAlgrthm == _TKIP_) ||
+-		(padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)) {
++	    (padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)) {
+ 		/* restore group key, WEP keys is restored in ips_leave() */
+ 		rtw_set_key(
+ 			padapter,
+@@ -2062,7 +2064,7 @@ void rtw_ap_restore_network(struct adapter *padapter)
+ 			/* pairwise key */
+ 			/* per sta pairwise key and settings */
+ 			if ((psecuritypriv->dot11PrivacyAlgrthm == _TKIP_) ||
+-				(psecuritypriv->dot11PrivacyAlgrthm == _AES_)) {
++			    (psecuritypriv->dot11PrivacyAlgrthm == _AES_)) {
+ 				rtw_setstakey_cmd(padapter, psta, true, false);
+ 			}
+ 		}
 -- 
 2.35.1
 
