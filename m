@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 737E0CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50612CCA486
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389313AbiFHBqB (ORCPT
+        id S1389142AbiFHBpt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:46:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38642 "EHLO
+        Tue, 7 Jun 2022 21:45:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380886AbiFGWcT (ORCPT
+        with ESMTP id S1381082AbiFGW2A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:32:19 -0400
+        Tue, 7 Jun 2022 18:28:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B17E027C255;
-        Tue,  7 Jun 2022 12:25:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89E2E2717B3;
+        Tue,  7 Jun 2022 12:23:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A765608CD;
-        Tue,  7 Jun 2022 19:25:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36075C385A2;
-        Tue,  7 Jun 2022 19:25:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 610BA60B07;
+        Tue,  7 Jun 2022 19:23:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E043C385A2;
+        Tue,  7 Jun 2022 19:23:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629932;
-        bh=1ZsatgNjEVp8upoppveFDyy7kk+zXJJA7FqcCTOQW7g=;
+        s=korg; t=1654629799;
+        bh=KQhNUBLOLtZcrsJx4S47bHKKob7oUfommlWDtlE6Xv8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rb8GIgED2YmryeMvBquPlutVwj3M3JzcJwd3rz5ht7pLO83ZCbNiXoqzGISjbHqE+
-         FaoqIRmm+IMt3wiNEHOxNL7TtKmzasOJd9K5nLdZFWWVPdXaYAl/x37H0HeY5Nurw1
-         YpRxhlKFxeGnm8fnIOhqyWVNsN1xlkRFVZpiXdhs=
+        b=NtJ4lUdEHczcLWeK68cU1vPOl/tEEb4vEgO9qMuF01u+jEub8Nt85QlrdG2Apwwxp
+         tyHihSMbbjZqeMhUIRJnh0Nra0Cmkw1qg6ryhbaXQAJa2pTXo34nMZ72JV+Kgn7lyc
+         +STSFDIEl5VvV5BzvEpY29X8AOY50CHq55zh/IaQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yixing Liu <liuyixing1@huawei.com>,
-        Wenpeng Liang <liangwenpeng@huawei.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.18 869/879] RDMA/hns: Remove the num_cqc_timer variable
-Date:   Tue,  7 Jun 2022 19:06:27 +0200
-Message-Id: <20220607165028.077895193@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.18 822/879] kexec_file: drop weak attribute from arch_kexec_apply_relocations[_add]
+Date:   Tue,  7 Jun 2022 19:05:40 +0200
+Message-Id: <20220607165026.712596078@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,78 +51,184 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yixing Liu <liuyixing1@huawei.com>
+From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
 
-commit db5dfbf5b201df65c1f5332c4d9d5e7c2f42396b upstream.
+commit 3e35142ef99fe6b4fe5d834ad43ee13cca10a2dc upstream.
 
-The bt number of cqc_timer of HIP09 increases compared with that of HIP08.
-Therefore, cqc_timer_bt_num and num_cqc_timer do not match. As a result,
-the driver may fail to allocate cqc_timer. So the driver needs to uniquely
-uses cqc_timer_bt_num to represent the bt number of cqc_timer.
+Since commit d1bcae833b32f1 ("ELF: Don't generate unused section
+symbols") [1], binutils (v2.36+) started dropping section symbols that
+it thought were unused.  This isn't an issue in general, but with
+kexec_file.c, gcc is placing kexec_arch_apply_relocations[_add] into a
+separate .text.unlikely section and the section symbol ".text.unlikely"
+is being dropped. Due to this, recordmcount is unable to find a non-weak
+symbol in .text.unlikely to generate a relocation record against.
 
-Fixes: 0e40dc2f70cd ("RDMA/hns: Add timer allocation support for hip08")
-Link: https://lore.kernel.org/r/20220429093545.58070-1-liangwenpeng@huawei.com
-Signed-off-by: Yixing Liu <liuyixing1@huawei.com>
-Signed-off-by: Wenpeng Liang <liangwenpeng@huawei.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Address this by dropping the weak attribute from these functions.
+Instead, follow the existing pattern of having architectures #define the
+name of the function they want to override in their headers.
+
+[1] https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=d1bcae833b32f1
+
+[akpm@linux-foundation.org: arch/s390/include/asm/kexec.h needs linux/module.h]
+Link: https://lkml.kernel.org/r/20220519091237.676736-1-naveen.n.rao@linux.vnet.ibm.com
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Cc: "Eric W. Biederman" <ebiederm@xmission.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/hns/hns_roce_device.h |    1 -
- drivers/infiniband/hw/hns/hns_roce_hw_v2.c  |    3 +--
- drivers/infiniband/hw/hns/hns_roce_hw_v2.h  |    2 +-
- drivers/infiniband/hw/hns/hns_roce_main.c   |    2 +-
- 4 files changed, 3 insertions(+), 5 deletions(-)
+ arch/s390/include/asm/kexec.h |   10 +++++++++
+ arch/x86/include/asm/kexec.h  |    8 +++++++
+ include/linux/kexec.h         |   46 ++++++++++++++++++++++++++++++++++--------
+ kernel/kexec_file.c           |   34 -------------------------------
+ 4 files changed, 56 insertions(+), 42 deletions(-)
 
---- a/drivers/infiniband/hw/hns/hns_roce_device.h
-+++ b/drivers/infiniband/hw/hns/hns_roce_device.h
-@@ -731,7 +731,6 @@ struct hns_roce_caps {
- 	u32		num_pi_qps;
- 	u32		reserved_qps;
- 	int		num_qpc_timer;
--	int		num_cqc_timer;
- 	u32		num_srqs;
- 	u32		max_wqes;
- 	u32		max_srq_wrs;
---- a/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
-+++ b/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
-@@ -1965,7 +1965,7 @@ static void set_default_caps(struct hns_
- 	caps->num_mtpts		= HNS_ROCE_V2_MAX_MTPT_NUM;
- 	caps->num_pds		= HNS_ROCE_V2_MAX_PD_NUM;
- 	caps->num_qpc_timer	= HNS_ROCE_V2_MAX_QPC_TIMER_NUM;
--	caps->num_cqc_timer	= HNS_ROCE_V2_MAX_CQC_TIMER_NUM;
-+	caps->cqc_timer_bt_num	= HNS_ROCE_V2_MAX_CQC_TIMER_BT_NUM;
+--- a/arch/s390/include/asm/kexec.h
++++ b/arch/s390/include/asm/kexec.h
+@@ -9,6 +9,8 @@
+ #ifndef _S390_KEXEC_H
+ #define _S390_KEXEC_H
  
- 	caps->max_qp_init_rdma	= HNS_ROCE_V2_MAX_QP_INIT_RDMA;
- 	caps->max_qp_dest_rdma	= HNS_ROCE_V2_MAX_QP_DEST_RDMA;
-@@ -2261,7 +2261,6 @@ static int hns_roce_query_pf_caps(struct
- 	caps->max_rq_sg = roundup_pow_of_two(caps->max_rq_sg);
- 	caps->max_extend_sg	     = le32_to_cpu(resp_a->max_extend_sg);
- 	caps->num_qpc_timer	     = le16_to_cpu(resp_a->num_qpc_timer);
--	caps->num_cqc_timer	     = le16_to_cpu(resp_a->num_cqc_timer);
- 	caps->max_srq_sges	     = le16_to_cpu(resp_a->max_srq_sges);
- 	caps->max_srq_sges = roundup_pow_of_two(caps->max_srq_sges);
- 	caps->num_aeq_vectors	     = resp_a->num_aeq_vectors;
---- a/drivers/infiniband/hw/hns/hns_roce_hw_v2.h
-+++ b/drivers/infiniband/hw/hns/hns_roce_hw_v2.h
-@@ -41,7 +41,7 @@
- #define HNS_ROCE_V2_MAX_SRQ_WR			0x8000
- #define HNS_ROCE_V2_MAX_SRQ_SGE			64
- #define HNS_ROCE_V2_MAX_CQ_NUM			0x100000
--#define HNS_ROCE_V2_MAX_CQC_TIMER_NUM		0x100
-+#define HNS_ROCE_V2_MAX_CQC_TIMER_BT_NUM	0x100
- #define HNS_ROCE_V2_MAX_SRQ_NUM			0x100000
- #define HNS_ROCE_V2_MAX_CQE_NUM			0x400000
- #define HNS_ROCE_V2_MAX_RQ_SGE_NUM		64
---- a/drivers/infiniband/hw/hns/hns_roce_main.c
-+++ b/drivers/infiniband/hw/hns/hns_roce_main.c
-@@ -737,7 +737,7 @@ static int hns_roce_init_hem(struct hns_
- 		ret = hns_roce_init_hem_table(hr_dev, &hr_dev->cqc_timer_table,
- 					      HEM_TYPE_CQC_TIMER,
- 					      hr_dev->caps.cqc_timer_entry_sz,
--					      hr_dev->caps.num_cqc_timer, 1);
-+					      hr_dev->caps.cqc_timer_bt_num, 1);
- 		if (ret) {
- 			dev_err(dev,
- 				"Failed to init CQC timer memory, aborting.\n");
++#include <linux/module.h>
++
+ #include <asm/processor.h>
+ #include <asm/page.h>
+ #include <asm/setup.h>
+@@ -83,4 +85,12 @@ struct kimage_arch {
+ extern const struct kexec_file_ops s390_kexec_image_ops;
+ extern const struct kexec_file_ops s390_kexec_elf_ops;
+ 
++#ifdef CONFIG_KEXEC_FILE
++struct purgatory_info;
++int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
++				     Elf_Shdr *section,
++				     const Elf_Shdr *relsec,
++				     const Elf_Shdr *symtab);
++#define arch_kexec_apply_relocations_add arch_kexec_apply_relocations_add
++#endif
+ #endif /*_S390_KEXEC_H */
+--- a/arch/x86/include/asm/kexec.h
++++ b/arch/x86/include/asm/kexec.h
+@@ -186,6 +186,14 @@ extern int arch_kexec_post_alloc_pages(v
+ extern void arch_kexec_pre_free_pages(void *vaddr, unsigned int pages);
+ #define arch_kexec_pre_free_pages arch_kexec_pre_free_pages
+ 
++#ifdef CONFIG_KEXEC_FILE
++struct purgatory_info;
++int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
++				     Elf_Shdr *section,
++				     const Elf_Shdr *relsec,
++				     const Elf_Shdr *symtab);
++#define arch_kexec_apply_relocations_add arch_kexec_apply_relocations_add
++#endif
+ #endif
+ 
+ typedef void crash_vmclear_fn(void);
+--- a/include/linux/kexec.h
++++ b/include/linux/kexec.h
+@@ -193,14 +193,6 @@ void *kexec_purgatory_get_symbol_addr(st
+ int arch_kexec_kernel_image_probe(struct kimage *image, void *buf,
+ 				  unsigned long buf_len);
+ void *arch_kexec_kernel_image_load(struct kimage *image);
+-int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
+-				     Elf_Shdr *section,
+-				     const Elf_Shdr *relsec,
+-				     const Elf_Shdr *symtab);
+-int arch_kexec_apply_relocations(struct purgatory_info *pi,
+-				 Elf_Shdr *section,
+-				 const Elf_Shdr *relsec,
+-				 const Elf_Shdr *symtab);
+ int arch_kimage_file_post_load_cleanup(struct kimage *image);
+ #ifdef CONFIG_KEXEC_SIG
+ int arch_kexec_kernel_verify_sig(struct kimage *image, void *buf,
+@@ -229,6 +221,44 @@ extern int crash_exclude_mem_range(struc
+ 				   unsigned long long mend);
+ extern int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
+ 				       void **addr, unsigned long *sz);
++
++#ifndef arch_kexec_apply_relocations_add
++/*
++ * arch_kexec_apply_relocations_add - apply relocations of type RELA
++ * @pi:		Purgatory to be relocated.
++ * @section:	Section relocations applying to.
++ * @relsec:	Section containing RELAs.
++ * @symtab:	Corresponding symtab.
++ *
++ * Return: 0 on success, negative errno on error.
++ */
++static inline int
++arch_kexec_apply_relocations_add(struct purgatory_info *pi, Elf_Shdr *section,
++				 const Elf_Shdr *relsec, const Elf_Shdr *symtab)
++{
++	pr_err("RELA relocation unsupported.\n");
++	return -ENOEXEC;
++}
++#endif
++
++#ifndef arch_kexec_apply_relocations
++/*
++ * arch_kexec_apply_relocations - apply relocations of type REL
++ * @pi:		Purgatory to be relocated.
++ * @section:	Section relocations applying to.
++ * @relsec:	Section containing RELs.
++ * @symtab:	Corresponding symtab.
++ *
++ * Return: 0 on success, negative errno on error.
++ */
++static inline int
++arch_kexec_apply_relocations(struct purgatory_info *pi, Elf_Shdr *section,
++			     const Elf_Shdr *relsec, const Elf_Shdr *symtab)
++{
++	pr_err("REL relocation unsupported.\n");
++	return -ENOEXEC;
++}
++#endif
+ #endif /* CONFIG_KEXEC_FILE */
+ 
+ #ifdef CONFIG_KEXEC_ELF
+--- a/kernel/kexec_file.c
++++ b/kernel/kexec_file.c
+@@ -109,40 +109,6 @@ int __weak arch_kexec_kernel_verify_sig(
+ #endif
+ 
+ /*
+- * arch_kexec_apply_relocations_add - apply relocations of type RELA
+- * @pi:		Purgatory to be relocated.
+- * @section:	Section relocations applying to.
+- * @relsec:	Section containing RELAs.
+- * @symtab:	Corresponding symtab.
+- *
+- * Return: 0 on success, negative errno on error.
+- */
+-int __weak
+-arch_kexec_apply_relocations_add(struct purgatory_info *pi, Elf_Shdr *section,
+-				 const Elf_Shdr *relsec, const Elf_Shdr *symtab)
+-{
+-	pr_err("RELA relocation unsupported.\n");
+-	return -ENOEXEC;
+-}
+-
+-/*
+- * arch_kexec_apply_relocations - apply relocations of type REL
+- * @pi:		Purgatory to be relocated.
+- * @section:	Section relocations applying to.
+- * @relsec:	Section containing RELs.
+- * @symtab:	Corresponding symtab.
+- *
+- * Return: 0 on success, negative errno on error.
+- */
+-int __weak
+-arch_kexec_apply_relocations(struct purgatory_info *pi, Elf_Shdr *section,
+-			     const Elf_Shdr *relsec, const Elf_Shdr *symtab)
+-{
+-	pr_err("REL relocation unsupported.\n");
+-	return -ENOEXEC;
+-}
+-
+-/*
+  * Free up memory used by kernel, initrd, and command line. This is temporary
+  * memory allocation which is not needed any more after these buffers have
+  * been loaded into separate segments and have been copied elsewhere.
 
 
