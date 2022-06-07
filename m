@@ -2,115 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66ED1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E18C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:46:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357233AbiFGTo5 (ORCPT
+        id S1357286AbiFGTpB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:44:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53888 "EHLO
+        Tue, 7 Jun 2022 15:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351925AbiFGSrd (ORCPT
+        with ESMTP id S1353343AbiFGSrh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F095B3669F;
-        Tue,  7 Jun 2022 11:02:46 -0700 (PDT)
+        Tue, 7 Jun 2022 14:47:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC786A889E;
+        Tue,  7 Jun 2022 11:02:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38473B82349;
-        Tue,  7 Jun 2022 18:02:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92C8EC34115;
-        Tue,  7 Jun 2022 18:02:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624963;
-        bh=tqE7yY871lsCTKWHao9KtQXVZv2IrM5/3qmOphjpyJg=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2590DB82340;
+        Tue,  7 Jun 2022 18:02:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FB82C36B00;
+        Tue,  7 Jun 2022 18:02:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624971;
+        bh=wsDuzAc9NqsM7BkZpBqt7GwC66dvPJnn9XcP8LB5P/c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aW2I8POemJZY62Zt7gcc6QcWfxlYu1+Tg2S0k/b0D3xzNxZ6BNRkcivrQb3/ZTimz
-         bQPTJmff2NuiPGl3iYVeTJUOLYUeQMFDlKk3SWrH0QF11kIkdmPQEORgPByT55DnGM
-         JsubtmNjIWRmGq821elYfX7uT1kGxLlAhz9nJvUs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
-        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.15 516/667] f2fs: fix to avoid f2fs_bug_on() in dec_valid_node_count()
-Date:   Tue,  7 Jun 2022 19:03:01 +0200
-Message-Id: <20220607164950.180457317@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=u4npYdLF2RSqU7tJN+jmDyGHAFonAAbPwjuDmNjQWfAqLWmI+JfChGz3onlDukbfy
+         vitQ3vr0FnFi5DwBhPOU4zRefQd9VCZ7KV4/gtI8/+eQSrU7tenFYX8IG/wjXRzlLi
+         PW9f0f+w06IVxW8bzEJIztyMh7UAI1Q7HJP9bTiQrLTMs0JEwzWbARY4La7xSYIEXA
+         Ca3WrPp5pGClFu6zdlQXD9QB1/SBdbZK9KZwobf1HuCXgKkbmXjHekwSSvl4/tvfkD
+         xhwPUF5ePc/jcppDuhHcg67nrv29Cs5LnvUrKXr3I/yOzOSqMmTLcE+UEk4P01D/3j
+         erRpqpOh2l9cg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, lee.jones@linaro.org
+Subject: [PATCH AUTOSEL 4.14 11/25] misc: rtsx: set NULL intfdata when probe fails
+Date:   Tue,  7 Jun 2022 14:02:12 -0400
+Message-Id: <20220607180229.482040-11-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180229.482040-1-sashal@kernel.org>
+References: <20220607180229.482040-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Shuah Khan <skhan@linuxfoundation.org>
 
-commit 4d17e6fe9293d57081ffdc11e1cf313e25e8fd9e upstream.
+[ Upstream commit f861d36e021e1ac4a0a2a1f6411d623809975d63 ]
 
-As Yanming reported in bugzilla:
+rtsx_usb_probe() doesn't call usb_set_intfdata() to null out the
+interface pointer when probe fails. This leaves a stale pointer.
+Noticed the missing usb_set_intfdata() while debugging an unrelated
+invalid DMA mapping problem.
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215897
+Fix it with a call to usb_set_intfdata(..., NULL).
 
-I have encountered a bug in F2FS file system in kernel v5.17.
-
-The kernel should enable CONFIG_KASAN=y and CONFIG_KASAN_INLINE=y. You can
-reproduce the bug by running the following commands:
-
-The kernel message is shown below:
-
-kernel BUG at fs/f2fs/f2fs.h:2511!
-Call Trace:
- f2fs_remove_inode_page+0x2a2/0x830
- f2fs_evict_inode+0x9b7/0x1510
- evict+0x282/0x4e0
- do_unlinkat+0x33a/0x540
- __x64_sys_unlinkat+0x8e/0xd0
- do_syscall_64+0x3b/0x90
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The root cause is: .total_valid_block_count or .total_valid_node_count
-could fuzzed to zero, then once dec_valid_node_count() was called, it
-will cause BUG_ON(), this patch fixes to print warning info and set
-SBI_NEED_FSCK into CP instead of panic.
-
-Cc: stable@vger.kernel.org
-Reported-by: Ming Yan <yanming@tju.edu.cn>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220429210913.46804-1-skhan@linuxfoundation.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/f2fs.h |   14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/mfd/rtsx_usb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/f2fs/f2fs.h
-+++ b/fs/f2fs/f2fs.h
-@@ -2487,11 +2487,17 @@ static inline void dec_valid_node_count(
- {
- 	spin_lock(&sbi->stat_lock);
+diff --git a/drivers/mfd/rtsx_usb.c b/drivers/mfd/rtsx_usb.c
+index 691dab791f7a..e94f855eac15 100644
+--- a/drivers/mfd/rtsx_usb.c
++++ b/drivers/mfd/rtsx_usb.c
+@@ -678,6 +678,7 @@ static int rtsx_usb_probe(struct usb_interface *intf,
+ 	return 0;
  
--	f2fs_bug_on(sbi, !sbi->total_valid_block_count);
--	f2fs_bug_on(sbi, !sbi->total_valid_node_count);
-+	if (unlikely(!sbi->total_valid_block_count ||
-+			!sbi->total_valid_node_count)) {
-+		f2fs_warn(sbi, "dec_valid_node_count: inconsistent block counts, total_valid_block:%u, total_valid_node:%u",
-+			  sbi->total_valid_block_count,
-+			  sbi->total_valid_node_count);
-+		set_sbi_flag(sbi, SBI_NEED_FSCK);
-+	} else {
-+		sbi->total_valid_block_count--;
-+		sbi->total_valid_node_count--;
-+	}
- 
--	sbi->total_valid_node_count--;
--	sbi->total_valid_block_count--;
- 	if (sbi->reserved_blocks &&
- 		sbi->current_reserved_blocks < sbi->reserved_blocks)
- 		sbi->current_reserved_blocks++;
-
+ out_init_fail:
++	usb_set_intfdata(ucr->pusb_intf, NULL);
+ 	usb_free_coherent(ucr->pusb_dev, IOBUF_SIZE, ucr->iobuf,
+ 			ucr->iobuf_dma);
+ 	return ret;
+-- 
+2.35.1
 
