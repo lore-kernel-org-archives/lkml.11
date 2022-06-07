@@ -2,169 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 899CECCA481
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:37:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8043ACCA485
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:37:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353099AbiFGSgH (ORCPT
+        id S1353243AbiFGSgg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:36:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58438 "EHLO
+        Tue, 7 Jun 2022 14:36:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349775AbiFGSEy (ORCPT
+        with ESMTP id S1351312AbiFGSB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:04:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 395111AF21;
-        Tue,  7 Jun 2022 10:47:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2A7E616B8;
-        Tue,  7 Jun 2022 17:47:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7439C34115;
-        Tue,  7 Jun 2022 17:47:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624035;
-        bh=4EVzbzWqHyf7kWhin1yXV+6G6KJBC9n2werDa8N1hEU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dPjNcbLHH346JbpcWRhY3w3HZIC9ih2MeUFhFL7oqAttfTv9kqSVBIuIbHEVg8pZ4
-         GTgQw3vYwYAGwDsxz0g3oDVPs39qqeZjKKvWNxqG3F3WNsPHGuvDgRmc08TzohcARb
-         1QlBq2xklYVR7rUaGbMbaQFlEuv7cINTud/MXdh4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 182/667] drm: fix EDID struct for old ARM OABI format
-Date:   Tue,  7 Jun 2022 18:57:27 +0200
-Message-Id: <20220607164940.266717817@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 14:01:56 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7BC9151FC6
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:44:14 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id s1so2061598wra.9
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:44:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Avvoh8CnIiqiG7pt5w+f0B0Z6X7OPhtWirg6KypOnRk=;
+        b=VJgCpuVqKSXl0XX58PrPxmWGKDkQdIE6BEthpBh1qGGSHXZS3+YISNnwTYkYarnho9
+         MvxMYs2TMqZiGshTbPZ0zIzK1VVVXZpVgaziJrABATtPimx965adbeB6GqOUlTuNnyhz
+         NPWJKmZexcPAKl4rzq3JtNd9/PXX0JeVvORheEEpbcyms/Ra+vjsuG5Kqeil6AQzy6/V
+         KHCGQPlibPQzrK3H2wed7BEJ3UlHPtrRePVo21DyyddSbOjiJ+ttt3X/L876GbyiyvAw
+         UJZAGIQaLuw88L2APyzR3tLX+5EFi65VfUbyfbBKfXfwkl++cELNNBZ8yhYU7i7NZ9fd
+         954g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Avvoh8CnIiqiG7pt5w+f0B0Z6X7OPhtWirg6KypOnRk=;
+        b=k1aHnMh4mIluG84ICYJRDgDK4i7dqXd/A1Ng6+F+/upNaPUKLJhDb+owqDKc4rs+pW
+         dhF2lGrFNuQTDRbiL0qjbT33uqF8H2GUcnL4B/50YcUQzZ+OR5WzYC1E+ngvj8Wbx2nV
+         ooiGe8C9EpIgZ/MlYcAdIYq9RZIkbDgi2UAoePxEm6w9vp21DqBKrC+JzNiFUhpyf9/Y
+         nlGjXeNl7l+lYiZNgI9T9ch8L+gjs46Yc8M3O/B1c+qFQphnT8fyJ6hB7YuTmm0QRP4i
+         5W2DcxIJ9RnJQ2Vt3HQpIklqZfvhlvyTtAoxePqLrkDCkat2SDqFPSdMONrZRsuDOsz+
+         7gaw==
+X-Gm-Message-State: AOAM5310YczAEu2995XXhr0o9BzG/LcQWaMvRv6+fdn+uNtC0ONLBSL6
+        x/UDE4tIYAKQWCQxDKDHOsp30471UWhj0PJ2YqMEVA==
+X-Google-Smtp-Source: ABdhPJyFuoW87JmCWjoEcQfJUeb0WIaes2z5fAnqfq4EfroINBdg/KTV/oyVRDvIVcWJxGZ+BbW1f/v1QcNJHtOHOBw=
+X-Received: by 2002:adf:eeca:0:b0:217:56ae:c657 with SMTP id
+ a10-20020adfeeca000000b0021756aec657mr15290057wrp.210.1654623852628; Tue, 07
+ Jun 2022 10:44:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220520012133.1217211-1-yosryahmed@google.com>
+ <20220520012133.1217211-6-yosryahmed@google.com> <20220603162339.GA25043@blackbody.suse.cz>
+ <CAJD7tkYwU5dW9Oof+pC81R9Bi-F=-EuiXpTn+HDeqbhTOTCcuw@mail.gmail.com>
+ <20220606123222.GA4377@blackbody.suse.cz> <CAJD7tkbi7Gnnf4NiUt-J61G7185NsRcySvP6qOQsFKMou7qZJg@mail.gmail.com>
+ <20220607121237.GC31717@blackbody.suse.cz>
+In-Reply-To: <20220607121237.GC31717@blackbody.suse.cz>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Tue, 7 Jun 2022 10:43:35 -0700
+Message-ID: <CAJD7tkYa3u52c77cnRxZ6D_4u5fkDG545r5a9SdK3Ys9Uuorig@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 5/5] bpf: add a selftest for cgroup
+ hierarchical stats collection
+To:     =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+On Tue, Jun 7, 2022 at 5:12 AM Michal Koutn=C3=BD <mkoutny@suse.com> wrote:
+>
+> On Mon, Jun 06, 2022 at 12:41:06PM -0700, Yosry Ahmed <yosryahmed@google.=
+com> wrote:
+> > I don't know if there is a standard way to handle this, but I think
+> > you should know the configs of your kernel when you are loading a bpf
+> > program?
+>
+> Isn't this one of purposes of BTF? (I don't know, I'm genuinely asking.)
+>
+> > If the CONFIG_CGROUPS=3D1 but CONFIG_MEMCG=3D0 I think everything will
+> > work normally except that task_memcg() will always return NULL so no
+> > stats will be collected, which makes sense.
+>
+> I was not able to track down what is the include chain to
+> tools/testing/selftests/bpf/progs/cgroup_vmscan.c, i.e. how is the enum
+> value memory_cgrp_id defined.
 
-[ Upstream commit 47f15561b69e226bfc034e94ff6dbec51a4662af ]
+memory_cgrp_id is defined in "vmlinux.h" (generated from BTF) which is
+included through "bpf_iter.h". If the kernel is not compiled with
+CONFIG_MEMCG then this enum value will not be defined and the bpf prog
+should not compile.
 
-When building the kernel for arm with the "-mabi=apcs-gnu" option, gcc
-will force alignment of all structures and unions to a word boundary
-(see also STRUCTURE_SIZE_BOUNDARY and the "-mstructure-size-boundary=XX"
-option if you're a gcc person), even when the members of said structures
-do not want or need said alignment.
-
-This completely messes up the structure alignment of 'struct edid' on
-those targets, because even though all the embedded structures are
-marked with "__attribute__((packed))", the unions that contain them are
-not.
-
-This was exposed by commit f1e4c916f97f ("drm/edid: add EDID block count
-and size helpers"), but the bug is pre-existing.  That commit just made
-the structure layout problem cause a build failure due to the addition
-of the
-
-        BUILD_BUG_ON(sizeof(*edid) != EDID_LENGTH);
-
-sanity check in drivers/gpu/drm/drm_edid.c:edid_block_data().
-
-This legacy union alignment should probably not be used in the first
-place, but we can fix the layout by adding the packed attribute to the
-union entries even when each member is already packed and it shouldn't
-matter in a sane build environment.
-
-You can see this issue with a trivial test program:
-
-  union {
-	struct {
-		char c[5];
-	};
-	struct {
-		char d;
-		unsigned e;
-	} __attribute__((packed));
-  } a = { "1234" };
-
-where building this with a normal "gcc -S" will result in the expected
-5-byte size of said union:
-
-	.type	a, @object
-	.size	a, 5
-
-but with an ARM compiler and the old ABI:
-
-    arm-linux-gnu-gcc -mabi=apcs-gnu -mfloat-abi=soft -S t.c
-
-you get
-
-	.type	a, %object
-	.size	a, 8
-
-instead, because even though each member of the union is packed, the
-union itself still gets aligned.
-
-This was reported by Sudip for the spear3xx_defconfig target.
-
-Link: https://lore.kernel.org/lkml/YpCUzStDnSgQLNFN@debian/
-Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/drm/drm_edid.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
-index deccfd39e6db..c24559f5329d 100644
---- a/include/drm/drm_edid.h
-+++ b/include/drm/drm_edid.h
-@@ -121,7 +121,7 @@ struct detailed_data_monitor_range {
- 			u8 supported_scalings;
- 			u8 preferred_refresh;
- 		} __attribute__((packed)) cvt;
--	} formula;
-+	} __attribute__((packed)) formula;
- } __attribute__((packed));
- 
- struct detailed_data_wpindex {
-@@ -154,7 +154,7 @@ struct detailed_non_pixel {
- 		struct detailed_data_wpindex color;
- 		struct std_timing timings[6];
- 		struct cvt_timing cvt[4];
--	} data;
-+	} __attribute__((packed)) data;
- } __attribute__((packed));
- 
- #define EDID_DETAIL_EST_TIMINGS 0xf7
-@@ -172,7 +172,7 @@ struct detailed_timing {
- 	union {
- 		struct detailed_pixel_timing pixel_data;
- 		struct detailed_non_pixel other_data;
--	} data;
-+	} __attribute__((packed)) data;
- } __attribute__((packed));
- 
- #define DRM_EDID_INPUT_SERRATION_VSYNC (1 << 0)
--- 
-2.35.1
-
-
-
+>
+> (A custom kernel module build requires target kernel's header files, I
+> could understand that compiling a BPF program requires them likewise and
+> that's how this could work.
+> Although, it goes against my undestanding of the CO-RE principle.)
+>
+> > There will be some overhead to running bpf programs that will always
+> > do nothing, but I would argue that it's the userspace's fault here for
+> > loading bpf programs on a non-compatible kernel.
+>
+> Yeah, running an empty program is non-issue in my eyes, I was rather
+> considering whether the program uses proper offsets.
+>
+> Michal
+>
