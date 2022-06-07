@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB634CCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2923C3F2D4
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:56:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349336AbiFGR4I (ORCPT
+        id S1349406AbiFGR4T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:56:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53224 "EHLO
+        Tue, 7 Jun 2022 13:56:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347833AbiFGRfu (ORCPT
+        with ESMTP id S1347805AbiFGRfs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:35:50 -0400
+        Tue, 7 Jun 2022 13:35:48 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0D9E110985;
-        Tue,  7 Jun 2022 10:31:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0880110171D;
+        Tue,  7 Jun 2022 10:31:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5562BCE23D2;
-        Tue,  7 Jun 2022 17:31:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EFE5C385A5;
-        Tue,  7 Jun 2022 17:31:48 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7AD0ECE23D0;
+        Tue,  7 Jun 2022 17:31:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83DC3C3411F;
+        Tue,  7 Jun 2022 17:31:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623108;
-        bh=2k//yvMXHuXRxoye9Uc9bkuApkOo3mD6RdJCNGJe7NE=;
+        s=korg; t=1654623088;
+        bh=1uQfHZyEVzAhNvhs2p8gXdX2bJGCq69ZMlYZfgFCGHs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0CHpR38abb5BAlstR0/45csYjuXIGTJaw1Cd4D3hJSFdrxzTLCPXGETaMAgaru7J+
-         qFmwjieSWnRzxltIAGSZ8h5WPnRJ+EyIidYs9lFNjM9x8oACsruhTi3MhVtM+Gj8oJ
-         K01rjPb+bdXwruieTZT7kIHTk3i+glhcMMc+s0IE=
+        b=O4hEVEKv3OJL48Ly1t/1ZUWacN5ZlbmWSSwoYNRSLlR3Xt0OZnbTnIQPq8chHiQzG
+         oGL/WcqOFhB8J+TMa3SneKwGOp63bcA5+ASQPwoOhaXJCT1LUbcm5oF5FG6KwU4qfi
+         R3ftFBI4uI7fRHGXhgEaI6SSa5LaFiSOfMlqFwxM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
+        David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 299/452] ASoC: atmel-classd: Remove endianness flag on class d component
-Date:   Tue,  7 Jun 2022 19:02:36 +0200
-Message-Id: <20220607164917.467415042@linuxfoundation.org>
+Subject: [PATCH 5.10 250/452] rxrpc: Fix listen() setting the bar too high for the prealloc rings
+Date:   Tue,  7 Jun 2022 19:01:47 +0200
+Message-Id: <20220607164916.008923590@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,42 +52,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 0104d52a6a69b06b0e8167f7c1247e8c76aca070 ]
+[ Upstream commit 88e22159750b0d55793302eeed8ee603f5c1a95c ]
 
-The endianness flag should have been removed when the driver was
-ported across from having both a CODEC and CPU side component, to
-just having a CPU component and using the dummy for the CODEC. The
-endianness flag is used to indicate that the device is completely
-ambivalent to the endianness of the data, typically due to the
-endianness being lost over the hardware link (ie. the link defines
-bit ordering). It's usage didn't have any effect when the driver
-had both a CPU and CODEC component, since the union of those equals
-the CPU side settings, but now causes the driver to falsely report
-it supports big endian. Correct this by removing the flag.
+AF_RXRPC's listen() handler lets you set the backlog up to 32 (if you bump
+up the sysctl), but whilst the preallocation circular buffers have 32 slots
+in them, one of them has to be a dead slot because we're using CIRC_CNT().
 
-Fixes: 1dfdbe73ccf9 ("ASoC: atmel-classd: remove codec component")
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220504170905.332415-4-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This means that listen(rxrpc_sock, 32) will cause an oops when the socket
+is closed because rxrpc_service_prealloc_one() allocated one too many calls
+and rxrpc_discard_prealloc() won't then be able to get rid of them because
+it'll think the ring is empty.  rxrpc_release_calls_on_socket() then tries
+to abort them, but oopses because call->peer isn't yet set.
+
+Fix this by setting the maximum backlog to RXRPC_BACKLOG_MAX - 1 to match
+the ring capacity.
+
+ BUG: kernel NULL pointer dereference, address: 0000000000000086
+ ...
+ RIP: 0010:rxrpc_send_abort_packet+0x73/0x240 [rxrpc]
+ Call Trace:
+  <TASK>
+  ? __wake_up_common_lock+0x7a/0x90
+  ? rxrpc_notify_socket+0x8e/0x140 [rxrpc]
+  ? rxrpc_abort_call+0x4c/0x60 [rxrpc]
+  rxrpc_release_calls_on_socket+0x107/0x1a0 [rxrpc]
+  rxrpc_release+0xc9/0x1c0 [rxrpc]
+  __sock_release+0x37/0xa0
+  sock_close+0x11/0x20
+  __fput+0x89/0x240
+  task_work_run+0x59/0x90
+  do_exit+0x319/0xaa0
+
+Fixes: 00e907127e6f ("rxrpc: Preallocate peers, conns and calls for incoming service requests")
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-afs@lists.infradead.org
+Link: https://lists.infradead.org/pipermail/linux-afs/2022-March/005079.html
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/atmel/atmel-classd.c | 1 -
- 1 file changed, 1 deletion(-)
+ net/rxrpc/sysctl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/atmel/atmel-classd.c b/sound/soc/atmel/atmel-classd.c
-index b1a28a9382fb..f91a0e728ed5 100644
---- a/sound/soc/atmel/atmel-classd.c
-+++ b/sound/soc/atmel/atmel-classd.c
-@@ -458,7 +458,6 @@ static const struct snd_soc_component_driver atmel_classd_cpu_dai_component = {
- 	.num_controls		= ARRAY_SIZE(atmel_classd_snd_controls),
- 	.idle_bias_on		= 1,
- 	.use_pmdown_time	= 1,
--	.endianness		= 1,
- };
+diff --git a/net/rxrpc/sysctl.c b/net/rxrpc/sysctl.c
+index 540351d6a5f4..555e0910786b 100644
+--- a/net/rxrpc/sysctl.c
++++ b/net/rxrpc/sysctl.c
+@@ -12,7 +12,7 @@
  
- /* ASoC sound card */
+ static struct ctl_table_header *rxrpc_sysctl_reg_table;
+ static const unsigned int four = 4;
+-static const unsigned int thirtytwo = 32;
++static const unsigned int max_backlog = RXRPC_BACKLOG_MAX - 1;
+ static const unsigned int n_65535 = 65535;
+ static const unsigned int n_max_acks = RXRPC_RXTX_BUFF_SIZE - 1;
+ static const unsigned long one_jiffy = 1;
+@@ -89,7 +89,7 @@ static struct ctl_table rxrpc_sysctl_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= (void *)&four,
+-		.extra2		= (void *)&thirtytwo,
++		.extra2		= (void *)&max_backlog,
+ 	},
+ 	{
+ 		.procname	= "rx_window_size",
 -- 
 2.35.1
 
