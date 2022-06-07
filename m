@@ -2,89 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC974CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E5A3CCA487
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385956AbiFGWmQ (ORCPT
+        id S1358779AbiFGWml (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:42:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50244 "EHLO
+        Tue, 7 Jun 2022 18:42:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380601AbiFGVbD (ORCPT
+        with ESMTP id S1380721AbiFGVbM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:31:03 -0400
-X-Greylist: delayed 595 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 12:03:14 PDT
-Received: from 4.mo560.mail-out.ovh.net (4.mo560.mail-out.ovh.net [87.98.172.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C88AC13F40B
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:03:14 -0700 (PDT)
-Received: from player158.ha.ovh.net (unknown [10.109.146.86])
-        by mo560.mail-out.ovh.net (Postfix) with ESMTP id 85EA721D9F
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:53:17 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player158.ha.ovh.net (Postfix) with ESMTPSA id CF6072B4B06CA;
-        Tue,  7 Jun 2022 18:53:13 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-98R0025b23b570-e9a2-4f30-9c24-99b8b7f3b651,
-                    2B697642B4708974A8072F1FAB3368C632332CFF) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
-Subject: [PATCH] regulator: rpi-panel-attiny: Use backlight helper
-Date:   Tue,  7 Jun 2022 20:53:04 +0200
-Message-Id: <20220607185304.1128962-1-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
+        Tue, 7 Jun 2022 17:31:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1750622AE68;
+        Tue,  7 Jun 2022 12:03:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E008C617EE;
+        Tue,  7 Jun 2022 19:03:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9C73C385A5;
+        Tue,  7 Jun 2022 19:03:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628603;
+        bh=9ngSOdPjjAPA6F7lCapsC6DrE+l8vaNY0CBrFpoeEAU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rZ54PyqYmwSVvrf5Nm14oo4COFkJF+sFeokLY7DTQIztz0PcY3s6nOmd8vLBn0vjs
+         Qb4Bw9oALDlFhBkAQmctlk4z/ivgUkFNvOxyKrNaAggOQhEA0eLV/Z8jaKDck+HSob
+         VeyWEEzrOUP3gB9PHUGtmTjPl0wBNLZ93uNgGgqQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 389/879] irqchip/aspeed-scu-ic: Fix irq_of_parse_and_map() return value
+Date:   Tue,  7 Jun 2022 18:58:27 +0200
+Message-Id: <20220607165014.156089559@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 11429291431109691014
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudeftdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhduheekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheeitd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-backlight_properties.fb_blank is deprecated. The states it represents
-are handled by other properties; but instead of accessing those
-properties directly, drivers should use the helpers provided by
-backlight.h.
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Instead of retrieving the backlight brightness in struct
-backlight_properties manually, and then checking whether the backlight
-should be on at all, use backlight_get_brightness() which does all
-this and insulates this from future changes.
+[ Upstream commit f03a9670d27d23fe734a456f16e2579b21ec02b4 ]
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
-Cc: Liam Girdwood <lgirdwood@gmail.com>
-Cc: Mark Brown <broonie@kernel.org>
+The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+
+Fixes: 04f605906ff0 ("irqchip: Add Aspeed SCU interrupt controller")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220423094227.33148-2-krzysztof.kozlowski@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/rpi-panel-attiny-regulator.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/irqchip/irq-aspeed-scu-ic.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/regulator/rpi-panel-attiny-regulator.c b/drivers/regulator/rpi-panel-attiny-regulator.c
-index fa8706a352ce..105f694a67e6 100644
---- a/drivers/regulator/rpi-panel-attiny-regulator.c
-+++ b/drivers/regulator/rpi-panel-attiny-regulator.c
-@@ -187,15 +187,11 @@ static int attiny_update_status(struct backlight_device *bl)
- {
- 	struct attiny_lcd *state = bl_get_data(bl);
- 	struct regmap *regmap = state->regmap;
--	int brightness = bl->props.brightness;
-+	int brightness = backlight_get_brightness(bl);
- 	int ret, i;
+diff --git a/drivers/irqchip/irq-aspeed-scu-ic.c b/drivers/irqchip/irq-aspeed-scu-ic.c
+index 18b77c3e6db4..279e92cf0b16 100644
+--- a/drivers/irqchip/irq-aspeed-scu-ic.c
++++ b/drivers/irqchip/irq-aspeed-scu-ic.c
+@@ -157,8 +157,8 @@ static int aspeed_scu_ic_of_init_common(struct aspeed_scu_ic *scu_ic,
+ 	}
  
- 	mutex_lock(&state->lock);
+ 	irq = irq_of_parse_and_map(node, 0);
+-	if (irq < 0) {
+-		rc = irq;
++	if (!irq) {
++		rc = -EINVAL;
+ 		goto err;
+ 	}
  
--	if (bl->props.power != FB_BLANK_UNBLANK ||
--	    bl->props.fb_blank != FB_BLANK_UNBLANK)
--		brightness = 0;
--
- 	for (i = 0; i < 10; i++) {
- 		ret = regmap_write(regmap, REG_PWM, brightness);
- 		if (!ret)
-
-base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
 -- 
-2.30.2
+2.35.1
+
+
 
