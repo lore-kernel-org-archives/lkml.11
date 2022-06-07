@@ -2,45 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37A12CCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7507ACCA491
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:27:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380098AbiFGV0Y (ORCPT
+        id S1380342AbiFGV0k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:26:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35278 "EHLO
+        Tue, 7 Jun 2022 17:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377209AbiFGUc4 (ORCPT
+        with ESMTP id S1377354AbiFGUdK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:32:56 -0400
+        Tue, 7 Jun 2022 16:33:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7E01E3B12;
-        Tue,  7 Jun 2022 11:34:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B1251E3B33;
+        Tue,  7 Jun 2022 11:34:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E35161552;
-        Tue,  7 Jun 2022 18:34:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ABBFC385A5;
-        Tue,  7 Jun 2022 18:34:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E905612F2;
+        Tue,  7 Jun 2022 18:34:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6AB8C385A2;
+        Tue,  7 Jun 2022 18:34:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626874;
-        bh=LF1vIGrxFRi8ROAYUdvZubMa66w/+arlvkmdlFTpdtM=;
+        s=korg; t=1654626898;
+        bh=s3REUmejm2B+k1Evp0AVpqDRsmJH2BJYafLe0kD8m6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NhmG3s/8mAnZzankbmDllKO8kL7F+WupaMmVyWC1Lu1tmmk2HNBYHZTtaz6xGXyO/
-         K1e/FcuFdVfZ49C8ukRvyJwYM9oNmWRtqTjK8dWq/Q64T0LGpADGP53sLKdeghoDZG
-         fgrIQzBMrS9Ze8yXFNdTpOaf+K/iZsK1ONH7iml4=
+        b=q5/KZuPFs3BIbkyob5UXva/bnpMcwZ8VTp31arPKvg8IxWOjzLRrfzuZv9Z/EO3Le
+         tomnFtAY9kaHgikWaSMbzfjxkLI46EwjlDYFcrygDM78ogiWkp8RH5oTIxtO0qB6L+
+         I35ovPhjVg2x2+ncI/B6cUMPR/NfFoU43d7XJrs4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Jane Chu <jane.chu@oracle.com>, Borislav Petkov <bp@suse.de>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
+        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Stephane Eranian <eranian@google.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 535/772] x86/mce: relocate set{clear}_mce_nospec() functions
-Date:   Tue,  7 Jun 2022 19:02:07 +0200
-Message-Id: <20220607165004.733121634@linuxfoundation.org>
+Subject: [PATCH 5.17 543/772] perf stat: Always keep perf metrics topdown events in a group
+Date:   Tue,  7 Jun 2022 19:02:15 +0200
+Message-Id: <20220607165004.964889851@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,196 +59,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jane Chu <jane.chu@oracle.com>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-[ Upstream commit b3fdf9398a16f01dc013967a4ab25e99c3f4fc12 ]
+[ Upstream commit e8f4f794d7047dd36f090f44f12cd645fba204d2 ]
 
-Relocate the twin mce functions to arch/x86/mm/pat/set_memory.c
-file where they belong.
+If any member in a group has a different cpu mask than the other
+members, the current perf stat disables group. when the perf metrics
+topdown events are part of the group, the below <not supported> error
+will be triggered.
 
-While at it, fixup a function name in a comment.
+  $ perf stat -e "{slots,topdown-retiring,uncore_imc_free_running_0/dclk/}" -a sleep 1
+  WARNING: grouped events cpus do not match, disabling group:
+    anon group { slots, topdown-retiring, uncore_imc_free_running_0/dclk/ }
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Jane Chu <jane.chu@oracle.com>
-Acked-by: Borislav Petkov <bp@suse.de>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>
-[sfr: gate {set,clear}_mce_nospec() by CONFIG_X86_64]
-Link: https://lore.kernel.org/r/165272527328.90175.8336008202048685278.stgit@dwillia2-desk3.amr.corp.intel.com
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+   Performance counter stats for 'system wide':
+
+         141,465,174      slots
+     <not supported>      topdown-retiring
+       1,605,330,334      uncore_imc_free_running_0/dclk/
+
+The perf metrics topdown events must always be grouped with a slots
+event as leader.
+
+Factor out evsel__remove_from_group() to only remove the regular events
+from the group.
+
+Remove evsel__must_be_in_group(), since no one use it anymore.
+
+With the patch, the topdown events aren't broken from the group for the
+splitting.
+
+  $ perf stat -e "{slots,topdown-retiring,uncore_imc_free_running_0/dclk/}" -a sleep 1
+  WARNING: grouped events cpus do not match, disabling group:
+    anon group { slots, topdown-retiring, uncore_imc_free_running_0/dclk/ }
+
+   Performance counter stats for 'system wide':
+
+         346,110,588      slots
+         124,608,256      topdown-retiring
+       1,606,869,976      uncore_imc_free_running_0/dclk/
+
+         1.003877592 seconds time elapsed
+
+Fixes: a9a1790247bdcf3b ("perf stat: Ensure group is defined on top of the same cpu mask")
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Acked-by: Ian Rogers <irogers@google.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Stephane Eranian <eranian@google.com>
+Cc: Xing Zhengjun <zhengjun.xing@linux.intel.com>
+Link: https://lore.kernel.org/r/20220518143900.1493980-3-kan.liang@linux.intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/set_memory.h | 52 -------------------------------
- arch/x86/mm/pat/set_memory.c      | 50 +++++++++++++++++++++++++++--
- include/linux/set_memory.h        |  8 ++---
- 3 files changed, 52 insertions(+), 58 deletions(-)
+ tools/perf/builtin-stat.c |  7 ++-----
+ tools/perf/util/evlist.c  |  6 +-----
+ tools/perf/util/evsel.c   | 13 +++++++++++--
+ tools/perf/util/evsel.h   |  2 +-
+ 4 files changed, 15 insertions(+), 13 deletions(-)
 
-diff --git a/arch/x86/include/asm/set_memory.h b/arch/x86/include/asm/set_memory.h
-index ff0f2d90338a..648be0bd20df 100644
---- a/arch/x86/include/asm/set_memory.h
-+++ b/arch/x86/include/asm/set_memory.h
-@@ -88,56 +88,4 @@ void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc);
+diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
+index 60baa3dadc4b..416a6a4fbcc7 100644
+--- a/tools/perf/builtin-stat.c
++++ b/tools/perf/builtin-stat.c
+@@ -271,11 +271,8 @@ static void evlist__check_cpu_maps(struct evlist *evlist)
+ 			pr_warning("     %s: %s\n", evsel->name, buf);
+ 		}
  
- extern int kernel_set_to_readonly;
- 
--#ifdef CONFIG_X86_64
--/*
-- * Prevent speculative access to the page by either unmapping
-- * it (if we do not require access to any part of the page) or
-- * marking it uncacheable (if we want to try to retrieve data
-- * from non-poisoned lines in the page).
-- */
--static inline int set_mce_nospec(unsigned long pfn, bool unmap)
--{
--	unsigned long decoy_addr;
--	int rc;
--
--	/* SGX pages are not in the 1:1 map */
--	if (arch_is_platform_page(pfn << PAGE_SHIFT))
--		return 0;
--	/*
--	 * We would like to just call:
--	 *      set_memory_XX((unsigned long)pfn_to_kaddr(pfn), 1);
--	 * but doing that would radically increase the odds of a
--	 * speculative access to the poison page because we'd have
--	 * the virtual address of the kernel 1:1 mapping sitting
--	 * around in registers.
--	 * Instead we get tricky.  We create a non-canonical address
--	 * that looks just like the one we want, but has bit 63 flipped.
--	 * This relies on set_memory_XX() properly sanitizing any __pa()
--	 * results with __PHYSICAL_MASK or PTE_PFN_MASK.
--	 */
--	decoy_addr = (pfn << PAGE_SHIFT) + (PAGE_OFFSET ^ BIT(63));
--
--	if (unmap)
--		rc = set_memory_np(decoy_addr, 1);
--	else
--		rc = set_memory_uc(decoy_addr, 1);
--	if (rc)
--		pr_warn("Could not invalidate pfn=0x%lx from 1:1 map\n", pfn);
--	return rc;
--}
--#define set_mce_nospec set_mce_nospec
--
--/* Restore full speculative operation to the pfn. */
--static inline int clear_mce_nospec(unsigned long pfn)
--{
--	return set_memory_wb((unsigned long) pfn_to_kaddr(pfn), 1);
--}
--#define clear_mce_nospec clear_mce_nospec
--#else
--/*
-- * Few people would run a 32-bit kernel on a machine that supports
-- * recoverable errors because they have too much memory to boot 32-bit.
-- */
--#endif
--
- #endif /* _ASM_X86_SET_MEMORY_H */
-diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
-index b4072115c8ef..b143972885eb 100644
---- a/arch/x86/mm/pat/set_memory.c
-+++ b/arch/x86/mm/pat/set_memory.c
-@@ -19,6 +19,7 @@
- #include <linux/vmstat.h>
- #include <linux/kernel.h>
- #include <linux/cc_platform.h>
-+#include <linux/set_memory.h>
- 
- #include <asm/e820/api.h>
- #include <asm/processor.h>
-@@ -29,7 +30,6 @@
- #include <asm/pgalloc.h>
- #include <asm/proto.h>
- #include <asm/memtype.h>
--#include <asm/set_memory.h>
- #include <asm/hyperv-tlfs.h>
- #include <asm/mshyperv.h>
- 
-@@ -1816,7 +1816,7 @@ static inline int cpa_clear_pages_array(struct page **pages, int numpages,
+-		for_each_group_evsel(pos, leader) {
+-			evsel__set_leader(pos, pos);
+-			pos->core.nr_members = 0;
+-		}
+-		evsel->core.leader->nr_members = 0;
++		for_each_group_evsel(pos, leader)
++			evsel__remove_from_group(pos, leader);
+ 	}
  }
  
- /*
-- * _set_memory_prot is an internal helper for callers that have been passed
-+ * __set_memory_prot is an internal helper for callers that have been passed
-  * a pgprot_t value from upper layers and a reservation has already been taken.
-  * If you want to set the pgprot to a specific page protocol, use the
-  * set_memory_xx() functions.
-@@ -1925,6 +1925,52 @@ int set_memory_wb(unsigned long addr, int numpages)
- }
- EXPORT_SYMBOL(set_memory_wb);
+diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
+index 3ff0de0b6710..ec745209c8b4 100644
+--- a/tools/perf/util/evlist.c
++++ b/tools/perf/util/evlist.c
+@@ -1795,11 +1795,7 @@ struct evsel *evlist__reset_weak_group(struct evlist *evsel_list, struct evsel *
+ 			 * them. Some events, like Intel topdown, require being
+ 			 * in a group and so keep these in the group.
+ 			 */
+-			if (!evsel__must_be_in_group(c2) && c2 != leader) {
+-				evsel__set_leader(c2, c2);
+-				c2->core.nr_members = 0;
+-				leader->core.nr_members--;
+-			}
++			evsel__remove_from_group(c2, leader);
  
+ 			/*
+ 			 * Set this for all former members of the group
+diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
+index 6fb3cf924dd2..63284e98c419 100644
+--- a/tools/perf/util/evsel.c
++++ b/tools/perf/util/evsel.c
+@@ -3054,7 +3054,16 @@ bool __weak arch_evsel__must_be_in_group(const struct evsel *evsel __maybe_unuse
+ 	return false;
+ }
+ 
+-bool evsel__must_be_in_group(const struct evsel *evsel)
 +/*
-+ * Prevent speculative access to the page by either unmapping
-+ * it (if we do not require access to any part of the page) or
-+ * marking it uncacheable (if we want to try to retrieve data
-+ * from non-poisoned lines in the page).
++ * Remove an event from a given group (leader).
++ * Some events, e.g., perf metrics Topdown events,
++ * must always be grouped. Ignore the events.
 + */
-+#ifdef CONFIG_X86_64
-+int set_mce_nospec(unsigned long pfn, bool unmap)
-+{
-+	unsigned long decoy_addr;
-+	int rc;
-+
-+	/* SGX pages are not in the 1:1 map */
-+	if (arch_is_platform_page(pfn << PAGE_SHIFT))
-+		return 0;
-+	/*
-+	 * We would like to just call:
-+	 *      set_memory_XX((unsigned long)pfn_to_kaddr(pfn), 1);
-+	 * but doing that would radically increase the odds of a
-+	 * speculative access to the poison page because we'd have
-+	 * the virtual address of the kernel 1:1 mapping sitting
-+	 * around in registers.
-+	 * Instead we get tricky.  We create a non-canonical address
-+	 * that looks just like the one we want, but has bit 63 flipped.
-+	 * This relies on set_memory_XX() properly sanitizing any __pa()
-+	 * results with __PHYSICAL_MASK or PTE_PFN_MASK.
-+	 */
-+	decoy_addr = (pfn << PAGE_SHIFT) + (PAGE_OFFSET ^ BIT(63));
-+
-+	if (unmap)
-+		rc = set_memory_np(decoy_addr, 1);
-+	else
-+		rc = set_memory_uc(decoy_addr, 1);
-+	if (rc)
-+		pr_warn("Could not invalidate pfn=0x%lx from 1:1 map\n", pfn);
-+	return rc;
-+}
-+
-+/* Restore full speculative operation to the pfn. */
-+int clear_mce_nospec(unsigned long pfn)
-+{
-+	return set_memory_wb((unsigned long) pfn_to_kaddr(pfn), 1);
-+}
-+EXPORT_SYMBOL_GPL(clear_mce_nospec);
-+#endif /* CONFIG_X86_64 */
-+
- int set_memory_x(unsigned long addr, int numpages)
++void evsel__remove_from_group(struct evsel *evsel, struct evsel *leader)
  {
- 	if (!(__supported_pte_mask & _PAGE_NX))
-diff --git a/include/linux/set_memory.h b/include/linux/set_memory.h
-index f36be5166c19..683a6c3f7179 100644
---- a/include/linux/set_memory.h
-+++ b/include/linux/set_memory.h
-@@ -42,14 +42,14 @@ static inline bool can_set_direct_map(void)
- #endif
- #endif /* CONFIG_ARCH_HAS_SET_DIRECT_MAP */
- 
--#ifndef set_mce_nospec
-+#ifdef CONFIG_X86_64
-+int set_mce_nospec(unsigned long pfn, bool unmap);
-+int clear_mce_nospec(unsigned long pfn);
-+#else
- static inline int set_mce_nospec(unsigned long pfn, bool unmap)
- {
- 	return 0;
+-	return arch_evsel__must_be_in_group(evsel);
++	if (!arch_evsel__must_be_in_group(evsel) && evsel != leader) {
++		evsel__set_leader(evsel, evsel);
++		evsel->core.nr_members = 0;
++		leader->core.nr_members--;
++	}
  }
--#endif
--
--#ifndef clear_mce_nospec
- static inline int clear_mce_nospec(unsigned long pfn)
- {
- 	return 0;
+diff --git a/tools/perf/util/evsel.h b/tools/perf/util/evsel.h
+index a36172ed4cf6..47f65f8e7c74 100644
+--- a/tools/perf/util/evsel.h
++++ b/tools/perf/util/evsel.h
+@@ -483,7 +483,7 @@ bool evsel__has_leader(struct evsel *evsel, struct evsel *leader);
+ bool evsel__is_leader(struct evsel *evsel);
+ void evsel__set_leader(struct evsel *evsel, struct evsel *leader);
+ int evsel__source_count(const struct evsel *evsel);
+-bool evsel__must_be_in_group(const struct evsel *evsel);
++void evsel__remove_from_group(struct evsel *evsel, struct evsel *leader);
+ 
+ bool arch_evsel__must_be_in_group(const struct evsel *evsel);
+ 
 -- 
 2.35.1
 
