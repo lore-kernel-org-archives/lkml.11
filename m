@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55491CCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6AA7CCA491
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:52:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349942AbiFGRvn (ORCPT
+        id S1348874AbiFGRuU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:51:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53292 "EHLO
+        Tue, 7 Jun 2022 13:50:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347481AbiFGRfS (ORCPT
+        with ESMTP id S1346696AbiFGR3d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:35:18 -0400
+        Tue, 7 Jun 2022 13:29:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E865010F374;
-        Tue,  7 Jun 2022 10:30:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D27118D3B;
+        Tue,  7 Jun 2022 10:24:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA69D6152A;
-        Tue,  7 Jun 2022 17:30:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2B7AC385A5;
-        Tue,  7 Jun 2022 17:30:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48BF560906;
+        Tue,  7 Jun 2022 17:24:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52F04C385A5;
+        Tue,  7 Jun 2022 17:24:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623022;
-        bh=20MCyB5rMbOhS6tJ+rz1pmkEOBZUeaGMgtx6VftxxMI=;
+        s=korg; t=1654622697;
+        bh=tiyZ3eOGweBf18A/dadGgQ0sLxVwdPM+W/Agj24C7+w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lVzkVs1WmEfV8ILFMGDEZDc8o9c43zBz+GIy+S9Fvf6Isu/gCb9le4+bWuPs5nniI
-         Y048C1RqT9xt4qyg8VmQjmG3yX3Aqng/4aYPyZwyMj8qO7+vONVXrupSg47ljwCEUZ
-         BTMVkQVHNPt212S5hiADy0+I+2K5cnbqc8LS+KEA=
+        b=J51Q6Zac4j4PPEY+PILYzAKzKf185xO4zsE80s8sMkQ4ANuqA5hck+1OZ/tk3Pv4o
+         fMuG7Pmi1AZzBAdA/64fSo/qWV/1WkW1ymvIZMOgq4YOjnBMfPvrgGEKHmiiBhA4Pv
+         OM+1SQn+otGAMMjaHXlh0LEMlU0WYDD2pt2QxNyY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 267/452] soc: qcom: llcc: Add MODULE_DEVICE_TABLE()
-Date:   Tue,  7 Jun 2022 19:02:04 +0200
-Message-Id: <20220607164916.508371672@linuxfoundation.org>
+Subject: [PATCH 5.10 115/452] powerpc/xics: fix refcount leak in icp_opal_init()
+Date:   Tue,  7 Jun 2022 18:59:32 +0200
+Message-Id: <20220607164911.982184998@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -52,36 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 5334a3b12a7233b31788de60d61bfd890059d783 ]
+[ Upstream commit 5dd9e27ea4a39f7edd4bf81e9e70208e7ac0b7c9 ]
 
-The llcc-qcom driver can be compiled as a module, but lacks
-MODULE_DEVICE_TABLE() and will therefore not be loaded automatically.
-Fix this.
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, use of_node_put() on it when done.
 
-Fixes: a3134fb09e0b ("drivers: soc: Add LLCC driver")
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20220408213336.581661-3-bjorn.andersson@linaro.org
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220402013419.2410298-1-lv.ruyi@zte.com.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/qcom/llcc-qcom.c | 1 +
+ arch/powerpc/sysdev/xics/icp-opal.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/soc/qcom/llcc-qcom.c b/drivers/soc/qcom/llcc-qcom.c
-index 70fbe70c6213..2e06f48d683d 100644
---- a/drivers/soc/qcom/llcc-qcom.c
-+++ b/drivers/soc/qcom/llcc-qcom.c
-@@ -496,6 +496,7 @@ static const struct of_device_id qcom_llcc_of_match[] = {
- 	{ .compatible = "qcom,sdm845-llcc", .data = &sdm845_cfg },
- 	{ }
- };
-+MODULE_DEVICE_TABLE(of, qcom_llcc_of_match);
+diff --git a/arch/powerpc/sysdev/xics/icp-opal.c b/arch/powerpc/sysdev/xics/icp-opal.c
+index 68fd2540b093..7fa520efcefa 100644
+--- a/arch/powerpc/sysdev/xics/icp-opal.c
++++ b/arch/powerpc/sysdev/xics/icp-opal.c
+@@ -195,6 +195,7 @@ int icp_opal_init(void)
  
- static struct platform_driver qcom_llcc_driver = {
- 	.driver = {
+ 	printk("XICS: Using OPAL ICP fallbacks\n");
+ 
++	of_node_put(np);
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
