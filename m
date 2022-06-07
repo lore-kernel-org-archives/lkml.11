@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D38B3CCA490
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55AA2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385081AbiFGWle (ORCPT
+        id S1385279AbiFGWlp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:41:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48884 "EHLO
+        Tue, 7 Jun 2022 18:41:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379424AbiFGVaE (ORCPT
+        with ESMTP id S1380153AbiFGVaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:30:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B558152BAE;
-        Tue,  7 Jun 2022 12:02:34 -0700 (PDT)
+        Tue, 7 Jun 2022 17:30:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D16152D8A;
+        Tue,  7 Jun 2022 12:02:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C336617F7;
-        Tue,  7 Jun 2022 19:02:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23860C34115;
-        Tue,  7 Jun 2022 19:02:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFD46B822C0;
+        Tue,  7 Jun 2022 19:02:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63D29C385A2;
+        Tue,  7 Jun 2022 19:02:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628553;
-        bh=DazYS8QUkKWeRD/pr9WvSxOGA3byYSt3OMAKPUQg4FQ=;
+        s=korg; t=1654628561;
+        bh=x7PO9lUovco5p9SZ7ZNCeyJS7CjTegdASYQEK9GNgtA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=axS2ZdNLH6dWvkP4wRR8iMGW+cv5PmbxshRzpnlfbG9vsVXlsQ8P33szb1VB+Ex1U
-         LEGun6hK+wynQhRdz8GFSjSZptEGaHNLTKjfRGLxMleXS0G7rpLbyJzs6a0fyvd4yH
-         eaVZkqvpkXCmsM2+26WnjP+TIVxeK6LEiyGUnChU=
+        b=2TGc3/7imuNAC6VCXXIZ9VhnTbIxmz/j4KzouXm+Jps4WZvriWdTOcjz65ts3cEiY
+         7kEAvotLEXmt4G7rb0GcpQZckZNQp5EKvSUtYsHV0oVpPFPEVcv35kQqEz+bctt/OX
+         ahWTOgXOw6eSpZOVRqTtmnkRIEcwkQ7r7AVopWyk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Ben Segall <bsegall@google.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 331/879] sched/fair: Fix cfs_rq_clock_pelt() for throttled cfs_rq
-Date:   Tue,  7 Jun 2022 18:57:29 +0200
-Message-Id: <20220607165012.464534941@linuxfoundation.org>
+Subject: [PATCH 5.18 334/879] drm/bridge: Fix it6505 Kconfig DRM_DP_AUX_BUS dependency
+Date:   Tue,  7 Jun 2022 18:57:32 +0200
+Message-Id: <20220607165012.552236678@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,93 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengming Zhou <zhouchengming@bytedance.com>
+From: Robert Foss <robert.foss@linaro.org>
 
-[ Upstream commit 64eaf50731ac0a8c76ce2fedd50ef6652aabc5ff ]
+[ Upstream commit c5060b09f460fc83846d361018a124fcade1b9e9 ]
 
-Since commit 23127296889f ("sched/fair: Update scale invariance of PELT")
-change to use rq_clock_pelt() instead of rq_clock_task(), we should also
-use rq_clock_pelt() for throttled_clock_task_time and throttled_clock_task
-accounting to get correct cfs_rq_clock_pelt() of throttled cfs_rq. And
-rename throttled_clock_task(_time) to be clock_pelt rather than clock_task.
+it6505 depends on DRM_DP_AUX_BUS, the kconfig for it6505 should
+reflect this dependency using 'select'.
 
-Fixes: 23127296889f ("sched/fair: Update scale invariance of PELT")
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Ben Segall <bsegall@google.com>
-Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
-Link: https://lore.kernel.org/r/20220408115309.81603-1-zhouchengming@bytedance.com
+Fixes: b5c84a9edcd4 ("drm/bridge: add it6505 driver")
+Reported-by: kernel test robot <lkp@intel.com>
+Suggested-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220421131415.1289469-1-robert.foss@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/fair.c  | 8 ++++----
- kernel/sched/pelt.h  | 4 ++--
- kernel/sched/sched.h | 4 ++--
- 3 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/gpu/drm/bridge/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index a68482d66535..cc8daa3dcc8b 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -4846,8 +4846,8 @@ static int tg_unthrottle_up(struct task_group *tg, void *data)
- 
- 	cfs_rq->throttle_count--;
- 	if (!cfs_rq->throttle_count) {
--		cfs_rq->throttled_clock_task_time += rq_clock_task(rq) -
--					     cfs_rq->throttled_clock_task;
-+		cfs_rq->throttled_clock_pelt_time += rq_clock_pelt(rq) -
-+					     cfs_rq->throttled_clock_pelt;
- 
- 		/* Add cfs_rq with load or one or more already running entities to the list */
- 		if (!cfs_rq_is_decayed(cfs_rq) || cfs_rq->nr_running)
-@@ -4864,7 +4864,7 @@ static int tg_throttle_down(struct task_group *tg, void *data)
- 
- 	/* group is entering throttled state, stop time */
- 	if (!cfs_rq->throttle_count) {
--		cfs_rq->throttled_clock_task = rq_clock_task(rq);
-+		cfs_rq->throttled_clock_pelt = rq_clock_pelt(rq);
- 		list_del_leaf_cfs_rq(cfs_rq);
- 	}
- 	cfs_rq->throttle_count++;
-@@ -5308,7 +5308,7 @@ static void sync_throttle(struct task_group *tg, int cpu)
- 	pcfs_rq = tg->parent->cfs_rq[cpu];
- 
- 	cfs_rq->throttle_count = pcfs_rq->throttle_count;
--	cfs_rq->throttled_clock_task = rq_clock_task(cpu_rq(cpu));
-+	cfs_rq->throttled_clock_pelt = rq_clock_pelt(cpu_rq(cpu));
- }
- 
- /* conditionally throttle active cfs_rq's from put_prev_entity() */
-diff --git a/kernel/sched/pelt.h b/kernel/sched/pelt.h
-index c336f5f481bc..4ff2ed4f8fa1 100644
---- a/kernel/sched/pelt.h
-+++ b/kernel/sched/pelt.h
-@@ -145,9 +145,9 @@ static inline u64 rq_clock_pelt(struct rq *rq)
- static inline u64 cfs_rq_clock_pelt(struct cfs_rq *cfs_rq)
- {
- 	if (unlikely(cfs_rq->throttle_count))
--		return cfs_rq->throttled_clock_task - cfs_rq->throttled_clock_task_time;
-+		return cfs_rq->throttled_clock_pelt - cfs_rq->throttled_clock_pelt_time;
- 
--	return rq_clock_pelt(rq_of(cfs_rq)) - cfs_rq->throttled_clock_task_time;
-+	return rq_clock_pelt(rq_of(cfs_rq)) - cfs_rq->throttled_clock_pelt_time;
- }
- #else
- static inline u64 cfs_rq_clock_pelt(struct cfs_rq *cfs_rq)
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 2133aea22086..0d2b6b758f32 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -603,8 +603,8 @@ struct cfs_rq {
- 	s64			runtime_remaining;
- 
- 	u64			throttled_clock;
--	u64			throttled_clock_task;
--	u64			throttled_clock_task_time;
-+	u64			throttled_clock_pelt;
-+	u64			throttled_clock_pelt_time;
- 	int			throttled;
- 	int			throttle_count;
- 	struct list_head	throttled_list;
+diff --git a/drivers/gpu/drm/bridge/Kconfig b/drivers/gpu/drm/bridge/Kconfig
+index becd9867f3a0..be2fc4791c1d 100644
+--- a/drivers/gpu/drm/bridge/Kconfig
++++ b/drivers/gpu/drm/bridge/Kconfig
+@@ -77,6 +77,7 @@ config DRM_DISPLAY_CONNECTOR
+ config DRM_ITE_IT6505
+         tristate "ITE IT6505 DisplayPort bridge"
+         depends on OF
++        select DRM_DP_AUX_BUS
+ 	select DRM_DP_HELPER
+         select DRM_KMS_HELPER
+         select DRM_DP_HELPER
 -- 
 2.35.1
 
