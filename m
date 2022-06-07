@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54EC3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B7F3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:59:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345279AbiFGR7Z (ORCPT
+        id S1349197AbiFGR7f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:59:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60498 "EHLO
+        Tue, 7 Jun 2022 13:59:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348010AbiFGRka (ORCPT
+        with ESMTP id S1348009AbiFGRka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:40:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B30145C87E;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ACF45B3E7;
         Tue,  7 Jun 2022 10:33:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 918CC614BC;
-        Tue,  7 Jun 2022 17:33:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F0A0C385A5;
-        Tue,  7 Jun 2022 17:33:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE6B3B822B3;
+        Tue,  7 Jun 2022 17:33:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39E14C385A5;
+        Tue,  7 Jun 2022 17:33:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623225;
-        bh=6liBI5zJu26OZInGUvmtcme7fluxGacz4kc/ayEpB+k=;
+        s=korg; t=1654623197;
+        bh=QMWOu71xU4aZ6HYfkSh4ZATVgYsMLdfG+b2gbDozZto=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qDCYMZh0Kb5Vlv2dyJlLTIje5Im/WZMsH+CXZWbX/qAqOYtRwBldE0xOaH69kytXy
-         R7ifFljYw0DXfpKTLrq2J5wDX5YjlrPIQNQeyHiOhka4o6J5hviE5LsOJawFn2xw3x
-         StAj30SO8vw8ifcVqR35JKEwsKWYpYqPxRCX2ifA=
+        b=mPMf2unndogkzX6cmXpTJcltSjI8q7hez6osb9ra8jlFhknjDxfg8A7MqKhgVj+TD
+         WvkpeDI0AOB0Z7vELHlIEIymA7gs0vuSvrKvXu3rulXljbTB09cOCtHF/QJAKIVYiA
+         atqANmY3q0FBZg/Xo/bf8agPTecLgp7IAckfQQg4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 341/452] i2c: rcar: fix PM ref counts in probe error paths
-Date:   Tue,  7 Jun 2022 19:03:18 +0200
-Message-Id: <20220607164918.718474217@linuxfoundation.org>
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 328/452] NFS: Do not report EINTR/ERESTARTSYS as mapping errors
+Date:   Tue,  7 Jun 2022 19:03:05 +0200
+Message-Id: <20220607164918.335805949@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,71 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 3fe2ec59db1a7569e18594b9c0cf1f4f1afd498e ]
+[ Upstream commit cea9ba7239dcc84175041174304c6cdeae3226e5 ]
 
-We have to take care of ID_P_PM_BLOCKED when bailing out during probe.
+If the attempt to flush data was interrupted due to a local signal, then
+just requeue the writes back for I/O.
 
-Fixes: 7ee24eb508d6 ("i2c: rcar: disable PM in multi-master mode")
-Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Fixes: 6fbda89b257f ("NFS: Replace custom error reporting mechanism with generic one")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-rcar.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ fs/nfs/write.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/i2c-rcar.c b/drivers/i2c/busses/i2c-rcar.c
-index 8722ca23f889..6a7a7a074a97 100644
---- a/drivers/i2c/busses/i2c-rcar.c
-+++ b/drivers/i2c/busses/i2c-rcar.c
-@@ -999,8 +999,10 @@ static int rcar_i2c_probe(struct platform_device *pdev)
- 	pm_runtime_enable(dev);
- 	pm_runtime_get_sync(dev);
- 	ret = rcar_i2c_clock_calculate(priv);
--	if (ret < 0)
--		goto out_pm_put;
-+	if (ret < 0) {
-+		pm_runtime_put(dev);
-+		goto out_pm_disable;
-+	}
- 
- 	rcar_i2c_write(priv, ICSAR, 0); /* Gen2: must be 0 if not using slave */
- 
-@@ -1029,19 +1031,19 @@ static int rcar_i2c_probe(struct platform_device *pdev)
- 
- 	ret = platform_get_irq(pdev, 0);
- 	if (ret < 0)
--		goto out_pm_disable;
-+		goto out_pm_put;
- 	priv->irq = ret;
- 	ret = devm_request_irq(dev, priv->irq, irqhandler, irqflags, dev_name(dev), priv);
- 	if (ret < 0) {
- 		dev_err(dev, "cannot get irq %d\n", priv->irq);
--		goto out_pm_disable;
-+		goto out_pm_put;
- 	}
- 
- 	platform_set_drvdata(pdev, priv);
- 
- 	ret = i2c_add_numbered_adapter(adap);
- 	if (ret < 0)
--		goto out_pm_disable;
-+		goto out_pm_put;
- 
- 	if (priv->flags & ID_P_HOST_NOTIFY) {
- 		priv->host_notify_client = i2c_new_slave_host_notify_device(adap);
-@@ -1058,7 +1060,8 @@ static int rcar_i2c_probe(struct platform_device *pdev)
-  out_del_device:
- 	i2c_del_adapter(&priv->adap);
-  out_pm_put:
--	pm_runtime_put(dev);
-+	if (priv->flags & ID_P_PM_BLOCKED)
-+		pm_runtime_put(dev);
-  out_pm_disable:
- 	pm_runtime_disable(dev);
- 	return ret;
+diff --git a/fs/nfs/write.c b/fs/nfs/write.c
+index 5d07799513a6..b08323ed0c25 100644
+--- a/fs/nfs/write.c
++++ b/fs/nfs/write.c
+@@ -1411,7 +1411,7 @@ static void nfs_async_write_error(struct list_head *head, int error)
+ 	while (!list_empty(head)) {
+ 		req = nfs_list_entry(head->next);
+ 		nfs_list_remove_request(req);
+-		if (nfs_error_is_fatal(error))
++		if (nfs_error_is_fatal_on_server(error))
+ 			nfs_write_error(req, error);
+ 		else
+ 			nfs_redirty_request(req);
 -- 
 2.35.1
 
