@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F4B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:43:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 438C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:43:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232067AbiFHBmq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:42:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57620 "EHLO
+        id S241511AbiFHBnC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:43:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382561AbiFGV7M (ORCPT
+        with ESMTP id S1381670AbiFGWVy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:59:12 -0400
+        Tue, 7 Jun 2022 18:21:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C135A1A045;
-        Tue,  7 Jun 2022 12:14:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D6926C0D5;
+        Tue,  7 Jun 2022 12:22:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B11BB82182;
-        Tue,  7 Jun 2022 19:14:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88590C385A2;
-        Tue,  7 Jun 2022 19:14:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E291B82182;
+        Tue,  7 Jun 2022 19:22:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6D43C34115;
+        Tue,  7 Jun 2022 19:22:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629246;
-        bh=doRABoW4tgNfRfhu2aDY35gvGWM6ReAS5XSiyNI3iSk=;
+        s=korg; t=1654629739;
+        bh=AZp9GM2aIQXcY2X/5Buvw7LgLptr9W3PQ57LG/PVk8Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=goX7vsvuV/myiEUAe+iGvQgvN1d2y6vdcnvdiEiIv55RGpglQOgA3zyn5xtGR26Ly
-         5NmJ0sXw8XFV/67F5R3FuCVyXJBa+AowYonUv4YtI0maIkWiiIMPPFQ6n6X6XXLkPz
-         jMQ2eS3xTVB9SnSq62MgRZz8YZ9Xgf7S4YgtWqqc=
+        b=KX1kOkY7DDLTzK4JaNBVoLx0lvjKHaByH4Ld0tzAAED8pq0vPMU1YzVrN67wwacbB
+         LFOurdvUVJmF/E2a7NZqt03xJU4jrS/yzduT+gTKAP6ar5ZOaSLsuwINamHUc0GtEW
+         lA7z3cpy/NtK1wBbFNJzCOHY0v+i4NcoDmKl7MC4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 621/879] crypto: sun8i-ss - rework handling of IV
-Date:   Tue,  7 Jun 2022 19:02:19 +0200
-Message-Id: <20220607165020.877431911@linuxfoundation.org>
+        stable@vger.kernel.org, Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        Song Liu <song@kernel.org>
+Subject: [PATCH 5.18 798/879] md: fix an incorrect NULL check in does_sb_need_changing
+Date:   Tue,  7 Jun 2022 19:05:16 +0200
+Message-Id: <20220607165026.024032950@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,296 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin Labbe <clabbe@baylibre.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit 359e893e8af456be2fefabe851716237df289cbf ]
+commit fc8738343eefc4ea8afb6122826dea48eacde514 upstream.
 
-sun8i-ss fail handling IVs when doing decryption of multiple SGs in-place.
-It should backup the last block of each SG source for using it later as
-IVs.
-In the same time remove allocation on requests path for storing all
-IVs.
+The bug is here:
+	if (!rdev)
 
-Fixes: f08fcced6d00 ("crypto: allwinner - Add sun8i-ss cryptographic offloader")
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The list iterator value 'rdev' will *always* be set and non-NULL
+by rdev_for_each(), so it is incorrect to assume that the iterator
+value will be NULL if the list is empty or no element found.
+Otherwise it will bypass the NULL check and lead to invalid memory
+access passing the check.
+
+To fix the bug, use a new variable 'iter' as the list iterator,
+while using the original variable 'rdev' as a dedicated pointer to
+point to the found element.
+
+Cc: stable@vger.kernel.org
+Fixes: 2aa82191ac36 ("md-cluster: Perform a lazy update")
+Acked-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Acked-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
+Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../allwinner/sun8i-ss/sun8i-ss-cipher.c      | 115 ++++++++++++------
- .../crypto/allwinner/sun8i-ss/sun8i-ss-core.c |  30 +++--
- drivers/crypto/allwinner/sun8i-ss/sun8i-ss.h  |  14 ++-
- 3 files changed, 107 insertions(+), 52 deletions(-)
+ drivers/md/md.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c
-index 554e400d41ca..70e2e6e37389 100644
---- a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c
-+++ b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c
-@@ -93,6 +93,68 @@ static int sun8i_ss_cipher_fallback(struct skcipher_request *areq)
- 	return err;
- }
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -2627,14 +2627,16 @@ static void sync_sbs(struct mddev *mddev
  
-+static int sun8i_ss_setup_ivs(struct skcipher_request *areq)
-+{
-+	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(areq);
-+	struct sun8i_cipher_tfm_ctx *op = crypto_skcipher_ctx(tfm);
-+	struct sun8i_ss_dev *ss = op->ss;
-+	struct sun8i_cipher_req_ctx *rctx = skcipher_request_ctx(areq);
-+	struct scatterlist *sg = areq->src;
-+	unsigned int todo, offset;
-+	unsigned int len = areq->cryptlen;
-+	unsigned int ivsize = crypto_skcipher_ivsize(tfm);
-+	struct sun8i_ss_flow *sf = &ss->flows[rctx->flow];
-+	int i = 0;
-+	u32 a;
-+	int err;
-+
-+	rctx->ivlen = ivsize;
-+	if (rctx->op_dir & SS_DECRYPTION) {
-+		offset = areq->cryptlen - ivsize;
-+		scatterwalk_map_and_copy(sf->biv, areq->src, offset,
-+					 ivsize, 0);
-+	}
-+
-+	/* we need to copy all IVs from source in case DMA is bi-directionnal */
-+	while (sg && len) {
-+		if (sg_dma_len(sg) == 0) {
-+			sg = sg_next(sg);
-+			continue;
-+		}
-+		if (i == 0)
-+			memcpy(sf->iv[0], areq->iv, ivsize);
-+		a = dma_map_single(ss->dev, sf->iv[i], ivsize, DMA_TO_DEVICE);
-+		if (dma_mapping_error(ss->dev, a)) {
-+			memzero_explicit(sf->iv[i], ivsize);
-+			dev_err(ss->dev, "Cannot DMA MAP IV\n");
-+			err = -EFAULT;
-+			goto dma_iv_error;
-+		}
-+		rctx->p_iv[i] = a;
-+		/* we need to setup all others IVs only in the decrypt way */
-+		if (rctx->op_dir & SS_ENCRYPTION)
-+			return 0;
-+		todo = min(len, sg_dma_len(sg));
-+		len -= todo;
-+		i++;
-+		if (i < MAX_SG) {
-+			offset = sg->length - ivsize;
-+			scatterwalk_map_and_copy(sf->iv[i], sg, offset, ivsize, 0);
-+		}
-+		rctx->niv = i;
-+		sg = sg_next(sg);
-+	}
-+
-+	return 0;
-+dma_iv_error:
-+	i--;
-+	while (i >= 0) {
-+		dma_unmap_single(ss->dev, rctx->p_iv[i], ivsize, DMA_TO_DEVICE);
-+		memzero_explicit(sf->iv[i], ivsize);
-+	}
-+	return err;
-+}
-+
- static int sun8i_ss_cipher(struct skcipher_request *areq)
+ static bool does_sb_need_changing(struct mddev *mddev)
  {
- 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(areq);
-@@ -101,9 +163,9 @@ static int sun8i_ss_cipher(struct skcipher_request *areq)
- 	struct sun8i_cipher_req_ctx *rctx = skcipher_request_ctx(areq);
- 	struct skcipher_alg *alg = crypto_skcipher_alg(tfm);
- 	struct sun8i_ss_alg_template *algt;
-+	struct sun8i_ss_flow *sf = &ss->flows[rctx->flow];
- 	struct scatterlist *sg;
- 	unsigned int todo, len, offset, ivsize;
--	void *backup_iv = NULL;
- 	int nr_sgs = 0;
- 	int nr_sgd = 0;
- 	int err = 0;
-@@ -134,30 +196,9 @@ static int sun8i_ss_cipher(struct skcipher_request *areq)
+-	struct md_rdev *rdev;
++	struct md_rdev *rdev = NULL, *iter;
+ 	struct mdp_superblock_1 *sb;
+ 	int role;
  
- 	ivsize = crypto_skcipher_ivsize(tfm);
- 	if (areq->iv && crypto_skcipher_ivsize(tfm) > 0) {
--		rctx->ivlen = ivsize;
--		rctx->biv = kzalloc(ivsize, GFP_KERNEL | GFP_DMA);
--		if (!rctx->biv) {
--			err = -ENOMEM;
-+		err = sun8i_ss_setup_ivs(areq);
-+		if (err)
- 			goto theend_key;
--		}
--		if (rctx->op_dir & SS_DECRYPTION) {
--			backup_iv = kzalloc(ivsize, GFP_KERNEL);
--			if (!backup_iv) {
--				err = -ENOMEM;
--				goto theend_key;
--			}
--			offset = areq->cryptlen - ivsize;
--			scatterwalk_map_and_copy(backup_iv, areq->src, offset,
--						 ivsize, 0);
--		}
--		memcpy(rctx->biv, areq->iv, ivsize);
--		rctx->p_iv = dma_map_single(ss->dev, rctx->biv, rctx->ivlen,
--					    DMA_TO_DEVICE);
--		if (dma_mapping_error(ss->dev, rctx->p_iv)) {
--			dev_err(ss->dev, "Cannot DMA MAP IV\n");
--			err = -ENOMEM;
--			goto theend_iv;
--		}
- 	}
- 	if (areq->src == areq->dst) {
- 		nr_sgs = dma_map_sg(ss->dev, areq->src, sg_nents(areq->src),
-@@ -243,21 +284,19 @@ static int sun8i_ss_cipher(struct skcipher_request *areq)
- 	}
- 
- theend_iv:
--	if (rctx->p_iv)
--		dma_unmap_single(ss->dev, rctx->p_iv, rctx->ivlen,
--				 DMA_TO_DEVICE);
--
- 	if (areq->iv && ivsize > 0) {
--		if (rctx->biv) {
--			offset = areq->cryptlen - ivsize;
--			if (rctx->op_dir & SS_DECRYPTION) {
--				memcpy(areq->iv, backup_iv, ivsize);
--				kfree_sensitive(backup_iv);
--			} else {
--				scatterwalk_map_and_copy(areq->iv, areq->dst, offset,
--							 ivsize, 0);
--			}
--			kfree(rctx->biv);
-+		for (i = 0; i < rctx->niv; i++) {
-+			dma_unmap_single(ss->dev, rctx->p_iv[i], ivsize, DMA_TO_DEVICE);
-+			memzero_explicit(sf->iv[i], ivsize);
+ 	/* Find a good rdev */
+-	rdev_for_each(rdev, mddev)
+-		if ((rdev->raid_disk >= 0) && !test_bit(Faulty, &rdev->flags))
++	rdev_for_each(iter, mddev)
++		if ((iter->raid_disk >= 0) && !test_bit(Faulty, &iter->flags)) {
++			rdev = iter;
+ 			break;
 +		}
-+
-+		offset = areq->cryptlen - ivsize;
-+		if (rctx->op_dir & SS_DECRYPTION) {
-+			memcpy(areq->iv, sf->biv, ivsize);
-+			memzero_explicit(sf->biv, ivsize);
-+		} else {
-+			scatterwalk_map_and_copy(areq->iv, areq->dst, offset,
-+					ivsize, 0);
- 		}
- 	}
  
-diff --git a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
-index 319fe3279a71..657530578643 100644
---- a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
-+++ b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-core.c
-@@ -66,6 +66,7 @@ int sun8i_ss_run_task(struct sun8i_ss_dev *ss, struct sun8i_cipher_req_ctx *rctx
- 		      const char *name)
- {
- 	int flow = rctx->flow;
-+	unsigned int ivlen = rctx->ivlen;
- 	u32 v = SS_START;
- 	int i;
- 
-@@ -104,15 +105,14 @@ int sun8i_ss_run_task(struct sun8i_ss_dev *ss, struct sun8i_cipher_req_ctx *rctx
- 		mutex_lock(&ss->mlock);
- 		writel(rctx->p_key, ss->base + SS_KEY_ADR_REG);
- 
--		if (i == 0) {
--			if (rctx->p_iv)
--				writel(rctx->p_iv, ss->base + SS_IV_ADR_REG);
--		} else {
--			if (rctx->biv) {
--				if (rctx->op_dir == SS_ENCRYPTION)
--					writel(rctx->t_dst[i - 1].addr + rctx->t_dst[i - 1].len * 4 - rctx->ivlen, ss->base + SS_IV_ADR_REG);
-+		if (ivlen) {
-+			if (rctx->op_dir == SS_ENCRYPTION) {
-+				if (i == 0)
-+					writel(rctx->p_iv[0], ss->base + SS_IV_ADR_REG);
- 				else
--					writel(rctx->t_src[i - 1].addr + rctx->t_src[i - 1].len * 4 - rctx->ivlen, ss->base + SS_IV_ADR_REG);
-+					writel(rctx->t_dst[i - 1].addr + rctx->t_dst[i - 1].len * 4 - ivlen, ss->base + SS_IV_ADR_REG);
-+			} else {
-+				writel(rctx->p_iv[i], ss->base + SS_IV_ADR_REG);
- 			}
- 		}
- 
-@@ -464,7 +464,7 @@ static void sun8i_ss_free_flows(struct sun8i_ss_dev *ss, int i)
-  */
- static int allocate_flows(struct sun8i_ss_dev *ss)
- {
--	int i, err;
-+	int i, j, err;
- 
- 	ss->flows = devm_kcalloc(ss->dev, MAXFLOW, sizeof(struct sun8i_ss_flow),
- 				 GFP_KERNEL);
-@@ -474,6 +474,18 @@ static int allocate_flows(struct sun8i_ss_dev *ss)
- 	for (i = 0; i < MAXFLOW; i++) {
- 		init_completion(&ss->flows[i].complete);
- 
-+		ss->flows[i].biv = devm_kmalloc(ss->dev, AES_BLOCK_SIZE,
-+						GFP_KERNEL | GFP_DMA);
-+		if (!ss->flows[i].biv)
-+			goto error_engine;
-+
-+		for (j = 0; j < MAX_SG; j++) {
-+			ss->flows[i].iv[j] = devm_kmalloc(ss->dev, AES_BLOCK_SIZE,
-+							  GFP_KERNEL | GFP_DMA);
-+			if (!ss->flows[i].iv[j])
-+				goto error_engine;
-+		}
-+
- 		ss->flows[i].engine = crypto_engine_alloc_init(ss->dev, true);
- 		if (!ss->flows[i].engine) {
- 			dev_err(ss->dev, "Cannot allocate engine\n");
-diff --git a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss.h b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss.h
-index 28188685b910..57ada8653855 100644
---- a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss.h
-+++ b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss.h
-@@ -121,11 +121,15 @@ struct sginfo {
-  * @complete:	completion for the current task on this flow
-  * @status:	set to 1 by interrupt if task is done
-  * @stat_req:	number of request done by this flow
-+ * @iv:		list of IV to use for each step
-+ * @biv:	buffer which contain the backuped IV
-  */
- struct sun8i_ss_flow {
- 	struct crypto_engine *engine;
- 	struct completion complete;
- 	int status;
-+	u8 *iv[MAX_SG];
-+	u8 *biv;
- #ifdef CONFIG_CRYPTO_DEV_SUN8I_SS_DEBUG
- 	unsigned long stat_req;
- #endif
-@@ -164,28 +168,28 @@ struct sun8i_ss_dev {
-  * @t_src:		list of mapped SGs with their size
-  * @t_dst:		list of mapped SGs with their size
-  * @p_key:		DMA address of the key
-- * @p_iv:		DMA address of the IV
-+ * @p_iv:		DMA address of the IVs
-+ * @niv:		Number of IVs DMA mapped
-  * @method:		current algorithm for this request
-  * @op_mode:		op_mode for this request
-  * @op_dir:		direction (encrypt vs decrypt) for this request
-  * @flow:		the flow to use for this request
-- * @ivlen:		size of biv
-+ * @ivlen:		size of IVs
-  * @keylen:		keylen for this request
-- * @biv:		buffer which contain the IV
-  * @fallback_req:	request struct for invoking the fallback skcipher TFM
-  */
- struct sun8i_cipher_req_ctx {
- 	struct sginfo t_src[MAX_SG];
- 	struct sginfo t_dst[MAX_SG];
- 	u32 p_key;
--	u32 p_iv;
-+	u32 p_iv[MAX_SG];
-+	int niv;
- 	u32 method;
- 	u32 op_mode;
- 	u32 op_dir;
- 	int flow;
- 	unsigned int ivlen;
- 	unsigned int keylen;
--	void *biv;
- 	struct skcipher_request fallback_req;   // keep at the end
- };
- 
--- 
-2.35.1
-
+ 	/* No good device found. */
+ 	if (!rdev)
 
 
