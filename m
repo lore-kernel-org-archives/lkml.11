@@ -2,81 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2186C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:46:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ADE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:47:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345167AbiFGQp7 (ORCPT
+        id S1345185AbiFGQr4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 12:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56130 "EHLO
+        Tue, 7 Jun 2022 12:47:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243262AbiFGQp5 (ORCPT
+        with ESMTP id S1345174AbiFGQrz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 12:45:57 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6301F504E;
-        Tue,  7 Jun 2022 09:45:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654620356; x=1686156356;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ctq6LVQOfjVVOtYv+AplzA6gCINpMNCuS0OiKyvIDb0=;
-  b=rFi5n/FBQqwxD1WLRGhtmdiq5aL9xeboWPV2IHPisjxDlZAfnJBNF5VQ
-   Of8Le1sKSBU5UraVnRSujwysD6kvL+P+V5kY74Pz/ZGqI1jRcTzVvAtsM
-   1K4TqukzYsHWXXP7kvoCmLVNo0h1O/UC/fZn8cnxnDNR5pTa+Pap5jLcO
-   c=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 07 Jun 2022 09:45:56 -0700
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 09:45:55 -0700
-Received: from asutoshd-linux1.qualcomm.com (10.80.80.8) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 7 Jun 2022 09:45:55 -0700
-Date:   Tue, 7 Jun 2022 09:45:55 -0700
-From:   Asutosh Das <quic_asutoshd@quicinc.com>
-To:     Eric Biggers <ebiggers@kernel.org>
-CC:     Jaegeuk Kim <jaegeuk@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Asutosh Das <asutoshd@codeaurora.org>,
-        Avri Altman <avri.altman@wdc.com>,
-        Bean Huo <beanhuo@micron.com>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        Can Guo <cang@codeaurora.org>
-Subject: Re: [PATCH] scsi: ufs: add a quirk to disable FUA support
-Message-ID: <20220607164555.GA30890@asutoshd-linux1.qualcomm.com>
-References: <20220531201053.3300018-1-jaegeuk@kernel.org>
- <YpZ71MU7+DRedq5S@gmail.com>
- <YpaATWTiipNERoVF@google.com>
- <YpaHwds1zYRwua3+@gmail.com>
+        Tue, 7 Jun 2022 12:47:55 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718671D0F8;
+        Tue,  7 Jun 2022 09:47:54 -0700 (PDT)
+Date:   Tue, 7 Jun 2022 18:47:51 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1654620473;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=lSDsywJB6k683pdbQfJxNfS1KPID3mBqEa5Vp/AoDIo=;
+        b=gWEdLbsAZVKjwpgZjroM0UejhNMN1fzFdMInH76EPGB31BBw8H88bkzk1NUqwGekEkrGcY
+        dY4EKc0DWHVI8W+BBz/lDyyjKcqA6bo61ikjKPdpaaV9CETAv4MWUuoUGiV0wHUpjWOC2P
+        ksQs6+CZApMQdGX5boy/psrG8ktcPjqe7jdjIWCLdXI/GvEnUnrs+aRhCWtcR08SeqW3xu
+        bLN5DIGJPfHRwJyVYWzF6jYRrF6rpDQpFs59GaoGxJPhxszDdGjMJvMks3WScjlzp9qi+N
+        TYF8byAqPqSLVWIhdHFC+ohY1sgV//EatJ3Rqxzn87tFgtMHt/s73n1+QAhv5Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1654620473;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=lSDsywJB6k683pdbQfJxNfS1KPID3mBqEa5Vp/AoDIo=;
+        b=MAH7c61VNSM9hWtcREbn31d1jdc2hKL+ffeAazKqIS4C28xkvGOVkyBgDl5AT6wedS3inS
+        oxOa7mIQ17lDriAQ==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        linux-rt-users@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [ANNOUNCE] v5.19-rc1-rt1
+Message-ID: <Yp+BNyvZjQPMBDXA@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YpaHwds1zYRwua3+@gmail.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31 2022 at 14:25 -0700, Eric Biggers wrote:
->On Tue, May 31, 2022 at 01:53:33PM -0700, Jaegeuk Kim wrote:
->> > Also, this patch does nothing by itself.  Which UFS host driver(s) need this
->> > quirk bit?  Can you update them to use it?  Or do they all need this, in which
->> > case a quirk bit would be unnecessary?
->>
->> Likewise other quick bits, using this is up to SoC or UFS vendors. I
->> think that combination is up to OEMs who is building the product.
->
->Of the UFS host drivers in the upstream kernel, which ones actually need this?
->
+Dear RT folks!
 
-Qualcomm UFSHC would need this.
->- Eric
+I'm pleased to announce the v5.19-rc1-rt1 patch set. 
+
+Changes since v5.18-rt11:
+  - Rebase to v5.19-rc1.
+
+Known issues
+     - Valentin Schneider reported a few splats on ARM64, see
+          https://lkml.kernel.org/r/20210810134127.1394269-1-valentin.schneider@arm.com
+
+You can get this release via the git tree at:
+
+    git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git v5.19-rc1-rt1
+
+The RT patch against v5.19-rc1 can be found here:
+
+    https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.19/older/patch-5.19-rc1-rt1.patch.xz
+
+The split quilt queue is available at:
+
+    https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.19/older/patches-5.19-rc1-rt1.tar.xz
+
+Sebastian
