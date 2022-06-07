@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61CE5CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:16:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD1A8C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:16:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381545AbiFHAPH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:15:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47754 "EHLO
+        id S231309AbiFHAPz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 20:15:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356690AbiFGWGy (ORCPT
+        with ESMTP id S1383045AbiFGWFH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:06:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDAF7252C2C;
-        Tue,  7 Jun 2022 12:15:50 -0700 (PDT)
+        Tue, 7 Jun 2022 18:05:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7381A195942;
+        Tue,  7 Jun 2022 12:16:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C908B822C0;
-        Tue,  7 Jun 2022 19:15:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC007C385A2;
-        Tue,  7 Jun 2022 19:15:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 104CB618DF;
+        Tue,  7 Jun 2022 19:16:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21189C385A2;
+        Tue,  7 Jun 2022 19:16:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629348;
-        bh=AFmrO0annGer79QB+xtRaRH2XRcecd0xN8/ccZeQdG0=;
+        s=korg; t=1654629380;
+        bh=fI/KXitLdUyMzMJrXOcCXOGK+kSgctBH+i8dgQZTFtU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M3f+YylxH7DsLQfDyLdr6NuiB+JNxafZeeXSLfGcgJWSmvCeqFDY1nLPv6hya/H8v
-         H92ISD/OgU79NkuFFLpWXGGZ75B8ZNHPf2T2ZYEAgeKJdZJha3OutP6GutouT0E4PF
-         wNez1j8GMf6w9rPyrKR1sBxluOC2nqHawcUr/pzs=
+        b=0wPuQxaXXOECNDRV9V9ZNKrg1jgByC+hcQBWu5RxHjk2mUyYV1usnCj+vHLtffiEY
+         Fts5FGroDnFguL6n9XItdm9LQYOCGZIqSYrlCHorQDooL6aFkTxpO2+GvWEWDsyPXn
+         RHsiurijUsg2w63stUEDDpcjKk+G2hZruTvrCUKI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wenqing Liu <wenqingliu0120@gmail.com>,
-        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org, Jia-Wei Chang <jia-wei.chang@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 659/879] f2fs: fix to do sanity check on inline_dots inode
-Date:   Tue,  7 Jun 2022 19:02:57 +0200
-Message-Id: <20220607165021.975926404@linuxfoundation.org>
+Subject: [PATCH 5.18 669/879] cpufreq: mediatek: Use module_init and add module_exit
+Date:   Tue,  7 Jun 2022 19:03:07 +0200
+Message-Id: <20220607165022.269583633@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,71 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
 
-[ Upstream commit 12662d19467b391b5b509ac5e9ab4f583c6dde16 ]
+[ Upstream commit b7070187c81cb90549d7561c0e750d7c7eb751f4 ]
 
-As Wenqing reported in bugzilla:
+- Use module_init instead of device_initcall.
+- Add a function for module_exit to unregister driver.
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215765
-
-It will cause a kernel panic with steps:
-- mkdir mnt
-- mount tmp40.img mnt
-- ls mnt
-
-folio_mark_dirty+0x33/0x50
-f2fs_add_regular_entry+0x541/0xad0 [f2fs]
-f2fs_add_dentry+0x6c/0xb0 [f2fs]
-f2fs_do_add_link+0x182/0x230 [f2fs]
-__recover_dot_dentries+0x2d6/0x470 [f2fs]
-f2fs_lookup+0x5af/0x6a0 [f2fs]
-__lookup_slow+0xac/0x200
-lookup_slow+0x45/0x70
-walk_component+0x16c/0x250
-path_lookupat+0x8b/0x1f0
-filename_lookup+0xef/0x250
-user_path_at_empty+0x46/0x70
-vfs_statx+0x98/0x190
-__do_sys_newlstat+0x41/0x90
-__x64_sys_newlstat+0x1a/0x30
-do_syscall_64+0x37/0xb0
-entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The root cause is for special file: e.g. character, block, fifo or
-socket file, f2fs doesn't assign address space operations pointer array
-for mapping->a_ops field, so, in a fuzzed image, if inline_dots flag was
-tagged in special file, during lookup(), when f2fs runs into
-__recover_dot_dentries(), it will cause NULL pointer access once
-f2fs_add_regular_entry() calls a_ops->set_dirty_page().
-
-Fixes: 510022a85839 ("f2fs: add F2FS_INLINE_DOTS to recover missing dot dentries")
-Reported-by: Wenqing Liu <wenqingliu0120@gmail.com>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/namei.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/cpufreq/mediatek-cpufreq.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/fs/f2fs/namei.c b/fs/f2fs/namei.c
-index 5ed79b29999f..fffafd2aa438 100644
---- a/fs/f2fs/namei.c
-+++ b/fs/f2fs/namei.c
-@@ -461,6 +461,13 @@ static int __recover_dot_dentries(struct inode *dir, nid_t pino)
- 		return 0;
- 	}
+diff --git a/drivers/cpufreq/mediatek-cpufreq.c b/drivers/cpufreq/mediatek-cpufreq.c
+index 866163883b48..9d7d9c8dc184 100644
+--- a/drivers/cpufreq/mediatek-cpufreq.c
++++ b/drivers/cpufreq/mediatek-cpufreq.c
+@@ -580,7 +580,13 @@ static int __init mtk_cpufreq_driver_init(void)
  
-+	if (!S_ISDIR(dir->i_mode)) {
-+		f2fs_err(sbi, "inconsistent inode status, skip recovering inline_dots inode (ino:%lu, i_mode:%u, pino:%u)",
-+			  dir->i_ino, dir->i_mode, pino);
-+		set_sbi_flag(sbi, SBI_NEED_FSCK);
-+		return -ENOTDIR;
-+	}
+ 	return 0;
+ }
+-device_initcall(mtk_cpufreq_driver_init);
++module_init(mtk_cpufreq_driver_init)
 +
- 	err = f2fs_dquot_initialize(dir);
- 	if (err)
- 		return err;
++static void __exit mtk_cpufreq_driver_exit(void)
++{
++	platform_driver_unregister(&mtk_cpufreq_platdrv);
++}
++module_exit(mtk_cpufreq_driver_exit)
+ 
+ MODULE_DESCRIPTION("MediaTek CPUFreq driver");
+ MODULE_AUTHOR("Pi-Cheng Chen <pi-cheng.chen@linaro.org>");
 -- 
 2.35.1
 
