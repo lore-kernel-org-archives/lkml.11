@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 292B4CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFFF7CCA48E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351289AbiFGSB4 (ORCPT
+        id S1350846AbiFGSB1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:01:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54884 "EHLO
+        Tue, 7 Jun 2022 14:01:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347851AbiFGRmj (ORCPT
+        with ESMTP id S1347650AbiFGRjm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:42:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052AD12E305;
-        Tue,  7 Jun 2022 10:35:04 -0700 (PDT)
+        Tue, 7 Jun 2022 13:39:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E31D3EF28;
+        Tue,  7 Jun 2022 10:33:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CC286159B;
-        Tue,  7 Jun 2022 17:34:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87FB5C36AFF;
-        Tue,  7 Jun 2022 17:34:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ABCB0B822B6;
+        Tue,  7 Jun 2022 17:33:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AC7FC385A5;
+        Tue,  7 Jun 2022 17:33:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623257;
-        bh=NJJ+Nkarf9LFJX66CXV++Zsx5I6VyYCOdtWPcYpe+9Q=;
+        s=korg; t=1654623186;
+        bh=M+wO0gucsAXwhXB5py56e2MHX9Zk2IutE7e7PbRevos=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sbrnd3mbld83pfyKyBx5jEixNxbzK91mo5OlmQZmNnImOymMAhDjngt9QK+iDYKXM
-         1UU9UWX+wYHZ//pqB9UTXZYI6iOdGRKGhqHJyvCvev32sTtldYrYC1f+edt7lPdTcn
-         e1VUcV5UjEcYQ5nRKBMoHr/L1Bbe0VSx1OAutdmE=
+        b=D9t6l4QnSJ9Q+lY9DGLuRryuknA3D/17YA86g+ghYhh/7c/UACPT5qcb5XuLbRYNS
+         Jw7Msb6mVKG5CzltArfWcz8KBhpIrrX2U/5T8rau5jFMu/QGR+IR/5hYtFs4VLN4Md
+         0FE7c4ECgQ70Kz1YxIH19DZzkyR1761wql1qV2yI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.10 352/452] wifi: mac80211: fix use-after-free in chanctx code
-Date:   Tue,  7 Jun 2022 19:03:29 +0200
-Message-Id: <20220607164919.047331076@linuxfoundation.org>
+        stable@vger.kernel.org, Zhi Li <lizhi01@loongson.cn>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 325/452] MIPS: Loongson: Use hwmon_device_register_with_groups() to register hwmon
+Date:   Tue,  7 Jun 2022 19:03:02 +0200
+Message-Id: <20220607164918.245455363@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,48 +51,212 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Guenter Roeck <linux@roeck-us.net>
 
-commit 2965c4cdf7ad9ce0796fac5e57debb9519ea721e upstream.
+[ Upstream commit abae018a03821be2b65c01ebe2bef06fd7d85a4c ]
 
-In ieee80211_vif_use_reserved_context(), when we have an
-old context and the new context's replace_state is set to
-IEEE80211_CHANCTX_REPLACE_NONE, we free the old context
-in ieee80211_vif_use_reserved_reassign(). Therefore, we
-cannot check the old_ctx anymore, so we should set it to
-NULL after this point.
+Calling hwmon_device_register_with_info() with NULL dev and/or chip
+information parameters is an ABI abuse and not a real conversion to
+the new API. Also, the code creates sysfs attributes _after_ creating
+the hwmon device, which is racy and unsupported to start with. On top
+of that, the removal code tries to remove the name attribute which is
+owned by the hwmon core.
 
-However, since the new_ctx replace state is clearly not
-IEEE80211_CHANCTX_REPLACES_OTHER, we're not going to do
-anything else in this function and can just return to
-avoid accessing the freed old_ctx.
+Use hwmon_device_register_with_groups() to register the hwmon device
+instead.
 
-Cc: stable@vger.kernel.org
-Fixes: 5bcae31d9cb1 ("mac80211: implement multi-vif in-place reservations")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220601091926.df419d91b165.I17a9b3894ff0b8323ce2afdb153b101124c821e5@changeid
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+In the future, the hwmon subsystem will reject calls to
+hwmon_device_register_with_info with NULL dev or chip/info parameters.
+Without this patch, the hwmon device will fail to register.
+
+Fixes: f59dc5119192 ("MIPS: Loongson: Fix boot warning about hwmon_device_register()")
+Cc: Zhi Li <lizhi01@loongson.cn>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/chan.c |    7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/platform/mips/cpu_hwmon.c | 127 ++++++++++--------------------
+ 1 file changed, 41 insertions(+), 86 deletions(-)
 
---- a/net/mac80211/chan.c
-+++ b/net/mac80211/chan.c
-@@ -1652,12 +1652,9 @@ int ieee80211_vif_use_reserved_context(s
+diff --git a/drivers/platform/mips/cpu_hwmon.c b/drivers/platform/mips/cpu_hwmon.c
+index 386389ffec41..d8c5f9195f85 100644
+--- a/drivers/platform/mips/cpu_hwmon.c
++++ b/drivers/platform/mips/cpu_hwmon.c
+@@ -55,55 +55,6 @@ int loongson3_cpu_temp(int cpu)
+ static int nr_packages;
+ static struct device *cpu_hwmon_dev;
  
- 	if (new_ctx->replace_state == IEEE80211_CHANCTX_REPLACE_NONE) {
- 		if (old_ctx)
--			err = ieee80211_vif_use_reserved_reassign(sdata);
--		else
--			err = ieee80211_vif_use_reserved_assign(sdata);
-+			return ieee80211_vif_use_reserved_reassign(sdata);
+-static SENSOR_DEVICE_ATTR(name, 0444, NULL, NULL, 0);
+-
+-static struct attribute *cpu_hwmon_attributes[] = {
+-	&sensor_dev_attr_name.dev_attr.attr,
+-	NULL
+-};
+-
+-/* Hwmon device attribute group */
+-static struct attribute_group cpu_hwmon_attribute_group = {
+-	.attrs = cpu_hwmon_attributes,
+-};
+-
+-static ssize_t get_cpu_temp(struct device *dev,
+-			struct device_attribute *attr, char *buf);
+-static ssize_t cpu_temp_label(struct device *dev,
+-			struct device_attribute *attr, char *buf);
+-
+-static SENSOR_DEVICE_ATTR(temp1_input, 0444, get_cpu_temp, NULL, 1);
+-static SENSOR_DEVICE_ATTR(temp1_label, 0444, cpu_temp_label, NULL, 1);
+-static SENSOR_DEVICE_ATTR(temp2_input, 0444, get_cpu_temp, NULL, 2);
+-static SENSOR_DEVICE_ATTR(temp2_label, 0444, cpu_temp_label, NULL, 2);
+-static SENSOR_DEVICE_ATTR(temp3_input, 0444, get_cpu_temp, NULL, 3);
+-static SENSOR_DEVICE_ATTR(temp3_label, 0444, cpu_temp_label, NULL, 3);
+-static SENSOR_DEVICE_ATTR(temp4_input, 0444, get_cpu_temp, NULL, 4);
+-static SENSOR_DEVICE_ATTR(temp4_label, 0444, cpu_temp_label, NULL, 4);
+-
+-static const struct attribute *hwmon_cputemp[4][3] = {
+-	{
+-		&sensor_dev_attr_temp1_input.dev_attr.attr,
+-		&sensor_dev_attr_temp1_label.dev_attr.attr,
+-		NULL
+-	},
+-	{
+-		&sensor_dev_attr_temp2_input.dev_attr.attr,
+-		&sensor_dev_attr_temp2_label.dev_attr.attr,
+-		NULL
+-	},
+-	{
+-		&sensor_dev_attr_temp3_input.dev_attr.attr,
+-		&sensor_dev_attr_temp3_label.dev_attr.attr,
+-		NULL
+-	},
+-	{
+-		&sensor_dev_attr_temp4_input.dev_attr.attr,
+-		&sensor_dev_attr_temp4_label.dev_attr.attr,
+-		NULL
+-	}
+-};
+-
+ static ssize_t cpu_temp_label(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
+ {
+@@ -121,24 +72,47 @@ static ssize_t get_cpu_temp(struct device *dev,
+ 	return sprintf(buf, "%d\n", value);
+ }
  
--		if (err)
--			return err;
-+		return ieee80211_vif_use_reserved_assign(sdata);
+-static int create_sysfs_cputemp_files(struct kobject *kobj)
+-{
+-	int i, ret = 0;
+-
+-	for (i = 0; i < nr_packages; i++)
+-		ret = sysfs_create_files(kobj, hwmon_cputemp[i]);
++static SENSOR_DEVICE_ATTR(temp1_input, 0444, get_cpu_temp, NULL, 1);
++static SENSOR_DEVICE_ATTR(temp1_label, 0444, cpu_temp_label, NULL, 1);
++static SENSOR_DEVICE_ATTR(temp2_input, 0444, get_cpu_temp, NULL, 2);
++static SENSOR_DEVICE_ATTR(temp2_label, 0444, cpu_temp_label, NULL, 2);
++static SENSOR_DEVICE_ATTR(temp3_input, 0444, get_cpu_temp, NULL, 3);
++static SENSOR_DEVICE_ATTR(temp3_label, 0444, cpu_temp_label, NULL, 3);
++static SENSOR_DEVICE_ATTR(temp4_input, 0444, get_cpu_temp, NULL, 4);
++static SENSOR_DEVICE_ATTR(temp4_label, 0444, cpu_temp_label, NULL, 4);
+ 
+-	return ret;
+-}
++static struct attribute *cpu_hwmon_attributes[] = {
++	&sensor_dev_attr_temp1_input.dev_attr.attr,
++	&sensor_dev_attr_temp1_label.dev_attr.attr,
++	&sensor_dev_attr_temp2_input.dev_attr.attr,
++	&sensor_dev_attr_temp2_label.dev_attr.attr,
++	&sensor_dev_attr_temp3_input.dev_attr.attr,
++	&sensor_dev_attr_temp3_label.dev_attr.attr,
++	&sensor_dev_attr_temp4_input.dev_attr.attr,
++	&sensor_dev_attr_temp4_label.dev_attr.attr,
++	NULL
++};
+ 
+-static void remove_sysfs_cputemp_files(struct kobject *kobj)
++static umode_t cpu_hwmon_is_visible(struct kobject *kobj,
++				    struct attribute *attr, int i)
+ {
+-	int i;
++	int id = i / 2;
+ 
+-	for (i = 0; i < nr_packages; i++)
+-		sysfs_remove_files(kobj, hwmon_cputemp[i]);
++	if (id < nr_packages)
++		return attr->mode;
++	return 0;
+ }
+ 
++static struct attribute_group cpu_hwmon_group = {
++	.attrs = cpu_hwmon_attributes,
++	.is_visible = cpu_hwmon_is_visible,
++};
++
++static const struct attribute_group *cpu_hwmon_groups[] = {
++	&cpu_hwmon_group,
++	NULL
++};
++
+ #define CPU_THERMAL_THRESHOLD 90000
+ static struct delayed_work thermal_work;
+ 
+@@ -159,50 +133,31 @@ static void do_thermal_timer(struct work_struct *work)
+ 
+ static int __init loongson_hwmon_init(void)
+ {
+-	int ret;
+-
+ 	pr_info("Loongson Hwmon Enter...\n");
+ 
+ 	if (cpu_has_csr())
+ 		csr_temp_enable = csr_readl(LOONGSON_CSR_FEATURES) &
+ 				  LOONGSON_CSRF_TEMP;
+ 
+-	cpu_hwmon_dev = hwmon_device_register_with_info(NULL, "cpu_hwmon", NULL, NULL, NULL);
+-	if (IS_ERR(cpu_hwmon_dev)) {
+-		ret = PTR_ERR(cpu_hwmon_dev);
+-		pr_err("hwmon_device_register fail!\n");
+-		goto fail_hwmon_device_register;
+-	}
+-
+ 	nr_packages = loongson_sysconf.nr_cpus /
+ 		loongson_sysconf.cores_per_package;
+ 
+-	ret = create_sysfs_cputemp_files(&cpu_hwmon_dev->kobj);
+-	if (ret) {
+-		pr_err("fail to create cpu temperature interface!\n");
+-		goto fail_create_sysfs_cputemp_files;
++	cpu_hwmon_dev = hwmon_device_register_with_groups(NULL, "cpu_hwmon",
++							  NULL, cpu_hwmon_groups);
++	if (IS_ERR(cpu_hwmon_dev)) {
++		pr_err("hwmon_device_register fail!\n");
++		return PTR_ERR(cpu_hwmon_dev);
  	}
  
- 	/*
+ 	INIT_DEFERRABLE_WORK(&thermal_work, do_thermal_timer);
+ 	schedule_delayed_work(&thermal_work, msecs_to_jiffies(20000));
+ 
+-	return ret;
+-
+-fail_create_sysfs_cputemp_files:
+-	sysfs_remove_group(&cpu_hwmon_dev->kobj,
+-				&cpu_hwmon_attribute_group);
+-	hwmon_device_unregister(cpu_hwmon_dev);
+-
+-fail_hwmon_device_register:
+-	return ret;
++	return 0;
+ }
+ 
+ static void __exit loongson_hwmon_exit(void)
+ {
+ 	cancel_delayed_work_sync(&thermal_work);
+-	remove_sysfs_cputemp_files(&cpu_hwmon_dev->kobj);
+-	sysfs_remove_group(&cpu_hwmon_dev->kobj,
+-				&cpu_hwmon_attribute_group);
+ 	hwmon_device_unregister(cpu_hwmon_dev);
+ }
+ 
+-- 
+2.35.1
+
 
 
