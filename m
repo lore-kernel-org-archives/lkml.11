@@ -2,93 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A868CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:31:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5590FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:32:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344107AbiFGPbz (ORCPT
+        id S1344130AbiFGPcC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 11:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51006 "EHLO
+        Tue, 7 Jun 2022 11:32:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232029AbiFGPbv (ORCPT
+        with ESMTP id S245305AbiFGPbw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 11:31:51 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A136F5067
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:31:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654615910; x=1686151910;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=x+VtFWdXpux7/W9Qk2tMxPNhs7vkk3dWzPjYVSKAWwY=;
-  b=lHAKYIm6ErL44ZM9gh8IWxkhHrKUpmyvQZ+VwHJBnAs9scHUSVuLBh6K
-   MdYpANmIgyj1Kr7/kaJJd6sk9DR5JGec1bEtd5A1cLx0altU6SlSa0GZO
-   ajgXHdPy7DYkt5YcVQ4XEnERWgwwMsPHUegODalvvZTGviZ3e5K7a4tbr
-   HREYBUjqEBuPWk9fzi0qSllDyAhrV4a8DhkmUdNOb1OHwno6opogctDNO
-   xE3M2nWmCv0/yHrAWU1pu3FOS/2QUAiayvddFjVYu6u1+bLBjXWgGDQCB
-   0dWcdkqbIhSM1F6v3T39Mw+etCIKYMfwXjZf+4Dc0XiRW6BGwoSxYX5iu
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="259570052"
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="259570052"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 08:25:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="584242600"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga007.fm.intel.com with ESMTP; 07 Jun 2022 08:25:27 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 50040109; Tue,  7 Jun 2022 18:25:30 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Dan Williams <dan.j.williams@intel.com>, nvdimm@lists.linux.dev,
+        Tue, 7 Jun 2022 11:31:52 -0400
+Received: from m12-11.163.com (m12-11.163.com [220.181.12.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B0B6F45DE;
+        Tue,  7 Jun 2022 08:31:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=uNPsyShOFiuwQGXJNt
+        ++4+eFtCC9VoD+9K2/mAYK9QI=; b=ILXys8kBZMpjoIDZoqm9tHve4Jy6dqU3Ul
+        1RWqpQVQHZWue1xgMBwJ4QzgfLM6RZerSdeMo9k3woQ1aZp/NEJaQogIoGa51mdG
+        Z2tbEJ8boPcW5VrGSwTg77NCLeYpwvMJEx6+JYJ3yrkcyVVe1qVKhud9GB4l7iKc
+        xM+e5xo+Y=
+Received: from localhost.localdomain (unknown [202.112.113.212])
+        by smtp7 (Coremail) with SMTP id C8CowADncKANb59i1gX+Gg--.1343S4;
+        Tue, 07 Jun 2022 23:30:26 +0800 (CST)
+From:   Xiaohui Zhang <ruc_zhangxiaohui@163.com>
+To:     Xiaohui Zhang <ruc_zhangxiaohui@163.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] nvdimm/namespace: return uuid_null only once in nd_dev_to_uuid()
-Date:   Tue,  7 Jun 2022 18:25:25 +0300
-Message-Id: <20220607152525.33468-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Cc:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+Subject: [PATCH 1/1] Bluetooth: use memset avoid memory leaks
+Date:   Tue,  7 Jun 2022 23:30:20 +0800
+Message-Id: <20220607153020.29430-1-ruc_zhangxiaohui@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: C8CowADncKANb59i1gX+Gg--.1343S4
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtw18JFy3Xw48AFW5WF4xtFb_yoWfWFX_uw
+        4ruayfZa1rJ34Iya12yF48u3W2yan5ZrZ5GrnaqrWUX34UGw47Krs2gFnxWrn7K39ruFy3
+        ArZ8JryrAw48JjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRMvtCDUUUUU==
+X-Originating-IP: [202.112.113.212]
+X-CM-SenderInfo: puxfs6pkdqw5xldrx3rl6rljoofrz/1tbiThIZMFUDPaLqywAAsd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Refactor nd_dev_to_uuid() in order to make code shorter and cleaner
-by joining conditions and hence returning uuid_null only once.
+From: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Similar to the handling of l2cap_ecred_connect in commit d3715b2333e9
+("Bluetooth: use memset avoid memory leaks"), we thought a patch
+might be needed here as well.
+
+Use memset to initialize structs to prevent memory leaks
+in l2cap_le_connect
+
+Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
 ---
- drivers/nvdimm/namespace_devs.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ net/bluetooth/l2cap_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/nvdimm/namespace_devs.c b/drivers/nvdimm/namespace_devs.c
-index bf4f5c09d9b1..3dae17c90e8c 100644
---- a/drivers/nvdimm/namespace_devs.c
-+++ b/drivers/nvdimm/namespace_devs.c
-@@ -170,15 +170,12 @@ EXPORT_SYMBOL(nvdimm_namespace_disk_name);
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index ae78490ecd3d..09ecaf556de5 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -1369,6 +1369,7 @@ static void l2cap_le_connect(struct l2cap_chan *chan)
  
- const uuid_t *nd_dev_to_uuid(struct device *dev)
- {
--	if (!dev)
--		return &uuid_null;
--
--	if (is_namespace_pmem(dev)) {
-+	if (dev && is_namespace_pmem(dev)) {
- 		struct nd_namespace_pmem *nspm = to_nd_namespace_pmem(dev);
+ 	l2cap_le_flowctl_init(chan, 0);
  
- 		return nspm->uuid;
--	} else
--		return &uuid_null;
-+	}
-+	return &uuid_null;
- }
- EXPORT_SYMBOL(nd_dev_to_uuid);
- 
++	memset(&req, 0, sizeof(req));
+ 	req.psm     = chan->psm;
+ 	req.scid    = cpu_to_le16(chan->scid);
+ 	req.mtu     = cpu_to_le16(chan->imtu);
 -- 
-2.35.1
+2.17.1
 
