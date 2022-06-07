@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 627F8CCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B500CCA48E
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357117AbiFGTlK (ORCPT
+        id S1357164AbiFGTlY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:41:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43262 "EHLO
+        Tue, 7 Jun 2022 15:41:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354431AbiFGSrC (ORCPT
+        with ESMTP id S1354478AbiFGSrE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ADDA44749;
-        Tue,  7 Jun 2022 11:01:12 -0700 (PDT)
+        Tue, 7 Jun 2022 14:47:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285DE6898D;
+        Tue,  7 Jun 2022 11:01:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E97DF616B6;
-        Tue,  7 Jun 2022 18:01:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53DD0C3411C;
-        Tue,  7 Jun 2022 18:01:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC0F4B82239;
+        Tue,  7 Jun 2022 18:01:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34C27C34115;
+        Tue,  7 Jun 2022 18:01:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624871;
-        bh=Th3DUZqFk8+1/xRoOYXgybjrLnW/ivzgL1Rlj1RfciY=;
+        s=k20201202; t=1654624887;
+        bh=WYtg6yUY6yiewaqifDNtJ9l3eq/l+7QgrMV3SgSnmtw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bLE/JclFbYmZ5ZSHsjv2g2QrJAAQJ+1R8g0rDS8xdFmU3EsdOWQYVc2w3G/c+jQCD
-         enuq65DounycUIBRNN1zMjapoUP67q3Y8jY/UoEt08f6fsbqgw4JH94eVT54Fdxg4P
-         lr3QGicdi3WFDSE8fxfBjphnw/nlMKdyebXBpfn66P2GJQyF62zg0Cy8DMMnjYyhSp
-         NuJ9eLqhAttKsnHUFXvLEOcYXNwcNeW67lX2d2Z3MMTUza2nC2lpkGEFDFsF4+BswX
-         IcjfHfjEjPRsQfzrspgtRVqCm4dattSIvKKewbRz4aW68Vq6ay41YLzTKX9w+u0xx7
-         XTJrd/uwofvtA==
+        b=BrcKxJLKAI3jXkFS13VL3Vb2rrFXudMZ1jFf2gy/kAIctNckzYa7G362dv54fi8fR
+         lKigeisufoY8TXfI+C1FcxY/GzRaI/IaOyB7f98WYKK24NxoBISoxq+cXX2b1XjCsU
+         w34KsOHZ7eg7DcoCzNMOx5yTNore0LWXWkPf/dVguz6QxF3uQwAt7V6YhovBQUi4IG
+         X4Ee7EQ3Ett7GAQD5BXtTdZdE+TXTVFihOM+uTXm85OKSxUrRakehJV6LSL2kAy3On
+         QLhR8595DMv08O5DOAoIQpS9HEznMnJs57LwRM7flxBFeWT0VR9/AwiQ4fPOSFCSG4
+         BxE6gD4FgbE5w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hannes Reinecke <hare@suse.de>, Zheyu Ma <zheyuma97@gmail.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, hare@kernel.org,
-        jejb@linux.ibm.com, linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 23/34] scsi: myrb: Fix up null pointer access on myrb_cleanup()
-Date:   Tue,  7 Jun 2022 13:59:58 -0400
-Message-Id: <20220607180011.481266-23-sashal@kernel.org>
+Cc:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>, frankja@linux.ibm.com,
+        gor@linux.ibm.com, kvm@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 32/34] s390/gmap: voluntarily schedule during key setting
+Date:   Tue,  7 Jun 2022 14:00:07 -0400
+Message-Id: <20220607180011.481266-32-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
 References: <20220607180011.481266-1-sashal@kernel.org>
@@ -53,55 +55,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hannes Reinecke <hare@suse.de>
+From: Christian Borntraeger <borntraeger@linux.ibm.com>
 
-[ Upstream commit f9f0a46141e2e39bedb4779c88380d1b5f018c14 ]
+[ Upstream commit 6d5946274df1fff539a7eece458a43be733d1db8 ]
 
-When myrb_probe() fails the callback might not be set, so we need to
-validate the 'disable_intr' callback in myrb_cleanup() to not cause a null
-pointer exception. And while at it do not call myrb_cleanup() if we cannot
-enable the PCI device at all.
+With large and many guest with storage keys it is possible to create
+large latencies or stalls during initial key setting:
 
-Link: https://lore.kernel.org/r/20220523120244.99515-1-hare@suse.de
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Tested-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+rcu: INFO: rcu_sched self-detected stall on CPU
+rcu:   18-....: (2099 ticks this GP) idle=54e/1/0x4000000000000002 softirq=35598716/35598716 fqs=998
+       (t=2100 jiffies g=155867385 q=20879)
+Task dump for CPU 18:
+CPU 1/KVM       R  running task        0 1030947 256019 0x06000004
+Call Trace:
+sched_show_task
+rcu_dump_cpu_stacks
+rcu_sched_clock_irq
+update_process_times
+tick_sched_handle
+tick_sched_timer
+__hrtimer_run_queues
+hrtimer_interrupt
+do_IRQ
+ext_int_handler
+ptep_zap_key
+
+The mmap lock is held during the page walking but since this is a
+semaphore scheduling is still possible. Same for the kvm srcu.
+To minimize overhead do this on every segment table entry or large page.
+
+Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Reviewed-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220530092706.11637-2-borntraeger@linux.ibm.com
+Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/myrb.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ arch/s390/mm/gmap.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/scsi/myrb.c b/drivers/scsi/myrb.c
-index 539ac8ce4fcd..35b32920a94a 100644
---- a/drivers/scsi/myrb.c
-+++ b/drivers/scsi/myrb.c
-@@ -1241,7 +1241,8 @@ static void myrb_cleanup(struct myrb_hba *cb)
- 	myrb_unmap(cb);
+diff --git a/arch/s390/mm/gmap.c b/arch/s390/mm/gmap.c
+index 5e5a4e1f0e6c..19ee8355b2a7 100644
+--- a/arch/s390/mm/gmap.c
++++ b/arch/s390/mm/gmap.c
+@@ -2579,6 +2579,18 @@ static int __s390_enable_skey_pte(pte_t *pte, unsigned long addr,
+ 	return 0;
+ }
  
- 	if (cb->mmio_base) {
--		cb->disable_intr(cb->io_base);
-+		if (cb->disable_intr)
-+			cb->disable_intr(cb->io_base);
- 		iounmap(cb->mmio_base);
- 	}
- 	if (cb->irq)
-@@ -3516,9 +3517,13 @@ static struct myrb_hba *myrb_detect(struct pci_dev *pdev,
- 	mutex_init(&cb->dcmd_mutex);
- 	mutex_init(&cb->dma_mutex);
- 	cb->pdev = pdev;
-+	cb->host = shost;
++/*
++ * Give a chance to schedule after setting a key to 256 pages.
++ * We only hold the mm lock, which is a rwsem and the kvm srcu.
++ * Both can sleep.
++ */
++static int __s390_enable_skey_pmd(pmd_t *pmd, unsigned long addr,
++				  unsigned long next, struct mm_walk *walk)
++{
++	cond_resched();
++	return 0;
++}
++
+ static int __s390_enable_skey_hugetlb(pte_t *pte, unsigned long addr,
+ 				      unsigned long hmask, unsigned long next,
+ 				      struct mm_walk *walk)
+@@ -2601,12 +2613,14 @@ static int __s390_enable_skey_hugetlb(pte_t *pte, unsigned long addr,
+ 	end = start + HPAGE_SIZE - 1;
+ 	__storage_key_init_range(start, end);
+ 	set_bit(PG_arch_1, &page->flags);
++	cond_resched();
+ 	return 0;
+ }
  
--	if (pci_enable_device(pdev))
--		goto failure;
-+	if (pci_enable_device(pdev)) {
-+		dev_err(&pdev->dev, "Failed to enable PCI device\n");
-+		scsi_host_put(shost);
-+		return NULL;
-+	}
+ static const struct mm_walk_ops enable_skey_walk_ops = {
+ 	.hugetlb_entry		= __s390_enable_skey_hugetlb,
+ 	.pte_entry		= __s390_enable_skey_pte,
++	.pmd_entry		= __s390_enable_skey_pmd,
+ };
  
- 	if (privdata->hw_init == DAC960_PD_hw_init ||
- 	    privdata->hw_init == DAC960_P_hw_init) {
+ int s390_enable_skey(void)
 -- 
 2.35.1
 
