@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD92DCCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97582C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385529AbiFHAo7 (ORCPT
+        id S1380115AbiFHAon (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38214 "EHLO
+        Tue, 7 Jun 2022 20:44:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382587AbiFGWDr (ORCPT
+        with ESMTP id S1382374AbiFGWDV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:03:47 -0400
+        Tue, 7 Jun 2022 18:03:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D350625227F;
-        Tue,  7 Jun 2022 12:15:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8263B2514B0;
+        Tue,  7 Jun 2022 12:15:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81844B8233E;
-        Tue,  7 Jun 2022 19:15:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE500C385A2;
-        Tue,  7 Jun 2022 19:15:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EBF28B82368;
+        Tue,  7 Jun 2022 19:15:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B62BC385A2;
+        Tue,  7 Jun 2022 19:15:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629326;
-        bh=MU2+vNNvD/C4Et7c0mjGwxnPA8RogRxCydOV6Jl+oY8=;
+        s=korg; t=1654629312;
+        bh=K1VJeX5GCDsY+9X8S0bObVsEpIXlCrJ6Ne/vbZkkzvU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R0uEdJk4YRFH4aFPeo1caQja3ZREHJLtwfaDEd87cJ2ltUnIB4JR3VHBuYVeeyMwJ
-         cuQ64eLOPtXzSLg7L7aGdG8y8ifPty7Udzu4f7+MgrMCgDwvESX5ldFdnutuPiRVia
-         weAqj2Ra4N15MgtqSRHy7TObhkvArFV8tRRmm9oM=
+        b=UoIWpnSc8T8zAS+vo4YbLV+BOU8vfL6HoNWtfHbp8tz1kAS8rJH12g0oYcofekbtL
+         oysX0y5QgpJlM06Fsh/7ORe51/b5smeXHwdl2aAbSE1543Lt040HSXUuixHu4ZhlVH
+         A2h9zF0bF1mxznEv6Lc/v86uQx9ldB3dri62sc0E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Bj=C3=B6rn=20Ard=C3=B6?= <bjorn.ardo@axis.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 651/879] mailbox: forward the hrtimer if not queued and under a lock
-Date:   Tue,  7 Jun 2022 19:02:49 +0200
-Message-Id: <20220607165021.743865142@linuxfoundation.org>
+Subject: [PATCH 5.18 647/879] powerpc/fsl_book3e: Dont set rodata RO too early
+Date:   Tue,  7 Jun 2022 19:02:45 +0200
+Message-Id: <20220607165021.627479518@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,107 +51,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Björn Ardö <bjorn.ardo@axis.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit bca1a1004615efe141fd78f360ecc48c60bc4ad5 ]
+[ Upstream commit ad91f66f5fa7c6f9346e721c3159ce818568028b ]
 
-This reverts commit c7dacf5b0f32957b24ef29df1207dc2cd8307743,
-"mailbox: avoid timer start from callback"
+On fsl_book3e, rodata is set read-only at the same time as
+init text is set NX at the end of init. That's too early.
 
-The previous commit was reverted since it lead to a race that
-caused the hrtimer to not be started at all. The check for
-hrtimer_active() in msg_submit() will return true if the
-callback function txdone_hrtimer() is currently running. This
-function could return HRTIMER_NORESTART and then the timer
-will not be restarted, and also msg_submit() will not start
-the timer. This will lead to a message actually being submitted
-but no timer will start to check for its compleation.
+As both action are performed at the same time, delay both
+actions to the time rodata is expected to be made read-only.
 
-The original fix that added checking hrtimer_active() was added to
-avoid a warning with hrtimer_forward. Looking in the kernel
-another solution to avoid this warning is to check hrtimer_is_queued()
-before calling hrtimer_forward_now() instead. This however requires a
-lock so the timer is not started by msg_submit() inbetween this check
-and the hrtimer_forward() call.
+It means we will have a small window with init mem freed but
+still executable. It shouldn't be an issue though, especially
+because the said memory gets poisoned and should therefore
+result to a bad instruction fault in case it gets executed.
 
-Fixes: c7dacf5b0f32 ("mailbox: avoid timer start from callback")
-Signed-off-by: Björn Ardö <bjorn.ardo@axis.com>
-Signed-off-by: Jassi Brar <jaswinder.singh@linaro.org>
+mmu_mark_initmem_nx() is bailing out before doing anything when
+CONFIG_STRICT_KERNEL_RWX is not selected or rodata_enabled is false.
+
+mmu_mark_rodata_ro() is called only when CONFIG_STRICT_KERNEL_RWX
+is selected and rodata_enabled is true so this is equivalent.
+
+Move code from mmu_mark_initmem_nx() into mmu_mark_rodata_ro() and
+remove the call to strict_kernel_rwx_enabled() which is not needed
+anymore.
+
+Fixes: d5970045cf9e ("powerpc/fsl_booke: Update of TLBCAMs after init")
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/2e35f0fd649c83c5add17a99514ac040767be93a.1652981047.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mailbox/mailbox.c          | 19 +++++++++++++------
- include/linux/mailbox_controller.h |  1 +
- 2 files changed, 14 insertions(+), 6 deletions(-)
+ arch/powerpc/mm/nohash/fsl_book3e.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/mailbox/mailbox.c b/drivers/mailbox/mailbox.c
-index 3e7d4b20ab34..4229b9b5da98 100644
---- a/drivers/mailbox/mailbox.c
-+++ b/drivers/mailbox/mailbox.c
-@@ -82,11 +82,11 @@ static void msg_submit(struct mbox_chan *chan)
- exit:
- 	spin_unlock_irqrestore(&chan->lock, flags);
+diff --git a/arch/powerpc/mm/nohash/fsl_book3e.c b/arch/powerpc/mm/nohash/fsl_book3e.c
+index dfe715e0f70a..388f7c7dabd3 100644
+--- a/arch/powerpc/mm/nohash/fsl_book3e.c
++++ b/arch/powerpc/mm/nohash/fsl_book3e.c
+@@ -287,22 +287,19 @@ void __init adjust_total_lowmem(void)
  
--	/* kick start the timer immediately to avoid delays */
- 	if (!err && (chan->txdone_method & TXDONE_BY_POLL)) {
--		/* but only if not already active */
--		if (!hrtimer_active(&chan->mbox->poll_hrt))
--			hrtimer_start(&chan->mbox->poll_hrt, 0, HRTIMER_MODE_REL);
-+		/* kick start the timer immediately to avoid delays */
-+		spin_lock_irqsave(&chan->mbox->poll_hrt_lock, flags);
-+		hrtimer_start(&chan->mbox->poll_hrt, 0, HRTIMER_MODE_REL);
-+		spin_unlock_irqrestore(&chan->mbox->poll_hrt_lock, flags);
- 	}
+ #ifdef CONFIG_STRICT_KERNEL_RWX
+ void mmu_mark_rodata_ro(void)
+-{
+-	/* Everything is done in mmu_mark_initmem_nx() */
+-}
+-#endif
+-
+-void mmu_mark_initmem_nx(void)
+ {
+ 	unsigned long remapped;
+ 
+-	if (!strict_kernel_rwx_enabled())
+-		return;
+-
+ 	remapped = map_mem_in_cams(__max_low_memory, CONFIG_LOWMEM_CAM_NUM, false, false);
+ 
+ 	WARN_ON(__max_low_memory != remapped);
  }
- 
-@@ -120,20 +120,26 @@ static enum hrtimer_restart txdone_hrtimer(struct hrtimer *hrtimer)
- 		container_of(hrtimer, struct mbox_controller, poll_hrt);
- 	bool txdone, resched = false;
- 	int i;
-+	unsigned long flags;
- 
- 	for (i = 0; i < mbox->num_chans; i++) {
- 		struct mbox_chan *chan = &mbox->chans[i];
- 
- 		if (chan->active_req && chan->cl) {
--			resched = true;
- 			txdone = chan->mbox->ops->last_tx_done(chan);
- 			if (txdone)
- 				tx_tick(chan, 0);
-+			else
-+				resched = true;
- 		}
- 	}
- 
- 	if (resched) {
--		hrtimer_forward_now(hrtimer, ms_to_ktime(mbox->txpoll_period));
-+		spin_lock_irqsave(&mbox->poll_hrt_lock, flags);
-+		if (!hrtimer_is_queued(hrtimer))
-+			hrtimer_forward_now(hrtimer, ms_to_ktime(mbox->txpoll_period));
-+		spin_unlock_irqrestore(&mbox->poll_hrt_lock, flags);
++#endif
 +
- 		return HRTIMER_RESTART;
- 	}
- 	return HRTIMER_NORESTART;
-@@ -500,6 +506,7 @@ int mbox_controller_register(struct mbox_controller *mbox)
- 		hrtimer_init(&mbox->poll_hrt, CLOCK_MONOTONIC,
- 			     HRTIMER_MODE_REL);
- 		mbox->poll_hrt.function = txdone_hrtimer;
-+		spin_lock_init(&mbox->poll_hrt_lock);
- 	}
++void mmu_mark_initmem_nx(void)
++{
++	/* Everything is done in mmu_mark_rodata_ro() */
++}
  
- 	for (i = 0; i < mbox->num_chans; i++) {
-diff --git a/include/linux/mailbox_controller.h b/include/linux/mailbox_controller.h
-index 36d6ce673503..6fee33cb52f5 100644
---- a/include/linux/mailbox_controller.h
-+++ b/include/linux/mailbox_controller.h
-@@ -83,6 +83,7 @@ struct mbox_controller {
- 				      const struct of_phandle_args *sp);
- 	/* Internal to API */
- 	struct hrtimer poll_hrt;
-+	spinlock_t poll_hrt_lock;
- 	struct list_head node;
- };
- 
+ void setup_initial_memory_limit(phys_addr_t first_memblock_base,
+ 				phys_addr_t first_memblock_size)
 -- 
 2.35.1
 
