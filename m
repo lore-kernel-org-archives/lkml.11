@@ -2,164 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F2BCCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD456CCA483
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347924AbiFHCOt convert rfc822-to-8bit (ORCPT
+        id S1446503AbiFHCPA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:14:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60840 "EHLO
+        Tue, 7 Jun 2022 22:15:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347030AbiFHBMK (ORCPT
+        with ESMTP id S234866AbiFHBXT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 21:12:10 -0400
-Received: from relay3.hostedemail.com (smtprelay0017.hostedemail.com [216.40.44.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A94F3F88
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 17:04:13 -0700 (PDT)
-Received: from omf14.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay08.hostedemail.com (Postfix) with ESMTP id 656FF20FE2;
-        Wed,  8 Jun 2022 00:04:12 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf14.hostedemail.com (Postfix) with ESMTPA id F305D34;
-        Wed,  8 Jun 2022 00:04:09 +0000 (UTC)
-Message-ID: <ff5d5283af74576f65545399851a40cb4f16a85c.camel@perches.com>
-Subject: Re: [PATCH AUTOSEL 5.15 24/51] staging: rtl8723bs: Fix alignment to
- match open parenthesis
-From:   Joe Perches <joe@perches.com>
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Soumya Negi <soumya.negi97@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        fabioaiuto83@gmail.com, hdegoede@redhat.com,
-        straube.linux@gmail.com, linux@roeck-us.net,
-        linux-staging@lists.linux.dev
-Date:   Tue, 07 Jun 2022 17:04:08 -0700
-In-Reply-To: <20220607175552.479948-24-sashal@kernel.org>
-References: <20220607175552.479948-1-sashal@kernel.org>
-         <20220607175552.479948-24-sashal@kernel.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        Tue, 7 Jun 2022 21:23:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7B66258713;
+        Tue,  7 Jun 2022 12:20:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95990608CD;
+        Tue,  7 Jun 2022 19:20:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E8E0C385A2;
+        Tue,  7 Jun 2022 19:20:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629616;
+        bh=7MXVjTOkzkp0cqe05piXDI6xTc6wj6lQz9zsbLMEO/I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wYrc81imlqJpBhQQBFVbaEUtbEadlZ6ZJQy8kOyOtfST+2bpqgGHrS65s9CzXtCUp
+         w9tLXrWar3tl4roN7/SENypWmzrodqUp9wnRIzDnWlfo0oX/moQ1Uo+UnZzKQI2gL/
+         X+rCYutjLYGISjNCd0iVTqvqfIpQv58TMfqh+mCU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH 5.18 754/879] PCI/PM: Fix bridge_d3_blacklist[] Elo i2 overwrite of Gigabyte X299
+Date:   Tue,  7 Jun 2022 19:04:32 +0200
+Message-Id: <20220607165024.745784224@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-Rspamd-Server: rspamout05
-X-Rspamd-Queue-Id: F305D34
-X-Stat-Signature: pnfos8g8zpnt97ykr4brkpj7d7bm7d1h
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18P40btaGeuEf3McqHiLYo0TAdcxzePTJw=
-X-HE-Tag: 1654646649-63006
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-06-07 at 13:55 -0400, Sasha Levin wrote:
-> From: Soumya Negi <soumya.negi97@gmail.com>
-> 
-> [ Upstream commit f722d67fad290b0c960f27062adc8cf59488d0a7 ]
-> 
-> Adhere to Linux coding style. Fixes checkpatch warnings:
-> CHECK: Alignment should match open parenthesis
-> CHECK: line length of 101 exceeds 100 columns
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-why should this be backported?  It's only whitespace changes.
+commit 12068bb346db5776d0ec9bb4cd073f8427a1ac92 upstream.
 
-And beyond that, it's incomplete as it only realigns the second line of
-statements that span 3 lines.
+92597f97a40b ("PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold") omitted
+braces around the new Elo i2 entry, so it overwrote the existing Gigabyte
+X299 entry.  Add the appropriate braces.
 
-> 
-> Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
-> Link: https://lore.kernel.org/r/20220513025553.13634-1-soumya.negi97@gmail.com
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  drivers/staging/rtl8723bs/core/rtw_ap.c | 24 +++++++++++++-----------
->  1 file changed, 13 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/staging/rtl8723bs/core/rtw_ap.c b/drivers/staging/rtl8723bs/core/rtw_ap.c
-> index 6064dd6a76b4..43cd90dc9017 100644
-> --- a/drivers/staging/rtl8723bs/core/rtw_ap.c
-> +++ b/drivers/staging/rtl8723bs/core/rtw_ap.c
-> @@ -519,12 +519,12 @@ void update_sta_info_apmode(struct adapter *padapter, struct sta_info *psta)
->  
->  		/*  B0 Config LDPC Coding Capability */
->  		if (TEST_FLAG(phtpriv_ap->ldpc_cap, LDPC_HT_ENABLE_TX) &&
-> -			      GET_HT_CAPABILITY_ELE_LDPC_CAP((u8 *)(&phtpriv_sta->ht_cap)))
-> +		    GET_HT_CAPABILITY_ELE_LDPC_CAP((u8 *)(&phtpriv_sta->ht_cap)))
->  			SET_FLAG(cur_ldpc_cap, (LDPC_HT_ENABLE_TX | LDPC_HT_CAP_TX));
->  
->  		/*  B7 B8 B9 Config STBC setting */
->  		if (TEST_FLAG(phtpriv_ap->stbc_cap, STBC_HT_ENABLE_TX) &&
-> -			      GET_HT_CAPABILITY_ELE_RX_STBC((u8 *)(&phtpriv_sta->ht_cap)))
-> +		    GET_HT_CAPABILITY_ELE_RX_STBC((u8 *)(&phtpriv_sta->ht_cap)))
->  			SET_FLAG(cur_stbc_cap, (STBC_HT_ENABLE_TX | STBC_HT_CAP_TX));
->  	} else {
->  		phtpriv_sta->ampdu_enable = false;
-> @@ -1064,10 +1064,12 @@ int rtw_check_beacon_data(struct adapter *padapter, u8 *pbuf,  int len)
->  		);
->  
->  		if ((psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_CCMP) ||
-> -		     (psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_CCMP)) {
-> -			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY & (0x07 << 2));
-> +		    (psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_CCMP)) {
-> +			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY &
-> +						       (0x07 << 2));
->  		} else {
-> -			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY & 0x00);
-> +			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY &
-> +						       0x00);
->  		}
->  
->  		rtw_hal_get_def_var(
-> @@ -1115,7 +1117,7 @@ int rtw_check_beacon_data(struct adapter *padapter, u8 *pbuf,  int len)
->  	pmlmepriv->htpriv.ht_option = false;
->  
->  	if ((psecuritypriv->wpa2_pairwise_cipher & WPA_CIPHER_TKIP) ||
-> -	     (psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_TKIP)) {
-> +	    (psecuritypriv->wpa_pairwise_cipher & WPA_CIPHER_TKIP)) {
->  		/* todo: */
->  		/* ht_cap = false; */
->  	}
-> @@ -1724,7 +1726,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
->  			pmlmepriv->num_sta_no_short_preamble--;
->  
->  			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
-> -				(pmlmepriv->num_sta_no_short_preamble == 0)) {
-> +			    (pmlmepriv->num_sta_no_short_preamble == 0)) {
->  				beacon_updated = true;
->  				update_beacon(padapter, 0xFF, NULL, true);
->  			}
-> @@ -1762,7 +1764,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
->  			pmlmepriv->num_sta_no_short_slot_time++;
->  
->  			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
-> -				 (pmlmepriv->num_sta_no_short_slot_time == 1)) {
-> +			    (pmlmepriv->num_sta_no_short_slot_time == 1)) {
->  				beacon_updated = true;
->  				update_beacon(padapter, 0xFF, NULL, true);
->  			}
-> @@ -1774,7 +1776,7 @@ void bss_cap_update_on_sta_join(struct adapter *padapter, struct sta_info *psta)
->  			pmlmepriv->num_sta_no_short_slot_time--;
->  
->  			if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
-> -				 (pmlmepriv->num_sta_no_short_slot_time == 0)) {
-> +			    (pmlmepriv->num_sta_no_short_slot_time == 0)) {
->  				beacon_updated = true;
->  				update_beacon(padapter, 0xFF, NULL, true);
->  			}
-> @@ -2023,7 +2025,7 @@ void rtw_ap_restore_network(struct adapter *padapter)
->  	start_bss_network(padapter);
->  
->  	if ((padapter->securitypriv.dot11PrivacyAlgrthm == _TKIP_) ||
-> -		(padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)) {
-> +	    (padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)) {
->  		/* restore group key, WEP keys is restored in ips_leave() */
->  		rtw_set_key(
->  			padapter,
-> @@ -2061,7 +2063,7 @@ void rtw_ap_restore_network(struct adapter *padapter)
->  			/* pairwise key */
->  			/* per sta pairwise key and settings */
->  			if ((psecuritypriv->dot11PrivacyAlgrthm == _TKIP_) ||
-> -				(psecuritypriv->dot11PrivacyAlgrthm == _AES_)) {
-> +			    (psecuritypriv->dot11PrivacyAlgrthm == _AES_)) {
->  				rtw_setstakey_cmd(padapter, psta, true, false);
->  			}
->  		}
+Found by:
+
+  $ make W=1 drivers/pci/pci.o
+    CC      drivers/pci/pci.o
+  drivers/pci/pci.c:2974:12: error: initialized field overwritten [-Werror=override-init]
+   2974 |   .ident = "Elo i2",
+        |            ^~~~~~~~
+
+Link: https://lore.kernel.org/r/20220526221258.GA409855@bhelgaas
+Fixes: 92597f97a40b ("PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold")
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: stable@vger.kernel.org  # v5.15+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/pci/pci.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -2920,6 +2920,8 @@ static const struct dmi_system_id bridge
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "Gigabyte Technology Co., Ltd."),
+ 			DMI_MATCH(DMI_BOARD_NAME, "X299 DESIGNARE EX-CF"),
+ 		},
++	},
++	{
+ 		/*
+ 		 * Downstream device is not accessible after putting a root port
+ 		 * into D3cold and back into D0 on Elo i2.
+
 
