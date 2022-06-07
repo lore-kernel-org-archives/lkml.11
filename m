@@ -2,132 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BE7CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 419BCCCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:09:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391076AbiFHBGW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60470 "EHLO
+        id S230090AbiFHBIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:08:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382306AbiFGXjF (ORCPT
+        with ESMTP id S1383706AbiFGVxb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:39:05 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F66A1737D3
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:30 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id 15-20020a63020f000000b003fca9ebc5cbso8958038pgc.22
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=GmS2Zfk79J/Sy/RToehyTdCO4x0cZbdTb+j/zQ23WRQ=;
-        b=bdzmq7UnnPvyPEMgI3dsae1dM+24A3NDnSWf4gIbLMniZ2r+Aq4+nRpXJeZPPB9xL8
-         PK2dP2sPhxm42na7Jm0Eep0e+8o5d5QH9UDPqbjcsE/VWDdOrTWQ2asiqtAsh3BmYVBz
-         HFXIyvQgt7roQVy8YOrqw6ZqEAfovWah6OHIiWgSxODHxPCKVHdzC9QY9emiU80JH6c6
-         Pf9AY6vbYJZsdWVbS8Utv1IcJ6z3SCEdzpio9yHXPzxLYiTu0UudYuPUblOSgy2Kr46l
-         fLzlCtqxY70zJB5zQcWyWFB+McvkwFLgrM4/v7DiqHrbVt1Y1Bqq3nqDXxLf26xzQ9Mh
-         90rA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=GmS2Zfk79J/Sy/RToehyTdCO4x0cZbdTb+j/zQ23WRQ=;
-        b=wKk5d0/nLHTRFEi6bM9TwPC4ufW96fEkYnZ9Und7+7mtNpYJrnv8PUsw7bP8+81ImH
-         JQQeQ/RgVIhGS1BHtQ+cqW5M+ny2WSHyM9G+IMn+E1ycsasaizM/SekqZsae9FYm+aly
-         uSB1jVxTuQpvSWfeewP3S+aXbZvDg49e/cOjHGSpj85FG8RfJ96Q0LP+bp9HVI4eMbZE
-         Ur3FjMt1Qf5vnsUT/yEBKbsu2LcZUXn+FVsk2qHFih+6kUJIQfjrTbdIr3TPYyB+HlwL
-         cz7PYJh05UprG7/n5KQNIoaA9F3rBBiL59B5zzaWtepPQUbeHT+N8MBaFCxIECIOvFL8
-         CqUQ==
-X-Gm-Message-State: AOAM531yotaXfwdlel39k1ovR7XhoXvfCBy0+vhH5zD2kXkoDpkiCOrj
-        xAqPqJ8is8JVUnvC1unc4zs3SpqHMTo=
-X-Google-Smtp-Source: ABdhPJzLtIwGn7tXr8E4ox73+ncuEOoNaH720aApuV9kLjNuT2EKO4l6xAlZFYo1g5kpgraplK4mzENO8E8=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:903:2d0:b0:14d:8a8d:cb1 with SMTP id
- s16-20020a17090302d000b0014d8a8d0cb1mr30934054plk.50.1654637789914; Tue, 07
- Jun 2022 14:36:29 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue,  7 Jun 2022 21:35:56 +0000
-In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
-Message-Id: <20220607213604.3346000-8-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220607213604.3346000-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v5 07/15] KVM: VMX: Add helper to check if the guest PMU has PERF_GLOBAL_CTRL
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
-        David Matlack <dmatlack@google.com>,
-        Oliver Upton <oupton@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 7 Jun 2022 17:53:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21348216286;
+        Tue,  7 Jun 2022 12:12:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ECED6618DF;
+        Tue,  7 Jun 2022 19:11:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 014F9C385A2;
+        Tue,  7 Jun 2022 19:11:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629119;
+        bh=wppAPTYZacra8jvjOGCwiUf7y78jF2kYF71m4qcN1Bo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oVHmiAslLOAMyzxxzVpLkJLg8JOIVQZie4M3Jro7ANVT3ZupzYfMQDCL3w4ccZYOu
+         bmm266/dHLrf3y9uS8Q8DLbXaki8j5LNK1M9YY4jF696kR2M2Zx1IKHYRI1pNJwWB6
+         aU5cNk64M3Q19lm1iiW9CKxkD4+qvKMJ5jo+4daQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 575/879] pinctrl: bcm2835: implement hook for missing gpio-ranges
+Date:   Tue,  7 Jun 2022 19:01:33 +0200
+Message-Id: <20220607165019.545531859@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a helper to check of the guest PMU has PERF_GLOBAL_CTRL, which is
-unintuitive _and_ diverges from Intel's architecturally defined behavior.
-Even worse, KVM currently implements the check using two different, but
-equivalent checksand , _and_ there has been at least one attempt to add a
-_third_ flavor.
+From: Stefan Wahren <stefan.wahren@i2se.com>
 
-Link: https://lore.kernel.org/all/Yk4ugOETeo%2FqDRbW@google.com
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+[ Upstream commit d2b67744fd99b06555b7e4d67302ede6c7c6a638 ]
+
+The commit c8013355ead6 ("ARM: dts: gpio-ranges property is now required")
+fixed the GPIO probing issues caused by "pinctrl: bcm2835: Change init
+order for gpio hogs". This changed only the kernel DTS files. Unfortunately
+it isn't guaranteed that these files are shipped to all users.
+
+So implement the necessary backward compatibility for BCM2835 and
+BCM2711 platform.
+
+Fixes: 266423e60ea1 ("pinctrl: bcm2835: Change init order for gpio hogs")
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220409095129.45786-3-stefan.wahren@i2se.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/vmx/pmu_intel.c |  4 ++--
- arch/x86/kvm/vmx/vmx.h       | 12 ++++++++++++
- 2 files changed, 14 insertions(+), 2 deletions(-)
+ drivers/pinctrl/bcm/pinctrl-bcm2835.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index 5b85320fc9f1..6ce3b066f7d9 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -111,7 +111,7 @@ static bool intel_pmc_is_enabled(struct kvm_pmc *pmc)
- {
- 	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
+diff --git a/drivers/pinctrl/bcm/pinctrl-bcm2835.c b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+index 47e433e09c5c..dad453054776 100644
+--- a/drivers/pinctrl/bcm/pinctrl-bcm2835.c
++++ b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+@@ -358,6 +358,22 @@ static int bcm2835_gpio_direction_output(struct gpio_chip *chip,
+ 	return 0;
+ }
  
--	if (pmu->version < 2)
-+	if (!intel_pmu_has_perf_global_ctrl(pmu))
- 		return true;
- 
- 	return test_bit(pmc->idx, (unsigned long *)&pmu->global_ctrl);
-@@ -208,7 +208,7 @@ static bool intel_is_valid_msr(struct kvm_vcpu *vcpu, u32 msr, bool host_initiat
- 	case MSR_CORE_PERF_GLOBAL_OVF_CTRL:
- 		if (host_initiated)
- 			return true;
--		return pmu->version > 1;
-+		return intel_pmu_has_perf_global_ctrl(pmu);
- 		break;
- 	case MSR_IA32_PEBS_ENABLE:
- 		if (host_initiated)
-diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
-index 576fed7e33de..215f17eb6732 100644
---- a/arch/x86/kvm/vmx/vmx.h
-+++ b/arch/x86/kvm/vmx/vmx.h
-@@ -91,6 +91,18 @@ union vmx_exit_reason {
- 	u32 full;
- };
- 
-+static inline bool intel_pmu_has_perf_global_ctrl(struct kvm_pmu *pmu)
++static int bcm2835_of_gpio_ranges_fallback(struct gpio_chip *gc,
++					   struct device_node *np)
 +{
-+	/*
-+	 * Architecturally, Intel's SDM states that IA32_PERF_GLOBAL_CTRL is
-+	 * supported if "CPUID.0AH: EAX[7:0] > 0", i.e. if the PMU version is
-+	 * greater than zero.  However, KVM only exposes and emulates the MSR
-+	 * to/for the guest if the guest PMU supports at least "Architectural
-+	 * Performance Monitoring Version 2".
-+	 */
-+	return pmu->version > 1;
++	struct pinctrl_dev *pctldev = of_pinctrl_get(np);
++
++	of_node_put(np);
++
++	if (!pctldev)
++		return 0;
++
++	gpiochip_add_pin_range(gc, pinctrl_dev_get_devname(pctldev), 0, 0,
++			       gc->ngpio);
++
++	return 0;
 +}
 +
- #define vcpu_to_lbr_desc(vcpu) (&to_vmx(vcpu)->lbr_desc)
- #define vcpu_to_lbr_records(vcpu) (&to_vmx(vcpu)->lbr_desc.records)
+ static const struct gpio_chip bcm2835_gpio_chip = {
+ 	.label = MODULE_NAME,
+ 	.owner = THIS_MODULE,
+@@ -372,6 +388,7 @@ static const struct gpio_chip bcm2835_gpio_chip = {
+ 	.base = -1,
+ 	.ngpio = BCM2835_NUM_GPIOS,
+ 	.can_sleep = false,
++	.of_gpio_ranges_fallback = bcm2835_of_gpio_ranges_fallback,
+ };
  
+ static const struct gpio_chip bcm2711_gpio_chip = {
+@@ -388,6 +405,7 @@ static const struct gpio_chip bcm2711_gpio_chip = {
+ 	.base = -1,
+ 	.ngpio = BCM2711_NUM_GPIOS,
+ 	.can_sleep = false,
++	.of_gpio_ranges_fallback = bcm2835_of_gpio_ranges_fallback,
+ };
+ 
+ static void bcm2835_gpio_irq_handle_bank(struct bcm2835_pinctrl *pc,
 -- 
-2.36.1.255.ge46751e96f-goog
+2.35.1
+
+
 
