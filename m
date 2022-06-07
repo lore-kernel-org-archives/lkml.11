@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C767C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:04:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B49BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:04:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349615AbiFGSEB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:04:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57846 "EHLO
+        id S241722AbiFGSEL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 14:04:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348668AbiFGRpx (ORCPT
+        with ESMTP id S1348759AbiFGRqL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:45:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 686B7132A09;
-        Tue,  7 Jun 2022 10:35:40 -0700 (PDT)
+        Tue, 7 Jun 2022 13:46:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294DD110455;
+        Tue,  7 Jun 2022 10:35:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 498EE614BC;
-        Tue,  7 Jun 2022 17:35:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 359D8C385A5;
-        Tue,  7 Jun 2022 17:35:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ED6160DB5;
+        Tue,  7 Jun 2022 17:35:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72D63C385A5;
+        Tue,  7 Jun 2022 17:35:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623324;
-        bh=jcHJD8ju3Rz+1Q/aZpacFYt41zZ5+xpft/qwCJ7JCgo=;
+        s=korg; t=1654623343;
+        bh=wXeySeeKfAlcFWkrlfM429Aal77jT3BoMCeXYZdnIg0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FdP9nZB/7z+kyGzLSJqaxPn+uy2HTrogAiRqWAoLZzgGREcMtFJUULpsxaq9WUoXA
-         4YdSwmYk5q4b5mDCdcfLCl4UHWFocYEu0mzsrlLFmtYSru32hG5wft4JcCW7v1X5kr
-         sMnCmt8sdsbtyF6myR+w10+9Hl3BDH4wiI2WEE3A=
+        b=MQhQ1wqsoMTcmbZ5gkZA/GQLiDjJdWS1HxQpdwVMFdm0n3jhc+ctNpZYlLlHa4NIl
+         oJLKuNxAOOzp5mnKZpjbfXzE1nZ5Y2KrwvfMdXk7gna8W65Uc1LN6fUKshVj7nNr41
+         /CN9KmslyzbvLxyFQ3CBxr+brCISDCxNXjAVYEVo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 336/452] dmaengine: stm32-mdma: fix chan initialization in stm32_mdma_irq_handler()
-Date:   Tue,  7 Jun 2022 19:03:13 +0200
-Message-Id: <20220607164918.571540078@linuxfoundation.org>
+        stable@vger.kernel.org, Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        Song Liu <song@kernel.org>
+Subject: [PATCH 5.10 384/452] md: fix an incorrect NULL check in does_sb_need_changing
+Date:   Tue,  7 Jun 2022 19:04:01 +0200
+Message-Id: <20220607164920.008915593@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,40 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amelie Delaunay <amelie.delaunay@foss.st.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit da3b8ddb464bd49b6248d00ca888ad751c9e44fd ]
+commit fc8738343eefc4ea8afb6122826dea48eacde514 upstream.
 
-The parameter to pass back to the handler function when irq has been
-requested is a struct stm32_mdma_device pointer, not a struct
-stm32_mdma_chan pointer.
-Even if chan is reinit later in the function, remove this wrong
-initialization.
+The bug is here:
+	if (!rdev)
 
-Fixes: a4ffb13c8946 ("dmaengine: Add STM32 MDMA driver")
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Link: https://lore.kernel.org/r/20220504155322.121431-3-amelie.delaunay@foss.st.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The list iterator value 'rdev' will *always* be set and non-NULL
+by rdev_for_each(), so it is incorrect to assume that the iterator
+value will be NULL if the list is empty or no element found.
+Otherwise it will bypass the NULL check and lead to invalid memory
+access passing the check.
+
+To fix the bug, use a new variable 'iter' as the list iterator,
+while using the original variable 'rdev' as a dedicated pointer to
+point to the found element.
+
+Cc: stable@vger.kernel.org
+Fixes: 2aa82191ac36 ("md-cluster: Perform a lazy update")
+Acked-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Acked-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
+Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/stm32-mdma.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/md.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/dma/stm32-mdma.c b/drivers/dma/stm32-mdma.c
-index 4ec6f5b69f56..9d54746c422c 100644
---- a/drivers/dma/stm32-mdma.c
-+++ b/drivers/dma/stm32-mdma.c
-@@ -1344,7 +1344,7 @@ static void stm32_mdma_xfer_end(struct stm32_mdma_chan *chan)
- static irqreturn_t stm32_mdma_irq_handler(int irq, void *devid)
- {
- 	struct stm32_mdma_device *dmadev = devid;
--	struct stm32_mdma_chan *chan = devid;
-+	struct stm32_mdma_chan *chan;
- 	u32 reg, id, ccr, ien, status;
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -2648,14 +2648,16 @@ static void sync_sbs(struct mddev *mddev
  
- 	/* Find out which channel generates the interrupt */
--- 
-2.35.1
-
+ static bool does_sb_need_changing(struct mddev *mddev)
+ {
+-	struct md_rdev *rdev;
++	struct md_rdev *rdev = NULL, *iter;
+ 	struct mdp_superblock_1 *sb;
+ 	int role;
+ 
+ 	/* Find a good rdev */
+-	rdev_for_each(rdev, mddev)
+-		if ((rdev->raid_disk >= 0) && !test_bit(Faulty, &rdev->flags))
++	rdev_for_each(iter, mddev)
++		if ((iter->raid_disk >= 0) && !test_bit(Faulty, &iter->flags)) {
++			rdev = iter;
+ 			break;
++		}
+ 
+ 	/* No good device found. */
+ 	if (!rdev)
 
 
