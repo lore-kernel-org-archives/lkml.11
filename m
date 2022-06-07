@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F462CCA489
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DECDCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378051AbiFGUvW (ORCPT
+        id S1377296AbiFGUue (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:51:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47334 "EHLO
+        Tue, 7 Jun 2022 16:50:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358455AbiFGTwa (ORCPT
+        with ESMTP id S1358308AbiFGTwU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:52:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3271313B2C2;
-        Tue,  7 Jun 2022 11:20:34 -0700 (PDT)
+        Tue, 7 Jun 2022 15:52:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEF28FD56;
+        Tue,  7 Jun 2022 11:20:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B877560DDA;
-        Tue,  7 Jun 2022 18:20:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3513C385A2;
-        Tue,  7 Jun 2022 18:20:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E98EB82368;
+        Tue,  7 Jun 2022 18:20:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 923E1C385A2;
+        Tue,  7 Jun 2022 18:19:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626033;
-        bh=g43Q8Fe4f7W0fpxHqctx7ITSHwKZuRrzitHywoPcmfE=;
+        s=korg; t=1654626000;
+        bh=Ir0V9XdICgoZ/GLaYLNxw9Lpqttbk/iKdMQZZJbOrvw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w/uS9yhIgois0zZhVRGTuaI6675m3gDeLcqkzRJSyNb4K3NpSfjyX6UxnTvzB0wmJ
-         CiWoSaJ9FmzXqHbv0my+jbgftbYWnmMTl82Pu2YZRT4BnpK1ObrjWUnVucHmlnvXXx
-         wekuyaU2VbaFTx7t6eky08BbUk1Ler96PzCMK80Y=
+        b=KxBUtwJBhYl9KA9FQztu188DWRm3cPRAFqPIIIe1vrZfvrbC0lbc/UUq5i59NcCuN
+         w7cD+EHS/u1OAHcYDrw6X2P/D1yZr9cKalfWIhZetCK5mPw3i3JOLghBgBroTPFRXN
+         7T/1fit8YBxBDkOfugbISRxruAMJ19Gv3WimyFZ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
+        Douglas Miller <doug.miller@cornelisnetworks.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 233/772] drm/edid: fix invalid EDID extension block filtering
-Date:   Tue,  7 Jun 2022 18:57:05 +0200
-Message-Id: <20220607164955.898357456@linuxfoundation.org>
+Subject: [PATCH 5.17 222/772] RDMA/hfi1: Prevent panic when SDMA is disabled
+Date:   Tue,  7 Jun 2022 18:56:54 +0200
+Message-Id: <20220607164955.575850891@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,53 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jani Nikula <jani.nikula@intel.com>
+From: Douglas Miller <doug.miller@cornelisnetworks.com>
 
-[ Upstream commit 3aefc722ff52076407203b6af9713de567993adf ]
+[ Upstream commit 629e052d0c98e46dde9f0824f0aa437f678d9b8f ]
 
-The invalid EDID block filtering uses the number of valid EDID
-extensions instead of all EDID extensions for looping the extensions in
-the copy. This is fine, by coincidence, if all the invalid blocks are at
-the end of the EDID. However, it's completely broken if there are
-invalid extensions in the middle; the invalid blocks are included and
-valid blocks are excluded.
+If the hfi1 module is loaded with HFI1_CAP_SDMA off, a call to
+hfi1_write_iter() will dereference a NULL pointer and panic. A typical
+stack frame is:
 
-Fix it by modifying the base block after, not before, the copy.
+  sdma_select_user_engine [hfi1]
+  hfi1_user_sdma_process_request [hfi1]
+  hfi1_write_iter [hfi1]
+  do_iter_readv_writev
+  do_iter_write
+  vfs_writev
+  do_writev
+  do_syscall_64
 
-Fixes: 14544d0937bf ("drm/edid: Only print the bad edid when aborting")
-Reported-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
-Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220330170426.349248-1-jani.nikula@intel.com
+The fix is to test for SDMA in hfi1_write_iter() and fail the I/O with
+EINVAL.
+
+Link: https://lore.kernel.org/r/20220520183706.48973.79803.stgit@awfm-01.cornelisnetworks.com
+Signed-off-by: Douglas Miller <doug.miller@cornelisnetworks.com>
+Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_edid.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/infiniband/hw/hfi1/file_ops.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
-index 83e5c115e754..502ef71dac68 100644
---- a/drivers/gpu/drm/drm_edid.c
-+++ b/drivers/gpu/drm/drm_edid.c
-@@ -2029,9 +2029,6 @@ struct edid *drm_do_get_edid(struct drm_connector *connector,
+diff --git a/drivers/infiniband/hw/hfi1/file_ops.c b/drivers/infiniband/hw/hfi1/file_ops.c
+index 1783a6ea5427..3ebdd42fec36 100644
+--- a/drivers/infiniband/hw/hfi1/file_ops.c
++++ b/drivers/infiniband/hw/hfi1/file_ops.c
+@@ -265,6 +265,8 @@ static ssize_t hfi1_write_iter(struct kiocb *kiocb, struct iov_iter *from)
+ 	unsigned long dim = from->nr_segs;
+ 	int idx;
  
- 		connector_bad_edid(connector, edid, edid[0x7e] + 1);
- 
--		edid[EDID_LENGTH-1] += edid[0x7e] - valid_extensions;
--		edid[0x7e] = valid_extensions;
--
- 		new = kmalloc_array(valid_extensions + 1, EDID_LENGTH,
- 				    GFP_KERNEL);
- 		if (!new)
-@@ -2048,6 +2045,9 @@ struct edid *drm_do_get_edid(struct drm_connector *connector,
- 			base += EDID_LENGTH;
- 		}
- 
-+		new[EDID_LENGTH - 1] += new[0x7e] - valid_extensions;
-+		new[0x7e] = valid_extensions;
-+
- 		kfree(edid);
- 		edid = new;
- 	}
++	if (!HFI1_CAP_IS_KSET(SDMA))
++		return -EINVAL;
+ 	idx = srcu_read_lock(&fd->pq_srcu);
+ 	pq = srcu_dereference(fd->pq, &fd->pq_srcu);
+ 	if (!cq || !pq) {
 -- 
 2.35.1
 
