@@ -2,124 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE22BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:24:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01876C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:27:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344948AbiFGQY1 (ORCPT
+        id S1343831AbiFGQ1O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 12:24:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32962 "EHLO
+        Tue, 7 Jun 2022 12:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236248AbiFGQYX (ORCPT
+        with ESMTP id S235612AbiFGQ1L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 12:24:23 -0400
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0306C6D968
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 09:24:22 -0700 (PDT)
-Received: by mail-io1-f72.google.com with SMTP id l3-20020a05660227c300b0065a8c141580so8286602ios.19
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 09:24:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=ndnbQPXIfIB+41eA5XK3lm1GuhYKxN1ZpG46L3Kj5rU=;
-        b=Xugy5WTNE7BO2mf1qrBPcrPF2Q4eF9h4Qd8+TAuJ2qRxzKV8uVlPF4Hbh+yi9UAmPm
-         EnCSkig0y0HcXaBYUWaz9pg+ISnQ6k9upqKKDLOv6LPzxluR2VUtU2Pmx5N6Ub7jj/Hc
-         G/H9OkhNWg0nZ641ddZj0j/LmPT5KwHmnmBBgLl/q+2y+uUYDAKjKDkvesLaqzsZDfAl
-         /95MzWq+cr/nwozpBQjQpG2wsnzXMUwsutsFPZNh9+HDsAD65BWeRPJzQRHf8wstx91Z
-         2iSqOmOmFvM5hs9J6S8x55qk1MRsWMyew9YrARL+Vyvl5DKeLj8fvwLg4IB4KOWqOdxS
-         7jQQ==
-X-Gm-Message-State: AOAM532PbN1iHwjDHrdXLAnDhWurTC+wpCp9W6NBHVA5JK+cQTbLzvk/
-        Qd/uAY0RyYPzjPcIlcoMba8K1E+ucxHhaGgQ5k0H5AxOQb9m
-X-Google-Smtp-Source: ABdhPJwd4EvLPq3B9U/k6O+usjT7wDELCPHkcJt6slaAZOLk3GsDiONn87WcA6uXkK1DfQOHYO0yFNrY8tj2i4AbkAt7iRpVqEQN
+        Tue, 7 Jun 2022 12:27:11 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8111AD;
+        Tue,  7 Jun 2022 09:27:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1654619226; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HQKTT3DBsyAu7n209v9YKnHJBKH0K7d7v+HEytHeZ1M=;
+        b=mu9UqRZvZAVAHxHN+JE2ruAE3VuYSiSAXtTGLe9aayCyBxSQWNeTtUsDMepw5WZV7ikKE8
+        4/5cYeaUk2owu/LmB03XD5gzqBdWmEFAVdJMy4VoecWU/VTPbIJ4JyhL5Mm1uLyxMxJ3Vm
+        R7RakfMGRs+AlJi05VmICImyElY8aZo=
+Date:   Tue, 07 Jun 2022 17:26:53 +0100
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH] pinctrl: ingenic: Convert to immutable irq chip
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     linus.walleij@linaro.org, linux-mips@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <TC84DR.BXHQAW8NSA8H@crapouillou.net>
+In-Reply-To: <20220607110525.36922-1-aidanmacdonald.0x0@gmail.com>
+References: <20220607110525.36922-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:c24a:0:b0:2d3:e79f:2fc1 with SMTP id
- k10-20020a92c24a000000b002d3e79f2fc1mr15901315ilo.250.1654619061331; Tue, 07
- Jun 2022 09:24:21 -0700 (PDT)
-Date:   Tue, 07 Jun 2022 09:24:21 -0700
-In-Reply-To: <0000000000003fc46005e0db5390@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000063ade705e0de053e@google.com>
-Subject: Re: [syzbot] KASAN: stack-out-of-bounds Write in check_move_unevictable_pages
-From:   syzbot <syzbot+8847ae8c7bc46bc9c10e@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+Hi Aidan,
 
-HEAD commit:    73d0e32571a0 Add linux-next specific files for 20220607
-git tree:       linux-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=130bde07f00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=448ee2b64e828049
-dashboard link: https://syzkaller.appspot.com/bug?extid=8847ae8c7bc46bc9c10e
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14359627f00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=177d5f3ff00000
+Le mar., juin 7 2022 at 12:05:25 +0100, Aidan MacDonald=20
+<aidanmacdonald.0x0@gmail.com> a =E9crit :
+> Update the driver to use an immutable IRQ chip to fix this warning:
+>=20
+>     "not an immutable chip, please consider fixing it!"
+>=20
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+> ---
+>  drivers/pinctrl/pinctrl-ingenic.c | 33=20
+> ++++++++++++++++++-------------
+>  1 file changed, 19 insertions(+), 14 deletions(-)
+>=20
+> diff --git a/drivers/pinctrl/pinctrl-ingenic.c=20
+> b/drivers/pinctrl/pinctrl-ingenic.c
+> index 1ca11616db74..37258fb05be3 100644
+> --- a/drivers/pinctrl/pinctrl-ingenic.c
+> +++ b/drivers/pinctrl/pinctrl-ingenic.c
+> @@ -135,7 +135,6 @@ struct ingenic_pinctrl {
+>  struct ingenic_gpio_chip {
+>  	struct ingenic_pinctrl *jzpc;
+>  	struct gpio_chip gc;
+> -	struct irq_chip irq_chip;
+>  	unsigned int irq, reg_base;
+>  };
+>=20
+> @@ -3419,6 +3418,8 @@ static void ingenic_gpio_irq_enable(struct=20
+> irq_data *irqd)
+>  	struct ingenic_gpio_chip *jzgc =3D gpiochip_get_data(gc);
+>  	int irq =3D irqd->hwirq;
+>=20
+> +	gpiochip_enable_irq(gc, irq);
+> +
+>  	if (is_soc_or_above(jzgc->jzpc, ID_JZ4770))
+>  		ingenic_gpio_set_bit(jzgc, JZ4770_GPIO_INT, irq, true);
+>  	else if (is_soc_or_above(jzgc->jzpc, ID_JZ4740))
+> @@ -3443,6 +3444,8 @@ static void ingenic_gpio_irq_disable(struct=20
+> irq_data *irqd)
+>  		ingenic_gpio_set_bit(jzgc, JZ4740_GPIO_SELECT, irq, false);
+>  	else
+>  		ingenic_gpio_set_bit(jzgc, JZ4730_GPIO_GPIER, irq, false);
+> +
+> +	gpiochip_disable_irq(gc, irq);
+>  }
+>=20
+>  static void ingenic_gpio_irq_ack(struct irq_data *irqd)
+> @@ -3684,6 +3687,20 @@ static void ingenic_gpio_irq_release(struct=20
+> irq_data *data)
+>  	return gpiochip_relres_irq(gpio_chip, data->hwirq);
+>  }
+>=20
+> +static const struct irq_chip ingenic_gpio_irqchip =3D {
+> +	.name			=3D "gpio",
+> +	.irq_enable		=3D ingenic_gpio_irq_enable,
+> +	.irq_disable		=3D ingenic_gpio_irq_disable,
+> +	.irq_unmask		=3D ingenic_gpio_irq_unmask,
+> +	.irq_mask		=3D ingenic_gpio_irq_mask,
+> +	.irq_ack		=3D ingenic_gpio_irq_ack,
+> +	.irq_set_type		=3D ingenic_gpio_irq_set_type,
+> +	.irq_set_wake		=3D ingenic_gpio_irq_set_wake,
+> +	.irq_request_resources	=3D ingenic_gpio_irq_request,
+> +	.irq_release_resources	=3D ingenic_gpio_irq_release,
+> +	.flags			=3D IRQCHIP_MASK_ON_SUSPEND | IRQCHIP_IMMUTABLE,
+> +};
+> +
+>  static int ingenic_pinmux_set_pin_fn(struct ingenic_pinctrl *jzpc,
+>  		int pin, int func)
+>  {
+> @@ -4172,20 +4189,8 @@ static int __init ingenic_gpio_probe(struct=20
+> ingenic_pinctrl *jzpc,
+>  	if (!jzgc->irq)
+>  		return -EINVAL;
+>=20
+> -	jzgc->irq_chip.name =3D jzgc->gc.label;
+> -	jzgc->irq_chip.irq_enable =3D ingenic_gpio_irq_enable;
+> -	jzgc->irq_chip.irq_disable =3D ingenic_gpio_irq_disable;
+> -	jzgc->irq_chip.irq_unmask =3D ingenic_gpio_irq_unmask;
+> -	jzgc->irq_chip.irq_mask =3D ingenic_gpio_irq_mask;
+> -	jzgc->irq_chip.irq_ack =3D ingenic_gpio_irq_ack;
+> -	jzgc->irq_chip.irq_set_type =3D ingenic_gpio_irq_set_type;
+> -	jzgc->irq_chip.irq_set_wake =3D ingenic_gpio_irq_set_wake;
+> -	jzgc->irq_chip.irq_request_resources =3D ingenic_gpio_irq_request;
+> -	jzgc->irq_chip.irq_release_resources =3D ingenic_gpio_irq_release;
+> -	jzgc->irq_chip.flags =3D IRQCHIP_MASK_ON_SUSPEND;
+> -
+>  	girq =3D &jzgc->gc.irq;
+> -	girq->chip =3D &jzgc->irq_chip;
+> +	gpio_irq_chip_set_chip(girq, &ingenic_gpio_irqchip);
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+8847ae8c7bc46bc9c10e@syzkaller.appspotmail.com
+This will change each irq_chip's name to "gpio", do we want that?
 
-==================================================================
-BUG: KASAN: vmalloc-out-of-bounds in folio_batch_add include/linux/pagevec.h:130 [inline]
-BUG: KASAN: vmalloc-out-of-bounds in check_move_unevictable_pages+0x3f6/0x440 mm/vmscan.c:4857
-BUG: KASAN: vmalloc-out-of-bounds in folio_batch_add include/linux/pagevec.h:130 [inline]
-BUG: KASAN: vmalloc-out-of-bounds in check_move_unevictable_pages+0x3f6/0x440 mm/vmscan.c:4857
-Write of size 8 at addr ffffc90002d30008 by task syz-executor102/3610
+You didn't remove jzgc->irq_chip, so maybe what you could do is
+jzgc->irq_chip =3D ingenic_gpio_irqchip;
+jzgc->irq_chip.name =3D jzgc->gc.label;
+gpio_irq_chip_set_chip(girq, &jzgc->irq_chip);
 
-CPU: 0 PID: 3610 Comm: syz-executor102 Not tainted 5.19.0-rc1-next-20220607-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0xf/0x495 mm/kasan/report.c:313
- print_report mm/kasan/report.c:429 [inline]
- kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
- folio_batch_add include/linux/pagevec.h:130 [inline]
- check_move_unevictable_pages+0x3f6/0x440 mm/vmscan.c:4857
- drm_gem_check_release_pagevec drivers/gpu/drm/drm_gem.c:511 [inline]
- drm_gem_put_pages+0x29f/0x3f0 drivers/gpu/drm/drm_gem.c:639
- drm_gem_shmem_put_pages_locked+0x13e/0x230 drivers/gpu/drm/drm_gem_shmem_helper.c:237
- drm_gem_shmem_put_pages drivers/gpu/drm/drm_gem_shmem_helper.c:252 [inline]
- drm_gem_shmem_vm_close+0x45/0x70 drivers/gpu/drm/drm_gem_shmem_helper.c:588
- remove_vma+0x81/0x130 mm/mmap.c:187
- exit_mmap+0x2a1/0x750 mm/mmap.c:3215
- __mmput+0x128/0x4c0 kernel/fork.c:1180
- mmput+0x5c/0x70 kernel/fork.c:1201
- exit_mm kernel/exit.c:510 [inline]
- do_exit+0xa18/0x2a00 kernel/exit.c:782
- do_group_exit+0xd2/0x2f0 kernel/exit.c:925
- __do_sys_exit_group kernel/exit.c:936 [inline]
- __se_sys_exit_group kernel/exit.c:934 [inline]
- __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:934
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f0a6ae36299
-Code: Unable to access opcode bytes at RIP 0x7f0a6ae3626f.
-RSP: 002b:00007ffe4d7cbe58 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
-RAX: ffffffffffffffda RBX: 00007f0a6aeaa270 RCX: 00007f0a6ae36299
-RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
-RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 0000000100000000
-R10: 0000000000000012 R11: 0000000000000246 R12: 00007f0a6aeaa270
-R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
- </TASK>
+Thoughts?
 
-The buggy address belongs to the virtual mapping at
- [ffffc90002d28000, ffffc90002d31000) created by:
- kernel_clone+0xe7/0xab0 kernel/fork.c:2648
+Cheers,
+-Paul
 
-Memory state around the buggy address:
- ffffc90002d2ff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffffc90002d2ff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffffc90002d30000: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-                      ^
- ffffc90002d30080: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
- ffffc90002d30100: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-==================================================================
+>  	girq->parent_handler =3D ingenic_gpio_irq_handler;
+>  	girq->num_parents =3D 1;
+>  	girq->parents =3D devm_kcalloc(dev, 1, sizeof(*girq->parents),
+> --
+> 2.35.1
+>=20
+
 
