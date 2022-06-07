@@ -2,95 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D79FCCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:53:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D9FFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:53:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353278AbiFGSxB (ORCPT
+        id S1353265AbiFGSxO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:53:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42258 "EHLO
+        Tue, 7 Jun 2022 14:53:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348485AbiFGSSW (ORCPT
+        with ESMTP id S1350560AbiFGSS0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:18:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8208BEA8BB;
-        Tue,  7 Jun 2022 10:53:12 -0700 (PDT)
+        Tue, 7 Jun 2022 14:18:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 056DCCE5F9;
+        Tue,  7 Jun 2022 10:53:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60ED6B8236D;
-        Tue,  7 Jun 2022 17:53:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3716C385A5;
-        Tue,  7 Jun 2022 17:53:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624388;
-        bh=8qcE7T16ltqtMTWp3URUMia95lno59Iiv0k4Vdapksc=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D30D5616A3;
+        Tue,  7 Jun 2022 17:53:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C004C3411F;
+        Tue,  7 Jun 2022 17:53:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624404;
+        bh=EbHpsNQsZRgTMF45CSYfLlirVAaStJQ+cyuj+aVwgLI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A3XhRyUN1FGkExWMx6af9ICTXYl44inEIe3Iit9MQn+W2mW/lerweVzc7LoEDRmtS
-         P104e7IQvIintiMigG3sq1gE3eXwF9ap8xLkcG57bTOlzFiP31jFymz48eDidO6xly
-         k7ckTCtzsREL+G0uGUaUQxjoISx5dSUoNl1kbikw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        b=EYzKgFhW/zlMMedwjuWsruIYK/6rk/pGf3p4fJFgI2uYpGpVDTZQqYvxry+b26jVx
+         QWG4vQbjOaotrERzkho5ssBU5SBd3b79PkHK1zkuAMJVf5Bf8REe8q8ynysfRUvoAj
+         s6YEjSp2W8zGspYXT/3eP0KZq6Q5BvgrejsNRpaH6Bx3F1b+FCWpL76rCgC8fZxp7B
+         xjBS1g4imqWF2iUdm+5ieoQot9iwloWa3mxwpOHHVjhdCJXFsyCThexfcXC9G/V/GC
+         u0jigqd7hojQOBX+jSBenuSqmsR8KdhCug0uCE6AV1b0kNsc4mPCmcPkrxIp/SF/Kq
+         F3WvWVpERufaw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Zheyu Ma <zheyuma97@gmail.com>, Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 268/667] drm/msm/dp: reset DP controller before transmit phy test pattern
-Date:   Tue,  7 Jun 2022 18:58:53 +0200
-Message-Id: <20220607164942.825453371@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+Subject: [PATCH AUTOSEL 5.17 07/60] tty: synclink_gt: Fix null-pointer-dereference in slgt_clean()
+Date:   Tue,  7 Jun 2022 13:52:04 -0400
+Message-Id: <20220607175259.478835-7-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 581d69981159b00f0443d171a4b900089f34ccfe ]
+[ Upstream commit 689ca31c542687709ba21ec2195c1fbce34fd029 ]
 
-DP controller state can not switch from video ready state to
-transmit phy pattern state at run time. DP mainlink has to be
-teared down followed by reset controller to default state to have
-DP controller switch to transmit phy test pattern state and start
-generate specified phy test pattern to sinker once main link setup
-again.
+When the driver fails at alloc_hdlcdev(), and then we remove the driver
+module, we will get the following splat:
 
-Changes in v2:
--- correct Fixes's commit id
+[   25.065966] general protection fault, probably for non-canonical address 0xdffffc0000000182: 0000 [#1] PREEMPT SMP KASAN PTI
+[   25.066914] KASAN: null-ptr-deref in range [0x0000000000000c10-0x0000000000000c17]
+[   25.069262] RIP: 0010:detach_hdlc_protocol+0x2a/0x3e0
+[   25.077709] Call Trace:
+[   25.077924]  <TASK>
+[   25.078108]  unregister_hdlc_device+0x16/0x30
+[   25.078481]  slgt_cleanup+0x157/0x9f0 [synclink_gt]
 
-Fixes: 52352fe2f866 ("drm/msm/dp: use dp_ctrl_off_link_stream during PHY compliance test run")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/483563/
-Link: https://lore.kernel.org/r/1650995939-28467-2-git-send-email-quic_khsieh@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fix this by checking whether the 'info->netdev' is a null pointer first.
+
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Link: https://lore.kernel.org/r/20220410114814.3920474-1-zheyuma97@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_ctrl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/synclink_gt.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-index 4af281d97493..1ccb166e3b28 100644
---- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
-+++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-@@ -1515,7 +1515,7 @@ static int dp_ctrl_process_phy_test_request(struct dp_ctrl_private *ctrl)
- 	 * running. Add the global reset just before disabling the
- 	 * link clocks and core clocks.
- 	 */
--	ret = dp_ctrl_off_link_stream(&ctrl->dp_ctrl);
-+	ret = dp_ctrl_off(&ctrl->dp_ctrl);
- 	if (ret) {
- 		DRM_ERROR("failed to disable DP controller\n");
- 		return ret;
+diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
+index 25c558e65ece..9bc2a9265277 100644
+--- a/drivers/tty/synclink_gt.c
++++ b/drivers/tty/synclink_gt.c
+@@ -1746,6 +1746,8 @@ static int hdlcdev_init(struct slgt_info *info)
+  */
+ static void hdlcdev_exit(struct slgt_info *info)
+ {
++	if (!info->netdev)
++		return;
+ 	unregister_hdlc_device(info->netdev);
+ 	free_netdev(info->netdev);
+ 	info->netdev = NULL;
 -- 
 2.35.1
-
-
 
