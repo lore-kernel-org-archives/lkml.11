@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8643CCA483
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:27:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F100CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:27:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382481AbiFHA0l (ORCPT
+        id S1346240AbiFHA1E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:26:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43894 "EHLO
+        Tue, 7 Jun 2022 20:27:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382135AbiFGWch (ORCPT
+        with ESMTP id S1382838AbiFGWEw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:32:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9F35C65E;
-        Tue,  7 Jun 2022 12:25:43 -0700 (PDT)
+        Tue, 7 Jun 2022 18:04:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2995A195941;
+        Tue,  7 Jun 2022 12:16:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E29FDB823CA;
-        Tue,  7 Jun 2022 19:25:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45366C385A2;
-        Tue,  7 Jun 2022 19:25:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D86DFB822C0;
+        Tue,  7 Jun 2022 19:16:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5016CC385A2;
+        Tue,  7 Jun 2022 19:16:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629940;
-        bh=9JoonTWpoek9ttj4ytgijLTdKPzH4Dk8tLw0vFaebRM=;
+        s=korg; t=1654629377;
+        bh=P0JhZEhnX0JrfUblM9gr7pRAlhvGRIoAzFxWTDmIUCM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LTGvK+r9mt7cu0tdyia12j7VFV9fHo2D8ilipEZmpzsEKGHA4RYMJZU8FSHw6TO17
-         zq+Dzw5Lf4wGufPH94KrjjxL3Y/dVpO0wke300PEjwGMgGrq4Y7zs8amXZqMhhXuyd
-         /nVYQRgOqPi5M4tHp4lA9CK6FwxJe5a4Hvm0tQSg=
+        b=fVEJJO1rvCZdCf2OA6dlCir10FjalPcFMRtq4pxGGib0RCptjxrG31DxkKz9f5mzw
+         y8ZcK6vVIAMrHxCNUhQ7dqqmZPyED7mEXW2ZgCKH+qHvqWD+36hMPdtyLfeEgWXQdS
+         MWGjQwk+NgHS2b4QOJxoTFzFKlRFOLeyekLAseNI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Giuseppe Scrivano <gscrivan@redhat.com>,
-        Amir Goldstein <amir73il@gmail.com>,
-        Christoph Hellwig <hch@lst.de>,
-        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
-        Miklos Szeredi <mszeredi@redhat.com>
-Subject: [PATCH 5.18 872/879] fs: add two trivial lookup helpers
-Date:   Tue,  7 Jun 2022 19:06:30 +0200
-Message-Id: <20220607165028.168664855@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 668/879] i2c: at91: use dma safe buffers
+Date:   Tue,  7 Jun 2022 19:03:06 +0200
+Message-Id: <20220607165022.239488914@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,146 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Brauner <brauner@kernel.org>
+From: Michael Walle <michael@walle.cc>
 
-commit 00675017e0aeba5305665c52ded4ddce6a4c0231 upstream.
+[ Upstream commit 03fbb903c8bf7e53e101e8d9a7b261264317c411 ]
 
-Similar to the addition of lookup_one() add a version of
-lookup_one_unlocked() and lookup_one_positive_unlocked() that take
-idmapped mounts into account. This is required to port overlay to
-support idmapped base layers.
+The supplied buffer might be on the stack and we get the following error
+message:
+[    3.312058] at91_i2c e0070600.i2c: rejecting DMA map of vmalloc memory
 
-Cc: <linux-fsdevel@vger.kernel.org>
-Tested-by: Giuseppe Scrivano <gscrivan@redhat.com>
-Reviewed-by: Amir Goldstein <amir73il@gmail.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Use i2c_{get,put}_dma_safe_msg_buf() to get a DMA-able memory region if
+necessary.
+
+Fixes: 60937b2cdbf9 ("i2c: at91: add dma support")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/namei.c            |   70 ++++++++++++++++++++++++++++++++++++++++++--------
- include/linux/namei.h |    6 ++++
- 2 files changed, 66 insertions(+), 10 deletions(-)
+ drivers/i2c/busses/i2c-at91-master.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
---- a/fs/namei.c
-+++ b/fs/namei.c
-@@ -2768,7 +2768,8 @@ struct dentry *lookup_one(struct user_na
- EXPORT_SYMBOL(lookup_one);
+diff --git a/drivers/i2c/busses/i2c-at91-master.c b/drivers/i2c/busses/i2c-at91-master.c
+index b0eae94909f4..5eca3b3bb609 100644
+--- a/drivers/i2c/busses/i2c-at91-master.c
++++ b/drivers/i2c/busses/i2c-at91-master.c
+@@ -656,6 +656,7 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
+ 	unsigned int_addr_flag = 0;
+ 	struct i2c_msg *m_start = msg;
+ 	bool is_read;
++	u8 *dma_buf;
  
- /**
-- * lookup_one_len_unlocked - filesystem helper to lookup single pathname component
-+ * lookup_one_unlocked - filesystem helper to lookup single pathname component
-+ * @mnt_userns:	idmapping of the mount the lookup is performed from
-  * @name:	pathname component to lookup
-  * @base:	base directory to lookup from
-  * @len:	maximum length @len should be interpreted to
-@@ -2779,14 +2780,15 @@ EXPORT_SYMBOL(lookup_one);
-  * Unlike lookup_one_len, it should be called without the parent
-  * i_mutex held, and will take the i_mutex itself if necessary.
-  */
--struct dentry *lookup_one_len_unlocked(const char *name,
--				       struct dentry *base, int len)
-+struct dentry *lookup_one_unlocked(struct user_namespace *mnt_userns,
-+				   const char *name, struct dentry *base,
-+				   int len)
- {
- 	struct qstr this;
- 	int err;
- 	struct dentry *ret;
+ 	dev_dbg(&adap->dev, "at91_xfer: processing %d messages:\n", num);
  
--	err = lookup_one_common(&init_user_ns, name, base, len, &this);
-+	err = lookup_one_common(mnt_userns, name, base, len, &this);
- 	if (err)
- 		return ERR_PTR(err);
+@@ -703,7 +704,17 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
+ 	dev->msg = m_start;
+ 	dev->recv_len_abort = false;
  
-@@ -2795,6 +2797,59 @@ struct dentry *lookup_one_len_unlocked(c
- 		ret = lookup_slow(&this, base, 0);
- 	return ret;
- }
-+EXPORT_SYMBOL(lookup_one_unlocked);
-+
-+/**
-+ * lookup_one_positive_unlocked - filesystem helper to lookup single
-+ *				  pathname component
-+ * @mnt_userns:	idmapping of the mount the lookup is performed from
-+ * @name:	pathname component to lookup
-+ * @base:	base directory to lookup from
-+ * @len:	maximum length @len should be interpreted to
-+ *
-+ * This helper will yield ERR_PTR(-ENOENT) on negatives. The helper returns
-+ * known positive or ERR_PTR(). This is what most of the users want.
-+ *
-+ * Note that pinned negative with unlocked parent _can_ become positive at any
-+ * time, so callers of lookup_one_unlocked() need to be very careful; pinned
-+ * positives have >d_inode stable, so this one avoids such problems.
-+ *
-+ * Note that this routine is purely a helper for filesystem usage and should
-+ * not be called by generic code.
-+ *
-+ * The helper should be called without i_mutex held.
-+ */
-+struct dentry *lookup_one_positive_unlocked(struct user_namespace *mnt_userns,
-+					    const char *name,
-+					    struct dentry *base, int len)
-+{
-+	struct dentry *ret = lookup_one_unlocked(mnt_userns, name, base, len);
-+
-+	if (!IS_ERR(ret) && d_flags_negative(smp_load_acquire(&ret->d_flags))) {
-+		dput(ret);
-+		ret = ERR_PTR(-ENOENT);
++	if (dev->use_dma) {
++		dma_buf = i2c_get_dma_safe_msg_buf(m_start, 1);
++		if (!dma_buf) {
++			ret = -ENOMEM;
++			goto out;
++		}
++		dev->buf = dma_buf;
 +	}
-+	return ret;
-+}
-+EXPORT_SYMBOL(lookup_one_positive_unlocked);
 +
-+/**
-+ * lookup_one_len_unlocked - filesystem helper to lookup single pathname component
-+ * @name:	pathname component to lookup
-+ * @base:	base directory to lookup from
-+ * @len:	maximum length @len should be interpreted to
-+ *
-+ * Note that this routine is purely a helper for filesystem usage and should
-+ * not be called by generic code.
-+ *
-+ * Unlike lookup_one_len, it should be called without the parent
-+ * i_mutex held, and will take the i_mutex itself if necessary.
-+ */
-+struct dentry *lookup_one_len_unlocked(const char *name,
-+				       struct dentry *base, int len)
-+{
-+	return lookup_one_unlocked(&init_user_ns, name, base, len);
-+}
- EXPORT_SYMBOL(lookup_one_len_unlocked);
+ 	ret = at91_do_twi_transfer(dev);
++	i2c_put_dma_safe_msg_buf(dma_buf, m_start, !ret);
  
- /*
-@@ -2808,12 +2863,7 @@ EXPORT_SYMBOL(lookup_one_len_unlocked);
- struct dentry *lookup_positive_unlocked(const char *name,
- 				       struct dentry *base, int len)
- {
--	struct dentry *ret = lookup_one_len_unlocked(name, base, len);
--	if (!IS_ERR(ret) && d_flags_negative(smp_load_acquire(&ret->d_flags))) {
--		dput(ret);
--		ret = ERR_PTR(-ENOENT);
--	}
--	return ret;
-+	return lookup_one_positive_unlocked(&init_user_ns, name, base, len);
- }
- EXPORT_SYMBOL(lookup_positive_unlocked);
- 
---- a/include/linux/namei.h
-+++ b/include/linux/namei.h
-@@ -69,6 +69,12 @@ extern struct dentry *lookup_one_len(con
- extern struct dentry *lookup_one_len_unlocked(const char *, struct dentry *, int);
- extern struct dentry *lookup_positive_unlocked(const char *, struct dentry *, int);
- struct dentry *lookup_one(struct user_namespace *, const char *, struct dentry *, int);
-+struct dentry *lookup_one_unlocked(struct user_namespace *mnt_userns,
-+				   const char *name, struct dentry *base,
-+				   int len);
-+struct dentry *lookup_one_positive_unlocked(struct user_namespace *mnt_userns,
-+					    const char *name,
-+					    struct dentry *base, int len);
- 
- extern int follow_down_one(struct path *);
- extern int follow_down(struct path *);
+ 	ret = (ret < 0) ? ret : num;
+ out:
+-- 
+2.35.1
+
 
 
