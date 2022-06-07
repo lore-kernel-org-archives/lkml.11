@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E98FBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:56:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6541AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:56:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377293AbiFGU4j (ORCPT
+        id S1377255AbiFGU4o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:56:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49962 "EHLO
+        Tue, 7 Jun 2022 16:56:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358526AbiFGTwh (ORCPT
+        with ESMTP id S1358456AbiFGTwa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:52:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB55169E23;
-        Tue,  7 Jun 2022 11:20:58 -0700 (PDT)
+        Tue, 7 Jun 2022 15:52:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DACFE13AF08;
+        Tue,  7 Jun 2022 11:20:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1564660DDF;
-        Tue,  7 Jun 2022 18:20:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21FA8C385A2;
-        Tue,  7 Jun 2022 18:20:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F8D2B82239;
+        Tue,  7 Jun 2022 18:20:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E960BC385A2;
+        Tue,  7 Jun 2022 18:20:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626057;
-        bh=g8nzPa7JapSk0M9r9c1N9ngg8LkaT/SpLFWBhIgeGHc=;
+        s=korg; t=1654626030;
+        bh=NnXQHT5P4J/X8Kbs05INx5ZZMNbLDhdSV/Bsk9NGxg8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k4hl4jiOKMQ5bbxLbGU4TbKni5H1dQoQQWPhiihCZBaTaQzHX5NEAapnYZ2N/LhOc
-         OzZae8By2P77+KiTfT1ofGqiMtgLEGdr9xL5181eoUjsE/hbVcRJTrggF29dCQvDa5
-         0KtGlqnu6t2tVCFzFOduZwn5n2Q2NXlPh+HODJGs=
+        b=GVoX7N172QLtBqtFT+KUpeDBzfq6qshNDpxgetj6Gm8SqMs5lG1hbmh3Dg5ztOcq2
+         /j2XLzHqQkgpn8t6/w2SsUXgcm1z0ZsNPC4PBm7n+AtWkwjrh+Bc4XMlG1ECfEQF3i
+         y5f7EcLiGm+TQDV2LG6FVDUcotyztnGH+7PV2eWw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Wenli Looi <wlooi@ucalgary.ca>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 241/772] ASoC: mediatek: Fix missing of_node_put in mt2701_wm8960_machine_probe
-Date:   Tue,  7 Jun 2022 18:57:13 +0200
-Message-Id: <20220607164956.130684396@linuxfoundation.org>
+Subject: [PATCH 5.17 232/772] ath9k: fix ar9003_get_eepmisc
+Date:   Tue,  7 Jun 2022 18:57:04 +0200
+Message-Id: <20220607164955.868660511@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,57 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Wenli Looi <wlooi@ucalgary.ca>
 
-[ Upstream commit 05654431a18fe24e5e46a375d98904134628a102 ]
+[ Upstream commit 9aaff3864b603408c02c629957ae8d8ff5d5a4f2 ]
 
-This node pointer is returned by of_parse_phandle() with
-refcount incremented in this function.
-Calling of_node_put() to avoid the refcount leak.
+The current implementation is reading the wrong eeprom type.
 
-Fixes: 8625c1dbd876 ("ASoC: mediatek: Add mt2701-wm8960 machine driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220404093526.30004-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: d8ec2e2a63e8 ("ath9k: Add an eeprom_ops callback for retrieving the eepmisc value")
+Signed-off-by: Wenli Looi <wlooi@ucalgary.ca>
+Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220320233010.123106-5-wlooi@ucalgary.ca
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mediatek/mt2701/mt2701-wm8960.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath9k/ar9003_eeprom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/mediatek/mt2701/mt2701-wm8960.c b/sound/soc/mediatek/mt2701/mt2701-wm8960.c
-index f56de1b918bf..0cdf2ae36243 100644
---- a/sound/soc/mediatek/mt2701/mt2701-wm8960.c
-+++ b/sound/soc/mediatek/mt2701/mt2701-wm8960.c
-@@ -129,7 +129,8 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
- 	if (!codec_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_platform_node;
- 	}
- 	for_each_card_prelinks(card, i, dai_link) {
- 		if (dai_link->codecs->name)
-@@ -140,7 +141,7 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
- 	ret = snd_soc_of_parse_audio_routing(card, "audio-routing");
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to parse audio-routing: %d\n", ret);
--		return ret;
-+		goto put_codec_node;
- 	}
+diff --git a/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c b/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
+index b0a4ca3559fd..abed1effd95c 100644
+--- a/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
++++ b/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
+@@ -5615,7 +5615,7 @@ unsigned int ar9003_get_paprd_scale_factor(struct ath_hw *ah,
  
- 	ret = devm_snd_soc_register_card(&pdev->dev, card);
-@@ -148,6 +149,10 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
- 			__func__, ret);
- 
-+put_codec_node:
-+	of_node_put(codec_node);
-+put_platform_node:
-+	of_node_put(platform_node);
- 	return ret;
+ static u8 ar9003_get_eepmisc(struct ath_hw *ah)
+ {
+-	return ah->eeprom.map4k.baseEepHeader.eepMisc;
++	return ah->eeprom.ar9300_eep.baseEepHeader.opCapFlags.eepMisc;
  }
  
+ const struct eeprom_ops eep_ar9300_ops = {
 -- 
 2.35.1
 
