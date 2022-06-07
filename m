@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 835A7CCA494
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:56:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EF73CCA49C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:56:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382204AbiFGVzo (ORCPT
+        id S1382445AbiFGVzy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:55:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49394 "EHLO
+        Tue, 7 Jun 2022 17:55:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379234AbiFGVCN (ORCPT
+        with ESMTP id S1379274AbiFGVCS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:02:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C84DD34BA7;
-        Tue,  7 Jun 2022 11:47:02 -0700 (PDT)
+        Tue, 7 Jun 2022 17:02:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D914F4CD7B;
+        Tue,  7 Jun 2022 11:47:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 220466156D;
-        Tue,  7 Jun 2022 18:47:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EA39C385A5;
-        Tue,  7 Jun 2022 18:47:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 744D1612F2;
+        Tue,  7 Jun 2022 18:47:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 840ECC385A2;
+        Tue,  7 Jun 2022 18:47:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627621;
-        bh=+XXbB3EX5auKXAmZDxmRIalEhFPa2J9WLidrIDueP3E=;
+        s=korg; t=1654627638;
+        bh=uYiciictdrSEQB12gEqhK2G+ukdTSz3fit8pE6wltZY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JV2IxWa4KIw7wv2ijXXLN4Sl0EcTHLjj60M2MCHGENxvsxcaGzHkewNOVuWaSm1Rj
-         RzcLOYzYU7wYMbBBpc3bUjnBzEWp32cYhaknAjnLks2eh4dJh5sPTRIaP2heiC0axs
-         HhkfdqwdLqOp7CJZgHWcw15vJRgzKxGWW0Rqr19k=
+        b=oh9xtc1CLoAeT0OqYnKlRNZUkE2Us+NDh9hAyz1zTIA4XkV4FAlHNUNRI5jQgUwVI
+         G1oZ8JV/9qQQUzPV5z+xvH4DgF3I3pJoFpIDA1RW5ZlbK095MsSQPJCfBKngc0Slj4
+         b91jT8l5pmzfdeSESBcBCpMCjqQNqWiEb5Mp4BGo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Mathias Nyman <mathias.nyman@linux.intel.com>,
-        Chris Chiu <chris.chiu@canonical.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>
-Subject: [PATCH 5.18 034/879] xhci: Set HCD flag to defer primary roothub registration
-Date:   Tue,  7 Jun 2022 18:52:32 +0200
-Message-Id: <20220607165003.665844631@linuxfoundation.org>
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH 5.18 022/879] fs/ntfs3: Update valid size if -EIOCBQUEUED
+Date:   Tue,  7 Jun 2022 18:52:20 +0200
+Message-Id: <20220607165003.320075307@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,46 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kishon Vijay Abraham I <kishon@ti.com>
+From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 
-commit b7a4f9b5d0e4b6dd937678c546c0b322dd1a4054 upstream.
+commit 52e00ea6b26e45fb8159e3b57cdde8d3f9bdd8e9 upstream.
 
-Set "HCD_FLAG_DEFER_RH_REGISTER" to hcd->flags in xhci_run() to defer
-registering primary roothub in usb_add_hcd() if xhci has two roothubs.
-This will make sure both primary roothub and secondary roothub will be
-registered along with the second HCD.
-This is required for cold plugged USB devices to be detected in certain
-PCIe USB cards (like Inateck USB card connected to AM64 EVM or J7200 EVM).
+Update valid size if write is still in I/O queue.
+Fixes xfstest generic/240
+Fixes: 82cae269cfa9 ("fs/ntfs3: Add initialization of super block")
 
-This patch has been added and reverted earier as it triggered a race
-in usb device enumeration.
-That race is now fixed in 5.16-rc3, and in stable back to 5.4
-commit 6cca13de26ee ("usb: hub: Fix locking issues with address0_mutex")
-commit 6ae6dc22d2d1 ("usb: hub: Fix usb enumeration issue due to address0
-race")
-
-[minor rebase change, and commit message update -Mathias]
-
-CC: stable@vger.kernel.org # 5.4+
-Suggested-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Tested-by: Chris Chiu <chris.chiu@canonical.com>
-Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
-Link: https://lore.kernel.org/r/20220510091630.16564-3-kishon@ti.com
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci.c |    2 ++
- 1 file changed, 2 insertions(+)
+ fs/ntfs3/inode.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -696,6 +696,8 @@ int xhci_run(struct usb_hcd *hcd)
- 	xhci_dbg_trace(xhci, trace_xhci_dbg_init,
- 			"Finished xhci_run for USB2 roothub");
+--- a/fs/ntfs3/inode.c
++++ b/fs/ntfs3/inode.c
+@@ -757,6 +757,7 @@ static ssize_t ntfs_direct_IO(struct kio
+ 	loff_t vbo = iocb->ki_pos;
+ 	loff_t end;
+ 	int wr = iov_iter_rw(iter) & WRITE;
++	size_t iter_count = iov_iter_count(iter);
+ 	loff_t valid;
+ 	ssize_t ret;
  
-+	set_bit(HCD_FLAG_DEFER_RH_REGISTER, &hcd->flags);
-+
- 	xhci_create_dbc_dev(xhci);
+@@ -770,10 +771,13 @@ static ssize_t ntfs_direct_IO(struct kio
+ 				 wr ? ntfs_get_block_direct_IO_W
+ 				    : ntfs_get_block_direct_IO_R);
  
- 	xhci_debugfs_init(xhci);
+-	if (ret <= 0)
++	if (ret > 0)
++		end = vbo + ret;
++	else if (wr && ret == -EIOCBQUEUED)
++		end = vbo + iter_count;
++	else
+ 		goto out;
+ 
+-	end = vbo + ret;
+ 	valid = ni->i_valid;
+ 	if (wr) {
+ 		if (end > valid && !S_ISBLK(inode->i_mode)) {
 
 
