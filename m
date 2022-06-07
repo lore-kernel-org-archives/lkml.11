@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A0EEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:27:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3292DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:28:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346660AbiFGR1w (ORCPT
+        id S1346662AbiFGR2C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:27:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45242 "EHLO
+        Tue, 7 Jun 2022 13:28:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241776AbiFGRYG (ORCPT
+        with ESMTP id S1346319AbiFGRXm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:24:06 -0400
+        Tue, 7 Jun 2022 13:23:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF4CC10A636;
-        Tue,  7 Jun 2022 10:22:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A90BF1053CB;
+        Tue,  7 Jun 2022 10:21:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B87160AE0;
-        Tue,  7 Jun 2022 17:22:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AC54C385A5;
-        Tue,  7 Jun 2022 17:22:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 36440609FA;
+        Tue,  7 Jun 2022 17:21:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40008C385A5;
+        Tue,  7 Jun 2022 17:21:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622522;
-        bh=4FSrYTcjJKXPVdDoyaJUWxXh5uWevkD+L6Qli9rjWgU=;
+        s=korg; t=1654622508;
+        bh=GcjfrhzQCxc1EVuTfPY07sfSOpXv/e8b2AKb9LNl33w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=md57atGUAyC3qdDlMK/Fd3NSbT/q8AYL+HiHvYBj3/ZrPZLQaw8/KlQPF+AtIhEo9
-         ooB17NNhFvZWkmjhnkBSZRlvPYer9KPYRE64pE9RCQUP9KtseaPrdD84RKIn79X8pY
-         h92rY4kAfd9Di3UScTq6ZYtKhTrfirmttOlhfLqc=
+        b=MWzZKruDZE0p9Y/9c/mFXWrQEIiifQWqMFwHXV2E17W8IaOqCA570j7Yv/6Gdf8PW
+         HiBVzRajLdo23vpk1OEnIvHOeQl87ZlA5n6q3ZDmiGU+8izjsxBwxWzUvETDMPE5MO
+         VVNWiduYr5IhdsyOPUfLFkzB6qUywbLAobpocrdM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        kernel test robot <lkp@intel.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 5.10 089/452] can: mcp251xfd: silence clangs -Wunaligned-access warning
-Date:   Tue,  7 Jun 2022 18:59:06 +0200
-Message-Id: <20220607164911.209394521@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 085/452] net: phy: micrel: Allow probing without .driver_data
+Date:   Tue,  7 Jun 2022 18:59:02 +0200
+Message-Id: <20220607164911.087406554@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -53,62 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Fabio Estevam <festevam@denx.de>
 
-[ Upstream commit 1a6dd9996699889313327be03981716a8337656b ]
+[ Upstream commit f2ef6f7539c68c6bd6c32323d8845ee102b7c450 ]
 
-clang emits a -Wunaligned-access warning on union
-mcp251xfd_tx_ojb_load_buf.
+Currently, if the .probe element is present in the phy_driver structure
+and the .driver_data is not, a NULL pointer dereference happens.
 
-The reason is that field hw_tx_obj (not declared as packed) is being
-packed right after a 16 bits field inside a packed struct:
+Allow passing .probe without .driver_data by inserting NULL checks
+for priv->type.
 
-| union mcp251xfd_tx_obj_load_buf {
-| 	struct __packed {
-| 		struct mcp251xfd_buf_cmd cmd;
-| 		  /* ^ 16 bits fields */
-| 		struct mcp251xfd_hw_tx_obj_raw hw_tx_obj;
-| 		  /* ^ not declared as packed */
-| 	} nocrc;
-| 	struct __packed {
-| 		struct mcp251xfd_buf_cmd_crc cmd;
-| 		struct mcp251xfd_hw_tx_obj_raw hw_tx_obj;
-| 		__be16 crc;
-| 	} crc;
-| } ____cacheline_aligned;
-
-Starting from LLVM 14, having an unpacked struct nested in a packed
-struct triggers a warning. c.f. [1].
-
-This is a false positive because the field is always being accessed
-with the relevant put_unaligned_*() function. Adding __packed to the
-structure declaration silences the warning.
-
-[1] https://github.com/llvm/llvm-project/issues/55520
-
-Link: https://lore.kernel.org/all/20220518114357.55452-1-mailhol.vincent@wanadoo.fr
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Reported-by: kernel test robot <lkp@intel.com>
-Tested-by: Nathan Chancellor <nathan@kernel.org> # build
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220513114613.762810-1-festevam@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/spi/mcp251xfd/mcp251xfd.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/micrel.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd.h b/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
-index fa1246e39980..766dbd19bba6 100644
---- a/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
-+++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
-@@ -426,7 +426,7 @@ struct mcp251xfd_hw_tef_obj {
- /* The tx_obj_raw version is used in spi async, i.e. without
-  * regmap. We have to take care of endianness ourselves.
-  */
--struct mcp251xfd_hw_tx_obj_raw {
-+struct __packed mcp251xfd_hw_tx_obj_raw {
- 	__le32 id;
- 	__le32 flags;
- 	u8 data[sizeof_field(struct canfd_frame, data)];
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 92e94ac94a34..bbbe198f83e8 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -283,7 +283,7 @@ static int kszphy_config_reset(struct phy_device *phydev)
+ 		}
+ 	}
+ 
+-	if (priv->led_mode >= 0)
++	if (priv->type && priv->led_mode >= 0)
+ 		kszphy_setup_led(phydev, priv->type->led_mode_reg, priv->led_mode);
+ 
+ 	return 0;
+@@ -299,10 +299,10 @@ static int kszphy_config_init(struct phy_device *phydev)
+ 
+ 	type = priv->type;
+ 
+-	if (type->has_broadcast_disable)
++	if (type && type->has_broadcast_disable)
+ 		kszphy_broadcast_disable(phydev);
+ 
+-	if (type->has_nand_tree_disable)
++	if (type && type->has_nand_tree_disable)
+ 		kszphy_nand_tree_disable(phydev);
+ 
+ 	return kszphy_config_reset(phydev);
+@@ -1112,7 +1112,7 @@ static int kszphy_probe(struct phy_device *phydev)
+ 
+ 	priv->type = type;
+ 
+-	if (type->led_mode_reg) {
++	if (type && type->led_mode_reg) {
+ 		ret = of_property_read_u32(np, "micrel,led-mode",
+ 				&priv->led_mode);
+ 		if (ret)
+@@ -1133,7 +1133,8 @@ static int kszphy_probe(struct phy_device *phydev)
+ 		unsigned long rate = clk_get_rate(clk);
+ 		bool rmii_ref_clk_sel_25_mhz;
+ 
+-		priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
++		if (type)
++			priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
+ 		rmii_ref_clk_sel_25_mhz = of_property_read_bool(np,
+ 				"micrel,rmii-reference-clock-select-25-mhz");
+ 
 -- 
 2.35.1
 
