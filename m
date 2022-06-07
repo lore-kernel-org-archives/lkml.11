@@ -2,131 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41612CCA492
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50439CCA491
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442220AbiFHAyI (ORCPT
+        id S1442262AbiFHAyM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:54:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58310 "EHLO
+        Tue, 7 Jun 2022 20:54:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444567AbiFGXCZ (ORCPT
+        with ESMTP id S1382418AbiFGWCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:02:25 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD04EC3EA;
-        Tue,  7 Jun 2022 13:16:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654633010; x=1686169010;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=7V/VA70lsYPB2rHKj1GQNpN5bDhVdxSUPtPF7P0+zbo=;
-  b=fbsSxyQUV8mvku3KKGwZ4Q3jQfGS2tG5xtFQ/UQYvtEp3Gruj1nAwISO
-   T0BGRmZkrfzuhlxavw2agJVj1n1BZrMCkN9yDls3FuDXCOoRrd9n2iT9L
-   DrFYTjbJxxdvtO3Pc6uglyNTM6xtfoge6bLMscRY9NIV/k84H3vI4Li3r
-   i2En5jse4+Z4prQcQ/Wu6+Y30kEYudIF7mhkUWRUkSybS0NMk026aoylM
-   k6DuaWC/jpsS/9Bpp89904e/WwquViakZ/EhOsfMyRNXHBtX7z36QPkYU
-   5kBK5lutWxf5/r/8/24S1hUc7HgRlcji5HKfyt92qU+pvRXPJ5emn2BSP
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="274279199"
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="274279199"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 13:16:50 -0700
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="648216227"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 13:16:48 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nyfd6-000W7i-N9;
-        Tue, 07 Jun 2022 23:16:44 +0300
-Date:   Tue, 7 Jun 2022 23:16:44 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Stephen Kitt <steve@sk2.org>
+        Tue, 7 Jun 2022 18:02:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D49128144;
+        Tue,  7 Jun 2022 12:14:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1B8D61807;
+        Tue,  7 Jun 2022 19:14:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB038C385A2;
+        Tue,  7 Jun 2022 19:14:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629280;
+        bh=conex0sFGgB/DV350k7ij59++tfMZbwt9/zyaSY9Pe8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GUnPt7cNXgGjXoZBZFj3OpHKLd6gkdIEe3LKbmqugKRUybbfX5PBIMgiga7CHN6Tz
+         KLd9sb/c/AyFUhQopBn67JdQlGCTsJZrP0P4XWUzE/o/iJ259Nn982vXndm0uxn6SN
+         tTDa3UjeEZr0m2TfeAZDwE4fqOxLhnLZDx6clYqQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Len Baker <len.baker@gmx.com>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-staging@lists.linux.dev
-Subject: Re: [PATCH] staging: ftbft: Use backlight helper
-Message-ID: <Yp+yLJNq70U3Z7AZ@smile.fi.intel.com>
-References: <20220607185516.1129900-1-steve@sk2.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 593/879] pinctrl: mvebu: Fix irq_of_parse_and_map() return value
+Date:   Tue,  7 Jun 2022 19:01:51 +0200
+Message-Id: <20220607165020.065562054@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220607185516.1129900-1-steve@sk2.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 08:55:16PM +0200, Stephen Kitt wrote:
-> backlight_properties.fb_blank is deprecated. The states it represents
-> are handled by other properties; but instead of accessing those
-> properties directly, drivers should use the helpers provided by
-> backlight.h.
-> 
-> Instead of manually checking the power state in struct
-> backlight_properties, use backlight_is_blank().
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+[ Upstream commit 71bc7cf3be65bab441e03667cf215c557712976c ]
 
-> Signed-off-by: Stephen Kitt <steve@sk2.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: "Noralf Trønnes" <noralf@tronnes.org>
-> Cc: Thomas Zimmermann <tzimmermann@suse.de>
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Cc: Javier Martinez Canillas <javierm@redhat.com>
-> Cc: Len Baker <len.baker@gmx.com>
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: linux-fbdev@vger.kernel.org
-> Cc: linux-staging@lists.linux.dev
-> ---
->  drivers/staging/fbtft/fb_ssd1351.c | 3 +--
->  drivers/staging/fbtft/fbtft-core.c | 3 +--
->  2 files changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/staging/fbtft/fb_ssd1351.c b/drivers/staging/fbtft/fb_ssd1351.c
-> index 6fd549a424d5..b8d55aa8c5c7 100644
-> --- a/drivers/staging/fbtft/fb_ssd1351.c
-> +++ b/drivers/staging/fbtft/fb_ssd1351.c
-> @@ -196,8 +196,7 @@ static int update_onboard_backlight(struct backlight_device *bd)
->  		      "%s: power=%d, fb_blank=%d\n",
->  		      __func__, bd->props.power, bd->props.fb_blank);
->  
-> -	on = (bd->props.power == FB_BLANK_UNBLANK) &&
-> -	     (bd->props.fb_blank == FB_BLANK_UNBLANK);
-> +	on = !backlight_is_blank(bd);
->  	/* Onboard backlight connected to GPIO0 on SSD1351, GPIO1 unused */
->  	write_reg(par, 0xB5, on ? 0x03 : 0x02);
->  
-> diff --git a/drivers/staging/fbtft/fbtft-core.c b/drivers/staging/fbtft/fbtft-core.c
-> index 60b2278d8b16..9b3eaed80cdd 100644
-> --- a/drivers/staging/fbtft/fbtft-core.c
-> +++ b/drivers/staging/fbtft/fbtft-core.c
-> @@ -137,8 +137,7 @@ static int fbtft_backlight_update_status(struct backlight_device *bd)
->  		      "%s: polarity=%d, power=%d, fb_blank=%d\n",
->  		      __func__, polarity, bd->props.power, bd->props.fb_blank);
->  
-> -	if ((bd->props.power == FB_BLANK_UNBLANK) &&
-> -	    (bd->props.fb_blank == FB_BLANK_UNBLANK))
-> +	if (!backlight_is_blank(bd))
->  		gpiod_set_value(par->gpio.led[0], polarity);
->  	else
->  		gpiod_set_value(par->gpio.led[0], !polarity);
-> 
-> base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
-> -- 
-> 2.30.2
-> 
+The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
 
+Fixes: 2f227605394b ("pinctrl: armada-37xx: Add irqchip support")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220422105339.78810-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/pinctrl/mvebu/pinctrl-armada-37xx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
+index 08cad14042e2..adccf03b3e5a 100644
+--- a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
++++ b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
+@@ -773,7 +773,7 @@ static int armada_37xx_irqchip_register(struct platform_device *pdev,
+ 	for (i = 0; i < nr_irq_parent; i++) {
+ 		int irq = irq_of_parse_and_map(np, i);
+ 
+-		if (irq < 0)
++		if (!irq)
+ 			continue;
+ 		girq->parents[i] = irq;
+ 	}
 -- 
-With Best Regards,
-Andy Shevchenko
+2.35.1
+
 
 
