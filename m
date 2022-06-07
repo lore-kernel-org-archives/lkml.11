@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50E2DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:33:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B5E6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382162AbiFGWdt (ORCPT
+        id S1382319AbiFGWeB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:33:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38714 "EHLO
+        Tue, 7 Jun 2022 18:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377759AbiFGVWF (ORCPT
+        with ESMTP id S1378188AbiFGVWK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:22:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66164164981;
-        Tue,  7 Jun 2022 11:59:57 -0700 (PDT)
+        Tue, 7 Jun 2022 17:22:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D201A15D33E;
+        Tue,  7 Jun 2022 12:00:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DF6D617E0;
-        Tue,  7 Jun 2022 18:59:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33926C385A2;
-        Tue,  7 Jun 2022 18:59:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1029B823A5;
+        Tue,  7 Jun 2022 18:59:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E71E2C385A2;
+        Tue,  7 Jun 2022 18:59:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628396;
-        bh=eACbbb4eKif5aUj/4zy3O0VV6wup17lsEmwBQlI9Rxo=;
+        s=korg; t=1654628374;
+        bh=iCzqAaDlEauDmKFP1NvQj5z/6UrWCL92RGzlJmskS8E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IKtY2fxIuDbey5ws160C6m5QVvu4f76rT4I97Df41cYNkCTvRnYBu1BCHrj294yIG
-         4CYjqa5rOjdKvxfHCc5EmjFp7b64MEjqN4IE3Ac84rRvQe8XYF6e/hg/Vv66Ukmu27
-         f52P2d+pvNSJ4KvEwcbheSCzODUkcJFIdmhYnmLc=
+        b=d/eMWXYtGJKRePo8EWG8kMfv/8skxSc0Occ93nxEiStwpfGHXhcMkaOo0GnzgWEya
+         PqO0gBNKP1jkfO59bQin892Bp9BJ2VWlTIUA7MPpgioUtD0szCOhEFgL/9xuZCfwYV
+         J6WIcRBWKEFWLyBnaWvBoCe69ms6BzyjEQ7wckZM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Michael Walle <michael@walle.cc>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, YueHaibing <yuehaibing@huawei.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 313/879] device property: Allow error pointer to be passed to fwnode APIs
-Date:   Tue,  7 Jun 2022 18:57:11 +0200
-Message-Id: <20220607165011.932842425@linuxfoundation.org>
+Subject: [PATCH 5.18 306/879] net: ethernet: ti: am65-cpsw: Fix build error without PHYLINK
+Date:   Tue,  7 Jun 2022 18:57:04 +0200
+Message-Id: <20220607165011.730721057@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -55,256 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: YueHaibing <yuehaibing@huawei.com>
 
-[ Upstream commit 002752af7b89b74c64fe6bec8c5fde3d3a7810d8 ]
+[ Upstream commit bfa323c659b1016c8e896920ba08cd6914cc3b0c ]
 
-Some of the fwnode APIs might return an error pointer instead of NULL
-or valid fwnode handle. The result of such API call may be considered
-optional and hence the test for it is usually done in a form of
+If PHYLINK is n, build fails:
 
-	fwnode = fwnode_find_reference(...);
-	if (IS_ERR(fwnode))
-		...error handling...
+drivers/net/ethernet/ti/am65-cpsw-ethtool.o: In function `am65_cpsw_set_link_ksettings':
+am65-cpsw-ethtool.c:(.text+0x118): undefined reference to `phylink_ethtool_ksettings_set'
+drivers/net/ethernet/ti/am65-cpsw-ethtool.o: In function `am65_cpsw_get_link_ksettings':
+am65-cpsw-ethtool.c:(.text+0x138): undefined reference to `phylink_ethtool_ksettings_get'
+drivers/net/ethernet/ti/am65-cpsw-ethtool.o: In function `am65_cpsw_set_eee':
+am65-cpsw-ethtool.c:(.text+0x158): undefined reference to `phylink_ethtool_set_eee'
 
-Nevertheless the resulting fwnode may have bumped the reference count
-and hence caller of the above API is obliged to call fwnode_handle_put().
-Since fwnode may be not valid either as NULL or error pointer the check
-has to be performed there. This approach uglifies the code and adds
-a point of making a mistake, i.e. forgetting about error point case.
+Select PHYLINK for TI_K3_AM65_CPSW_NUSS to fix this.
 
-To prevent this, allow an error pointer to be passed to the fwnode APIs.
-
-Fixes: 83b34afb6b79 ("device property: Introduce fwnode_find_reference()")
-Reported-by: Nuno Sá <nuno.sa@analog.com>
-Tested-by: Nuno Sá <nuno.sa@analog.com>
-Acked-by: Nuno Sá <nuno.sa@analog.com>
-Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tested-by: Michael Walle <michael@walle.cc>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: e8609e69470f ("net: ethernet: ti: am65-cpsw: Convert to PHYLINK")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Link: https://lore.kernel.org/r/20220409105931.9080-1-yuehaibing@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/property.c | 89 +++++++++++++++++++++++------------------
- include/linux/fwnode.h  | 10 ++---
- 2 files changed, 56 insertions(+), 43 deletions(-)
+ drivers/net/ethernet/ti/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/base/property.c b/drivers/base/property.c
-index c0e94cce9c29..2f6843c9612b 100644
---- a/drivers/base/property.c
-+++ b/drivers/base/property.c
-@@ -47,12 +47,14 @@ bool fwnode_property_present(const struct fwnode_handle *fwnode,
- {
- 	bool ret;
- 
-+	if (IS_ERR_OR_NULL(fwnode))
-+		return false;
-+
- 	ret = fwnode_call_bool_op(fwnode, property_present, propname);
--	if (ret == false && !IS_ERR_OR_NULL(fwnode) &&
--	    !IS_ERR_OR_NULL(fwnode->secondary))
--		ret = fwnode_call_bool_op(fwnode->secondary, property_present,
--					 propname);
--	return ret;
-+	if (ret)
-+		return ret;
-+
-+	return fwnode_call_bool_op(fwnode->secondary, property_present, propname);
- }
- EXPORT_SYMBOL_GPL(fwnode_property_present);
- 
-@@ -232,15 +234,16 @@ static int fwnode_property_read_int_array(const struct fwnode_handle *fwnode,
- {
- 	int ret;
- 
-+	if (IS_ERR_OR_NULL(fwnode))
-+		return -EINVAL;
-+
- 	ret = fwnode_call_int_op(fwnode, property_read_int_array, propname,
- 				 elem_size, val, nval);
--	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
--	    !IS_ERR_OR_NULL(fwnode->secondary))
--		ret = fwnode_call_int_op(
--			fwnode->secondary, property_read_int_array, propname,
--			elem_size, val, nval);
-+	if (ret != -EINVAL)
-+		return ret;
- 
--	return ret;
-+	return fwnode_call_int_op(fwnode->secondary, property_read_int_array, propname,
-+				  elem_size, val, nval);
- }
- 
- /**
-@@ -371,14 +374,16 @@ int fwnode_property_read_string_array(const struct fwnode_handle *fwnode,
- {
- 	int ret;
- 
-+	if (IS_ERR_OR_NULL(fwnode))
-+		return -EINVAL;
-+
- 	ret = fwnode_call_int_op(fwnode, property_read_string_array, propname,
- 				 val, nval);
--	if (ret == -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
--	    !IS_ERR_OR_NULL(fwnode->secondary))
--		ret = fwnode_call_int_op(fwnode->secondary,
--					 property_read_string_array, propname,
--					 val, nval);
--	return ret;
-+	if (ret != -EINVAL)
-+		return ret;
-+
-+	return fwnode_call_int_op(fwnode->secondary, property_read_string_array, propname,
-+				  val, nval);
- }
- EXPORT_SYMBOL_GPL(fwnode_property_read_string_array);
- 
-@@ -480,15 +485,19 @@ int fwnode_property_get_reference_args(const struct fwnode_handle *fwnode,
- {
- 	int ret;
- 
-+	if (IS_ERR_OR_NULL(fwnode))
-+		return -ENOENT;
-+
- 	ret = fwnode_call_int_op(fwnode, get_reference_args, prop, nargs_prop,
- 				 nargs, index, args);
-+	if (ret == 0)
-+		return ret;
- 
--	if (ret < 0 && !IS_ERR_OR_NULL(fwnode) &&
--	    !IS_ERR_OR_NULL(fwnode->secondary))
--		ret = fwnode_call_int_op(fwnode->secondary, get_reference_args,
--					 prop, nargs_prop, nargs, index, args);
-+	if (IS_ERR_OR_NULL(fwnode->secondary))
-+		return ret;
- 
--	return ret;
-+	return fwnode_call_int_op(fwnode->secondary, get_reference_args, prop, nargs_prop,
-+				  nargs, index, args);
- }
- EXPORT_SYMBOL_GPL(fwnode_property_get_reference_args);
- 
-@@ -635,12 +644,13 @@ EXPORT_SYMBOL_GPL(fwnode_count_parents);
- struct fwnode_handle *fwnode_get_nth_parent(struct fwnode_handle *fwnode,
- 					    unsigned int depth)
- {
--	unsigned int i;
--
- 	fwnode_handle_get(fwnode);
- 
--	for (i = 0; i < depth && fwnode; i++)
-+	do {
-+		if (depth-- == 0)
-+			break;
- 		fwnode = fwnode_get_next_parent(fwnode);
-+	} while (fwnode);
- 
- 	return fwnode;
- }
-@@ -659,17 +669,17 @@ EXPORT_SYMBOL_GPL(fwnode_get_nth_parent);
- bool fwnode_is_ancestor_of(struct fwnode_handle *test_ancestor,
- 				  struct fwnode_handle *test_child)
- {
--	if (!test_ancestor)
-+	if (IS_ERR_OR_NULL(test_ancestor))
- 		return false;
- 
- 	fwnode_handle_get(test_child);
--	while (test_child) {
-+	do {
- 		if (test_child == test_ancestor) {
- 			fwnode_handle_put(test_child);
- 			return true;
- 		}
- 		test_child = fwnode_get_next_parent(test_child);
--	}
-+	} while (test_child);
- 	return false;
- }
- 
-@@ -698,7 +708,7 @@ fwnode_get_next_available_child_node(const struct fwnode_handle *fwnode,
- {
- 	struct fwnode_handle *next_child = child;
- 
--	if (!fwnode)
-+	if (IS_ERR_OR_NULL(fwnode))
- 		return NULL;
- 
- 	do {
-@@ -722,16 +732,16 @@ struct fwnode_handle *device_get_next_child_node(struct device *dev,
- 	const struct fwnode_handle *fwnode = dev_fwnode(dev);
- 	struct fwnode_handle *next;
- 
-+	if (IS_ERR_OR_NULL(fwnode))
-+		return NULL;
-+
- 	/* Try to find a child in primary fwnode */
- 	next = fwnode_get_next_child_node(fwnode, child);
- 	if (next)
- 		return next;
- 
- 	/* When no more children in primary, continue with secondary */
--	if (fwnode && !IS_ERR_OR_NULL(fwnode->secondary))
--		next = fwnode_get_next_child_node(fwnode->secondary, child);
--
--	return next;
-+	return fwnode_get_next_child_node(fwnode->secondary, child);
- }
- EXPORT_SYMBOL_GPL(device_get_next_child_node);
- 
-@@ -798,6 +808,9 @@ EXPORT_SYMBOL_GPL(fwnode_handle_put);
-  */
- bool fwnode_device_is_available(const struct fwnode_handle *fwnode)
- {
-+	if (IS_ERR_OR_NULL(fwnode))
-+		return false;
-+
- 	if (!fwnode_has_op(fwnode, device_is_available))
- 		return true;
- 
-@@ -988,14 +1001,14 @@ fwnode_graph_get_next_endpoint(const struct fwnode_handle *fwnode,
- 		parent = fwnode_graph_get_port_parent(prev);
- 	else
- 		parent = fwnode;
-+	if (IS_ERR_OR_NULL(parent))
-+		return NULL;
- 
- 	ep = fwnode_call_ptr_op(parent, graph_get_next_endpoint, prev);
-+	if (ep)
-+		return ep;
- 
--	if (IS_ERR_OR_NULL(ep) &&
--	    !IS_ERR_OR_NULL(parent) && !IS_ERR_OR_NULL(parent->secondary))
--		ep = fwnode_graph_get_next_endpoint(parent->secondary, NULL);
--
--	return ep;
-+	return fwnode_graph_get_next_endpoint(parent->secondary, NULL);
- }
- EXPORT_SYMBOL_GPL(fwnode_graph_get_next_endpoint);
- 
-diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
-index 3a532ba66f6c..7defac04f9a3 100644
---- a/include/linux/fwnode.h
-+++ b/include/linux/fwnode.h
-@@ -148,12 +148,12 @@ struct fwnode_operations {
- 	int (*add_links)(struct fwnode_handle *fwnode);
- };
- 
--#define fwnode_has_op(fwnode, op)				\
--	((fwnode) && (fwnode)->ops && (fwnode)->ops->op)
-+#define fwnode_has_op(fwnode, op)					\
-+	(!IS_ERR_OR_NULL(fwnode) && (fwnode)->ops && (fwnode)->ops->op)
-+
- #define fwnode_call_int_op(fwnode, op, ...)				\
--	(fwnode ? (fwnode_has_op(fwnode, op) ?				\
--		   (fwnode)->ops->op(fwnode, ## __VA_ARGS__) : -ENXIO) : \
--	 -EINVAL)
-+	(fwnode_has_op(fwnode, op) ?					\
-+	 (fwnode)->ops->op(fwnode, ## __VA_ARGS__) : (IS_ERR_OR_NULL(fwnode) ? -EINVAL : -ENXIO))
- 
- #define fwnode_call_bool_op(fwnode, op, ...)		\
- 	(fwnode_has_op(fwnode, op) ?			\
+diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
+index affcf92cd3aa..fb30bc5d56cb 100644
+--- a/drivers/net/ethernet/ti/Kconfig
++++ b/drivers/net/ethernet/ti/Kconfig
+@@ -94,6 +94,7 @@ config TI_K3_AM65_CPSW_NUSS
+ 	depends on ARCH_K3 && OF && TI_K3_UDMA_GLUE_LAYER
+ 	select NET_DEVLINK
+ 	select TI_DAVINCI_MDIO
++	select PHYLINK
+ 	imply PHY_TI_GMII_SEL
+ 	depends on TI_K3_AM65_CPTS || !TI_K3_AM65_CPTS
+ 	help
 -- 
 2.35.1
 
