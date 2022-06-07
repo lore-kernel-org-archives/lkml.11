@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E43D2CCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:11:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A27CCA485
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379567AbiFGVKY (ORCPT
+        id S1379610AbiFGVKk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:10:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57844 "EHLO
+        Tue, 7 Jun 2022 17:10:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359417AbiFGUNC (ORCPT
+        with ESMTP id S1359198AbiFGUNG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:13:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF181C5932;
-        Tue,  7 Jun 2022 11:28:00 -0700 (PDT)
+        Tue, 7 Jun 2022 16:13:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49B31C8644;
+        Tue,  7 Jun 2022 11:28:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9876E611B9;
-        Tue,  7 Jun 2022 18:27:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F27CC385A5;
-        Tue,  7 Jun 2022 18:27:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79211B8237C;
+        Tue,  7 Jun 2022 18:28:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E363FC385A2;
+        Tue,  7 Jun 2022 18:28:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626479;
-        bh=L9JwzUGdFPNimbr28DRbXd/wF9sc7qGhkKw3LAEyio4=;
+        s=korg; t=1654626487;
+        bh=be1KVqywA5lFgQdeCfBOmIrKvoUbkFJVnHDvVczohYE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jYegUN6BET95jO9DUFxFbJP02g7aopPt9v/qCA3XaSyyPfbGwYtnYAxzVzeagbgDg
-         0scxWaHMvS56sGGo/6b6+yA4Nj3fIurrvPfXZrXAFNvswYP1k38nDcj70BXLjq629Q
-         h0RSzSToG9P/oGCOfsFiHeobqErcbCt4n82gLnSw=
+        b=EEiJw0MAsbLqtpNHuBWwjahnwpc0Xa7ZeGrW6ZCZYS0sNaCwMXMHtjh9tmM48jMSi
+         1L2S1s0pZ67kpyxDn9Q45HYgzzjeHtPJ8cAtV62oAdWRK9yyFpfn72BWQPvsXJoZ9C
+         gecQ+aSS1q/Fh1dgTtSOVa4vE1DcUBeS69Hs2JEw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will.deacon@arm.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 394/772] irqchip/gic-v3: Refactor ISB + EOIR at ack time
-Date:   Tue,  7 Jun 2022 18:59:46 +0200
-Message-Id: <20220607165000.622825245@linuxfoundation.org>
+Subject: [PATCH 5.17 397/772] m68k: math-emu: Fix dependencies of math emulation support
+Date:   Tue,  7 Jun 2022 18:59:49 +0200
+Message-Id: <20220607165000.709641552@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,186 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Rutland <mark.rutland@arm.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 
-[ Upstream commit 6efb50923771f392122f5ce69dfc43b08f16e449 ]
+[ Upstream commit ed6bc6bf0a7d75e80eb1df883c09975ebb74e590 ]
 
-There are cases where a context synchronization event is necessary
-between an IRQ being raised and being handled, and there are races such
-that we cannot rely upon the exception entry being subsequent to the
-interrupt being raised. To fix this, we place an ISB between a read of
-IAR and the subsequent invocation of an IRQ handler.
+If CONFIG_M54xx=y, CONFIG_MMU=y, and CONFIG_M68KFPU_EMU=y:
 
-When EOI mode 1 is in use, we need to EOI an interrupt prior to invoking
-its handler, and we have a write to EOIR for this. As this write to EOIR
-requires an ISB, and this is provided by the gic_write_eoir() helper, we
-omit the usual ISB in this case, with the logic being:
+    {standard input}:272: Error: invalid instruction for this architecture; needs 68000 or higher (68000 [68ec000, 68hc000, 68hc001, 68008, 68302, 68306, 68307, 68322, 68356], 68010, 68020 [68k, 68ec020], 68030 [68ec030], 68040 [68ec040], 68060 [68ec060], cpu32 [68330, 68331, 68332, 68333, 68334, 68336, 68340, 68341, 68349, 68360], fidoa [fido]) -- statement `sub.b %d1,%d3' ignored
+    {standard input}:609: Error: invalid instruction for this architecture; needs 68020 or higher (68020 [68k, 68ec020], 68030 [68ec030], 68040 [68ec040], 68060 [68ec060]) -- statement `bfextu 4(%a1){%d0,#8},%d0' ignored
+    {standard input}:752: Error: operands mismatch -- statement `mulu.l 4(%a0),%d3:%d0' ignored
+    {standard input}:1155: Error: operands mismatch -- statement `divu.l %d0,%d3:%d7' ignored
 
-|	if (static_branch_likely(&supports_deactivate_key))
-|		gic_write_eoir(irqnr);
-|	else
-|		isb();
+The math emulation support code is intended for 68020 and higher, and
+uses several instructions or instruction modes not available on coldfire
+or 68000.
 
-This is somewhat opaque, and it would be a little clearer if there were
-an unconditional ISB, with only the write to EOIR being conditional,
-e.g.
+Originally, the dependency of M68KFPU_EMU on MMU was fine, as MMU
+support was only available on 68020 or higher.  But this assumption
+was broken by the introduction of MMU support for M547x and M548x.
 
-|	if (static_branch_likely(&supports_deactivate_key))
-|		write_gicreg(irqnr, ICC_EOIR1_EL1);
-|
-|	isb();
+Drop the dependency on MMU, as the code should work fine on 68020 and up
+without MMU (which are not yet supported by Linux, though).
+Add dependencies on M68KCLASSIC (to rule out Coldfire) and FPU (kernel
+has some type of floating-point support --- be it hardware or software
+emulated, to rule out anything below 68020).
 
-This patch rewrites the code that way, with this logic factored into a
-new helper function with comments explaining what the ISB is for, as
-were originally laid out in commit:
-
-  39a06b67c2c1256b ("irqchip/gic: Ensure we have an ISB between ack and ->handle_irq")
-
-Note that since then, we removed the IAR polling in commit:
-
-  342677d70ab92142 ("irqchip/gic-v3: Remove acknowledge loop")
-
-... which removed one of the two race conditions.
-
-For consistency, other portions of the driver are made to manipulate
-EOIR using write_gicreg() and explcit ISBs, and the gic_write_eoir()
-helper function is removed.
-
-There should be no functional change as a result of this patch.
-
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Will Deacon <will.deacon@arm.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220513133038.226182-3-mark.rutland@arm.com
+Fixes: 1f7034b9616e6f14 ("m68k: allow ColdFire 547x and 548x CPUs to be built with MMU enabled")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Reviewed-by: Greg Ungerer <gerg@linux-m68k.org>
+Link: https://lore.kernel.org/r/18c34695b7c95107f60ccca82a4ff252f3edf477.1652446117.git.geert@linux-m68k.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/include/asm/arch_gicv3.h   |  7 +----
- arch/arm64/include/asm/arch_gicv3.h |  6 ----
- drivers/irqchip/irq-gic-v3.c        | 43 ++++++++++++++++++++++-------
- 3 files changed, 34 insertions(+), 22 deletions(-)
+ arch/m68k/Kconfig.cpu | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/include/asm/arch_gicv3.h b/arch/arm/include/asm/arch_gicv3.h
-index 413abfb42989..f82a819eb0db 100644
---- a/arch/arm/include/asm/arch_gicv3.h
-+++ b/arch/arm/include/asm/arch_gicv3.h
-@@ -48,6 +48,7 @@ static inline u32 read_ ## a64(void)		\
- 	return read_sysreg(a32); 		\
- }						\
+diff --git a/arch/m68k/Kconfig.cpu b/arch/m68k/Kconfig.cpu
+index 0d00ef5117dc..97bb4ce45e10 100644
+--- a/arch/m68k/Kconfig.cpu
++++ b/arch/m68k/Kconfig.cpu
+@@ -327,7 +327,7 @@ comment "Processor Specific Options"
  
-+CPUIF_MAP(ICC_EOIR1, ICC_EOIR1_EL1)
- CPUIF_MAP(ICC_PMR, ICC_PMR_EL1)
- CPUIF_MAP(ICC_AP0R0, ICC_AP0R0_EL1)
- CPUIF_MAP(ICC_AP0R1, ICC_AP0R1_EL1)
-@@ -63,12 +64,6 @@ CPUIF_MAP(ICC_AP1R3, ICC_AP1R3_EL1)
- 
- /* Low-level accessors */
- 
--static inline void gic_write_eoir(u32 irq)
--{
--	write_sysreg(irq, ICC_EOIR1);
--	isb();
--}
--
- static inline void gic_write_dir(u32 val)
- {
- 	write_sysreg(val, ICC_DIR);
-diff --git a/arch/arm64/include/asm/arch_gicv3.h b/arch/arm64/include/asm/arch_gicv3.h
-index 4ad22c3135db..5a0f792492af 100644
---- a/arch/arm64/include/asm/arch_gicv3.h
-+++ b/arch/arm64/include/asm/arch_gicv3.h
-@@ -26,12 +26,6 @@
-  * sets the GP register's most significant bits to 0 with an explicit cast.
-  */
- 
--static inline void gic_write_eoir(u32 irq)
--{
--	write_sysreg_s(irq, SYS_ICC_EOIR1_EL1);
--	isb();
--}
--
- static __always_inline void gic_write_dir(u32 irq)
- {
- 	write_sysreg_s(irq, SYS_ICC_DIR_EL1);
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index 3e3afb30de50..c26f571fba0c 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -556,7 +556,8 @@ static void gic_irq_nmi_teardown(struct irq_data *d)
- 
- static void gic_eoi_irq(struct irq_data *d)
- {
--	gic_write_eoir(gic_irq(d));
-+	write_gicreg(gic_irq(d), ICC_EOIR1_EL1);
-+	isb();
- }
- 
- static void gic_eoimode1_eoi_irq(struct irq_data *d)
-@@ -640,10 +641,38 @@ static void gic_deactivate_unhandled(u32 irqnr)
- 		if (irqnr < 8192)
- 			gic_write_dir(irqnr);
- 	} else {
--		gic_write_eoir(irqnr);
-+		write_gicreg(irqnr, ICC_EOIR1_EL1);
-+		isb();
- 	}
- }
- 
-+/*
-+ * Follow a read of the IAR with any HW maintenance that needs to happen prior
-+ * to invoking the relevant IRQ handler. We must do two things:
-+ *
-+ * (1) Ensure instruction ordering between a read of IAR and subsequent
-+ *     instructions in the IRQ handler using an ISB.
-+ *
-+ *     It is possible for the IAR to report an IRQ which was signalled *after*
-+ *     the CPU took an IRQ exception as multiple interrupts can race to be
-+ *     recognized by the GIC, earlier interrupts could be withdrawn, and/or
-+ *     later interrupts could be prioritized by the GIC.
-+ *
-+ *     For devices which are tightly coupled to the CPU, such as PMUs, a
-+ *     context synchronization event is necessary to ensure that system
-+ *     register state is not stale, as these may have been indirectly written
-+ *     *after* exception entry.
-+ *
-+ * (2) Deactivate the interrupt when EOI mode 1 is in use.
-+ */
-+static inline void gic_complete_ack(u32 irqnr)
-+{
-+	if (static_branch_likely(&supports_deactivate_key))
-+		write_gicreg(irqnr, ICC_EOIR1_EL1);
-+
-+	isb();
-+}
-+
- static inline void gic_handle_nmi(u32 irqnr, struct pt_regs *regs)
- {
- 	bool irqs_enabled = interrupts_enabled(regs);
-@@ -652,10 +681,7 @@ static inline void gic_handle_nmi(u32 irqnr, struct pt_regs *regs)
- 	if (irqs_enabled)
- 		nmi_enter();
- 
--	if (static_branch_likely(&supports_deactivate_key))
--		gic_write_eoir(irqnr);
--	else
--		isb()
-+	gic_complete_ack(irqnr);
- 
- 	/*
- 	 * Leave the PSR.I bit set to prevent other NMIs to be
-@@ -726,10 +752,7 @@ static asmlinkage void __exception_irq_entry gic_handle_irq(struct pt_regs *regs
- 		gic_arch_enable_irqs();
- 	}
- 
--	if (static_branch_likely(&supports_deactivate_key))
--		gic_write_eoir(irqnr);
--	else
--		isb();
-+	gic_complete_ack(irqnr);
- 
- 	if (generic_handle_domain_irq(gic_data.domain, irqnr)) {
- 		WARN_ONCE(true, "Unexpected interrupt received!\n");
+ config M68KFPU_EMU
+ 	bool "Math emulation support"
+-	depends on MMU
++	depends on M68KCLASSIC && FPU
+ 	help
+ 	  At some point in the future, this will cause floating-point math
+ 	  instructions to be emulated by the kernel on machines that lack a
 -- 
 2.35.1
 
