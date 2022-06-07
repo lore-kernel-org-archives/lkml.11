@@ -2,152 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E2E6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:09:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92EDCC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:09:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242616AbiFGLJP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 07:09:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54380 "EHLO
+        id S242675AbiFGLJq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 07:09:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242620AbiFGLIr (ORCPT
+        with ESMTP id S242566AbiFGLJH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 07:08:47 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2245B10F365;
-        Tue,  7 Jun 2022 04:04:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654599888; x=1686135888;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=txlfXjkncT5hC674qNejQhjc3HzGWH2n9+3fSqXFElg=;
-  b=ZuD7XJunqF+oQFgLH70hHJJzUyDX/9Yyc6z/CGQlpdoTx2vRCSnUIMdU
-   c+zfWhewQS+lC0l415FmCsQO53rJ3rhge8dFjRY8a1jhFcm63Mrp0WMax
-   P6O85A56btM6uWNuhZisYsr0CngEkzk9lZJDaEp1LiHgLMy2IgiuryQsw
-   qREJIxgAk54i4xKov6l73S0FeHzeVIP8Sd//H8/nuzDdMYWgpIEUldZ6B
-   dx/PtK3dqDIHU38EmKFI/JcKuKg+qZy7W6E9DR1nJCP7fXN7Krkcx1Dgu
-   3BozaNrA6+MRwCS0xy9xiJHRXuyEIg2IordpDtehhM98fpeYUsJiMw9O1
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="338066809"
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="338066809"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 04:04:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="614870759"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga001.jf.intel.com with ESMTP; 07 Jun 2022 04:04:18 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 257B4GZI020549;
-        Tue, 7 Jun 2022 12:04:16 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Tue, 7 Jun 2022 07:09:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D5B11047E
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 04:04:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BA8761630
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:04:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC647C385A5;
+        Tue,  7 Jun 2022 11:04:54 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="RmRcAWBG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1654599893;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pLbg+TRUH6aNHSqlpwLrYjAG/GDDxPAkzL7dlKJUm+U=;
+        b=RmRcAWBGSH3K7FBjd1mGn0C2bl3pEIa7D0gY/o4J5ba4EU5YNnMsZxUrFHa52s3NBus7Ab
+        U++HjufPsObfnIwyDc93cfeD8zM/fqf35gCyMcwkgtsHCWRsFE8bWN0FpyRnzjW8EYTRe2
+        cSDW0F1IbcriTJy1zN8muYL773odWXE=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 6df8dc51 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 7 Jun 2022 11:04:52 +0000 (UTC)
+Date:   Tue, 7 Jun 2022 13:04:47 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Stephen Boyd <swboyd@chromium.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
         Arnd Bergmann <arnd@arndb.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Richard Henderson <rth@twiddle.net>,
-        Matt Turner <mattst88@gmail.com>,
-        Brian Cain <bcain@quicinc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/6] bitops: unify non-atomic bitops prototypes across architectures
-Date:   Tue,  7 Jun 2022 13:03:10 +0200
-Message-Id: <20220607110310.72649-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <Yp5oMmzNlq+Ut4So@yury-laptop>
-References: <20220606114908.962562-1-alexandr.lobakin@intel.com> <20220606114908.962562-5-alexandr.lobakin@intel.com> <Yp5oMmzNlq+Ut4So@yury-laptop>
+        Phil Elwell <phil@raspberrypi.com>
+Subject: Re: [PATCH] random: do not use jump labels before they are
+ initialized
+Message-ID: <Yp8wz2Ey4J4u+ZlK@zx2c4.com>
+References: <20220607100210.683136-1-Jason@zx2c4.com>
+ <CAMj1kXEAuh-tokcqvKCQF5Vq+jZKj4ZM=PyGaHKapXPJKVyOrg@mail.gmail.com>
+ <Yp8oOH+9V336LrLk@zx2c4.com>
+ <Yp8rcFrqK/IkzKXj@zx2c4.com>
+ <CAMj1kXHV833uMJYrdUagJpH5hoj4ivC6zxMJvNnxLAF2NG3_sg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAMj1kXHV833uMJYrdUagJpH5hoj4ivC6zxMJvNnxLAF2NG3_sg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yury Norov <yury.norov@gmail.com>
-Date: Mon, 6 Jun 2022 13:48:50 -0700
+Hi Ard,
 
-> On Mon, Jun 06, 2022 at 01:49:05PM +0200, Alexander Lobakin wrote:
-> > Currently, there is a mess with the prototypes of the non-atomic
-> > bitops across the different architectures:
-> > 
-> > ret	bool, int, unsigned long
-> > nr	int, long, unsigned int, unsigned long
-> > addr	volatile unsigned long *, volatile void *
-> > 
-> > Thankfully, it doesn't provoke any bugs, but can sometimes make
-> > the compiler angry when it's not handy at all.
-> > Adjust all the prototypes to the following standard:
-> > 
-> > ret	bool				retval can be only 0 or 1
-> > nr	unsigned long			native; signed makes no sense
-> > addr	volatile unsigned long *	bitmaps are arrays of ulongs
-> > 
-> > Finally, add some static assertions in order to prevent people from
-> > making a mess in this room again.
-> > I also used the %__always_inline attribute consistently they always
-> > get resolved to the actual operations.
-> > 
-> > Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > ---
-> 
-> Reviewed-by: Yury Norov <yury.norov@gmail.com>
-> 
-> [...]
-> 
-> > diff --git a/include/linux/bitops.h b/include/linux/bitops.h
-> > index 7aaed501f768..5520ac9b1c24 100644
-> > --- a/include/linux/bitops.h
-> > +++ b/include/linux/bitops.h
-> > @@ -26,12 +26,25 @@ extern unsigned int __sw_hweight16(unsigned int w);
-> >  extern unsigned int __sw_hweight32(unsigned int w);
-> >  extern unsigned long __sw_hweight64(__u64 w);
-> >  
-> > +#include <asm-generic/bitops/generic-non-atomic.h>
-> > +
-> >  /*
-> >   * Include this here because some architectures need generic_ffs/fls in
-> >   * scope
-> >   */
-> >  #include <asm/bitops.h>
-> >  
-> > +/* Check that the bitops prototypes are sane */
-> > +#define __check_bitop_pr(name)	static_assert(__same_type(name, gen_##name))
-> > +__check_bitop_pr(__set_bit);
-> > +__check_bitop_pr(__clear_bit);
-> > +__check_bitop_pr(__change_bit);
-> > +__check_bitop_pr(__test_and_set_bit);
-> > +__check_bitop_pr(__test_and_clear_bit);
-> > +__check_bitop_pr(__test_and_change_bit);
-> > +__check_bitop_pr(test_bit);
-> > +#undef __check_bitop_pr
-> 
-> This one is amazing trick! And the series is good overall. Do you want me to
-> take it in bitmap tree, when it's ready, or you'll move it somehow else?
+On Tue, Jun 07, 2022 at 12:56:20PM +0200, Ard Biesheuvel wrote:
+> Could we do this to defer the static key manipulation? That way, the
+> first call to crng_reseed() that occurs after the static keys API
+> becomes available will set the static key, and patch itself away at
+> the same time.
 
-Thanks :) Yeah I'm glad we can use __same_type() (->
-__builtin_types_compatible_p()) for functions as well, it simplifies
-keeping the prototypes unified a lot.
+That's almost the same as the patch I just posted, except you
+pushed the logic down into crng_reseed() instead of credit_init_bits().
+(A previous mini-project aimed to remove as much logic as possible from
+crng_reseed(), counting on those blocks in crng_init_bits() to only ever
+run once.) What this means is that the static key won't get changed
+until whenever the next reseeding is. I guess that's "fine" but I think
+I'd prefer to keep the entropy counting stuff as separate from the init
+bits stuff as possible.
 
-I'm fine with either your bitmap tree or Arnd's asm-generic tree, so
-it was my question which I happily forgot to ask: which of those two
-is preferred for the series.
+>> As a third, I could just defer doing anything with the bootloader seed
+>> until random_init(). This might actually be the simplest solution...
+>> I'll sketch something out. A downside, which might be sort of
+>> significant, is that a few odd things actually use randomness before
+>> random_init() is called. So these would miss out on having that seed.
+>> I'll have to look what exactly to see if we're actually getting anything
+>> real out of that.
+>>
+>
+> This is kind of the point of using a firmware provided seed, i.e.,
+> that it is available much earlier than anything else.
 
-> 
-> Thanks,
-> Yury
+I'll send a patch for this anyway because I'm sort of curious now. Maybe
+it'll be a dead end, for the reason you mentioned, but I think I'll
+still try to evaluate it.
 
-Thanks,
-Olek
+Jason
