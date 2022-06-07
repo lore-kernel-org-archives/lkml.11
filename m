@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A030CCCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79EE6CCA482
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390578AbiFHAgh (ORCPT
+        id S1390318AbiFHAgc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46012 "EHLO
+        Tue, 7 Jun 2022 20:36:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384377AbiFGVyb (ORCPT
+        with ESMTP id S1382547AbiFGWDp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:54:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AFE224ACAE;
-        Tue,  7 Jun 2022 12:13:28 -0700 (PDT)
+        Tue, 7 Jun 2022 18:03:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D66D252240;
+        Tue,  7 Jun 2022 12:15:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A824B8237B;
-        Tue,  7 Jun 2022 19:13:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02177C385A2;
-        Tue,  7 Jun 2022 19:13:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED37D61846;
+        Tue,  7 Jun 2022 19:15:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 083A8C385A5;
+        Tue,  7 Jun 2022 19:15:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629205;
-        bh=rErfl5eEDB3p0z9t/ZqOeXDL0w1kyG5P6kY7CDdLFXA=;
+        s=korg; t=1654629315;
+        bh=ozUGUxXjZ0SLqJrR+0taUaj3gF28+ijUtxbb/5RCXvs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hKn97rOcJWRY+c5AeznycFpd6Zk4YVeHoDVdosZRQS7qqCIKL6cvflnIH98c9yWwf
-         Nfhb1IPdpJplEmm3oWorRnYRbn5AThMPeRgQT6m2IpTLTMj5Xrq54H5Q7WzIJ+KSvM
-         gugBtaAPwzBO2Cu9tn2Bvs15KE/N6BHGYhoX0T7c=
+        b=n/uoaSrDoocPVciIBlMya+1GYtVkmTy0cdO21Yruf/wpf8ICqULc2y2s2HoA2MR/L
+         VTEmIMrvC/jjDnU6bBBJxTEIY/azEDDLLyTfkbdgJ/C5YMT+9SqnilVqu+gPQYWXcP
+         ndhPiHeL2YCYnL7RgQg/Gq4RFUxHIx5LMIZI6DqE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Igor Zhbanov <izh1979@gmail.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 607/879] powerpc/idle: Fix return value of __setup() handler
-Date:   Tue,  7 Jun 2022 19:02:05 +0200
-Message-Id: <20220607165020.469487811@linuxfoundation.org>
+Subject: [PATCH 5.18 648/879] gpio: sim: Use correct order for the parameters of devm_kcalloc()
+Date:   Tue,  7 Jun 2022 19:02:46 +0200
+Message-Id: <20220607165021.656260726@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,43 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit b793a01000122d2bd133ba451a76cc135b5e162c ]
+[ Upstream commit c680c6a814a2269427fad9ac417ab16756bceae9 ]
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
+We should have 'n', then 'size', not the opposite.
+This is harmless because the 2 values are just multiplied, but having
+the correct order silence a (unpublished yet) smatch warning.
 
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) argument or environment
-strings.
-
-Also, error return codes don't mean anything to obsolete_checksetup() --
-only non-zero (usually 1) or zero. So return 1 from powersave_off().
-
-Fixes: 302eca184fb8 ("[POWERPC] cell: use ppc_md->power_save instead of cbe_idle_loop")
-Reported-by: Igor Zhbanov <izh1979@gmail.com>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220502192925.19954-1-rdunlap@infradead.org
+Fixes: cb8c474e79be ("gpio: sim: new testing module")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/idle.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpio/gpio-sim.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/kernel/idle.c b/arch/powerpc/kernel/idle.c
-index 4ad79eb638c6..77cd4c5a2d63 100644
---- a/arch/powerpc/kernel/idle.c
-+++ b/arch/powerpc/kernel/idle.c
-@@ -37,7 +37,7 @@ static int __init powersave_off(char *arg)
- {
- 	ppc_md.power_save = NULL;
- 	cpuidle_disable = IDLE_POWERSAVE_OFF;
--	return 0;
-+	return 1;
- }
- __setup("powersave=off", powersave_off);
+diff --git a/drivers/gpio/gpio-sim.c b/drivers/gpio/gpio-sim.c
+index 41c31b10ae84..98109839102f 100644
+--- a/drivers/gpio/gpio-sim.c
++++ b/drivers/gpio/gpio-sim.c
+@@ -314,8 +314,8 @@ static int gpio_sim_setup_sysfs(struct gpio_sim_chip *chip)
  
+ 	for (i = 0; i < num_lines; i++) {
+ 		attr_group = devm_kzalloc(dev, sizeof(*attr_group), GFP_KERNEL);
+-		attrs = devm_kcalloc(dev, sizeof(*attrs),
+-				     GPIO_SIM_NUM_ATTRS, GFP_KERNEL);
++		attrs = devm_kcalloc(dev, GPIO_SIM_NUM_ATTRS, sizeof(*attrs),
++				     GFP_KERNEL);
+ 		val_attr = devm_kzalloc(dev, sizeof(*val_attr), GFP_KERNEL);
+ 		pull_attr = devm_kzalloc(dev, sizeof(*pull_attr), GFP_KERNEL);
+ 		if (!attr_group || !attrs || !val_attr || !pull_attr)
 -- 
 2.35.1
 
