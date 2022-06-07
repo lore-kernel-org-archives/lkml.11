@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7148CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:42:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC02C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380936AbiFGVmd (ORCPT
+        id S1380988AbiFGVmi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:42:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51914 "EHLO
+        Tue, 7 Jun 2022 17:42:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378690AbiFGUwX (ORCPT
+        with ESMTP id S1378712AbiFGUwY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:52:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E90BF6146;
-        Tue,  7 Jun 2022 11:42:49 -0700 (PDT)
+        Tue, 7 Jun 2022 16:52:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 373CEF5BC;
+        Tue,  7 Jun 2022 11:42:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8245AB82182;
-        Tue,  7 Jun 2022 18:42:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECDA5C385A2;
-        Tue,  7 Jun 2022 18:42:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85F7F61629;
+        Tue,  7 Jun 2022 18:42:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92604C341C4;
+        Tue,  7 Jun 2022 18:42:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627367;
-        bh=5W7m88KiTZvHvoWjyOt0GpGQuUxzdpHJkRGENQfNYDY=;
+        s=korg; t=1654627372;
+        bh=yBMfBMsenoejD3SJApeyaIR+DRPPPmmkDIHXMUaPI6E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bNm5uATOucfBJ9wWIqyvwlEihts0v15j13QYm/aF4eQb0kMFqoQstA+NvXFRLidpT
-         qAGusUmZttG4xyJBrYSTBQUOH9/dCG5Cr7dMDQthtAw/62O5XON4KNfRtaCUKJapK6
-         GLOLneMm5QYmV7XJOlwPrO5lfoy/i6KnMKVjYcYc=
+        b=MkQ+mU4JUC5KpYfMw0y4QBuHIx+Fm3+g37+tPvT92sQnbkEVnDfNNdl4o6Qrrd2Z9
+         JTJvqNPuTqIvGF/0zZg2hGcaCccEUP1QqI9QWeqEkdFrcsPooM8Yv2VeQ2dsqNnCwF
+         Qa7BfXPtOkuiGYOOMC2PclZmhcUFrJgoauAIYZE0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.17 714/772] um: virtio_uml: Fix broken device handling in time-travel
-Date:   Tue,  7 Jun 2022 19:05:06 +0200
-Message-Id: <20220607165010.083869783@linuxfoundation.org>
+        Richard Weinberger <richard@nod.at>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH 5.17 716/772] um: chan_user: Fix winch_tramp() return value
+Date:   Tue,  7 Jun 2022 19:05:08 +0200
+Message-Id: <20220607165010.142697733@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,115 +52,62 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-commit af9fb41ed315ce95f659f0b10b4d59a71975381d upstream.
+commit 57ae0b67b747031bc41fb44643aa5344ab58607e upstream.
 
-If a device implementation crashes, virtio_uml will mark it
-as dead by calling virtio_break_device() and scheduling the
-work that will remove it.
+The previous fix here was only partially correct, it did
+result in returning a proper error value in case of error,
+but it also clobbered the pid that we need to return from
+this function (not just zero for success).
 
-This still seems like the right thing to do, but it's done
-directly while reading the message, and if time-travel is
-used, this is in the time-travel handler, outside of the
-normal Linux machinery. Therefore, we cannot acquire locks
-or do normal "linux-y" things because e.g. lockdep will be
-confused about the context.
+As a result, it returned 0 here, but later this is treated
+as a pid and used to kill the process, but since it's now
+0 we kill(0, SIGKILL), which makes UML kill itself rather
+than just the helper thread.
 
-Move handling this situation out of the read function and
-into the actual IRQ handler and response handling instead,
-so that in the case of time-travel we don't call it in the
-wrong context.
+Fix that and make it more obvious by using a separate
+variable for the pid.
 
-Chances are the system will still crash immediately, since
-the device implementation crashing may also cause the time-
-travel controller to go down, but at least all of that now
-happens without strange warnings from lockdep.
-
-Fixes: c8177aba37ca ("um: time-travel: rework interrupt handling in ext mode")
-Cc: stable@vger.kernel.org
+Fixes: ccf1236ecac4 ("um: fix error return code in winch_tramp()")
+Reported-and-tested-by: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/um/drivers/virtio_uml.c |   33 +++++++++++++++++++++++----------
- 1 file changed, 23 insertions(+), 10 deletions(-)
+ arch/um/drivers/chan_user.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/arch/um/drivers/virtio_uml.c
-+++ b/arch/um/drivers/virtio_uml.c
-@@ -63,6 +63,7 @@ struct virtio_uml_device {
+--- a/arch/um/drivers/chan_user.c
++++ b/arch/um/drivers/chan_user.c
+@@ -220,7 +220,7 @@ static int winch_tramp(int fd, struct tt
+ 		       unsigned long *stack_out)
+ {
+ 	struct winch_data data;
+-	int fds[2], n, err;
++	int fds[2], n, err, pid;
+ 	char c;
  
- 	u8 config_changed_irq:1;
- 	uint64_t vq_irq_vq_map;
-+	int recv_rc;
- };
+ 	err = os_pipe(fds, 1, 1);
+@@ -238,8 +238,9 @@ static int winch_tramp(int fd, struct tt
+ 	 * problem with /dev/net/tun, which if held open by this
+ 	 * thread, prevents the TUN/TAP device from being reused.
+ 	 */
+-	err = run_helper_thread(winch_thread, &data, CLONE_FILES, stack_out);
+-	if (err < 0) {
++	pid = run_helper_thread(winch_thread, &data, CLONE_FILES, stack_out);
++	if (pid < 0) {
++		err = pid;
+ 		printk(UM_KERN_ERR "fork of winch_thread failed - errno = %d\n",
+ 		       -err);
+ 		goto out_close;
+@@ -263,7 +264,7 @@ static int winch_tramp(int fd, struct tt
+ 		goto out_close;
+ 	}
  
- struct virtio_uml_vq_info {
-@@ -148,14 +149,6 @@ static int vhost_user_recv(struct virtio
+-	return err;
++	return pid;
  
- 	rc = vhost_user_recv_header(fd, msg);
- 
--	if (rc == -ECONNRESET && vu_dev->registered) {
--		struct virtio_uml_platform_data *pdata;
--
--		pdata = vu_dev->pdata;
--
--		virtio_break_device(&vu_dev->vdev);
--		schedule_work(&pdata->conn_broken_wk);
--	}
- 	if (rc)
- 		return rc;
- 	size = msg->header.size;
-@@ -164,6 +157,21 @@ static int vhost_user_recv(struct virtio
- 	return full_read(fd, &msg->payload, size, false);
- }
- 
-+static void vhost_user_check_reset(struct virtio_uml_device *vu_dev,
-+				   int rc)
-+{
-+	struct virtio_uml_platform_data *pdata = vu_dev->pdata;
-+
-+	if (rc != -ECONNRESET)
-+		return;
-+
-+	if (!vu_dev->registered)
-+		return;
-+
-+	virtio_break_device(&vu_dev->vdev);
-+	schedule_work(&pdata->conn_broken_wk);
-+}
-+
- static int vhost_user_recv_resp(struct virtio_uml_device *vu_dev,
- 				struct vhost_user_msg *msg,
- 				size_t max_payload_size)
-@@ -171,8 +179,10 @@ static int vhost_user_recv_resp(struct v
- 	int rc = vhost_user_recv(vu_dev, vu_dev->sock, msg,
- 				 max_payload_size, true);
- 
--	if (rc)
-+	if (rc) {
-+		vhost_user_check_reset(vu_dev, rc);
- 		return rc;
-+	}
- 
- 	if (msg->header.flags != (VHOST_USER_FLAG_REPLY | VHOST_USER_VERSION))
- 		return -EPROTO;
-@@ -369,6 +379,7 @@ static irqreturn_t vu_req_read_message(s
- 				 sizeof(msg.msg.payload) +
- 				 sizeof(msg.extra_payload));
- 
-+	vu_dev->recv_rc = rc;
- 	if (rc)
- 		return IRQ_NONE;
- 
-@@ -412,7 +423,9 @@ static irqreturn_t vu_req_interrupt(int
- 	if (!um_irq_timetravel_handler_used())
- 		ret = vu_req_read_message(vu_dev, NULL);
- 
--	if (vu_dev->vq_irq_vq_map) {
-+	if (vu_dev->recv_rc) {
-+		vhost_user_check_reset(vu_dev, vu_dev->recv_rc);
-+	} else if (vu_dev->vq_irq_vq_map) {
- 		struct virtqueue *vq;
- 
- 		virtio_device_for_each_vq((&vu_dev->vdev), vq) {
+  out_close:
+ 	close(fds[1]);
 
 
