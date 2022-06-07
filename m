@@ -2,78 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B80DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 06:49:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61807CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 06:50:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237292AbiFGGtH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 02:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40846 "EHLO
+        id S231287AbiFGGu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 02:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237307AbiFGGtB (ORCPT
+        with ESMTP id S231219AbiFGGuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 02:49:01 -0400
-Received: from mail-sz.amlogic.com (mail-sz.amlogic.com [211.162.65.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDC14B0D25
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 23:48:59 -0700 (PDT)
-Received: from droid11-sz.amlogic.com (10.28.8.21) by mail-sz.amlogic.com
- (10.28.11.5) with Microsoft SMTP Server id 15.1.2176.2; Tue, 7 Jun 2022
- 14:48:58 +0800
-From:   Liang Yang <liang.yang@amlogic.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        <linux-mtd@lists.infradead.org>
-CC:     Liang Yang <liang.yang@amlogic.com>,
-        kernel test robot <lkp@intel.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jianxin Pan <jianxin.pan@amlogic.com>,
-        Victor Wan <victor.wan@amlogic.com>,
-        XianWei Zhao <xianwei.zhao@amlogic.com>,
-        Kelvin Zhang <kelvin.zhang@amlogic.com>,
-        BiChao Zheng <bichao.zheng@amlogic.com>,
-        YongHui Yu <yonghui.yu@amlogic.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v6 5/5] mtd: rawnand: meson: not support legacy clock
-Date:   Tue, 7 Jun 2022 14:47:30 +0800
-Message-ID: <20220607064731.13367-6-liang.yang@amlogic.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220607064731.13367-1-liang.yang@amlogic.com>
-References: <20220607064731.13367-1-liang.yang@amlogic.com>
+        Tue, 7 Jun 2022 02:50:54 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D865DFD0D
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 23:50:52 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id fu3so31697020ejc.7
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 23:50:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=gcjA/D1N6F29apXrVNtiB7cxyQefIwUG0Piy77ZFa00=;
+        b=e2qVNFqbMue2rV7KpSz8oiizqGhv0jaDz+S7v3abMGbZ5xqQPVkya+z5RUS3itUo6A
+         1j6PkbqlIQuh/gY/koXNA12KXKqn5ULLSpkUSrxg4UuZ7LzSqtZgcgQIFF4CFMqc8s2z
+         GE+4BgBFrSrqjJWANmEjSMXbibBF7EKTb7VwCj0Q2NIOG73uw6IsAYvCGSBBVLHGzo8A
+         ArW+08xmfFtfzTns54FcKHsrtzPOadCFxTQUHTq9tjH90xSVvG5f65DozGw9VA/xMyAC
+         wrePdthLVd1R17UCRUme4Qbxl34TmlRvUHzfD67qsktqJTfmZ2gaLX7rfAz9RE//gBnM
+         WsTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gcjA/D1N6F29apXrVNtiB7cxyQefIwUG0Piy77ZFa00=;
+        b=FzpxZEE1t80ZKo3SbeJK2S365cvaZbWsGG2jfRZI8MEfELB5KjFtZytARnn/Llw3Ch
+         nOUpl039AI32gNbNNrE5mUBBmYnzc454Qx3qIMlV8dgam9rzA11Y7gGxQZrEFuwUfVKR
+         0QlrmBvDV7AOhU4qnrZJPii+YNMWJto4vZQOqTeghoPdIEVBFJMqjuIsH0qmwVbCnIhL
+         T4AH1YJAGBxXoZPEwDHqSi4Wsv92ohHfjB65SqOyGJYcPvx8oONcWQV/I84n0OHKQ7Oh
+         aAq+Gz23gnywuglcnyfz3oWBYAZboPzHJZfQihRCH2oNc3hZqYyJ1jVAUqfn2C5q98n9
+         NVYw==
+X-Gm-Message-State: AOAM531cnQPBw2zmqSyvWN3MNKB6dLLBSTBTa/M6ULmz+oxtHu45bhHY
+        4mGr8A77jS8/Qn7pVDOvIl2EMzp7Ao1UmA==
+X-Google-Smtp-Source: ABdhPJyR5JlmxsGr7LTLbWT6s2wCa6c297ttH1DNwdGUznsJNrDOcsQpF6v/UhkoFMjJt2jTJ0qQhA==
+X-Received: by 2002:a17:907:c29:b0:704:fbb:1943 with SMTP id ga41-20020a1709070c2900b007040fbb1943mr25005900ejc.486.1654584650908;
+        Mon, 06 Jun 2022 23:50:50 -0700 (PDT)
+Received: from [192.168.0.181] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id n24-20020aa7c698000000b0042bb229e81esm9694505edq.15.2022.06.06.23.50.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jun 2022 23:50:50 -0700 (PDT)
+Message-ID: <3e4e504c-5a38-43cd-ea8d-afbbb72eacad@linaro.org>
+Date:   Tue, 7 Jun 2022 08:50:49 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.28.8.21]
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v4 1/4] dt-bindings: interconnect: qcom,sdm845-cpu-bwmon:
+ add BWMON device
+Content-Language: en-US
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>, Georgi Djakov <djakov@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh@kernel.org>
+References: <20220601101140.170504-1-krzysztof.kozlowski@linaro.org>
+ <20220601101140.170504-2-krzysztof.kozlowski@linaro.org>
+ <Yp5tjUICIEUptKSx@ripper>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <Yp5tjUICIEUptKSx@ripper>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-meson NFC driver use common clock interfaces. so the test robot report
-some errors once using the legacy clock with HAVE_LEGACY_CLK on.
+On 06/06/2022 23:11, Bjorn Andersson wrote:
+> On Wed 01 Jun 03:11 PDT 2022, Krzysztof Kozlowski wrote:
+> 
+>> Add bindings for the Qualcomm Bandwidth Monitor device providing
+>> performance data on interconnects.  The bindings describe only BWMON
+>> version 4, e.g. the instance on SDM845 between CPU and Last Level Cache
+>> Controller.
+>>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> Reviewed-by: Rob Herring <robh@kernel.org>
+>> Acked-by: Georgi Djakov <djakov@kernel.org>
+>> ---
+>>  .../interconnect/qcom,sdm845-cpu-bwmon.yaml   | 97 +++++++++++++++++++
+>>  1 file changed, 97 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/interconnect/qcom,sdm845-cpu-bwmon.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/interconnect/qcom,sdm845-cpu-bwmon.yaml b/Documentation/devicetree/bindings/interconnect/qcom,sdm845-cpu-bwmon.yaml
+>> new file mode 100644
+>> index 000000000000..8c82e06ee432
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/interconnect/qcom,sdm845-cpu-bwmon.yaml
+>> @@ -0,0 +1,97 @@
+>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/interconnect/qcom,sdm845-cpu-bwmon.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Qualcomm Interconnect Bandwidth Monitor
+>> +
+>> +maintainers:
+>> +  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> +
+>> +description:
+>> +  Bandwidth Monitor measures current throughput on buses between various NoC
+>> +  fabrics and provides information when it crosses configured thresholds.
+>> +
+>> +properties:
+>> +  compatible:
+>> +    enum:
+>> +      - qcom,sdm845-cpu-bwmon       # BWMON v4
+> 
+> It seems the thing that's called bwmon v4 is compatible with a number of
+> different platforms, should we add a generic compatible to the binding
+> as well, to avoid having to update the implementation for each SoC?
+> 
+> (I.e. "qcom,sdm845-cpu-bwmon", "qcom,bwmon-v4")
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Liang Yang <liang.yang@amlogic.com>
----
- drivers/mtd/nand/raw/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I am hesitant. I could not find BWMON IP block versioning in the
+Qualcomm docs. Only the downstream sources had it. Therefore I think it
+is more applicable to use this one as fallback for other boards, e.g.:
 
-diff --git a/drivers/mtd/nand/raw/Kconfig b/drivers/mtd/nand/raw/Kconfig
-index 67b7cb67c030..5169412a4af4 100644
---- a/drivers/mtd/nand/raw/Kconfig
-+++ b/drivers/mtd/nand/raw/Kconfig
-@@ -395,7 +395,7 @@ config MTD_NAND_STM32_FMC2
- 
- config MTD_NAND_MESON
- 	tristate "Support for NAND controller on Amlogic's Meson SoCs"
--	depends on ARCH_MESON || COMPILE_TEST
-+	depends on ARCH_MESON || COMPILE_TEST || !HAVE_LEGACY_CLK
- 	select MFD_SYSCON
- 	help
- 	  Enables support for NAND controller on Amlogic's Meson SoCs.
--- 
-2.34.1
+"qcom,sdm660-cpu-bwmon", "qcom,sdm845-cpu-bwmon"
+(even if the number is a bit odd - newer comes as last compatible).
 
+What's your preference?
+
+Best regards,
+Krzysztof
