@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4341CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2000CCCA485
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386473AbiFGWs7 (ORCPT
+        id S1386985AbiFGWtj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:48:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51574 "EHLO
+        Tue, 7 Jun 2022 18:49:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381212AbiFGVkR (ORCPT
+        with ESMTP id S1381306AbiFGVk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:40:17 -0400
+        Tue, 7 Jun 2022 17:40:26 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E6EF719D7;
-        Tue,  7 Jun 2022 12:05:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A8B74B1C8;
+        Tue,  7 Jun 2022 12:06:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0960DB822C0;
-        Tue,  7 Jun 2022 19:05:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FA0AC385A2;
-        Tue,  7 Jun 2022 19:05:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20B36B823AE;
+        Tue,  7 Jun 2022 19:06:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80543C385A2;
+        Tue,  7 Jun 2022 19:06:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628755;
-        bh=kTTiIZpJ2ysOrS1uGjg/TY4Npyhe4hfUh2qruWkuNL4=;
+        s=korg; t=1654628796;
+        bh=PxGyuL6ReFTTSA/dQVTf/Ns6fdwTRWGkJOcMF8Ss+2k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sSaaq9a/TvCD8t4+dO1o13PkzXgfeFqvZm0EE+MEQoI42L2RojVB5P/te/IOjheTc
-         zKCctDMu6oUZ6hpardNP/w28H06kvxbOCFeA+gwuT6Og8u9ySjcgEkvqDaRbPbGuw9
-         /5sOfeViPvYfunGt1n1UNWZNSnnhnFoCZk3+w9S8=
+        b=zCXdcnbUMPHcOaVuh7njMAw7E34YkGE5G3ML5iXGDYAYKk3+Lxc6wbZ4AbupWTa3L
+         6VC8K8q23HdVMkvlm7EmIsA1t4LMFqpKBC6wIP4KpGVN8Q0GrBdSLKzhJrYv5CPiZs
+         fxHhwROvM9erZ89/9yDfnixW5xln+ElO08YamtjY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 443/879] media: atmel: atmel-isc: Fix PM disable depth imbalance in atmel_isc_probe
-Date:   Tue,  7 Jun 2022 18:59:21 +0200
-Message-Id: <20220607165015.730476467@linuxfoundation.org>
+Subject: [PATCH 5.18 418/879] ASoC: imx-hdmi: Fix refcount leak in imx_hdmi_probe
+Date:   Tue,  7 Jun 2022 18:58:56 +0200
+Message-Id: <20220607165014.996207454@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,43 +52,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 395829c61a196a0821a703a49c4db3ac51daff73 ]
+[ Upstream commit ed46731d8e86c8d65f5fc717671e1f1f6c3146d2 ]
 
-The pm_runtime_enable will decrease power disable depth.
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable().
+of_find_device_by_node() takes reference, we should use put_device()
+to release it. when devm_kzalloc() fails, it doesn't have a
+put_device(), it will cause refcount leak.
+Add missing put_device() to fix this.
 
-Fixes: 0a0e265515db ("media: atmel: atmel-isc: split driver into driver base and isc")
+Fixes: 6a5f850aa83a ("ASoC: fsl: Add imx-hdmi machine driver")
+Fixes: f670b274f7f6 ("ASoC: imx-hdmi: add put_device() after of_find_device_by_node()")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Link: https://lore.kernel.org/r/20220511052740.46903-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/atmel/atmel-sama5d2-isc.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ sound/soc/fsl/imx-hdmi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/platform/atmel/atmel-sama5d2-isc.c b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-index c5b9563e36cb..e9415495e738 100644
---- a/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-+++ b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
-@@ -562,7 +562,7 @@ static int atmel_isc_probe(struct platform_device *pdev)
- 	ret = clk_prepare_enable(isc->ispck);
- 	if (ret) {
- 		dev_err(dev, "failed to enable ispck: %d\n", ret);
--		goto cleanup_subdev;
-+		goto disable_pm;
+diff --git a/sound/soc/fsl/imx-hdmi.c b/sound/soc/fsl/imx-hdmi.c
+index 929f69b758af..ec149dc73938 100644
+--- a/sound/soc/fsl/imx-hdmi.c
++++ b/sound/soc/fsl/imx-hdmi.c
+@@ -126,6 +126,7 @@ static int imx_hdmi_probe(struct platform_device *pdev)
+ 	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+ 	if (!data) {
+ 		ret = -ENOMEM;
++		put_device(&cpu_pdev->dev);
+ 		goto fail;
  	}
- 
- 	/* ispck should be greater or equal to hclock */
-@@ -580,6 +580,9 @@ static int atmel_isc_probe(struct platform_device *pdev)
- unprepare_clk:
- 	clk_disable_unprepare(isc->ispck);
- 
-+disable_pm:
-+	pm_runtime_disable(dev);
-+
- cleanup_subdev:
- 	isc_subdev_cleanup(isc);
  
 -- 
 2.35.1
