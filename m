@@ -2,87 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E048CCA493
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9478CCCA496
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442390AbiFHAy3 (ORCPT
+        id S1442490AbiFHAyg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:54:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36190 "EHLO
+        Tue, 7 Jun 2022 20:54:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385037AbiFGWRN (ORCPT
+        with ESMTP id S1382038AbiFGVqK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:17:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665CE262706;
-        Tue,  7 Jun 2022 12:20:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E09E3B8233E;
-        Tue,  7 Jun 2022 19:19:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57601C385A5;
-        Tue,  7 Jun 2022 19:19:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629593;
-        bh=1xR0J75ZXSv9F3XwtXuUO8C7ILR4HML9B/tq5xySGAg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ev4CnCyW2zesNdcn8gvTabIncHOMAXpWIUikYPUAHboF4aeh9IBHpO6T3HrHv8yqH
-         PgQiPcNegbOqUeYrpc8WD8dfbtX3ZWIRR7tyyerA1TBo12t79OkNYjH1Q4ubQmYsTG
-         Bzna4iAvBDK74U95SSLYG0zoxwmekGs3JnL/2jj8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Gregory Greenman <gregory.greenman@intel.com>
-Subject: [PATCH 5.18 720/879] iwlwifi: fw: init SAR GEO table only if data is present
-Date:   Tue,  7 Jun 2022 19:03:58 +0200
-Message-Id: <20220607165023.753760422@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:46:10 -0400
+Received: from mail-io1-f49.google.com (mail-io1-f49.google.com [209.85.166.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B9B235B03;
+        Tue,  7 Jun 2022 12:07:44 -0700 (PDT)
+Received: by mail-io1-f49.google.com with SMTP id i201so10914649ioa.6;
+        Tue, 07 Jun 2022 12:07:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FfDC8OCE89M5DmQOiwz11rqXI91cPiUhxnizP3Vecs4=;
+        b=KtkDR78AVoln2T3KHs1nW/C5BlGGhNxb2vdT9H3jjsMOjvRHT/hsUGovoOz9nAhqIo
+         NznUDv7XY5VUhTH7/yXDhq+9iUGfnLWiK70mZLA3GeHjAuBKUuhbm5Lvi/ZV/NKqnF2o
+         UBlv2S7U9TTMH2MYXK0oBT83zADuBc8P4xwK+6PI0BEC3IVYt+C6Bjzy9HXomhHrEF1T
+         D16dp3UAdkmdXKZX/UrczVCRi4rVCT62MzTjmJCibDaA/VmzcSEbab1zcmSB1Myw3bK6
+         gElauK/zHLMU89daVerhSSf+d/qdZHh56+3EGmnXJtVknVasaa8GnO9fF0lYeG30A9gX
+         O+bw==
+X-Gm-Message-State: AOAM531rTDHbxc3PIFCHHXNAGVFNdZ/UKlaYW62Rv5jZRdtJ/Csduu84
+        dHzipIOdahEnoF9YiUmAM0VDTHYuMw==
+X-Google-Smtp-Source: ABdhPJyXN4BjBm3eZUFDX9fHMePl6YzIdSCERXPSC3Ydq6geCntnC7mEUdXSSQ2BbAKOjP5dYeuqbQ==
+X-Received: by 2002:a05:6638:160a:b0:330:f07b:7c5d with SMTP id x10-20020a056638160a00b00330f07b7c5dmr17052629jas.222.1654628863838;
+        Tue, 07 Jun 2022 12:07:43 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id k4-20020a926f04000000b002d52f2f5a97sm3143012ilc.35.2022.06.07.12.07.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 12:07:43 -0700 (PDT)
+Received: (nullmailer pid 3646440 invoked by uid 1000);
+        Tue, 07 Jun 2022 19:07:41 -0000
+Date:   Tue, 7 Jun 2022 13:07:41 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Vaibhav Jain <vaibhav@linux.ibm.com>
+Cc:     Prakhar Srivastava <prsriva@linux.microsoft.com>,
+        Thiago Jung Bauermann <bauerman@linux.ibm.com>,
+        Thiago Jung Bauermann <bauerman@linux.vnet.ibm.com>,
+        linux-kernel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        devicetree@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Ritesh Harjani <ritesh.list@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Mimi Zohar <zohar@linux.vnet.ibm.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>
+Subject: Re: [PATCH v3] of: check previous kernel's ima-kexec-buffer against
+ memory bounds
+Message-ID: <20220607190741.GA3644258-robh@kernel.org>
+References: <20220531041446.3334259-1-vaibhav@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220531041446.3334259-1-vaibhav@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+On Tue, 31 May 2022 09:44:46 +0530, Vaibhav Jain wrote:
+> Presently ima_get_kexec_buffer() doesn't check if the previous kernel's
+> ima-kexec-buffer lies outside the addressable memory range. This can result
+> in a kernel panic if the new kernel is booted with 'mem=X' arg and the
+> ima-kexec-buffer was allocated beyond that range by the previous kernel.
+> The panic is usually of the form below:
+> 
+> $ sudo kexec --initrd initrd vmlinux --append='mem=16G'
+> 
+> <snip>
+>  BUG: Unable to handle kernel data access on read at 0xc000c01fff7f0000
+>  Faulting instruction address: 0xc000000000837974
+>  Oops: Kernel access of bad area, sig: 11 [#1]
+> <snip>
+>  NIP [c000000000837974] ima_restore_measurement_list+0x94/0x6c0
+>  LR [c00000000083b55c] ima_load_kexec_buffer+0xac/0x160
+>  Call Trace:
+>  [c00000000371fa80] [c00000000083b55c] ima_load_kexec_buffer+0xac/0x160
+>  [c00000000371fb00] [c0000000020512c4] ima_init+0x80/0x108
+>  [c00000000371fb70] [c0000000020514dc] init_ima+0x4c/0x120
+>  [c00000000371fbf0] [c000000000012240] do_one_initcall+0x60/0x2c0
+>  [c00000000371fcc0] [c000000002004ad0] kernel_init_freeable+0x344/0x3ec
+>  [c00000000371fda0] [c0000000000128a4] kernel_init+0x34/0x1b0
+>  [c00000000371fe10] [c00000000000ce64] ret_from_kernel_thread+0x5c/0x64
+>  Instruction dump:
+>  f92100b8 f92100c0 90e10090 910100a0 4182050c 282a0017 3bc00000 40810330
+>  7c0802a6 fb610198 7c9b2378 f80101d0 <a1240000> 2c090001 40820614 e9240010
+>  ---[ end trace 0000000000000000 ]---
+> 
+> Fix this issue by checking returned PFN range of previous kernel's
+> ima-kexec-buffer with page_is_ram() to ensure correct memory bounds.
+> 
+> Fixes: 467d27824920 ("powerpc: ima: get the kexec buffer passed by the previous kernel")
+> Cc: Frank Rowand <frowand.list@gmail.com>
+> Cc: Prakhar Srivastava <prsriva@linux.microsoft.com>
+> Cc: Lakshmi Ramasubramanian <nramas@linux.microsoft.com>
+> Cc: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+> Cc: Rob Herring <robh@kernel.org>
+> Cc: Ritesh Harjani <ritesh.list@gmail.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Vaibhav Jain <vaibhav@linux.ibm.com>
+> ---
+> Changelog
+> ==========
+> v3:
+> * change the type for {start,end}_pfn to unsigned long [ Ritesh ]
+> * Switched to page_is_ram() from pfn_vaild() [ Rob ]
+> 
+> v2:
+> * Instead of using memblock to determine the valid bounds use pfn_valid() to do
+> so since memblock may not be available late after the kernel init. [ Mpe ]
+> * Changed the patch prefix from 'powerpc' to 'of' [ Mpe ]
+> * Updated the 'Fixes' tag to point to correct commit that introduced this
+> function. [ Rob ]
+> * Fixed some whitespace/tab issues in the patch description [ Rob ]
+> * Added another check for checking ig 'tmp_size' for ima-kexec-buffer is > 0
+> ---
+>  drivers/of/kexec.c | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
+> 
 
-commit d1f6530c3e373ddd7c76b05646052a27eead14ad upstream.
-
-When no table data was read from ACPI, then filling the data
-and returning success here will fill zero values, which means
-transmit power will be limited to 0 dBm. This is clearly not
-intended.
-
-Return an error from iwl_sar_geo_init() if there's no data to
-fill into the command structure.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Fixes: 78a19d5285d9 ("iwlwifi: mvm: Read the PPAG and SAR tables at INIT stage")
-Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
-Link: https://lore.kernel.org/r/20220517120044.bc45923b74e9.Id2b4362234b7f8ced82c591b95d4075dd2ec12f4@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/wireless/intel/iwlwifi/fw/acpi.c |    3 +++
- 1 file changed, 3 insertions(+)
-
---- a/drivers/net/wireless/intel/iwlwifi/fw/acpi.c
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/acpi.c
-@@ -937,6 +937,9 @@ int iwl_sar_geo_init(struct iwl_fw_runti
- {
- 	int i, j;
- 
-+	if (!fwrt->geo_enabled)
-+		return -ENODATA;
-+
- 	if (!iwl_sar_geo_support(fwrt))
- 		return -EOPNOTSUPP;
- 
-
-
+Applied, thanks!
