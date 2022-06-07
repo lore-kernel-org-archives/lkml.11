@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60DCDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CAABC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:54:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231491AbiFGRx5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37394 "EHLO
+        id S1346849AbiFGRyD (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 13:54:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348181AbiFGRgH (ORCPT
+        with ESMTP id S1348189AbiFGRgH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:36:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B33118025;
-        Tue,  7 Jun 2022 10:32:18 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22329119047;
+        Tue,  7 Jun 2022 10:32:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D53FAB822B1;
-        Tue,  7 Jun 2022 17:32:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37B7AC34115;
-        Tue,  7 Jun 2022 17:32:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2D4E60BC6;
+        Tue,  7 Jun 2022 17:32:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF7A5C385A5;
+        Tue,  7 Jun 2022 17:32:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623133;
-        bh=F+Ejk3TJqvM9iJL5X57Am9LXrVwli2Qkgi0+4c09buY=;
+        s=korg; t=1654623136;
+        bh=m4s0WglICdo491eXbZcJ6FwNYedwvtRMrugEDzy/LpQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yCdWjxJ95gLCKrMitJ5LDMJoh+ykUrRfWxvWZSyc03eqEzQRjA+CuO9ruEMHkb0Dz
-         EIQ36tHX6zAGE7R3SXngWV/5VczJ4bMrVvMj5eh3UHOy7HuN3nNP9LZBB3uDDopIDb
-         qhRQ/pMrkjLGNO0JujhGTfk5cWXuTnGu9hshyEx4=
+        b=YivNSuWw1OjdRnh6zRjA62RImkH0f1MUsYtT+HJ0Ofc6pItvJA3gBuAvcNDXMEwUs
+         kJax9m0yRkn0HSZ4sG9zPFu2dt/350Rxo14p5iLxuHB06S4AhtL9LfN8sPGcVYVWw1
+         icJ9gtArlGIwbeTeI8hw1+7mtr4F0PdHLgKpkbWE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        stable@vger.kernel.org, Eric Badger <ebadger@purestorage.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Ashok Raj <ashok.raj@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 307/452] Input: sparcspkr - fix refcount leak in bbc_beep_probe
-Date:   Tue,  7 Jun 2022 19:02:44 +0200
-Message-Id: <20220607164917.707030065@linuxfoundation.org>
+Subject: [PATCH 5.10 308/452] PCI/AER: Clear MULTI_ERR_COR/UNCOR_RCV bits
+Date:   Tue,  7 Jun 2022 19:02:45 +0200
+Message-Id: <20220607164917.736481207@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,36 +53,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 
-[ Upstream commit c8994b30d71d64d5dcc9bc0edbfdf367171aa96f ]
+[ Upstream commit 203926da2bff8e172200a2f11c758987af112d4a ]
 
-of_find_node_by_path() calls of_find_node_opts_by_path(),
-which returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+When a Root Port or Root Complex Event Collector receives an error Message
+e.g., ERR_COR, it sets PCI_ERR_ROOT_COR_RCV in the Root Error Status
+register and logs the Requester ID in the Error Source Identification
+register.  If it receives a second ERR_COR Message before software clears
+PCI_ERR_ROOT_COR_RCV, hardware sets PCI_ERR_ROOT_MULTI_COR_RCV and the
+Requester ID is lost.
 
-Fixes: 9c1a5077fdca ("input: Rewrite sparcspkr device probing.")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220516081018.42728-1-linmq006@gmail.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+In the following scenario, PCI_ERR_ROOT_MULTI_COR_RCV was never cleared:
+
+  - hardware receives ERR_COR message
+  - hardware sets PCI_ERR_ROOT_COR_RCV
+  - aer_irq() entered
+  - aer_irq(): status = pci_read_config_dword(PCI_ERR_ROOT_STATUS)
+  - aer_irq(): now status == PCI_ERR_ROOT_COR_RCV
+  - hardware receives second ERR_COR message
+  - hardware sets PCI_ERR_ROOT_MULTI_COR_RCV
+  - aer_irq(): pci_write_config_dword(PCI_ERR_ROOT_STATUS, status)
+  - PCI_ERR_ROOT_COR_RCV is cleared; PCI_ERR_ROOT_MULTI_COR_RCV is set
+  - aer_irq() entered again
+  - aer_irq(): status = pci_read_config_dword(PCI_ERR_ROOT_STATUS)
+  - aer_irq(): now status == PCI_ERR_ROOT_MULTI_COR_RCV
+  - aer_irq() exits because PCI_ERR_ROOT_COR_RCV not set
+  - PCI_ERR_ROOT_MULTI_COR_RCV is still set
+
+The same problem occurred with ERR_NONFATAL/ERR_FATAL Messages and
+PCI_ERR_ROOT_UNCOR_RCV and PCI_ERR_ROOT_MULTI_UNCOR_RCV.
+
+Fix the problem by queueing an AER event and clearing the Root Error Status
+bits when any of these bits are set:
+
+  PCI_ERR_ROOT_COR_RCV
+  PCI_ERR_ROOT_UNCOR_RCV
+  PCI_ERR_ROOT_MULTI_COR_RCV
+  PCI_ERR_ROOT_MULTI_UNCOR_RCV
+
+See the bugzilla link for details from Eric about how to reproduce this
+problem.
+
+[bhelgaas: commit log, move repro details to bugzilla]
+Fixes: e167bfcaa4cd ("PCI: aerdrv: remove magical ROOT_ERR_STATUS_MASKS")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215992
+Link: https://lore.kernel.org/r/20220418150237.1021519-1-sathyanarayanan.kuppuswamy@linux.intel.com
+Reported-by: Eric Badger <ebadger@purestorage.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Ashok Raj <ashok.raj@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/misc/sparcspkr.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pci/pcie/aer.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/input/misc/sparcspkr.c b/drivers/input/misc/sparcspkr.c
-index fe43e5557ed7..cdcb7737c46a 100644
---- a/drivers/input/misc/sparcspkr.c
-+++ b/drivers/input/misc/sparcspkr.c
-@@ -205,6 +205,7 @@ static int bbc_beep_probe(struct platform_device *op)
+diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
+index 65dff5f3457a..c40546eeecb3 100644
+--- a/drivers/pci/pcie/aer.c
++++ b/drivers/pci/pcie/aer.c
+@@ -101,6 +101,11 @@ struct aer_stats {
+ #define ERR_COR_ID(d)			(d & 0xffff)
+ #define ERR_UNCOR_ID(d)			(d >> 16)
  
- 	info = &state->u.bbc;
- 	info->clock_freq = of_getintprop_default(dp, "clock-frequency", 0);
-+	of_node_put(dp);
- 	if (!info->clock_freq)
- 		goto out_free;
++#define AER_ERR_STATUS_MASK		(PCI_ERR_ROOT_UNCOR_RCV |	\
++					PCI_ERR_ROOT_COR_RCV |		\
++					PCI_ERR_ROOT_MULTI_COR_RCV |	\
++					PCI_ERR_ROOT_MULTI_UNCOR_RCV)
++
+ static int pcie_aer_disable;
+ static pci_ers_result_t aer_root_reset(struct pci_dev *dev);
  
+@@ -1187,7 +1192,7 @@ static irqreturn_t aer_irq(int irq, void *context)
+ 	struct aer_err_source e_src = {};
+ 
+ 	pci_read_config_dword(rp, aer + PCI_ERR_ROOT_STATUS, &e_src.status);
+-	if (!(e_src.status & (PCI_ERR_ROOT_UNCOR_RCV|PCI_ERR_ROOT_COR_RCV)))
++	if (!(e_src.status & AER_ERR_STATUS_MASK))
+ 		return IRQ_NONE;
+ 
+ 	pci_read_config_dword(rp, aer + PCI_ERR_ROOT_ERR_SRC, &e_src.id);
 -- 
 2.35.1
 
