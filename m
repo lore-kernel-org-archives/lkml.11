@@ -2,100 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACEA7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:03:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 985ACC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242439AbiFGLDZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 07:03:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48914 "EHLO
+        id S242445AbiFGLDd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 07:03:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242873AbiFGLA4 (ORCPT
+        with ESMTP id S242878AbiFGLA5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 07:00:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 260BA12ACD
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 04:00:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654599625;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VzaXOhmAYBhkuCm+bqJjmltdmOzIulpuJDII2ewUdDA=;
-        b=SANDveMc3cRpA9TmXWniLtN9pjB4Z1AsNNqsh8GaVv2zTR3AfISh000yWMHnuHku00Ut+t
-        EzAL5zFH3dd46+meNcBzLVD4osqWhCZKk3aPe5lCCkMZlFSb5zEGQXdVeLtyYqKj2hWoCB
-        wtNHNMyEQ1U7+Mm37GIzaJy1AV8V6PU=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-367-eG3V-dzYOMehpD-rOWm9pw-1; Tue, 07 Jun 2022 07:00:21 -0400
-X-MC-Unique: eG3V-dzYOMehpD-rOWm9pw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 7 Jun 2022 07:00:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6697303
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 04:00:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AC505380114F;
-        Tue,  7 Jun 2022 11:00:20 +0000 (UTC)
-Received: from MiWiFi-R3L-srv.redhat.com (ovpn-13-113.pek2.redhat.com [10.72.13.113])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5B2391121314;
-        Tue,  7 Jun 2022 11:00:16 +0000 (UTC)
-From:   Baoquan He <bhe@redhat.com>
-To:     akpm@linux-foundation.org, urezki@gmail.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        hch@infradead.org, Baoquan He <bhe@redhat.com>
-Subject: [PATCH v2 4/4] mm/vmalloc: Add code comment for find_vmap_area_exceed_addr()
-Date:   Tue,  7 Jun 2022 18:59:58 +0800
-Message-Id: <20220607105958.382076-5-bhe@redhat.com>
-In-Reply-To: <20220607105958.382076-1-bhe@redhat.com>
-References: <20220607105958.382076-1-bhe@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63C3261556
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:00:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F0DDC385A5;
+        Tue,  7 Jun 2022 11:00:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654599641;
+        bh=NCRYi15R3SZXtnylokP+CV2OP6UTPKNRKneK+LCEpG0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ILDaKY5ugYGsxjq64AvD2ysNnh0lwMQfUX31OEtuMOLB15NMj9whtQz/IwJamuE0n
+         KOosLjA/tUa0TDajoaTZ7HU3GhWFivLIpk6uPwlJFR5HkBM4K2Cb/EHWQpgN0qQDSs
+         NqZudHs6sArM4mjJXfyJWnuXLd8mipD8YgISVE3Q=
+Date:   Tue, 7 Jun 2022 13:00:36 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH] staging: r8188eu: Fix kernel-doc
+Message-ID: <Yp8v1OPPOlb9A16D@kroah.com>
+References: <20220524083914.68736-1-jiapeng.chong@linux.alibaba.com>
+ <Yp2WPrOz85/70CZx@kroah.com>
+ <Yp2zwBqn6uDvGNWN@debian.me>
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yp2zwBqn6uDvGNWN@debian.me>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Its behaviour is like find_vma() which finds an area above the specified
-address, add comment to make it easier to understand.
+On Mon, Jun 06, 2022 at 02:58:56PM +0700, Bagas Sanjaya wrote:
+> On Mon, Jun 06, 2022 at 07:53:02AM +0200, Greg KH wrote:
+> > On Tue, May 24, 2022 at 04:39:14PM +0800, Jiapeng Chong wrote:
+> > > Fix the following W=1 kernel warnings:
+> > > 
+> > > drivers/staging/r8188eu/hal/rtl8188e_phycfg.c:291: warning: expecting
+> > > prototype for Function(). Prototype was for rtl8188e_PHY_SetRFReg()
+> > > instead.
+> > > 
+> > > drivers/staging/r8188eu/hal/rtl8188e_phycfg.c:257: warning: expecting
+> > > prototype for Function(). Prototype was for rtl8188e_PHY_QueryRFReg()
+> > > instead.
+> > 
+> > Please put build warning lines all on one line.
+> > 
+> > > 
+> > > Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> > 
+> > No, gcc reported this, not a robot, right?
+> > 
+> > You have read Documentation/process/researcher-guidelines.rst for how to
+> > properly document patches that are created by research tools like this,
+> > right?  Please fix this commit up to follow those requirements please.
+> > 
+> 
+> Hi Greg and Jiapeng,
+> 
+> First, IMO this is not research tool (in the sense of academic purposes),
+> but development bot used in corporate environment, kinda like kernel
+> test robot <lkp@intel.com>. When the bot reports any build warnings,
+> these will be followed up by developers proposing fixes.
 
-And also fix two places of grammer mistake/typo.
+Ok, then please document it as such and point to where we can find out
+more information about it.
 
-Signed-off-by: Baoquan He <bhe@redhat.com>
-Reviewed-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
----
- mm/vmalloc.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+> What I see in the patch message is just "Fix this warning..." without
+> saying why there is the warning.
 
-diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index b9bf7dfe71ec..a4d8b80734fa 100644
---- a/mm/vmalloc.c
-+++ b/mm/vmalloc.c
-@@ -790,6 +790,7 @@ unsigned long vmalloc_nr_pages(void)
- 	return atomic_long_read(&nr_vmalloc_pages);
- }
- 
-+/* Look up the first VA which satisfies addr < va_end, NULL if none. */
- static struct vmap_area *find_vmap_area_exceed_addr(unsigned long addr)
- {
- 	struct vmap_area *va = NULL;
-@@ -929,7 +930,7 @@ link_va(struct vmap_area *va, struct rb_root *root,
- 		 * Some explanation here. Just perform simple insertion
- 		 * to the tree. We do not set va->subtree_max_size to
- 		 * its current size before calling rb_insert_augmented().
--		 * It is because of we populate the tree from the bottom
-+		 * It is because we populate the tree from the bottom
- 		 * to parent levels when the node _is_ in the tree.
- 		 *
- 		 * Therefore we set subtree_max_size to zero after insertion,
-@@ -1655,7 +1656,7 @@ static atomic_long_t vmap_lazy_nr = ATOMIC_LONG_INIT(0);
- 
- /*
-  * Serialize vmap purging.  There is no actual critical section protected
-- * by this look, but we want to avoid concurrent calls for performance
-+ * by this lock, but we want to avoid concurrent calls for performance
-  * reasons and to make the pcpu_get_vm_areas more deterministic.
-  */
- static DEFINE_MUTEX(vmap_purge_lock);
--- 
-2.34.1
+Which isn't ok.
 
+> Second, gcc DOESN'T, again DOESN'T, report "expecting prototype"
+> warnings. These are from scripts/kernel-doc, which enabled these
+> warnings on W=1 build.
+
+Yes, the kernel build reports this, not a random "robot".
+
+> So the underlying problem is mismatching function name in kernel-doc
+> comment and actual function.
+
+Agreed, so the changelog should say as such.
+
+thanks,
+
+greg k-h
