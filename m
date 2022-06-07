@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37061CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28440CCA486
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384220AbiFGWkz (ORCPT
+        id S1383649AbiFGWkw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:40:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51014 "EHLO
+        Tue, 7 Jun 2022 18:40:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351764AbiFGV1z (ORCPT
+        with ESMTP id S1378778AbiFGV1d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:27:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB0842409A;
-        Tue,  7 Jun 2022 12:02:10 -0700 (PDT)
+        Tue, 7 Jun 2022 17:27:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8125152BB2;
+        Tue,  7 Jun 2022 12:02:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B4F96179F;
-        Tue,  7 Jun 2022 19:02:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93DFBC385A2;
-        Tue,  7 Jun 2022 19:02:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E484617C8;
+        Tue,  7 Jun 2022 19:02:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1383FC385A2;
+        Tue,  7 Jun 2022 19:02:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628528;
-        bh=woBVtfXMdZ+njOaigONRBmmjkMIp2AjS1uRNQoekDWM=;
+        s=korg; t=1654628523;
+        bh=4en+cC/nYj++7MgCIJDMIe5jSsByg+LEvsp7KKofpjw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vYq/3ozXxyAfQTxcy2vkVNXc9BgFrXYeLDC3n0Ap/nzziCmiZg/1dyzQ3DQAYmYnD
-         2oH5GJ6sNPbWAWuL7faRSUG+PJ7bPam4SwHD4Jq8aagguRcHmFcYxDC7aGtlJllBG6
-         tQ8pmcJJnTGLVMKef7D0Qy6g/4FEMDoFgWjqOZKk=
+        b=CZM0B7O5lsSKl1Mcwn/E2qm5Qu+Wg5iss56J/AxYUW/FKdYBvEYlny1j3Za7iMXei
+         BTOipycdg0dXK4vIcvvh5h/FsjZWM5PTWxXRk8G3bHddjL5Nf9B8/HLB7RRwHn+GMq
+         6ZONYFgYftQNeXfzYAVEEwI6YnGzShavkcvjSTgM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Tsung Hsieh <chentsung@chromium.org>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Michael Walle <michael@walle.cc>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 361/879] mtd: spi-nor: core: Check written SR value in spi_nor_write_16bit_sr_and_check()
-Date:   Tue,  7 Jun 2022 18:57:59 +0200
-Message-Id: <20220607165013.341649472@linuxfoundation.org>
+Subject: [PATCH 5.18 359/879] selftests/resctrl: Fix null pointer dereference on open failed
+Date:   Tue,  7 Jun 2022 18:57:57 +0200
+Message-Id: <20220607165013.284404152@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,49 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Tsung Hsieh <chentsung@chromium.org>
+From: Colin Ian King <colin.i.king@gmail.com>
 
-[ Upstream commit 70dd83d737d8900b2d98db6dc6b928c596334d37 ]
+[ Upstream commit c7b607fa9325ccc94982774c505176677117689c ]
 
-Read back Status Register 1 to ensure that the written byte match the
-received value and return -EIO if read back test failed.
+Currently if opening /dev/null fails to open then file pointer fp
+is null and further access to fp via fprintf will cause a null
+pointer dereference. Fix this by returning a negative error value
+when a null fp is detected.
 
-Without this patch, spi_nor_write_16bit_sr_and_check() only check the
-second half of the 16bit. It causes errors like spi_nor_sr_unlock()
-return success incorrectly when spi_nor_write_16bit_sr_and_check()
-doesn't write SR successfully.
+Detected using cppcheck static analysis:
+tools/testing/selftests/resctrl/fill_buf.c:124:6: note: Assuming
+that condition '!fp' is not redundant
+ if (!fp)
+     ^
+tools/testing/selftests/resctrl/fill_buf.c:126:10: note: Null
+pointer dereference
+ fprintf(fp, "Sum: %d ", ret);
 
-Fixes: 39d1e3340c73 ("mtd: spi-nor: Fix clearing of QE bit on lock()/unlock()")
-Signed-off-by: Chen-Tsung Hsieh <chentsung@chromium.org>
-Signed-off-by: Pratyush Yadav <p.yadav@ti.com>
-Reviewed-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Acked-by: Pratyush Yadav <p.yadav@ti.com>
-Link: https://lore.kernel.org/r/20220126073227.3401275-1-chentsung@chromium.org
+Fixes: a2561b12fe39 ("selftests/resctrl: Add built in benchmark")
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/spi-nor/core.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ tools/testing/selftests/resctrl/fill_buf.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index b4f141ad9c9c..c1630131c734 100644
---- a/drivers/mtd/spi-nor/core.c
-+++ b/drivers/mtd/spi-nor/core.c
-@@ -788,6 +788,15 @@ static int spi_nor_write_16bit_sr_and_check(struct spi_nor *nor, u8 sr1)
- 	if (ret)
- 		return ret;
+diff --git a/tools/testing/selftests/resctrl/fill_buf.c b/tools/testing/selftests/resctrl/fill_buf.c
+index 51e5cf22632f..56ccbeae0638 100644
+--- a/tools/testing/selftests/resctrl/fill_buf.c
++++ b/tools/testing/selftests/resctrl/fill_buf.c
+@@ -121,8 +121,10 @@ static int fill_cache_read(unsigned char *start_ptr, unsigned char *end_ptr,
  
-+	ret = spi_nor_read_sr(nor, sr_cr);
-+	if (ret)
-+		return ret;
-+
-+	if (sr1 != sr_cr[0]) {
-+		dev_dbg(nor->dev, "SR: Read back test failed\n");
-+		return -EIO;
+ 	/* Consume read result so that reading memory is not optimized out. */
+ 	fp = fopen("/dev/null", "w");
+-	if (!fp)
++	if (!fp) {
+ 		perror("Unable to write to /dev/null");
++		return -1;
 +	}
-+
- 	if (nor->flags & SNOR_F_NO_READ_CR)
- 		return 0;
+ 	fprintf(fp, "Sum: %d ", ret);
+ 	fclose(fp);
  
 -- 
 2.35.1
