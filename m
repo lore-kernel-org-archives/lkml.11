@@ -2,89 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F02B3CCA48A
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:30:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A103CCA48B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:30:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390051AbiFHB3A (ORCPT
+        id S1378112AbiFHB3K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:29:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
+        Tue, 7 Jun 2022 21:29:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1441967AbiFGW6W (ORCPT
+        with ESMTP id S1379270AbiFGWC1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:58:22 -0400
-Received: from 18.mo581.mail-out.ovh.net (18.mo581.mail-out.ovh.net [188.165.56.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED4032EB8B
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 13:03:44 -0700 (PDT)
-Received: from player698.ha.ovh.net (unknown [10.111.208.235])
-        by mo581.mail-out.ovh.net (Postfix) with ESMTP id 62BB9242B2
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:24:38 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player698.ha.ovh.net (Postfix) with ESMTPSA id 4F4D12B4804CC;
-        Tue,  7 Jun 2022 19:24:29 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-110S0042cd40763-c023-4ca6-b106-f074094dbf1e,
-                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Antonino Daplas <adaplas@gmail.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Helge Deller <deller@gmx.de>, Paul Mackerras <paulus@samba.org>
-Cc:     linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>, dri-devel@lists.freedesktop.org
-Subject: [PATCH 5/7] fbdev: nvidia: Use backlight helper
-Date:   Tue,  7 Jun 2022 21:23:33 +0200
-Message-Id: <20220607192335.1137249-6-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220607192335.1137249-1-steve@sk2.org>
-References: <20220607192335.1137249-1-steve@sk2.org>
+        Tue, 7 Jun 2022 18:02:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E0724E1F3;
+        Tue,  7 Jun 2022 12:14:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0C1E618DE;
+        Tue,  7 Jun 2022 19:14:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E967FC385A5;
+        Tue,  7 Jun 2022 19:14:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629269;
+        bh=wtRpv9QwfoalmL4GN3rNYbstJt18keKOX4M31pundK4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=H5/KNcfbL8T05x52i7bzVdVOPqTdgZCyPYVvJbP8wEG7OYiyycHIAexnyBSJ0b7pM
+         2rWa9qEV+6SqJ4siLzotThUS8bl9rt29gd3l+CVWplCXQg0fZ9jBn6wTSB4mgmDzY6
+         Tf8sZ5sv0D7mSUKG81XYTsm/UhV55ES5z0+BwCXM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Jane Chu <jane.chu@oracle.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 628/879] mce: fix set_mce_nospec to always unmap the whole page
+Date:   Tue,  7 Jun 2022 19:02:26 +0200
+Message-Id: <20220607165021.077610687@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 11958745864637351657
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudefjecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgepheenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekud
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of retrieving the backlight brightness in struct
-backlight_properties manually, and then checking whether the backlight
-should be on at all, use backlight_get_brightness() which does all
-this and insulates this from future changes.
+From: Jane Chu <jane.chu@oracle.com>
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
-Cc: Antonino Daplas <adaplas@gmail.com>
-Cc: Helge Deller <deller@gmx.de>
-Cc: linux-fbdev@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
+[ Upstream commit 5898b43af954b83c4a4ee4ab85c4dbafa395822a ]
+
+The set_memory_uc() approach doesn't work well in all cases.
+As Dan pointed out when "The VMM unmapped the bad page from
+guest physical space and passed the machine check to the guest."
+"The guest gets virtual #MC on an access to that page. When
+the guest tries to do set_memory_uc() and instructs cpa_flush()
+to do clean caches that results in taking another fault / exception
+perhaps because the VMM unmapped the page from the guest."
+
+Since the driver has special knowledge to handle NP or UC,
+mark the poisoned page with NP and let driver handle it when
+it comes down to repair.
+
+Please refer to discussions here for more details.
+https://lore.kernel.org/all/CAPcyv4hrXPb1tASBZUg-GgdVs0OOFKXMXLiHmktg_kFi7YBMyQ@mail.gmail.com/
+
+Now since poisoned page is marked as not-present, in order to
+avoid writing to a not-present page and trigger kernel Oops,
+also fix pmem_do_write().
+
+Fixes: 284ce4011ba6 ("x86/memory_failure: Introduce {set, clear}_mce_nospec()")
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Jane Chu <jane.chu@oracle.com>
+Acked-by: Tony Luck <tony.luck@intel.com>
+Link: https://lore.kernel.org/r/165272615484.103830.2563950688772226611.stgit@dwillia2-desk3.amr.corp.intel.com
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/nvidia/nv_backlight.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ arch/x86/kernel/cpu/mce/core.c |  6 +++---
+ arch/x86/mm/pat/set_memory.c   | 23 +++++++++++------------
+ drivers/nvdimm/pmem.c          | 30 +++++++-----------------------
+ include/linux/set_memory.h     |  4 ++--
+ 4 files changed, 23 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/video/fbdev/nvidia/nv_backlight.c b/drivers/video/fbdev/nvidia/nv_backlight.c
-index 2ce53529f636..503a7a683855 100644
---- a/drivers/video/fbdev/nvidia/nv_backlight.c
-+++ b/drivers/video/fbdev/nvidia/nv_backlight.c
-@@ -49,17 +49,11 @@ static int nvidia_bl_update_status(struct backlight_device *bd)
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index 981496e6bc0e..fa67bb9d1afe 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -579,7 +579,7 @@ static int uc_decode_notifier(struct notifier_block *nb, unsigned long val,
+ 
+ 	pfn = mce->addr >> PAGE_SHIFT;
+ 	if (!memory_failure(pfn, 0)) {
+-		set_mce_nospec(pfn, whole_page(mce));
++		set_mce_nospec(pfn);
+ 		mce->kflags |= MCE_HANDLED_UC;
+ 	}
+ 
+@@ -1316,7 +1316,7 @@ static void kill_me_maybe(struct callback_head *cb)
+ 
+ 	ret = memory_failure(p->mce_addr >> PAGE_SHIFT, flags);
+ 	if (!ret) {
+-		set_mce_nospec(p->mce_addr >> PAGE_SHIFT, p->mce_whole_page);
++		set_mce_nospec(p->mce_addr >> PAGE_SHIFT);
+ 		sync_core();
+ 		return;
+ 	}
+@@ -1342,7 +1342,7 @@ static void kill_me_never(struct callback_head *cb)
+ 	p->mce_count = 0;
+ 	pr_err("Kernel accessed poison in user space at %llx\n", p->mce_addr);
+ 	if (!memory_failure(p->mce_addr >> PAGE_SHIFT, 0))
+-		set_mce_nospec(p->mce_addr >> PAGE_SHIFT, p->mce_whole_page);
++		set_mce_nospec(p->mce_addr >> PAGE_SHIFT);
+ }
+ 
+ static void queue_task_work(struct mce *m, char *msg, void (*func)(struct callback_head *))
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index 417440c6bf80..1abd5438f126 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -1914,14 +1914,9 @@ int set_memory_wb(unsigned long addr, int numpages)
+ }
+ EXPORT_SYMBOL(set_memory_wb);
+ 
+-/*
+- * Prevent speculative access to the page by either unmapping
+- * it (if we do not require access to any part of the page) or
+- * marking it uncacheable (if we want to try to retrieve data
+- * from non-poisoned lines in the page).
+- */
++/* Prevent speculative access to a page by marking it not-present */
+ #ifdef CONFIG_X86_64
+-int set_mce_nospec(unsigned long pfn, bool unmap)
++int set_mce_nospec(unsigned long pfn)
  {
- 	struct nvidia_par *par = bl_get_data(bd);
- 	u32 tmp_pcrt, tmp_pmc, fpcontrol;
--	int level;
-+	int level = backlight_get_brightness(bd);
+ 	unsigned long decoy_addr;
+ 	int rc;
+@@ -1943,19 +1938,23 @@ int set_mce_nospec(unsigned long pfn, bool unmap)
+ 	 */
+ 	decoy_addr = (pfn << PAGE_SHIFT) + (PAGE_OFFSET ^ BIT(63));
  
- 	if (!par->FlatPanel)
- 		return 0;
- 
--	if (bd->props.power != FB_BLANK_UNBLANK ||
--	    bd->props.fb_blank != FB_BLANK_UNBLANK)
--		level = 0;
+-	if (unmap)
+-		rc = set_memory_np(decoy_addr, 1);
 -	else
--		level = bd->props.brightness;
--
- 	tmp_pmc = NV_RD32(par->PMC, 0x10F0) & 0x0000FFFF;
- 	tmp_pcrt = NV_RD32(par->PCRTC0, 0x081C) & 0xFFFFFFFC;
- 	fpcontrol = NV_RD32(par->PRAMDAC, 0x0848) & 0xCFFFFFCC;
+-		rc = set_memory_uc(decoy_addr, 1);
++	rc = set_memory_np(decoy_addr, 1);
+ 	if (rc)
+ 		pr_warn("Could not invalidate pfn=0x%lx from 1:1 map\n", pfn);
+ 	return rc;
+ }
+ 
++static int set_memory_present(unsigned long *addr, int numpages)
++{
++	return change_page_attr_set(addr, numpages, __pgprot(_PAGE_PRESENT), 0);
++}
++
+ /* Restore full speculative operation to the pfn. */
+ int clear_mce_nospec(unsigned long pfn)
+ {
+-	return set_memory_wb((unsigned long) pfn_to_kaddr(pfn), 1);
++	unsigned long addr = (unsigned long) pfn_to_kaddr(pfn);
++
++	return set_memory_present(&addr, 1);
+ }
+ EXPORT_SYMBOL_GPL(clear_mce_nospec);
+ #endif /* CONFIG_X86_64 */
+diff --git a/drivers/nvdimm/pmem.c b/drivers/nvdimm/pmem.c
+index 58d95242a836..4aa17132a557 100644
+--- a/drivers/nvdimm/pmem.c
++++ b/drivers/nvdimm/pmem.c
+@@ -158,36 +158,20 @@ static blk_status_t pmem_do_write(struct pmem_device *pmem,
+ 			struct page *page, unsigned int page_off,
+ 			sector_t sector, unsigned int len)
+ {
+-	blk_status_t rc = BLK_STS_OK;
+-	bool bad_pmem = false;
+ 	phys_addr_t pmem_off = sector * 512 + pmem->data_offset;
+ 	void *pmem_addr = pmem->virt_addr + pmem_off;
+ 
+-	if (unlikely(is_bad_pmem(&pmem->bb, sector, len)))
+-		bad_pmem = true;
++	if (unlikely(is_bad_pmem(&pmem->bb, sector, len))) {
++		blk_status_t rc = pmem_clear_poison(pmem, pmem_off, len);
++
++		if (rc != BLK_STS_OK)
++			return rc;
++	}
+ 
+-	/*
+-	 * Note that we write the data both before and after
+-	 * clearing poison.  The write before clear poison
+-	 * handles situations where the latest written data is
+-	 * preserved and the clear poison operation simply marks
+-	 * the address range as valid without changing the data.
+-	 * In this case application software can assume that an
+-	 * interrupted write will either return the new good
+-	 * data or an error.
+-	 *
+-	 * However, if pmem_clear_poison() leaves the data in an
+-	 * indeterminate state we need to perform the write
+-	 * after clear poison.
+-	 */
+ 	flush_dcache_page(page);
+ 	write_pmem(pmem_addr, page, page_off, len);
+-	if (unlikely(bad_pmem)) {
+-		rc = pmem_clear_poison(pmem, pmem_off, len);
+-		write_pmem(pmem_addr, page, page_off, len);
+-	}
+ 
+-	return rc;
++	return BLK_STS_OK;
+ }
+ 
+ static void pmem_submit_bio(struct bio *bio)
+diff --git a/include/linux/set_memory.h b/include/linux/set_memory.h
+index 683a6c3f7179..369769ce7399 100644
+--- a/include/linux/set_memory.h
++++ b/include/linux/set_memory.h
+@@ -43,10 +43,10 @@ static inline bool can_set_direct_map(void)
+ #endif /* CONFIG_ARCH_HAS_SET_DIRECT_MAP */
+ 
+ #ifdef CONFIG_X86_64
+-int set_mce_nospec(unsigned long pfn, bool unmap);
++int set_mce_nospec(unsigned long pfn);
+ int clear_mce_nospec(unsigned long pfn);
+ #else
+-static inline int set_mce_nospec(unsigned long pfn, bool unmap)
++static inline int set_mce_nospec(unsigned long pfn)
+ {
+ 	return 0;
+ }
 -- 
-2.30.2
+2.35.1
+
+
 
