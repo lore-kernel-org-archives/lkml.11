@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0C72CCA489
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:30:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 156B5CCA48C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:30:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389621AbiFHB2s (ORCPT
+        id S1390196AbiFHB3D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:28:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49796 "EHLO
+        Tue, 7 Jun 2022 21:29:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384242AbiFGWUT (ORCPT
+        with ESMTP id S1382591AbiFGWEw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:20:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358332632AE;
-        Tue,  7 Jun 2022 12:20:49 -0700 (PDT)
+        Tue, 7 Jun 2022 18:04:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ACA8195911;
+        Tue,  7 Jun 2022 12:16:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DED560907;
-        Tue,  7 Jun 2022 19:20:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16DACC385A5;
-        Tue,  7 Jun 2022 19:20:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 275EA61846;
+        Tue,  7 Jun 2022 19:16:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BE2AC385A2;
+        Tue,  7 Jun 2022 19:16:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629638;
-        bh=ZB5KUxuvNQ0yTaFTUxeKiF3Scpi+CLvkddXIlq4z0cY=;
+        s=korg; t=1654629364;
+        bh=XWpk6V/154R5tELQENQl5ceIwIAimCa0bLUYtlrSCjM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1gnxW557vtIskEm9smjrUApV4jHbMGZ+RPw1yaXJu8reY133528/nat+oEjncByxy
-         vFS5otkmc9RDnAUF+qunUZ+Knr8mI+QWyXoYD5CPCXa/VFby/2mc2+K0VGfrHY6Aor
-         Nv4XYRXa7vC/jtrdZ6w40BWJLCVvNTQkg2rhq+LU=
+        b=Ede9HT0Kg5kHnwAkf7R7a100f5SsZM+3hQhMvkcn2NJ+pFhH0eEcq/NgcdmPSYaZz
+         GsaDEIrQVhF4XXkvsEtY5rYv0/fIFoDJgkQt9LllU4Mz9TcLOQQWsVjpvGx+xWyyyH
+         HV2FU78HiowTeTbokQXtSHf7oXhWuHuD8UGt0PSg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Avraham Stern <avraham.stern@intel.com>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.18 722/879] iwlwifi: mei: clear the sap data header before sending
-Date:   Tue,  7 Jun 2022 19:04:00 +0200
-Message-Id: <20220607165023.811326528@linuxfoundation.org>
+        stable@vger.kernel.org, Yong Wu <yong.wu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 664/879] iommu/mediatek: Fix 2 HW sharing pgtable issue
+Date:   Tue,  7 Jun 2022 19:03:02 +0200
+Message-Id: <20220607165022.119559056@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,33 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Avraham Stern <avraham.stern@intel.com>
+From: Yong Wu <yong.wu@mediatek.com>
 
-commit 55cf10488d7a9fa1b1b473a5e44a80666932e094 upstream.
+[ Upstream commit 645b87c190c959e9bb4f216b8c4add4ee880451a ]
 
-The SAP data header has some fields that are marked as reserved
-but are actually in use by CSME. Clear those fields before sending
-the data to avoid having random values in those fields.
+In the commit 4f956c97d26b ("iommu/mediatek: Move domain_finalise into
+attach_device"), I overlooked the sharing pgtable case.
+After that commit, the "data" in the mtk_iommu_domain_finalise always is
+the data of the current IOMMU HW. Fix this for the sharing pgtable case.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Avraham Stern <avraham.stern@intel.com>
-Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
-Link: https://lore.kernel.org/r/20220517120045.8dd3423cf683.I02976028eaa6aab395cb2e701fa7127212762eb7@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Only affect mt2712 which is the only SoC that share pgtable currently.
+
+Fixes: 4f956c97d26b ("iommu/mediatek: Move domain_finalise into attach_device")
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Link: https://lore.kernel.org/r/20220503071427.2285-5-yong.wu@mediatek.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mei/main.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/mtk_iommu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/drivers/net/wireless/intel/iwlwifi/mei/main.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mei/main.c
-@@ -493,6 +493,7 @@ void iwl_mei_add_data_to_ring(struct sk_
- 	if (cb_tx) {
- 		struct iwl_sap_cb_data *cb_hdr = skb_push(skb, sizeof(*cb_hdr));
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 6fd75a60abd6..95c82b8bcc35 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -446,7 +446,7 @@ static void mtk_iommu_domain_free(struct iommu_domain *domain)
+ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 				   struct device *dev)
+ {
+-	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
++	struct mtk_iommu_data *data = dev_iommu_priv_get(dev), *frstdata;
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+ 	struct device *m4udev = data->dev;
+ 	int ret, domid;
+@@ -456,7 +456,10 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 		return domid;
  
-+		memset(cb_hdr, 0, sizeof(*cb_hdr));
- 		cb_hdr->hdr.type = cpu_to_le16(SAP_MSG_CB_DATA_PACKET);
- 		cb_hdr->hdr.len = cpu_to_le16(skb->len - sizeof(cb_hdr->hdr));
- 		cb_hdr->hdr.seq_num = cpu_to_le32(atomic_inc_return(&mei->sap_seq_no));
+ 	if (!dom->data) {
+-		if (mtk_iommu_domain_finalise(dom, data, domid))
++		/* Data is in the frstdata in sharing pgtable case. */
++		frstdata = mtk_iommu_get_m4u_data();
++
++		if (mtk_iommu_domain_finalise(dom, frstdata, domid))
+ 			return -ENODEV;
+ 		dom->data = data;
+ 	}
+-- 
+2.35.1
+
 
 
