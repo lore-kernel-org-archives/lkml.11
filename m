@@ -2,114 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A1E3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:48:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB51CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:48:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381591AbiFGVsN (ORCPT
+        id S1381960AbiFGVsW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:48:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51638 "EHLO
+        Tue, 7 Jun 2022 17:48:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377955AbiFGUvO (ORCPT
+        with ESMTP id S1377793AbiFGUzC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:51:14 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C3AC1FDE91;
-        Tue,  7 Jun 2022 11:41:01 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id b8so7451054edj.11;
-        Tue, 07 Jun 2022 11:41:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GXW2rL4NXVvRk2JDX2m18WOLhnXkn5o6+TY+7wVjtRE=;
-        b=N1Vd8aWmM1ySk0mcW8trc9dPBtxtE5CftSphFS3k/DOJ5xs8NntlPTLMsbV9eB2G3s
-         jDH1jzVIBP9rhvsgxrEvleACfClys8746/KX2ydKGjWjNHjtdF8iixR/BIXxGhEXscDZ
-         RfZNydJIpQ6qHFpL/g/sKhupfs1rhEQJoqsECwgXUs7pH8Ks1HCpYqUr4YdgFnxEWJAn
-         skSU7VYd+Vf+n/AxTsPxO5cAJ4zEvaE71/vFjeQe9cCDcYGJbKG9KV4hF4756Z9ZRtH1
-         2t/SWs7guc+T8E6dUW+5Y2uy/A0DHimYVsTI3N9Wp1mAiFcX/S8c30nwBig5jyoQdwfi
-         sLbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GXW2rL4NXVvRk2JDX2m18WOLhnXkn5o6+TY+7wVjtRE=;
-        b=GqUjQ1vyi6Xs6EpgmHIPe8z6BbgBYzkpkT+gibD1HhwXC1VOuSKAd99PfOYTZwxgIK
-         P4og1CSLQbpbB57KiQKMgUsvCnKkxy5yasyzZ1Nwr1uWJCY8+4XOppXudmxJfHT7nrOz
-         Em3sUbAGM7rEbiPmccrQ1cmRTlXE1xf+eIxts8pvnIZBg6Gcxe7+qYJTFAKQwk+b3OXb
-         k3kbpMyLOxl7ZoXN4163bP/OJovIshbMaIhSRR25aGYJRJhFqxgpzJTw6hdx5HVdeNhF
-         gilUHmXVHBgG3n4Q3CehKWzOZubrXU3nEb0ZfO9BC3IL48NrA69nEt2jaKjavlC2Xrpc
-         B9tA==
-X-Gm-Message-State: AOAM530Fmi9VClKsNQLBYwrivZ1KcDy1VXeeksb6RrBVTNtyNGG3UtcL
-        3cAdox2t9NMynTPH6MPHCJSB4b3hZgIGX1+JBME=
-X-Google-Smtp-Source: ABdhPJzFV7POzzYaS/eYvT70ZbJnT5xC9j9FFMEaFh9GOlCQHbKJzeMiTOD9OCYSb+pr7kVIj1bdTOlQrPIVFly5PwE=
-X-Received: by 2002:a05:6402:120b:b0:42f:aa44:4d85 with SMTP id
- c11-20020a056402120b00b0042faa444d85mr25727948edw.338.1654627259569; Tue, 07
- Jun 2022 11:40:59 -0700 (PDT)
+        Tue, 7 Jun 2022 16:55:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 614F3126981;
+        Tue,  7 Jun 2022 11:43:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5F43B82018;
+        Tue,  7 Jun 2022 18:43:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09445C385A2;
+        Tue,  7 Jun 2022 18:43:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654627433;
+        bh=gETrSTnWg67/TGYrV3g4gUyvCXG3/9kRgri1WNlx8XA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HEWI2GErxXIET1A5FNdsm19NQMiH44wbyrfGOrkrGpSNIUhau3yJeEpSkTj1Bdu0Y
+         +Vk0+RWgt9jeSgZZl2BbwCGoauCvSiB1iH4nYamuqqPeix879AsvCbLJrBeY92An+T
+         i7FPvgkO89tj9FQPJ8C3TB7kzLVVHN69k/4pyhxY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Song Liu <song@kernel.org>
+Subject: [PATCH 5.17 697/772] md: fix an incorrect NULL check in md_reload_sb
+Date:   Tue,  7 Jun 2022 19:04:49 +0200
+Message-Id: <20220607165009.589541302@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220606184731.437300-1-jolsa@kernel.org> <20220606184731.437300-4-jolsa@kernel.org>
-In-Reply-To: <20220606184731.437300-4-jolsa@kernel.org>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 7 Jun 2022 11:40:47 -0700
-Message-ID: <CAADnVQJA54Ra8+tV0e0KwSXAg93JRoiefDXWR-Lqatya5YWKpg@mail.gmail.com>
-Subject: Re: [PATCHv2 bpf 3/3] bpf: Force cookies array to follow symbols sorting
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 11:48 AM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> When user specifies symbols and cookies for kprobe_multi link
-> interface it's very likely the cookies will be misplaced and
-> returned to wrong functions (via get_attach_cookie helper).
->
-> The reason is that to resolve the provided functions we sort
-> them before passing them to ftrace_lookup_symbols, but we do
-> not do the same sort on the cookie values.
->
-> Fixing this by using sort_r function with custom swap callback
-> that swaps cookie values as well.
->
-> Fixes: 0236fec57a15 ("bpf: Resolve symbols with ftrace_lookup_symbols for kprobe multi link")
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-It looks good, but something in this patch is causing a regression:
-./test_progs -t kprobe_multi
-test_kprobe_multi_test:PASS:load_kallsyms 0 nsec
-#80/1    kprobe_multi_test/skel_api:OK
-#80/2    kprobe_multi_test/link_api_addrs:OK
-#80/3    kprobe_multi_test/link_api_syms:OK
-#80/4    kprobe_multi_test/attach_api_pattern:OK
-#80/5    kprobe_multi_test/attach_api_addrs:OK
-#80/6    kprobe_multi_test/attach_api_syms:OK
-#80/7    kprobe_multi_test/attach_api_fails:OK
-test_bench_attach:PASS:get_syms 0 nsec
-test_bench_attach:PASS:kprobe_multi_empty__open_and_load 0 nsec
-libbpf: prog 'test_kprobe_empty': failed to attach: No such process
-test_bench_attach:FAIL:bpf_program__attach_kprobe_multi_opts
-unexpected error: -3
-#80/8    kprobe_multi_test/bench_attach:FAIL
-#80      kprobe_multi_test:FAIL
+commit 64c54d9244a4efe9bc6e9c98e13c4bbb8bb39083 upstream.
 
-CI is unfortunately green, because we don't run it there:
-#80/1 kprobe_multi_test/skel_api:OK
-#80/2 kprobe_multi_test/link_api_addrs:OK
-#80/3 kprobe_multi_test/link_api_syms:OK
-#80/4 kprobe_multi_test/attach_api_pattern:OK
-#80/5 kprobe_multi_test/attach_api_addrs:OK
-#80/6 kprobe_multi_test/attach_api_syms:OK
-#80/7 kprobe_multi_test/attach_api_fails:OK
-#80 kprobe_multi_test:OK
+The bug is here:
+	if (!rdev || rdev->desc_nr != nr) {
+
+The list iterator value 'rdev' will *always* be set and non-NULL
+by rdev_for_each_rcu(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty or no element
+found (In fact, it will be a bogus pointer to an invalid struct
+object containing the HEAD). Otherwise it will bypass the check
+and lead to invalid memory access passing the check.
+
+To fix the bug, use a new variable 'iter' as the list iterator,
+while using the original variable 'pdev' as a dedicated pointer to
+point to the found element.
+
+Cc: stable@vger.kernel.org
+Fixes: 70bcecdb1534 ("md-cluster: Improve md_reload_sb to be less error prone")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/md/md.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -9794,16 +9794,18 @@ static int read_rdev(struct mddev *mddev
+ 
+ void md_reload_sb(struct mddev *mddev, int nr)
+ {
+-	struct md_rdev *rdev;
++	struct md_rdev *rdev = NULL, *iter;
+ 	int err;
+ 
+ 	/* Find the rdev */
+-	rdev_for_each_rcu(rdev, mddev) {
+-		if (rdev->desc_nr == nr)
++	rdev_for_each_rcu(iter, mddev) {
++		if (iter->desc_nr == nr) {
++			rdev = iter;
+ 			break;
++		}
+ 	}
+ 
+-	if (!rdev || rdev->desc_nr != nr) {
++	if (!rdev) {
+ 		pr_warn("%s: %d Could not find rdev with nr %d\n", __func__, __LINE__, nr);
+ 		return;
+ 	}
+
+
