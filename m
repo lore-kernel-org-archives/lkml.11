@@ -2,162 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93C33CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:13:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 738E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:13:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355197AbiFGTNE (ORCPT
+        id S1353952AbiFGTNP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:13:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49228 "EHLO
+        Tue, 7 Jun 2022 15:13:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352150AbiFGSZf (ORCPT
+        with ESMTP id S1352450AbiFGS0M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:25:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0CAEEF050;
-        Tue,  7 Jun 2022 10:54:43 -0700 (PDT)
+        Tue, 7 Jun 2022 14:26:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6206B1406E5;
+        Tue,  7 Jun 2022 10:54:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 585B6B82376;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CAEA60DBA;
+        Tue,  7 Jun 2022 17:54:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AE81C34119;
         Tue,  7 Jun 2022 17:54:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE362C3411C;
-        Tue,  7 Jun 2022 17:54:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624482;
-        bh=rFUmO2eCpiuWmXjiSQBqGcHExDGAR+qKjNun3mFwazE=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624485;
+        bh=UuT5pcuIYfI0vQXMOvXgNqqRRJ+ochAjLD8cGR0HfcE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CONORWZeviQknHwnB2Bkhg6J21gvPsQ84sKMHqhOMkAjMQi5saEOHvNJlCbC9CJCn
-         +NvkRpm5ESAmhcKq6TAo7dsoVjs/8xhv2wYCUV6kLuqyJMB8Eho+504xMwJuE6SzQ9
-         Hx/ETSLBKjnnQ1YaDFdtdgu8/i2+PVbVQLEaZ+I0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Sebastian Fricke <sebastian.fricke@collabora.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 342/667] media: rkvdec: h264: Fix dpb_valid implementation
-Date:   Tue,  7 Jun 2022 19:00:07 +0200
-Message-Id: <20220607164945.018636763@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=d7LLBdMTMUuNAbZvaT3NDdgyrIJlKffEgKa577AOftX+/fEqSXVI1+ZHyL/SF9nzx
+         CDP8xaLQhI5BQT5XJfETMg3Njoum98+JHP9EWYeL7R9M+Un9YeePqcl5RhxP0vQZ+E
+         dGgFcZVCxeQVFCY9xntjrbXfj7LdEjPAxpReN55/m9LVqgjOTVX18oDVdnNEz9AneG
+         p+hJba+Jh1KUcq5LmTOz8MJi9Rk0dGFwlpN1+auD0CA0VWda1IEoeLiJhhfqPAQXaQ
+         KJgtET/uPt4gKn+vRcP1sFYr2kssgTepltCMkY8sJyAXKnjy6rVwvYvizvIjuFSHIS
+         HJLEClMZbnxfQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     David Galiffi <David.Galiffi@amd.com>,
+        Martin Leung <Martin.Leung@amd.com>,
+        Qingqing Zhuo <qingqing.zhuo@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
+        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, Hansen.Dsouza@amd.com, Charlene.Liu@amd.com,
+        HaoPing.Liu@amd.com, baihaowen@meizu.com, dillon.varone@amd.com,
+        alex.hung@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.17 41/60] drm/amd/display: Check if modulo is 0 before dividing.
+Date:   Tue,  7 Jun 2022 13:52:38 -0400
+Message-Id: <20220607175259.478835-41-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+From: David Galiffi <David.Galiffi@amd.com>
 
-[ Upstream commit 7ab889f09dfa70e8097ec1b9186fd228124112cb ]
+[ Upstream commit 49947b906a6bd9668eaf4f9cf691973c25c26955 ]
 
-The ref builder only provided references that are marked as valid in the
-dpb. Thus the current implementation of dpb_valid would always set the
-flag to 1. This is not representing missing frames (this is called
-'non-existing' pictures in the spec). In some context, these non-existing
-pictures still need to occupy a slot in the reference list according to
-the spec.
+[How & Why]
+If a value of 0 is read, then this will cause a divide-by-0 panic.
 
-Fixes: cd33c830448ba ("media: rkvdec: Add the rkvdec driver")
-Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Reviewed-by: Martin Leung <Martin.Leung@amd.com>
+Acked-by: Qingqing Zhuo <qingqing.zhuo@amd.com>
+Signed-off-by: David Galiffi <David.Galiffi@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/rkvdec/rkvdec-h264.c | 33 ++++++++++++++++------
- 1 file changed, 24 insertions(+), 9 deletions(-)
+ drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-index 951e19231da2..f5d8c6cb740b 100644
---- a/drivers/staging/media/rkvdec/rkvdec-h264.c
-+++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
-@@ -112,6 +112,7 @@ struct rkvdec_h264_run {
- 	const struct v4l2_ctrl_h264_sps *sps;
- 	const struct v4l2_ctrl_h264_pps *pps;
- 	const struct v4l2_ctrl_h264_scaling_matrix *scaling_matrix;
-+	int ref_buf_idx[V4L2_H264_NUM_DPB_ENTRIES];
- };
- 
- struct rkvdec_h264_ctx {
-@@ -725,6 +726,26 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
- 	}
- }
- 
-+static void lookup_ref_buf_idx(struct rkvdec_ctx *ctx,
-+			       struct rkvdec_h264_run *run)
-+{
-+	const struct v4l2_ctrl_h264_decode_params *dec_params = run->decode_params;
-+	u32 i;
-+
-+	for (i = 0; i < ARRAY_SIZE(dec_params->dpb); i++) {
-+		struct v4l2_m2m_ctx *m2m_ctx = ctx->fh.m2m_ctx;
-+		const struct v4l2_h264_dpb_entry *dpb = run->decode_params->dpb;
-+		struct vb2_queue *cap_q = &m2m_ctx->cap_q_ctx.q;
-+		int buf_idx = -1;
-+
-+		if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
-+			buf_idx = vb2_find_timestamp(cap_q,
-+						     dpb[i].reference_ts, 0);
-+
-+		run->ref_buf_idx[i] = buf_idx;
-+	}
-+}
-+
- static void assemble_hw_rps(struct rkvdec_ctx *ctx,
- 			    struct rkvdec_h264_run *run)
- {
-@@ -762,7 +783,7 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
- 
- 	for (j = 0; j < RKVDEC_NUM_REFLIST; j++) {
- 		for (i = 0; i < h264_ctx->reflists.num_valid; i++) {
--			u8 dpb_valid = 0;
-+			bool dpb_valid = run->ref_buf_idx[i] >= 0;
- 			u8 idx = 0;
- 
- 			switch (j) {
-@@ -779,8 +800,6 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
- 
- 			if (idx >= ARRAY_SIZE(dec_params->dpb))
- 				continue;
--			dpb_valid = !!(dpb[idx].flags &
--				       V4L2_H264_DPB_ENTRY_FLAG_ACTIVE);
- 
- 			set_ps_field(hw_rps, DPB_INFO(i, j),
- 				     idx | dpb_valid << 4);
-@@ -859,13 +878,8 @@ get_ref_buf(struct rkvdec_ctx *ctx, struct rkvdec_h264_run *run,
- 	    unsigned int dpb_idx)
- {
- 	struct v4l2_m2m_ctx *m2m_ctx = ctx->fh.m2m_ctx;
--	const struct v4l2_h264_dpb_entry *dpb = run->decode_params->dpb;
- 	struct vb2_queue *cap_q = &m2m_ctx->cap_q_ctx.q;
--	int buf_idx = -1;
--
--	if (dpb[dpb_idx].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
--		buf_idx = vb2_find_timestamp(cap_q,
--					     dpb[dpb_idx].reference_ts, 0);
-+	int buf_idx = run->ref_buf_idx[dpb_idx];
- 
- 	/*
- 	 * If a DPB entry is unused or invalid, address of current destination
-@@ -1102,6 +1116,7 @@ static int rkvdec_h264_run(struct rkvdec_ctx *ctx)
- 
- 	assemble_hw_scaling_list(ctx, &run);
- 	assemble_hw_pps(ctx, &run);
-+	lookup_ref_buf_idx(ctx, &run);
- 	assemble_hw_rps(ctx, &run);
- 	config_registers(ctx, &run);
- 
+diff --git a/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c b/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
+index 2c7eb982eabc..054823d12403 100644
+--- a/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
++++ b/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
+@@ -1013,9 +1013,12 @@ static bool get_pixel_clk_frequency_100hz(
+ 			 * not be programmed equal to DPREFCLK
+ 			 */
+ 			modulo_hz = REG_READ(MODULO[inst]);
+-			*pixel_clk_khz = div_u64((uint64_t)clock_hz*
+-				clock_source->ctx->dc->clk_mgr->dprefclk_khz*10,
+-				modulo_hz);
++			if (modulo_hz)
++				*pixel_clk_khz = div_u64((uint64_t)clock_hz*
++					clock_source->ctx->dc->clk_mgr->dprefclk_khz*10,
++					modulo_hz);
++			else
++				*pixel_clk_khz = 0;
+ 		} else {
+ 			/* NOTE: There is agreement with VBIOS here that MODULO is
+ 			 * programmed equal to DPREFCLK, in which case PHASE will be
 -- 
 2.35.1
-
-
 
