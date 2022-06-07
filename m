@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F39EC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FDFDC43334
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355550AbiFHBeQ (ORCPT
+        id S1359020AbiFHBed (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:34:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58706 "EHLO
+        Tue, 7 Jun 2022 21:34:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382467AbiFGWYC (ORCPT
+        with ESMTP id S1384712AbiFGWQE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:24:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B08BB26D37A;
-        Tue,  7 Jun 2022 12:22:39 -0700 (PDT)
+        Tue, 7 Jun 2022 18:16:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F149261285;
+        Tue,  7 Jun 2022 12:19:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5A24B823CC;
-        Tue,  7 Jun 2022 19:22:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 459A0C34115;
-        Tue,  7 Jun 2022 19:22:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B25561937;
+        Tue,  7 Jun 2022 19:19:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 483C2C385A2;
+        Tue,  7 Jun 2022 19:19:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629755;
-        bh=Oi1NSIjcbY9SuzHX20ZcJb9MNusOYrpRgA7ZUNRtZFA=;
+        s=korg; t=1654629546;
+        bh=u4cVDWE9ghJnWZVgnl39r4y8K2fhJNdkdYHrYy7ygyI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JRqHkLIVe9EpQUgPEuFJqnVStF1eDW7u2egR3clA7Xcn0zeoL5cQI0HwkyenoK3+l
-         ymSeIt9U4J7HEd2bvB61kNKl4mS6PKBfGIDTuNBrkj1mipflvcjxpd3+hEzar5uOD6
-         jD+968HE7awNJXKm1CCOrGBXLI9t8hNxlNHbaLhc=
+        b=nWBWwtM/NW10Lwhog8KB/ECDWlIxmU84zPUoVhZpAJApzVemiJSlWgdfTGRTRp3em
+         ATfM9w8NkdnifS8TkEd8WmbwrR8XzWRdptRjQOzX6e0FsA9Fl2WNgKOZwkcNw9T3Am
+         BCXEUScsve4NQQpfiw8d9tIyntJ8QcS7mD/hbK4U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Ezequiel Garcia <ezequiel@collabora.com>,
-        Fabio Estevam <festevam@denx.de>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.18 803/879] media: coda: Add more H264 levels for CODA960
-Date:   Tue,  7 Jun 2022 19:05:21 +0200
-Message-Id: <20220607165026.167855829@linuxfoundation.org>
+        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.18 731/879] bfq: Drop pointless unlock-lock pair
+Date:   Tue,  7 Jun 2022 19:04:09 +0200
+Message-Id: <20220607165024.074983777@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,51 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+From: Jan Kara <jack@suse.cz>
 
-commit eb2fd187abc878a2dfad46902becb74963473c7d upstream.
+commit fc84e1f941b91221092da5b3102ec82da24c5673 upstream.
 
-Add H264 level 1.0, 4.1, 4.2 to the list of supported formats.
-While the hardware does not fully support these levels, it does support
-most of them. The constraints on frame size and pixel formats already
-cover the limitation.
+In bfq_insert_request() we unlock bfqd->lock only to call
+trace_block_rq_insert() and then lock bfqd->lock again. This is really
+pointless since tracing is disabled if we really care about performance
+and even if the tracepoint is enabled, it is a quick call.
 
-This fixes negotiation of level on GStreamer 1.17.1.
-
-Cc: stable@vger.kernel.org
-Fixes: 42a68012e67c2 ("media: coda: add read-only h.264 decoder profile/level controls")
-Suggested-by: Philipp Zabel <p.zabel@pengutronix.de>
-Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+CC: stable@vger.kernel.org
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-5-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/chips-media/coda-common.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ block/bfq-iosched.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/drivers/media/platform/chips-media/coda-common.c
-+++ b/drivers/media/platform/chips-media/coda-common.c
-@@ -2367,12 +2367,15 @@ static void coda_encode_ctrls(struct cod
- 	if (ctx->dev->devtype->product == CODA_960) {
- 		v4l2_ctrl_new_std_menu(&ctx->ctrls, &coda_ctrl_ops,
- 			V4L2_CID_MPEG_VIDEO_H264_LEVEL,
--			V4L2_MPEG_VIDEO_H264_LEVEL_4_0,
--			~((1 << V4L2_MPEG_VIDEO_H264_LEVEL_2_0) |
-+			V4L2_MPEG_VIDEO_H264_LEVEL_4_2,
-+			~((1 << V4L2_MPEG_VIDEO_H264_LEVEL_1_0) |
-+			  (1 << V4L2_MPEG_VIDEO_H264_LEVEL_2_0) |
- 			  (1 << V4L2_MPEG_VIDEO_H264_LEVEL_3_0) |
- 			  (1 << V4L2_MPEG_VIDEO_H264_LEVEL_3_1) |
- 			  (1 << V4L2_MPEG_VIDEO_H264_LEVEL_3_2) |
--			  (1 << V4L2_MPEG_VIDEO_H264_LEVEL_4_0)),
-+			  (1 << V4L2_MPEG_VIDEO_H264_LEVEL_4_0) |
-+			  (1 << V4L2_MPEG_VIDEO_H264_LEVEL_4_1) |
-+			  (1 << V4L2_MPEG_VIDEO_H264_LEVEL_4_2)),
- 			V4L2_MPEG_VIDEO_H264_LEVEL_4_0);
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -6154,11 +6154,8 @@ static void bfq_insert_request(struct bl
+ 		return;
  	}
- 	v4l2_ctrl_new_std(&ctx->ctrls, &coda_ctrl_ops,
+ 
+-	spin_unlock_irq(&bfqd->lock);
+-
+ 	trace_block_rq_insert(rq);
+ 
+-	spin_lock_irq(&bfqd->lock);
+ 	bfqq = bfq_init_rq(rq);
+ 	if (!bfqq || at_head) {
+ 		if (at_head)
 
 
