@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DECDCCA486
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD81C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358324AbiFGURU (ORCPT
+        id S1376687AbiFGURC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:17:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51510 "EHLO
+        Tue, 7 Jun 2022 16:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356600AbiFGT2B (ORCPT
+        with ESMTP id S1356452AbiFGT1q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:28:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657451A0766;
-        Tue,  7 Jun 2022 11:10:15 -0700 (PDT)
+        Tue, 7 Jun 2022 15:27:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EED319FF78;
+        Tue,  7 Jun 2022 11:09:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2261B61927;
-        Tue,  7 Jun 2022 18:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31E16C385A5;
-        Tue,  7 Jun 2022 18:10:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9271161680;
+        Tue,  7 Jun 2022 18:09:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9090C385A2;
+        Tue,  7 Jun 2022 18:09:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625413;
-        bh=g1hLS+ya2aqBBFKEuQr7s2NPVCANtnGbX7JMaSlptaU=;
+        s=korg; t=1654625389;
+        bh=P93cyAbJAwdWUFf2HFYq9K7w37mCzMvtd/q/MFN3/kw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L3hvmUr5bgolbWc47DkNuRszhWkwV+5N1JsMKt1zl+G2Z7czuxVIbacrjR//H6qSu
-         7V7tWPFr8BJuxe8880M2cP1ASMD7ESqFvJRmhWasE6aW7WW6frZRYfVlnYihSDwreB
-         9cQf2/Jkkvt7bjo88PWtARWYANTqJkBRbBOv4aQY=
+        b=OmB6h9gFFEu8zuEZZucaA1+22zjBCdo4iH0FgxX/S9XNea86PA+VtyLZMWgrQU6Pm
+         IyDmmdUebokjNcLiHN17zACbGt4sN97XPClS3Yu5xcy9DqdoXNaTPPQSEOZxNGPktb
+         9DUtULe66K8BGqNvcRbF4NwhfQRkFaFTMhb7H6Qw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rik van der Kemp <rik@upto11.nl>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 011/772] ALSA: hda/realtek: Enable 4-speaker output for Dell XPS 15 9520 laptop
-Date:   Tue,  7 Jun 2022 18:53:23 +0200
-Message-Id: <20220607164949.331836000@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Stephen Zhang <starzhangzsd@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: [PATCH 5.15 658/667] MIPS: IP30: Remove incorrect `cpu_has_fpu override
+Date:   Tue,  7 Jun 2022 19:05:23 +0200
+Message-Id: <20220607164954.380910379@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,35 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rik van der Kemp <rik@upto11.nl>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-commit 15dad62f4bdb5dc0f0efde8181d680db9963544c upstream.
+commit f44b3e74c33fe04defeff24ebcae98c3bcc5b285 upstream.
 
-The 2022-model XPS 15 appears to use the same 4-speakers-on-ALC289
-audio setup as the Dell XPS 15 9510, so requires the same quirk to
-enable woofer output. Tested on my own 9520.
+Remove unsupported forcing of `cpu_has_fpu' to 1, which makes the `nofpu'
+kernel parameter non-functional, and also causes a link error:
 
-[ Move the entry to the right position in the SSID order -- tiwai ]
+ld: arch/mips/kernel/traps.o: in function `trap_init':
+./arch/mips/include/asm/msa.h:(.init.text+0x348): undefined reference to `handle_fpe'
+ld: ./arch/mips/include/asm/msa.h:(.init.text+0x354): undefined reference to `handle_fpe'
+ld: ./arch/mips/include/asm/msa.h:(.init.text+0x360): undefined reference to `handle_fpe'
 
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216035
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Rik van der Kemp <rik@upto11.nl>
-Link: https://lore.kernel.org/r/181056a137b.d14baf90133058.8425453735588429828@upto11.nl
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+where the CONFIG_MIPS_FP_SUPPORT configuration option has been disabled.
+
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Reported-by: Stephen Zhang <starzhangzsd@gmail.com>
+Fixes: 7505576d1c1a ("MIPS: add support for SGI Octane (IP30)")
+Cc: stable@vger.kernel.org # v5.5+
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/mips/include/asm/mach-ip30/cpu-feature-overrides.h |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -8921,6 +8921,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1028, 0x0a62, "Dell Precision 5560", ALC289_FIXUP_DUAL_SPK),
- 	SND_PCI_QUIRK(0x1028, 0x0a9d, "Dell Latitude 5430", ALC269_FIXUP_DELL4_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1028, 0x0a9e, "Dell Latitude 5430", ALC269_FIXUP_DELL4_MIC_NO_PRESENCE),
-+	SND_PCI_QUIRK(0x1028, 0x0b19, "Dell XPS 15 9520", ALC289_FIXUP_DUAL_SPK),
- 	SND_PCI_QUIRK(0x1028, 0x164a, "Dell", ALC293_FIXUP_DELL1_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1028, 0x164b, "Dell", ALC293_FIXUP_DELL1_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x103c, 0x1586, "HP", ALC269_FIXUP_HP_MUTE_LED_MIC2),
+--- a/arch/mips/include/asm/mach-ip30/cpu-feature-overrides.h
++++ b/arch/mips/include/asm/mach-ip30/cpu-feature-overrides.h
+@@ -29,7 +29,6 @@
+ #define cpu_has_3k_cache		0
+ #define cpu_has_4k_cache		1
+ #define cpu_has_tx39_cache		0
+-#define cpu_has_fpu			1
+ #define cpu_has_nofpuex			0
+ #define cpu_has_32fpr			1
+ #define cpu_has_counter			1
 
 
