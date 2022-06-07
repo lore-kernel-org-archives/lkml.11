@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D27CCA494
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83BB6CCA491
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352604AbiFGSRV (ORCPT
+        id S1352127AbiFGSQz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:17:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60936 "EHLO
+        Tue, 7 Jun 2022 14:16:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348940AbiFGR5s (ORCPT
+        with ESMTP id S1348598AbiFGR5a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:57:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26192E09C;
-        Tue,  7 Jun 2022 10:40:46 -0700 (PDT)
+        Tue, 7 Jun 2022 13:57:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FA0314780D;
+        Tue,  7 Jun 2022 10:40:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 825D86137B;
-        Tue,  7 Jun 2022 17:40:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BA79C385A5;
-        Tue,  7 Jun 2022 17:40:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80229615B8;
+        Tue,  7 Jun 2022 17:40:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8600DC385A5;
+        Tue,  7 Jun 2022 17:40:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623645;
-        bh=4SlgomPlrnsgsFOxlEG6cbiBe2aA10hG0NWQqjJmNQE=;
+        s=korg; t=1654623623;
+        bh=4WZshwgCuLseii/geAgye3QBcW3LI/+mQFUHRGNbp5I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BEHM4Q7e1EJv0E7E48sCD2z4Vm/Knweitw1jWGFIEWHqZLffOgIuDeNHdtHzaSDEO
-         wkoJ+ziSXDOyV/ijZjew1I8woLGmQxpXG7LWx2+HW13Hn1fyugz10qOhvVVj84CK46
-         SBpfeUYu3By5UZLXGAT07IY1v8giSsS/3GZR8HXc=
+        b=lBNULopzWDUkqHBrmig10fsFTgYblk3CQsu1WKCpYzT/vp23qXOnUsvM4wC6w0t3W
+         4otEngMXRJwkFthivxDurkEPFCpxypRP29xinCF4IMVlnG0nwQDWv5CoizsraXL9C6
+         4094Ea7a2xzzyXFhprofhnfYPJs5eTYZiF1L8bbk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nikolay Borisov <nborisov@suse.com>,
-        Qu Wenruo <wqu@suse.com>, David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 039/667] btrfs: add "0x" prefix for unsupported optional features
-Date:   Tue,  7 Jun 2022 18:55:04 +0200
-Message-Id: <20220607164935.970108667@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Michael=20Niew=C3=B6hner?= <linux@mniewoehner.de>,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH 5.15 031/667] platform/x86: intel-hid: fix _DSM function index handling
+Date:   Tue,  7 Jun 2022 18:54:56 +0200
+Message-Id: <20220607164935.728654743@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,47 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Michael Niewöhner <linux@mniewoehner.de>
 
-commit d5321a0fa8bc49f11bea0b470800962c17d92d8f upstream.
+commit 1620c80bba53af8c547bab34a1d3bc58319fe608 upstream.
 
-The following error message lack the "0x" obviously:
+intel_hid_dsm_fn_mask is a bit mask containing one bit for each function
+index. Fix the function index check in intel_hid_evaluate_method
+accordingly, which was missed in commit 97ab4516205e ("platform/x86:
+intel-hid: fix _DSM function index handling").
 
-  cannot mount because of unsupported optional features (4000)
-
-Add the prefix to make it less confusing. This can happen on older
-kernels that try to mount a filesystem with newer features so it makes
-sense to backport to older trees.
-
-CC: stable@vger.kernel.org # 4.14+
-Reviewed-by: Nikolay Borisov <nborisov@suse.com>
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: 97ab4516205e ("platform/x86: intel-hid: fix _DSM function index handling")
+Cc: stable@vger.kernel.org
+Signed-off-by: Michael Niewöhner <linux@mniewoehner.de>
+Link: https://lore.kernel.org/r/66f813f5bcc724a0f6dd5adefe6a9728dbe509e3.camel@mniewoehner.de
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/disk-io.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/platform/x86/intel/hid.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/btrfs/disk-io.c
-+++ b/fs/btrfs/disk-io.c
-@@ -3370,7 +3370,7 @@ int __cold open_ctree(struct super_block
- 		~BTRFS_FEATURE_INCOMPAT_SUPP;
- 	if (features) {
- 		btrfs_err(fs_info,
--		    "cannot mount because of unsupported optional features (%llx)",
-+		    "cannot mount because of unsupported optional features (0x%llx)",
- 		    features);
- 		err = -EINVAL;
- 		goto fail_alloc;
-@@ -3408,7 +3408,7 @@ int __cold open_ctree(struct super_block
- 		~BTRFS_FEATURE_COMPAT_RO_SUPP;
- 	if (!sb_rdonly(sb) && features) {
- 		btrfs_err(fs_info,
--	"cannot mount read-write because of unsupported optional features (%llx)",
-+	"cannot mount read-write because of unsupported optional features (0x%llx)",
- 		       features);
- 		err = -EINVAL;
- 		goto fail_alloc;
+--- a/drivers/platform/x86/intel/hid.c
++++ b/drivers/platform/x86/intel/hid.c
+@@ -245,7 +245,7 @@ static bool intel_hid_evaluate_method(ac
+ 
+ 	method_name = (char *)intel_hid_dsm_fn_to_method[fn_index];
+ 
+-	if (!(intel_hid_dsm_fn_mask & fn_index))
++	if (!(intel_hid_dsm_fn_mask & BIT(fn_index)))
+ 		goto skip_dsm_eval;
+ 
+ 	obj = acpi_evaluate_dsm_typed(handle, &intel_dsm_guid,
 
 
