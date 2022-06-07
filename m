@@ -2,105 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A78CCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:46:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4D78CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:46:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381881AbiFGVpX (ORCPT
+        id S1381823AbiFGVpC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:45:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48896 "EHLO
+        Tue, 7 Jun 2022 17:45:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378982AbiFGUwq (ORCPT
+        with ESMTP id S1378932AbiFGUwm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:52:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D90B5DD18;
-        Tue,  7 Jun 2022 11:43:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CDDA4B82018;
-        Tue,  7 Jun 2022 18:43:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A11AC385A5;
-        Tue,  7 Jun 2022 18:43:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627408;
-        bh=MLkY1OvX2VTXtWkd4B2hKU9SxPB0F0RJYdX5ADWhvgw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MESPoffPnVZJv0vEZT4cstW9C2cbGwnmDYkftCm3STc9zfQlWHu/8kpEO7hV36SKc
-         s12LtS92pUQcQ1dzJSBh5FF3JMtxDeqobAHyxA4GC7l4DRdFo+s61RXInh08DzCfei
-         YZyWuplz2AArz9Z6GDOEgt6IX//TPRa29GRJJSrw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Lyude Paul <lyude@redhat.com>
-Subject: [PATCH 5.17 692/772] drm/nouveau/clk: Fix an incorrect NULL check on list iterator
-Date:   Tue,  7 Jun 2022 19:04:44 +0200
-Message-Id: <20220607165009.444085967@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 16:52:42 -0400
+X-Greylist: delayed 277 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 11:43:22 PDT
+Received: from 8.mo575.mail-out.ovh.net (8.mo575.mail-out.ovh.net [46.105.74.219])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692083F332
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:43:20 -0700 (PDT)
+Received: from player746.ha.ovh.net (unknown [10.108.16.8])
+        by mo575.mail-out.ovh.net (Postfix) with ESMTP id B9FFC22A18
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:34:27 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player746.ha.ovh.net (Postfix) with ESMTPSA id 6A0ED1DF14EEC;
+        Tue,  7 Jun 2022 18:34:21 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-108S002f51240c6-cd04-485d-92a4-59fa50673865,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH] backlight: Use backlight helper
+Date:   Tue,  7 Jun 2022 20:34:11 +0200
+Message-Id: <20220607183411.1125030-1-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11111224708588406284
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddvjecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejgeeirdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheejhe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+backlight_properties.fb_blank is deprecated. The states it represents
+are handled by other properties; but instead of accessing those
+properties directly, drivers should use the helpers provided by
+backlight.h.
 
-commit 1c3b2a27def609473ed13b1cd668cb10deab49b4 upstream.
+Instead of retrieving the backlight brightness in struct
+backlight_properties manually, and then checking whether the backlight
+should be on at all, use backlight_get_brightness() which does all
+this and insulates this from future changes.
 
-The bug is here:
-	if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
-		return cstate;
-
-The list iterator value 'cstate' will *always* be set and non-NULL
-by list_for_each_entry_from_reverse(), so it is incorrect to assume
-that the iterator value will be unchanged if the list is empty or no
-element is found (In fact, it will be a bogus pointer to an invalid
-structure object containing the HEAD). Also it missed a NULL check
-at callsite and may lead to invalid memory access after that.
-
-To fix this bug, just return 'encoder' when found, otherwise return
-NULL. And add the NULL check.
-
-Cc: stable@vger.kernel.org
-Fixes: 1f7f3d91ad38a ("drm/nouveau/clk: Respect voltage limits in nvkm_cstate_prog")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220327075824.11806-1-xiam0nd.tong@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc: linuxppc-dev@lists.ozlabs.org
 ---
- drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/macintosh/via-pmu-backlight.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
-@@ -135,10 +135,10 @@ nvkm_cstate_find_best(struct nvkm_clk *c
+diff --git a/drivers/macintosh/via-pmu-backlight.c b/drivers/macintosh/via-pmu-backlight.c
+index 2194016122d2..c2d87e7fa85b 100644
+--- a/drivers/macintosh/via-pmu-backlight.c
++++ b/drivers/macintosh/via-pmu-backlight.c
+@@ -71,12 +71,7 @@ static int pmu_backlight_get_level_brightness(int level)
+ static int __pmu_backlight_update_status(struct backlight_device *bd)
+ {
+ 	struct adb_request req;
+-	int level = bd->props.brightness;
+-
+-
+-	if (bd->props.power != FB_BLANK_UNBLANK ||
+-	    bd->props.fb_blank != FB_BLANK_UNBLANK)
+-		level = 0;
++	int level = backlight_get_brightness(bd);
  
- 	list_for_each_entry_from_reverse(cstate, &pstate->list, head) {
- 		if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
--			break;
-+			return cstate;
- 	}
- 
--	return cstate;
-+	return NULL;
- }
- 
- static struct nvkm_cstate *
-@@ -169,6 +169,8 @@ nvkm_cstate_prog(struct nvkm_clk *clk, s
- 	if (!list_empty(&pstate->list)) {
- 		cstate = nvkm_cstate_get(clk, pstate, cstatei);
- 		cstate = nvkm_cstate_find_best(clk, pstate, cstate);
-+		if (!cstate)
-+			return -EINVAL;
- 	} else {
- 		cstate = &pstate->base;
- 	}
+ 	if (level > 0) {
+ 		int pmulevel = pmu_backlight_get_level_brightness(level);
 
+base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+-- 
+2.30.2
 
