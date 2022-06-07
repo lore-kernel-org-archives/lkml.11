@@ -2,92 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC5DCC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF540C43334
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387078AbiFHAW5 (ORCPT
+        id S1347784AbiFHAXH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:22:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51404 "EHLO
+        Tue, 7 Jun 2022 20:23:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383781AbiFGWIU (ORCPT
+        with ESMTP id S1383264AbiFGVw7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:08:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE68256958;
-        Tue,  7 Jun 2022 12:18:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 7 Jun 2022 17:52:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E656B192C61
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:10:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654629057;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UILT9WGW3d0IxemmFu2Q9nTCU5K37LJyUJt0iSrwqk0=;
+        b=f5bmZ4BD0oi2x54BIPMhDoqZgG+sRMBaH8gMijnzckMVFNg1jcaCK48WFwzcBXD/wKqRWy
+        i7Jx9yX+Noe8gA3EYFimlv/ukXC4idJ+J1sAstwkdT9MHdE1EfARCtrunwk1MMmt9Y+uAA
+        tYH+TRQup1Vg/TEtt5oxkAbRQLHxQy0=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-595-RfDcGG7yMvyhqyGswC6abw-1; Tue, 07 Jun 2022 15:10:51 -0400
+X-MC-Unique: RfDcGG7yMvyhqyGswC6abw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 745AE61937;
-        Tue,  7 Jun 2022 19:18:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B540C385A2;
-        Tue,  7 Jun 2022 19:18:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629518;
-        bh=q/qGVdP1QmculnLBqOY5CtVe3ahdbNWzYw2U/xURrBU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lgfpTuzh+JmSKYIFKQhcyDrwkaTeQodHGglTLxCyKT6vKp7Wnp6/sfC8KPXF5k8MG
-         FI2YzCrfdzYyRswiWhkWRineDCdnU2/YelAm40ZPul3LlsTEUuxRSH7kTcZnmhYacx
-         upLloTcsNRh2orilBmIwn97z0syg20fZ/amkPFzU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 679/879] NFS: Do not report flush errors in nfs_write_end()
-Date:   Tue,  7 Jun 2022 19:03:17 +0200
-Message-Id: <20220607165022.556269950@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 080C280418F;
+        Tue,  7 Jun 2022 19:09:00 +0000 (UTC)
+Received: from emerald.redhat.com (unknown [10.22.9.252])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6FC0740FD372;
+        Tue,  7 Jun 2022 19:08:23 +0000 (UTC)
+From:   Lyude Paul <lyude@redhat.com>
+To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org
+Cc:     Wayne Lin <Wayne.Lin@amd.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
+        Mikita Lipski <mikita.lipski@amd.com>,
+        Roman Li <Roman.Li@amd.com>, Claudio Suarez <cssk@net-c.es>,
+        Ian Chen <ian.chen@amd.com>,
+        Colin Ian King <colin.king@intel.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RFC 02/18] drm/amdgpu/dm/mst: Rename get_payload_table()
+Date:   Tue,  7 Jun 2022 15:06:59 -0400
+Message-Id: <20220607190715.1331124-3-lyude@redhat.com>
+In-Reply-To: <20220607190715.1331124-1-lyude@redhat.com>
+References: <20220607190715.1331124-1-lyude@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+This function isn't too confusing if you see the comment around the
+call-site for it, but if you don't then it's not at all obvious this is
+meant to copy DRM's payload table over to DC's internal state structs.
+Seeing this function before finding that comment definitely threw me into a
+loop a few times.
 
-[ Upstream commit d95b26650e86175e4a97698d89bc1626cd1df0c6 ]
+So, let's rename this to make it's purpose more obvious regardless of where
+in the code you are.
 
-If we do flush cached writebacks in nfs_write_end() due to the imminent
-expiration of an RPCSEC_GSS session, then we should defer reporting any
-resulting errors until the calls to file_check_and_advance_wb_err() in
-nfs_file_write() and nfs_file_fsync().
-
-Fixes: 6fbda89b257f ("NFS: Replace custom error reporting mechanism with generic one")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Cc: Wayne Lin <Wayne.Lin@amd.com>
+Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
 ---
- fs/nfs/file.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/fs/nfs/file.c b/fs/nfs/file.c
-index 87e4cd5e8fe2..3f17748eaf29 100644
---- a/fs/nfs/file.c
-+++ b/fs/nfs/file.c
-@@ -386,11 +386,8 @@ static int nfs_write_end(struct file *file, struct address_space *mapping,
- 		return status;
- 	NFS_I(mapping->host)->write_io += copied;
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
+index 1bd70d306c22..1eaacab0334b 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
+@@ -153,8 +153,9 @@ enum dc_edid_status dm_helpers_parse_edid_caps(
+ 	return result;
+ }
  
--	if (nfs_ctx_key_to_expire(ctx, mapping->host)) {
--		status = nfs_wb_all(mapping->host);
--		if (status < 0)
--			return status;
--	}
-+	if (nfs_ctx_key_to_expire(ctx, mapping->host))
-+		nfs_wb_all(mapping->host);
+-static void get_payload_table(struct amdgpu_dm_connector *aconnector,
+-			      struct dc_dp_mst_stream_allocation_table *proposed_table)
++static void
++fill_dc_mst_payload_table_from_drm(struct amdgpu_dm_connector *aconnector,
++				   struct dc_dp_mst_stream_allocation_table *proposed_table)
+ {
+ 	int i;
+ 	struct drm_dp_mst_topology_mgr *mst_mgr =
+@@ -252,7 +253,7 @@ bool dm_helpers_dp_mst_write_payload_allocation_table(
+ 	 * stream. AMD ASIC stream slot allocation should follow the same
+ 	 * sequence. copy DRM MST allocation to dc */
  
- 	return copied;
+-	get_payload_table(aconnector, proposed_table);
++	fill_dc_mst_payload_table_from_drm(aconnector, proposed_table);
+ 
+ 	return true;
  }
 -- 
-2.35.1
-
-
+2.35.3
 
