@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABAE4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE7A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347468AbiFGVCd (ORCPT
+        id S1377505AbiFGVCo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:02:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56636 "EHLO
+        Tue, 7 Jun 2022 17:02:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358303AbiFGUAn (ORCPT
+        with ESMTP id S1358374AbiFGUA7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:00:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086881BF813;
-        Tue,  7 Jun 2022 11:25:01 -0700 (PDT)
+        Tue, 7 Jun 2022 16:00:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8207FD4A3D;
+        Tue,  7 Jun 2022 11:24:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79691B82340;
-        Tue,  7 Jun 2022 18:24:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCD84C36AFE;
-        Tue,  7 Jun 2022 18:24:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52B1CB8237F;
+        Tue,  7 Jun 2022 18:24:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0297C385A5;
+        Tue,  7 Jun 2022 18:24:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626265;
-        bh=h3Iy+kVmndOWjfqZOnxjHYmN6wP9QVfI61uzfD0c8rU=;
+        s=korg; t=1654626257;
+        bh=fnG+UK/GdWNYtSgoQqZ5bqzvkDaVX9q79kRygAvrBt8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pbjbvmvBZWKgYTbSyh0q+RWNyenRXLn5JryWlS4Pbt5QWHpLEIS/PSHbVSaZMYPNR
-         Lt8QyfnA1l8y5rjLFvlkTLnOVBqx+IZzAAHkTQEG3McmoHdG7g01LsMNamZdK0167B
-         3r55wj3VuAIbYTVvFr3EW9nvJs4YYqN4SAIomCdw=
+        b=cz5nDozrmhMe308RjGfkgdF3SinEA4mN6zz54qWSdU4X4bT8qgsRPGmuaWsv6I5qu
+         WNW/yCUkDjW6XpZYoIly8lyxvru2s0i+9PUj9PCyh87n+1KmU3WXyIIXEG4hZZ37A5
+         HYUiJzpy2xnt3eHtUeMrRx8PbXqWnlcLHaHHL1Do=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org, Luca Ceresoli <luca.ceresoli@bootlin.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 316/772] drm/msm/dp: fix error check return value of irq_of_parse_and_map()
-Date:   Tue,  7 Jun 2022 18:58:28 +0200
-Message-Id: <20220607164958.338307735@linuxfoundation.org>
+Subject: [PATCH 5.17 296/772] spi: rockchip: fix missing error on unsupported SPI_CS_HIGH
+Date:   Tue,  7 Jun 2022 18:58:08 +0200
+Message-Id: <20220607164957.745814757@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,43 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Luca Ceresoli <luca.ceresoli@bootlin.com>
 
-[ Upstream commit e92d0d93f86699b7b25c7906613fdc374d66c8ca ]
+[ Upstream commit d5d933f09ac326aebad85bfb787cc786ad477711 ]
 
-The irq_of_parse_and_map() function returns 0 on failure, and does not
-return an negative value.
+The hardware (except for the ROCKCHIP_SPI_VER2_TYPE2 version) does not
+support active-high native chip selects. However if such a CS is configured
+the core does not error as it normally should, because the
+'ctlr->use_gpio_descriptors = true' line in rockchip_spi_probe() makes the
+core set SPI_CS_HIGH in ctlr->mode_bits.
 
-Fixes: 8ede2ecc3e5e ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/483176/
-Link: https://lore.kernel.org/r/20220424032418.3173632-1-lv.ruyi@zte.com.cn
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In such a case the spi-rockchip driver operates normally but produces an
+active-low chip select signal without notice.
+
+There is no provision in the current core code to handle this
+situation. Fix by adding a check in the ctlr->setup function (similarly to
+what spi-atmel.c does).
+
+This cannot be done reading the SPI_CS_HIGH but in ctlr->mode_bits because
+that bit gets always set by the core for master mode (see above).
+
+Fixes: eb1262e3cc8b ("spi: spi-rockchip: use num-cs property and ctlr->enable_gpiods")
+Signed-off-by: Luca Ceresoli <luca.ceresoli@bootlin.com>
+Link: https://lore.kernel.org/r/20220421213251.1077899-1-luca.ceresoli@bootlin.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_display.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/spi/spi-rockchip.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 229c699f6227..fb424f8b29e5 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -1212,10 +1212,9 @@ int dp_display_request_irq(struct msm_dp *dp_display)
- 	dp = container_of(dp_display, struct dp_display_private, dp_display);
+diff --git a/drivers/spi/spi-rockchip.c b/drivers/spi/spi-rockchip.c
+index 83da8fdb3c02..b721b62118e1 100644
+--- a/drivers/spi/spi-rockchip.c
++++ b/drivers/spi/spi-rockchip.c
+@@ -196,6 +196,8 @@ struct rockchip_spi {
  
- 	dp->irq = irq_of_parse_and_map(dp->pdev->dev.of_node, 0);
--	if (dp->irq < 0) {
--		rc = dp->irq;
--		DRM_ERROR("failed to get irq: %d\n", rc);
--		return rc;
-+	if (!dp->irq) {
-+		DRM_ERROR("failed to get irq\n");
+ 	bool slave_abort;
+ 	bool cs_inactive; /* spi slave tansmition stop when cs inactive */
++	bool cs_high_supported; /* native CS supports active-high polarity */
++
+ 	struct spi_transfer *xfer; /* Store xfer temporarily */
+ };
+ 
+@@ -718,6 +720,11 @@ static int rockchip_spi_setup(struct spi_device *spi)
+ 	struct rockchip_spi *rs = spi_controller_get_devdata(spi->controller);
+ 	u32 cr0;
+ 
++	if (!spi->cs_gpiod && (spi->mode & SPI_CS_HIGH) && !rs->cs_high_supported) {
++		dev_warn(&spi->dev, "setup: non GPIO CS can't be active-high\n");
 +		return -EINVAL;
- 	}
++	}
++
+ 	pm_runtime_get_sync(rs->dev);
  
- 	rc = devm_request_irq(&dp->pdev->dev, dp->irq,
+ 	cr0 = readl_relaxed(rs->regs + ROCKCHIP_SPI_CTRLR0);
+@@ -898,6 +905,7 @@ static int rockchip_spi_probe(struct platform_device *pdev)
+ 
+ 	switch (readl_relaxed(rs->regs + ROCKCHIP_SPI_VERSION)) {
+ 	case ROCKCHIP_SPI_VER2_TYPE2:
++		rs->cs_high_supported = true;
+ 		ctlr->mode_bits |= SPI_CS_HIGH;
+ 		if (ctlr->can_dma && slave_mode)
+ 			rs->cs_inactive = true;
 -- 
 2.35.1
 
