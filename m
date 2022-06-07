@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0708DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:28:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8986C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:28:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379529AbiFGV2M (ORCPT
+        id S1349264AbiFGV2X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:28:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46208 "EHLO
+        Tue, 7 Jun 2022 17:28:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377729AbiFGUeB (ORCPT
+        with ESMTP id S1377715AbiFGUeA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F3F31E7348;
-        Tue,  7 Jun 2022 11:35:49 -0700 (PDT)
+        Tue, 7 Jun 2022 16:34:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 762601E7165;
+        Tue,  7 Jun 2022 11:35:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9547461579;
-        Tue,  7 Jun 2022 18:35:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3A9BC385A5;
-        Tue,  7 Jun 2022 18:35:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF30EB8237C;
+        Tue,  7 Jun 2022 18:35:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EA6DC385A2;
+        Tue,  7 Jun 2022 18:35:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626948;
-        bh=cDGXQDzvZnIg4L2nHZB3SGryb9zKYnI5rFK0O1CZtEY=;
+        s=korg; t=1654626942;
+        bh=zbZoZDXyPQtH/CA9+JLIhXQbldowgqpgV7bnTEcHvuQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BCIkmfdiYWaVSRyPAvLXHLz/anuNCqeMtl/6jrRveQ9lm3yhA0qSw6Mp2VEXyijOy
-         qCwEimQDy4D2BYGgPaEUnvpDFMuHHIez/0OYlzeYWZv8ou51LBx2B9OibOLGCIIW27
-         ZZGFFXpyeL+mHI197aoQxeolWkucI5GHtonrzats=
+        b=FjToTmEjigegRIkNsr4AvH1l66oagIG+h4XL0M95H7Vj6cpxwK2Xe6eMlM5E2LDuh
+         0IjSxA1+Zwuz0kYpSLgZq83KNUW9K4R2zXOJKKf+qRHjI6ceY01xZ0gNjK30sU3LYp
+         yXYz0v7IxH80JwdRhpaHS6HWw2ckzMFPcENrI1Kg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Robert Marko <robert.marko@sartura.hr>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 521/772] ASoC: atmel-pdmic: Remove endianness flag on pdmic component
-Date:   Tue,  7 Jun 2022 19:01:53 +0200
-Message-Id: <20220607165004.329655752@linuxfoundation.org>
+Subject: [PATCH 5.17 519/772] arm64: dts: marvell: espressobin-ultra: fix SPI-NOR config
+Date:   Tue,  7 Jun 2022 19:01:51 +0200
+Message-Id: <20220607165004.271776655@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,42 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Robert Marko <robert.marko@sartura.hr>
 
-[ Upstream commit 52857c3baa0e5ddeba7b2c84e56bb71c9674e048 ]
+[ Upstream commit 5202f4c3816b42e989f9cad49a73c7e88fba89f4 ]
 
-The endianness flag should have been removed when the driver was
-ported across from having both a CODEC and CPU side component, to
-just having a CPU component and using the dummy for the CODEC. The
-endianness flag is used to indicate that the device is completely
-ambivalent to the endianness of the data, typically due to the
-endianness being lost over the hardware link (ie. the link defines
-bit ordering). It's usage didn't have any effect when the driver
-had both a CPU and CODEC component, since the union of those equals
-the CPU side settings, but now causes the driver to falsely report
-it supports big endian. Correct this by removing the flag.
+SPI config for the SPI-NOR is incorrect and completely breaking
+reading/writing to the onboard SPI-NOR.
 
-Fixes: f3c668074a04 ("ASoC: atmel-pdmic: remove codec component")
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220504170905.332415-3-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+SPI-NOR is connected in the single(x1) IO mode and not in the quad
+(x4) mode.
+Also, there is no need to override the max frequency from the DTSI
+as the mx25u3235f that is used supports 104Mhz.
+
+Fixes: 3404fe15a60f ("arm64: dts: marvell: add DT for ESPRESSObin-Ultra")
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/atmel/atmel-pdmic.c | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/sound/soc/atmel/atmel-pdmic.c b/sound/soc/atmel/atmel-pdmic.c
-index 42117de299e7..ea34efac2fff 100644
---- a/sound/soc/atmel/atmel-pdmic.c
-+++ b/sound/soc/atmel/atmel-pdmic.c
-@@ -481,7 +481,6 @@ static const struct snd_soc_component_driver atmel_pdmic_cpu_dai_component = {
- 	.num_controls		= ARRAY_SIZE(atmel_pdmic_snd_controls),
- 	.idle_bias_on		= 1,
- 	.use_pmdown_time	= 1,
--	.endianness		= 1,
- };
+diff --git a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
+index c5eb3604dd5b..610ff6f385c7 100644
+--- a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
++++ b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
+@@ -71,10 +71,6 @@
  
- /* ASoC sound card */
+ &spi0 {
+ 	flash@0 {
+-		spi-max-frequency = <108000000>;
+-		spi-rx-bus-width = <4>;
+-		spi-tx-bus-width = <4>;
+-
+ 		partitions {
+ 			compatible = "fixed-partitions";
+ 			#address-cells = <1>;
 -- 
 2.35.1
 
