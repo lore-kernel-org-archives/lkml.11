@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D28A3CCA482
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:48:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD0DDCCA483
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243539AbiFHAsU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:48:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36114 "EHLO
+        id S1349813AbiFHAst (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 20:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382142AbiFGVqh (ORCPT
+        with ESMTP id S1382341AbiFGVzs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:46:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B61235B2B;
-        Tue,  7 Jun 2022 12:07:50 -0700 (PDT)
+        Tue, 7 Jun 2022 17:55:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C74224CC82;
+        Tue,  7 Jun 2022 12:13:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D2D4B823AF;
-        Tue,  7 Jun 2022 19:07:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EBF0C385A5;
-        Tue,  7 Jun 2022 19:07:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 42DBD6191A;
+        Tue,  7 Jun 2022 19:13:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B6BBC385A2;
+        Tue,  7 Jun 2022 19:13:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628868;
-        bh=83AZfT2oaqVByY9h8y63qPN/ORkZeBhxHxDtVV7kixs=;
+        s=korg; t=1654629202;
+        bh=z7AVenX/X9Jsutgao0sLOigp9cSo+2vLYkPsboRwK6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zHM9IOL7lcmd0OFuD2iWD+rI1bliEfH1YKu5aTquzz/FWWsrPEYrBMNdfMSUKKws/
-         Y1Yo/CjL4KkWzVf1gb6qwWL/XvsGtwVkcfWnYCKOCw2GVoyZDzkOJsDTaaheQ2nV4g
-         +7Au7qpxY+Z4TRGua+UA+plDz6dLw1JYZYIZPM2U=
+        b=Wf4PPsOeFRzlSfMOqZgRFm1T4j+he0fueEb4CHn6rIr0ZHlpHHPkPN+zwnwnc/grb
+         qCg3zKthwD6Cst9/y5BP1VIBfXpFdUKizmfkae8WtoFlmEUXn1F1/MlpewVKsmLajO
+         bup4WBEMIbbW8ikwlb+IeAyXGoKvBlPod76u80Io=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Rob Clark <robdclark@chromium.org>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 485/879] drm: msm: fix possible memory leak in mdp5_crtc_cursor_set()
-Date:   Tue,  7 Jun 2022 19:00:03 +0200
-Message-Id: <20220607165016.950805606@linuxfoundation.org>
+Subject: [PATCH 5.18 606/879] pinctrl: renesas: core: Fix possible null-ptr-deref in sh_pfc_map_resources()
+Date:   Tue,  7 Jun 2022 19:02:04 +0200
+Message-Id: <20220607165020.440730483@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,38 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 947a844bb3ebff0f4736d244d792ce129f6700d7 ]
+[ Upstream commit 5376e3d904532e657fd7ca1a9b1ff3d351527b90 ]
 
-drm_gem_object_lookup will call drm_gem_object_get inside. So cursor_bo
-needs to be put when msm_gem_get_and_pin_iova fails.
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-Fixes: e172d10a9c4a ("drm/msm/mdp5: Add hardware cursor support")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220509061125.18585-1-hbh25y@gmail.com
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+Fixes: c7977ec4a336 ("pinctrl: sh-pfc: Convert to platform_get_*()")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220429082637.1308182-1-yangyingliang@huawei.com
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/pinctrl/renesas/core.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-index fe2922c8d21b..31447da0af25 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-@@ -997,8 +997,10 @@ static int mdp5_crtc_cursor_set(struct drm_crtc *crtc,
+diff --git a/drivers/pinctrl/renesas/core.c b/drivers/pinctrl/renesas/core.c
+index d0d4714731c1..3d8bf521c3e7 100644
+--- a/drivers/pinctrl/renesas/core.c
++++ b/drivers/pinctrl/renesas/core.c
+@@ -71,12 +71,11 @@ static int sh_pfc_map_resources(struct sh_pfc *pfc,
  
- 	ret = msm_gem_get_and_pin_iova(cursor_bo, kms->aspace,
- 			&mdp5_crtc->cursor.iova);
--	if (ret)
-+	if (ret) {
-+		drm_gem_object_put(cursor_bo);
- 		return -EINVAL;
-+	}
- 
- 	pm_runtime_get_sync(&pdev->dev);
- 
+ 	/* Fill them. */
+ 	for (i = 0; i < num_windows; i++) {
+-		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
+-		windows->phys = res->start;
+-		windows->size = resource_size(res);
+-		windows->virt = devm_ioremap_resource(pfc->dev, res);
++		windows->virt = devm_platform_get_and_ioremap_resource(pdev, i, &res);
+ 		if (IS_ERR(windows->virt))
+ 			return -ENOMEM;
++		windows->phys = res->start;
++		windows->size = resource_size(res);
+ 		windows++;
+ 	}
+ 	for (i = 0; i < num_irqs; i++)
 -- 
 2.35.1
 
