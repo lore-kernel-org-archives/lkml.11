@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBBDDCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:37:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7885BCCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:37:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243214AbiFGRhP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:37:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39738 "EHLO
+        id S1347110AbiFGRhZ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 13:37:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347126AbiFGRaF (ORCPT
+        with ESMTP id S1347115AbiFGRaE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:30:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C8A106357;
-        Tue,  7 Jun 2022 10:25:51 -0700 (PDT)
+        Tue, 7 Jun 2022 13:30:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EE41104CA1;
+        Tue,  7 Jun 2022 10:25:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5FD0FB8220C;
-        Tue,  7 Jun 2022 17:25:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6B36C34119;
-        Tue,  7 Jun 2022 17:25:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DFAD760DD7;
+        Tue,  7 Jun 2022 17:25:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEC6DC34119;
+        Tue,  7 Jun 2022 17:25:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622749;
-        bh=4oSBZ2chzdyPHk6sCJjt2l+LxkycHf5dOy0q0eZOCxo=;
+        s=korg; t=1654622746;
+        bh=Dpdm++xgQQtnKOJ7PWDRP9mEMKETdjOyBpIHvoMFAjE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=12CIYBzM4lSkl+YcXx9QeNZjhGNTLiWVkxAdmIzbkX/aEKdv8ibuD2xFMm66JkbZ/
-         hDNj+pCxonnaf6RxqyUGAfuzs8612DmscLN916lxJDDoKHGzzKk5uDyV7WcIvzewdG
-         7NK5kmku1+1zdCp60xUTlzIggGN6Q5FPn1WdZfpY=
+        b=vA221cZtcIC/SMsbW6WXSHDe0OGPSxok4s5jATxCQEx8vQA68p8fxts1UibxXovM1
+         Pumqj6xuKqd/btGMH7APdbk81WT9KaEOWg2gDwCX2Oo2hB7YmcQlGaozvdrcBkj0qH
+         G8kRYWyDU7f5UdAvQ9HSm3ADYckIqMi+FCgDglBk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 170/452] x86/speculation: Add missing prototype for unpriv_ebpf_notify()
-Date:   Tue,  7 Jun 2022 19:00:27 +0200
-Message-Id: <20220607164913.628356974@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 169/452] mtd: rawnand: cadence: fix possible null-ptr-deref in cadence_nand_dt_probe()
+Date:   Tue,  7 Jun 2022 19:00:26 +0200
+Message-Id: <20220607164913.599805875@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,43 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 2147c438fde135d6c145a96e373d9348e7076f7f ]
+[ Upstream commit a28ed09dafee20da51eb26452950839633afd824 ]
 
-Fix the following warnings seen with "make W=1":
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-  kernel/sysctl.c:183:13: warning: no previous prototype for ‘unpriv_ebpf_notify’ [-Wmissing-prototypes]
-    183 | void __weak unpriv_ebpf_notify(int new_state)
-        |             ^~~~~~~~~~~~~~~~~~
-
-  arch/x86/kernel/cpu/bugs.c:659:6: warning: no previous prototype for ‘unpriv_ebpf_notify’ [-Wmissing-prototypes]
-    659 | void unpriv_ebpf_notify(int new_state)
-        |      ^~~~~~~~~~~~~~~~~~
-
-Fixes: 44a3918c8245 ("x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/5689d065f739602ececaee1e05e68b8644009608.1650930000.git.jpoimboe@redhat.com
+Fixes: ec4ba01e894d ("mtd: rawnand: Add new Cadence NAND driver to MTD subsystem")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220426084913.4021868-1-yangyingliang@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/bpf.h | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/mtd/nand/raw/cadence-nand-controller.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index ea3ff499e94a..f21bc441e3fa 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1730,6 +1730,8 @@ void bpf_offload_dev_netdev_unregister(struct bpf_offload_dev *offdev,
- 				       struct net_device *netdev);
- bool bpf_offload_dev_match(struct bpf_prog *prog, struct net_device *netdev);
+diff --git a/drivers/mtd/nand/raw/cadence-nand-controller.c b/drivers/mtd/nand/raw/cadence-nand-controller.c
+index b46786cd53e0..4fdb39214a12 100644
+--- a/drivers/mtd/nand/raw/cadence-nand-controller.c
++++ b/drivers/mtd/nand/raw/cadence-nand-controller.c
+@@ -2983,11 +2983,10 @@ static int cadence_nand_dt_probe(struct platform_device *ofdev)
+ 	if (IS_ERR(cdns_ctrl->reg))
+ 		return PTR_ERR(cdns_ctrl->reg);
  
-+void unpriv_ebpf_notify(int new_state);
-+
- #if defined(CONFIG_NET) && defined(CONFIG_BPF_SYSCALL)
- int bpf_prog_offload_init(struct bpf_prog *prog, union bpf_attr *attr);
+-	res = platform_get_resource(ofdev, IORESOURCE_MEM, 1);
+-	cdns_ctrl->io.dma = res->start;
+-	cdns_ctrl->io.virt = devm_ioremap_resource(&ofdev->dev, res);
++	cdns_ctrl->io.virt = devm_platform_get_and_ioremap_resource(ofdev, 1, &res);
+ 	if (IS_ERR(cdns_ctrl->io.virt))
+ 		return PTR_ERR(cdns_ctrl->io.virt);
++	cdns_ctrl->io.dma = res->start;
  
+ 	dt->clk = devm_clk_get(cdns_ctrl->dev, "nf_clk");
+ 	if (IS_ERR(dt->clk))
 -- 
 2.35.1
 
