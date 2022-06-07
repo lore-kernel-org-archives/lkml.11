@@ -2,44 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CAA5CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:18:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46D73CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:18:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377870AbiFGVSn (ORCPT
+        id S1378109AbiFGVSv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:18:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47502 "EHLO
+        Tue, 7 Jun 2022 17:18:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359344AbiFGUWL (ORCPT
+        with ESMTP id S1359256AbiFGUWO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:22:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5F2144FFB;
-        Tue,  7 Jun 2022 11:31:30 -0700 (PDT)
+        Tue, 7 Jun 2022 16:22:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08CE31451CA;
+        Tue,  7 Jun 2022 11:31:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EFE05B82349;
-        Tue,  7 Jun 2022 18:31:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50087C385A2;
-        Tue,  7 Jun 2022 18:31:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80A05612EC;
+        Tue,  7 Jun 2022 18:31:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5934FC385A2;
+        Tue,  7 Jun 2022 18:31:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626687;
-        bh=3/Sd1TFgFMuNHHWqfNjOIDCUnuVWqpZeYGhR3MVlMEs=;
+        s=korg; t=1654626695;
+        bh=L6/7d3an9St0b/NgFIVefwNBWNQVxznP7DEJrhafcWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yX6hh1Sqm0rpTrf/VSw1Sf5i60uCFiIhLoModFCLqEmtWFiLxO3nBRC9g9dGlNgFy
-         wUDSSVMy+kXEX0AV0PUQRQ4DqjrUwAwUvHTs1OyvLGRoebk5j1TsSIUA/CkOi/rV9z
-         QuHP1RI55LxA7uhG5ZHQ0hjef8Xj2a/OwBy9lPdM=
+        b=DaInAJeWGIdCYXzvl6ZUNwCjU0nFtxXgWSsnbnIHc1t7ak0CL2YvH6TkA61qMee5c
+         r9AZTl7w6efsf3epISH6qfQR0aw5NZ8c/bICzkaqaIT6ocT35FykVl9v8A5nKPKqwm
+         kmbZdtA4gbKK+s2EsikVF3CyI7+lOHQ7Us3NmNCM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chenyi Qiang <chenyi.qiang@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Ian Rogers <irogers@google.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Stephane Eranian <eranian@google.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 466/772] KVM: nVMX: Clear IDT vectoring on nested VM-Exit for double/triple fault
-Date:   Tue,  7 Jun 2022 19:00:58 +0200
-Message-Id: <20220607165002.730503757@linuxfoundation.org>
+Subject: [PATCH 5.17 431/772] perf parse-events: Support different format of the topdown event name
+Date:   Tue,  7 Jun 2022 19:00:23 +0200
+Message-Id: <20220607165001.702676452@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,123 +58,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-[ Upstream commit 9bd1f0efa859b61950d109b32ff8d529cc33a3ad ]
+[ Upstream commit e7d1374ed5cb346efd9b3df03814dbc0767adb4e ]
 
-Clear the IDT vectoring field in vmcs12 on next VM-Exit due to a double
-or triple fault.  Per the SDM, a VM-Exit isn't considered to occur during
-event delivery if the exit is due to an intercepted double fault or a
-triple fault.  Opportunistically move the default clearing (no event
-"pending") into the helper so that it's more obvious that KVM does indeed
-handle this case.
+The evsel->name may have a different format for a topdown event, a pure
+topdown name (e.g., topdown-fe-bound), or a PMU name + a topdown name
+(e.g., cpu/topdown-fe-bound/). The cpu/topdown-fe-bound/ kind format
+isn't supported by the arch_evlist__leader(). This format is a very
+common format for a hybrid platform, which requires specifying the PMU
+name for each event.
 
-Note, the double fault case is worded rather wierdly in the SDM:
+Without the patch,
 
-  The original event results in a double-fault exception that causes the
-  VM exit directly.
+  $ perf stat -e '{instructions,slots,cpu/topdown-fe-bound/}' -a sleep 1
 
-Temporarily ignoring injected events, double faults can _only_ occur if
-an exception occurs while attempting to deliver a different exception,
-i.e. there's _always_ an original event.  And for injected double fault,
-while there's no original event, injected events are never subject to
-interception.
+   Performance counter stats for 'system wide':
 
-Presumably the SDM is calling out that a the vectoring info will be valid
-if a different exit occurs after a double fault, e.g. if a #PF occurs and
-is intercepted while vectoring #DF, then the vectoring info will show the
-double fault.  In other words, the clause can simply be read as:
+       <not counted>      instructions
+       <not counted>      slots
+     <not supported>      cpu/topdown-fe-bound/
 
-  The VM exit is caused by a double-fault exception.
+         1.003482041 seconds time elapsed
 
-Fixes: 4704d0befb07 ("KVM: nVMX: Exiting from L2 to L1")
-Cc: Chenyi Qiang <chenyi.qiang@intel.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220407002315.78092-4-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+  Some events weren't counted. Try disabling the NMI watchdog:
+          echo 0 > /proc/sys/kernel/nmi_watchdog
+          perf stat ...
+          echo 1 > /proc/sys/kernel/nmi_watchdog
+  The events in group usually have to be from the same PMU. Try reorganizing the group.
+
+With the patch,
+
+  $ perf stat -e '{instructions,slots,cpu/topdown-fe-bound/}' -a sleep 1
+
+  Performance counter stats for 'system wide':
+
+         157,383,996      slots
+          25,011,711      instructions
+          27,441,686      cpu/topdown-fe-bound/
+
+         1.003530890 seconds time elapsed
+
+Fixes: bc355822f0d9623b ("perf parse-events: Move slots only with topdown")
+Reviewed-by: Ian Rogers <irogers@google.com>
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Stephane Eranian <eranian@google.com>
+Cc: Xing Zhengjun <zhengjun.xing@linux.intel.com>
+Link: https://lore.kernel.org/r/20220518143900.1493980-4-kan.liang@linux.intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/vmx/nested.c | 32 ++++++++++++++++++++++++++++----
- arch/x86/kvm/vmx/vmcs.h   |  5 +++++
- 2 files changed, 33 insertions(+), 4 deletions(-)
+ tools/perf/arch/x86/util/evlist.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 2992db28c644..d795ac816aec 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -3695,12 +3695,34 @@ vmcs12_guest_cr4(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12)
- }
- 
- static void vmcs12_save_pending_event(struct kvm_vcpu *vcpu,
--				      struct vmcs12 *vmcs12)
-+				      struct vmcs12 *vmcs12,
-+				      u32 vm_exit_reason, u32 exit_intr_info)
- {
- 	u32 idt_vectoring;
- 	unsigned int nr;
- 
--	if (vcpu->arch.exception.injected) {
-+	/*
-+	 * Per the SDM, VM-Exits due to double and triple faults are never
-+	 * considered to occur during event delivery, even if the double/triple
-+	 * fault is the result of an escalating vectoring issue.
-+	 *
-+	 * Note, the SDM qualifies the double fault behavior with "The original
-+	 * event results in a double-fault exception".  It's unclear why the
-+	 * qualification exists since exits due to double fault can occur only
-+	 * while vectoring a different exception (injected events are never
-+	 * subject to interception), i.e. there's _always_ an original event.
-+	 *
-+	 * The SDM also uses NMI as a confusing example for the "original event
-+	 * causes the VM exit directly" clause.  NMI isn't special in any way,
-+	 * the same rule applies to all events that cause an exit directly.
-+	 * NMI is an odd choice for the example because NMIs can only occur on
-+	 * instruction boundaries, i.e. they _can't_ occur during vectoring.
-+	 */
-+	if ((u16)vm_exit_reason == EXIT_REASON_TRIPLE_FAULT ||
-+	    ((u16)vm_exit_reason == EXIT_REASON_EXCEPTION_NMI &&
-+	     is_double_fault(exit_intr_info))) {
-+		vmcs12->idt_vectoring_info_field = 0;
-+	} else if (vcpu->arch.exception.injected) {
- 		nr = vcpu->arch.exception.nr;
- 		idt_vectoring = nr | VECTORING_INFO_VALID_MASK;
- 
-@@ -3733,6 +3755,8 @@ static void vmcs12_save_pending_event(struct kvm_vcpu *vcpu,
- 			idt_vectoring |= INTR_TYPE_EXT_INTR;
- 
- 		vmcs12->idt_vectoring_info_field = idt_vectoring;
-+	} else {
-+		vmcs12->idt_vectoring_info_field = 0;
- 	}
- }
- 
-@@ -4219,8 +4243,8 @@ static void prepare_vmcs12(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
- 		 * Transfer the event that L0 or L1 may wanted to inject into
- 		 * L2 to IDT_VECTORING_INFO_FIELD.
- 		 */
--		vmcs12->idt_vectoring_info_field = 0;
--		vmcs12_save_pending_event(vcpu, vmcs12);
-+		vmcs12_save_pending_event(vcpu, vmcs12,
-+					  vm_exit_reason, exit_intr_info);
- 
- 		vmcs12->vm_exit_intr_info = exit_intr_info;
- 		vmcs12->vm_exit_instruction_len = vmcs_read32(VM_EXIT_INSTRUCTION_LEN);
-diff --git a/arch/x86/kvm/vmx/vmcs.h b/arch/x86/kvm/vmx/vmcs.h
-index e325c290a816..2b9d7a7e83f7 100644
---- a/arch/x86/kvm/vmx/vmcs.h
-+++ b/arch/x86/kvm/vmx/vmcs.h
-@@ -104,6 +104,11 @@ static inline bool is_breakpoint(u32 intr_info)
- 	return is_exception_n(intr_info, BP_VECTOR);
- }
- 
-+static inline bool is_double_fault(u32 intr_info)
-+{
-+	return is_exception_n(intr_info, DF_VECTOR);
-+}
-+
- static inline bool is_page_fault(u32 intr_info)
- {
- 	return is_exception_n(intr_info, PF_VECTOR);
+diff --git a/tools/perf/arch/x86/util/evlist.c b/tools/perf/arch/x86/util/evlist.c
+index cfc208d71f00..75564a7df15b 100644
+--- a/tools/perf/arch/x86/util/evlist.c
++++ b/tools/perf/arch/x86/util/evlist.c
+@@ -36,7 +36,7 @@ struct evsel *arch_evlist__leader(struct list_head *list)
+ 				if (slots == first)
+ 					return first;
+ 			}
+-			if (!strncasecmp(evsel->name, "topdown", 7))
++			if (strcasestr(evsel->name, "topdown"))
+ 				has_topdown = true;
+ 			if (slots && has_topdown)
+ 				return slots;
 -- 
 2.35.1
 
