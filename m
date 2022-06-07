@@ -2,123 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03BEBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:39:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC9EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382160AbiFGWjw (ORCPT
+        id S1382258AbiFGWkB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:39:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38388 "EHLO
+        Tue, 7 Jun 2022 18:40:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379141AbiFGVZO (ORCPT
+        with ESMTP id S1379070AbiFGVZL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:25:14 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E60A150B7B
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:01:42 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id n8so15615164plh.1
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:01:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XlC5WhPEtlChZIl+n5BBhBXh04p3vnO18/6gEyRk/7I=;
-        b=aiEoUfInXs6muqWe9eAFyYvM/XQRsycTnGNXLPtV5k6vx6lf9JLcKGqq5Qnluowoaj
-         z4Wl1unEUXEkk8niQrnFc5kvsyfgbdRvPcRZtypHElhb1b+AmCNk3ZVDHDXvgObfm7Uy
-         eKNnzoJvWvkExKgTkl65s6gsf+sxZl7wd9uc4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XlC5WhPEtlChZIl+n5BBhBXh04p3vnO18/6gEyRk/7I=;
-        b=bTNjKqFT+f7jddMJrKQakCCvURLM86zaNtfinybYS1CTfHhz1rzHR34DExVkcU3azl
-         IUJZLvKDBzGSguiXgsoLuCmqLHQmMxugd0HNO78oLIH8EGrVHOhDpb4NzkeJTNKP4UMf
-         oYNRHN7p3hy39mOaC5yQk2U/0Ou6ULNgWbaBKQ9pLZQ1BB9jDLHT9qBO8+GE1Wq8FOA5
-         Twosna2L1kxNlATt6CyBLe+QzWWMbCOLTYSSIyE1bBUHYf63+LarthKLzlQG92YGVNz/
-         GDzZghXJze7B6nM0KtToEm1Z5zPmFZxwtci7N46r4jBo5xTcgI6GRBeUuuifzehEg0QV
-         Vg9g==
-X-Gm-Message-State: AOAM533LEGiSnz3hLKqNc5fmPRgLKos30H03m7MfxvOLgfgYJGn5Yl2K
-        ndVPfSt7Ho+xxGfdp+FyEMal7/Xl2kHR1Q==
-X-Google-Smtp-Source: ABdhPJys+qHC9VhA3c9fwXaPhk0EIhEKcRgheZtI7KEsqbNQpujN5/HXjl1x4+YKKseCyyA6hK7pOg==
-X-Received: by 2002:a17:90a:2c0c:b0:1ea:14c0:f0ca with SMTP id m12-20020a17090a2c0c00b001ea14c0f0camr2481026pjd.143.1654628501156;
-        Tue, 07 Jun 2022 12:01:41 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id g29-20020aa79ddd000000b0050dc762819esm13236084pfq.120.2022.06.07.12.01.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 12:01:40 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     bleung@chromium.org, swboyd@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Xin Ji <xji@analogixsemi.com>
-Subject: [PATCH 0/7] usb: typec: Introduce typec-switch binding
-Date:   Tue,  7 Jun 2022 19:00:17 +0000
-Message-Id: <20220607190131.1647511-1-pmalani@chromium.org>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+        Tue, 7 Jun 2022 17:25:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CF9227CFB;
+        Tue,  7 Jun 2022 12:01:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6F41617CC;
+        Tue,  7 Jun 2022 19:01:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA949C385A2;
+        Tue,  7 Jun 2022 19:01:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628487;
+        bh=+tuo2CRgp+QVPGwPvewXtMmsI8rHSTGcq5AMWNkynzk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=S87ANvnJpIDEvhi0sPwEubYmdvViMZAFnYhYhhGIqKpLelV1E+ZvgjJiDhSAOJU8j
+         gUKcftrNsp1MimqcaUa6TSnk+MzuwTu4AtoO0d2JoesAnR0POtiJyoFOwoiQuiL55U
+         lGtVdlrY0Ng2ZtdQ0gA3P6kKm2b19r2kQsPklBd4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 347/879] mtdblock: warn if opened on NAND
+Date:   Tue,  7 Jun 2022 18:57:45 +0200
+Message-Id: <20220607165012.932889479@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series introduces a binding for Type-C data lane switches. These
-control the routing and operating modes of USB Type-C data lanes based
-on the PD messaging from the Type-C port driver regarding connected peripherals.
+From: Bjørn Mork <bjorn@mork.no>
 
-The first patch introduces a change to the Type-C mux class mode-switch
-matching code, while the second adds a config guard to a Type-C header.
-The next couple of patches introduce the new "typec-switch" binding as
-well as one user of it (the ANX7625 drm bridge).
+[ Upstream commit 96a3295c351da82d7af99b2fc004a3cf9f4716a9 ]
 
-The remaining patches add functionality to the anx7625 driver to
-register the mode-switches, as well as program its crosspoint
-switch depending on which Type-C port has a DisplayPort (DP) peripheral
-connected to it.
+Warning on every translated mtd partition results in excessive log noise
+if this driver is loaded:
 
-Pin-Yen Lin (1):
-  drm/bridge: anx7625: Add typec_mux_set callback function
+  nand: device found, Manufacturer ID: 0xc2, Chip ID: 0xf1
+  nand: Macronix MX30LF1G18AC
+  nand: 128 MiB, SLC, erase size: 128 KiB, page size: 2048, OOB size: 64
+  mt7621-nand 1e003000.nand: ECC strength adjusted to 4 bits
+  read_bbt: found bbt at block 1023
+  10 fixed-partitions partitions found on MTD device mt7621-nand
+  Creating 10 MTD partitions on "mt7621-nand":
+  0x000000000000-0x000000080000 : "Bootloader"
+  mtdblock: MTD device 'Bootloader' is NAND, please consider using UBI block devices instead.
+  0x000000080000-0x000000100000 : "Config"
+  mtdblock: MTD device 'Config' is NAND, please consider using UBI block devices instead.
+  0x000000100000-0x000000140000 : "Factory"
+  mtdblock: MTD device 'Factory' is NAND, please consider using UBI block devices instead.
+  0x000000140000-0x000002000000 : "Kernel"
+  mtdblock: MTD device 'Kernel' is NAND, please consider using UBI block devices instead.
+  0x000000540000-0x000002000000 : "ubi"
+  mtdblock: MTD device 'ubi' is NAND, please consider using UBI block devices instead.
+  0x000002140000-0x000004000000 : "Kernel2"
+  mtdblock: MTD device 'Kernel2' is NAND, please consider using UBI block devices instead.
+  0x000004000000-0x000004100000 : "wwan"
+  mtdblock: MTD device 'wwan' is NAND, please consider using UBI block devices instead.
+  0x000004100000-0x000005100000 : "data"
+  mtdblock: MTD device 'data' is NAND, please consider using UBI block devices instead.
+  0x000005100000-0x000005200000 : "rom-d"
+  mtdblock: MTD device 'rom-d' is NAND, please consider using UBI block devices instead.
+  0x000005200000-0x000005280000 : "reserve"
+  mtdblock: MTD device 'reserve' is NAND, please consider using UBI block devices instead.
+  mtk_soc_eth 1e100000.ethernet eth0: mediatek frame engine at 0xbe100000, irq 21
 
-Prashant Malani (6):
-  usb: typec: mux: Allow muxes to specify mode-switch
-  usb: typec: mux: Add CONFIG guards for functions
-  dt-bindings: usb: Add Type-C switch binding
-  dt-bindings: drm/bridge: anx7625: Add mode-switch support
-  drm/bridge: anx7625: Register number of Type C switches
-  drm/bridge: anx7625: Register Type-C mode switches
+This is more likely to annoy than to help users of embedded distros where
+this driver is enabled by default.  Making the blockdevs available does
+not imply that they are in use, and warning about bootloader partitions
+or other devices which obviously never will be mounted is more confusing
+than helpful.
 
- .../display/bridge/analogix,anx7625.yaml      |  56 +++++++
- .../devicetree/bindings/usb/typec-switch.yaml |  76 +++++++++
- drivers/gpu/drm/bridge/analogix/anx7625.c     | 151 ++++++++++++++++++
- drivers/gpu/drm/bridge/analogix/anx7625.h     |  20 +++
- drivers/usb/typec/mux.c                       |   8 +-
- include/linux/usb/typec_mux.h                 |  38 +++++
- 6 files changed, 347 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/usb/typec-switch.yaml
+Move the warning to open(), where it will be of more use - actually warning
+anyone who mounts a file system on NAND using mtdblock.
 
+Fixes: e07403a8c6be ("mtdblock: Warn if added for a NAND device")
+Signed-off-by: Bjørn Mork <bjorn@mork.no>
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220328161108.87757-1-bjorn@mork.no
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/mtd/mtdblock.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/mtd/mtdblock.c b/drivers/mtd/mtdblock.c
+index 03e3de3a5d79..1e94e7d10b8b 100644
+--- a/drivers/mtd/mtdblock.c
++++ b/drivers/mtd/mtdblock.c
+@@ -257,6 +257,10 @@ static int mtdblock_open(struct mtd_blktrans_dev *mbd)
+ 		return 0;
+ 	}
+ 
++	if (mtd_type_is_nand(mbd->mtd))
++		pr_warn("%s: MTD device '%s' is NAND, please consider using UBI block devices instead.\n",
++			mbd->tr->name, mbd->mtd->name);
++
+ 	/* OK, it's not open. Create cache info for it */
+ 	mtdblk->count = 1;
+ 	mutex_init(&mtdblk->cache_mutex);
+@@ -322,10 +326,6 @@ static void mtdblock_add_mtd(struct mtd_blktrans_ops *tr, struct mtd_info *mtd)
+ 	if (!(mtd->flags & MTD_WRITEABLE))
+ 		dev->mbd.readonly = 1;
+ 
+-	if (mtd_type_is_nand(mtd))
+-		pr_warn("%s: MTD device '%s' is NAND, please consider using UBI block devices instead.\n",
+-			tr->name, mtd->name);
+-
+ 	if (add_mtd_blktrans_dev(&dev->mbd))
+ 		kfree(dev);
+ }
 -- 
-2.36.1.255.ge46751e96f-goog
+2.35.1
+
+
 
