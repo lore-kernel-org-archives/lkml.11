@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95CEFCCA496
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F077CCA492
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:02:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358772AbiFGUCK (ORCPT
+        id S1358721AbiFGUCB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:02:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57552 "EHLO
+        Tue, 7 Jun 2022 16:02:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354269AbiFGTBI (ORCPT
+        with ESMTP id S1353105AbiFGS7n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:01:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02696150B74;
-        Tue,  7 Jun 2022 11:04:40 -0700 (PDT)
+        Tue, 7 Jun 2022 14:59:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A2314E953;
+        Tue,  7 Jun 2022 11:04:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40EB2B82182;
-        Tue,  7 Jun 2022 18:04:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 973C5C385A5;
-        Tue,  7 Jun 2022 18:04:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96FD9617B4;
+        Tue,  7 Jun 2022 18:04:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7E15C34119;
+        Tue,  7 Jun 2022 18:04:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625078;
-        bh=vZmvHM2DfQ7VRp/VGBoT9ovMvxCa/klpEUTu4j7ejho=;
+        s=korg; t=1654625061;
+        bh=OcWhrdsFQIgNPCqf/QrOHTOvPgdXZMIducRNLcG6Qdg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hH8PLNVSDeJf6FB/NyjwNUG/6wSOh0jl13W9eHqig4fT0PHylgEd8r/k+DU9HyydT
-         on1Wr+/ojqkt7GrlzPjxsXaj9tqxK1UwrtdTZaPxAzQxzHUnvAIpypqpS20NwNseTv
-         rliYPm0wgrNU/EeqCr6OFDELMhY/SJNQ0ByL2yLM=
+        b=kXvpvoWU68TCz+XPz30lRXnMkShO+9by5NDxpXVPhYGpsdG85ddkGOSl1S+CfWl2W
+         nyN21HNJRJWleXFn2bSQaNPFcudOGCjDzhWnTNggV3C2ILERQRozMFa0krYQTqpyHk
+         1nAKf91t0Fq5/ke9vaeEJeVCQInICpNamHhqudYA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Denis Efremov <denis.e.efremov@oracle.com>
-Subject: [PATCH 5.15 557/667] staging: r8188eu: prevent ->Ssid overflow in rtw_wx_set_scan()
-Date:   Tue,  7 Jun 2022 19:03:42 +0200
-Message-Id: <20220607164951.405242820@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
+        Gautam Menghani <gautammenghani201@gmail.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.15 552/667] tracing: Initialize integer variable to prevent garbage return value
+Date:   Tue,  7 Jun 2022 19:03:37 +0200
+Message-Id: <20220607164951.256161571@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -48,37 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Denis Efremov <denis.e.efremov@oracle.com>
+From: Gautam Menghani <gautammenghani201@gmail.com>
 
-commit bc10916e890948d8927a5c8c40fb5dc44be5e1b8 upstream.
+commit 154827f8e53d8c492b3fb0cb757fbcadb5d516b5 upstream.
 
-This code has a check to prevent read overflow but it needs another
-check to prevent writing beyond the end of the ->Ssid[] array.
+Initialize the integer variable to 0 to fix the clang scan warning:
+Undefined or garbage value returned to caller
+[core.uninitialized.UndefReturn]
+        return ret;
 
-Fixes: 2b42bd58b321 ("staging: r8188eu: introduce new os_dep dir for RTL8188eu driver")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Denis Efremov <denis.e.efremov@oracle.com>
-Link: https://lore.kernel.org/r/20220518070052.108287-1-denis.e.efremov@oracle.com
+Link: https://lkml.kernel.org/r/20220522061826.1751-1-gautammenghani201@gmail.com
+
+Cc: stable@vger.kernel.org
+Fixes: 8993665abcce ("tracing/boot: Support multiple handlers for per-event histogram")
+Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/staging/r8188eu/os_dep/ioctl_linux.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ kernel/trace/trace_boot.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-+++ b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-@@ -1249,9 +1249,11 @@ static int rtw_wx_set_scan(struct net_de
- 						break;
- 					}
- 					sec_len = *(pos++); len -= 1;
--					if (sec_len > 0 && sec_len <= len) {
-+					if (sec_len > 0 &&
-+					    sec_len <= len &&
-+					    sec_len <= 32) {
- 						ssid[ssid_index].SsidLength = sec_len;
--						memcpy(ssid[ssid_index].Ssid, pos, ssid[ssid_index].SsidLength);
-+						memcpy(ssid[ssid_index].Ssid, pos, sec_len);
- 						ssid_index++;
- 					}
- 					pos += sec_len;
+--- a/kernel/trace/trace_boot.c
++++ b/kernel/trace/trace_boot.c
+@@ -300,7 +300,7 @@ trace_boot_hist_add_handlers(struct xbc_
+ {
+ 	struct xbc_node *node;
+ 	const char *p, *handler;
+-	int ret;
++	int ret = 0;
+ 
+ 	handler = xbc_node_get_data(hnode);
+ 
 
 
