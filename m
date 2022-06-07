@@ -2,91 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EEA5CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A86D0CCA48A
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355398AbiFGTPh (ORCPT
+        id S1355516AbiFGTQE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:15:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35498 "EHLO
+        Tue, 7 Jun 2022 15:16:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352553AbiFGS0R (ORCPT
+        with ESMTP id S1352796AbiFGS06 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:26:17 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891CD16F91D;
-        Tue,  7 Jun 2022 10:54:55 -0700 (PDT)
+        Tue, 7 Jun 2022 14:26:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C3C171253;
+        Tue,  7 Jun 2022 10:55:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3D276CE2422;
-        Tue,  7 Jun 2022 17:54:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57053C3411C;
-        Tue,  7 Jun 2022 17:54:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624473;
-        bh=PGpBVVFXYWAfjYtRkA7TYJ3yh3f7UZ35lMQ9PxdCqxo=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2949B80B66;
+        Tue,  7 Jun 2022 17:54:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5619EC36AFF;
+        Tue,  7 Jun 2022 17:54:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624487;
+        bh=14TsCn54a3xzE/a5cVI/njMjihJEWCBEFwfM8vZP8RI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tWPETTRJmu7Ot8nnJsMH8nXwvy50aoxWBtxCaX9htEO7LGSfN/exiP5sa8KoKYtTd
-         G6seW6XdpmN1mdcslO2gMWdOlLRR/xp8qEWESEU55ipvzpkqckz/e7I/8K9mRgt+Db
-         ETddn7/TKKa/AA0P25xeTI4AZFNU1926EjrxbAYY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 339/667] media: i2c: ov5648: fix wrong pointer passed to IS_ERR() and PTR_ERR()
-Date:   Tue,  7 Jun 2022 19:00:04 +0200
-Message-Id: <20220607164944.931757902@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=NZO6x/HeoHKAMqedrXOEZSizlUSykwaTHrSq+7GKgZQOvZMVVYbYBXyryCdSMHt12
+         7T3k7rhsCdQngyNImxGRoVD1zAMbHoUN+BdMyhs8uuE5NzrGeR2F1sfXmm6GDZHM8w
+         10UubfLNZ1Pwb6M1c4sQ7u58acgKsaMwp5+ItzYWA1z0Qry/j4QKaP2uHK5QBnpHp+
+         InNMoTLp4bvspIUs1PIO/ijCNVl1BddXwWyXC+hO5b92THI+FNupqwd0nKCvMJYX9a
+         RnFIScQmmX/nmh19AdwJghvKczYXF7CHTxfapmTZk7exjUlasK77F3Zoz/6r96/T0w
+         R790a8+IaIW8g==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Gong Yuanjun <ruc_gongyuanjun@163.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.17 42/60] drm/radeon: fix a possible null pointer dereference
+Date:   Tue,  7 Jun 2022 13:52:39 -0400
+Message-Id: <20220607175259.478835-42-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Gong Yuanjun <ruc_gongyuanjun@163.com>
 
-[ Upstream commit a6dd5265c21c28d0a782befe41a97c347e78f22f ]
+[ Upstream commit a2b28708b645c5632dc93669ab06e97874c8244f ]
 
-IS_ERR() and PTR_ERR() use wrong pointer, it should be
-sensor->dovdd, fix it.
+In radeon_fp_native_mode(), the return value of drm_mode_duplicate()
+is assigned to mode, which will lead to a NULL pointer dereference
+on failure of drm_mode_duplicate(). Add a check to avoid npd.
 
-Fixes: e43ccb0a045f ("media: i2c: Add support for the OV5648 image sensor")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+The failure status of drm_cvt_mode() on the other path is checked too.
+
+Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/ov5648.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/radeon/radeon_connectors.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/media/i2c/ov5648.c b/drivers/media/i2c/ov5648.c
-index ef8b52dc9401..bb3666fc5618 100644
---- a/drivers/media/i2c/ov5648.c
-+++ b/drivers/media/i2c/ov5648.c
-@@ -2498,9 +2498,9 @@ static int ov5648_probe(struct i2c_client *client)
+diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
+index 1546abcadacf..d157bb9072e8 100644
+--- a/drivers/gpu/drm/radeon/radeon_connectors.c
++++ b/drivers/gpu/drm/radeon/radeon_connectors.c
+@@ -473,6 +473,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 	    native_mode->vdisplay != 0 &&
+ 	    native_mode->clock != 0) {
+ 		mode = drm_mode_duplicate(dev, native_mode);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		drm_mode_set_name(mode);
  
- 	/* DOVDD: digital I/O */
- 	sensor->dovdd = devm_regulator_get(dev, "dovdd");
--	if (IS_ERR(sensor->dvdd)) {
-+	if (IS_ERR(sensor->dovdd)) {
- 		dev_err(dev, "cannot get DOVDD (digital I/O) regulator\n");
--		ret = PTR_ERR(sensor->dvdd);
-+		ret = PTR_ERR(sensor->dovdd);
- 		goto error_endpoint;
+@@ -487,6 +489,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 		 * simpler.
+ 		 */
+ 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
  	}
- 
 -- 
 2.35.1
-
-
 
