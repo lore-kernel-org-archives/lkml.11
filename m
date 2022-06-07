@@ -2,110 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE30C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:23:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 873DAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354727AbiFGTX3 (ORCPT
+        id S1354743AbiFGTXg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:23:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43712 "EHLO
+        Tue, 7 Jun 2022 15:23:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352997AbiFGSbe (ORCPT
+        with ESMTP id S1351712AbiFGSaW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:31:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA04517CE4A;
-        Tue,  7 Jun 2022 10:56:41 -0700 (PDT)
+        Tue, 7 Jun 2022 14:30:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A67817B852;
+        Tue,  7 Jun 2022 10:55:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B960561853;
-        Tue,  7 Jun 2022 17:56:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45D5BC36B01;
-        Tue,  7 Jun 2022 17:56:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624600;
-        bh=KPi+PDnXetNqe8k0T50PiyVPHdsSkTnx9m4diIFuL3I=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB2A7617A8;
+        Tue,  7 Jun 2022 17:55:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B89E5C385A5;
+        Tue,  7 Jun 2022 17:55:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624540;
+        bh=WJ1qz385d40EjoodeLDV9Fyq2UfN3XLug7kxrcVZJME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D0lWwweAUSi5w2DIcEOnr4JosKQpI6jqPtTKv4kQlCc5V+B8JU331ZcBsTaCOWBaj
-         /vSW4pnolOmspVe0beGKs5fjA1V2NA0zSNDpAhoAjrb7z9n1XwUdljmrXH5pzE8RjA
-         wIItbH7vt5Tv062r5VoRjC+sa9dKYGlbIW/cemlcb1WNAqxBXpvHMsvTiwIZ0G0K32
-         g3qWOJg4Q1t5nVgcwFPv9AGoDEvmvNhhvzkl8oIS1uxGDHWe3gOAFWScxqPhQN0lT0
-         qZ+157i4SLzGTIYStD9pzZfAN3CX21x96uSgc5PoMbLLdV1YSeFMGt1F62c0ek398q
-         E8kfQz+0FSs+w==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 13/51] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
-Date:   Tue,  7 Jun 2022 13:55:12 -0400
-Message-Id: <20220607175552.479948-13-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
-References: <20220607175552.479948-1-sashal@kernel.org>
+        b=d8AwNBw04HB/h1s9ZqV8KplOXyNqY+LNg9OLfgEru7QY0vp/FVpQRBaG3ESX1Qx7T
+         JHDmZ9faZ2kNH2l3jOcA0rJWWjOzUNP/l+8RWjYS4C+/Cfg+5HsgJHPYybzKY97Hlv
+         cm2vEfPCKdoHGxzvCe3MqEJTw7yyBlqFprhMjvSk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 365/667] net: stmmac: fix out-of-bounds access in a selftest
+Date:   Tue,  7 Jun 2022 19:00:30 +0200
+Message-Id: <20220607164945.700160674@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 62b2caef400c1738b6d22f636c628d9f85cd4c4c ]
+[ Upstream commit fe5c5fc145edcf98a759b895f52b646730eeb7be ]
 
-There is a deadlock in sa1100_set_termios(), which is shown
-below:
+GCC 12 points out that struct tc_action is smaller than
+struct tcf_action:
 
-   (Thread 1)              |      (Thread 2)
-                           | sa1100_enable_ms()
-sa1100_set_termios()       |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | sa1100_timeout()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
+drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c: In function ‘stmmac_test_rxp’:
+drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:1132:21: warning: array subscript ‘struct tcf_gact[0]’ is partly outside array bounds of ‘unsigned char[272]’ [-Warray-bounds]
+ 1132 |                 gact->tcf_action = TC_ACT_SHOT;
+      |                     ^~
 
-We hold sport->port.lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need sport->port.lock in position (2) of thread 2. As a result,
-sa1100_set_termios() will block forever.
-
-This patch moves del_timer_sync() before spin_lock_irqsave()
-in order to prevent the deadlock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417111626.7802-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ccfc639a94f2 ("net: stmmac: selftests: Add a selftest for Flexible RX Parser")
+Link: https://lore.kernel.org/r/20220519004305.2109708-1-kuba@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sa1100.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../net/ethernet/stmicro/stmmac/stmmac_selftests.c  | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
-index 697b6a002a16..4ddcc985621a 100644
---- a/drivers/tty/serial/sa1100.c
-+++ b/drivers/tty/serial/sa1100.c
-@@ -446,6 +446,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
- 	quot = uart_get_divisor(port, baud);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+index e649a3e6a529..dd5c4ef92ef3 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+@@ -1084,8 +1084,9 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
+ 	unsigned char addr[ETH_ALEN] = {0xde, 0xad, 0xbe, 0xef, 0x00, 0x00};
+ 	struct tc_cls_u32_offload cls_u32 = { };
+ 	struct stmmac_packet_attrs attr = { };
+-	struct tc_action **actions, *act;
++	struct tc_action **actions;
+ 	struct tc_u32_sel *sel;
++	struct tcf_gact *gact;
+ 	struct tcf_exts *exts;
+ 	int ret, i, nk = 1;
  
-+	del_timer_sync(&sport->timer);
-+
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 
- 	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
-@@ -476,8 +478,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 				UTSR1_TO_SM(UTSR1_ROR);
+@@ -1110,8 +1111,8 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
+ 		goto cleanup_exts;
  	}
  
--	del_timer_sync(&sport->timer);
+-	act = kcalloc(nk, sizeof(*act), GFP_KERNEL);
+-	if (!act) {
++	gact = kcalloc(nk, sizeof(*gact), GFP_KERNEL);
++	if (!gact) {
+ 		ret = -ENOMEM;
+ 		goto cleanup_actions;
+ 	}
+@@ -1126,9 +1127,7 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
+ 	exts->nr_actions = nk;
+ 	exts->actions = actions;
+ 	for (i = 0; i < nk; i++) {
+-		struct tcf_gact *gact = to_gact(&act[i]);
 -
- 	/*
- 	 * Update the per-port timeout.
- 	 */
+-		actions[i] = &act[i];
++		actions[i] = (struct tc_action *)&gact[i];
+ 		gact->tcf_action = TC_ACT_SHOT;
+ 	}
+ 
+@@ -1152,7 +1151,7 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
+ 	stmmac_tc_setup_cls_u32(priv, priv, &cls_u32);
+ 
+ cleanup_act:
+-	kfree(act);
++	kfree(gact);
+ cleanup_actions:
+ 	kfree(actions);
+ cleanup_exts:
 -- 
 2.35.1
+
+
 
