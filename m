@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC046C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:59:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 312B7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:59:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235956AbiFGR7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:59:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35244 "EHLO
+        id S1348933AbiFGR7s (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 13:59:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348065AbiFGRkd (ORCPT
+        with ESMTP id S1348042AbiFGRkb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:40:33 -0400
+        Tue, 7 Jun 2022 13:40:31 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7C6E5EBE4;
-        Tue,  7 Jun 2022 10:33:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CDB25DA4E;
+        Tue,  7 Jun 2022 10:33:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5BD0DB822B5;
-        Tue,  7 Jun 2022 17:33:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3707C385A5;
-        Tue,  7 Jun 2022 17:33:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B3A0B80B66;
+        Tue,  7 Jun 2022 17:32:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEAADC385A5;
+        Tue,  7 Jun 2022 17:32:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623203;
-        bh=/Fza7DPcEZiLdv6QQEr3Nv8/nx9sopsNoJkJqeHIs9c=;
+        s=korg; t=1654623172;
+        bh=gre4uAHrsKDi39ok3MaazrrARM/PvoktjsklLRrW6s8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AYVvTezp+Hk7E3W5LpgVq1MiyRlwM64zQU4mM4GpzKfHv4Dqemgwj0dVcGeQGkzZ0
-         VTc64KUWOEjySDK9JCr866G7aLyPAk9OJRW7TtJXR5A9iuLIXMo5qLeTstAYvtTN8g
-         zl4eM+CJVNopp4noQRaKKUIK3qcWoKJ//OXxHGc4=
+        b=xmaytr4BBrPiDGDlW0ak3XNBNgZQFj8M5tGGtf9264O7RDsDUFo1oh2lnZNRRB8ww
+         FgqQeVxRj0KBECuq4Pv0OOEzqBKbiUAtoGABcsmRPAns3S5B4fTTgdQF3igyhZ7/sg
+         VyQxMA2XlmI1kHFh74KGHnFTwXCOpNwX1EzfHsJw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 330/452] NFS: Do not report flush errors in nfs_write_end()
-Date:   Tue,  7 Jun 2022 19:03:07 +0200
-Message-Id: <20220607164918.393702910@linuxfoundation.org>
+        stable@vger.kernel.org, Yong Wu <yong.wu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 320/452] iommu/mediatek: Add list_del in mtk_iommu_remove
+Date:   Tue,  7 Jun 2022 19:02:57 +0200
+Message-Id: <20220607164918.092690377@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,41 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Yong Wu <yong.wu@mediatek.com>
 
-[ Upstream commit d95b26650e86175e4a97698d89bc1626cd1df0c6 ]
+[ Upstream commit ee55f75e4bcade81d253163641b63bef3e76cac4 ]
 
-If we do flush cached writebacks in nfs_write_end() due to the imminent
-expiration of an RPCSEC_GSS session, then we should defer reporting any
-resulting errors until the calls to file_check_and_advance_wb_err() in
-nfs_file_write() and nfs_file_fsync().
+Lack the list_del in the mtk_iommu_remove, and remove
+bus_set_iommu(*, NULL) since there may be several iommu HWs.
+we can not bus_set_iommu null when one iommu driver unbind.
 
-Fixes: 6fbda89b257f ("NFS: Replace custom error reporting mechanism with generic one")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+This could be a fix for mt2712 which support 2 M4U HW and list them.
+
+Fixes: 7c3a2ec02806 ("iommu/mediatek: Merge 2 M4U HWs into one iommu domain")
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Link: https://lore.kernel.org/r/20220503071427.2285-6-yong.wu@mediatek.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/file.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/iommu/mtk_iommu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/fs/nfs/file.c b/fs/nfs/file.c
-index 887faff3a73e..ad856b7b9a46 100644
---- a/fs/nfs/file.c
-+++ b/fs/nfs/file.c
-@@ -390,11 +390,8 @@ static int nfs_write_end(struct file *file, struct address_space *mapping,
- 		return status;
- 	NFS_I(mapping->host)->write_io += copied;
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 19387d2bc4b4..051815c9d2bb 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -768,8 +768,7 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+ 	iommu_device_sysfs_remove(&data->iommu);
+ 	iommu_device_unregister(&data->iommu);
  
--	if (nfs_ctx_key_to_expire(ctx, mapping->host)) {
--		status = nfs_wb_all(mapping->host);
--		if (status < 0)
--			return status;
--	}
-+	if (nfs_ctx_key_to_expire(ctx, mapping->host))
-+		nfs_wb_all(mapping->host);
+-	if (iommu_present(&platform_bus_type))
+-		bus_set_iommu(&platform_bus_type, NULL);
++	list_del(&data->list);
  
- 	return copied;
- }
+ 	clk_disable_unprepare(data->bclk);
+ 	devm_free_irq(&pdev->dev, data->irq, data);
 -- 
 2.35.1
 
