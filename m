@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37193CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:22:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CED31C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:22:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378045AbiFGVWh (ORCPT
+        id S1377992AbiFGVWo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:22:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59894 "EHLO
+        Tue, 7 Jun 2022 17:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376644AbiFGU1F (ORCPT
+        with ESMTP id S1376766AbiFGU2H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:27:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF9A3113A07;
-        Tue,  7 Jun 2022 11:33:02 -0700 (PDT)
+        Tue, 7 Jun 2022 16:28:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 264E71D80A7;
+        Tue,  7 Jun 2022 11:33:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7239B82188;
-        Tue,  7 Jun 2022 18:33:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3838DC385A2;
-        Tue,  7 Jun 2022 18:32:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C148B8237C;
+        Tue,  7 Jun 2022 18:33:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7F2CC385A5;
+        Tue,  7 Jun 2022 18:33:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626779;
-        bh=Kw55ogd+UksAEvHHk1V0dss2Rjc0d6qyG+RxuJsUNVQ=;
+        s=korg; t=1654626788;
+        bh=conex0sFGgB/DV350k7ij59++tfMZbwt9/zyaSY9Pe8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CzhAnysWMV42aJFvqgsT5SZVXEwnTRFcCkU4i+a+17FiYOr4XRsV+FJ7qi/eL+Pcr
-         LVpWCCja7OZsH2rQmiX/BvHArNsjEzy2Nda4KnHriQ6bufI26z/bmA40cxJE2s+AkK
-         GlMYx8xcwXhYtPK6w6YXqdpLAec78hJC738G1idI=
+        b=ANm4+MV++tW8/oFp+QcZfR7UEZlTy1GX1EuLpuv4cFDwKJrk4w8Qdc+GbX/1duQv4
+         0SwFHXGc/kBVEAGcYG/P1kH8Qr0LuO+Bb70yelD+rOMlEl50VNgQglvTPUFpy9J/rE
+         YGsXfA1o7aTpGRXtnRya6a9jNmgW7nOddPhZP9Yc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 500/772] firmware: arm_scmi: Fix list protocols enumeration in the base protocol
-Date:   Tue,  7 Jun 2022 19:01:32 +0200
-Message-Id: <20220607165003.715302037@linuxfoundation.org>
+Subject: [PATCH 5.17 503/772] pinctrl: mvebu: Fix irq_of_parse_and_map() return value
+Date:   Tue,  7 Jun 2022 19:01:35 +0200
+Message-Id: <20220607165003.801604637@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,41 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cristian Marussi <cristian.marussi@arm.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 8009120e0354a67068e920eb10dce532391361d0 ]
+[ Upstream commit 71bc7cf3be65bab441e03667cf215c557712976c ]
 
-While enumerating protocols implemented by the SCMI platform using
-BASE_DISCOVER_LIST_PROTOCOLS, the number of returned protocols is
-currently validated in an improper way since the check employs a sum
-between unsigned integers that could overflow and cause the check itself
-to be silently bypassed if the returned value 'loop_num_ret' is big
-enough.
+The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
 
-Fix the validation avoiding the addition.
-
-Link: https://lore.kernel.org/r/20220330150551.2573938-4-cristian.marussi@arm.com
-Fixes: b6f20ff8bd94 ("firmware: arm_scmi: add common infrastructure and support for base protocol")
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Fixes: 2f227605394b ("pinctrl: armada-37xx: Add irqchip support")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220422105339.78810-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/arm_scmi/base.c | 2 +-
+ drivers/pinctrl/mvebu/pinctrl-armada-37xx.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/firmware/arm_scmi/base.c b/drivers/firmware/arm_scmi/base.c
-index f5219334fd3a..3fe172c03c24 100644
---- a/drivers/firmware/arm_scmi/base.c
-+++ b/drivers/firmware/arm_scmi/base.c
-@@ -197,7 +197,7 @@ scmi_base_implementation_list_get(const struct scmi_protocol_handle *ph,
- 			break;
+diff --git a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
+index 08cad14042e2..adccf03b3e5a 100644
+--- a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
++++ b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
+@@ -773,7 +773,7 @@ static int armada_37xx_irqchip_register(struct platform_device *pdev,
+ 	for (i = 0; i < nr_irq_parent; i++) {
+ 		int irq = irq_of_parse_and_map(np, i);
  
- 		loop_num_ret = le32_to_cpu(*num_ret);
--		if (tot_num_ret + loop_num_ret > MAX_PROTOCOLS_IMP) {
-+		if (loop_num_ret > MAX_PROTOCOLS_IMP - tot_num_ret) {
- 			dev_err(dev, "No. of Protocol > MAX_PROTOCOLS_IMP");
- 			break;
- 		}
+-		if (irq < 0)
++		if (!irq)
+ 			continue;
+ 		girq->parents[i] = irq;
+ 	}
 -- 
 2.35.1
 
