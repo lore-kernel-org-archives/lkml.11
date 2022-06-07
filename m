@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF472C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:14:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDB89C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:14:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349527AbiFGSOh (ORCPT
+        id S1349827AbiFGSOr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:14:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34110 "EHLO
+        Tue, 7 Jun 2022 14:14:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347611AbiFGRwc (ORCPT
+        with ESMTP id S1348693AbiFGRxP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:52:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E900F143872;
-        Tue,  7 Jun 2022 10:39:40 -0700 (PDT)
+        Tue, 7 Jun 2022 13:53:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6091214385B;
+        Tue,  7 Jun 2022 10:39:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B709B822C0;
-        Tue,  7 Jun 2022 17:39:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F223C385A5;
-        Tue,  7 Jun 2022 17:39:00 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EE216CE23EA;
+        Tue,  7 Jun 2022 17:34:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E042AC36AFE;
+        Tue,  7 Jun 2022 17:34:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623541;
-        bh=dCeVzC/jF/iTDOn+inmUhCo29O8Nt84UucMF/ifylBA=;
+        s=korg; t=1654623280;
+        bh=yNGFt9B2lX024OfqieyA1TBvJLt1kPHCpswVW6eiqqY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wNPPdY9aLFLtBysy/grcQnD8C2qfkKfLEjJ6sZFUPcqI3vGubG+zoU/JoFjE5g8hy
-         dmTMLFtKqBfd9xEo7XZ36f5EeVHUoJLMrLtpghxTwguNRsWKjoFDwMoReKhCkQ+t//
-         Or1m3RkygKzOhOZ+ZrB40yNO9wKs0ZUDvH1sDY38=
+        b=A9u7MDIzf/IkBUpFSU8s5LTzc1wgZHq40zcm5TOJsxnmYkZ4zxbBbxftLpRI6rEF+
+         DkN2c9NkK5muNyVmSFLycVtD5sYOUowvWqYu3iEi7LA2E+13iKboP9f734DqOb087R
+         YAaSnltEKlYvkSvaor1RAXKh5+6fpuc7ko+z4yOI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 5.10 423/452] dt-bindings: gpio: altera: correct interrupt-cells
-Date:   Tue,  7 Jun 2022 19:04:40 +0200
-Message-Id: <20220607164921.161130361@linuxfoundation.org>
+        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 5.10 360/452] ext4: fix warning in ext4_handle_inode_extension
+Date:   Tue,  7 Jun 2022 19:03:37 +0200
+Message-Id: <20220607164919.290774326@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -48,40 +49,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dinh Nguyen <dinguyen@kernel.org>
+From: Ye Bin <yebin10@huawei.com>
 
-commit 3a21c3ac93aff7b4522b152399df8f6a041df56d upstream.
+commit f4534c9fc94d22383f187b9409abb3f9df2e3db3 upstream.
 
-update documentation to correctly state the interrupt-cells to be 2.
+We got issue as follows:
+EXT4-fs error (device loop0) in ext4_reserve_inode_write:5741: Out of memory
+EXT4-fs error (device loop0): ext4_setattr:5462: inode #13: comm syz-executor.0: mark_inode_dirty error
+EXT4-fs error (device loop0) in ext4_setattr:5519: Out of memory
+EXT4-fs error (device loop0): ext4_ind_map_blocks:595: inode #13: comm syz-executor.0: Can't allocate blocks for non-extent mapped inodes with bigalloc
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 4361 at fs/ext4/file.c:301 ext4_file_write_iter+0x11c9/0x1220
+Modules linked in:
+CPU: 1 PID: 4361 Comm: syz-executor.0 Not tainted 5.10.0+ #1
+RIP: 0010:ext4_file_write_iter+0x11c9/0x1220
+RSP: 0018:ffff924d80b27c00 EFLAGS: 00010282
+RAX: ffffffff815a3379 RBX: 0000000000000000 RCX: 000000003b000000
+RDX: ffff924d81601000 RSI: 00000000000009cc RDI: 00000000000009cd
+RBP: 000000000000000d R08: ffffffffbc5a2c6b R09: 0000902e0e52a96f
+R10: ffff902e2b7c1b40 R11: ffff902e2b7c1b40 R12: 000000000000000a
+R13: 0000000000000001 R14: ffff902e0e52aa10 R15: ffffffffffffff8b
+FS:  00007f81a7f65700(0000) GS:ffff902e3bc80000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffff600400 CR3: 000000012db88001 CR4: 00000000003706e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ do_iter_readv_writev+0x2e5/0x360
+ do_iter_write+0x112/0x4c0
+ do_pwritev+0x1e5/0x390
+ __x64_sys_pwritev2+0x7e/0xa0
+ do_syscall_64+0x37/0x50
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Cc: stable@vger.kernel.org
-Fixes: 4fd9bbc6e071 ("drivers/gpio: Altera soft IP GPIO driver devicetree binding")
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Above issue may happen as follows:
+Assume
+inode.i_size=4096
+EXT4_I(inode)->i_disksize=4096
+
+step 1: set inode->i_isize = 8192
+ext4_setattr
+  if (attr->ia_size != inode->i_size)
+    EXT4_I(inode)->i_disksize = attr->ia_size;
+    rc = ext4_mark_inode_dirty
+       ext4_reserve_inode_write
+          ext4_get_inode_loc
+            __ext4_get_inode_loc
+              sb_getblk --> return -ENOMEM
+   ...
+   if (!error)  ->will not update i_size
+     i_size_write(inode, attr->ia_size);
+Now:
+inode.i_size=4096
+EXT4_I(inode)->i_disksize=8192
+
+step 2: Direct write 4096 bytes
+ext4_file_write_iter
+ ext4_dio_write_iter
+   iomap_dio_rw ->return error
+ if (extend)
+   ext4_handle_inode_extension
+     WARN_ON_ONCE(i_size_read(inode) < EXT4_I(inode)->i_disksize);
+->Then trigger warning.
+
+To solve above issue, if mark inode dirty failed in ext4_setattr just
+set 'EXT4_I(inode)->i_disksize' with old value.
+
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Link: https://lore.kernel.org/r/20220326065351.761952-1-yebin10@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/gpio/gpio-altera.txt |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ fs/ext4/inode.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/Documentation/devicetree/bindings/gpio/gpio-altera.txt
-+++ b/Documentation/devicetree/bindings/gpio/gpio-altera.txt
-@@ -9,8 +9,9 @@ Required properties:
-   - The second cell is reserved and is currently unused.
- - gpio-controller : Marks the device node as a GPIO controller.
- - interrupt-controller: Mark the device node as an interrupt controller
--- #interrupt-cells : Should be 1. The interrupt type is fixed in the hardware.
-+- #interrupt-cells : Should be 2. The interrupt type is fixed in the hardware.
-   - The first cell is the GPIO offset number within the GPIO controller.
-+  - The second cell is the interrupt trigger type and level flags.
- - interrupts: Specify the interrupt.
- - altr,interrupt-type: Specifies the interrupt trigger type the GPIO
-   hardware is synthesized. This field is required if the Altera GPIO controller
-@@ -38,6 +39,6 @@ gpio_altr: gpio@ff200000 {
- 	altr,interrupt-type = <IRQ_TYPE_EDGE_RISING>;
- 	#gpio-cells = <2>;
- 	gpio-controller;
--	#interrupt-cells = <1>;
-+	#interrupt-cells = <2>;
- 	interrupt-controller;
- };
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -5444,6 +5444,7 @@ int ext4_setattr(struct dentry *dentry,
+ 	if (attr->ia_valid & ATTR_SIZE) {
+ 		handle_t *handle;
+ 		loff_t oldsize = inode->i_size;
++		loff_t old_disksize;
+ 		int shrink = (attr->ia_size < inode->i_size);
+ 
+ 		if (!(ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS))) {
+@@ -5517,6 +5518,7 @@ int ext4_setattr(struct dentry *dentry,
+ 					inode->i_sb->s_blocksize_bits);
+ 
+ 			down_write(&EXT4_I(inode)->i_data_sem);
++			old_disksize = EXT4_I(inode)->i_disksize;
+ 			EXT4_I(inode)->i_disksize = attr->ia_size;
+ 			rc = ext4_mark_inode_dirty(handle, inode);
+ 			if (!error)
+@@ -5528,6 +5530,8 @@ int ext4_setattr(struct dentry *dentry,
+ 			 */
+ 			if (!error)
+ 				i_size_write(inode, attr->ia_size);
++			else
++				EXT4_I(inode)->i_disksize = old_disksize;
+ 			up_write(&EXT4_I(inode)->i_data_sem);
+ 			ext4_journal_stop(handle);
+ 			if (error)
 
 
