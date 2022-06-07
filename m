@@ -2,91 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABD3BCCA489
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA89CCA48C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353682AbiFGSp5 (ORCPT
+        id S1353927AbiFGSqR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:45:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41768 "EHLO
+        Tue, 7 Jun 2022 14:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351917AbiFGSQs (ORCPT
+        with ESMTP id S1352094AbiFGSQx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62D4D13391A;
-        Tue,  7 Jun 2022 10:50:08 -0700 (PDT)
+        Tue, 7 Jun 2022 14:16:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1CDDEA3;
+        Tue,  7 Jun 2022 10:50:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD38861794;
-        Tue,  7 Jun 2022 17:50:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67A1EC341C4;
-        Tue,  7 Jun 2022 17:50:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624207;
-        bh=/iUON9WW6bsYbfVqaGxLRyqJA2zgabLnd46UiDlgoD8=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E62E6146F;
+        Tue,  7 Jun 2022 17:50:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C24EC385A5;
+        Tue,  7 Jun 2022 17:50:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624230;
+        bh=JGu5/sJQWhxYWpYIMKgqESsrp3SFHjGVwap1IYN4MQY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uASTYLNCryH3nlHEQvqaMECw6fdUuBL04k81iws1utq1dmHM1VU/QnWQBEXBfjrrU
-         KdzVKzNU3S42avTzouAHJqSe8AHuhGCua0XFYo/4dapxPdLcTrAdF1gafHiuz2s4Ld
-         arJKDPzSeImddabzXUqN6d7j0/Lvwak2NAyhgKY6GWOrtscYBm2gcv0lP6o9BgImm1
-         PPDsjpHwbVTEcMro71q1GLrTNSMtzwhjQnQncpaTLOfVoFGMAOT4lk35m7X1l4r6bL
-         ZsO80u3PsVTJNArraN8wVL47hVN28ByL+HhHrZgy7E//xNtB7kkn6hrIGf765zM8bI
-         9uB/pGimt9aVA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhen Ni <nizhen@uniontech.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, ok@artecdesign.ee,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 13/68] USB: host: isp116x: check return value after calling platform_get_resource()
-Date:   Tue,  7 Jun 2022 13:47:39 -0400
-Message-Id: <20220607174846.477972-13-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+        b=s8pag7z1wDW3ZbzhY7LEG+ehMxdDea8AeAoaiks4U/GRRpzDaz0eD7Pz4pcRD7cpV
+         hSqCFQEA4IBrkDIKlmO/x1RNhs+I3Bq1Hpw9sVUgbQMNkzVykwmusQmspCFY0QXG5B
+         Pg2wSllvMMZWs5dBOVeQS6fySuFcVy1LG3yvBV8Q=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 251/667] drm/msm/dpu: adjust display_v_end for eDP and DP
+Date:   Tue,  7 Jun 2022 18:58:36 +0200
+Message-Id: <20220607164942.312261844@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhen Ni <nizhen@uniontech.com>
+From: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-[ Upstream commit 134a3408c2d3f7e23eb0e4556e0a2d9f36c2614e ]
+[ Upstream commit e18aeea7f5efb9508722c8c7fd4d32e6f8cdfe50 ]
 
-It will cause null-ptr-deref if platform_get_resource() returns NULL,
-we need check the return value.
+The “DP timing” requires the active region to be defined in the
+bottom-right corner of the frame dimensions which is different
+with DSI. Therefore both display_h_end and display_v_end need
+to be adjusted accordingly. However current implementation has
+only display_h_end adjusted.
 
-Signed-off-by: Zhen Ni <nizhen@uniontech.com>
-Link: https://lore.kernel.org/r/20220302033716.31272-1-nizhen@uniontech.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+
+Fixes: fc3a69ec68d3 ("drm/msm/dpu: intf timing path for displayport")
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Patchwork: https://patchwork.freedesktop.org/patch/476277/
+Link: https://lore.kernel.org/r/1645824192-29670-2-git-send-email-quic_khsieh@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/isp116x-hcd.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/host/isp116x-hcd.c b/drivers/usb/host/isp116x-hcd.c
-index 8835f6bd528e..8c7f0991c21b 100644
---- a/drivers/usb/host/isp116x-hcd.c
-+++ b/drivers/usb/host/isp116x-hcd.c
-@@ -1541,10 +1541,12 @@ static int isp116x_remove(struct platform_device *pdev)
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
+index 116e2b5b1a90..284f5610dc35 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
+@@ -148,6 +148,7 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
+ 		active_v_end = active_v_start + (p->yres * hsync_period) - 1;
  
- 	iounmap(isp116x->data_reg);
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
--	release_mem_region(res->start, 2);
-+	if (res)
-+		release_mem_region(res->start, 2);
- 	iounmap(isp116x->addr_reg);
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	release_mem_region(res->start, 2);
-+	if (res)
-+		release_mem_region(res->start, 2);
+ 		display_v_start += p->hsync_pulse_width + p->h_back_porch;
++		display_v_end   -= p->h_front_porch; 
  
- 	usb_put_hcd(hcd);
- 	return 0;
+ 		active_hctl = (active_h_end << 16) | active_h_start;
+ 		display_hctl = active_hctl;
 -- 
 2.35.1
+
+
 
