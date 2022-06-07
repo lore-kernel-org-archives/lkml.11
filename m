@@ -2,89 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FBFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 13:35:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C57C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 13:35:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244762AbiFGNez (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 09:34:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47780 "EHLO
+        id S244778AbiFGNfO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 09:35:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244748AbiFGNeu (ORCPT
+        with ESMTP id S235180AbiFGNfK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 09:34:50 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A6FC0E3E;
-        Tue,  7 Jun 2022 06:34:50 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id v11-20020a17090a4ecb00b001e2c5b837ccso20833668pjl.3;
-        Tue, 07 Jun 2022 06:34:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nlxHI5pyaLrlB7ND0VC51Zbr/G9/jKlDBRHH2ZyX0cU=;
-        b=Q3yelo7VfE2k3ouw+w2afUY5Q6RURvSjC4ozP/UX7PT8C0Ppl6SsKeWkXRVsCkjE+F
-         Iyakr1Br88UFYCwhpw0G+g0I6PiGuiBD5JIDUsO5iaZ+Oejt5c5/MSkzpXuzTQi3vtve
-         OGfF+hn+X/MDbqL2lHwE8fFDwlRl5C2x3c6QFqWWTMIGZMOSiwxC4L7UuF//CnF7nwfm
-         ZL4UvQ4YU0qBMqFOh7df7fgnsKmOxyaJOGwtSMLtBPzsH9wcFU3QPwEf013sESwb2Iaj
-         QQH74ELVmhb1c9pTS+QRLRbzdL/Nvfsl/xE9ryPLv/qMinWZwqBWBPAuVltVH6QhKM1l
-         4Uag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nlxHI5pyaLrlB7ND0VC51Zbr/G9/jKlDBRHH2ZyX0cU=;
-        b=1a0skkl9rVgv/HZZItm7kPzdCOO6f6uhpwzR0IxcvWQXUo4fvlxPqr3RIH69GVlCi+
-         zxkfVpxisvIqP6eZRHP3E5q1KnO98EXCy0/0nC3Wp+2arSJSBd8I6p5COSewKSOdLicI
-         K/thQFeWC3s7KhkBHqhOWBVHFTx71pce1HFsIPG5D7VNCWsuT8XCjzQo6ZN2uKMv/hfO
-         CkBl6lhnGOcqTIods5ENeqYs9rTDFbHTrf6taTZeR3resKZc1mqJKmMvoPnEsB/SojWu
-         QWoFBZfZdk2DPvQvptzIkcAKZ/6CacKZ2fyoUU3VXmANCBU9t86IApNPM6Lr4XONcov3
-         TDUA==
-X-Gm-Message-State: AOAM532Yuqq13TDIPq1xDVxiRXpUpMNtG1Q8JhnB9O9ET4fhCCPLP4Le
-        m/AUVK8i1qvo1wesgIS6YZlVw2EtmDz+YMZuGRo=
-X-Google-Smtp-Source: ABdhPJwrY5Tczaplh0YoEL0T8UbCazQFQjnHacHc+CWbN3xEK80kwyqx6j70Qa458CD23YBVe2ts9gUpTaoelQhyYpQ=
-X-Received: by 2002:a17:903:22cb:b0:167:992f:60c3 with SMTP id
- y11-20020a17090322cb00b00167992f60c3mr2175720plg.59.1654608889474; Tue, 07
- Jun 2022 06:34:49 -0700 (PDT)
+        Tue, 7 Jun 2022 09:35:10 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F760C0E3D;
+        Tue,  7 Jun 2022 06:35:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654608909; x=1686144909;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=Nk2FQNCwXfa0h6pokVAdh8hD10SQTS2uKjBoUDhQsiQ=;
+  b=NHR9atT3esBIw2tMOW7N8Ou6ceGX8WFtIM50ceblbfzGeYht4qMpqYv3
+   VugHO6H6QPDUtx6K1uJCYzWfvVkPcodtffAmQmgUM9Pv4yP7wKviPWyRR
+   0gayYe64Gp2WJI281VY1ZfHehNs4t8dPv+VZrB0t+UX+49WsKLUVAsJkB
+   +xg0ppkWMiXGS9D6wzNgz+6+5uOOGstYasRTn0xnugjT9VAFq6GL1JS0q
+   2OOxklnjpXAsKbAdrAdTUp7fG0tShMaUycYCSGDhAH57WC/NAfvFOYLGN
+   pH7w6ZSJD1Qrd7p+FgGj+Ag/rgHo0x44V8Z1wR85s5P7R3Tlg5PteOQ84
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="275496334"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="275496334"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 06:35:09 -0700
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="636127178"
+Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 06:35:07 -0700
+Date:   Tue, 7 Jun 2022 16:35:05 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 08/36] tty/vt: consolemap: one line = one statement
+In-Reply-To: <20220607104946.18710-8-jslaby@suse.cz>
+Message-ID: <f38a1c1-7a35-c67-ec11-4646ba9ce76c@linux.intel.com>
+References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-8-jslaby@suse.cz>
 MIME-Version: 1.0
-References: <20220606134553.2919693-1-alvin@pqrs.dk> <20220606134553.2919693-3-alvin@pqrs.dk>
-In-Reply-To: <20220606134553.2919693-3-alvin@pqrs.dk>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Tue, 7 Jun 2022 10:34:38 -0300
-Message-ID: <CAJq09z6TDWSFZCFHTSevao4-fsiVavUYtmBFVttMhYqsOobg9g@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/5] net: dsa: realtek: rtl8365mb: remove
- port_mask private data member
-To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/mixed; boundary="8323329-1285436299-1654608908=:1622"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> There is no real need for this variable: the line change interrupt mask
-> is sufficiently masked out when getting linkup_ind and linkdown_ind in
-> the interrupt handler.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Yes, it was currently useless as well as priv->num_ports (it is a constant).
+--8323329-1285436299-1654608908=:1622
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-I wonder if we should really create irq threads for unused ports
-(!dsa_is_unused_port()). Some models have only 2+1 ports and we are
-always dealing with 10/11 ports.
-If dsa_is_unused_port() is too costly to be used everywhere, we could
-keep port_mask and iterate over it (for_each_set_bit) instead of from
-0 til priv->num_ports-1.
+On Tue, 7 Jun 2022, Jiri Slaby wrote:
 
-Regards,
+> Some lines combine more statements on one line. This makes the code hard
+> to follow. Do it properly in the "one line = one statement" fashion.
+> 
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> ---
 
-Luiz
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+
+-- 
+ i.
+
+--8323329-1285436299-1654608908=:1622--
