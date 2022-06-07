@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D4B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:21:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25AB4CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:21:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358534AbiFGUVo (ORCPT
+        id S1358679AbiFGUVt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53394 "EHLO
+        Tue, 7 Jun 2022 16:21:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355158AbiFGT3X (ORCPT
+        with ESMTP id S1355438AbiFGT3v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:29:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F90A1A4093;
-        Tue,  7 Jun 2022 11:11:46 -0700 (PDT)
+        Tue, 7 Jun 2022 15:29:51 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA9E41A43E8;
+        Tue,  7 Jun 2022 11:11:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A3E0361903;
-        Tue,  7 Jun 2022 18:11:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFAD5C385A2;
-        Tue,  7 Jun 2022 18:11:44 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 23266CE2443;
+        Tue,  7 Jun 2022 18:11:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38B50C34115;
+        Tue,  7 Jun 2022 18:11:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625505;
-        bh=QYPPoscQqoIcHK0tg64TmPO1PWMhQP1qVM9aBWs4vtQ=;
+        s=korg; t=1654625510;
+        bh=5/0HLBIHwIsm8UNga4LbUSZ3eBdbnNrZstFRE28f+uw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dgN8THwVZli45bA4eDcCYiKITT3TAEgKZzfUJbLQUhnzzZgV6BeNSAEjgBuNXDPYT
-         Rs3I/yI5Or4qk2H5Vj8VYgqOBt3DDHhNMq4qqat/Wz3KLrGCCHNbLHltez0sd0x0Nq
-         puaA9oJXmGszsxvyXCHDsoNChp0vgzhW5Zs00AGU=
+        b=awFM3ti9V0d0MsJn1aMpbb7bRD7pcOuKz47SH+bHU1fZRBriZiuxhKGrqYCtNiI8C
+         7QC5xm3XUNct0EPiJQeicc5+PxQiob39kG5uFjWIM3PRxdtK/4ICrCp8paBW+6Hhlc
+         EE9DrQagLAYt4DC0LZmSVcYTMZageR6wZnHln4Ik=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
         David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.17 043/772] btrfs: return correct error number for __extent_writepage_io()
-Date:   Tue,  7 Jun 2022 18:53:55 +0200
-Message-Id: <20220607164950.297303459@linuxfoundation.org>
+Subject: [PATCH 5.17 045/772] btrfs: fix the error handling for submit_extent_page() for btrfs_do_readpage()
+Date:   Tue,  7 Jun 2022 18:53:57 +0200
+Message-Id: <20220607164950.360048766@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,86 +51,69 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Qu Wenruo <wqu@suse.com>
 
-commit 44e5801fada6925d2bba1987c7b59cbcc9d0d592 upstream.
+commit 10f7f6f879c28f8368d6516ab1ccf3517a1f5d3d upstream.
 
 [BUG]
-If we hit an error from submit_extent_page() inside
-__extent_writepage_io(), we could still return 0 to the caller, and
-even trigger the warning in btrfs_page_assert_not_dirty().
+Test case generic/475 have a very high chance (almost 100%) to hit a fs
+hang, where a data page will never be unlocked and hang all later
+operations.
 
 [CAUSE]
-In __extent_writepage_io(), if we hit an error from
-submit_extent_page(), we will just clean up the range and continue.
+In btrfs_do_readpage(), if we hit an error from submit_extent_page() we
+will try to do the cleanup for our current io range, and exit.
 
-This is completely fine for regular PAGE_SIZE == sectorsize, as we can
-only hit one sector in one page, thus after the error we're ensured to
-exit and @ret will be saved.
+This works fine for PAGE_SIZE == sectorsize cases, but not for subpage.
 
-But for subpage case, we may have other dirty subpage range in the page,
-and in the next loop, we may succeeded submitting the next range.
+For subpage btrfs_do_readpage() will lock the full page first, which can
+contain several different sectors and extents:
 
-In that case, @ret will be overwritten, and we return 0 to the caller,
-while we have hit some error.
+ btrfs_do_readpage()
+ |- begin_page_read()
+ |  |- btrfs_subpage_start_reader();
+ |     Now the page will have PAGE_SIZE / sectorsize reader pending,
+ |     and the page is locked.
+ |
+ |- end_page_read() for different branches
+ |  This function will reduce subpage readers, and when readers
+ |  reach 0, it will unlock the page.
+
+But when submit_extent_page() failed, we only cleanup the current
+io range, while the remaining io range will never be cleaned up, and the
+page remains locked forever.
 
 [FIX]
-Introduce @has_error and @saved_ret to record the first error we hit, so
-we will never forget what error we hit.
+Update the error handling of submit_extent_page() to cleanup all the
+remaining subpage range before exiting the loop.
+
+Please note that, now submit_extent_page() can only fail due to
+sanity check in alloc_new_bio().
+
+Thus regular IO errors are impossible to trigger the error path.
 
 CC: stable@vger.kernel.org # 5.15+
 Signed-off-by: Qu Wenruo <wqu@suse.com>
 Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/extent_io.c |   13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ fs/btrfs/extent_io.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
 --- a/fs/btrfs/extent_io.c
 +++ b/fs/btrfs/extent_io.c
-@@ -3898,10 +3898,12 @@ static noinline_for_stack int __extent_w
- 	u64 extent_offset;
- 	u64 block_start;
- 	struct extent_map *em;
-+	int saved_ret = 0;
- 	int ret = 0;
- 	int nr = 0;
- 	u32 opf = REQ_OP_WRITE;
- 	const unsigned int write_flags = wbc_to_write_flags(wbc);
-+	bool has_error = false;
- 	bool compressed;
- 
- 	ret = btrfs_writepage_cow_fixup(page);
-@@ -3951,6 +3953,9 @@ static noinline_for_stack int __extent_w
- 		if (IS_ERR_OR_NULL(em)) {
- 			btrfs_page_set_error(fs_info, page, cur, end - cur + 1);
- 			ret = PTR_ERR_OR_ZERO(em);
-+			has_error = true;
-+			if (!saved_ret)
-+				saved_ret = ret;
- 			break;
- 		}
- 
-@@ -4014,6 +4019,10 @@ static noinline_for_stack int __extent_w
- 					 end_bio_extent_writepage,
- 					 0, 0, false);
+@@ -3721,8 +3721,12 @@ int btrfs_do_readpage(struct page *page,
+ 					 this_bio_flag,
+ 					 force_bio_submit);
  		if (ret) {
-+			has_error = true;
-+			if (!saved_ret)
-+				saved_ret = ret;
-+
- 			btrfs_page_set_error(fs_info, page, cur, iosize);
- 			if (PageWriteback(page))
- 				btrfs_page_clear_writeback(fs_info, page, cur,
-@@ -4027,8 +4036,10 @@ static noinline_for_stack int __extent_w
- 	 * If we finish without problem, we should not only clear page dirty,
- 	 * but also empty subpage dirty bits
- 	 */
--	if (!ret)
-+	if (!has_error)
- 		btrfs_page_assert_not_dirty(fs_info, page);
-+	else
-+		ret = saved_ret;
- 	*nr_ret = nr;
- 	return ret;
- }
+-			unlock_extent(tree, cur, cur + iosize - 1);
+-			end_page_read(page, false, cur, iosize);
++			/*
++			 * We have to unlock the remaining range, or the page
++			 * will never be unlocked.
++			 */
++			unlock_extent(tree, cur, end);
++			end_page_read(page, false, cur, end + 1 - cur);
+ 			goto out;
+ 		}
+ 		cur = cur + iosize;
 
 
