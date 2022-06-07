@@ -2,82 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D75CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:29:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2DB8CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:29:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354696AbiFGT3E (ORCPT
+        id S1352019AbiFGT3K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:29:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47146 "EHLO
+        Tue, 7 Jun 2022 15:29:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352666AbiFGSe4 (ORCPT
+        with ESMTP id S1352602AbiFGSey (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:34:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9A0EE11;
-        Tue,  7 Jun 2022 10:57:56 -0700 (PDT)
+        Tue, 7 Jun 2022 14:34:54 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B6D17F83E;
+        Tue,  7 Jun 2022 10:57:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2995B82368;
-        Tue,  7 Jun 2022 17:57:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14834C385A5;
-        Tue,  7 Jun 2022 17:57:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624673;
-        bh=yCzJMVCUlRwnYxLiqzwsBgrMgG0o7TJdZI532aPA9YI=;
+        by sin.source.kernel.org (Postfix) with ESMTPS id D0449CE242B;
+        Tue,  7 Jun 2022 17:57:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FB74C34115;
+        Tue,  7 Jun 2022 17:57:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624669;
+        bh=V+2fr26x6mH1tjdXZJG+wmFJjeJtUEdbGyA7Ms03VpE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hcRAZwxncmJSWp0qxjHCakG8ALvhBL02xHAOJn+5uHI9swZhpIgJ16DxkHezZzJph
-         9Siz+1Ug+n1pUWKOWwzrlxLznK4Hg65s2BoG3bjcnwyugL1ewurufDZTCo+4wmci/G
-         m/H4ZA4AQcrxZQOZp/PoDzC9jdQ8IBoI90K5gzrk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 412/667] crypto: marvell/cesa - ECB does not IV
-Date:   Tue,  7 Jun 2022 19:01:17 +0200
-Message-Id: <20220607164947.097333288@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=NVPOaZ0tN9p7YhOulNx9Chq9rMVzhE5cgDBMD9OAuyma9XIJdHLvUOIOyd4eQmIzS
+         FPOwTJ/8QYYvzsW0NSj4DaQHucWLbc5aA/3vbeyUr2/YRxkdzZZz4++77kKaA3xWpg
+         g3MNuQ8Nx+0Fb7bYpl4tLSeGK1xZ+SNa5B+19J3PS51F+l2wUlh1ePrS7/Kv6CxAp7
+         GNGXNOyHxBorkTqYHZnj4PdPDMWC9KzqSeC96qHGvLjILSnyqEuYmr3WzW2fwiIRMm
+         L31y4UHwzFR84Yt8gcq0I3K4OrGmnnF8jo4Gog+U9n5aILn7vFyt2L5TP6BJBIfVow
+         DH0Gh5sMP/Dtw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Lijo Lazar <lijo.lazar@amd.com>,
+        Yang Wang <kevinyang.wang@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, evan.quan@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, luben.tuikov@amd.com, kevin1.wang@amd.com,
+        Stanley.Yang@amd.com, tao.zhou1@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 39/51] drm/amd/pm: Fix missing thermal throttler status
+Date:   Tue,  7 Jun 2022 13:55:38 -0400
+Message-Id: <20220607175552.479948-39-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
+References: <20220607175552.479948-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin Labbe <clabbe@baylibre.com>
+From: Lijo Lazar <lijo.lazar@amd.com>
 
-[ Upstream commit 4ffa1763622ae5752961499588f3f8874315f974 ]
+[ Upstream commit b0f4d663fce6a4232d3c20ce820f919111b1c60b ]
 
-The DES3 ECB has an IV size set but ECB does not need one.
+On aldebaran, when thermal throttling happens due to excessive GPU
+temperature, the reason for throttling event is missed in warning
+message. This patch fixes it.
 
-Fixes: 4ada483978237 ("crypto: marvell/cesa - add Triple-DES support")
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Lijo Lazar <lijo.lazar@amd.com>
+Reviewed-by: Yang Wang <kevinyang.wang@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/marvell/cesa/cipher.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/crypto/marvell/cesa/cipher.c b/drivers/crypto/marvell/cesa/cipher.c
-index b739d3b873dc..c6f2fa753b7c 100644
---- a/drivers/crypto/marvell/cesa/cipher.c
-+++ b/drivers/crypto/marvell/cesa/cipher.c
-@@ -624,7 +624,6 @@ struct skcipher_alg mv_cesa_ecb_des3_ede_alg = {
- 	.decrypt = mv_cesa_ecb_des3_ede_decrypt,
- 	.min_keysize = DES3_EDE_KEY_SIZE,
- 	.max_keysize = DES3_EDE_KEY_SIZE,
--	.ivsize = DES3_EDE_BLOCK_SIZE,
- 	.base = {
- 		.cra_name = "ecb(des3_ede)",
- 		.cra_driver_name = "mv-ecb-des3-ede",
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
+index c9cfeb094750..d0c6b864d00a 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
+@@ -1627,6 +1627,7 @@ static const struct throttling_logging_label {
+ 	uint32_t feature_mask;
+ 	const char *label;
+ } logging_label[] = {
++	{(1U << THROTTLER_TEMP_GPU_BIT), "GPU"},
+ 	{(1U << THROTTLER_TEMP_MEM_BIT), "HBM"},
+ 	{(1U << THROTTLER_TEMP_VR_GFX_BIT), "VR of GFX rail"},
+ 	{(1U << THROTTLER_TEMP_VR_MEM_BIT), "VR of HBM rail"},
 -- 
 2.35.1
-
-
 
