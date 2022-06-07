@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D0CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:33:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A39C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380061AbiFGVdv (ORCPT
+        id S1380072AbiFGVeA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:33:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45296 "EHLO
+        Tue, 7 Jun 2022 17:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359517AbiFGUfq (ORCPT
+        with ESMTP id S1356956AbiFGUfx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:35:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530011EAF2;
-        Tue,  7 Jun 2022 11:37:54 -0700 (PDT)
+        Tue, 7 Jun 2022 16:35:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590571EC562;
+        Tue,  7 Jun 2022 11:37:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3FBFBB8237F;
-        Tue,  7 Jun 2022 18:37:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97652C385A2;
-        Tue,  7 Jun 2022 18:37:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB4076157B;
+        Tue,  7 Jun 2022 18:37:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05B34C385A2;
+        Tue,  7 Jun 2022 18:37:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627069;
-        bh=u7ZIt0Mxn6nLQ2SNVIueveazrS/E5Xd4kCtZ5F653Dk=;
+        s=korg; t=1654627077;
+        bh=+qYyiDJGeKCahr8QfyQ+ZqpAAbEYjvVX4oxGHvDXOOI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ToVZuZOQMNaYJCxEuoXDGwImLPNklwUT7RtPD+LFkd0vUOBpcQpdeWc9ATlTZu6km
-         s5U00DGrqK9OSh0ypJ+L2fVwqarA/4bNDHFE3pEVFJthSFWDaF/T/QE2sXhcxxunCt
-         MIKBLnSHQK1kqqzJYKBnCy6JUgyEYnP8K600yB0g=
+        b=ONUrf09sN6+xXspEGojofVFKHN3yfjYvceIeHQF0+0x6a4+D5TkWHk1L4ASdyPIr8
+         AYXzQc4GuHp1r51egygNBnQYqR4C9segC0v0z9Ev4/mUwWpkMLT9k92kPEkvP6FI4o
+         th0bXDsuhpP8DL+DwBAu6X6xCAvwqZuhNjfqcojk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 565/772] f2fs: fix dereference of stale list iterator after loop body
-Date:   Tue,  7 Jun 2022 19:02:37 +0200
-Message-Id: <20220607165005.604542807@linuxfoundation.org>
+Subject: [PATCH 5.17 602/772] rtla: Fix __set_sched_attr error message
+Date:   Tue,  7 Jun 2022 19:03:14 +0200
+Message-Id: <20220607165006.680494153@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,60 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: Daniel Bristot de Oliveira <bristot@kernel.org>
 
-[ Upstream commit 2aaf51dd39afb6d01d13f1e6fe20b684733b37d5 ]
+[ Upstream commit 941a53c39a151e9aceef153cdfaed0f166ba01b7 ]
 
-The list iterator variable will be a bogus pointer if no break was hit.
-Dereferencing it (cur->page in this case) could load an out-of-bounds/undefined
-value making it unsafe to use that in the comparision to determine if the
-specific element was found.
+rtla's function __set_sched_attr() was borrowed from stalld, but I
+forgot to update the error message to something meaningful for rtla.
 
-Since 'cur->page' *can* be out-ouf-bounds it cannot be guaranteed that
-by chance (or intention of an attacker) it matches the value of 'page'
-even though the correct element was not found.
+ Update the error message from:
+        boost_with_deadline failed to boost pid PID: STRERROR
+ to a proper one:
+        Failed to set sched attributes to the pid PID: STRERROR
 
-This is fixed by using a separate list iterator variable for the loop
-and only setting the original variable if a suitable element was found.
-Then determing if the element was found is simply checking if the
-variable is set.
+Link: https://lkml.kernel.org/r/a2d19b2c53f6512aefd1ee7f8c1bd19d4fc8b99d.1651247710.git.bristot@kernel.org
+Link: https://lore.kernel.org/r/eeded730413e7feaa13f946924bcf2cbf7dd9561.1650617571.git.bristot@kernel.org/
 
-Fixes: 8c242db9b8c0 ("f2fs: fix stale ATOMIC_WRITTEN_PAGE private pointer")
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Fixes: b1696371d865 ("rtla: Helper functions for rtla")
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/segment.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ tools/tracing/rtla/src/utils.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-index 416d802ebbea..1b37a619065e 100644
---- a/fs/f2fs/segment.c
-+++ b/fs/f2fs/segment.c
-@@ -356,16 +356,19 @@ void f2fs_drop_inmem_page(struct inode *inode, struct page *page)
- 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
- 	struct list_head *head = &fi->inmem_pages;
- 	struct inmem_pages *cur = NULL;
-+	struct inmem_pages *tmp;
+diff --git a/tools/tracing/rtla/src/utils.c b/tools/tracing/rtla/src/utils.c
+index ffaf8ec84001..c4dd2aa0e963 100644
+--- a/tools/tracing/rtla/src/utils.c
++++ b/tools/tracing/rtla/src/utils.c
+@@ -254,7 +254,7 @@ int __set_sched_attr(int pid, struct sched_attr *attr)
  
- 	f2fs_bug_on(sbi, !page_private_atomic(page));
- 
- 	mutex_lock(&fi->inmem_lock);
--	list_for_each_entry(cur, head, list) {
--		if (cur->page == page)
-+	list_for_each_entry(tmp, head, list) {
-+		if (tmp->page == page) {
-+			cur = tmp;
- 			break;
-+		}
+ 	retval = sched_setattr(pid, attr, flags);
+ 	if (retval < 0) {
+-		err_msg("boost_with_deadline failed to boost pid %d: %s\n",
++		err_msg("Failed to set sched attributes to the pid %d: %s\n",
+ 			pid, strerror(errno));
+ 		return 1;
  	}
- 
--	f2fs_bug_on(sbi, list_empty(head) || cur->page != page);
-+	f2fs_bug_on(sbi, !cur);
- 	list_del(&cur->list);
- 	mutex_unlock(&fi->inmem_lock);
- 
 -- 
 2.35.1
 
