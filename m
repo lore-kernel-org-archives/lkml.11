@@ -2,117 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 390B1CCA487
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F34CCA492
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442992AbiFHCBi (ORCPT
+        id S1443538AbiFHCCm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:01:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47758 "EHLO
+        Tue, 7 Jun 2022 22:02:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1840369AbiFHAFG (ORCPT
+        with ESMTP id S1842425AbiFHAJ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:05:06 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A881D0BEA;
-        Tue,  7 Jun 2022 13:21:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654633261; x=1686169261;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=TOBWj/d3INrH0x6zLmSNwJlgmp7Kh2t/gQb1rcSIgAs=;
-  b=R86wmGQA1M3jPdWDkfYGln+kT0wQufVxSzZ1R9k3lEhpKSEjLoXCNBnR
-   FaYxzb8sGieVxkTtjq/HWCd9hiffCxOw6IjpQWKWZqzwtM6xOJeJ+NBSI
-   NkW2VLP9Foy9GEtCCGyj1eyrd+/ajeJfjIctPBXdrZ1+lmPjFX+wcQrTo
-   +h9sA25BAa52zmjCppP7NU8CED7oMtUi20ozg/58N7qUBNkQnTHOUeIih
-   UQVeUdsV1Q93poQ+cJUr756u9g0kKoz62l36DhIlhOndKJAphMDUBsfVy
-   patpfPx3BmfYDjZIUdOrb2RuiAsUftOxKXk0OcVsCIhnV5ozdwcX6RZyO
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="257187474"
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="257187474"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 13:21:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="709631225"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga004.jf.intel.com with ESMTP; 07 Jun 2022 13:20:58 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 1DD3F109; Tue,  7 Jun 2022 23:21:01 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-spi@vger.kernel.org
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/2] driver core: Introduce device_find_first_child() helper
-Date:   Tue,  7 Jun 2022 23:20:57 +0300
-Message-Id: <20220607202058.8304-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 7 Jun 2022 20:09:28 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CF9614A930
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 13:36:56 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id h23so30089545lfe.4
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 13:36:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3q6TfnyhK/JVdpGe1sn/i51UuwyEe8WKDR0Bhpepgkw=;
+        b=tnMvdL81BwwXW6yVLeadSVxqoY40YLtneqyhtf7dzDEpjVWIgYH2iRPKp6eha1ETf/
+         Smnkr1PDED9FhO6HiPjOWfoRl+qtY5bDl2zV8/T21F7omzHIsh8REiwWKm7rynrFC7ha
+         9z+rlqOGw5hX23QjtYQZk2+zXzfNjdTLnK4vrIWAqzEASTEjsvOOPjhpZ6f40Z7QrcnB
+         /r0WaquGT7aHMBd+33JvbWRYcNc6jPuoNu/Lox9ShGV826J9aHUp1scqdqE5EYLGSHfx
+         gfWYSsAzMjOPFQwNOxPDSeXLbznp8dwHpy4bYBa63aLMO72Y8VFdbnm8Wo5j+lC8f2hp
+         o8GA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3q6TfnyhK/JVdpGe1sn/i51UuwyEe8WKDR0Bhpepgkw=;
+        b=i8KLpsLlwwtXetRS4CcAg9dHQne+ZQvvmCpaXAaGsSETHVcchzA/7FYYKrIwxqBzfv
+         PrbrdGApj9mg3udgQQf9fb20/9rVg8mdWcGeUzBAnro3fQeki1RCsyrWSU2nqFe0OxyV
+         0JMxGog9JfTmc70PAaaEoeCgoy0X0wyV7ULNBa8sEYJLiU/BmOSGOuM2ZKnpGxnF4DCR
+         E3Idu7NC7JOrizsIjSs2gK6MZd+kOFbZZlfYftuKpsmvufzx5+KeBefwUATJH/T9Jh1i
+         QykzOF7gPx/Vfvp/v5vdtHh+0JYe7iQHy2YIWREVyEbRrJTddGbrWDTvaNddTU4UhqDX
+         y4YQ==
+X-Gm-Message-State: AOAM531hCGe+9JsbrunLUg6s80knKZ7QR3tM2lrdwi/QirnTNXd1Xpzo
+        LDsJA7SAYKPNyJf4LxmDpOAj3RbdH+kGqoQE1tcvxw==
+X-Google-Smtp-Source: ABdhPJy8Duzb8ouGhVTvWRJ84NdalTVXSBgNTWEcv3+UOHIOpiHr/k9nNY8Ntdn5isOX7HonVhqmVDniLFKJXZMbJLw=
+X-Received: by 2002:a05:6512:3132:b0:478:f2f1:3a75 with SMTP id
+ p18-20020a056512313200b00478f2f13a75mr21381284lfd.100.1654634213023; Tue, 07
+ Jun 2022 13:36:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <Yp9uRz40J24vWLSb@dev-arch.thelio-3990X> <20220607180847.13482-1-jstitt007@gmail.com>
+ <CAKwvOd=C2kyMVLYTKJcBQNnqK0T4nEBMeaS3DpTM2ez1P+qcqQ@mail.gmail.com>
+In-Reply-To: <CAKwvOd=C2kyMVLYTKJcBQNnqK0T4nEBMeaS3DpTM2ez1P+qcqQ@mail.gmail.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 7 Jun 2022 13:36:41 -0700
+Message-ID: <CAKwvOdnAALywDS6aZKCu1xnocc8LR5q_-UdLwSkBJ83nS-bL6g@mail.gmail.com>
+Subject: Re: [PATCH v2] netfilter: conntrack: Fix clang -Wformat warning in print_tuple()
+To:     Justin Stitt <jstitt007@gmail.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>, llvm@lists.linux.dev,
+        Nathan Chancellor <nathan@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        Tom Rix <trix@redhat.com>, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are several places in the kernel where this kind of functionality is
-being used. Provide a generic helper for such cases.
+Also, please make sure to run scripts/get_maintainer.pl on your patch
+file and CC everyone it recommends, with the maintainers you want to
+pick up your patch in the To field.
+https://lore.kernel.org/llvm/20220607180847.13482-1-jstitt007@gmail.com/T/#u
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/base/core.c    | 24 ++++++++++++++++++++++++
- include/linux/device.h |  1 +
- 2 files changed, 25 insertions(+)
+$ ./scripts/get_maintainer.pl
+0001-netfilter-conntrack-Fix-clang-Wformat-warning-in-pri.patch
+Pablo Neira Ayuso <pablo@netfilter.org> (maintainer:NETFILTER)
+Jozsef Kadlecsik <kadlec@netfilter.org> (maintainer:NETFILTER)
+Florian Westphal <fw@strlen.de> (maintainer:NETFILTER)
+"David S. Miller" <davem@davemloft.net> (maintainer:NETWORKING [GENERAL])
+Eric Dumazet <edumazet@google.com> (maintainer:NETWORKING [GENERAL])
+Jakub Kicinski <kuba@kernel.org> (maintainer:NETWORKING [GENERAL])
+Paolo Abeni <pabeni@redhat.com> (maintainer:NETWORKING [GENERAL])
+Nathan Chancellor <nathan@kernel.org> (supporter:CLANG/LLVM BUILD SUPPORT)
+Nick Desaulniers <ndesaulniers@google.com> (supporter:CLANG/LLVM BUILD SUPPORT)
+Tom Rix <trix@redhat.com> (reviewer:CLANG/LLVM BUILD SUPPORT)
+netfilter-devel@vger.kernel.org (open list:NETFILTER)
+coreteam@netfilter.org (open list:NETFILTER)
+netdev@vger.kernel.org (open list:NETWORKING [GENERAL])
+linux-kernel@vger.kernel.org (open list)
+llvm@lists.linux.dev (open list:CLANG/LLVM BUILD SUPPORT
 
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 7cd789c4985d..972bfe975cd0 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -3832,6 +3832,30 @@ struct device *device_find_child_by_name(struct device *parent,
- }
- EXPORT_SYMBOL_GPL(device_find_child_by_name);
- 
-+/**
-+ * device_find_first_child - device iterator for locating the fist child device.
-+ * @parent: parent struct device
-+ *
-+ * This is similar to the device_find_child() function above, but it
-+ * returns a reference to the first child device.
-+ *
-+ * NOTE: you will need to drop the reference with put_device() after use.
-+ */
-+struct device *device_find_first_child(struct device *parent)
-+{
-+	struct klist_iter i;
-+	struct device *child;
-+
-+	if (!parent)
-+		return NULL;
-+
-+	klist_iter_init(&parent->p->klist_children, &i);
-+	child = get_device(next_device(&i));
-+	klist_iter_exit(&i);
-+	return child;
-+}
-+EXPORT_SYMBOL_GPL(device_find_first_child);
-+
- int __init devices_init(void)
- {
- 	devices_kset = kset_create_and_add("devices", &device_uevent_ops, NULL);
-diff --git a/include/linux/device.h b/include/linux/device.h
-index dc941997795c..20171a4358df 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -905,6 +905,7 @@ struct device *device_find_child(struct device *dev, void *data,
- 				 int (*match)(struct device *dev, void *data));
- struct device *device_find_child_by_name(struct device *parent,
- 					 const char *name);
-+struct device *device_find_first_child(struct device *parent);
- int device_rename(struct device *dev, const char *new_name);
- int device_move(struct device *dev, struct device *new_parent,
- 		enum dpm_order dpm_order);
+On Tue, Jun 7, 2022 at 1:33 PM Nick Desaulniers <ndesaulniers@google.com> wrote:
+>
+> On Tue, Jun 7, 2022 at 11:09 AM Justin Stitt <jstitt007@gmail.com> wrote:
+> >
+> >  | net/netfilter/nf_conntrack_standalone.c:63:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->src.u.tcp.port),
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:64:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->dst.u.tcp.port));
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:69:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->src.u.udp.port),
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:70:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->dst.u.udp.port));
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:75:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->src.u.dccp.port),
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:76:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->dst.u.dccp.port));
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:80:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->src.u.sctp.port),
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:81:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->dst.u.sctp.port));
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >
+> > Variadic functions (printf-like) undergo default argument promotion.
+> > Documentation/core-api/printk-formats.rst specifically recommends
+> > using the promoted-to-type's format flag.
+> >
+> > Also, as per C11 6.3.1.1:
+> > (https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1548.pdf)
+> > `If an int can represent all values of the original type ..., the
+> > value is converted to an int; otherwise, it is converted to an
+> > unsigned int. These are called the integer promotions.`
+> > Thus it makes sense to change %hu (as well as %u) to %d.
+> >
+> > It should be noted that %u does not produce the same warning as %hu in this
+> > context. However, it should probably be changed as well for consistency.
+>
+> Right, because they are `unsigned char` and the parameter is unnamed
+> for variadic functions they are also default-argument-promoted to int.
+> -Wformat won't warn on signedness.
+>
+> Thanks for the patch!
+>
+> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+> Link: https://github.com/ClangBuiltLinux/linux/issues/378
+>
+> Also, Nathan supplied his RB tag on v1; it's ok next time to include
+> it on subsequent revisions of patches, so long as you don't change the
+> patch too much between revisions.
+>
+> >
+> > Signed-off-by: Justin Stitt <jstitt007@gmail.com>
+> > ---
+> >  Diff between v1 -> v2:
+> >  * update commit message and subject line
+> >
+> >  Note: The architecture (arm64) is critical for reproducing this warning.
+> >
+> >  net/netfilter/nf_conntrack_standalone.c | 10 +++++-----
+> >  1 file changed, 5 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
+> > index 6ad7bbc90d38..afbec8a12c5e 100644
+> > --- a/net/netfilter/nf_conntrack_standalone.c
+> > +++ b/net/netfilter/nf_conntrack_standalone.c
+> > @@ -53,30 +53,30 @@ print_tuple(struct seq_file *s, const struct nf_conntrack_tuple *tuple,
+> >
+> >         switch (l4proto->l4proto) {
+> >         case IPPROTO_ICMP:
+> > -               seq_printf(s, "type=%u code=%u id=%u ",
+> > +               seq_printf(s, "type=%d code=%d id=%d ",
+> >                            tuple->dst.u.icmp.type,
+> >                            tuple->dst.u.icmp.code,
+> >                            ntohs(tuple->src.u.icmp.id));
+> >                 break;
+> >         case IPPROTO_TCP:
+> > -               seq_printf(s, "sport=%hu dport=%hu ",
+> > +               seq_printf(s, "sport=%d dport=%d ",
+> >                            ntohs(tuple->src.u.tcp.port),
+> >                            ntohs(tuple->dst.u.tcp.port));
+> >                 break;
+> >         case IPPROTO_UDPLITE:
+> >         case IPPROTO_UDP:
+> > -               seq_printf(s, "sport=%hu dport=%hu ",
+> > +               seq_printf(s, "sport=%d dport=%d ",
+> >                            ntohs(tuple->src.u.udp.port),
+> >                            ntohs(tuple->dst.u.udp.port));
+> >
+> >                 break;
+> >         case IPPROTO_DCCP:
+> > -               seq_printf(s, "sport=%hu dport=%hu ",
+> > +               seq_printf(s, "sport=%d dport=%d ",
+> >                            ntohs(tuple->src.u.dccp.port),
+> >                            ntohs(tuple->dst.u.dccp.port));
+> >                 break;
+> >         case IPPROTO_SCTP:
+> > -               seq_printf(s, "sport=%hu dport=%hu ",
+> > +               seq_printf(s, "sport=%d dport=%d ",
+> >                            ntohs(tuple->src.u.sctp.port),
+> >                            ntohs(tuple->dst.u.sctp.port));
+> >                 break;
+> > --
+> > 2.30.2
+> >
+>
+>
+> --
+> Thanks,
+> ~Nick Desaulniers
+
+
+
 -- 
-2.35.1
-
+Thanks,
+~Nick Desaulniers
