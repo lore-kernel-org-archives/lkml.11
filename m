@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 439BFCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:07:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 787D3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:07:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382579AbiFGWHJ (ORCPT
+        id S1382772AbiFGWHM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:07:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50314 "EHLO
+        Tue, 7 Jun 2022 18:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378838AbiFGVEc (ORCPT
+        with ESMTP id S1378735AbiFGVEb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:04:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C7BB2EAB;
-        Tue,  7 Jun 2022 11:48:59 -0700 (PDT)
+        Tue, 7 Jun 2022 17:04:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252E818CE18;
+        Tue,  7 Jun 2022 11:48:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CA916156D;
-        Tue,  7 Jun 2022 18:48:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 142C4C36B0C;
-        Tue,  7 Jun 2022 18:48:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8DACB8220B;
+        Tue,  7 Jun 2022 18:48:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2149CC385A2;
+        Tue,  7 Jun 2022 18:48:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627738;
-        bh=cz7EaM8E2HHkUwPlijx0Xy7QFc9ala/dWiZQqSjozhk=;
+        s=korg; t=1654627735;
+        bh=Aoq/ZnXVcKk+p7VdfH7dk2D2Y56VczJQo9MgI9eHjA8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R0hYTOhIkPRpolN+KjXM/JowZCtGVpu9vam4TcjRAnsMLXUYW3UhSk2k4GiE2onPJ
-         CM1/xjri7hrGi87tzk4G5UJGPfIFpC3MWG62Ds2I3PCPwigaZxLR/ofWZKJMlRvtjr
-         3nxEEgxX1LqRsGNCYRWy6QUZzF0ih8sHUn+z13BI=
+        b=VNC3nVrUzn4nEr8DfhDa+WJ9o/6ul5g1h32KaHNtiQ2ONcNnBqoEbdDv8OvXXsHS9
+         kF4rfx6yJs3z4/UsYnRgTv6QaDJlZdBdfsqFN5gdb7WbQK9VAi5kL1rdk+PylWd7eW
+         Cpfjiw22AXp71ylrGfxr9yWq6zcaJWyeuUIM31Ic=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Yang <Eric.Yang2@amd.com>,
-        Pavle Kotarac <Pavle.Kotarac@amd.com>,
-        Saaem Rizvi <syerizvi@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Steven Price <steven.price@arm.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 076/879] drm/amd/display: Disabling Z10 on DCN31
-Date:   Tue,  7 Jun 2022 18:53:14 +0200
-Message-Id: <20220607165004.896958794@linuxfoundation.org>
+Subject: [PATCH 5.18 075/879] drm/komeda: return early if drm_universal_plane_init() fails.
+Date:   Tue,  7 Jun 2022 18:53:13 +0200
+Message-Id: <20220607165004.868468353@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,37 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saaem Rizvi <syerizvi@amd.com>
+From: Liviu Dudau <liviu.dudau@arm.com>
 
-[ Upstream commit 5d5af34072c8b11f60960c3bea57ff9de5877791 ]
+[ Upstream commit c8f76c37cc3668ee45e081e76a15f24a352ebbdd ]
 
-[WHY]
-Z10 is should not be enabled by default on DCN31.
+If drm_universal_plane_init() fails early we jump to the common cleanup code
+that calls komeda_plane_destroy() which in turn could access the uninitalised
+drm_plane and crash. Return early if an error is detected without going through
+the common code.
 
-[HOW]
-Using DC debug flags to disable Z10 by default on DCN31.
-
-Reviewed-by: Eric Yang <Eric.Yang2@amd.com>
-Acked-by: Pavle Kotarac <Pavle.Kotarac@amd.com>
-Signed-off-by: Saaem Rizvi <syerizvi@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Reported-by: Steven Price <steven.price@arm.com>
+Reviewed-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
+Link: https://lore.kernel.org/dri-devel/20211203100946.2706922-1-liviu.dudau@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/arm/display/komeda/komeda_plane.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
-index 63934ecf6be8..d71e625cc476 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
-@@ -1030,6 +1030,7 @@ static const struct dc_debug_options debug_defaults_drv = {
- 			.afmt = true,
- 		}
- 	},
-+	.disable_z10 = true,
- 	.optimize_edp_link_rate = true,
- 	.enable_sw_cntl_psr = true,
- 	.apply_vendor_specific_lttpr_wa = true,
+diff --git a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
+index d63d83800a8a..d646e3ae1a23 100644
+--- a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
++++ b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
+@@ -275,8 +275,10 @@ static int komeda_plane_add(struct komeda_kms_dev *kms,
+ 
+ 	komeda_put_fourcc_list(formats);
+ 
+-	if (err)
+-		goto cleanup;
++	if (err) {
++		kfree(kplane);
++		return err;
++	}
+ 
+ 	drm_plane_helper_add(plane, &komeda_plane_helper_funcs);
+ 
 -- 
 2.35.1
 
