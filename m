@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE28EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09128CCA493
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358159AbiFGTv4 (ORCPT
+        id S1358183AbiFGTwA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:51:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58468 "EHLO
+        Tue, 7 Jun 2022 15:52:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354265AbiFGSqv (ORCPT
+        with ESMTP id S1354223AbiFGSqr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:51 -0400
+        Tue, 7 Jun 2022 14:46:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CB2D118020;
-        Tue,  7 Jun 2022 11:00:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7828214917F;
+        Tue,  7 Jun 2022 11:00:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2530B61866;
-        Tue,  7 Jun 2022 18:00:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59FD9C34115;
-        Tue,  7 Jun 2022 18:00:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9A22618BF;
+        Tue,  7 Jun 2022 18:00:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCAA2C34119;
+        Tue,  7 Jun 2022 18:00:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624829;
-        bh=AFtAHfC/KbuuNV46TdvKwid6qZzeWaijsvBa9IoGvxk=;
+        s=k20201202; t=1654624821;
+        bh=E4J8qHqnbKH9RWVVx26+7JoGtwsNVBNGUHnQObsUXp4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O8/QWVjUDKuiuAk+GxsrGkLZKrdbswi6dQyxShfIR6pCMskvaFCJMw68zfW/pm9kg
-         ASxQC73XQ58Ome2Z+gpTy3HuOrd5dxAVNoZCvEjUL+QSSIHbjm9mfbviBPgauvbKkc
-         9njE4CvrCMHeJBBi3cgj2LcwhVHLvY9t44cnL+TWzhNdb8GMP2tkWilIek14U0Ho+/
-         elLbn0AyTAId0Kw3UfrLpLihJ1ftGXxRSltrFGMeilL5Uk2sE+X7jM7Kqio6+lU1T+
-         8IxOjuE50YxC1KGZWUM6U4ePBWV54jUN44M5P5yhzcQget9PkfIcKHVatW8CGMVLb8
-         FlalKNa8pTmrg==
+        b=Ak7a50+O3yxMyk7OZYcrCl3vXbqI0Vb9d9VrY0kXTfaURTCTSZnLRkQvekgwtVTdf
+         IBKUyydyDkxaKglGzw+L69dwfYB3hy0b+6VxY+ugF5UaEoXuixSMcVw4j+WrOc0jGE
+         MkHbo2POoW0zWEiE1J26E0hmwuYRAbXkJ7Q1lvySPTh2o5c+LHRwPljSXue4hDMeK/
+         /6Kn6e6NzUoe/dTUsGzJvPdKkZyjulDlXv6y1fjmnAL3HzWVjZnQ7UV4bni5+1KvgP
+         kJDtFXelAZHH1AOXIdvP2f0nAKjb9RQh/lvqqEfbqjPk8T66hx6hx/uXhy33RH8okc
+         oE1Zp+dV0mRYA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, baihaowen@meizu.com,
-        dave@stgolabs.net, wangborong@cdjrlc.com, len.baker@gmx.com,
-        linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.4 06/34] drivers: staging: rtl8192u: Fix deadlock in ieee80211_beacons_stop()
-Date:   Tue,  7 Jun 2022 13:59:41 -0400
-Message-Id: <20220607180011.481266-6-sashal@kernel.org>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Denis Ciocca <denis.ciocca@st.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
+        cai.huoqing@linux.dev, andy.shevchenko@gmail.com,
+        aardelean@deviqon.com, lars@metafoo.de, linux-iio@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 02/34] iio: st_sensors: Add a local lock for protecting odr
+Date:   Tue,  7 Jun 2022 13:59:37 -0400
+Message-Id: <20220607180011.481266-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
 References: <20220607180011.481266-1-sashal@kernel.org>
@@ -54,52 +56,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-[ Upstream commit 806c7b53414934ba2a39449b31fd1a038e500273 ]
+[ Upstream commit 474010127e2505fc463236470908e1ff5ddb3578 ]
 
-There is a deadlock in ieee80211_beacons_stop(), which is shown below:
+Right now the (framework) mlock lock is (ab)used for multiple purposes:
+1- protecting concurrent accesses over the odr local cache
+2- avoid changing samplig frequency whilst buffer is running
 
-   (Thread 1)              |      (Thread 2)
-                           | ieee80211_send_beacon()
-ieee80211_beacons_stop()   |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | ieee80211_send_beacon_cb()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
+Let's start by handling situation #1 with a local lock.
 
-We hold ieee->beacon_lock in position (1) of thread 1 and use
-del_timer_sync() to wait timer to stop, but timer handler
-also need ieee->beacon_lock in position (2) of thread 2.
-As a result, ieee80211_beacons_stop() will block forever.
-
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417135407.109536-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Cc: Denis Ciocca <denis.ciocca@st.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/r/20220207143840.707510-7-miquel.raynal@bootlin.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../iio/common/st_sensors/st_sensors_core.c   | 24 ++++++++++++++-----
+ include/linux/iio/common/st_sensors.h         |  3 +++
+ 2 files changed, 21 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-index 33a6af7aad22..a869694337f7 100644
---- a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-+++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-@@ -528,9 +528,9 @@ static void ieee80211_beacons_stop(struct ieee80211_device *ieee)
- 	spin_lock_irqsave(&ieee->beacon_lock, flags);
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index 364683783ae5..c25b0bc89b0c 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -76,16 +76,18 @@ static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
  
- 	ieee->beacon_txing = 0;
--	del_timer_sync(&ieee->beacon_timer);
+ int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
+ {
+-	int err;
++	int err = 0;
+ 	struct st_sensor_odr_avl odr_out = {0, 0};
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
  
- 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
-+	del_timer_sync(&ieee->beacon_timer);
++	mutex_lock(&sdata->odr_lock);
++
+ 	if (!sdata->sensor_settings->odr.mask)
+-		return 0;
++		goto unlock_mutex;
+ 
+ 	err = st_sensors_match_odr(sdata->sensor_settings, odr, &odr_out);
+ 	if (err < 0)
+-		goto st_sensors_match_odr_error;
++		goto unlock_mutex;
+ 
+ 	if ((sdata->sensor_settings->odr.addr ==
+ 					sdata->sensor_settings->pw.addr) &&
+@@ -108,7 +110,9 @@ int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
+ 	if (err >= 0)
+ 		sdata->odr = odr_out.hz;
+ 
+-st_sensors_match_odr_error:
++unlock_mutex:
++	mutex_unlock(&sdata->odr_lock);
++
+ 	return err;
  }
+ EXPORT_SYMBOL(st_sensors_set_odr);
+@@ -384,6 +388,8 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
+ 	struct st_sensors_platform_data *of_pdata;
+ 	int err = 0;
  
- void ieee80211_stop_send_beacons(struct ieee80211_device *ieee)
++	mutex_init(&sdata->odr_lock);
++
+ 	/* If OF/DT pdata exists, it will take precedence of anything else */
+ 	of_pdata = st_sensors_of_probe(indio_dev->dev.parent, pdata);
+ 	if (of_pdata)
+@@ -575,18 +581,24 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
+ 		err = -EBUSY;
+ 		goto out;
+ 	} else {
++		mutex_lock(&sdata->odr_lock);
+ 		err = st_sensors_set_enable(indio_dev, true);
+-		if (err < 0)
++		if (err < 0) {
++			mutex_unlock(&sdata->odr_lock);
+ 			goto out;
++		}
+ 
+ 		msleep((sdata->sensor_settings->bootime * 1000) / sdata->odr);
+ 		err = st_sensors_read_axis_data(indio_dev, ch, val);
+-		if (err < 0)
++		if (err < 0) {
++			mutex_unlock(&sdata->odr_lock);
+ 			goto out;
++		}
+ 
+ 		*val = *val >> ch->scan_type.shift;
+ 
+ 		err = st_sensors_set_enable(indio_dev, false);
++		mutex_unlock(&sdata->odr_lock);
+ 	}
+ out:
+ 	mutex_unlock(&indio_dev->mlock);
+diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+index 686be532f4cb..7816bf070f83 100644
+--- a/include/linux/iio/common/st_sensors.h
++++ b/include/linux/iio/common/st_sensors.h
+@@ -228,6 +228,7 @@ struct st_sensor_settings {
+  * @hw_irq_trigger: if we're using the hardware interrupt on the sensor.
+  * @hw_timestamp: Latest timestamp from the interrupt handler, when in use.
+  * @buffer_data: Data used by buffer part.
++ * @odr_lock: Local lock for preventing concurrent ODR accesses/changes
+  */
+ struct st_sensor_data {
+ 	struct device *dev;
+@@ -253,6 +254,8 @@ struct st_sensor_data {
+ 	s64 hw_timestamp;
+ 
+ 	char buffer_data[ST_SENSORS_MAX_BUFFER_SIZE] ____cacheline_aligned;
++
++	struct mutex odr_lock;
+ };
+ 
+ #ifdef CONFIG_IIO_BUFFER
 -- 
 2.35.1
 
