@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06F46C19F55
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0C69C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:09:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444248AbiFHBHY (ORCPT
+        id S1444738AbiFHBH4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:07:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40212 "EHLO
+        Tue, 7 Jun 2022 21:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383452AbiFGWa6 (ORCPT
+        with ESMTP id S1380764AbiFGWbx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:30:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A83DA275599;
-        Tue,  7 Jun 2022 12:23:59 -0700 (PDT)
+        Tue, 7 Jun 2022 18:31:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB42D27B9BB;
+        Tue,  7 Jun 2022 12:25:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 189A160B89;
-        Tue,  7 Jun 2022 19:23:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 241D7C385A2;
-        Tue,  7 Jun 2022 19:23:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64CC0B823CA;
+        Tue,  7 Jun 2022 19:25:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D18F4C34115;
+        Tue,  7 Jun 2022 19:25:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629838;
-        bh=e5c3CxGrpbc0Jirl6dkEelSrmn2mfAXYagN8IL4SVRg=;
+        s=korg; t=1654629916;
+        bh=h96rxag+E6cq0S1AR/1pcZZD3EluK5LjxM3GIvxyU98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O+gNpg1jbThA3toFtdPFCSqFr7B7qOMjJSF+YPKr72zVxx7OTcQHraBA95qUB7Jd4
-         eyQ/osmLU+iyayajwA0wsaElYblHF7vAJw+TJFX9Tq2mHwBMDWCtzSc2F7YT13KXy4
-         MLPeH60iLDLkr+DHMItYheNQmKnpCpFHNBdmlnrY=
+        b=d3KPGz3EWS/Wyif7tSmZRehTV+zVCA5CBnz71YXYDbX9H5klWuW66SiMNFv2vt3SP
+         hKjgzAOsBVtHe5eZ67aKytjvs+T58ApA3eww9osLoPXv9KlJCGwIEaIp5mT5CA3ZxD
+         huC/ET8YDr8ibqSm03UXNW4HTwPYOD7i6PX3QUQE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yi Yang <yiyang13@huawei.com>,
-        Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 5.18 834/879] xtensa/simdisk: fix proc_read_simdisk()
-Date:   Tue,  7 Jun 2022 19:05:52 +0200
-Message-Id: <20220607165027.064347224@linuxfoundation.org>
+        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
+        Tejun Heo <tj@kernel.org>
+Subject: [PATCH 5.18 864/879] kseltest/cgroup: Make test_stress.sh work if run interactively
+Date:   Tue,  7 Jun 2022 19:06:22 +0200
+Message-Id: <20220607165027.932414097@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,56 +49,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yi Yang <yiyang13@huawei.com>
+From: Waiman Long <longman@redhat.com>
 
-commit b011946d039d66bbc7102137e98cc67e1356aa87 upstream.
+commit 213adc63dfbcdff9a0c19ec1f2681fda9c05cf6d upstream.
 
-The commit a69755b18774 ("xtensa simdisk: switch to proc_create_data()")
-split read operation into two parts, first retrieving the path when it's
-non-null and second retrieving the trailing '\n'. However when the path
-is non-null the first simple_read_from_buffer updates ppos, and the
-second simple_read_from_buffer returns 0 if ppos is greater than 1 (i.e.
-almost always). As a result reading from that proc file is almost always
-empty.
+Commit 54de76c01239 ("kselftest/cgroup: fix test_stress.sh to use OUTPUT
+dir") changes the test_core command path from . to $OUTPUT. However,
+variable OUTPUT may not be defined if the command is run interactively.
+Fix that by using ${OUTPUT:-.} to cover both cases.
 
-Fix it by making a temporary copy of the path with the trailing '\n' and
-using simple_read_from_buffer on that copy.
-
-Cc: stable@vger.kernel.org
-Fixes: a69755b18774 ("xtensa simdisk: switch to proc_create_data()")
-Signed-off-by: Yi Yang <yiyang13@huawei.com>
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Signed-off-by: Waiman Long <longman@redhat.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/xtensa/platforms/iss/simdisk.c |   18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ tools/testing/selftests/cgroup/test_stress.sh |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/xtensa/platforms/iss/simdisk.c
-+++ b/arch/xtensa/platforms/iss/simdisk.c
-@@ -211,12 +211,18 @@ static ssize_t proc_read_simdisk(struct
- 	struct simdisk *dev = pde_data(file_inode(file));
- 	const char *s = dev->filename;
- 	if (s) {
--		ssize_t n = simple_read_from_buffer(buf, size, ppos,
--							s, strlen(s));
--		if (n < 0)
--			return n;
--		buf += n;
--		size -= n;
-+		ssize_t len = strlen(s);
-+		char *temp = kmalloc(len + 2, GFP_KERNEL);
-+
-+		if (!temp)
-+			return -ENOMEM;
-+
-+		len = scnprintf(temp, len + 2, "%s\n", s);
-+		len = simple_read_from_buffer(buf, size, ppos,
-+					      temp, len);
-+
-+		kfree(temp);
-+		return len;
- 	}
- 	return simple_read_from_buffer(buf, size, ppos, "\n", 1);
- }
+--- a/tools/testing/selftests/cgroup/test_stress.sh
++++ b/tools/testing/selftests/cgroup/test_stress.sh
+@@ -1,4 +1,4 @@
+ #!/bin/bash
+ # SPDX-License-Identifier: GPL-2.0
+ 
+-./with_stress.sh -s subsys -s fork ${OUTPUT}/test_core
++./with_stress.sh -s subsys -s fork ${OUTPUT:-.}/test_core
 
 
