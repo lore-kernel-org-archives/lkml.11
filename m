@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE50ACCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C509BCCA487
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384380AbiFGWLJ (ORCPT
+        id S1384398AbiFGWLP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:11:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58112 "EHLO
+        Tue, 7 Jun 2022 18:11:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379021AbiFGVIk (ORCPT
+        with ESMTP id S235181AbiFGVIB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:08:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A0D7213283;
-        Tue,  7 Jun 2022 11:50:55 -0700 (PDT)
+        Tue, 7 Jun 2022 17:08:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B75212C9F;
+        Tue,  7 Jun 2022 11:50:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AF7B612F2;
-        Tue,  7 Jun 2022 18:50:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D7F7C385A2;
-        Tue,  7 Jun 2022 18:50:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED63D616B6;
+        Tue,  7 Jun 2022 18:50:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3FFBC385A2;
+        Tue,  7 Jun 2022 18:50:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627855;
-        bh=0SOjUx1vP3pC5to7NMBxAemGEoK1IKRZDN4I6BH/TuI=;
+        s=korg; t=1654627849;
+        bh=Dif+QLRgomHeNwIGglbOydkrFgua16Gw8/jn/i5m3BU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wZ8fj7K/rSp7e9q6gUUKQ6bWkwXD3YrfqHRJUB1MUEOd+gY3IW7jucABHGpHjjYMd
-         MvUmaiTWiaCTed7Tfhn11zfax2S7pCDN1+K4IX2lxHk55EsBV0eH+vHqSzTGP0F5wN
-         cSN7F1FbSHjJsoELtzM/d8IX5sNmipbkR32zOnac=
+        b=WAOT9/XrZfUK4iqHJhOWHafgZnxVRHBr+Ck55+DdkMwcz2H3RfrLZBZ8zWN7jDcgk
+         /+C2K7E/4rYbqFqexHAZehArOe+1U004Pak3nC6k3Uo6SLIucuhakXtxvAgyM4U/Cy
+         H3eJcdM+4EiA53nVMB+b3Q0a9rIhgLx9n7QMxOxI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wen Gong <quic_wgong@quicinc.com>,
-        Abhishek Kumar <kuabhs@chromium.org>,
-        Brian Norris <briannorris@chromium.org>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Vignesh Raghavendra <vigneshr@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 118/879] ath10k: skip ath10k_halt during suspend for driver state RESTARTING
-Date:   Tue,  7 Jun 2022 18:53:56 +0200
-Message-Id: <20220607165006.126929640@linuxfoundation.org>
+Subject: [PATCH 5.18 108/879] drivers: mmc: sdhci_am654: Add the quirk to set TESTCD bit
+Date:   Tue,  7 Jun 2022 18:53:46 +0200
+Message-Id: <20220607165005.832701868@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,112 +51,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abhishek Kumar <kuabhs@chromium.org>
+From: Vignesh Raghavendra <vigneshr@ti.com>
 
-[ Upstream commit b72a4aff947ba807177bdabb43debaf2c66bee05 ]
+[ Upstream commit c7666240ec76422cb7546bd07cc8ae80dc0ccdd2 ]
 
-Double free crash is observed when FW recovery(caused by wmi
-timeout/crash) is followed by immediate suspend event. The FW recovery
-is triggered by ath10k_core_restart() which calls driver clean up via
-ath10k_halt(). When the suspend event occurs between the FW recovery,
-the restart worker thread is put into frozen state until suspend completes.
-The suspend event triggers ath10k_stop() which again triggers ath10k_halt()
-The double invocation of ath10k_halt() causes ath10k_htt_rx_free() to be
-called twice(Note: ath10k_htt_rx_alloc was not called by restart worker
-thread because of its frozen state), causing the crash.
+The ARASAN MMC controller on Keystone 3 class of devices need the SDCD
+line to be connected for proper functioning. Similar to the issue pointed
+out in sdhci-of-arasan.c driver, commit 3794c542641f ("mmc:
+sdhci-of-arasan: Set controller to test mode when no CD bit").
 
-To fix this, during the suspend flow, skip call to ath10k_halt() in
-ath10k_stop() when the current driver state is ATH10K_STATE_RESTARTING.
-Also, for driver state ATH10K_STATE_RESTARTING, call
-ath10k_wait_for_suspend() in ath10k_stop(). This is because call to
-ath10k_wait_for_suspend() is skipped later in
-[ath10k_halt() > ath10k_core_stop()] for the driver state
-ATH10K_STATE_RESTARTING.
+In cases where this can't be connected, add a quirk to force the
+controller into test mode and set the TESTCD bit. Use the flag
+"ti,fails-without-test-cd", to implement this above quirk when required.
 
-The frozen restart worker thread will be cancelled during resume when the
-device comes out of suspend.
-
-Below is the crash stack for reference:
-
-[  428.469167] ------------[ cut here ]------------
-[  428.469180] kernel BUG at mm/slub.c:4150!
-[  428.469193] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
-[  428.469219] Workqueue: events_unbound async_run_entry_fn
-[  428.469230] RIP: 0010:kfree+0x319/0x31b
-[  428.469241] RSP: 0018:ffffa1fac015fc30 EFLAGS: 00010246
-[  428.469247] RAX: ffffedb10419d108 RBX: ffff8c05262b0000
-[  428.469252] RDX: ffff8c04a8c07000 RSI: 0000000000000000
-[  428.469256] RBP: ffffa1fac015fc78 R08: 0000000000000000
-[  428.469276] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  428.469285] Call Trace:
-[  428.469295]  ? dma_free_attrs+0x5f/0x7d
-[  428.469320]  ath10k_core_stop+0x5b/0x6f
-[  428.469336]  ath10k_halt+0x126/0x177
-[  428.469352]  ath10k_stop+0x41/0x7e
-[  428.469387]  drv_stop+0x88/0x10e
-[  428.469410]  __ieee80211_suspend+0x297/0x411
-[  428.469441]  rdev_suspend+0x6e/0xd0
-[  428.469462]  wiphy_suspend+0xb1/0x105
-[  428.469483]  ? name_show+0x2d/0x2d
-[  428.469490]  dpm_run_callback+0x8c/0x126
-[  428.469511]  ? name_show+0x2d/0x2d
-[  428.469517]  __device_suspend+0x2e7/0x41b
-[  428.469523]  async_suspend+0x1f/0x93
-[  428.469529]  async_run_entry_fn+0x3d/0xd1
-[  428.469535]  process_one_work+0x1b1/0x329
-[  428.469541]  worker_thread+0x213/0x372
-[  428.469547]  kthread+0x150/0x15f
-[  428.469552]  ? pr_cont_work+0x58/0x58
-[  428.469558]  ? kthread_blkcg+0x31/0x31
-
-Tested-on: QCA6174 hw3.2 PCI WLAN.RM.4.4.1-00288-QCARMSWPZ-1
-Co-developed-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220426221859.v2.1.I650b809482e1af8d0156ed88b5dc2677a0711d46@changeid
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+Link: https://lore.kernel.org/r/20220425063120.10135-3-a-govindraju@ti.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/mac.c | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
+ drivers/mmc/host/sdhci_am654.c | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index b11aaee8b8c0..a11b31191d5a 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -5339,13 +5339,29 @@ static int ath10k_start(struct ieee80211_hw *hw)
- static void ath10k_stop(struct ieee80211_hw *hw)
- {
- 	struct ath10k *ar = hw->priv;
-+	u32 opt;
+diff --git a/drivers/mmc/host/sdhci_am654.c b/drivers/mmc/host/sdhci_am654.c
+index e54fe24d47e7..e7ced1496a07 100644
+--- a/drivers/mmc/host/sdhci_am654.c
++++ b/drivers/mmc/host/sdhci_am654.c
+@@ -147,6 +147,9 @@ struct sdhci_am654_data {
+ 	int drv_strength;
+ 	int strb_sel;
+ 	u32 flags;
++	u32 quirks;
++
++#define SDHCI_AM654_QUIRK_FORCE_CDTEST BIT(0)
+ };
  
- 	ath10k_drain_tx(ar);
- 
- 	mutex_lock(&ar->conf_mutex);
- 	if (ar->state != ATH10K_STATE_OFF) {
--		if (!ar->hw_rfkill_on)
--			ath10k_halt(ar);
-+		if (!ar->hw_rfkill_on) {
-+			/* If the current driver state is RESTARTING but not yet
-+			 * fully RESTARTED because of incoming suspend event,
-+			 * then ath10k_halt() is already called via
-+			 * ath10k_core_restart() and should not be called here.
-+			 */
-+			if (ar->state != ATH10K_STATE_RESTARTING) {
-+				ath10k_halt(ar);
-+			} else {
-+				/* Suspending here, because when in RESTARTING
-+				 * state, ath10k_core_stop() skips
-+				 * ath10k_wait_for_suspend().
-+				 */
-+				opt = WMI_PDEV_SUSPEND_AND_DISABLE_INTR;
-+				ath10k_wait_for_suspend(ar, opt);
-+			}
-+		}
- 		ar->state = ATH10K_STATE_OFF;
+ struct sdhci_am654_driver_data {
+@@ -369,6 +372,21 @@ static void sdhci_am654_write_b(struct sdhci_host *host, u8 val, int reg)
  	}
- 	mutex_unlock(&ar->conf_mutex);
+ }
+ 
++static void sdhci_am654_reset(struct sdhci_host *host, u8 mask)
++{
++	u8 ctrl;
++	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
++	struct sdhci_am654_data *sdhci_am654 = sdhci_pltfm_priv(pltfm_host);
++
++	sdhci_reset(host, mask);
++
++	if (sdhci_am654->quirks & SDHCI_AM654_QUIRK_FORCE_CDTEST) {
++		ctrl = sdhci_readb(host, SDHCI_HOST_CONTROL);
++		ctrl |= SDHCI_CTRL_CDTEST_INS | SDHCI_CTRL_CDTEST_EN;
++		sdhci_writeb(host, ctrl, SDHCI_HOST_CONTROL);
++	}
++}
++
+ static int sdhci_am654_execute_tuning(struct mmc_host *mmc, u32 opcode)
+ {
+ 	struct sdhci_host *host = mmc_priv(mmc);
+@@ -500,7 +518,7 @@ static struct sdhci_ops sdhci_j721e_4bit_ops = {
+ 	.set_clock = sdhci_j721e_4bit_set_clock,
+ 	.write_b = sdhci_am654_write_b,
+ 	.irq = sdhci_am654_cqhci_irq,
+-	.reset = sdhci_reset,
++	.reset = sdhci_am654_reset,
+ };
+ 
+ static const struct sdhci_pltfm_data sdhci_j721e_4bit_pdata = {
+@@ -719,6 +737,9 @@ static int sdhci_am654_get_of_property(struct platform_device *pdev,
+ 	device_property_read_u32(dev, "ti,clkbuf-sel",
+ 				 &sdhci_am654->clkbuf_sel);
+ 
++	if (device_property_read_bool(dev, "ti,fails-without-test-cd"))
++		sdhci_am654->quirks |= SDHCI_AM654_QUIRK_FORCE_CDTEST;
++
+ 	sdhci_get_of_property(pdev);
+ 
+ 	return 0;
 -- 
 2.35.1
 
