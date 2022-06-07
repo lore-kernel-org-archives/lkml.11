@@ -2,153 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F074BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:53:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F5A2CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:53:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353843AbiFHBtM (ORCPT
+        id S1390357AbiFHBuR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:49:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51414 "EHLO
+        Tue, 7 Jun 2022 21:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383900AbiFGWIU (ORCPT
+        with ESMTP id S1450379AbiFGXLN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:08:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6524256959;
-        Tue,  7 Jun 2022 12:18:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 542E0B823D5;
-        Tue,  7 Jun 2022 19:18:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A543EC385A5;
-        Tue,  7 Jun 2022 19:18:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629516;
-        bh=9R5ZdtnFBk0LJ87brCjYh7QbNZwGS+6WpNNS9NjwiEE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y2/hzhXXLaQ8HdZvctMivsyfFhOuXE8UUxKuyFxgXBLOC9aM1wiF1DHfxmODhE78w
-         rTuDyBMfrlCCvkUCumnmcn2ftQaXNv0QIZBgEfqUPJWI+vTuZ+6U586uImmulVj+Hu
-         6r3et7PmYnR3dIXCBvsIYJsBE8gSlin96hDZXvEA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, ChenXiaoSong <chenxiaosong2@huawei.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 678/879] NFS: Dont report ENOSPC write errors twice
-Date:   Tue,  7 Jun 2022 19:03:16 +0200
-Message-Id: <20220607165022.528205277@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 19:11:13 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DB0392134;
+        Tue,  7 Jun 2022 13:49:17 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id x18so10682587qtj.3;
+        Tue, 07 Jun 2022 13:49:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6OzJWnX7XOWLy09SsgShl0+AdUcp50QiZ/tYbextP4Q=;
+        b=i1FQpB4zMZY2BupvN4XD17bMMlxM4SkxRXOTS8rctLXeu4FHOSmZP53iCYomN0KUS8
+         n3HSSYbo6X6Sk1uiVfJqf6HQXbKSSAqi1t79N1EDcHuurJzYMxigwswntQKPaxx0EK6z
+         8yCc9JpDoSsKmC7fc/LSwquIInUEH3pH3EuKrJEYqWCkxMUAQa00osLr2ExZSaBqXbOd
+         lDlXitfjh7J3oYfX1JhgIaVGjErCHPIqW0XKAJR+phtWmHz6FMpHaJ+MYBF0tHmOpHEH
+         BJTN45YtUJvPFSvXl0N/rGCzJsRJnTn2Fep/1jogSm24ivyzzWEVzn8soIDXe+1ycML1
+         GR7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6OzJWnX7XOWLy09SsgShl0+AdUcp50QiZ/tYbextP4Q=;
+        b=jzkBTsJp1fgOgqvNmquB8C4pG51i0eHYDxS4RcRYuSmXVo6a0rqcXxQZOG1O15/yMl
+         2jPSKs0yqR62qboxYXD0rLA44UltwBbX14kPbX8ZGhoMVjcajNHWi6HjsK6UNrdItF3Q
+         0B7vNIegsmX0YbMOpBD0Y9eiW/JEC+fm5G3EyqbVPfRJPPKI0QByhS8J9zYPeA7rUnar
+         XKh/GsMyC8AGbXsouZFUk4YXjrl0MsGdy4ojre/8TgbF1LqPWx7XXcP083UlNAEbK8yp
+         NVImUHNacHxyn4UfetsfiBnLBcTiyFLpNgNMaDff256apbi8BKOneRcNlO64XnhLAlNS
+         2+Jg==
+X-Gm-Message-State: AOAM531plcj3kz5nF6hwjQvguisaOuGnKKWurtrF4zO0N8CktxJmpH8l
+        42wZHRNQCQmsAl/Gu+XWqpNaLxkfFkKw5boV9sgbc749
+X-Google-Smtp-Source: ABdhPJwE6QpALhwFKv2F6OUdVIHHsur41OqT3tW0FzBUtOfl6yfACS1sOYPrMnF2Eq0+1aMyXMWgGuGskF2YCDs9uk8=
+X-Received: by 2002:a05:622a:344:b0:304:eb0a:3901 with SMTP id
+ r4-20020a05622a034400b00304eb0a3901mr11181434qtw.297.1654634956111; Tue, 07
+ Jun 2022 13:49:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220604193300.125758-1-robimarko@gmail.com> <20220604193300.125758-2-robimarko@gmail.com>
+ <Yp+lMm66+imh1wvk@sirena.org.uk>
+In-Reply-To: <Yp+lMm66+imh1wvk@sirena.org.uk>
+From:   Robert Marko <robimarko@gmail.com>
+Date:   Tue, 7 Jun 2022 22:49:05 +0200
+Message-ID: <CAOX2RU7DefWU9jr09VOFsN7+9wWw5rbYGmvfyFA4HHHF9A8acQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] regulator: qcom_smd: correct MP5496 ranges
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        lgirdwood@gmail.com, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+On Tue, 7 Jun 2022 at 21:21, Mark Brown <broonie@kernel.org> wrote:
+>
+> On Sat, Jun 04, 2022 at 09:33:00PM +0200, Robert Marko wrote:
+> > Currently set MP5496 Buck and LDO ranges dont match its datasheet[1].
+> > According to the datasheet:
+> > Buck range is 0.6-2.1875V with a 12.5mV step
+> > LDO range is 0.8-3.975V with a 25mV step.
+>
+> Doesn't make much difference here but in general fixes like this should
+> come before new features in a series so they can be applied without
+> dependency issues.
 
-[ Upstream commit e6005436f6cc9ed13288f936903f0151e5543485 ]
+Will do it next time, thanks for the heads up.
 
-Any errors reported by the write() system call need to be cleared from
-the file descriptor's error tracking. The current call to nfs_wb_all()
-causes the error to be reported, but since it doesn't call
-file_check_and_advance_wb_err(), we can end up reporting the same error
-a second time when the application calls fsync().
-
-Note that since Linux 4.13, the rule is that EIO may be reported for
-write(), but it must be reported by a subsequent fsync(), so let's just
-drop reporting it in write.
-
-The check for nfs_ctx_key_to_expire() is just a duplicate to the one
-already in nfs_write_end(), so let's drop that too.
-
-Reported-by: ChenXiaoSong <chenxiaosong2@huawei.com>
-Fixes: ce368536dd61 ("nfs: nfs_file_write() should check for writeback errors")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/nfs/file.c | 34 ++++++++++++++--------------------
- 1 file changed, 14 insertions(+), 20 deletions(-)
-
-diff --git a/fs/nfs/file.c b/fs/nfs/file.c
-index 7c380e555224..87e4cd5e8fe2 100644
---- a/fs/nfs/file.c
-+++ b/fs/nfs/file.c
-@@ -598,18 +598,6 @@ static const struct vm_operations_struct nfs_file_vm_ops = {
- 	.page_mkwrite = nfs_vm_page_mkwrite,
- };
- 
--static int nfs_need_check_write(struct file *filp, struct inode *inode,
--				int error)
--{
--	struct nfs_open_context *ctx;
--
--	ctx = nfs_file_open_context(filp);
--	if (nfs_error_is_fatal_on_server(error) ||
--	    nfs_ctx_key_to_expire(ctx, inode))
--		return 1;
--	return 0;
--}
--
- ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
- {
- 	struct file *file = iocb->ki_filp;
-@@ -637,7 +625,7 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
- 	if (iocb->ki_flags & IOCB_APPEND || iocb->ki_pos > i_size_read(inode)) {
- 		result = nfs_revalidate_file_size(inode, file);
- 		if (result)
--			goto out;
-+			return result;
- 	}
- 
- 	nfs_clear_invalid_mapping(file->f_mapping);
-@@ -656,6 +644,7 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
- 
- 	written = result;
- 	iocb->ki_pos += written;
-+	nfs_add_stats(inode, NFSIOS_NORMALWRITTENBYTES, written);
- 
- 	if (mntflags & NFS_MOUNT_WRITE_EAGER) {
- 		result = filemap_fdatawrite_range(file->f_mapping,
-@@ -673,17 +662,22 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
- 	}
- 	result = generic_write_sync(iocb, written);
- 	if (result < 0)
--		goto out;
-+		return result;
- 
-+out:
- 	/* Return error values */
- 	error = filemap_check_wb_err(file->f_mapping, since);
--	if (nfs_need_check_write(file, inode, error)) {
--		int err = nfs_wb_all(inode);
--		if (err < 0)
--			result = err;
-+	switch (error) {
-+	default:
-+		break;
-+	case -EDQUOT:
-+	case -EFBIG:
-+	case -ENOSPC:
-+		nfs_wb_all(inode);
-+		error = file_check_and_advance_wb_err(file);
-+		if (error < 0)
-+			result = error;
- 	}
--	nfs_add_stats(inode, NFSIOS_NORMALWRITTENBYTES, written);
--out:
- 	return result;
- 
- out_swapfile:
--- 
-2.35.1
-
-
-
+Regards,
+Robert
