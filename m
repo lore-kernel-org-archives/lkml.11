@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3128C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:30:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E02CCCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:30:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388876AbiFHB1y (ORCPT
+        id S1388915AbiFHB2B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:27:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42196 "EHLO
+        Tue, 7 Jun 2022 21:28:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383924AbiFGWIy (ORCPT
+        with ESMTP id S1385479AbiFGWbc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:08:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8E625873C;
-        Tue,  7 Jun 2022 12:18:47 -0700 (PDT)
+        Tue, 7 Jun 2022 18:31:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E1527935A;
+        Tue,  7 Jun 2022 12:24:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96295617DA;
-        Tue,  7 Jun 2022 19:18:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A493CC385A2;
-        Tue,  7 Jun 2022 19:18:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E50D3B823D0;
+        Tue,  7 Jun 2022 19:24:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43C49C385A5;
+        Tue,  7 Jun 2022 19:24:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629527;
-        bh=dQGT3VlrKxcHxBouEadgO5wi9SVWHYVnGFN9n4WJfvY=;
+        s=korg; t=1654629879;
+        bh=M/NcB8WX6Wqp97huGdzefR0XgbpT9OSioDVVk20zTLM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v0e0BV3zzotDL1ppxjj6j07We1M6l1EBd+7coiWyxarIk4MTLlvo2iyxRWFRU21ug
-         Ct1QF3EFLMPAI5rusNhnv2dCufRYSOqtF11/nxjisiVeYUW270Ih3undR77v73KJOC
-         NCxd6ZwzWKoOcBHiagF3oQnupwNZ3BXk1UIzvLpI=
+        b=1EoONYz1InAWVdFCJKaW10+PmiQ6H/ngSn3pczAOpxBCgYySqBLaFybotLfvdR8/R
+         xnKjMOndDOdNzrJmelTJGPf+RTO04Eq9VhkrrxK2K6OIhhrzFrjNjZZzQ14F7zKkFj
+         P0vQB/rRtQ0IKsfPUh24/YN9naf3C7R5RzAbxL7Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <aglo@umich.edu>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 682/879] NFS: Further fixes to the writeback error handling
-Date:   Tue,  7 Jun 2022 19:03:20 +0200
-Message-Id: <20220607165022.642130557@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: [PATCH 5.18 809/879] csky: patch_text: Fixup last cpu should be master
+Date:   Tue,  7 Jun 2022 19:05:27 +0200
+Message-Id: <20220607165026.339144983@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,100 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Guo Ren <guoren@linux.alibaba.com>
 
-[ Upstream commit c6fd3511c3397dd9cbc6dc5d105bbedb69bf4061 ]
+commit 8c4d16471e2babe9bdfe41d6ef724526629696cb upstream.
 
-When we handle an error by redirtying the page, we're not corrupting the
-mapping, so we don't want the error to be recorded in the mapping.
-If the caller has specified a sync_mode of WB_SYNC_NONE, we can just
-return AOP_WRITEPAGE_ACTIVATE. However if we're dealing with
-WB_SYNC_ALL, we need to ensure that retries happen when the errors are
-non-fatal.
+These patch_text implementations are using stop_machine_cpuslocked
+infrastructure with atomic cpu_count. The original idea: When the
+master CPU patch_text, the others should wait for it. But current
+implementation is using the first CPU as master, which couldn't
+guarantee the remaining CPUs are waiting. This patch changes the
+last CPU as the master to solve the potential risk.
 
-Reported-by: Olga Kornievskaia <aglo@umich.edu>
-Fixes: 8fc75bed96bb ("NFS: Fix up return value on fatal errors in nfs_page_async_flush()")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 33e53ae1ce41 ("csky: Add kprobes supported")
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/write.c | 39 ++++++++++++++++++---------------------
- 1 file changed, 18 insertions(+), 21 deletions(-)
+ arch/csky/kernel/probes/kprobes.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/nfs/write.c b/fs/nfs/write.c
-index 4925d11849cd..2f41659e232e 100644
---- a/fs/nfs/write.c
-+++ b/fs/nfs/write.c
-@@ -603,8 +603,9 @@ static void nfs_write_error(struct nfs_page *req, int error)
-  * Find an associated nfs write request, and prepare to flush it out
-  * May return an error if the user signalled nfs_wait_on_request().
-  */
--static int nfs_page_async_flush(struct nfs_pageio_descriptor *pgio,
--				struct page *page)
-+static int nfs_page_async_flush(struct page *page,
-+				struct writeback_control *wbc,
-+				struct nfs_pageio_descriptor *pgio)
- {
- 	struct nfs_page *req;
- 	int ret = 0;
-@@ -630,11 +631,11 @@ static int nfs_page_async_flush(struct nfs_pageio_descriptor *pgio,
- 		/*
- 		 * Remove the problematic req upon fatal errors on the server
- 		 */
--		if (nfs_error_is_fatal(ret)) {
--			if (nfs_error_is_fatal_on_server(ret))
--				goto out_launder;
--		} else
--			ret = -EAGAIN;
-+		if (nfs_error_is_fatal_on_server(ret))
-+			goto out_launder;
-+		if (wbc->sync_mode == WB_SYNC_NONE)
-+			ret = AOP_WRITEPAGE_ACTIVATE;
-+		redirty_page_for_writepage(wbc, page);
- 		nfs_redirty_request(req);
- 		pgio->pg_error = 0;
- 	} else
-@@ -650,15 +651,8 @@ static int nfs_page_async_flush(struct nfs_pageio_descriptor *pgio,
- static int nfs_do_writepage(struct page *page, struct writeback_control *wbc,
- 			    struct nfs_pageio_descriptor *pgio)
- {
--	int ret;
--
- 	nfs_pageio_cond_complete(pgio, page_index(page));
--	ret = nfs_page_async_flush(pgio, page);
--	if (ret == -EAGAIN) {
--		redirty_page_for_writepage(wbc, page);
--		ret = AOP_WRITEPAGE_ACTIVATE;
--	}
--	return ret;
-+	return nfs_page_async_flush(page, wbc, pgio);
- }
+--- a/arch/csky/kernel/probes/kprobes.c
++++ b/arch/csky/kernel/probes/kprobes.c
+@@ -30,7 +30,7 @@ static int __kprobes patch_text_cb(void
+ 	struct csky_insn_patch *param = priv;
+ 	unsigned int addr = (unsigned int)param->addr;
  
- /*
-@@ -733,12 +727,15 @@ int nfs_writepages(struct address_space *mapping, struct writeback_control *wbc)
- 		priority = wb_priority(wbc);
- 	}
- 
--	nfs_pageio_init_write(&pgio, inode, priority, false,
--				&nfs_async_write_completion_ops);
--	pgio.pg_io_completion = ioc;
--	err = write_cache_pages(mapping, wbc, nfs_writepages_callback, &pgio);
--	pgio.pg_error = 0;
--	nfs_pageio_complete(&pgio);
-+	do {
-+		nfs_pageio_init_write(&pgio, inode, priority, false,
-+				      &nfs_async_write_completion_ops);
-+		pgio.pg_io_completion = ioc;
-+		err = write_cache_pages(mapping, wbc, nfs_writepages_callback,
-+					&pgio);
-+		pgio.pg_error = 0;
-+		nfs_pageio_complete(&pgio);
-+	} while (err < 0 && !nfs_error_is_fatal(err));
- 	nfs_io_completion_put(ioc);
- 
- 	if (err < 0)
--- 
-2.35.1
-
+-	if (atomic_inc_return(&param->cpu_count) == 1) {
++	if (atomic_inc_return(&param->cpu_count) == num_online_cpus()) {
+ 		*(u16 *) addr = cpu_to_le16(param->opcode);
+ 		dcache_wb_range(addr, addr + 2);
+ 		atomic_inc(&param->cpu_count);
 
 
