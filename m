@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D1CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:03:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 109E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:03:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382405AbiFGWDV (ORCPT
+        id S1379275AbiFGWDj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:03:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40620 "EHLO
+        Tue, 7 Jun 2022 18:03:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378874AbiFGVBx (ORCPT
+        with ESMTP id S1378665AbiFGVDX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:01:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9842C20EE86;
-        Tue,  7 Jun 2022 11:45:51 -0700 (PDT)
+        Tue, 7 Jun 2022 17:03:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E17B3145589;
+        Tue,  7 Jun 2022 11:48:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EC5BB822C0;
-        Tue,  7 Jun 2022 18:45:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71B1EC385A2;
-        Tue,  7 Jun 2022 18:45:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F1BA61295;
+        Tue,  7 Jun 2022 18:48:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BA19C385A2;
+        Tue,  7 Jun 2022 18:48:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627548;
-        bh=NOiv8Tiyc/iLudToEyG5vrD7UybPASKRRba4y5xBscc=;
+        s=korg; t=1654627715;
+        bh=qO2K96LJDhbirD99gp0YVHECVMdEPs1haKCeGlOd7O0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jq5QMVBoEYGlfASOy5DvzkVgFBbSrkyliNRELPEADt4sDdssSFSf2MuMFPuOg8C6I
-         lrMFMpsiy7FBPf08FXOEfuNvPDnsCG+jveICgcD8GTAIARCcelBRnpmnGFp6jAwp2A
-         iozp6s5b2lNOTrX3c49B9JsM2iCwv47jFj6EXH0A=
+        b=0XIe/dzPnfwJ/bsDQODmzGdNvbFD6ABI6/rreRtwYI/IxXPWZ2lhokRnCMTsX+sgg
+         +xH4v0fd0+59idN32kj8WqBF6+0/aM4O6zCm2QsKgYfF96pycqo3xywmt1Dk5lQWJB
+         RG37+kbXrSCteus25fgxG6Bd5QcylBxhbTtO/t+A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>,
-        Philippe Cornu <philippe.cornu@foss.st.com>
-Subject: [PATCH 5.17 732/772] stm: ltdc: fix two incorrect NULL checks on list iterator
-Date:   Tue,  7 Jun 2022 19:05:24 +0200
-Message-Id: <20220607165010.609589954@linuxfoundation.org>
+        stable@vger.kernel.org, Joe Perches <joe@perches.com>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH 5.18 026/879] fs/ntfs3: In function ntfs_set_acl_ex do not change inode->i_mode if called from function ntfs_init_acl
+Date:   Tue,  7 Jun 2022 18:52:24 +0200
+Message-Id: <20220607165003.435264945@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,70 +49,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 
-commit 2e6c86be0e57079d1fb6c7c7e5423db096d0548a upstream.
+commit 9186d472ee780fabf74424756c4c00545166157e upstream.
 
-The two bugs are here:
-	if (encoder) {
-	if (bridge && bridge->timings)
+ntfs_init_acl sets mode. ntfs_init_acl calls ntfs_set_acl_ex.
+ntfs_set_acl_ex must not change this mode.
+Fixes xfstest generic/444
+Fixes: be71b5cba2e6 ("fs/ntfs3: Add attrib operations")
 
-The list iterator value 'encoder/bridge' will *always* be set and
-non-NULL by drm_for_each_encoder()/list_for_each_entry(), so it is
-incorrect to assume that the iterator value will be NULL if the
-list is empty or no element is found.
-
-To fix the bug, use a new variable '*_iter' as the list iterator,
-while use the old variable 'encoder/bridge' as a dedicated pointer
-to point to the found element.
-
-Cc: stable@vger.kernel.org
-Fixes: 99e360442f223 ("drm/stm: Fix bus_flags handling")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Acked-by: Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
-Signed-off-by: Philippe Cornu <philippe.cornu@foss.st.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220327055355.3808-1-xiam0nd.tong@gmail.com
+Reviewed-by: Joe Perches <joe@perches.com>
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/stm/ltdc.c |   16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ fs/ntfs3/xattr.c |   13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
---- a/drivers/gpu/drm/stm/ltdc.c
-+++ b/drivers/gpu/drm/stm/ltdc.c
-@@ -528,8 +528,8 @@ static void ltdc_crtc_mode_set_nofb(stru
- 	struct drm_device *ddev = crtc->dev;
- 	struct drm_connector_list_iter iter;
- 	struct drm_connector *connector = NULL;
--	struct drm_encoder *encoder = NULL;
--	struct drm_bridge *bridge = NULL;
-+	struct drm_encoder *encoder = NULL, *en_iter;
-+	struct drm_bridge *bridge = NULL, *br_iter;
- 	struct drm_display_mode *mode = &crtc->state->adjusted_mode;
- 	u32 hsync, vsync, accum_hbp, accum_vbp, accum_act_w, accum_act_h;
- 	u32 total_width, total_height;
-@@ -538,15 +538,19 @@ static void ltdc_crtc_mode_set_nofb(stru
- 	int ret;
+--- a/fs/ntfs3/xattr.c
++++ b/fs/ntfs3/xattr.c
+@@ -541,7 +541,7 @@ struct posix_acl *ntfs_get_acl(struct in
  
- 	/* get encoder from crtc */
--	drm_for_each_encoder(encoder, ddev)
--		if (encoder->crtc == crtc)
-+	drm_for_each_encoder(en_iter, ddev)
-+		if (en_iter->crtc == crtc) {
-+			encoder = en_iter;
- 			break;
-+		}
+ static noinline int ntfs_set_acl_ex(struct user_namespace *mnt_userns,
+ 				    struct inode *inode, struct posix_acl *acl,
+-				    int type)
++				    int type, bool init_acl)
+ {
+ 	const char *name;
+ 	size_t size, name_len;
+@@ -554,8 +554,9 @@ static noinline int ntfs_set_acl_ex(stru
  
- 	if (encoder) {
- 		/* get bridge from encoder */
--		list_for_each_entry(bridge, &encoder->bridge_chain, chain_node)
--			if (bridge->encoder == encoder)
-+		list_for_each_entry(br_iter, &encoder->bridge_chain, chain_node)
-+			if (br_iter->encoder == encoder) {
-+				bridge = br_iter;
- 				break;
-+			}
+ 	switch (type) {
+ 	case ACL_TYPE_ACCESS:
+-		if (acl) {
+-			umode_t mode = inode->i_mode;
++		/* Do not change i_mode if we are in init_acl */
++		if (acl && !init_acl) {
++			umode_t mode;
  
- 		/* Get the connector from encoder */
- 		drm_connector_list_iter_begin(ddev, &iter);
+ 			err = posix_acl_update_mode(mnt_userns, inode, &mode,
+ 						    &acl);
+@@ -616,7 +617,7 @@ out:
+ int ntfs_set_acl(struct user_namespace *mnt_userns, struct inode *inode,
+ 		 struct posix_acl *acl, int type)
+ {
+-	return ntfs_set_acl_ex(mnt_userns, inode, acl, type);
++	return ntfs_set_acl_ex(mnt_userns, inode, acl, type, false);
+ }
+ 
+ /*
+@@ -636,7 +637,7 @@ int ntfs_init_acl(struct user_namespace
+ 
+ 	if (default_acl) {
+ 		err = ntfs_set_acl_ex(mnt_userns, inode, default_acl,
+-				      ACL_TYPE_DEFAULT);
++				      ACL_TYPE_DEFAULT, true);
+ 		posix_acl_release(default_acl);
+ 	} else {
+ 		inode->i_default_acl = NULL;
+@@ -647,7 +648,7 @@ int ntfs_init_acl(struct user_namespace
+ 	else {
+ 		if (!err)
+ 			err = ntfs_set_acl_ex(mnt_userns, inode, acl,
+-					      ACL_TYPE_ACCESS);
++					      ACL_TYPE_ACCESS, true);
+ 		posix_acl_release(acl);
+ 	}
+ 
 
 
