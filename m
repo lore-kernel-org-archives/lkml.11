@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70D25CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79486C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349984AbiFGSKQ (ORCPT
+        id S1350131AbiFGSKa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59820 "EHLO
+        Tue, 7 Jun 2022 14:10:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349083AbiFGRu3 (ORCPT
+        with ESMTP id S1349753AbiFGRve (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:50:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3130139CB1;
-        Tue,  7 Jun 2022 10:37:46 -0700 (PDT)
+        Tue, 7 Jun 2022 13:51:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAA113AF3D;
+        Tue,  7 Jun 2022 10:38:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02192B81F38;
-        Tue,  7 Jun 2022 17:37:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EC14C385A5;
-        Tue,  7 Jun 2022 17:37:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C7BC6164A;
+        Tue,  7 Jun 2022 17:38:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63053C34115;
+        Tue,  7 Jun 2022 17:38:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623450;
-        bh=fh98o9JfXKscxLcEWhWjcFhLkDzvvPrMBrnCd4wQVg4=;
+        s=korg; t=1654623505;
+        bh=9OVdoleGkdoG1w/I/9GHVvRNmcXCvndh0qaqcBXBFIY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tKuR0AMfA3jyt7RwK4TNfuhc68zYiTZ9VButqQidiYb+vDXtn7yHFmocCPs25LEFL
-         G4vwLmALVwEvDp7mmj1S1tm0xUutbUA0k96qp1yK1udoRK/lsx3kUj2+HjMamx2j+e
-         8rbZn/qLAA8BiWprymFD/YA0YtwTA8eZk9igobYg=
+        b=UPs2km50uJgbiNXc5wVLxaaaeGtkMTdh+zBu4vAMn/wS+GWbFGMmiblpy351AKIuR
+         jZ9eLPUdndILDgRxL3A0Ybr/zp3nXxSusulzaiuEGB3+p7/5NTWFFjTciP0xAEhlk3
+         MbqQFQ+pXP1TxM+oFQ8kf4nQKtJHNKQOf9BXN8qU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Lyude Paul <lyude@redhat.com>
-Subject: [PATCH 5.10 381/452] drm/nouveau/kms/nv50-: atom: fix an incorrect NULL check on list iterator
-Date:   Tue,  7 Jun 2022 19:03:58 +0200
-Message-Id: <20220607164919.918256440@linuxfoundation.org>
+        "yukuai (C)" <yukuai3@huawei.com>, Jan Kara <jack@suse.cz>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 442/452] bfq: Drop pointless unlock-lock pair
+Date:   Tue,  7 Jun 2022 19:04:59 +0200
+Message-Id: <20220607164921.735922268@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,97 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Jan Kara <jack@suse.cz>
 
-commit 6ce4431c7ba7954c4fa6a96ce16ca1b2943e1a83 upstream.
+commit fc84e1f941b91221092da5b3102ec82da24c5673 upstream.
 
-The bug is here:
-	return encoder;
+In bfq_insert_request() we unlock bfqd->lock only to call
+trace_block_rq_insert() and then lock bfqd->lock again. This is really
+pointless since tracing is disabled if we really care about performance
+and even if the tracepoint is enabled, it is a quick call.
 
-The list iterator value 'encoder' will *always* be set and non-NULL
-by drm_for_each_encoder_mask(), so it is incorrect to assume that the
-iterator value will be NULL if the list is empty or no element found.
-Otherwise it will bypass some NULL checks and lead to invalid memory
-access passing the check.
-
-To fix this bug, just return 'encoder' when found, otherwise return
-NULL.
-
-Cc: stable@vger.kernel.org
-Fixes: 12885ecbfe62d ("drm/nouveau/kms/nvd9-: Add CRC support")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-[Changed commit title]
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220327073925.11121-1-xiam0nd.tong@gmail.com
+CC: stable@vger.kernel.org
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-5-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/dispnv50/atom.h |    6 +++---
- drivers/gpu/drm/nouveau/dispnv50/crc.c  |   27 ++++++++++++++++++++++-----
- 2 files changed, 25 insertions(+), 8 deletions(-)
+ block/bfq-iosched.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/drivers/gpu/drm/nouveau/dispnv50/atom.h
-+++ b/drivers/gpu/drm/nouveau/dispnv50/atom.h
-@@ -160,14 +160,14 @@ nv50_head_atom_get(struct drm_atomic_sta
- static inline struct drm_encoder *
- nv50_head_atom_get_encoder(struct nv50_head_atom *atom)
- {
--	struct drm_encoder *encoder = NULL;
-+	struct drm_encoder *encoder;
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -5537,11 +5537,8 @@ static void bfq_insert_request(struct bl
+ 		return;
+ 	}
  
- 	/* We only ever have a single encoder */
- 	drm_for_each_encoder_mask(encoder, atom->state.crtc->dev,
- 				  atom->state.encoder_mask)
--		break;
-+		return encoder;
+-	spin_unlock_irq(&bfqd->lock);
+-
+ 	blk_mq_sched_request_inserted(rq);
  
--	return encoder;
-+	return NULL;
- }
- 
- #define nv50_wndw_atom(p) container_of((p), struct nv50_wndw_atom, state)
---- a/drivers/gpu/drm/nouveau/dispnv50/crc.c
-+++ b/drivers/gpu/drm/nouveau/dispnv50/crc.c
-@@ -411,9 +411,18 @@ void nv50_crc_atomic_check_outp(struct n
- 		struct nv50_head_atom *armh = nv50_head_atom(old_crtc_state);
- 		struct nv50_head_atom *asyh = nv50_head_atom(new_crtc_state);
- 		struct nv50_outp_atom *outp_atom;
--		struct nouveau_encoder *outp =
--			nv50_real_outp(nv50_head_atom_get_encoder(armh));
--		struct drm_encoder *encoder = &outp->base.base;
-+		struct nouveau_encoder *outp;
-+		struct drm_encoder *encoder, *enc;
-+
-+		enc = nv50_head_atom_get_encoder(armh);
-+		if (!enc)
-+			continue;
-+
-+		outp = nv50_real_outp(enc);
-+		if (!outp)
-+			continue;
-+
-+		encoder = &outp->base.base;
- 
- 		if (!asyh->clr.crc)
- 			continue;
-@@ -464,8 +473,16 @@ void nv50_crc_atomic_set(struct nv50_hea
- 	struct drm_device *dev = crtc->dev;
- 	struct nv50_crc *crc = &head->crc;
- 	const struct nv50_crc_func *func = nv50_disp(dev)->core->func->crc;
--	struct nouveau_encoder *outp =
--		nv50_real_outp(nv50_head_atom_get_encoder(asyh));
-+	struct nouveau_encoder *outp;
-+	struct drm_encoder *encoder;
-+
-+	encoder = nv50_head_atom_get_encoder(asyh);
-+	if (!encoder)
-+		return;
-+
-+	outp = nv50_real_outp(encoder);
-+	if (!outp)
-+		return;
- 
- 	func->set_src(head, outp->or,
- 		      nv50_crc_source_type(outp, asyh->crc.src),
+-	spin_lock_irq(&bfqd->lock);
+ 	bfqq = bfq_init_rq(rq);
+ 	if (!bfqq || at_head || blk_rq_is_passthrough(rq)) {
+ 		if (at_head)
 
 
