@@ -2,97 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52CB5CCA48A
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D4FCCA489
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357078AbiFGTlE (ORCPT
+        id S1357014AbiFGTku (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:41:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58102 "EHLO
+        Tue, 7 Jun 2022 15:40:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354448AbiFGSrC (ORCPT
+        with ESMTP id S1354464AbiFGSrD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:02 -0400
+        Tue, 7 Jun 2022 14:47:03 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D723B522EB;
-        Tue,  7 Jun 2022 11:01:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153BA61297;
+        Tue,  7 Jun 2022 11:01:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 696BAB82182;
-        Tue,  7 Jun 2022 18:01:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8684C34115;
-        Tue,  7 Jun 2022 18:01:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624876;
-        bh=jKvlRLiX/pLSuJlbO74Zn3Gv8I0bAvcaloQk1F8KwSs=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C04C9B8236C;
+        Tue,  7 Jun 2022 18:01:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C1E3C34119;
+        Tue,  7 Jun 2022 18:01:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624881;
+        bh=jgYV900Ixg7qwGZpFkcwl38cnjMpLQdOhfZPhadzomc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p99CJbuUAN73D10DCKRxHF2AcDnbf5W+mpMUGClGbxykwwj8BFiEvSO42kr4UaoBu
-         FXJluq4t4vxhuhrr58/D6MDZ00Sx+YJ4OlBcsUBvwIslOutTgQ3ezWAxAEgO9Iu260
-         rqlNlWsoNXWB+xg6ESa61SLsIq6R1XvTYJdoaetnxk5cXxtWkwYeWWr5qleoe6AW5Q
-         b7fQTdNsj+PKhyez2nFnMNjAjFC+bir1t/bT1LMeHL7nERI1nJyqCwNzk6/TEkuPB5
-         8NbO5HbdC/Vgl2RErKMUxWH8RI+ik/wP9Kg45oW4h2LMK0rN2ZGgvgYBGCvwM6JKIM
-         siK5XXSU1B9PQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Gong Yuanjun <ruc_gongyuanjun@163.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.4 26/34] drm/radeon: fix a possible null pointer dereference
-Date:   Tue,  7 Jun 2022 14:00:01 -0400
-Message-Id: <20220607180011.481266-26-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
-References: <20220607180011.481266-1-sashal@kernel.org>
+        b=KGzQ4V+J4+ZAHMhS0nG11aD8L30R5v0rZQuoyqmGmDCODr5vv4Kr8K1zTN1sCN3kl
+         qKWqpUf4n9YIJRWqBOmm3hCIyOmmAvXVdhL1JPcf2SuS3TQdfjGAXXuN2mvaoI53Yh
+         JTOXFqNJbCaZFUGqg7W+WjQTxEGkLRYuKoSHZBEo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Christoph Hellwig <hch@infradead.org>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@lst.de>, Joerg Roedel <jroedel@suse.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 480/667] iommu/amd: Enable swiotlb in all cases
+Date:   Tue,  7 Jun 2022 19:02:25 +0200
+Message-Id: <20220607164949.096642665@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gong Yuanjun <ruc_gongyuanjun@163.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit a2b28708b645c5632dc93669ab06e97874c8244f ]
+[ Upstream commit 121660bba631104154b7c15e88f208c48c8c3297 ]
 
-In radeon_fp_native_mode(), the return value of drm_mode_duplicate()
-is assigned to mode, which will lead to a NULL pointer dereference
-on failure of drm_mode_duplicate(). Add a check to avoid npd.
+Previously the AMD IOMMU would only enable SWIOTLB in certain
+circumstances:
+ * IOMMU in passthrough mode
+ * SME enabled
 
-The failure status of drm_cvt_mode() on the other path is checked too.
+This logic however doesn't work when an untrusted device is plugged in
+that doesn't do page aligned DMA transactions.  The expectation is
+that a bounce buffer is used for those transactions.
 
-Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+This fails like this:
+
+swiotlb buffer is full (sz: 4096 bytes), total 0 (slots), used 0 (slots)
+
+That happens because the bounce buffers have been allocated, followed by
+freed during startup but the bounce buffering code expects that all IOMMUs
+have left it enabled.
+
+Remove the criteria to set up bounce buffers on AMD systems to ensure
+they're always available for supporting untrusted devices.
+
+Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
+Suggested-by: Christoph Hellwig <hch@infradead.org>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220404204723.9767-2-mario.limonciello@amd.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/radeon/radeon_connectors.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iommu/amd/iommu.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
-index bc63f4cecf5d..ca6ccd69424e 100644
---- a/drivers/gpu/drm/radeon/radeon_connectors.c
-+++ b/drivers/gpu/drm/radeon/radeon_connectors.c
-@@ -477,6 +477,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
- 	    native_mode->vdisplay != 0 &&
- 	    native_mode->clock != 0) {
- 		mode = drm_mode_duplicate(dev, native_mode);
-+		if (!mode)
-+			return NULL;
- 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
- 		drm_mode_set_name(mode);
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index f46eb7397021..e23e70af718f 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1816,17 +1816,10 @@ void amd_iommu_domain_update(struct protection_domain *domain)
+ 	amd_iommu_domain_flush_complete(domain);
+ }
  
-@@ -491,6 +493,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
- 		 * simpler.
- 		 */
- 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
-+		if (!mode)
-+			return NULL;
- 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
- 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
- 	}
+-static void __init amd_iommu_init_dma_ops(void)
+-{
+-	swiotlb = (iommu_default_passthrough() || sme_me_mask) ? 1 : 0;
+-}
+-
+ int __init amd_iommu_init_api(void)
+ {
+ 	int err;
+ 
+-	amd_iommu_init_dma_ops();
+-
+ 	err = bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
+ 	if (err)
+ 		return err;
 -- 
 2.35.1
+
+
 
