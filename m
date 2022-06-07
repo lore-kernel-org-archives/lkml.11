@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D60C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:39:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD78C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:39:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356722AbiFGTje (ORCPT
+        id S1356107AbiFGTjh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:39:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58514 "EHLO
+        Tue, 7 Jun 2022 15:39:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354307AbiFGSqx (ORCPT
+        with ESMTP id S1354348AbiFGSq4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CAE512699E;
-        Tue,  7 Jun 2022 11:00:39 -0700 (PDT)
+        Tue, 7 Jun 2022 14:46:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D383910FDA;
+        Tue,  7 Jun 2022 11:00:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0867B82368;
-        Tue,  7 Jun 2022 18:00:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0130C341C4;
-        Tue,  7 Jun 2022 18:00:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73131617B0;
+        Tue,  7 Jun 2022 18:00:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 194A4C341C0;
+        Tue,  7 Jun 2022 18:00:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624837;
-        bh=pqhJmF9qXFmlGCy4O3OHm8/2Lk2t6X69Xz6V9YTOae8=;
+        s=k20201202; t=1654624851;
+        bh=jMZXmEP/+RK0uQl0NLibbp+SHDtq/RGALhCcm54ehP8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mVlZfUvWF8HWpersW3E27RGyWnGixKzy6IRdM3ElmeaWyftEYhsHN/Ppve0YW/l4H
-         WisirUQ8VyXtRp9FrA680qKIlLfpwmvGtcxCia83Mb6WcGVmpcKNVVnPRSTf79bRaZ
-         JO/UiWvD8HgHmA9eF1sgGxqk/RQwZ4BzqX/tHqbn/wXyupAxTx2gl4d0yCHUA2+5Qi
-         ixf+BliA15qFckeaatGK657mmprwRQ4IJ9SmZpLpJ/o5YSU61iwEToMrazN5p//fFD
-         hTaQmggxEFFOLoSFOslRqekhubw1RdtomucnWm6dnIQ3igtLK9s0AIHF95TQbWG+Ic
-         mDHxxrER4lA/A==
+        b=GYvakcHWwb6uv/ImDN7uzsS/8i17Mgx8XeY/ntoafP1VTRePrMnlusXfFR5htTVTq
+         Lv2rApWuiUu2sCRHY0/r/lPeoPQ6+g6ZPQSyDAV0tPWlMBq+kXDva25FXimCpjxBTB
+         PgXNMu/z1m+kcVdd9o/Hh7ezFkv19B0PVj8yjvv/HckUovU7N7yOoTKfcTApTynJXK
+         xf5wX6KDuw5vkOVU9XFc7tJ1lA3lDLQ3CE7+nmGK+4PulhH7IaSt5W9NC/+3Bal+gF
+         DnWakuvT8Npy1bwQne4H1fG0jec9CFKOo70ELChDf9SSJ/KgF5b+bWb6RCgfazH5Cy
+         zdLb9OMF2BfTQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 09/34] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
-Date:   Tue,  7 Jun 2022 13:59:44 -0400
-Message-Id: <20220607180011.481266-9-sashal@kernel.org>
+Cc:     bumwoo lee <bw365.lee@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Sasha Levin <sashal@kernel.org>, myungjoo.ham@samsung.com
+Subject: [PATCH AUTOSEL 5.4 14/34] extcon: Modify extcon device to be created after driver data is set
+Date:   Tue,  7 Jun 2022 13:59:49 -0400
+Message-Id: <20220607180011.481266-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
 References: <20220607180011.481266-1-sashal@kernel.org>
@@ -53,59 +52,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: bumwoo lee <bw365.lee@samsung.com>
 
-[ Upstream commit 62b2caef400c1738b6d22f636c628d9f85cd4c4c ]
+[ Upstream commit 5dcc2afe716d69f5112ce035cb14f007461ff189 ]
 
-There is a deadlock in sa1100_set_termios(), which is shown
-below:
+Currently, someone can invoke the sysfs such as state_show()
+intermittently before dev_set_drvdata() is done.
+And it can be a cause of kernel Oops because of edev is Null at that time.
+So modified the driver registration to after setting drviver data.
 
-   (Thread 1)              |      (Thread 2)
-                           | sa1100_enable_ms()
-sa1100_set_termios()       |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | sa1100_timeout()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
+- Oops's backtrace.
 
-We hold sport->port.lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need sport->port.lock in position (2) of thread 2. As a result,
-sa1100_set_termios() will block forever.
+Backtrace:
+[<c067865c>] (state_show) from [<c05222e8>] (dev_attr_show)
+[<c05222c0>] (dev_attr_show) from [<c02c66e0>] (sysfs_kf_seq_show)
+[<c02c6648>] (sysfs_kf_seq_show) from [<c02c496c>] (kernfs_seq_show)
+[<c02c4938>] (kernfs_seq_show) from [<c025e2a0>] (seq_read)
+[<c025e11c>] (seq_read) from [<c02c50a0>] (kernfs_fop_read)
+[<c02c5064>] (kernfs_fop_read) from [<c0231cac>] (__vfs_read)
+[<c0231c5c>] (__vfs_read) from [<c0231ee0>] (vfs_read)
+[<c0231e34>] (vfs_read) from [<c0232464>] (ksys_read)
+[<c02323f0>] (ksys_read) from [<c02324fc>] (sys_read)
+[<c02324e4>] (sys_read) from [<c00091d0>] (__sys_trace_return)
 
-This patch moves del_timer_sync() before spin_lock_irqsave()
-in order to prevent the deadlock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417111626.7802-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: bumwoo lee <bw365.lee@samsung.com>
+Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sa1100.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/extcon/extcon.c | 29 +++++++++++++++++------------
+ 1 file changed, 17 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
-index 8e618129e65c..ff4b44bdf6b6 100644
---- a/drivers/tty/serial/sa1100.c
-+++ b/drivers/tty/serial/sa1100.c
-@@ -454,6 +454,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
- 	quot = uart_get_divisor(port, baud);
- 
-+	del_timer_sync(&sport->timer);
-+
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 
- 	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
-@@ -484,8 +486,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 				UTSR1_TO_SM(UTSR1_ROR);
+diff --git a/drivers/extcon/extcon.c b/drivers/extcon/extcon.c
+index 5c9e156cd086..6b905c3d30f4 100644
+--- a/drivers/extcon/extcon.c
++++ b/drivers/extcon/extcon.c
+@@ -1230,19 +1230,14 @@ int extcon_dev_register(struct extcon_dev *edev)
+ 		edev->dev.type = &edev->extcon_dev_type;
  	}
  
--	del_timer_sync(&sport->timer);
+-	ret = device_register(&edev->dev);
+-	if (ret) {
+-		put_device(&edev->dev);
+-		goto err_dev;
+-	}
 -
- 	/*
- 	 * Update the per-port timeout.
- 	 */
+ 	spin_lock_init(&edev->lock);
+-	edev->nh = devm_kcalloc(&edev->dev, edev->max_supported,
+-				sizeof(*edev->nh), GFP_KERNEL);
+-	if (!edev->nh) {
+-		ret = -ENOMEM;
+-		device_unregister(&edev->dev);
+-		goto err_dev;
++	if (edev->max_supported) {
++		edev->nh = kcalloc(edev->max_supported, sizeof(*edev->nh),
++				GFP_KERNEL);
++		if (!edev->nh) {
++			ret = -ENOMEM;
++			goto err_alloc_nh;
++		}
+ 	}
+ 
+ 	for (index = 0; index < edev->max_supported; index++)
+@@ -1253,6 +1248,12 @@ int extcon_dev_register(struct extcon_dev *edev)
+ 	dev_set_drvdata(&edev->dev, edev);
+ 	edev->state = 0;
+ 
++	ret = device_register(&edev->dev);
++	if (ret) {
++		put_device(&edev->dev);
++		goto err_dev;
++	}
++
+ 	mutex_lock(&extcon_dev_list_lock);
+ 	list_add(&edev->entry, &extcon_dev_list);
+ 	mutex_unlock(&extcon_dev_list_lock);
+@@ -1260,6 +1261,9 @@ int extcon_dev_register(struct extcon_dev *edev)
+ 	return 0;
+ 
+ err_dev:
++	if (edev->max_supported)
++		kfree(edev->nh);
++err_alloc_nh:
+ 	if (edev->max_supported)
+ 		kfree(edev->extcon_dev_type.groups);
+ err_alloc_groups:
+@@ -1320,6 +1324,7 @@ void extcon_dev_unregister(struct extcon_dev *edev)
+ 	if (edev->max_supported) {
+ 		kfree(edev->extcon_dev_type.groups);
+ 		kfree(edev->cables);
++		kfree(edev->nh);
+ 	}
+ 
+ 	put_device(&edev->dev);
 -- 
 2.35.1
 
