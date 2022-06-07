@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A454C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:14:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5388AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:14:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358426AbiFGUOL (ORCPT
+        id S1358237AbiFGUOT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:14:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54672 "EHLO
+        Tue, 7 Jun 2022 16:14:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356160AbiFGTSE (ORCPT
+        with ESMTP id S1355501AbiFGTUm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:18:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F8C980BB;
-        Tue,  7 Jun 2022 11:08:21 -0700 (PDT)
+        Tue, 7 Jun 2022 15:20:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33BFC19B6A2;
+        Tue,  7 Jun 2022 11:08:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 495F1B82340;
-        Tue,  7 Jun 2022 18:08:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94953C34115;
-        Tue,  7 Jun 2022 18:08:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05945B82349;
+        Tue,  7 Jun 2022 18:08:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73273C385A5;
+        Tue,  7 Jun 2022 18:08:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625300;
-        bh=tFoR9Br0dJyQn8KkDFTvfGGYDCQYy+S1SSv26Zq4pKE=;
+        s=korg; t=1654625321;
+        bh=dCeVzC/jF/iTDOn+inmUhCo29O8Nt84UucMF/ifylBA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WwPILEBaOBAhNXxSZ6kdnHUF3+SeBaF3v5BUGP4uY/eMYq8KBm+lO0ZSPnSe6w+Bq
-         ef7htkfK/W4l5XzotXEYRec5xf5KSA/GiR5XrYOQ9GmJVHuhlU+eJzagGRjVG/bgYh
-         wJHIZfiAntuPnak6eUJFh3WoRiTDAOTfn/mYhmdE=
+        b=cjbSV9jqyItMamlWkqaPjBEh6Zm85sG7IAE7az1sFboaBlh59IqyYl+/ZQ6eXCGYJ
+         7fLaXNBcRglBs7s1xuKsg501AElGoiiJa0IL42w7RX/Smec/1biam84ig9Jz0ObL/U
+         0Bc9AVBDtN5owTaSlAfokUgBfxMOQ8WlSc+hQ22o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>,
-        Thierry Reding <treding@nvidia.com>
-Subject: [PATCH 5.15 637/667] arm64: tegra: Add missing DFLL reset on Tegra210
-Date:   Tue,  7 Jun 2022 19:05:02 +0200
-Message-Id: <20220607164953.765565100@linuxfoundation.org>
+        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 5.15 644/667] dt-bindings: gpio: altera: correct interrupt-cells
+Date:   Tue,  7 Jun 2022 19:05:09 +0200
+Message-Id: <20220607164953.970633780@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,40 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
+From: Dinh Nguyen <dinguyen@kernel.org>
 
-commit 0017f2c856e21bb900be88469e15dac4f41f4065 upstream.
+commit 3a21c3ac93aff7b4522b152399df8f6a041df56d upstream.
 
-Commit 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling
-clocks") removed deassertion of reset lines when enabling peripheral
-clocks. This breaks the initialization of the DFLL driver which relied
-on this behaviour.
-
-In order to be able to fix this, add the corresponding reset to the DT.
-Tested on Google Pixel C.
+update documentation to correctly state the interrupt-cells to be 2.
 
 Cc: stable@vger.kernel.org
-Fixes: 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling clocks")
-Signed-off-by: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+Fixes: 4fd9bbc6e071 ("drivers/gpio: Altera soft IP GPIO driver devicetree binding")
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/nvidia/tegra210.dtsi |    5 +++--
+ Documentation/devicetree/bindings/gpio/gpio-altera.txt |    5 +++--
  1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/arch/arm64/boot/dts/nvidia/tegra210.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra210.dtsi
-@@ -1355,8 +1355,9 @@
- 			 <&tegra_car TEGRA210_CLK_DFLL_REF>,
- 			 <&tegra_car TEGRA210_CLK_I2C5>;
- 		clock-names = "soc", "ref", "i2c";
--		resets = <&tegra_car TEGRA210_RST_DFLL_DVCO>;
--		reset-names = "dvco";
-+		resets = <&tegra_car TEGRA210_RST_DFLL_DVCO>,
-+			 <&tegra_car 155>;
-+		reset-names = "dvco", "dfll";
- 		#clock-cells = <0>;
- 		clock-output-names = "dfllCPU_out";
- 		status = "disabled";
+--- a/Documentation/devicetree/bindings/gpio/gpio-altera.txt
++++ b/Documentation/devicetree/bindings/gpio/gpio-altera.txt
+@@ -9,8 +9,9 @@ Required properties:
+   - The second cell is reserved and is currently unused.
+ - gpio-controller : Marks the device node as a GPIO controller.
+ - interrupt-controller: Mark the device node as an interrupt controller
+-- #interrupt-cells : Should be 1. The interrupt type is fixed in the hardware.
++- #interrupt-cells : Should be 2. The interrupt type is fixed in the hardware.
+   - The first cell is the GPIO offset number within the GPIO controller.
++  - The second cell is the interrupt trigger type and level flags.
+ - interrupts: Specify the interrupt.
+ - altr,interrupt-type: Specifies the interrupt trigger type the GPIO
+   hardware is synthesized. This field is required if the Altera GPIO controller
+@@ -38,6 +39,6 @@ gpio_altr: gpio@ff200000 {
+ 	altr,interrupt-type = <IRQ_TYPE_EDGE_RISING>;
+ 	#gpio-cells = <2>;
+ 	gpio-controller;
+-	#interrupt-cells = <1>;
++	#interrupt-cells = <2>;
+ 	interrupt-controller;
+ };
 
 
