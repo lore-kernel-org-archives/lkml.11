@@ -2,108 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C292C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:49:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62C09C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354568AbiFGTs7 (ORCPT
+        id S1356604AbiFGTtH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:48:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58420 "EHLO
+        Tue, 7 Jun 2022 15:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354577AbiFGSrL (ORCPT
+        with ESMTP id S1354571AbiFGSrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15CF2AE260;
-        Tue,  7 Jun 2022 11:02:21 -0700 (PDT)
+        Tue, 7 Jun 2022 14:47:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB85CBC6C7;
+        Tue,  7 Jun 2022 11:02:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B831BB82366;
-        Tue,  7 Jun 2022 18:02:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF010C385A5;
-        Tue,  7 Jun 2022 18:02:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624939;
-        bh=6oCEsGrH4yCyfhP7SrWq+do8nPz28zA/Cu2zTNcGrHU=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61365B82343;
+        Tue,  7 Jun 2022 18:02:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15D5FC385A5;
+        Tue,  7 Jun 2022 18:02:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624936;
+        bh=MoPOMp3HkRc27P0VlZQzSm3a57AYXjopJQxk/auGAOo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w9xgKuRYtMH16fkrmY9E3mk+ZbN2a9AhnPigTJdbqBRqZ/kbx4n32DlV5aRMML531
-         eXt0i5tdsCnt46naQp06t6h/pZtjCtepcnhE6sE62wn5qjD8v2ggMU4wiTJKVevIDl
-         3Uj4kExPBSH4fsoRaK3cxei+8YEAYUphlj6mn4DY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Ian Rogers <irogers@google.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Sumanth Korikkar <sumanthk@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 508/667] perf build: Fix btf__load_from_kernel_by_id() feature check
-Date:   Tue,  7 Jun 2022 19:02:53 +0200
-Message-Id: <20220607164949.936822050@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=kYpHnhh4F8JkhSoyVrotvOM2B8nQybl3JJpgiNcOx+Vm7G6fdcdLIel0um9MTB9hR
+         9FrmAeD7HcrovXet9PqGGL9+0U6KAHef6IGRhDrz5pDSdek41meiJVZpnUSjv7qpHC
+         2pYO4adNZpfYeO8Sr/duIAy18FLWd1XGe1rgvpgcITB+3PL0HubC2WZhZttyImMZ89
+         tjF3RIa8ujr05H58uzsSt4+HPQkeTagk1BoeoSSoClPUFF/ghrmGbbYdsK6tYHBGUX
+         xKo+5YmVl0dgamusK9rm4ZCQMRu4h4O1Vv3kVbPn5m6ahVZ7G0LnlhVaKCnrvc4GvT
+         tpr/i+k3RRASw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Michal Kubecek <mkubecek@suse.cz>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 20/27] Revert "net: af_key: add check for pfkey_broadcast in function pfkey_process"
+Date:   Tue,  7 Jun 2022 14:01:24 -0400
+Message-Id: <20220607180133.481701-20-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180133.481701-1-sashal@kernel.org>
+References: <20220607180133.481701-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Olsa <jolsa@kernel.org>
+From: Michal Kubecek <mkubecek@suse.cz>
 
-[ Upstream commit 73534617dfa3c4cd95fe5ffaeff5315e9ffc2de6 ]
+[ Upstream commit 9c90c9b3e50e16d03c7f87d63e9db373974781e0 ]
 
-The btf__load_from_kernel_by_id() only takes one arg, not two.
+This reverts commit 4dc2a5a8f6754492180741facf2a8787f2c415d7.
 
-Committer notes:
+A non-zero return value from pfkey_broadcast() does not necessarily mean
+an error occurred as this function returns -ESRCH when no registered
+listener received the message. In particular, a call with
+BROADCAST_PROMISC_ONLY flag and null one_sk argument can never return
+zero so that this commit in fact prevents processing any PF_KEY message.
+One visible effect is that racoon daemon fails to find encryption
+algorithms like aes and refuses to start.
 
-I tested it just with an older libbpf, one where
-btf__load_from_kernel_by_id() wasn't introduced yet.
+Excluding -ESRCH return value would fix this but it's not obvious that
+we really want to bail out here and most other callers of
+pfkey_broadcast() also ignore the return value. Also, as pointed out by
+Steffen Klassert, PF_KEY is kind of deprecated and newer userspace code
+should use netlink instead so that we should only disturb the code for
+really important fixes.
 
-A test with a newer dynamic libbpf would fail because the
-btf__load_from_kernel_by_id() is there, but takes just one arg.
+v2: add a comment explaining why is the return value ignored
 
-Fixes: 0ae065a5d265bc5a ("perf build: Fix check for btf__load_from_kernel_by_id() in libbpf")
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Ilya Leoshkevich <iii@linux.ibm.com>
-Cc: Sumanth Korikkar <sumanthk@linux.ibm.com>
-Cc: Sven Schnelle <svens@linux.ibm.com>
-Cc: Thomas Richter <tmricht@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Link: http://lore.kernel.org/linux-perf-users/YozLKby7ITEtchC9@krava
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../build/feature/test-libbpf-btf__load_from_kernel_by_id.c  | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/key/af_key.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c b/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c
-index f7c084428735..a17647f7d5a4 100644
---- a/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c
-+++ b/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c
-@@ -1,7 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0
--#include <bpf/libbpf.h>
-+#include <bpf/btf.h>
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index 1bbb6ec89ff3..af67e0d265c0 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2836,10 +2836,12 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
+ 	void *ext_hdrs[SADB_EXT_MAX];
+ 	int err;
  
- int main(void)
- {
--	return btf__load_from_kernel_by_id(20151128, NULL);
-+	btf__load_from_kernel_by_id(20151128);
-+	return 0;
- }
+-	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
+-			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
+-	if (err)
+-		return err;
++	/* Non-zero return value of pfkey_broadcast() does not always signal
++	 * an error and even on an actual error we may still want to process
++	 * the message so rather ignore the return value.
++	 */
++	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
++			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
+ 
+ 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
+ 	err = parse_exthdrs(skb, hdr, ext_hdrs);
 -- 
 2.35.1
-
-
 
