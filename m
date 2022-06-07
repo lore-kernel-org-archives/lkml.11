@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED8F9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58AFFCCA487
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:23:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378511AbiFGVWR (ORCPT
+        id S1378549AbiFGVXJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:22:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57718 "EHLO
+        Tue, 7 Jun 2022 17:23:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376411AbiFGU0l (ORCPT
+        with ESMTP id S1376913AbiFGU2Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:26:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3031D787E;
-        Tue,  7 Jun 2022 11:32:34 -0700 (PDT)
+        Tue, 7 Jun 2022 16:28:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9F81D9B7A;
+        Tue,  7 Jun 2022 11:33:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 29927B82349;
-        Tue,  7 Jun 2022 18:32:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95AF0C385A5;
-        Tue,  7 Jun 2022 18:32:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EF9160906;
+        Tue,  7 Jun 2022 18:33:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FA03C34115;
+        Tue,  7 Jun 2022 18:33:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626752;
-        bh=AI3ZPRVKoLMW8n1kDaiCEYvP2yicAHgSGb0ItYrciIk=;
+        s=korg; t=1654626807;
+        bh=/Tu8r2LfOw0CLxiSZGrql0GLd6ZXzzDncyyTCP0+Lc4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aIaG1YvYvPAolKlNOYzffM1SDL9w/iQ/SCiwV63CD6juAoD1Kn3BG6pQkUXKTKZeB
-         XInAjFZ666X1SzTVoZuwMyukV66R3/nx0mvxaoXpHoC6fUe6qYsG2nnv/cvpebzLGK
-         8fMLWe42M9ViSv2ZeRi0rYhnxyAgjMipgLE09dg0=
+        b=G0nsFaSbehreYEB+AMSusmbOll+5m4X6QXfzmGeRXeruVMW0fmExAIqnIW7pWvWI7
+         cST9s/GAXjPQdrqm1b3agAwwqiMCrLgfFc5iwrxQoEPZvvK2sI0LQnVyuEyx49qQFl
+         wo315GaKw33XKuKrwmAQRDiz5MeeiDwanUfdLKYg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 491/772] arm64: dts: qcom: qrb5165-rb5: Fix can-clock node name
-Date:   Tue,  7 Jun 2022 19:01:23 +0200
-Message-Id: <20220607165003.452714944@linuxfoundation.org>
+Subject: [PATCH 5.17 509/772] firmware: arm_ffa: Remove incorrect assignment of driver_data
+Date:   Tue,  7 Jun 2022 19:01:41 +0200
+Message-Id: <20220607165003.977213165@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,36 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vinod Koul <vkoul@kernel.org>
+From: Sudeep Holla <sudeep.holla@arm.com>
 
-[ Upstream commit 1eae95fb1d696968ca72be3ac8e0d62bb4d8da42 ]
+[ Upstream commit 00512d2930b338fdd42bd90bbd1793fe212c2d31 ]
 
-Per DT spec node names should not have underscores (_) in them, so
-change can_clock to can-clock.
+The ffa core driver currently assigns its own driver information
+to individual ffa device driver_data which is wrong. Firstly, it leaks
+this core driver information to individual ffa_device and hence to
+ffa_driver. Secondly the ffa_device driver_data is for use by individual
+ffa_driver and not for this core driver managing all those devices.
 
-Fixes: 5c44c564e449 ("arm64: dts: qcom: qrb5165-rb5: Add support for MCP2518FD")
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220421073502.1824089-1-vkoul@kernel.org
+Link: https://lore.kernel.org/r/20220429113946.2087145-2-sudeep.holla@arm.com
+Fixes: d0c0bce83122 ("firmware: arm_ffa: Setup in-kernel users of FFA partitions")
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/qrb5165-rb5.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/firmware/arm_ffa/driver.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts b/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
-index 845eb7a6bf92..0e63f707b911 100644
---- a/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
-+++ b/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
-@@ -29,7 +29,7 @@
- 	};
- 
- 	/* Fixed crystal oscillator dedicated to MCP2518FD */
--	clk40M: can_clock {
-+	clk40M: can-clock {
- 		compatible = "fixed-clock";
- 		#clock-cells = <0>;
- 		clock-frequency = <40000000>;
+diff --git a/drivers/firmware/arm_ffa/driver.c b/drivers/firmware/arm_ffa/driver.c
+index 8fa1785afd42..44300dbcc643 100644
+--- a/drivers/firmware/arm_ffa/driver.c
++++ b/drivers/firmware/arm_ffa/driver.c
+@@ -688,8 +688,6 @@ static void ffa_setup_partitions(void)
+ 			       __func__, tpbuf->id);
+ 			continue;
+ 		}
+-
+-		ffa_dev_set_drvdata(ffa_dev, drv_info);
+ 	}
+ 	kfree(pbuf);
+ }
 -- 
 2.35.1
 
