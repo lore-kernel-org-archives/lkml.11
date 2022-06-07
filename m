@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CDF8CCA493
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9672CCA492
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386851AbiFHB0y (ORCPT
+        id S1386959AbiFHB1F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:26:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57302 "EHLO
+        Tue, 7 Jun 2022 21:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383440AbiFGWCG (ORCPT
+        with ESMTP id S1384750AbiFGWQK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:02:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6A524E034;
-        Tue,  7 Jun 2022 12:14:21 -0700 (PDT)
+        Tue, 7 Jun 2022 18:16:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B151B261441;
+        Tue,  7 Jun 2022 12:20:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B37E861923;
-        Tue,  7 Jun 2022 19:14:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C59A5C385A2;
-        Tue,  7 Jun 2022 19:14:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4957B6192F;
+        Tue,  7 Jun 2022 19:19:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58099C385A2;
+        Tue,  7 Jun 2022 19:19:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629261;
-        bh=Kw55ogd+UksAEvHHk1V0dss2Rjc0d6qyG+RxuJsUNVQ=;
+        s=korg; t=1654629596;
+        bh=54fPIN8G1JovSP05z2k3xNR+dvWsXyhzfXkHCXyejmo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FXoOAfpzTps+iNTT4DkF2bvxKxShqQkddaa26NT3gnmUgSZPY/+17IztoNv48zpMK
-         9tcPv+Zp5QcYk4+FOFerUPCcz5CDGw+DnRtBOsvzUesB3/0RmPO+LTp4Quc5hsrMKc
-         /eW0TFEY/HVvncpeyOZrlr3oZz8aIXRw0IOTayH0=
+        b=TD8MMqKfW5xaOLbMEHbwXi0l7zz6s1TvDIhTBCjOuwixgtKiXvIcJpSUQ7dpGn8KH
+         yx33ZGxwZmOKuxVnL9PGaQvjptR134IqiqQrgX5TtlgA/qGqDduh8fv2Ems4QjsWtm
+         cZMtSjfTJDKbMPFDF55LlTdFowSMHvdPrfqTHLE4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 590/879] firmware: arm_scmi: Fix list protocols enumeration in the base protocol
-Date:   Tue,  7 Jun 2022 19:01:48 +0200
-Message-Id: <20220607165019.976475398@linuxfoundation.org>
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.18 747/879] ACPI: property: Release subnode properties with data nodes
+Date:   Tue,  7 Jun 2022 19:04:25 +0200
+Message-Id: <20220607165024.537888675@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,43 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cristian Marussi <cristian.marussi@arm.com>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-[ Upstream commit 8009120e0354a67068e920eb10dce532391361d0 ]
+commit 3bd561e1572ee02a50cd1a5be339abf1a5b78d56 upstream.
 
-While enumerating protocols implemented by the SCMI platform using
-BASE_DISCOVER_LIST_PROTOCOLS, the number of returned protocols is
-currently validated in an improper way since the check employs a sum
-between unsigned integers that could overflow and cause the check itself
-to be silently bypassed if the returned value 'loop_num_ret' is big
-enough.
+struct acpi_device_properties describes one source of properties present
+on either struct acpi_device or struct acpi_data_node. When properties are
+parsed, both are populated but when released, only those properties that
+are associated with the device node are freed.
 
-Fix the validation avoiding the addition.
+Fix this by also releasing memory of the data node properties.
 
-Link: https://lore.kernel.org/r/20220330150551.2573938-4-cristian.marussi@arm.com
-Fixes: b6f20ff8bd94 ("firmware: arm_scmi: add common infrastructure and support for base protocol")
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 5f5e4890d57a ("ACPI / property: Allow multiple property compatible _DSD entries")
+Cc: 4.20+ <stable@vger.kernel.org> # 4.20+
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/arm_scmi/base.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/acpi/property.c |   18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/firmware/arm_scmi/base.c b/drivers/firmware/arm_scmi/base.c
-index f5219334fd3a..3fe172c03c24 100644
---- a/drivers/firmware/arm_scmi/base.c
-+++ b/drivers/firmware/arm_scmi/base.c
-@@ -197,7 +197,7 @@ scmi_base_implementation_list_get(const struct scmi_protocol_handle *ph,
- 			break;
+--- a/drivers/acpi/property.c
++++ b/drivers/acpi/property.c
+@@ -433,6 +433,16 @@ void acpi_init_properties(struct acpi_de
+ 		acpi_extract_apple_properties(adev);
+ }
  
- 		loop_num_ret = le32_to_cpu(*num_ret);
--		if (tot_num_ret + loop_num_ret > MAX_PROTOCOLS_IMP) {
-+		if (loop_num_ret > MAX_PROTOCOLS_IMP - tot_num_ret) {
- 			dev_err(dev, "No. of Protocol > MAX_PROTOCOLS_IMP");
- 			break;
- 		}
--- 
-2.35.1
-
++static void acpi_free_device_properties(struct list_head *list)
++{
++	struct acpi_device_properties *props, *tmp;
++
++	list_for_each_entry_safe(props, tmp, list, list) {
++		list_del(&props->list);
++		kfree(props);
++	}
++}
++
+ static void acpi_destroy_nondev_subnodes(struct list_head *list)
+ {
+ 	struct acpi_data_node *dn, *next;
+@@ -445,22 +455,18 @@ static void acpi_destroy_nondev_subnodes
+ 		wait_for_completion(&dn->kobj_done);
+ 		list_del(&dn->sibling);
+ 		ACPI_FREE((void *)dn->data.pointer);
++		acpi_free_device_properties(&dn->data.properties);
+ 		kfree(dn);
+ 	}
+ }
+ 
+ void acpi_free_properties(struct acpi_device *adev)
+ {
+-	struct acpi_device_properties *props, *tmp;
+-
+ 	acpi_destroy_nondev_subnodes(&adev->data.subnodes);
+ 	ACPI_FREE((void *)adev->data.pointer);
+ 	adev->data.of_compatible = NULL;
+ 	adev->data.pointer = NULL;
+-	list_for_each_entry_safe(props, tmp, &adev->data.properties, list) {
+-		list_del(&props->list);
+-		kfree(props);
+-	}
++	acpi_free_device_properties(&adev->data.properties);
+ }
+ 
+ /**
 
 
