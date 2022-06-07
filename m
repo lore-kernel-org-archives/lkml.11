@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9672CCA492
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F69ACCA496
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386959AbiFHB1F (ORCPT
+        id S1387403AbiFHB1W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:27:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38266 "EHLO
+        Tue, 7 Jun 2022 21:27:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384750AbiFGWQK (ORCPT
+        with ESMTP id S1383478AbiFGVxO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:16:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B151B261441;
-        Tue,  7 Jun 2022 12:20:04 -0700 (PDT)
+        Tue, 7 Jun 2022 17:53:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3937244F66;
+        Tue,  7 Jun 2022 12:11:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4957B6192F;
-        Tue,  7 Jun 2022 19:19:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58099C385A2;
-        Tue,  7 Jun 2022 19:19:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD8CE612EC;
+        Tue,  7 Jun 2022 19:11:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EADE0C385A5;
+        Tue,  7 Jun 2022 19:11:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629596;
-        bh=54fPIN8G1JovSP05z2k3xNR+dvWsXyhzfXkHCXyejmo=;
+        s=korg; t=1654629108;
+        bh=yRHFUJLE9xSqVhgzgjZ7u51QhzkbKY04Y0WQF2bXGUQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TD8MMqKfW5xaOLbMEHbwXi0l7zz6s1TvDIhTBCjOuwixgtKiXvIcJpSUQ7dpGn8KH
-         yx33ZGxwZmOKuxVnL9PGaQvjptR134IqiqQrgX5TtlgA/qGqDduh8fv2Ems4QjsWtm
-         cZMtSjfTJDKbMPFDF55LlTdFowSMHvdPrfqTHLE4=
+        b=ng25k4vZ/GLk4VY8JDxERco6Av8wEzNSqPjpguIn6JZpgcliwM5uFXk6KEl5qZCUu
+         wdfOPCCzcU2Nr6wUQGHd+lExvjWic6GCWlILhBAQ562IC1H9fXdMriZZmtdeeUXbJE
+         B47dlZETzIfO+P8HJP1naZ5fj0hyJmjApjDzbCXw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.18 747/879] ACPI: property: Release subnode properties with data nodes
-Date:   Tue,  7 Jun 2022 19:04:25 +0200
-Message-Id: <20220607165024.537888675@linuxfoundation.org>
+        stable@vger.kernel.org, Vladis Dronov <vdronov@redhat.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 572/879] hwrng: cn10k - Make check_rng_health() return an error code
+Date:   Tue,  7 Jun 2022 19:01:30 +0200
+Message-Id: <20220607165019.458060752@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,70 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Vladis Dronov <vdronov@redhat.com>
 
-commit 3bd561e1572ee02a50cd1a5be339abf1a5b78d56 upstream.
+[ Upstream commit 32547a6aedda132907fcd15cdc8271429609f216 ]
 
-struct acpi_device_properties describes one source of properties present
-on either struct acpi_device or struct acpi_data_node. When properties are
-parsed, both are populated but when released, only those properties that
-are associated with the device node are freed.
+Currently check_rng_health() returns zero unconditionally.
+Make it to output an error code and return it.
 
-Fix this by also releasing memory of the data node properties.
-
-Fixes: 5f5e4890d57a ("ACPI / property: Allow multiple property compatible _DSD entries")
-Cc: 4.20+ <stable@vger.kernel.org> # 4.20+
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 38e9791a0209 ("hwrng: cn10k - Add random number generator support")
+Signed-off-by: Vladis Dronov <vdronov@redhat.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/property.c |   18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ drivers/char/hw_random/cn10k-rng.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
---- a/drivers/acpi/property.c
-+++ b/drivers/acpi/property.c
-@@ -433,6 +433,16 @@ void acpi_init_properties(struct acpi_de
- 		acpi_extract_apple_properties(adev);
- }
+diff --git a/drivers/char/hw_random/cn10k-rng.c b/drivers/char/hw_random/cn10k-rng.c
+index dd226630b67d..a01e9307737c 100644
+--- a/drivers/char/hw_random/cn10k-rng.c
++++ b/drivers/char/hw_random/cn10k-rng.c
+@@ -31,26 +31,23 @@ struct cn10k_rng {
  
-+static void acpi_free_device_properties(struct list_head *list)
-+{
-+	struct acpi_device_properties *props, *tmp;
-+
-+	list_for_each_entry_safe(props, tmp, list, list) {
-+		list_del(&props->list);
-+		kfree(props);
-+	}
-+}
-+
- static void acpi_destroy_nondev_subnodes(struct list_head *list)
- {
- 	struct acpi_data_node *dn, *next;
-@@ -445,22 +455,18 @@ static void acpi_destroy_nondev_subnodes
- 		wait_for_completion(&dn->kobj_done);
- 		list_del(&dn->sibling);
- 		ACPI_FREE((void *)dn->data.pointer);
-+		acpi_free_device_properties(&dn->data.properties);
- 		kfree(dn);
- 	}
- }
+ #define PLAT_OCTEONTX_RESET_RNG_EBG_HEALTH_STATE     0xc2000b0f
  
- void acpi_free_properties(struct acpi_device *adev)
+-static int reset_rng_health_state(struct cn10k_rng *rng)
++static unsigned long reset_rng_health_state(struct cn10k_rng *rng)
  {
--	struct acpi_device_properties *props, *tmp;
+ 	struct arm_smccc_res res;
+ 
+ 	/* Send SMC service call to reset EBG health state */
+ 	arm_smccc_smc(PLAT_OCTEONTX_RESET_RNG_EBG_HEALTH_STATE, 0, 0, 0, 0, 0, 0, 0, &res);
+-	if (res.a0 != 0UL)
+-		return -EIO;
 -
- 	acpi_destroy_nondev_subnodes(&adev->data.subnodes);
- 	ACPI_FREE((void *)adev->data.pointer);
- 	adev->data.of_compatible = NULL;
- 	adev->data.pointer = NULL;
--	list_for_each_entry_safe(props, tmp, &adev->data.properties, list) {
--		list_del(&props->list);
--		kfree(props);
--	}
-+	acpi_free_device_properties(&adev->data.properties);
+-	return 0;
++	return res.a0;
  }
  
- /**
+ static int check_rng_health(struct cn10k_rng *rng)
+ {
+ 	u64 status;
+-	int err;
++	unsigned long err;
+ 
+ 	/* Skip checking health */
+ 	if (!rng->reg_base)
+-		return 0;
++		return -ENODEV;
+ 
+ 	status = readq(rng->reg_base + RNM_PF_EBG_HEALTH);
+ 	if (status & BIT_ULL(20)) {
+@@ -58,7 +55,9 @@ static int check_rng_health(struct cn10k_rng *rng)
+ 		if (err) {
+ 			dev_err(&rng->pdev->dev, "HWRNG: Health test failed (status=%llx)\n",
+ 					status);
+-			dev_err(&rng->pdev->dev, "HWRNG: error during reset\n");
++			dev_err(&rng->pdev->dev, "HWRNG: error during reset (error=%lx)\n",
++					err);
++			return -EIO;
+ 		}
+ 	}
+ 	return 0;
+-- 
+2.35.1
+
 
 
