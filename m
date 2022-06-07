@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D138BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5295C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:58:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343499AbiFGR6M (ORCPT
+        id S1349007AbiFGR6S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36156 "EHLO
+        Tue, 7 Jun 2022 13:58:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347470AbiFGRhx (ORCPT
+        with ESMTP id S1347263AbiFGRie (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:37:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37AE29813;
-        Tue,  7 Jun 2022 10:33:15 -0700 (PDT)
+        Tue, 7 Jun 2022 13:38:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B622C103;
+        Tue,  7 Jun 2022 10:33:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F131960BC6;
-        Tue,  7 Jun 2022 17:32:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E2B6C385A5;
-        Tue,  7 Jun 2022 17:32:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7F41614D8;
+        Tue,  7 Jun 2022 17:32:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4E57C3411C;
+        Tue,  7 Jun 2022 17:32:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623158;
-        bh=/kXF5EwV/X6EjUXiAUV7ID0fOWl4eERfxctu+CQl7TY=;
+        s=korg; t=1654623175;
+        bh=zPLuZ3eZPROFo6QNQ3r/yJVnSCX7Z7vFZYB6P26u/xc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A4auHl+SQ98r/yRbzRnSJsdchyDNfFBel/jitQi5hjSwvGm3Gry4HvTnO+7S+g40X
-         /PyGmBpcYQmDL9799h6I0GoL2GuViTHTmxhx1Da/gfuvR97I+FY1kaXUMe7uMEqV1U
-         5HHYbYbTZYGTzSEG6rep8tg+DOojI7pfmeR9fQxU=
+        b=X9+no6RokkrmFUtW7kzaDu5a/xKx1xoNBAbdKos67PSZyQpeUo1JUi+GQ+sQBlr+m
+         EDGdWy5GV1TpZStPGTPkXa1JkclE+YCnu7nXJLu1T9evwvn2hgySuObi1EOcEiw5x1
+         dfG8m2WhUr1pvBF//HsBQOrGMKE63eI4thVlfQl8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Douglas Miller <doug.miller@cornelisnetworks.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 316/452] RDMA/hfi1: Prevent use of lock before it is initialized
-Date:   Tue,  7 Jun 2022 19:02:53 +0200
-Message-Id: <20220607164917.974785343@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 321/452] i2c: at91: use dma safe buffers
+Date:   Tue,  7 Jun 2022 19:02:58 +0200
+Message-Id: <20220607164918.123146999@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -52,70 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Douglas Miller <doug.miller@cornelisnetworks.com>
+From: Michael Walle <michael@walle.cc>
 
-[ Upstream commit 05c03dfd09c069c4ffd783b47b2da5dcc9421f2c ]
+[ Upstream commit 03fbb903c8bf7e53e101e8d9a7b261264317c411 ]
 
-If there is a failure during probe of hfi1 before the sdma_map_lock is
-initialized, the call to hfi1_free_devdata() will attempt to use a lock
-that has not been initialized. If the locking correctness validator is on
-then an INFO message and stack trace resembling the following may be seen:
+The supplied buffer might be on the stack and we get the following error
+message:
+[    3.312058] at91_i2c e0070600.i2c: rejecting DMA map of vmalloc memory
 
-  INFO: trying to register non-static key.
-  The code is fine but needs lockdep annotation, or maybe
-  you didn't initialize this object before use?
-  turning off the locking correctness validator.
-  Call Trace:
-  register_lock_class+0x11b/0x880
-  __lock_acquire+0xf3/0x7930
-  lock_acquire+0xff/0x2d0
-  _raw_spin_lock_irq+0x46/0x60
-  sdma_clean+0x42a/0x660 [hfi1]
-  hfi1_free_devdata+0x3a7/0x420 [hfi1]
-  init_one+0x867/0x11a0 [hfi1]
-  pci_device_probe+0x40e/0x8d0
+Use i2c_{get,put}_dma_safe_msg_buf() to get a DMA-able memory region if
+necessary.
 
-The use of sdma_map_lock in sdma_clean() is for freeing the sdma_map
-memory, and sdma_map is not allocated/initialized until after
-sdma_map_lock has been initialized. This code only needs to be run if
-sdma_map is not NULL, and so checking for that condition will avoid trying
-to use the lock before it is initialized.
-
-Fixes: 473291b3ea0e ("IB/hfi1: Fix for early release of sdma context")
-Fixes: 7724105686e7 ("IB/hfi1: add driver files")
-Link: https://lore.kernel.org/r/20220520183701.48973.72434.stgit@awfm-01.cornelisnetworks.com
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Douglas Miller <doug.miller@cornelisnetworks.com>
-Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: 60937b2cdbf9 ("i2c: at91: add dma support")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/hfi1/sdma.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/i2c/busses/i2c-at91-master.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/infiniband/hw/hfi1/sdma.c b/drivers/infiniband/hw/hfi1/sdma.c
-index 0b73dc7847aa..a044bee257f9 100644
---- a/drivers/infiniband/hw/hfi1/sdma.c
-+++ b/drivers/infiniband/hw/hfi1/sdma.c
-@@ -1330,11 +1330,13 @@ void sdma_clean(struct hfi1_devdata *dd, size_t num_engines)
- 		kvfree(sde->tx_ring);
- 		sde->tx_ring = NULL;
- 	}
--	spin_lock_irq(&dd->sde_map_lock);
--	sdma_map_free(rcu_access_pointer(dd->sdma_map));
--	RCU_INIT_POINTER(dd->sdma_map, NULL);
--	spin_unlock_irq(&dd->sde_map_lock);
--	synchronize_rcu();
-+	if (rcu_access_pointer(dd->sdma_map)) {
-+		spin_lock_irq(&dd->sde_map_lock);
-+		sdma_map_free(rcu_access_pointer(dd->sdma_map));
-+		RCU_INIT_POINTER(dd->sdma_map, NULL);
-+		spin_unlock_irq(&dd->sde_map_lock);
-+		synchronize_rcu();
-+	}
- 	kfree(dd->per_sdma);
- 	dd->per_sdma = NULL;
+diff --git a/drivers/i2c/busses/i2c-at91-master.c b/drivers/i2c/busses/i2c-at91-master.c
+index 66864f9cf7ac..974225faaf96 100644
+--- a/drivers/i2c/busses/i2c-at91-master.c
++++ b/drivers/i2c/busses/i2c-at91-master.c
+@@ -657,6 +657,7 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
+ 	unsigned int_addr_flag = 0;
+ 	struct i2c_msg *m_start = msg;
+ 	bool is_read;
++	u8 *dma_buf;
  
+ 	dev_dbg(&adap->dev, "at91_xfer: processing %d messages:\n", num);
+ 
+@@ -704,7 +705,17 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
+ 	dev->msg = m_start;
+ 	dev->recv_len_abort = false;
+ 
++	if (dev->use_dma) {
++		dma_buf = i2c_get_dma_safe_msg_buf(m_start, 1);
++		if (!dma_buf) {
++			ret = -ENOMEM;
++			goto out;
++		}
++		dev->buf = dma_buf;
++	}
++
+ 	ret = at91_do_twi_transfer(dev);
++	i2c_put_dma_safe_msg_buf(dma_buf, m_start, !ret);
+ 
+ 	ret = (ret < 0) ? ret : num;
+ out:
 -- 
 2.35.1
 
