@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D91CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:03:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C9DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:03:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378654AbiFGVDS (ORCPT
+        id S1357931AbiFGVDV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:03:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34336 "EHLO
+        Tue, 7 Jun 2022 17:03:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358524AbiFGUBa (ORCPT
+        with ESMTP id S1358543AbiFGUBc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:01:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2BE1BFEE8;
-        Tue,  7 Jun 2022 11:25:09 -0700 (PDT)
+        Tue, 7 Jun 2022 16:01:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 360461BFEF8;
+        Tue,  7 Jun 2022 11:25:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BA63611F3;
-        Tue,  7 Jun 2022 18:24:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 156EFC34115;
-        Tue,  7 Jun 2022 18:24:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D44BB6131C;
+        Tue,  7 Jun 2022 18:25:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1F2BC385A5;
+        Tue,  7 Jun 2022 18:25:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626273;
-        bh=y8K22HlUZzFY2D++dPIwaw10yzNWRo2Ms21xUoJuNjk=;
+        s=korg; t=1654626309;
+        bh=OTohrVweZevOm9cRwjCmHSJsUXG9oyGFi+4rVDceyDw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dgavX+49QDWFWTfKpyJE2TR3Omqvh8J8BXJ+PBuptkpjb1w+R9zlTf+tMLtEJgfr8
-         3sFU0UZ9+/+BAL7yXC+aNoMTFgCHOqb4mU7GsTgQdOxrwVK12uFhV0mejaX8A+68Vr
-         nimvgfQbfiac7uM62Aw/mN2zCUMfSryLbXtZthRk=
+        b=qAKAb8OkG4i7iBvEOur7IhBtKuMnM2ACag081K4lrmpTp5gtlkCcWsF+t5P28SztQ
+         GYCHHO/File+mrocv9csRD08QF1xxJaIyhnTBf7vLNWnzLqNP5dOe9eODsA4lTQS4s
+         L13dMFEC2l2YyI18j4gkEZQyGSfArHiEsPTOGEN4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 319/772] drm/msm/dsi: fix error checks and return values for DSI xmit functions
-Date:   Tue,  7 Jun 2022 18:58:31 +0200
-Message-Id: <20220607164958.425058543@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 331/772] irqchip/exiu: Fix acknowledgment of edge triggered interrupts
+Date:   Tue,  7 Jun 2022 18:58:43 +0200
+Message-Id: <20220607164958.777321609@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,82 +51,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Daniel Thompson <daniel.thompson@linaro.org>
 
-[ Upstream commit f0e7e9ed379c012c4d6b09a09b868accc426223c ]
+[ Upstream commit 4efc851c36e389f7ed432edac0149acc5f94b0c7 ]
 
-As noticed by Dan ([1] an the followup thread) there are multiple issues
-with the return values for MSM DSI command transmission callback. In
-the error case it can easily return a positive value when it should
-have returned a proper error code.
+Currently the EXIU uses the fasteoi interrupt flow that is configured by
+it's parent (irq-gic-v3.c). With this flow the only chance to clear the
+interrupt request happens during .irq_eoi() and (obviously) this happens
+after the interrupt handler has run. EXIU requires edge triggered
+interrupts to be acked prior to interrupt handling. Without this we
+risk incorrect interrupt dismissal when a new interrupt is delivered
+after the handler reads and acknowledges the peripheral but before the
+irq_eoi() takes place.
 
-This commits attempts to fix these issues both in TX and in RX paths.
+Fix this by clearing the interrupt request from .irq_ack() if we are
+configured for edge triggered interrupts. This requires adopting the
+fasteoi-ack flow instead of the fasteoi to ensure the ack gets called.
 
-[1]: https://lore.kernel.org/linux-arm-msm/20211001123617.GH2283@kili/
+These changes have been tested using the power button on a
+Developerbox/SC2A11 combined with some hackery in gpio-keys so I can
+play with the different trigger mode [and an mdelay(500) so I can
+can check what happens on a double click in both modes].
 
-Fixes: a689554ba6ed ("drm/msm: Initial add DSI connector support")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Tested-by: Marijn Suijten <marijn.suijten@somainline.org>
-Patchwork: https://patchwork.freedesktop.org/patch/480501/
-Link: https://lore.kernel.org/r/20220401231104.967193-1-dmitry.baryshkov@linaro.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fixes: 706cffc1b912 ("irqchip/exiu: Add support for Socionext Synquacer EXIU controller")
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220503134541.2566457-1-daniel.thompson@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dsi/dsi_host.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+ arch/arm64/Kconfig.platforms   |  1 +
+ drivers/irqchip/irq-sni-exiu.c | 25 ++++++++++++++++++++++---
+ 2 files changed, 23 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
-index 3a3f53f0c8ae..9ea07bd541c4 100644
---- a/drivers/gpu/drm/msm/dsi/dsi_host.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
-@@ -1337,10 +1337,10 @@ static int dsi_cmds2buf_tx(struct msm_dsi_host *msm_host,
- 			dsi_get_bpp(msm_host->format) / 8;
+diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+index 21697449d762..14602e0e024e 100644
+--- a/arch/arm64/Kconfig.platforms
++++ b/arch/arm64/Kconfig.platforms
+@@ -253,6 +253,7 @@ config ARCH_INTEL_SOCFPGA
  
- 	len = dsi_cmd_dma_add(msm_host, msg);
--	if (!len) {
-+	if (len < 0) {
- 		pr_err("%s: failed to add cmd type = 0x%x\n",
- 			__func__,  msg->type);
--		return -EINVAL;
-+		return len;
- 	}
+ config ARCH_SYNQUACER
+ 	bool "Socionext SynQuacer SoC Family"
++	select IRQ_FASTEOI_HIERARCHY_HANDLERS
  
- 	/* for video mode, do not send cmds more than
-@@ -1359,10 +1359,14 @@ static int dsi_cmds2buf_tx(struct msm_dsi_host *msm_host,
- 	}
+ config ARCH_TEGRA
+ 	bool "NVIDIA Tegra SoC Family"
+diff --git a/drivers/irqchip/irq-sni-exiu.c b/drivers/irqchip/irq-sni-exiu.c
+index abd011fcecf4..c7db617e1a2f 100644
+--- a/drivers/irqchip/irq-sni-exiu.c
++++ b/drivers/irqchip/irq-sni-exiu.c
+@@ -37,11 +37,26 @@ struct exiu_irq_data {
+ 	u32		spi_base;
+ };
  
- 	ret = dsi_cmd_dma_tx(msm_host, len);
--	if (ret < len) {
--		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, len=%d\n",
--			__func__, msg->type, (*(u8 *)(msg->tx_buf)), len);
--		return -ECOMM;
-+	if (ret < 0) {
-+		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, len=%d, ret=%d\n",
-+			__func__, msg->type, (*(u8 *)(msg->tx_buf)), len, ret);
-+		return ret;
-+	} else if (ret < len) {
-+		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, ret=%d len=%d\n",
-+			__func__, msg->type, (*(u8 *)(msg->tx_buf)), ret, len);
-+		return -EIO;
- 	}
+-static void exiu_irq_eoi(struct irq_data *d)
++static void exiu_irq_ack(struct irq_data *d)
+ {
+ 	struct exiu_irq_data *data = irq_data_get_irq_chip_data(d);
  
- 	return len;
-@@ -2088,9 +2092,12 @@ int msm_dsi_host_cmd_rx(struct mipi_dsi_host *host,
- 		}
+ 	writel(BIT(d->hwirq), data->base + EIREQCLR);
++}
++
++static void exiu_irq_eoi(struct irq_data *d)
++{
++	struct exiu_irq_data *data = irq_data_get_irq_chip_data(d);
++
++	/*
++	 * Level triggered interrupts are latched and must be cleared during
++	 * EOI or the interrupt will be jammed on. Of course if a level
++	 * triggered interrupt is still asserted then the write will not clear
++	 * the interrupt.
++	 */
++	if (irqd_is_level_type(d))
++		writel(BIT(d->hwirq), data->base + EIREQCLR);
++
+ 	irq_chip_eoi_parent(d);
+ }
  
- 		ret = dsi_cmds2buf_tx(msm_host, msg);
--		if (ret < msg->tx_len) {
-+		if (ret < 0) {
- 			pr_err("%s: Read cmd Tx failed, %d\n", __func__, ret);
- 			return ret;
-+		} else if (ret < msg->tx_len) {
-+			pr_err("%s: Read cmd Tx failed, too short: %d\n", __func__, ret);
-+			return -ECOMM;
- 		}
+@@ -91,10 +106,13 @@ static int exiu_irq_set_type(struct irq_data *d, unsigned int type)
+ 	writel_relaxed(val, data->base + EILVL);
  
- 		/*
+ 	val = readl_relaxed(data->base + EIEDG);
+-	if (type == IRQ_TYPE_LEVEL_LOW || type == IRQ_TYPE_LEVEL_HIGH)
++	if (type == IRQ_TYPE_LEVEL_LOW || type == IRQ_TYPE_LEVEL_HIGH) {
+ 		val &= ~BIT(d->hwirq);
+-	else
++		irq_set_handler_locked(d, handle_fasteoi_irq);
++	} else {
+ 		val |= BIT(d->hwirq);
++		irq_set_handler_locked(d, handle_fasteoi_ack_irq);
++	}
+ 	writel_relaxed(val, data->base + EIEDG);
+ 
+ 	writel_relaxed(BIT(d->hwirq), data->base + EIREQCLR);
+@@ -104,6 +122,7 @@ static int exiu_irq_set_type(struct irq_data *d, unsigned int type)
+ 
+ static struct irq_chip exiu_irq_chip = {
+ 	.name			= "EXIU",
++	.irq_ack		= exiu_irq_ack,
+ 	.irq_eoi		= exiu_irq_eoi,
+ 	.irq_enable		= exiu_irq_enable,
+ 	.irq_mask		= exiu_irq_mask,
 -- 
 2.35.1
 
