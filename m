@@ -2,115 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C488CCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70196CCA48F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355596AbiFGTQb (ORCPT
+        id S1355626AbiFGTQi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49868 "EHLO
+        Tue, 7 Jun 2022 15:16:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351198AbiFGS2m (ORCPT
+        with ESMTP id S1350843AbiFGS2S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:28:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CDE816BE32;
-        Tue,  7 Jun 2022 10:54:58 -0700 (PDT)
+        Tue, 7 Jun 2022 14:28:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B670B172C05;
+        Tue,  7 Jun 2022 10:55:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C4A9DB82373;
-        Tue,  7 Jun 2022 17:54:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5A91C341C4;
-        Tue,  7 Jun 2022 17:54:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624475;
-        bh=7x+kvaAGBYnjwKY1A04rLcfFo43yJeOkojHUWswIhIA=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25DC8B8234A;
+        Tue,  7 Jun 2022 17:55:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82AA8C34115;
+        Tue,  7 Jun 2022 17:55:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624503;
+        bh=pmnwGLGte3qP88JParZVFtU9tGvsrvRb24tKPoVDvlc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CFekoLL5nxfGkvcZnWbqQvx3nEkpxruP3WMpvMRaZzbmbWMNGRjVc2+g3zKVLpbuF
-         xbG40iUj7r3RmhwkImHpu2Q1Ca0+MZRQNXQYq+ZlAi2yHZM4icnI5Q5ZYOqd6xrxlW
-         C3MSWUkrZ3ZxlR8IdiJKMu7yhKE9WLLMVJmX3tmSZP2UxUnQGRh1K8OuoMNcoATho1
-         4pFrZrPawcmjP04TE463g5uIBGfpjS3PTSD1YkcvAHouzOCjuXo4zv6yWF5emPpCY7
-         vRbjMAe8h1XOGF8z8j2q+q/19XTMAj88hyBMJeXoNZWUmUzCCWVOeTaDzGb+FVF3q3
-         Ns5SJj7Nr9XFQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Venky Shankar <vshankar@redhat.com>, Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 38/60] ceph: allow ceph.dir.rctime xattr to be updatable
-Date:   Tue,  7 Jun 2022 13:52:35 -0400
-Message-Id: <20220607175259.478835-38-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
+        b=qo/Sv23vvCIztVzgnoqwCUCia5geB6h3emYonPeSgu3+T1v6ZGXjLU+p9JXJmZTQK
+         9bgFikC7n0KYj9icxQ8zZ9gNb4Pww0nrnQtoRms8QdiqzAP24p8RdTyvc5Cnjc6ayN
+         gAcGjME+BDAgCDqOFxXTS2j+0EMcJCMLOuCs9W84=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        David Rientjes <rientjes@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 310/667] dma-direct: factor out a helper for DMA_ATTR_NO_KERNEL_MAPPING allocations
+Date:   Tue,  7 Jun 2022 18:59:35 +0200
+Message-Id: <20220607164944.071964936@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Venky Shankar <vshankar@redhat.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit d7a2dc523085f8b8c60548ceedc696934aefeb0e ]
+[ Upstream commit d541ae55d538265861ef729a64d2d816d34ef1e2 ]
 
-`rctime' has been a pain point in cephfs due to its buggy
-nature - inconsistent values reported and those sorts.
-Fixing rctime is non-trivial needing an overall redesign
-of the entire nested statistics infrastructure.
+Split the code for DMA_ATTR_NO_KERNEL_MAPPING allocations into a separate
+helper to make dma_direct_alloc a little more readable.
 
-As a workaround, PR
-
-     http://github.com/ceph/ceph/pull/37938
-
-allows this extended attribute to be manually set. This allows
-users to "fixup" inconsistent rctime values. While this sounds
-messy, its probably the wisest approach allowing users/scripts
-to workaround buggy rctime values.
-
-The above PR enables Ceph MDS to allow manually setting
-rctime extended attribute with the corresponding user-land
-changes. We may as well allow the same to be done via kclient
-for parity.
-
-Signed-off-by: Venky Shankar <vshankar@redhat.com>
-Reviewed-by: Xiubo Li <xiubli@redhat.com>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Acked-by: David Rientjes <rientjes@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/xattr.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ kernel/dma/direct.c | 31 ++++++++++++++++++++-----------
+ 1 file changed, 20 insertions(+), 11 deletions(-)
 
-diff --git a/fs/ceph/xattr.c b/fs/ceph/xattr.c
-index fcf7dfdecf96..e41b22bd66ce 100644
---- a/fs/ceph/xattr.c
-+++ b/fs/ceph/xattr.c
-@@ -366,6 +366,14 @@ static ssize_t ceph_vxattrcb_auth_mds(struct ceph_inode_info *ci,
- 	}
- #define XATTR_RSTAT_FIELD(_type, _name)			\
- 	XATTR_NAME_CEPH(_type, _name, VXATTR_FLAG_RSTAT)
-+#define XATTR_RSTAT_FIELD_UPDATABLE(_type, _name)			\
-+	{								\
-+		.name = CEPH_XATTR_NAME(_type, _name),			\
-+		.name_size = sizeof (CEPH_XATTR_NAME(_type, _name)),	\
-+		.getxattr_cb = ceph_vxattrcb_ ## _type ## _ ## _name,	\
-+		.exists_cb = NULL,					\
-+		.flags = VXATTR_FLAG_RSTAT,				\
-+	}
- #define XATTR_LAYOUT_FIELD(_type, _name, _field)			\
- 	{								\
- 		.name = CEPH_XATTR_NAME2(_type, _name, _field),	\
-@@ -404,7 +412,7 @@ static struct ceph_vxattr ceph_dir_vxattrs[] = {
- 	XATTR_RSTAT_FIELD(dir, rsubdirs),
- 	XATTR_RSTAT_FIELD(dir, rsnaps),
- 	XATTR_RSTAT_FIELD(dir, rbytes),
--	XATTR_RSTAT_FIELD(dir, rctime),
-+	XATTR_RSTAT_FIELD_UPDATABLE(dir, rctime),
- 	{
- 		.name = "ceph.dir.pin",
- 		.name_size = sizeof("ceph.dir.pin"),
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 4c6c5e0635e3..ddaac01f2cba 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -149,6 +149,24 @@ static void *dma_direct_alloc_from_pool(struct device *dev, size_t size,
+ 	return ret;
+ }
+ 
++static void *dma_direct_alloc_no_mapping(struct device *dev, size_t size,
++		dma_addr_t *dma_handle, gfp_t gfp)
++{
++	struct page *page;
++
++	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO);
++	if (!page)
++		return NULL;
++
++	/* remove any dirty cache lines on the kernel alias */
++	if (!PageHighMem(page))
++		arch_dma_prep_coherent(page, size);
++
++	/* return the page pointer as the opaque cookie */
++	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
++	return page;
++}
++
+ void *dma_direct_alloc(struct device *dev, size_t size,
+ 		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+ {
+@@ -161,17 +179,8 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 		gfp |= __GFP_NOWARN;
+ 
+ 	if ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) &&
+-	    !force_dma_unencrypted(dev) && !is_swiotlb_for_alloc(dev)) {
+-		page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO);
+-		if (!page)
+-			return NULL;
+-		/* remove any dirty cache lines on the kernel alias */
+-		if (!PageHighMem(page))
+-			arch_dma_prep_coherent(page, size);
+-		*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
+-		/* return the page pointer as the opaque cookie */
+-		return page;
+-	}
++	    !force_dma_unencrypted(dev) && !is_swiotlb_for_alloc(dev))
++		return dma_direct_alloc_no_mapping(dev, size, dma_handle, gfp);
+ 
+ 	if (!IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED) &&
+ 	    !IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
 -- 
 2.35.1
+
+
 
