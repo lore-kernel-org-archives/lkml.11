@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69947CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6B07CCA48A
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:56:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357226AbiFGTzA (ORCPT
+        id S1357353AbiFGTzG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57864 "EHLO
+        Tue, 7 Jun 2022 15:55:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353988AbiFGSqX (ORCPT
+        with ESMTP id S1353986AbiFGSqX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:46:23 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF7118E44B;
-        Tue,  7 Jun 2022 10:59:54 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88BD418CE06;
+        Tue,  7 Jun 2022 10:59:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5A4A8CE2439;
-        Tue,  7 Jun 2022 17:59:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4300C36AFE;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7E68ACE2422;
         Tue,  7 Jun 2022 17:59:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F08DFC36B00;
+        Tue,  7 Jun 2022 17:59:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624790;
-        bh=l5ObCqWV5DtUWe/84mfk11TbqDN6Yq+o0TqAqpuILE8=;
+        s=k20201202; t=1654624787;
+        bh=6DyTdZ+3NmC1WOEKbVtBnVjs6rHMu8f5CzxpA4emPfw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IyhDWij30qNzIgcGLky5WolvOB8cMz9Wjrd+rCCl1v5Bmo23G/L/xuQJEX8zqyhNQ
-         oqa/yAWtUnKPSdWs0em5NIpTSk6qNyZtLLxPDR90lvx+YKWHlwJJ+DKaU161zM7Fe/
-         BIw7JHpBchas994tGVWFocAWIcKK3dWGGYP1SitVk9Eb9OR0RMOZvU7KyUyjBgDfb2
-         BKzunNHllMZx4Fck07yeePKux1oLh9RzKw4fncTvBrtf7svJlwuCwElOKGqSkfEwVA
-         faDJ6lzRnMj126al9BNTO1vFGBCCZOnhzQPAfSdmbPgpM/76Q2/FZFIfdYcsLzymn3
-         ATsy15BbQ5cGA==
+        b=T6S/oJLLfHPZshxxUM+3YfeyQ2Zc3elpY9+DK0hoPjx/IE5N+7WlbqAdwKcoQiqeq
+         ESNo/lynS9NU4VnhM7ASWSk6tUQpBpyNj3S3ea+EYNpAQSoRNnxOoCH4ps12FVf6x5
+         2dSDfo3G7VFZub4Mwb0OcB/tO7H3e0VC8ck+8ibaKTfvncnQbNrYNYALPv0jp4yyW1
+         e1HLgm6hm5A610PS7c10nSlWWwX4xmxKQNI1fmRucxm9OhgGNDiEKI08NuOPRKIo1m
+         1XE4oWeSRB2kMrEPnx+tDUVPJITSA3lYrGz4Mfp6J/D5PPvfqK4H7bnW+XtOTEUsS6
+         GVYHdrUV9RzZw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michal Kubecek <mkubecek@suse.cz>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 27/38] Revert "net: af_key: add check for pfkey_broadcast in function pfkey_process"
-Date:   Tue,  7 Jun 2022 13:58:22 -0400
-Message-Id: <20220607175835.480735-27-sashal@kernel.org>
+Cc:     Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
+        Donald Buczek <buczek@molgen.mpg.de>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        linux-raid@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 25/38] md: protect md_unregister_thread from reentrancy
+Date:   Tue,  7 Jun 2022 13:58:20 -0400
+Message-Id: <20220607175835.480735-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
 References: <20220607175835.480735-1-sashal@kernel.org>
@@ -54,57 +54,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Kubecek <mkubecek@suse.cz>
+From: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
 
-[ Upstream commit 9c90c9b3e50e16d03c7f87d63e9db373974781e0 ]
+[ Upstream commit 1e267742283a4b5a8ca65755c44166be27e9aa0f ]
 
-This reverts commit 4dc2a5a8f6754492180741facf2a8787f2c415d7.
+Generally, the md_unregister_thread is called with reconfig_mutex, but
+raid_message in dm-raid doesn't hold reconfig_mutex to unregister thread,
+so md_unregister_thread can be called simulitaneously from two call sites
+in theory.
 
-A non-zero return value from pfkey_broadcast() does not necessarily mean
-an error occurred as this function returns -ESRCH when no registered
-listener received the message. In particular, a call with
-BROADCAST_PROMISC_ONLY flag and null one_sk argument can never return
-zero so that this commit in fact prevents processing any PF_KEY message.
-One visible effect is that racoon daemon fails to find encryption
-algorithms like aes and refuses to start.
+Then after previous commit which remove the protection of reconfig_mutex
+for md_unregister_thread completely, the potential issue could be worse
+than before.
 
-Excluding -ESRCH return value would fix this but it's not obvious that
-we really want to bail out here and most other callers of
-pfkey_broadcast() also ignore the return value. Also, as pointed out by
-Steffen Klassert, PF_KEY is kind of deprecated and newer userspace code
-should use netlink instead so that we should only disturb the code for
-really important fixes.
+Let's take pers_lock at the beginning of function to ensure reentrancy.
 
-v2: add a comment explaining why is the return value ignored
-
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Reported-by: Donald Buczek <buczek@molgen.mpg.de>
+Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/key/af_key.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/md/md.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 6b7ed5568c09..2aa16a171285 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2830,10 +2830,12 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
- 	void *ext_hdrs[SADB_EXT_MAX];
- 	int err;
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index e4e855976dca..f8f24e9de69a 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -7968,17 +7968,22 @@ EXPORT_SYMBOL(md_register_thread);
  
--	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
--			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
--	if (err)
--		return err;
-+	/* Non-zero return value of pfkey_broadcast() does not always signal
-+	 * an error and even on an actual error we may still want to process
-+	 * the message so rather ignore the return value.
-+	 */
-+	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
-+			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
+ void md_unregister_thread(struct md_thread **threadp)
+ {
+-	struct md_thread *thread = *threadp;
+-	if (!thread)
+-		return;
+-	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+-	/* Locking ensures that mddev_unlock does not wake_up a
++	struct md_thread *thread;
++
++	/*
++	 * Locking ensures that mddev_unlock does not wake_up a
+ 	 * non-existent thread
+ 	 */
+ 	spin_lock(&pers_lock);
++	thread = *threadp;
++	if (!thread) {
++		spin_unlock(&pers_lock);
++		return;
++	}
+ 	*threadp = NULL;
+ 	spin_unlock(&pers_lock);
  
- 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
- 	err = parse_exthdrs(skb, hdr, ext_hdrs);
++	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+ 	kthread_stop(thread->tsk);
+ 	kfree(thread);
+ }
 -- 
 2.35.1
 
