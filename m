@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B722CCA499
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D0A0CCA497
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351509AbiFGSCG (ORCPT
+        id S1350523AbiFGSBR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:02:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60498 "EHLO
+        Tue, 7 Jun 2022 14:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347957AbiFGRnL (ORCPT
+        with ESMTP id S1348394AbiFGRks (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:43:11 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB7C12DBD5;
-        Tue,  7 Jun 2022 10:35:08 -0700 (PDT)
+        Tue, 7 Jun 2022 13:40:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23FAE11CA16;
+        Tue,  7 Jun 2022 10:34:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 656D4CE23E9;
-        Tue,  7 Jun 2022 17:34:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 597BBC385A5;
-        Tue,  7 Jun 2022 17:34:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6F27B822B8;
+        Tue,  7 Jun 2022 17:33:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26081C385A5;
+        Tue,  7 Jun 2022 17:33:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623260;
-        bh=xefLKrafgz1e+ulOs7MaMGAkmrbR2qnND4iwEX0xVRc=;
+        s=korg; t=1654623219;
+        bh=nrQeSr+/kkhagHCqcL77mMePp0hOtwF9X5zPz7U52e4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XFS6Sj8ghO0F/uYMQ9gikh2z6KEo7L3ypkUfvO3dRiY4fL9/YuZnWofzT9gTQB0Dj
-         qEYCWZGTfNdRHTP8hASJd7pnT6ez+pO2seQASt0qMQ37sFXw0eBshWdJHbwmiifOd1
-         btqJ+J9BaIFA9JhBIOCUC4SC5ljQtIlbL8+a+vgo=
+        b=Hn298LwsUn7ZvYr1shfwhwQ9KXgs5wuGQ3uRveDLQhG6KyFQm2DLSJlakElmctHGw
+         AkZq6CjMgjSZI9ZfxIdWXiMbQWC/+VmQsXXnEBJel8MTq7znAv3DFKSd5s/fbINiRP
+         dGOsbWXZvE/FfQ7MPkqNIkMib2nXP/ScKlbJJesg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.10 353/452] iwlwifi: mvm: fix assert 1F04 upon reconfig
-Date:   Tue,  7 Jun 2022 19:03:30 +0200
-Message-Id: <20220607164919.077862118@linuxfoundation.org>
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 287/452] firmware: arm_scmi: Fix list protocols enumeration in the base protocol
+Date:   Tue,  7 Jun 2022 19:02:24 +0200
+Message-Id: <20220607164917.103701260@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,36 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+From: Cristian Marussi <cristian.marussi@arm.com>
 
-commit 9d096e3d3061dbf4ee10e2b59fc2c06e05bdb997 upstream.
+[ Upstream commit 8009120e0354a67068e920eb10dce532391361d0 ]
 
-When we reconfig we must not send the MAC_POWER command that relates to
-a MAC that was not yet added to the firmware.
+While enumerating protocols implemented by the SCMI platform using
+BASE_DISCOVER_LIST_PROTOCOLS, the number of returned protocols is
+currently validated in an improper way since the check employs a sum
+between unsigned integers that could overflow and cause the check itself
+to be silently bypassed if the returned value 'loop_num_ret' is big
+enough.
 
-Ignore those in the iterator.
+Fix the validation avoiding the addition.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
-Link: https://lore.kernel.org/r/20220517120044.ed2ffc8ce732.If786e19512d0da4334a6382ea6148703422c7d7b@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220330150551.2573938-4-cristian.marussi@arm.com
+Fixes: b6f20ff8bd94 ("firmware: arm_scmi: add common infrastructure and support for base protocol")
+Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/power.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/firmware/arm_scmi/base.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/wireless/intel/iwlwifi/mvm/power.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/power.c
-@@ -621,6 +621,9 @@ static void iwl_mvm_power_get_vifs_itera
- 	struct iwl_power_vifs *power_iterator = _data;
- 	bool active = mvmvif->phy_ctxt && mvmvif->phy_ctxt->id < NUM_PHY_CTX;
+diff --git a/drivers/firmware/arm_scmi/base.c b/drivers/firmware/arm_scmi/base.c
+index 017e5d8bd869..e51d28ba2833 100644
+--- a/drivers/firmware/arm_scmi/base.c
++++ b/drivers/firmware/arm_scmi/base.c
+@@ -188,7 +188,7 @@ static int scmi_base_implementation_list_get(const struct scmi_handle *handle,
+ 			break;
  
-+	if (!mvmvif->uploaded)
-+		return;
-+
- 	switch (ieee80211_vif_type_p2p(vif)) {
- 	case NL80211_IFTYPE_P2P_DEVICE:
- 		break;
+ 		loop_num_ret = le32_to_cpu(*num_ret);
+-		if (tot_num_ret + loop_num_ret > MAX_PROTOCOLS_IMP) {
++		if (loop_num_ret > MAX_PROTOCOLS_IMP - tot_num_ret) {
+ 			dev_err(dev, "No. of Protocol > MAX_PROTOCOLS_IMP");
+ 			break;
+ 		}
+-- 
+2.35.1
+
 
 
