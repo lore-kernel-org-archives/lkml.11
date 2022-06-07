@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1BAAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:42:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5897AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:43:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343644AbiFGRmy (ORCPT
+        id S1347727AbiFGRm7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:42:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40756 "EHLO
+        Tue, 7 Jun 2022 13:42:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347804AbiFGRbF (ORCPT
+        with ESMTP id S1347818AbiFGRbO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:31:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A61C113F8D;
-        Tue,  7 Jun 2022 10:28:26 -0700 (PDT)
+        Tue, 7 Jun 2022 13:31:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E4E410A622;
+        Tue,  7 Jun 2022 10:28:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 395826137B;
-        Tue,  7 Jun 2022 17:28:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 434DBC34115;
-        Tue,  7 Jun 2022 17:28:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2C87B8220B;
+        Tue,  7 Jun 2022 17:28:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CF40C385A5;
+        Tue,  7 Jun 2022 17:28:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622905;
-        bh=aC3QzV0C3qB4/9EjgZ2dWaoFjCGlIrDWz+PsRE9Zk00=;
+        s=korg; t=1654622908;
+        bh=6PvPp41sWDIFRVcwMs3dWSgt0lhHS7kXOIPuLaqjBcM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KLSraon2cM0tR3aIKQn1CFy22IPuYF3r/UWFGRioXiyqry2ReS8phDNmgBXe+kbvu
-         iGZZnIQMnRT1phtZmxJvNslCbVbaCkNJuIj8KPkq7fCmjoakXs4QbgiAJu1R+bypF/
-         3/dcMCKl7D2qBhPbN1DiUE0+XbodXMKF//0BqFvg=
+        b=bTIEDBg68VAR88X7vZhksMAAWemd3RDXJwizbPxJpfGG9/wjMzQmk92EJw7yehtjO
+         oe8EpJHf9ohvl8CCcSdYirc3/qmNgvbHfrG4K5XAL84Ds1ozl7j8jVl46xo/qudt1e
+         BhWKVd692qzSvz4sx/VMD255gp875W2h8AtfvAzE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        stable@vger.kernel.org, Zheng Bin <zhengbin13@huawei.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 225/452] sctp: read sk->sk_bound_dev_if once in sctp_rcv()
-Date:   Tue,  7 Jun 2022 19:01:22 +0200
-Message-Id: <20220607164915.268668086@linuxfoundation.org>
+Subject: [PATCH 5.10 226/452] net: hinic: add missing destroy_workqueue in hinic_pf_to_mgmt_init
+Date:   Tue,  7 Jun 2022 19:01:23 +0200
+Message-Id: <20220607164915.298695412@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -53,47 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Zheng Bin <zhengbin13@huawei.com>
 
-[ Upstream commit a20ea298071f46effa3aaf965bf9bb34c901db3f ]
+[ Upstream commit 382d917bfc1e92339dae3c8a636b2730e8bb5132 ]
 
-sctp_rcv() reads sk->sk_bound_dev_if twice while the socket
-is not locked. Another cpu could change this field under us.
+hinic_pf_to_mgmt_init misses destroy_workqueue in error path,
+this patch fixes that.
 
-Fixes: 0fd9a65a76e8 ("[SCTP] Support SO_BINDTODEVICE socket option on incoming packets.")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Neil Horman <nhorman@tuxdriver.com>
-Cc: Vlad Yasevich <vyasevich@gmail.com>
-Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Fixes: 6dbb89014dc3 ("hinic: fix sending mailbox timeout in aeq event work")
+Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sctp/input.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/sctp/input.c b/net/sctp/input.c
-index 34494a0b28bd..8f3aab6a4458 100644
---- a/net/sctp/input.c
-+++ b/net/sctp/input.c
-@@ -92,6 +92,7 @@ int sctp_rcv(struct sk_buff *skb)
- 	struct sctp_chunk *chunk;
- 	union sctp_addr src;
- 	union sctp_addr dest;
-+	int bound_dev_if;
- 	int family;
- 	struct sctp_af *af;
- 	struct net *net = dev_net(skb->dev);
-@@ -169,7 +170,8 @@ int sctp_rcv(struct sk_buff *skb)
- 	 * If a frame arrives on an interface and the receiving socket is
- 	 * bound to another interface, via SO_BINDTODEVICE, treat it as OOTB
- 	 */
--	if (sk->sk_bound_dev_if && (sk->sk_bound_dev_if != af->skb_iif(skb))) {
-+	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
-+	if (bound_dev_if && (bound_dev_if != af->skb_iif(skb))) {
- 		if (transport) {
- 			sctp_transport_put(transport);
- 			asoc = NULL;
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
+index 819fa13034c0..027dcc453506 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
+@@ -647,6 +647,7 @@ int hinic_pf_to_mgmt_init(struct hinic_pf_to_mgmt *pf_to_mgmt,
+ 	err = alloc_msg_buf(pf_to_mgmt);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "Failed to allocate msg buffers\n");
++		destroy_workqueue(pf_to_mgmt->workq);
+ 		hinic_health_reporters_destroy(hwdev->devlink_dev);
+ 		return err;
+ 	}
+@@ -654,6 +655,7 @@ int hinic_pf_to_mgmt_init(struct hinic_pf_to_mgmt *pf_to_mgmt,
+ 	err = hinic_api_cmd_init(pf_to_mgmt->cmd_chain, hwif);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "Failed to initialize cmd chains\n");
++		destroy_workqueue(pf_to_mgmt->workq);
+ 		hinic_health_reporters_destroy(hwdev->devlink_dev);
+ 		return err;
+ 	}
 -- 
 2.35.1
 
