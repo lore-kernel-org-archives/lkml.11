@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 213B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E195FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349090AbiFGSLp (ORCPT
+        id S1349445AbiFGSLw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:11:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41888 "EHLO
+        Tue, 7 Jun 2022 14:11:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350071AbiFGRvv (ORCPT
+        with ESMTP id S1350085AbiFGRvw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:51:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5971140414;
-        Tue,  7 Jun 2022 10:39:24 -0700 (PDT)
+        Tue, 7 Jun 2022 13:51:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D4C140436;
+        Tue,  7 Jun 2022 10:39:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ECAB16155F;
-        Tue,  7 Jun 2022 17:39:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 042A7C385A5;
-        Tue,  7 Jun 2022 17:39:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89631B822B3;
+        Tue,  7 Jun 2022 17:38:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2C71C34115;
+        Tue,  7 Jun 2022 17:38:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623549;
-        bh=9ai2x4mUpTzJOgbzS743zBxcRco43rTjAJoOH+7BUvw=;
+        s=korg; t=1654623511;
+        bh=hvcS1gHigAT6ZNxj5Al53l8T890zTiFuMM8Med6xssg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BG0ev77rLYes8sxLNdbKrbK2Kl1UHQ2eFNr1EHwnvYU3wIEANiwcdqKhng/R6SOLt
-         pjR7rnDkSbFb9MV8UTXNQxfcHtcQDiq0PzCwTitlFxCrABH8bDaoKHRlqBe5IbphV/
-         /kXnMoA8mXtU5vMBbN6fQk7CY/bGijnNIOr0iXZ4=
+        b=h27WAvCorK0Q7Jl0WIC8uFOhu9Xev41ZAPzOVGLTlOCii1bHX+ogmfBnpHsX6YyHm
+         gL4IMZ/5HuXALTKOVHW2Q41GPkqwDkoKMlYhoEaiGwuwUEJWow4SRi3fscala2kLS2
+         uJIBq6i0pvFW8rXKBEJUqqgM1Yx5hFRDQEmSNM6s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Mao Jinlong <quic_jinlmao@quicinc.com>
-Subject: [PATCH 5.10 426/452] coresight: core: Fix coresight device probe failure issue
-Date:   Tue,  7 Jun 2022 19:04:43 +0200
-Message-Id: <20220607164921.250038870@linuxfoundation.org>
+        "yukuai (C)" <yukuai3@huawei.com>, Jan Kara <jack@suse.cz>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 444/452] bfq: Get rid of __bio_blkcg() usage
+Date:   Tue,  7 Jun 2022 19:05:01 +0200
+Message-Id: <20220607164921.798843434@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,122 +49,196 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mao Jinlong <quic_jinlmao@quicinc.com>
+From: Jan Kara <jack@suse.cz>
 
-commit 8c1d3f79d9ca48e406b78e90e94cf09a8c076bf2 upstream.
+commit 4e54a2493e582361adc3bfbf06c7d50d19d18837 upstream.
 
-It is possibe that probe failure issue happens when the device
-and its child_device's probe happens at the same time.
-In coresight_make_links, has_conns_grp is true for parent, but
-has_conns_grp is false for child device as has_conns_grp is set
-to true in coresight_create_conns_sysfs_group. The probe of parent
-device will fail at this condition. Add has_conns_grp check for
-child device before make the links and make the process from
-device_register to connection_create be atomic to avoid this
-probe failure issue.
+BFQ usage of __bio_blkcg() is a relict from the past. Furthermore if bio
+would not be associated with any blkcg, the usage of __bio_blkcg() in
+BFQ is prone to races with the task being migrated between cgroups as
+__bio_blkcg() calls at different places could return different blkcgs.
 
-Cc: stable@vger.kernel.org
-Suggested-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Suggested-by: Mike Leach <mike.leach@linaro.org>
-Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
-Link: https://lore.kernel.org/r/20220309142206.15632-1-quic_jinlmao@quicinc.com
-[ Added Cc stable ]
-Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Convert BFQ to the new situation where bio->bi_blkg is initialized in
+bio_set_dev() and thus practically always valid. This allows us to save
+blkcg_gq lookup and noticeably simplify the code.
+
+CC: stable@vger.kernel.org
+Fixes: 0fe061b9f03c ("blkcg: fix ref count issue with bio_blkcg() using task_css")
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-8-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwtracing/coresight/coresight-core.c |   33 ++++++++++++++++++---------
- 1 file changed, 22 insertions(+), 11 deletions(-)
+ block/bfq-cgroup.c  |   63 ++++++++++++++++++----------------------------------
+ block/bfq-iosched.c |   10 --------
+ block/bfq-iosched.h |    3 --
+ 3 files changed, 25 insertions(+), 51 deletions(-)
 
---- a/drivers/hwtracing/coresight/coresight-core.c
-+++ b/drivers/hwtracing/coresight/coresight-core.c
-@@ -1337,7 +1337,7 @@ static int coresight_fixup_device_conns(
- 			continue;
- 		conn->child_dev =
- 			coresight_find_csdev_by_fwnode(conn->child_fwnode);
--		if (conn->child_dev) {
-+		if (conn->child_dev && conn->child_dev->has_conns_grp) {
- 			ret = coresight_make_links(csdev, conn,
- 						   conn->child_dev);
- 			if (ret)
-@@ -1486,6 +1486,7 @@ struct coresight_device *coresight_regis
- 	int nr_refcnts = 1;
- 	atomic_t *refcnts = NULL;
- 	struct coresight_device *csdev;
-+	bool registered = false;
+--- a/block/bfq-cgroup.c
++++ b/block/bfq-cgroup.c
+@@ -582,27 +582,11 @@ static void bfq_group_set_parent(struct
+ 	entity->sched_data = &parent->sched_data;
+ }
  
- 	csdev = kzalloc(sizeof(*csdev), GFP_KERNEL);
- 	if (!csdev) {
-@@ -1506,7 +1507,8 @@ struct coresight_device *coresight_regis
- 	refcnts = kcalloc(nr_refcnts, sizeof(*refcnts), GFP_KERNEL);
- 	if (!refcnts) {
- 		ret = -ENOMEM;
--		goto err_free_csdev;
-+		kfree(csdev);
-+		goto err_out;
- 	}
+-static struct bfq_group *bfq_lookup_bfqg(struct bfq_data *bfqd,
+-					 struct blkcg *blkcg)
++static void bfq_link_bfqg(struct bfq_data *bfqd, struct bfq_group *bfqg)
+ {
+-	struct blkcg_gq *blkg;
+-
+-	blkg = blkg_lookup(blkcg, bfqd->queue);
+-	if (likely(blkg))
+-		return blkg_to_bfqg(blkg);
+-	return NULL;
+-}
+-
+-struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd,
+-				     struct blkcg *blkcg)
+-{
+-	struct bfq_group *bfqg, *parent;
++	struct bfq_group *parent;
+ 	struct bfq_entity *entity;
  
- 	csdev->refcnt = refcnts;
-@@ -1530,6 +1532,13 @@ struct coresight_device *coresight_regis
- 	csdev->dev.fwnode = fwnode_handle_get(dev_fwnode(desc->dev));
- 	dev_set_name(&csdev->dev, "%s", desc->name);
- 
-+	/*
-+	 * Make sure the device registration and the connection fixup
-+	 * are synchronised, so that we don't see uninitialised devices
-+	 * on the coresight bus while trying to resolve the connections.
-+	 */
-+	mutex_lock(&coresight_mutex);
-+
- 	ret = device_register(&csdev->dev);
- 	if (ret) {
- 		put_device(&csdev->dev);
-@@ -1537,7 +1546,7 @@ struct coresight_device *coresight_regis
- 		 * All resources are free'd explicitly via
- 		 * coresight_device_release(), triggered from put_device().
- 		 */
--		goto err_out;
-+		goto out_unlock;
- 	}
- 
- 	if (csdev->type == CORESIGHT_DEV_TYPE_SINK ||
-@@ -1552,11 +1561,11 @@ struct coresight_device *coresight_regis
- 			 * from put_device(), which is in turn called from
- 			 * function device_unregister().
- 			 */
--			goto err_out;
-+			goto out_unlock;
+-	bfqg = bfq_lookup_bfqg(bfqd, blkcg);
+-	if (unlikely(!bfqg))
+-		return NULL;
+-
+ 	/*
+ 	 * Update chain of bfq_groups as we might be handling a leaf group
+ 	 * which, along with some of its relatives, has not been hooked yet
+@@ -619,8 +603,15 @@ struct bfq_group *bfq_find_set_group(str
+ 			bfq_group_set_parent(curr_bfqg, parent);
  		}
  	}
--
--	mutex_lock(&coresight_mutex);
-+	/* Device is now registered */
-+	registered = true;
++}
  
- 	ret = coresight_create_conns_sysfs_group(csdev);
- 	if (!ret)
-@@ -1566,16 +1575,18 @@ struct coresight_device *coresight_regis
- 	if (!ret && cti_assoc_ops && cti_assoc_ops->add)
- 		cti_assoc_ops->add(csdev);
- 
-+out_unlock:
- 	mutex_unlock(&coresight_mutex);
--	if (ret) {
-+	/* Success */
-+	if (!ret)
-+		return csdev;
+-	return bfqg;
++struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
++{
++	struct blkcg_gq *blkg = bio->bi_blkg;
 +
-+	/* Unregister the device if needed */
-+	if (registered) {
- 		coresight_unregister(csdev);
- 		return ERR_PTR(ret);
- 	}
++	if (!blkg)
++		return bfqd->root_group;
++	return blkg_to_bfqg(blkg);
+ }
  
--	return csdev;
+ /**
+@@ -696,25 +687,15 @@ void bfq_bfqq_move(struct bfq_data *bfqd
+  * Move bic to blkcg, assuming that bfqd->lock is held; which makes
+  * sure that the reference to cgroup is valid across the call (see
+  * comments in bfq_bic_update_cgroup on this issue)
+- *
+- * NOTE: an alternative approach might have been to store the current
+- * cgroup in bfqq and getting a reference to it, reducing the lookup
+- * time here, at the price of slightly more complex code.
+  */
+-static struct bfq_group *__bfq_bic_change_cgroup(struct bfq_data *bfqd,
+-						struct bfq_io_cq *bic,
+-						struct blkcg *blkcg)
++static void *__bfq_bic_change_cgroup(struct bfq_data *bfqd,
++				     struct bfq_io_cq *bic,
++				     struct bfq_group *bfqg)
+ {
+ 	struct bfq_queue *async_bfqq = bic_to_bfqq(bic, 0);
+ 	struct bfq_queue *sync_bfqq = bic_to_bfqq(bic, 1);
+-	struct bfq_group *bfqg;
+ 	struct bfq_entity *entity;
+ 
+-	bfqg = bfq_find_set_group(bfqd, blkcg);
 -
--err_free_csdev:
--	kfree(csdev);
- err_out:
- 	/* Cleanup the connection information */
- 	coresight_release_platform_data(NULL, desc->pdata);
+-	if (unlikely(!bfqg))
+-		bfqg = bfqd->root_group;
+-
+ 	if (async_bfqq) {
+ 		entity = &async_bfqq->entity;
+ 
+@@ -766,20 +747,24 @@ static struct bfq_group *__bfq_bic_chang
+ void bfq_bic_update_cgroup(struct bfq_io_cq *bic, struct bio *bio)
+ {
+ 	struct bfq_data *bfqd = bic_to_bfqd(bic);
+-	struct bfq_group *bfqg = NULL;
++	struct bfq_group *bfqg = bfq_bio_bfqg(bfqd, bio);
+ 	uint64_t serial_nr;
+ 
+-	rcu_read_lock();
+-	serial_nr = __bio_blkcg(bio)->css.serial_nr;
++	serial_nr = bfqg_to_blkg(bfqg)->blkcg->css.serial_nr;
+ 
+ 	/*
+ 	 * Check whether blkcg has changed.  The condition may trigger
+ 	 * spuriously on a newly created cic but there's no harm.
+ 	 */
+ 	if (unlikely(!bfqd) || likely(bic->blkcg_serial_nr == serial_nr))
+-		goto out;
++		return;
+ 
+-	bfqg = __bfq_bic_change_cgroup(bfqd, bic, __bio_blkcg(bio));
++	/*
++	 * New cgroup for this process. Make sure it is linked to bfq internal
++	 * cgroup hierarchy.
++	 */
++	bfq_link_bfqg(bfqd, bfqg);
++	__bfq_bic_change_cgroup(bfqd, bic, bfqg);
+ 	/*
+ 	 * Update blkg_path for bfq_log_* functions. We cache this
+ 	 * path, and update it here, for the following
+@@ -832,8 +817,6 @@ void bfq_bic_update_cgroup(struct bfq_io
+ 	 */
+ 	blkg_path(bfqg_to_blkg(bfqg), bfqg->blkg_path, sizeof(bfqg->blkg_path));
+ 	bic->blkcg_serial_nr = serial_nr;
+-out:
+-	rcu_read_unlock();
+ }
+ 
+ /**
+@@ -1451,7 +1434,7 @@ void bfq_end_wr_async(struct bfq_data *b
+ 	bfq_end_wr_async_queues(bfqd, bfqd->root_group);
+ }
+ 
+-struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd, struct blkcg *blkcg)
++struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
+ {
+ 	return bfqd->root_group;
+ }
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -5162,14 +5162,7 @@ static struct bfq_queue *bfq_get_queue(s
+ 	struct bfq_queue *bfqq;
+ 	struct bfq_group *bfqg;
+ 
+-	rcu_read_lock();
+-
+-	bfqg = bfq_find_set_group(bfqd, __bio_blkcg(bio));
+-	if (!bfqg) {
+-		bfqq = &bfqd->oom_bfqq;
+-		goto out;
+-	}
+-
++	bfqg = bfq_bio_bfqg(bfqd, bio);
+ 	if (!is_sync) {
+ 		async_bfqq = bfq_async_queue_prio(bfqd, bfqg, ioprio_class,
+ 						  ioprio);
+@@ -5213,7 +5206,6 @@ static struct bfq_queue *bfq_get_queue(s
+ out:
+ 	bfqq->ref++; /* get a process reference to this queue */
+ 	bfq_log_bfqq(bfqd, bfqq, "get_queue, at end: %p, %d", bfqq, bfqq->ref);
+-	rcu_read_unlock();
+ 	return bfqq;
+ }
+ 
+--- a/block/bfq-iosched.h
++++ b/block/bfq-iosched.h
+@@ -984,8 +984,7 @@ void bfq_bfqq_move(struct bfq_data *bfqd
+ void bfq_init_entity(struct bfq_entity *entity, struct bfq_group *bfqg);
+ void bfq_bic_update_cgroup(struct bfq_io_cq *bic, struct bio *bio);
+ void bfq_end_wr_async(struct bfq_data *bfqd);
+-struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd,
+-				     struct blkcg *blkcg);
++struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio);
+ struct blkcg_gq *bfqg_to_blkg(struct bfq_group *bfqg);
+ struct bfq_group *bfqq_group(struct bfq_queue *bfqq);
+ struct bfq_group *bfq_create_group_hierarchy(struct bfq_data *bfqd, int node);
 
 
