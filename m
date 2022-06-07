@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49CD7CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:54:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E31C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:54:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377521AbiFGUyU (ORCPT
+        id S1377565AbiFGUyZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:54:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50074 "EHLO
+        Tue, 7 Jun 2022 16:54:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358761AbiFGTxJ (ORCPT
+        with ESMTP id S1358790AbiFGTxM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:53:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A6EF1B701C;
-        Tue,  7 Jun 2022 11:22:24 -0700 (PDT)
+        Tue, 7 Jun 2022 15:53:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D526E1B7038;
+        Tue,  7 Jun 2022 11:22:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C9E9661238;
-        Tue,  7 Jun 2022 18:22:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD51EC385A5;
-        Tue,  7 Jun 2022 18:22:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66461B8233E;
+        Tue,  7 Jun 2022 18:22:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDB38C385A5;
+        Tue,  7 Jun 2022 18:22:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626143;
-        bh=ZcruHj1kOgQZVF2d3vZPOn0QPi+u8OfiQpOvLGafu9Y=;
+        s=korg; t=1654626149;
+        bh=LQq/7blpbZyhfx4zRTEyWiRAUMsgZCLnSCZeVlsS+RE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ck/Rd/wUVUpqYBrSqsN2YBhlFCu5BQTpR3GU4MaJqyhBhw4kPxifztwgvdkcUaZUV
-         hVcw82PImrx8LeshL1+fnSVToB+3DoaLivCAB2AaV1hLKT4iiMIjiipOl/OQVxNs0H
-         kDPIoRNQlHzGYxW+4fhu6kxwxjmvzf0bwZUZgV8A=
+        b=BNvRjkyNOhmSHJW79omZQdVEmtu/ndPr6TSYxYgMEDoC3+ABSW+8PeZYxrEPPSUqH
+         KQBmVz7OphrdrjzCJLhN7XP0nQkcBh1+r5lEE+QcG1iIywatVs09eniBVL4+dLz80D
+         NR60bvYUwbps2lMZiBzmptwz99q6RqOLqhFD5434=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 273/772] HID: elan: Fix potential double free in elan_input_configured
-Date:   Tue,  7 Jun 2022 18:57:45 +0200
-Message-Id: <20220607164957.070998306@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Adam Ward <Adam.Ward.Opensource@diasemi.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 275/772] regulator: da9121: Fix uninit-value in da9121_assign_chip_model()
+Date:   Tue,  7 Jun 2022 18:57:47 +0200
+Message-Id: <20220607164957.130419825@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,49 +52,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit 1af20714fedad238362571620be0bd690ded05b6 ]
+[ Upstream commit bab76514aca36bc513224525d5598da676938218 ]
 
-'input' is a managed resource allocated with devm_input_allocate_device(),
-so there is no need to call input_free_device() explicitly or
-there will be a double free.
+KASAN report slab-out-of-bounds in __regmap_init as follows:
 
-According to the doc of devm_input_allocate_device():
- * Managed input devices do not need to be explicitly unregistered or
- * freed as it will be done automatically when owner device unbinds from
- * its driver (or binding fails).
+BUG: KASAN: slab-out-of-bounds in __regmap_init drivers/base/regmap/regmap.c:841
+Read of size 1 at addr ffff88803678cdf1 by task xrun/9137
 
-Fixes: b7429ea53d6c ("HID: elan: Fix memleak in elan_input_configured")
-Fixes: 9a6a4193d65b ("HID: Add driver for USB ELAN Touchpad")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+CPU: 0 PID: 9137 Comm: xrun Tainted: G        W         5.18.0-rc2
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x15a lib/dump_stack.c:88
+ print_report.cold+0xcd/0x69b mm/kasan/report.c:313
+ kasan_report+0x8e/0xc0 mm/kasan/report.c:491
+ __regmap_init+0x4540/0x4ba0 drivers/base/regmap/regmap.c:841
+ __devm_regmap_init+0x7a/0x100 drivers/base/regmap/regmap.c:1266
+ __devm_regmap_init_i2c+0x65/0x80 drivers/base/regmap/regmap-i2c.c:394
+ da9121_i2c_probe+0x386/0x6d1 drivers/regulator/da9121-regulator.c:1039
+ i2c_device_probe+0x959/0xac0 drivers/i2c/i2c-core-base.c:563
+
+This happend when da9121 device is probe by da9121_i2c_id, but with
+invalid dts. Thus, chip->subvariant_id is set to -EINVAL, and later
+da9121_assign_chip_model() will access 'regmap' without init it.
+
+Fix it by return -EINVAL from da9121_assign_chip_model() if
+'chip->subvariant_id' is invalid.
+
+Fixes: f3fbd5566f6a ("regulator: da9121: Add device variants")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Reviewed-by: Adam Ward <Adam.Ward.Opensource@diasemi.com>
+Link: https://lore.kernel.org/r/20220421090335.1876149-1-weiyongjun1@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-elan.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/regulator/da9121-regulator.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/hid/hid-elan.c b/drivers/hid/hid-elan.c
-index 3091355d48df..8e4a5528e25d 100644
---- a/drivers/hid/hid-elan.c
-+++ b/drivers/hid/hid-elan.c
-@@ -188,7 +188,6 @@ static int elan_input_configured(struct hid_device *hdev, struct hid_input *hi)
- 	ret = input_mt_init_slots(input, ELAN_MAX_FINGERS, INPUT_MT_POINTER);
- 	if (ret) {
- 		hid_err(hdev, "Failed to init elan MT slots: %d\n", ret);
--		input_free_device(input);
- 		return ret;
+diff --git a/drivers/regulator/da9121-regulator.c b/drivers/regulator/da9121-regulator.c
+index eb9df485bd8a..76e0e23bf598 100644
+--- a/drivers/regulator/da9121-regulator.c
++++ b/drivers/regulator/da9121-regulator.c
+@@ -1030,6 +1030,8 @@ static int da9121_assign_chip_model(struct i2c_client *i2c,
+ 		chip->variant_id = DA9121_TYPE_DA9142;
+ 		regmap = &da9121_2ch_regmap_config;
+ 		break;
++	default:
++		return -EINVAL;
  	}
  
-@@ -200,7 +199,6 @@ static int elan_input_configured(struct hid_device *hdev, struct hid_input *hi)
- 		hid_err(hdev, "Failed to register elan input device: %d\n",
- 			ret);
- 		input_mt_destroy_slots(input);
--		input_free_device(input);
- 		return ret;
- 	}
- 
+ 	/* Set these up for of_regulator_match call which may want .of_map_modes */
 -- 
 2.35.1
 
