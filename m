@@ -2,214 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 228FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:20:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C8D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239412AbiFGJUi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:20:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52830 "EHLO
+        id S239329AbiFGJXv convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:23:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239318AbiFGJUT (ORCPT
+        with ESMTP id S239008AbiFGJXp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:20:19 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2F02E52B7;
-        Tue,  7 Jun 2022 02:20:16 -0700 (PDT)
-X-UUID: e8e9ace7f0cf4905b66f14c1f6dcbade-20220607
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:d953d523-13f9-44fa-9d01-b8a172af7300,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:5
-X-CID-META: VersionHash:2a19b09,CLOUDID:9293777e-c8dc-403a-96e8-6237210dceee,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:0,BEC:nil
-X-UUID: e8e9ace7f0cf4905b66f14c1f6dcbade-20220607
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1291890033; Tue, 07 Jun 2022 17:20:09 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 7 Jun 2022 17:20:07 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 7 Jun 2022 17:20:07 +0800
-Message-ID: <f807ee3b6fbfe1e5af29e07c07e61eec03abf368.camel@mediatek.com>
-Subject: Re: [PATCH v19 6/6] soc: mediatek: mutex: add functions that
- operate registers by CMDQ
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Moudy Ho <moudy.ho@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>
-CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Rob Landley <rob@landley.net>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        <tfiga@chromium.org>, <drinkcat@chromium.org>,
-        <pihsun@chromium.org>, <hsinyi@google.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        daoyuan huang <daoyuan.huang@mediatek.com>,
-        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
-        <allen-kh.cheng@mediatek.com>, <xiandong.wang@mediatek.com>,
-        <randy.wu@mediatek.com>, <jason-jh.lin@mediatek.com>,
-        <roy-cw.yeh@mediatek.com>, <river.cheng@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <cellopoint.kai@gmail.com>
-Date:   Tue, 7 Jun 2022 17:20:07 +0800
-In-Reply-To: <20220531055224.19280-7-moudy.ho@mediatek.com>
-References: <20220531055224.19280-1-moudy.ho@mediatek.com>
-         <20220531055224.19280-7-moudy.ho@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+        Tue, 7 Jun 2022 05:23:45 -0400
+X-Greylist: delayed 519 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 02:23:43 PDT
+Received: from einhorn-mail-out.in-berlin.de (einhorn.in-berlin.de [192.109.42.8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 331BE37BE7
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:23:42 -0700 (PDT)
+X-Envelope-From: thomas@osterried.de
+Received: from x-berg.in-berlin.de (x-change.in-berlin.de [217.197.86.40])
+        by einhorn.in-berlin.de  with ESMTPS id 2579Eat51498908
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Tue, 7 Jun 2022 11:14:36 +0200
+Received: from x-berg.in-berlin.de ([217.197.86.42] helo=smtpclient.apple)
+        by x-berg.in-berlin.de with esmtpa (Exim 4.94.2)
+        (envelope-from <thomas@osterried.de>)
+        id 1nyVIJ-0001s8-OQ; Tue, 07 Jun 2022 11:14:35 +0200
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
+Subject: Re: [PATCH net-next] ax25: Fix deadlock caused by skb_recv_datagram
+ in ax25_recvmsg
+From:   Thomas Osterried <thomas@osterried.de>
+In-Reply-To: <CANn89i+HbdWS4JU0odCbRApuCTGFAt9_NSUoCSFo-b4-z0uWCQ@mail.gmail.com>
+Date:   Tue, 7 Jun 2022 11:14:34 +0200
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        LKML <linux-kernel@vger.kernel.org>, jreuter@yaina.de,
+        =?utf-8?Q?Ralf_B=C3=A4chle_DL5RB?= <ralf@linux-mips.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>, linux-hams@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <E5F82D12-56D3-4040-A92B-C658772FD8DD@osterried.de>
+References: <20220606162138.81505-1-duoming@zju.edu.cn>
+ <CANn89i+HbdWS4JU0odCbRApuCTGFAt9_NSUoCSFo-b4-z0uWCQ@mail.gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+X-Mailer: Apple Mail (2.3696.100.31)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Moudy:
 
-On Tue, 2022-05-31 at 13:52 +0800, Moudy Ho wrote:
-> Due to HW limitations, MDP3 is necessary to enable MUTEX in each
-> frame
-> for SOF triggering and cooperate with CMDQ control to reduce the
-> amount
-> of interrupts generated(also, reduce frame latency).
-> 
-> In response to the above situation, a new interface
-> "mtk_mutex_enable_by_cmdq" has been added to achieve the purpose.
 
-Reviewed-by: CK Hu <ck.hu@mediatek.com>
+> Am 06.06.2022 um 19:31 schrieb Eric Dumazet <edumazet@google.com>:
+> 
+> On Mon, Jun 6, 2022 at 9:21 AM Duoming Zhou <duoming@zju.edu.cn> wrote:
+>> 
+>> The skb_recv_datagram() in ax25_recvmsg() will hold lock_sock
+>> and block until it receives a packet from the remote. If the client
+>> doesn`t connect to server and calls read() directly, it will not
+>> receive any packets forever. As a result, the deadlock will happen.
+>> 
+>> The fail log caused by deadlock is shown below:
+>> 
+>> [  861.122612] INFO: task ax25_deadlock:148 blocked for more than 737 seconds.
+>> [  861.124543] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+>> [  861.127764] Call Trace:
+>> [  861.129688]  <TASK>
+>> [  861.130743]  __schedule+0x2f9/0xb20
+>> [  861.131526]  schedule+0x49/0xb0
+>> [  861.131640]  __lock_sock+0x92/0x100
+>> [  861.131640]  ? destroy_sched_domains_rcu+0x20/0x20
+>> [  861.131640]  lock_sock_nested+0x6e/0x70
+>> [  861.131640]  ax25_sendmsg+0x46/0x420
+>> [  861.134383]  ? ax25_recvmsg+0x1e0/0x1e0
+>> [  861.135658]  sock_sendmsg+0x59/0x60
+>> [  861.136791]  __sys_sendto+0xe9/0x150
+>> [  861.137212]  ? __schedule+0x301/0xb20
+>> [  861.137710]  ? __do_softirq+0x4a2/0x4fd
+>> [  861.139153]  __x64_sys_sendto+0x20/0x30
+>> [  861.140330]  do_syscall_64+0x3b/0x90
+>> [  861.140731]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+>> [  861.141249] RIP: 0033:0x7fdf05ee4f64
+>> [  861.141249] RSP: 002b:00007ffe95772fc0 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+>> [  861.141249] RAX: ffffffffffffffda RBX: 0000565303a013f0 RCX: 00007fdf05ee4f64
+>> [  861.141249] RDX: 0000000000000005 RSI: 0000565303a01678 RDI: 0000000000000005
+>> [  861.141249] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+>> [  861.141249] R10: 0000000000000000 R11: 0000000000000246 R12: 0000565303a00cf0
+>> [  861.141249] R13: 00007ffe957730e0 R14: 0000000000000000 R15: 0000000000000000
+>> 
+>> This patch moves the skb_recv_datagram() before lock_sock() in order
+>> that other functions that need lock_sock could be executed.
+>> 
+> 
+> 
+> Why is this targeting net-next tree ?
+
+Off-topic question for better understanding: when patches go to netdev,
+when to net-next tree? Ah, found explanation it here (mentioning it
+for our readers at linux-hams@):
+  https://www.kernel.org/doc/Documentation/networking/netdev-FAQ.txt
+
+> 1) A fix should target net tree
+> 2) It should include a Fixes: tag
+
+tnx for info. "Fix" in subject is not enough?
+
+
+> Also:
+> - this patch bypasses tests in ax25_recvmsg()
+> - This might break applications depending on blocking read() operations.
+
+We have discussed and verified it.
+
+We had a deadlock problem (during concurrent read/write),
+found by Thomas Habets, in
+  https://marc.info/?l=linux-hams&m=159319049624305&w=2
+Duoming found a second problem with current ax.25 implementation, that causes
+deadlock not only for the userspace program Thomas had, but also in the kernel.
+
+Thomas' patch did not made it to the git kernel net, because the testing bot
+complained that there was no "goto out:" left, for label "out:".
+
+Furhermore, before the test
+          if (sk->sk_type == SOCK_SEQPACKET && sk->sk_state != TCP_ESTABLISHED) {
+it's useful to do lock_sock(sk);
+
+After reading through the documentation in the code above the skb_recv_datagram()
+function, it should be safe to use this function without locking.
+That's why we moved it to the top of ax25_recvmsg().
+
+
+> I feel a real fix is going to be slightly more difficult than that.
+
+It's interesting to see how other kernel drivers use skb_recv_datagram().
+Many have copied the code of others. But in the end, there are various variants:
+
+
+
+af_x25.c (for X.25) does it this way:
+
+	lock_sock(sk);
+if (x25->neighbour == NULL)
+goto out;
+..
+if (sk->sk_state != TCP_ESTABLISHED)
+goto out;
+..
+release_sock(sk);
+skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT,
+flags & MSG_DONTWAIT, &rc);
+lock_sock(sk);
+
+-> They lock for sk->sk_state tests, and then
+release lock for skb_recv_datagram()
+
+
+
+unix.c does it with a local lock in the unix socket struct:
+
+mutex_lock(&u->iolock);
+skb = skb_recv_datagram(sk, 0, 1, &err);
+mutex_unlock(&u->iolock);
+if (!skb)
+return err;
+
+
+
+netrom/af_netrom.c: It may have the same "deadlog hang" like af_ax25.c that Thomas observed.
+-> may also be needed to fix.
+
+
+rose/af_rose.c: does not use any locks (!)
+
+
+vy 73,
+	- Thomas  dl9sau
+
 
 > 
-> Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
-> Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> ---
->  drivers/soc/mediatek/mtk-mutex.c       | 45
-> +++++++++++++++++++++++++-
->  include/linux/soc/mediatek/mtk-mutex.h |  2 ++
->  2 files changed, 46 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/soc/mediatek/mtk-mutex.c
-> b/drivers/soc/mediatek/mtk-mutex.c
-> index 23009445adb4..b93dd391fc86 100644
-> --- a/drivers/soc/mediatek/mtk-mutex.c
-> +++ b/drivers/soc/mediatek/mtk-mutex.c
-> @@ -7,10 +7,12 @@
->  #include <linux/iopoll.h>
->  #include <linux/module.h>
->  #include <linux/of_device.h>
-> +#include <linux/of_address.h>
->  #include <linux/platform_device.h>
->  #include <linux/regmap.h>
->  #include <linux/soc/mediatek/mtk-mmsys.h>
->  #include <linux/soc/mediatek/mtk-mutex.h>
-> +#include <linux/soc/mediatek/mtk-cmdq.h>
->  
->  #define MT2701_MUTEX0_MOD0			0x2c
->  #define MT2701_MUTEX0_SOF0			0x30
-> @@ -204,6 +206,8 @@ struct mtk_mutex_ctx {
->  	void __iomem			*regs;
->  	struct mtk_mutex		mutex[10];
->  	const struct mtk_mutex_data	*data;
-> +	phys_addr_t			addr;
-> +	struct cmdq_client_reg		cmdq_reg;
->  };
->  
->  static const unsigned int mt2701_mutex_mod[DDP_COMPONENT_ID_MAX] = {
-> @@ -594,6 +598,30 @@ void mtk_mutex_enable(struct mtk_mutex *mutex)
->  }
->  EXPORT_SYMBOL_GPL(mtk_mutex_enable);
->  
-> +int mtk_mutex_enable_by_cmdq(struct mtk_mutex *mutex, void *pkt)
-> +{
-> +	struct mtk_mutex_ctx *mtx = container_of(mutex, struct
-> mtk_mutex_ctx,
-> +						 mutex[mutex->id]);
-> +#if IS_REACHABLE(CONFIG_MTK_CMDQ)
-> +	struct cmdq_pkt *cmdq_pkt = (struct cmdq_pkt *)pkt;
-> +
-> +	WARN_ON(&mtx->mutex[mutex->id] != mutex);
-> +
-> +	if (!mtx->cmdq_reg.size) {
-> +		dev_err(mtx->dev, "mediatek,gce-client-reg hasn't been
-> set");
-> +		return -EINVAL;
-> +	}
-> +
-> +	cmdq_pkt_write(cmdq_pkt, mtx->cmdq_reg.subsys,
-> +		       mtx->addr + DISP_REG_MUTEX_EN(mutex->id), 1);
-> +	return 0;
-> +#else
-> +	dev_err(mtx->dev, "Not support for enable MUTEX by CMDQ");
-> +	return -ENODEV;
-> +#endif
-> +}
-> +EXPORT_SYMBOL_GPL(mtk_mutex_enable_by_cmdq);
-> +
->  void mtk_mutex_disable(struct mtk_mutex *mutex)
->  {
->  	struct mtk_mutex_ctx *mtx = container_of(mutex, struct
-> mtk_mutex_ctx,
-> @@ -690,8 +718,11 @@ static int mtk_mutex_probe(struct
-> platform_device *pdev)
->  {
->  	struct device *dev = &pdev->dev;
->  	struct mtk_mutex_ctx *mtx;
-> -	struct resource *regs;
-> +	struct resource *regs, addr;
->  	int i;
-> +#if IS_REACHABLE(CONFIG_MTK_CMDQ)
-> +	int ret;
-> +#endif
->  
->  	mtx = devm_kzalloc(dev, sizeof(*mtx), GFP_KERNEL);
->  	if (!mtx)
-> @@ -711,6 +742,18 @@ static int mtk_mutex_probe(struct
-> platform_device *pdev)
->  		}
->  	}
->  
-> +	if (of_address_to_resource(dev->of_node, 0, &addr) < 0) {
-> +		dev_err(dev, "Failed to get addr\n");
-> +		return -EINVAL;
-> +	}
-> +	mtx->addr = addr.start;
-> +
-> +#if IS_REACHABLE(CONFIG_MTK_CMDQ)
-> +	ret = cmdq_dev_get_client_reg(dev, &mtx->cmdq_reg, 0);
-> +	if (ret)
-> +		dev_dbg(dev, "No mediatek,gce-client-reg!\n");
-> +#endif
-> +
->  	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->  	mtx->regs = devm_ioremap_resource(dev, regs);
->  	if (IS_ERR(mtx->regs)) {
-> diff --git a/include/linux/soc/mediatek/mtk-mutex.h
-> b/include/linux/soc/mediatek/mtk-mutex.h
-> index 829231523e3f..385ec8795c1d 100644
-> --- a/include/linux/soc/mediatek/mtk-mutex.h
-> +++ b/include/linux/soc/mediatek/mtk-mutex.h
-> @@ -35,6 +35,8 @@ int mtk_mutex_prepare(struct mtk_mutex *mutex);
->  void mtk_mutex_add_comp(struct mtk_mutex *mutex,
->  			enum mtk_ddp_comp_id id);
->  void mtk_mutex_enable(struct mtk_mutex *mutex);
-> +int mtk_mutex_enable_by_cmdq(struct mtk_mutex *mutex,
-> +			     void *pkt);
->  void mtk_mutex_disable(struct mtk_mutex *mutex);
->  void mtk_mutex_remove_comp(struct mtk_mutex *mutex,
->  			   enum mtk_ddp_comp_id id);
+> Thank you
+> 
+>> Reported-by: Thomas Habets <thomas@@habets.se>
+>> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+>> ---
+>> net/ax25/af_ax25.c | 11 ++++++-----
+>> 1 file changed, 6 insertions(+), 5 deletions(-)
+>> 
+>> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+>> index 95393bb2760..02cd6087512 100644
+>> --- a/net/ax25/af_ax25.c
+>> +++ b/net/ax25/af_ax25.c
+>> @@ -1665,6 +1665,11 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>>        int copied;
+>>        int err = 0;
+>> 
+>> +       /* Now we can treat all alike */
+>> +       skb = skb_recv_datagram(sk, flags, &err);
+>> +       if (!skb)
+>> +               goto done;
+>> +
+>>        lock_sock(sk);
+>>        /*
+>>         *      This works for seqpacket too. The receiver has ordered the
+>> @@ -1675,11 +1680,6 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>>                goto out;
+>>        }
+>> 
+>> -       /* Now we can treat all alike */
+>> -       skb = skb_recv_datagram(sk, flags, &err);
+>> -       if (skb == NULL)
+>> -               goto out;
+>> -
+>>        if (!sk_to_ax25(sk)->pidincl)
+>>                skb_pull(skb, 1);               /* Remove PID */
+>> 
+>> @@ -1725,6 +1725,7 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>> out:
+>>        release_sock(sk);
+>> 
+>> +done:
+>>        return err;
+>> }
+>> 
+>> --
+>> 2.17.1
+>> 
+> 
 
