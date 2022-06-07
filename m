@@ -2,94 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E24FDCCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA8ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240670AbiFGKL4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56744 "EHLO
+        id S240686AbiFGKL7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:11:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233342AbiFGKLy (ORCPT
+        with ESMTP id S240669AbiFGKLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:11:54 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1B1E8B94
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 03:11:52 -0700 (PDT)
-Received: from fsav311.sakura.ne.jp (fsav311.sakura.ne.jp [153.120.85.142])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 257ABV1r073398;
-        Tue, 7 Jun 2022 19:11:31 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav311.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav311.sakura.ne.jp);
- Tue, 07 Jun 2022 19:11:31 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav311.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 257ABVSk073394
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Tue, 7 Jun 2022 19:11:31 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <bc424a36-24f6-3f52-5fdd-5d24cc209a6f@I-love.SAKURA.ne.jp>
-Date:   Tue, 7 Jun 2022 19:11:31 +0900
+        Tue, 7 Jun 2022 06:11:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC1DA338C;
+        Tue,  7 Jun 2022 03:11:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3A09B81EDB;
+        Tue,  7 Jun 2022 10:11:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F64AC3411E;
+        Tue,  7 Jun 2022 10:11:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654596711;
+        bh=u/LeARG2hwxh21NjNwvi6BgnN1cum7FrrFPMu1OzkfY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Ep4byXZ8izun2IJ+1pW7U1VjvjuX0mLio8JYSqFxp96ZTPtlppNuwjAgGzLO58DmO
+         F1BS8dLeF3tRS57YXHB2AvkPU01RHWYxPVpx92soGPkInCwWYWmomoS9qYBNmd0ku0
+         YxFLyuy9RTaY8uFE8iT3Ls3OI2sWZO3Mob0QDIvNY89Scx0xrDv690vrFmpi9mB2Ni
+         CWPTE4foaaomaw1I+BJzDb48A7ytfFhQt0+boLnB0h0DeMLFoZuV9Nt0xooN6rLOn+
+         bMikhScHjD8yv0fS1vf3q59YUNCycOQzHg5Fh17I+XYsHnJuayqQIPG0pCqkVnLbeF
+         JRyee4eULKOWg==
+Date:   Tue, 7 Jun 2022 13:09:56 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Jianglei Nie <niejianglei2021@163.com>
+Cc:     jejb@linux.ibm.com, zohar@linux.ibm.com, dhowells@redhat.com,
+        jmorris@namei.org, serge@hallyn.com,
+        linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] security:trusted_tpm2: Fix memory leak in
+ tpm2_key_encode()
+Message-ID: <Yp8j9FilcBMyeL2G@iki.fi>
+References: <20220607074650.432834-1-niejianglei2021@163.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2] kbuild: fix build failure by
- scripts/check-local-export
-Content-Language: en-US
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-References: <62ba96a2-0a0c-ab8e-351d-398f31a880ae@I-love.SAKURA.ne.jp>
- <ce0b0a88-f8cb-ba9c-8a0e-1a818f8c50e0@I-love.SAKURA.ne.jp>
- <8af7aebf-61ae-f126-57fa-8ff358c1841e@I-love.SAKURA.ne.jp>
- <CAK7LNAREqTb=Y08R-jX8mNZoTmEYt_6WrUrP+U2oZQk2tT9kBg@mail.gmail.com>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <CAK7LNAREqTb=Y08R-jX8mNZoTmEYt_6WrUrP+U2oZQk2tT9kBg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607074650.432834-1-niejianglei2021@163.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/06/07 17:34, Masahiro Yamada wrote:
-> This patch does not work because you did not avoid
-> running the while-loop in a subshell.
-> 
-> It is well described in  this page:
-> https://riptutorial.com/bash/example/26955/to-avoid-usage-of-a-sub-shell
-> 
+"KEYS: trusted: fix memory leak in tpm2_key_encode()"
 
-I didn't know that. Then, adding below diff will work.
+On Tue, Jun 07, 2022 at 03:46:50PM +0800, Jianglei Nie wrote:
+> The function allocates a memory chunk for scratch by kmalloc(), but
+                                        ~~~         ~~ 
+                                        from        with
 
-@@ -24,7 +24,7 @@ exit_code=0
- # symbol_types is fine because export_symbols will remain empty.
- result=$(${NM} ${1} 2>&1) || die "${result}"
+There's more than one function in Linux - maybe you'd rather want
+to write: "tpm2_key_encode() allocates ..."
 
--echo "${result}" | while read value type name
-+while read value type name
- do
-        # Skip the line if the number of fields is less than 3.
-        #
-@@ -48,7 +48,9 @@ do
-        if [[ ${name} == __ksymtab_* ]]; then
-                export_symbols+=(${name#__ksymtab_})
-        fi
--done
-+done <<EOF
-+"${result}"
-+EOF
+> it is never freed through the function, which leads to a memory leak.
 
- for name in "${export_symbols[@]}"
- do
+You can just write "it is never freed, which leads to a memory leak."
 
-> 
-> 
-> I will send a working patch with a proper commit log.
+> Handle those cases with kfree().
 
-OK. "[PATCH] scripts/check-local-export: avoid 'wait $!' for process substitution" works.
+"Free the memory chunk with kfree() in the return paths."
 
-Thank you.
+> Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+
+Thank you finding this and providing a fix, it is highly appreciated.
+Please don't take the nitpicking with the language personally. Just want
+to have it documented in appropriate form.
+
+BR, Jarkko
