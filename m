@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5AEECCA494
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9F8CCCA491
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357308AbiFGTlu (ORCPT
+        id S1357218AbiFGTl1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:41:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57802 "EHLO
+        Tue, 7 Jun 2022 15:41:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354389AbiFGSq7 (ORCPT
+        with ESMTP id S1354479AbiFGSrE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:59 -0400
+        Tue, 7 Jun 2022 14:47:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFAA42873F;
-        Tue,  7 Jun 2022 11:00:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D92A66AFF;
+        Tue,  7 Jun 2022 11:01:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67A31617B0;
-        Tue,  7 Jun 2022 18:00:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78F47C385A5;
-        Tue,  7 Jun 2022 18:00:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BA6A617B0;
+        Tue,  7 Jun 2022 18:01:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2B8BC34119;
+        Tue,  7 Jun 2022 18:01:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624858;
-        bh=4ZBKrg277j10J4kfqZX7XizaQzgUZzCFAjO9QyhY8fI=;
+        s=korg; t=1654624887;
+        bh=qOG8Y18WbTQ5OroftqQAArGQvZPIVLqJFUdTH/Dey4Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kQqrQvPDLxtwjwU5f8iidSABlax398+LUqB0kBY5+o9wQKdtjq3AlYv+b/6czrBrg
-         4a0SB/6/X13beyIoSpl80Ab60ORH5x7NhSOzS/qYvCt6n8AnSrWppWCGnQwv6IRaGm
-         HXz2NBmn2ln22VA2cbOCtB326P3ArLtpFtEaCd7w=
+        b=Rg/q3B0r4Ma9aIGqBoe6Z0/Bl3gTJc9OSVJUh5P+uLuh/XAH/bmI27b0K/SONSaln
+         uw8qnR7nCxuJWQQS7ZUWfog2gYlGyr2Ve+//Mt44/XjPXT0BlwYRM62eT6+Zbj3gC6
+         NKxzVzrwMkbam0btqabCTcsAapdFnvUh2IJ4KenM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 477/667] f2fs: support fault injection for dquot_initialize()
-Date:   Tue,  7 Jun 2022 19:02:22 +0200
-Message-Id: <20220607164949.008245956@linuxfoundation.org>
+        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+        Yong Wu <yong.wu@mediatek.com>,
+        kernel test robot <lkp@intel.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 490/667] iommu/mediatek: Fix NULL pointer dereference when printing dev_name
+Date:   Tue,  7 Jun 2022 19:02:35 +0200
+Message-Id: <20220607164949.395899818@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,359 +54,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Miles Chen <miles.chen@mediatek.com>
 
-[ Upstream commit 10a26878564f27327b12e8f4b4d8d7b43065fae5 ]
+[ Upstream commit de78657e16f41417da9332f09c2d67d100096939 ]
 
-This patch adds a new function f2fs_dquot_initialize() to wrap
-dquot_initialize(), and it supports to inject fault into
-f2fs_dquot_initialize() to simulate inner failure occurs in
-dquot_initialize().
+When larbdev is NULL (in the case I hit, the node is incorrectly set
+iommus = <&iommu NUM>), it will cause device_link_add() fail and
+kernel crashes when we try to print dev_name(larbdev).
 
-Usage:
-a) echo 65536 > /sys/fs/f2fs/<dev>/inject_type or
-b) mount -o fault_type=65536 <dev> <mountpoint>
+Let's fail the probe if a larbdev is NULL to avoid invalid inputs from
+dts.
 
-Signed-off-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+It should work for normal correct setting and avoid the crash caused
+by my incorrect setting.
+
+Error log:
+[   18.189042][  T301] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000050
+...
+[   18.344519][  T301] pstate: a0400005 (NzCv daif +PAN -UAO)
+[   18.345213][  T301] pc : mtk_iommu_probe_device+0xf8/0x118 [mtk_iommu]
+[   18.346050][  T301] lr : mtk_iommu_probe_device+0xd0/0x118 [mtk_iommu]
+[   18.346884][  T301] sp : ffffffc00a5635e0
+[   18.347392][  T301] x29: ffffffc00a5635e0 x28: ffffffd44a46c1d8
+[   18.348156][  T301] x27: ffffff80c39a8000 x26: ffffffd44a80cc38
+[   18.348917][  T301] x25: 0000000000000000 x24: ffffffd44a80cc38
+[   18.349677][  T301] x23: ffffffd44e4da4c6 x22: ffffffd44a80cc38
+[   18.350438][  T301] x21: ffffff80cecd1880 x20: 0000000000000000
+[   18.351198][  T301] x19: ffffff80c439f010 x18: ffffffc00a50d0c0
+[   18.351959][  T301] x17: ffffffffffffffff x16: 0000000000000004
+[   18.352719][  T301] x15: 0000000000000004 x14: ffffffd44eb5d420
+[   18.353480][  T301] x13: 0000000000000ad2 x12: 0000000000000003
+[   18.354241][  T301] x11: 00000000fffffad2 x10: c0000000fffffad2
+[   18.355003][  T301] x9 : a0d288d8d7142d00 x8 : a0d288d8d7142d00
+[   18.355763][  T301] x7 : ffffffd44c2bc640 x6 : 0000000000000000
+[   18.356524][  T301] x5 : 0000000000000080 x4 : 0000000000000001
+[   18.357284][  T301] x3 : 0000000000000000 x2 : 0000000000000005
+[   18.358045][  T301] x1 : 0000000000000000 x0 : 0000000000000000
+[   18.360208][  T301] Hardware name: MT6873 (DT)
+[   18.360771][  T301] Call trace:
+[   18.361168][  T301]  dump_backtrace+0xf8/0x1f0
+[   18.361737][  T301]  dump_stack_lvl+0xa8/0x11c
+[   18.362305][  T301]  dump_stack+0x1c/0x2c
+[   18.362816][  T301]  mrdump_common_die+0x184/0x40c [mrdump]
+[   18.363575][  T301]  ipanic_die+0x24/0x38 [mrdump]
+[   18.364230][  T301]  atomic_notifier_call_chain+0x128/0x2b8
+[   18.364937][  T301]  die+0x16c/0x568
+[   18.365394][  T301]  __do_kernel_fault+0x1e8/0x214
+[   18.365402][  T301]  do_page_fault+0xb8/0x678
+[   18.366934][  T301]  do_translation_fault+0x48/0x64
+[   18.368645][  T301]  do_mem_abort+0x68/0x148
+[   18.368652][  T301]  el1_abort+0x40/0x64
+[   18.368660][  T301]  el1h_64_sync_handler+0x54/0x88
+[   18.368668][  T301]  el1h_64_sync+0x68/0x6c
+[   18.368673][  T301]  mtk_iommu_probe_device+0xf8/0x118 [mtk_iommu]
+...
+
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Yong Wu <yong.wu@mediatek.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 635319a4a744 ("media: iommu/mediatek: Add device_link between the consumer and the larb devices")
+Signed-off-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220505132731.21628-1-miles.chen@mediatek.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/filesystems/f2fs.rst |  1 +
- fs/f2fs/checkpoint.c               |  2 +-
- fs/f2fs/f2fs.h                     |  2 ++
- fs/f2fs/file.c                     |  6 +++---
- fs/f2fs/inline.c                   |  2 +-
- fs/f2fs/inode.c                    |  2 +-
- fs/f2fs/namei.c                    | 30 +++++++++++++++---------------
- fs/f2fs/recovery.c                 |  6 +++---
- fs/f2fs/super.c                    | 16 ++++++++++++++++
- fs/f2fs/verity.c                   |  2 +-
- fs/f2fs/xattr.c                    |  2 +-
- 11 files changed, 45 insertions(+), 26 deletions(-)
+ drivers/iommu/mtk_iommu.c    | 6 ++++++
+ drivers/iommu/mtk_iommu_v1.c | 7 +++++++
+ 2 files changed, 13 insertions(+)
 
-diff --git a/Documentation/filesystems/f2fs.rst b/Documentation/filesystems/f2fs.rst
-index 09de6ebbbdfa..7fe50b0bccde 100644
---- a/Documentation/filesystems/f2fs.rst
-+++ b/Documentation/filesystems/f2fs.rst
-@@ -197,6 +197,7 @@ fault_type=%d		 Support configuring fault injection type, should be
- 			 FAULT_DISCARD		  0x000002000
- 			 FAULT_WRITE_IO		  0x000004000
- 			 FAULT_SLAB_ALLOC	  0x000008000
-+			 FAULT_DQUOT_INIT	  0x000010000
- 			 ===================	  ===========
- mode=%s			 Control block allocation mode which supports "adaptive"
- 			 and "lfs". In "lfs" mode, there should be no random
-diff --git a/fs/f2fs/checkpoint.c b/fs/f2fs/checkpoint.c
-index 1ff32926e199..70d898ad2d1d 100644
---- a/fs/f2fs/checkpoint.c
-+++ b/fs/f2fs/checkpoint.c
-@@ -653,7 +653,7 @@ static int recover_orphan_inode(struct f2fs_sb_info *sbi, nid_t ino)
- 		return PTR_ERR(inode);
- 	}
- 
--	err = dquot_initialize(inode);
-+	err = f2fs_dquot_initialize(inode);
- 	if (err) {
- 		iput(inode);
- 		goto err_out;
-diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
-index 0a0fa1a64d06..d775048d4366 100644
---- a/fs/f2fs/f2fs.h
-+++ b/fs/f2fs/f2fs.h
-@@ -55,6 +55,7 @@ enum {
- 	FAULT_DISCARD,
- 	FAULT_WRITE_IO,
- 	FAULT_SLAB_ALLOC,
-+	FAULT_DQUOT_INIT,
- 	FAULT_MAX,
- };
- 
-@@ -3375,6 +3376,7 @@ static inline int f2fs_add_link(struct dentry *dentry, struct inode *inode)
-  */
- int f2fs_inode_dirtied(struct inode *inode, bool sync);
- void f2fs_inode_synced(struct inode *inode);
-+int f2fs_dquot_initialize(struct inode *inode);
- int f2fs_enable_quota_files(struct f2fs_sb_info *sbi, bool rdonly);
- int f2fs_quota_sync(struct super_block *sb, int type);
- loff_t max_file_blocks(struct inode *inode);
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index 8ef92719c679..21dde125ff77 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -786,7 +786,7 @@ int f2fs_truncate(struct inode *inode)
- 		return -EIO;
- 	}
- 
--	err = dquot_initialize(inode);
-+	err = f2fs_dquot_initialize(inode);
- 	if (err)
- 		return err;
- 
-@@ -916,7 +916,7 @@ int f2fs_setattr(struct user_namespace *mnt_userns, struct dentry *dentry,
- 		return err;
- 
- 	if (is_quota_modification(inode, attr)) {
--		err = dquot_initialize(inode);
-+		err = f2fs_dquot_initialize(inode);
- 		if (err)
- 			return err;
- 	}
-@@ -3023,7 +3023,7 @@ static int f2fs_ioc_setproject(struct inode *inode, __u32 projid)
- 	}
- 	f2fs_put_page(ipage, 1);
- 
--	err = dquot_initialize(inode);
-+	err = f2fs_dquot_initialize(inode);
- 	if (err)
- 		return err;
- 
-diff --git a/fs/f2fs/inline.c b/fs/f2fs/inline.c
-index 56a20d5c15da..ea08f0dfa1bd 100644
---- a/fs/f2fs/inline.c
-+++ b/fs/f2fs/inline.c
-@@ -192,7 +192,7 @@ int f2fs_convert_inline_inode(struct inode *inode)
- 			f2fs_hw_is_readonly(sbi) || f2fs_readonly(sbi->sb))
- 		return 0;
- 
--	err = dquot_initialize(inode);
-+	err = f2fs_dquot_initialize(inode);
- 	if (err)
- 		return err;
- 
-diff --git a/fs/f2fs/inode.c b/fs/f2fs/inode.c
-index 2272000fb10b..a40e52ba5ec8 100644
---- a/fs/f2fs/inode.c
-+++ b/fs/f2fs/inode.c
-@@ -759,7 +759,7 @@ void f2fs_evict_inode(struct inode *inode)
- 	if (inode->i_nlink || is_bad_inode(inode))
- 		goto no_delete;
- 
--	err = dquot_initialize(inode);
-+	err = f2fs_dquot_initialize(inode);
- 	if (err) {
- 		err = 0;
- 		set_sbi_flag(sbi, SBI_QUOTA_NEED_REPAIR);
-diff --git a/fs/f2fs/namei.c b/fs/f2fs/namei.c
-index ae0838001480..a728a0af9ce0 100644
---- a/fs/f2fs/namei.c
-+++ b/fs/f2fs/namei.c
-@@ -74,7 +74,7 @@ static struct inode *f2fs_new_inode(struct inode *dir, umode_t mode)
- 	if (err)
- 		goto fail_drop;
- 
--	err = dquot_initialize(inode);
-+	err = f2fs_dquot_initialize(inode);
- 	if (err)
- 		goto fail_drop;
- 
-@@ -345,7 +345,7 @@ static int f2fs_create(struct user_namespace *mnt_userns, struct inode *dir,
- 	if (!f2fs_is_checkpoint_ready(sbi))
- 		return -ENOSPC;
- 
--	err = dquot_initialize(dir);
-+	err = f2fs_dquot_initialize(dir);
- 	if (err)
- 		return err;
- 
-@@ -404,7 +404,7 @@ static int f2fs_link(struct dentry *old_dentry, struct inode *dir,
- 			F2FS_I(old_dentry->d_inode)->i_projid)))
- 		return -EXDEV;
- 
--	err = dquot_initialize(dir);
-+	err = f2fs_dquot_initialize(dir);
- 	if (err)
- 		return err;
- 
-@@ -460,7 +460,7 @@ static int __recover_dot_dentries(struct inode *dir, nid_t pino)
- 		return 0;
- 	}
- 
--	err = dquot_initialize(dir);
-+	err = f2fs_dquot_initialize(dir);
- 	if (err)
- 		return err;
- 
-@@ -598,10 +598,10 @@ static int f2fs_unlink(struct inode *dir, struct dentry *dentry)
- 		goto fail;
- 	}
- 
--	err = dquot_initialize(dir);
-+	err = f2fs_dquot_initialize(dir);
- 	if (err)
- 		goto fail;
--	err = dquot_initialize(inode);
-+	err = f2fs_dquot_initialize(inode);
- 	if (err)
- 		goto fail;
- 
-@@ -675,7 +675,7 @@ static int f2fs_symlink(struct user_namespace *mnt_userns, struct inode *dir,
- 	if (err)
- 		return err;
- 
--	err = dquot_initialize(dir);
-+	err = f2fs_dquot_initialize(dir);
- 	if (err)
- 		return err;
- 
-@@ -746,7 +746,7 @@ static int f2fs_mkdir(struct user_namespace *mnt_userns, struct inode *dir,
- 	if (unlikely(f2fs_cp_error(sbi)))
- 		return -EIO;
- 
--	err = dquot_initialize(dir);
-+	err = f2fs_dquot_initialize(dir);
- 	if (err)
- 		return err;
- 
-@@ -803,7 +803,7 @@ static int f2fs_mknod(struct user_namespace *mnt_userns, struct inode *dir,
- 	if (!f2fs_is_checkpoint_ready(sbi))
- 		return -ENOSPC;
- 
--	err = dquot_initialize(dir);
-+	err = f2fs_dquot_initialize(dir);
- 	if (err)
- 		return err;
- 
-@@ -841,7 +841,7 @@ static int __f2fs_tmpfile(struct inode *dir, struct dentry *dentry,
- 	struct inode *inode;
- 	int err;
- 
--	err = dquot_initialize(dir);
-+	err = f2fs_dquot_initialize(dir);
- 	if (err)
- 		return err;
- 
-@@ -965,16 +965,16 @@ static int f2fs_rename(struct inode *old_dir, struct dentry *old_dentry,
- 			return err;
- 	}
- 
--	err = dquot_initialize(old_dir);
-+	err = f2fs_dquot_initialize(old_dir);
- 	if (err)
- 		goto out;
- 
--	err = dquot_initialize(new_dir);
-+	err = f2fs_dquot_initialize(new_dir);
- 	if (err)
- 		goto out;
- 
- 	if (new_inode) {
--		err = dquot_initialize(new_inode);
-+		err = f2fs_dquot_initialize(new_inode);
- 		if (err)
- 			goto out;
- 	}
-@@ -1138,11 +1138,11 @@ static int f2fs_cross_rename(struct inode *old_dir, struct dentry *old_dentry,
- 			F2FS_I(new_dentry->d_inode)->i_projid)))
- 		return -EXDEV;
- 
--	err = dquot_initialize(old_dir);
-+	err = f2fs_dquot_initialize(old_dir);
- 	if (err)
- 		goto out;
- 
--	err = dquot_initialize(new_dir);
-+	err = f2fs_dquot_initialize(new_dir);
- 	if (err)
- 		goto out;
- 
-diff --git a/fs/f2fs/recovery.c b/fs/f2fs/recovery.c
-index 04655511d7f5..66b75bc6a60a 100644
---- a/fs/f2fs/recovery.c
-+++ b/fs/f2fs/recovery.c
-@@ -81,7 +81,7 @@ static struct fsync_inode_entry *add_fsync_inode(struct f2fs_sb_info *sbi,
- 	if (IS_ERR(inode))
- 		return ERR_CAST(inode);
- 
--	err = dquot_initialize(inode);
-+	err = f2fs_dquot_initialize(inode);
- 	if (err)
- 		goto err_out;
- 
-@@ -203,7 +203,7 @@ static int recover_dentry(struct inode *inode, struct page *ipage,
- 			goto out_put;
- 		}
- 
--		err = dquot_initialize(einode);
-+		err = f2fs_dquot_initialize(einode);
- 		if (err) {
- 			iput(einode);
- 			goto out_put;
-@@ -508,7 +508,7 @@ static int check_index_in_prev_nodes(struct f2fs_sb_info *sbi,
- 		if (IS_ERR(inode))
- 			return PTR_ERR(inode);
- 
--		ret = dquot_initialize(inode);
-+		ret = f2fs_dquot_initialize(inode);
- 		if (ret) {
- 			iput(inode);
- 			return ret;
-diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
-index 6dc66b7bc1f5..d41081aae2e5 100644
---- a/fs/f2fs/super.c
-+++ b/fs/f2fs/super.c
-@@ -58,6 +58,7 @@ const char *f2fs_fault_name[FAULT_MAX] = {
- 	[FAULT_DISCARD]		= "discard error",
- 	[FAULT_WRITE_IO]	= "write IO error",
- 	[FAULT_SLAB_ALLOC]	= "slab alloc",
-+	[FAULT_DQUOT_INIT]	= "dquot initialize",
- };
- 
- void f2fs_build_fault_attr(struct f2fs_sb_info *sbi, unsigned int rate,
-@@ -2535,6 +2536,16 @@ static ssize_t f2fs_quota_write(struct super_block *sb, int type,
- 	return len - towrite;
- }
- 
-+int f2fs_dquot_initialize(struct inode *inode)
-+{
-+	if (time_to_inject(F2FS_I_SB(inode), FAULT_DQUOT_INIT)) {
-+		f2fs_show_injection_info(F2FS_I_SB(inode), FAULT_DQUOT_INIT);
-+		return -ESRCH;
-+	}
-+
-+	return dquot_initialize(inode);
-+}
-+
- static struct dquot **f2fs_get_dquots(struct inode *inode)
- {
- 	return F2FS_I(inode)->i_dquot;
-@@ -2919,6 +2930,11 @@ static const struct quotactl_ops f2fs_quotactl_ops = {
- 	.get_nextdqblk	= dquot_get_next_dqblk,
- };
- #else
-+int f2fs_dquot_initialize(struct inode *inode)
-+{
-+	return 0;
-+}
-+
- int f2fs_quota_sync(struct super_block *sb, int type)
- {
- 	return 0;
-diff --git a/fs/f2fs/verity.c b/fs/f2fs/verity.c
-index 03549b5ba204..fe5acdccaae1 100644
---- a/fs/f2fs/verity.c
-+++ b/fs/f2fs/verity.c
-@@ -136,7 +136,7 @@ static int f2fs_begin_enable_verity(struct file *filp)
- 	 * here and not rely on ->open() doing it.  This must be done before
- 	 * evicting the inline data.
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 9b3ded518f83..2ae46fa6b3de 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -586,6 +586,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+ 	 * All the ports in each a device should be in the same larbs.
  	 */
--	err = dquot_initialize(inode);
-+	err = f2fs_dquot_initialize(inode);
- 	if (err)
- 		return err;
+ 	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
++	if (larbid >= MTK_LARB_NR_MAX)
++		return ERR_PTR(-EINVAL);
++
+ 	for (i = 1; i < fwspec->num_ids; i++) {
+ 		larbidx = MTK_M4U_TO_LARB(fwspec->ids[i]);
+ 		if (larbid != larbidx) {
+@@ -595,6 +598,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+ 		}
+ 	}
+ 	larbdev = data->larb_imu[larbid].dev;
++	if (!larbdev)
++		return ERR_PTR(-EINVAL);
++
+ 	link = device_link_add(dev, larbdev,
+ 			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
+ 	if (!link)
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index bc7ee90b9373..254530ad6c48 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -80,6 +80,7 @@
+ /* MTK generation one iommu HW only support 4K size mapping */
+ #define MT2701_IOMMU_PAGE_SHIFT			12
+ #define MT2701_IOMMU_PAGE_SIZE			(1UL << MT2701_IOMMU_PAGE_SHIFT)
++#define MT2701_LARB_NR_MAX			3
  
-diff --git a/fs/f2fs/xattr.c b/fs/f2fs/xattr.c
-index 6a3b3bec7989..797ac505a075 100644
---- a/fs/f2fs/xattr.c
-+++ b/fs/f2fs/xattr.c
-@@ -782,7 +782,7 @@ int f2fs_setxattr(struct inode *inode, int index, const char *name,
- 	if (!f2fs_is_checkpoint_ready(sbi))
- 		return -ENOSPC;
+ /*
+  * MTK m4u support 4GB iova address space, and only support 4K page
+@@ -457,6 +458,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
  
--	err = dquot_initialize(inode);
-+	err = f2fs_dquot_initialize(inode);
- 	if (err)
- 		return err;
+ 	/* Link the consumer device with the smi-larb device(supplier) */
+ 	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
++	if (larbid >= MT2701_LARB_NR_MAX)
++		return ERR_PTR(-EINVAL);
++
+ 	for (idx = 1; idx < fwspec->num_ids; idx++) {
+ 		larbidx = mt2701_m4u_to_larb(fwspec->ids[idx]);
+ 		if (larbid != larbidx) {
+@@ -467,6 +471,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+ 	}
  
+ 	larbdev = data->larb_imu[larbid].dev;
++	if (!larbdev)
++		return ERR_PTR(-EINVAL);
++
+ 	link = device_link_add(dev, larbdev,
+ 			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
+ 	if (!link)
 -- 
 2.35.1
 
