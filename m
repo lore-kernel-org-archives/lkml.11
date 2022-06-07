@@ -2,97 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75054CCA49C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F1EDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377751AbiFGUu4 (ORCPT
+        id S1378478AbiFGUwJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:50:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50096 "EHLO
+        Tue, 7 Jun 2022 16:52:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358317AbiFGTwV (ORCPT
+        with ESMTP id S1358594AbiFGTwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:52:21 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2029B9D4F7;
-        Tue,  7 Jun 2022 11:20:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B87F4CE2442;
-        Tue,  7 Jun 2022 18:19:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFD8DC34115;
-        Tue,  7 Jun 2022 18:19:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625997;
-        bh=Xa0g44ZSKtbu2eHMT5YdxXdYc5BkotwIBs6dFLGfG5E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m2dFmDPyE5Ex96IVDhiTHJzXAg1NOXKnhyHYBa3ccdFJUZcwNj17WsHbdKc/6bh0y
-         YLRXepbnBAhG8B+O9cEl/yps10JYa7EduolcHDBaRy6czVpPHmRDb14sow0hS0aiUz
-         fJaCbBYfQJUg4fJZ7+GY7Dm317sdDzU37U9X7SHc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 221/772] smb3: check for null tcon
-Date:   Tue,  7 Jun 2022 18:56:53 +0200
-Message-Id: <20220607164955.546541394@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 15:52:44 -0400
+X-Greylist: delayed 179 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 11:21:13 PDT
+Received: from 9.mo576.mail-out.ovh.net (9.mo576.mail-out.ovh.net [46.105.56.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED7625DA
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:21:13 -0700 (PDT)
+Received: from player728.ha.ovh.net (unknown [10.111.172.36])
+        by mo576.mail-out.ovh.net (Postfix) with ESMTP id CD860241BC
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:21:11 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player728.ha.ovh.net (Postfix) with ESMTPSA id 83A8D2B3FFBBD;
+        Tue,  7 Jun 2022 18:21:03 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-103G005c1a5820f-bbd6-4097-a39f-86f090581fe2,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 2/3] drm/panel: panel-dsi-cm: Use backlight helpers
+Date:   Tue,  7 Jun 2022 20:20:25 +0200
+Message-Id: <20220607182026.1121992-3-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220607182026.1121992-1-steve@sk2.org>
+References: <20220607182026.1121992-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 10887170627632334470
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddvgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejvdekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheejie
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steve French <stfrench@microsoft.com>
+Instead of retrieving the backlight brightness in struct
+backlight_properties manually, and then checking whether the backlight
+should be on at all, use backlight_get_brightness() which does all
+this and insulates this from future changes.
 
-[ Upstream commit bbdf6cf56c88845fb0b713cbf5c6623c53fe40d8 ]
+Instead of setting the power state by manually updating fields in
+struct backlight_properties, use backlight_enable() and
+backlight_disable(). These also call backlight_update_status() so the
+separate call is no longer needed.
 
-Although unlikely to be null, it is confusing to use a pointer
-before checking for it to be null so move the use down after
-null check.
-
-Addresses-Coverity: 1517586 ("Null pointer dereferences  (REVERSE_INULL)")
-Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: dri-devel@lists.freedesktop.org
 ---
- fs/cifs/smb2ops.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/panel/panel-dsi-cm.c | 24 ++++--------------------
+ 1 file changed, 4 insertions(+), 20 deletions(-)
 
-diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
-index 53c3f056ab84..ab74a678fb93 100644
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -757,8 +757,8 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
- 		struct cifs_sb_info *cifs_sb,
- 		struct cached_fid **cfid)
+diff --git a/drivers/gpu/drm/panel/panel-dsi-cm.c b/drivers/gpu/drm/panel/panel-dsi-cm.c
+index b58cb064975f..aa36dc6cedd3 100644
+--- a/drivers/gpu/drm/panel/panel-dsi-cm.c
++++ b/drivers/gpu/drm/panel/panel-dsi-cm.c
+@@ -86,16 +86,10 @@ static void dsicm_bl_power(struct panel_drv_data *ddata, bool enable)
+ 		return;
+ 
+ 	if (enable) {
+-		backlight->props.fb_blank = FB_BLANK_UNBLANK;
+-		backlight->props.state = ~(BL_CORE_FBBLANK | BL_CORE_SUSPENDED);
+-		backlight->props.power = FB_BLANK_UNBLANK;
++		backlight_enable(backlight);
+ 	} else {
+-		backlight->props.fb_blank = FB_BLANK_NORMAL;
+-		backlight->props.power = FB_BLANK_POWERDOWN;
+-		backlight->props.state |= BL_CORE_FBBLANK | BL_CORE_SUSPENDED;
++		backlight_disable(backlight);
+ 	}
+-
+-	backlight_update_status(backlight);
+ }
+ 
+ static void hw_guard_start(struct panel_drv_data *ddata, int guard_msec)
+@@ -196,13 +190,7 @@ static int dsicm_bl_update_status(struct backlight_device *dev)
  {
--	struct cifs_ses *ses = tcon->ses;
--	struct TCP_Server_Info *server = ses->server;
-+	struct cifs_ses *ses;
-+	struct TCP_Server_Info *server;
- 	struct cifs_open_parms oparms;
- 	struct smb2_create_rsp *o_rsp = NULL;
- 	struct smb2_query_info_rsp *qi_rsp = NULL;
-@@ -776,6 +776,9 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
- 	if (tcon->nohandlecache)
- 		return -ENOTSUPP;
+ 	struct panel_drv_data *ddata = dev_get_drvdata(&dev->dev);
+ 	int r = 0;
+-	int level;
+-
+-	if (dev->props.fb_blank == FB_BLANK_UNBLANK &&
+-			dev->props.power == FB_BLANK_UNBLANK)
+-		level = dev->props.brightness;
+-	else
+-		level = 0;
++	int level = backlight_get_brightness(dev);
  
-+	ses = tcon->ses;
-+	server = ses->server;
-+
- 	if (cifs_sb->root == NULL)
- 		return -ENOENT;
+ 	dev_dbg(&ddata->dsi->dev, "update brightness to %d\n", level);
  
+@@ -219,11 +207,7 @@ static int dsicm_bl_update_status(struct backlight_device *dev)
+ 
+ static int dsicm_bl_get_intensity(struct backlight_device *dev)
+ {
+-	if (dev->props.fb_blank == FB_BLANK_UNBLANK &&
+-			dev->props.power == FB_BLANK_UNBLANK)
+-		return dev->props.brightness;
+-
+-	return 0;
++	return backlight_get_brightness(dev);
+ }
+ 
+ static const struct backlight_ops dsicm_bl_ops = {
 -- 
-2.35.1
-
-
+2.30.2
 
