@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8649BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:07:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68C59CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:07:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377999AbiFGWHk (ORCPT
+        id S1378732AbiFGWHv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:07:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49336 "EHLO
+        Tue, 7 Jun 2022 18:07:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378750AbiFGVBr (ORCPT
+        with ESMTP id S1378661AbiFGVBj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:01:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D0520E6FC;
-        Tue,  7 Jun 2022 11:45:33 -0700 (PDT)
+        Tue, 7 Jun 2022 17:01:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B93920E53D;
+        Tue,  7 Jun 2022 11:45:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B60D6156D;
-        Tue,  7 Jun 2022 18:45:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BEC6C385A2;
-        Tue,  7 Jun 2022 18:45:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DCC3CB81FE1;
+        Tue,  7 Jun 2022 18:45:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BBE4C385A2;
+        Tue,  7 Jun 2022 18:45:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627532;
-        bh=NrPlRNLy3VPCTlW9T90w4oVHwZBt8gL5yWLzuJeF2n0=;
+        s=korg; t=1654627521;
+        bh=K0bdUzOfeyMkxgs4pOZ4/dubG5F1GljN0qv8FWivZ/Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2JyNQXKtjbyxfEOp94jYeKXMZsathdig5iwIOPBgytRmvzFsmBK92et+MqeTMXQW1
-         RMIPY2BNB0vEenYjrauKdj/Bu31Mjn1iR7JneQiaiR8PgjH31h6+NYTl8+WpN2NauR
-         TVKBS9xypp+62GG0QGL/7PcSEJROWbvxAJcVA+V8=
+        b=10ob+5Os258xH8buI2vKckcKpQnYUvPuBFB5KSZAeVK2BtmiFJnSAtGzGNBCvhDxN
+         An6gRGBAIkmHc7VkXLwhvXRt4zjVeV57cJcYqgOQZ9qPnh+oCCQaCCF6AM68qUj8d1
+         atwNk04l9avmlMpqiZFyvHqCDpw3jSR2FD5CuBNg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
-        Tony Lindgren <tony@atomide.com>
-Subject: [PATCH 5.17 772/772] tty: n_gsm: Fix packet data hex dump output
-Date:   Tue,  7 Jun 2022 19:06:04 +0200
-Message-Id: <20220607165011.769069408@linuxfoundation.org>
+        stable@vger.kernel.org, Fine Fan <ffan@redhat.com>,
+        Xiao Ni <xni@redhat.com>, Song Liu <song@kernel.org>
+Subject: [PATCH 5.17 769/772] md: Dont set mddev private to NULL in raid0 pers->free
+Date:   Tue,  7 Jun 2022 19:06:01 +0200
+Message-Id: <20220607165011.681618180@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,96 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Lindgren <tony@atomide.com>
+From: Xiao Ni <xni@redhat.com>
 
-commit 925ea0fa5277c1e6bb9e51955ef34eea9736c3d7 upstream.
+commit 0f2571ad7a30ff6b33cde142439f9378669f8b4f upstream.
 
-The module param debug for n_gsm uses KERN_INFO level, but the hexdump
-now uses KERN_DEBUG level. This started after commit 091cb0994edd
-("lib/hexdump: make print_hex_dump_bytes() a nop on !DEBUG builds").
-We now use dynamic_hex_dump() unless DEBUG is set.
+In normal stop process, it does like this:
+   do_md_stop
+      |
+   __md_stop (pers->free(); mddev->private=NULL)
+      |
+   md_free (free mddev)
+__md_stop sets mddev->private to NULL after pers->free. The raid device
+will be stopped and mddev memory is free. But in reshape, it doesn't
+free the mddev and mddev will still be used in new raid.
 
-This causes no packets to be seen with modprobe n_gsm debug=0x1f unlike
-earlier. Let's fix this by adding gsm_hex_dump_bytes() that calls
-print_hex_dump() with KERN_INFO to match what n_gsm is doing with the
-other debug related output.
+In reshape, it first sets mddev->private to new_pers and then runs
+old_pers->free(). Now raid0 sets mddev->private to NULL in raid0_free.
+The new raid can't work anymore. It will panic when dereference
+mddev->private because of NULL pointer dereference.
 
-Fixes: 091cb0994edd ("lib/hexdump: make print_hex_dump_bytes() a nop on !DEBUG builds")
-Cc: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Link: https://lore.kernel.org/r/20220512131506.1216-1-tony@atomide.com
+It can panic like this:
+[63010.814972] kernel BUG at drivers/md/raid10.c:928!
+[63010.819778] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+[63010.825011] CPU: 3 PID: 44437 Comm: md0_resync Kdump: loaded Not tainted 5.14.0-86.el9.x86_64 #1
+[63010.833789] Hardware name: Dell Inc. PowerEdge R6415/07YXFK, BIOS 1.15.0 09/11/2020
+[63010.841440] RIP: 0010:raise_barrier+0x161/0x170 [raid10]
+[63010.865508] RSP: 0018:ffffc312408bbc10 EFLAGS: 00010246
+[63010.870734] RAX: 0000000000000000 RBX: ffffa00bf7d39800 RCX: 0000000000000000
+[63010.877866] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffffa00bf7d39800
+[63010.884999] RBP: 0000000000000000 R08: fffffa4945e74400 R09: 0000000000000000
+[63010.892132] R10: ffffa00eed02f798 R11: 0000000000000000 R12: ffffa00bbc435200
+[63010.899266] R13: ffffa00bf7d39800 R14: 0000000000000400 R15: 0000000000000003
+[63010.906399] FS:  0000000000000000(0000) GS:ffffa00eed000000(0000) knlGS:0000000000000000
+[63010.914485] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[63010.920229] CR2: 00007f5cfbe99828 CR3: 0000000105efe000 CR4: 00000000003506e0
+[63010.927363] Call Trace:
+[63010.929822]  ? bio_reset+0xe/0x40
+[63010.933144]  ? raid10_alloc_init_r10buf+0x60/0xa0 [raid10]
+[63010.938629]  raid10_sync_request+0x756/0x1610 [raid10]
+[63010.943770]  md_do_sync.cold+0x3e4/0x94c
+[63010.947698]  md_thread+0xab/0x160
+[63010.951024]  ? md_write_inc+0x50/0x50
+[63010.954688]  kthread+0x149/0x170
+[63010.957923]  ? set_kthread_struct+0x40/0x40
+[63010.962107]  ret_from_fork+0x22/0x30
+
+Removing the code that sets mddev->private to NULL in raid0 can fix
+problem.
+
+Fixes: 0c031fd37f69 (md: Move alloc/free acct bioset in to personality)
+Reported-by: Fine Fan <ffan@redhat.com>
+Signed-off-by: Xiao Ni <xni@redhat.com>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |   31 +++++++++++++++++++++++--------
- 1 file changed, 23 insertions(+), 8 deletions(-)
+ drivers/md/raid0.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -444,6 +444,25 @@ static u8 gsm_encode_modem(const struct
- 	return modembits;
+--- a/drivers/md/raid0.c
++++ b/drivers/md/raid0.c
+@@ -361,7 +361,6 @@ static void free_conf(struct mddev *mdde
+ 	kfree(conf->strip_zone);
+ 	kfree(conf->devlist);
+ 	kfree(conf);
+-	mddev->private = NULL;
  }
  
-+static void gsm_hex_dump_bytes(const char *fname, const u8 *data,
-+			       unsigned long len)
-+{
-+	char *prefix;
-+
-+	if (!fname) {
-+		print_hex_dump(KERN_INFO, "", DUMP_PREFIX_NONE, 16, 1, data, len,
-+			       true);
-+		return;
-+	}
-+
-+	prefix = kasprintf(GFP_KERNEL, "%s: ", fname);
-+	if (!prefix)
-+		return;
-+	print_hex_dump(KERN_INFO, prefix, DUMP_PREFIX_OFFSET, 16, 1, data, len,
-+		       true);
-+	kfree(prefix);
-+}
-+
- /**
-  *	gsm_print_packet	-	display a frame for debug
-  *	@hdr: header to print before decode
-@@ -508,7 +527,7 @@ static void gsm_print_packet(const char
- 	else
- 		pr_cont("(F)");
- 
--	print_hex_dump_bytes("", DUMP_PREFIX_NONE, data, dlen);
-+	gsm_hex_dump_bytes(NULL, data, dlen);
- }
- 
- 
-@@ -698,9 +717,7 @@ static void gsm_data_kick(struct gsm_mux
- 		}
- 
- 		if (debug & 4)
--			print_hex_dump_bytes("gsm_data_kick: ",
--					     DUMP_PREFIX_OFFSET,
--					     gsm->txframe, len);
-+			gsm_hex_dump_bytes(__func__, gsm->txframe, len);
- 		if (gsmld_output(gsm, gsm->txframe, len) <= 0)
- 			break;
- 		/* FIXME: Can eliminate one SOF in many more cases */
-@@ -2448,8 +2465,7 @@ static int gsmld_output(struct gsm_mux *
- 		return -ENOSPC;
- 	}
- 	if (debug & 4)
--		print_hex_dump_bytes("gsmld_output: ", DUMP_PREFIX_OFFSET,
--				     data, len);
-+		gsm_hex_dump_bytes(__func__, data, len);
- 	return gsm->tty->ops->write(gsm->tty, data, len);
- }
- 
-@@ -2525,8 +2541,7 @@ static void gsmld_receive_buf(struct tty
- 	char flags = TTY_NORMAL;
- 
- 	if (debug & 4)
--		print_hex_dump_bytes("gsmld_receive: ", DUMP_PREFIX_OFFSET,
--				     cp, count);
-+		gsm_hex_dump_bytes(__func__, cp, count);
- 
- 	for (; count; count--, cp++) {
- 		if (fp)
+ static void raid0_free(struct mddev *mddev, void *priv)
 
 
