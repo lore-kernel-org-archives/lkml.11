@@ -2,51 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4539C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C0CCCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357325AbiFGTuJ (ORCPT
+        id S1357420AbiFGTuS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:50:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
+        Tue, 7 Jun 2022 15:50:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354526AbiFGSrG (ORCPT
+        with ESMTP id S1354507AbiFGSrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:47:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FCE991545;
-        Tue,  7 Jun 2022 11:01:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD1B7A804;
+        Tue,  7 Jun 2022 11:01:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 003D4B82349;
-        Tue,  7 Jun 2022 18:01:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 558E1C34119;
-        Tue,  7 Jun 2022 18:01:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D810B82182;
+        Tue,  7 Jun 2022 18:01:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71116C3411C;
+        Tue,  7 Jun 2022 18:01:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624907;
-        bh=xJ+H+2CaxHlku3k8gqS+qjfVUzDXWJAwtE4JnyZwM6k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IDvlZZQ6QYRIWSn28FAl2PJZDTXZvO2qCngQlrDpyE2RUSiwH1P4OSbnbYwt3zdhL
-         Eedihr2AVuWNS3fXxCo37kaFii/yEmhhybWeerhIYyayld5hhRbrTkryWjps7hlmBy
-         8cIOH55U7XYcY7pzmaImJQRrmpQi2i3+tTiQ5/Nd+t5MlKYr8w/D3FEHYuy+g527dN
-         WB5OFgBwnjAjlr3No58IPo7OYeAwhujT0tWfST1/5NPMBBODCI6aOHBS4m1sh3SgqB
-         t6EMwysGAKUI/hlxdbUj4CV0GhNkd3igeNlWoTXumqbfaUU4P3p16ReA7WTMxBsY96
-         sFvPKl49JOj8A==
+        s=k20201202; t=1654624896;
+        bh=EZK/LpgtcWkuxU1xfFoepZT73wWITzW3Yx7sqm7t7Ow=;
+        h=From:To:Cc:Subject:Date:From;
+        b=MxHA9wSA87QpFeamJxBG9+7vMfmbmhauYJXIkPQSUwDQUnKcELtwaYPLJ54wukbSj
+         0j/MUFXthfLXCZKqCkjuN5WfDk4awywJ/uv02hTL7+kW5uquSke8t9CAwJrRhZu96E
+         OjFLlifczyGX8DsTuxrAwvxM+d6UEJ1/8XfNE7mvgQs0Yt9MFKYXUjRbtID7/MY5ag
+         LRVZtiY5khT8AdX1SD8oNcQr6TiKnjRCi5i6FDB4EuyzvpUpx4NimgFKpSfLAGaN9U
+         MG469asbP5ZZrNS35RXxjdS7EDlqHM9AibFJAh7E89wBrT9dQr+uuvoT4lBcS8LJjo
+         dVxxyc5UhgsOQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, baihaowen@meizu.com,
-        dan.carpenter@oracle.com, paskripkin@gmail.com, wjsota@gmail.com,
-        dave@stgolabs.net, edumazet@google.com, yangyingliang@huawei.com,
-        linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 4.19 06/27] drivers: staging: rtl8192e: Fix deadlock in rtllib_beacons_stop()
-Date:   Tue,  7 Jun 2022 14:01:10 -0400
-Message-Id: <20220607180133.481701-6-sashal@kernel.org>
+Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>, jic23@kernel.org,
+        linux-iio@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 01/27] iio: dummy: iio_simple_dummy: check the return value of kstrdup()
+Date:   Tue,  7 Jun 2022 14:01:05 -0400
+Message-Id: <20220607180133.481701-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180133.481701-1-sashal@kernel.org>
-References: <20220607180133.481701-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,51 +51,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit 9b6bdbd9337de3917945847bde262a34a87a6303 ]
+[ Upstream commit ba93642188a6fed754bf7447f638bc410e05a929 ]
 
-There is a deadlock in rtllib_beacons_stop(), which is shown
-below:
+kstrdup() is also a memory allocation-related function, it returns NULL
+when some memory errors happen. So it is better to check the return
+value of it so to catch the memory error in time. Besides, there should
+have a kfree() to clear up the allocation if we get a failure later in
+this function to prevent memory leak.
 
-   (Thread 1)              |      (Thread 2)
-                           | rtllib_send_beacon()
-rtllib_beacons_stop()      |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | rtllib_send_beacon_cb()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
-
-We hold ieee->beacon_lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need ieee->beacon_lock in position (2) of thread 2.
-As a result, rtllib_beacons_stop() will block forever.
-
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417141641.124388-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Link: https://lore.kernel.org/r/tencent_C920CFCC33B9CC1C63141FE1334A39FF8508@qq.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8192e/rtllib_softmac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/dummy/iio_simple_dummy.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
-index 919231fec09c..5f1dd4e2d12e 100644
---- a/drivers/staging/rtl8192e/rtllib_softmac.c
-+++ b/drivers/staging/rtl8192e/rtllib_softmac.c
-@@ -654,9 +654,9 @@ static void rtllib_beacons_stop(struct rtllib_device *ieee)
- 	spin_lock_irqsave(&ieee->beacon_lock, flags);
+diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
+index 62052479c349..f970b4388dda 100644
+--- a/drivers/iio/dummy/iio_simple_dummy.c
++++ b/drivers/iio/dummy/iio_simple_dummy.c
+@@ -571,10 +571,9 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	struct iio_sw_device *swd;
  
- 	ieee->beacon_txing = 0;
--	del_timer_sync(&ieee->beacon_timer);
+ 	swd = kzalloc(sizeof(*swd), GFP_KERNEL);
+-	if (!swd) {
+-		ret = -ENOMEM;
+-		goto error_kzalloc;
+-	}
++	if (!swd)
++		return ERR_PTR(-ENOMEM);
++
+ 	/*
+ 	 * Allocate an IIO device.
+ 	 *
+@@ -586,7 +585,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	indio_dev = iio_device_alloc(sizeof(*st));
+ 	if (!indio_dev) {
+ 		ret = -ENOMEM;
+-		goto error_ret;
++		goto error_free_swd;
+ 	}
  
- 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
-+	del_timer_sync(&ieee->beacon_timer);
+ 	st = iio_priv(indio_dev);
+@@ -617,6 +616,10 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	 *    indio_dev->name = spi_get_device_id(spi)->name;
+ 	 */
+ 	indio_dev->name = kstrdup(name, GFP_KERNEL);
++	if (!indio_dev->name) {
++		ret = -ENOMEM;
++		goto error_free_device;
++	}
  
+ 	/* Provide description of available channels */
+ 	indio_dev->channels = iio_dummy_channels;
+@@ -633,7 +636,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 
+ 	ret = iio_simple_dummy_events_register(indio_dev);
+ 	if (ret < 0)
+-		goto error_free_device;
++		goto error_free_name;
+ 
+ 	ret = iio_simple_dummy_configure_buffer(indio_dev);
+ 	if (ret < 0)
+@@ -650,11 +653,12 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	iio_simple_dummy_unconfigure_buffer(indio_dev);
+ error_unregister_events:
+ 	iio_simple_dummy_events_unregister(indio_dev);
++error_free_name:
++	kfree(indio_dev->name);
+ error_free_device:
+ 	iio_device_free(indio_dev);
+-error_ret:
++error_free_swd:
+ 	kfree(swd);
+-error_kzalloc:
+ 	return ERR_PTR(ret);
  }
  
 -- 
