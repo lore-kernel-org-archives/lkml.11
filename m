@@ -2,112 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A5C7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:12:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D241C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:12:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242641AbiFGLLx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 07:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
+        id S242147AbiFGLMG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 07:12:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243338AbiFGLLK (ORCPT
+        with ESMTP id S242887AbiFGLKS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 07:11:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0265F120B0
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 04:11:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98FBBB81F68
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:11:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41F2FC385A5
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:11:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654600266;
-        bh=PIkzzbA01Ke1e/RvnsMMOC+0QlwVwbLmLPr3rdaNonU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=NpkMadAVWM+8qyvEpWsUhzhB+bfwyX/YxFEzg6lTh6fkXOfa7vjRQWNPcsCo9L9GC
-         yF8xCzHKzvQed+DO6cYsIgTFLgGkIE4+j282R2+4EOxqz89JM9PKY+0hueMhKvrvu9
-         M75u5kWdy88pyHNKWnqYewAvL8SX0In4UA23S06Xo/te+8qYIzC1yF+F15a5z9eY58
-         7AlfvEU8dJ6Weu7H0m6JTbkTiMfY25razWKB42jpSidP6lflLf3NkJ/OtOg3K7RCR3
-         /hYWLb97qOk5GJ3N8K/Wy+f1+ufg4m+3/PMZyBI6ZDjxbyIjIrYuJcP06GzMY8Qg/V
-         liLERutnYuwcg==
-Received: by mail-oi1-f176.google.com with SMTP id s8so18161059oib.6
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 04:11:06 -0700 (PDT)
-X-Gm-Message-State: AOAM532voL2al5PCbmTsFlJAMpAS2BRJ0fFeUgEgnuyEV529ySPQWeCs
-        W+8XvCikQwUrdPFtElPhn+cNvuCL3ecz0rqVV+o=
-X-Google-Smtp-Source: ABdhPJx1A/CvRWfOQ3GFWIDzS3fTiGPqRgRi8dTUnmjkP0XSzpYtlEYcz6hvOOgD5Zoh3259OdkBrVt9FP81qFpcuLs=
-X-Received: by 2002:a05:6808:300e:b0:32c:425e:df34 with SMTP id
- ay14-20020a056808300e00b0032c425edf34mr16693579oib.126.1654600265478; Tue, 07
- Jun 2022 04:11:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220607100210.683136-1-Jason@zx2c4.com> <CAMj1kXEAuh-tokcqvKCQF5Vq+jZKj4ZM=PyGaHKapXPJKVyOrg@mail.gmail.com>
- <Yp8oOH+9V336LrLk@zx2c4.com> <Yp8rcFrqK/IkzKXj@zx2c4.com> <CAMj1kXHV833uMJYrdUagJpH5hoj4ivC6zxMJvNnxLAF2NG3_sg@mail.gmail.com>
- <Yp8wz2Ey4J4u+ZlK@zx2c4.com>
-In-Reply-To: <Yp8wz2Ey4J4u+ZlK@zx2c4.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 7 Jun 2022 13:10:52 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXFK9pFUdOABKP0Zp7tEJNVS1dTjxp5DgSwqzM8TEYJLTQ@mail.gmail.com>
-Message-ID: <CAMj1kXFK9pFUdOABKP0Zp7tEJNVS1dTjxp5DgSwqzM8TEYJLTQ@mail.gmail.com>
-Subject: Re: [PATCH] random: do not use jump labels before they are initialized
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Stephen Boyd <swboyd@chromium.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Russell King <linux@armlinux.org.uk>,
+        Tue, 7 Jun 2022 07:10:18 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD09B2D1E1;
+        Tue,  7 Jun 2022 04:08:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654600093; x=1686136093;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=LehJpdli2K1kf6xsEwsX5oR/25DuYLSpUF31DPXQGNU=;
+  b=Hxe0iItbIGbxHeLqEenzuHtMgUYwsX+vSY59uBIU2y6sY/JpwJetD+rF
+   lnOXsnA99+RuqBeQLIao9cJXcDDKF4CyLphIbQl+Jej7/zLBlsB2j48Pm
+   lodzC+HOWaNSB4ZPb7ZWsRBUIe6hBndIq4CY+UFolzmyMWdSEZIWBMuwO
+   ZmVe0u1Ypueglv72qyh4a8FEI6O6fhFMuD35ZA1EnEPIPW7Vxrq7nmQ1W
+   FKLybDrCUmw3Od5F8WU+Z2FupIJEgMN7/yVfE6075VL6+u80rmvzVdGYj
+   p+CtZGTYWn5LZnix4t8iiXgEnbzgZiOQb0lhphZkR+zAdwI7G/RSyvXpn
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="276758945"
+X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
+   d="scan'208";a="276758945"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 04:08:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
+   d="scan'208";a="584155731"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga007.fm.intel.com with ESMTP; 07 Jun 2022 04:08:08 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 257B86Ft021369;
+        Tue, 7 Jun 2022 12:08:06 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         Arnd Bergmann <arnd@arndb.de>,
-        Phil Elwell <phil@raspberrypi.com>
-Content-Type: text/plain; charset="UTF-8"
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Richard Henderson <rth@twiddle.net>,
+        Matt Turner <mattst88@gmail.com>,
+        Brian Cain <bcain@quicinc.com>,
+        "Geert Uytterhoeven" <geert@linux-m68k.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Kees Cook <keescook@chromium.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
+        Tony Luck <tony.luck@intel.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 5/6] bitops: wrap non-atomic bitops with a transparent macro
+Date:   Tue,  7 Jun 2022 13:07:05 +0200
+Message-Id: <20220607110705.72887-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607105718.72434-1-alexandr.lobakin@intel.com>
+References: <20220606114908.962562-1-alexandr.lobakin@intel.com> <20220606114908.962562-6-alexandr.lobakin@intel.com> <Yp4q5KlIxmlznvuh@FVFF77S0Q05N.cambridge.arm.com> <20220607105718.72434-1-alexandr.lobakin@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 7 Jun 2022 at 13:04, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> Hi Ard,
->
-> On Tue, Jun 07, 2022 at 12:56:20PM +0200, Ard Biesheuvel wrote:
-> > Could we do this to defer the static key manipulation? That way, the
-> > first call to crng_reseed() that occurs after the static keys API
-> > becomes available will set the static key, and patch itself away at
-> > the same time.
->
-> That's almost the same as the patch I just posted, except you
-> pushed the logic down into crng_reseed() instead of credit_init_bits().
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
+Date: Tue, 7 Jun 2022 12:57:18 +0200
 
-Sure.
+> From: Mark Rutland <mark.rutland@arm.com>
+> Date: Mon, 6 Jun 2022 17:27:16 +0100
+> 
+> > On Mon, Jun 06, 2022 at 01:49:06PM +0200, Alexander Lobakin wrote:
+> > > In preparation for altering the non-atomic bitops with a macro, wrap
+> > > them in a transparent definition. This requires prepending one more
+> > > '_' to their names in order to be able to do that seamlessly.
+> > > sparc32 already has the triple-underscored functions, so I had to
+> > > rename them ('___' -> 'sp32_').
+> > 
+> > Could we use an 'arch_' prefix here, like we do for the atomics, or is that
+> > already overloaded?
+> 
+> Yeah it is, for example, x86 has 'arch_' functions defined in its
+> architecture headers[0] and at the same time uses generic
+> instrumented '__' helpers[1], so on x86 both underscored and 'arch_'
+> are defined and they are not the same.
 
-> (A previous mini-project aimed to remove as much logic as possible from
-> crng_reseed(), counting on those blocks in crng_init_bits() to only ever
-> run once.) What this means is that the static key won't get changed
-> until whenever the next reseeding is. I guess that's "fine" but I think
-> I'd prefer to keep the entropy counting stuff as separate from the init
-> bits stuff as possible.
->
+Oh well, forgot to attach the links. Can be found at the bottom of
+this mail.
 
-Fair enough. What I would like is to remove the need to play around
-with the placement of jump_label_init() across architectures. Jump
-labels are fundamentally a performance optimization, so unless you can
-explain how setting it as early as possible makes a material
-difference, performance or otherwise, I really think we should pursue
-a solution that does the static key manipulation at some later time.
+> Same with those sparc32 triple-underscored, sparc32 at the same time
+> uses generic non-instrumented, so it has underscored, 'arch_' and
+> triple-underscored.
+> 
+> In general, bitops are overloaded with tons of prefixes already :)
+> I'm not really glad that I introduced one more level, but not that
+> we have many options here.
+> 
+> > 
+> > Thanks,
+> > Mark.
+> > 
+> > > 
+> > > Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> > > ---
+> 
+> [...]
+> 
+> > > -- 
+> > > 2.36.1
+> 
+> Thanks,
+> Olek
 
-> >> As a third, I could just defer doing anything with the bootloader seed
-> >> until random_init(). This might actually be the simplest solution...
-> >> I'll sketch something out. A downside, which might be sort of
-> >> significant, is that a few odd things actually use randomness before
-> >> random_init() is called. So these would miss out on having that seed.
-> >> I'll have to look what exactly to see if we're actually getting anything
-> >> real out of that.
-> >>
-> >
-> > This is kind of the point of using a firmware provided seed, i.e.,
-> > that it is available much earlier than anything else.
->
-> I'll send a patch for this anyway because I'm sort of curious now. Maybe
-> it'll be a dead end, for the reason you mentioned, but I think I'll
-> still try to evaluate it.
->
+[0] https://elixir.bootlin.com/linux/v5.19-rc1/source/arch/x86/include/asm/bitops.h#L136
+[1] https://elixir.bootlin.com/linux/v5.19-rc1/source/include/asm-generic/bitops/instrumented-non-atomic.h#L93
 
-Sure. Anything that can be deferred to an initcall() should be, as the
-early arch code is much too fragile to much around with.
+Thanks,
+Olek
