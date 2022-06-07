@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F7BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:59:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF8B2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:59:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353216AbiFGS7T (ORCPT
+        id S1353297AbiFGS70 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:59:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44902 "EHLO
+        Tue, 7 Jun 2022 14:59:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351997AbiFGSUs (ORCPT
+        with ESMTP id S1350790AbiFGSTw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:20:48 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1810AA33B9;
-        Tue,  7 Jun 2022 10:53:45 -0700 (PDT)
+        Tue, 7 Jun 2022 14:19:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E17E36FA21;
+        Tue,  7 Jun 2022 10:53:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 624C7CE2423;
-        Tue,  7 Jun 2022 17:53:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80A4DC385A5;
-        Tue,  7 Jun 2022 17:53:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DAEC615B1;
+        Tue,  7 Jun 2022 17:53:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9A0FC36B01;
+        Tue,  7 Jun 2022 17:53:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624401;
-        bh=rsPwkGNK9GIoywZVByF5Yv2MTWSczBPHM5FyQ9egQNU=;
+        s=korg; t=1654624421;
+        bh=QZsirAHLXyzJVrTkY/suxsZZZSl9IHSAJLFc0FhppEk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rAsPpIJHarljeeSfU4uXwSim4oGSnZD3KDg7O9IKK573H7UFaw9MN3qnWpUCfiQNU
-         ckaNiXxk9nXYod8S8VkKlB/5C3fGFFtgYHckBjAsxX+wDqLEIoF+pxEvR6ZczmMjwH
-         ondeTSyQc3w5CxIy8gEx4ZmqwT/K3kuuDdXlthZE=
+        b=r0SX4ubd7xEcXQAwwqKGK6pb/q1qytmY/AzoND14ezTRCPu6e9aSQBxHLcMrErHlm
+         6MBPHxsJB3uM623mNo4mSqmzgKupng0K4Mf6vzcrqyGe8artOajDwILxVumg1ENzT5
+         BX8sh3DNRkBJkIQ4FguHhDjKxGsYBOE1//O+Zlgc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Phil Auld <pauld@redhat.com>,
-        Tejun Heo <tj@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 315/667] kselftest/cgroup: fix test_stress.sh to use OUTPUT dir
-Date:   Tue,  7 Jun 2022 18:59:40 +0200
-Message-Id: <20220607164944.219628539@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 322/667] media: atmel: atmel-isc: Fix PM disable depth imbalance in atmel_isc_probe
+Date:   Tue,  7 Jun 2022 18:59:47 +0200
+Message-Id: <20220607164944.428422300@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,31 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Auld <pauld@redhat.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 54de76c0123915e7533ce352de30a1f2d80fe81f ]
+[ Upstream commit 395829c61a196a0821a703a49c4db3ac51daff73 ]
 
-Running cgroup kselftest with O= fails to run the with_stress test due
-to hardcoded ./test_core. Find test_core binary using the OUTPUT directory.
+The pm_runtime_enable will decrease power disable depth.
+If the probe fails, we should use pm_runtime_disable() to balance
+pm_runtime_enable().
 
-Fixes: 1a99fcc035fb ("selftests: cgroup: Run test_core under interfering stress")
-Signed-off-by: Phil Auld <pauld@redhat.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
+Fixes: 0a0e265515db ("media: atmel: atmel-isc: split driver into driver base and isc")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/cgroup/test_stress.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/platform/atmel/atmel-sama5d2-isc.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/cgroup/test_stress.sh b/tools/testing/selftests/cgroup/test_stress.sh
-index 15d9d5896394..109c044f715f 100755
---- a/tools/testing/selftests/cgroup/test_stress.sh
-+++ b/tools/testing/selftests/cgroup/test_stress.sh
-@@ -1,4 +1,4 @@
- #!/bin/bash
- # SPDX-License-Identifier: GPL-2.0
+diff --git a/drivers/media/platform/atmel/atmel-sama5d2-isc.c b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
+index e29a9193bac8..c8ed9315ef31 100644
+--- a/drivers/media/platform/atmel/atmel-sama5d2-isc.c
++++ b/drivers/media/platform/atmel/atmel-sama5d2-isc.c
+@@ -537,7 +537,7 @@ static int atmel_isc_probe(struct platform_device *pdev)
+ 	ret = clk_prepare_enable(isc->ispck);
+ 	if (ret) {
+ 		dev_err(dev, "failed to enable ispck: %d\n", ret);
+-		goto cleanup_subdev;
++		goto disable_pm;
+ 	}
  
--./with_stress.sh -s subsys -s fork ./test_core
-+./with_stress.sh -s subsys -s fork ${OUTPUT}/test_core
+ 	/* ispck should be greater or equal to hclock */
+@@ -555,6 +555,9 @@ static int atmel_isc_probe(struct platform_device *pdev)
+ unprepare_clk:
+ 	clk_disable_unprepare(isc->ispck);
+ 
++disable_pm:
++	pm_runtime_disable(dev);
++
+ cleanup_subdev:
+ 	isc_subdev_cleanup(isc);
+ 
 -- 
 2.35.1
 
