@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91DD6C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17473C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385219AbiFGWpl (ORCPT
+        id S1386150AbiFGWsK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:45:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51014 "EHLO
+        Tue, 7 Jun 2022 18:48:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379510AbiFGVcq (ORCPT
+        with ESMTP id S1381210AbiFGVkR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:32:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4E114AF57;
-        Tue,  7 Jun 2022 12:04:13 -0700 (PDT)
+        Tue, 7 Jun 2022 17:40:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E0B17CC82;
+        Tue,  7 Jun 2022 12:05:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09887B823B0;
-        Tue,  7 Jun 2022 19:04:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FDFAC385A2;
-        Tue,  7 Jun 2022 19:04:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A941B823AF;
+        Tue,  7 Jun 2022 19:05:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADF3EC385A2;
+        Tue,  7 Jun 2022 19:05:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628650;
-        bh=h52zxNpYYU8WCZXmj5zjTKIXV+j+MQqMSEZmLGWkZrc=;
+        s=korg; t=1654628753;
+        bh=cHRlMGUzCXKk8F2ryIz/RpSKKPb+sErUHOmEBspnArs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lh5f4Uyqf4nbNK5iv7MifFpdpysdAHkf4XbMEyxkckEr87kLJPqxK60e981OViGrk
-         zLhja9qrAkkvW8baV4FU1bY7lnElJkkonV6548mzq2Uh8HxISSTNBusW+z3GbWMB9M
-         nJhP/viaCjk70LIxClO8+dSZZN53KSoka6sIuMw8=
+        b=lyNz+bNxQRkI5SxwczIPzBW8zkZvn9vqnungUvX1yKJ7Kd6D0Hi86gPtopeyIl7gM
+         vR4u2nBkKBZ35QD/DA7LQsQvytZEfPpsccuAw2tUfgkhxbXzvCDXTsv6G35WNJLFIs
+         bBM+NRf+wmSHYke0+vqjjOZoynCKLxah0cq/RfBU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Hugues Fruchet <hugues.fruchet@foss.st.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 405/879] spi: spi-fsl-qspi: check return value after calling platform_get_resource_byname()
-Date:   Tue,  7 Jun 2022 18:58:43 +0200
-Message-Id: <20220607165014.618258607@linuxfoundation.org>
+Subject: [PATCH 5.18 442/879] media: st-delta: Fix PM disable depth imbalance in delta_probe
+Date:   Tue,  7 Jun 2022 18:59:20 +0200
+Message-Id: <20220607165015.701562010@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,37 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit a2b331ac11e1cac56f5b7d367e9f3c5796deaaed ]
+[ Upstream commit 94e3dba710fe0afc772172305444250023fc2d30 ]
 
-It will cause null-ptr-deref if platform_get_resource_byname() returns NULL,
-we need check the return value.
+The pm_runtime_enable will decrease power disable depth.
+If the probe fails, we should use pm_runtime_disable() to balance
+pm_runtime_enable().
 
-Fixes: 858e26a515c2 ("spi: spi-fsl-qspi: Reduce devm_ioremap size to 4 times AHB buffer size")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220505093954.1285615-1-yangyingliang@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: f386509e4959 ("[media] st-delta: STiH4xx multi-format video decoder v4l2 driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Acked-by: Hugues Fruchet <hugues.fruchet@foss.st.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-fsl-qspi.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/media/platform/st/sti/delta/delta-v4l2.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/spi/spi-fsl-qspi.c b/drivers/spi/spi-fsl-qspi.c
-index 9851551ebbe0..46ae46a944c5 100644
---- a/drivers/spi/spi-fsl-qspi.c
-+++ b/drivers/spi/spi-fsl-qspi.c
-@@ -876,6 +876,10 @@ static int fsl_qspi_probe(struct platform_device *pdev)
+diff --git a/drivers/media/platform/st/sti/delta/delta-v4l2.c b/drivers/media/platform/st/sti/delta/delta-v4l2.c
+index c887a31ebb54..420ad4d8df5d 100644
+--- a/drivers/media/platform/st/sti/delta/delta-v4l2.c
++++ b/drivers/media/platform/st/sti/delta/delta-v4l2.c
+@@ -1859,7 +1859,7 @@ static int delta_probe(struct platform_device *pdev)
+ 	if (ret) {
+ 		dev_err(delta->dev, "%s failed to initialize firmware ipc channel\n",
+ 			DELTA_PREFIX);
+-		goto err;
++		goto err_pm_disable;
+ 	}
  
- 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
- 					"QuadSPI-memory");
-+	if (!res) {
-+		ret = -EINVAL;
-+		goto err_put_ctrl;
-+	}
- 	q->memmap_phy = res->start;
- 	/* Since there are 4 cs, map size required is 4 times ahb_buf_size */
- 	q->ahb_addr = devm_ioremap(dev, q->memmap_phy,
+ 	/* register all available decoders */
+@@ -1873,7 +1873,7 @@ static int delta_probe(struct platform_device *pdev)
+ 	if (ret) {
+ 		dev_err(delta->dev, "%s failed to register V4L2 device\n",
+ 			DELTA_PREFIX);
+-		goto err;
++		goto err_pm_disable;
+ 	}
+ 
+ 	delta->work_queue = create_workqueue(DELTA_NAME);
+@@ -1898,6 +1898,8 @@ static int delta_probe(struct platform_device *pdev)
+ 	destroy_workqueue(delta->work_queue);
+ err_v4l2:
+ 	v4l2_device_unregister(&delta->v4l2_dev);
++err_pm_disable:
++	pm_runtime_disable(dev);
+ err:
+ 	return ret;
+ }
 -- 
 2.35.1
 
