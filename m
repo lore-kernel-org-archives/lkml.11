@@ -2,168 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB7C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:38:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89D38C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:38:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356422AbiFGTiY (ORCPT
+        id S1355554AbiFGTid (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:38:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43128 "EHLO
+        Tue, 7 Jun 2022 15:38:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354220AbiFGSqq (ORCPT
+        with ESMTP id S1354239AbiFGSqu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE2B14917E;
-        Tue,  7 Jun 2022 11:00:21 -0700 (PDT)
+        Tue, 7 Jun 2022 14:46:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C5D122967;
+        Tue,  7 Jun 2022 11:00:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CE34617B0;
-        Tue,  7 Jun 2022 18:00:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CB3BC385A5;
-        Tue,  7 Jun 2022 18:00:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624820;
-        bh=jv8T9mm9HoMZ2y/WrCuWvj+VF4kRNY4oxnvpwKCYlE4=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8815B82239;
+        Tue,  7 Jun 2022 18:00:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2BE4C36B00;
+        Tue,  7 Jun 2022 18:00:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624822;
+        bh=9fscbB/2/WC67uRuZ4ZUNRPLnqkEBlREFuhjDFoHd/s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o/ow9zJeRwa0HoRiRGHX217ZK2KT+BGHK4FZfAlLpAmSOz1PMum2siIbre8RqhPUA
-         wzd0P7ALRcUGIo0lvd1bLiYL5KzjOKTjlC+qqmSIkh6ldYNgYyN4BjiFcm1xqU2y73
-         fPgdp+kJ6aWu/85BVySd41ys7Y+T0IbcwPoZ5MYQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        syzbot+bdd6e38a1ed5ee58d8bd@syzkaller.appspotmail.com,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        "Soheil Hassas Yeganeh" <soheil@google.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        "Sridhar Samudrala" <sridhar.samudrala@intel.com>,
-        Alexander Duyck <alexander.h.duyck@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: [PATCH 5.15 438/667] list: fix a data-race around ep->rdllist
-Date:   Tue,  7 Jun 2022 19:01:43 +0200
-Message-Id: <20220607164947.857538800@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=HwUFyGKInPTRIxs5yLssIn6s50ZwlnHHBc3/ap6WDC43NBFCCQBFbO+asvLCuFfRS
+         ZDlmY8sqmnwNrVg+QunPejyZyC2b5aqIA1usET550HSZKNGpvxu+oXrT+A8uNtcuY6
+         TWT/wsoEwACrXxcunDy/bmyfy1o7cOvyN59NiRluFrCy1c41Y7NwBSGau/MsXvJa4G
+         SuKCYbkqz3sLWoMum5Kfq4WVjPZqNqVGt5JWFR1c7koBbw5fKVEOkZd47VZCQP2tfT
+         2gLwFwU3qlZic6MRQS+lW0jHJX87tVF1p4/P8BymlMeREnJt3KF8rfEHzTtHWKz0JZ
+         fvmez6Iv+Kbuw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Kees Cook <keescook@chromium.org>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 03/34] lkdtm/usercopy: Expand size of "out of frame" object
+Date:   Tue,  7 Jun 2022 13:59:38 -0400
+Message-Id: <20220607180011.481266-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
+References: <20220607180011.481266-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit d679ae94fdd5d3ab00c35078f5af5f37e068b03d ]
+[ Upstream commit f387e86d3a74407bdd9c5815820ac9d060962840 ]
 
-ep_poll() first calls ep_events_available() with no lock held and checks
-if ep->rdllist is empty by list_empty_careful(), which reads
-rdllist->prev.  Thus all accesses to it need some protection to avoid
-store/load-tearing.
+To be sufficiently out of range for the usercopy test to see the lifetime
+mismatch, expand the size of the "bad" buffer, which will let it be
+beyond current_stack_pointer regardless of stack growth direction.
+Paired with the recent addition of stack depth checking under
+CONFIG_HARDENED_USERCOPY=y, this will correctly start tripping again.
 
-Note INIT_LIST_HEAD_RCU() already has the annotation for both prev
-and next.
-
-Commit bf3b9f6372c4 ("epoll: Add busy poll support to epoll with socket
-fds.") added the first lockless ep_events_available(), and commit
-c5a282e9635e ("fs/epoll: reduce the scope of wq lock in epoll_wait()")
-made some ep_events_available() calls lockless and added single call under
-a lock, finally commit e59d3c64cba6 ("epoll: eliminate unnecessary lock
-for zero timeout") made the last ep_events_available() lockless.
-
-BUG: KCSAN: data-race in do_epoll_wait / do_epoll_wait
-
-write to 0xffff88810480c7d8 of 8 bytes by task 1802 on cpu 0:
- INIT_LIST_HEAD include/linux/list.h:38 [inline]
- list_splice_init include/linux/list.h:492 [inline]
- ep_start_scan fs/eventpoll.c:622 [inline]
- ep_send_events fs/eventpoll.c:1656 [inline]
- ep_poll fs/eventpoll.c:1806 [inline]
- do_epoll_wait+0x4eb/0xf40 fs/eventpoll.c:2234
- do_epoll_pwait fs/eventpoll.c:2268 [inline]
- __do_sys_epoll_pwait fs/eventpoll.c:2281 [inline]
- __se_sys_epoll_pwait+0x12b/0x240 fs/eventpoll.c:2275
- __x64_sys_epoll_pwait+0x74/0x80 fs/eventpoll.c:2275
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffff88810480c7d8 of 8 bytes by task 1799 on cpu 1:
- list_empty_careful include/linux/list.h:329 [inline]
- ep_events_available fs/eventpoll.c:381 [inline]
- ep_poll fs/eventpoll.c:1797 [inline]
- do_epoll_wait+0x279/0xf40 fs/eventpoll.c:2234
- do_epoll_pwait fs/eventpoll.c:2268 [inline]
- __do_sys_epoll_pwait fs/eventpoll.c:2281 [inline]
- __se_sys_epoll_pwait+0x12b/0x240 fs/eventpoll.c:2275
- __x64_sys_epoll_pwait+0x74/0x80 fs/eventpoll.c:2275
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0xffff88810480c7d0 -> 0xffff888103c15098
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 1799 Comm: syz-fuzzer Tainted: G        W         5.17.0-rc7-syzkaller-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Link: https://lkml.kernel.org/r/20220322002653.33865-3-kuniyu@amazon.co.jp
-Fixes: e59d3c64cba6 ("epoll: eliminate unnecessary lock for zero timeout")
-Fixes: c5a282e9635e ("fs/epoll: reduce the scope of wq lock in epoll_wait()")
-Fixes: bf3b9f6372c4 ("epoll: Add busy poll support to epoll with socket fds.")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Reported-by: syzbot+bdd6e38a1ed5ee58d8bd@syzkaller.appspotmail.com
-Cc: Al Viro <viro@zeniv.linux.org.uk>, Andrew Morton <akpm@linux-foundation.org>
-Cc: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Cc: Kuniyuki Iwashima <kuni1840@gmail.com>
-Cc: "Soheil Hassas Yeganeh" <soheil@google.com>
-Cc: Davidlohr Bueso <dave@stgolabs.net>
-Cc: "Sridhar Samudrala" <sridhar.samudrala@intel.com>
-Cc: Alexander Duyck <alexander.h.duyck@intel.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Reported-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Link: https://lore.kernel.org/lkml/762faf1b-0443-5ddf-4430-44a20cf2ec4d@collabora.com/
+Signed-off-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/list.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/misc/lkdtm/usercopy.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/list.h b/include/linux/list.h
-index a5709c9955e4..a119dd1990d4 100644
---- a/include/linux/list.h
-+++ b/include/linux/list.h
-@@ -33,7 +33,7 @@
- static inline void INIT_LIST_HEAD(struct list_head *list)
+diff --git a/drivers/misc/lkdtm/usercopy.c b/drivers/misc/lkdtm/usercopy.c
+index e172719dd86d..4617c63b1026 100644
+--- a/drivers/misc/lkdtm/usercopy.c
++++ b/drivers/misc/lkdtm/usercopy.c
+@@ -30,12 +30,12 @@ static const unsigned char test_text[] = "This is a test.\n";
+  */
+ static noinline unsigned char *trick_compiler(unsigned char *stack)
  {
- 	WRITE_ONCE(list->next, list);
--	list->prev = list;
-+	WRITE_ONCE(list->prev, list);
+-	return stack + 0;
++	return stack + unconst;
  }
  
- #ifdef CONFIG_DEBUG_LIST
-@@ -304,7 +304,7 @@ static inline int list_empty(const struct list_head *head)
- static inline void list_del_init_careful(struct list_head *entry)
+ static noinline unsigned char *do_usercopy_stack_callee(int value)
  {
- 	__list_del_entry(entry);
--	entry->prev = entry;
-+	WRITE_ONCE(entry->prev, entry);
- 	smp_store_release(&entry->next, entry);
+-	unsigned char buf[32];
++	unsigned char buf[128];
+ 	int i;
+ 
+ 	/* Exercise stack to avoid everything living in registers. */
+@@ -43,7 +43,12 @@ static noinline unsigned char *do_usercopy_stack_callee(int value)
+ 		buf[i] = value & 0xff;
+ 	}
+ 
+-	return trick_compiler(buf);
++	/*
++	 * Put the target buffer in the middle of stack allocation
++	 * so that we don't step on future stack users regardless
++	 * of stack growth direction.
++	 */
++	return trick_compiler(&buf[(128/2)-32]);
  }
  
-@@ -324,7 +324,7 @@ static inline void list_del_init_careful(struct list_head *entry)
- static inline int list_empty_careful(const struct list_head *head)
- {
- 	struct list_head *next = smp_load_acquire(&head->next);
--	return list_is_head(next, head) && (next == head->prev);
-+	return list_is_head(next, head) && (next == READ_ONCE(head->prev));
- }
+ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
+@@ -66,6 +71,12 @@ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
+ 		bad_stack -= sizeof(unsigned long);
+ 	}
  
- /**
++#ifdef ARCH_HAS_CURRENT_STACK_POINTER
++	pr_info("stack     : %px\n", (void *)current_stack_pointer);
++#endif
++	pr_info("good_stack: %px-%px\n", good_stack, good_stack + sizeof(good_stack));
++	pr_info("bad_stack : %px-%px\n", bad_stack, bad_stack + sizeof(good_stack));
++
+ 	user_addr = vm_mmap(NULL, 0, PAGE_SIZE,
+ 			    PROT_READ | PROT_WRITE | PROT_EXEC,
+ 			    MAP_ANONYMOUS | MAP_PRIVATE, 0);
 -- 
 2.35.1
-
-
 
