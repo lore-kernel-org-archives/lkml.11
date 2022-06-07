@@ -2,115 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52A9DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D7B6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:47:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353721AbiFGSrs (ORCPT
+        id S1347076AbiFGSrz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58048 "EHLO
+        Tue, 7 Jun 2022 14:47:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352262AbiFGSRA (ORCPT
+        with ESMTP id S1352264AbiFGSRA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:17:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B66579397;
-        Tue,  7 Jun 2022 10:51:16 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D45379803;
+        Tue,  7 Jun 2022 10:51:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 16C896170B;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33A26B82340;
         Tue,  7 Jun 2022 17:51:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9628CC34119;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A01A4C3411C;
         Tue,  7 Jun 2022 17:51:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624275;
-        bh=x31zvOB0b/h3T21ZNGLUMTm+uU569tG9DWKh8rttLcU=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624275;
+        bh=MhY5AKNn21dWYS0iPSQcwo1ibmMkfbI6/CS3dfxBLL8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BFStR9ifeciWwHVzNrCkKMRjYrPVLlBPch4lAsvxBnLpmaCg6eBfeasGB/eNhw0xi
-         h/Vjx7FgYGOMoFt9EThN2bb35sqB3lLO0mv45cId1/rCFLzj4C4E9UPpTKSuC32NTd
-         nN/zZJlyMxyv8YoO5YZA0C4ppmYo+VFnMv5B4vrNLo966B52UUDrEpNAmU4FMttP/4
-         jpjGo7w7droOVCnGNLWUEN/9Xx5ilC/+Ppz6tJ9v1jILWaX9s2fgisq2BbB7J2zata
-         NF7hdrv09M9hOF/rpJAyLfrw6LzPoaLl9w8Vx2t9dhfBiWznW3abU3dLdtAaVESDzZ
-         S8fWxZsDOgB2A==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Venky Shankar <vshankar@redhat.com>, Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 41/68] ceph: allow ceph.dir.rctime xattr to be updatable
-Date:   Tue,  7 Jun 2022 13:48:07 -0400
-Message-Id: <20220607174846.477972-41-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+        b=Y/A4bB9nXSjYlk1r+G0k1nolkh47lJ78geX2N81yrvaUPJYt4v+s0N5OuE8Q9mg7+
+         XNN9ffD6jQa8X8k1xfTMZK8TxE9qzbVjbI7grgWFEijvpiowW3fAXItJlIdG+PJcm7
+         9ahVujtGWeKF9auDCOFHsaZLmiDDxGDeEgG4vmpQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 261/667] mtd: rawnand: intel: fix possible null-ptr-deref in ebu_nand_probe()
+Date:   Tue,  7 Jun 2022 18:58:46 +0200
+Message-Id: <20220607164942.611137577@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Venky Shankar <vshankar@redhat.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit d7a2dc523085f8b8c60548ceedc696934aefeb0e ]
+[ Upstream commit ddf66aefd685fd46500b9917333e1b1e118276dc ]
 
-`rctime' has been a pain point in cephfs due to its buggy
-nature - inconsistent values reported and those sorts.
-Fixing rctime is non-trivial needing an overall redesign
-of the entire nested statistics infrastructure.
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
 
-As a workaround, PR
-
-     http://github.com/ceph/ceph/pull/37938
-
-allows this extended attribute to be manually set. This allows
-users to "fixup" inconsistent rctime values. While this sounds
-messy, its probably the wisest approach allowing users/scripts
-to workaround buggy rctime values.
-
-The above PR enables Ceph MDS to allow manually setting
-rctime extended attribute with the corresponding user-land
-changes. We may as well allow the same to be done via kclient
-for parity.
-
-Signed-off-by: Venky Shankar <vshankar@redhat.com>
-Reviewed-by: Xiubo Li <xiubli@redhat.com>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Fixes: 0b1039f016e8 ("mtd: rawnand: Add NAND controller support on Intel LGM SoC")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220426084913.4021868-2-yangyingliang@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/xattr.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/mtd/nand/raw/intel-nand-controller.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/ceph/xattr.c b/fs/ceph/xattr.c
-index afec84088471..8c2dc2c762a4 100644
---- a/fs/ceph/xattr.c
-+++ b/fs/ceph/xattr.c
-@@ -366,6 +366,14 @@ static ssize_t ceph_vxattrcb_auth_mds(struct ceph_inode_info *ci,
- 	}
- #define XATTR_RSTAT_FIELD(_type, _name)			\
- 	XATTR_NAME_CEPH(_type, _name, VXATTR_FLAG_RSTAT)
-+#define XATTR_RSTAT_FIELD_UPDATABLE(_type, _name)			\
-+	{								\
-+		.name = CEPH_XATTR_NAME(_type, _name),			\
-+		.name_size = sizeof (CEPH_XATTR_NAME(_type, _name)),	\
-+		.getxattr_cb = ceph_vxattrcb_ ## _type ## _ ## _name,	\
-+		.exists_cb = NULL,					\
-+		.flags = VXATTR_FLAG_RSTAT,				\
-+	}
- #define XATTR_LAYOUT_FIELD(_type, _name, _field)			\
- 	{								\
- 		.name = CEPH_XATTR_NAME2(_type, _name, _field),	\
-@@ -404,7 +412,7 @@ static struct ceph_vxattr ceph_dir_vxattrs[] = {
- 	XATTR_RSTAT_FIELD(dir, rsubdirs),
- 	XATTR_RSTAT_FIELD(dir, rsnaps),
- 	XATTR_RSTAT_FIELD(dir, rbytes),
--	XATTR_RSTAT_FIELD(dir, rctime),
-+	XATTR_RSTAT_FIELD_UPDATABLE(dir, rctime),
- 	{
- 		.name = "ceph.dir.pin",
- 		.name_size = sizeof("ceph.dir.pin"),
+diff --git a/drivers/mtd/nand/raw/intel-nand-controller.c b/drivers/mtd/nand/raw/intel-nand-controller.c
+index 7c1c80dae826..e91b879b32bd 100644
+--- a/drivers/mtd/nand/raw/intel-nand-controller.c
++++ b/drivers/mtd/nand/raw/intel-nand-controller.c
+@@ -619,9 +619,9 @@ static int ebu_nand_probe(struct platform_device *pdev)
+ 	resname = devm_kasprintf(dev, GFP_KERNEL, "nand_cs%d", cs);
+ 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, resname);
+ 	ebu_host->cs[cs].chipaddr = devm_ioremap_resource(dev, res);
+-	ebu_host->cs[cs].nand_pa = res->start;
+ 	if (IS_ERR(ebu_host->cs[cs].chipaddr))
+ 		return PTR_ERR(ebu_host->cs[cs].chipaddr);
++	ebu_host->cs[cs].nand_pa = res->start;
+ 
+ 	ebu_host->clk = devm_clk_get(dev, NULL);
+ 	if (IS_ERR(ebu_host->clk))
 -- 
 2.35.1
+
+
 
