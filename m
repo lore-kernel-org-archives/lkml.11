@@ -2,77 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD377CCA486
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:11:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A8A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:11:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242496AbiFGLLY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 07:11:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37524 "EHLO
+        id S242605AbiFGLL3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 07:11:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243084AbiFGLKi (ORCPT
+        with ESMTP id S243022AbiFGLKc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 07:10:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6D39BAC2;
-        Tue,  7 Jun 2022 04:09:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 606B5B81F67;
-        Tue,  7 Jun 2022 11:09:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A165C385A5;
-        Tue,  7 Jun 2022 11:09:09 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="hM6inLcZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1654600148;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=05ZDRn+9Kxgpo8QsxBj7Nm6masp/GCwnWMrtg/75p8k=;
-        b=hM6inLcZrJ1hIf172CEMGMg9q7w51oxf1fdo7MyCz3oI2e8YPF6gl3TlgarLeGMOeSCaFg
-        CfpUSNbYSgh4KAtKsvNlBah8XYtju4r2JNDjHHGMVAY6LkxZgcRUpxcE9RK8pqNGiWbaFD
-        DY6bVkCn4P8Kh8+RGz9tkxNK0LnZ0dg=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 04c485fc (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 7 Jun 2022 11:09:08 +0000 (UTC)
-Date:   Tue, 7 Jun 2022 13:09:03 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Phil Elwell <phil@raspberrypi.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+        Tue, 7 Jun 2022 07:10:32 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 185748B0A3;
+        Tue,  7 Jun 2022 04:08:54 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id cx11so15378461pjb.1;
+        Tue, 07 Jun 2022 04:08:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Po1Q5+6dI5yA4ldBgb2PF70K+bMXEwc5eVZhSQFEPLQ=;
+        b=oGkUJxSiFWnEbzHhenRsTq1+Di2BTqEPtyQKOuzfE117dtISgEKhcUGbepRpqseLXc
+         uDjuopqh2LIvIPWDRqkn3HtKKfO5WfoShBll48QLsqVtzwIG2CqplMMXW8kWt+77SMZz
+         eUfInGS8fV+8vqasQ/gFjGTS7u4hQ4Z1Gw0R2Y1jzLfKm9MQSduAN5Csz1EseWH4Tv3u
+         kTxulbf3f9SvFFo7VVjRTl9VDqktaI+zbxKnHuAeGK53bVfl7dPZpgqO1vNb4s74A+WS
+         iWkQdPJDO8jOgwTbwFasvLepqmcno7hRXfXSzHI1OKITixe1XbMtaxn8/j1hneoXgDmh
+         c0IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Po1Q5+6dI5yA4ldBgb2PF70K+bMXEwc5eVZhSQFEPLQ=;
+        b=7qKmQwv5pNaE7+NNzs0ABtNPCxVi7fS3XnefOUfeEIu58TP5vFF6EW128LwPA6Dv6H
+         PEGEwMKCdAkCuGOv9ly3dEr9wIl+2u/RJKSVihZ4BFeqFn4LNqSTFVU3Rh88O2hbghaX
+         hw5/42vvNUjoEgXt2V6G49/81TaNXIgJUSpjKVenZ6pIGXqkXnyZHX0ZE+mnBi4fZ7U2
+         1bcmDc2gLzo6mN37cX6wjbYXMWltUHuZNQvpx2+KxLFr7KqZpk5v51Ks4HhxqvlX/W7d
+         6TroS1Fs2Gi5RrNlgSkjAjYuVenlv3myxBQq8ezMJKjjJkR4MgxFy14YF9IaEUFFvUWP
+         N1kg==
+X-Gm-Message-State: AOAM533LNoTgzr9cd3r9oecMMIbzBKejmkA7ic5vsd3j0nDbrOr1fk+x
+        SYNRZ6BacDPVkJUJbVFRQdE=
+X-Google-Smtp-Source: ABdhPJyzMIIixx7LNlorf8GeSs9/oSuBiBElDRVrwCUcFan3ee56iXcevAaVtwW0gAdH+D0FOIGpsg==
+X-Received: by 2002:a17:902:d58a:b0:164:f5d1:82e9 with SMTP id k10-20020a170902d58a00b00164f5d182e9mr28874742plh.3.1654600133569;
+        Tue, 07 Jun 2022 04:08:53 -0700 (PDT)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id i4-20020aa787c4000000b0051bc581b62asm10439542pfo.121.2022.06.07.04.08.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 04:08:52 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
         Stephen Boyd <swboyd@chromium.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        stable <stable@vger.kernel.org>
-Subject: Re: [PATCH v2] ARM: initialize jump labels before setup_machine_fdt()
-Message-ID: <Yp8xz0gfsRKgSO/n@zx2c4.com>
-References: <8cc7ebe4-442b-a24b-9bb0-fce6e0425ee6@raspberrypi.com>
- <CAHmME9pL=g7Gz9-QOHnTosLHAL9YSPsW+CnE=9=u3iTQaFzomg@mail.gmail.com>
- <0f6458d7-037a-fa4d-8387-7de833288fb9@raspberrypi.com>
- <Yp8WBaqr+sLInNnc@kroah.com>
- <c47c42e3-1d56-5859-a6ad-976a1a3381c6@raspberrypi.com>
+        David Heidelberg <david@ixit.cz>,
+        Guo Zhengkui <guozhengkui@vivo.com>,
+        Xu Wang <vulab@iscas.ac.cn>, Miaoqian Lin <linmq006@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Rob Herring <robh@kernel.org>, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] drm/msm/mdp4: Fix refcount leak in mdp4_modeset_init_intf
+Date:   Tue,  7 Jun 2022 15:08:38 +0400
+Message-Id: <20220607110841.53889-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <c47c42e3-1d56-5859-a6ad-976a1a3381c6@raspberrypi.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Phil,
+of_graph_get_remote_node() returns remote device node pointer with
+refcount incremented, we should use of_node_put() on it
+when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-On Tue, Jun 07, 2022 at 12:04:13PM +0100, Phil Elwell wrote:
-> A clean 5.15.45 boots cleanly, whereas a downstream kernel shows the static key 
-> warning (but it does go on to boot). The significant difference is that our 
-> defconfigs set CONFIG_RANDOM_TRUST_BOOTLOADER=y - defining that on top of 
-> multi_v7_defconfig demonstrates the issue on a clean 5.15.45. Conversely, not 
-> setting that option in a downstream kernel build avoids the warning
+Fixes: 86418f90a4c1 ("drm: convert drivers to use of_graph_get_remote_node")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Ah, that makes sense. Note that I've got a patch out for changing that
-defconfig as well to be Y, which means the CI will catch this sort of
-thing in the future.
+diff --git a/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c b/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
+index fb48c8c19ec3..17cb1fc78379 100644
+--- a/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
++++ b/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
+@@ -216,6 +216,7 @@ static int mdp4_modeset_init_intf(struct mdp4_kms *mdp4_kms,
+ 		encoder = mdp4_lcdc_encoder_init(dev, panel_node);
+ 		if (IS_ERR(encoder)) {
+ 			DRM_DEV_ERROR(dev->dev, "failed to construct LCDC encoder\n");
++			of_node_put(panel_node);
+ 			return PTR_ERR(encoder);
+ 		}
+ 
+@@ -225,6 +226,7 @@ static int mdp4_modeset_init_intf(struct mdp4_kms *mdp4_kms,
+ 		connector = mdp4_lvds_connector_init(dev, panel_node, encoder);
+ 		if (IS_ERR(connector)) {
+ 			DRM_DEV_ERROR(dev->dev, "failed to initialize LVDS connector\n");
++			of_node_put(panel_node);
+ 			return PTR_ERR(connector);
+ 		}
+ 
+-- 
+2.25.1
 
-Jason
