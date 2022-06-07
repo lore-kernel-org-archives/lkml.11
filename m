@@ -2,125 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C91BDCCA498
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 735B0CCA493
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389401AbiFHAfs (ORCPT
+        id S1389076AbiFHAfP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:35:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35100 "EHLO
+        Tue, 7 Jun 2022 20:35:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384755AbiFGWbM (ORCPT
+        with ESMTP id S1387122AbiFGWt5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:31:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E79527850D;
-        Tue,  7 Jun 2022 12:24:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76ADBB823CA;
-        Tue,  7 Jun 2022 19:24:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C96A1C385A2;
-        Tue,  7 Jun 2022 19:24:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629863;
-        bh=/nt2azIDU63waHlYWHq5Z5MohAVPxSo0yJVmg3AdC48=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wd5FZwfPbNWtO5tuZr+YbNztPwtFB41T8SVMCxqZfciK+hHWcuQ3ic0UP9SwOTBGM
-         SKeCHVJKJ3H7wYQ666Srx6rc2JsQZrwnXk0OyXzA9Qbr6iQVPl0Sy45DK+VofpTWjz
-         YPJKxotda+72OwcosKvxWOgmumAx4dqhjyA0tTEQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 5.18 843/879] serial: pch: dont overwrite xmit->buf[0] by x_char
-Date:   Tue,  7 Jun 2022 19:06:01 +0200
-Message-Id: <20220607165027.320975559@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 18:49:57 -0400
+Received: from 1.mo582.mail-out.ovh.net (1.mo582.mail-out.ovh.net [46.105.56.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4CD42AA001
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:38:35 -0700 (PDT)
+Received: from player728.ha.ovh.net (unknown [10.108.4.44])
+        by mo582.mail-out.ovh.net (Postfix) with ESMTP id 88CC22479F
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:21:19 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player728.ha.ovh.net (Postfix) with ESMTPSA id CA4DE2B3FFBEF;
+        Tue,  7 Jun 2022 18:21:11 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-103G005316ed421-19f3-47a4-8681-230257df63a6,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 3/3] drm/panel: sony-acx565akm: Use backlight helpers
+Date:   Tue,  7 Jun 2022 20:20:26 +0200
+Message-Id: <20220607182026.1121992-4-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220607182026.1121992-1-steve@sk2.org>
+References: <20220607182026.1121992-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 10889422424181868166
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddvgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejvdekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekvd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+Instead of retrieving the backlight brightness in struct
+backlight_properties manually, and then checking whether the backlight
+should be on at all, use backlight_get_brightness() which does all
+this and insulates this from future changes.
 
-commit d9f3af4fbb1d955bbaf872d9e76502f6e3e803cb upstream.
+Instead of manually checking the power state in struct
+backlight_properties, use backlight_is_blank().
 
-When x_char is to be sent, the TX path overwrites whatever is in the
-circular buffer at offset 0 with x_char and sends it using
-pch_uart_hal_write(). I don't understand how this was supposed to work
-if xmit->buf[0] already contained some character. It must have been
-lost.
-
-Remove this whole pop_tx_x() concept and do the work directly in the
-callers. (Without printing anything using dev_dbg().)
-
-Cc: <stable@vger.kernel.org>
-Fixes: 3c6a483275f4 (Serial: EG20T: add PCH_UART driver)
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20220503080808.28332-1-jslaby@suse.cz
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: dri-devel@lists.freedesktop.org
 ---
- drivers/tty/serial/pch_uart.c |   27 +++++++--------------------
- 1 file changed, 7 insertions(+), 20 deletions(-)
+ drivers/gpu/drm/panel/panel-sony-acx565akm.c | 11 ++---------
+ 1 file changed, 2 insertions(+), 9 deletions(-)
 
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -624,22 +624,6 @@ static int push_rx(struct eg20t_port *pr
- 	return 0;
- }
- 
--static int pop_tx_x(struct eg20t_port *priv, unsigned char *buf)
--{
--	int ret = 0;
--	struct uart_port *port = &priv->port;
--
--	if (port->x_char) {
--		dev_dbg(priv->port.dev, "%s:X character send %02x (%lu)\n",
--			__func__, port->x_char, jiffies);
--		buf[0] = port->x_char;
--		port->x_char = 0;
--		ret = 1;
--	}
--
--	return ret;
--}
--
- static int dma_push_rx(struct eg20t_port *priv, int size)
+diff --git a/drivers/gpu/drm/panel/panel-sony-acx565akm.c b/drivers/gpu/drm/panel/panel-sony-acx565akm.c
+index 0d7541a33f87..a6bc8c8cf6c8 100644
+--- a/drivers/gpu/drm/panel/panel-sony-acx565akm.c
++++ b/drivers/gpu/drm/panel/panel-sony-acx565akm.c
+@@ -298,13 +298,7 @@ static void acx565akm_set_brightness(struct acx565akm_panel *lcd, int level)
+ static int acx565akm_bl_update_status_locked(struct backlight_device *dev)
  {
- 	int room;
-@@ -889,9 +873,10 @@ static unsigned int handle_tx(struct eg2
+ 	struct acx565akm_panel *lcd = dev_get_drvdata(&dev->dev);
+-	int level;
+-
+-	if (dev->props.fb_blank == FB_BLANK_UNBLANK &&
+-	    dev->props.power == FB_BLANK_UNBLANK)
+-		level = dev->props.brightness;
+-	else
+-		level = 0;
++	int level = backlight_get_brightness(dev);
  
- 	fifo_size = max(priv->fifo_size, 1);
- 	tx_empty = 1;
--	if (pop_tx_x(priv, xmit->buf)) {
--		pch_uart_hal_write(priv, xmit->buf, 1);
-+	if (port->x_char) {
-+		pch_uart_hal_write(priv, &port->x_char, 1);
- 		port->icount.tx++;
-+		port->x_char = 0;
- 		tx_empty = 0;
- 		fifo_size--;
- 	}
-@@ -946,9 +931,11 @@ static unsigned int dma_handle_tx(struct
- 	}
+ 	acx565akm_set_brightness(lcd, level);
  
- 	fifo_size = max(priv->fifo_size, 1);
--	if (pop_tx_x(priv, xmit->buf)) {
--		pch_uart_hal_write(priv, xmit->buf, 1);
-+
-+	if (port->x_char) {
-+		pch_uart_hal_write(priv, &port->x_char, 1);
- 		port->icount.tx++;
-+		port->x_char = 0;
- 		fifo_size--;
- 	}
+@@ -330,8 +324,7 @@ static int acx565akm_bl_get_intensity(struct backlight_device *dev)
  
-
+ 	mutex_lock(&lcd->mutex);
+ 
+-	if (dev->props.fb_blank == FB_BLANK_UNBLANK &&
+-	    dev->props.power == FB_BLANK_UNBLANK)
++	if (!backlight_is_blank(dev))
+ 		intensity = acx565akm_get_actual_brightness(lcd);
+ 	else
+ 		intensity = 0;
+-- 
+2.30.2
 
