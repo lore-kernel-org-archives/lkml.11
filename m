@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D900ACCA48F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:06:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C451CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379674AbiFGVGN (ORCPT
+        id S1379792AbiFGVG1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:06:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54192 "EHLO
+        Tue, 7 Jun 2022 17:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359065AbiFGUIA (ORCPT
+        with ESMTP id S1358073AbiFGUIY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:08:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0AD4EBEAE;
-        Tue,  7 Jun 2022 11:26:07 -0700 (PDT)
+        Tue, 7 Jun 2022 16:08:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD80EAD3C;
+        Tue,  7 Jun 2022 11:26:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4FBC5B82340;
-        Tue,  7 Jun 2022 18:26:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B94C2C385A5;
-        Tue,  7 Jun 2022 18:26:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D74AD6127C;
+        Tue,  7 Jun 2022 18:26:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0873C385A2;
+        Tue,  7 Jun 2022 18:26:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626365;
-        bh=LbqyjluyiwqorG7sAuTBbY2h6uEWrKDh7XnSBWLGDfw=;
+        s=korg; t=1654626374;
+        bh=wXml3vOeHTe2aPhXSByfJUBg4hzCXWKnW4+DgntOpHU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xp1UPVvtQKI9vFG6lhcZzqUdYkVXuuzY0FXTDpPIAHwNlc/qCUGaDusU6KgrgzlC/
-         lQzj5UHOWJ5IDQp7UfpQmPYd2KRG0ScUsvdQPZnDK1l+8uQqu+FWXwmMBj9/nWmq/Y
-         m0XKRIMKSqtjnmaTp0S3UKuFVDsJmkzHi0Vnj73c=
+        b=B0bt+U2owuc7uAtYoVUdjg1NYxOyqiAeEZh3H72gvKDGSVYLJvG06Wop6n9ENA5dh
+         1W5CyuXnSdlEG9H+DRRyIL3JRoFO9dDhe8IWOjvLkLRR5PYATdUopquumJqtdXRS2N
+         MGZAqA/ZJPWyEd1nnRBh4jNaqa1N8w+IvNbW349I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ajay Singh <ajay.kathat@microchip.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 353/772] wilc1000: fix crash observed in AP mode with cfg80211_register_netdevice()
-Date:   Tue,  7 Jun 2022 18:59:05 +0200
-Message-Id: <20220607164959.421406328@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 356/772] ASoC: fsl: Fix refcount leak in imx_sgtl5000_probe
+Date:   Tue,  7 Jun 2022 18:59:08 +0200
+Message-Id: <20220607164959.509680805@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,46 +51,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ajay Singh <ajay.kathat@microchip.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 868f0e28290c7a33e8cb79bfe97ebdcbb756e048 ]
+[ Upstream commit 41cd312dfe980af869c3503b4d38e62ed20dd3b7 ]
 
-Monitor(mon.) interface is used for handling the AP mode and 'ieee80211_ptr'
-reference is not getting set for it. Like earlier implementation,
-use register_netdevice() instead of cfg80211_register_netdevice() which
-expects valid 'ieee80211_ptr' reference to avoid the possible crash.
+of_find_i2c_device_by_node() takes a reference,
+In error paths, we should call put_device() to drop
+the reference to aviod refount leak.
 
-Fixes: 2fe8ef106238 ("cfg80211: change netdev registration/unregistration semantics")
-Signed-off-by: Ajay Singh <ajay.kathat@microchip.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220504161924.2146601-3-ajay.kathat@microchip.com
+Fixes: 81e8e4926167 ("ASoC: fsl: add sgtl5000 clock support for imx-sgtl5000")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
+Link: https://lore.kernel.org/r/20220511065803.3957-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/microchip/wilc1000/mon.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/fsl/imx-sgtl5000.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/microchip/wilc1000/mon.c b/drivers/net/wireless/microchip/wilc1000/mon.c
-index 6bd63934c2d8..b5a1b65c087c 100644
---- a/drivers/net/wireless/microchip/wilc1000/mon.c
-+++ b/drivers/net/wireless/microchip/wilc1000/mon.c
-@@ -233,7 +233,7 @@ struct net_device *wilc_wfi_init_mon_interface(struct wilc *wl,
- 	wl->monitor_dev->netdev_ops = &wilc_wfi_netdev_ops;
- 	wl->monitor_dev->needs_free_netdev = true;
+diff --git a/sound/soc/fsl/imx-sgtl5000.c b/sound/soc/fsl/imx-sgtl5000.c
+index 8daced42d55e..580a0d963f0e 100644
+--- a/sound/soc/fsl/imx-sgtl5000.c
++++ b/sound/soc/fsl/imx-sgtl5000.c
+@@ -120,19 +120,19 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
+ 	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+ 	if (!data) {
+ 		ret = -ENOMEM;
+-		goto fail;
++		goto put_device;
+ 	}
  
--	if (cfg80211_register_netdevice(wl->monitor_dev)) {
-+	if (register_netdevice(wl->monitor_dev)) {
- 		netdev_err(real_dev, "register_netdevice failed\n");
- 		free_netdev(wl->monitor_dev);
- 		return NULL;
-@@ -251,7 +251,7 @@ void wilc_wfi_deinit_mon_interface(struct wilc *wl, bool rtnl_locked)
- 		return;
+ 	comp = devm_kzalloc(&pdev->dev, 3 * sizeof(*comp), GFP_KERNEL);
+ 	if (!comp) {
+ 		ret = -ENOMEM;
+-		goto fail;
++		goto put_device;
+ 	}
  
- 	if (rtnl_locked)
--		cfg80211_unregister_netdevice(wl->monitor_dev);
-+		unregister_netdevice(wl->monitor_dev);
- 	else
- 		unregister_netdev(wl->monitor_dev);
- 	wl->monitor_dev = NULL;
+ 	data->codec_clk = clk_get(&codec_dev->dev, NULL);
+ 	if (IS_ERR(data->codec_clk)) {
+ 		ret = PTR_ERR(data->codec_clk);
+-		goto fail;
++		goto put_device;
+ 	}
+ 
+ 	data->clk_frequency = clk_get_rate(data->codec_clk);
+@@ -158,10 +158,10 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
+ 	data->card.dev = &pdev->dev;
+ 	ret = snd_soc_of_parse_card_name(&data->card, "model");
+ 	if (ret)
+-		goto fail;
++		goto put_device;
+ 	ret = snd_soc_of_parse_audio_routing(&data->card, "audio-routing");
+ 	if (ret)
+-		goto fail;
++		goto put_device;
+ 	data->card.num_links = 1;
+ 	data->card.owner = THIS_MODULE;
+ 	data->card.dai_link = &data->dai;
+@@ -174,7 +174,7 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
+ 	ret = devm_snd_soc_register_card(&pdev->dev, &data->card);
+ 	if (ret) {
+ 		dev_err_probe(&pdev->dev, ret, "snd_soc_register_card failed\n");
+-		goto fail;
++		goto put_device;
+ 	}
+ 
+ 	of_node_put(ssi_np);
+@@ -182,6 +182,8 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
+ 
+ 	return 0;
+ 
++put_device:
++	put_device(&codec_dev->dev);
+ fail:
+ 	if (data && !IS_ERR(data->codec_clk))
+ 		clk_put(data->codec_clk);
 -- 
 2.35.1
 
