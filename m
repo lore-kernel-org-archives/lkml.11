@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D5AFCCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2054CCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352995AbiFGSRv (ORCPT
+        id S1350842AbiFGSO7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:17:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39902 "EHLO
+        Tue, 7 Jun 2022 14:14:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348298AbiFGR6A (ORCPT
+        with ESMTP id S1348713AbiFGRxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:58:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF7854FB0;
-        Tue,  7 Jun 2022 10:40:59 -0700 (PDT)
+        Tue, 7 Jun 2022 13:53:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 585B31447B8;
+        Tue,  7 Jun 2022 10:39:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B19EB80B66;
-        Tue,  7 Jun 2022 17:40:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2939C34115;
-        Tue,  7 Jun 2022 17:40:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC843615F5;
+        Tue,  7 Jun 2022 17:39:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B25E7C385A5;
+        Tue,  7 Jun 2022 17:39:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623657;
-        bh=sN1Kk7yA6tgJ56jtZ7RfRBdgp59iuwFaAZOanZaTchg=;
+        s=korg; t=1654623552;
+        bh=5YfO6wYxuI36GuaW0/gD8NPiHcmgmSRqF/dYT+hzzsc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r0dvhWKXHchjzZjywaknfwV5KmsFe+d8f77eAuo1ecgK1Yt+/DBuRuMvbkPRXQ7cy
-         dNgRPKFom6NXtcYUK4IGx6AxzhQRUFWAV0Hqgv7+DiDSHj8jUuBCISbSl5nUdIpSRs
-         E/rkKwGHW0KT34Z2UNThwC6mupoWucD8nOVsQ+z8=
+        b=M0thlZnn2GL2r8Sl+Q38fQyvPRNes+8+NBBW8ohJO03/zy0PxlpSq/AskQsMvxmDa
+         /tlKBixFmgV0cEnAT7hF8Dv9Z2h1qbFgKL+dW75WohJ7aZCOLZo51XMOtKJwsOPSo7
+         NqRqgxFv+k/dIYMua9UmeexEgD/U42sufV5Sjc9U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.15 007/667] riscv: Fix irq_work when SMP is disabled
-Date:   Tue,  7 Jun 2022 18:54:32 +0200
-Message-Id: <20220607164935.002231686@linuxfoundation.org>
+        stable@vger.kernel.org, Vivek Gautam <vivek.gautam@codeaurora.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.10 427/452] phy: qcom-qmp: fix reset-controller leak on probe errors
+Date:   Tue,  7 Jun 2022 19:04:44 +0200
+Message-Id: <20220607164921.279200824@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
+In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
+References: <20220607164908.521895282@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,36 +52,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Johan Hovold <johan+linaro@kernel.org>
 
-commit 2273272823db6f67d57761df8116ae32e7f05bed upstream.
+commit 4d2900f20edfe541f75756a00deeb2ffe7c66bc1 upstream.
 
-irq_work is triggered via an IPI, but the IPI infrastructure is not
-included in uniprocessor kernels. As a result, irq_work never runs.
-Fall back to the tick-based irq_work implementation on uniprocessor
-configurations.
+Make sure to release the lane reset controller in case of a late probe
+error (e.g. probe deferral).
 
-Fixes: 298447928bb1 ("riscv: Support irq_work via self IPIs")
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://lore.kernel.org/r/20220430030025.58405-1-samuel@sholland.org
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Note that due to the reset controller being defined in devicetree in
+"lane" child nodes, devm_reset_control_get_exclusive() cannot be used
+directly.
+
+Fixes: e78f3d15e115 ("phy: qcom-qmp: new qmp phy driver for qcom-chipsets")
+Cc: stable@vger.kernel.org      # 4.12
+Cc: Vivek Gautam <vivek.gautam@codeaurora.org>
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220427063243.32576-3-johan+linaro@kernel.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/include/asm/irq_work.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/phy/qualcomm/phy-qcom-qmp.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
---- a/arch/riscv/include/asm/irq_work.h
-+++ b/arch/riscv/include/asm/irq_work.h
-@@ -4,7 +4,7 @@
+--- a/drivers/phy/qualcomm/phy-qcom-qmp.c
++++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
+@@ -3717,6 +3717,11 @@ static const struct phy_ops qcom_qmp_pci
+ 	.owner		= THIS_MODULE,
+ };
  
- static inline bool arch_irq_work_has_interrupt(void)
- {
--	return true;
-+	return IS_ENABLED(CONFIG_SMP);
- }
- extern void arch_irq_work_raise(void);
- #endif /* _ASM_RISCV_IRQ_WORK_H */
++static void qcom_qmp_reset_control_put(void *data)
++{
++	reset_control_put(data);
++}
++
+ static
+ int qcom_qmp_phy_create(struct device *dev, struct device_node *np, int id,
+ 			void __iomem *serdes, const struct qmp_phy_cfg *cfg)
+@@ -3811,6 +3816,10 @@ int qcom_qmp_phy_create(struct device *d
+ 			dev_err(dev, "failed to get lane%d reset\n", id);
+ 			return PTR_ERR(qphy->lane_rst);
+ 		}
++		ret = devm_add_action_or_reset(dev, qcom_qmp_reset_control_put,
++					       qphy->lane_rst);
++		if (ret)
++			return ret;
+ 	}
+ 
+ 	if (cfg->type == PHY_TYPE_UFS || cfg->type == PHY_TYPE_PCIE)
 
 
