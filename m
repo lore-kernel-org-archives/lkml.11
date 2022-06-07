@@ -2,94 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BB45CCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE138CCA49A
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:55:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388155AbiFHAur (ORCPT
+        id S1384739AbiFHAtw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:50:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45902 "EHLO
+        Tue, 7 Jun 2022 20:49:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382705AbiFGVvo (ORCPT
+        with ESMTP id S1383898AbiFGWbB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:51:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C9E150B49;
-        Tue,  7 Jun 2022 12:09:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F047E618D6;
-        Tue,  7 Jun 2022 19:09:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0572AC385A2;
-        Tue,  7 Jun 2022 19:09:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628956;
-        bh=d5f3waSstqFwsHwR92Wq26SEDDhS6+RyUHdRiynwipA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pn9sOZ5d14S2TUvY/BB0kMl5qcJv0okZDQ8s2imRAVsuYQobKp2htripz0iN1olJT
-         4SJV+Hof6M5xYXTNVMaP7Wd9mZ74LggU7mRM+P12vh3NMJaIf1se04oflyejc4UQCq
-         T6P2k0mrdC1uv1VsT7TnlIxuhG38Cqm7qWLuDGiA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 518/879] rxrpc: Dont try to resend the request if were receiving the reply
-Date:   Tue,  7 Jun 2022 19:00:36 +0200
-Message-Id: <20220607165017.911288090@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 18:31:01 -0400
+Received: from 6.mo575.mail-out.ovh.net (6.mo575.mail-out.ovh.net [46.105.63.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4326E2755B9
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:24:03 -0700 (PDT)
+Received: from player698.ha.ovh.net (unknown [10.110.115.149])
+        by mo575.mail-out.ovh.net (Postfix) with ESMTP id B3F7F22B79
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:24:01 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player698.ha.ovh.net (Postfix) with ESMTPSA id 67A972B48042C;
+        Tue,  7 Jun 2022 19:23:52 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-110S0043a930085-a9b6-4bf1-b62d-4f18fbec254c,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Antonino Daplas <adaplas@gmail.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Helge Deller <deller@gmx.de>, Paul Mackerras <paulus@samba.org>
+Cc:     linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>, dri-devel@lists.freedesktop.org
+Subject: [PATCH 1/7] fbdev: aty128fb: Use backlight helper
+Date:   Tue,  7 Jun 2022 21:23:29 +0200
+Message-Id: <20220607192335.1137249-2-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220607192335.1137249-1-steve@sk2.org>
+References: <20220607192335.1137249-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11948331288570660585
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudefiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheejhe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+Instead of retrieving the backlight brightness in struct
+backlight_properties manually, and then checking whether the backlight
+should be on at all, use backlight_get_brightness() which does all
+this and insulates this from future changes.
 
-[ Upstream commit 114af61f88fbe34d641b13922d098ffec4c1be1b ]
-
-rxrpc has a timer to trigger resending of unacked data packets in a call.
-This is not cancelled when a client call switches to the receive phase on
-the basis that most calls don't last long enough for it to ever expire.
-However, if it *does* expire after we've started to receive the reply, we
-shouldn't then go into trying to retransmit or pinging the server to find
-out if an ack got lost.
-
-Fix this by skipping the resend code if we're into receiving the reply to a
-client call.
-
-Fixes: 17926a79320a ("[AF_RXRPC]: Provide secure RxRPC sockets for use by userspace and kernel both")
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: linux-afs@lists.infradead.org
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: Helge Deller <deller@gmx.de>
+Cc: linux-fbdev@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
 ---
- net/rxrpc/call_event.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/video/fbdev/aty/aty128fb.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
-index e426f6831aab..f8ecad2b730e 100644
---- a/net/rxrpc/call_event.c
-+++ b/net/rxrpc/call_event.c
-@@ -406,7 +406,8 @@ void rxrpc_process_call(struct work_struct *work)
- 		goto recheck_state;
- 	}
+diff --git a/drivers/video/fbdev/aty/aty128fb.c b/drivers/video/fbdev/aty/aty128fb.c
+index b26c81233b6b..a8f9baac3d3f 100644
+--- a/drivers/video/fbdev/aty/aty128fb.c
++++ b/drivers/video/fbdev/aty/aty128fb.c
+@@ -1765,12 +1765,10 @@ static int aty128_bl_update_status(struct backlight_device *bd)
+ 	unsigned int reg = aty_ld_le32(LVDS_GEN_CNTL);
+ 	int level;
  
--	if (test_and_clear_bit(RXRPC_CALL_EV_RESEND, &call->events)) {
-+	if (test_and_clear_bit(RXRPC_CALL_EV_RESEND, &call->events) &&
-+	    call->state != RXRPC_CALL_CLIENT_RECV_REPLY) {
- 		rxrpc_resend(call, now);
- 		goto recheck_state;
- 	}
+-	if (bd->props.power != FB_BLANK_UNBLANK ||
+-	    bd->props.fb_blank != FB_BLANK_UNBLANK ||
+-	    !par->lcd_on)
++	if (!par->lcd_on)
+ 		level = 0;
+ 	else
+-		level = bd->props.brightness;
++		level = backlight_get_brightness(bd);
+ 
+ 	reg |= LVDS_BL_MOD_EN | LVDS_BLON;
+ 	if (level > 0) {
 -- 
-2.35.1
-
-
+2.30.2
 
