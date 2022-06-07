@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D7BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7885BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358162AbiFGVIK (ORCPT
+        id S1378991AbiFGVIR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:08:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58170 "EHLO
+        Tue, 7 Jun 2022 17:08:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359195AbiFGUJi (ORCPT
+        with ESMTP id S1359124AbiFGUJh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:09:38 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4E114385B;
-        Tue,  7 Jun 2022 11:26:58 -0700 (PDT)
+        Tue, 7 Jun 2022 16:09:37 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60DBC1C4F07;
+        Tue,  7 Jun 2022 11:26:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2E0A2CE2451;
-        Tue,  7 Jun 2022 18:26:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A639C385A2;
-        Tue,  7 Jun 2022 18:26:54 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AF9D5CE2453;
+        Tue,  7 Jun 2022 18:26:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEDE6C385A5;
+        Tue,  7 Jun 2022 18:26:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626415;
-        bh=0bo0HpIdec6Q2HW1VvnqdH82NSSLOTfGiJXwD0+ptA4=;
+        s=korg; t=1654626407;
+        bh=sQXuJwoXwKhHrCNYb8Yinm9Ja3LysUM379OcmxSH9k8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U2sd1sG6Hrua7qdWsy1xt6c/lKr4kvWkVFoDahBelKbp6bkwMtqqVYqkbIK+Xpu5a
-         mM/9y4BComYWan6Cm3qYvfwetpDuhQ/LIoO8fEHMtPK5BHm/6L0rmmwwjQqEjKZRpM
-         VmAWUNCBuZEx785k1xdc68bnQwXVAAIvQgyNGb0E=
+        b=cx0wqHyOpBX8hJL7gLcqznHjNSYFvqYpPafn868bhbcIoUT/qbutiAQhXs2wzhfPl
+         WvhVBjzpONrJOQi7a3uNxRO2SIjs9ildMN7kRbdcXMj1sNQ5Ia0jBPjDlKJkxVeX/F
+         iwnpjuZBnPYJpiEW0X3nqg+NBrj/OIFRIe02laNE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 369/772] mt76: mt7915: do not pass data pointer to mt7915_mcu_muru_debug_set
-Date:   Tue,  7 Jun 2022 18:59:21 +0200
-Message-Id: <20220607164959.889533988@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 367/772] media: exynos4-is: Fix PM disable depth imbalance in fimc_is_probe
+Date:   Tue,  7 Jun 2022 18:59:19 +0200
+Message-Id: <20220607164959.830674206@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,34 +53,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit badb6ffaa1439fce30fc6ef10571dcf45a622b44 ]
+[ Upstream commit 5c0db68ce0faeb000c3540d095eb272d671a6e03 ]
 
-Fix typo in mt7915_muru_debug_set routine and pass muru_debug value to
-mt7915_mcu_muru_debug_set() instead of data pointer.
+If probe fails then we need to call pm_runtime_disable() to balance
+out the previous pm_runtime_enable() call.
 
-Fixes: 1966a5078f2d ("mt76: mt7915: add mu-mimo and ofdma debugfs knobs")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Fixes: 9a761e436843 ("[media] exynos4-is: Add Exynos4x12 FIMC-IS driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/platform/exynos4-is/fimc-is.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
-index e96d1c31dd36..2ff054187dac 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
-@@ -87,7 +87,7 @@ mt7915_muru_debug_set(void *data, u64 val)
- 	struct mt7915_dev *dev = data;
+diff --git a/drivers/media/platform/exynos4-is/fimc-is.c b/drivers/media/platform/exynos4-is/fimc-is.c
+index e55e411038f4..81b290dace3a 100644
+--- a/drivers/media/platform/exynos4-is/fimc-is.c
++++ b/drivers/media/platform/exynos4-is/fimc-is.c
+@@ -830,7 +830,7 @@ static int fimc_is_probe(struct platform_device *pdev)
  
- 	dev->muru_debug = val;
--	mt7915_mcu_muru_debug_set(dev, data);
-+	mt7915_mcu_muru_debug_set(dev, dev->muru_debug);
+ 	ret = pm_runtime_resume_and_get(dev);
+ 	if (ret < 0)
+-		goto err_irq;
++		goto err_pm_disable;
  
- 	return 0;
- }
+ 	vb2_dma_contig_set_max_seg_size(dev, DMA_BIT_MASK(32));
+ 
+@@ -864,6 +864,8 @@ static int fimc_is_probe(struct platform_device *pdev)
+ 	pm_runtime_put_noidle(dev);
+ 	if (!pm_runtime_enabled(dev))
+ 		fimc_is_runtime_suspend(dev);
++err_pm_disable:
++	pm_runtime_disable(dev);
+ err_irq:
+ 	free_irq(is->irq, is);
+ err_clk:
 -- 
 2.35.1
 
