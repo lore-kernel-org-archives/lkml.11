@@ -2,86 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12F46CCA498
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7F95CCA487
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356869AbiFGT2S (ORCPT
+        id S1356284AbiFGT1Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:28:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48304 "EHLO
+        Tue, 7 Jun 2022 15:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352135AbiFGSdV (ORCPT
+        with ESMTP id S1352291AbiFGSdh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:33:21 -0400
+        Tue, 7 Jun 2022 14:33:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5924417EF5F;
-        Tue,  7 Jun 2022 10:57:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8802A17EF6F;
+        Tue,  7 Jun 2022 10:57:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC996611FE;
-        Tue,  7 Jun 2022 17:57:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12C95C34119;
-        Tue,  7 Jun 2022 17:57:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624644;
-        bh=b0y7kcZVJHUzbw5GlGaRG2weKRKicsuh66ywd8v6S5I=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C40C617A7;
+        Tue,  7 Jun 2022 17:57:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2612CC34119;
+        Tue,  7 Jun 2022 17:57:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624651;
+        bh=UgRvapknkbWv1n+qLNYsevu7vYN4tPMzGejAAl3vGcY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F5/bduoXlHOdKb9UtzCmuGC09MnhOPNanqZg4s8f2taBhx7o3h/osOxMXVTNlNz2O
-         oF/yJ7UQHjqirHVhchyApuUEi8QFqHoaPUCs5SfbhK65NPIyp4847zIWpIdnDmG1OB
-         8yLwNQxqj4PNp4rbdK27OH4Cg38D0kYSFzGesBY2CMxqYLbkjY/tYTft5O4i42nLMR
-         CSUKNZNvjTC6M183NQMxNR5MBESkEoYjdaC2QfwcSPF4HrULdsv6wIM5gB8uefbvHP
-         Em5vUO1W8lSC8lE1f2kDGY/7Eyq/QX2Rm/DMjkiERXCB3mAbV4Q5cvGuf4BXkUvkYa
-         9nROcEhOyS6aQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheng Bin <zhengbin13@huawei.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, w.d.hubbs@gmail.com,
-        chris@the-brannons.com, kirk@reisers.ca,
-        samuel.thibault@ens-lyon.org, trix@redhat.com,
-        salah.triki@gmail.com, speakup@linux-speakup.org
-Subject: [PATCH AUTOSEL 5.15 28/51] accessiblity: speakup: Add missing misc_deregister in softsynth_probe
-Date:   Tue,  7 Jun 2022 13:55:27 -0400
-Message-Id: <20220607175552.479948-28-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
-References: <20220607175552.479948-1-sashal@kernel.org>
+        b=cXzcyElK5aJexOMpWHGm3WJetPal0bxCKmpDK+TKvSapPQVn9NN5igGKZQqGsMQYx
+         ibw598q6nU5kzfNVQxG8Ppo5kdGo1xK6m/Szus8a5onBVnkS7C5WiADUe44F7y2Fr/
+         ZP1VxSh5TeN3CuDbvmTjrZ0pY5ppIojeF+lPJg14=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
+        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 405/667] can: xilinx_can: mark bit timing constants as const
+Date:   Tue,  7 Jun 2022 19:01:10 +0200
+Message-Id: <20220607164946.888988595@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Bin <zhengbin13@huawei.com>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-[ Upstream commit 106101303eda8f93c65158e5d72b2cc6088ed034 ]
+[ Upstream commit ae38fda02996d43d9fb09f16e81e0008704dd524 ]
 
-softsynth_probe misses a call misc_deregister() in an error path, this
-patch fixes that.
+This patch marks the bit timing constants as const.
 
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
-Link: https://lore.kernel.org/r/20220511032937.2736738-1-zhengbin13@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c223da689324 ("can: xilinx_can: Add support for CANFD FD frames")
+Link: https://lore.kernel.org/all/20220317203119.792552-1-mkl@pengutronix.de
+Cc: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+Cc: Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/accessibility/speakup/speakup_soft.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/can/xilinx_can.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/accessibility/speakup/speakup_soft.c b/drivers/accessibility/speakup/speakup_soft.c
-index 19824e7006fe..786dc5d080f3 100644
---- a/drivers/accessibility/speakup/speakup_soft.c
-+++ b/drivers/accessibility/speakup/speakup_soft.c
-@@ -397,6 +397,7 @@ static int softsynth_probe(struct spk_synth *synth)
- 	synthu_device.name = "softsynthu";
- 	synthu_device.fops = &softsynthu_fops;
- 	if (misc_register(&synthu_device)) {
-+		misc_deregister(&synth_device);
- 		pr_warn("Couldn't initialize miscdevice /dev/softsynthu.\n");
- 		return -ENODEV;
- 	}
+diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
+index a579b9b791ed..262b783d1df8 100644
+--- a/drivers/net/can/xilinx_can.c
++++ b/drivers/net/can/xilinx_can.c
+@@ -239,7 +239,7 @@ static const struct can_bittiming_const xcan_bittiming_const_canfd = {
+ };
+ 
+ /* AXI CANFD Data Bittiming constants as per AXI CANFD 1.0 specs */
+-static struct can_bittiming_const xcan_data_bittiming_const_canfd = {
++static const struct can_bittiming_const xcan_data_bittiming_const_canfd = {
+ 	.name = DRIVER_NAME,
+ 	.tseg1_min = 1,
+ 	.tseg1_max = 16,
+@@ -265,7 +265,7 @@ static const struct can_bittiming_const xcan_bittiming_const_canfd2 = {
+ };
+ 
+ /* AXI CANFD 2.0 Data Bittiming constants as per AXI CANFD 2.0 spec */
+-static struct can_bittiming_const xcan_data_bittiming_const_canfd2 = {
++static const struct can_bittiming_const xcan_data_bittiming_const_canfd2 = {
+ 	.name = DRIVER_NAME,
+ 	.tseg1_min = 1,
+ 	.tseg1_max = 32,
 -- 
 2.35.1
+
+
 
