@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9886CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70D25CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349951AbiFGSKK (ORCPT
+        id S1349984AbiFGSKQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:10:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47472 "EHLO
+        Tue, 7 Jun 2022 14:10:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349131AbiFGRud (ORCPT
+        with ESMTP id S1349083AbiFGRu3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:50:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D4FA13AF13;
-        Tue,  7 Jun 2022 10:37:51 -0700 (PDT)
+        Tue, 7 Jun 2022 13:50:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3130139CB1;
+        Tue,  7 Jun 2022 10:37:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C15BEB820C3;
-        Tue,  7 Jun 2022 17:37:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 290CBC34119;
-        Tue,  7 Jun 2022 17:37:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 02192B81F38;
+        Tue,  7 Jun 2022 17:37:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EC14C385A5;
+        Tue,  7 Jun 2022 17:37:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623469;
-        bh=OqZ1fM3XT7xiCBk1pwig0hnNmi/cqv4tqNiVLsVyCeY=;
+        s=korg; t=1654623450;
+        bh=fh98o9JfXKscxLcEWhWjcFhLkDzvvPrMBrnCd4wQVg4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=imLsQ7q6b/R+FiHpbDkJpe3RObs7lMMBOcLXmWRc1egr3d4QXfky/ZNsJQb4GInR3
-         ZdFC3o154oWIgwmMUGycHCQnPdePPOYxsQfxBUiFZYQkYiqkaZ0DnfLM7I5U3q+qYp
-         x673Og6/80RYJbc77UOPJ1EOizN6huHkZYlMgQFQ=
+        b=tKuR0AMfA3jyt7RwK4TNfuhc68zYiTZ9VButqQidiYb+vDXtn7yHFmocCPs25LEFL
+         G4vwLmALVwEvDp7mmj1S1tm0xUutbUA0k96qp1yK1udoRK/lsx3kUj2+HjMamx2j+e
+         8rbZn/qLAA8BiWprymFD/YA0YtwTA8eZk9igobYg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jeffrey Mitchell <jeffrey.mitchell@starlab.io>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Brian Foster <bfoster@redhat.com>,
-        Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH 5.10 430/452] xfs: set inode size after creating symlink
-Date:   Tue,  7 Jun 2022 19:04:47 +0200
-Message-Id: <20220607164921.367417409@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 5.10 381/452] drm/nouveau/kms/nv50-: atom: fix an incorrect NULL check on list iterator
+Date:   Tue,  7 Jun 2022 19:03:58 +0200
+Message-Id: <20220607164919.918256440@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -53,40 +49,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeffrey Mitchell <jeffrey.mitchell@starlab.io>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 8aa921a95335d0a8c8e2be35a44467e7c91ec3e4 upstream.
+commit 6ce4431c7ba7954c4fa6a96ce16ca1b2943e1a83 upstream.
 
-When XFS creates a new symlink, it writes its size to disk but not to the
-VFS inode. This causes i_size_read() to return 0 for that symlink until
-it is re-read from disk, for example when the system is rebooted.
+The bug is here:
+	return encoder;
 
-I found this inconsistency while protecting directories with eCryptFS.
-The command "stat path/to/symlink/in/ecryptfs" will report "Size: 0" if
-the symlink was created after the last reboot on an XFS root.
+The list iterator value 'encoder' will *always* be set and non-NULL
+by drm_for_each_encoder_mask(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty or no element found.
+Otherwise it will bypass some NULL checks and lead to invalid memory
+access passing the check.
 
-Call i_size_write() in xfs_symlink()
+To fix this bug, just return 'encoder' when found, otherwise return
+NULL.
 
-Signed-off-by: Jeffrey Mitchell <jeffrey.mitchell@starlab.io>
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Brian Foster <bfoster@redhat.com>
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Cc: stable@vger.kernel.org
+Fixes: 12885ecbfe62d ("drm/nouveau/kms/nvd9-: Add CRC support")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+[Changed commit title]
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220327073925.11121-1-xiam0nd.tong@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/xfs_symlink.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/nouveau/dispnv50/atom.h |    6 +++---
+ drivers/gpu/drm/nouveau/dispnv50/crc.c  |   27 ++++++++++++++++++++++-----
+ 2 files changed, 25 insertions(+), 8 deletions(-)
 
---- a/fs/xfs/xfs_symlink.c
-+++ b/fs/xfs/xfs_symlink.c
-@@ -300,6 +300,7 @@ xfs_symlink(
- 		}
- 		ASSERT(pathlen == 0);
- 	}
-+	i_size_write(VFS_I(ip), ip->i_d.di_size);
+--- a/drivers/gpu/drm/nouveau/dispnv50/atom.h
++++ b/drivers/gpu/drm/nouveau/dispnv50/atom.h
+@@ -160,14 +160,14 @@ nv50_head_atom_get(struct drm_atomic_sta
+ static inline struct drm_encoder *
+ nv50_head_atom_get_encoder(struct nv50_head_atom *atom)
+ {
+-	struct drm_encoder *encoder = NULL;
++	struct drm_encoder *encoder;
  
- 	/*
- 	 * Create the directory entry for the symlink.
+ 	/* We only ever have a single encoder */
+ 	drm_for_each_encoder_mask(encoder, atom->state.crtc->dev,
+ 				  atom->state.encoder_mask)
+-		break;
++		return encoder;
+ 
+-	return encoder;
++	return NULL;
+ }
+ 
+ #define nv50_wndw_atom(p) container_of((p), struct nv50_wndw_atom, state)
+--- a/drivers/gpu/drm/nouveau/dispnv50/crc.c
++++ b/drivers/gpu/drm/nouveau/dispnv50/crc.c
+@@ -411,9 +411,18 @@ void nv50_crc_atomic_check_outp(struct n
+ 		struct nv50_head_atom *armh = nv50_head_atom(old_crtc_state);
+ 		struct nv50_head_atom *asyh = nv50_head_atom(new_crtc_state);
+ 		struct nv50_outp_atom *outp_atom;
+-		struct nouveau_encoder *outp =
+-			nv50_real_outp(nv50_head_atom_get_encoder(armh));
+-		struct drm_encoder *encoder = &outp->base.base;
++		struct nouveau_encoder *outp;
++		struct drm_encoder *encoder, *enc;
++
++		enc = nv50_head_atom_get_encoder(armh);
++		if (!enc)
++			continue;
++
++		outp = nv50_real_outp(enc);
++		if (!outp)
++			continue;
++
++		encoder = &outp->base.base;
+ 
+ 		if (!asyh->clr.crc)
+ 			continue;
+@@ -464,8 +473,16 @@ void nv50_crc_atomic_set(struct nv50_hea
+ 	struct drm_device *dev = crtc->dev;
+ 	struct nv50_crc *crc = &head->crc;
+ 	const struct nv50_crc_func *func = nv50_disp(dev)->core->func->crc;
+-	struct nouveau_encoder *outp =
+-		nv50_real_outp(nv50_head_atom_get_encoder(asyh));
++	struct nouveau_encoder *outp;
++	struct drm_encoder *encoder;
++
++	encoder = nv50_head_atom_get_encoder(asyh);
++	if (!encoder)
++		return;
++
++	outp = nv50_real_outp(encoder);
++	if (!outp)
++		return;
+ 
+ 	func->set_src(head, outp->or,
+ 		      nv50_crc_source_type(outp, asyh->crc.src),
 
 
