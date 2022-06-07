@@ -2,144 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFF8ECCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5D77CCA48D
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389764AbiFHBqQ (ORCPT
+        id S1389850AbiFHBqY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:46:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58176 "EHLO
+        Tue, 7 Jun 2022 21:46:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382466AbiFGXjF (ORCPT
+        with ESMTP id S1384731AbiFGWQF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:39:05 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 209DB1742B1
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:32 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id i16-20020a170902cf1000b001540b6a09e3so10037554plg.0
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=xglW57R7dPrxeD1+iu7KlOWod3vvDTBjvAqs2DB9Tyo=;
-        b=Z8n2j8d/l+NC3N9+mbSwNLqH3Dk5xFYh3W8mbYfNzq6SnxKTw2miTYcRgW55MA898M
-         tmofR+kdMmdNHI4Ukui4H9GO2TaNKM1ORixz8VRgMCvGIBmAFOimwOB+cmuXfel+5/Q8
-         wmI/GlXJFGuExnuB2R051rnXIKjHh8mXRiGXe0GsvU/ke6Z2UFuzAycPdzJLmrqYUVNt
-         u0757aLcVkOOPfwGMK8VmL5NOw5E6tMyLH7XQY94dWQS5DUwDJMA4buwRvXpM0cNjGLX
-         Ri77c5iIuMaAm6afVDTEFcuQgsRqJZPMXnoDhaUyRHigFNl1sYnLGmktT7uVpepWchos
-         Hf9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=xglW57R7dPrxeD1+iu7KlOWod3vvDTBjvAqs2DB9Tyo=;
-        b=lnbV0bKXOyIU7cIM48xlU0XdLOgzpQoUgj8i7rR3sGK3sWJ7n9GY3+qHwUSOFmwP5D
-         ++iGOUZXnXxRyIHII7B3OFdh4Sh/dtlf9MHm5x9X0tqDBr/BhslJ7bzOWT4BG+Kb8zDY
-         pB47cUcelhfm1jv39SQHWCoEYFmBQ5vbEAFsAsvztt1JbpYuR9x78IaMXtHAH+GczY9H
-         2n4OeddpWB7/Rz5WDCGD8sGReTLOL6EzzJKUm//w5ZZyNIE1/RaUUSr9g792Q47hd2T9
-         dAa5sLHww+KSaB2JNt+n0dfV1YvRblRGYc3i/Ig6JwnNlU7ojP+m+TX835ynncuOJR5N
-         6u6w==
-X-Gm-Message-State: AOAM533gv/TXH1txCkv4EkRRBLpT2kc9vmFTNxoAvhAQQVrCuDDnzsOk
-        sKHxhSUr069G94aWg4PVAqOEtt5aiYc=
-X-Google-Smtp-Source: ABdhPJyYWskGfqg7Lzc1BANxoat/HX9oJuMU6eVjhdTVKgpGqjo/fAChIvEUAOBwu0ruJlwRyubKpPudm4k=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:9b8a:b0:163:d0ad:f9e8 with SMTP id
- y10-20020a1709029b8a00b00163d0adf9e8mr30305164plp.79.1654637791642; Tue, 07
- Jun 2022 14:36:31 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue,  7 Jun 2022 21:35:57 +0000
-In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
-Message-Id: <20220607213604.3346000-9-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220607213604.3346000-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v5 08/15] KVM: nVMX: Keep KVM updates to PERF_GLOBAL_CTRL ctrl
- bits across MSR write
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
-        David Matlack <dmatlack@google.com>,
-        Oliver Upton <oupton@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 7 Jun 2022 18:16:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB6322612BA;
+        Tue,  7 Jun 2022 12:20:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B49D36193E;
+        Tue,  7 Jun 2022 19:19:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3837C385A2;
+        Tue,  7 Jun 2022 19:19:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629560;
+        bh=uDFJt36J43JNrQpnP2g5KapftTC+j4X2m4rJ87PLIAI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pWTiAM3bB7BjY7Bs3jCMoXBJixbsNaXqJ8SvVD7dgCUmonWebji2ybSySWCZizsmm
+         J2JIPuiGlTz41RZpWwo8tfxwfzzSs/l3vG/3MbOrREewHjUMIXO7a6XWaW7dOjNK06
+         cmebVmF57lPysuqRdWn4YUPP1qDvkrqm/IkoiI5o=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 5.18 736/879] ext4: mark group as trimmed only if it was fully scanned
+Date:   Tue,  7 Jun 2022 19:04:14 +0200
+Message-Id: <20220607165024.220534344@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Upton <oupton@google.com>
+From: Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
 
-Since commit 03a8871add95 ("KVM: nVMX: Expose load IA32_PERF_GLOBAL_CTRL
-VM-{Entry,Exit} control"), KVM has taken ownership of the "load
-IA32_PERF_GLOBAL_CTRL" VMX entry/exit control bits. The ABI is that
-these bits will be set in the IA32_VMX_TRUE_{ENTRY,EXIT}_CTLS MSRs if
-the guest's CPUID exposes a vPMU that supports the IA32_PERF_GLOBAL_CTRL
-MSR (CPUID.0AH:EAX[7:0] > 1), and clear otherwise.
+commit d63c00ea435a5352f486c259665a4ced60399421 upstream.
 
-However, commit aedbaf4f6afd ("KVM: x86: Extract kvm_update_cpuid_runtime()
-from kvm_update_cpuid()") partially broke KVM ownership of the
-aforementioned bits. Before, kvm_update_cpuid() was exercised frequently
-when running a guest and constantly applied its own changes to the "load
-IA32_PERF_GLOBAL_CTRL" bits. Now, the "load IA32_PERF_GLOBAL_CTRL" bits
-are only ever updated after a KVM_SET_CPUID/KVM_SET_CPUID2 ioctl, meaning
-that a subsequent MSR write from userspace will clobber these values.
+Otherwise nonaligned fstrim calls will works inconveniently for iterative
+scanners, for example:
 
-Note that older kernels without commit c44d9b34701d ("KVM: x86: Invoke
-vendor's vcpu_after_set_cpuid() after all common updates") still require
-that the entry/exit controls be updated from kvm_pmu_refresh(). Leave
-the benign call in place to allow for cleaner backporting and punt the
-cleanup to a later change.
+// trim [0,16MB] for group-1, but mark full group as trimmed
+fstrim  -o $((1024*1024*128)) -l $((1024*1024*16)) ./m
+// handle [16MB,16MB] for group-1, do nothing because group already has the flag.
+fstrim  -o $((1024*1024*144)) -l $((1024*1024*16)) ./m
 
-Uphold the old ABI by reapplying KVM's tweaks to the "load
-IA32_PERF_GLOBAL_CTRL" bits after an MSR write from userspace.
+[ Update function documentation for ext4_trim_all_free -- TYT ]
 
-Note, the old ABI that is being preserved is misguided KVM behavior that
-was introduced by commit 03a8871add95 ("KVM: nVMX: Expose load
-IA32_PERF_GLOBAL_CTRL VM-{Entry,Exit} control").  KVM's bogus tweaking of
-VMX MSRs was first implemented by commit 5f76f6f5ff96 ("KVM: nVMX: Do not
-expose MPX VMX controls when guest MPX disabled") to hack around a QEMU
-bug, and that bad behavior was unfortunately applied to PERF_GLOBAL_CTRL
-before it could be stamped out.
-
-Fixes: aedbaf4f6afd ("KVM: x86: Extract kvm_update_cpuid_runtime() from kvm_update_cpuid()")
-Reported-by: Jim Mattson <jmattson@google.com>
-Signed-off-by: Oliver Upton <oupton@google.com>
-[sean: explicitly document the original KVM hack, set bits iff CPU
-       supports the control]
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
+Link: https://lore.kernel.org/r/1650214995-860245-1-git-send-email-dmtrmonakhov@yandex-team.ru
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/vmx.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ fs/ext4/mballoc.c |   18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 3f1671d7cbe4..73ec4746a4e6 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -7413,6 +7413,20 @@ void nested_vmx_entry_exit_ctls_update(struct kvm_vcpu *vcpu)
- 			vmx->nested.msrs.exit_ctls_high &= ~VM_EXIT_CLEAR_BNDCFGS;
- 		}
- 	}
-+
-+	/*
-+	 * KVM supports a 1-setting of the "load IA32_PERF_GLOBAL_CTRL"
-+	 * VM-{Entry,Exit} controls if the vPMU supports IA32_PERF_GLOBAL_CTRL.
-+	 */
-+	if (cpu_has_load_perf_global_ctrl()) {
-+		if (intel_pmu_has_perf_global_ctrl(vcpu_to_pmu(vcpu))) {
-+			vmx->nested.msrs.entry_ctls_high |= VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL;
-+			vmx->nested.msrs.exit_ctls_high |= VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL;
-+		} else {
-+			vmx->nested.msrs.entry_ctls_high &= ~VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL;
-+			vmx->nested.msrs.exit_ctls_high &= ~VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL;
-+		}
-+	}
- }
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -6398,6 +6398,7 @@ __releases(ext4_group_lock_ptr(sb, e4b->
+  * @start:		first group block to examine
+  * @max:		last group block to examine
+  * @minblocks:		minimum extent block count
++ * @set_trimmed:	set the trimmed flag if at least one block is trimmed
+  *
+  * ext4_trim_all_free walks through group's block bitmap searching for free
+  * extents. When the free extent is found, mark it as used in group buddy
+@@ -6407,7 +6408,7 @@ __releases(ext4_group_lock_ptr(sb, e4b->
+ static ext4_grpblk_t
+ ext4_trim_all_free(struct super_block *sb, ext4_group_t group,
+ 		   ext4_grpblk_t start, ext4_grpblk_t max,
+-		   ext4_grpblk_t minblocks)
++		   ext4_grpblk_t minblocks, bool set_trimmed)
+ {
+ 	struct ext4_buddy e4b;
+ 	int ret;
+@@ -6426,7 +6427,7 @@ ext4_trim_all_free(struct super_block *s
+ 	if (!EXT4_MB_GRP_WAS_TRIMMED(e4b.bd_info) ||
+ 	    minblocks < EXT4_SB(sb)->s_last_trim_minblks) {
+ 		ret = ext4_try_to_trim_range(sb, &e4b, start, max, minblocks);
+-		if (ret >= 0)
++		if (ret >= 0 && set_trimmed)
+ 			EXT4_MB_GRP_SET_TRIMMED(e4b.bd_info);
+ 	} else {
+ 		ret = 0;
+@@ -6463,6 +6464,7 @@ int ext4_trim_fs(struct super_block *sb,
+ 	ext4_fsblk_t first_data_blk =
+ 			le32_to_cpu(EXT4_SB(sb)->s_es->s_first_data_block);
+ 	ext4_fsblk_t max_blks = ext4_blocks_count(EXT4_SB(sb)->s_es);
++	bool whole_group, eof = false;
+ 	int ret = 0;
  
- static void update_intel_pt_cfg(struct kvm_vcpu *vcpu)
--- 
-2.36.1.255.ge46751e96f-goog
+ 	start = range->start >> sb->s_blocksize_bits;
+@@ -6481,8 +6483,10 @@ int ext4_trim_fs(struct super_block *sb,
+ 		if (minlen > EXT4_CLUSTERS_PER_GROUP(sb))
+ 			goto out;
+ 	}
+-	if (end >= max_blks)
++	if (end >= max_blks - 1) {
+ 		end = max_blks - 1;
++		eof = true;
++	}
+ 	if (end <= first_data_blk)
+ 		goto out;
+ 	if (start < first_data_blk)
+@@ -6496,6 +6500,7 @@ int ext4_trim_fs(struct super_block *sb,
+ 
+ 	/* end now represents the last cluster to discard in this group */
+ 	end = EXT4_CLUSTERS_PER_GROUP(sb) - 1;
++	whole_group = true;
+ 
+ 	for (group = first_group; group <= last_group; group++) {
+ 		grp = ext4_get_group_info(sb, group);
+@@ -6512,12 +6517,13 @@ int ext4_trim_fs(struct super_block *sb,
+ 		 * change it for the last group, note that last_cluster is
+ 		 * already computed earlier by ext4_get_group_no_and_offset()
+ 		 */
+-		if (group == last_group)
++		if (group == last_group) {
+ 			end = last_cluster;
+-
++			whole_group = eof ? true : end == EXT4_CLUSTERS_PER_GROUP(sb) - 1;
++		}
+ 		if (grp->bb_free >= minlen) {
+ 			cnt = ext4_trim_all_free(sb, group, first_cluster,
+-						end, minlen);
++						 end, minlen, whole_group);
+ 			if (cnt < 0) {
+ 				ret = cnt;
+ 				break;
+
 
