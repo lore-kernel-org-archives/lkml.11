@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32D7AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5170FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:03:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377620AbiFGWCo (ORCPT
+        id S1382428AbiFGWCz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:02:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50222 "EHLO
+        Tue, 7 Jun 2022 18:02:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378997AbiFGVB5 (ORCPT
+        with ESMTP id S1378939AbiFGVB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:01:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF0E5187C35;
-        Tue,  7 Jun 2022 11:46:07 -0700 (PDT)
+        Tue, 7 Jun 2022 17:01:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D9311045E;
+        Tue,  7 Jun 2022 11:46:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85DF6B81FE1;
-        Tue,  7 Jun 2022 18:46:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5EF5C385A5;
-        Tue,  7 Jun 2022 18:46:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D29F7B82182;
+        Tue,  7 Jun 2022 18:46:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 463C9C385A5;
+        Tue,  7 Jun 2022 18:45:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627565;
-        bh=diPTJAlAYIKdCCWA3zqqCctkFNXEeBxcidPHNv1YQRA=;
+        s=korg; t=1654627559;
+        bh=QMG3R1mvrOBvB2v3vbuMnUg8mhkaroJLdlZ6oZ9ggBM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0Svy5Cvc8pNCFvxOiB1Y41A8UFp9HaRceXonX+7c73W+cpONejjK72c8mUMLeGKLm
-         g9w/lvuw0uaGLFIZOG6W/XSZQ6Gvadu2ODk4gc7pY2j6Py1h9K/j2dprKdw931B0ad
-         ZSdN1KYIosO1/YEtkheLEFKCC6wTZ82QjyRdevy8=
+        b=0/GajD8B5ebR+Vh5Ek//jULAdbL1lK/W6Aqj87ddvkFP0TmNulNHQPEdlRRcH1aIE
+         aZm4VFTRpD/3392/Pd19bLP5UBnKHKflITHG86KZjdewene6uV2msGLhma3f37MW0E
+         hyZzs9hLE+ua6mbeeHoS3Y4dQWxH402nV9cg6XdU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+6912c9592caca7ca0e7d@syzkaller.appspotmail.com,
+        stable@vger.kernel.org, Rik van der Kemp <rik@upto11.nl>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.18 014/879] ALSA: usb-audio: Cancel pending work at closing a MIDI substream
-Date:   Tue,  7 Jun 2022 18:52:12 +0200
-Message-Id: <20220607165003.085393918@linuxfoundation.org>
+Subject: [PATCH 5.18 012/879] ALSA: hda/realtek: Enable 4-speaker output for Dell XPS 15 9520 laptop
+Date:   Tue,  7 Jun 2022 18:52:10 +0200
+Message-Id: <20220607165003.027607750@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,36 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Rik van der Kemp <rik@upto11.nl>
 
-commit 0125de38122f0f66bf61336158d12a1aabfe6425 upstream.
+commit 15dad62f4bdb5dc0f0efde8181d680db9963544c upstream.
 
-At closing a USB MIDI output substream, there might be still a pending
-work, which would eventually access the rawmidi runtime object that is
-being released.  For fixing the race, make sure to cancel the pending
-work at closing.
+The 2022-model XPS 15 appears to use the same 4-speakers-on-ALC289
+audio setup as the Dell XPS 15 9510, so requires the same quirk to
+enable woofer output. Tested on my own 9520.
 
-Reported-by: syzbot+6912c9592caca7ca0e7d@syzkaller.appspotmail.com
+[ Move the entry to the right position in the SSID order -- tiwai ]
+
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216035
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/000000000000e7e75005dfd07cf6@google.com
-Link: https://lore.kernel.org/r/20220525131203.11299-1-tiwai@suse.de
+Signed-off-by: Rik van der Kemp <rik@upto11.nl>
+Link: https://lore.kernel.org/r/181056a137b.d14baf90133058.8425453735588429828@upto11.nl
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/midi.c |    3 +++
- 1 file changed, 3 insertions(+)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/sound/usb/midi.c
-+++ b/sound/usb/midi.c
-@@ -1145,6 +1145,9 @@ static int snd_usbmidi_output_open(struc
- 
- static int snd_usbmidi_output_close(struct snd_rawmidi_substream *substream)
- {
-+	struct usbmidi_out_port *port = substream->runtime->private_data;
-+
-+	cancel_work_sync(&port->ep->work);
- 	return substream_open(substream, 0, 0);
- }
- 
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -8957,6 +8957,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1028, 0x0a62, "Dell Precision 5560", ALC289_FIXUP_DUAL_SPK),
+ 	SND_PCI_QUIRK(0x1028, 0x0a9d, "Dell Latitude 5430", ALC269_FIXUP_DELL4_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1028, 0x0a9e, "Dell Latitude 5430", ALC269_FIXUP_DELL4_MIC_NO_PRESENCE),
++	SND_PCI_QUIRK(0x1028, 0x0b19, "Dell XPS 15 9520", ALC289_FIXUP_DUAL_SPK),
+ 	SND_PCI_QUIRK(0x1028, 0x164a, "Dell", ALC293_FIXUP_DELL1_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1028, 0x164b, "Dell", ALC293_FIXUP_DELL1_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x103c, 0x1586, "HP", ALC269_FIXUP_HP_MUTE_LED_MIC2),
 
 
