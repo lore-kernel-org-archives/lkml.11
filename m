@@ -2,188 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34C53C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:19:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1D86C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:19:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355175AbiFGTTd (ORCPT
+        id S1355215AbiFGTTm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:19:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42082 "EHLO
+        Tue, 7 Jun 2022 15:19:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351539AbiFGS3z (ORCPT
+        with ESMTP id S1352381AbiFGSa5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:29:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C06817B849;
-        Tue,  7 Jun 2022 10:55:35 -0700 (PDT)
+        Tue, 7 Jun 2022 14:30:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B1817B860;
+        Tue,  7 Jun 2022 10:56:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EEBB4617A6;
-        Tue,  7 Jun 2022 17:55:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E24FC34115;
-        Tue,  7 Jun 2022 17:55:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624534;
-        bh=VAG+3uL6h5kOCfu6AuzyUB7t+yIhbm19oEA/UYTLcX8=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C91CB82368;
+        Tue,  7 Jun 2022 17:56:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9462C385A5;
+        Tue,  7 Jun 2022 17:55:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624560;
+        bh=s94jmMXWkkh4w8m1TyTXIlqdOH6AqDe8fb8VIYlApNo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZZDOB/q6nznt3YUijwQSwlc06wih5Wp7PhT5BzmKW4328letOO8kidVILErW1slta
-         Ccy628lAHeCJ6MmVJx4rw62i6CqLXOmEqgDM/3BiRIyZsoCT/DVFkM0O57/0Fyra+4
-         v+xYxwj3KSsSl0HdP+5qq66CC3R59Xf14j4ill+k2irBoPolKpEjc48FEaKDMmDkBC
-         djqzmEGjvYLLP2iKg6K5MvQXM1KR/sS8jV7FyZ3tscXpWd+MP3Rn6CshAomNtSsKIk
-         +XZkq9HlvNLLJPpIz7MrvWvNlPxf77ILCo5uUsDgGomNRCQSQqH4B6fxCLHbR4FH5L
-         0kLX7WBGEkGkA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Cyril Brulebois <kibi@debian.org>,
-        Sasha Levin <sashal@kernel.org>, jim2101024@gmail.com,
-        nsaenz@kernel.org, f.fainelli@gmail.com, lpieralisi@kernel.org,
-        linux-pci@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 56/60] Revert "PCI: brcmstb: Split brcm_pcie_setup() into two funcs"
-Date:   Tue,  7 Jun 2022 13:52:53 -0400
-Message-Id: <20220607175259.478835-56-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
+        b=ieiUJLfwy7Lazwej6fZYpcxhGwm2F+M4bOPaCwvqKa5uyO0UrnrBYihsUKGDphBBs
+         k8JSbT3WxCKDFgiAGAfvBbxtEqW61PNHoFmxhkdse5PRXvqDNoPaWRAmwvDDJ0IHh5
+         BoQ5XqK+TNqj7FvwWRD42LodRJWQDYavkVuAgdh4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 371/667] rxrpc: Dont let ack.previousPacket regress
+Date:   Tue,  7 Jun 2022 19:00:36 +0200
+Message-Id: <20220607164945.876848016@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit f4fd559de3434c44bed1d2912bd0c75cfa42898b ]
+[ Upstream commit 81524b6312535897707f2942695da1d359a5e56b ]
 
-This reverts commit 830aa6f29f07a4e2f1a947dfa72b3ccddb46dd21.
+The previousPacket field in the rx ACK packet should never go backwards -
+it's now the highest DATA sequence number received, not the last on
+received (it used to be used for out of sequence detection).
 
-This is part of a revert of the following commits:
-
-  11ed8b8624b8 ("PCI: brcmstb: Do not turn off WOL regulators on suspend")
-  93e41f3fca3d ("PCI: brcmstb: Add control of subdevice voltage regulators")
-  67211aadcb4b ("PCI: brcmstb: Add mechanism to turn on subdev regulators")
-  830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup() into two funcs")
-
-Cyril reported that 830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup()
-into two funcs"), which appeared in v5.17-rc1, broke booting on the
-Raspberry Pi Compute Module 4.  Apparently 830aa6f29f07 panics with an
-Asynchronous SError Interrupt, and after further commits here is a black
-screen on HDMI and no output on the serial console.
-
-This does not seem to affect the Raspberry Pi 4 B.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215925
-Link: https://lore.kernel.org/r/20220511201856.808690-5-helgaas@kernel.org
-Reported-by: Cyril Brulebois <kibi@debian.org>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Fixes: 248f219cb8bc ("rxrpc: Rewrite the data and ack handling code")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pcie-brcmstb.c | 65 +++++++++++----------------
- 1 file changed, 26 insertions(+), 39 deletions(-)
+ net/rxrpc/ar-internal.h | 4 ++--
+ net/rxrpc/input.c       | 4 +++-
+ net/rxrpc/output.c      | 2 +-
+ 3 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pci/controller/pcie-brcmstb.c b/drivers/pci/controller/pcie-brcmstb.c
-index 0e8346114a8d..e61058e13818 100644
---- a/drivers/pci/controller/pcie-brcmstb.c
-+++ b/drivers/pci/controller/pcie-brcmstb.c
-@@ -926,9 +926,16 @@ static inline int brcm_pcie_get_rc_bar2_size_and_offset(struct brcm_pcie *pcie,
+diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+index 9a9688c41d4d..8465985a4cb6 100644
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -679,7 +679,7 @@ struct rxrpc_call {
+ 	/* Receive-phase ACK management (ACKs we send). */
+ 	u8			ackr_reason;	/* reason to ACK */
+ 	rxrpc_serial_t		ackr_serial;	/* serial of packet being ACK'd */
+-	rxrpc_seq_t		ackr_prev_seq;	/* previous sequence number received */
++	rxrpc_seq_t		ackr_highest_seq; /* Higest sequence number received */
+ 	rxrpc_seq_t		ackr_consumed;	/* Highest packet shown consumed */
+ 	rxrpc_seq_t		ackr_seen;	/* Highest packet shown seen */
  
- static int brcm_pcie_setup(struct brcm_pcie *pcie)
- {
-+	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(pcie);
- 	u64 rc_bar2_offset, rc_bar2_size;
- 	void __iomem *base = pcie->base;
--	int ret, memc;
-+	struct device *dev = pcie->dev;
-+	struct resource_entry *entry;
-+	bool ssc_good = false;
-+	struct resource *res;
-+	int num_out_wins = 0;
-+	u16 nlw, cls, lnksta;
-+	int i, ret, memc;
- 	u32 tmp, burst, aspm_support;
+@@ -694,7 +694,7 @@ struct rxrpc_call {
+ 	/* Transmission-phase ACK management (ACKs we've received). */
+ 	ktime_t			acks_latest_ts;	/* Timestamp of latest ACK received */
+ 	rxrpc_seq_t		acks_first_seq;	/* first sequence number received */
+-	rxrpc_seq_t		acks_prev_seq;	/* previous sequence number received */
++	rxrpc_seq_t		acks_prev_seq;	/* Highest previousPacket received */
+ 	rxrpc_seq_t		acks_lowest_nak; /* Lowest NACK in the buffer (or ==tx_hard_ack) */
+ 	rxrpc_seq_t		acks_lost_top;	/* tx_top at the time lost-ack ping sent */
+ 	rxrpc_serial_t		acks_lost_ping;	/* Serial number of probe ACK */
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index 3da33b5c13b2..680b984ef87f 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -453,7 +453,6 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 	    !rxrpc_receiving_reply(call))
+ 		goto unlock;
  
- 	/* Reset the bridge */
-@@ -1018,40 +1025,6 @@ static int brcm_pcie_setup(struct brcm_pcie *pcie)
- 	if (pcie->gen)
- 		brcm_pcie_set_gen(pcie, pcie->gen);
+-	call->ackr_prev_seq = seq0;
+ 	hard_ack = READ_ONCE(call->rx_hard_ack);
  
--	/* Don't advertise L0s capability if 'aspm-no-l0s' */
--	aspm_support = PCIE_LINK_STATE_L1;
--	if (!of_property_read_bool(pcie->np, "aspm-no-l0s"))
--		aspm_support |= PCIE_LINK_STATE_L0S;
--	tmp = readl(base + PCIE_RC_CFG_PRIV1_LINK_CAPABILITY);
--	u32p_replace_bits(&tmp, aspm_support,
--		PCIE_RC_CFG_PRIV1_LINK_CAPABILITY_ASPM_SUPPORT_MASK);
--	writel(tmp, base + PCIE_RC_CFG_PRIV1_LINK_CAPABILITY);
--
--	/*
--	 * For config space accesses on the RC, show the right class for
--	 * a PCIe-PCIe bridge (the default setting is to be EP mode).
--	 */
--	tmp = readl(base + PCIE_RC_CFG_PRIV1_ID_VAL3);
--	u32p_replace_bits(&tmp, 0x060400,
--			  PCIE_RC_CFG_PRIV1_ID_VAL3_CLASS_CODE_MASK);
--	writel(tmp, base + PCIE_RC_CFG_PRIV1_ID_VAL3);
--
--	return 0;
--}
--
--static int brcm_pcie_linkup(struct brcm_pcie *pcie)
--{
--	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(pcie);
--	struct device *dev = pcie->dev;
--	void __iomem *base = pcie->base;
--	struct resource_entry *entry;
--	struct resource *res;
--	int num_out_wins = 0;
--	u16 nlw, cls, lnksta;
--	bool ssc_good = false;
--	u32 tmp;
--	int ret, i;
--
- 	/* Unassert the fundamental reset */
- 	pcie->perst_set(pcie, 0);
+ 	nr_subpackets = sp->nr_subpackets;
+@@ -534,6 +533,9 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 			ack_serial = serial;
+ 		}
  
-@@ -1102,6 +1075,24 @@ static int brcm_pcie_linkup(struct brcm_pcie *pcie)
- 		num_out_wins++;
- 	}
- 
-+	/* Don't advertise L0s capability if 'aspm-no-l0s' */
-+	aspm_support = PCIE_LINK_STATE_L1;
-+	if (!of_property_read_bool(pcie->np, "aspm-no-l0s"))
-+		aspm_support |= PCIE_LINK_STATE_L0S;
-+	tmp = readl(base + PCIE_RC_CFG_PRIV1_LINK_CAPABILITY);
-+	u32p_replace_bits(&tmp, aspm_support,
-+		PCIE_RC_CFG_PRIV1_LINK_CAPABILITY_ASPM_SUPPORT_MASK);
-+	writel(tmp, base + PCIE_RC_CFG_PRIV1_LINK_CAPABILITY);
++		if (after(seq0, call->ackr_highest_seq))
++			call->ackr_highest_seq = seq0;
 +
-+	/*
-+	 * For config space accesses on the RC, show the right class for
-+	 * a PCIe-PCIe bridge (the default setting is to be EP mode).
-+	 */
-+	tmp = readl(base + PCIE_RC_CFG_PRIV1_ID_VAL3);
-+	u32p_replace_bits(&tmp, 0x060400,
-+			  PCIE_RC_CFG_PRIV1_ID_VAL3_CLASS_CODE_MASK);
-+	writel(tmp, base + PCIE_RC_CFG_PRIV1_ID_VAL3);
-+
- 	if (pcie->ssc) {
- 		ret = brcm_pcie_set_ssc(pcie);
- 		if (ret == 0)
-@@ -1290,10 +1281,6 @@ static int brcm_pcie_resume(struct device *dev)
- 	if (ret)
- 		goto err_reset;
- 
--	ret = brcm_pcie_linkup(pcie);
--	if (ret)
--		goto err_reset;
--
- 	if (pcie->msi)
- 		brcm_msi_set_regs(pcie->msi);
- 
+ 		/* Queue the packet.  We use a couple of memory barriers here as need
+ 		 * to make sure that rx_top is perceived to be set after the buffer
+ 		 * pointer and that the buffer pointer is set after the annotation and
+diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
+index a45c83f22236..46aae9b7006f 100644
+--- a/net/rxrpc/output.c
++++ b/net/rxrpc/output.c
+@@ -89,7 +89,7 @@ static size_t rxrpc_fill_out_ack(struct rxrpc_connection *conn,
+ 	pkt->ack.bufferSpace	= htons(8);
+ 	pkt->ack.maxSkew	= htons(0);
+ 	pkt->ack.firstPacket	= htonl(hard_ack + 1);
+-	pkt->ack.previousPacket	= htonl(call->ackr_prev_seq);
++	pkt->ack.previousPacket	= htonl(call->ackr_highest_seq);
+ 	pkt->ack.serial		= htonl(serial);
+ 	pkt->ack.reason		= reason;
+ 	pkt->ack.nAcks		= top - hard_ack;
 -- 
 2.35.1
+
+
 
