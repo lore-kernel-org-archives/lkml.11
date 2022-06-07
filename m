@@ -2,108 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F34D5CCA48B
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22A19CCA48D
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354680AbiFGTGY (ORCPT
+        id S1354737AbiFGTGe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:06:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42292 "EHLO
+        Tue, 7 Jun 2022 15:06:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352494AbiFGSVM (ORCPT
+        with ESMTP id S1352478AbiFGSVM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:21:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBC1536328;
-        Tue,  7 Jun 2022 10:53:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59E833EBD;
+        Tue,  7 Jun 2022 10:53:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7E59615B1;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 233A3617A6;
         Tue,  7 Jun 2022 17:53:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC929C36AFF;
-        Tue,  7 Jun 2022 17:53:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624432;
-        bh=4xqLIrzzEA/JuqLzZr/AFmoDw70Apy9I+tuZWlznjWM=;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1264C36AFE;
+        Tue,  7 Jun 2022 17:53:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624431;
+        bh=jGr8WXM1jdPMD04g4tRJ+Sq3zW2YgJpdz6hJ9tysoig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XsFj3zcuDQ0FyDj4NxHVL01EBVVm4IAKOF4K2RbWf5J4QwSp6e1m4v19YzPno00td
-         GXEN0DNb+Zple5Hq0ACaRPTP/+GUxdtrRB05j11vqA5G4y+vwFH5wv0FsynRRyStyr
-         ZGZsYQLDG7NcXsKlu7Mr2LVnt3Zn4Q9ihA2qzru4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+1a247e36149ffd709a9b@syzkaller.appspotmail.com
-Subject: [PATCH 5.15 325/667] media: pvrusb2: fix array-index-out-of-bounds in pvr2_i2c_core_init
-Date:   Tue,  7 Jun 2022 18:59:50 +0200
-Message-Id: <20220607164944.517728985@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=Z6RxyhMgWe3KXu4OCXb9MBy1VkR4+tvHfQ3kJmL2t9noNmH5W9luWtTzUcv/8mven
+         ETvjFPhex8jpwkKtIpLDsCytab1huTQmbiwuSgXdnugtYhbp79hHDI70ZJXNH3i3xm
+         aicld636PiQrToTuj/tMSug1GqhxsYvbPa5EP0B1KCQPBvFF3/e28bI1vvO+2qduht
+         bk2+fdpSB+7L6PKMh/dbkSEHnFbNyhMBniGwgH1twmoav2Yrx6ca+1cpEEg8IKkDMS
+         RtGy64EP8QTbdABGbLbezk33m+E6EH+ESRDNQgu4ow0Hdi1ERs3DI6/p3Q6J9ISEFj
+         v2ZlpotvuFniQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 19/60] usb: dwc3: host: Stop setting the ACPI companion
+Date:   Tue,  7 Jun 2022 13:52:16 -0400
+Message-Id: <20220607175259.478835-19-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-[ Upstream commit 471bec68457aaf981add77b4f590d65dd7da1059 ]
+[ Upstream commit 7fd069d65da2e20b1caec3b7bcf9dfbe28c04bb2 ]
 
-Syzbot reported that -1 is used as array index. The problem was in
-missing validation check.
+It is no longer needed. The sysdev pointer is now used when
+assigning the ACPI companions to the xHCI ports and USB
+devices.
 
-hdw->unit_number is initialized with -1 and then if init table walk fails
-this value remains unchanged. Since code blindly uses this member for
-array indexing adding sanity check is the easiest fix for that.
+Assigning the ACPI companion here resulted in the
+fwnode->secondary pointer to be replaced also for the parent
+dwc3 device since the primary fwnode (the ACPI companion)
+was shared. That was unintentional and it created potential
+side effects like resource leaks.
 
-hdw->workpoll initialization moved upper to prevent warning in
-__flush_work.
-
-Reported-and-tested-by: syzbot+1a247e36149ffd709a9b@syzkaller.appspotmail.com
-
-Fixes: d855497edbfb ("V4L/DVB (4228a): pvrusb2 to kernel 2.6.18")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Link: https://lore.kernel.org/r/20220428111056.3558-3-heikki.krogerus@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/pvrusb2/pvrusb2-hdw.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/usb/dwc3/host.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-index 3915d551d59e..fccd1798445d 100644
---- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-+++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-@@ -2569,6 +2569,11 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
- 	} while (0);
- 	mutex_unlock(&pvr2_unit_mtx);
+diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
+index eda871973d6c..f56c30cf151e 100644
+--- a/drivers/usb/dwc3/host.c
++++ b/drivers/usb/dwc3/host.c
+@@ -7,7 +7,6 @@
+  * Authors: Felipe Balbi <balbi@ti.com>,
+  */
  
-+	INIT_WORK(&hdw->workpoll, pvr2_hdw_worker_poll);
-+
-+	if (hdw->unit_number == -1)
-+		goto fail;
-+
- 	cnt1 = 0;
- 	cnt2 = scnprintf(hdw->name+cnt1,sizeof(hdw->name)-cnt1,"pvrusb2");
- 	cnt1 += cnt2;
-@@ -2580,8 +2585,6 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
- 	if (cnt1 >= sizeof(hdw->name)) cnt1 = sizeof(hdw->name)-1;
- 	hdw->name[cnt1] = 0;
+-#include <linux/acpi.h>
+ #include <linux/irq.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+@@ -83,7 +82,6 @@ int dwc3_host_init(struct dwc3 *dwc)
+ 	}
  
--	INIT_WORK(&hdw->workpoll,pvr2_hdw_worker_poll);
--
- 	pvr2_trace(PVR2_TRACE_INIT,"Driver unit number is %d, name is %s",
- 		   hdw->unit_number,hdw->name);
+ 	xhci->dev.parent	= dwc->dev;
+-	ACPI_COMPANION_SET(&xhci->dev, ACPI_COMPANION(dwc->dev));
+ 
+ 	dwc->xhci = xhci;
  
 -- 
 2.35.1
-
-
 
