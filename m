@@ -2,83 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39C12CCA485
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99DFAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379032AbiFGWRd (ORCPT
+        id S1380256AbiFGWRj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:17:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33798 "EHLO
+        Tue, 7 Jun 2022 18:17:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379996AbiFGVLW (ORCPT
+        with ESMTP id S1379995AbiFGVLW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:11:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27AAA21734F;
-        Tue,  7 Jun 2022 11:52:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB66361579;
-        Tue,  7 Jun 2022 18:52:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE37EC36B05;
-        Tue,  7 Jun 2022 18:52:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627970;
-        bh=+u2Yt/xw2sPo6EAVrtuFDGeht+dJf7/yaSqLvJi8jeA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XYfhEJ+7rZCPIc8OLuATxCaAxGKdDioQ+Wd41VfAB3dRLNVn4xjgSlK6yz7vV6vI7
-         Ilj91alwKNP0bXYjTfUjwRAsCEsWrJFCcgF2Lt+54Y+5Mfl2UhKiTAyTSJBkoFNi8e
-         A3DaUibPnIHYVWSEh+RbwoM29aKi8Tz9zhV9HhsQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheng Bin <zhengbin13@huawei.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 152/879] ASoC: SOF: amd: add missing platform_device_unregister in acp_pci_rn_probe
-Date:   Tue,  7 Jun 2022 18:54:30 +0200
-Message-Id: <20220607165007.117946976@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69E2121734C
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:52:49 -0700 (PDT)
+Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <a.fatoum@pengutronix.de>)
+        id 1nyeJf-0007KB-17; Tue, 07 Jun 2022 20:52:35 +0200
+Message-ID: <0429fbb6-691d-1283-e364-209054bc38a7@pengutronix.de>
+Date:   Tue, 7 Jun 2022 20:52:29 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2] KEYS: trusted: tpm2: Fix migratable logic
+Content-Language: en-US
+To:     david.safford@gmail.com, Jarkko Sakkinen <jarkko@kernel.org>,
+        James Bottomley <jejb@linux.ibm.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        David Howells <dhowells@redhat.com>,
+        James Morris <jmorris@namei.org>,
+        "SergeE.Hallyn" <serge@hallyn.com>
+Cc:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <141492344ae13c9842626e696685316ee340d717.camel@gmail.com>
+From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
+In-Reply-To: <141492344ae13c9842626e696685316ee340d717.camel@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
+X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Bin <zhengbin13@huawei.com>
+On 07.06.22 20:07, david.safford@gmail.com wrote:
+> When creating (sealing) a new trusted key, migratable
+> trusted keys have the FIXED_TPM and FIXED_PARENT attributes
+> set, and non-migratable keys don't. This is backwards, and
+> also causes creation to fail when creating a migratable key
+> under a migratable parent. (The TPM thinks you are trying to
+> seal a non-migratable blob under a migratable parent.)
+> 
+> The following simple patch fixes the logic, and has been
+> tested for all four combinations of migratable and non-migratable
+> trusted keys and parent storage keys. With this logic, you will
+> get a proper failure if you try to create a non-migratable
+> trusted key under a migratable parent storage key, and all other
+> combinations work correctly.
+> 
+> Fixes: e5fb5d2c5a03 ("security: keys: trusted: Make sealed key properly interoperable")
+> Signed-off-by: David Safford <david.safford@gmail.com>
 
-[ Upstream commit cbcab8cd737c74c20195c31d647e19f7cb49c9b8 ]
+Reviewed-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
 
-acp_pci_rn_probe misses a call platform_device_unregister in error path,
-this patch fixes that.
+Thanks,
+Ahmad
 
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
-Link: https://lore.kernel.org/r/20220512013728.4128903-1-zhengbin13@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/sof/amd/pci-rn.c | 1 +
- 1 file changed, 1 insertion(+)
+> ---
+> Changelog:
+>  * v2:
+>    * added Signed-off-by, Fixes, proper Subject and distribution
+> .
+>  security/keys/trusted-keys/trusted_tpm2.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/security/keys/trusted-keys/trusted_tpm2.c b/security/keys/trusted-keys/trusted_tpm2.c
+> index 0165da386289..2b2c8eb258d5 100644
+> --- a/security/keys/trusted-keys/trusted_tpm2.c
+> +++ b/security/keys/trusted-keys/trusted_tpm2.c
+> @@ -283,8 +283,8 @@ int tpm2_seal_trusted(struct tpm_chip *chip,
+>  	/* key properties */
+>  	flags = 0;
+>  	flags |= options->policydigest_len ? 0 : TPM2_OA_USER_WITH_AUTH;
+> -	flags |= payload->migratable ? (TPM2_OA_FIXED_TPM |
+> -					TPM2_OA_FIXED_PARENT) : 0;
+> +	flags |= payload->migratable ? 0 : (TPM2_OA_FIXED_TPM |
+> +					    TPM2_OA_FIXED_PARENT);
+>  	tpm_buf_append_u32(&buf, flags);
+> 
+>  	/* policy */
+> --
+> 2.36.1
+> 
 
-diff --git a/sound/soc/sof/amd/pci-rn.c b/sound/soc/sof/amd/pci-rn.c
-index 392ffbdf6417..d809d151a38c 100644
---- a/sound/soc/sof/amd/pci-rn.c
-+++ b/sound/soc/sof/amd/pci-rn.c
-@@ -93,6 +93,7 @@ static int acp_pci_rn_probe(struct pci_dev *pci, const struct pci_device_id *pci
- 	res = devm_kzalloc(&pci->dev, sizeof(struct resource) * ARRAY_SIZE(renoir_res), GFP_KERNEL);
- 	if (!res) {
- 		sof_pci_remove(pci);
-+		platform_device_unregister(dmic_dev);
- 		return -ENOMEM;
- 	}
- 
+
 -- 
-2.35.1
-
-
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
