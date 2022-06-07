@@ -2,140 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25668C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:20:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB5BCCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:20:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345752AbiFGRUj (ORCPT
+        id S1345863AbiFGRUn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:20:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39782 "EHLO
+        Tue, 7 Jun 2022 13:20:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345685AbiFGRTE (ORCPT
+        with ESMTP id S1345695AbiFGRTE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:19:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5691053FD;
-        Tue,  7 Jun 2022 10:19:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 907B6B82239;
-        Tue,  7 Jun 2022 17:18:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8D2FC341C0;
-        Tue,  7 Jun 2022 17:18:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622338;
-        bh=A7eaECiv2vQDkwyli5GuWMn2aASk7JkFATOo2W8Bw+Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yhekfF3QqEGc17auuM6/mnY58t7TD9nXh4ubcNr8hO9Q5lagfPzJyS2zcujcix+ex
-         pYmbuORYMoY+zA7rEFVQnSTOvR2EzQSS6+xU9Td+nDQOfJ+kSUaKK8y23wN7W1mDS+
-         K4+C6KYAL0tK+RCtlISw1zf7xB7OPkQXPdb1ze90=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Luca=20B=C3=A9la=20Palkovics?= 
-        <luca.bela.palkovics@gmail.com>, Qu Wenruo <wqu@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.10 023/452] btrfs: repair super block num_devices automatically
-Date:   Tue,  7 Jun 2022 18:58:00 +0200
-Message-Id: <20220607164909.235093202@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
-References: <20220607164908.521895282@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 392761059C4
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:19:02 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id kq6so23529187ejb.11
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:19:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=csyCE0Ob47wjhHNAVvg56QOFgF3Z5EUZtR/Uys+YVVE=;
+        b=hOf6w9EVAYIQzT9X+s6hlk8MU7l4KDMIyWM3na6s57c7oz0ebPWlRD8bN3ISYULBAm
+         RU/cxgFP98aC5QHGPIqMu6aV/g4yTYpfRu2/LV0hpgzCHoB0+w4r3HgMbSoTJVUcOro1
+         Whv2Op6Rq68Loyw1L1Wb1hc3AIPefTZe1S1ihkLoCXFiVDreyVdv3fk/68flH0/hGB1P
+         dtzq51oCnofKxYOdohJZivZBCq9pTWeKWQrleUKT5TfBb+O7wDMUpDLK90YzdBtJGO4W
+         XWkWSCzDpQ13DzFHrfMEruf1dMHFIvGvNbiaetQ3RnAQYfwiuD00H3ZZxnfo80ezaNXH
+         gm1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=csyCE0Ob47wjhHNAVvg56QOFgF3Z5EUZtR/Uys+YVVE=;
+        b=0+pjo7cEzM/1qjXt3ReJNJijF0cbROhsGS6RMG3wqhijWJBTP5yL+Qn0vdxkm4tUfq
+         33JCKY2pZP12hRSrzWwdoVoTNuBSe3zLSom1TIglH35d1q9eO5Gr7D3BZriYCeRJHED2
+         U9pP4lZFHVol16Zhn3i8fPlLkSYcnElhmre8KQa4sx6Y5A/gxR8MZkotdmyUYDU4Vn+a
+         LxkTkfkkFYc5peusHg5DXSO0E0ECnyRhAifrCjN/ce8o4/nyo6lBftnCkHBQqNQEM/DA
+         K8vkzbEYzFxeCy5O8aZ4EUIMX1oBfa1rCkXwm00Ivy1UUHg13ymgnvKEMNXE06wY2NVg
+         Q60A==
+X-Gm-Message-State: AOAM531aJI+k739/rg3VEifaMnSB2mdp1M8cz0TILdeRCyYXrb5PrJ/c
+        yoM71ec695a6hLyqbVBZiHV23A==
+X-Google-Smtp-Source: ABdhPJw1cGOn5vbz5JcbHCWGoDHgn+tubzNQr0bZoZGrSPxYlhfwNAVhnOCrVVZtsrHGSg/p3vonrA==
+X-Received: by 2002:a17:907:3e0d:b0:711:dbff:b830 with SMTP id hp13-20020a1709073e0d00b00711dbffb830mr6553739ejc.601.1654622341683;
+        Tue, 07 Jun 2022 10:19:01 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id i7-20020a170906444700b0070e238ff66fsm5876540ejp.96.2022.06.07.10.19.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 10:19:01 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Brian Masney <masneyb@onstation.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 10/14] arm64: dts: qcom: sc7180: add dedicated IMEM and syscon compatibles
+Date:   Tue,  7 Jun 2022 19:18:44 +0200
+Message-Id: <20220607171848.535128-10-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220607171848.535128-1-krzysztof.kozlowski@linaro.org>
+References: <20220607171848.535128-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+Add proper compatibles to the IMEM device node:
+1. syscon to allow accessing memory from other devices,
+2. dedicated compatible as required for syscon and simple-mfd nodes.
 
-commit d201238ccd2f30b9bfcfadaeae0972e3a486a176 upstream.
-
-[BUG]
-There is a report that a btrfs has a bad super block num devices.
-
-This makes btrfs to reject the fs completely.
-
-  BTRFS error (device sdd3): super_num_devices 3 mismatch with num_devices 2 found here
-  BTRFS error (device sdd3): failed to read chunk tree: -22
-  BTRFS error (device sdd3): open_ctree failed
-
-[CAUSE]
-During btrfs device removal, chunk tree and super block num devs are
-updated in two different transactions:
-
-  btrfs_rm_device()
-  |- btrfs_rm_dev_item(device)
-  |  |- trans = btrfs_start_transaction()
-  |  |  Now we got transaction X
-  |  |
-  |  |- btrfs_del_item()
-  |  |  Now device item is removed from chunk tree
-  |  |
-  |  |- btrfs_commit_transaction()
-  |     Transaction X got committed, super num devs untouched,
-  |     but device item removed from chunk tree.
-  |     (AKA, super num devs is already incorrect)
-  |
-  |- cur_devices->num_devices--;
-  |- cur_devices->total_devices--;
-  |- btrfs_set_super_num_devices()
-     All those operations are not in transaction X, thus it will
-     only be written back to disk in next transaction.
-
-So after the transaction X in btrfs_rm_dev_item() committed, but before
-transaction X+1 (which can be minutes away), a power loss happen, then
-we got the super num mismatch.
-
-This has been fixed by commit bbac58698a55 ("btrfs: remove device item
-and update super block in the same transaction").
-
-[FIX]
-Make the super_num_devices check less strict, converting it from a hard
-error to a warning, and reset the value to a correct one for the current
-or next transaction commit.
-
-As the number of device items is the critical information where the
-super block num_devices is only a cached value (and also useful for
-cross checking), it's safe to automatically update it. Other device
-related problems like missing device are handled after that and may
-require other means to resolve, like degraded mount. With this fix,
-potentially affected filesystems won't fail mount and require the manual
-repair by btrfs check.
-
-Reported-by: Luca Béla Palkovics <luca.bela.palkovics@gmail.com>
-Link: https://lore.kernel.org/linux-btrfs/CA+8xDSpvdm_U0QLBAnrH=zqDq_cWCOH5TiV46CKmp3igr44okQ@mail.gmail.com/
-CC: stable@vger.kernel.org # 4.14+
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- fs/btrfs/volumes.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/arm64/boot/dts/qcom/sc7180.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/btrfs/volumes.c
-+++ b/fs/btrfs/volumes.c
-@@ -7191,12 +7191,12 @@ int btrfs_read_chunk_tree(struct btrfs_f
- 	 * do another round of validation checks.
- 	 */
- 	if (total_dev != fs_info->fs_devices->total_devices) {
--		btrfs_err(fs_info,
--	   "super_num_devices %llu mismatch with num_devices %llu found here",
-+		btrfs_warn(fs_info,
-+"super block num_devices %llu mismatch with DEV_ITEM count %llu, will be repaired on next transaction commit",
- 			  btrfs_super_num_devices(fs_info->super_copy),
- 			  total_dev);
--		ret = -EINVAL;
--		goto error;
-+		fs_info->fs_devices->total_devices = total_dev;
-+		btrfs_set_super_num_devices(fs_info->super_copy, total_dev);
- 	}
- 	if (btrfs_super_total_bytes(fs_info->super_copy) <
- 	    fs_info->fs_devices->total_rw_bytes) {
-
+diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+index 496fc2857d92..6dae8a9ac196 100644
+--- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+@@ -3248,7 +3248,7 @@ spmi_bus: spmi@c440000 {
+ 		};
+ 
+ 		sram@146aa000 {
+-			compatible = "simple-mfd";
++			compatible = "qcom,sc7180-imem", "syscon", "simple-mfd";
+ 			reg = <0 0x146aa000 0 0x2000>;
+ 
+ 			#address-cells = <1>;
+-- 
+2.34.1
 
