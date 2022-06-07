@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF1E5C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4923ECCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:03:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377791AbiFGVC4 (ORCPT
+        id S1377826AbiFGVDH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:02:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56962 "EHLO
+        Tue, 7 Jun 2022 17:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358404AbiFGUBF (ORCPT
+        with ESMTP id S1358461AbiFGUBU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:01:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC491BF829;
-        Tue,  7 Jun 2022 11:25:02 -0700 (PDT)
+        Tue, 7 Jun 2022 16:01:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C022A1BF83F;
+        Tue,  7 Jun 2022 11:25:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B740EB82380;
-        Tue,  7 Jun 2022 18:24:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31217C385A2;
-        Tue,  7 Jun 2022 18:24:55 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BFDDECE2450;
+        Tue,  7 Jun 2022 18:25:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD70AC385A2;
+        Tue,  7 Jun 2022 18:25:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626295;
-        bh=QC86eaR/Z38/8g/VRUCfa+oQBHk1N5srI9aCg/xtso0=;
+        s=korg; t=1654626301;
+        bh=4ASkb/g6G2ZZFgNmAk/5U4+uvW0mf22CrsJpRm8q4XQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aMWYQuuRifbovV3kbCR5H62hrJnDzvVyY4vQKHu+a4MVsnHyI/uhtmQTDzav7Ri5E
-         BcCNdXmTODGvay/UAzTGWaT9cku3Q+Fq7QptN3iUIx0Gwno902+KSJw1Qmjr62wr0y
-         wBqstS6/MysEolIIf5+Hq/lbFUgItKnMZUH7vYAM=
+        b=UTtPVBzJOEzEUm8W1YflafrntYTQgGJdNK6IX1M3O/0eUDAlMDI4k+8BKHN8njj4v
+         HevD+ssu98a7AAK9a3hOL1jIfxJErLrFLmKCPOnzqR5mqJXilojqgc1xBhYcI6C8ZI
+         +xQlb4zY0t+HK5FrLiaf2f3mzzB4VB0ATKsZw9Hs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
-        Ian Abbott <abbotti@mev.co.uk>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 326/772] spi: cadence-quadspi: fix Direct Access Mode disable for SoCFPGA
-Date:   Tue,  7 Jun 2022 18:58:38 +0200
-Message-Id: <20220607164958.627569468@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 328/772] virtio_blk: fix the discard_granularity and discard_alignment queue limits
+Date:   Tue,  7 Jun 2022 18:58:40 +0200
+Message-Id: <20220607164958.686765828@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,41 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ian Abbott <abbotti@mev.co.uk>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit f724c296f2f2cc3f9342b0fc26239635cbed856e ]
+[ Upstream commit 62952cc5bccd89b76d710de1d0b43244af0f2903 ]
 
-The Cadence QSPI compatible string required for the SoCFPGA platform
-changed from the default "cdns,qspi-nor" to "intel,socfpga-qspi" with
-the introduction of an additional quirk in
-commit 98d948eb8331 ("spi: cadence-quadspi: fix write completion support").
-However, that change did not preserve the previously used
-quirk for this platform.  Reinstate the `CQSPI_DISABLE_DAC_MODE` quirk
-for the SoCFPGA platform.
+The discard_alignment queue limit is named a bit misleading means the
+offset into the block device at which the discard granularity starts.
 
-Fixes: 98d948eb8331 ("spi: cadence-quadspi: fix write completion support")
-Cc: Dinh Nguyen <dinguyen@kernel.org>
-Signed-off-by: Ian Abbott <abbotti@mev.co.uk>
-Link: https://lore.kernel.org/r/20220427153446.10113-1-abbotti@mev.co.uk
-Signed-off-by: Mark Brown <broonie@kernel.org>
+On the other hand the discard_sector_alignment from the virtio 1.1 looks
+similar to what Linux uses as discard granularity (even if not very well
+described):
+
+  "discard_sector_alignment can be used by OS when splitting a request
+   based on alignment. "
+
+And at least qemu does set it to the discard granularity.
+
+So stop setting the discard_alignment and use the virtio
+discard_sector_alignment to set the discard granularity.
+
+Fixes: 1f23816b8eb8 ("virtio_blk: add discard and write zeroes support")
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Martin K. Petersen <martin.petersen@oracle.com>
+Link: https://lore.kernel.org/r/20220418045314.360785-5-hch@lst.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-cadence-quadspi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/block/virtio_blk.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/spi/spi-cadence-quadspi.c b/drivers/spi/spi-cadence-quadspi.c
-index b8ac24318cb3..85a33bcb7884 100644
---- a/drivers/spi/spi-cadence-quadspi.c
-+++ b/drivers/spi/spi-cadence-quadspi.c
-@@ -1863,7 +1863,7 @@ static const struct cqspi_driver_platdata intel_lgm_qspi = {
- };
+diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
+index 8c415be86732..907eba23cb2f 100644
+--- a/drivers/block/virtio_blk.c
++++ b/drivers/block/virtio_blk.c
+@@ -905,11 +905,12 @@ static int virtblk_probe(struct virtio_device *vdev)
+ 		blk_queue_io_opt(q, blk_size * opt_io_size);
  
- static const struct cqspi_driver_platdata socfpga_qspi = {
--	.quirks = CQSPI_NO_SUPPORT_WR_COMPLETION,
-+	.quirks = CQSPI_DISABLE_DAC_MODE | CQSPI_NO_SUPPORT_WR_COMPLETION,
- };
+ 	if (virtio_has_feature(vdev, VIRTIO_BLK_F_DISCARD)) {
+-		q->limits.discard_granularity = blk_size;
+-
+ 		virtio_cread(vdev, struct virtio_blk_config,
+ 			     discard_sector_alignment, &v);
+-		q->limits.discard_alignment = v ? v << SECTOR_SHIFT : 0;
++		if (v)
++			q->limits.discard_granularity = v << SECTOR_SHIFT;
++		else
++			q->limits.discard_granularity = blk_size;
  
- static const struct cqspi_driver_platdata versal_ospi = {
+ 		virtio_cread(vdev, struct virtio_blk_config,
+ 			     max_discard_sectors, &v);
 -- 
 2.35.1
 
