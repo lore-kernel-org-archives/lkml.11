@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 292B7C28D13
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA222C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444565AbiFHBHl (ORCPT
+        id S1443499AbiFHBHL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:07:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46018 "EHLO
+        Tue, 7 Jun 2022 21:07:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382935AbiFGVwG (ORCPT
+        with ESMTP id S1379863AbiFGWG4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:52:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2437823F88D;
-        Tue,  7 Jun 2022 12:10:06 -0700 (PDT)
+        Tue, 7 Jun 2022 18:06:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABC4E2534C7;
+        Tue,  7 Jun 2022 12:16:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9DF4B8220B;
-        Tue,  7 Jun 2022 19:10:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DD0DC385A2;
-        Tue,  7 Jun 2022 19:10:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4697961922;
+        Tue,  7 Jun 2022 19:16:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B733C385A2;
+        Tue,  7 Jun 2022 19:16:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629003;
-        bh=Vbdwe/T0f5JOUSiNqbAGHbB+2pd0/m5eObuptyLOk7Q=;
+        s=korg; t=1654629405;
+        bh=90hcqqTDbuainC8u75Jns7z4qyyeclpWRSFDaglmv18=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eqd7VOF89q1/UW/D0rOg3eV35CqrRuByf9vd5Pwl7R89Us+eiX9k7bCw0Nyufcc8z
-         BQtX71DGJQHRAYgqiLxZmpL7QYGJSridxSyHAZgf3D56E5+nZ1yQ3vp+dJ77QmkK21
-         5lnb4CwOeEvLDjDe7rLPND5+dhePq8ZP3GlGuXeE=
+        b=sw5SAKsAMQQlmiIFtn/PojJkkR9aK8Mnc5+Xf4W3ZpstcoYRJK9B1J/8qqj24xF5a
+         JWS/V6/IRGVjufXL68f03mS6G3pv/8Z22g+bS1G7rzOC3187tIk1kdUOgmlxrsJ4dr
+         kkZvsJBCghbT/PH4iG/JbittfecUdjow25TbFWNs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shawn Lin <shawn.lin@rock-chips.com>,
-        Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
+        Russell Currey <ruscur@russell.cc>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 533/879] arm64: dts: rockchip: Move drive-impedance-ohm to emmc phy on rk3399
-Date:   Tue,  7 Jun 2022 19:00:51 +0200
-Message-Id: <20220607165018.344448695@linuxfoundation.org>
+Subject: [PATCH 5.18 639/879] powerpc/powernv: Get L1D flush requirements from device-tree
+Date:   Tue,  7 Jun 2022 19:02:37 +0200
+Message-Id: <20220607165021.395499836@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,41 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shawn Lin <shawn.lin@rock-chips.com>
+From: Russell Currey <ruscur@russell.cc>
 
-[ Upstream commit 4246d0bab2a8685e3d4aec2cb0ef8c526689ce96 ]
+[ Upstream commit 2efee6adb56159288bce9d1ab51fc9056d7007d4 ]
 
-drive-impedance-ohm is introduced for emmc phy instead of pcie phy.
+The device-tree properties no-need-l1d-flush-msr-pr-1-to-0 and
+no-need-l1d-flush-kernel-on-user-access are the equivalents of
+H_CPU_BEHAV_NO_L1D_FLUSH_ENTRY and H_CPU_BEHAV_NO_L1D_FLUSH_UACCESS
+from the H_GET_CPU_CHARACTERISTICS hcall on pseries respectively.
 
-Fixes: fb8b7460c995 ("arm64: dts: rockchip: Define drive-impedance-ohm for RK3399's emmc-phy.")
-Signed-off-by: Shawn Lin <shawn.lin@rock-chips.com>
-Link: https://lore.kernel.org/r/1647336426-154797-1-git-send-email-shawn.lin@rock-chips.com
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+In commit d02fa40d759f ("powerpc/powernv: Remove POWER9 PVR version
+check for entry and uaccess flushes") the condition for disabling the
+L1D flush on kernel entry and user access was changed from any non-P9
+CPU to only checking P7 and P8.  Without the appropriate device-tree
+checks for newer processors on powernv, these flushes are unnecessarily
+enabled on those systems.  This patch corrects this.
+
+Fixes: d02fa40d759f ("powerpc/powernv: Remove POWER9 PVR version check for entry and uaccess flushes")
+Reported-by: Joel Stanley <joel@jms.id.au>
+Signed-off-by: Russell Currey <ruscur@russell.cc>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220404101536.104794-1-ruscur@russell.cc
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/rockchip/rk3399.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/platforms/powernv/setup.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 080457a68e3c..88f26d89eea1 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1534,6 +1534,7 @@
- 			reg = <0xf780 0x24>;
- 			clocks = <&sdhci>;
- 			clock-names = "emmcclk";
-+			drive-impedance-ohm = <50>;
- 			#phy-cells = <0>;
- 			status = "disabled";
- 		};
-@@ -1544,7 +1545,6 @@
- 			clock-names = "refclk";
- 			#phy-cells = <1>;
- 			resets = <&cru SRST_PCIEPHY>;
--			drive-impedance-ohm = <50>;
- 			reset-names = "phy";
- 			status = "disabled";
- 		};
+diff --git a/arch/powerpc/platforms/powernv/setup.c b/arch/powerpc/platforms/powernv/setup.c
+index 105d889abd51..378f7e5f18d2 100644
+--- a/arch/powerpc/platforms/powernv/setup.c
++++ b/arch/powerpc/platforms/powernv/setup.c
+@@ -96,6 +96,12 @@ static void __init init_fw_feat_flags(struct device_node *np)
+ 
+ 	if (fw_feature_is("disabled", "needs-spec-barrier-for-bound-checks", np))
+ 		security_ftr_clear(SEC_FTR_BNDS_CHK_SPEC_BAR);
++
++	if (fw_feature_is("enabled", "no-need-l1d-flush-msr-pr-1-to-0", np))
++		security_ftr_clear(SEC_FTR_L1D_FLUSH_ENTRY);
++
++	if (fw_feature_is("enabled", "no-need-l1d-flush-kernel-on-user-access", np))
++		security_ftr_clear(SEC_FTR_L1D_FLUSH_UACCESS);
+ }
+ 
+ static void __init pnv_setup_security_mitigations(void)
 -- 
 2.35.1
 
