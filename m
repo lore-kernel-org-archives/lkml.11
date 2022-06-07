@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0521CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:42:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93BACCCA498
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:42:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377848AbiFGVmO (ORCPT
+        id S1350694AbiFGVmJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:42:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51474 "EHLO
+        Tue, 7 Jun 2022 17:42:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378476AbiFGUwJ (ORCPT
+        with ESMTP id S1378486AbiFGUwJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:52:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC3502010C6;
-        Tue,  7 Jun 2022 11:42:19 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E369F1D92E2;
+        Tue,  7 Jun 2022 11:42:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9559B8239B;
-        Tue,  7 Jun 2022 18:42:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33741C385A2;
-        Tue,  7 Jun 2022 18:42:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CECD615CE;
+        Tue,  7 Jun 2022 18:42:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F880C385A2;
+        Tue,  7 Jun 2022 18:42:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627336;
-        bh=/dvj1yLBraTRfb7jibzxDZgOea9b9knsNdoqbo1WkrI=;
+        s=korg; t=1654627339;
+        bh=h3I5A+wDlDqLSRwTv8fsj9hr+2X2VVhVi4iPFBVDOFw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pDi53xCn3OrM292eNRJqGSQBCXI3X75RZndcNJQPdqAlyNMeIkCMqICefMlAiuYxA
-         R/qMxNJIO0MJXEUFNUDsgQRFrbWTjrx04IrvvrVwPiNTnMDMrU7MahgSvNOCUBVxcH
-         9Mb+LnrJDjeoNZdu0tZnvBUsvzgZSTtPwxmXV9JY=
+        b=eecRoPiRXJtIGgInFu3hJM1UkmAkS/wA17lERC/5KhE2y4DRRNfD3ddQxScHSaMq7
+         9ikcUE05Lqh8pRD8YxVIWSbe+o5doccsRxuiLQGdlPbvKuqD6CNk4M0Ro1PoJkaaXs
+         tN3Nd43N9l5E6c5+5G7pA6guawcnwpYnHdfV4wdw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Puyou Lu <puyou.lu@gmail.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Tejun Heo <tj@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.17 704/772] lib/string_helpers: fix not adding strarray to devices resource list
-Date:   Tue,  7 Jun 2022 19:04:56 +0200
-Message-Id: <20220607165009.794182134@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.17 705/772] RDMA/hfi1: Fix potential integer multiplication overflow errors
+Date:   Tue,  7 Jun 2022 19:04:57 +0200
+Message-Id: <20220607165009.823534740@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,41 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Puyou Lu <puyou.lu@gmail.com>
+From: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
 
-commit cd290a9839cee2f6641558877e707bd373c8f6f1 upstream.
+commit f93e91a0372c922c20d5bee260b0f43b4b8a1bee upstream.
 
-Add allocated strarray to device's resource list. This is a must to
-automatically release strarray when the device disappears.
+When multiplying of different types, an overflow is possible even when
+storing the result in a larger type. This is because the conversion is
+done after the multiplication. So arithmetic overflow and thus in
+incorrect value is possible.
 
-Without this fix we have a memory leak in the few drivers which use
-devm_kasprintf_strarray().
+Correct an instance of this in the inter packet delay calculation.  Fix by
+ensuring one of the operands is u64 which will promote the other to u64 as
+well ensuring no overflow.
 
-Link: https://lkml.kernel.org/r/20220506044409.30066-1-puyou.lu@gmail.com
-Link: https://lkml.kernel.org/r/20220506073623.2679-1-puyou.lu@gmail.com
-Fixes: acdb89b6c87a ("lib/string_helpers: Introduce managed variant of kasprintf_strarray()")
-Signed-off-by: Puyou Lu <puyou.lu@gmail.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Cc: Tejun Heo <tj@kernel.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Fixes: 7724105686e7 ("IB/hfi1: add driver files")
+Link: https://lore.kernel.org/r/20220520183712.48973.29855.stgit@awfm-01.cornelisnetworks.com
+Reviewed-by: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
+Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/string_helpers.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/infiniband/hw/hfi1/init.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/lib/string_helpers.c
-+++ b/lib/string_helpers.c
-@@ -757,6 +757,9 @@ char **devm_kasprintf_strarray(struct de
- 		return ERR_PTR(-ENOMEM);
- 	}
- 
-+	ptr->n = n;
-+	devres_add(dev, ptr);
-+
- 	return ptr->array;
- }
- EXPORT_SYMBOL_GPL(devm_kasprintf_strarray);
+--- a/drivers/infiniband/hw/hfi1/init.c
++++ b/drivers/infiniband/hw/hfi1/init.c
+@@ -489,7 +489,7 @@ void set_link_ipg(struct hfi1_pportdata
+ 	u16 shift, mult;
+ 	u64 src;
+ 	u32 current_egress_rate; /* Mbits /sec */
+-	u32 max_pkt_time;
++	u64 max_pkt_time;
+ 	/*
+ 	 * max_pkt_time is the maximum packet egress time in units
+ 	 * of the fabric clock period 1/(805 MHz).
 
 
