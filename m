@@ -2,90 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDEF6CCA486
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:15:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3326FCCA488
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:16:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446518AbiFHCPD (ORCPT
+        id S1446549AbiFHCP3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:15:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33118 "EHLO
+        Tue, 7 Jun 2022 22:15:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242760AbiFHBX2 (ORCPT
+        with ESMTP id S1386485AbiFHB0b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 21:23:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF99B26F366;
-        Tue,  7 Jun 2022 12:22:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B4DD60B01;
-        Tue,  7 Jun 2022 19:22:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3479BC3411C;
-        Tue,  7 Jun 2022 19:22:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629777;
-        bh=FfadC9C66rH2lacYrTMtOrPQ5n/QT/RHFNMsY8y2TuA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bMgvY5NcS8eAmpjOgOJDh0coi7s5FLSWqaEFe/n/i1TIaT9qS4uW6QSTdqQRBombf
-         FRzbn6xsSYu97/Lw4IJGTROv6TxHKgOz7w+mMb99d4HY4yceQL8rQOKm5+1AASxRi1
-         XdM4qPu4tcrFy9neec49FiXSHXed3P0sT/ykHvhg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dimitri John Ledkov <dimitri.ledkov@canonical.com>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.18 814/879] cfg80211: declare MODULE_FIRMWARE for regulatory.db
-Date:   Tue,  7 Jun 2022 19:05:32 +0200
-Message-Id: <20220607165026.485151127@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 21:26:31 -0400
+X-Greylist: delayed 599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 12:43:18 PDT
+Received: from 2.mo584.mail-out.ovh.net (2.mo584.mail-out.ovh.net [46.105.72.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A29B71B6FF0
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:43:17 -0700 (PDT)
+Received: from player698.ha.ovh.net (unknown [10.110.115.143])
+        by mo584.mail-out.ovh.net (Postfix) with ESMTP id 4689C23ACB
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:23:52 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player698.ha.ovh.net (Postfix) with ESMTPSA id 6FA302B48041C;
+        Tue,  7 Jun 2022 19:23:45 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-110S00469d172a2-4b38-4c8e-95e7-ea9a2b73ce1c,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Antonino Daplas <adaplas@gmail.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Helge Deller <deller@gmx.de>, Paul Mackerras <paulus@samba.org>
+Cc:     linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 0/7] fbdev: Use backlight helpers
+Date:   Tue,  7 Jun 2022 21:23:28 +0200
+Message-Id: <20220607192335.1137249-1-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11945798012241282694
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudefiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekge
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
+backlight_properties.fb_blank is deprecated. The states it represents
+are handled by other properties; but instead of accessing those
+properties directly, drivers should use the helpers provided by
+backlight.h, even in cases where fb_blank isn't involved.
 
-commit 7bc7981eeebe1b8e603ad2ffc5e84f4df76920dd upstream.
+This will ultimately allow fb_blank to be removed.
 
-Add MODULE_FIRMWARE declarations for regulatory.db and
-regulatory.db.p7s such that userspace tooling can discover and include
-these files.
+Stephen Kitt (7):
+  fbdev: aty128fb: Use backlight helper
+  fbdev: atyfb: Use backlight helper
+  fbdev: radeon: Use backlight helper
+  fbdev: mx3fb: Use backlight helper
+  fbdev: nvidia: Use backlight helper
+  fbdev: omapfb: panel-dsi-cm: Use backlight helper
+  fbdev: riva: Use backlight helper
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
-Link: https://lore.kernel.org/r/20220414125004.267819-1-dimitri.ledkov@canonical.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/wireless/reg.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/video/fbdev/aty/aty128fb.c                       | 6 ++----
+ drivers/video/fbdev/aty/atyfb_base.c                     | 8 +-------
+ drivers/video/fbdev/aty/radeon_backlight.c               | 6 +-----
+ drivers/video/fbdev/mx3fb.c                              | 7 +------
+ drivers/video/fbdev/nvidia/nv_backlight.c                | 8 +-------
+ drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 +-------
+ drivers/video/fbdev/riva/fbdev.c                         | 8 +-------
+ 7 files changed, 8 insertions(+), 43 deletions(-)
 
---- a/net/wireless/reg.c
-+++ b/net/wireless/reg.c
-@@ -807,6 +807,8 @@ static int __init load_builtin_regdb_key
- 	return 0;
- }
- 
-+MODULE_FIRMWARE("regulatory.db.p7s");
-+
- static bool regdb_has_valid_signature(const u8 *data, unsigned int size)
- {
- 	const struct firmware *sig;
-@@ -1078,6 +1080,8 @@ static void regdb_fw_cb(const struct fir
- 	release_firmware(fw);
- }
- 
-+MODULE_FIRMWARE("regulatory.db");
-+
- static int query_regdb_file(const char *alpha2)
- {
- 	ASSERT_RTNL();
 
+base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+-- 
+2.30.2
 
