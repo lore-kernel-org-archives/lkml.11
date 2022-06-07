@@ -2,92 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F822CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 507E2CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380179AbiFGVaV (ORCPT
+        id S1380149AbiFGVaQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:30:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45018 "EHLO
+        Tue, 7 Jun 2022 17:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377850AbiFGUeJ (ORCPT
+        with ESMTP id S1377851AbiFGUeJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:34:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CB61E7AED;
-        Tue,  7 Jun 2022 11:36:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14BE861579;
-        Tue,  7 Jun 2022 18:36:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15F5BC385A2;
-        Tue,  7 Jun 2022 18:36:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626975;
-        bh=fI/KXitLdUyMzMJrXOcCXOGK+kSgctBH+i8dgQZTFtU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mgfqda02p0YzODiMLDVyFm4VjNakGBox+FQdptvwhWEfLjo9sXKQG1rtKDhfQUABZ
-         PmPApW89grkjxpeuPHEjAgyhtAR0DRgSH1KM4Yf18UcxRee168vrqAlar575DWQyue
-         g1q+odkDEHjPMJWt+05jd3aGCES2jItCDGiqFwYs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jia-Wei Chang <jia-wei.chang@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 573/772] cpufreq: mediatek: Use module_init and add module_exit
-Date:   Tue,  7 Jun 2022 19:02:45 +0200
-Message-Id: <20220607165005.836807761@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C6F1E7AEC
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:36:16 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id i66so24990889oia.11
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:36:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=et5d4DM7Qkz5qPPCoiTPlM6P1258hTgQ0iEkTPrpV+I=;
+        b=PuFBuqldb4cHgsAojupGIYPzKREKfkNatPa7bNJQ3T7Y+VXcNNgnWsYkvgJ/efgrh3
+         6Tn3ounWD12Wg3D59zmyEuUSXPLON+5y+Nue/CWFFSBVH4f/G7rc7jpirEo3w6c2wPxC
+         xHFhs/2y9CqjlPp5zehXBRxbhz6Hoz43R/XOkXaUR/jU++0Rvqfu/8tpLqh0ykZLOqCM
+         E7ev37DY+9K9VrD5xzMbiLXP5yu8PUfmJjpJ3AjJKgAR28c36eSF84wSsYmuVxp65Dy0
+         ocOiAaBGBT87tJfATIkqFQLfoCX1V2jcq2zXGsnmZpjMeZ56p2G8QVcGYYZG4KFtFwo8
+         JjHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=et5d4DM7Qkz5qPPCoiTPlM6P1258hTgQ0iEkTPrpV+I=;
+        b=4Gg/7YwpEOrtmzp8YI9v+H6XIHNupcmqGeEs14X394CNbF3BVFqmFZbfMnCRZnb7Xs
+         uvbzWb6udN2Sb+z7d2k4Z1V+XtNeYpEaXl6O7CGnOw1Z8yMAcb7BuoWysUIZONDchSZF
+         kOkqPY+s8eKGy8hB7ZTTfXZDzSXm8Ff/yZGg1Zhh23b/fDhPqfjP4wmyLmlGkdJNCkk0
+         tJrkFj2FvPgx0JMYdXCwDLW3YetcGf6oSlIHdp98nAgTVNySBTfGdfynyPZGub5DXMpD
+         ro5zL5lILMNko9/lkCC4vNflTWeDyDYrYyWDCfrgd++OQYKmLJ3qIyNOT64//MrsHHWS
+         hkEg==
+X-Gm-Message-State: AOAM531o9oZmxYzW0J4WpEiVt+/Atwdz7sMXXVQ+EiwJeoc2SJ/8b1kJ
+        FfF9N3IZ+/DGjyMpb1RDIBtjTU4Wlc0JdB+y6n0=
+X-Google-Smtp-Source: ABdhPJzmUwUQfQ1DjEveyo8nz4KlADt9ph70/XrvL3Meqmc0UgfuQHYvRofrgjdJ+ret0rbkQJflWwhjvu8RZcC6Ftk=
+X-Received: by 2002:a54:4f01:0:b0:32e:726c:bced with SMTP id
+ e1-20020a544f01000000b0032e726cbcedmr128014oiy.253.1654626973764; Tue, 07 Jun
+ 2022 11:36:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220607151933.32850-1-xiaohuizhang@ruc.edu.cn>
+In-Reply-To: <20220607151933.32850-1-xiaohuizhang@ruc.edu.cn>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Tue, 7 Jun 2022 14:36:02 -0400
+Message-ID: <CADnq5_MiHN=iXt4E5AKSixRqMR5bkqwoxXd_KUj02DFtcwhS6w@mail.gmail.com>
+Subject: Re: [PATCH 1/1] drm/radeon: Initialize fences array entries in radeon_sa_bo_next_hole
+To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        Christian Koenig <christian.koenig@amd.com>,
+        xinhui pan <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+Applied.  Thanks!
 
-[ Upstream commit b7070187c81cb90549d7561c0e750d7c7eb751f4 ]
+Alex
 
-- Use module_init instead of device_initcall.
-- Add a function for module_exit to unregister driver.
-
-Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/cpufreq/mediatek-cpufreq.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/cpufreq/mediatek-cpufreq.c b/drivers/cpufreq/mediatek-cpufreq.c
-index 866163883b48..9d7d9c8dc184 100644
---- a/drivers/cpufreq/mediatek-cpufreq.c
-+++ b/drivers/cpufreq/mediatek-cpufreq.c
-@@ -580,7 +580,13 @@ static int __init mtk_cpufreq_driver_init(void)
- 
- 	return 0;
- }
--device_initcall(mtk_cpufreq_driver_init);
-+module_init(mtk_cpufreq_driver_init)
-+
-+static void __exit mtk_cpufreq_driver_exit(void)
-+{
-+	platform_driver_unregister(&mtk_cpufreq_platdrv);
-+}
-+module_exit(mtk_cpufreq_driver_exit)
- 
- MODULE_DESCRIPTION("MediaTek CPUFreq driver");
- MODULE_AUTHOR("Pi-Cheng Chen <pi-cheng.chen@linaro.org>");
--- 
-2.35.1
-
-
-
+On Tue, Jun 7, 2022 at 12:04 PM Xiaohui Zhang <xiaohuizhang@ruc.edu.cn> wrote:
+>
+> Similar to the handling of amdgpu_sa_bo_next_hole in commit 6a15f3ff19a8
+> ("drm/amdgpu: Initialize fences array entries in amdgpu_sa_bo_next_hole"),
+> we thought a patch might be needed here as well.
+>
+> The entries were only initialized once in radeon_sa_bo_new. If a fence
+> wasn't signalled yet in the first radeon_sa_bo_next_hole call, but then
+> got signalled before a later radeon_sa_bo_next_hole call, it could
+> destroy the fence but leave its pointer in the array, resulting in
+> use-after-free in radeon_sa_bo_new.
+>
+> Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+> ---
+>  drivers/gpu/drm/radeon/radeon_sa.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/radeon/radeon_sa.c b/drivers/gpu/drm/radeon/radeon_sa.c
+> index 310c322c7112..0981948bd9ed 100644
+> --- a/drivers/gpu/drm/radeon/radeon_sa.c
+> +++ b/drivers/gpu/drm/radeon/radeon_sa.c
+> @@ -267,6 +267,8 @@ static bool radeon_sa_bo_next_hole(struct radeon_sa_manager *sa_manager,
+>         for (i = 0; i < RADEON_NUM_RINGS; ++i) {
+>                 struct radeon_sa_bo *sa_bo;
+>
+> +               fences[i] = NULL;
+> +
+>                 if (list_empty(&sa_manager->flist[i])) {
+>                         continue;
+>                 }
+> @@ -332,10 +334,8 @@ int radeon_sa_bo_new(struct radeon_device *rdev,
+>
+>         spin_lock(&sa_manager->wq.lock);
+>         do {
+> -               for (i = 0; i < RADEON_NUM_RINGS; ++i) {
+> -                       fences[i] = NULL;
+> +               for (i = 0; i < RADEON_NUM_RINGS; ++i)
+>                         tries[i] = 0;
+> -               }
+>
+>                 do {
+>                         radeon_sa_bo_try_free(sa_manager);
+> --
+> 2.17.1
+>
