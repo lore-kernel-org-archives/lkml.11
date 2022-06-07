@@ -2,119 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4556C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:56:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EED4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:56:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240246AbiFGJ4Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39924 "EHLO
+        id S240356AbiFGJ43 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:56:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240192AbiFGJ4L (ORCPT
+        with ESMTP id S240276AbiFGJ4M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:56:11 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7508E8B9D
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:56:09 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id h5so23429843wrb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 02:56:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5FXIG1Rp9D4NgAZ2oOx6JgdhKdrDvM+0LjdQT4OHOI8=;
-        b=ewXyLD3UqIPbri3d3Epx/ZmHVw4kmGp4TWXET1A/krbuovskBBkvOZVhPknJVFKV1a
-         aeSs3+P/swErSMIXx3c/+lcspyoCjpIwoDoEVASuK+cwRGejC75n7xGLJuNolhhXr7ZQ
-         eBHoJPPvGL9p1XZdodxCZOvtU0JN57VWcliuw=
+        Tue, 7 Jun 2022 05:56:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D813EE733E
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:56:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654595770;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hPcrVbGSfC2d9bGnlJDvNet18sRYkg2g/ox43s88aXY=;
+        b=dqFhhRaY2DLlVF7XMlqXUfh3vbMzXHoa9hihcTdf/POqlsCYMSgV8CzfX76g1zIQ07LGPX
+        6WHs6lSi0Sf9Ykh45l+L9j7FiXgJ4gVCdJ/nculHXY+gqr5m8q4breY9poKFEVj0eR9wZw
+        KZjfA4D1syW466Ao7ela76zwl04WFLY=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-2-_OO9tEeGO_-jfXmT3Op4Tw-1; Tue, 07 Jun 2022 05:56:08 -0400
+X-MC-Unique: _OO9tEeGO_-jfXmT3Op4Tw-1
+Received: by mail-qk1-f197.google.com with SMTP id k13-20020a05620a414d00b006a6e4dc1dfcso662911qko.19
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 02:56:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5FXIG1Rp9D4NgAZ2oOx6JgdhKdrDvM+0LjdQT4OHOI8=;
-        b=OKqBSp6ocKet0uHpDqZWUn5LTOkOyRNsmAd3gKOlEGwZ5T1OYfVouhPg5p86VKsdHO
-         Au8UXg2P/1NsiR8J/xTIa97z/xBJujwWX4gh7NYwktIJoXqK6BKWspAVlVj1lK1gXIBS
-         ADq0exlMt2UZZaZLVsQUA9sCuvcr9YGm6zuBzkoZ5uvSfQV9fCZZrC0EOa2dn/L+CD/7
-         F6IDK01Cvj9XJgN84fGxAd+LBUktrBZ464DR8y9B79b25TFxb5K8acicw52U9YkWTUbm
-         FHqTLga/9HipAT96Si7MateA3rFoB4mESEcBrJb80G6GlNyObZzk87QfKvWAqKDuE/zP
-         6FaA==
-X-Gm-Message-State: AOAM531X0QSNwXC6JcIA0b7EdGbLS7aKD3pE/qc75/L8saA7aT3kblOB
-        W9AZ0UhFK4vpSe1ngRcVc4pgmaG42md3tg==
-X-Google-Smtp-Source: ABdhPJw7S1CHDV9dzULGPXNBpA7tqNRSYB3tkot1REE9Yc5K+Ctk7TUUjV1fwcg7urU9hU38dX2IwA==
-X-Received: by 2002:adf:aa83:0:b0:210:2433:5c7c with SMTP id h3-20020adfaa83000000b0021024335c7cmr26617386wrc.340.1654595768161;
-        Tue, 07 Jun 2022 02:56:08 -0700 (PDT)
-Received: from dario-ThinkPad-T14s-Gen-2i.pdxnet.pdxeng.ch (mob-5-90-137-51.net.vodafone.it. [5.90.137.51])
-        by smtp.gmail.com with ESMTPSA id b12-20020a5d4b8c000000b0020feb9c44c2sm17693546wrt.20.2022.06.07.02.56.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=hPcrVbGSfC2d9bGnlJDvNet18sRYkg2g/ox43s88aXY=;
+        b=YSD++PZqlmjnBYUk8PsFwXM1Kmf4bVW27DSY9arUDE+0nlsqX+aWjf7xeEPAdEumbK
+         LHoz0HwlFl3AVM1AICZmr3c+v5Pcs+MuBS+jOKh7vntgb6KQR1WXCIvVs6wJl3qyelsG
+         jWrO9TKywZcxXFXqUw3PZZ/e2f39db3W7fev7TeGQGKPqrhiNh/9r3Y/oxy+vg8jJMHe
+         5dVi5hrLKUQG0rCBHhpNmnMVbi1TTu0C1pZH4fG4Xcq2dy2vSIb0aQJqr0bXQ+J8La+U
+         KnEz6vpylh9iEtqbJVuYYiC6n77MXgaqL4+3NfDn7BIjjiuy9DMDi3H4+ukXcYamLpm6
+         fmRg==
+X-Gm-Message-State: AOAM530FLvmG4Cp8FF+MCJlc/QfD04fdKPpTc0fE2xvXwih8QtqFxksd
+        J4BAXblNhhpu5pNOK5T18/pxrWaaFYDAbvZ/eDalR+VQAjROmz6lPA4OR+7YyRifBbh0IZXQ4bj
+        2B5hF5FFwANPBgY5D0yshK+q+
+X-Received: by 2002:a37:917:0:b0:6a6:9a14:b542 with SMTP id 23-20020a370917000000b006a69a14b542mr14626086qkj.562.1654595767101;
         Tue, 07 Jun 2022 02:56:07 -0700 (PDT)
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        Oliver Graute <oliver.graute@kococonnector.com>,
-        linux-input@vger.kernel.org
-Subject: [RESEND PATCH v4 2/6] Input: edt-ft5x06 - get/set M12 report rate by sysfs
-Date:   Tue,  7 Jun 2022 11:55:52 +0200
-Message-Id: <20220607095556.1034338-3-dario.binacchi@amarulasolutions.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220607095556.1034338-1-dario.binacchi@amarulasolutions.com>
-References: <20220607095556.1034338-1-dario.binacchi@amarulasolutions.com>
+X-Google-Smtp-Source: ABdhPJxGn1pnO3L/l5/swG8TZlg+GJyHc7lm8NxVbWhcbgeMs61jMxFKA3z/PBHvttTea5vJ/1bMlQ==
+X-Received: by 2002:a37:917:0:b0:6a6:9a14:b542 with SMTP id 23-20020a370917000000b006a69a14b542mr14626069qkj.562.1654595766859;
+        Tue, 07 Jun 2022 02:56:06 -0700 (PDT)
+Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
+        by smtp.gmail.com with ESMTPSA id d127-20020a37b485000000b0069fc13ce257sm12793643qkf.136.2022.06.07.02.56.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 02:56:06 -0700 (PDT)
+Message-ID: <e249bd60cef49706e39cc619876e26c90d88ecb0.camel@redhat.com>
+Subject: Re: [PATCH v6 20/38] KVM: nVMX: hyper-v: Cache VP assist page in
+ 'struct kvm_vcpu_hv'
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        Yuan Yao <yuan.yao@linux.intel.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 07 Jun 2022 12:56:02 +0300
+In-Reply-To: <20220606083655.2014609-21-vkuznets@redhat.com>
+References: <20220606083655.2014609-1-vkuznets@redhat.com>
+         <20220606083655.2014609-21-vkuznets@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-2.fc34) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for reading/writing scan rate (SC) register for M12 by
-sysfs. The register value is equal to the SC (Hz), unlike M06, where
-instead it is equal to SC / 10.
+On Mon, 2022-06-06 at 10:36 +0200, Vitaly Kuznetsov wrote:
+> In preparation to enabling L2 TLB flush, cache VP assist page in
+> 'struct kvm_vcpu_hv'. While on it, rename nested_enlightened_vmentry()
+> to nested_get_evmptr() and make it return eVMCS GPA directly.
+> 
+> No functional change intended.
+> 
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+> ---
+>  arch/x86/include/asm/kvm_host.h |  2 ++
+>  arch/x86/kvm/hyperv.c           | 10 ++++++----
+>  arch/x86/kvm/hyperv.h           |  3 +--
+>  arch/x86/kvm/vmx/evmcs.c        | 21 +++++++--------------
+>  arch/x86/kvm/vmx/evmcs.h        |  2 +-
+>  arch/x86/kvm/vmx/nested.c       |  6 +++---
+>  6 files changed, 20 insertions(+), 24 deletions(-)
+> 
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index f9a34af0a5cc..e62db76c8d37 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -650,6 +650,8 @@ struct kvm_vcpu_hv {
+>         /* Preallocated buffer for handling hypercalls passing sparse vCPU set */
+>         u64 sparse_banks[HV_MAX_SPARSE_VCPU_BANKS];
+>  
+> +       struct hv_vp_assist_page vp_assist_page;
+> +
+>         struct {
+>                 u64 pa_page_gpa;
+>                 u64 vm_id;
+> diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+> index 4396d75588d8..91310774c0b9 100644
+> --- a/arch/x86/kvm/hyperv.c
+> +++ b/arch/x86/kvm/hyperv.c
+> @@ -903,13 +903,15 @@ bool kvm_hv_assist_page_enabled(struct kvm_vcpu *vcpu)
+>  }
+>  EXPORT_SYMBOL_GPL(kvm_hv_assist_page_enabled);
+>  
+> -bool kvm_hv_get_assist_page(struct kvm_vcpu *vcpu,
+> -                           struct hv_vp_assist_page *assist_page)
+> +bool kvm_hv_get_assist_page(struct kvm_vcpu *vcpu)
+>  {
+> -       if (!kvm_hv_assist_page_enabled(vcpu))
+> +       struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
+> +
+> +       if (!hv_vcpu || !kvm_hv_assist_page_enabled(vcpu))
+>                 return false;
+> +
+>         return !kvm_read_guest_cached(vcpu->kvm, &vcpu->arch.pv_eoi.data,
+> -                                     assist_page, sizeof(*assist_page));
+> +                                     &hv_vcpu->vp_assist_page, sizeof(struct hv_vp_assist_page));
+>  }
+>  EXPORT_SYMBOL_GPL(kvm_hv_get_assist_page);
+>  
+> diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
+> index 2aa6fb7fc599..139beb55b781 100644
+> --- a/arch/x86/kvm/hyperv.h
+> +++ b/arch/x86/kvm/hyperv.h
+> @@ -105,8 +105,7 @@ int kvm_hv_activate_synic(struct kvm_vcpu *vcpu, bool dont_zero_synic_pages);
+>  void kvm_hv_vcpu_uninit(struct kvm_vcpu *vcpu);
+>  
+>  bool kvm_hv_assist_page_enabled(struct kvm_vcpu *vcpu);
+> -bool kvm_hv_get_assist_page(struct kvm_vcpu *vcpu,
+> -                           struct hv_vp_assist_page *assist_page);
+> +bool kvm_hv_get_assist_page(struct kvm_vcpu *vcpu);
+>  
+>  static inline struct kvm_vcpu_hv_stimer *to_hv_stimer(struct kvm_vcpu *vcpu,
+>                                                       int timer_index)
+> diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
+> index 805afc170b5b..7cd7b16942c6 100644
+> --- a/arch/x86/kvm/vmx/evmcs.c
+> +++ b/arch/x86/kvm/vmx/evmcs.c
+> @@ -307,24 +307,17 @@ __init void evmcs_sanitize_exec_ctrls(struct vmcs_config *vmcs_conf)
+>  }
+>  #endif
+>  
+> -bool nested_enlightened_vmentry(struct kvm_vcpu *vcpu, u64 *evmcs_gpa)
+> +u64 nested_get_evmptr(struct kvm_vcpu *vcpu)
+>  {
+> -       struct hv_vp_assist_page assist_page;
+> +       struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
+>  
+> -       *evmcs_gpa = -1ull;
+> +       if (unlikely(!kvm_hv_get_assist_page(vcpu)))
+> +               return EVMPTR_INVALID;
+>  
+> -       if (unlikely(!kvm_hv_get_assist_page(vcpu, &assist_page)))
+> -               return false;
+> +       if (unlikely(!hv_vcpu->vp_assist_page.enlighten_vmentry))
+> +               return EVMPTR_INVALID;
+>  
+> -       if (unlikely(!assist_page.enlighten_vmentry))
+> -               return false;
+> -
+> -       if (unlikely(!evmptr_is_valid(assist_page.current_nested_vmcs)))
+> -               return false;
+> -
+> -       *evmcs_gpa = assist_page.current_nested_vmcs;
+> -
+> -       return true;
+> +       return hv_vcpu->vp_assist_page.current_nested_vmcs;
+>  }
+>  
+>  uint16_t nested_get_evmcs_version(struct kvm_vcpu *vcpu)
+> diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
+> index 584741b85eb6..22d238b36238 100644
+> --- a/arch/x86/kvm/vmx/evmcs.h
+> +++ b/arch/x86/kvm/vmx/evmcs.h
+> @@ -239,7 +239,7 @@ enum nested_evmptrld_status {
+>         EVMPTRLD_ERROR,
+>  };
+>  
+> -bool nested_enlightened_vmentry(struct kvm_vcpu *vcpu, u64 *evmcs_gpa);
+> +u64 nested_get_evmptr(struct kvm_vcpu *vcpu);
+>  uint16_t nested_get_evmcs_version(struct kvm_vcpu *vcpu);
+>  int nested_enable_evmcs(struct kvm_vcpu *vcpu,
+>                         uint16_t *vmcs_version);
+> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+> index 4a827b3d929a..87bff81f7f3e 100644
+> --- a/arch/x86/kvm/vmx/nested.c
+> +++ b/arch/x86/kvm/vmx/nested.c
+> @@ -1995,7 +1995,8 @@ static enum nested_evmptrld_status nested_vmx_handle_enlightened_vmptrld(
+>         if (likely(!vmx->nested.enlightened_vmcs_enabled))
+>                 return EVMPTRLD_DISABLED;
+>  
+> -       if (!nested_enlightened_vmentry(vcpu, &evmcs_gpa)) {
+> +       evmcs_gpa = nested_get_evmptr(vcpu);
+> +       if (!evmptr_is_valid(evmcs_gpa)) {
+>                 nested_release_evmcs(vcpu);
+>                 return EVMPTRLD_DISABLED;
+>         }
+> @@ -5084,7 +5085,6 @@ static int handle_vmclear(struct kvm_vcpu *vcpu)
+>         struct vcpu_vmx *vmx = to_vmx(vcpu);
+>         u32 zero = 0;
+>         gpa_t vmptr;
+> -       u64 evmcs_gpa;
+>         int r;
+>  
+>         if (!nested_vmx_check_permission(vcpu))
+> @@ -5110,7 +5110,7 @@ static int handle_vmclear(struct kvm_vcpu *vcpu)
+>          * vmx->nested.hv_evmcs but this shouldn't be a problem.
+>          */
+>         if (likely(!vmx->nested.enlightened_vmcs_enabled ||
+> -                  !nested_enlightened_vmentry(vcpu, &evmcs_gpa))) {
+> +                  !evmptr_is_valid(nested_get_evmptr(vcpu)))) {
+>                 if (vmptr == vmx->nested.current_vmptr)
+>                         nested_release_vmcs12(vcpu);
+>  
 
-Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
-Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
-Tested-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
----
 
-(no changes since v1)
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 
- drivers/input/touchscreen/edt-ft5x06.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+Best regards,
+	Maxim Levitsky
 
-diff --git a/drivers/input/touchscreen/edt-ft5x06.c b/drivers/input/touchscreen/edt-ft5x06.c
-index bb2e1cbffba7..77f061af5c61 100644
---- a/drivers/input/touchscreen/edt-ft5x06.c
-+++ b/drivers/input/touchscreen/edt-ft5x06.c
-@@ -47,6 +47,8 @@
- #define M09_REGISTER_NUM_X		0x94
- #define M09_REGISTER_NUM_Y		0x95
- 
-+#define M12_REGISTER_REPORT_RATE	0x88
-+
- #define EV_REGISTER_THRESHOLD		0x40
- #define EV_REGISTER_GAIN		0x41
- #define EV_REGISTER_OFFSET_Y		0x45
-@@ -523,9 +525,9 @@ static EDT_ATTR(offset_y, S_IWUSR | S_IRUGO, NO_REGISTER, NO_REGISTER,
- /* m06: range 20 to 80, m09: range 0 to 30, m12: range 1 to 255... */
- static EDT_ATTR(threshold, S_IWUSR | S_IRUGO, WORK_REGISTER_THRESHOLD,
- 		M09_REGISTER_THRESHOLD, EV_REGISTER_THRESHOLD, 0, 255);
--/* m06: range 3 to 14, m12: (0x64: 100Hz) */
-+/* m06: range 3 to 14, m12: range 1 to 255 */
- static EDT_ATTR(report_rate, S_IWUSR | S_IRUGO, WORK_REGISTER_REPORT_RATE,
--		NO_REGISTER, NO_REGISTER, 0, 255);
-+		M12_REGISTER_REPORT_RATE, NO_REGISTER, 0, 255);
- 
- static struct attribute *edt_ft5x06_attrs[] = {
- 	&edt_ft5x06_attr_gain.dattr.attr,
-@@ -1030,7 +1032,8 @@ static void edt_ft5x06_ts_set_regs(struct edt_ft5x06_ts_data *tsdata)
- 	case EDT_M09:
- 	case EDT_M12:
- 		reg_addr->reg_threshold = M09_REGISTER_THRESHOLD;
--		reg_addr->reg_report_rate = NO_REGISTER;
-+		reg_addr->reg_report_rate = tsdata->version == EDT_M12 ?
-+			M12_REGISTER_REPORT_RATE : NO_REGISTER;
- 		reg_addr->reg_gain = M09_REGISTER_GAIN;
- 		reg_addr->reg_offset = M09_REGISTER_OFFSET;
- 		reg_addr->reg_offset_x = NO_REGISTER;
--- 
-2.32.0
 
