@@ -2,100 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ACFECCA48D
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2225CCA496
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356351AbiFGT1h (ORCPT
+        id S1356586AbiFGT2A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:27:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36798 "EHLO
+        Tue, 7 Jun 2022 15:28:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351817AbiFGScv (ORCPT
+        with ESMTP id S1352386AbiFGSdm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:32:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE7317EC26;
-        Tue,  7 Jun 2022 10:57:04 -0700 (PDT)
+        Tue, 7 Jun 2022 14:33:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19FC147837;
+        Tue,  7 Jun 2022 10:57:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AECD7B81F38;
-        Tue,  7 Jun 2022 17:57:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EA50C385A5;
-        Tue,  7 Jun 2022 17:57:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624621;
-        bh=InK2P2719+ucxNiXUq5akHXves7w4RjNdOe6zfMyDME=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5102F61896;
+        Tue,  7 Jun 2022 17:57:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4FF9C34115;
+        Tue,  7 Jun 2022 17:57:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624655;
+        bh=ePu/TFxZhlL/47ffI9miQGre6cc/+lefNGf4A6NqDWk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t5wXBdGSPHVHbTQqZjKtfA8TCLrM1mecyXrOyQpbZw19Rxk3+xGqpAf9I4KYntziQ
-         XOMKgIsVdtnFGSBYWTOCuL0kknIAM4XdmyECY/hvOgvO/4GMPlDwFyI9ov0hsjSBX1
-         W4ie76GnACO8n5AyTGrQXR7LlMae4SL1uJ3lmiKw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 353/667] thermal/drivers/bcm2711: Dont clamp temperature at zero
-Date:   Tue,  7 Jun 2022 19:00:18 +0200
-Message-Id: <20220607164945.345319640@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=CJVayjU1wgZCLxrRTgZAyx0nzjko4WV/I/Ih0JIN8cp5+GJoy0XCDbm/+le0oTtX7
+         J8OXPq9x5dEvqO6thBlw+bLSqP2dVgMnlo+7QgGdx66fvAGVCIEVThZrMk4/Y6hdAy
+         Uh97krG8/d18vECBGbYFqtiAa2gSOwJuuPZMvI1a5i5QWBHwBUYKLTmKbOAjVHQq2L
+         GtDBXzGoKQRa0nnYgzrbMSDRfhlNWyYRWpwe/wKZCxsL51YPz0LQDbdB4riInRLGfe
+         z5wfzMqu/j/9BVe4YSRXFnxdGjeMW5d6iY3N7rrdWY6623LiOXkUgFFtG2wiac3cCP
+         qhW5PRREwWQ+Q==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Venky Shankar <vshankar@redhat.com>, Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 35/51] ceph: allow ceph.dir.rctime xattr to be updatable
+Date:   Tue,  7 Jun 2022 13:55:34 -0400
+Message-Id: <20220607175552.479948-35-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
+References: <20220607175552.479948-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Wahren <stefan.wahren@i2se.com>
+From: Venky Shankar <vshankar@redhat.com>
 
-[ Upstream commit 106e0121e243de4da7d634338089a68a8da2abe9 ]
+[ Upstream commit d7a2dc523085f8b8c60548ceedc696934aefeb0e ]
 
-The thermal sensor on BCM2711 is capable of negative temperatures, so don't
-clamp the measurements at zero. Since this was the only use for variable t,
-drop it.
+`rctime' has been a pain point in cephfs due to its buggy
+nature - inconsistent values reported and those sorts.
+Fixing rctime is non-trivial needing an overall redesign
+of the entire nested statistics infrastructure.
 
-This change based on a patch by Dom Cobley, who also tested the fix.
+As a workaround, PR
 
-Fixes: 59b781352dc4 ("thermal: Add BCM2711 thermal driver")
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220412195423.104511-1-stefan.wahren@i2se.com
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+     http://github.com/ceph/ceph/pull/37938
+
+allows this extended attribute to be manually set. This allows
+users to "fixup" inconsistent rctime values. While this sounds
+messy, its probably the wisest approach allowing users/scripts
+to workaround buggy rctime values.
+
+The above PR enables Ceph MDS to allow manually setting
+rctime extended attribute with the corresponding user-land
+changes. We may as well allow the same to be done via kclient
+for parity.
+
+Signed-off-by: Venky Shankar <vshankar@redhat.com>
+Reviewed-by: Xiubo Li <xiubli@redhat.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/thermal/broadcom/bcm2711_thermal.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ fs/ceph/xattr.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/thermal/broadcom/bcm2711_thermal.c b/drivers/thermal/broadcom/bcm2711_thermal.c
-index 1ec57d9ecf53..e9bef5c3414b 100644
---- a/drivers/thermal/broadcom/bcm2711_thermal.c
-+++ b/drivers/thermal/broadcom/bcm2711_thermal.c
-@@ -38,7 +38,6 @@ static int bcm2711_get_temp(void *data, int *temp)
- 	int offset = thermal_zone_get_offset(priv->thermal);
- 	u32 val;
- 	int ret;
--	long t;
- 
- 	ret = regmap_read(priv->regmap, AVS_RO_TEMP_STATUS, &val);
- 	if (ret)
-@@ -50,9 +49,7 @@ static int bcm2711_get_temp(void *data, int *temp)
- 	val &= AVS_RO_TEMP_STATUS_DATA_MSK;
- 
- 	/* Convert a HW code to a temperature reading (millidegree celsius) */
--	t = slope * val + offset;
--
--	*temp = t < 0 ? 0 : t;
-+	*temp = slope * val + offset;
- 
- 	return 0;
- }
+diff --git a/fs/ceph/xattr.c b/fs/ceph/xattr.c
+index 159a1ffa4f4b..db288b4aee6d 100644
+--- a/fs/ceph/xattr.c
++++ b/fs/ceph/xattr.c
+@@ -366,6 +366,14 @@ static ssize_t ceph_vxattrcb_auth_mds(struct ceph_inode_info *ci,
+ 	}
+ #define XATTR_RSTAT_FIELD(_type, _name)			\
+ 	XATTR_NAME_CEPH(_type, _name, VXATTR_FLAG_RSTAT)
++#define XATTR_RSTAT_FIELD_UPDATABLE(_type, _name)			\
++	{								\
++		.name = CEPH_XATTR_NAME(_type, _name),			\
++		.name_size = sizeof (CEPH_XATTR_NAME(_type, _name)),	\
++		.getxattr_cb = ceph_vxattrcb_ ## _type ## _ ## _name,	\
++		.exists_cb = NULL,					\
++		.flags = VXATTR_FLAG_RSTAT,				\
++	}
+ #define XATTR_LAYOUT_FIELD(_type, _name, _field)			\
+ 	{								\
+ 		.name = CEPH_XATTR_NAME2(_type, _name, _field),	\
+@@ -404,7 +412,7 @@ static struct ceph_vxattr ceph_dir_vxattrs[] = {
+ 	XATTR_RSTAT_FIELD(dir, rsubdirs),
+ 	XATTR_RSTAT_FIELD(dir, rsnaps),
+ 	XATTR_RSTAT_FIELD(dir, rbytes),
+-	XATTR_RSTAT_FIELD(dir, rctime),
++	XATTR_RSTAT_FIELD_UPDATABLE(dir, rctime),
+ 	{
+ 		.name = "ceph.dir.pin",
+ 		.name_size = sizeof("ceph.dir.pin"),
 -- 
 2.35.1
-
-
 
