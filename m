@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83BB6CCA491
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DDDAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352127AbiFGSQz (ORCPT
+        id S1352557AbiFGSRR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:16:55 -0400
+        Tue, 7 Jun 2022 14:17:17 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348598AbiFGR5a (ORCPT
+        with ESMTP id S1349030AbiFGR5s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:57:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FA0314780D;
-        Tue,  7 Jun 2022 10:40:24 -0700 (PDT)
+        Tue, 7 Jun 2022 13:57:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC98237F3;
+        Tue,  7 Jun 2022 10:40:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 80229615B8;
-        Tue,  7 Jun 2022 17:40:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8600DC385A5;
-        Tue,  7 Jun 2022 17:40:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E72761499;
+        Tue,  7 Jun 2022 17:40:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A931C34115;
+        Tue,  7 Jun 2022 17:40:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623623;
-        bh=4WZshwgCuLseii/geAgye3QBcW3LI/+mQFUHRGNbp5I=;
+        s=korg; t=1654623648;
+        bh=lIQbYf0TkVPgHqacQsbXEfI+WghXsnVMfGGAywaL/M8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lBNULopzWDUkqHBrmig10fsFTgYblk3CQsu1WKCpYzT/vp23qXOnUsvM4wC6w0t3W
-         4otEngMXRJwkFthivxDurkEPFCpxypRP29xinCF4IMVlnG0nwQDWv5CoizsraXL9C6
-         4094Ea7a2xzzyXFhprofhnfYPJs5eTYZiF1L8bbk=
+        b=mqdVL4N6SJhyoV/x+MYeWEBdINUUhezwH41GcY4qopkA4ot3LSfrs5OYe8a6blITK
+         7W9BGEes4AIJ3xZysuOARQBf99FVvlWfgG9FE/oANR1IdzOXUrO72N/523NH+gd/Mz
+         MsFWkurX8jT1ZMjK0whuo1jyurs32E2Q7oHI/rGU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Michael=20Niew=C3=B6hner?= <linux@mniewoehner.de>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 5.15 031/667] platform/x86: intel-hid: fix _DSM function index handling
-Date:   Tue,  7 Jun 2022 18:54:56 +0200
-Message-Id: <20220607164935.728654743@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.15 004/667] parisc/stifb: Keep track of hardware path of graphics card
+Date:   Tue,  7 Jun 2022 18:54:29 +0200
+Message-Id: <20220607164934.909123304@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,36 +48,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Niewöhner <linux@mniewoehner.de>
+From: Helge Deller <deller@gmx.de>
 
-commit 1620c80bba53af8c547bab34a1d3bc58319fe608 upstream.
+commit b046f984814af7985f444150ec28716d42d00d9a upstream.
 
-intel_hid_dsm_fn_mask is a bit mask containing one bit for each function
-index. Fix the function index check in intel_hid_evaluate_method
-accordingly, which was missed in commit 97ab4516205e ("platform/x86:
-intel-hid: fix _DSM function index handling").
+Keep the pa_path (hardware path) of the graphics card in sti_struct and use
+this info to give more useful info which card is currently being used.
 
-Fixes: 97ab4516205e ("platform/x86: intel-hid: fix _DSM function index handling")
-Cc: stable@vger.kernel.org
-Signed-off-by: Michael Niewöhner <linux@mniewoehner.de>
-Link: https://lore.kernel.org/r/66f813f5bcc724a0f6dd5adefe6a9728dbe509e3.camel@mniewoehner.de
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: stable@vger.kernel.org   # v5.10+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/platform/x86/intel/hid.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/console/sticon.c  |    5 ++++-
+ drivers/video/console/sticore.c |   15 +++++++--------
+ drivers/video/fbdev/sticore.h   |    3 +++
+ 3 files changed, 14 insertions(+), 9 deletions(-)
 
---- a/drivers/platform/x86/intel/hid.c
-+++ b/drivers/platform/x86/intel/hid.c
-@@ -245,7 +245,7 @@ static bool intel_hid_evaluate_method(ac
+--- a/drivers/video/console/sticon.c
++++ b/drivers/video/console/sticon.c
+@@ -46,6 +46,7 @@
+ #include <linux/slab.h>
+ #include <linux/font.h>
+ #include <linux/crc32.h>
++#include <linux/fb.h>
  
- 	method_name = (char *)intel_hid_dsm_fn_to_method[fn_index];
+ #include <asm/io.h>
  
--	if (!(intel_hid_dsm_fn_mask & fn_index))
-+	if (!(intel_hid_dsm_fn_mask & BIT(fn_index)))
- 		goto skip_dsm_eval;
+@@ -392,7 +393,9 @@ static int __init sticonsole_init(void)
+     for (i = 0; i < MAX_NR_CONSOLES; i++)
+ 	font_data[i] = STI_DEF_FONT;
  
- 	obj = acpi_evaluate_dsm_typed(handle, &intel_dsm_guid,
+-    pr_info("sticon: Initializing STI text console.\n");
++    pr_info("sticon: Initializing STI text console on %s at [%s]\n",
++	sticon_sti->sti_data->inq_outptr.dev_name,
++	sticon_sti->pa_path);
+     console_lock();
+     err = do_take_over_console(&sti_con, 0, MAX_NR_CONSOLES - 1,
+ 		PAGE0->mem_cons.cl_class != CL_DUPLEX);
+--- a/drivers/video/console/sticore.c
++++ b/drivers/video/console/sticore.c
+@@ -34,7 +34,7 @@
+ 
+ #include "../fbdev/sticore.h"
+ 
+-#define STI_DRIVERVERSION "Version 0.9b"
++#define STI_DRIVERVERSION "Version 0.9c"
+ 
+ static struct sti_struct *default_sti __read_mostly;
+ 
+@@ -503,7 +503,7 @@ sti_select_fbfont(struct sti_cooked_rom
+ 	if (!fbfont)
+ 		return NULL;
+ 
+-	pr_info("STI selected %ux%u framebuffer font %s for sticon\n",
++	pr_info("    using %ux%u framebuffer font %s\n",
+ 			fbfont->width, fbfont->height, fbfont->name);
+ 			
+ 	bpc = ((fbfont->width+7)/8) * fbfont->height; 
+@@ -947,6 +947,7 @@ out_err:
+ 
+ static void sticore_check_for_default_sti(struct sti_struct *sti, char *path)
+ {
++	pr_info("    located at [%s]\n", sti->pa_path);
+ 	if (strcmp (path, default_sti_path) == 0)
+ 		default_sti = sti;
+ }
+@@ -958,7 +959,6 @@ static void sticore_check_for_default_st
+  */
+ static int __init sticore_pa_init(struct parisc_device *dev)
+ {
+-	char pa_path[21];
+ 	struct sti_struct *sti = NULL;
+ 	int hpa = dev->hpa.start;
+ 
+@@ -971,8 +971,8 @@ static int __init sticore_pa_init(struct
+ 	if (!sti)
+ 		return 1;
+ 
+-	print_pa_hwpath(dev, pa_path);
+-	sticore_check_for_default_sti(sti, pa_path);
++	print_pa_hwpath(dev, sti->pa_path);
++	sticore_check_for_default_sti(sti, sti->pa_path);
+ 	return 0;
+ }
+ 
+@@ -1008,9 +1008,8 @@ static int sticore_pci_init(struct pci_d
+ 
+ 	sti = sti_try_rom_generic(rom_base, fb_base, pd);
+ 	if (sti) {
+-		char pa_path[30];
+-		print_pci_hwpath(pd, pa_path);
+-		sticore_check_for_default_sti(sti, pa_path);
++		print_pci_hwpath(pd, sti->pa_path);
++		sticore_check_for_default_sti(sti, sti->pa_path);
+ 	}
+ 	
+ 	if (!sti) {
+--- a/drivers/video/fbdev/sticore.h
++++ b/drivers/video/fbdev/sticore.h
+@@ -370,6 +370,9 @@ struct sti_struct {
+ 
+ 	/* pointer to all internal data */
+ 	struct sti_all_data *sti_data;
++
++	/* pa_path of this device */
++	char pa_path[24];
+ };
+ 
+ 
 
 
