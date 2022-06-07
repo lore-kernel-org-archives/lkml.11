@@ -2,161 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0538ACCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:06:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9543CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:08:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243723AbiFGRGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56478 "EHLO
+        id S1345432AbiFGRIw (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 13:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237338AbiFGRGl (ORCPT
+        with ESMTP id S237340AbiFGRIr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:06:41 -0400
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDE3C54037
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:06:39 -0700 (PDT)
-Received: by mail-il1-x131.google.com with SMTP id y16so14685296ili.13
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:06:39 -0700 (PDT)
+        Tue, 7 Jun 2022 13:08:47 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 595175A086
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:08:46 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id q140so1382224pgq.6
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:08:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QocnDs5w4TazSvMjzZtEO2lYhuTH55BPpRIi6NIvCgU=;
-        b=dRIKodz4tDRakIwL0rM81s0k+Y6sZzcFymClpndB8u/CNXlwMmEmdV6eO7OFiQEORL
-         RK+hl2KV8qmY2zotWqT9OqXbxCSCqmtKPR2fKLk/Mb0c+F8ZI2wckPqNLd2ds4vZP1jG
-         C/vot/RN14YqPvaWRF8f28nNs5npMlddiM4VpnBfok8fA8fMw/xmkGhAh8qIwpbGG7zA
-         etgWLnPu1MN2lSSOGQzLJHcc+BFtSeWfbom4aOkEuu1b+IVR71PRroP+Quo3BaXb/zMK
-         WLh8pUvlVbF3b6e3ZlxSjOR9QVU+ORoPadn3wP2qQZvV2aTu6gfnZelrf7gUwLUfRxot
-         fCVQ==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Gj4nNQAESP5jflqurRD9VKGtQTZmCuItcAgDDc3/EP4=;
+        b=VYwP9VNwE6R1T0NhlSkX0nAVef8l+qQgnXhfjYJ4L2IvV9TzQb4EosNHbjdNFF5WWK
+         u7hddhZJX6di6aNLxhWTTmz9LK+kcr/U5w0YWmbSu3uptMWh57gPnBIaBkf2Bt3JXMVp
+         FPXHEqlhuDQ1qh5UFKpugBGyAyi0l6TUB2vBW/QyPVF97k6v4c2ua4E0eh2ZYm8Uyas3
+         FZDXl4UxY18YBgmvUTQMJgkd+26j+QrYgXxCilvPS+YLqVuL43nPVHSLWvJam9Q0sHCP
+         sl5MAEx/yHbA7xAmHMs71NOYGYKOhN+wKHfapkODDJ8tRn0eU5OvwkVEN4TF22tPTD8I
+         uv8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QocnDs5w4TazSvMjzZtEO2lYhuTH55BPpRIi6NIvCgU=;
-        b=K/cf37krr3Ubbcjy/CGqy49yFM90Uqod/jZpl6LvXuQDV0fW5eeoI/uS710Ipt3njF
-         57z7rgDh+/nB2tBEkqaD3WIvyTDP+p7c0dS3pAWtXsa2c+BGb0e0FTnWYb5Ijj+pJzLC
-         qpy1eOwlnsmt9OEPl/vcBH/6mOj+IVqQGo72MYTU70h/d+gf7iiBiq/4MpX6mGoesdX+
-         oW4c1qG1w4mGDMqUcrzWJ1Yznd2Kb07DmdD2EunbX/NI/5U4Fkyb/vqAYNMJejDuDueh
-         Z6SlxwFAPS3ugNEKnVyqNy/hY6yNMw7LS4Xr1hTyS0YdmPIRPNdkN0JLf4a8bzOs5jDg
-         GF6w==
-X-Gm-Message-State: AOAM533LT8jlr9QqJRiiA1cFJyrznAg0E3O5frjs3/R6Pl7waNOc/jnw
-        HSJ+BhbV7itSnSoT9b62TUNr0nHlIOScY4poxpyfFA==
-X-Google-Smtp-Source: ABdhPJz9Lg7BSVbItguQd767ICKznx7IEdGBPR3e7oFdkDrucWpyWhc4A+HS6IV9zKDoTqLI78OYvApBCnJGhZImJL0=
-X-Received: by 2002:a05:6e02:1e0b:b0:2d1:b5e8:38a0 with SMTP id
- g11-20020a056e021e0b00b002d1b5e838a0mr17440930ila.296.1654621598804; Tue, 07
- Jun 2022 10:06:38 -0700 (PDT)
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=Gj4nNQAESP5jflqurRD9VKGtQTZmCuItcAgDDc3/EP4=;
+        b=4SsG65k/pQ2a8CzzXWEHW819+8zJjTlNrq0FDxpUk6h9aAgZah0ZpqLkrEMvcuLjRI
+         cNabPgfklXisPVOSoKJI3AIJiUZCJHImPEcEOsQTP8+SIvNavtrsMSU4eaiue8HX1EeG
+         a2mdbw3RhusfGUPRlYxdUYX4l/UAb+Fa8VQOWDva6ibZvj0OmgfS6fRTtIKBJaUKl1/P
+         c0MnPjICIyO1rPJIBHd+KGe3meg+KZbZCz1mME/vwOi1lsFtuMkU4AdLEAw2AMQ/hL8S
+         /LUGZz30d4Q3j1uaOr5VNzZ1SYeWvd9x6aTFDfbHfpxLxBYB4iSdAm57JWYKYF2xMcpa
+         c/Lg==
+X-Gm-Message-State: AOAM532zpjBbnj/RZo8nmVZDbe4Ev6X6wkTJTOnOmos6DinF4LRW921Y
+        fUJ+3krF+b8qpHzkXW+TufvnoYXwnSY=
+X-Google-Smtp-Source: ABdhPJzT80uFXzM351e5ip7Ri7nKrY0DNtEhGpO2KgP4KTgo2GWVDfRpShu695EU5F0scbftzYjDuA==
+X-Received: by 2002:a05:6a00:2999:b0:51b:e3c8:9e30 with SMTP id cj25-20020a056a00299900b0051be3c89e30mr22769172pfb.41.1654621725450;
+        Tue, 07 Jun 2022 10:08:45 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:fa4d])
+        by smtp.gmail.com with ESMTPSA id z8-20020a17090a1fc800b001e0c5da6a51sm12148384pjz.50.2022.06.07.10.08.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 10:08:43 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 7 Jun 2022 07:08:42 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5] workqueue: Wrap flush_workqueue() using a macro
+Message-ID: <Yp+GGhQ8ZpbPgeQQ@slm.duckdns.org>
+References: <f8c281cd-6ce7-818d-8c43-6024a7b3b481@I-love.SAKURA.ne.jp>
 MIME-Version: 1.0
-References: <20220607142337.78458-1-duoming@zju.edu.cn>
-In-Reply-To: <20220607142337.78458-1-duoming@zju.edu.cn>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 7 Jun 2022 10:06:27 -0700
-Message-ID: <CANn89iJoOvG=KrouTpe+bgAVf=mYtxE1D3m542UF96XwxKEVsQ@mail.gmail.com>
-Subject: Re: [PATCH v2] net: ax25: Fix deadlock caused by skb_recv_datagram in ax25_recvmsg
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     LKML <linux-kernel@vger.kernel.org>, jreuter@yaina.de,
-        Ralf Baechle <ralf@linux-mips.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>, linux-hams@vger.kernel.org,
-        thomas@osterried.de
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f8c281cd-6ce7-818d-8c43-6024a7b3b481@I-love.SAKURA.ne.jp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 7:24 AM Duoming Zhou <duoming@zju.edu.cn> wrote:
->
-> The skb_recv_datagram() in ax25_recvmsg() will hold lock_sock
-> and block until it receives a packet from the remote. If the client
-> doesn`t connect to server and calls read() directly, it will not
-> receive any packets forever. As a result, the deadlock will happen.
->
-> The fail log caused by deadlock is shown below:
->
-> [  369.606973] INFO: task ax25_deadlock:157 blocked for more than 245 seconds.
-> [  369.608919] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-> [  369.613058] Call Trace:
-> [  369.613315]  <TASK>
-> [  369.614072]  __schedule+0x2f9/0xb20
-> [  369.615029]  schedule+0x49/0xb0
-> [  369.615734]  __lock_sock+0x92/0x100
-> [  369.616763]  ? destroy_sched_domains_rcu+0x20/0x20
-> [  369.617941]  lock_sock_nested+0x6e/0x70
-> [  369.618809]  ax25_bind+0xaa/0x210
-> [  369.619736]  __sys_bind+0xca/0xf0
-> [  369.620039]  ? do_futex+0xae/0x1b0
-> [  369.620387]  ? __x64_sys_futex+0x7c/0x1c0
-> [  369.620601]  ? fpregs_assert_state_consistent+0x19/0x40
-> [  369.620613]  __x64_sys_bind+0x11/0x20
-> [  369.621791]  do_syscall_64+0x3b/0x90
-> [  369.622423]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> [  369.623319] RIP: 0033:0x7f43c8aa8af7
-> [  369.624301] RSP: 002b:00007f43c8197ef8 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
-> [  369.625756] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f43c8aa8af7
-> [  369.626724] RDX: 0000000000000010 RSI: 000055768e2021d0 RDI: 0000000000000005
-> [  369.628569] RBP: 00007f43c8197f00 R08: 0000000000000011 R09: 00007f43c8198700
-> [  369.630208] R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff845e6afe
-> [  369.632240] R13: 00007fff845e6aff R14: 00007f43c8197fc0 R15: 00007f43c8198700
->
-> This patch moves the skb_recv_datagram() before lock_sock() in order
-> that other functions that need lock_sock could be executed.
->
-> Suggested-by: Thomas Osterried <thomas@osterried.de>
-> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-> Reported-by: Thomas Habets <thomas@@habets.se>
-> ---
-> Changes in v2:
->   - Make commit messages clearer.
->
->  net/ax25/af_ax25.c | 11 ++++++-----
->  1 file changed, 6 insertions(+), 5 deletions(-)
->
-> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-> index 95393bb2760..02cd6087512 100644
-> --- a/net/ax25/af_ax25.c
-> +++ b/net/ax25/af_ax25.c
-> @@ -1665,6 +1665,11 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
->         int copied;
->         int err = 0;
->
-> +       /* Now we can treat all alike */
-> +       skb = skb_recv_datagram(sk, flags, &err);
-> +       if (!skb)
-> +               goto done;
-> +
+On Wed, Jun 01, 2022 at 04:32:47PM +0900, Tetsuo Handa wrote:
+> Since flush operation synchronously waits for completion, flushing
+> system-wide WQs (e.g. system_wq) might introduce possibility of deadlock
+> due to unexpected locking dependency. Tejun Heo commented at [1] that it
+> makes no sense at all to call flush_workqueue() on the shared WQs as the
+> caller has no idea what it's gonna end up waiting for.
+> 
+> Although there is flush_scheduled_work() which flushes system_wq WQ with
+> "Think twice before calling this function! It's very easy to get into
+> trouble if you don't take great care." warning message, syzbot found a
+> circular locking dependency caused by flushing system_wq WQ [2].
+> 
+> Therefore, let's change the direction to that developers had better use
+> their local WQs if flush_scheduled_work()/flush_workqueue(system_*_wq) is
+> inevitable.
+> 
+> Steps for converting system-wide WQs into local WQs are explained at [3],
+> and a conversion to stop flushing system-wide WQs is in progress. Now we
+> want some mechanism for preventing developers who are not aware of this
+> conversion from again start flushing system-wide WQs.
+> 
+> Since I found that WARN_ON() is complete but awkward approach for teaching
+> developers about this problem, let's use __compiletime_warning() for
+> incomplete but handy approach. For completeness, we will also insert
+> WARN_ON() into __flush_workqueue() after all in-tree users stopped calling
+> flush_scheduled_work().
+> 
+> Link: https://lore.kernel.org/all/YgnQGZWT%2Fn3VAITX@slm.duckdns.org/ [1]
+> Link: https://syzkaller.appspot.com/bug?extid=bde0f89deacca7c765b8 [2]
+> Link: https://lkml.kernel.org/r/49925af7-78a8-a3dd-bce6-cfc02e1a9236@I-love.SAKURA.ne.jp [3]
+> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 
-So at this point we have skb=something. This means that the following
-branch will leak it.
+Applied to wq/for-5.19-fixes.
 
-if (sk->sk_type == SOCK_SEQPACKET && sk->sk_state != TCP_ESTABLISHED) {
-    err =  -ENOTCONN;
-    goto out;    // skb will be leaked
-}
+Thanks.
 
-
->         /*
->          *      This works for seqpacket too. The receiver has ordered the
-> @@ -1675,11 +1680,6 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
->                 goto out;
->         }
->
-> -       /* Now we can treat all alike */
-> -       skb = skb_recv_datagram(sk, flags, &err);
-> -       if (skb == NULL)
-> -               goto out;
-> -
->         if (!sk_to_ax25(sk)->pidincl)
->                 skb_pull(skb, 1);               /* Remove PID */
->
-> @@ -1725,6 +1725,7 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
->  out:
->         release_sock(sk);
->
-> +done:
->         return err;
->  }
->
-> --
-> 2.17.1
->
+-- 
+tejun
