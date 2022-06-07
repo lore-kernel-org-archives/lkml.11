@@ -2,128 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3ACFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:49:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD0B9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:50:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241866AbiFGKts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42776 "EHLO
+        id S233955AbiFGKuw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:50:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241816AbiFGKsk (ORCPT
+        with ESMTP id S242299AbiFGKuK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:48:40 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB3C3136E;
-        Tue,  7 Jun 2022 03:47:28 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id bg6so14520050ejb.0;
-        Tue, 07 Jun 2022 03:47:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:from:to:cc:subject:date:in-reply-to:message-id
-         :mime-version;
-        bh=Pgq5MawNxPb77sAjnIPnFN2fq8aE2jaJNXvjUTWy23s=;
-        b=e3kfSjAbsoTviVaMNfjdVxtoKtiTjcV2OsAN+3ENsSb1F1CXz9kskNbi+nMmkBTb/J
-         Sbq0w4htYEMnZCTs6zWgagvMnfgGN+3xv7XxOzRm52lyYk6bhPMqQZhG+mx4BUOmXi3u
-         4FGmSXXppL8R3yiREC0BCqDKgRRYUXzQJD41n2DgxSk+vvv1mTFB6mpGACcPD/4sk4pY
-         EbiG2y5lsTTNsY04+HxZUNXVC9tlDAC7dPO6TF9m3f2++E5OmgGg0gNSdAGuwEwB+TKf
-         5P6orTIcfqMHiDeQEMyYp2zYx/lcXShUu7Ls+evt7DXJZl6LcmY9kLURrzNePpq6h8qQ
-         CHhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=Pgq5MawNxPb77sAjnIPnFN2fq8aE2jaJNXvjUTWy23s=;
-        b=suNR+cxqIlBNJ18JrA/2un55tHxdfv4rdHKjWbDKfE4jylDTWQkOA7z8QdvtNIcVkr
-         jvGgv/dfhD9QnVmMV5JQNk7/0e+dXkhARKFf5Vl9AKQpfV+bS6HH2lW18+iTsh0zdY/E
-         k+I8HRLtAce8crUbrDu/uQOhPI6mM7x3ke+NSAH0BmeSH9u5AMQyo7ZUUCtosGAzP9vy
-         lGKFTiiYhdZmwh2hlGnZiKou50ol/AjNWNIaF69+PgvdiVZmbmIvShuJHSjDBWTcBDtg
-         /FWlvOlIQJ9zulGqFE2U9MzSPSusz2Q9MdDb7AqtemcUsFGBJF67ZMqB2qWFBGDoa74M
-         5E1A==
-X-Gm-Message-State: AOAM533IJUl15eAX+TSYqgo8kAI3n1lMUo+nSOO6heB5lHgM0YPg3DRS
-        VO34Y4GSpqGUNJAWcNjDzIs=
-X-Google-Smtp-Source: ABdhPJwE12iAv0pTVW95ulxsPwHuM4wYaFcQKpFYRThN/bNbeSFLp8E2X/JkdJoBlaXq5YK50hXBCw==
-X-Received: by 2002:a17:906:a188:b0:70c:1e17:b833 with SMTP id s8-20020a170906a18800b0070c1e17b833mr22500662ejy.271.1654598846780;
-        Tue, 07 Jun 2022 03:47:26 -0700 (PDT)
-Received: from localhost (92.40.203.113.threembb.co.uk. [92.40.203.113])
-        by smtp.gmail.com with ESMTPSA id n24-20020aa7c698000000b0042bb229e81esm10044086edq.15.2022.06.07.03.47.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 03:47:26 -0700 (PDT)
-References: <20220603135714.12007-1-aidanmacdonald.0x0@gmail.com>
- <20220603135714.12007-2-aidanmacdonald.0x0@gmail.com>
- <20220606174320.GA16522@quicinc.com>
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     Guru Das Srinagesh <quic_gurus@quicinc.com>
-Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, wens@csie.org, jic23@kernel.org,
-        lee.jones@linaro.org, sre@kernel.org, broonie@kernel.org,
-        gregkh@linuxfoundation.org, lgirdwood@gmail.com, lars@metafoo.de,
-        rafael@kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 01/10] regmap-irq: Add get_irq_reg to support unusual
- register layouts
-Date:   Tue, 07 Jun 2022 11:46:54 +0100
-In-reply-to: <20220606174320.GA16522@quicinc.com>
-Message-ID: <shCOrWuZYFlO3x9fYvGVQDCINY4Z8d5E@localhost>
+        Tue, 7 Jun 2022 06:50:10 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15E2F5D0A;
+        Tue,  7 Jun 2022 03:49:52 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 404F421B72;
+        Tue,  7 Jun 2022 10:49:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1654598991; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tVqBK3m3laHxkdWX6Mqm/9egdXttb3XupQn5X0C/tnM=;
+        b=rLu8WTuqqJoKSpUmQnrOJpShcRXxQt+OciOCuCHpv84OEdjTx165JL7rZRgMEuqMOOoh5+
+        JNrpWvN03so/zhcfh6j1oQUARFIbiGLu24IeA2ox9Gsjzc3Ow5IXcYQquU+wNidPqP8OxJ
+        z3pCQpGys75o9XlrFjk6bazMkdz0bJk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1654598991;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tVqBK3m3laHxkdWX6Mqm/9egdXttb3XupQn5X0C/tnM=;
+        b=JUs5NO4JvN1IZkFMSDqblsQhEqGtaIjhaCurpsj7YkY6FSzuRhirPWk1/yxhpxnmOusWCw
+        6G2SPbGcAWr7i0AA==
+Received: from localhost.localdomain (unknown [10.100.201.122])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 1962F2C143;
+        Tue,  7 Jun 2022 10:49:51 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 08/36] tty/vt: consolemap: one line = one statement
+Date:   Tue,  7 Jun 2022 12:49:18 +0200
+Message-Id: <20220607104946.18710-8-jslaby@suse.cz>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607104946.18710-1-jslaby@suse.cz>
+References: <20220607104946.18710-1-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Some lines combine more statements on one line. This makes the code hard
+to follow. Do it properly in the "one line = one statement" fashion.
 
-Guru Das Srinagesh <quic_gurus@quicinc.com> writes:
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
+ drivers/tty/vt/consolemap.c | 30 ++++++++++++++++++++----------
+ 1 file changed, 20 insertions(+), 10 deletions(-)
 
-> On Fri, Jun 03, 2022 at 02:57:05PM +0100, Aidan MacDonald wrote:
->> Add a new callback, get_irq_reg, for regmap IRQ chips, to support devices
->> with unusual register layouts. This is required in the rare cases where
->> the offset of an IRQ register is not constant with respect to the base
->> register. This is probably best illustrated with an example:
->> 
->>             mask    status
->>     IRQ0    0x40    0x44
->>     IRQ1    0x41    0x45
->>     IRQ2    0x42    0x46
->>     IRQ3    0x43    0x47
->>     IRQ4    0x4a    0x4d
->> 
->> If we set mask_base = 0x40 and status_base = 0x44, the offsets of each
->> register relative to the base are:
->> 
->>             mask    status
->>     IRQ0    0       0
->>     IRQ1    1       1
->>     IRQ2    2       2
->>     IRQ3    3       3
->>     IRQ4    10      9
->> 
->> The existing mapping mechanisms can't include IRQ4 in the same irqchip
->> as IRQ0-3 because the offset of IRQ4's register depends on which type
->> of register we're asking for, ie. which base register is used.
->> 
->> The get_irq_reg callback allows drivers to specify an arbitrary mapping
->> of (base register, register index) pairs to register addresses, instead
->> of the default linear mapping "base_register + register_index". This
->> allows unusual layouts, like the one above, to be handled using a single
->> regmap IRQ chip.
->> 
->> The drawback is that when get_irq_reg is used, it's impossible to use
->> bulk reads for status registers even if some of them are contiguous,
->> because the mapping is opaque to regmap-irq. This should be acceptable
->> for the case of a few infrequently-polled status registers.
->
-> This patch does two things:
->
-> 1. Add a new callback `get_irq_reg`
-> 2. Replace unmask_offset calculation with call to sub_irq_reg()
->
-> Could you please split the patch into two to better reflect this?
->
-> Thank you.
->
-> Guru Das.
+diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+index 157c7f936294..f97081e01b71 100644
+--- a/drivers/tty/vt/consolemap.c
++++ b/drivers/tty/vt/consolemap.c
+@@ -215,12 +215,14 @@ static void set_inverse_transl(struct vc_data *conp, struct uni_pagedict *p, int
+ 	unsigned short *t = translations[i];
+ 	unsigned char *q;
+ 	
+-	if (!p) return;
++	if (!p)
++		return;
+ 	q = p->inverse_translations[i];
+ 
+ 	if (!q) {
+ 		q = p->inverse_translations[i] = kmalloc(MAX_GLYPH, GFP_KERNEL);
+-		if (!q) return;
++		if (!q)
++			return;
+ 	}
+ 	memset(q, 0, MAX_GLYPH);
+ 
+@@ -240,7 +242,8 @@ static void set_inverse_trans_unicode(struct vc_data *conp,
+ 	u16 **p1, *p2;
+ 	u16 *q;
+ 
+-	if (!p) return;
++	if (!p)
++		return;
+ 	q = p->inverse_trans_unicode;
+ 	if (!q) {
+ 		q = p->inverse_trans_unicode =
+@@ -412,7 +415,8 @@ static void con_release_unimap(struct uni_pagedict *p)
+ 	u16 **p1;
+ 	int i, j;
+ 
+-	if (p == dflt) dflt = NULL;  
++	if (p == dflt)
++		dflt = NULL;
+ 	for (i = 0; i < UNI_DIRS; i++) {
+ 		p1 = p->uni_pgdir[i];
+ 		if (p1 != NULL) {
+@@ -458,7 +462,8 @@ static int con_unify_unimap(struct vc_data *conp, struct uni_pagedict *p)
+ 			continue;
+ 		for (j = 0; j < UNI_DIRS; j++) {
+ 			u16 **p1, **q1;
+-			p1 = p->uni_pgdir[j]; q1 = q->uni_pgdir[j];
++			p1 = p->uni_pgdir[j];
++			q1 = q->uni_pgdir[j];
+ 			if (!p1 && !q1)
+ 				continue;
+ 			if (!p1 || !q1)
+@@ -492,19 +497,23 @@ con_insert_unipair(struct uni_pagedict *p, u_short unicode, u_short fontpos)
+ 	int i, n;
+ 	u16 **p1, *p2;
+ 
+-	p1 = p->uni_pgdir[n = unicode >> 11];
++	n = unicode >> 11;
++	p1 = p->uni_pgdir[n];
+ 	if (!p1) {
+ 		p1 = p->uni_pgdir[n] = kmalloc_array(UNI_DIR_ROWS,
+ 						     sizeof(u16 *), GFP_KERNEL);
+-		if (!p1) return -ENOMEM;
++		if (!p1)
++			return -ENOMEM;
+ 		for (i = 0; i < UNI_DIR_ROWS; i++)
+ 			p1[i] = NULL;
+ 	}
+ 
+-	p2 = p1[n = (unicode >> 6) & 0x1f];
++	n = (unicode >> 6) & 0x1f;
++	p2 = p1[n];
+ 	if (!p2) {
+ 		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(u16), GFP_KERNEL);
+-		if (!p2) return -ENOMEM;
++		if (!p2)
++			return -ENOMEM;
+ 		/* No glyphs for the characters (yet) */
+ 		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(u16));
+ 	}
+@@ -532,7 +541,8 @@ static int con_do_clear_unimap(struct vc_data *vc)
+ 		q->refcount=1;
+ 		*vc->vc_uni_pagedir_loc = q;
+ 	} else {
+-		if (p == dflt) dflt = NULL;
++		if (p == dflt)
++			dflt = NULL;
+ 		p->refcount++;
+ 		p->sum = 0;
+ 		con_release_unimap(p);
+-- 
+2.36.1
 
-No problem, I'll do that in my v2.
-
-Regards,
-Aidan
