@@ -2,172 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DC1DCCA483
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B529DCCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232339AbiFHBiV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:38:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35270 "EHLO
+        id S1388568AbiFHBiO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381446AbiFGVrR (ORCPT
+        with ESMTP id S1384023AbiFGVyA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:47:17 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF302383D3
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:08:04 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id b5so15585687plx.10
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:08:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=sFse0rFSlJ0YYavNaa4y03OPGbaMuJtoNAgCQ6a6W8c=;
-        b=egqwCoKZqBXVLuKBc5pBZJMLx1Er/E5gqJBY0WIV+gpES8qbQTYV1aLLMoL19SXphc
-         lK8Gh8uUsJd8XfsnR+jIcEghA1Fey7gwOw5VGvdRT3NcD8yrHBZpl106Q8KajEC6vdqb
-         v4+28bPMXQbxefQML/1CAGdjIvco9R8BEzTQw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sFse0rFSlJ0YYavNaa4y03OPGbaMuJtoNAgCQ6a6W8c=;
-        b=eHG2FHbTobOtpq27ZA7KFGQ0r3TgJ5WdiHFXBa70eFZiiinJG0WKmo6YuzSr6Vy+qt
-         HqOpc6QssjnHtIs98MLRzEUCYRKI3pCCsV8hHaUhNgbWzbpLadTnUlo2xNzjD85naSN4
-         3O72qNsOl1ag8zqqrjDlubnA24bk/bak4JLE1gfK95f0Sdv4rFQcOgQh1w2BoAh6iVa4
-         MXXfU7evXeoDwRVzmk0Lm4pCtdqsKHe1LHGx5SuwnLe6lxkS4a2dt33mGKC9fDdqEwPm
-         vrHVkSLD4jzJl4SgfRUwK1fNgMkVYnUtulRTrlMYwnpJBykgxyiQPdDq6fQA5N0g9QXB
-         UVQg==
-X-Gm-Message-State: AOAM530kvvzEESjr4QnYc+bV4EHjQELk386Z7Q64Q4ifFJy0ixeJBGlg
-        2hZ0sdyDlBLQ7eLvGoIJxR1rdCI9hGts/A==
-X-Google-Smtp-Source: ABdhPJxRnlpJtnHj8QUvVU0+Lwk4T4sd6PIecvJFEsj9C43AuOQ/lHFYgRv7vIv5lWTUWerChJvSkw==
-X-Received: by 2002:a17:90b:224e:b0:1e6:8ae1:8e1a with SMTP id hk14-20020a17090b224e00b001e68ae18e1amr30682456pjb.59.1654628882986;
-        Tue, 07 Jun 2022 12:08:02 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id g29-20020aa79ddd000000b0050dc762819esm13236084pfq.120.2022.06.07.12.08.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 12:08:02 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     bleung@chromium.org, swboyd@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Xin Ji <xji@analogixsemi.com>
-Subject: [PATCH 4/7] dt-bindings: drm/bridge: anx7625: Add mode-switch support
-Date:   Tue,  7 Jun 2022 19:00:22 +0000
-Message-Id: <20220607190131.1647511-5-pmalani@chromium.org>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-In-Reply-To: <20220607190131.1647511-1-pmalani@chromium.org>
-References: <20220607190131.1647511-1-pmalani@chromium.org>
+        Tue, 7 Jun 2022 17:54:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F639248519;
+        Tue,  7 Jun 2022 12:12:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8850B8233E;
+        Tue,  7 Jun 2022 19:12:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24437C385A2;
+        Tue,  7 Jun 2022 19:12:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629155;
+        bh=TZ3jw2i/lBbJ6ycdnyiMSxxAXqvD9R7FYIEzatyBwoY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CQn+Kl13rbEo+AfSKT5rHAoC9qADlXbzNhwwzsMVUR9eiuL8Do7TM5D+VxV34VObt
+         sVPoDXrjHMU1+/VjWgL0a3JbEyOBqA3VMPewtFSDupFGslYq/9Ot0r8WD1XAmynT2+
+         JyiKluVqBEZq0JGcCjE3OtwkDPfc+33AWPt/Pk7k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 549/879] soc: qcom: llcc: Add MODULE_DEVICE_TABLE()
+Date:   Tue,  7 Jun 2022 19:01:07 +0200
+Message-Id: <20220607165018.803159822@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Analogix 7625 can be used in systems to switch USB Type-C DisplayPort
-alternate mode lane traffic between 2 Type-C ports.
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-Update the binding to accommodate this usage by introducing a switch
-property.
+[ Upstream commit 5334a3b12a7233b31788de60d61bfd890059d783 ]
 
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
+The llcc-qcom driver can be compiled as a module, but lacks
+MODULE_DEVICE_TABLE() and will therefore not be loaded automatically.
+Fix this.
+
+Fixes: a3134fb09e0b ("drivers: soc: Add LLCC driver")
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20220408213336.581661-3-bjorn.andersson@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../display/bridge/analogix,anx7625.yaml      | 56 +++++++++++++++++++
- 1 file changed, 56 insertions(+)
+ drivers/soc/qcom/llcc-qcom.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-index 35a48515836e..7e1f655ddfcc 100644
---- a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-+++ b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-@@ -105,6 +105,26 @@ properties:
-       - port@0
-       - port@1
+diff --git a/drivers/soc/qcom/llcc-qcom.c b/drivers/soc/qcom/llcc-qcom.c
+index eecafeded56f..85ba8209b182 100644
+--- a/drivers/soc/qcom/llcc-qcom.c
++++ b/drivers/soc/qcom/llcc-qcom.c
+@@ -749,6 +749,7 @@ static const struct of_device_id qcom_llcc_of_match[] = {
+ 	{ .compatible = "qcom,sm8450-llcc", .data = &sm8450_cfg },
+ 	{ }
+ };
++MODULE_DEVICE_TABLE(of, qcom_llcc_of_match);
  
-+  switches:
-+    type: object
-+    description: Set of switches controlling DisplayPort traffic on
-+      outgoing RX/TX lanes to Type C ports.
-+
-+    properties:
-+      switch:
-+        $ref: /schemas/usb/typec-switch.yaml#
-+        maxItems: 2
-+
-+        properties:
-+          reg:
-+            maxItems: 1
-+
-+        required:
-+          - reg
-+
-+    required:
-+      - switch@0
-+
- required:
-   - compatible
-   - reg
-@@ -167,5 +187,41 @@ examples:
-                     };
-                 };
-             };
-+            switches {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+                switch@0 {
-+                    compatible = "typec-switch";
-+                    reg = <0>;
-+                    mode-switch;
-+
-+                    ports {
-+                        #address-cells = <1>;
-+                        #size-cells = <0>;
-+                        port@0 {
-+                            reg = <0>;
-+                            anx_typec0: endpoint {
-+                              remote-endpoint = <&typec_port0>;
-+                            };
-+                        };
-+                    };
-+                };
-+                switch@1 {
-+                    compatible = "typec-switch";
-+                    reg = <1>;
-+                    mode-switch;
-+
-+                    ports {
-+                        #address-cells = <1>;
-+                        #size-cells = <0>;
-+                        port@0 {
-+                            reg = <0>;
-+                            anx_typec1: endpoint {
-+                              remote-endpoint = <&typec_port1>;
-+                            };
-+                        };
-+                    };
-+                };
-+            };
-         };
-     };
+ static struct platform_driver qcom_llcc_driver = {
+ 	.driver = {
 -- 
-2.36.1.255.ge46751e96f-goog
+2.35.1
+
+
 
