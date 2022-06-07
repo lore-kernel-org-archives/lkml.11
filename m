@@ -2,108 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25646CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B69FCCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392396AbiFHAw0 (ORCPT
+        id S1392472AbiFHAwc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:52:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50586 "EHLO
+        Tue, 7 Jun 2022 20:52:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382765AbiFGWVu (ORCPT
+        with ESMTP id S1381444AbiFGVsM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:21:50 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF1E26ACBA
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:22:19 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id o6so10561993plg.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:22:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=dG6iUQTX56gb1KRoxh+jUdOBcbzfvID/rD9lhppbHhw=;
-        b=WTYz1wQYjjWL/0TzdIpz0b1L3rInkykCucL+C8/qCNXA/oiXsHwBL8s7GFBmS3KG2s
-         5PZMpTxrkHRsy0IUqsGEDAAu4jYlqxzkNNONVKljpUde8ZEcjxsO1llUSfG8awZnA0qB
-         kySTZ1c9hVyIZzINZ+4VPklhOIITtZUKIeCR5n0uCipeYvD/zcnxFkwORHptAMNJTA3g
-         Flf2S85/9j6Gp+aAaIGRg9LV5sxap9sYRv/xKEbf+pxxo04T/r0xxyn2MIIGUU9YKJnI
-         l2vyOPsonxkuBkim2P9pEMB3eBNDNqh9OHyLU6acObP4Lfp0bOCb5i9Pe5nwGkvvlgWN
-         Zb/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dG6iUQTX56gb1KRoxh+jUdOBcbzfvID/rD9lhppbHhw=;
-        b=PQhkQ2mRTW3MBInZJQtxFqvWT93iBnL+63Atgj0j0/W84ur1GAnEsM3OyB6nvQP3ev
-         n9Mo9mYoN1mM8kr8HJKSjEDgkFAjC2LKdwsRvuw/90V0ZRjoeuYb8WGH8YdNtwOYOONQ
-         yN6OioAMJY7ZMRytEiFy8olLjA3lRpXbrsLeCTpUKPdiFfvJu6k+wKOOXpGljkTsy6f8
-         HtEMydzmeYfMKZnvptm3f+3fjVTqu8w2BovWJeZNeSsnm9YIr8Unb0mkdCgdDeXyHNtW
-         Lh4m2i44lkCfEttNR1DpPJDW4TSVibTZVrMGK19Durd6wbahF07PcYB0P9tF2+rFBcYB
-         lDCQ==
-X-Gm-Message-State: AOAM533HsnD98/yPWMnDxE5+uIMY4Mqdf/x5+JMRnN2nBW5so9SceWYU
-        NbZUh5RrKL+AiyiIEnS8w9hD+Q==
-X-Google-Smtp-Source: ABdhPJwv+u+ed6w7AqQdZ2IfKjz2pwsuRB7B048zj22PbfKf0SNIDeZdsHsPxYbB2cWVA1+zUSBCLA==
-X-Received: by 2002:a17:902:930c:b0:167:8960:2c39 with SMTP id bc12-20020a170902930c00b0016789602c39mr8419405plb.33.1654629737646;
-        Tue, 07 Jun 2022 12:22:17 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id 21-20020a170902c11500b001677d4a9665sm4295102pli.267.2022.06.07.12.22.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 12:22:17 -0700 (PDT)
-Date:   Tue, 7 Jun 2022 19:22:13 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Maxim Levitsky <mlevitsk@redhat.com>, kvm@vger.kernel.org,
-        x86@kernel.org, Borislav Petkov <bp@alien8.de>,
-        linux-kernel@vger.kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Jim Mattson <jmattson@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: [PATCH] KVM: x86: preserve interrupt shadow across SMM entries
-Message-ID: <Yp+lZahfgYYlA9U9@google.com>
-References: <20220607151647.307157-1-mlevitsk@redhat.com>
- <2c561959-2382-f668-7cb8-01d17d627dd6@redhat.com>
+        Tue, 7 Jun 2022 17:48:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF40239099;
+        Tue,  7 Jun 2022 12:08:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66965617DA;
+        Tue,  7 Jun 2022 19:08:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 777DAC385A2;
+        Tue,  7 Jun 2022 19:08:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628890;
+        bh=7gLmPXzMhNy7D2VimkqVQcs4oFEM8KSRbDToOpCrFlw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=s6LAoqZy4UdzmE6fa9NbIkk/cQ1oBrhk2023b8W6wn44m/JhzGOCoVMi8bnwIQv2M
+         SncGcolC8XnX68/t1qRKCp1LuJm1lznpXO5cLccFPhPSceaYC122ZJdHdDIWsu1qPu
+         Zi/JFMMbjd/KNL5gOKSizLCAbGyXyrAf8FweiuGE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 492/879] thermal/drivers/broadcom: Fix potential NULL dereference in sr_thermal_probe
+Date:   Tue,  7 Jun 2022 19:00:10 +0200
+Message-Id: <20220607165017.152295215@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2c561959-2382-f668-7cb8-01d17d627dd6@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022, Paolo Bonzini wrote:
-> On 6/7/22 17:16, Maxim Levitsky wrote:
-> > If the #SMI happens while the vCPU is in the interrupt shadow,
-> > (after STI or MOV SS),
-> > we must both clear it to avoid VM entry failure on VMX,
-> > due to consistency check vs EFLAGS.IF which is cleared on SMM entries,
-> > and restore it on RSM so that #SMI is transparent to the non SMM code.
-> > 
-> > To support migration, reuse upper 4 bits of
-> > 'kvm_vcpu_events.interrupt.shadow' to store the smm interrupt shadow.
-> > 
-> > This was lightly tested with a linux guest and smm load script,
-> > and a unit test will be soon developed to test this better.
-> > 
-> > For discussion: there are other ways to fix this issue:
-> > 
-> > 1. The SMM shadow can be stored in SMRAM at some unused
-> > offset, this will allow to avoid changes to kvm_vcpu_ioctl_x86_set_vcpu_events
-> 
-> Yes, that would be better (and would not require a new cap).
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-At one point do we chalk up SMM emulation as a failed experiment and deprecate
-support?  There are most definitely more bugs lurking in KVM's handling of
-save/restore across SMI+RSM.
+[ Upstream commit e20d136ec7d6f309989c447638365840d3424c8e ]
 
-> > 2. #SMI can instead be blocked while the interrupt shadow is active,
-> > which might even be what the real CPU does, however since neither VMX
-> > nor SVM support SMM window handling, this will involve single stepping
-> > the guest like it is currently done on SVM for the NMI window in some cases.
+platform_get_resource() may return NULL, add proper check to
+avoid potential NULL dereferencing.
 
-FWIW, blocking SMI in STI/MOVSS shadows is explicitly allowed by the Intel SDM.
-IIRC, modern Intel CPUs block SMIs in MOVSS shadows but not STI shadows.
+Fixes: 250e211057c72 ("thermal: broadcom: Add Stingray thermal driver")
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Link: https://lore.kernel.org/r/20220425092929.90412-1-zhengyongjun3@huawei.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/thermal/broadcom/sr-thermal.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/thermal/broadcom/sr-thermal.c b/drivers/thermal/broadcom/sr-thermal.c
+index 475ce2900771..85ab9edd580c 100644
+--- a/drivers/thermal/broadcom/sr-thermal.c
++++ b/drivers/thermal/broadcom/sr-thermal.c
+@@ -60,6 +60,9 @@ static int sr_thermal_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -ENOENT;
++
+ 	sr_thermal->regs = (void __iomem *)devm_memremap(&pdev->dev, res->start,
+ 							 resource_size(res),
+ 							 MEMREMAP_WB);
+-- 
+2.35.1
+
+
+
