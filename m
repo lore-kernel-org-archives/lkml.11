@@ -2,159 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4315C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:23:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD99FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235136AbiFHBXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:23:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
+        id S244655AbiFHBXu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382747AbiFGVvv (ORCPT
+        with ESMTP id S1384018AbiFGVx7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:51:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5E423D5F9;
-        Tue,  7 Jun 2022 12:09:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F43DB81F6D;
-        Tue,  7 Jun 2022 19:09:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80EFDC385A5;
-        Tue,  7 Jun 2022 19:09:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628961;
-        bh=yUWi9eLXk1J9vjjkZvhBAvrAmSPuFeslmO2wWxRBOq4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qno4Tf19kIUGpy8a69SHWgkMmKd8VMQc+TyccwQmVVqCEp/GlJH6brqmxOFUxHQF4
-         CE717dsumKUvYgoB28Gbu88CQAtKDg16eef+3h3e42DQYwnleRHP6CeYHGV65ZsIlx
-         BzVaoyfO9ctiADqsO/WKe8ZktdTSvWdRREyKb1nI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Jeffrey Altman <jaltman@auristor.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 519/879] rxrpc: Fix overlapping ACK accounting
-Date:   Tue,  7 Jun 2022 19:00:37 +0200
-Message-Id: <20220607165017.940371166@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:53:59 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF1F248517
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:12:50 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id c2so24209284edf.5
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:12:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7kb1j+lCYcgNJfFRtU39ymeKe9zS4sLF08OKHSZXXsk=;
+        b=adPlAQ+Bou+4Tln1nEnCl84skioMttrUky89A5FguxVn/QEfz2lsfXdaCoPuhegnEx
+         pS2Mf4tzCXPnX6a8rBGJKlMDM4JWozBITUs7OtqwUZXEauNgL5wFDann1NuPVQ84R2/F
+         SiKHKY/gcUNMiz6keZBbt5ej+HUZZW5D+bWpceuKEd21chp/ec4OWlKCOgWNh1ocs1XD
+         ETkKWwHNDT9V6uFbdvIvo0/d8cHwH5vy4OFxVGp9kdPjouw0Eq3beVkPpg8w3PZMIO0j
+         xNO2/Pob0Fhg/JiNAyl3k26tOS79XwzGqBJJsCCYQ34+SEOad5CzgNlrl/gb7rCYYC4d
+         pG6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7kb1j+lCYcgNJfFRtU39ymeKe9zS4sLF08OKHSZXXsk=;
+        b=c1dM7/vTDKoWZKTxxfqMNxcpGRVXIlYzJ17OUTt06RCTl/+2jgvCfiIsF2ny7gUxLn
+         GJKmZP+aY3bhT2jU7oG8gf+7eDzuPlZgKgU75rbNP/ZQYwqGXhVmIxLIVtZVY11ZmBC+
+         VGCB3w4fe93BWMU9icMOgHBcS523m/eJftEAmuUMFbmeKnX3eGGV3cEGOWugLpXGR5Jw
+         tYtGpVzARuqtomS41dZnDkF36ivvflZImbmKLR9xR1JYwCA9X11DzRD7ZsY4jLg/x9xD
+         tVB/LAjRLjB+2fPbssFSRMZADlz3VtY/2+y0nYqzzR8vhsxeZF0lCEqTn3eLQXE82tKl
+         ZMfA==
+X-Gm-Message-State: AOAM530PA+8y+vcTzwXf9sPiSGQt0NvVuMsmVBq4qOk28kQM8Z4XJaca
+        P/tOHyf8S+df3ldwX4cPhkeoF5s7Bp7SwRMupeO2+Q==
+X-Google-Smtp-Source: ABdhPJzDz+gUGeg7JrjZDYQJqx4ADRcQHPr104EcjqIGmFojpTe85n7p+Y2kwYAcqviPln3kX1gG0YoHp2ksvNLfBkA=
+X-Received: by 2002:a05:6402:2687:b0:430:328f:e46b with SMTP id
+ w7-20020a056402268700b00430328fe46bmr22886699edd.33.1654629156511; Tue, 07
+ Jun 2022 12:12:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220607145639.2362750-1-tzungbi@kernel.org> <20220607145639.2362750-16-tzungbi@kernel.org>
+In-Reply-To: <20220607145639.2362750-16-tzungbi@kernel.org>
+From:   Guenter Roeck <groeck@google.com>
+Date:   Tue, 7 Jun 2022 12:12:25 -0700
+Message-ID: <CABXOdTcYD6L6vnfNJwYROo1ynGqkabdbpm8JjvvosjtYGV1xow@mail.gmail.com>
+Subject: Re: [PATCH v2 15/15] platform/chrome: cros_ec_proto: return 0 on
+ getting wake mask success
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     bleung@chromium.org, groeck@chromium.org,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+On Tue, Jun 7, 2022 at 7:57 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
+>
+> cros_ec_get_host_event_wake_mask() used to return value from
+> send_command() which is number of bytes for input payload on success
+> (i.e. sizeof(struct ec_response_host_event_mask)).
+>
+> However, the callers don't need to know how many bytes are available.
+>
+> - Fix cros_ec_get_host_event_wake_mask() to return 0 on success;
+>   negative integers on error.
+>
+> - Add a Kunit test for guarding if send_command() returns 0 in
+>   get_host_event_wake_mask().
+>
+Please split into two patches.
 
-[ Upstream commit 8940ba3cfe4841928777fd45eaa92051522c7f0c ]
+Thanks,
+Guenter
 
-Fix accidental overlapping of Rx-phase ACK accounting with Tx-phase ACK
-accounting through variables shared between the two.  call->acks_* members
-refer to ACKs received in the Tx phase and call->ackr_* members to ACKs
-sent/to be sent during the Rx phase.
-
-Fixes: 1a2391c30c0b ("rxrpc: Fix detection of out of order acks")
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Jeffrey Altman <jaltman@auristor.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/rxrpc/ar-internal.h |  7 ++++---
- net/rxrpc/input.c       | 16 ++++++++--------
- 2 files changed, 12 insertions(+), 11 deletions(-)
-
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 422558d50571..cc1fe6d00eca 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -676,10 +676,9 @@ struct rxrpc_call {
- 
- 	spinlock_t		input_lock;	/* Lock for packet input to this call */
- 
--	/* receive-phase ACK management */
-+	/* Receive-phase ACK management (ACKs we send). */
- 	u8			ackr_reason;	/* reason to ACK */
- 	rxrpc_serial_t		ackr_serial;	/* serial of packet being ACK'd */
--	rxrpc_serial_t		ackr_first_seq;	/* first sequence number received */
- 	rxrpc_seq_t		ackr_prev_seq;	/* previous sequence number received */
- 	rxrpc_seq_t		ackr_consumed;	/* Highest packet shown consumed */
- 	rxrpc_seq_t		ackr_seen;	/* Highest packet shown seen */
-@@ -692,8 +691,10 @@ struct rxrpc_call {
- #define RXRPC_CALL_RTT_AVAIL_MASK	0xf
- #define RXRPC_CALL_RTT_PEND_SHIFT	8
- 
--	/* transmission-phase ACK management */
-+	/* Transmission-phase ACK management (ACKs we've received). */
- 	ktime_t			acks_latest_ts;	/* Timestamp of latest ACK received */
-+	rxrpc_seq_t		acks_first_seq;	/* first sequence number received */
-+	rxrpc_seq_t		acks_prev_seq;	/* previous sequence number received */
- 	rxrpc_seq_t		acks_lowest_nak; /* Lowest NACK in the buffer (or ==tx_hard_ack) */
- 	rxrpc_seq_t		acks_lost_top;	/* tx_top at the time lost-ack ping sent */
- 	rxrpc_serial_t		acks_lost_ping;	/* Serial number of probe ACK */
-diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index 67d3eba60dc7..3da33b5c13b2 100644
---- a/net/rxrpc/input.c
-+++ b/net/rxrpc/input.c
-@@ -812,7 +812,7 @@ static void rxrpc_input_soft_acks(struct rxrpc_call *call, u8 *acks,
- static bool rxrpc_is_ack_valid(struct rxrpc_call *call,
- 			       rxrpc_seq_t first_pkt, rxrpc_seq_t prev_pkt)
- {
--	rxrpc_seq_t base = READ_ONCE(call->ackr_first_seq);
-+	rxrpc_seq_t base = READ_ONCE(call->acks_first_seq);
- 
- 	if (after(first_pkt, base))
- 		return true; /* The window advanced */
-@@ -820,7 +820,7 @@ static bool rxrpc_is_ack_valid(struct rxrpc_call *call,
- 	if (before(first_pkt, base))
- 		return false; /* firstPacket regressed */
- 
--	if (after_eq(prev_pkt, call->ackr_prev_seq))
-+	if (after_eq(prev_pkt, call->acks_prev_seq))
- 		return true; /* previousPacket hasn't regressed. */
- 
- 	/* Some rx implementations put a serial number in previousPacket. */
-@@ -933,8 +933,8 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
- 	/* Discard any out-of-order or duplicate ACKs (outside lock). */
- 	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
- 		trace_rxrpc_rx_discard_ack(call->debug_id, ack_serial,
--					   first_soft_ack, call->ackr_first_seq,
--					   prev_pkt, call->ackr_prev_seq);
-+					   first_soft_ack, call->acks_first_seq,
-+					   prev_pkt, call->acks_prev_seq);
- 		return;
- 	}
- 
-@@ -949,14 +949,14 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
- 	/* Discard any out-of-order or duplicate ACKs (inside lock). */
- 	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
- 		trace_rxrpc_rx_discard_ack(call->debug_id, ack_serial,
--					   first_soft_ack, call->ackr_first_seq,
--					   prev_pkt, call->ackr_prev_seq);
-+					   first_soft_ack, call->acks_first_seq,
-+					   prev_pkt, call->acks_prev_seq);
- 		goto out;
- 	}
- 	call->acks_latest_ts = skb->tstamp;
- 
--	call->ackr_first_seq = first_soft_ack;
--	call->ackr_prev_seq = prev_pkt;
-+	call->acks_first_seq = first_soft_ack;
-+	call->acks_prev_seq = prev_pkt;
- 
- 	/* Parse rwind and mtu sizes if provided. */
- 	if (buf.info.rxMTU)
--- 
-2.35.1
-
-
-
+> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+> ---
+> Changes from v1:
+> - Return 0 on success; otherwise, negative intergers.
+>
+>  drivers/platform/chrome/cros_ec_proto.c      |  23 ++--
+>  drivers/platform/chrome/cros_ec_proto_test.c | 128 +++++++++++++++++++
+>  2 files changed, 142 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+> index 9d96ed16244f..04c852aa790b 100644
+> --- a/drivers/platform/chrome/cros_ec_proto.c
+> +++ b/drivers/platform/chrome/cros_ec_proto.c
+> @@ -256,18 +256,23 @@ static int cros_ec_get_host_event_wake_mask(struct cros_ec_device *ec_dev, uint3
+>         msg->insize = sizeof(*r);
+>
+>         ret = send_command(ec_dev, msg);
+> -       if (ret >= 0) {
+> -               mapped = cros_ec_map_error(msg->result);
+> -               if (mapped) {
+> -                       ret = mapped;
+> -                       goto exit;
+> -               }
+> +       if (ret < 0)
+> +               goto exit;
+> +
+> +       mapped = cros_ec_map_error(msg->result);
+> +       if (mapped) {
+> +               ret = mapped;
+> +               goto exit;
+>         }
+> -       if (ret > 0) {
+> -               r = (struct ec_response_host_event_mask *)msg->data;
+> -               *mask = r->mask;
+> +
+> +       if (ret == 0) {
+> +               ret = -EPROTO;
+> +               goto exit;
+>         }
+>
+> +       r = (struct ec_response_host_event_mask *)msg->data;
+> +       *mask = r->mask;
+> +       ret = 0;
+>  exit:
+>         kfree(msg);
+>         return ret;
+> diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
+> index af69410f2978..3ee0de337d53 100644
+> --- a/drivers/platform/chrome/cros_ec_proto_test.c
+> +++ b/drivers/platform/chrome/cros_ec_proto_test.c
+> @@ -1406,6 +1406,133 @@ static void cros_ec_proto_test_query_all_default_wake_mask_return_error(struct k
+>         }
+>  }
+>
+> +static void cros_ec_proto_test_query_all_default_wake_mask_return0(struct kunit *test)
+> +{
+> +       struct cros_ec_proto_test_priv *priv = test->priv;
+> +       struct cros_ec_device *ec_dev = &priv->ec_dev;
+> +       struct ec_xfer_mock *mock;
+> +       int ret;
+> +
+> +       /* Set some garbage bytes. */
+> +       ec_dev->host_event_wake_mask = U32_MAX;
+> +
+> +       /* For cros_ec_get_proto_info() without passthru. */
+> +       {
+> +               struct ec_response_get_protocol_info *data;
+> +
+> +               mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +
+> +               /*
+> +                * Although it doesn't check the value, provides valid sizes so that
+> +                * cros_ec_query_all() allocates din and dout correctly.
+> +                */
+> +               data = (struct ec_response_get_protocol_info *)mock->o_data;
+> +               data->max_request_packet_size = 0xbe;
+> +               data->max_response_packet_size = 0xef;
+> +       }
+> +
+> +       /* For cros_ec_get_proto_info() with passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_addx(test, 0, EC_RES_INVALID_COMMAND, 0);
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +       }
+> +
+> +       /* For cros_ec_get_host_command_version_mask() for MKBP. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_add(test, 0);
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +       }
+> +
+> +       /* For cros_ec_get_host_command_version_mask() for host sleep v1. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_add(test, 0);
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +       }
+> +
+> +       /* For get_host_event_wake_mask(). */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_add(test, 0);
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +       }
+> +
+> +       cros_ec_proto_test_query_all_pretest(test);
+> +       ret = cros_ec_query_all(ec_dev);
+> +       KUNIT_EXPECT_EQ(test, ret, 0);
+> +
+> +       /* For cros_ec_get_proto_info() without passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_PROTOCOL_INFO);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_protocol_info));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
+> +       }
+> +
+> +       /* For cros_ec_get_proto_info() with passthru. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command,
+> +                               EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) |
+> +                               EC_CMD_GET_PROTOCOL_INFO);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_protocol_info));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
+> +       }
+> +
+> +       /* For cros_ec_get_host_command_version_mask() for MKBP. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_CMD_VERSIONS);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_cmd_versions));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_get_cmd_versions));
+> +       }
+> +
+> +       /* For cros_ec_get_host_command_version_mask() for host sleep v1. */
+> +       {
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_GET_CMD_VERSIONS);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize,
+> +                               sizeof(struct ec_response_get_cmd_versions));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_get_cmd_versions));
+> +       }
+> +
+> +       /* For get_host_event_wake_mask(). */
+> +       {
+> +               u32 mask;
+> +
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_HOST_EVENT_GET_WAKE_MASK);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize, sizeof(struct ec_response_host_event_mask));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
+> +
+> +               mask = ec_dev->host_event_wake_mask;
+> +               KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_CLOSED), 0);
+> +               KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_DISCONNECTED), 0);
+> +               KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_LOW), 0);
+> +               KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_CRITICAL), 0);
+> +               KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY), 0);
+> +               KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_PD_MCU), 0);
+> +               KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_STATUS), 0);
+> +       }
+> +}
+> +
+>  static void cros_ec_proto_test_release(struct device *dev)
+>  {
+>  }
+> @@ -1471,6 +1598,7 @@ static struct kunit_case cros_ec_proto_test_cases[] = {
+>         KUNIT_CASE(cros_ec_proto_test_query_all_no_host_sleep),
+>         KUNIT_CASE(cros_ec_proto_test_query_all_no_host_sleep_return0),
+>         KUNIT_CASE(cros_ec_proto_test_query_all_default_wake_mask_return_error),
+> +       KUNIT_CASE(cros_ec_proto_test_query_all_default_wake_mask_return0),
+>         {}
+>  };
+>
+> --
+> 2.36.1.255.ge46751e96f-goog
+>
