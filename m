@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 697CEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:38:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37475CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:38:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345784AbiFGSii (ORCPT
+        id S1345827AbiFGSip (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:38:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51496 "EHLO
+        Tue, 7 Jun 2022 14:38:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349522AbiFGSHF (ORCPT
+        with ESMTP id S1344194AbiFGSHz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:07:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23AF45371E;
+        Tue, 7 Jun 2022 14:07:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD483969A;
         Tue,  7 Jun 2022 10:48:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A76661732;
-        Tue,  7 Jun 2022 17:47:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83259C385A5;
-        Tue,  7 Jun 2022 17:47:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6DD0B8233E;
+        Tue,  7 Jun 2022 17:47:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C57AC34115;
+        Tue,  7 Jun 2022 17:47:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624070;
-        bh=cnXSpj71eQMwhKdrGkg6POkXC+2h0YgRyd9EbaikIb8=;
+        s=korg; t=1654624054;
+        bh=siwl64RdAseHoxhVxsdB3Xy9Hp3JQLj4fBIMdrwi3tI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wip/wwz41pKz/yAybu/HiFd1EWjqxlwBgP7doPQbApulJTekeZk4iSneh2noTU/cX
-         5NdtUH51ep3TvAEm+BsLfELHBH5YAc7AJNglQcGIqeibaHNuvBsE1GJePPmyMrlt3I
-         gZ6nFT7vJ5hMh+5CcBn428mdElBp1741+5jQA/lM=
+        b=oXyShcVPXO0UBnZWoF2mEiYFiiRcH1I1AcUqZwDEXiWB0l7AHCoEe+H62NjpKkcKs
+         FhqjnaAmJ/m8QMX3cayKWRKlhPo7VLcbqZkHs+Q9Vht9Mh/ufVO0a7EKWcwzi6t2Di
+         AWoe405BgeZ741LiJjGcMiEusfpaElD0chG4Jwvo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 194/667] spi: qcom-qspi: Add minItems to interconnect-names
-Date:   Tue,  7 Jun 2022 18:57:39 +0200
-Message-Id: <20220607164940.620603263@linuxfoundation.org>
+Subject: [PATCH 5.15 189/667] drm/edid: fix invalid EDID extension block filtering
+Date:   Tue,  7 Jun 2022 18:57:34 +0200
+Message-Id: <20220607164940.471585998@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,38 +52,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+From: Jani Nikula <jani.nikula@intel.com>
 
-[ Upstream commit e23d86c49a9c78e8dbe3abff20b30812b26ab427 ]
+[ Upstream commit 3aefc722ff52076407203b6af9713de567993adf ]
 
-Add minItems constraint to interconnect-names as well. The schema
-currently tries to match 2 names and fail for DTs with single entry.
+The invalid EDID block filtering uses the number of valid EDID
+extensions instead of all EDID extensions for looping the extensions in
+the copy. This is fine, by coincidence, if all the invalid blocks are at
+the end of the EDID. However, it's completely broken if there are
+invalid extensions in the middle; the invalid blocks are included and
+valid blocks are excluded.
 
-With the change applied, below interconnect-names values are possible:
-['qspi-config'], ['qspi-config', 'qspi-memory']
+Fix it by modifying the base block after, not before, the copy.
 
-Fixes: 8f9c291558ea ("dt-bindings: spi: Add interconnect binding for QSPI")
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220328192006.18523-1-singh.kuldeep87k@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 14544d0937bf ("drm/edid: Only print the bad edid when aborting")
+Reported-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220330170426.349248-1-jani.nikula@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/drm_edid.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml b/Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml
-index ef5698f426b2..392204a08e96 100644
---- a/Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml
-+++ b/Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml
-@@ -45,6 +45,7 @@ properties:
-     maxItems: 2
+diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
+index ee6f44f9a81c..6ab048ba8021 100644
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -1994,9 +1994,6 @@ struct edid *drm_do_get_edid(struct drm_connector *connector,
  
-   interconnect-names:
-+    minItems: 1
-     items:
-       - const: qspi-config
-       - const: qspi-memory
+ 		connector_bad_edid(connector, edid, edid[0x7e] + 1);
+ 
+-		edid[EDID_LENGTH-1] += edid[0x7e] - valid_extensions;
+-		edid[0x7e] = valid_extensions;
+-
+ 		new = kmalloc_array(valid_extensions + 1, EDID_LENGTH,
+ 				    GFP_KERNEL);
+ 		if (!new)
+@@ -2013,6 +2010,9 @@ struct edid *drm_do_get_edid(struct drm_connector *connector,
+ 			base += EDID_LENGTH;
+ 		}
+ 
++		new[EDID_LENGTH - 1] += new[0x7e] - valid_extensions;
++		new[0x7e] = valid_extensions;
++
+ 		kfree(edid);
+ 		edid = new;
+ 	}
 -- 
 2.35.1
 
