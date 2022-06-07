@@ -2,114 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF540C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:26:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10CE2CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:26:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347784AbiFHAXH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45988 "EHLO
+        id S236137AbiFHAX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 20:23:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383264AbiFGVw7 (ORCPT
+        with ESMTP id S1383757AbiFGWZO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:52:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E656B192C61
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:10:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654629057;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UILT9WGW3d0IxemmFu2Q9nTCU5K37LJyUJt0iSrwqk0=;
-        b=f5bmZ4BD0oi2x54BIPMhDoqZgG+sRMBaH8gMijnzckMVFNg1jcaCK48WFwzcBXD/wKqRWy
-        i7Jx9yX+Noe8gA3EYFimlv/ukXC4idJ+J1sAstwkdT9MHdE1EfARCtrunwk1MMmt9Y+uAA
-        tYH+TRQup1Vg/TEtt5oxkAbRQLHxQy0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-595-RfDcGG7yMvyhqyGswC6abw-1; Tue, 07 Jun 2022 15:10:51 -0400
-X-MC-Unique: RfDcGG7yMvyhqyGswC6abw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 7 Jun 2022 18:25:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2899426EEBF;
+        Tue,  7 Jun 2022 12:22:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 080C280418F;
-        Tue,  7 Jun 2022 19:09:00 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.9.252])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6FC0740FD372;
-        Tue,  7 Jun 2022 19:08:23 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org
-Cc:     Wayne Lin <Wayne.Lin@amd.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
-        Mikita Lipski <mikita.lipski@amd.com>,
-        Roman Li <Roman.Li@amd.com>, Claudio Suarez <cssk@net-c.es>,
-        Ian Chen <ian.chen@amd.com>,
-        Colin Ian King <colin.king@intel.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [RFC 02/18] drm/amdgpu/dm/mst: Rename get_payload_table()
-Date:   Tue,  7 Jun 2022 15:06:59 -0400
-Message-Id: <20220607190715.1331124-3-lyude@redhat.com>
-In-Reply-To: <20220607190715.1331124-1-lyude@redhat.com>
-References: <20220607190715.1331124-1-lyude@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE713609D0;
+        Tue,  7 Jun 2022 19:22:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B82C7C385A2;
+        Tue,  7 Jun 2022 19:22:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629772;
+        bh=9E8DLy1jXcYjYN0wqF0KZRXbQUMR5XhMKZCP7s2JCPY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lEjvzEqzSsrZTeAiG93YqHKJHj3wi96zXe2r6D1PytjGLCl8tyY+4y/zVDuC173zi
+         g8163PfgXtd84hCQKXwGRqqkV+nyGFQ7ImPbCxAdtGDAKQ8CCaDjUvatlNLsNWONaw
+         eEHBfdtlMCOEmn7whRwKHelSKGcPLlzfVEM5OZno=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Nico Boehr <nrb@linux.ibm.com>
+Subject: [PATCH 5.18 761/879] s390/perf: obtain sie_block from the right address
+Date:   Tue,  7 Jun 2022 19:04:39 +0200
+Message-Id: <20220607165024.953078037@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This function isn't too confusing if you see the comment around the
-call-site for it, but if you don't then it's not at all obvious this is
-meant to copy DRM's payload table over to DC's internal state structs.
-Seeing this function before finding that comment definitely threw me into a
-loop a few times.
+From: Nico Boehr <nrb@linux.ibm.com>
 
-So, let's rename this to make it's purpose more obvious regardless of where
-in the code you are.
+commit c9bfb460c3e4da2462e16b0f0b200990b36b1dd2 upstream.
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: Wayne Lin <Wayne.Lin@amd.com>
-Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
+Since commit 1179f170b6f0 ("s390: fix fpu restore in entry.S"), the
+sie_block pointer is located at empty1[1], but in sie_block() it was
+taken from empty1[0].
+
+This leads to a random pointer being dereferenced, possibly causing
+system crash.
+
+This problem can be observed when running a simple guest with an endless
+loop and recording the cpu-clock event:
+
+  sudo perf kvm --guestvmlinux=<guestkernel> --guest top -e cpu-clock
+
+With this fix, the correct guest address is shown.
+
+Fixes: 1179f170b6f0 ("s390: fix fpu restore in entry.S")
+Cc: stable@vger.kernel.org
+Acked-by: Christian Borntraeger <borntraeger@de.ibm.com>
+Acked-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Nico Boehr <nrb@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ arch/s390/kernel/perf_event.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
-index 1bd70d306c22..1eaacab0334b 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
-@@ -153,8 +153,9 @@ enum dc_edid_status dm_helpers_parse_edid_caps(
- 	return result;
+--- a/arch/s390/kernel/perf_event.c
++++ b/arch/s390/kernel/perf_event.c
+@@ -30,7 +30,7 @@ static struct kvm_s390_sie_block *sie_bl
+ 	if (!stack)
+ 		return NULL;
+ 
+-	return (struct kvm_s390_sie_block *) stack->empty1[0];
++	return (struct kvm_s390_sie_block *)stack->empty1[1];
  }
  
--static void get_payload_table(struct amdgpu_dm_connector *aconnector,
--			      struct dc_dp_mst_stream_allocation_table *proposed_table)
-+static void
-+fill_dc_mst_payload_table_from_drm(struct amdgpu_dm_connector *aconnector,
-+				   struct dc_dp_mst_stream_allocation_table *proposed_table)
- {
- 	int i;
- 	struct drm_dp_mst_topology_mgr *mst_mgr =
-@@ -252,7 +253,7 @@ bool dm_helpers_dp_mst_write_payload_allocation_table(
- 	 * stream. AMD ASIC stream slot allocation should follow the same
- 	 * sequence. copy DRM MST allocation to dc */
- 
--	get_payload_table(aconnector, proposed_table);
-+	fill_dc_mst_payload_table_from_drm(aconnector, proposed_table);
- 
- 	return true;
- }
--- 
-2.35.3
+ static bool is_in_guest(struct pt_regs *regs)
+
 
