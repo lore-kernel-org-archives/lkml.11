@@ -2,85 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 887BDC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 788C6C43334
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355399AbiFGTZJ (ORCPT
+        id S1355380AbiFGTZF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:25:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48504 "EHLO
+        Tue, 7 Jun 2022 15:25:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353113AbiFGSbn (ORCPT
+        with ESMTP id S1353023AbiFGSbg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:31:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBAD517D3A7;
-        Tue,  7 Jun 2022 10:56:51 -0700 (PDT)
+        Tue, 7 Jun 2022 14:31:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F079917CE67;
+        Tue,  7 Jun 2022 10:56:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 41D8C611FE;
-        Tue,  7 Jun 2022 17:56:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA862C36AFF;
-        Tue,  7 Jun 2022 17:56:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624610;
-        bh=H/ojBjv8RedJ1tRhj7i5pR0yqtBqO8nR4KB/LsnXy2I=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 27CC1B81F38;
+        Tue,  7 Jun 2022 17:56:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76D6BC385A5;
+        Tue,  7 Jun 2022 17:56:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624601;
+        bh=wpfaxEUSQSSnqw0C1UmU0qcePChoKtwxbyOBltqsojw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XlUlHJEtG1KKfJzold6SoQ2872pBnMVeP3HPdBdh8fPzheUyflg1mjD1/FTIJL5c/
-         /xIdLeHtx19oTtWBvteKEhVV4Tw3MxCGrx/EiaurPG4O9OhuXO39mJMW9wi7Pb5nPn
-         z9E3rNpEPUVyvSkHlykXNZ/FFNMicPK3NrCZj5j4XUc5j11pQPxqgi8ZXgASQ3Kc+K
-         IPVCoX52ORZxbeOmcb3I/u42m+4aMWAg3kptV9wzVFljqgPXZY7+uUsGaaU+Xa2eUv
-         +R15QXfsMzThyOwpxx1YiGcUn5jUmIAhXYKnZeQpjNQdosOlB1uIKbLmgIdceZUXZ2
-         mfeA/1AWbFxgA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hangyu Hua <hbh25y@gmail.com>,
-        Eli Billauer <eli.billauer@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        b=LAmbJ0g/oNkTq6VUtkk6+xQcAfzfR2odnjBz5aU7k9grbuyiOPTA2gWvStoFzOzt2
+         3S2cu9GEeb4tn3ZEWewbJJ3OxW25sgYICRvelZOUf41Ex77+yFOxVaVmhoDb4I2kTw
+         skEQgd3TDjFwugziYkDp7I+hRWf1wetPEQSYt7M0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.15 16/51] char: xillybus: fix a refcount leak in cleanup_dev()
-Date:   Tue,  7 Jun 2022 13:55:15 -0400
-Message-Id: <20220607175552.479948-16-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
-References: <20220607175552.479948-1-sashal@kernel.org>
+Subject: [PATCH 5.15 385/667] ARM: dts: BCM5301X: update CRU block description
+Date:   Tue,  7 Jun 2022 19:00:50 +0200
+Message-Id: <20220607164946.295076841@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Rafał Miłecki <rafal@milecki.pl>
 
-[ Upstream commit b67d19662fdee275c479d21853bc1239600a798f ]
+[ Upstream commit 31fd9b79dc580301c53a001482755ba7e88c2809 ]
 
-usb_get_dev is called in xillyusb_probe. So it is better to call
-usb_put_dev before xdev is released.
+This describes CRU in a way matching documentation and fixes:
 
-Acked-by: Eli Billauer <eli.billauer@gmail.com>
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220406075703.23464-1-hbh25y@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+arch/arm/boot/dts/bcm4708-asus-rt-ac56u.dt.yaml: cru@100: $nodename:0: 'cru@100' does not match '^([a-z][a-z0-9\\-]+-bus|bus|soc|axi|ahb|apb)(@[0-9a-f]+)?$'
+        From schema: /lib/python3.6/site-packages/dtschema/schemas/simple-bus.yaml
+
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/xillybus/xillyusb.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/bcm5301x.dtsi | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/char/xillybus/xillyusb.c b/drivers/char/xillybus/xillyusb.c
-index dc3551796e5e..39bcbfd908b4 100644
---- a/drivers/char/xillybus/xillyusb.c
-+++ b/drivers/char/xillybus/xillyusb.c
-@@ -549,6 +549,7 @@ static void cleanup_dev(struct kref *kref)
- 	if (xdev->workq)
- 		destroy_workqueue(xdev->workq);
+diff --git a/arch/arm/boot/dts/bcm5301x.dtsi b/arch/arm/boot/dts/bcm5301x.dtsi
+index f69d2af3c1fa..db8c3f684786 100644
+--- a/arch/arm/boot/dts/bcm5301x.dtsi
++++ b/arch/arm/boot/dts/bcm5301x.dtsi
+@@ -423,14 +423,14 @@
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
  
-+	usb_put_dev(xdev->udev);
- 	kfree(xdev->channels); /* Argument may be NULL, and that's fine */
- 	kfree(xdev);
- }
+-		cru@100 {
+-			compatible = "simple-bus";
++		cru-bus@100 {
++			compatible = "brcm,ns-cru", "simple-mfd";
+ 			reg = <0x100 0x1a4>;
+ 			ranges;
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
+ 
+-			lcpll0: lcpll0@100 {
++			lcpll0: clock-controller@100 {
+ 				#clock-cells = <1>;
+ 				compatible = "brcm,nsp-lcpll0";
+ 				reg = <0x100 0x14>;
+@@ -439,7 +439,7 @@
+ 						     "sdio", "ddr_phy";
+ 			};
+ 
+-			genpll: genpll@140 {
++			genpll: clock-controller@140 {
+ 				#clock-cells = <1>;
+ 				compatible = "brcm,nsp-genpll";
+ 				reg = <0x140 0x24>;
+@@ -450,6 +450,11 @@
+ 						     "sata1", "sata2";
+ 			};
+ 
++			syscon@180 {
++				compatible = "brcm,cru-clkset", "syscon";
++				reg = <0x180 0x4>;
++			};
++
+ 			pinctrl: pin-controller@1c0 {
+ 				compatible = "brcm,bcm4708-pinmux";
+ 				reg = <0x1c0 0x24>;
 -- 
 2.35.1
+
+
 
