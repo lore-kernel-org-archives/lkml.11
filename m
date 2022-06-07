@@ -2,101 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31B02C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 08:30:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C9EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 08:31:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238218AbiFGIaj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 04:30:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
+        id S238247AbiFGIbX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 04:31:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238259AbiFGIaF (ORCPT
+        with ESMTP id S238371AbiFGIbO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 04:30:05 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA684D02AC;
-        Tue,  7 Jun 2022 01:30:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654590603; x=1686126603;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=VptkMufomdRSrg3I6L8NzNQ9Iz/Fv8+mCnYXfJFZ6Cg=;
-  b=UuE8vZWJ61I3vsT3tUSl+ryh/41pxuXK/IF2ZoJQ4Do6P+Tr3CX011GR
-   cdubCK4Dn7bPqJ3Am5DxcFFGtDMpTtlgEa7vGvNOpjta25oPma70UGfjT
-   n6q8LgDp/a6S9Z3YuNi+j7jt/Hta5g1J6klOjd3+LaDAxbo1Oog31TDMN
-   hvg6T0MxwRYDrh/8E/3m9olinS4VM5bgw7HkNi339tpC3U3a7dsFEg7Dy
-   XWuhjuI171DYX1ZTfFBIrN8XDwKnbbX9ncjmiwfrt0Wn5pwsUhO8GR9Wf
-   tMl4vPxn4nSE7izx/pA6+ojNATasbPskqAF5wX6uWQw0cl6XrT8nrPr1R
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="277393721"
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="277393721"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 01:30:03 -0700
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="584103506"
-Received: from akmessan-mobl1.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.214.146])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 01:30:00 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Douglas Anderson <dianders@chromium.org>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v3 5/6] serial: 8250_dw: Use serial_lsr_in() in dw8250_handle_irq()
-Date:   Tue,  7 Jun 2022 11:29:33 +0300
-Message-Id: <20220607082934.7242-6-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220607082934.7242-1-ilpo.jarvinen@linux.intel.com>
-References: <20220607082934.7242-1-ilpo.jarvinen@linux.intel.com>
+        Tue, 7 Jun 2022 04:31:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0BED244E;
+        Tue,  7 Jun 2022 01:31:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A5FE616BD;
+        Tue,  7 Jun 2022 08:31:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99AE4C3411E;
+        Tue,  7 Jun 2022 08:31:05 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="FuzyMElt"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1654590662;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fUt937EWiJwdxfcnA3TwhfA5LXA4pjELaJrATUg3Gno=;
+        b=FuzyMEltiCFIFQUmYH95BwWbsv9Jmv2KImD60Loe0r08XydEY3ttXcvt2b44+BjRtgAm0h
+        oFuS9FJbwBOXJGoKg5jenf+H/iSelcEFK9LRXllKyWlfmzzn26X8gRODeb0i+4mQwuLvsw
+        xC638RdHA9p8zxSDpuTqy57YQtJHXeY=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id c7736b60 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 7 Jun 2022 08:31:02 +0000 (UTC)
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-2f83983782fso167380197b3.6;
+        Tue, 07 Jun 2022 01:31:01 -0700 (PDT)
+X-Gm-Message-State: AOAM53030pdb+b7HVxAMKm7E/41I944k4+CpQp8ktweDv0zt+LQIypYp
+        F3eeQaWeXi6QZaoVEGY13X/cAl4bsJqOhQOuVT4=
+X-Google-Smtp-Source: ABdhPJw/VMyA0h9d+MMv/xwmYZDFcqj0M+obhAs7O9tOWkc5LQ9u10sR+9mDVCGaUSlxaOjCKRDw5LSvVGWJ0aRCjSc=
+X-Received: by 2002:a0d:cd04:0:b0:300:4784:caa3 with SMTP id
+ p4-20020a0dcd04000000b003004784caa3mr30121618ywd.231.1654590660515; Tue, 07
+ Jun 2022 01:31:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <8cc7ebe4-442b-a24b-9bb0-fce6e0425ee6@raspberrypi.com>
+In-Reply-To: <8cc7ebe4-442b-a24b-9bb0-fce6e0425ee6@raspberrypi.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 7 Jun 2022 10:30:49 +0200
+X-Gmail-Original-Message-ID: <CAHmME9pL=g7Gz9-QOHnTosLHAL9YSPsW+CnE=9=u3iTQaFzomg@mail.gmail.com>
+Message-ID: <CAHmME9pL=g7Gz9-QOHnTosLHAL9YSPsW+CnE=9=u3iTQaFzomg@mail.gmail.com>
+Subject: Re: [PATCH v2] ARM: initialize jump labels before setup_machine_fdt()
+To:     Phil Elwell <phil@raspberrypi.com>
+Cc:     Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-dw8250_handle_irq() reads LSR under a few conditions, convert both to
-use serial_lsr_in() in order to preserve LSR flags properly across
-reads.
+Hi Phil,
 
-Cc: Douglas Anderson <dianders@chromium.org>
-Cc: Phil Edworthy <phil.edworthy@renesas.com>
-Cc: Miquel Raynal <miquel.raynal@bootlin.com>
-Fixes: 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogus rx timeout interrupt")
-Fixes: aa63d786cea2 ("serial: 8250: dw: Add support for DMA flow controlling devices")
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/8250/8250_dw.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thanks for testing this. Can you let me know if v1 of this works?
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index f57bbd32ef11..1fae45991812 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -253,7 +253,7 @@ static int dw8250_handle_irq(struct uart_port *p)
- 	 */
- 	if (!up->dma && rx_timeout) {
- 		spin_lock_irqsave(&p->lock, flags);
--		status = p->serial_in(p, UART_LSR);
-+		status = serial_lsr_in(up);
- 
- 		if (!(status & (UART_LSR_DR | UART_LSR_BI)))
- 			(void) p->serial_in(p, UART_RX);
-@@ -263,7 +263,7 @@ static int dw8250_handle_irq(struct uart_port *p)
- 
- 	/* Manually stop the Rx DMA transfer when acting as flow controller */
- 	if (quirks & DW_UART_QUIRK_IS_DMA_FC && up->dma && up->dma->rx_running && rx_timeout) {
--		status = p->serial_in(p, UART_LSR);
-+		status = serial_lsr_in(up);
- 		if (status & (UART_LSR_DR | UART_LSR_BI)) {
- 			dw8250_writel_ext(p, RZN1_UART_RDMACR, 0);
- 			dw8250_writel_ext(p, DW_UART_DMASA, 1);
--- 
-2.30.2
+https://lore.kernel.org/lkml/20220602212234.344394-1-Jason@zx2c4.com/
 
+(I'll also fashion a revert for this part of stable.)
+
+Jason
