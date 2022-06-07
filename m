@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A35FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:35:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB03AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:35:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377325AbiFGUdJ (ORCPT
+        id S1377632AbiFGUdz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48248 "EHLO
+        Tue, 7 Jun 2022 16:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357173AbiFGTlZ (ORCPT
+        with ESMTP id S1357501AbiFGTmD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:41:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 805F31B0797;
-        Tue,  7 Jun 2022 11:14:45 -0700 (PDT)
+        Tue, 7 Jun 2022 15:42:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01E891B434F;
+        Tue,  7 Jun 2022 11:15:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 941EB6062B;
-        Tue,  7 Jun 2022 18:14:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A0BEC385A2;
-        Tue,  7 Jun 2022 18:14:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 218B360907;
+        Tue,  7 Jun 2022 18:15:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EF6CC385A2;
+        Tue,  7 Jun 2022 18:15:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625684;
-        bh=ANPSwNcTl7zhLV7ZHA8rp2TEI5O8LBeIxTtocsGsb6g=;
+        s=korg; t=1654625714;
+        bh=htPLHIavmzyKkdgcgtvk/pHoNlVhNVBf2q2ECVQ1E6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l/yDVUzGey3mT5WGjOYCU2lg+rEsHShUC1yXb6dHr6UqlF1Ch8vnozOVSUJTHKXRa
-         j9AfjCnHq6W54tDol1LoEz+8aK2VLDKpZXeBObBwfauPYXUC1bzfVsTvto5WZ5O5It
-         2QYHzLQ8+hLM0j/yE2sb3E7GylaRsU1z/qZjJ95Q=
+        b=GAN5hPafDOxAS5wsrKN91hXTW3JlLG8UOXPuHlA3kk46toTb2tGUgS/U9dygUv414
+         uBeFpJ0yYapYXLPMcxaWqqlC2/7grE3DVVCGovKfEdrG+0Ym9wh4yQjhrXAK9ugHlf
+         iYcc96+dwrd3iHFCea0VS4CR4nKMFnhceB5guNAM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         James Smart <jsmart2021@gmail.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 079/772] scsi: lpfc: Move cfg_log_verbose check before calling lpfc_dmp_dbg()
-Date:   Tue,  7 Jun 2022 18:54:31 +0200
-Message-Id: <20220607164951.368200897@linuxfoundation.org>
+Subject: [PATCH 5.17 080/772] scsi: lpfc: Fix SCSI I/O completion and abort handler deadlock
+Date:   Tue,  7 Jun 2022 18:54:32 +0200
+Message-Id: <20220607164951.397886491@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,108 +53,147 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit e294647b1aed4247fe52851f3a3b2b19ae906228 ]
+[ Upstream commit 03cbbd7c2f5ee288f648f4aeedc765a181188553 ]
 
-In an attempt to log message 0126 with LOG_TRACE_EVENT, the following hard
-lockup call trace hangs the system.
+During stress I/O tests with 500+ vports, hard LOCKUP call traces are
+observed.
 
-Call Trace:
- _raw_spin_lock_irqsave+0x32/0x40
- lpfc_dmp_dbg.part.32+0x28/0x220 [lpfc]
- lpfc_cmpl_els_fdisc+0x145/0x460 [lpfc]
- lpfc_sli_cancel_jobs+0x92/0xd0 [lpfc]
- lpfc_els_flush_cmd+0x43c/0x670 [lpfc]
- lpfc_els_flush_all_cmd+0x37/0x60 [lpfc]
- lpfc_sli4_async_event_proc+0x956/0x1720 [lpfc]
- lpfc_do_work+0x1485/0x1d70 [lpfc]
- kthread+0x112/0x130
- ret_from_fork+0x1f/0x40
-Kernel panic - not syncing: Hard LOCKUP
+CPU A:
+ native_queued_spin_lock_slowpath+0x192
+ _raw_spin_lock_irqsave+0x32
+ lpfc_handle_fcp_err+0x4c6
+ lpfc_fcp_io_cmd_wqe_cmpl+0x964
+ lpfc_sli4_fp_handle_cqe+0x266
+ __lpfc_sli4_process_cq+0x105
+ __lpfc_sli4_hba_process_cq+0x3c
+ lpfc_cq_poll_hdler+0x16
+ irq_poll_softirq+0x76
+ __softirqentry_text_start+0xe4
+ irq_exit+0xf7
+ do_IRQ+0x7f
 
-The same CPU tries to claim the phba->port_list_lock twice.
+CPU B:
+ native_queued_spin_lock_slowpath+0x5b
+ _raw_spin_lock+0x1c
+ lpfc_abort_handler+0x13e
+ scmd_eh_abort_handler+0x85
+ process_one_work+0x1a7
+ worker_thread+0x30
+ kthread+0x112
+ ret_from_fork+0x1f
 
-Move the cfg_log_verbose checks as part of the lpfc_printf_vlog() and
-lpfc_printf_log() macros before calling lpfc_dmp_dbg().  There is no need
-to take the phba->port_list_lock within lpfc_dmp_dbg().
+Diagram of lockup:
 
-Link: https://lore.kernel.org/r/20220412222008.126521-3-jsmart2021@gmail.com
+CPUA                            CPUB
+----                            ----
+lpfc_cmd->buf_lock
+                            phba->hbalock
+                            lpfc_cmd->buf_lock
+phba->hbalock
+
+Fix by reordering the taking of the lpfc_cmd->buf_lock and phba->hbalock in
+lpfc_abort_handler routine so that it tries to take the lpfc_cmd->buf_lock
+first before phba->hbalock.
+
+Link: https://lore.kernel.org/r/20220412222008.126521-7-jsmart2021@gmail.com
 Co-developed-by: Justin Tee <justin.tee@broadcom.com>
 Signed-off-by: Justin Tee <justin.tee@broadcom.com>
 Signed-off-by: James Smart <jsmart2021@gmail.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_init.c   | 29 +----------------------------
- drivers/scsi/lpfc/lpfc_logmsg.h |  6 +++---
- 2 files changed, 4 insertions(+), 31 deletions(-)
+ drivers/scsi/lpfc/lpfc_scsi.c | 33 +++++++++++++++------------------
+ 1 file changed, 15 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
-index 9569a7390f9d..6739bdd8195d 100644
---- a/drivers/scsi/lpfc/lpfc_init.c
-+++ b/drivers/scsi/lpfc/lpfc_init.c
-@@ -15712,34 +15712,7 @@ void lpfc_dmp_dbg(struct lpfc_hba *phba)
- 	unsigned int temp_idx;
- 	int i;
- 	int j = 0;
--	unsigned long rem_nsec, iflags;
--	bool log_verbose = false;
--	struct lpfc_vport *port_iterator;
--
--	/* Don't dump messages if we explicitly set log_verbose for the
--	 * physical port or any vport.
--	 */
--	if (phba->cfg_log_verbose)
--		return;
--
--	spin_lock_irqsave(&phba->port_list_lock, iflags);
--	list_for_each_entry(port_iterator, &phba->port_list, listentry) {
--		if (port_iterator->load_flag & FC_UNLOADING)
--			continue;
--		if (scsi_host_get(lpfc_shost_from_vport(port_iterator))) {
--			if (port_iterator->cfg_log_verbose)
--				log_verbose = true;
--
--			scsi_host_put(lpfc_shost_from_vport(port_iterator));
--
--			if (log_verbose) {
--				spin_unlock_irqrestore(&phba->port_list_lock,
--						       iflags);
--				return;
--			}
--		}
--	}
--	spin_unlock_irqrestore(&phba->port_list_lock, iflags);
-+	unsigned long rem_nsec;
+diff --git a/drivers/scsi/lpfc/lpfc_scsi.c b/drivers/scsi/lpfc/lpfc_scsi.c
+index 5a3da38a9067..6cc94fae01b8 100644
+--- a/drivers/scsi/lpfc/lpfc_scsi.c
++++ b/drivers/scsi/lpfc/lpfc_scsi.c
+@@ -5907,25 +5907,25 @@ lpfc_abort_handler(struct scsi_cmnd *cmnd)
+ 	if (!lpfc_cmd)
+ 		return ret;
  
- 	if (atomic_cmpxchg(&phba->dbg_log_dmping, 0, 1) != 0)
- 		return;
-diff --git a/drivers/scsi/lpfc/lpfc_logmsg.h b/drivers/scsi/lpfc/lpfc_logmsg.h
-index 7d480c798794..a5aafe230c74 100644
---- a/drivers/scsi/lpfc/lpfc_logmsg.h
-+++ b/drivers/scsi/lpfc/lpfc_logmsg.h
-@@ -73,7 +73,7 @@ do { \
- #define lpfc_printf_vlog(vport, level, mask, fmt, arg...) \
- do { \
- 	{ if (((mask) & (vport)->cfg_log_verbose) || (level[1] <= '3')) { \
--		if ((mask) & LOG_TRACE_EVENT) \
-+		if ((mask) & LOG_TRACE_EVENT && !(vport)->cfg_log_verbose) \
- 			lpfc_dmp_dbg((vport)->phba); \
- 		dev_printk(level, &((vport)->phba->pcidev)->dev, "%d:(%d):" \
- 			   fmt, (vport)->phba->brd_no, vport->vpi, ##arg);  \
-@@ -89,11 +89,11 @@ do { \
- 				 (phba)->pport->cfg_log_verbose : \
- 				 (phba)->cfg_log_verbose; \
- 	if (((mask) & log_verbose) || (level[1] <= '3')) { \
--		if ((mask) & LOG_TRACE_EVENT) \
-+		if ((mask) & LOG_TRACE_EVENT && !log_verbose) \
- 			lpfc_dmp_dbg(phba); \
- 		dev_printk(level, &((phba)->pcidev)->dev, "%d:" \
- 			fmt, phba->brd_no, ##arg); \
--	} else  if (!(phba)->cfg_log_verbose)\
-+	} else if (!log_verbose)\
- 		lpfc_dbg_print(phba, "%d:" fmt, phba->brd_no, ##arg); \
- 	} \
- } while (0)
+-	spin_lock_irqsave(&phba->hbalock, flags);
++	/* Guard against IO completion being called at same time */
++	spin_lock_irqsave(&lpfc_cmd->buf_lock, flags);
++
++	spin_lock(&phba->hbalock);
+ 	/* driver queued commands are in process of being flushed */
+ 	if (phba->hba_flag & HBA_IOQ_FLUSH) {
+ 		lpfc_printf_vlog(vport, KERN_WARNING, LOG_FCP,
+ 			"3168 SCSI Layer abort requested I/O has been "
+ 			"flushed by LLD.\n");
+ 		ret = FAILED;
+-		goto out_unlock;
++		goto out_unlock_hba;
+ 	}
+ 
+-	/* Guard against IO completion being called at same time */
+-	spin_lock(&lpfc_cmd->buf_lock);
+-
+ 	if (!lpfc_cmd->pCmd) {
+ 		lpfc_printf_vlog(vport, KERN_WARNING, LOG_FCP,
+ 			 "2873 SCSI Layer I/O Abort Request IO CMPL Status "
+ 			 "x%x ID %d LUN %llu\n",
+ 			 SUCCESS, cmnd->device->id, cmnd->device->lun);
+-		goto out_unlock_buf;
++		goto out_unlock_hba;
+ 	}
+ 
+ 	iocb = &lpfc_cmd->cur_iocbq;
+@@ -5933,7 +5933,7 @@ lpfc_abort_handler(struct scsi_cmnd *cmnd)
+ 		pring_s4 = phba->sli4_hba.hdwq[iocb->hba_wqidx].io_wq->pring;
+ 		if (!pring_s4) {
+ 			ret = FAILED;
+-			goto out_unlock_buf;
++			goto out_unlock_hba;
+ 		}
+ 		spin_lock(&pring_s4->ring_lock);
+ 	}
+@@ -5966,8 +5966,8 @@ lpfc_abort_handler(struct scsi_cmnd *cmnd)
+ 			 "3389 SCSI Layer I/O Abort Request is pending\n");
+ 		if (phba->sli_rev == LPFC_SLI_REV4)
+ 			spin_unlock(&pring_s4->ring_lock);
+-		spin_unlock(&lpfc_cmd->buf_lock);
+-		spin_unlock_irqrestore(&phba->hbalock, flags);
++		spin_unlock(&phba->hbalock);
++		spin_unlock_irqrestore(&lpfc_cmd->buf_lock, flags);
+ 		goto wait_for_cmpl;
+ 	}
+ 
+@@ -5988,15 +5988,13 @@ lpfc_abort_handler(struct scsi_cmnd *cmnd)
+ 	if (ret_val != IOCB_SUCCESS) {
+ 		/* Indicate the IO is not being aborted by the driver. */
+ 		lpfc_cmd->waitq = NULL;
+-		spin_unlock(&lpfc_cmd->buf_lock);
+-		spin_unlock_irqrestore(&phba->hbalock, flags);
+ 		ret = FAILED;
+-		goto out;
++		goto out_unlock_hba;
+ 	}
+ 
+ 	/* no longer need the lock after this point */
+-	spin_unlock(&lpfc_cmd->buf_lock);
+-	spin_unlock_irqrestore(&phba->hbalock, flags);
++	spin_unlock(&phba->hbalock);
++	spin_unlock_irqrestore(&lpfc_cmd->buf_lock, flags);
+ 
+ 	if (phba->cfg_poll & DISABLE_FCP_RING_INT)
+ 		lpfc_sli_handle_fast_ring_event(phba,
+@@ -6031,10 +6029,9 @@ lpfc_abort_handler(struct scsi_cmnd *cmnd)
+ out_unlock_ring:
+ 	if (phba->sli_rev == LPFC_SLI_REV4)
+ 		spin_unlock(&pring_s4->ring_lock);
+-out_unlock_buf:
+-	spin_unlock(&lpfc_cmd->buf_lock);
+-out_unlock:
+-	spin_unlock_irqrestore(&phba->hbalock, flags);
++out_unlock_hba:
++	spin_unlock(&phba->hbalock);
++	spin_unlock_irqrestore(&lpfc_cmd->buf_lock, flags);
+ out:
+ 	lpfc_printf_vlog(vport, KERN_WARNING, LOG_FCP,
+ 			 "0749 SCSI Layer I/O Abort Request Status x%x ID %d "
 -- 
 2.35.1
 
