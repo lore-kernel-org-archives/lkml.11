@@ -2,154 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E8ABCCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88661CCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:54:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383012AbiFGVwK (ORCPT
+        id S1383203AbiFGVwk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:52:10 -0400
+        Tue, 7 Jun 2022 17:52:40 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377483AbiFGU6j (ORCPT
+        with ESMTP id S1377130AbiFGU5d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:58:39 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47DA1207ED9;
-        Tue,  7 Jun 2022 11:44:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4C02ECE246B;
-        Tue,  7 Jun 2022 18:39:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D35DC385A2;
-        Tue,  7 Jun 2022 18:39:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627165;
-        bh=iGrk7ybXy8UBEz6nBp+6bzcQu5WH/ziqTIZ8/LsZenM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tAa4rZmdCGl68S7JZ7CuyNzF0zH/ycehLWlcakoWNYdYiBVFK6zjLFbcX+Op5Yixe
-         mXAZDUp/wOSQYLe5JGd21wROXBlMtCZ2nXro2/suRqwbhw8U9D/nEaAawLQGgySYtw
-         qkmCOfqsqdnffFm/waz13Kt6Mhoq5bP2DGx0Co78=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 5.17 640/772] ext4: fix warning in ext4_handle_inode_extension
-Date:   Tue,  7 Jun 2022 19:03:52 +0200
-Message-Id: <20220607165007.926370031@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 16:57:33 -0400
+Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C395201FF3
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:44:21 -0700 (PDT)
+X-ASG-Debug-ID: 1654627459-1cf43917f3396680001-xx1T2L
+Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with ESMTP id ytKMQdwzzCTN1huP; Tue, 07 Jun 2022 14:44:19 -0400 (EDT)
+X-Barracuda-Envelope-From: tonyb@cybernetics.com
+X-ASG-Whitelist: Client
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=cybernetics.com; s=mail;
+        bh=ko90FEQrFc3kr/EXmZEbhsh++NujIvq49Z2hdvGupnI=;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:Cc:To:From:
+        Content-Language:Subject:MIME-Version:Date:Message-ID; b=WUGhF+zc7hcw6JoFhMVn
+        sGaBwqMKrtT0LAsXqUcUj76iU06x+W8kn/yVArt8p4dHAKYUv4FvRp/bnqdKNITJ8eZ4h4+G4cdWa
+        MiUopTVPkmkKCknVE11Zis2M2WKnboszBLWCavFSHLU31NMgSYjzMIvvxF7fzNbz4pg+2PoWvM=
+Received: from [10.157.2.224] (HELO [192.168.200.1])
+  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
+  with ESMTPS id 11859456; Tue, 07 Jun 2022 14:44:19 -0400
+Message-ID: <06f83492-1eaf-16c4-31b0-1f148995ee59@cybernetics.com>
+Date:   Tue, 7 Jun 2022 14:44:18 -0400
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: [PATCH v6 07/11] dmapool: ignore init_on_free when DMAPOOL_DEBUG
+ enabled
+Content-Language: en-US
+X-ASG-Orig-Subj: [PATCH v6 07/11] dmapool: ignore init_on_free when DMAPOOL_DEBUG
+ enabled
+From:   Tony Battersby <tonyb@cybernetics.com>
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc:     iommu@lists.linux-foundation.org, kernel-team@fb.com,
+        Matthew Wilcox <willy@infradead.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Tony Lindgren <tony@atomide.com>
+References: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
+In-Reply-To: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Barracuda-Connect: UNKNOWN[10.10.4.126]
+X-Barracuda-Start-Time: 1654627459
+X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
+X-Barracuda-BRTS-Status: 1
+X-Virus-Scanned: by bsmtpd at cybernetics.com
+X-Barracuda-Scan-Msg-Size: 1450
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+There are two cases:
 
-commit f4534c9fc94d22383f187b9409abb3f9df2e3db3 upstream.
+1) In the normal case that the memory is being freed correctly, then
+DMAPOOL_DEBUG will memset the memory anyway, so speed thing up by
+avoiding a double-memset of the same memory.
 
-We got issue as follows:
-EXT4-fs error (device loop0) in ext4_reserve_inode_write:5741: Out of memory
-EXT4-fs error (device loop0): ext4_setattr:5462: inode #13: comm syz-executor.0: mark_inode_dirty error
-EXT4-fs error (device loop0) in ext4_setattr:5519: Out of memory
-EXT4-fs error (device loop0): ext4_ind_map_blocks:595: inode #13: comm syz-executor.0: Can't allocate blocks for non-extent mapped inodes with bigalloc
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 4361 at fs/ext4/file.c:301 ext4_file_write_iter+0x11c9/0x1220
-Modules linked in:
-CPU: 1 PID: 4361 Comm: syz-executor.0 Not tainted 5.10.0+ #1
-RIP: 0010:ext4_file_write_iter+0x11c9/0x1220
-RSP: 0018:ffff924d80b27c00 EFLAGS: 00010282
-RAX: ffffffff815a3379 RBX: 0000000000000000 RCX: 000000003b000000
-RDX: ffff924d81601000 RSI: 00000000000009cc RDI: 00000000000009cd
-RBP: 000000000000000d R08: ffffffffbc5a2c6b R09: 0000902e0e52a96f
-R10: ffff902e2b7c1b40 R11: ffff902e2b7c1b40 R12: 000000000000000a
-R13: 0000000000000001 R14: ffff902e0e52aa10 R15: ffffffffffffff8b
-FS:  00007f81a7f65700(0000) GS:ffff902e3bc80000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffffffff600400 CR3: 000000012db88001 CR4: 00000000003706e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- do_iter_readv_writev+0x2e5/0x360
- do_iter_write+0x112/0x4c0
- do_pwritev+0x1e5/0x390
- __x64_sys_pwritev2+0x7e/0xa0
- do_syscall_64+0x37/0x50
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+2) In the abnormal case that DMAPOOL_DEBUG detects that a driver passes
+incorrect parameters to dma_pool_free() (e.g. double-free, invalid
+free, mismatched vaddr/dma, etc.), then that is a kernel bug, and we
+don't want to clear the passed-in possibly-invalid memory pointer
+because we can't be sure that the memory is really free.  So don't clear
+it just because init_on_free=1.
 
-Above issue may happen as follows:
-Assume
-inode.i_size=4096
-EXT4_I(inode)->i_disksize=4096
-
-step 1: set inode->i_isize = 8192
-ext4_setattr
-  if (attr->ia_size != inode->i_size)
-    EXT4_I(inode)->i_disksize = attr->ia_size;
-    rc = ext4_mark_inode_dirty
-       ext4_reserve_inode_write
-          ext4_get_inode_loc
-            __ext4_get_inode_loc
-              sb_getblk --> return -ENOMEM
-   ...
-   if (!error)  ->will not update i_size
-     i_size_write(inode, attr->ia_size);
-Now:
-inode.i_size=4096
-EXT4_I(inode)->i_disksize=8192
-
-step 2: Direct write 4096 bytes
-ext4_file_write_iter
- ext4_dio_write_iter
-   iomap_dio_rw ->return error
- if (extend)
-   ext4_handle_inode_extension
-     WARN_ON_ONCE(i_size_read(inode) < EXT4_I(inode)->i_disksize);
-->Then trigger warning.
-
-To solve above issue, if mark inode dirty failed in ext4_setattr just
-set 'EXT4_I(inode)->i_disksize' with old value.
-
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Link: https://lore.kernel.org/r/20220326065351.761952-1-yebin10@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
 ---
- fs/ext4/inode.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ mm/dmapool.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -5381,6 +5381,7 @@ int ext4_setattr(struct user_namespace *
- 	if (attr->ia_valid & ATTR_SIZE) {
- 		handle_t *handle;
- 		loff_t oldsize = inode->i_size;
-+		loff_t old_disksize;
- 		int shrink = (attr->ia_size < inode->i_size);
+diff --git a/mm/dmapool.c b/mm/dmapool.c
+index facdb3571976..44038089a41a 100644
+--- a/mm/dmapool.c
++++ b/mm/dmapool.c
+@@ -406,8 +406,6 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
+ 	}
  
- 		if (!(ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS))) {
-@@ -5452,6 +5453,7 @@ int ext4_setattr(struct user_namespace *
- 					inode->i_sb->s_blocksize_bits);
+ 	offset = vaddr - page->vaddr;
+-	if (want_init_on_free())
+-		memset(vaddr, 0, pool->size);
+ #ifdef	DMAPOOL_DEBUG
+ 	if ((dma - page->dma) != offset) {
+ 		spin_unlock_irqrestore(&pool->lock, flags);
+@@ -452,6 +450,9 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
+ 			goto freelist_corrupt;
+ 	}
+ 	memset(vaddr, POOL_POISON_FREED, pool->size);
++#else
++	if (want_init_on_free())
++		memset(vaddr, 0, pool->size);
+ #endif
  
- 			down_write(&EXT4_I(inode)->i_data_sem);
-+			old_disksize = EXT4_I(inode)->i_disksize;
- 			EXT4_I(inode)->i_disksize = attr->ia_size;
- 			rc = ext4_mark_inode_dirty(handle, inode);
- 			if (!error)
-@@ -5463,6 +5465,8 @@ int ext4_setattr(struct user_namespace *
- 			 */
- 			if (!error)
- 				i_size_write(inode, attr->ia_size);
-+			else
-+				EXT4_I(inode)->i_disksize = old_disksize;
- 			up_write(&EXT4_I(inode)->i_data_sem);
- 			ext4_journal_stop(handle);
- 			if (error)
-
+ 	page->in_use--;
+-- 
+2.25.1
 
