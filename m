@@ -2,86 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 506D4CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70208CCA485
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:47:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353614AbiFGSpm (ORCPT
+        id S1353628AbiFGSps (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48292 "EHLO
+        Tue, 7 Jun 2022 14:45:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351676AbiFGSQg (ORCPT
+        with ESMTP id S1351750AbiFGSQj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BAD1168367;
-        Tue,  7 Jun 2022 10:49:51 -0700 (PDT)
+        Tue, 7 Jun 2022 14:16:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83AB9169E1F;
+        Tue,  7 Jun 2022 10:49:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3637B822CD;
-        Tue,  7 Jun 2022 17:49:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9055C3411C;
-        Tue,  7 Jun 2022 17:49:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624189;
-        bh=C3p8V+CShGR7nozEVmR7aMQKSLK+SVYLvPNgHctlLf8=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1042B82354;
+        Tue,  7 Jun 2022 17:49:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12662C385A5;
+        Tue,  7 Jun 2022 17:49:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624192;
+        bh=LtD2sJe2boOYtX6cow/+32eJTyD0CxUW8sSQ2go5Sdw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cUG3+XhgZgpmffcMbPkC8s2EfFubH3J7+kLOsWCDlrqz0FW8l1RNK/AyTxJ7xqWA5
-         xKnXaCI6KNHrJyJEV/XbLrGqP2ElRwhM0ZatierSYwC4UAXxTUkzFG5dcjthvU5rEL
-         5KudYeoITjMrOwnpqEM6sGzFRBzHkMt4JH1kVDXdjjPnVBy2aXId+skBuxYfLgtQHv
-         h+S4UdxKQ6wIjjfa4jl5ubSPzAXQTtXLxSLWF2zm2TBdp3CjKDohjmzCEM07lfjsVC
-         5BOeGDBX7f8a0ewscUL4CTHEi/GnVz3wgQ8JmATeQYKRSAjEArvAUcSxsSoUJk1LSy
-         BSJy+eFLBNxZw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Huang Guobin <huangguobin4@huawei.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 09/68] tty: Fix a possible resource leak in icom_probe
-Date:   Tue,  7 Jun 2022 13:47:35 -0400
-Message-Id: <20220607174846.477972-9-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+        b=KPua9Uv7TOOiYOxX9i83hMftMQEpmMjYF/Tp+x0WEkH9xBrTkLUOFAj8kLgRI5xzX
+         ydaFU+jeYVDfzUF/YokDZmidolI/R08WUUp6tpKMYpRLkj9RsDFaoTejsvBMK71oVc
+         PnJ9i5y80ZqQCeJSjYZlWLbOE59zxyUMN+WtPAaM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 238/667] media: hantro: Empty encoder capture buffers by default
+Date:   Tue,  7 Jun 2022 18:58:23 +0200
+Message-Id: <20220607164941.922864144@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Huang Guobin <huangguobin4@huawei.com>
+From: Chen-Yu Tsai <wenst@chromium.org>
 
-[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
+[ Upstream commit 309373a3571ef7175bd9da0c9b13476a718e8478 ]
 
-When pci_read_config_dword failed, call pci_release_regions() and
-pci_disable_device() to recycle the resource previously allocated.
+The payload size for encoder capture buffers is set by the driver upon
+finishing encoding each frame, based on the encoded length returned from
+hardware, and whatever header and padding length used. Setting a
+non-zero default serves no real purpose, and also causes issues if the
+capture buffer is returned to userspace unused, confusing the
+application.
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
-Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Instead, always set the payload size to 0 for encoder capture buffers
+when preparing them.
+
+Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
+Fixes: 082aaecff35f ("media: hantro: Fix .buf_prepare")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/icom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/media/hantro/hantro_v4l2.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index 03a2fe9f4c9a..02b375ba2f07 100644
---- a/drivers/tty/serial/icom.c
-+++ b/drivers/tty/serial/icom.c
-@@ -1501,7 +1501,7 @@ static int icom_probe(struct pci_dev *dev,
- 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
- 	if (retval) {
- 		dev_err(&dev->dev, "PCI Config read FAILED\n");
--		return retval;
-+		goto probe_exit0;
- 	}
+diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging/media/hantro/hantro_v4l2.c
+index bcb0bdff4a9a..629bf40a5e5c 100644
+--- a/drivers/staging/media/hantro/hantro_v4l2.c
++++ b/drivers/staging/media/hantro/hantro_v4l2.c
+@@ -647,8 +647,12 @@ static int hantro_buf_prepare(struct vb2_buffer *vb)
+ 	 * (for OUTPUT buffers, if userspace passes 0 bytesused, v4l2-core sets
+ 	 * it to buffer length).
+ 	 */
+-	if (V4L2_TYPE_IS_CAPTURE(vq->type))
+-		vb2_set_plane_payload(vb, 0, pix_fmt->plane_fmt[0].sizeimage);
++	if (V4L2_TYPE_IS_CAPTURE(vq->type)) {
++		if (ctx->is_encoder)
++			vb2_set_plane_payload(vb, 0, 0);
++		else
++			vb2_set_plane_payload(vb, 0, pix_fmt->plane_fmt[0].sizeimage);
++	}
  
- 	pci_write_config_dword(dev, PCI_COMMAND,
+ 	return 0;
+ }
 -- 
 2.35.1
+
+
 
