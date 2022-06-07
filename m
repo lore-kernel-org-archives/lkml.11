@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49544CCA49F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE30CCA499
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352363AbiFGS0D (ORCPT
+        id S1352000AbiFGSZ2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:26:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60982 "EHLO
+        Tue, 7 Jun 2022 14:25:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351233AbiFGSBy (ORCPT
+        with ESMTP id S1350921AbiFGSBa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:01:54 -0400
+        Tue, 7 Jun 2022 14:01:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998BF150B50;
-        Tue,  7 Jun 2022 10:44:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76EF814CDF3;
+        Tue,  7 Jun 2022 10:43:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC6F8615B1;
-        Tue,  7 Jun 2022 17:44:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD5DEC385A5;
-        Tue,  7 Jun 2022 17:44:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CB8561529;
+        Tue,  7 Jun 2022 17:43:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42B8AC385A5;
+        Tue,  7 Jun 2022 17:43:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623846;
-        bh=KcMfdVrPS5sBaTos33sAmjiggMA4Goon5JHj92fmjP8=;
+        s=korg; t=1654623810;
+        bh=K2Ct8v612oBd7AGh9aMx4iuQ2nz0lA2eVt8p+V/mDAU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0x3i8H3gvs9ywwz6mPAeI0NXsbSxoiZaiWRhpdAjW7zRus4JITm500eQ70QovU7gV
-         eOyUZAjOHKUdIfcfrqyxg8jbnEfnZiFWS7ZbHBK2/HcfTek5okIx3W3BcozJIQI3E1
-         rvP8D/Q5IPX0TfsIOZ57qO2DZYp123xrmZIzbg1s=
+        b=QvTzfbUkpoqz10WP1oZ2b521HC2cpNZfGX7WW5Jionngaak0fdOVI6ok9Vs2uSGhv
+         QfQFxeF1hDW5KXrKZicq6Ev/1C7cPim/FjJ7pbwoXv1TmevJWQ+tlRZgJ5ghx9IU8A
+         6eiYIFuklMqsRiizTCeqz6VDIh6MZfptu7I2kHo4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 113/667] rtlwifi: Use pr_warn instead of WARN_ONCE
-Date:   Tue,  7 Jun 2022 18:56:18 +0200
-Message-Id: <20220607164938.211783979@linuxfoundation.org>
+        stable@vger.kernel.org, Zhen Lei <thunder.leizhen@huawei.com>,
+        Rob Herring <robh@kernel.org>, Baoquan He <bhe@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 101/667] of: Support more than one crash kernel regions for kexec -s
+Date:   Tue,  7 Jun 2022 18:56:06 +0200
+Message-Id: <20220607164937.851752212@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,37 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Zhen Lei <thunder.leizhen@huawei.com>
 
-[ Upstream commit ad732da434a2936128769216eddaece3b1af4588 ]
+[ Upstream commit 8af6b91f58341325bf74ecb0389ddc0039091d84 ]
 
-This memory allocation failure can be triggered by fault injection or
-high pressure testing, resulting a WARN.
+When "crashkernel=X,high" is used, there may be two crash regions:
+high=crashk_res and low=crashk_low_res. But now the syscall
+kexec_file_load() only add crashk_res into "linux,usable-memory-range",
+this may cause the second kernel to have no available dma memory.
 
-Fix this by replacing WARN with pr_warn.
+Fix it like kexec-tools does for option -c, add both 'high' and 'low'
+regions into the dtb.
 
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220511014453.1621366-1-dzm91@hust.edu.cn
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Acked-by: Baoquan He <bhe@redhat.com>
+Link: https://lore.kernel.org/r/20220506114402.365-6-thunder.leizhen@huawei.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtlwifi/usb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/of/kexec.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
-index 86a236873254..a8eebafb9a7e 100644
---- a/drivers/net/wireless/realtek/rtlwifi/usb.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
-@@ -1014,7 +1014,7 @@ int rtl_usb_probe(struct usb_interface *intf,
- 	hw = ieee80211_alloc_hw(sizeof(struct rtl_priv) +
- 				sizeof(struct rtl_usb_priv), &rtl_ops);
- 	if (!hw) {
--		WARN_ONCE(true, "rtl_usb: ieee80211 alloc failed\n");
-+		pr_warn("rtl_usb: ieee80211 alloc failed\n");
- 		return -ENOMEM;
+diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
+index 761fd870d1db..72c790a3c910 100644
+--- a/drivers/of/kexec.c
++++ b/drivers/of/kexec.c
+@@ -386,6 +386,15 @@ void *of_kexec_alloc_and_setup_fdt(const struct kimage *image,
+ 				crashk_res.end - crashk_res.start + 1);
+ 		if (ret)
+ 			goto out;
++
++		if (crashk_low_res.end) {
++			ret = fdt_appendprop_addrrange(fdt, 0, chosen_node,
++					"linux,usable-memory-range",
++					crashk_low_res.start,
++					crashk_low_res.end - crashk_low_res.start + 1);
++			if (ret)
++				goto out;
++		}
  	}
- 	rtlpriv = hw->priv;
+ 
+ 	/* add bootargs */
 -- 
 2.35.1
 
