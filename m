@@ -2,161 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C085CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07BA8CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355317AbiFGTPL (ORCPT
+        id S1355345AbiFGTPZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:15:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41192 "EHLO
+        Tue, 7 Jun 2022 15:15:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351789AbiFGSZA (ORCPT
+        with ESMTP id S1352512AbiFGS0Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:25:00 -0400
+        Tue, 7 Jun 2022 14:26:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F96CED8C4;
-        Tue,  7 Jun 2022 10:54:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305CA16A525;
+        Tue,  7 Jun 2022 10:54:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16141B82375;
-        Tue,  7 Jun 2022 17:54:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0137BC385A5;
-        Tue,  7 Jun 2022 17:54:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624476;
-        bh=JOgQfKsk4lnzYzLZ2hqnQAoqsKCIfymaPjmRrx2OWVM=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A099B8236A;
+        Tue,  7 Jun 2022 17:54:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D51CAC3411C;
+        Tue,  7 Jun 2022 17:54:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624490;
+        bh=j4qLntO3VaOtB7btRAveV4YpRZHf6JXJpBSgnbjuGuk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dprTLKVpgul6EEr+KQW9I2LlyamqCphE+cmKTyvTjq98BVLDK/TRZegFJjuFfxqrc
-         Jd0KSomvc2s/SUAbboA6X+U9CxiPWU37VGwAQeDcF/4rG4LrLHGyjBM4SBn0Um/Jzb
-         heddnWqb3+4HWjaOojZ7GHOVp05f9V0GtND68bst4CnrjWBAhuRs32PnD/kLX07B/3
-         +VzLSxqz9ILE55bpkd1sf1wCSmZ136LIOuohVUlXtAfPIZkBjiB2ndET1WSuooAlLj
-         VWv56BjoK+4iAnlyrqspTw6/d9S403aifvmY5Ag/JsLRyW5Js2AvmtAJt5Vg9cyQWm
-         mYX0l2/paOS8w==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiubo Li <xiubli@redhat.com>, Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 39/60] ceph: flush the mdlog for filesystem sync
-Date:   Tue,  7 Jun 2022 13:52:36 -0400
-Message-Id: <20220607175259.478835-39-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
+        b=wzgJ7sEcKgWRm6RaTdm0KfwHwKG2JfRf70Quk2Ql6Inowli180+9lHhfZyyFCJD/n
+         GQ6tGCSoPGAnjPSNJKU1denMWhTyQosUWWdr990UFFAPv2F4RseOnP4mjbAYLEEFAA
+         nIVyB+oksgPyz61IqrTzm8KeGgcC46z7djilwKgY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 344/667] regulator: scmi: Fix refcount leak in scmi_regulator_probe
+Date:   Tue,  7 Jun 2022 19:00:09 +0200
+Message-Id: <20220607164945.077569797@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiubo Li <xiubli@redhat.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 1b2ba3c5616e17ff951359e25c658a1c3f146f1e ]
+[ Upstream commit 68d6c8476fd4f448e70e0ab31ff972838ac41dae ]
 
-Before waiting for a request's safe reply, we will send the mdlog flush
-request to the relevant MDS. And this will also flush the mdlog for all
-the other unsafe requests in the same session, so we can record the last
-session and no need to flush mdlog again in the next loop. But there
-still have cases that it may send the mdlog flush requst twice or more,
-but that should be not often.
+of_find_node_by_name() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-Rename wait_unsafe_requests() to
-flush_mdlog_and_wait_mdsc_unsafe_requests() to make it more
-descriptive.
-
-[xiubli: fold in MDS request refcount leak fix from Jeff]
-
-URL: https://tracker.ceph.com/issues/55284
-URL: https://tracker.ceph.com/issues/55411
-Signed-off-by: Xiubo Li <xiubli@redhat.com>
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Fixes: 0fbeae70ee7c ("regulator: add SCMI driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220516074433.32433-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/mds_client.c | 33 +++++++++++++++++++++++++++------
- 1 file changed, 27 insertions(+), 6 deletions(-)
+ drivers/regulator/scmi-regulator.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
-index c30eefc0ac19..97098920b305 100644
---- a/fs/ceph/mds_client.c
-+++ b/fs/ceph/mds_client.c
-@@ -4705,15 +4705,17 @@ void ceph_mdsc_pre_umount(struct ceph_mds_client *mdsc)
- }
- 
- /*
-- * wait for all write mds requests to flush.
-+ * flush the mdlog and wait for all write mds requests to flush.
-  */
--static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
-+static void flush_mdlog_and_wait_mdsc_unsafe_requests(struct ceph_mds_client *mdsc,
-+						 u64 want_tid)
- {
- 	struct ceph_mds_request *req = NULL, *nextreq;
-+	struct ceph_mds_session *last_session = NULL;
- 	struct rb_node *n;
- 
- 	mutex_lock(&mdsc->mutex);
--	dout("wait_unsafe_requests want %lld\n", want_tid);
-+	dout("%s want %lld\n", __func__, want_tid);
- restart:
- 	req = __get_oldest_req(mdsc);
- 	while (req && req->r_tid <= want_tid) {
-@@ -4725,14 +4727,32 @@ static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
- 			nextreq = NULL;
- 		if (req->r_op != CEPH_MDS_OP_SETFILELOCK &&
- 		    (req->r_op & CEPH_MDS_OP_WRITE)) {
-+			struct ceph_mds_session *s = req->r_session;
-+
-+			if (!s) {
-+				req = nextreq;
-+				continue;
-+			}
-+
- 			/* write op */
- 			ceph_mdsc_get_request(req);
- 			if (nextreq)
- 				ceph_mdsc_get_request(nextreq);
-+			s = ceph_get_mds_session(s);
- 			mutex_unlock(&mdsc->mutex);
--			dout("wait_unsafe_requests  wait on %llu (want %llu)\n",
-+
-+			/* send flush mdlog request to MDS */
-+			if (last_session != s) {
-+				send_flush_mdlog(s);
-+				ceph_put_mds_session(last_session);
-+				last_session = s;
-+			} else {
-+				ceph_put_mds_session(s);
-+			}
-+			dout("%s wait on %llu (want %llu)\n", __func__,
- 			     req->r_tid, want_tid);
- 			wait_for_completion(&req->r_safe_completion);
-+
- 			mutex_lock(&mdsc->mutex);
- 			ceph_mdsc_put_request(req);
- 			if (!nextreq)
-@@ -4747,7 +4767,8 @@ static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
- 		req = nextreq;
+diff --git a/drivers/regulator/scmi-regulator.c b/drivers/regulator/scmi-regulator.c
+index 1f02f60ad136..41ae7ac27ff6 100644
+--- a/drivers/regulator/scmi-regulator.c
++++ b/drivers/regulator/scmi-regulator.c
+@@ -352,7 +352,7 @@ static int scmi_regulator_probe(struct scmi_device *sdev)
+ 			return ret;
+ 		}
  	}
- 	mutex_unlock(&mdsc->mutex);
--	dout("wait_unsafe_requests done\n");
-+	ceph_put_mds_session(last_session);
-+	dout("%s done\n", __func__);
- }
- 
- void ceph_mdsc_sync(struct ceph_mds_client *mdsc)
-@@ -4776,7 +4797,7 @@ void ceph_mdsc_sync(struct ceph_mds_client *mdsc)
- 	dout("sync want tid %lld flush_seq %lld\n",
- 	     want_tid, want_flush);
- 
--	wait_unsafe_requests(mdsc, want_tid);
-+	flush_mdlog_and_wait_mdsc_unsafe_requests(mdsc, want_tid);
- 	wait_caps_flush(mdsc, want_flush);
- }
- 
+-
++	of_node_put(np);
+ 	/*
+ 	 * Register a regulator for each valid regulator-DT-entry that we
+ 	 * can successfully reach via SCMI and has a valid associated voltage
 -- 
 2.35.1
+
+
 
