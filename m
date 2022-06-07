@@ -2,153 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D502CCCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:46:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 064CBCCA482
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:46:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381810AbiFGVo5 (ORCPT
+        id S1381840AbiFGVpI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:44:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49850 "EHLO
+        Tue, 7 Jun 2022 17:45:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378907AbiFGUwl (ORCPT
+        with ESMTP id S1378864AbiFGUwi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:52:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D16C49F93;
-        Tue,  7 Jun 2022 11:43:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A3C1B81FE1;
-        Tue,  7 Jun 2022 18:43:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0B5CC385A2;
-        Tue,  7 Jun 2022 18:43:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627400;
-        bh=1deBv8pWO4EhlblSV+d3qc0OS1zA34siQuYQ1ppkR98=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NQJdeDEit6+VZlI5dh6SbqTdDOcU2yCS1u+luF1fUpUgID3zt0ZyzLOe2e6zQol3T
-         EfiHmFL89hueOdcBzDPbV9FAfR2kv6c5EvZA8CRsG7+ewHzVMF52OFdgPkERq1MxFm
-         UVZm0VtHDfrvh2aBsy131z54nvBkqpuXafS2B3ZE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe de Dinechin <christophe@dinechin.org>,
-        Christophe de Dinechin <dinechin@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ben Segall <bsegall@google.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, Mel Gorman <mgorman@suse.de>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH 5.17 725/772] nodemask.h: fix compilation error with GCC12
-Date:   Tue,  7 Jun 2022 19:05:17 +0200
-Message-Id: <20220607165010.407418185@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 16:52:38 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9AE2E696
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:43:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654627395; x=1686163395;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=A/5BMYgNu0Yt+eZ+D/1xw5NF6LjHXm/NfMiYDFkov/E=;
+  b=fz8aDaP64ANsWlhebzZNz0ydhV/mOiheQKp4ixSKXUo8Ty1p2rB2sEvs
+   mEgZHmwrT9EVtjosLpMIr+UC64Ws44c99hVJDACbCfYMtCP6/BgO48ofr
+   DT9idM/1VgsdFTIVqn6li9gwxU6X4Pk/9Upu6aCDFldzvks8+Db2gob8Q
+   +i0Hwjo2mDJgMm8UsKADQpvgt1du16bRjx9X5vspJBmN14lcrTwhgxmfs
+   mBQ0nm7GXBhMf33ETn3mVJGJJrIORpbDIv9a2DLYWr5Hq1kFESHgLo/CH
+   vXWpFSQdpCU4/DGMFwrTvQEqgOiBK5L30bp6mLq5bsGYZNmuDurOfX8nu
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="257178716"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="257178716"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 11:43:06 -0700
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="579716176"
+Received: from schen9-mobl.amr.corp.intel.com ([10.251.8.166])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 11:43:05 -0700
+Message-ID: <92649c9a6e0b6931b34aeaaf22c0a1e874484b7f.camel@linux.intel.com>
+Subject: Re: [PATCH v5 1/9] mm/demotion: Add support for explicit memory
+ tiers
+From:   Tim Chen <tim.c.chen@linux.intel.com>
+To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
+        Greg Thelen <gthelen@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>
+Date:   Tue, 07 Jun 2022 11:43:05 -0700
+In-Reply-To: <20220603134237.131362-2-aneesh.kumar@linux.ibm.com>
+References: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
+         <20220603134237.131362-2-aneesh.kumar@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe de Dinechin <dinechin@redhat.com>
+On Fri, 2022-06-03 at 19:12 +0530, Aneesh Kumar K.V wrote:
+> 
+> 
+> The nodes which are part of a specific memory tier can be listed
+> via
+> /sys/devices/system/memtier/memtierN/nodelist
+> 
+> "Rank" is an opaque value. Its absolute value doesn't have any
+> special meaning. But the rank values of different memtiers can be
+> compared with each other to determine the memory tier order.
+> 
+> For example, if we have 3 memtiers: memtier0, memtier1, memiter2, and
+> their rank values are 300, 200, 100, then the memory tier order is:
+> memtier0 -> memtier2 -> memtier1, 
 
-commit 37462a920392cb86541650a6f4121155f11f1199 upstream.
+Why is memtier2 (rank 100) higher than memtier1 (rank 200)?  Seems like
+the order should be memtier0 -> memtier1 -> memtier2?
+                    (rank 300)  (rank 200)  (rank 100)
 
-With gcc version 12.0.1 20220401 (Red Hat 12.0.1-0), building with
-defconfig results in the following compilation error:
+> where memtier0 is the highest tier
+> and memtier1 is the lowest tier.
 
-|   CC      mm/swapfile.o
-| mm/swapfile.c: In function `setup_swap_info':
-| mm/swapfile.c:2291:47: error: array subscript -1 is below array bounds
-|  of `struct plist_node[]' [-Werror=array-bounds]
-|  2291 |                                 p->avail_lists[i].prio = 1;
-|       |                                 ~~~~~~~~~~~~~~^~~
-| In file included from mm/swapfile.c:16:
-| ./include/linux/swap.h:292:27: note: while referencing `avail_lists'
-|   292 |         struct plist_node avail_lists[]; /*
-|       |                           ^~~~~~~~~~~
+I think memtier2 is the lowest as it has the lowest rank value.
+> 
+> The rank value of each memtier should be unique.
+> 
+> 
+> +
+> +static void memory_tier_device_release(struct device *dev)
+> +{
+> +	struct memory_tier *tier = to_memory_tier(dev);
+> +
 
-This is due to the compiler detecting that the mask in
-node_states[__state] could theoretically be zero, which would lead to
-first_node() returning -1 through find_first_bit.
+Do we need some ref counts on memory_tier?
+If there is another device still using the same memtier,
+free below could cause problem.
 
-I believe that the warning/error is legitimate.  I first tried adding a
-test to check that the node mask is not emtpy, since a similar test exists
-in the case where MAX_NUMNODES == 1.
+> +	kfree(tier);
+> +}
+> +
+> 
+...
+> +static struct memory_tier *register_memory_tier(unsigned int tier)
+> +{
+> +	int error;
+> +	struct memory_tier *memtier;
+> +
+> +	if (tier >= MAX_MEMORY_TIERS)
+> +		return NULL;
+> +
+> +	memtier = kzalloc(sizeof(struct memory_tier), GFP_KERNEL);
+> +	if (!memtier)
+> +		return NULL;
+> +
+> +	memtier->dev.id = tier;
+> +	memtier->rank = get_rank_from_tier(tier);
+> +	memtier->dev.bus = &memory_tier_subsys;
+> +	memtier->dev.release = memory_tier_device_release;
+> +	memtier->dev.groups = memory_tier_dev_groups;
+> +
 
-However, adding the if statement causes other warnings to appear in
-for_each_cpu_node_but, because it introduces a dangling else ambiguity.
-And unfortunately, GCC is not smart enough to detect that the added test
-makes the case where (node) == -1 impossible, so it still complains with
-the same message.
+Should you take the mem_tier_lock before you insert to
+memtier-list?
 
-This is why I settled on replacing that with a harmless, but relatively
-useless (node) >= 0 test.  Based on the warning for the dangling else, I
-also decided to fix the case where MAX_NUMNODES == 1 by moving the
-condition inside the for loop.  It will still only be tested once.  This
-ensures that the meaning of an else following for_each_node_mask or
-derivatives would not silently have a different meaning depending on the
-configuration.
+> +	insert_memory_tier(memtier);
+> +
+> +	error = device_register(&memtier->dev);
+> +	if (error) {
+> +		list_del(&memtier->list);
+> +		put_device(&memtier->dev);
+> +		return NULL;
+> +	}
+> +	return memtier;
+> +}
+> +
+> +__maybe_unused // temporay to prevent warnings during bisects
+> +static void unregister_memory_tier(struct memory_tier *memtier)
+> +{
 
-Link: https://lkml.kernel.org/r/20220414150855.2407137-3-dinechin@redhat.com
-Signed-off-by: Christophe de Dinechin <christophe@dinechin.org>
-Signed-off-by: Christophe de Dinechin <dinechin@redhat.com>
-Reviewed-by: Andrew Morton <akpm@linux-foundation.org>
-Cc: Ben Segall <bsegall@google.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc: Vincent Guittot <vincent.guittot@linaro.org>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- include/linux/nodemask.h |   13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+I think we should take mem_tier_lock before modifying memtier->list.
 
---- a/include/linux/nodemask.h
-+++ b/include/linux/nodemask.h
-@@ -375,14 +375,13 @@ static inline void __nodes_fold(nodemask
- }
- 
- #if MAX_NUMNODES > 1
--#define for_each_node_mask(node, mask)			\
--	for ((node) = first_node(mask);			\
--		(node) < MAX_NUMNODES;			\
--		(node) = next_node((node), (mask)))
-+#define for_each_node_mask(node, mask)				    \
-+	for ((node) = first_node(mask);				    \
-+	     (node >= 0) && (node) < MAX_NUMNODES;		    \
-+	     (node) = next_node((node), (mask)))
- #else /* MAX_NUMNODES == 1 */
--#define for_each_node_mask(node, mask)			\
--	if (!nodes_empty(mask))				\
--		for ((node) = 0; (node) < 1; (node)++)
-+#define for_each_node_mask(node, mask)                                  \
-+	for ((node) = 0; (node) < 1 && !nodes_empty(mask); (node)++)
- #endif /* MAX_NUMNODES */
- 
- /*
+> +	list_del(&memtier->list);
+> +	device_unregister(&memtier->dev);
+> +}
+> +
+> 
 
+Thanks.
+
+Tim
 
