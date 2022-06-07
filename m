@@ -2,114 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A406C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:14:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EFCCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384117AbiFGWOv (ORCPT
+        id S1384110AbiFGWO5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:14:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43876 "EHLO
+        Tue, 7 Jun 2022 18:14:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380094AbiFGVL3 (ORCPT
+        with ESMTP id S1380117AbiFGVLb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:11:29 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC2A217639;
-        Tue,  7 Jun 2022 11:53:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654627989; x=1686163989;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=DJX1fTXVl6qyeFmIlJ6koAYNPAMtDi8XGkKfp/5Rjkk=;
-  b=OCHIyRs9DtIpE3t6KEdc/Sn6Pj4wgi7d8G0+H6n7SRoJZGft383hbNly
-   IbUtL7MU99R8ipjARhLUzWttPDQHhgcp2Ajzkf6j1+HfY/AMdSn86wL19
-   ubHqOKvF8IMThdDk4PuNAy4tAC3iFaRF54DBB7df+BDWHJKxCmon5U4LS
-   g=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 07 Jun 2022 11:53:07 -0700
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 07 Jun 2022 11:53:06 -0700
-X-QCInternal: smtphost
-Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 08 Jun 2022 00:22:52 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
-        id 898523F76; Wed,  8 Jun 2022 00:22:51 +0530 (+0530)
-From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
-        swboyd@chromium.org,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Subject: [PATCH 1/2] serial: core: Introduce callback for start_rx and do stop_rx in suspend only if this callback implementation is present.
-Date:   Wed,  8 Jun 2022 00:22:44 +0530
-Message-Id: <1654627965-1461-2-git-send-email-quic_vnivarth@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1654627965-1461-1-git-send-email-quic_vnivarth@quicinc.com>
-References: <1654627965-1461-1-git-send-email-quic_vnivarth@quicinc.com>
+        Tue, 7 Jun 2022 17:11:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C0A2178A4;
+        Tue,  7 Jun 2022 11:53:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0FB2EB81F6D;
+        Tue,  7 Jun 2022 18:53:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BD70C385A2;
+        Tue,  7 Jun 2022 18:53:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654627991;
+        bh=67f36S+4rjT+JdsrzBc14AqQKTdEkAdczFOtEskmpRI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fMTP545xExRWOgun2l5fN5CCI5ZJ4mdLF3QRC///R4TslD17sQG0/TcFAPZ0ozlPW
+         097f61iRXIhuY8Cp9gjzO0I9gtf6XIglocR+8XkrUsCoSqC3bVDWO6VRyvSj+FcZLG
+         bX1gF28Ek/j7eSWWelFp5bcdlMKwie7j35QtHXoE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
+        Oliver Neukum <oneukum@suse.com>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Ferry Toth <fntoth@gmail.com>
+Subject: [PATCH 5.18 168/879] usbnet: Run unregister_netdev() before unbind() again
+Date:   Tue,  7 Jun 2022 18:54:46 +0200
+Message-Id: <20220607165007.586261372@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In suspend sequence there is a need to perform stop_rx during suspend
-sequence to prevent any asynchronous data over rx line. However this
-can cause problem to drivers which dont do re-start_rx during set_termios.
+From: Lukas Wunner <lukas@wunner.de>
 
-Add new callback start_rx and perform stop_rx only when implementation of
-start_rx is present. Also add call to start_rx in resume sequence so that
-drivers who come across this problem can make use of this framework.
+[ Upstream commit d1408f6b4dd78fb1b9e26bcf64477984e5f85409 ]
 
-Fixes: c9d2325cdb92 ("serial: core: Do stop_rx in suspend path for console if console_suspend is disabled")
-Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Commit 2c9d6c2b871d ("usbnet: run unbind() before unregister_netdev()")
+sought to fix a use-after-free on disconnect of USB Ethernet adapters.
+
+It turns out that a different fix is necessary to address the issue:
+https://lore.kernel.org/netdev/18b3541e5372bc9b9fc733d422f4e698c089077c.1650177997.git.lukas@wunner.de/
+
+So the commit was not necessary.
+
+The commit made binding and unbinding of USB Ethernet asymmetrical:
+Before, usbnet_probe() first invoked the ->bind() callback and then
+register_netdev().  usbnet_disconnect() mirrored that by first invoking
+unregister_netdev() and then ->unbind().
+
+Since the commit, the order in usbnet_disconnect() is reversed and no
+longer mirrors usbnet_probe().
+
+One consequence is that a PHY disconnected (and stopped) in ->unbind()
+is afterwards stopped once more by unregister_netdev() as it closes the
+netdev before unregistering.  That necessitates a contortion in ->stop()
+because the PHY may only be stopped if it hasn't already been
+disconnected.
+
+Reverting the commit allows making the call to phy_stop() unconditional
+in ->stop().
+
+Tested-by: Oleksij Rempel <o.rempel@pengutronix.de> # LAN9514/9512/9500
+Tested-by: Ferry Toth <fntoth@gmail.com> # LAN9514
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Acked-by: Oliver Neukum <oneukum@suse.com>
+Cc: Martyn Welch <martyn.welch@collabora.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/serial_core.c | 9 ++++++---
- include/linux/serial_core.h      | 1 +
- 2 files changed, 7 insertions(+), 3 deletions(-)
+ drivers/net/usb/asix_devices.c | 6 +-----
+ drivers/net/usb/smsc95xx.c     | 3 +--
+ drivers/net/usb/usbnet.c       | 6 +++---
+ 3 files changed, 5 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 9a85b41..338ebad 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2214,11 +2214,12 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
- 	/*
- 	 * Nothing to do if the console is not suspending
- 	 * except stop_rx to prevent any asynchronous data
--	 * over RX line. Re-start_rx, when required, is
--	 * done by set_termios in resume sequence
-+	 * over RX line. However ensure that we will be
-+	 * able to Re-start_rx later.
- 	 */
- 	if (!console_suspend_enabled && uart_console(uport)) {
--		uport->ops->stop_rx(uport);
-+		if (uport->ops->start_rx)
-+			uport->ops->stop_rx(uport);
- 		goto unlock;
- 	}
+diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
+index 38e47a93fb83..5b5eb630c4b7 100644
+--- a/drivers/net/usb/asix_devices.c
++++ b/drivers/net/usb/asix_devices.c
+@@ -795,11 +795,7 @@ static int ax88772_stop(struct usbnet *dev)
+ {
+ 	struct asix_common_private *priv = dev->driver_priv;
  
-@@ -2310,6 +2311,8 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
- 		if (console_suspend_enabled)
- 			uart_change_pm(state, UART_PM_STATE_ON);
- 		uport->ops->set_termios(uport, &termios, NULL);
-+		if (!console_suspend_enabled && uport->ops->start_rx)
-+			uport->ops->start_rx(uport);
- 		if (console_suspend_enabled)
- 			console_start(uport->cons);
- 	}
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index cbd5070..657a0fc 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -45,6 +45,7 @@ struct uart_ops {
- 	void		(*unthrottle)(struct uart_port *);
- 	void		(*send_xchar)(struct uart_port *, char ch);
- 	void		(*stop_rx)(struct uart_port *);
-+	void		(*start_rx)(struct uart_port *);
- 	void		(*enable_ms)(struct uart_port *);
- 	void		(*break_ctl)(struct uart_port *, int ctl);
- 	int		(*startup)(struct uart_port *);
+-	/* On unplugged USB, we will get MDIO communication errors and the
+-	 * PHY will be set in to PHY_HALTED state.
+-	 */
+-	if (priv->phydev->state != PHY_HALTED)
+-		phy_stop(priv->phydev);
++	phy_stop(priv->phydev);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index 4ef61f6b85df..edf0492ad489 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -1243,8 +1243,7 @@ static int smsc95xx_start_phy(struct usbnet *dev)
+ 
+ static int smsc95xx_stop(struct usbnet *dev)
+ {
+-	if (dev->net->phydev)
+-		phy_stop(dev->net->phydev);
++	phy_stop(dev->net->phydev);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index 9a6450f796dc..36b24ec11650 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -1616,9 +1616,6 @@ void usbnet_disconnect (struct usb_interface *intf)
+ 		   xdev->bus->bus_name, xdev->devpath,
+ 		   dev->driver_info->description);
+ 
+-	if (dev->driver_info->unbind)
+-		dev->driver_info->unbind(dev, intf);
+-
+ 	net = dev->net;
+ 	unregister_netdev (net);
+ 
+@@ -1626,6 +1623,9 @@ void usbnet_disconnect (struct usb_interface *intf)
+ 
+ 	usb_scuttle_anchored_urbs(&dev->deferred);
+ 
++	if (dev->driver_info->unbind)
++		dev->driver_info->unbind(dev, intf);
++
+ 	usb_kill_urb(dev->interrupt);
+ 	usb_free_urb(dev->interrupt);
+ 	kfree(dev->padding_pkt);
 -- 
-Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
+2.35.1
+
+
 
