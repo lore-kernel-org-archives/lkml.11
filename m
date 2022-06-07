@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB2DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:09:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DCE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:09:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244929AbiFGSJF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:09:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47226 "EHLO
+        id S243170AbiFGSJN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 14:09:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348885AbiFGRuU (ORCPT
+        with ESMTP id S1348980AbiFGRuY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:50:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D82137C51;
-        Tue,  7 Jun 2022 10:37:31 -0700 (PDT)
+        Tue, 7 Jun 2022 13:50:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0F10137440;
+        Tue,  7 Jun 2022 10:37:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C61B4614BC;
-        Tue,  7 Jun 2022 17:37:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8035C36AFF;
-        Tue,  7 Jun 2022 17:37:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56882B822B1;
+        Tue,  7 Jun 2022 17:37:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A69A0C385A5;
+        Tue,  7 Jun 2022 17:37:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623437;
-        bh=u3BGt4PKsLXxAzxsq/aZZArjOH52aSbr80e3Qobz3pY=;
+        s=korg; t=1654623456;
+        bh=RJrjyvSFLG5vaE/YCedMXiTGe5JIDbSiGT/RnpKzjtI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ddXnfS8YeEL/vMTvykzLdKy7bOVKRaHd1OlWR8DL9lW7N8GER1yuxhl5fhsWlVSrU
-         RfPyCgEZMe0Rl4juRz9VtQEx1ROka263/f1njWqNCbD9Z00FqJPxHN24qGfKxRUwv1
-         WD9KOPqcwRduXnlnojExzra0/AYyeuZGX3xOUDeU=
+        b=ds1qUW3KKPSHvnlL8cgp4OsU8WZUWJrMNyah5Izpm3YFo3j+3tj9TfbtevTVO1Eg0
+         UwP2xPVyE4zn8PcXaEa0hseg27pwg4QyHODTVTKH3IpHIL4V2gCSj2NWYVLTILqM3x
+         Prndqd9cWew1oYjZuDwDIkjThnmQJcBIPPtG6kUA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Jyri Sarha <jyri.sarha@iki.fi>
-Subject: [PATCH 5.10 415/452] tilcdc: tilcdc_external: fix an incorrect NULL check on list iterator
-Date:   Tue,  7 Jun 2022 19:04:32 +0200
-Message-Id: <20220607164920.922389649@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Ville Syrjala <ville.syrjala@linux.intel.com>,
+        Jani Nikula <jani.nikula@intel.com>
+Subject: [PATCH 5.10 383/452] drm/i915/dsi: fix VBT send packet port selection for ICL+
+Date:   Tue,  7 Jun 2022 19:04:00 +0200
+Message-Id: <20220607164919.978470651@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -48,52 +49,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Jani Nikula <jani.nikula@intel.com>
 
-commit 8b917cbe38e9b0d002492477a9fc2bfee2412ce4 upstream.
+commit 0ea917819d12fed41ea4662cc26ffa0060a5c354 upstream.
 
-The bug is here:
-	if (!encoder) {
+The VBT send packet port selection was never updated for ICL+ where the
+2nd link is on port B instead of port C as in VLV+ DSI.
 
-The list iterator value 'encoder' will *always* be set and non-NULL
-by list_for_each_entry(), so it is incorrect to assume that the
-iterator value will be NULL if the list is empty or no element
-is found.
+First, single link DSI needs to use the configured port instead of
+relying on the VBT sequence block port. Remove the hard-coded port C
+check here and make it generic. For reference, see commit f915084edc5a
+("drm/i915: Changes related to the sequence port no for") for the
+original VLV specific fix.
 
-To fix the bug, use a new variable 'iter' as the list iterator,
-while use the original variable 'encoder' as a dedicated pointer
-to point to the found element.
+Second, the sequence block port number is either 0 or 1, where 1
+indicates the 2nd link. Remove the hard-coded port C here for 2nd
+link. (This could be a "find second set bit" on DSI ports, but just
+check the two possible options.)
 
-Cc: stable@vger.kernel.org
-Fixes: ec9eab097a500 ("drm/tilcdc: Add drm bridge support for attaching drm bridge drivers")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Reviewed-by: Jyri Sarha <jyri.sarha@iki.fi>
-Tested-by: Jyri Sarha <jyri.sarha@iki.fi>
-Signed-off-by: Jyri Sarha <jyri.sarha@iki.fi>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220327061516.5076-1-xiam0nd.tong@gmail.com
+Third, sanity check the result with a warning to avoid a NULL pointer
+dereference.
+
+Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/5984
+Cc: stable@vger.kernel.org # v4.19+
+Cc: Ville Syrjala <ville.syrjala@linux.intel.com>
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220520094600.2066945-1-jani.nikula@intel.com
+(cherry picked from commit 08c59dde71b73a0ac94e3ed2d431345b01f20485)
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/tilcdc/tilcdc_external.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/display/intel_dsi_vbt.c |   33 ++++++++++++++++++---------
+ 1 file changed, 22 insertions(+), 11 deletions(-)
 
---- a/drivers/gpu/drm/tilcdc/tilcdc_external.c
-+++ b/drivers/gpu/drm/tilcdc/tilcdc_external.c
-@@ -60,11 +60,13 @@ struct drm_connector *tilcdc_encoder_fin
- int tilcdc_add_component_encoder(struct drm_device *ddev)
+--- a/drivers/gpu/drm/i915/display/intel_dsi_vbt.c
++++ b/drivers/gpu/drm/i915/display/intel_dsi_vbt.c
+@@ -121,9 +121,25 @@ struct i2c_adapter_lookup {
+ #define  ICL_GPIO_DDPA_CTRLCLK_2	8
+ #define  ICL_GPIO_DDPA_CTRLDATA_2	9
+ 
+-static enum port intel_dsi_seq_port_to_port(u8 port)
++static enum port intel_dsi_seq_port_to_port(struct intel_dsi *intel_dsi,
++					    u8 seq_port)
  {
- 	struct tilcdc_drm_private *priv = ddev->dev_private;
--	struct drm_encoder *encoder;
-+	struct drm_encoder *encoder = NULL, *iter;
+-	return port ? PORT_C : PORT_A;
++	/*
++	 * If single link DSI is being used on any port, the VBT sequence block
++	 * send packet apparently always has 0 for the port. Just use the port
++	 * we have configured, and ignore the sequence block port.
++	 */
++	if (hweight8(intel_dsi->ports) == 1)
++		return ffs(intel_dsi->ports) - 1;
++
++	if (seq_port) {
++		if (intel_dsi->ports & PORT_B)
++			return PORT_B;
++		else if (intel_dsi->ports & PORT_C)
++			return PORT_C;
++	}
++
++	return PORT_A;
+ }
  
--	list_for_each_entry(encoder, &ddev->mode_config.encoder_list, head)
--		if (encoder->possible_crtcs & (1 << priv->crtc->index))
-+	list_for_each_entry(iter, &ddev->mode_config.encoder_list, head)
-+		if (iter->possible_crtcs & (1 << priv->crtc->index)) {
-+			encoder = iter;
- 			break;
-+		}
+ static const u8 *mipi_exec_send_packet(struct intel_dsi *intel_dsi,
+@@ -145,15 +161,10 @@ static const u8 *mipi_exec_send_packet(s
  
- 	if (!encoder) {
- 		dev_err(ddev->dev, "%s: No suitable encoder found\n", __func__);
+ 	seq_port = (flags >> MIPI_PORT_SHIFT) & 3;
+ 
+-	/* For DSI single link on Port A & C, the seq_port value which is
+-	 * parsed from Sequence Block#53 of VBT has been set to 0
+-	 * Now, read/write of packets for the DSI single link on Port A and
+-	 * Port C will based on the DVO port from VBT block 2.
+-	 */
+-	if (intel_dsi->ports == (1 << PORT_C))
+-		port = PORT_C;
+-	else
+-		port = intel_dsi_seq_port_to_port(seq_port);
++	port = intel_dsi_seq_port_to_port(intel_dsi, seq_port);
++
++	if (drm_WARN_ON(&dev_priv->drm, !intel_dsi->dsi_hosts[port]))
++		goto out;
+ 
+ 	dsi_device = intel_dsi->dsi_hosts[port]->device;
+ 	if (!dsi_device) {
 
 
