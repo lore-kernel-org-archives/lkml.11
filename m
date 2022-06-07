@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8BD9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:28:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88FC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:28:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350333AbiFGS2c (ORCPT
+        id S1351168AbiFGS2j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:28:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60980 "EHLO
+        Tue, 7 Jun 2022 14:28:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351819AbiFGSCW (ORCPT
+        with ESMTP id S1351834AbiFGSCW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:02:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B573F1312A2;
-        Tue,  7 Jun 2022 10:45:37 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BAEE158941;
+        Tue,  7 Jun 2022 10:45:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 699AAB8232C;
-        Tue,  7 Jun 2022 17:45:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C47D5C34115;
-        Tue,  7 Jun 2022 17:45:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4696CB822B8;
+        Tue,  7 Jun 2022 17:45:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B69BC385A5;
+        Tue,  7 Jun 2022 17:45:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623935;
-        bh=HwjH44pS8984mw7Nh4lKusX1l8RJWXNJDc+xlPI7FLA=;
+        s=korg; t=1654623938;
+        bh=E2vAERETYddzn4GYwSsfoJsRJPnWmxQkNGh4FbGL0WU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fcCIL58CyXE6U0nHbiOpP5c/A2hJb2AOTuH0XI0Z5FBhYhjB/SZmx8erOMjWbHqIw
-         P8FMU7eoxi52k1Tgb4Qo25LZsYItWWAcV4XhueoHAXXrcXnFo40P3wXIF2REviEm41
-         p7QWP2QLahbGK9+XxhMXDaRUF6h5EupDODNLBe1o=
+        b=II5INv5n21MxwugkZk7IdqC6fezCWVfKSM//jxvU6+uHi/iDG6dph0moGb4RsGNfk
+         iS1tBH9HhE4vxbyBuZ1WKkgT5E2jIA5eDBCQfNHOvg1ByZfKpmR5R4gzCwq8i4rrqS
+         6EDCQTLpVyZDqUG97PAQta4tYomGZQKTtig8LKY8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bob Peterson <rpeterso@redhat.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Bodo Stroesser <bostroesser@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 146/667] gfs2: use i_lock spin_lock for inode qadata
-Date:   Tue,  7 Jun 2022 18:56:51 +0200
-Message-Id: <20220607164939.197755194@linuxfoundation.org>
+Subject: [PATCH 5.15 147/667] scsi: target: tcmu: Avoid holding XArray lock when calling lock_page
+Date:   Tue,  7 Jun 2022 18:56:52 +0200
+Message-Id: <20220607164939.227255522@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,86 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bob Peterson <rpeterso@redhat.com>
+From: Bodo Stroesser <bostroesser@gmail.com>
 
-[ Upstream commit 5fcff61eea9efd1f4b60e89d2d686b5feaea100f ]
+[ Upstream commit 325d5c5fb216674296f3902a8902b942da3adc5b ]
 
-Before this patch, functions gfs2_qa_get and _put used the i_rw_mutex to
-prevent simultaneous access to its i_qadata. But i_rw_mutex is now used
-for many other things, including iomap_begin and end, which causes a
-conflict according to lockdep. We cannot just remove the lock since
-simultaneous opens (gfs2_open -> gfs2_open_common -> gfs2_qa_get) can
-then stomp on each others values for i_qadata.
+In tcmu_blocks_release(), lock_page() is called to prevent a race causing
+possible data corruption. Since lock_page() might sleep, calling it while
+holding XArray lock is a bug.
 
-This patch solves the conflict by using the i_lock spin_lock in the inode
-to prevent simultaneous access.
+To fix this, replace the xas_for_each() call with xa_for_each_range().
+Since the latter does its own handling of XArray locking, the xas_lock()
+and xas_unlock() calls around the original loop are no longer necessary.
 
-Signed-off-by: Bob Peterson <rpeterso@redhat.com>
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+The switch to xa_for_each_range() slows down the loop slightly. This is
+acceptable since tcmu_blocks_release() is not relevant for performance.
+
+Link: https://lore.kernel.org/r/20220517192913.21405-1-bostroesser@gmail.com
+Fixes: bb9b9eb0ae2e ("scsi: target: tcmu: Fix possible data corruption")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Bodo Stroesser <bostroesser@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/gfs2/quota.c | 32 ++++++++++++++++++++------------
- 1 file changed, 20 insertions(+), 12 deletions(-)
+ drivers/target/target_core_user.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/fs/gfs2/quota.c b/fs/gfs2/quota.c
-index be0997e24d60..dc77080a82bb 100644
---- a/fs/gfs2/quota.c
-+++ b/fs/gfs2/quota.c
-@@ -531,34 +531,42 @@ static void qdsb_put(struct gfs2_quota_data *qd)
-  */
- int gfs2_qa_get(struct gfs2_inode *ip)
+diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
+index 0173f44b015a..1e8e9dd3f482 100644
+--- a/drivers/target/target_core_user.c
++++ b/drivers/target/target_core_user.c
+@@ -1661,13 +1661,14 @@ static int tcmu_check_and_free_pending_cmd(struct tcmu_cmd *cmd)
+ static u32 tcmu_blocks_release(struct tcmu_dev *udev, unsigned long first,
+ 				unsigned long last)
  {
--	int error = 0;
- 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
-+	struct inode *inode = &ip->i_inode;
+-	XA_STATE(xas, &udev->data_pages, first * udev->data_pages_per_blk);
+ 	struct page *page;
++	unsigned long dpi;
+ 	u32 pages_freed = 0;
  
- 	if (sdp->sd_args.ar_quota == GFS2_QUOTA_OFF)
- 		return 0;
- 
--	down_write(&ip->i_rw_mutex);
-+	spin_lock(&inode->i_lock);
- 	if (ip->i_qadata == NULL) {
--		ip->i_qadata = kmem_cache_zalloc(gfs2_qadata_cachep, GFP_NOFS);
--		if (!ip->i_qadata) {
--			error = -ENOMEM;
--			goto out;
--		}
-+		struct gfs2_qadata *tmp;
-+
-+		spin_unlock(&inode->i_lock);
-+		tmp = kmem_cache_zalloc(gfs2_qadata_cachep, GFP_NOFS);
-+		if (!tmp)
-+			return -ENOMEM;
-+
-+		spin_lock(&inode->i_lock);
-+		if (ip->i_qadata == NULL)
-+			ip->i_qadata = tmp;
-+		else
-+			kmem_cache_free(gfs2_qadata_cachep, tmp);
+-	xas_lock(&xas);
+-	xas_for_each(&xas, page, (last + 1) * udev->data_pages_per_blk - 1) {
+-		xas_store(&xas, NULL);
++	first = first * udev->data_pages_per_blk;
++	last = (last + 1) * udev->data_pages_per_blk - 1;
++	xa_for_each_range(&udev->data_pages, dpi, page, first, last) {
++		xa_erase(&udev->data_pages, dpi);
+ 		/*
+ 		 * While reaching here there may be page faults occurring on
+ 		 * the to-be-released pages. A race condition may occur if
+@@ -1691,7 +1692,6 @@ static u32 tcmu_blocks_release(struct tcmu_dev *udev, unsigned long first,
+ 		__free_page(page);
+ 		pages_freed++;
  	}
- 	ip->i_qadata->qa_ref++;
--out:
--	up_write(&ip->i_rw_mutex);
--	return error;
-+	spin_unlock(&inode->i_lock);
-+	return 0;
- }
+-	xas_unlock(&xas);
  
- void gfs2_qa_put(struct gfs2_inode *ip)
- {
--	down_write(&ip->i_rw_mutex);
-+	struct inode *inode = &ip->i_inode;
-+
-+	spin_lock(&inode->i_lock);
- 	if (ip->i_qadata && --ip->i_qadata->qa_ref == 0) {
- 		kmem_cache_free(gfs2_qadata_cachep, ip->i_qadata);
- 		ip->i_qadata = NULL;
- 	}
--	up_write(&ip->i_rw_mutex);
-+	spin_unlock(&inode->i_lock);
- }
+ 	atomic_sub(pages_freed, &global_page_count);
  
- int gfs2_quota_hold(struct gfs2_inode *ip, kuid_t uid, kgid_t gid)
 -- 
 2.35.1
 
