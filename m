@@ -2,132 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC32DCCA487
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:57:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 247FFCCA48B
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:57:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353861AbiFGSzF (ORCPT
+        id S1353891AbiFGSzK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:55:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53170 "EHLO
+        Tue, 7 Jun 2022 14:55:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352791AbiFGSRd (ORCPT
+        with ESMTP id S1352754AbiFGSRa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CDE213CA17;
-        Tue,  7 Jun 2022 10:52:42 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A45F13C1DA;
+        Tue,  7 Jun 2022 10:52:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 057AAB8236F;
-        Tue,  7 Jun 2022 17:52:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75925C385A5;
-        Tue,  7 Jun 2022 17:52:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624359;
-        bh=Fz+mdtALI1lCwdc+1/YXjrbj9w82Y3UPUFerJeEZOzw=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C289DB82375;
+        Tue,  7 Jun 2022 17:52:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A74ACC34115;
+        Tue,  7 Jun 2022 17:52:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624353;
+        bh=NdoOI/mdof+A4Uy4fR9Q85uef2kWgrggo63N4r2XOrk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kKzscmKqfXqrnN4EmLMzIJ8PMNhc8ZHG8bV+aOR8j3WwcSkKfijujPOf14ASqzoQ7
-         8G6YX0CB6L+2Lv9OWH4kry2qmQlF2c+gAjS3au8WzAQILCV1irt5UU3qZ73z/GzzG3
-         L2UWOrXGUxpWcMJNoZHxt9lINxAMOKIbVhSidT7Q=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 298/667] regulator: qcom_smd: Fix up PM8950 regulator configuration
-Date:   Tue,  7 Jun 2022 18:59:23 +0200
-Message-Id: <20220607164943.715457451@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=OiQ8ttaQEIDZHO4BgNte3CzWmLn5BYB61eF6QhTkPTx4MoPfdiHNNuKDdcEVDWRa8
+         ScqUAFUbDv7QTnCce4PNGOnAVjq+Bm33e3AQ5T5ujEJ5tpVIFYLcAfqz3YCt27e9Cr
+         2FlKKSiky5uynDyF5seSO6IZinZcQFGjjJaU8kXaSTL2dJ5IVEr8T3Qv/fno0I/62T
+         nvEUgg/ewdENwt9R3LKkK8gEQUThjQ8DBtOwb+PcPVAf8MSusdzFxNZk67gjLjVmoX
+         Rn107JHjT3mK8Sr49dr543l2YN8KD+51mDD597W+y2ITeK1C13fkPPNVFUEXMgQIq+
+         QKDleXSkPPQSg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Cyril Brulebois <kibi@debian.org>,
+        Sasha Levin <sashal@kernel.org>, jim2101024@gmail.com,
+        nsaenz@kernel.org, f.fainelli@gmail.com, lpieralisi@kernel.org,
+        p.zabel@pengutronix.de, linux-pci@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 60/68] Revert "PCI: brcmstb: Do not turn off WOL regulators on suspend"
+Date:   Tue,  7 Jun 2022 13:48:26 -0400
+Message-Id: <20220607174846.477972-60-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-[ Upstream commit b11b3d21a94d66bc05d1142e0b210bfa316c62be ]
+[ Upstream commit 7894025c783ca36394d3afe49c8cfb4c830b82fe ]
 
-Following changes have been made:
+This reverts commit 11ed8b8624b8085f706864b4addcd304b1e4fc38.
 
-- S5, L4, L18, L20 and L21 were removed (S5 is managed by
-SPMI, whereas the rest seems not to exist [or at least it's blocked
-by Sony Loire /MSM8956/ RPM firmware])
+This is part of a revert of the following commits:
 
-- Supply maps have were adjusted to reflect regulator changes.
+  11ed8b8624b8 ("PCI: brcmstb: Do not turn off WOL regulators on suspend")
+  93e41f3fca3d ("PCI: brcmstb: Add control of subdevice voltage regulators")
+  67211aadcb4b ("PCI: brcmstb: Add mechanism to turn on subdev regulators")
+  830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup() into two funcs")
 
-Fixes: e44adca5fa25 ("regulator: qcom_smd: Add PM8950 regulators")
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Link: https://lore.kernel.org/r/20220430163753.609909-1-konrad.dybcio@somainline.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Cyril reported that 830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup()
+into two funcs"), which appeared in v5.17-rc1, broke booting on the
+Raspberry Pi Compute Module 4.  Apparently 830aa6f29f07 panics with an
+Asynchronous SError Interrupt, and after further commits here is a black
+screen on HDMI and no output on the serial console.
+
+This does not seem to affect the Raspberry Pi 4 B.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215925
+Link: https://lore.kernel.org/r/20220511201856.808690-2-helgaas@kernel.org
+Reported-by: Cyril Brulebois <kibi@debian.org>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/qcom_smd-regulator.c | 35 +++++++++++++-------------
- 1 file changed, 17 insertions(+), 18 deletions(-)
+ drivers/pci/controller/pcie-brcmstb.c | 53 +++++----------------------
+ 1 file changed, 9 insertions(+), 44 deletions(-)
 
-diff --git a/drivers/regulator/qcom_smd-regulator.c b/drivers/regulator/qcom_smd-regulator.c
-index b6287f7e78f4..eb974b9c0b19 100644
---- a/drivers/regulator/qcom_smd-regulator.c
-+++ b/drivers/regulator/qcom_smd-regulator.c
-@@ -926,32 +926,31 @@ static const struct rpm_regulator_data rpm_pm8950_regulators[] = {
- 	{ "s2", QCOM_SMD_RPM_SMPA, 2, &pm8950_hfsmps, "vdd_s2" },
- 	{ "s3", QCOM_SMD_RPM_SMPA, 3, &pm8950_hfsmps, "vdd_s3" },
- 	{ "s4", QCOM_SMD_RPM_SMPA, 4, &pm8950_hfsmps, "vdd_s4" },
--	{ "s5", QCOM_SMD_RPM_SMPA, 5, &pm8950_ftsmps2p5, "vdd_s5" },
-+	/* S5 is managed via SPMI. */
- 	{ "s6", QCOM_SMD_RPM_SMPA, 6, &pm8950_hfsmps, "vdd_s6" },
- 
- 	{ "l1", QCOM_SMD_RPM_LDOA, 1, &pm8950_ult_nldo, "vdd_l1_l19" },
- 	{ "l2", QCOM_SMD_RPM_LDOA, 2, &pm8950_ult_nldo, "vdd_l2_l23" },
- 	{ "l3", QCOM_SMD_RPM_LDOA, 3, &pm8950_ult_nldo, "vdd_l3" },
--	{ "l4", QCOM_SMD_RPM_LDOA, 4, &pm8950_ult_pldo, "vdd_l4_l5_l6_l7_l16" },
--	{ "l5", QCOM_SMD_RPM_LDOA, 5, &pm8950_pldo_lv, "vdd_l4_l5_l6_l7_l16" },
--	{ "l6", QCOM_SMD_RPM_LDOA, 6, &pm8950_pldo_lv, "vdd_l4_l5_l6_l7_l16" },
--	{ "l7", QCOM_SMD_RPM_LDOA, 7, &pm8950_pldo_lv, "vdd_l4_l5_l6_l7_l16" },
-+	/* L4 seems not to exist. */
-+	{ "l5", QCOM_SMD_RPM_LDOA, 5, &pm8950_pldo_lv, "vdd_l5_l6_l7_l16" },
-+	{ "l6", QCOM_SMD_RPM_LDOA, 6, &pm8950_pldo_lv, "vdd_l5_l6_l7_l16" },
-+	{ "l7", QCOM_SMD_RPM_LDOA, 7, &pm8950_pldo_lv, "vdd_l5_l6_l7_l16" },
- 	{ "l8", QCOM_SMD_RPM_LDOA, 8, &pm8950_ult_pldo, "vdd_l8_l11_l12_l17_l22" },
- 	{ "l9", QCOM_SMD_RPM_LDOA, 9, &pm8950_ult_pldo, "vdd_l9_l10_l13_l14_l15_l18" },
- 	{ "l10", QCOM_SMD_RPM_LDOA, 10, &pm8950_ult_nldo, "vdd_l9_l10_l13_l14_l15_l18"},
--	{ "l11", QCOM_SMD_RPM_LDOA, 11, &pm8950_ult_pldo, "vdd_l8_l11_l12_l17_l22"},
--	{ "l12", QCOM_SMD_RPM_LDOA, 12, &pm8950_ult_pldo, "vdd_l8_l11_l12_l17_l22"},
--	{ "l13", QCOM_SMD_RPM_LDOA, 13, &pm8950_ult_pldo, "vdd_l9_l10_l13_l14_l15_l18"},
--	{ "l14", QCOM_SMD_RPM_LDOA, 14, &pm8950_ult_pldo, "vdd_l9_l10_l13_l14_l15_l18"},
--	{ "l15", QCOM_SMD_RPM_LDOA, 15, &pm8950_ult_pldo, "vdd_l9_l10_l13_l14_l15_l18"},
--	{ "l16", QCOM_SMD_RPM_LDOA, 16, &pm8950_ult_pldo, "vdd_l4_l5_l6_l7_l16"},
--	{ "l17", QCOM_SMD_RPM_LDOA, 17, &pm8950_ult_pldo, "vdd_l8_l11_l12_l17_l22"},
--	{ "l18", QCOM_SMD_RPM_LDOA, 18, &pm8950_ult_pldo, "vdd_l9_l10_l13_l14_l15_l18"},
--	{ "l19", QCOM_SMD_RPM_LDOA, 18, &pm8950_pldo, "vdd_l1_l19"},
--	{ "l20", QCOM_SMD_RPM_LDOA, 18, &pm8950_pldo, "vdd_l20"},
--	{ "l21", QCOM_SMD_RPM_LDOA, 18, &pm8950_pldo, "vdd_l21"},
--	{ "l22", QCOM_SMD_RPM_LDOA, 18, &pm8950_pldo, "vdd_l8_l11_l12_l17_l22"},
--	{ "l23", QCOM_SMD_RPM_LDOA, 18, &pm8950_pldo, "vdd_l2_l23"},
-+	{ "l11", QCOM_SMD_RPM_LDOA, 11, &pm8950_ult_pldo, "vdd_l8_l11_l12_l17_l22" },
-+	{ "l12", QCOM_SMD_RPM_LDOA, 12, &pm8950_ult_pldo, "vdd_l8_l11_l12_l17_l22" },
-+	{ "l13", QCOM_SMD_RPM_LDOA, 13, &pm8950_ult_pldo, "vdd_l9_l10_l13_l14_l15_l18" },
-+	{ "l14", QCOM_SMD_RPM_LDOA, 14, &pm8950_ult_pldo, "vdd_l9_l10_l13_l14_l15_l18" },
-+	{ "l15", QCOM_SMD_RPM_LDOA, 15, &pm8950_ult_pldo, "vdd_l9_l10_l13_l14_l15_l18" },
-+	{ "l16", QCOM_SMD_RPM_LDOA, 16, &pm8950_ult_pldo, "vdd_l5_l6_l7_l16" },
-+	{ "l17", QCOM_SMD_RPM_LDOA, 17, &pm8950_ult_pldo, "vdd_l8_l11_l12_l17_l22" },
-+	/* L18 seems not to exist. */
-+	{ "l19", QCOM_SMD_RPM_LDOA, 19, &pm8950_pldo, "vdd_l1_l19" },
-+	/* L20 & L21 seem not to exist. */
-+	{ "l22", QCOM_SMD_RPM_LDOA, 22, &pm8950_pldo, "vdd_l8_l11_l12_l17_l22" },
-+	{ "l23", QCOM_SMD_RPM_LDOA, 23, &pm8950_pldo, "vdd_l2_l23" },
- 	{}
+diff --git a/drivers/pci/controller/pcie-brcmstb.c b/drivers/pci/controller/pcie-brcmstb.c
+index 375c0c40bbf8..3edd63735948 100644
+--- a/drivers/pci/controller/pcie-brcmstb.c
++++ b/drivers/pci/controller/pcie-brcmstb.c
+@@ -333,7 +333,6 @@ struct brcm_pcie {
+ 	void			(*bridge_sw_init_set)(struct brcm_pcie *pcie, u32 val);
+ 	bool			refusal_mode;
+ 	struct subdev_regulators *sr;
+-	bool			ep_wakeup_capable;
  };
+ 
+ static inline bool is_bmips(const struct brcm_pcie *pcie)
+@@ -1351,21 +1350,9 @@ static void brcm_pcie_turn_off(struct brcm_pcie *pcie)
+ 	pcie->bridge_sw_init_set(pcie, 1);
+ }
+ 
+-static int pci_dev_may_wakeup(struct pci_dev *dev, void *data)
+-{
+-	bool *ret = data;
+-
+-	if (device_may_wakeup(&dev->dev)) {
+-		*ret = true;
+-		dev_info(&dev->dev, "disable cancelled for wake-up device\n");
+-	}
+-	return (int) *ret;
+-}
+-
+ static int brcm_pcie_suspend(struct device *dev)
+ {
+ 	struct brcm_pcie *pcie = dev_get_drvdata(dev);
+-	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(pcie);
+ 	int ret;
+ 
+ 	brcm_pcie_turn_off(pcie);
+@@ -1384,22 +1371,11 @@ static int brcm_pcie_suspend(struct device *dev)
+ 	}
+ 
+ 	if (pcie->sr) {
+-		/*
+-		 * Now turn off the regulators, but if at least one
+-		 * downstream device is enabled as a wake-up source, do not
+-		 * turn off regulators.
+-		 */
+-		pcie->ep_wakeup_capable = false;
+-		pci_walk_bus(bridge->bus, pci_dev_may_wakeup,
+-			     &pcie->ep_wakeup_capable);
+-		if (!pcie->ep_wakeup_capable) {
+-			ret = regulator_bulk_disable(pcie->sr->num_supplies,
+-						     pcie->sr->supplies);
+-			if (ret) {
+-				dev_err(dev, "Could not turn off regulators\n");
+-				reset_control_reset(pcie->rescal);
+-				return ret;
+-			}
++		ret = regulator_bulk_disable(pcie->sr->num_supplies, pcie->sr->supplies);
++		if (ret) {
++			dev_err(dev, "Could not turn off regulators\n");
++			reset_control_reset(pcie->rescal);
++			return ret;
+ 		}
+ 	}
+ 	clk_disable_unprepare(pcie->clk);
+@@ -1420,21 +1396,10 @@ static int brcm_pcie_resume(struct device *dev)
+ 		return ret;
+ 
+ 	if (pcie->sr) {
+-		if (pcie->ep_wakeup_capable) {
+-			/*
+-			 * We are resuming from a suspend.  In the suspend we
+-			 * did not disable the power supplies, so there is
+-			 * no need to enable them (and falsely increase their
+-			 * usage count).
+-			 */
+-			pcie->ep_wakeup_capable = false;
+-		} else {
+-			ret = regulator_bulk_enable(pcie->sr->num_supplies,
+-						    pcie->sr->supplies);
+-			if (ret) {
+-				dev_err(dev, "Could not turn on regulators\n");
+-				goto err_disable_clk;
+-			}
++		ret = regulator_bulk_enable(pcie->sr->num_supplies, pcie->sr->supplies);
++		if (ret) {
++			dev_err(dev, "Could not turn on regulators\n");
++			goto err_disable_clk;
+ 		}
+ 	}
  
 -- 
 2.35.1
-
-
 
