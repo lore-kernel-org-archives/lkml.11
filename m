@@ -2,86 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA29CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0230CCA488
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442725AbiFHCBC (ORCPT
+        id S1442835AbiFHCBO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:01:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32828 "EHLO
+        Tue, 7 Jun 2022 22:01:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1838814AbiFHACL (ORCPT
+        with ESMTP id S1839316AbiFHAC6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:02:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4756C19D627;
-        Tue,  7 Jun 2022 12:25:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF70560B09;
-        Tue,  7 Jun 2022 19:25:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD69DC385A5;
-        Tue,  7 Jun 2022 19:25:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629954;
-        bh=uKZth2wW7tJJ3m1gjlFlyDbnJUXr98WnLkj7u8W5GIg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yg0tPphB+fdPzd/MI+On1+XKO7bBPpV8Z+G89wdtj9i8CT54gE65DvW9MamshmtU1
-         XoCjT2TH0XhuEOfXe/mzT6jojSUTLbi/hCxNmhN7qY2sVpYylkciXeVC/RUkH2kaYa
-         dXyfT3eXQ/7VuPUOW6V7UcYyfTtqoFA3sZXSYOTk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>, Coly Li <colyli@suse.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.18 877/879] md: bcache: check the return value of kzalloc() in detached_dev_do_request()
-Date:   Tue,  7 Jun 2022 19:06:35 +0200
-Message-Id: <20220607165028.313237677@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 20:02:58 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1640757B33
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 16:52:34 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id c83so1977935qke.3
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 16:52:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=I5bIA8RovZ0OK8PNlEOCrd8XWvxVcrOKgYX0lsRMHs0=;
+        b=KTfI2qFLJ+aAHRXp1Fk+G2auRh0YeaY5jKt5RMRNbLOXBXdmxmYzqTIxcyN30yQGQ2
+         8LzXgVmswee+4+r5DbL0cYffY4N1/883lIpTOTb9kcIz4fuphFY0SLktL7tMOT4ZIxU4
+         rwQw+qwo4XLB9tGwHE2Nt66zTrt1EzBj7QECltOIVKwaLsQ0UR+nrIlp/jVCb8ok2/nM
+         mlU2WxBH23u09BZK+VG8vbgdQ1bgp5TnNEJlyTCr7R99ZgnPzm2D0gZ7uUON6m+DJm+S
+         38PrqlVvCEMzw6Ao8zd+u8m6KN3ITXaZdnxxNMt0OwvV4R7KNAedS7CQKML09xH+71he
+         Piwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=I5bIA8RovZ0OK8PNlEOCrd8XWvxVcrOKgYX0lsRMHs0=;
+        b=ldrTeZzL2uVS25x5w3lam69vHGAq9Rje2v1bd2KSMTo3JgEGtdsBT1Se26m0nnscbY
+         IbckK09I4snd/rI5Ql7zbz7pozdtF7uatvD+9zKH8KCDVEQ2G7BFk9KtwADZYLqwzFPJ
+         4lewWJJhD5BosfL9L/92yoQNCdhe4y8hmiOLbB9QkEk4srB1jAip8y3nhc7IVHX/USKp
+         +hzoC2HiDD39NYZTZF4KnXl1KitBVdtck70F1WhCfiN5PGb9cdS+YEi9SGpcWpONtPGU
+         l50mFwmI4BRAKsmTuDk2IYwClkGgv5MpHQDCqskjcrIZIMtG0OzxRUZx+JDBKUG549y3
+         89Nw==
+X-Gm-Message-State: AOAM530xXml5kGqUwS8kJV+lE/2hv6e1z0JVq6hrHUN8B5bOvYmCXl3A
+        niqNCM/gXxwrb1FakM1NzVTT2zuplIcsE8ThJwg90A==
+X-Google-Smtp-Source: ABdhPJx9OS3WgJ7xFZVSzzuFy/GVj77eWoUolgeKliH+N0347n1Xtkzr+MVR+jabfBeySi2RA42Y4jrUEpLCwgNrh5s=
+X-Received: by 2002:a05:620a:4311:b0:67e:8a0f:4cd5 with SMTP id
+ u17-20020a05620a431100b0067e8a0f4cd5mr21887718qko.363.1654645953166; Tue, 07
+ Jun 2022 16:52:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220607213543.4057620-1-bjorn.andersson@linaro.org>
+ <20220607213543.4057620-4-bjorn.andersson@linaro.org> <d9658f54-e594-8f0e-071e-ef627285d281@linaro.org>
+ <Yp/ZkxNltUgE79nC@ripper>
+In-Reply-To: <Yp/ZkxNltUgE79nC@ripper>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Wed, 8 Jun 2022 02:52:22 +0300
+Message-ID: <CAA8EJppSKfWXoNhqj+XOVV18P+uP=5fo7kaOGNWdYnN-NH8xNw@mail.gmail.com>
+Subject: Re: [PATCH v2 3/5] phy: qcom-qmp: Add USB4 5NM QMP combo PHY registers
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Manu Gautam <mgautam@codeaurora.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+On Wed, 8 Jun 2022 at 02:02, Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
+>
+> On Tue 07 Jun 15:24 PDT 2022, Dmitry Baryshkov wrote:
+>
+> > On 08/06/2022 00:35, Bjorn Andersson wrote:
+> > > Add all registers defines from qcom,usb4-5nm-qmp-combo.h of the msm-5.4
+> > > kernel. Offsets are adjusted to be relative to each sub-block, as we
+> > > describe the individual pieces in the upstream kernel and "v5_5NM" are
+> > > injected in the defines to not collide with existing constants.
+> > >
+> > > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > > ---
+> > >
+> > > Changes since v1:
+> > > - New patch
+> > >
+> > >   .../qualcomm/phy-qcom-usb4-5nm-qmp-combo.h    | 1547 +++++++++++++++++
+> > >   1 file changed, 1547 insertions(+)
+> > >   create mode 100644 drivers/phy/qualcomm/phy-qcom-usb4-5nm-qmp-combo.h
+> > >
+> > > diff --git a/drivers/phy/qualcomm/phy-qcom-usb4-5nm-qmp-combo.h b/drivers/phy/qualcomm/phy-qcom-usb4-5nm-qmp-combo.h
+> > > new file mode 100644
+> > > index 000000000000..7be8a50269ec
+> > > --- /dev/null
+> > > +++ b/drivers/phy/qualcomm/phy-qcom-usb4-5nm-qmp-combo.h
+> > > @@ -0,0 +1,1547 @@
+> > > +/* SPDX-License-Identifier: GPL-2.0-only */
+> > > +/*
+> > > + * Copyright (c) 2021, The Linux Foundation. All rights reserved.
+> > > + */
+> > > +
+> > > +#ifndef PHY_QCOM_V5_5NM_QMP_COMBO_USB4_H
+> > > +#define PHY_QCOM_V5_5NM_QMP_COMBO_USB4_H
+> > > +
+> > > +/* USB4-USB3-DP Combo PHY register offsets */
+> > > +/* Module: USB43DP_COM_USB43DP_COM_USB4_USB3_DP_COM */
+> > > +#define USB43DP_V5_5NM_COM_PHY_MODE_CTRL                           0x00
+> > > +#define USB43DP_V5_5NM_COM_SW_RESET                                        0x04
+> > > +#define USB43DP_V5_5NM_COM_POWER_DOWN_CTRL                         0x08
+> > > +#define USB43DP_V5_5NM_COM_SWI_CTRL                                        0x0c
+> > > +#define USB43DP_V5_5NM_COM_TYPEC_CTRL                                      0x10
+> > > +#define USB43DP_V5_5NM_COM_TYPEC_PWRDN_CTRL                                0x14
+> > > +#define USB43DP_V5_5NM_COM_DP_BIST_CFG_0                           0x18
+> > > +#define USB43DP_V5_5NM_COM_RESET_OVRD_CTRL1                                0x1c
+> > > +#define USB43DP_V5_5NM_COM_RESET_OVRD_CTRL2                                0x20
+> > > +#define USB43DP_V5_5NM_COM_DBG_CLK_MUX_CTRL                                0x24
+> > > +#define USB43DP_V5_5NM_COM_TYPEC_STATUS                                    0x28
+> > > +#define USB43DP_V5_5NM_COM_PLACEHOLDER_STATUS                              0x2c
+> > > +#define USB43DP_V5_5NM_COM_REVISION_ID0                                    0x30
+> > > +#define USB43DP_V5_5NM_COM_REVISION_ID1                                    0x34
+> > > +#define USB43DP_V5_5NM_COM_REVISION_ID2                                    0x38
+> > > +#define USB43DP_V5_5NM_COM_REVISION_ID3                                    0x3c
+> >
+> > QPHY_V5_DP_COM_foo ?
+> >
+>
+> My first version of the QMP patch used V5 defines and USB worked
+> sometimes. So I hacked up a thing to dump the phy sequences of the
+> downstream and upstream kernels, compared the magic numbers and then
+> tried to fit suitable constants.
+>
+> But it obviously was a waste of time and I would have to make up a
+> different naming scheme for the ones that doesn't match the existing
+> constants - when we could just use the autogenerated files that exist in
+> the downstream kernels.
 
-commit 40f567bbb3b0639d2ec7d1c6ad4b1b018f80cf19 upstream.
+I decided that I should write more about it. My main issue with using
+downstream tables is that we end up with tons of repetitive defines.
+Each chip generation would bring 2-4 sets of tables, wouldn't it? This
+can easily become an unsupported beast.
+I'd propose to follow the opposite path. Let's split the existing
+tables on a per-generation, per-region basis. Yes, we'd end up with
+tens of the header files. However then when new generation arrives, we
+can split corresponding header files on a region-by-region basis, and
+compare each region with existing tables. If the region matches, use
+it. If it does not, create a new header. Yes, I can do this for the
+existing header as a continuation of the QMP split saga, if everybody
+agrees that this is a good path.
 
-The function kzalloc() in detached_dev_do_request() can fail, so its
-return value should be checked.
+You can ask, why do I suggest such a scheme? Because it looks like the
+lowest common scheme. If we check downstream, we have USB/USB+DP with
+huge autogenerated tables. Then comes UFS, which mostly follows naming
+of the phy-qcom-qmp.h.
 
-Fixes: bc082a55d25c ("bcache: fix inaccurate io state for detached bcache devices")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: Coly Li <colyli@suse.de>
-Link: https://lore.kernel.org/r/20220527152818.27545-4-colyli@suse.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/md/bcache/request.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+And the last one is a PCIe. I do not know about the sc8280xp, but for
+the rest of the platforms we do not have register names at all. When I
+was porting the SM8450 PCIe PHY support, I had to guess the correct
+generation beforehand. With just 5 QSERDES_COM_ namespaces, guessing
+is easy. If  we had separate namespaces for the UFS and for several
+USB PHY instances, guessing would be next to impossible. And then
+creating a correct table would also be impossible. Well, as long as we
+do not accept tables without register names.
 
---- a/drivers/md/bcache/request.c
-+++ b/drivers/md/bcache/request.c
-@@ -1105,6 +1105,12 @@ static void detached_dev_do_request(stru
- 	 * which would call closure_get(&dc->disk.cl)
- 	 */
- 	ddip = kzalloc(sizeof(struct detached_dev_io_private), GFP_NOIO);
-+	if (!ddip) {
-+		bio->bi_status = BLK_STS_RESOURCE;
-+		bio->bi_end_io(bio);
-+		return;
-+	}
-+
- 	ddip->d = d;
- 	/* Count on the bcache device */
- 	ddip->orig_bdev = orig_bdev;
+Thus I think we should resort to using a single naming scheme rather
+than following downstream here. If you dislike existing
+QSERDES_Vn/QPHY_Vn, let's come up with something more sensible.
 
-
+--
+With best wishes
+Dmitry
