@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF2C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:21:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B94DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:21:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355348AbiFGTUK (ORCPT
+        id S1355265AbiFGTUG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:20:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36798 "EHLO
+        Tue, 7 Jun 2022 15:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352513AbiFGSbE (ORCPT
+        with ESMTP id S1352528AbiFGSbE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:31:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAB5146414;
-        Tue,  7 Jun 2022 10:56:25 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 186FD17C691;
+        Tue,  7 Jun 2022 10:56:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0BF2B8237D;
-        Tue,  7 Jun 2022 17:56:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F9C7C36B05;
-        Tue,  7 Jun 2022 17:56:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80E0BB82349;
+        Tue,  7 Jun 2022 17:56:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA53EC36B03;
+        Tue,  7 Jun 2022 17:56:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624582;
-        bh=l0FwX6vnSfPHMFtFGMF5ei/ho1GrpvkhyQLI9eGiIZA=;
+        s=korg; t=1654624585;
+        bh=wipdWey83GtLJHDSYSTNBJuKOdf6I7EDkLauVU7uwAc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rXDH4p7160mnUKQS3DYHLhqCgK5la9KnRvtHw1kU5N0LV33Dc+zdcE//WuyyKHhX2
-         x4gu8ZgDmoJq4grwouZHR6+io6h5dybejsO3vQVMH5YI0OYXf1yuSyj9cjZh/wGWJc
-         Cz3jnvntKSCjA/MFIJbheNx7bG3IR9gMRziQHkZY=
+        b=jQEC01avAaad+0rdeX2RQyTH/uckDtWLmIEJdV+oY/05seIS7xaoQpZCftHAdMhHU
+         ek3m/YbPprKvEmFhZwP0Kg9uUGMMz8HZHmwjgNas6KBKZ0Xk19Cd7JsUTnVIacB8RH
+         Ue5Wccxo2xB9+q5ezA3TzjobpkINqb8mZNGEChvQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Robin Murphy <robin.murphy@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 378/667] dma-direct: dont call dma_set_decrypted for remapped allocations
-Date:   Tue,  7 Jun 2022 19:00:43 +0200
-Message-Id: <20220607164946.086122133@linuxfoundation.org>
+Subject: [PATCH 5.15 379/667] dma-direct: always leak memory that cant be re-encrypted
+Date:   Tue,  7 Jun 2022 19:00:44 +0200
+Message-Id: <20220607164946.115445191@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,51 +52,67 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit 5570449b6876f215d49ac4db9ccce6ff7aa1e20a ]
+[ Upstream commit a90cf30437489343b8386ae87b4827b6d6c3ed50 ]
 
-Remapped allocations handle the encrypted bit through the pgprot passed
-to vmap, so there is no call dma_set_decrypted.  Note that this case is
-currently entirely theoretical as no valid kernel configuration supports
-remapped allocations and memory encryption currently.
+We must never let unencrypted memory go back into the general page pool.
+So if we fail to set it back to encrypted when freeing DMA memory, leak
+the memory instead and warn the user.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/direct.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ kernel/dma/direct.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
 diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index b9513fd68239..473964620773 100644
+index 473964620773..8e24455dd236 100644
 --- a/kernel/dma/direct.c
 +++ b/kernel/dma/direct.c
-@@ -241,8 +241,6 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- 				__builtin_return_address(0));
- 		if (!ret)
- 			goto out_free_pages;
--		if (dma_set_decrypted(dev, ret, size))
--			goto out_free_pages;
- 		memset(ret, 0, size);
- 		goto done;
- 	}
-@@ -316,12 +314,13 @@ void dma_direct_free(struct device *dev, size_t size,
- 	    dma_free_from_pool(dev, cpu_addr, PAGE_ALIGN(size)))
- 		return;
+@@ -84,9 +84,14 @@ static int dma_set_decrypted(struct device *dev, void *vaddr, size_t size)
  
--	dma_set_encrypted(dev, cpu_addr, 1 << page_order);
--
--	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr))
-+	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
- 		vunmap(cpu_addr);
--	else if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CLEAR_UNCACHED))
--		arch_dma_clear_uncached(cpu_addr, size);
-+	} else {
-+		if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CLEAR_UNCACHED))
-+			arch_dma_clear_uncached(cpu_addr, size);
-+		dma_set_encrypted(dev, cpu_addr, 1 << page_order);
-+	}
+ static int dma_set_encrypted(struct device *dev, void *vaddr, size_t size)
+ {
++	int ret;
++
+ 	if (!force_dma_unencrypted(dev))
+ 		return 0;
+-	return set_memory_encrypted((unsigned long)vaddr, 1 << get_order(size));
++	ret = set_memory_encrypted((unsigned long)vaddr, 1 << get_order(size));
++	if (ret)
++		pr_warn_ratelimited("leaking DMA memory that can't be re-encrypted\n");
++	return ret;
+ }
+ 
+ static void __dma_direct_free_pages(struct device *dev, struct page *page,
+@@ -273,7 +278,6 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 	return ret;
+ 
+ out_encrypt_pages:
+-	/* If memory cannot be re-encrypted, it must be leaked */
+ 	if (dma_set_encrypted(dev, page_address(page), size))
+ 		return NULL;
+ out_free_pages:
+@@ -319,7 +323,8 @@ void dma_direct_free(struct device *dev, size_t size,
+ 	} else {
+ 		if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CLEAR_UNCACHED))
+ 			arch_dma_clear_uncached(cpu_addr, size);
+-		dma_set_encrypted(dev, cpu_addr, 1 << page_order);
++		if (dma_set_encrypted(dev, cpu_addr, 1 << page_order))
++			return;
+ 	}
  
  	__dma_direct_free_pages(dev, dma_direct_to_page(dev, dma_addr), size);
+@@ -363,7 +368,8 @@ void dma_direct_free_pages(struct device *dev, size_t size,
+ 	    dma_free_from_pool(dev, vaddr, size))
+ 		return;
+ 
+-	dma_set_encrypted(dev, vaddr, 1 << page_order);
++	if (dma_set_encrypted(dev, vaddr, 1 << page_order))
++		return;
+ 	__dma_direct_free_pages(dev, page, size);
  }
+ 
 -- 
 2.35.1
 
