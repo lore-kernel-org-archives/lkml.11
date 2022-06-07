@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42639C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:28:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3287BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:28:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344045AbiFGS2A (ORCPT
+        id S1350490AbiFGS2S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:28:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58426 "EHLO
+        Tue, 7 Jun 2022 14:28:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351807AbiFGSCW (ORCPT
+        with ESMTP id S1351833AbiFGSCW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:02:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3298A131296;
-        Tue,  7 Jun 2022 10:45:35 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5AB4158943;
+        Tue,  7 Jun 2022 10:45:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D60F1B80B66;
-        Tue,  7 Jun 2022 17:45:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23634C385A5;
-        Tue,  7 Jun 2022 17:45:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 612EC616A3;
+        Tue,  7 Jun 2022 17:45:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 706CFC385A5;
+        Tue,  7 Jun 2022 17:45:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623932;
-        bh=Y3ci4aj1bWHDsYuaG5QQrbA8DGau5DUCSDNwP7ULckA=;
+        s=korg; t=1654623940;
+        bh=CTn9HCUjXYHSwA99rQmy+i5tCftAg7PvxJaOxRnYJjo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bRUHXx8V6u63scCqWZ3pH9+ArKSjlVsgs4bE94TUzsgZsTg52yuQX1gL4MO5ANB5u
-         3dIzN32y1bPxagyz9tWLiF26NSZbtuR3glR6FcrzxOIol10//cdP1z4NdT0/ceQUiS
-         Bq02l4MYJOIsxLWFojxeyYvMpKUE8Z1Z4cfnsBIs=
+        b=wSZlWFNhUKJMe9Xvnj2Wb8AGeySsqykX7W2SlQM0EnqYsUqRScUbpHYdONBJ64Blm
+         nVuobse9j3vO2F+R/dVnvy4PeEk7lmpubxxUqtvCslf6LPUrYFKuat5c+mo7I6tpct
+         n79QDqHQd+XM+zPh6XI8Lf+TlRbn2Ejl7kRjHjus=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mykola Lysenko <mykolal@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Kwanghoon Son <k.son@samsung.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 145/667] selftests/bpf: fix btf_dump/btf_dump due to recent clang change
-Date:   Tue,  7 Jun 2022 18:56:50 +0200
-Message-Id: <20220607164939.168699984@linuxfoundation.org>
+Subject: [PATCH 5.15 130/667] media: exynos4-is: Fix compile warning
+Date:   Tue,  7 Jun 2022 18:56:35 +0200
+Message-Id: <20220607164938.723276775@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,87 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yonghong Song <yhs@fb.com>
+From: Kwanghoon Son <k.son@samsung.com>
 
-[ Upstream commit 4050764cbaa25760aab40857f723393c07898474 ]
+[ Upstream commit e080f5c1f2b6d02c02ee5d674e0e392ccf63bbaf ]
 
-Latest llvm-project upstream had a change of behavior
-related to qualifiers on function return type ([1]).
-This caused selftests btf_dump/btf_dump failure.
-The following example shows what changed.
+Declare static on function 'fimc_isp_video_device_unregister'.
 
-  $ cat t.c
-  typedef const char * const (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
-  struct t {
-    int a;
-    fn_ptr_arr2_t l;
-  };
-  int foo(struct t *arg) {
-    return arg->a;
-  }
+When VIDEO_EXYNOS4_ISP_DMA_CAPTURE=n, compiler warns about
+warning: no previous prototype for function [-Wmissing-prototypes]
 
-Compiled with latest upstream llvm15,
-  $ clang -O2 -g -target bpf -S -emit-llvm t.c
-The related generated debuginfo IR looks like:
-  !16 = !DIDerivedType(tag: DW_TAG_typedef, name: "fn_ptr_arr2_t", file: !1, line: 1, baseType: !17)
-  !17 = !DICompositeType(tag: DW_TAG_array_type, baseType: !18, size: 320, elements: !32)
-  !18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !19)
-  !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
-  !20 = !DISubroutineType(types: !21)
-  !21 = !{!22, null}
-  !22 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !23, size: 64)
-  !23 = !DISubroutineType(types: !24)
-  !24 = !{!25, !28}
-  !25 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !26, size: 64)
-  !26 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !27)
-  !27 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
-You can see two intermediate const qualifier to pointer are dropped in debuginfo IR.
-
-With llvm14, we have following debuginfo IR:
-  !16 = !DIDerivedType(tag: DW_TAG_typedef, name: "fn_ptr_arr2_t", file: !1, line: 1, baseType: !17)
-  !17 = !DICompositeType(tag: DW_TAG_array_type, baseType: !18, size: 320, elements: !34)
-  !18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !19)
-  !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
-  !20 = !DISubroutineType(types: !21)
-  !21 = !{!22, null}
-  !22 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !23)
-  !23 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !24, size: 64)
-  !24 = !DISubroutineType(types: !25)
-  !25 = !{!26, !30}
-  !26 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !27)
-  !27 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !28, size: 64)
-  !28 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !29)
-  !29 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
-All const qualifiers are preserved.
-
-To adapt the selftest to both old and new llvm, this patch removed
-the intermediate const qualifier in const-to-ptr types, to make the
-test succeed again.
-
-  [1] https://reviews.llvm.org/D125919
-
-Reported-by: Mykola Lysenko <mykolal@fb.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/r/20220523152044.3905809-1-yhs@fb.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Kwanghoon Son <k.son@samsung.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c | 2 +-
+ drivers/media/platform/exynos4-is/fimc-isp-video.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-index 8aaa24a00322..970598dda732 100644
---- a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-+++ b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-@@ -94,7 +94,7 @@ typedef void (* (*signal_t)(int, void (*)(int)))(int);
+diff --git a/drivers/media/platform/exynos4-is/fimc-isp-video.h b/drivers/media/platform/exynos4-is/fimc-isp-video.h
+index edcb3a5e3cb9..2dd4ddbc748a 100644
+--- a/drivers/media/platform/exynos4-is/fimc-isp-video.h
++++ b/drivers/media/platform/exynos4-is/fimc-isp-video.h
+@@ -32,7 +32,7 @@ static inline int fimc_isp_video_device_register(struct fimc_isp *isp,
+ 	return 0;
+ }
  
- typedef char * (*fn_ptr_arr1_t[10])(int **);
- 
--typedef char * (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
-+typedef char * (* (* const fn_ptr_arr2_t[5])())(char * (*)(int));
- 
- struct struct_w_typedefs {
- 	int_t a;
+-void fimc_isp_video_device_unregister(struct fimc_isp *isp,
++static inline void fimc_isp_video_device_unregister(struct fimc_isp *isp,
+ 				enum v4l2_buf_type type)
+ {
+ }
 -- 
 2.35.1
 
