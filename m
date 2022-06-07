@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0180CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E01BECCA488
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386224AbiFGWsl (ORCPT
+        id S1385698AbiFGWqY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:48:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45624 "EHLO
+        Tue, 7 Jun 2022 18:46:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381296AbiFGVk0 (ORCPT
+        with ESMTP id S1381026AbiFGVgY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:40:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 732831A1955;
-        Tue,  7 Jun 2022 12:06:18 -0700 (PDT)
+        Tue, 7 Jun 2022 17:36:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7831B16B2E9;
+        Tue,  7 Jun 2022 12:04:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 086A7617CC;
-        Tue,  7 Jun 2022 19:06:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C48BC385A2;
-        Tue,  7 Jun 2022 19:06:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E4DFB822C0;
+        Tue,  7 Jun 2022 19:04:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE8E9C385A2;
+        Tue,  7 Jun 2022 19:04:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628777;
-        bh=lCSjziNxTNEwSEtrEq7GooJbluSq6XU4T2ICg7uY5No=;
+        s=korg; t=1654628684;
+        bh=cdpR5UjLYMHMaQGNNmxQgvoSzmmjN67q2tKRQs6L/p0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YoeSCJOL00lg3V1or8os+JYaeh+EpqVMzZD6GxHQZi0YgOc4Bej5njK0q7eZJsEyx
-         jwoo4erf1bDOuDu0BOGgcykL6n57ard0yETXwo+vBu7Zi2ZwRU2TykNeMllnITWvws
-         y2JVRjgsFqQrfyQCoW0/OskL+4vCGMSyyTuWxAXU=
+        b=rNZH3+GBms2evUMfSGY+lKq8QlZnQkDlM3NTz1UB7Qwttqdm+7kwkAoHAhiIIR40S
+         p7NtAzKkVeiPxHqEbWggcD4U66JEZrYsZvZdtab5NgyzBybKo4MZY+rxpweIZ5ZS2I
+         PqbiuSCxl+2dTcvJcDWZHqKWA4PqeXlDXOuLEOzU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yake Yang <yake.yang@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Jagan Teki <jagan@amarulasolutions.com>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 451/879] Bluetooth: mt7921s: Fix the incorrect pointer check
-Date:   Tue,  7 Jun 2022 18:59:29 +0200
-Message-Id: <20220607165015.959413495@linuxfoundation.org>
+Subject: [PATCH 5.18 377/879] drm/panel: panel-simple: Fix proper bpc for AM-1280800N3TZQW-T00H
+Date:   Tue,  7 Jun 2022 18:58:15 +0200
+Message-Id: <20220607165013.813628533@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,35 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+From: Jagan Teki <jagan@amarulasolutions.com>
 
-[ Upstream commit 789f6b8ac3b15bca09b69d5699cad0bf6e2103aa ]
+[ Upstream commit 7eafbecd2288c542ea15ea20cf1a7e64a25c21bc ]
 
-Fix the incorrect pointer check on ven_data.
+AM-1280800N3TZQW-T00H panel support 8 bpc not 6 bpc as per
+recent testing in i.MX8MM platform.
 
-Fixes: f41b91fa1783 ("Bluetooth: mt7921s: Add .btmtk_get_codec_config_data")
-Co-developed-by: Yake Yang <yake.yang@mediatek.com>
-Signed-off-by: Yake Yang <yake.yang@mediatek.com>
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fix it.
+
+Fixes: bca684e69c4c ("drm/panel: simple: Add AM-1280800N3TZQW-T00H")
+Signed-off-by: Jagan Teki <jagan@amarulasolutions.com>
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211111094103.494831-1-jagan@amarulasolutions.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/btmtksdio.c | 2 +-
+ drivers/gpu/drm/panel/panel-simple.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
-index f3dc5881fff7..b6d77e04240c 100644
---- a/drivers/bluetooth/btmtksdio.c
-+++ b/drivers/bluetooth/btmtksdio.c
-@@ -961,7 +961,7 @@ static int btmtksdio_get_codec_config_data(struct hci_dev *hdev,
- 	}
- 
- 	*ven_data = kmalloc(sizeof(__u8), GFP_KERNEL);
--	if (!ven_data) {
-+	if (!*ven_data) {
- 		err = -ENOMEM;
- 		goto error;
- 	}
+diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
+index 00b9e1d22087..6880dc59fa88 100644
+--- a/drivers/gpu/drm/panel/panel-simple.c
++++ b/drivers/gpu/drm/panel/panel-simple.c
+@@ -720,7 +720,7 @@ static const struct drm_display_mode ampire_am_1280800n3tzqw_t00h_mode = {
+ static const struct panel_desc ampire_am_1280800n3tzqw_t00h = {
+ 	.modes = &ampire_am_1280800n3tzqw_t00h_mode,
+ 	.num_modes = 1,
+-	.bpc = 6,
++	.bpc = 8,
+ 	.size = {
+ 		.width = 217,
+ 		.height = 136,
 -- 
 2.35.1
 
