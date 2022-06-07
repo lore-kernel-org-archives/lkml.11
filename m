@@ -2,102 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2CC3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA81C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243600AbiFGMPW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:15:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
+        id S242920AbiFGMSG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:18:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243618AbiFGMPG (ORCPT
+        with ESMTP id S243582AbiFGMRn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:15:06 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5640EC5081
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:15:04 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id fd25so22747670edb.3
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 05:15:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=5fH4FavPEfvLlMdMUWk9QQO46jHXVYLmKxePrfhtVTY=;
-        b=xPL8KUcGOJQUW6FJ7vqGgkD7DnRuM9BbLBv1xfktYaCGemXr11kTt9hlgeR/rWy44D
-         RsbYk+vgElonYHAOitiDzU81OjYUZLQqszvIIvJ8BpRX2kpcjCt9TbgRahx6J+Io1klS
-         zCNPJEXCjy6asJRwIsfFUAm7JkpXdMqLGz0e8rUBCSiQdEibs2iO0eG4bY1idePyGUFM
-         W6tscg+T2Y3QVHGUICuDo4KuG+UNCredWNAO604DOki/ZTHUia4AKV414vtxYnMvRlti
-         82Suy2cGUjUiiTJNd3MpvBGtZfaEM5v6+fqBr2lMtfX2H4A8fsNkJdBn3UBWe+R31trJ
-         Cu6g==
+        Tue, 7 Jun 2022 08:17:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B5ADF7483
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:15:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654604153;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oMK24xIGG6wu595QaPQlChtbwsTC3JSyEhFxYI/TvBY=;
+        b=FjUq0gs+Ne4/F5RXNkuLGNYNE6i12mTLsGAi87Scneatkv3b+jCoueak5RcsCcD9GWntWJ
+        4fWeAcZ3ClsPhLgSwzTEKmh3XBzzs9nOJ6frKpHjrUf9agnxC3lHxKYF1HHeOhe5kwvPNS
+        bQefxyAbpAdI4a7HgWjzzy7ClINr3pA=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-212-nspVzmDHM2ygZNySYXwj8g-1; Tue, 07 Jun 2022 08:15:52 -0400
+X-MC-Unique: nspVzmDHM2ygZNySYXwj8g-1
+Received: by mail-qv1-f72.google.com with SMTP id da12-20020a05621408cc00b0046448be0e98so10727993qvb.9
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 05:15:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=5fH4FavPEfvLlMdMUWk9QQO46jHXVYLmKxePrfhtVTY=;
-        b=sSKbP7C0/ebpAJLaUCiG0z3rTKIkr/tLzXu+Ryo1mR4FoOFEioVtbYWGWAI2Dy1+Ad
-         zLEvEYwZMNLlWkrtd/Nos53EkDGqhuAochY3bEpWwQZ8O4BwuVC7Cf5eawkqOgitb7ur
-         RskwV3guDajycw0s4kl1DIPGbF2CZKSc3i/3gewKM1qmSDGj+X1/cvjQVDoIdxPn9Gmy
-         b/PX7/UQvQeHMoAQvCR8JYVTrXFNDRST3QfwAFh6SzqyIkp2fpyjQNq0LIugOebDs7Az
-         3gT+8KHB9zuAhEZ7ueT8N1DvDNF8Y+veFPe3KUYkKt994oL0o8wEij9cH+Q2ka7AWUjo
-         Wnbg==
-X-Gm-Message-State: AOAM530Sgw4klxoYcKM8+qzw/ViT2scbiSAaCzq9zBmIOyAm02lTzi3N
-        OZwYSN/bBM7cf0Ip5ptK5mBKFGztatR63A==
-X-Google-Smtp-Source: ABdhPJx0DSqjBZ+b9BV4kl1YSSXSZRVKSEOfofAh7Iqy1JDvVeOQvA2sW119u0gPadHqCpd/wWJZ+A==
-X-Received: by 2002:a05:6402:254e:b0:431:35df:5e38 with SMTP id l14-20020a056402254e00b0043135df5e38mr18206654edb.385.1654604102905;
-        Tue, 07 Jun 2022 05:15:02 -0700 (PDT)
-Received: from [192.168.0.183] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id v2-20020a170906b00200b006ff05d4726esm7576280ejy.50.2022.06.07.05.15.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 05:15:02 -0700 (PDT)
-Message-ID: <92db548d-aaa7-aac5-a56b-e787769ab0fb@linaro.org>
-Date:   Tue, 7 Jun 2022 14:15:01 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=oMK24xIGG6wu595QaPQlChtbwsTC3JSyEhFxYI/TvBY=;
+        b=2O35HXG3csr99CVK8lS42oTn2PxwJ41vIW6yC+1Z+pyLZ77Y5ak4cTB61OyhvRzn9r
+         8SnCQ1xar2fVHS68rE161+PfpCIrAhwp7wcXYPxbg5ijVijoYzlIGcwLFOz6a8NR02xs
+         HZORmC+0WOhI4Wure78sxOCTroUgjD2t/3Nsh9NC5bKonwsnIuITOqZcQm9wdaS8Pxl1
+         W4mMbq0Spl9DtqInMS+XgXFmFDE9svhkmecTwOv7IzgrM1xPIgcis0HQ/9hzwkWOyt9c
+         EbH3Ne+OMyifR2uBXDaXJTgtuSEyNMyyfIvrMnO/6yrmed3WvC6VUCej3QXK4qK70nHu
+         AtjQ==
+X-Gm-Message-State: AOAM532XIWpWtKZj4bxyLZmUENvQ77audWYNf+AuNS9+RuK/PXAmy1Hj
+        Dsbf/6JeOp5Fsr9PQkPU7wK922H67rI1B90Lu30X153/I2i4amSSpsyagsC0M13oIpi5oczODy9
+        AutJh25pjTfr2D43a8yEHypxB
+X-Received: by 2002:ae9:df87:0:b0:6a6:acfe:f1ed with SMTP id t129-20020ae9df87000000b006a6acfef1edmr10438248qkf.579.1654604152054;
+        Tue, 07 Jun 2022 05:15:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz0A1/Z3+7HGeA0k9MPhFMYSifjOBR8tuyrQVy1bAdH0gssRyCDYA3k9yt79LLbL7gI80w4HQ==
+X-Received: by 2002:ae9:df87:0:b0:6a6:acfe:f1ed with SMTP id t129-20020ae9df87000000b006a6acfef1edmr10438233qkf.579.1654604151818;
+        Tue, 07 Jun 2022 05:15:51 -0700 (PDT)
+Received: from halaneylaptop ([2600:1700:1ff0:d0e0::48])
+        by smtp.gmail.com with ESMTPSA id bl33-20020a05620a1aa100b006a6f1c30701sm353511qkb.115.2022.06.07.05.15.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 05:15:50 -0700 (PDT)
+Date:   Tue, 7 Jun 2022 07:15:48 -0500
+From:   Andrew Halaney <ahalaney@redhat.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] clk: qcom: gdsc: Bump parent usage count when GDSC is
+ found enabled
+Message-ID: <20220607121548.fhzpjcmoahlkue4t@halaneylaptop>
+References: <20220606212112.3617731-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 06/23] dt-bindings: mmc: exynos-dw-mshc: update
- samsung,pinctrl.yaml reference
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Protsenko <semen.protsenko@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org
-References: <cover.1654529011.git.mchehab@kernel.org>
- <5c937793dd7aec30da4964b39561072ae184f89b.1654529011.git.mchehab@kernel.org>
- <5fe2246f-97db-e7b0-a72e-c8c5ff6b2abe@linaro.org>
-In-Reply-To: <5fe2246f-97db-e7b0-a72e-c8c5ff6b2abe@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220606212112.3617731-1-bjorn.andersson@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/06/2022 17:41, Krzysztof Kozlowski wrote:
-> On 06/06/2022 17:25, Mauro Carvalho Chehab wrote:
->> Changeset af030d83da1d ("dt-bindings: pinctrl: samsung: convert to dtschema")
->> renamed: bindings/pinctrl/samsung-pinctrl.txt
->> to: bindings/pinctrl/samsung-pinctrl.yaml, splitting it into multiple
->> files.
->>
->> Update exynos-dw-mshc.txt accordingly.
->>
->> Fixes: af030d83da1d ("dt-bindings: pinctrl: samsung: convert to dtschema")
->> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+On Mon, Jun 06, 2022 at 02:21:12PM -0700, Bjorn Andersson wrote:
+> When a GDSC is found to be enabled at boot the pm_runtime state will
+> be unbalanced as the GDSC is later turned off. Fix this by increasing
+> the usage counter on the power-domain, in line with how we handled the
+> regulator state.
 > 
-> Commit is okay, but you can also drop it entirely because entire part
-> will be removed with:
-> https://lore.kernel.org/all/20220605163710.144210-4-krzysztof.kozlowski@linaro.org/
+> Fixes: 1b771839de05 ("clk: qcom: gdsc: enable optional power domain support")
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>  drivers/clk/qcom/gdsc.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/clk/qcom/gdsc.c b/drivers/clk/qcom/gdsc.c
+> index 44520efc6c72..a1fa7c4cff60 100644
+> --- a/drivers/clk/qcom/gdsc.c
+> +++ b/drivers/clk/qcom/gdsc.c
+> @@ -420,6 +420,9 @@ static int gdsc_init(struct gdsc *sc)
+>  				return ret;
+>  		}
+>  
+> +		/* ...and the power-domain */
+> +		gdsc_pm_runtime_get(sc);
+> +
+>  		/*
+>  		 * Votable GDSCs can be ON due to Vote from other masters.
+>  		 * If a Votable GDSC is ON, make sure we have a Vote.
+> -- 
+> 2.35.1
+> 
 
-Which was now applied by Ulf.
+Makes sense to me!
 
-Best regards,
-Krzysztof
+Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
+
