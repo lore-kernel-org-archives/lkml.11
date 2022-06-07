@@ -2,141 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7694BCCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB38CCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348440AbiFGRpZ (ORCPT
+        id S1348473AbiFGRp2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:45:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45006 "EHLO
+        Tue, 7 Jun 2022 13:45:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348185AbiFGRbi (ORCPT
+        with ESMTP id S1348163AbiFGRbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:31:38 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A60F311E4AB
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:29:44 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id o7so3323115eja.1
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:29:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=6Qly2UIyOE8jeV4UIMO9/cbT7m/yg5zZN4spcrrGBuY=;
-        b=Y6qrBUmNyxndVHvDEdVrGGkau8+wN4t82cmUBnOQFk3GEGZj6VNhHZUy22YizV9ln6
-         EFsltomJCd6kyFokxtvKBcGaDI3XoW2hTCU1g89CMyqfp4I5GvB/LufsevPe/s4XMKV/
-         1pkd5q3lbyqGAHxTmcNE9SFRVJVNGBXW2DAjOBJZ9aFZc9IT6WNWAxXBF3wpngkudFcw
-         bHdeCnMOKba9yc57Rr6ibZtDPGEbb81jC25TjQjc8rJcIiBry7MwafG5Qi5cOHs3S3c0
-         zanlP8LX+2O5fao7T22B3tFmD0l7d4L6JsfPGHojTJQ+urPLihkg0NsLAksVlpDCD368
-         NueQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6Qly2UIyOE8jeV4UIMO9/cbT7m/yg5zZN4spcrrGBuY=;
-        b=ebZSkSDEgSe7aeM8da+/ak2NkEFdSK9ODcV3YmadaEjoAlFpaz+3+AERMkP1ntgJbw
-         4znFO6S5mA/UfBmKXe2rLbKVrfk1aLNVVlrhjGInYrSpcY8lqHLOMG55RQ5sGpWMAqkz
-         Ng33YYVfiXou/kPM3zN7KLgr57dARJDP+Ncvl+EaLVCF9RI6KbJ5VkI0j2KTFR+aQ2p7
-         hLDPLJ1FGHKI9BFl+2YoRTeX1uwnT9TEfXgRgy91V5zVwFJ0QEyLI/JcNt5mSaA2t7x4
-         Y7eAUbra7LMDrkeewqVqz2GeBMfqUOQDD/QHBoAi4yghoi6h5muxoxRUwvVc5Cxsljsv
-         fdbg==
-X-Gm-Message-State: AOAM531nwwdQOTPMj4/Yc/IYZPtOjZ26ZBSNzGcUyB2dlKP5bJglikr0
-        8Ug7VcaRc10GQuDFpIIyA5JAgQ/w1NrmGQ==
-X-Google-Smtp-Source: ABdhPJxQllnLp5MdeAtv1dMJ/Mnqk9ZmQf9PtgCRrHGxsCtsV8I4AO0a7NAAkrbukOGwiVxtIhFLiw==
-X-Received: by 2002:a17:907:16a1:b0:6fe:ffd9:b14f with SMTP id hc33-20020a17090716a100b006feffd9b14fmr27532053ejc.573.1654622982983;
-        Tue, 07 Jun 2022 10:29:42 -0700 (PDT)
-Received: from [192.168.0.187] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id b5-20020a17090691c500b006feaa22e367sm7948656ejx.165.2022.06.07.10.29.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 10:29:42 -0700 (PDT)
-Message-ID: <0549347e-1906-a293-ee7a-824578a00227@linaro.org>
-Date:   Tue, 7 Jun 2022 19:29:41 +0200
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0583510D915;
+        Tue,  7 Jun 2022 10:29:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A6F40CE23D1;
+        Tue,  7 Jun 2022 17:29:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90F67C385A5;
+        Tue,  7 Jun 2022 17:29:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654622978;
+        bh=CzrLO3e2CgEOzWZRssCzwztDRtE5eWvfjtuaGMykLwI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IEeYxrdITAZ4E0feXxnVRAsQ40LCr5PysKutKTCvfR3SbfcsjLHcbk9woh7jytu0a
+         vkE+LeXaTguxrfoPDQhu9ComUp52FQeiDdH7HMaDMSGkGr6rBdaXhE8/4dIpHZaxlH
+         HA+VCAeaKpqcANd9xLDnbRS55f6greuZ0wcppGPs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 244/452] ASoC: wm2000: fix missing clk_disable_unprepare() on error in wm2000_anc_transition()
+Date:   Tue,  7 Jun 2022 19:01:41 +0200
+Message-Id: <20220607164915.830592378@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
+References: <20220607164908.521895282@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 06/10] dt-bindings: arm: freescale: Add fsl,scu-pd yaml
- file
-Content-Language: en-US
-To:     Abel Vesa <abel.vesa@nxp.com>, Rob Herring <robh@kernel.org>
-Cc:     Shawn Guo <shawnguo@kernel.org>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220607105951.1821519-1-abel.vesa@nxp.com>
- <20220607105951.1821519-7-abel.vesa@nxp.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220607105951.1821519-7-abel.vesa@nxp.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/06/2022 12:59, Abel Vesa wrote:
-> This documents separately the PD child node of the SCU main node.
-> 
-> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-> ---
->  .../bindings/arm/freescale/fsl,scu-pd.yaml    | 32 +++++++++++++++++++
->  1 file changed, 32 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/arm/freescale/fsl,scu-pd.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/freescale/fsl,scu-pd.yaml b/Documentation/devicetree/bindings/arm/freescale/fsl,scu-pd.yaml
-> new file mode 100644
-> index 000000000000..154a63495436
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/arm/freescale/fsl,scu-pd.yaml
-> @@ -0,0 +1,32 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/arm/freescale/fsl,scu-pd.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: i.MX SCU Client Device Node - Power domain bindings based on SCU Message Protocol
-> +
-> +maintainers:
-> +  - Shawn Guo <shawnguo@kernel.org>
-> +
-> +description: i.MX SCU Client Device Node
-> +  Client nodes are maintained as children of the relevant IMX-SCU device node.
-> +  Power domain bindings based on SCU Message Protocol
-> +  This binding for the SCU power domain providers uses the generic power
-> +  domain binding (Documentation/devicetree/bindings/power/power-domain.yaml)
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-Using of other bindings is reflected by '$ref'. Mentioning it in
-description means nothing and it is not helpful. Reference the proper
-schema instead.
+[ Upstream commit be2af740e2a9c7134f2d8ab4f104006e110b13de ]
 
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - fsl,imx8qm-scu-pd
-> +          - fsl,imx8qxp-scu-pd
-> +      - const: fsl,scu-pd
-> +  '#power-domain-cells':
-> +    const: 1
-> +
-> +additionalProperties: false
+Fix the missing clk_disable_unprepare() before return
+from wm2000_anc_transition() in the error handling case.
 
-Use the same order as in example-schema.yaml, so for regular case:
-properties+required+additionalProperties
+Fixes: 514cfd6dd725 ("ASoC: wm2000: Integrate with clock API")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220514091053.686416-1-yangyingliang@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/soc/codecs/wm2000.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-when referencing other schema, without any if-then-else:
-allOf:properties+required+additionalProperties
-
-When having if-then-else:
-properties+required+allOf+additionalProperties
-
-> +
-> +required:
-> +  - compatible
-> +  - '#power-domain-cells'
+diff --git a/sound/soc/codecs/wm2000.c b/sound/soc/codecs/wm2000.c
+index 72e165cc6443..97ece3114b3d 100644
+--- a/sound/soc/codecs/wm2000.c
++++ b/sound/soc/codecs/wm2000.c
+@@ -536,7 +536,7 @@ static int wm2000_anc_transition(struct wm2000_priv *wm2000,
+ {
+ 	struct i2c_client *i2c = wm2000->i2c;
+ 	int i, j;
+-	int ret;
++	int ret = 0;
+ 
+ 	if (wm2000->anc_mode == mode)
+ 		return 0;
+@@ -566,13 +566,13 @@ static int wm2000_anc_transition(struct wm2000_priv *wm2000,
+ 		ret = anc_transitions[i].step[j](i2c,
+ 						 anc_transitions[i].analogue);
+ 		if (ret != 0)
+-			return ret;
++			break;
+ 	}
+ 
+ 	if (anc_transitions[i].dest == ANC_OFF)
+ 		clk_disable_unprepare(wm2000->mclk);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static int wm2000_anc_set_mode(struct wm2000_priv *wm2000)
+-- 
+2.35.1
 
 
-Best regards,
-Krzysztof
+
