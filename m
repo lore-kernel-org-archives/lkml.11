@@ -2,153 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 761C1CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA4F3C43334
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387779AbiFHAav (ORCPT
+        id S1343714AbiFHAdy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:30:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35130 "EHLO
+        Tue, 7 Jun 2022 20:33:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381637AbiFGW3l (ORCPT
+        with ESMTP id S1382403AbiFGVvY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:29:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1D5274D53;
-        Tue,  7 Jun 2022 12:23:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D26E8B823CC;
-        Tue,  7 Jun 2022 19:23:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 073ECC385A2;
-        Tue,  7 Jun 2022 19:23:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629827;
-        bh=1deBv8pWO4EhlblSV+d3qc0OS1zA34siQuYQ1ppkR98=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NJj62ezhD1Cs/XBtPm6WLTPKjqfjOjtbUPr5nsMhFqqn3SltjKffdq+BgLFphQB1S
-         1Ci7gQrbjKy7tS1wUh419QHCzpuI0GGWew6gu4OqLZveTb7tSWNgdmWC01EuiQjKrd
-         M9irQ5a+8sfCn8io1nmC7rOeZkIh72nikNH+6I2k=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe de Dinechin <christophe@dinechin.org>,
-        Christophe de Dinechin <dinechin@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ben Segall <bsegall@google.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, Mel Gorman <mgorman@suse.de>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH 5.18 831/879] nodemask.h: fix compilation error with GCC12
-Date:   Tue,  7 Jun 2022 19:05:49 +0200
-Message-Id: <20220607165026.976043805@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:51:24 -0400
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB7141D502C
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:08:46 -0700 (PDT)
+Received: by mail-io1-xd30.google.com with SMTP id q76so11304520iod.8
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:08:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RBZRrGNSZ5Xl0z15O0Xk88yjDszs7TKdMgfjuiPJgmM=;
+        b=GqAQd+Yz3A+QhO79joLQGMr6YFmt2jbjW/N5dGcQWNI6pKy/Jh9/r7QRm5oMmO7TM7
+         YfaHGGz139f8EDYHgZ7gXLPik5y64QwjIc8Iza7hqjhDh2VvegQasYdZV7cowar+4lGC
+         BliWWhtnBqWUH4Ts2hJOeNjwXktdXoFBHYzUSDNp9vl1E36P65d4hBCMRlREAxbdau6r
+         fxLxuU6IqyYdDTWNfGt5fAxnmQbyg3qriDG0D5diHQlw3DwRtakaNm+9wgIaGTKTH0pq
+         1XtM+l6MMzTJbCjo1URWWNFdHno57Ybh//4gb7Ao7tCO5ktId2huX8hUPgVQ6hrGW+aQ
+         62sA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RBZRrGNSZ5Xl0z15O0Xk88yjDszs7TKdMgfjuiPJgmM=;
+        b=ydOczoqyiveHqVwAxfHDVvC12ffh9btaPB0o6zwaRxry173XxNunox+zfKcKOaRdEE
+         dI1uf8vYWbGzgVfPS+YNDrfWCgATXb+6lIF++hrQomh4VQEY5JxVaC6wlmbkTM9XCbsz
+         uEtEHRNVH7RJIKJCmuMbJ9wGSlz0RyWJY4a/uWh+s5zrVjXeuRQRo9F1Bn+dnvroggks
+         fyDOyzgxBZjBFV/kWE7vMRLP0+nDqMkxzNzqDa7DIZFOWe0RUKHNmCVSKS/QeDYYcdnS
+         oiFDuuSdtPSWLkzXfhxepYUwe5xyNwXWPfciL09xxe0rSP4Lw5zmILw2mfM8RnlOAddf
+         yDew==
+X-Gm-Message-State: AOAM532mjj2LZU8kQvxtr/bD7hOgSvufRoWEq8oyfFTmI5sxW8ZvDYlx
+        ILPCqe8LH7QRndNH+BB9oWmmoubBJ9lur7v7J6s=
+X-Google-Smtp-Source: ABdhPJwyfmrwvW5BMuTQdxQDQKJNaAvZax/AKYssdzPmPw6YRiYZZfzwQ248pFfsaehNvtQvfx4+Rx5/OhEr6YXWhwU=
+X-Received: by 2002:a05:6638:270b:b0:331:b9e7:65af with SMTP id
+ m11-20020a056638270b00b00331b9e765afmr5375557jav.256.1654628925830; Tue, 07
+ Jun 2022 12:08:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220607180406.1116277-1-steve@sk2.org>
+In-Reply-To: <20220607180406.1116277-1-steve@sk2.org>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Tue, 7 Jun 2022 21:08:34 +0200
+Message-ID: <CANiq72kRhmT37H1FAGYGny83ONYXeqJuO8ZPbym0ajQOWKY4Kw@mail.gmail.com>
+Subject: Re: [PATCH] auxdisplay: ht16k33: Use backlight helper
+To:     Stephen Kitt <steve@sk2.org>
+Cc:     Robin van der Gracht <robin@protonic.nl>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe de Dinechin <dinechin@redhat.com>
+Hi Stephen,
 
-commit 37462a920392cb86541650a6f4121155f11f1199 upstream.
+On Tue, Jun 7, 2022 at 8:04 PM Stephen Kitt <steve@sk2.org> wrote:
+>
+> backlight_properties.fb_blank is deprecated. The states it represents
+> are handled by other properties; but instead of accessing those
+> properties directly, drivers should use the helpers provided by
+> backlight.h.
+>
+> Instead of retrieving the backlight brightness in struct
+> backlight_properties manually, and then checking whether the backlight
+> should be on at all, use backlight_get_brightness() which does all
+> this and insulates this from future changes.
 
-With gcc version 12.0.1 20220401 (Red Hat 12.0.1-0), building with
-defconfig results in the following compilation error:
+Thanks for the patch! Looks good to me.
 
-|   CC      mm/swapfile.o
-| mm/swapfile.c: In function `setup_swap_info':
-| mm/swapfile.c:2291:47: error: array subscript -1 is below array bounds
-|  of `struct plist_node[]' [-Werror=array-bounds]
-|  2291 |                                 p->avail_lists[i].prio = 1;
-|       |                                 ~~~~~~~~~~~~~~^~~
-| In file included from mm/swapfile.c:16:
-| ./include/linux/swap.h:292:27: note: while referencing `avail_lists'
-|   292 |         struct plist_node avail_lists[]; /*
-|       |                           ^~~~~~~~~~~
+There is a functional change in that `BL_CORE_SUSPENDED` is taken into
+account with this change, but I assume that is expected. In that case,
+it could be good to mention it in the commit message.
 
-This is due to the compiler detecting that the mask in
-node_states[__state] could theoretically be zero, which would lead to
-first_node() returning -1 through find_first_bit.
-
-I believe that the warning/error is legitimate.  I first tried adding a
-test to check that the node mask is not emtpy, since a similar test exists
-in the case where MAX_NUMNODES == 1.
-
-However, adding the if statement causes other warnings to appear in
-for_each_cpu_node_but, because it introduces a dangling else ambiguity.
-And unfortunately, GCC is not smart enough to detect that the added test
-makes the case where (node) == -1 impossible, so it still complains with
-the same message.
-
-This is why I settled on replacing that with a harmless, but relatively
-useless (node) >= 0 test.  Based on the warning for the dangling else, I
-also decided to fix the case where MAX_NUMNODES == 1 by moving the
-condition inside the for loop.  It will still only be tested once.  This
-ensures that the meaning of an else following for_each_node_mask or
-derivatives would not silently have a different meaning depending on the
-configuration.
-
-Link: https://lkml.kernel.org/r/20220414150855.2407137-3-dinechin@redhat.com
-Signed-off-by: Christophe de Dinechin <christophe@dinechin.org>
-Signed-off-by: Christophe de Dinechin <dinechin@redhat.com>
-Reviewed-by: Andrew Morton <akpm@linux-foundation.org>
-Cc: Ben Segall <bsegall@google.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc: Vincent Guittot <vincent.guittot@linaro.org>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- include/linux/nodemask.h |   13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
-
---- a/include/linux/nodemask.h
-+++ b/include/linux/nodemask.h
-@@ -375,14 +375,13 @@ static inline void __nodes_fold(nodemask
- }
- 
- #if MAX_NUMNODES > 1
--#define for_each_node_mask(node, mask)			\
--	for ((node) = first_node(mask);			\
--		(node) < MAX_NUMNODES;			\
--		(node) = next_node((node), (mask)))
-+#define for_each_node_mask(node, mask)				    \
-+	for ((node) = first_node(mask);				    \
-+	     (node >= 0) && (node) < MAX_NUMNODES;		    \
-+	     (node) = next_node((node), (mask)))
- #else /* MAX_NUMNODES == 1 */
--#define for_each_node_mask(node, mask)			\
--	if (!nodes_empty(mask))				\
--		for ((node) = 0; (node) < 1; (node)++)
-+#define for_each_node_mask(node, mask)                                  \
-+	for ((node) = 0; (node) < 1 && !nodes_empty(mask); (node)++)
- #endif /* MAX_NUMNODES */
- 
- /*
-
-
+Cheers,
+Miguel
