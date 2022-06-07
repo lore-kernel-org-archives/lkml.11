@@ -2,101 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B66C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:18:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC88CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:18:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383061AbiFGWSC (ORCPT
+        id S1383493AbiFGWSK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:18:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43478 "EHLO
+        Tue, 7 Jun 2022 18:18:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379974AbiFGVLV (ORCPT
+        with ESMTP id S1379966AbiFGVLV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:11:21 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37AA2217346;
-        Tue,  7 Jun 2022 11:52:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 83BB6CE2424;
-        Tue,  7 Jun 2022 18:52:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 735E2C385A2;
-        Tue,  7 Jun 2022 18:52:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627958;
-        bh=lYHN3M9R/cWlaC8P7t69WHiCUtqTwEPDM2IyLMD+e50=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D6siFhsoDZ3XsQcYQQ9EOHAgNHDQoyNuH/47vuBvduLd4yKPmApuqU9P+7HIgmvQS
-         vUMWYIdMNvSh0k2e1TW2O3chOUCYcJyb7bGNCxlXI/V43YtfTEPKGsIy2Bu7Gk90mG
-         o2DfU5mFJWciyInSum69Q6ZGXJLolaJTkKfNkzDk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 114/879] ASoC: Intel: bytcr_rt5640: Add quirk for the HP Pro Tablet 408
-Date:   Tue,  7 Jun 2022 18:53:52 +0200
-Message-Id: <20220607165006.010992767@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB3921682A;
+        Tue,  7 Jun 2022 11:52:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=7JLpmF2WWEjZt5s92gmeTOB0LAVvi3DsmkSlokLpb2s=; b=sgEjrBWyLnlD29+Ns5Q/ZOkcLs
+        TUfzlICy3mxwL8/vxk4D0UGg8KV2IZkdkayNdiCB91n0/G/tCK1B1ojv9skTIkXd0b+09ti+aa/L1
+        ObMQMw01e/rumghyYynjZOOIM1nzYWkDSJ+i/JwwBp6DJiDC0V/hUUyrYHpLf67vy9MFpw97VyzY5
+        t/NZo/b0smUbP1XVZrfEMo62pwSWVhBuEkHIv6ZjDqd4gmcNAcDkXAkgtPv/nYtzFoMrFnIHa83KH
+        7C7VwSIsS9L1o/pUNbFPIyheMxx6lETSmK0VJihiNObpkcidZl4G4smoR08W/la1e0jm8XNfYMMO7
+        goLIgocQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:32776)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nyeJY-0003q1-6t; Tue, 07 Jun 2022 19:52:28 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nyeJV-00012v-B3; Tue, 07 Jun 2022 19:52:25 +0100
+Date:   Tue, 7 Jun 2022 19:52:25 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>
+Cc:     luizluca@gmail.com, Linus Walleij <linus.walleij@linaro.org>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v2] net: dsa: realtek: rtl8365mb: fix GMII caps for
+ ports with internal PHY
+Message-ID: <Yp+eaUiOwZts/HgS@shell.armlinux.org.uk>
+References: <20220607184624.417641-1-alvin@pqrs.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220607184624.417641-1-alvin@pqrs.dk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+On Tue, Jun 07, 2022 at 08:46:24PM +0200, Alvin Šipraga wrote:
+> From: Alvin Šipraga <alsi@bang-olufsen.dk>
+> 
+> Since commit a18e6521a7d9 ("net: phylink: handle NA interface mode in
+> phylink_fwnode_phy_connect()"), phylib defaults to GMII when no phy-mode
+> or phy-connection-type property is specified in a DSA port node of the
+> device tree. The same commit caused a regression in rtl8365mb whereby
+> phylink would fail to connect, because the driver did not advertise
+> support for GMII for ports with internal PHY.
+> 
+> It should be noted that the aforementioned regression is not because the
+> blamed commit was incorrect: on the contrary, the blamed commit is
+> correcting the previous behaviour whereby unspecified phy-mode would
+> cause the internal interface mode to be PHY_INTERFACE_MODE_NA. The
+> rtl8365mb driver only worked by accident before because it _did_
+> advertise support for PHY_INTERFACE_MODE_NA, despite NA being reserved
+> for internal use by phylink. With one mistake fixed, the other was
+> exposed.
+> 
+> Commit a5dba0f207e5 ("net: dsa: rtl8365mb: add GMII as user port mode")
+> then introduced implicit support for GMII mode on ports with internal
+> PHY to allow a PHY connection for device trees where the phy-mode is not
+> explicitly set to "internal". At this point everything was working OK
+> again.
+> 
+> Subsequently, commit 6ff6064605e9 ("net: dsa: realtek: convert to
+> phylink_generic_validate()") broke this behaviour again by discarding
+> the usage of rtl8365mb_phy_mode_supported() - where this GMII support
+> was indicated - while switching to the new .phylink_get_caps API.
+> 
+> With the new API, rtl8365mb_phy_mode_supported() is no longer needed.
+> Remove it altogether and add back the GMII capability - this time to
+> rtl8365mb_phylink_get_caps() - so that the above default behaviour works
+> for ports with internal PHY again.
+> 
+> Fixes: 6ff6064605e9 ("net: dsa: realtek: convert to phylink_generic_validate()")
+> Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-[ Upstream commit ce216cfa84a4e1c23b105e652c550bdeaac9e922 ]
+Even though I raised concerns about the ext_int thing previously, this
+is still a step forward, so:
 
-Add a quirk for the HP Pro Tablet 408, this BYTCR tablet has no CHAN
-package in its ACPI tables and uses SSP0-AIF1 rather then SSP0-AIF2 which
-is the default for BYTCR devices.
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-It also uses DMIC1 for the internal mic rather then the default IN3
-and it uses JD2 rather then the default JD1 for jack-detect.
+Thanks!
 
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=211485
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220427134918.527381-1-hdegoede@redhat.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/intel/boards/bytcr_rt5640.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/sound/soc/intel/boards/bytcr_rt5640.c b/sound/soc/intel/boards/bytcr_rt5640.c
-index d76a505052fb..f81ae742faa7 100644
---- a/sound/soc/intel/boards/bytcr_rt5640.c
-+++ b/sound/soc/intel/boards/bytcr_rt5640.c
-@@ -773,6 +773,18 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
- 					BYT_RT5640_OVCD_SF_0P75 |
- 					BYT_RT5640_MCLK_EN),
- 	},
-+	{	/* HP Pro Tablet 408 */
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "HP Pro Tablet 408"),
-+		},
-+		.driver_data = (void *)(BYT_RT5640_DMIC1_MAP |
-+					BYT_RT5640_JD_SRC_JD2_IN4N |
-+					BYT_RT5640_OVCD_TH_1500UA |
-+					BYT_RT5640_OVCD_SF_0P75 |
-+					BYT_RT5640_SSP0_AIF1 |
-+					BYT_RT5640_MCLK_EN),
-+	},
- 	{	/* HP Stream 7 */
- 		.matches = {
- 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
 -- 
-2.35.1
-
-
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
