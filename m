@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FFF1CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1B05CCA48E
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:46:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382003AbiFGVqA (ORCPT
+        id S1382092AbiFGVqZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:46:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49008 "EHLO
+        Tue, 7 Jun 2022 17:46:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378682AbiFGUwX (ORCPT
+        with ESMTP id S1378589AbiFGUwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:52:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E33F15A17;
-        Tue,  7 Jun 2022 11:42:47 -0700 (PDT)
+        Tue, 7 Jun 2022 16:52:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C291208A0;
+        Tue,  7 Jun 2022 11:42:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8C14B82018;
-        Tue,  7 Jun 2022 18:42:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D12BC385A2;
-        Tue,  7 Jun 2022 18:42:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 06568B81FE1;
+        Tue,  7 Jun 2022 18:42:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FFD3C385A2;
+        Tue,  7 Jun 2022 18:42:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627364;
-        bh=ky2CKWepQbNbVV7XwcZQYn/5gAFmeJhM5i3r1Xbv73o=;
+        s=korg; t=1654627350;
+        bh=SOVgZGmxox99chUL0j/dLJdoiw+f0+Ci7SsA5C0yofA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B7v0cn0wjLsQ+N3QdUM8Cft+bu4Qtyh2COzB4Xc02OVP68ICwFtqSoEpUuLe3aCZl
-         M9UxtgL7za6pfeX3p3M/DNmj0S9ydMB+XCocCxppCAgPOUk3tlMgEEK5uj2zsR8Uuz
-         KRzeMqGDkcMKlJAP7SMb5tNcgthKoczh90N/yLYw=
+        b=DjXBNMiogV++pUefPIvfcPRKYsVtMDPPvkYa/bfBdgdYq1KZnJRYV7U53bQ+rUdA8
+         efuPZRFT/UsdV8inbHNRTTjMM2DhV5EjhBFNFbbRTttxbJP7rHCmtt8OpsSABMY1C2
+         yEN2L48IdynjZPoRQaXJJzu0vRD522/5qUDglK4w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catrinel Catrinescu <cc@80211.de>,
-        Felix Fietkau <nbd@nbd.name>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.17 713/772] mac80211: upgrade passive scan to active scan on DFS channels after beacon rx
-Date:   Tue,  7 Jun 2022 19:05:05 +0200
-Message-Id: <20220607165010.055746370@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 5.17 708/772] irqchip/armada-370-xp: Do not touch Performance Counter Overflow on A375, A38x, A39x
+Date:   Tue,  7 Jun 2022 19:05:00 +0200
+Message-Id: <20220607165009.910673302@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,103 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Pali Rohár <pali@kernel.org>
 
-commit b041b7b9de6e1d4362de855ab90f9d03ef323edd upstream.
+commit a3d66a76348daf559873f19afc912a2a7c2ccdaf upstream.
 
-In client mode, we can't connect to hidden SSID APs or SSIDs not advertised
-in beacons on DFS channels, since we're forced to passive scan. Fix this by
-sending out a probe request immediately after the first beacon, if active
-scan was requested by the user.
+Register ARMADA_370_XP_INT_FABRIC_MASK_OFFS is Armada 370 and XP specific
+and on new Armada platforms it has different meaning. It does not configure
+Performance Counter Overflow interrupt masking. So do not touch this
+register on non-A370/XP platforms (A375, A38x and A39x).
 
+Signed-off-by: Pali Rohár <pali@kernel.org>
 Cc: stable@vger.kernel.org
-Reported-by: Catrinel Catrinescu <cc@80211.de>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Link: https://lore.kernel.org/r/20220420104907.36275-1-nbd@nbd.name
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: 28da06dfd9e4 ("irqchip: armada-370-xp: Enable the PMU interrupts")
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220425113706.29310-1-pali@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/mac80211/ieee80211_i.h |    5 +++++
- net/mac80211/scan.c        |   20 ++++++++++++++++++++
- 2 files changed, 25 insertions(+)
+ drivers/irqchip/irq-armada-370-xp.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/net/mac80211/ieee80211_i.h
-+++ b/net/mac80211/ieee80211_i.h
-@@ -1128,6 +1128,9 @@ struct tpt_led_trigger {
-  *	a scan complete for an aborted scan.
-  * @SCAN_HW_CANCELLED: Set for our scan work function when the scan is being
-  *	cancelled.
-+ * @SCAN_BEACON_WAIT: Set whenever we're passive scanning because of radar/no-IR
-+ *	and could send a probe request after receiving a beacon.
-+ * @SCAN_BEACON_DONE: Beacon received, we can now send a probe request
-  */
- enum {
- 	SCAN_SW_SCANNING,
-@@ -1136,6 +1139,8 @@ enum {
- 	SCAN_COMPLETED,
- 	SCAN_ABORTED,
- 	SCAN_HW_CANCELLED,
-+	SCAN_BEACON_WAIT,
-+	SCAN_BEACON_DONE,
- };
+--- a/drivers/irqchip/irq-armada-370-xp.c
++++ b/drivers/irqchip/irq-armada-370-xp.c
+@@ -308,7 +308,16 @@ static inline int armada_370_xp_msi_init
  
- /**
---- a/net/mac80211/scan.c
-+++ b/net/mac80211/scan.c
-@@ -281,6 +281,16 @@ void ieee80211_scan_rx(struct ieee80211_
- 	if (likely(!sdata1 && !sdata2))
- 		return;
- 
-+	if (test_and_clear_bit(SCAN_BEACON_WAIT, &local->scanning)) {
-+		/*
-+		 * we were passive scanning because of radar/no-IR, but
-+		 * the beacon/proberesp rx gives us an opportunity to upgrade
-+		 * to active scan
-+		 */
-+		 set_bit(SCAN_BEACON_DONE, &local->scanning);
-+		 ieee80211_queue_delayed_work(&local->hw, &local->scan_work, 0);
-+	}
+ static void armada_xp_mpic_perf_init(void)
+ {
+-	unsigned long cpuid = cpu_logical_map(smp_processor_id());
++	unsigned long cpuid;
 +
- 	if (ieee80211_is_probe_resp(mgmt->frame_control)) {
- 		struct cfg80211_scan_request *scan_req;
- 		struct cfg80211_sched_scan_request *sched_scan_req;
-@@ -787,6 +797,8 @@ static int __ieee80211_start_scan(struct
- 						IEEE80211_CHAN_RADAR)) ||
- 		    !req->n_ssids) {
- 			next_delay = IEEE80211_PASSIVE_CHANNEL_TIME;
-+			if (req->n_ssids)
-+				set_bit(SCAN_BEACON_WAIT, &local->scanning);
- 		} else {
- 			ieee80211_scan_state_send_probe(local, &next_delay);
- 			next_delay = IEEE80211_CHANNEL_TIME;
-@@ -998,6 +1010,8 @@ set_channel:
- 	    !scan_req->n_ssids) {
- 		*next_delay = IEEE80211_PASSIVE_CHANNEL_TIME;
- 		local->next_scan_state = SCAN_DECISION;
-+		if (scan_req->n_ssids)
-+			set_bit(SCAN_BEACON_WAIT, &local->scanning);
- 		return;
- 	}
- 
-@@ -1090,6 +1104,8 @@ void ieee80211_scan_work(struct work_str
- 			goto out;
- 	}
- 
-+	clear_bit(SCAN_BEACON_WAIT, &local->scanning);
++	/*
++	 * This Performance Counter Overflow interrupt is specific for
++	 * Armada 370 and XP. It is not available on Armada 375, 38x and 39x.
++	 */
++	if (!of_machine_is_compatible("marvell,armada-370-xp"))
++		return;
 +
- 	/*
- 	 * as long as no delay is required advance immediately
- 	 * without scheduling a new work
-@@ -1100,6 +1116,10 @@ void ieee80211_scan_work(struct work_str
- 			goto out_complete;
- 		}
++	cpuid = cpu_logical_map(smp_processor_id());
  
-+		if (test_and_clear_bit(SCAN_BEACON_DONE, &local->scanning) &&
-+		    local->next_scan_state == SCAN_DECISION)
-+			local->next_scan_state = SCAN_SEND_PROBE;
-+
- 		switch (local->next_scan_state) {
- 		case SCAN_DECISION:
- 			/* if no more bands/channels left, complete scan */
+ 	/* Enable Performance Counter Overflow interrupts */
+ 	writel(ARMADA_370_XP_INT_CAUSE_PERF(cpuid),
 
 
