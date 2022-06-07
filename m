@@ -2,262 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24061CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58533CCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:51:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354285AbiFGSui (ORCPT
+        id S1354461AbiFGSuy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:50:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53170 "EHLO
+        Tue, 7 Jun 2022 14:50:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351941AbiFGSQs (ORCPT
+        with ESMTP id S1352183AbiFGSQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DFB919F95;
-        Tue,  7 Jun 2022 10:50:11 -0700 (PDT)
+        Tue, 7 Jun 2022 14:16:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A0991208A;
+        Tue,  7 Jun 2022 10:51:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0ECFEB8234A;
-        Tue,  7 Jun 2022 17:50:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B928C385A5;
-        Tue,  7 Jun 2022 17:50:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624208;
-        bh=dyUWHoCX8ZiwGXskDcR9+7U5Ap2FdBhASl8Kl6ho7I4=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB5A4616A3;
+        Tue,  7 Jun 2022 17:50:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA95FC3411F;
+        Tue,  7 Jun 2022 17:50:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624259;
+        bh=3ttcGsVjKZvzFTSgSt+g/d8gzLsfqgi8Q3mcukMoIGs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HnuHgnEh1wjRY1wuPEZf9r3YjUBLHw9/n3JPcvLnirjPjs+tx0jaXJFFgcMDPwY8/
-         rmSS1sJckXL0HZcnqtjdRAdlcJXGwSIHsQhN3lLPuyDGTeF7VECbs9FllxTnTJG7GM
-         sUkmQ83yUfCjha5VQ5lf8grorN+2yNXw/xZVNDnw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Lin <jon.lin@rock-chips.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 244/667] spi: rockchip: Stop spi slave dma receiver when cs inactive
-Date:   Tue,  7 Jun 2022 18:58:29 +0200
-Message-Id: <20220607164942.103315062@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=I4fI8DB33gp7RTeOkmxkg0UtlN6YHPg9U1lscjA3x0ycGp/JpiXwuA5iY78u6FNKH
+         c3UdtkUWla5Mx2MHNoy+fGwYVC+1BZ9lNTnJD5r2JT3Lxa3q4WbO9+g6yCXg/5aHY/
+         5MokzkeKXoDFnTNhgBjoYnLWi07gLmtYiyt4RWCV2OdAwngxNWSCYE9tizkW1V1Ssj
+         DbVkgWHLJXOsA6i6FEENzAOVRp8H18rrGsNcBokEcqzzkZcUWs3dfbBMDVkB8cyzVz
+         OLLMYEKsTVMFBAFsmoAkNP8pXMOL3O0qvo1FHMcxPogBRiZX6EBIVyPLKysmK5LszO
+         KsqYivxRqLEGw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
+        Donald Buczek <buczek@molgen.mpg.de>,
+        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        agk@redhat.com, snitzer@kernel.org, dm-devel@redhat.com,
+        linux-raid@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 35/68] md: don't unregister sync_thread with reconfig_mutex held
+Date:   Tue,  7 Jun 2022 13:48:01 -0400
+Message-Id: <20220607174846.477972-35-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jon Lin <jon.lin@rock-chips.com>
+From: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
 
-[ Upstream commit 869f2c94db92f0f1d6acd0dff1c1ebb8160f5e29 ]
+[ Upstream commit 8b48ec23cc51a4e7c8dbaef5f34ebe67e1a80934 ]
 
-The spi which's version is higher than ver 2 will automatically
-enable this feature.
+Unregister sync_thread doesn't need to hold reconfig_mutex since it
+doesn't reconfigure array.
 
-If the length of master transmission is uncertain, the RK spi slave
-is better to automatically stop after cs inactive instead of waiting
-for xfer_completion forever.
+And it could cause deadlock problem for raid5 as follows:
 
-Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
-Link: https://lore.kernel.org/r/20220216014028.8123-4-jon.lin@rock-chips.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+1. process A tried to reap sync thread with reconfig_mutex held after echo
+   idle to sync_action.
+2. raid5 sync thread was blocked if there were too many active stripes.
+3. SB_CHANGE_PENDING was set (because of write IO comes from upper layer)
+   which causes the number of active stripes can't be decreased.
+4. SB_CHANGE_PENDING can't be cleared since md_check_recovery was not able
+   to hold reconfig_mutex.
+
+More details in the link:
+https://lore.kernel.org/linux-raid/5ed54ffc-ce82-bf66-4eff-390cb23bc1ac@molgen.mpg.de/T/#t
+
+And add one parameter to md_reap_sync_thread since it could be called by
+dm-raid which doesn't hold reconfig_mutex.
+
+Reported-and-tested-by: Donald Buczek <buczek@molgen.mpg.de>
+Signed-off-by: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-rockchip.c | 81 ++++++++++++++++++++++++++++++++++----
- 1 file changed, 73 insertions(+), 8 deletions(-)
+ drivers/md/dm-raid.c |  2 +-
+ drivers/md/md.c      | 14 +++++++++-----
+ drivers/md/md.h      |  2 +-
+ 3 files changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/spi/spi-rockchip.c b/drivers/spi/spi-rockchip.c
-index c6a1bb09be05..5ecd0692cca1 100644
---- a/drivers/spi/spi-rockchip.c
-+++ b/drivers/spi/spi-rockchip.c
-@@ -133,7 +133,8 @@
- #define INT_TF_OVERFLOW				(1 << 1)
- #define INT_RF_UNDERFLOW			(1 << 2)
- #define INT_RF_OVERFLOW				(1 << 3)
--#define INT_RF_FULL					(1 << 4)
-+#define INT_RF_FULL				(1 << 4)
-+#define INT_CS_INACTIVE				(1 << 6)
- 
- /* Bit fields in ICR, 4bit */
- #define ICR_MASK					0x0f
-@@ -194,6 +195,8 @@ struct rockchip_spi {
- 	bool cs_asserted[ROCKCHIP_SPI_MAX_CS_NUM];
- 
- 	bool slave_abort;
-+	bool cs_inactive; /* spi slave tansmition stop when cs inactive */
-+	struct spi_transfer *xfer; /* Store xfer temporarily */
- };
- 
- static inline void spi_enable_chip(struct rockchip_spi *rs, bool enable)
-@@ -343,6 +346,15 @@ static irqreturn_t rockchip_spi_isr(int irq, void *dev_id)
- 	struct spi_controller *ctlr = dev_id;
- 	struct rockchip_spi *rs = spi_controller_get_devdata(ctlr);
- 
-+	/* When int_cs_inactive comes, spi slave abort */
-+	if (rs->cs_inactive && readl_relaxed(rs->regs + ROCKCHIP_SPI_IMR) & INT_CS_INACTIVE) {
-+		ctlr->slave_abort(ctlr);
-+		writel_relaxed(0, rs->regs + ROCKCHIP_SPI_IMR);
-+		writel_relaxed(0xffffffff, rs->regs + ROCKCHIP_SPI_ICR);
-+
-+		return IRQ_HANDLED;
-+	}
-+
- 	if (rs->tx_left)
- 		rockchip_spi_pio_writer(rs);
- 
-@@ -350,6 +362,7 @@ static irqreturn_t rockchip_spi_isr(int irq, void *dev_id)
- 	if (!rs->rx_left) {
- 		spi_enable_chip(rs, false);
- 		writel_relaxed(0, rs->regs + ROCKCHIP_SPI_IMR);
-+		writel_relaxed(0xffffffff, rs->regs + ROCKCHIP_SPI_ICR);
- 		spi_finalize_current_transfer(ctlr);
+diff --git a/drivers/md/dm-raid.c b/drivers/md/dm-raid.c
+index 2b26435a6946..a5cc73d8f535 100644
+--- a/drivers/md/dm-raid.c
++++ b/drivers/md/dm-raid.c
+@@ -3730,7 +3730,7 @@ static int raid_message(struct dm_target *ti, unsigned int argc, char **argv,
+ 	if (!strcasecmp(argv[0], "idle") || !strcasecmp(argv[0], "frozen")) {
+ 		if (mddev->sync_thread) {
+ 			set_bit(MD_RECOVERY_INTR, &mddev->recovery);
+-			md_reap_sync_thread(mddev);
++			md_reap_sync_thread(mddev, false);
+ 		}
+ 	} else if (decipher_sync_action(mddev, mddev->recovery) != st_idle)
+ 		return -EBUSY;
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 309b3af906ad..e3c1450b9e69 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -4842,7 +4842,7 @@ action_store(struct mddev *mddev, const char *page, size_t len)
+ 				flush_workqueue(md_misc_wq);
+ 			if (mddev->sync_thread) {
+ 				set_bit(MD_RECOVERY_INTR, &mddev->recovery);
+-				md_reap_sync_thread(mddev);
++				md_reap_sync_thread(mddev, true);
+ 			}
+ 			mddev_unlock(mddev);
+ 		}
+@@ -6212,7 +6212,7 @@ static void __md_stop_writes(struct mddev *mddev)
+ 		flush_workqueue(md_misc_wq);
+ 	if (mddev->sync_thread) {
+ 		set_bit(MD_RECOVERY_INTR, &mddev->recovery);
+-		md_reap_sync_thread(mddev);
++		md_reap_sync_thread(mddev, true);
  	}
  
-@@ -357,14 +370,18 @@ static irqreturn_t rockchip_spi_isr(int irq, void *dev_id)
+ 	del_timer_sync(&mddev->safemode_timer);
+@@ -9320,7 +9320,7 @@ void md_check_recovery(struct mddev *mddev)
+ 			 * ->spare_active and clear saved_raid_disk
+ 			 */
+ 			set_bit(MD_RECOVERY_INTR, &mddev->recovery);
+-			md_reap_sync_thread(mddev);
++			md_reap_sync_thread(mddev, true);
+ 			clear_bit(MD_RECOVERY_RECOVER, &mddev->recovery);
+ 			clear_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
+ 			clear_bit(MD_SB_CHANGE_PENDING, &mddev->sb_flags);
+@@ -9355,7 +9355,7 @@ void md_check_recovery(struct mddev *mddev)
+ 			goto unlock;
+ 		}
+ 		if (mddev->sync_thread) {
+-			md_reap_sync_thread(mddev);
++			md_reap_sync_thread(mddev, true);
+ 			goto unlock;
+ 		}
+ 		/* Set RUNNING before clearing NEEDED to avoid
+@@ -9428,14 +9428,18 @@ void md_check_recovery(struct mddev *mddev)
  }
+ EXPORT_SYMBOL(md_check_recovery);
  
- static int rockchip_spi_prepare_irq(struct rockchip_spi *rs,
--		struct spi_transfer *xfer)
-+				    struct spi_controller *ctlr,
-+				    struct spi_transfer *xfer)
+-void md_reap_sync_thread(struct mddev *mddev)
++void md_reap_sync_thread(struct mddev *mddev, bool reconfig_mutex_held)
  {
- 	rs->tx = xfer->tx_buf;
- 	rs->rx = xfer->rx_buf;
- 	rs->tx_left = rs->tx ? xfer->len / rs->n_bytes : 0;
- 	rs->rx_left = xfer->len / rs->n_bytes;
+ 	struct md_rdev *rdev;
+ 	sector_t old_dev_sectors = mddev->dev_sectors;
+ 	bool is_reshaped = false;
  
--	writel_relaxed(INT_RF_FULL, rs->regs + ROCKCHIP_SPI_IMR);
-+	if (rs->cs_inactive)
-+		writel_relaxed(INT_RF_FULL | INT_CS_INACTIVE, rs->regs + ROCKCHIP_SPI_IMR);
-+	else
-+		writel_relaxed(INT_RF_FULL, rs->regs + ROCKCHIP_SPI_IMR);
- 	spi_enable_chip(rs, true);
- 
- 	if (rs->tx_left)
-@@ -383,6 +400,9 @@ static void rockchip_spi_dma_rxcb(void *data)
- 	if (state & TXDMA && !rs->slave_abort)
- 		return;
- 
-+	if (rs->cs_inactive)
-+		writel_relaxed(0, rs->regs + ROCKCHIP_SPI_IMR);
-+
- 	spi_enable_chip(rs, false);
- 	spi_finalize_current_transfer(ctlr);
- }
-@@ -423,14 +443,16 @@ static int rockchip_spi_prepare_dma(struct rockchip_spi *rs,
- 
- 	atomic_set(&rs->state, 0);
- 
-+	rs->tx = xfer->tx_buf;
-+	rs->rx = xfer->rx_buf;
-+
- 	rxdesc = NULL;
- 	if (xfer->rx_buf) {
- 		struct dma_slave_config rxconf = {
- 			.direction = DMA_DEV_TO_MEM,
- 			.src_addr = rs->dma_addr_rx,
- 			.src_addr_width = rs->n_bytes,
--			.src_maxburst = rockchip_spi_calc_burst_size(xfer->len /
--								     rs->n_bytes),
-+			.src_maxburst = rockchip_spi_calc_burst_size(xfer->len / rs->n_bytes),
- 		};
- 
- 		dmaengine_slave_config(ctlr->dma_rx, &rxconf);
-@@ -474,10 +496,13 @@ static int rockchip_spi_prepare_dma(struct rockchip_spi *rs,
- 	/* rx must be started before tx due to spi instinct */
- 	if (rxdesc) {
- 		atomic_or(RXDMA, &rs->state);
--		dmaengine_submit(rxdesc);
-+		ctlr->dma_rx->cookie = dmaengine_submit(rxdesc);
- 		dma_async_issue_pending(ctlr->dma_rx);
- 	}
- 
-+	if (rs->cs_inactive)
-+		writel_relaxed(INT_CS_INACTIVE, rs->regs + ROCKCHIP_SPI_IMR);
-+
- 	spi_enable_chip(rs, true);
- 
- 	if (txdesc) {
-@@ -584,7 +609,42 @@ static size_t rockchip_spi_max_transfer_size(struct spi_device *spi)
- static int rockchip_spi_slave_abort(struct spi_controller *ctlr)
- {
- 	struct rockchip_spi *rs = spi_controller_get_devdata(ctlr);
-+	u32 rx_fifo_left;
-+	struct dma_tx_state state;
-+	enum dma_status status;
-+
-+	/* Get current dma rx point */
-+	if (atomic_read(&rs->state) & RXDMA) {
-+		dmaengine_pause(ctlr->dma_rx);
-+		status = dmaengine_tx_status(ctlr->dma_rx, ctlr->dma_rx->cookie, &state);
-+		if (status == DMA_ERROR) {
-+			rs->rx = rs->xfer->rx_buf;
-+			rs->xfer->len = 0;
-+			rx_fifo_left = readl_relaxed(rs->regs + ROCKCHIP_SPI_RXFLR);
-+			for (; rx_fifo_left; rx_fifo_left--)
-+				readl_relaxed(rs->regs + ROCKCHIP_SPI_RXDR);
-+			goto out;
-+		} else {
-+			rs->rx += rs->xfer->len - rs->n_bytes * state.residue;
-+		}
-+	}
- 
-+	/* Get the valid data left in rx fifo and set rs->xfer->len real rx size */
-+	if (rs->rx) {
-+		rx_fifo_left = readl_relaxed(rs->regs + ROCKCHIP_SPI_RXFLR);
-+		for (; rx_fifo_left; rx_fifo_left--) {
-+			u32 rxw = readl_relaxed(rs->regs + ROCKCHIP_SPI_RXDR);
-+
-+			if (rs->n_bytes == 1)
-+				*(u8 *)rs->rx = (u8)rxw;
-+			else
-+				*(u16 *)rs->rx = (u16)rxw;
-+			rs->rx += rs->n_bytes;
-+		}
-+		rs->xfer->len = (unsigned int)(rs->rx - rs->xfer->rx_buf);
-+	}
-+
-+out:
- 	if (atomic_read(&rs->state) & RXDMA)
- 		dmaengine_terminate_sync(ctlr->dma_rx);
- 	if (atomic_read(&rs->state) & TXDMA)
-@@ -626,7 +686,7 @@ static int rockchip_spi_transfer_one(
- 	}
- 
- 	rs->n_bytes = xfer->bits_per_word <= 8 ? 1 : 2;
--
-+	rs->xfer = xfer;
- 	use_dma = ctlr->can_dma ? ctlr->can_dma(ctlr, spi, xfer) : false;
- 
- 	ret = rockchip_spi_config(rs, spi, xfer, use_dma, ctlr->slave);
-@@ -636,7 +696,7 @@ static int rockchip_spi_transfer_one(
- 	if (use_dma)
- 		return rockchip_spi_prepare_dma(rs, ctlr, xfer);
- 
--	return rockchip_spi_prepare_irq(rs, xfer);
-+	return rockchip_spi_prepare_irq(rs, ctlr, xfer);
- }
- 
- static bool rockchip_spi_can_dma(struct spi_controller *ctlr,
-@@ -815,8 +875,13 @@ static int rockchip_spi_probe(struct platform_device *pdev)
- 	switch (readl_relaxed(rs->regs + ROCKCHIP_SPI_VERSION)) {
- 	case ROCKCHIP_SPI_VER2_TYPE2:
- 		ctlr->mode_bits |= SPI_CS_HIGH;
-+		if (ctlr->can_dma && slave_mode)
-+			rs->cs_inactive = true;
-+		else
-+			rs->cs_inactive = false;
- 		break;
- 	default:
-+		rs->cs_inactive = false;
- 		break;
- 	}
- 
++	if (reconfig_mutex_held)
++		mddev_unlock(mddev);
+ 	/* resync has finished, collect result */
+ 	md_unregister_thread(&mddev->sync_thread);
++	if (reconfig_mutex_held)
++		mddev_lock_nointr(mddev);
+ 	if (!test_bit(MD_RECOVERY_INTR, &mddev->recovery) &&
+ 	    !test_bit(MD_RECOVERY_REQUESTED, &mddev->recovery) &&
+ 	    mddev->degraded != mddev->raid_disks) {
+diff --git a/drivers/md/md.h b/drivers/md/md.h
+index 6ac283864533..1870864c9fc9 100644
+--- a/drivers/md/md.h
++++ b/drivers/md/md.h
+@@ -711,7 +711,7 @@ extern struct md_thread *md_register_thread(
+ extern void md_unregister_thread(struct md_thread **threadp);
+ extern void md_wakeup_thread(struct md_thread *thread);
+ extern void md_check_recovery(struct mddev *mddev);
+-extern void md_reap_sync_thread(struct mddev *mddev);
++extern void md_reap_sync_thread(struct mddev *mddev, bool reconfig_mutex_held);
+ extern int mddev_init_writes_pending(struct mddev *mddev);
+ extern bool md_write_start(struct mddev *mddev, struct bio *bi);
+ extern void md_write_inc(struct mddev *mddev, struct bio *bi);
 -- 
 2.35.1
-
-
 
