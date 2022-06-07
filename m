@@ -2,144 +2,388 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12BF1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:42:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F6C9CCA489
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:42:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390953AbiFHAl7 (ORCPT
+        id S1389155AbiFHAlM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:41:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52868 "EHLO
+        Tue, 7 Jun 2022 20:41:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382614AbiFGWVy (ORCPT
+        with ESMTP id S1383278AbiFGVxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:21:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DF126C0DF;
-        Tue,  7 Jun 2022 12:22:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 7 Jun 2022 17:53:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9C89192C6A
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:11:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654629060;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eRq46kAYDt3qC3J5COV22ywbnzIkY0HqgrBcO+W8oJE=;
+        b=LhC6NAJSCY89kVUw6UcXO7XcCZfcjQBU7xiInmHYmWkN9X2L61FFop2e22wFQZaU+xUgAd
+        PfwcoKaCa9J/iq/lE5S9K1dOsdhJcc5iJ/Q5HFHXR3GRJBPNq207ohQMKSNJrdyCIP2FUW
+        EljeNYPIsdNrlrceflyGZybgz0bC/Ew=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-359-I7JZzLRmMcyO3mfnMH4x5w-1; Tue, 07 Jun 2022 15:10:52 -0400
+X-MC-Unique: I7JZzLRmMcyO3mfnMH4x5w-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D8566077B;
-        Tue,  7 Jun 2022 19:22:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50086C385A5;
-        Tue,  7 Jun 2022 19:22:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629730;
-        bh=Mfy3ytbbDKigbAx7RnPOWXW8wcLTxwl+MTXvB2B/5Hs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wiPJY7w0tVg8yjxLDIiCO4WICmFQHqaZ8fWc/Ty9jJLg2V4ixnWEqz/w+pdXuVIsQ
-         6NlF/fORZjmihiFJSpPnJfAj9xGZejWgzS4k9JRjpP4Yco5r0jR8v4mf7hPD2v71Yt
-         BKDDb/tTyd4hR2WYEiyvZH/z2t/CE8SNf+R+cZmE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Lyude Paul <lyude@redhat.com>
-Subject: [PATCH 5.18 795/879] drm/nouveau/kms/nv50-: atom: fix an incorrect NULL check on list iterator
-Date:   Tue,  7 Jun 2022 19:05:13 +0200
-Message-Id: <20220607165025.938481961@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 92A91185A7BA;
+        Tue,  7 Jun 2022 19:09:26 +0000 (UTC)
+Received: from emerald.redhat.com (unknown [10.22.9.252])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4A7464116D69;
+        Tue,  7 Jun 2022 19:08:56 +0000 (UTC)
+From:   Lyude Paul <lyude@redhat.com>
+To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org
+Cc:     Wayne Lin <Wayne.Lin@amd.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Imre Deak <imre.deak@intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RFC 03/18] drm/display/dp_mst: Rename drm_dp_mst_vcpi_allocation
+Date:   Tue,  7 Jun 2022 15:07:00 -0400
+Message-Id: <20220607190715.1331124-4-lyude@redhat.com>
+In-Reply-To: <20220607190715.1331124-1-lyude@redhat.com>
+References: <20220607190715.1331124-1-lyude@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+In retrospect, the name I chose for this originally is confusing, as
+there's a lot more info in here then just the VCPI. This really should be
+called a payload. Let's make it more obvious that this is meant to be
+related to the atomic state and is about payloads by renaming it to
+drm_dp_mst_atomic_payload. Also, rename various variables throughout the
+code that use atomic payloads.
 
-commit 6ce4431c7ba7954c4fa6a96ce16ca1b2943e1a83 upstream.
-
-The bug is here:
-	return encoder;
-
-The list iterator value 'encoder' will *always* be set and non-NULL
-by drm_for_each_encoder_mask(), so it is incorrect to assume that the
-iterator value will be NULL if the list is empty or no element found.
-Otherwise it will bypass some NULL checks and lead to invalid memory
-access passing the check.
-
-To fix this bug, just return 'encoder' when found, otherwise return
-NULL.
-
-Cc: stable@vger.kernel.org
-Fixes: 12885ecbfe62d ("drm/nouveau/kms/nvd9-: Add CRC support")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-[Changed commit title]
 Signed-off-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220327073925.11121-1-xiam0nd.tong@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Wayne Lin <Wayne.Lin@amd.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Imre Deak <imre.deak@intel.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Sean Paul <sean@poorly.run>
 ---
- drivers/gpu/drm/nouveau/dispnv50/atom.h |    6 +++---
- drivers/gpu/drm/nouveau/dispnv50/crc.c  |   27 ++++++++++++++++++++++-----
- 2 files changed, 25 insertions(+), 8 deletions(-)
+ drivers/gpu/drm/display/drm_dp_mst_topology.c | 96 +++++++++----------
+ include/drm/display/drm_dp_mst_helper.h       |  4 +-
+ 2 files changed, 50 insertions(+), 50 deletions(-)
 
---- a/drivers/gpu/drm/nouveau/dispnv50/atom.h
-+++ b/drivers/gpu/drm/nouveau/dispnv50/atom.h
-@@ -160,14 +160,14 @@ nv50_head_atom_get(struct drm_atomic_sta
- static inline struct drm_encoder *
- nv50_head_atom_get_encoder(struct nv50_head_atom *atom)
+diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+index 67b3b9697da7..38eecb89e22d 100644
+--- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
++++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+@@ -4381,7 +4381,7 @@ int drm_dp_atomic_find_vcpi_slots(struct drm_atomic_state *state,
+ 				  int pbn_div)
  {
--	struct drm_encoder *encoder = NULL;
-+	struct drm_encoder *encoder;
+ 	struct drm_dp_mst_topology_state *topology_state;
+-	struct drm_dp_vcpi_allocation *pos, *vcpi = NULL;
++	struct drm_dp_mst_atomic_payload *pos, *payload = NULL;
+ 	int prev_slots, prev_bw, req_slots;
  
- 	/* We only ever have a single encoder */
- 	drm_for_each_encoder_mask(encoder, atom->state.crtc->dev,
- 				  atom->state.encoder_mask)
--		break;
-+		return encoder;
+ 	topology_state = drm_atomic_get_mst_topology_state(state, mgr);
+@@ -4389,11 +4389,11 @@ int drm_dp_atomic_find_vcpi_slots(struct drm_atomic_state *state,
+ 		return PTR_ERR(topology_state);
  
--	return encoder;
-+	return NULL;
+ 	/* Find the current allocation for this port, if any */
+-	list_for_each_entry(pos, &topology_state->vcpis, next) {
++	list_for_each_entry(pos, &topology_state->payloads, next) {
+ 		if (pos->port == port) {
+-			vcpi = pos;
+-			prev_slots = vcpi->vcpi;
+-			prev_bw = vcpi->pbn;
++			payload = pos;
++			prev_slots = payload->vcpi;
++			prev_bw = payload->pbn;
+ 
+ 			/*
+ 			 * This should never happen, unless the driver tries
+@@ -4410,7 +4410,7 @@ int drm_dp_atomic_find_vcpi_slots(struct drm_atomic_state *state,
+ 			break;
+ 		}
+ 	}
+-	if (!vcpi) {
++	if (!payload) {
+ 		prev_slots = 0;
+ 		prev_bw = 0;
+ 	}
+@@ -4428,17 +4428,17 @@ int drm_dp_atomic_find_vcpi_slots(struct drm_atomic_state *state,
+ 		       port, prev_bw, pbn);
+ 
+ 	/* Add the new allocation to the state */
+-	if (!vcpi) {
+-		vcpi = kzalloc(sizeof(*vcpi), GFP_KERNEL);
+-		if (!vcpi)
++	if (!payload) {
++		payload = kzalloc(sizeof(*payload), GFP_KERNEL);
++		if (!payload)
+ 			return -ENOMEM;
+ 
+ 		drm_dp_mst_get_port_malloc(port);
+-		vcpi->port = port;
+-		list_add(&vcpi->next, &topology_state->vcpis);
++		payload->port = port;
++		list_add(&payload->next, &topology_state->payloads);
+ 	}
+-	vcpi->vcpi = req_slots;
+-	vcpi->pbn = pbn;
++	payload->vcpi = req_slots;
++	payload->pbn = pbn;
+ 
+ 	return req_slots;
  }
+@@ -4475,21 +4475,21 @@ int drm_dp_atomic_release_vcpi_slots(struct drm_atomic_state *state,
+ 				     struct drm_dp_mst_port *port)
+ {
+ 	struct drm_dp_mst_topology_state *topology_state;
+-	struct drm_dp_vcpi_allocation *pos;
++	struct drm_dp_mst_atomic_payload *pos;
+ 	bool found = false;
  
- #define nv50_wndw_atom(p) container_of((p), struct nv50_wndw_atom, state)
---- a/drivers/gpu/drm/nouveau/dispnv50/crc.c
-+++ b/drivers/gpu/drm/nouveau/dispnv50/crc.c
-@@ -390,9 +390,18 @@ void nv50_crc_atomic_check_outp(struct n
- 		struct nv50_head_atom *armh = nv50_head_atom(old_crtc_state);
- 		struct nv50_head_atom *asyh = nv50_head_atom(new_crtc_state);
- 		struct nv50_outp_atom *outp_atom;
--		struct nouveau_encoder *outp =
--			nv50_real_outp(nv50_head_atom_get_encoder(armh));
--		struct drm_encoder *encoder = &outp->base.base;
-+		struct nouveau_encoder *outp;
-+		struct drm_encoder *encoder, *enc;
-+
-+		enc = nv50_head_atom_get_encoder(armh);
-+		if (!enc)
-+			continue;
-+
-+		outp = nv50_real_outp(enc);
-+		if (!outp)
-+			continue;
-+
-+		encoder = &outp->base.base;
+ 	topology_state = drm_atomic_get_mst_topology_state(state, mgr);
+ 	if (IS_ERR(topology_state))
+ 		return PTR_ERR(topology_state);
  
- 		if (!asyh->clr.crc)
+-	list_for_each_entry(pos, &topology_state->vcpis, next) {
++	list_for_each_entry(pos, &topology_state->payloads, next) {
+ 		if (pos->port == port) {
+ 			found = true;
+ 			break;
+ 		}
+ 	}
+ 	if (WARN_ON(!found)) {
+-		drm_err(mgr->dev, "no VCPI for [MST PORT:%p] found in mst state %p\n",
++		drm_err(mgr->dev, "No payload for [MST PORT:%p] found in mst state %p\n",
+ 			port, &topology_state->base);
+ 		return -EINVAL;
+ 	}
+@@ -5072,7 +5072,7 @@ drm_dp_mst_duplicate_state(struct drm_private_obj *obj)
+ {
+ 	struct drm_dp_mst_topology_state *state, *old_state =
+ 		to_dp_mst_topology_state(obj->state);
+-	struct drm_dp_vcpi_allocation *pos, *vcpi;
++	struct drm_dp_mst_atomic_payload *pos, *payload;
+ 
+ 	state = kmemdup(old_state, sizeof(*state), GFP_KERNEL);
+ 	if (!state)
+@@ -5080,25 +5080,25 @@ drm_dp_mst_duplicate_state(struct drm_private_obj *obj)
+ 
+ 	__drm_atomic_helper_private_obj_duplicate_state(obj, &state->base);
+ 
+-	INIT_LIST_HEAD(&state->vcpis);
++	INIT_LIST_HEAD(&state->payloads);
+ 
+-	list_for_each_entry(pos, &old_state->vcpis, next) {
++	list_for_each_entry(pos, &old_state->payloads, next) {
+ 		/* Prune leftover freed VCPI allocations */
+ 		if (!pos->vcpi)
  			continue;
-@@ -443,8 +452,16 @@ void nv50_crc_atomic_set(struct nv50_hea
- 	struct drm_device *dev = crtc->dev;
- 	struct nv50_crc *crc = &head->crc;
- 	const struct nv50_crc_func *func = nv50_disp(dev)->core->func->crc;
--	struct nouveau_encoder *outp =
--		nv50_real_outp(nv50_head_atom_get_encoder(asyh));
-+	struct nouveau_encoder *outp;
-+	struct drm_encoder *encoder;
-+
-+	encoder = nv50_head_atom_get_encoder(asyh);
-+	if (!encoder)
-+		return;
-+
-+	outp = nv50_real_outp(encoder);
-+	if (!outp)
-+		return;
  
- 	func->set_src(head, outp->or, nv50_crc_source_type(outp, asyh->crc.src),
- 		      &crc->ctx[crc->ctx_idx]);
-
+-		vcpi = kmemdup(pos, sizeof(*vcpi), GFP_KERNEL);
+-		if (!vcpi)
++		payload = kmemdup(pos, sizeof(*payload), GFP_KERNEL);
++		if (!payload)
+ 			goto fail;
+ 
+-		drm_dp_mst_get_port_malloc(vcpi->port);
+-		list_add(&vcpi->next, &state->vcpis);
++		drm_dp_mst_get_port_malloc(payload->port);
++		list_add(&payload->next, &state->payloads);
+ 	}
+ 
+ 	return &state->base;
+ 
+ fail:
+-	list_for_each_entry_safe(pos, vcpi, &state->vcpis, next) {
++	list_for_each_entry_safe(pos, payload, &state->payloads, next) {
+ 		drm_dp_mst_put_port_malloc(pos->port);
+ 		kfree(pos);
+ 	}
+@@ -5112,9 +5112,9 @@ static void drm_dp_mst_destroy_state(struct drm_private_obj *obj,
+ {
+ 	struct drm_dp_mst_topology_state *mst_state =
+ 		to_dp_mst_topology_state(state);
+-	struct drm_dp_vcpi_allocation *pos, *tmp;
++	struct drm_dp_mst_atomic_payload *pos, *tmp;
+ 
+-	list_for_each_entry_safe(pos, tmp, &mst_state->vcpis, next) {
++	list_for_each_entry_safe(pos, tmp, &mst_state->payloads, next) {
+ 		/* We only keep references to ports with non-zero VCPIs */
+ 		if (pos->vcpi)
+ 			drm_dp_mst_put_port_malloc(pos->port);
+@@ -5147,7 +5147,7 @@ static int
+ drm_dp_mst_atomic_check_mstb_bw_limit(struct drm_dp_mst_branch *mstb,
+ 				      struct drm_dp_mst_topology_state *state)
+ {
+-	struct drm_dp_vcpi_allocation *vcpi;
++	struct drm_dp_mst_atomic_payload *payload;
+ 	struct drm_dp_mst_port *port;
+ 	int pbn_used = 0, ret;
+ 	bool found = false;
+@@ -5155,9 +5155,9 @@ drm_dp_mst_atomic_check_mstb_bw_limit(struct drm_dp_mst_branch *mstb,
+ 	/* Check that we have at least one port in our state that's downstream
+ 	 * of this branch, otherwise we can skip this branch
+ 	 */
+-	list_for_each_entry(vcpi, &state->vcpis, next) {
+-		if (!vcpi->pbn ||
+-		    !drm_dp_mst_port_downstream_of_branch(vcpi->port, mstb))
++	list_for_each_entry(payload, &state->payloads, next) {
++		if (!payload->pbn ||
++		    !drm_dp_mst_port_downstream_of_branch(payload->port, mstb))
+ 			continue;
+ 
+ 		found = true;
+@@ -5188,7 +5188,7 @@ static int
+ drm_dp_mst_atomic_check_port_bw_limit(struct drm_dp_mst_port *port,
+ 				      struct drm_dp_mst_topology_state *state)
+ {
+-	struct drm_dp_vcpi_allocation *vcpi;
++	struct drm_dp_mst_atomic_payload *payload;
+ 	int pbn_used = 0;
+ 
+ 	if (port->pdt == DP_PEER_DEVICE_NONE)
+@@ -5197,10 +5197,10 @@ drm_dp_mst_atomic_check_port_bw_limit(struct drm_dp_mst_port *port,
+ 	if (drm_dp_mst_is_end_device(port->pdt, port->mcs)) {
+ 		bool found = false;
+ 
+-		list_for_each_entry(vcpi, &state->vcpis, next) {
+-			if (vcpi->port != port)
++		list_for_each_entry(payload, &state->payloads, next) {
++			if (payload->port != port)
+ 				continue;
+-			if (!vcpi->pbn)
++			if (!payload->pbn)
+ 				return 0;
+ 
+ 			found = true;
+@@ -5220,7 +5220,7 @@ drm_dp_mst_atomic_check_port_bw_limit(struct drm_dp_mst_port *port,
+ 			return -EINVAL;
+ 		}
+ 
+-		pbn_used = vcpi->pbn;
++		pbn_used = payload->pbn;
+ 	} else {
+ 		pbn_used = drm_dp_mst_atomic_check_mstb_bw_limit(port->mstb,
+ 								 state);
+@@ -5245,25 +5245,25 @@ static inline int
+ drm_dp_mst_atomic_check_vcpi_alloc_limit(struct drm_dp_mst_topology_mgr *mgr,
+ 					 struct drm_dp_mst_topology_state *mst_state)
+ {
+-	struct drm_dp_vcpi_allocation *vcpi;
++	struct drm_dp_mst_atomic_payload *payload;
+ 	int avail_slots = mst_state->total_avail_slots, payload_count = 0;
+ 
+-	list_for_each_entry(vcpi, &mst_state->vcpis, next) {
+-		/* Releasing VCPI is always OK-even if the port is gone */
+-		if (!vcpi->vcpi) {
++	list_for_each_entry(payload, &mst_state->payloads, next) {
++		/* Releasing payloads is always OK-even if the port is gone */
++		if (!payload->vcpi) {
+ 			drm_dbg_atomic(mgr->dev, "[MST PORT:%p] releases all VCPI slots\n",
+-				       vcpi->port);
++				       payload->port);
+ 			continue;
+ 		}
+ 
+ 		drm_dbg_atomic(mgr->dev, "[MST PORT:%p] requires %d vcpi slots\n",
+-			       vcpi->port, vcpi->vcpi);
++			       payload->port, payload->vcpi);
+ 
+-		avail_slots -= vcpi->vcpi;
++		avail_slots -= payload->vcpi;
+ 		if (avail_slots < 0) {
+ 			drm_dbg_atomic(mgr->dev,
+ 				       "[MST PORT:%p] not enough VCPI slots in mst state %p (avail=%d)\n",
+-				       vcpi->port, mst_state, avail_slots + vcpi->vcpi);
++				       payload->port, mst_state, avail_slots + payload->vcpi);
+ 			return -ENOSPC;
+ 		}
+ 
+@@ -5296,7 +5296,7 @@ drm_dp_mst_atomic_check_vcpi_alloc_limit(struct drm_dp_mst_topology_mgr *mgr,
+ int drm_dp_mst_add_affected_dsc_crtcs(struct drm_atomic_state *state, struct drm_dp_mst_topology_mgr *mgr)
+ {
+ 	struct drm_dp_mst_topology_state *mst_state;
+-	struct drm_dp_vcpi_allocation *pos;
++	struct drm_dp_mst_atomic_payload *pos;
+ 	struct drm_connector *connector;
+ 	struct drm_connector_state *conn_state;
+ 	struct drm_crtc *crtc;
+@@ -5307,7 +5307,7 @@ int drm_dp_mst_add_affected_dsc_crtcs(struct drm_atomic_state *state, struct drm
+ 	if (IS_ERR(mst_state))
+ 		return -EINVAL;
+ 
+-	list_for_each_entry(pos, &mst_state->vcpis, next) {
++	list_for_each_entry(pos, &mst_state->payloads, next) {
+ 
+ 		connector = pos->port->connector;
+ 
+@@ -5361,7 +5361,7 @@ int drm_dp_mst_atomic_enable_dsc(struct drm_atomic_state *state,
+ 				 bool enable)
+ {
+ 	struct drm_dp_mst_topology_state *mst_state;
+-	struct drm_dp_vcpi_allocation *pos;
++	struct drm_dp_mst_atomic_payload *pos;
+ 	bool found = false;
+ 	int vcpi = 0;
+ 
+@@ -5370,7 +5370,7 @@ int drm_dp_mst_atomic_enable_dsc(struct drm_atomic_state *state,
+ 	if (IS_ERR(mst_state))
+ 		return PTR_ERR(mst_state);
+ 
+-	list_for_each_entry(pos, &mst_state->vcpis, next) {
++	list_for_each_entry(pos, &mst_state->payloads, next) {
+ 		if (pos->port == port) {
+ 			found = true;
+ 			break;
+@@ -5557,7 +5557,7 @@ int drm_dp_mst_topology_mgr_init(struct drm_dp_mst_topology_mgr *mgr,
+ 	mst_state->start_slot = 1;
+ 
+ 	mst_state->mgr = mgr;
+-	INIT_LIST_HEAD(&mst_state->vcpis);
++	INIT_LIST_HEAD(&mst_state->payloads);
+ 
+ 	drm_atomic_private_obj_init(dev, &mgr->base,
+ 				    &mst_state->base,
+diff --git a/include/drm/display/drm_dp_mst_helper.h b/include/drm/display/drm_dp_mst_helper.h
+index 10adec068b7f..5671173f9f37 100644
+--- a/include/drm/display/drm_dp_mst_helper.h
++++ b/include/drm/display/drm_dp_mst_helper.h
+@@ -542,7 +542,7 @@ struct drm_dp_payload {
+ 
+ #define to_dp_mst_topology_state(x) container_of(x, struct drm_dp_mst_topology_state, base)
+ 
+-struct drm_dp_vcpi_allocation {
++struct drm_dp_mst_atomic_payload {
+ 	struct drm_dp_mst_port *port;
+ 	int vcpi;
+ 	int pbn;
+@@ -552,7 +552,7 @@ struct drm_dp_vcpi_allocation {
+ 
+ struct drm_dp_mst_topology_state {
+ 	struct drm_private_state base;
+-	struct list_head vcpis;
++	struct list_head payloads;
+ 	struct drm_dp_mst_topology_mgr *mgr;
+ 	u8 total_avail_slots;
+ 	u8 start_slot;
+-- 
+2.35.3
 
