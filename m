@@ -2,104 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D47EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:22:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20186C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:22:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243759AbiFGMWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:22:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39598 "EHLO
+        id S243670AbiFGMWl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:22:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243725AbiFGMVq (ORCPT
+        with ESMTP id S243660AbiFGMWI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:21:46 -0400
-Received: from zg8tmja5ljk3lje4ms43mwaa.icoremail.net (zg8tmja5ljk3lje4ms43mwaa.icoremail.net [209.97.181.73])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id D1D30F74B0;
-        Tue,  7 Jun 2022 05:21:05 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Tue, 7 Jun 2022 20:20:35
- +0800 (GMT+08:00)
-X-Originating-IP: [106.117.78.144]
-Date:   Tue, 7 Jun 2022 20:20:35 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Eric Dumazet" <edumazet@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, jreuter@yaina.de,
-        "Ralf Baechle" <ralf@linux-mips.org>,
-        "David Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>, netdev <netdev@vger.kernel.org>,
-        linux-hams@vger.kernel.org, thomas@osterried.de
-Subject: Re: [PATCH net-next] ax25: Fix deadlock caused by skb_recv_datagram
- in ax25_recvmsg
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <CANn89i+HbdWS4JU0odCbRApuCTGFAt9_NSUoCSFo-b4-z0uWCQ@mail.gmail.com>
-References: <20220606162138.81505-1-duoming@zju.edu.cn>
- <CANn89i+HbdWS4JU0odCbRApuCTGFAt9_NSUoCSFo-b4-z0uWCQ@mail.gmail.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Tue, 7 Jun 2022 08:22:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2407EFB43F
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:21:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFFDC61774
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:21:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E1E7C34119
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:21:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654604487;
+        bh=ksFFNe7xm0oX79tCDDomZZrarZbbV5nWWlbLyEOTlgw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=T3dW7KqeOlbw6vNZ+A1ENczdRQnjOofrTjCfa9nO9hGXI+Ry4NR9hBt+dTF9Etins
+         FNF+8i64Vc2Uced8qWB33PXka4jNAPDQIDqPoqzK1pSpOY9yuOc13pbaBpXz3OOx5/
+         e/yihUo/0B0WkLwUmcQGSdrMwXaY1VXNdaYJNhRKrevuAJopct2zitPJZaT0ocQ5dq
+         lnzJROuCAuP09nOlB6uULbg3+a0W3Hdu5KMYNFGNPIOG9BtBTkxcYLXtv6KjQMeQgO
+         /rtoLnutJXxs+vUBa+NIYSq+xyOoS50xC5deWAXHtyIARaNexlWMkzjBNKXTtpn9Ei
+         JYe9jrvcXGplw==
+Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-f2e0a41009so22922718fac.6
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 05:21:27 -0700 (PDT)
+X-Gm-Message-State: AOAM531L/B1jwcktANunt4k7wAVM1pHS6WdHWZg18rHBBjEh4hbanUm5
+        eGW7vdFNRPhbtBv/f14CNDNz3oNTc6FXL2zEPUs=
+X-Google-Smtp-Source: ABdhPJwF9WaK98yWUyqrrQMSRr8QQvyarEiVENFU+gfpjxrB+sdK+dC0buBYdz8WbuehbhbY3YvjNy1ULHb17/71pOM=
+X-Received: by 2002:a05:6871:5c8:b0:f3:3c1c:126f with SMTP id
+ v8-20020a05687105c800b000f33c1c126fmr16341810oan.126.1654604486249; Tue, 07
+ Jun 2022 05:21:26 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <17d6464d.57350.1813e1c1082.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgC3PiGUQp9iNr1mAQ--.34665W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgEOAVZdtaFt3AACsg
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+References: <20220607100210.683136-1-Jason@zx2c4.com> <CAMj1kXEAuh-tokcqvKCQF5Vq+jZKj4ZM=PyGaHKapXPJKVyOrg@mail.gmail.com>
+ <Yp8oOH+9V336LrLk@zx2c4.com> <Yp8rcFrqK/IkzKXj@zx2c4.com> <CAMj1kXHV833uMJYrdUagJpH5hoj4ivC6zxMJvNnxLAF2NG3_sg@mail.gmail.com>
+ <Yp8wz2Ey4J4u+ZlK@zx2c4.com> <CAMj1kXFK9pFUdOABKP0Zp7tEJNVS1dTjxp5DgSwqzM8TEYJLTQ@mail.gmail.com>
+ <Yp839NjwW3scZEqi@zx2c4.com> <CAMj1kXF7NToZgAW66puCOwc1+d7ZTmVm_CbDYEeH+j0XJH1vug@mail.gmail.com>
+ <Yp9BmEyOvVitZICT@zx2c4.com>
+In-Reply-To: <Yp9BmEyOvVitZICT@zx2c4.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Tue, 7 Jun 2022 14:21:13 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXHfs46UKjkVoWwtSGiRACP0v69x0mr8_J_BWmx-WCVMhw@mail.gmail.com>
+Message-ID: <CAMj1kXHfs46UKjkVoWwtSGiRACP0v69x0mr8_J_BWmx-WCVMhw@mail.gmail.com>
+Subject: Re: [PATCH] random: do not use jump labels before they are initialized
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Stephen Boyd <swboyd@chromium.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Phil Elwell <phil@raspberrypi.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGVsbG8sCgpPbiBNb24sIDYgSnVuIDIwMjIgMTA6MzE6NDkgLTA3MDAgRXJpYyBEdW1hemV0IHdy
-b3RlOgoKPiBPbiBNb24sIEp1biA2LCAyMDIyIGF0IDk6MjEgQU0gRHVvbWluZyBaaG91IDxkdW9t
-aW5nQHpqdS5lZHUuY24+IHdyb3RlOgo+ID4KPiA+IFRoZSBza2JfcmVjdl9kYXRhZ3JhbSgpIGlu
-IGF4MjVfcmVjdm1zZygpIHdpbGwgaG9sZCBsb2NrX3NvY2sKPiA+IGFuZCBibG9jayB1bnRpbCBp
-dCByZWNlaXZlcyBhIHBhY2tldCBmcm9tIHRoZSByZW1vdGUuIElmIHRoZSBjbGllbnQKPiA+IGRv
-ZXNuYHQgY29ubmVjdCB0byBzZXJ2ZXIgYW5kIGNhbGxzIHJlYWQoKSBkaXJlY3RseSwgaXQgd2ls
-bCBub3QKPiA+IHJlY2VpdmUgYW55IHBhY2tldHMgZm9yZXZlci4gQXMgYSByZXN1bHQsIHRoZSBk
-ZWFkbG9jayB3aWxsIGhhcHBlbi4KPiA+Cj4gPiBUaGUgZmFpbCBsb2cgY2F1c2VkIGJ5IGRlYWRs
-b2NrIGlzIHNob3duIGJlbG93Ogo+ID4KPiA+IFsgIDg2MS4xMjI2MTJdIElORk86IHRhc2sgYXgy
-NV9kZWFkbG9jazoxNDggYmxvY2tlZCBmb3IgbW9yZSB0aGFuIDczNyBzZWNvbmRzLgo+ID4gWyAg
-ODYxLjEyNDU0M10gImVjaG8gMCA+IC9wcm9jL3N5cy9rZXJuZWwvaHVuZ190YXNrX3RpbWVvdXRf
-c2VjcyIgZGlzYWJsZXMgdGhpcyBtZXNzYWdlLgo+ID4gWyAgODYxLjEyNzc2NF0gQ2FsbCBUcmFj
-ZToKPiA+IFsgIDg2MS4xMjk2ODhdICA8VEFTSz4KPiA+IFsgIDg2MS4xMzA3NDNdICBfX3NjaGVk
-dWxlKzB4MmY5LzB4YjIwCj4gPiBbICA4NjEuMTMxNTI2XSAgc2NoZWR1bGUrMHg0OS8weGIwCj4g
-PiBbICA4NjEuMTMxNjQwXSAgX19sb2NrX3NvY2srMHg5Mi8weDEwMAo+ID4gWyAgODYxLjEzMTY0
-MF0gID8gZGVzdHJveV9zY2hlZF9kb21haW5zX3JjdSsweDIwLzB4MjAKPiA+IFsgIDg2MS4xMzE2
-NDBdICBsb2NrX3NvY2tfbmVzdGVkKzB4NmUvMHg3MAo+ID4gWyAgODYxLjEzMTY0MF0gIGF4MjVf
-c2VuZG1zZysweDQ2LzB4NDIwCj4gPiBbICA4NjEuMTM0MzgzXSAgPyBheDI1X3JlY3Ztc2crMHgx
-ZTAvMHgxZTAKPiA+IFsgIDg2MS4xMzU2NThdICBzb2NrX3NlbmRtc2crMHg1OS8weDYwCj4gPiBb
-ICA4NjEuMTM2NzkxXSAgX19zeXNfc2VuZHRvKzB4ZTkvMHgxNTAKPiA+IFsgIDg2MS4xMzcyMTJd
-ICA/IF9fc2NoZWR1bGUrMHgzMDEvMHhiMjAKPiA+IFsgIDg2MS4xMzc3MTBdICA/IF9fZG9fc29m
-dGlycSsweDRhMi8weDRmZAo+ID4gWyAgODYxLjEzOTE1M10gIF9feDY0X3N5c19zZW5kdG8rMHgy
-MC8weDMwCj4gPiBbICA4NjEuMTQwMzMwXSAgZG9fc3lzY2FsbF82NCsweDNiLzB4OTAKPiA+IFsg
-IDg2MS4xNDA3MzFdICBlbnRyeV9TWVNDQUxMXzY0X2FmdGVyX2h3ZnJhbWUrMHg0Ni8weGIwCj4g
-PiBbICA4NjEuMTQxMjQ5XSBSSVA6IDAwMzM6MHg3ZmRmMDVlZTRmNjQKPiA+IFsgIDg2MS4xNDEy
-NDldIFJTUDogMDAyYjowMDAwN2ZmZTk1NzcyZmMwIEVGTEFHUzogMDAwMDAyNDYgT1JJR19SQVg6
-IDAwMDAwMDAwMDAwMDAwMmMKPiA+IFsgIDg2MS4xNDEyNDldIFJBWDogZmZmZmZmZmZmZmZmZmZk
-YSBSQlg6IDAwMDA1NjUzMDNhMDEzZjAgUkNYOiAwMDAwN2ZkZjA1ZWU0ZjY0Cj4gPiBbICA4NjEu
-MTQxMjQ5XSBSRFg6IDAwMDAwMDAwMDAwMDAwMDUgUlNJOiAwMDAwNTY1MzAzYTAxNjc4IFJESTog
-MDAwMDAwMDAwMDAwMDAwNQo+ID4gWyAgODYxLjE0MTI0OV0gUkJQOiAwMDAwMDAwMDAwMDAwMDAw
-IFIwODogMDAwMDAwMDAwMDAwMDAwMCBSMDk6IDAwMDAwMDAwMDAwMDAwMDAKPiA+IFsgIDg2MS4x
-NDEyNDldIFIxMDogMDAwMDAwMDAwMDAwMDAwMCBSMTE6IDAwMDAwMDAwMDAwMDAyNDYgUjEyOiAw
-MDAwNTY1MzAzYTAwY2YwCj4gPiBbICA4NjEuMTQxMjQ5XSBSMTM6IDAwMDA3ZmZlOTU3NzMwZTAg
-UjE0OiAwMDAwMDAwMDAwMDAwMDAwIFIxNTogMDAwMDAwMDAwMDAwMDAwMAo+ID4KPiA+IFRoaXMg
-cGF0Y2ggbW92ZXMgdGhlIHNrYl9yZWN2X2RhdGFncmFtKCkgYmVmb3JlIGxvY2tfc29jaygpIGlu
-IG9yZGVyCj4gPiB0aGF0IG90aGVyIGZ1bmN0aW9ucyB0aGF0IG5lZWQgbG9ja19zb2NrIGNvdWxk
-IGJlIGV4ZWN1dGVkLgo+ID4KPiAKPiAKPiBXaHkgaXMgdGhpcyB0YXJnZXRpbmcgbmV0LW5leHQg
-dHJlZSA/Cj4gCj4gMSkgQSBmaXggc2hvdWxkIHRhcmdldCBuZXQgdHJlZQo+IDIpIEl0IHNob3Vs
-ZCBpbmNsdWRlIGEgRml4ZXM6IHRhZwoKVGhhbmsgeW91IGZvciB5b3VyIHRpbWUgYW5kIHN1Z2dl
-c3Rpb25zIQpJIHdpbGwgY2hhbmdlIHRoZSB0YXJnZXQgdHJlZSB0byBuZXQgYW5kIGFkZCBhIEZp
-eGVzOiB0YWcuCgo+IEFsc286Cj4gLSB0aGlzIHBhdGNoIGJ5cGFzc2VzIHRlc3RzIGluIGF4MjVf
-cmVjdm1zZygpCj4gLSBUaGlzIG1pZ2h0IGJyZWFrIGFwcGxpY2F0aW9ucyBkZXBlbmRpbmcgb24g
-YmxvY2tpbmcgcmVhZCgpIG9wZXJhdGlvbnMuCj4gCj4gSSBmZWVsIGEgcmVhbCBmaXggaXMgZ29p
-bmcgdG8gYmUgc2xpZ2h0bHkgbW9yZSBkaWZmaWN1bHQgdGhhbiB0aGF0LgoKSSB0aGluayBtb3Zp
-bmcgc2tiX3JlY3ZfZGF0YWdyYW0oKSBiZWZvcmUgbG9ja19zb2NrKCkgaXMgb2ssIGJlY2F1c2Ug
-aXQgZG9lcyBub3QKaG9sZCBsb2NrX3NvY2soKSBhbmQgd2lsbCBub3QgaW5mbHVlbmNlIG90aGVy
-IG9wZXJhdGlvbnMuIFRoZSBhcHBsaWNhdGlvbnMgd291bGQgbm90CmJyZWFrLiBXaGF0YHMgbW9y
-ZSwgaXQgaXMgc2FmZSB0byBtb3ZlIHNrYl9yZWN2X2RhdGFncmFtKCkgYmVmb3JlIGxvY2tfc29j
-aygpLgoKVGhlIGNoZWNrICJpZiAoc2stPnNrX3R5cGUgPT0gU09DS19TRVFQQUNLRVQgJiYgc2st
-PnNrX3N0YXRlICE9IFRDUF9FU1RBQkxJU0hFRCkiCmhhdmUgdG8gYmUgcHJvdGVjdGVkIGJ5IGxv
-Y2tfc29jaygpLCBiZWNhdXNlIHNrLT5za19zdGF0ZSBtYXkgYmUgY2hhbmdlZCBieQpheDI1X2Rp
-c2Nvbm5lY3QoKSBpbiBheDI1X2tpbGxfYnlfZGV2aWNlKCkuIAoKQmVzdCByZWdhcmRzLApEdW9t
-aW5nIFpob3UK
+On Tue, 7 Jun 2022 at 14:16, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> Hi Ard,
+>
+> On Tue, Jun 07, 2022 at 02:03:28PM +0200, Ard Biesheuvel wrote:
+> > On Tue, 7 Jun 2022 at 13:35, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> > >
+> > > Hi Ard,
+> > >
+> > > On Tue, Jun 07, 2022 at 01:10:52PM +0200, Ard Biesheuvel wrote:
+> > > > Fair enough. What I would like is to remove the need to play around
+> > > > with the placement of jump_label_init() across architectures. Jump
+> > > > labels are fundamentally a performance optimization, so unless you can
+> > > > explain how setting it as early as possible makes a material
+> > > > difference, performance or otherwise, I really think we should pursue
+> > > > a solution that does the static key manipulation at some later time.
+> > >
+> > > Alright. It sounds like Catalin also prefers the same. This seems simple
+> > > enough with minimal downsides: https://lore.kernel.org/lkml/20220607113238.769088-1-Jason@zx2c4.com/
+> > >
+> >
+> > That looks simple enough. Do we risk causing any boot stalls due to
+> > the crediting being deferred? Or new warnings about randomness being
+> > used before CRNG is ready?
+>
+> We don't risk boot stalls. But there will be warnings for developers who
+> have enabled the CONFIG_WARN_ALL_UNSEEDED_RANDOM debug option.
+>
+>
+> > > So maybe we should just go that route.
+> > >
+> >
+> > It is not my preferred approach, but I can live with it.
+>
+> I'm not sure what your preferred approach is at this point in time
+> actually. I'll summarize all the approaches discussed so far:
+>
+> 1) Fix archs to initialize jump labels earlier:
+>    https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git/commit/?id=73e2d827a501
+>    https://lore.kernel.org/lkml/20220603121543.360283-1-Jason@zx2c4.com/
+>
+> 2) Defer mixing & crediting until random_init():
+>    https://lore.kernel.org/lkml/20220607111514.755009-1-Jason@zx2c4.com/
+>
+> 3) Defer crediting (but not mixing) until random_init():
+>    https://lore.kernel.org/lkml/20220607113238.769088-1-Jason@zx2c4.com/
+>
+> 4) Defer changing the static branch (but neither mixing nor crediting) until random_init():
+>    https://lore.kernel.org/lkml/20220607100210.683136-1-Jason@zx2c4.com/
+>
+>
+> My first choice is (1) if it's feasible.
+>
+> (2) is not possible without introducing a copy, so that's out.
+>
+> What's your preferred approach? Or is there a number 5 you have in mind?
+>
+
+Seems like we need a mutex instead of going back concurrently on two
+different threads :-)
+
+I'll shut up now and wait for your reply on the other thread.
