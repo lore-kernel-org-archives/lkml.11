@@ -2,97 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5A01C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1076FCCA483
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352040AbiFGT2i (ORCPT
+        id S1352529AbiFGT2r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58402 "EHLO
+        Tue, 7 Jun 2022 15:28:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352559AbiFGSet (ORCPT
+        with ESMTP id S1352579AbiFGSey (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:34:49 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526EF17F83C;
-        Tue,  7 Jun 2022 10:57:47 -0700 (PDT)
+        Tue, 7 Jun 2022 14:34:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB96E147810;
+        Tue,  7 Jun 2022 10:57:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2D9D3CE23D9;
-        Tue,  7 Jun 2022 17:57:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BB35C385A5;
-        Tue,  7 Jun 2022 17:57:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624664;
-        bh=14TsCn54a3xzE/a5cVI/njMjihJEWCBEFwfM8vZP8RI=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CE6C6187F;
+        Tue,  7 Jun 2022 17:57:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4397DC385A5;
+        Tue,  7 Jun 2022 17:57:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624670;
+        bh=5RfgC+jXF8hHJVSRuyWvu7JfVcQ0gFgz8ApQ4Hn+XTQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qF2H5lbWAc/w9pBhA1GYOkIrHZS77y9rnzzBIsmt+5vvduX3RRk0t0FEnpKgd24Zs
-         rVwx7Tp89agDu2r5omD2YmQ68dIN4YifFfiiLONp1HaCMrLLTOt5a2ejaBTFI4+8HX
-         iyX22WsrO5FegrxD1fRM0P5ys/MnsPsyqQs7mYV4MMEUfykohBGUGjg6zWN5pFTuBm
-         R1OjZwu5VNt2YWiimE4xuIB/bwYO3LlU1FAmsTLQr2M41PvxbNxv3TVu6571TEM5Gn
-         sdubRh++L/7JzcLbjoz+Ti9wrAihdAE6dYyHMLQ/0Sx4OqmqX1BMwLA1nCtkNiqKVv
-         xLUvvou3+kg/g==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Gong Yuanjun <ruc_gongyuanjun@163.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 38/51] drm/radeon: fix a possible null pointer dereference
-Date:   Tue,  7 Jun 2022 13:55:37 -0400
-Message-Id: <20220607175552.479948-38-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
-References: <20220607175552.479948-1-sashal@kernel.org>
+        b=NTI/5dBgvE6J/GrRarP9fLPJURIwPcrCpE9bEXR5xVzhxcS4jEJ1si7ovIk3AkJ0T
+         4qa+DccLpUwdzg5vvRH0X7oZVqPZnUD2NNlW9drvCiwWHvdQ84dZTrOnVSkoDkNofw
+         rzINQhWZlWCsj6AAXnYFhvENazO8zdVm9ZVkAr30=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 411/667] misc: ocxl: fix possible double free in ocxl_file_register_afu
+Date:   Tue,  7 Jun 2022 19:01:16 +0200
+Message-Id: <20220607164947.067754481@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gong Yuanjun <ruc_gongyuanjun@163.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit a2b28708b645c5632dc93669ab06e97874c8244f ]
+[ Upstream commit 950cf957fe34d40d63dfa3bf3968210430b6491e ]
 
-In radeon_fp_native_mode(), the return value of drm_mode_duplicate()
-is assigned to mode, which will lead to a NULL pointer dereference
-on failure of drm_mode_duplicate(). Add a check to avoid npd.
+info_release() will be called in device_unregister() when info->dev's
+reference count is 0. So there is no need to call ocxl_afu_put() and
+kfree() again.
 
-The failure status of drm_cvt_mode() on the other path is checked too.
+Fix this by adding free_minor() and return to err_unregister error path.
 
-Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: 75ca758adbaf ("ocxl: Create a clear delineation between ocxl backend & frontend")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Acked-by: Frederic Barrat <fbarrat@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220418085758.38145-1-hbh25y@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/radeon/radeon_connectors.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/misc/ocxl/file.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
-index 1546abcadacf..d157bb9072e8 100644
---- a/drivers/gpu/drm/radeon/radeon_connectors.c
-+++ b/drivers/gpu/drm/radeon/radeon_connectors.c
-@@ -473,6 +473,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
- 	    native_mode->vdisplay != 0 &&
- 	    native_mode->clock != 0) {
- 		mode = drm_mode_duplicate(dev, native_mode);
-+		if (!mode)
-+			return NULL;
- 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
- 		drm_mode_set_name(mode);
+diff --git a/drivers/misc/ocxl/file.c b/drivers/misc/ocxl/file.c
+index e70525eedaae..d278f8ba2c76 100644
+--- a/drivers/misc/ocxl/file.c
++++ b/drivers/misc/ocxl/file.c
+@@ -558,7 +558,9 @@ int ocxl_file_register_afu(struct ocxl_afu *afu)
  
-@@ -487,6 +489,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
- 		 * simpler.
- 		 */
- 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
-+		if (!mode)
-+			return NULL;
- 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
- 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
- 	}
+ err_unregister:
+ 	ocxl_sysfs_unregister_afu(info); // safe to call even if register failed
++	free_minor(info);
+ 	device_unregister(&info->dev);
++	return rc;
+ err_put:
+ 	ocxl_afu_put(afu);
+ 	free_minor(info);
 -- 
 2.35.1
+
+
 
