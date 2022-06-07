@@ -2,100 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B113C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:33:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33C14CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:34:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245568AbiFGOde (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 10:33:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60070 "EHLO
+        id S245570AbiFGOeU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 10:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243354AbiFGOda (ORCPT
+        with ESMTP id S245179AbiFGOeN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 10:33:30 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04CC2B36F4;
-        Tue,  7 Jun 2022 07:33:29 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 257EW6VH011786;
-        Tue, 7 Jun 2022 14:33:29 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=2Fl+E7n61EDWOdDB4Qwnb/kTFDcxq7ECEIrMTRqG8XY=;
- b=sJN7DibwXj+7XrXFRHe6M2Q/Z28jOZ/4C3e/oG0GNig79P1RfPG6BJLhldUvIxWlU+nr
- /Zy8KMKzl67zaFMrmNqmakR0YXoZwywpJVAYm6weuc6XaesFCgJ574vT8IjErkpuVPjk
- 2TLAJ0bdlRMvDNVYwEB+cWMqSbcDMpiyOgOJeZLssEtUqa4Er3s9xXYMqYUMjdLn5jfp
- yey8lqoniUPob52A+LBBT2iOHSux3qiEflmDN9V7wvhA5DW0Q7+fhkG7kWA2h7dDEO/1
- rrlnoK6XD3vgC1H+zypXQYxR+f30DmUHrns2nBvc8T4r2KGe911VdOz64nqDECFg8grW Uw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gj7w4s2xk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 07 Jun 2022 14:33:29 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 257EXSXu016064;
-        Tue, 7 Jun 2022 14:33:28 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gj7w4s2wp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 07 Jun 2022 14:33:28 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 257EM5Oj027264;
-        Tue, 7 Jun 2022 14:33:26 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma06ams.nl.ibm.com with ESMTP id 3gfxnhux88-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 07 Jun 2022 14:33:26 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 257EXNG113304116
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 7 Jun 2022 14:33:23 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 04BFCA405B;
-        Tue,  7 Jun 2022 14:33:23 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 75D37A405F;
-        Tue,  7 Jun 2022 14:33:22 +0000 (GMT)
-Received: from li-ca45c2cc-336f-11b2-a85c-c6e71de567f1 (unknown [9.171.69.129])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Tue,  7 Jun 2022 14:33:22 +0000 (GMT)
-Date:   Tue, 7 Jun 2022 16:33:20 +0200
-From:   Nico Boehr <nrb@linux.ibm.com>
-To:     Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     kvm@vger.kernel.org, borntraeger@de.ibm.com, frankja@linux.ibm.com,
-        thuth@redhat.com, pasic@linux.ibm.com, david@redhat.com,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        scgl@linux.ibm.com, mimu@linux.ibm.com
-Subject: Re: [PATCH v11 18/19] KVM: s390: pv: avoid export before import if
- possible
-Message-ID: <20220607163320.2b1d966a@li-ca45c2cc-336f-11b2-a85c-c6e71de567f1>
-In-Reply-To: <20220603065645.10019-19-imbrenda@linux.ibm.com>
-References: <20220603065645.10019-1-imbrenda@linux.ibm.com>
-        <20220603065645.10019-19-imbrenda@linux.ibm.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+        Tue, 7 Jun 2022 10:34:13 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 0A305B714D
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 07:34:10 -0700 (PDT)
+Received: (qmail 405325 invoked by uid 1000); 7 Jun 2022 10:34:08 -0400
+Date:   Tue, 7 Jun 2022 10:34:08 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Will Deacon <will@kernel.org>
+Cc:     Akira Yokosawa <akiyks@gmail.com>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: Re: [RFC PATCH -lkmm] docs/memory-barriers: Fix inconsistent name of
+ 'data dependency barrier'
+Message-ID: <Yp9h4Cmo0UNZp6xD@rowland.harvard.edu>
+References: <cc2c7885-ac75-24f3-e18a-e77f97c91b4c@gmail.com>
+ <20220607133432.GA32701@willie-the-truck>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: dIxryWdMW6ZEHAF3_oCd8kaZcK-bbeHW
-X-Proofpoint-GUID: U1AhcWVbAhWctiHHyPKNUB3ZXgTvknfb
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-07_06,2022-06-07_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 impostorscore=0
- suspectscore=0 lowpriorityscore=0 phishscore=0 priorityscore=1501
- malwarescore=0 clxscore=1015 adultscore=0 spamscore=0 mlxlogscore=820
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206070058
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607133432.GA32701@willie-the-truck>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri,  3 Jun 2022 08:56:44 +0200
-Claudio Imbrenda <imbrenda@linux.ibm.com> wrote:
+On Tue, Jun 07, 2022 at 02:34:33PM +0100, Will Deacon wrote:
+> On Sat, May 28, 2022 at 01:15:30PM +0900, Akira Yokosawa wrote:
+> > The term "data dependency barrier", which has been in
+> > memory-barriers.txt ever since it was first authored by David Howells,
+> > has become confusing due to the fact that in LKMM's explanations.txt
+> > and elsewhere, "data dependency" is used mostly for load-to-store data
+> > dependency.
+> > 
+> > To prevent further confusions, do the following changes:
+> > 
+> >   - substitute "address-dependency barrier" for "data dependency barrier";
+> >   - add note on the removal of kernel APIs for explicit address-
+> >     dependency barriers in kernel release v5.9;
+> >   - add note on the section title rename;
+> >   - use READ_ONCE_OLD() for READ_ONCE() of pre-4.15 (no address-
+> >     dependency implication) in code snippets;
+> >   - fix number of CPU memory barrier APIs;
+> >   - and a few more context adjustments.
 
-> If the appropriate UV feature bit is set, there is no need to perform
-> an export before import.
-> 
-> Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+> I suppose this isn't really a comment on your patch, as I much prefer the
+> updated terminology, but the way this section is now worded really makes it
+> sounds like address dependencies only order load -> load, whereas they
+> equally order load -> store. Saying that "An address-dependency barrier...
+> is not required to have any effect on stores" is really confusing to me: the
+> barrier should only ever be used in conjunction with an address-dependency
+> _anyway_ so whether or not it's the barrier or the dependency giving the
+> order is an implementation detail.
 
-Reviewed-by: Nico Boehr <nrb@linux.ibm.com>
+It would be more accurate to say that address-dependency barriers are 
+not _needed_ for load->store ordering because the dependencies 
+themselves already provide this ordering (even on Alpha).
+
+> Perhaps the barrier should be called a "Read-read-address-dependency
+> barrier", an "Address-dependency read barrier" or even a "Consume barrier"
+> (:p) instead? Dunno, Alan is normally much better at naming these things
+> than I am.
+
+Well, "load-load-address-dependency barrier" would be okay as a generic 
+name, albeit unwieldy.  Note however that on Alpha -- the only 
+architecture to need these barriers -- they aren't anything special; the 
+actual instruction is the equivalent of an ordinary smp_rmb().  (Please 
+correct me if my memory about this is wrong.)
+
+So in principle you could simply call them "read memory barriers" while 
+pointing out the need for special use on demented architectures where 
+address dependencies do not guarantee load->load ordering.
+
+> Alternatively, maybe we should be removing the historical stuff from the
+> document altogether if it's no longer needed. We don't have any occurrences
+> of read_barrier_depends() anymore, so why confuse people with it?
+
+How about relegating discussion of these barriers to a special 
+"historical" or "niche architecture" section of the document?  In a 
+separate patch, of course.
+
+Alan
+
+
