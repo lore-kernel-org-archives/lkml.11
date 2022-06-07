@@ -2,174 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4849C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 08:47:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A545C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 08:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238584AbiFGIrP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 04:47:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33480 "EHLO
+        id S238547AbiFGIr3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 04:47:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238464AbiFGIqo (ORCPT
+        with ESMTP id S238535AbiFGIqt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 04:46:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D6D9DE528D
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 01:46:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654591577;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xI1BfmQ1tmnR7pC5S7JA4VoggSPGIGxH2wHdSDEj2eY=;
-        b=X55jLBkgeKgFdioPCSOW+I5e1aurDHHGvHSSb/Tnc/QpMCCQM/hpuQEbTZREQU+OWeSTdC
-        VCPEotsmnHxQxDG3Mw1b1qPAphQakjF32eWd74YwIT39JM1qcVOa7nURIE+nTL32N9pfF5
-        c3/tKDtgZlARaqrJ1OSRE5uMp/GDs5U=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-497-FsXDx8f6ODWIiI5LRw5Rsw-1; Tue, 07 Jun 2022 04:46:16 -0400
-X-MC-Unique: FsXDx8f6ODWIiI5LRw5Rsw-1
-Received: by mail-qk1-f199.google.com with SMTP id bp18-20020a05620a459200b006a6a7b1f0acso7686634qkb.13
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 01:46:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=xI1BfmQ1tmnR7pC5S7JA4VoggSPGIGxH2wHdSDEj2eY=;
-        b=ea3m5KOD72oksd6qnxniAiOsOQTXMfH3xLyJ/Kb+bRdHX/e7QmNpm0BNYZTgPKqAYp
-         5/1e1Iu3yIRJL9hpw4tTJB2iNSQZ6I0cLZLvlk3leq1e7r+tk0B4VelpSfGq3cn/pTHe
-         FvYm+lCoTXVCuXGnx+yNtg9OJh+XmmtrKRDtHcnxiAUr47InINnq3PgLS6fqGxW705Hx
-         SLVbRO9SwCX1LuIxZOtjXu92J93inSjt6/M66ejKVjmJbWEURtLCzl6ga+TCwmWx2v2d
-         //V2jn1NrDx8tTEkaLdBA4sRzMujaIiKsaz5dzHr0iiRVjBw8BO8G2lWsyg6nytU9F8V
-         ARSw==
-X-Gm-Message-State: AOAM531N+uYf/Jp3q8I3VnoeTx49tS5YVWnaNRxiCI0d9DWE71kupAs5
-        Jz26LHQYleidDEbu4javGE91D+g6RolvM56E5GMU7j6TKrQVtoq8oYdmXtCw+uuAFYNzdx3hZXd
-        MER8AZpBPB7lBz1IL6uYAWuDA
-X-Received: by 2002:ac8:578d:0:b0:2f3:e61d:df9e with SMTP id v13-20020ac8578d000000b002f3e61ddf9emr21797459qta.181.1654591575258;
-        Tue, 07 Jun 2022 01:46:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz7za2/FDRtffmJ1CIimVYvMn+o4/Op1dXsBZwSHG55CAOEduxCodQmfpxNLBNuQ7GdVOdjWw==
-X-Received: by 2002:ac8:578d:0:b0:2f3:e61d:df9e with SMTP id v13-20020ac8578d000000b002f3e61ddf9emr21797445qta.181.1654591575018;
-        Tue, 07 Jun 2022 01:46:15 -0700 (PDT)
-Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
-        by smtp.gmail.com with ESMTPSA id u22-20020ac87516000000b002f92b74ba99sm11416797qtq.13.2022.06.07.01.46.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 01:46:14 -0700 (PDT)
-Message-ID: <420b6cfdeab348f93c0de20ef07b66663fe5030c.camel@redhat.com>
-Subject: Re: [PATCH v6 02/38] KVM: x86: hyper-v: Resurrect dedicated
- KVM_REQ_HV_TLB_FLUSH flag
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        Yuan Yao <yuan.yao@linux.intel.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 07 Jun 2022 11:46:10 +0300
-In-Reply-To: <20220606083655.2014609-3-vkuznets@redhat.com>
-References: <20220606083655.2014609-1-vkuznets@redhat.com>
-         <20220606083655.2014609-3-vkuznets@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-2.fc34) 
+        Tue, 7 Jun 2022 04:46:49 -0400
+Received: from EX-PRD-EDGE02.vmware.com (EX-PRD-EDGE02.vmware.com [208.91.3.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B81E64C6;
+        Tue,  7 Jun 2022 01:46:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+    s=s1024; d=vmware.com;
+    h=from:to:cc:subject:date:message-id:in-reply-to:mime-version:
+      content-type;
+    bh=4lj7Pjrsj0fjGG1tY7xV5D9Zi+bYPl6gA2VIwx7whPA=;
+    b=lnBUnMPdfUlTrifI824SKy5tSqiYEZKHwUJChPR0LceprGcXnrmnF5Y5YbHMBZ
+      v3Wxhhi7wW/bxVT0K5yO3LwwLHKjbOIDvoRANJlwMpF4I1Ql2+EvtUksCVdLpX
+      VGeE0JUDtrpQ+Y2E/Hjb5h3Z7kh4DmZxX7yu46YuJyJv1Z4=
+Received: from sc9-mailhost2.vmware.com (10.113.161.72) by
+ EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
+ 15.1.2308.14; Tue, 7 Jun 2022 01:45:37 -0700
+Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
+        by sc9-mailhost2.vmware.com (Postfix) with ESMTP id 906D82023C;
+        Tue,  7 Jun 2022 01:45:43 -0700 (PDT)
+Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
+        id 8A64FAA2B0; Tue,  7 Jun 2022 01:45:43 -0700 (PDT)
+From:   Ronak Doshi <doshir@vmware.com>
+To:     <netdev@vger.kernel.org>
+CC:     Ronak Doshi <doshir@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 net-next 7/8] vmxnet3: use ext1 field to indicate encapsulated packet
+Date:   Tue, 7 Jun 2022 01:45:17 -0700
+Message-ID: <20220607084518.30316-8-doshir@vmware.com>
+X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20220607084518.30316-1-doshir@vmware.com>
+References: <20220607084518.30316-1-doshir@vmware.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+Received-SPF: None (EX-PRD-EDGE02.vmware.com: doshir@vmware.com does not
+ designate permitted sender hosts)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-06-06 at 10:36 +0200, Vitaly Kuznetsov wrote:
-> In preparation to implementing fine-grained Hyper-V TLB flush and
-> L2 TLB flush, resurrect dedicated KVM_REQ_HV_TLB_FLUSH request bit.
-> As
-> KVM_REQ_TLB_FLUSH_GUEST/KVM_REQ_TLB_FLUSH_CURRENT are stronger
-> operations,
-> clear KVM_REQ_HV_TLB_FLUSH request in
-> kvm_service_local_tlb_flush_requests()
-> when any of these were also requested.
-> 
-> No (real) functional change intended.
-> 
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> ---
->  arch/x86/include/asm/kvm_host.h |  2 ++
->  arch/x86/kvm/hyperv.c           |  4 ++--
->  arch/x86/kvm/x86.c              | 10 ++++++++--
->  3 files changed, 12 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/kvm_host.h
-> b/arch/x86/include/asm/kvm_host.h
-> index 8699f715d867..7a6a6f47b603 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -108,6 +108,8 @@
->         KVM_ARCH_REQ_FLAGS(30, KVM_REQUEST_WAIT |
-> KVM_REQUEST_NO_WAKEUP)
->  #define KVM_REQ_MMU_FREE_OBSOLETE_ROOTS \
->         KVM_ARCH_REQ_FLAGS(31, KVM_REQUEST_WAIT |
-> KVM_REQUEST_NO_WAKEUP)
-> +#define KVM_REQ_HV_TLB_FLUSH \
-> +       KVM_ARCH_REQ_FLAGS(32, KVM_REQUEST_WAIT |
-> KVM_REQUEST_NO_WAKEUP)
->  
->  #define
-> CR0_RESERVED_BITS                                               \
->         (~(unsigned long)(X86_CR0_PE | X86_CR0_MP | X86_CR0_EM |
-> X86_CR0_TS \
-> diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-> index 46f9dfb60469..b402ad059eb9 100644
-> --- a/arch/x86/kvm/hyperv.c
-> +++ b/arch/x86/kvm/hyperv.c
-> @@ -1876,11 +1876,11 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu
-> *vcpu, struct kvm_hv_hcall *hc)
->          * analyze it here, flush TLB regardless of the specified
-> address space.
->          */
->         if (all_cpus) {
-> -               kvm_make_all_cpus_request(kvm,
-> KVM_REQ_TLB_FLUSH_GUEST);
-> +               kvm_make_all_cpus_request(kvm, KVM_REQ_HV_TLB_FLUSH);
->         } else {
->                 sparse_set_to_vcpu_mask(kvm, sparse_banks,
-> valid_bank_mask, vcpu_mask);
->  
-> -               kvm_make_vcpus_request_mask(kvm,
-> KVM_REQ_TLB_FLUSH_GUEST, vcpu_mask);
-> +               kvm_make_vcpus_request_mask(kvm,
-> KVM_REQ_HV_TLB_FLUSH, vcpu_mask);
->         }
->  
->  ret_success:
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 67732e658e76..80cd3eb5e7de 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -3353,11 +3353,17 @@ static inline void
-> kvm_vcpu_flush_tlb_current(struct kvm_vcpu *vcpu)
->   */
->  void kvm_service_local_tlb_flush_requests(struct kvm_vcpu *vcpu)
->  {
-> -       if (kvm_check_request(KVM_REQ_TLB_FLUSH_CURRENT, vcpu))
-> +       if (kvm_check_request(KVM_REQ_TLB_FLUSH_CURRENT, vcpu)) {
->                 kvm_vcpu_flush_tlb_current(vcpu);
-> +               kvm_clear_request(KVM_REQ_HV_TLB_FLUSH, vcpu);
-> +       }
->  
-> -       if (kvm_check_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu))
-> +       if (kvm_check_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu)) {
-> +               kvm_vcpu_flush_tlb_guest(vcpu);
-> +               kvm_clear_request(KVM_REQ_HV_TLB_FLUSH, vcpu);
-> +       } else if (kvm_check_request(KVM_REQ_HV_TLB_FLUSH, vcpu)) {
->                 kvm_vcpu_flush_tlb_guest(vcpu);
-> +       }
->  }
->  EXPORT_SYMBOL_GPL(kvm_service_local_tlb_flush_requests);
->  
+Till vmxnet3 version 6, om field of transmit descriptor was used
+to indicate encapsulated offload packet and msscof was used to
+indirectly indicate TSO/CSO. From version 7 and later, ext1 field
+will be used to indicate whether packet is encapsulated or not and
+om fields will continue to indicate if the packet is TSO or CSO.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+---
+ drivers/net/vmxnet3/vmxnet3_defs.h | 14 ++++++++------
+ drivers/net/vmxnet3/vmxnet3_drv.c  | 18 +++++++++++++++---
+ 2 files changed, 23 insertions(+), 9 deletions(-)
 
-Best regards,
-	Maxim Levitsky
+diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
+index cb9dc72f2b3d..41d6767283a6 100644
+--- a/drivers/net/vmxnet3/vmxnet3_defs.h
++++ b/drivers/net/vmxnet3/vmxnet3_defs.h
+@@ -148,17 +148,17 @@ struct Vmxnet3_TxDesc {
+ 
+ #ifdef __BIG_ENDIAN_BITFIELD
+ 	u32 msscof:14;  /* MSS, checksum offset, flags */
+-	u32 ext1:1;
++	u32 ext1:1;     /* set to 1 to indicate inner csum/tso, vmxnet3 v7 */
+ 	u32 dtype:1;    /* descriptor type */
+-	u32 oco:1;
++	u32 oco:1;      /* Outer csum offload */
+ 	u32 gen:1;      /* generation bit */
+ 	u32 len:14;
+ #else
+ 	u32 len:14;
+ 	u32 gen:1;      /* generation bit */
+-	u32 oco:1;
++	u32 oco:1;      /* Outer csum offload */
+ 	u32 dtype:1;    /* descriptor type */
+-	u32 ext1:1;
++	u32 ext1:1;     /* set to 1 to indicate inner csum/tso, vmxnet3 v7 */
+ 	u32 msscof:14;  /* MSS, checksum offset, flags */
+ #endif  /* __BIG_ENDIAN_BITFIELD */
+ 
+@@ -262,11 +262,13 @@ struct Vmxnet3_RxCompDesc {
+ 	u32		rqID:10;      /* rx queue/ring ID */
+ 	u32		sop:1;        /* Start of Packet */
+ 	u32		eop:1;        /* End of Packet */
+-	u32		ext1:2;
++	u32		ext1:2;       /* bit 0: indicating v4/v6/.. is for inner header */
++				      /* bit 1: indicating rssType is based on inner header */
+ 	u32		rxdIdx:12;    /* Index of the RxDesc */
+ #else
+ 	u32		rxdIdx:12;    /* Index of the RxDesc */
+-	u32		ext1:2;
++	u32		ext1:2;       /* bit 0: indicating v4/v6/.. is for inner header */
++				      /* bit 1: indicating rssType is based on inner header */
+ 	u32		eop:1;        /* End of Packet */
+ 	u32		sop:1;        /* Start of Packet */
+ 	u32		rqID:10;      /* rx queue/ring ID */
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 6e013ae0b5ea..aa96441ea86c 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1161,7 +1161,12 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 	if (ctx.mss) {
+ 		if (VMXNET3_VERSION_GE_4(adapter) && skb->encapsulation) {
+ 			gdesc->txd.hlen = ctx.l4_offset + ctx.l4_hdr_size;
+-			gdesc->txd.om = VMXNET3_OM_ENCAP;
++			if (VMXNET3_VERSION_GE_7(adapter)) {
++				gdesc->txd.om = VMXNET3_OM_TSO;
++				gdesc->txd.ext1 = 1;
++			} else {
++				gdesc->txd.om = VMXNET3_OM_ENCAP;
++			}
+ 			gdesc->txd.msscof = ctx.mss;
+ 
+ 			if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_TUNNEL_CSUM)
+@@ -1178,8 +1183,15 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 			    skb->encapsulation) {
+ 				gdesc->txd.hlen = ctx.l4_offset +
+ 						  ctx.l4_hdr_size;
+-				gdesc->txd.om = VMXNET3_OM_ENCAP;
+-				gdesc->txd.msscof = 0;		/* Reserved */
++				if (VMXNET3_VERSION_GE_7(adapter)) {
++					gdesc->txd.om = VMXNET3_OM_CSUM;
++					gdesc->txd.msscof = ctx.l4_offset +
++							    skb->csum_offset;
++					gdesc->txd.ext1 = 1;
++				} else {
++					gdesc->txd.om = VMXNET3_OM_ENCAP;
++					gdesc->txd.msscof = 0;		/* Reserved */
++				}
+ 			} else {
+ 				gdesc->txd.hlen = ctx.l4_offset;
+ 				gdesc->txd.om = VMXNET3_OM_CSUM;
+-- 
+2.11.0
 
