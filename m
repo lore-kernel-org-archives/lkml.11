@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B9CCCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 838CBC43334
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385129AbiFGWpa (ORCPT
+        id S1386335AbiFGWsu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:45:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55282 "EHLO
+        Tue, 7 Jun 2022 18:48:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354538AbiFGV3k (ORCPT
+        with ESMTP id S1381234AbiFGVkU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:29:40 -0400
+        Tue, 7 Jun 2022 17:40:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7481152BAC;
-        Tue,  7 Jun 2022 12:02:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D2E5152DA7;
+        Tue,  7 Jun 2022 12:06:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6765BB82391;
-        Tue,  7 Jun 2022 19:02:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1799C385A5;
-        Tue,  7 Jun 2022 19:02:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C16BBB823AF;
+        Tue,  7 Jun 2022 19:05:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24F3BC385A2;
+        Tue,  7 Jun 2022 19:05:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628545;
-        bh=uZOwd6s3kVhfsImudmQXu07CdvivTkI16naom/J1bL4=;
+        s=korg; t=1654628758;
+        bh=l+0I0SbIqtb+A2f2/RYmBLgaBp3aFf+0oUxXgNg1N6s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cIt/6TQhSxOr45Q13C9zMug5nMcpJkbjWUcRhDMuW5w74MQa63kwZu8RX7Hs1C7lQ
-         Kkm1UReNx/sNHQ6NB56KNVH5BOBxOI406UFOnxHudZ6o+W0+K+LU8kde8kHngxWp2V
-         +KO6T9iDCXKw/XBupiSTbVS3Vn4/8B34BzseFT2w=
+        b=rvCHNBvSPsGsGIwRzcXTsoehpmxLn8QURMCdNdVAMQdiexUzZ/XUfeuyMXnbUJgQj
+         32LwdnypIy8KiUq5IPhwJyC2lWkCBgLaq278IfrolGYoHvHTgA7Nj/zAyhadfOGzb/
+         I0UuFd1Z/lCtKUeRQRoPhNsTx4GSWSJI9eQ34nnw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        Katsuhiro Suzuki <katsuhiro@katsuster.net>,
-        Mark Brown <broonie@kernel.org>,
+        Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>,
+        Jacopo Mondi <jacopo+renesas@jmondi.org>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 366/879] ASoC: rk3328: fix disabling mclk on pclk probe failure
-Date:   Tue,  7 Jun 2022 18:58:04 +0200
-Message-Id: <20220607165013.494505834@linuxfoundation.org>
+Subject: [PATCH 5.18 444/879] media: i2c: rdacm2x: properly set subdev entity function
+Date:   Tue,  7 Jun 2022 18:59:22 +0200
+Message-Id: <20220607165015.760039300@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,37 +54,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+From: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
 
-[ Upstream commit dd508e324cdde1c06ace08a8143fa50333a90703 ]
+[ Upstream commit d2facee67b4883bb3e7461a0a93fd70d0c7b7261 ]
 
-If preparing/enabling the pclk fails, the probe function should
-unprepare and disable the previously prepared and enabled mclk,
-which it doesn't do. This commit rectifies this.
+The subdevice entity function was left unset, which produces a warning
+when probing the device:
 
-Fixes: c32759035ad2 ("ASoC: rockchip: support ACODEC for rk3328")
-Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
-Reviewed-by: Katsuhiro Suzuki <katsuhiro@katsuster.net>
-Link: https://lore.kernel.org/r/20220427172310.138638-1-frattaroli.nicolas@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+mxc-md bus@58000000:camera: Entity type for entity rdacm20 19-0051 was
+not initialized!
+
+This patch will set entity function to MEDIA_ENT_F_CAM_SENSOR and leave
+flags unset.
+
+Fixes: 34009bffc1c6 ("media: i2c: Add RDACM20 driver")
+Fixes: a59f853b3b4b ("media: i2c: Add driver for RDACM21 camera module")
+Signed-off-by: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
+Reviewed-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
+Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rk3328_codec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/i2c/rdacm20.c | 2 +-
+ drivers/media/i2c/rdacm21.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/rk3328_codec.c b/sound/soc/codecs/rk3328_codec.c
-index 758d439e8c7a..86b679cf7aef 100644
---- a/sound/soc/codecs/rk3328_codec.c
-+++ b/sound/soc/codecs/rk3328_codec.c
-@@ -481,7 +481,7 @@ static int rk3328_platform_probe(struct platform_device *pdev)
- 	ret = clk_prepare_enable(rk3328->pclk);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to enable acodec pclk\n");
--		return ret;
-+		goto err_unprepare_mclk;
- 	}
+diff --git a/drivers/media/i2c/rdacm20.c b/drivers/media/i2c/rdacm20.c
+index 025a610de893..9c6f66cab564 100644
+--- a/drivers/media/i2c/rdacm20.c
++++ b/drivers/media/i2c/rdacm20.c
+@@ -611,7 +611,7 @@ static int rdacm20_probe(struct i2c_client *client)
+ 		goto error_free_ctrls;
  
- 	base = devm_platform_ioremap_resource(pdev, 0);
+ 	dev->pad.flags = MEDIA_PAD_FL_SOURCE;
+-	dev->sd.entity.flags |= MEDIA_ENT_F_CAM_SENSOR;
++	dev->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
+ 	ret = media_entity_pads_init(&dev->sd.entity, 1, &dev->pad);
+ 	if (ret < 0)
+ 		goto error_free_ctrls;
+diff --git a/drivers/media/i2c/rdacm21.c b/drivers/media/i2c/rdacm21.c
+index 12ec5467ed1e..ef31cf5f23ca 100644
+--- a/drivers/media/i2c/rdacm21.c
++++ b/drivers/media/i2c/rdacm21.c
+@@ -583,7 +583,7 @@ static int rdacm21_probe(struct i2c_client *client)
+ 		goto error_free_ctrls;
+ 
+ 	dev->pad.flags = MEDIA_PAD_FL_SOURCE;
+-	dev->sd.entity.flags |= MEDIA_ENT_F_CAM_SENSOR;
++	dev->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
+ 	ret = media_entity_pads_init(&dev->sd.entity, 1, &dev->pad);
+ 	if (ret < 0)
+ 		goto error_free_ctrls;
 -- 
 2.35.1
 
