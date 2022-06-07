@@ -2,93 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7089CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B79ACCCA488
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354902AbiFGS5U (ORCPT
+        id S1354880AbiFGS5O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:57:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41768 "EHLO
+        Tue, 7 Jun 2022 14:57:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352403AbiFGSRI (ORCPT
+        with ESMTP id S1352408AbiFGSRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:17:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D5122294;
-        Tue,  7 Jun 2022 10:51:46 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02D022534;
+        Tue,  7 Jun 2022 10:51:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C5A0E61797;
-        Tue,  7 Jun 2022 17:51:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2377C34115;
-        Tue,  7 Jun 2022 17:51:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624305;
-        bh=ryHxilJ0m5kwi2l7DWgR4sLjPCCPqNz0RUdabj2f13g=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B59661797;
+        Tue,  7 Jun 2022 17:51:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35EEDC385A5;
+        Tue,  7 Jun 2022 17:51:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624309;
+        bh=WOZZ81gRLciIhVRawU+i1v+Da6F8SDjqNSRRDxrrypA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YQ5Atw5mrk1xXstMmBg9aEY9M4wlrrwkKMxCjhwI335iAKyLXkW+3ErHPKK4iH6Ky
-         gWxCvBOChhyTH9rOy81USyM9jOxJYBu0z/XcnZgdlSu567YpsNHoE0EZgil1c4BLds
-         Bp6Rdvi4ldg7JOEP7Q4BK4FSUZgI15KRU2hXaj6w=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 262/667] x86/speculation: Add missing prototype for unpriv_ebpf_notify()
-Date:   Tue,  7 Jun 2022 18:58:47 +0200
-Message-Id: <20220607164942.640860862@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=LJBd9gXmVLcmbxvJOYkoSsJXJqPT/iJPZ5nINJlDqarivZ3EMWjuKUxMM8s0cjQDR
+         fWWIc1PUfeHJf1Zoqegn/jodLF86AOhjRh+9iSdKslJfoqf995F+xFuVMLFy40sMgG
+         F5jqwaHgGyR2A7ADsKv1ic5fBAIyziOK/pAu2gCf/Fw4PfgBS+ObbY8XhqT00hXHcL
+         dKMGtp9pilsilThCuS6e0blVhXIlR8+V9Sx7bu0txPDpIJMsE9b8YplS04EO7PK0rk
+         +WMhninCYJcnnZmVzptVZZeuvEL20lswYJCtA/T8XZD/MNK5As4afQCOC44rqVAdo8
+         2731n6Qyt/+KQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
+        Qingqing Zhuo <qingqing.zhuo@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
+        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, Eric.Yang2@amd.com, michael.strauss@amd.com,
+        Charlene.Liu@amd.com, paul.hsieh@amd.com, nikola.cornij@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.18 46/68] drm/amd/display: Check zero planes for OTG disable W/A on clock change
+Date:   Tue,  7 Jun 2022 13:48:12 -0400
+Message-Id: <20220607174846.477972-46-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
 
-[ Upstream commit 2147c438fde135d6c145a96e373d9348e7076f7f ]
+[ Upstream commit 66a197203794339b028eedfa880bff9367fce783 ]
 
-Fix the following warnings seen with "make W=1":
+[Why]
+A display clock change hang can occur when switching between DIO and HPO
+enabled modes during the optimize_bandwidth in dc_commit_state_no_check
+call.
 
-  kernel/sysctl.c:183:13: warning: no previous prototype for ‘unpriv_ebpf_notify’ [-Wmissing-prototypes]
-    183 | void __weak unpriv_ebpf_notify(int new_state)
-        |             ^~~~~~~~~~~~~~~~~~
+This happens when going from 4k120 8bpc 420 to 4k144 10bpc 444.
 
-  arch/x86/kernel/cpu/bugs.c:659:6: warning: no previous prototype for ‘unpriv_ebpf_notify’ [-Wmissing-prototypes]
-    659 | void unpriv_ebpf_notify(int new_state)
-        |      ^~~~~~~~~~~~~~~~~~
+Display clock in the DIO case is 1200MHz, but pixel rate is 600MHz
+because the pixel format is 420.
 
-Fixes: 44a3918c8245 ("x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/5689d065f739602ececaee1e05e68b8644009608.1650930000.git.jpoimboe@redhat.com
+Display clock in the HPO case is less (800MHz?) because of ODM combine
+which results in a smaller divider.
+
+The DIO is still active in prepare but not active in the optimize which
+results in the hang occuring.
+
+During this change there are no planes on the stream so it's safe to
+apply the workaround, but dpms_off = false and signal type is not
+virtual.
+
+[How]
+Check for plane_count == 0, no planes on the stream.
+
+It's easiest to check pipe->plane_state == NULL as an equivalent check
+rather than trying to search for the stream status in the context
+associated with the stream, so let's do that.
+
+The primary, non MPO pipe should not have a NULL plane state.
+
+Reviewed-by: Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>
+Acked-by: Qingqing Zhuo <qingqing.zhuo@amd.com>
+Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/bpf.h | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c | 3 ++-
+ drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_clk_mgr.c | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index c5c4b6f09e23..bb766a0b9b51 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1991,6 +1991,8 @@ void bpf_offload_dev_netdev_unregister(struct bpf_offload_dev *offdev,
- 				       struct net_device *netdev);
- bool bpf_offload_dev_match(struct bpf_prog *prog, struct net_device *netdev);
+diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c
+index 8be4c1970628..3bf2ab2ff7f8 100644
+--- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c
++++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c
+@@ -91,7 +91,8 @@ static void dcn315_disable_otg_wa(struct clk_mgr *clk_mgr_base, bool disable)
  
-+void unpriv_ebpf_notify(int new_state);
-+
- #if defined(CONFIG_NET) && defined(CONFIG_BPF_SYSCALL)
- int bpf_prog_offload_init(struct bpf_prog *prog, union bpf_attr *attr);
+ 		if (pipe->top_pipe || pipe->prev_odm_pipe)
+ 			continue;
+-		if (pipe->stream && (pipe->stream->dpms_off || dc_is_virtual_signal(pipe->stream->signal))) {
++		if (pipe->stream && (pipe->stream->dpms_off || pipe->plane_state == NULL ||
++				     dc_is_virtual_signal(pipe->stream->signal))) {
+ 			if (disable)
+ 				pipe->stream_res.tg->funcs->immediate_disable_crtc(pipe->stream_res.tg);
+ 			else
+diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_clk_mgr.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_clk_mgr.c
+index 3121dd2d2a91..fc3af81ed6c6 100644
+--- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_clk_mgr.c
++++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_clk_mgr.c
+@@ -122,7 +122,8 @@ static void dcn316_disable_otg_wa(struct clk_mgr *clk_mgr_base, bool disable)
  
+ 		if (pipe->top_pipe || pipe->prev_odm_pipe)
+ 			continue;
+-		if (pipe->stream && (pipe->stream->dpms_off || dc_is_virtual_signal(pipe->stream->signal))) {
++		if (pipe->stream && (pipe->stream->dpms_off || pipe->plane_state == NULL ||
++				     dc_is_virtual_signal(pipe->stream->signal))) {
+ 			if (disable)
+ 				pipe->stream_res.tg->funcs->immediate_disable_crtc(pipe->stream_res.tg);
+ 			else
 -- 
 2.35.1
-
-
 
