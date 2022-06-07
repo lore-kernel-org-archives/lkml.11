@@ -2,92 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FB1AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 07:53:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E06DDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 07:53:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237945AbiFGHxa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 03:53:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41748 "EHLO
+        id S237935AbiFGHxz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 03:53:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237996AbiFGHxX (ORCPT
+        with ESMTP id S237942AbiFGHxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 03:53:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E84375799B
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 00:53:21 -0700 (PDT)
+        Tue, 7 Jun 2022 03:53:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 78906C9676
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 00:53:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654588400;
+        s=mimecast20190719; t=1654588429;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=kIeoNALdguR3aN7GKFEd9K9npyp4og2Qegkqr3lDxJQ=;
-        b=Ya1jsPoWKA1hNsjlyikiBLTgftNRn5qSlkvz2+jsWq78B61SiCkEi7v5Epphx9Y4pC9/ax
-        f75Gdc1PcvflWUwH3GJfdfWa4d7AmxescOWBCVSkPdckSp+Cea1gs0OippiMSG/II7uELk
-        aXWqJ1AcsO7Q3cCBggrQsw1GBfnV5QU=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=p5gZGK2oHc6INSHHTUFNUO8RNY5gojgeBamGwkE0RTs=;
+        b=BkaqNQ8ycvaI9+u6TabB3R2aH9jJeBSC9pBFZiQfcdDWi7uKsAHI7Tm8bOIZqQsU5+Spe4
+        8lv6/2Qse28b8QG2r12/5IJNUjGX0Rya7HaEImg37MeDZd6p183BZE488mzm6vVtxwQ5Dq
+        PBb4tYyDD/HWhK2gRmOt3kvSDtYRovY=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-600-nAeEfYI2Mluw13Zq_E6HMQ-1; Tue, 07 Jun 2022 03:53:15 -0400
-X-MC-Unique: nAeEfYI2Mluw13Zq_E6HMQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A56A73C0CD44;
-        Tue,  7 Jun 2022 07:53:14 +0000 (UTC)
-Received: from localhost (ovpn-13-113.pek2.redhat.com [10.72.13.113])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id E6B47405D4BF;
-        Tue,  7 Jun 2022 07:53:13 +0000 (UTC)
-Date:   Tue, 7 Jun 2022 15:53:10 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     akpm@linux-foundation.org, npiggin@gmail.com, urezki@gmail.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/5] mm: ioremap: rename ioremap_page_range() to
- ioremap_range()
-Message-ID: <Yp8D5o0swyqETiDS@MiWiFi-R3L-srv>
-References: <20220606083909.363350-1-bhe@redhat.com>
- <20220606083909.363350-6-bhe@redhat.com>
- <Yp7h0Jv6vpgt6xdZ@infradead.org>
+ us-mta-577-68xVCxi0PDirIBT2rCWd2Q-1; Tue, 07 Jun 2022 03:53:48 -0400
+X-MC-Unique: 68xVCxi0PDirIBT2rCWd2Q-1
+Received: by mail-qt1-f199.google.com with SMTP id l20-20020ac81494000000b002f91203eeacso13359436qtj.10
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 00:53:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=p5gZGK2oHc6INSHHTUFNUO8RNY5gojgeBamGwkE0RTs=;
+        b=EdKwTrzibJSPC3rp1HXoLaC5JQAppOfLkyr5pyoNZN30VaEwp+4lawnyFAUTCHK2kV
+         YUTmTF5b0YP87HaJgW4aa3/MaDfh7Eh/XzOIUj6QQcYh/cLGVr60R3Gt5QObMlPlujH2
+         JoLa2O9xmXfVa4odsxOUZ9IBH35ErWbU83slpdl1wUIlshs0YhzhOjtNTQTpASgoSuUk
+         y9RUHaBTzrH7hL1ifuNPauD8x6taP/UygX0GJYZjDA/439rS+0JIEtcvMvvw5yUr2PQH
+         KDfHs4VA8yQXcBP/LEA2jS7NXHRQMpkvNks9ia9JFcHY2bzCc1RyvHmvBqlqRSE+Joow
+         +D+g==
+X-Gm-Message-State: AOAM532/9TS7v15EnBiJK5/aTaDyGju1cb5IcQ3Gag4QxJyQ40jD7ys8
+        4HjrxX6R6iM3z6QUK659Y5ixlQurXw5HF3D4eRgYiENugU7aJGO2LzcmCLBKmac0K4EWiun0vpp
+        PFH18PmUf4+dR3W3T/pd1oCd+
+X-Received: by 2002:a05:622a:52:b0:304:e646:8d23 with SMTP id y18-20020a05622a005200b00304e6468d23mr11345595qtw.350.1654588427667;
+        Tue, 07 Jun 2022 00:53:47 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJykcmoQEH1DeTa2Cc1XF3NkWdyz49V4zHhjPDPtJThSs/CPy68asbh75IEtZLPjXtaFejSTFQ==
+X-Received: by 2002:a05:622a:52:b0:304:e646:8d23 with SMTP id y18-20020a05622a005200b00304e6468d23mr11345589qtw.350.1654588427429;
+        Tue, 07 Jun 2022 00:53:47 -0700 (PDT)
+Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
+        by smtp.gmail.com with ESMTPSA id v27-20020a05622a189b00b002f937991969sm11558876qtc.24.2022.06.07.00.53.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 00:53:46 -0700 (PDT)
+Message-ID: <66b4d9d336884886d04d4d6dd5e517b2634ce625.camel@redhat.com>
+Subject: Re: [PATCH 2/7] KVM: x86: inhibit APICv/AVIC when the guest and/or
+ host changes either apic id or the apic base from their default values.
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Chao Gao <chao.gao@intel.com>
+Cc:     kvm@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        x86@kernel.org, Borislav Petkov <bp@alien8.de>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Date:   Tue, 07 Jun 2022 10:53:42 +0300
+In-Reply-To: <20220607070515.GA26909@gao-cwp>
+References: <20220606180829.102503-1-mlevitsk@redhat.com>
+         <20220606180829.102503-3-mlevitsk@redhat.com>
+         <20220607070515.GA26909@gao-cwp>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-2.fc34) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yp7h0Jv6vpgt6xdZ@infradead.org>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/06/22 at 10:27pm, Christoph Hellwig wrote:
-> On Mon, Jun 06, 2022 at 04:39:09PM +0800, Baoquan He wrote:
-> > Because the current ioremap_page_range() only maps IO address to kernel
-> > virtual address, no struct page pointer passed in or page handling related.
-> > So rename it here.
-> > 
-> > The renaming is done with below command:
-> > sed -i "s/ioremap_page_range/ioremap_range/g" `git grep -l ioremap_page_range`
+On Tue, 2022-06-07 at 15:05 +0800, Chao Gao wrote:
+> On Mon, Jun 06, 2022 at 09:08:24PM +0300, Maxim Levitsky wrote:
+> > +       /*
+> > +        * For simplicity, the APIC acceleration is inhibited
+> > +        * first time either APIC ID or APIC base are changed by
+> > the guest
+> > +        * from their reset values.
+> > +        */
+> > +       APICV_INHIBIT_REASON_APIC_ID_MODIFIED,
+> > +       APICV_INHIBIT_REASON_APIC_BASE_MODIFIED,
+> > +
+> > +
 > 
-> This creates a lot of churn without much of a benefit.  If you want
-> to get rid of the name please convert most architectures to the
-> generioc ioremap code first so that all these callers go away..
+> Remove one newline.
+Will do.
+> 
+> > void kvm_apic_update_apicv(struct kvm_vcpu *vcpu)
+> > @@ -2666,6 +2683,8 @@ static int kvm_apic_state_fixup(struct
+> > kvm_vcpu *vcpu,
+> >                         icr = __kvm_lapic_get_reg64(s->regs,
+> > APIC_ICR);
+> >                         __kvm_lapic_set_reg(s->regs, APIC_ICR2, icr
+> > >> 32);
+> >                 }
+> > +       } else {
+> > +               kvm_lapic_xapic_id_updated(vcpu->arch.apic);
+> 
+> Strictly speaking, this is needed only for "set" cases.
+> 
+True, thanks!
 
-Thanks for checking.
 
-Yeah, I didn't manually adjust those indentation after replacing via
-command. While the name of ioremap_page_range() is misleading, relative
-to its implementation.
-
-Converting to use generic ioremap code on most of architectures sounds
-like a good idea, just like what the arm/arm64 converting patchset is
-doing. From a quick look, not all places can take the converting, and
-there's one in pci_remap_iospace() under drivers. So what I need to do
-is to:
-
-1)take back this pach;
-2)convert as many architectures to the generic ioremap code as possible;
-3)rename the left places of ioremap_page_range() to ioremap_range().
-
-Please check if this is what you are suggesting.
-
-Thanks
-Baoquan
+Best regards,
+	Maxim Levitsky
 
