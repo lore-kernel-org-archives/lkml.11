@@ -2,132 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF24CCCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E1BCCCA489
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385923AbiFHBg2 (ORCPT
+        id S1385712AbiFHBgW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:36:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60302 "EHLO
+        Tue, 7 Jun 2022 21:36:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381979AbiFGVpz (ORCPT
+        with ESMTP id S1386449AbiFGWs5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:45:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A42235260;
-        Tue,  7 Jun 2022 12:07:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 7 Jun 2022 18:48:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 14CBA27410D
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:36:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654630602;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2hQw9PjwI7xzOPycqxwicemxVs6g0PK0F6TWsxf3MaA=;
+        b=c4ovMLnOziPCg3y9QEDPL5p6Zndnp+j7e3Om9OKumNoaJvUZApAYyz6/8A7sWpUu1Dmt/M
+        oEDy3ZcUY7I3Juz5atmjT3WZqRL2xNWkUgbThG3f/O3CXMOSMx32oqnmMwZbdEfZibgUeI
+        YXfil3PHFLFuDd2q7SUNC7zttZ18Mtg=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-496-O_3NXQaoOv-axGes3qAn5Q-1; Tue, 07 Jun 2022 15:36:40 -0400
+X-MC-Unique: O_3NXQaoOv-axGes3qAn5Q-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1CAA9B823B4;
-        Tue,  7 Jun 2022 19:07:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 792E7C385A2;
-        Tue,  7 Jun 2022 19:07:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628857;
-        bh=6Bw7n5DpPSq0LsUhzO7WxUFhcxXLj80U1w2T9SxWBAU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0AgIvIOOvRxHv+KDQg+ytpz1YoatdXkkfWN23Vxb0Ff9F+liOHFHYsPyxgSkPbDcI
-         N+d3kH4SL4NT6hccUxTfCmN+Ilw6gOGr7LimBkDC5fRaAfd1mtCxsiBfORICqYLOX+
-         ZQAzPq6foLQtiikMBAPBg4u+B+WpXCkeyqGiNHY8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Moshe Tal <moshet@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 481/879] net/mlx5e: Correct the calculation of max channels for rep
-Date:   Tue,  7 Jun 2022 18:59:59 +0200
-Message-Id: <20220607165016.837135001@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9753680D190;
+        Tue,  7 Jun 2022 19:35:14 +0000 (UTC)
+Received: from emerald.redhat.com (unknown [10.22.9.252])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4AA422C0484A;
+        Tue,  7 Jun 2022 19:34:45 +0000 (UTC)
+From:   Lyude Paul <lyude@redhat.com>
+To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org
+Cc:     Wayne Lin <Wayne.Lin@amd.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Imre Deak <imre.deak@intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RESEND RFC 10/18] drm/display/dp_mst: Fix modeset tracking in drm_dp_atomic_release_vcpi_slots()
+Date:   Tue,  7 Jun 2022 15:29:25 -0400
+Message-Id: <20220607192933.1333228-11-lyude@redhat.com>
+In-Reply-To: <20220607192933.1333228-1-lyude@redhat.com>
+References: <20220607192933.1333228-1-lyude@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Moshe Tal <moshet@nvidia.com>
+Currently with the MST helpers we avoid releasing payloads _and_ avoid
+pulling in the MST state if there aren't any actual payload changes. While
+we want to keep the first step, we need to now make sure that we're always
+pulling in the MST state on all modesets that can modify payloads - even if
+the resulting payloads in the atomic state are identical to the previous
+ones.
 
-[ Upstream commit 6d0ba49321a40a8dada22c223bbe91c063b08db4 ]
+This is mainly to make it so that if a CRTC is still assigned to a
+connector but is set to DPMS off, the CRTC still holds it's payload
+allocation in the atomic state and still appropriately pulls in the MST
+state for commit tracking. Otherwise, we'll occasionally forget to update
+MST payloads from changes caused by non-atomic DPMS changes. Doing this
+also allows us to track bandwidth limitations in a state correctly even
+between DPMS changes, so that there's no chance of a simple ->active change
+being rejected by the atomic check.
 
-Correct the calculation of maximum channels of rep to better utilize
-the hardware resources and allow a larger scale of reps.
-
-This will allow creation of all virtual ports configured.
-
-Fixes: 473baf2e9e8c ("net/mlx5e: Allow profile-specific limitation on max num of channels")
-Signed-off-by: Moshe Tal <moshet@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Cc: Wayne Lin <Wayne.Lin@amd.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Imre Deak <imre.deak@intel.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Sean Paul <sean@poorly.run>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h      |  1 +
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c |  9 +++++++++
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c  | 10 ++++++++--
- 3 files changed, 18 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/display/drm_dp_mst_topology.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 8653ac0fd865..ee34e861d3af 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -1221,6 +1221,7 @@ mlx5e_tx_mpwqe_supported(struct mlx5_core_dev *mdev)
- 		MLX5_CAP_ETH(mdev, enhanced_multi_pkt_send_wqe);
- }
+diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+index e73b34c0cc9e..c5edcf2a26c8 100644
+--- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
++++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+@@ -4485,6 +4485,7 @@ int drm_dp_atomic_release_time_slots(struct drm_atomic_state *state,
+ 	struct drm_dp_mst_topology_state *topology_state;
+ 	struct drm_dp_mst_atomic_payload *payload;
+ 	struct drm_connector_state *old_conn_state, *new_conn_state;
++	bool update_payload = true;
  
-+int mlx5e_get_pf_num_tirs(struct mlx5_core_dev *mdev);
- int mlx5e_priv_init(struct mlx5e_priv *priv,
- 		    const struct mlx5e_profile *profile,
- 		    struct net_device *netdev,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index fa229998606c..72867a8ff48b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -5251,6 +5251,15 @@ mlx5e_calc_max_nch(struct mlx5_core_dev *mdev, struct net_device *netdev,
- 	return max_nch;
- }
+ 	old_conn_state = drm_atomic_get_old_connector_state(state, port->connector);
+ 	if (!old_conn_state->crtc)
+@@ -4496,10 +4497,12 @@ int drm_dp_atomic_release_time_slots(struct drm_atomic_state *state,
+ 		struct drm_crtc_state *crtc_state =
+ 			drm_atomic_get_new_crtc_state(state, new_conn_state->crtc);
  
-+int mlx5e_get_pf_num_tirs(struct mlx5_core_dev *mdev)
-+{
-+	/* Indirect TIRS: 2 sets of TTCs (inner + outer steering)
-+	 * and 1 set of direct TIRS
-+	 */
-+	return 2 * MLX5E_NUM_INDIR_TIRS
-+		+ mlx5e_profile_max_num_channels(mdev, &mlx5e_nic_profile);
-+}
+-		if (!crtc_state ||
+-		    !drm_atomic_crtc_needs_modeset(crtc_state) ||
+-		    crtc_state->enable)
++		/* No modeset means no payload changes, so it's safe to not pull in the MST state */
++		if (!crtc_state || !drm_atomic_crtc_needs_modeset(crtc_state))
+ 			return 0;
 +
- /* mlx5e generic netdev management API (move to en_common.c) */
- int mlx5e_priv_init(struct mlx5e_priv *priv,
- 		    const struct mlx5e_profile *profile,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 6b7e7ea6ded2..a464461f1418 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -604,10 +604,16 @@ bool mlx5e_eswitch_vf_rep(const struct net_device *netdev)
- 	return netdev->netdev_ops == &mlx5e_netdev_ops_rep;
- }
++		if (!crtc_state->mode_changed && !crtc_state->connectors_changed)
++			update_payload = false;
+ 	}
  
-+/* One indirect TIR set for outer. Inner not supported in reps. */
-+#define REP_NUM_INDIR_TIRS MLX5E_NUM_INDIR_TIRS
-+
- static int mlx5e_rep_max_nch_limit(struct mlx5_core_dev *mdev)
- {
--	return (1 << MLX5_CAP_GEN(mdev, log_max_tir)) /
--		mlx5_eswitch_get_total_vports(mdev);
-+	int max_tir_num = 1 << MLX5_CAP_GEN(mdev, log_max_tir);
-+	int num_vports = mlx5_eswitch_get_total_vports(mdev);
-+
-+	return (max_tir_num - mlx5e_get_pf_num_tirs(mdev)
-+		- (num_vports * REP_NUM_INDIR_TIRS)) / num_vports;
- }
+ 	topology_state = drm_atomic_get_mst_topology_state(state, mgr);
+@@ -4507,6 +4510,8 @@ int drm_dp_atomic_release_time_slots(struct drm_atomic_state *state,
+ 		return PTR_ERR(topology_state);
  
- static void mlx5e_build_rep_params(struct net_device *netdev)
+ 	topology_state->pending_crtc_mask |= drm_crtc_mask(old_conn_state->crtc);
++	if (!update_payload)
++		return 0;
+ 
+ 	payload = drm_atomic_get_mst_payload_state(topology_state, port);
+ 	if (WARN_ON(!payload)) {
 -- 
-2.35.1
-
-
+2.35.3
 
