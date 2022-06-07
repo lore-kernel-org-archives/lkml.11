@@ -2,149 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 442ADCCA48A
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:37:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18D02C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:37:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356469AbiFGTgd (ORCPT
+        id S1355968AbiFGTe7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:36:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57868 "EHLO
+        Tue, 7 Jun 2022 15:34:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353903AbiFGSqP (ORCPT
+        with ESMTP id S1346470AbiFGSoN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:15 -0400
+        Tue, 7 Jun 2022 14:44:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CB7C11B695;
-        Tue,  7 Jun 2022 10:59:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A43186BBB;
+        Tue,  7 Jun 2022 10:59:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C379DB8236D;
-        Tue,  7 Jun 2022 17:59:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A52EC34119;
-        Tue,  7 Jun 2022 17:59:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624780;
-        bh=78yXqKY6zP8b3ImpuiwidyEDgk2sDBYQEuyP5G3UUfY=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32D59B82182;
+        Tue,  7 Jun 2022 17:59:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA313C34115;
+        Tue,  7 Jun 2022 17:59:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624743;
+        bh=Af1Twr37yZkIfi9hel/4jCo9eqfsFUDhK9Nk8JM5iS8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nLfwlK7zQerk64di/rQiZVHsZyTcHyFgkB6jliyzaR6syZd1bEn9tDqx4TKWJ5Hrd
-         mCgNu/IMg+rb+TBqQuDjyTJphegNth8wENIqPm4LRMytX0+1mtC0HjM79An+jpc43X
-         V1VbSFhf25rXX70ma/iaYfXXI+153yfAE49LtxNg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Francesco Dolcini <francesco.dolcini@toradex.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Richard Zhu <hongxing.zhu@nxp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 452/667] PCI: imx6: Fix PERST# start-up sequence
-Date:   Tue,  7 Jun 2022 19:01:57 +0200
-Message-Id: <20220607164948.271712251@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=tpGUGLRxDEv0mnWLp9MpbQNCAY2BH/N/uyjmywFERQHdHBIk/g3wpZ8KzHtJLIaF4
+         ljK0Xlcg6x5NnGp/0IkPGqSUl6EG66mv3wAs+taDP1vY/HNRlXC6CzZPqsKAmuSNxS
+         WpDLgJu3pZSt/nL4jitpqVKGXB3LTT3qVwrAy0/O5eWJD2fEGxrS7G5pED/Xo9tWfd
+         u3EbS+2c7x8tf5Z4qJJTXAMGiPPmChVP6HZ++sflaQYViyj3sUpNgLWm6n9PMIDF4S
+         r1Go239othAj2xS7doHfYy3E9v1Etr0QEqEHzC/xfO4hZsfgblk1q45pbFb9Es//eE
+         g1aKxcQOps/ZQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, baihaowen@meizu.com,
+        wangborong@cdjrlc.com, dave@stgolabs.net, len.baker@gmx.com,
+        linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.10 07/38] drivers: staging: rtl8192u: Fix deadlock in ieee80211_beacons_stop()
+Date:   Tue,  7 Jun 2022 13:58:02 -0400
+Message-Id: <20220607175835.480735-7-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
+References: <20220607175835.480735-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Francesco Dolcini <francesco.dolcini@toradex.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit a6809941c1f17f455db2cf4ca19c6d8c8746ec25 ]
+[ Upstream commit 806c7b53414934ba2a39449b31fd1a038e500273 ]
 
-According to the PCIe standard the PERST# signal (reset-gpio in
-fsl,imx* compatible dts) should be kept asserted for at least 100 usec
-before the PCIe refclock is stable, should be kept asserted for at
-least 100 msec after the power rails are stable and the host should wait
-at least 100 msec after it is de-asserted before accessing the
-configuration space of any attached device.
+There is a deadlock in ieee80211_beacons_stop(), which is shown below:
 
->From PCIe CEM r2.0, sec 2.6.2
+   (Thread 1)              |      (Thread 2)
+                           | ieee80211_send_beacon()
+ieee80211_beacons_stop()   |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | ieee80211_send_beacon_cb()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-  T-PVPERL: Power stable to PERST# inactive - 100 msec
-  T-PERST-CLK: REFCLK stable before PERST# inactive - 100 usec.
+We hold ieee->beacon_lock in position (1) of thread 1 and use
+del_timer_sync() to wait timer to stop, but timer handler
+also need ieee->beacon_lock in position (2) of thread 2.
+As a result, ieee80211_beacons_stop() will block forever.
 
->From PCIe r5.0, sec 6.6.1
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
 
-  With a Downstream Port that does not support Link speeds greater than
-  5.0 GT/s, software must wait a minimum of 100 ms before sending a
-  Configuration Request to the device immediately below that Port.
-
-Failure to do so could prevent PCIe devices to be working correctly,
-and this was experienced with real devices.
-
-Move reset assert to imx6_pcie_assert_core_reset(), this way we ensure
-that PERST# is asserted before enabling any clock, move de-assert to the
-end of imx6_pcie_deassert_core_reset() after the clock is enabled and
-deemed stable and add a new delay of 100 msec just afterward.
-
-Link: https://lore.kernel.org/all/20220211152550.286821-1-francesco.dolcini@toradex.com
-Link: https://lore.kernel.org/r/20220404081509.94356-1-francesco.dolcini@toradex.com
-Fixes: bb38919ec56e ("PCI: imx6: Add support for i.MX6 PCIe controller")
-Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
-Acked-by: Richard Zhu <hongxing.zhu@nxp.com>
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417135407.109536-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/dwc/pci-imx6.c | 23 ++++++++++++++---------
- 1 file changed, 14 insertions(+), 9 deletions(-)
+ drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index 2c05f2f7d1c0..67dbf9d88d22 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -403,6 +403,11 @@ static void imx6_pcie_assert_core_reset(struct imx6_pcie *imx6_pcie)
- 			dev_err(dev, "failed to disable vpcie regulator: %d\n",
- 				ret);
- 	}
-+
-+	/* Some boards don't have PCIe reset GPIO. */
-+	if (gpio_is_valid(imx6_pcie->reset_gpio))
-+		gpio_set_value_cansleep(imx6_pcie->reset_gpio,
-+					imx6_pcie->gpio_active_high);
+diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+index 690b664df8fa..56a447651644 100644
+--- a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
++++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+@@ -528,9 +528,9 @@ static void ieee80211_beacons_stop(struct ieee80211_device *ieee)
+ 	spin_lock_irqsave(&ieee->beacon_lock, flags);
+ 
+ 	ieee->beacon_txing = 0;
+-	del_timer_sync(&ieee->beacon_timer);
+ 
+ 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
++	del_timer_sync(&ieee->beacon_timer);
  }
  
- static unsigned int imx6_pcie_grp_offset(const struct imx6_pcie *imx6_pcie)
-@@ -525,15 +530,6 @@ static void imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
- 	/* allow the clocks to stabilize */
- 	usleep_range(200, 500);
- 
--	/* Some boards don't have PCIe reset GPIO. */
--	if (gpio_is_valid(imx6_pcie->reset_gpio)) {
--		gpio_set_value_cansleep(imx6_pcie->reset_gpio,
--					imx6_pcie->gpio_active_high);
--		msleep(100);
--		gpio_set_value_cansleep(imx6_pcie->reset_gpio,
--					!imx6_pcie->gpio_active_high);
--	}
--
- 	switch (imx6_pcie->drvdata->variant) {
- 	case IMX8MQ:
- 		reset_control_deassert(imx6_pcie->pciephy_reset);
-@@ -576,6 +572,15 @@ static void imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
- 		break;
- 	}
- 
-+	/* Some boards don't have PCIe reset GPIO. */
-+	if (gpio_is_valid(imx6_pcie->reset_gpio)) {
-+		msleep(100);
-+		gpio_set_value_cansleep(imx6_pcie->reset_gpio,
-+					!imx6_pcie->gpio_active_high);
-+		/* Wait for 100ms after PERST# deassertion (PCIe r5.0, 6.6.1) */
-+		msleep(100);
-+	}
-+
- 	return;
- 
- err_ref_clk:
+ void ieee80211_stop_send_beacons(struct ieee80211_device *ieee)
 -- 
 2.35.1
-
-
 
