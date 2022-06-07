@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1313EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:07:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24338C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358860AbiFGUH0 (ORCPT
+        id S1358911AbiFGUHc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:07:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58854 "EHLO
+        Tue, 7 Jun 2022 16:07:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355072AbiFGTK4 (ORCPT
+        with ESMTP id S1355160AbiFGTLO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:10:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B642D1CC;
-        Tue,  7 Jun 2022 11:06:55 -0700 (PDT)
+        Tue, 7 Jun 2022 15:11:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 397CF193210;
+        Tue,  7 Jun 2022 11:07:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 820C7617B4;
-        Tue,  7 Jun 2022 18:06:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AC33C385A5;
-        Tue,  7 Jun 2022 18:06:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10DC3B82348;
+        Tue,  7 Jun 2022 18:06:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D57AC385A5;
+        Tue,  7 Jun 2022 18:06:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625213;
-        bh=ZsBH+abYMj2l1STkIQRTzR0SQKeKcobrxNXlw/MWR3g=;
+        s=korg; t=1654625216;
+        bh=SOVgZGmxox99chUL0j/dLJdoiw+f0+Ci7SsA5C0yofA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HUM+cBwQDBnFyi59Zfedt8BaYmvdqPGR8hyJtVPYX5WkW+JQWb9r/lb0TY24gpM7q
-         +zjNqgXY/mlzpnxo00NqO5OxqhBvBrknICo+BqT3r+67qTZb6JH1VmV6gkFjI/ZKPn
-         PA9QnSFixE0VwOcQRb+YVyI27ujYtRM9h/p/Mt7A=
+        b=rHODHinSK4RNxpyfVs1BFBp7pRzJUx5KbJ9VUVAclHcTXJGtNV8rbCnnqku02LJBq
+         QqB7kt/YZChFL5WUeyIoOUjR+od0Xe9FKPGDDBixNTa9t8TmxcnfSVNnpYkOb7Xfbn
+         lGOqdt4sQ00bL2KFJPmOmcvotqSx1nyHkjLK49wg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
-        Guo Ren <guoren@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [PATCH 5.15 605/667] csky: patch_text: Fixup last cpu should be master
-Date:   Tue,  7 Jun 2022 19:04:30 +0200
-Message-Id: <20220607164952.821688402@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 5.15 606/667] irqchip/armada-370-xp: Do not touch Performance Counter Overflow on A375, A38x, A39x
+Date:   Tue,  7 Jun 2022 19:04:31 +0200
+Message-Id: <20220607164952.851045229@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,37 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+From: Pali Rohár <pali@kernel.org>
 
-commit 8c4d16471e2babe9bdfe41d6ef724526629696cb upstream.
+commit a3d66a76348daf559873f19afc912a2a7c2ccdaf upstream.
 
-These patch_text implementations are using stop_machine_cpuslocked
-infrastructure with atomic cpu_count. The original idea: When the
-master CPU patch_text, the others should wait for it. But current
-implementation is using the first CPU as master, which couldn't
-guarantee the remaining CPUs are waiting. This patch changes the
-last CPU as the master to solve the potential risk.
+Register ARMADA_370_XP_INT_FABRIC_MASK_OFFS is Armada 370 and XP specific
+and on new Armada platforms it has different meaning. It does not configure
+Performance Counter Overflow interrupt masking. So do not touch this
+register on non-A370/XP platforms (A375, A38x and A39x).
 
-Fixes: 33e53ae1ce41 ("csky: Add kprobes supported")
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: <stable@vger.kernel.org>
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: 28da06dfd9e4 ("irqchip: armada-370-xp: Enable the PMU interrupts")
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220425113706.29310-1-pali@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/csky/kernel/probes/kprobes.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/irqchip/irq-armada-370-xp.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/arch/csky/kernel/probes/kprobes.c
-+++ b/arch/csky/kernel/probes/kprobes.c
-@@ -28,7 +28,7 @@ static int __kprobes patch_text_cb(void
- 	struct csky_insn_patch *param = priv;
- 	unsigned int addr = (unsigned int)param->addr;
+--- a/drivers/irqchip/irq-armada-370-xp.c
++++ b/drivers/irqchip/irq-armada-370-xp.c
+@@ -308,7 +308,16 @@ static inline int armada_370_xp_msi_init
  
--	if (atomic_inc_return(&param->cpu_count) == 1) {
-+	if (atomic_inc_return(&param->cpu_count) == num_online_cpus()) {
- 		*(u16 *) addr = cpu_to_le16(param->opcode);
- 		dcache_wb_range(addr, addr + 2);
- 		atomic_inc(&param->cpu_count);
+ static void armada_xp_mpic_perf_init(void)
+ {
+-	unsigned long cpuid = cpu_logical_map(smp_processor_id());
++	unsigned long cpuid;
++
++	/*
++	 * This Performance Counter Overflow interrupt is specific for
++	 * Armada 370 and XP. It is not available on Armada 375, 38x and 39x.
++	 */
++	if (!of_machine_is_compatible("marvell,armada-370-xp"))
++		return;
++
++	cpuid = cpu_logical_map(smp_processor_id());
+ 
+ 	/* Enable Performance Counter Overflow interrupts */
+ 	writel(ARMADA_370_XP_INT_CAUSE_PERF(cpuid),
 
 
