@@ -2,110 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73872C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:46:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9EA5CCA487
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:46:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357589AbiFGTp4 (ORCPT
+        id S1357565AbiFGTpv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:45:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58034 "EHLO
+        Tue, 7 Jun 2022 15:45:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351599AbiFGSrd (ORCPT
+        with ESMTP id S1352082AbiFGSrd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:47:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A95A56407;
-        Tue,  7 Jun 2022 11:02:44 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B6F633B8;
+        Tue,  7 Jun 2022 11:02:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C4C8B82377;
-        Tue,  7 Jun 2022 18:02:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08D18C36AFE;
-        Tue,  7 Jun 2022 18:02:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624961;
-        bh=x3KhVWC0ll/qL0hqYrVnjfMXp95Ww5ZMIt+AkkTdFUI=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B06C618E2;
+        Tue,  7 Jun 2022 18:02:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 572A6C341C4;
+        Tue,  7 Jun 2022 18:02:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624966;
+        bh=xG5UT33xYf+4Qyt4vCNy+naMLbjA1+soN+YweZdk1HA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XOI3mhYlrWv2I9TA/V87fe35TpXgbK1LILAxF+JZL6yLUZY/ij2YzCCaXyRu6Zfrt
-         kj1331KI7VFz7yEPxb1S65l6Rnn+bUpSlkTTMbckRKrkhub5cksqCoa+ny9Kbru0NP
-         GBGJmvP9DgQ48s8GzTQPuWFCOEXWYnpIvoBIEkVY6eb4pumBSVk+1InYFTO5pmq0jS
-         Izf8iiJY77qYhkT9hzQkcqTAOaaTf+gwWpufFliSijT5VuKGJWOhc5+PaqxVlHSPzf
-         Tyms8B+1AaCjX6vHR6t/rcwSp4V5hqgNqPvLIPCiBLT+iJArbXcP1xMfPtLt0jjZzu
-         cuK1Lww07zJbQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 07/25] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
-Date:   Tue,  7 Jun 2022 14:02:08 -0400
-Message-Id: <20220607180229.482040-7-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180229.482040-1-sashal@kernel.org>
-References: <20220607180229.482040-1-sashal@kernel.org>
+        b=h4ibgprK2zkxtUnMrXWSGvcrBx34g+3bRk9WGnio+/KUmnkzHqdr3gwM65+XEQasf
+         SWF1cob9MGBrUeh8FreC9iIKKtpjiQufHX/vqnoD/iUekPG7iPtHfQV17SqVa7mJbc
+         k9rOH6YX+w4wt0v8tUQz0MPZmNtgnJZcxeeCIGI0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.15 517/667] f2fs: fix to do sanity check on block address in f2fs_do_zero_range()
+Date:   Tue,  7 Jun 2022 19:03:02 +0200
+Message-Id: <20220607164950.209865463@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit 62b2caef400c1738b6d22f636c628d9f85cd4c4c ]
+commit 25f8236213a91efdf708b9d77e9e51b6fc3e141c upstream.
 
-There is a deadlock in sa1100_set_termios(), which is shown
-below:
+As Yanming reported in bugzilla:
 
-   (Thread 1)              |      (Thread 2)
-                           | sa1100_enable_ms()
-sa1100_set_termios()       |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | sa1100_timeout()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
+https://bugzilla.kernel.org/show_bug.cgi?id=215894
 
-We hold sport->port.lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need sport->port.lock in position (2) of thread 2. As a result,
-sa1100_set_termios() will block forever.
+I have encountered a bug in F2FS file system in kernel v5.17.
 
-This patch moves del_timer_sync() before spin_lock_irqsave()
-in order to prevent the deadlock.
+I have uploaded the system call sequence as case.c, and a fuzzed image can
+be found in google net disk
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417111626.7802-1-duoming@zju.edu.cn
+The kernel should enable CONFIG_KASAN=y and CONFIG_KASAN_INLINE=y. You can
+reproduce the bug by running the following commands:
+
+kernel BUG at fs/f2fs/segment.c:2291!
+Call Trace:
+ f2fs_invalidate_blocks+0x193/0x2d0
+ f2fs_fallocate+0x2593/0x4a70
+ vfs_fallocate+0x2a5/0xac0
+ ksys_fallocate+0x35/0x70
+ __x64_sys_fallocate+0x8e/0xf0
+ do_syscall_64+0x3b/0x90
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+The root cause is, after image was fuzzed, block mapping info in inode
+will be inconsistent with SIT table, so in f2fs_fallocate(), it will cause
+panic when updating SIT with invalid blkaddr.
+
+Let's fix the issue by adding sanity check on block address before updating
+SIT table with it.
+
+Cc: stable@vger.kernel.org
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sa1100.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/f2fs/file.c |   16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
-index fd3d1329d48c..68eb1c9faa29 100644
---- a/drivers/tty/serial/sa1100.c
-+++ b/drivers/tty/serial/sa1100.c
-@@ -452,6 +452,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
- 	quot = uart_get_divisor(port, baud);
- 
-+	del_timer_sync(&sport->timer);
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -1436,11 +1436,19 @@ static int f2fs_do_zero_range(struct dno
+ 			ret = -ENOSPC;
+ 			break;
+ 		}
+-		if (dn->data_blkaddr != NEW_ADDR) {
+-			f2fs_invalidate_blocks(sbi, dn->data_blkaddr);
+-			dn->data_blkaddr = NEW_ADDR;
+-			f2fs_set_data_blkaddr(dn);
 +
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 
- 	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
-@@ -482,8 +484,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 				UTSR1_TO_SM(UTSR1_ROR);
++		if (dn->data_blkaddr == NEW_ADDR)
++			continue;
++
++		if (!f2fs_is_valid_blkaddr(sbi, dn->data_blkaddr,
++					DATA_GENERIC_ENHANCE)) {
++			ret = -EFSCORRUPTED;
++			break;
+ 		}
++
++		f2fs_invalidate_blocks(sbi, dn->data_blkaddr);
++		dn->data_blkaddr = NEW_ADDR;
++		f2fs_set_data_blkaddr(dn);
  	}
  
--	del_timer_sync(&sport->timer);
--
- 	/*
- 	 * Update the per-port timeout.
- 	 */
--- 
-2.35.1
+ 	f2fs_update_extent_cache_range(dn, start, 0, index - start);
+
 
