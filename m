@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D480CCA485
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:23:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 736B3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:23:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378286AbiFGVWx (ORCPT
+        id S1352035AbiFGVXV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:22:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59944 "EHLO
+        Tue, 7 Jun 2022 17:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376809AbiFGU2L (ORCPT
+        with ESMTP id S1376871AbiFGU2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:28:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB861D92D3;
-        Tue,  7 Jun 2022 11:33:15 -0700 (PDT)
+        Tue, 7 Jun 2022 16:28:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B43041D9B40;
+        Tue,  7 Jun 2022 11:33:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 10CB6B82188;
-        Tue,  7 Jun 2022 18:33:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76EC0C385A2;
-        Tue,  7 Jun 2022 18:33:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C24C3B82349;
+        Tue,  7 Jun 2022 18:33:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2023BC385A2;
+        Tue,  7 Jun 2022 18:33:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626793;
-        bh=aSoKgQo3dMDBuDYbjgDk2sOaJdxoVF0R36S6qlw9zqE=;
+        s=korg; t=1654626799;
+        bh=WYUm3IfFlBJsTPpfZgfJ8+0Ib/s2pOnubORdt3YOv3g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DLSbSs2JRN/P5Xxv1Fnmgoj0eiIRRb06o0xQmYxL9F8yn+hmqhtzPJCr4D5mYkJK9
-         zQUZ5Y9FoRzc5Php6Do53JTGXw9NfgutHe7OCrEDKcBz3d9yLQOfxaq82ovxbdOe0K
-         jhQp1zGgdEwE7ZXoezRmcKhVEn/mVK2HVydFy1mM=
+        b=CFBHGoPjFfovRJ+lW99pT1m3k5s+A8uLiVPiIq0RB6VzH+hKi+no8ITr1fgZEDEtn
+         hwVqjfc92eETE6LZwLclWNW2F2mjnGrVPiUL9S4GOnnmF6nfom1SlvE7b15MR39P+e
+         nXPzh+NkaUrAREBrK4qvSLUNczxdt9j4hDTL22XE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Michal Hocko <mhocko@suse.com>,
+        David Hildenbrand <david@redhat.com>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
-        Mel Gorman <mel@csn.ul.ie>,
-        Minchan Kim <minchan.kim@gmail.com>,
-        KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>,
-        KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
+        Scott Cheloha <cheloha@linux.vnet.ibm.com>,
+        Nathan Lynch <nathanl@linux.ibm.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 505/772] drivers/base/node.c: fix compaction sysfs file leak
-Date:   Tue,  7 Jun 2022 19:01:37 +0200
-Message-Id: <20220607165003.859966201@linuxfoundation.org>
+Subject: [PATCH 5.17 507/772] drivers/base/memory: fix an unlikely reference counting issue in __add_memory_block()
+Date:   Tue,  7 Jun 2022 19:01:39 +0200
+Message-Id: <20220607165003.919479616@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -55,42 +56,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit da63dc84befaa9e6079a0bc363ff0eaa975f9073 ]
+[ Upstream commit f47f758cff59c68015d6b9b9c077110df7c2c828 ]
 
-Compaction sysfs file is created via compaction_register_node in
-register_node.  But we forgot to remove it in unregister_node.  Thus
-compaction sysfs file is leaked.  Using compaction_unregister_node to fix
-this issue.
+__add_memory_block() calls both put_device() and device_unregister() when
+storing the memory block into the xarray.  This is incorrect because
+xarray doesn't take an additional reference and device_unregister()
+already calls put_device().
 
-Link: https://lkml.kernel.org/r/20220401070905.43679-1-linmiaohe@huawei.com
-Fixes: ed4a6d7f0676 ("mm: compaction: add /sys trigger for per-node memory compaction")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Triggering the issue looks really unlikely and its only effect should be
+to log a spurious warning about a ref counted issue.
+
+Link: https://lkml.kernel.org/r/d44c63d78affe844f020dc02ad6af29abc448fc4.1650611702.git.christophe.jaillet@wanadoo.fr
+Fixes: 4fb6eabf1037 ("drivers/base/memory.c: cache memory blocks in xarray to accelerate lookup")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Acked-by: Michal Hocko <mhocko@suse.com>
+Reviewed-by: David Hildenbrand <david@redhat.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Rafael J. Wysocki <rafael@kernel.org>
-Cc: Mel Gorman <mel@csn.ul.ie>
-Cc: Minchan Kim <minchan.kim@gmail.com>
-Cc: KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>
-Cc: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Scott Cheloha <cheloha@linux.vnet.ibm.com>
+Cc: Nathan Lynch <nathanl@linux.ibm.com>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/node.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/base/memory.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/base/node.c b/drivers/base/node.c
-index 87acc47e8951..7b8368bc2000 100644
---- a/drivers/base/node.c
-+++ b/drivers/base/node.c
-@@ -682,6 +682,7 @@ static int register_node(struct node *node, int num)
-  */
- void unregister_node(struct node *node)
- {
-+	compaction_unregister_node(node);
- 	hugetlb_unregister_node(node);		/* no-op, if memoryless node */
- 	node_remove_accesses(node);
- 	node_remove_caches(node);
+diff --git a/drivers/base/memory.c b/drivers/base/memory.c
+index 60c38f9cf1a7..c0d501a3a714 100644
+--- a/drivers/base/memory.c
++++ b/drivers/base/memory.c
+@@ -634,10 +634,9 @@ int register_memory(struct memory_block *memory)
+ 	}
+ 	ret = xa_err(xa_store(&memory_blocks, memory->dev.id, memory,
+ 			      GFP_KERNEL));
+-	if (ret) {
+-		put_device(&memory->dev);
++	if (ret)
+ 		device_unregister(&memory->dev);
+-	}
++
+ 	return ret;
+ }
+ 
 -- 
 2.35.1
 
