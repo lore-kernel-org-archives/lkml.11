@@ -2,388 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1692CCA48F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5905CCCA493
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378631AbiFHBD5 (ORCPT
+        id S1382456AbiFHBEY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:03:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36148 "EHLO
+        Tue, 7 Jun 2022 21:04:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385485AbiFGWlx (ORCPT
+        with ESMTP id S1382960AbiFGWHT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:41:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5391528ABDB
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:33:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654630380;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eRq46kAYDt3qC3J5COV22ywbnzIkY0HqgrBcO+W8oJE=;
-        b=UmgQTY/oB17l5xYx9BJwvY6Q9cadeOV0/Gllon9kPu1KzB0h8fBrVB3bAKzHikvFZNA0ge
-        XBKfGjgIAH+zum7qRuzASNTS/0OySYV5Q9MBNd30bI5oA4/UubI31pidyvO/EZyAKJAAiO
-        ybz3/psmz7jUqgnQ9dJjy/ybnklunDY=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-277-EYXGRZ95MNOL6ygMgV0yuA-1; Tue, 07 Jun 2022 15:32:53 -0400
-X-MC-Unique: EYXGRZ95MNOL6ygMgV0yuA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 7 Jun 2022 18:07:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E17254EF5;
+        Tue,  7 Jun 2022 12:18:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 58EF13C11A19;
-        Tue,  7 Jun 2022 19:31:27 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.9.252])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 523C72B94308;
-        Tue,  7 Jun 2022 19:30:59 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org
-Cc:     Wayne Lin <Wayne.Lin@amd.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [RESEND RFC 03/18] drm/display/dp_mst: Rename drm_dp_mst_vcpi_allocation
-Date:   Tue,  7 Jun 2022 15:29:18 -0400
-Message-Id: <20220607192933.1333228-4-lyude@redhat.com>
-In-Reply-To: <20220607192933.1333228-1-lyude@redhat.com>
-References: <20220607192933.1333228-1-lyude@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4078E61935;
+        Tue,  7 Jun 2022 19:18:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F28BC385A5;
+        Tue,  7 Jun 2022 19:18:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629507;
+        bh=Ue0c+wenPzgN/VZN46qNl7OXZmDwKF31qmcdXlPYR6g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PKz3OEF+RkwIj8P6mTQz9eAL/5ytUk00XUxZeC3IIxpdQX8sA+aK/BNbefsPx6Fxk
+         LzMFShB01N0dqmma1xFZCdtCmtR5sWnf2xBfRb3Jo0l7PoYHXPR3/zW8DP4jY+azSQ
+         d0VzRPXL+ZoiOuUwzKpNImlh+a5X15ZBLogc2v5c=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Gabriel Krisman Bertazi <krisman@collabora.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.18 714/879] f2fs: dont use casefolded comparison for "." and ".."
+Date:   Tue,  7 Jun 2022 19:03:52 +0200
+Message-Id: <20220607165023.578067656@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In retrospect, the name I chose for this originally is confusing, as
-there's a lot more info in here then just the VCPI. This really should be
-called a payload. Let's make it more obvious that this is meant to be
-related to the atomic state and is about payloads by renaming it to
-drm_dp_mst_atomic_payload. Also, rename various variables throughout the
-code that use atomic payloads.
+From: Eric Biggers <ebiggers@google.com>
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: Wayne Lin <Wayne.Lin@amd.com>
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Imre Deak <imre.deak@intel.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Sean Paul <sean@poorly.run>
+commit b5639bb4313b9d455fc9fc4768d23a5e4ca8cb9d upstream.
+
+Tryng to rename a directory that has all following properties fails with
+EINVAL and triggers the 'WARN_ON_ONCE(!fscrypt_has_encryption_key(dir))'
+in f2fs_match_ci_name():
+
+    - The directory is casefolded
+    - The directory is encrypted
+    - The directory's encryption key is not yet set up
+    - The parent directory is *not* encrypted
+
+The problem is incorrect handling of the lookup of ".." to get the
+parent reference to update.  fscrypt_setup_filename() treats ".." (and
+".") specially, as it's never encrypted.  It's passed through as-is, and
+setting up the directory's key is not attempted.  As the name isn't a
+no-key name, f2fs treats it as a "normal" name and attempts a casefolded
+comparison.  That breaks the assumption of the WARN_ON_ONCE() in
+f2fs_match_ci_name() which assumes that for encrypted directories,
+casefolded comparisons only happen when the directory's key is set up.
+
+We could just remove this WARN_ON_ONCE().  However, since casefolding is
+always a no-op on "." and ".." anyway, let's instead just not casefold
+these names.  This results in the standard bytewise comparison.
+
+Fixes: 7ad08a58bf67 ("f2fs: Handle casefolding with Encryption")
+Cc: <stable@vger.kernel.org> # v5.11+
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Gabriel Krisman Bertazi <krisman@collabora.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/display/drm_dp_mst_topology.c | 96 +++++++++----------
- include/drm/display/drm_dp_mst_helper.h       |  4 +-
- 2 files changed, 50 insertions(+), 50 deletions(-)
+ fs/f2fs/dir.c  |    3 ++-
+ fs/f2fs/f2fs.h |   10 +++++-----
+ fs/f2fs/hash.c |   11 ++++++-----
+ 3 files changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-index 67b3b9697da7..38eecb89e22d 100644
---- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
-+++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-@@ -4381,7 +4381,7 @@ int drm_dp_atomic_find_vcpi_slots(struct drm_atomic_state *state,
- 				  int pbn_div)
- {
- 	struct drm_dp_mst_topology_state *topology_state;
--	struct drm_dp_vcpi_allocation *pos, *vcpi = NULL;
-+	struct drm_dp_mst_atomic_payload *pos, *payload = NULL;
- 	int prev_slots, prev_bw, req_slots;
+--- a/fs/f2fs/dir.c
++++ b/fs/f2fs/dir.c
+@@ -82,7 +82,8 @@ int f2fs_init_casefolded_name(const stru
+ #if IS_ENABLED(CONFIG_UNICODE)
+ 	struct super_block *sb = dir->i_sb;
  
- 	topology_state = drm_atomic_get_mst_topology_state(state, mgr);
-@@ -4389,11 +4389,11 @@ int drm_dp_atomic_find_vcpi_slots(struct drm_atomic_state *state,
- 		return PTR_ERR(topology_state);
- 
- 	/* Find the current allocation for this port, if any */
--	list_for_each_entry(pos, &topology_state->vcpis, next) {
-+	list_for_each_entry(pos, &topology_state->payloads, next) {
- 		if (pos->port == port) {
--			vcpi = pos;
--			prev_slots = vcpi->vcpi;
--			prev_bw = vcpi->pbn;
-+			payload = pos;
-+			prev_slots = payload->vcpi;
-+			prev_bw = payload->pbn;
- 
- 			/*
- 			 * This should never happen, unless the driver tries
-@@ -4410,7 +4410,7 @@ int drm_dp_atomic_find_vcpi_slots(struct drm_atomic_state *state,
- 			break;
- 		}
- 	}
--	if (!vcpi) {
-+	if (!payload) {
- 		prev_slots = 0;
- 		prev_bw = 0;
- 	}
-@@ -4428,17 +4428,17 @@ int drm_dp_atomic_find_vcpi_slots(struct drm_atomic_state *state,
- 		       port, prev_bw, pbn);
- 
- 	/* Add the new allocation to the state */
--	if (!vcpi) {
--		vcpi = kzalloc(sizeof(*vcpi), GFP_KERNEL);
--		if (!vcpi)
-+	if (!payload) {
-+		payload = kzalloc(sizeof(*payload), GFP_KERNEL);
-+		if (!payload)
- 			return -ENOMEM;
- 
- 		drm_dp_mst_get_port_malloc(port);
--		vcpi->port = port;
--		list_add(&vcpi->next, &topology_state->vcpis);
-+		payload->port = port;
-+		list_add(&payload->next, &topology_state->payloads);
- 	}
--	vcpi->vcpi = req_slots;
--	vcpi->pbn = pbn;
-+	payload->vcpi = req_slots;
-+	payload->pbn = pbn;
- 
- 	return req_slots;
- }
-@@ -4475,21 +4475,21 @@ int drm_dp_atomic_release_vcpi_slots(struct drm_atomic_state *state,
- 				     struct drm_dp_mst_port *port)
- {
- 	struct drm_dp_mst_topology_state *topology_state;
--	struct drm_dp_vcpi_allocation *pos;
-+	struct drm_dp_mst_atomic_payload *pos;
- 	bool found = false;
- 
- 	topology_state = drm_atomic_get_mst_topology_state(state, mgr);
- 	if (IS_ERR(topology_state))
- 		return PTR_ERR(topology_state);
- 
--	list_for_each_entry(pos, &topology_state->vcpis, next) {
-+	list_for_each_entry(pos, &topology_state->payloads, next) {
- 		if (pos->port == port) {
- 			found = true;
- 			break;
- 		}
- 	}
- 	if (WARN_ON(!found)) {
--		drm_err(mgr->dev, "no VCPI for [MST PORT:%p] found in mst state %p\n",
-+		drm_err(mgr->dev, "No payload for [MST PORT:%p] found in mst state %p\n",
- 			port, &topology_state->base);
- 		return -EINVAL;
- 	}
-@@ -5072,7 +5072,7 @@ drm_dp_mst_duplicate_state(struct drm_private_obj *obj)
- {
- 	struct drm_dp_mst_topology_state *state, *old_state =
- 		to_dp_mst_topology_state(obj->state);
--	struct drm_dp_vcpi_allocation *pos, *vcpi;
-+	struct drm_dp_mst_atomic_payload *pos, *payload;
- 
- 	state = kmemdup(old_state, sizeof(*state), GFP_KERNEL);
- 	if (!state)
-@@ -5080,25 +5080,25 @@ drm_dp_mst_duplicate_state(struct drm_private_obj *obj)
- 
- 	__drm_atomic_helper_private_obj_duplicate_state(obj, &state->base);
- 
--	INIT_LIST_HEAD(&state->vcpis);
-+	INIT_LIST_HEAD(&state->payloads);
- 
--	list_for_each_entry(pos, &old_state->vcpis, next) {
-+	list_for_each_entry(pos, &old_state->payloads, next) {
- 		/* Prune leftover freed VCPI allocations */
- 		if (!pos->vcpi)
- 			continue;
- 
--		vcpi = kmemdup(pos, sizeof(*vcpi), GFP_KERNEL);
--		if (!vcpi)
-+		payload = kmemdup(pos, sizeof(*payload), GFP_KERNEL);
-+		if (!payload)
- 			goto fail;
- 
--		drm_dp_mst_get_port_malloc(vcpi->port);
--		list_add(&vcpi->next, &state->vcpis);
-+		drm_dp_mst_get_port_malloc(payload->port);
-+		list_add(&payload->next, &state->payloads);
- 	}
- 
- 	return &state->base;
- 
- fail:
--	list_for_each_entry_safe(pos, vcpi, &state->vcpis, next) {
-+	list_for_each_entry_safe(pos, payload, &state->payloads, next) {
- 		drm_dp_mst_put_port_malloc(pos->port);
- 		kfree(pos);
- 	}
-@@ -5112,9 +5112,9 @@ static void drm_dp_mst_destroy_state(struct drm_private_obj *obj,
- {
- 	struct drm_dp_mst_topology_state *mst_state =
- 		to_dp_mst_topology_state(state);
--	struct drm_dp_vcpi_allocation *pos, *tmp;
-+	struct drm_dp_mst_atomic_payload *pos, *tmp;
- 
--	list_for_each_entry_safe(pos, tmp, &mst_state->vcpis, next) {
-+	list_for_each_entry_safe(pos, tmp, &mst_state->payloads, next) {
- 		/* We only keep references to ports with non-zero VCPIs */
- 		if (pos->vcpi)
- 			drm_dp_mst_put_port_malloc(pos->port);
-@@ -5147,7 +5147,7 @@ static int
- drm_dp_mst_atomic_check_mstb_bw_limit(struct drm_dp_mst_branch *mstb,
- 				      struct drm_dp_mst_topology_state *state)
- {
--	struct drm_dp_vcpi_allocation *vcpi;
-+	struct drm_dp_mst_atomic_payload *payload;
- 	struct drm_dp_mst_port *port;
- 	int pbn_used = 0, ret;
- 	bool found = false;
-@@ -5155,9 +5155,9 @@ drm_dp_mst_atomic_check_mstb_bw_limit(struct drm_dp_mst_branch *mstb,
- 	/* Check that we have at least one port in our state that's downstream
- 	 * of this branch, otherwise we can skip this branch
+-	if (IS_CASEFOLDED(dir)) {
++	if (IS_CASEFOLDED(dir) &&
++	    !is_dot_dotdot(fname->usr_fname->name, fname->usr_fname->len)) {
+ 		fname->cf_name.name = f2fs_kmem_cache_alloc(f2fs_cf_name_slab,
+ 					GFP_NOFS, false, F2FS_SB(sb));
+ 		if (!fname->cf_name.name)
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -508,11 +508,11 @@ struct f2fs_filename {
+ #if IS_ENABLED(CONFIG_UNICODE)
+ 	/*
+ 	 * For casefolded directories: the casefolded name, but it's left NULL
+-	 * if the original name is not valid Unicode, if the directory is both
+-	 * casefolded and encrypted and its encryption key is unavailable, or if
+-	 * the filesystem is doing an internal operation where usr_fname is also
+-	 * NULL.  In all these cases we fall back to treating the name as an
+-	 * opaque byte sequence.
++	 * if the original name is not valid Unicode, if the original name is
++	 * "." or "..", if the directory is both casefolded and encrypted and
++	 * its encryption key is unavailable, or if the filesystem is doing an
++	 * internal operation where usr_fname is also NULL.  In all these cases
++	 * we fall back to treating the name as an opaque byte sequence.
  	 */
--	list_for_each_entry(vcpi, &state->vcpis, next) {
--		if (!vcpi->pbn ||
--		    !drm_dp_mst_port_downstream_of_branch(vcpi->port, mstb))
-+	list_for_each_entry(payload, &state->payloads, next) {
-+		if (!payload->pbn ||
-+		    !drm_dp_mst_port_downstream_of_branch(payload->port, mstb))
- 			continue;
- 
- 		found = true;
-@@ -5188,7 +5188,7 @@ static int
- drm_dp_mst_atomic_check_port_bw_limit(struct drm_dp_mst_port *port,
- 				      struct drm_dp_mst_topology_state *state)
+ 	struct fscrypt_str cf_name;
+ #endif
+--- a/fs/f2fs/hash.c
++++ b/fs/f2fs/hash.c
+@@ -91,7 +91,7 @@ static u32 TEA_hash_name(const u8 *p, si
+ /*
+  * Compute @fname->hash.  For all directories, @fname->disk_name must be set.
+  * For casefolded directories, @fname->usr_fname must be set, and also
+- * @fname->cf_name if the filename is valid Unicode.
++ * @fname->cf_name if the filename is valid Unicode and is not "." or "..".
+  */
+ void f2fs_hash_filename(const struct inode *dir, struct f2fs_filename *fname)
  {
--	struct drm_dp_vcpi_allocation *vcpi;
-+	struct drm_dp_mst_atomic_payload *payload;
- 	int pbn_used = 0;
- 
- 	if (port->pdt == DP_PEER_DEVICE_NONE)
-@@ -5197,10 +5197,10 @@ drm_dp_mst_atomic_check_port_bw_limit(struct drm_dp_mst_port *port,
- 	if (drm_dp_mst_is_end_device(port->pdt, port->mcs)) {
- 		bool found = false;
- 
--		list_for_each_entry(vcpi, &state->vcpis, next) {
--			if (vcpi->port != port)
-+		list_for_each_entry(payload, &state->payloads, next) {
-+			if (payload->port != port)
- 				continue;
--			if (!vcpi->pbn)
-+			if (!payload->pbn)
- 				return 0;
- 
- 			found = true;
-@@ -5220,7 +5220,7 @@ drm_dp_mst_atomic_check_port_bw_limit(struct drm_dp_mst_port *port,
- 			return -EINVAL;
- 		}
- 
--		pbn_used = vcpi->pbn;
-+		pbn_used = payload->pbn;
- 	} else {
- 		pbn_used = drm_dp_mst_atomic_check_mstb_bw_limit(port->mstb,
- 								 state);
-@@ -5245,25 +5245,25 @@ static inline int
- drm_dp_mst_atomic_check_vcpi_alloc_limit(struct drm_dp_mst_topology_mgr *mgr,
- 					 struct drm_dp_mst_topology_state *mst_state)
- {
--	struct drm_dp_vcpi_allocation *vcpi;
-+	struct drm_dp_mst_atomic_payload *payload;
- 	int avail_slots = mst_state->total_avail_slots, payload_count = 0;
- 
--	list_for_each_entry(vcpi, &mst_state->vcpis, next) {
--		/* Releasing VCPI is always OK-even if the port is gone */
--		if (!vcpi->vcpi) {
-+	list_for_each_entry(payload, &mst_state->payloads, next) {
-+		/* Releasing payloads is always OK-even if the port is gone */
-+		if (!payload->vcpi) {
- 			drm_dbg_atomic(mgr->dev, "[MST PORT:%p] releases all VCPI slots\n",
--				       vcpi->port);
-+				       payload->port);
- 			continue;
- 		}
- 
- 		drm_dbg_atomic(mgr->dev, "[MST PORT:%p] requires %d vcpi slots\n",
--			       vcpi->port, vcpi->vcpi);
-+			       payload->port, payload->vcpi);
- 
--		avail_slots -= vcpi->vcpi;
-+		avail_slots -= payload->vcpi;
- 		if (avail_slots < 0) {
- 			drm_dbg_atomic(mgr->dev,
- 				       "[MST PORT:%p] not enough VCPI slots in mst state %p (avail=%d)\n",
--				       vcpi->port, mst_state, avail_slots + vcpi->vcpi);
-+				       payload->port, mst_state, avail_slots + payload->vcpi);
- 			return -ENOSPC;
- 		}
- 
-@@ -5296,7 +5296,7 @@ drm_dp_mst_atomic_check_vcpi_alloc_limit(struct drm_dp_mst_topology_mgr *mgr,
- int drm_dp_mst_add_affected_dsc_crtcs(struct drm_atomic_state *state, struct drm_dp_mst_topology_mgr *mgr)
- {
- 	struct drm_dp_mst_topology_state *mst_state;
--	struct drm_dp_vcpi_allocation *pos;
-+	struct drm_dp_mst_atomic_payload *pos;
- 	struct drm_connector *connector;
- 	struct drm_connector_state *conn_state;
- 	struct drm_crtc *crtc;
-@@ -5307,7 +5307,7 @@ int drm_dp_mst_add_affected_dsc_crtcs(struct drm_atomic_state *state, struct drm
- 	if (IS_ERR(mst_state))
- 		return -EINVAL;
- 
--	list_for_each_entry(pos, &mst_state->vcpis, next) {
-+	list_for_each_entry(pos, &mst_state->payloads, next) {
- 
- 		connector = pos->port->connector;
- 
-@@ -5361,7 +5361,7 @@ int drm_dp_mst_atomic_enable_dsc(struct drm_atomic_state *state,
- 				 bool enable)
- {
- 	struct drm_dp_mst_topology_state *mst_state;
--	struct drm_dp_vcpi_allocation *pos;
-+	struct drm_dp_mst_atomic_payload *pos;
- 	bool found = false;
- 	int vcpi = 0;
- 
-@@ -5370,7 +5370,7 @@ int drm_dp_mst_atomic_enable_dsc(struct drm_atomic_state *state,
- 	if (IS_ERR(mst_state))
- 		return PTR_ERR(mst_state);
- 
--	list_for_each_entry(pos, &mst_state->vcpis, next) {
-+	list_for_each_entry(pos, &mst_state->payloads, next) {
- 		if (pos->port == port) {
- 			found = true;
- 			break;
-@@ -5557,7 +5557,7 @@ int drm_dp_mst_topology_mgr_init(struct drm_dp_mst_topology_mgr *mgr,
- 	mst_state->start_slot = 1;
- 
- 	mst_state->mgr = mgr;
--	INIT_LIST_HEAD(&mst_state->vcpis);
-+	INIT_LIST_HEAD(&mst_state->payloads);
- 
- 	drm_atomic_private_obj_init(dev, &mgr->base,
- 				    &mst_state->base,
-diff --git a/include/drm/display/drm_dp_mst_helper.h b/include/drm/display/drm_dp_mst_helper.h
-index 10adec068b7f..5671173f9f37 100644
---- a/include/drm/display/drm_dp_mst_helper.h
-+++ b/include/drm/display/drm_dp_mst_helper.h
-@@ -542,7 +542,7 @@ struct drm_dp_payload {
- 
- #define to_dp_mst_topology_state(x) container_of(x, struct drm_dp_mst_topology_state, base)
- 
--struct drm_dp_vcpi_allocation {
-+struct drm_dp_mst_atomic_payload {
- 	struct drm_dp_mst_port *port;
- 	int vcpi;
- 	int pbn;
-@@ -552,7 +552,7 @@ struct drm_dp_vcpi_allocation {
- 
- struct drm_dp_mst_topology_state {
- 	struct drm_private_state base;
--	struct list_head vcpis;
-+	struct list_head payloads;
- 	struct drm_dp_mst_topology_mgr *mgr;
- 	u8 total_avail_slots;
- 	u8 start_slot;
--- 
-2.35.3
+@@ -110,10 +110,11 @@ void f2fs_hash_filename(const struct ino
+ 		/*
+ 		 * If the casefolded name is provided, hash it instead of the
+ 		 * on-disk name.  If the casefolded name is *not* provided, that
+-		 * should only be because the name wasn't valid Unicode, so fall
+-		 * back to treating the name as an opaque byte sequence.  Note
+-		 * that to handle encrypted directories, the fallback must use
+-		 * usr_fname (plaintext) rather than disk_name (ciphertext).
++		 * should only be because the name wasn't valid Unicode or was
++		 * "." or "..", so fall back to treating the name as an opaque
++		 * byte sequence.  Note that to handle encrypted directories,
++		 * the fallback must use usr_fname (plaintext) rather than
++		 * disk_name (ciphertext).
+ 		 */
+ 		WARN_ON_ONCE(!fname->usr_fname->name);
+ 		if (fname->cf_name.name) {
+
 
