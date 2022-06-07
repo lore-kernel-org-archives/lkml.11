@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B43EFCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:09:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C29C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383923AbiFGWJr (ORCPT
+        id S1383982AbiFGWJz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:09:47 -0400
+        Tue, 7 Jun 2022 18:09:55 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379945AbiFGVGh (ORCPT
+        with ESMTP id S1379441AbiFGVF5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:06:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B87212550;
-        Tue,  7 Jun 2022 11:50:38 -0700 (PDT)
+        Tue, 7 Jun 2022 17:05:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AFEF18F2E1;
+        Tue,  7 Jun 2022 11:49:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 836B861724;
-        Tue,  7 Jun 2022 18:50:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90C6BC385A2;
-        Tue,  7 Jun 2022 18:50:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C712C616C3;
+        Tue,  7 Jun 2022 18:49:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D84DEC385A2;
+        Tue,  7 Jun 2022 18:49:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627830;
-        bh=PH+cowAQ+wr2TocWy9i17v14NXwGOM4fF5selByEHAY=;
+        s=korg; t=1654627771;
+        bh=MryhVYwL20qdpycWJZzLIYovOEL+Bs5lNHa/2TnV0EA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tw92rxTiqSReUKVqKQoZDOWVr1JJGJI5M677AGd0aavRwqRVPHPMIQiWr67HtN3Ex
-         QTw5nbgCw0lpPVN9SZKsgtHngQHChRap+gYk2cX/yHErJJzjVXYV92HiYgCPG02lB3
-         4Grdn6ZJr+Tlf/dmk1iVPEQERKCwaPLIxX/4WOQA=
+        b=zR/0GN70zecaWHKTYH4KotHMeNz1X10cEx2N2EVOCkiaH6NH2cVM1yCjAq+CkbQfr
+         kvo/u1h5riHY99v0drcrUEXOPf5j2YdAlVPABp5jT6lzLSVe2RVvxDyg/BjXw00GTY
+         RGVzbBQkMJ9zEqgFQprX7GUuot439iFYa04l3WH0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Heming Zhao <heming.zhao@suse.com>, Song Liu <song@kernel.org>,
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Jan Kara <jack@suse.cz>, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 106/879] md/bitmap: dont set sb values if cant pass sanity check
-Date:   Tue,  7 Jun 2022 18:53:44 +0200
-Message-Id: <20220607165005.771344896@linuxfoundation.org>
+Subject: [PATCH 5.18 087/879] loop: implement ->free_disk
+Date:   Tue,  7 Jun 2022 18:53:25 +0200
+Message-Id: <20220607165005.218796914@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,161 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heming Zhao <heming.zhao@suse.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit e68cb83a57a458b01c9739e2ad9cb70b04d1e6d2 ]
+[ Upstream commit d2c7f56f8b5256d57f9e3fc7794c31361d43bdd9 ]
 
-If bitmap area contains invalid data, kernel will crash then mdadm
-triggers "Segmentation fault".
-This is cluster-md speical bug. In non-clustered env, mdadm will
-handle broken metadata case. In clustered array, only kernel space
-handles bitmap slot info. But even this bug only happened in clustered
-env, current sanity check is wrong, the code should be changed.
+Ensure that the lo_device which is stored in the gendisk private
+data is valid until the gendisk is freed.  Currently the loop driver
+uses a lot of effort to make sure a device is not freed when it is
+still in use, but to to fix a potential deadlock this will be relaxed
+a bit soon.
 
-How to trigger: (faulty injection)
-
-dd if=/dev/zero bs=1M count=1 oflag=direct of=/dev/sda
-dd if=/dev/zero bs=1M count=1 oflag=direct of=/dev/sdb
-mdadm -C /dev/md0 -b clustered -e 1.2 -n 2 -l mirror /dev/sda /dev/sdb
-mdadm -Ss
-echo aaa > magic.txt
- == below modifying slot 2 bitmap data ==
-dd if=magic.txt of=/dev/sda seek=16384 bs=1 count=3 <== destroy magic
-dd if=/dev/zero of=/dev/sda seek=16436 bs=1 count=4 <== ZERO chunksize
-mdadm -A /dev/md0 /dev/sda /dev/sdb
- == kernel crashes. mdadm outputs "Segmentation fault" ==
-
-Reason of kernel crash:
-
-In md_bitmap_read_sb (called by md_bitmap_create), bad bitmap magic didn't
-block chunksize assignment, and zero value made DIV_ROUND_UP_SECTOR_T()
-trigger "divide error".
-
-Crash log:
-
-kernel: md: md0 stopped.
-kernel: md/raid1:md0: not clean -- starting background reconstruction
-kernel: md/raid1:md0: active with 2 out of 2 mirrors
-kernel: dlm: ... ...
-kernel: md-cluster: Joined cluster 44810aba-38bb-e6b8-daca-bc97a0b254aa slot 1
-kernel: md0: invalid bitmap file superblock: bad magic
-kernel: md_bitmap_copy_from_slot can't get bitmap from slot 2
-kernel: md-cluster: Could not gather bitmaps from slot 2
-kernel: divide error: 0000 [#1] SMP NOPTI
-kernel: CPU: 0 PID: 1603 Comm: mdadm Not tainted 5.14.6-1-default
-kernel: Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
-kernel: RIP: 0010:md_bitmap_create+0x1d1/0x850 [md_mod]
-kernel: RSP: 0018:ffffc22ac0843ba0 EFLAGS: 00010246
-kernel: ... ...
-kernel: Call Trace:
-kernel:  ? dlm_lock_sync+0xd0/0xd0 [md_cluster 77fe..7a0]
-kernel:  md_bitmap_copy_from_slot+0x2c/0x290 [md_mod 24ea..d3a]
-kernel:  load_bitmaps+0xec/0x210 [md_cluster 77fe..7a0]
-kernel:  md_bitmap_load+0x81/0x1e0 [md_mod 24ea..d3a]
-kernel:  do_md_run+0x30/0x100 [md_mod 24ea..d3a]
-kernel:  md_ioctl+0x1290/0x15a0 [md_mod 24ea....d3a]
-kernel:  ? mddev_unlock+0xaa/0x130 [md_mod 24ea..d3a]
-kernel:  ? blkdev_ioctl+0xb1/0x2b0
-kernel:  block_ioctl+0x3b/0x40
-kernel:  __x64_sys_ioctl+0x7f/0xb0
-kernel:  do_syscall_64+0x59/0x80
-kernel:  ? exit_to_user_mode_prepare+0x1ab/0x230
-kernel:  ? syscall_exit_to_user_mode+0x18/0x40
-kernel:  ? do_syscall_64+0x69/0x80
-kernel:  entry_SYSCALL_64_after_hwframe+0x44/0xae
-kernel: RIP: 0033:0x7f4a15fa722b
-kernel: ... ...
-kernel: ---[ end trace 8afa7612f559c868 ]---
-kernel: RIP: 0010:md_bitmap_create+0x1d1/0x850 [md_mod]
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Guoqing Jiang <guoqing.jiang@linux.dev>
-Signed-off-by: Heming Zhao <heming.zhao@suse.com>
-Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220330052917.2566582-12-hch@lst.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/md-bitmap.c | 44 ++++++++++++++++++++++--------------------
- 1 file changed, 23 insertions(+), 21 deletions(-)
+ drivers/block/loop.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/md/md-bitmap.c b/drivers/md/md-bitmap.c
-index bfd6026d7809..612460d2bdaf 100644
---- a/drivers/md/md-bitmap.c
-+++ b/drivers/md/md-bitmap.c
-@@ -639,14 +639,6 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
- 	daemon_sleep = le32_to_cpu(sb->daemon_sleep) * HZ;
- 	write_behind = le32_to_cpu(sb->write_behind);
- 	sectors_reserved = le32_to_cpu(sb->sectors_reserved);
--	/* Setup nodes/clustername only if bitmap version is
--	 * cluster-compatible
--	 */
--	if (sb->version == cpu_to_le32(BITMAP_MAJOR_CLUSTERED)) {
--		nodes = le32_to_cpu(sb->nodes);
--		strlcpy(bitmap->mddev->bitmap_info.cluster_name,
--				sb->cluster_name, 64);
--	}
+diff --git a/drivers/block/loop.c b/drivers/block/loop.c
+index a58595f5ee2c..ed7bec11948c 100644
+--- a/drivers/block/loop.c
++++ b/drivers/block/loop.c
+@@ -1768,6 +1768,14 @@ static void lo_release(struct gendisk *disk, fmode_t mode)
+ 	mutex_unlock(&lo->lo_mutex);
+ }
  
- 	/* verify that the bitmap-specific fields are valid */
- 	if (sb->magic != cpu_to_le32(BITMAP_MAGIC))
-@@ -668,6 +660,16 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
- 		goto out;
- 	}
- 
-+	/*
-+	 * Setup nodes/clustername only if bitmap version is
-+	 * cluster-compatible
-+	 */
-+	if (sb->version == cpu_to_le32(BITMAP_MAJOR_CLUSTERED)) {
-+		nodes = le32_to_cpu(sb->nodes);
-+		strlcpy(bitmap->mddev->bitmap_info.cluster_name,
-+				sb->cluster_name, 64);
-+	}
++static void lo_free_disk(struct gendisk *disk)
++{
++	struct loop_device *lo = disk->private_data;
 +
- 	/* keep the array size field of the bitmap superblock up to date */
- 	sb->sync_size = cpu_to_le64(bitmap->mddev->resync_max_sectors);
++	mutex_destroy(&lo->lo_mutex);
++	kfree(lo);
++}
++
+ static const struct block_device_operations lo_fops = {
+ 	.owner =	THIS_MODULE,
+ 	.open =		lo_open,
+@@ -1776,6 +1784,7 @@ static const struct block_device_operations lo_fops = {
+ #ifdef CONFIG_COMPAT
+ 	.compat_ioctl =	lo_compat_ioctl,
+ #endif
++	.free_disk =	lo_free_disk,
+ };
  
-@@ -700,9 +702,9 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
+ /*
+@@ -2090,15 +2099,14 @@ static void loop_remove(struct loop_device *lo)
+ {
+ 	/* Make this loop device unreachable from pathname. */
+ 	del_gendisk(lo->lo_disk);
+-	blk_cleanup_disk(lo->lo_disk);
++	blk_cleanup_queue(lo->lo_disk->queue);
+ 	blk_mq_free_tag_set(&lo->tag_set);
  
- out:
- 	kunmap_atomic(sb);
--	/* Assigning chunksize is required for "re_read" */
--	bitmap->mddev->bitmap_info.chunksize = chunksize;
- 	if (err == 0 && nodes && (bitmap->cluster_slot < 0)) {
-+		/* Assigning chunksize is required for "re_read" */
-+		bitmap->mddev->bitmap_info.chunksize = chunksize;
- 		err = md_setup_cluster(bitmap->mddev, nodes);
- 		if (err) {
- 			pr_warn("%s: Could not setup cluster service (%d)\n",
-@@ -713,18 +715,18 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
- 		goto re_read;
- 	}
+ 	mutex_lock(&loop_ctl_mutex);
+ 	idr_remove(&loop_index_idr, lo->lo_number);
+ 	mutex_unlock(&loop_ctl_mutex);
+-	/* There is no route which can find this loop device. */
+-	mutex_destroy(&lo->lo_mutex);
+-	kfree(lo);
++
++	put_disk(lo->lo_disk);
+ }
  
--
- out_no_sb:
--	if (test_bit(BITMAP_STALE, &bitmap->flags))
--		bitmap->events_cleared = bitmap->mddev->events;
--	bitmap->mddev->bitmap_info.chunksize = chunksize;
--	bitmap->mddev->bitmap_info.daemon_sleep = daemon_sleep;
--	bitmap->mddev->bitmap_info.max_write_behind = write_behind;
--	bitmap->mddev->bitmap_info.nodes = nodes;
--	if (bitmap->mddev->bitmap_info.space == 0 ||
--	    bitmap->mddev->bitmap_info.space > sectors_reserved)
--		bitmap->mddev->bitmap_info.space = sectors_reserved;
--	if (err) {
-+	if (err == 0) {
-+		if (test_bit(BITMAP_STALE, &bitmap->flags))
-+			bitmap->events_cleared = bitmap->mddev->events;
-+		bitmap->mddev->bitmap_info.chunksize = chunksize;
-+		bitmap->mddev->bitmap_info.daemon_sleep = daemon_sleep;
-+		bitmap->mddev->bitmap_info.max_write_behind = write_behind;
-+		bitmap->mddev->bitmap_info.nodes = nodes;
-+		if (bitmap->mddev->bitmap_info.space == 0 ||
-+			bitmap->mddev->bitmap_info.space > sectors_reserved)
-+			bitmap->mddev->bitmap_info.space = sectors_reserved;
-+	} else {
- 		md_bitmap_print_sb(bitmap);
- 		if (bitmap->cluster_slot < 0)
- 			md_cluster_stop(bitmap->mddev);
+ static void loop_probe(dev_t dev)
 -- 
 2.35.1
 
