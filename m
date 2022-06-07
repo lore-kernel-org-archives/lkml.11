@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F327DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:59:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A914C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:02:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382137AbiFGV7n (ORCPT
+        id S1382606AbiFGV7v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:59:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50348 "EHLO
+        Tue, 7 Jun 2022 17:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379282AbiFGVCT (ORCPT
+        with ESMTP id S1379270AbiFGVCS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:02:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04335719ED;
-        Tue,  7 Jun 2022 11:47:31 -0700 (PDT)
+        Tue, 7 Jun 2022 17:02:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCFA03CA59;
+        Tue,  7 Jun 2022 11:47:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89F056157E;
-        Tue,  7 Jun 2022 18:47:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 943B8C385A2;
-        Tue,  7 Jun 2022 18:47:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8655CB81FE1;
+        Tue,  7 Jun 2022 18:47:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DE9EC385A2;
+        Tue,  7 Jun 2022 18:47:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627650;
-        bh=OgiNMBYlEY3guzwZGXY3PG8CmHv0f71hexffQ5zD8SY=;
+        s=korg; t=1654627633;
+        bh=yKGJ+d5ZKU97vSb+zzxqTj/aDTnvOOGjazdAMaubQE8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gvv1EZCltwCUtOKTvyfWpGfMu/t7J+tRk+ommlAtFSlJ9E8hE8Q4cGwyct1eFy6ON
-         4V/SkVN+WsMJuM4W6Lys2kJ6tf2QxvL1ihp9r8JXI66l2hhWzII5ECQASPmYOa1k1j
-         4agVAZLNBxzy82KPc2+HOrhAiZEPn4PgFvCYVfJQ=
+        b=m0Bo8cXIDHh9rSsAWQOntqs82cU04dud38mNmvG1PSUTnAmcI0V6IiHfllq9j5p5A
+         zLCosj+7JrtK3nhVQReUSIUjk2bQiFgX0gmRo9q5Xke0zN8ZnDzStnw9W0oLN7D5Vo
+         rbn/rqw6iIsXmvwEx8yit/5G4XO0QhoFDlt6qPHY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.18 043/879] ptrace/xtensa: Replace PT_SINGLESTEP with TIF_SINGLESTEP
-Date:   Tue,  7 Jun 2022 18:52:41 +0200
-Message-Id: <20220607165003.929708775@linuxfoundation.org>
+        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: [PATCH 5.18 038/879] perf/x86/intel: Fix event constraints for ICL
+Date:   Tue,  7 Jun 2022 18:52:36 +0200
+Message-Id: <20220607165003.783888970@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,83 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-commit 4a3d2717d140401df7501a95e454180831a0c5af upstream.
+commit 86dca369075b3e310c3c0adb0f81e513c562b5e4 upstream.
 
-xtensa is the last user of the PT_SINGLESTEP flag.  Changing tsk->ptrace in
-user_enable_single_step and user_disable_single_step without locking could
-potentiallly cause problems.
+According to the latest event list, the event encoding 0x55
+INST_DECODED.DECODERS and 0x56 UOPS_DECODED.DEC0 are only available on
+the first 4 counters. Add them into the event constraints table.
 
-So use a thread info flag instead of a flag in tsk->ptrace.  Use TIF_SINGLESTEP
-that xtensa already had defined but unused.
-
-Remove the definitions of PT_SINGLESTEP and PT_BLOCKSTEP as they have no more users.
-
+Fixes: 6017608936c1 ("perf/x86/intel: Add Icelake support")
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Acked-by: Peter Zijlstra <peterz@infradead.org>
 Cc: stable@vger.kernel.org
-Acked-by: Max Filippov <jcmvbkbc@gmail.com>
-Tested-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Oleg Nesterov <oleg@redhat.com>
-Link: https://lkml.kernel.org/r/20220505182645.497868-4-ebiederm@xmission.com
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Link: https://lore.kernel.org/r/20220525133952.1660658-1-kan.liang@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/xtensa/kernel/ptrace.c |    4 ++--
- arch/xtensa/kernel/signal.c |    4 ++--
- include/linux/ptrace.h      |    6 ------
- 3 files changed, 4 insertions(+), 10 deletions(-)
+ arch/x86/events/intel/core.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/xtensa/kernel/ptrace.c
-+++ b/arch/xtensa/kernel/ptrace.c
-@@ -225,12 +225,12 @@ const struct user_regset_view *task_user
- 
- void user_enable_single_step(struct task_struct *child)
- {
--	child->ptrace |= PT_SINGLESTEP;
-+	set_tsk_thread_flag(child, TIF_SINGLESTEP);
- }
- 
- void user_disable_single_step(struct task_struct *child)
- {
--	child->ptrace &= ~PT_SINGLESTEP;
-+	clear_tsk_thread_flag(child, TIF_SINGLESTEP);
- }
- 
- /*
---- a/arch/xtensa/kernel/signal.c
-+++ b/arch/xtensa/kernel/signal.c
-@@ -473,7 +473,7 @@ static void do_signal(struct pt_regs *re
- 		/* Set up the stack frame */
- 		ret = setup_frame(&ksig, sigmask_to_save(), regs);
- 		signal_setup_done(ret, &ksig, 0);
--		if (current->ptrace & PT_SINGLESTEP)
-+		if (test_thread_flag(TIF_SINGLESTEP))
- 			task_pt_regs(current)->icountlevel = 1;
- 
- 		return;
-@@ -499,7 +499,7 @@ static void do_signal(struct pt_regs *re
- 	/* If there's no signal to deliver, we just restore the saved mask.  */
- 	restore_saved_sigmask();
- 
--	if (current->ptrace & PT_SINGLESTEP)
-+	if (test_thread_flag(TIF_SINGLESTEP))
- 		task_pt_regs(current)->icountlevel = 1;
- 	return;
- }
---- a/include/linux/ptrace.h
-+++ b/include/linux/ptrace.h
-@@ -46,12 +46,6 @@ extern int ptrace_access_vm(struct task_
- #define PT_EXITKILL		(PTRACE_O_EXITKILL << PT_OPT_FLAG_SHIFT)
- #define PT_SUSPEND_SECCOMP	(PTRACE_O_SUSPEND_SECCOMP << PT_OPT_FLAG_SHIFT)
- 
--/* single stepping state bits (used on ARM and PA-RISC) */
--#define PT_SINGLESTEP_BIT	31
--#define PT_SINGLESTEP		(1<<PT_SINGLESTEP_BIT)
--#define PT_BLOCKSTEP_BIT	30
--#define PT_BLOCKSTEP		(1<<PT_BLOCKSTEP_BIT)
--
- extern long arch_ptrace(struct task_struct *child, long request,
- 			unsigned long addr, unsigned long data);
- extern int ptrace_readdata(struct task_struct *tsk, unsigned long src, char __user *dst, int len);
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -276,7 +276,7 @@ static struct event_constraint intel_icl
+ 	INTEL_EVENT_CONSTRAINT_RANGE(0x03, 0x0a, 0xf),
+ 	INTEL_EVENT_CONSTRAINT_RANGE(0x1f, 0x28, 0xf),
+ 	INTEL_EVENT_CONSTRAINT(0x32, 0xf),	/* SW_PREFETCH_ACCESS.* */
+-	INTEL_EVENT_CONSTRAINT_RANGE(0x48, 0x54, 0xf),
++	INTEL_EVENT_CONSTRAINT_RANGE(0x48, 0x56, 0xf),
+ 	INTEL_EVENT_CONSTRAINT_RANGE(0x60, 0x8b, 0xf),
+ 	INTEL_UEVENT_CONSTRAINT(0x04a3, 0xff),  /* CYCLE_ACTIVITY.STALLS_TOTAL */
+ 	INTEL_UEVENT_CONSTRAINT(0x10a3, 0xff),  /* CYCLE_ACTIVITY.CYCLES_MEM_ANY */
 
 
