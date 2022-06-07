@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53BF1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:07:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA223C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:08:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359010AbiFGUHx (ORCPT
+        id S1359078AbiFGUIE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:07:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43174 "EHLO
+        Tue, 7 Jun 2022 16:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245137AbiFGTL0 (ORCPT
+        with ESMTP id S1354965AbiFGTL4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:11:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B70194242;
-        Tue,  7 Jun 2022 11:07:06 -0700 (PDT)
+        Tue, 7 Jun 2022 15:11:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D89EAAE5E;
+        Tue,  7 Jun 2022 11:07:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B532D618F6;
-        Tue,  7 Jun 2022 18:07:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5F82C34119;
-        Tue,  7 Jun 2022 18:07:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BDEC617B4;
+        Tue,  7 Jun 2022 18:07:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3162AC385A5;
+        Tue,  7 Jun 2022 18:07:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625225;
-        bh=s88LYf1pFdDDcHZeXM4fiQIU0i0g0org+rLeRSkBlFg=;
+        s=korg; t=1654625230;
+        bh=Xj4t98qVdkLPZQTS7OXQAoSx8M/pu0ePvUGCBZ8pXgU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bC8td3iWGd2+bBj4d+PEoUp2JaBuikV7Er6VUl/R5SRCmCo0XepT2gCCYzF1AiAz9
-         K2wGxejlMQpycsXMXBr/zSxtU/cQHVMMhjhBi5W1Be8nsKH//SL7Hpzvxy8FX+C41s
-         dI1iWEO71zOnxDHCxClaJ9ACS2mbt29Kr6HEpFdU=
+        b=hDbfrtwUheLwm2zJzHTQSg8QWlV7Ur7sjjtvD84OOh6pARzwEdEp7qFbh3i40QdNH
+         0qL8RYU1UiuqSg1RQAFswPUhuZb1I8RFxjW5xP6PK5GIwk7dmSA1EYYeD+jdddMkb7
+         JmvEFnAqgjw5AOsWOdVKl7zKPfWbN9zjOMzXQqKE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kant Fan <kant@allwinnertech.com>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.15 608/667] thermal: devfreq_cooling: use local ops instead of global ops
-Date:   Tue,  7 Jun 2022 19:04:33 +0200
-Message-Id: <20220607164952.910130081@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
+Subject: [PATCH 5.15 572/667] samples/landlock: Add clang-format exceptions
+Date:   Tue,  7 Jun 2022 19:03:57 +0200
+Message-Id: <20220607164951.849348590@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,109 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kant Fan <kant@allwinnertech.com>
+From: Mickaël Salaün <mic@digikod.net>
 
-commit b947769b8f778db130aad834257fcaca25df2edc upstream.
+commit 9805a722db071e1772b80e6e0ff33f35355639ac upstream.
 
-Fix access illegal address problem in following condition:
+In preparation to a following commit, add clang-format on and
+clang-format off stanzas around constant definitions.  This enables to
+keep aligned values, which is much more readable than packed
+definitions.
 
-There are multiple devfreq cooling devices in system, some of them has
-EM model but others do not. Energy model ops such as state2power will
-append to global devfreq_cooling_ops when the cooling device with
-EM model is registered. It makes the cooling device without EM model
-also use devfreq_cooling_ops after appending when registered later by
-of_devfreq_cooling_register_power() or of_devfreq_cooling_register().
-
-The IPA governor regards the cooling devices without EM model as a power
-actor, because they also have energy model ops, and will access illegal
-address at dfc->em_pd when execute cdev->ops->get_requested_power,
-cdev->ops->state2power or cdev->ops->power2state.
-
-Fixes: 615510fe13bd2 ("thermal: devfreq_cooling: remove old power model and use EM")
-Cc: 5.13+ <stable@vger.kernel.org> # 5.13+
-Signed-off-by: Kant Fan <kant@allwinnertech.com>
-Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Link: https://lore.kernel.org/r/20220506160513.523257-7-mic@digikod.net
+Cc: stable@vger.kernel.org
+Signed-off-by: Mickaël Salaün <mic@digikod.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/thermal/devfreq_cooling.c |   25 ++++++++++++++++++-------
- 1 file changed, 18 insertions(+), 7 deletions(-)
+ samples/landlock/sandboxer.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/drivers/thermal/devfreq_cooling.c
-+++ b/drivers/thermal/devfreq_cooling.c
-@@ -358,21 +358,28 @@ of_devfreq_cooling_register_power(struct
- 	struct thermal_cooling_device *cdev;
- 	struct device *dev = df->dev.parent;
- 	struct devfreq_cooling_device *dfc;
-+	struct thermal_cooling_device_ops *ops;
- 	char *name;
- 	int err, num_opps;
+--- a/samples/landlock/sandboxer.c
++++ b/samples/landlock/sandboxer.c
+@@ -70,11 +70,15 @@ static int parse_path(char *env_path, co
+ 	return num_paths;
+ }
  
--	dfc = kzalloc(sizeof(*dfc), GFP_KERNEL);
--	if (!dfc)
-+	ops = kmemdup(&devfreq_cooling_ops, sizeof(*ops), GFP_KERNEL);
-+	if (!ops)
- 		return ERR_PTR(-ENOMEM);
- 
-+	dfc = kzalloc(sizeof(*dfc), GFP_KERNEL);
-+	if (!dfc) {
-+		err = -ENOMEM;
-+		goto free_ops;
-+	}
++/* clang-format off */
 +
- 	dfc->devfreq = df;
+ #define ACCESS_FILE ( \
+ 	LANDLOCK_ACCESS_FS_EXECUTE | \
+ 	LANDLOCK_ACCESS_FS_WRITE_FILE | \
+ 	LANDLOCK_ACCESS_FS_READ_FILE)
  
- 	dfc->em_pd = em_pd_get(dev);
- 	if (dfc->em_pd) {
--		devfreq_cooling_ops.get_requested_power =
-+		ops->get_requested_power =
- 			devfreq_cooling_get_requested_power;
--		devfreq_cooling_ops.state2power = devfreq_cooling_state2power;
--		devfreq_cooling_ops.power2state = devfreq_cooling_power2state;
-+		ops->state2power = devfreq_cooling_state2power;
-+		ops->power2state = devfreq_cooling_power2state;
- 
- 		dfc->power_ops = dfc_power;
- 
-@@ -407,8 +414,7 @@ of_devfreq_cooling_register_power(struct
- 	if (!name)
- 		goto remove_qos_req;
- 
--	cdev = thermal_of_cooling_device_register(np, name, dfc,
--						  &devfreq_cooling_ops);
-+	cdev = thermal_of_cooling_device_register(np, name, dfc, ops);
- 	kfree(name);
- 
- 	if (IS_ERR(cdev)) {
-@@ -429,6 +435,8 @@ free_table:
- 	kfree(dfc->freq_table);
- free_dfc:
- 	kfree(dfc);
-+free_ops:
-+	kfree(ops);
- 
- 	return ERR_PTR(err);
++/* clang-format on */
++
+ static int populate_ruleset(
+ 		const char *const env_var, const int ruleset_fd,
+ 		const __u64 allowed_access)
+@@ -139,6 +143,8 @@ out_free_name:
+ 	return ret;
  }
-@@ -510,11 +518,13 @@ EXPORT_SYMBOL_GPL(devfreq_cooling_em_reg
- void devfreq_cooling_unregister(struct thermal_cooling_device *cdev)
+ 
++/* clang-format off */
++
+ #define ACCESS_FS_ROUGHLY_READ ( \
+ 	LANDLOCK_ACCESS_FS_EXECUTE | \
+ 	LANDLOCK_ACCESS_FS_READ_FILE | \
+@@ -156,6 +162,8 @@ out_free_name:
+ 	LANDLOCK_ACCESS_FS_MAKE_BLOCK | \
+ 	LANDLOCK_ACCESS_FS_MAKE_SYM)
+ 
++/* clang-format on */
++
+ int main(const int argc, char *const argv[], char *const *const envp)
  {
- 	struct devfreq_cooling_device *dfc;
-+	const struct thermal_cooling_device_ops *ops;
- 	struct device *dev;
- 
- 	if (IS_ERR_OR_NULL(cdev))
- 		return;
- 
-+	ops = cdev->ops;
- 	dfc = cdev->devdata;
- 	dev = dfc->devfreq->dev.parent;
- 
-@@ -525,5 +535,6 @@ void devfreq_cooling_unregister(struct t
- 
- 	kfree(dfc->freq_table);
- 	kfree(dfc);
-+	kfree(ops);
- }
- EXPORT_SYMBOL_GPL(devfreq_cooling_unregister);
+ 	const char *cmd_path;
 
 
