@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F216C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:54:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB169C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:54:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242301AbiFGKyY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:54:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
+        id S242310AbiFGKyd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:54:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242343AbiFGKuN (ORCPT
+        with ESMTP id S242331AbiFGKuL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:50:13 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76CF4F688F;
-        Tue,  7 Jun 2022 03:49:56 -0700 (PDT)
+        Tue, 7 Jun 2022 06:50:11 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC501F5D3F;
+        Tue,  7 Jun 2022 03:49:54 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 5088F21B8B;
-        Tue,  7 Jun 2022 10:49:54 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id 48DF11F95C;
+        Tue,  7 Jun 2022 10:49:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1654598994; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1654598993; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xMyZQRrXKtJochWB7+xsGtil/6dW4kBEoZgfCPMyREI=;
-        b=c6POMQ1ZHRZ7N+amluupGEghN5rWqQ8Kc+FXi0uvbaTothz4CAuqd3dzj5NkqJkY07SJSR
-        ET2cxU4ItRyEVeX4+wjRFNaNImRPHWp8mGuSLiocj0WV/aZD6SilCK45ix7dLjhYz9CuYK
-        6KhUR3c7DGPgMcmXZYwsZzrCBnFYdC0=
+        bh=uZIoMqQGGLfGogLqhRC/8PFBN/3KA8xRO38ygrUs7+M=;
+        b=Q0/rPDLtSfO9LU/7mMMN9ldo4Oc70O7Qjo6i78Z9WY6gRySL4xezBJ16+DTaxsx3oamRq2
+        FE5YikGgKi3LHMXE9+NQiNSh0Hh4LWXvHH5zZNd+85bINQCeZ3twPze+jBGncdzEo5JUzb
+        neiBierAXkeCPv2RKSApOA9r+k4cOJA=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1654598994;
+        s=susede2_ed25519; t=1654598993;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xMyZQRrXKtJochWB7+xsGtil/6dW4kBEoZgfCPMyREI=;
-        b=gPUycg+0rWUOl8es/5KCJA4BDQj4QeYwfgkFWPuHIs0HbE4XOYbzT44LxGGmHxZcZZ1mQF
-        P1S4Ab2+kkK5kABg==
+        bh=uZIoMqQGGLfGogLqhRC/8PFBN/3KA8xRO38ygrUs7+M=;
+        b=kscQCgXfBuRdRTtk42Lj0gwR7k6OFLBesO43ZDGYQ7HT6cHH3uIuQWPHIggMh+7MvIJfbR
+        VpsskQ+CrOqhGcCA==
 Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 28A352C143;
-        Tue,  7 Jun 2022 10:49:54 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 21CBE2C141;
+        Tue,  7 Jun 2022 10:49:53 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 23/36] tty/vt: consolemap: saner variable names in con_unify_unimap()
-Date:   Tue,  7 Jun 2022 12:49:33 +0200
-Message-Id: <20220607104946.18710-23-jslaby@suse.cz>
+Subject: [PATCH 18/36] tty/vt: consolemap: remove glyph < 0 check from set_inverse_trans_unicode()
+Date:   Tue,  7 Jun 2022 12:49:28 +0200
+Message-Id: <20220607104946.18710-18-jslaby@suse.cz>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607104946.18710-1-jslaby@suse.cz>
 References: <20220607104946.18710-1-jslaby@suse.cz>
@@ -57,94 +57,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function uses too vague variable names like i, j, k for iterators, p,
-q, p1, p2 for pointers etc.
-
-Rename all these, so that it is clear what is going on:
-- dict: for dictionaries.
-- d, r, g: for dir, row, glyph iterators -- these are unsigned now.
-- dir, row: for directory and row pointers.
-- glyph: for the glyph.
-- and so on...
-
-This is a lot of shuffling, but the result pays off, IMO.
+glyph is now an int casted from u16. It can never be negative. So remove
+the check and type glyph as u16 properly in set_inverse_trans_unicode().
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/consolemap.c | 49 ++++++++++++++++++-------------------
- 1 file changed, 24 insertions(+), 25 deletions(-)
+ drivers/tty/vt/consolemap.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-index 2454a4395722..cbdc73605148 100644
+index 80536687acef..733795a3dc68 100644
 --- a/drivers/tty/vt/consolemap.c
 +++ b/drivers/tty/vt/consolemap.c
-@@ -454,42 +454,41 @@ void con_free_unimap(struct vc_data *vc)
- 	kfree(p);
- }
-   
--static int con_unify_unimap(struct vc_data *conp, struct uni_pagedict *p)
-+static int con_unify_unimap(struct vc_data *conp, struct uni_pagedict *dict1)
+@@ -244,7 +244,7 @@ static void set_inverse_transl(struct vc_data *conp, struct uni_pagedict *p,
+ static void set_inverse_trans_unicode(struct vc_data *conp,
+ 				      struct uni_pagedict *p)
  {
--	int i, j, k;
--	struct uni_pagedict *q;
--	
--	for (i = 0; i < MAX_NR_CONSOLES; i++) {
--		if (!vc_cons_allocated(i))
-+	struct uni_pagedict *dict2;
-+	unsigned int cons, d, r;
-+
-+	for (cons = 0; cons < MAX_NR_CONSOLES; cons++) {
-+		if (!vc_cons_allocated(cons))
- 			continue;
--		q = *vc_cons[i].d->vc_uni_pagedir_loc;
--		if (!q || q == p || q->sum != p->sum)
-+		dict2 = *vc_cons[cons].d->vc_uni_pagedir_loc;
-+		if (!dict2 || dict2 == dict1 || dict2->sum != dict1->sum)
- 			continue;
--		for (j = 0; j < UNI_DIRS; j++) {
--			u16 **p1, **q1;
--			p1 = p->uni_pgdir[j];
--			q1 = q->uni_pgdir[j];
--			if (!p1 && !q1)
-+		for (d = 0; d < UNI_DIRS; d++) {
-+			u16 **dir1 = dict1->uni_pgdir[d];
-+			u16 **dir2 = dict2->uni_pgdir[d];
-+			if (!dir1 && !dir2)
+-	int i, j, k, glyph;
++	int i, j, k;
+ 	u16 **p1, *p2;
+ 	u16 *q;
+ 
+@@ -268,9 +268,8 @@ static void set_inverse_trans_unicode(struct vc_data *conp,
+ 			if (!p2)
  				continue;
--			if (!p1 || !q1)
-+			if (!dir1 || !dir2)
- 				break;
--			for (k = 0; k < UNI_DIR_ROWS; k++) {
--				if (!p1[k] && !q1[k])
-+			for (r = 0; r < UNI_DIR_ROWS; r++) {
-+				if (!dir1[r] && !dir2[r])
- 					continue;
--				if (!p1[k] || !q1[k])
-+				if (!dir1[r] || !dir2[r])
- 					break;
--				if (memcmp(p1[k], q1[k], UNI_ROW_GLYPHS *
--							sizeof(*p1[k])))
-+				if (memcmp(dir1[r], dir2[r], UNI_ROW_GLYPHS *
-+							sizeof(*dir1[r])))
- 					break;
+ 			for (k = 0; k < UNI_ROW_GLYPHS; k++) {
+-				glyph = p2[k];
+-				if (glyph >= 0 && glyph < MAX_GLYPH
+-					       && q[glyph] < 32)
++				u16 glyph = p2[k];
++				if (glyph < MAX_GLYPH && q[glyph] < 32)
+ 					q[glyph] = UNI(i, j, k);
  			}
--			if (k < UNI_DIR_ROWS)
-+			if (r < UNI_DIR_ROWS)
- 				break;
  		}
--		if (j == UNI_DIRS) {
--			q->refcount++;
--			*conp->vc_uni_pagedir_loc = q;
--			con_release_unimap(p);
--			kfree(p);
-+		if (d == UNI_DIRS) {
-+			dict2->refcount++;
-+			*conp->vc_uni_pagedir_loc = dict2;
-+			con_release_unimap(dict1);
-+			kfree(dict1);
- 			return 1;
- 		}
- 	}
 -- 
 2.36.1
 
