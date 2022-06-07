@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E53BDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:13:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC224C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:13:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354329AbiFGWNl (ORCPT
+        id S1358798AbiFGWNw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:13:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35078 "EHLO
+        Tue, 7 Jun 2022 18:13:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379883AbiFGVLI (ORCPT
+        with ESMTP id S1379907AbiFGVLJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:11:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D49D21629E;
-        Tue,  7 Jun 2022 11:52:23 -0700 (PDT)
+        Tue, 7 Jun 2022 17:11:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DAE216802;
+        Tue,  7 Jun 2022 11:52:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E3D286156D;
-        Tue,  7 Jun 2022 18:52:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04385C385A2;
-        Tue,  7 Jun 2022 18:52:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 49EF4612F2;
+        Tue,  7 Jun 2022 18:52:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FB26C385A2;
+        Tue,  7 Jun 2022 18:52:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627942;
-        bh=sbZJ/EgR/Q6h7bQ8bXYkdHk3sVPiz5d14IrGMh6M1ls=;
+        s=korg; t=1654627947;
+        bh=63KEk9VLTggDHYa7uCWhw1ThCahBRf68liu0x9+Y4Q8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RkQ0cJeYiIpbknQTHCz34yPra8oATCa5cJLJ6yXuzls+XJ4BPvB4UCyo/6JpCnGSs
-         cG+omIN2vPS9+1sePQf0VIk1R0wVC6y5TKH50EhZ5B/Zob52fXH2LUo0Mn9TqX/nYs
-         jWWaG2JxYaqgBySILnUH7XFORVb/I+qB2N993wEo=
+        b=B2olAgxPCtAWpqnZ838c+7Z05LLh6+GM5Vcp/HD00hXs4tUu6bt76Zy6i/fjE7/xk
+         35cIra2dpcwLDqfGFbMCmyLhoFscfyldsI/lSgD+SACiU2Jw+9iE6sAFZGJil31Y75
+         qmOvWsuCf8/x0tQfu1BYZr9PspWV6HRC6Sg45hmA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ravi Bangoria <ravi.bangoria@amd.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        eberhard.stoll@kontron.de, Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 147/879] perf/amd/ibs: Cascade pmu init functions return value
-Date:   Tue,  7 Jun 2022 18:54:25 +0200
-Message-Id: <20220607165006.971472877@linuxfoundation.org>
+Subject: [PATCH 5.18 149/879] spi: stm32-qspi: Fix wait_cmd timeout in APM mode
+Date:   Tue,  7 Jun 2022 18:54:27 +0200
+Message-Id: <20220607165007.030694004@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,98 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ravi Bangoria <ravi.bangoria@amd.com>
+From: Patrice Chotard <patrice.chotard@foss.st.com>
 
-[ Upstream commit 39b2ca75eec8a33e2ffdb8aa0c4840ec3e3b472c ]
+[ Upstream commit d83d89ea68b4726700fa87b22db075e4217e691c ]
 
-IBS pmu initialization code ignores return value provided by
-callee functions. Fix it.
+In APM mode, TCF and TEF flags are not set. To avoid timeout in
+stm32_qspi_wait_cmd(), don't check if TCF/TEF are set.
 
-Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220509044914.1473-2-ravi.bangoria@amd.com
+Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
+Reported-by: eberhard.stoll@kontron.de
+Link: https://lore.kernel.org/r/20220511074644.558874-2-patrice.chotard@foss.st.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/events/amd/ibs.c | 37 +++++++++++++++++++++++++++++--------
- 1 file changed, 29 insertions(+), 8 deletions(-)
+ drivers/spi/spi-stm32-qspi.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/events/amd/ibs.c b/arch/x86/events/amd/ibs.c
-index 9739019d4b67..367ca899e6e8 100644
---- a/arch/x86/events/amd/ibs.c
-+++ b/arch/x86/events/amd/ibs.c
-@@ -759,9 +759,10 @@ static __init int perf_ibs_pmu_init(struct perf_ibs *perf_ibs, char *name)
- 	return ret;
- }
+diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
+index ffdc55f87e82..dd38cb8ffbc2 100644
+--- a/drivers/spi/spi-stm32-qspi.c
++++ b/drivers/spi/spi-stm32-qspi.c
+@@ -308,7 +308,8 @@ static int stm32_qspi_wait_cmd(struct stm32_qspi *qspi,
+ 	if (!op->data.nbytes)
+ 		goto wait_nobusy;
  
--static __init void perf_event_ibs_init(void)
-+static __init int perf_event_ibs_init(void)
- {
- 	struct attribute **attr = ibs_op_format_attrs;
-+	int ret;
+-	if (readl_relaxed(qspi->io_base + QSPI_SR) & SR_TCF)
++	if ((readl_relaxed(qspi->io_base + QSPI_SR) & SR_TCF) ||
++	    qspi->fmode == CCR_FMODE_APM)
+ 		goto out;
  
- 	/*
- 	 * Some chips fail to reset the fetch count when it is written; instead
-@@ -773,7 +774,9 @@ static __init void perf_event_ibs_init(void)
- 	if (boot_cpu_data.x86 == 0x19 && boot_cpu_data.x86_model < 0x10)
- 		perf_ibs_fetch.fetch_ignore_if_zero_rip = 1;
- 
--	perf_ibs_pmu_init(&perf_ibs_fetch, "ibs_fetch");
-+	ret = perf_ibs_pmu_init(&perf_ibs_fetch, "ibs_fetch");
-+	if (ret)
-+		return ret;
- 
- 	if (ibs_caps & IBS_CAPS_OPCNT) {
- 		perf_ibs_op.config_mask |= IBS_OP_CNT_CTL;
-@@ -786,15 +789,35 @@ static __init void perf_event_ibs_init(void)
- 		perf_ibs_op.cnt_mask    |= IBS_OP_MAX_CNT_EXT_MASK;
- 	}
- 
--	perf_ibs_pmu_init(&perf_ibs_op, "ibs_op");
-+	ret = perf_ibs_pmu_init(&perf_ibs_op, "ibs_op");
-+	if (ret)
-+		goto err_op;
-+
-+	ret = register_nmi_handler(NMI_LOCAL, perf_ibs_nmi_handler, 0, "perf_ibs");
-+	if (ret)
-+		goto err_nmi;
- 
--	register_nmi_handler(NMI_LOCAL, perf_ibs_nmi_handler, 0, "perf_ibs");
- 	pr_info("perf: AMD IBS detected (0x%08x)\n", ibs_caps);
-+	return 0;
-+
-+err_nmi:
-+	perf_pmu_unregister(&perf_ibs_op.pmu);
-+	free_percpu(perf_ibs_op.pcpu);
-+	perf_ibs_op.pcpu = NULL;
-+err_op:
-+	perf_pmu_unregister(&perf_ibs_fetch.pmu);
-+	free_percpu(perf_ibs_fetch.pcpu);
-+	perf_ibs_fetch.pcpu = NULL;
-+
-+	return ret;
- }
- 
- #else /* defined(CONFIG_PERF_EVENTS) && defined(CONFIG_CPU_SUP_AMD) */
- 
--static __init void perf_event_ibs_init(void) { }
-+static __init int perf_event_ibs_init(void)
-+{
-+	return 0;
-+}
- 
- #endif
- 
-@@ -1064,9 +1087,7 @@ static __init int amd_ibs_init(void)
- 			  x86_pmu_amd_ibs_starting_cpu,
- 			  x86_pmu_amd_ibs_dying_cpu);
- 
--	perf_event_ibs_init();
--
--	return 0;
-+	return perf_event_ibs_init();
- }
- 
- /* Since we need the pci subsystem to init ibs we can't do this earlier: */
+ 	reinit_completion(&qspi->data_completion);
 -- 
 2.35.1
 
