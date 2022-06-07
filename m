@@ -2,104 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45EA3CCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BD78CCA48B
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:02:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358381AbiFGUBB (ORCPT
+        id S1358438AbiFGUBL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:01:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40488 "EHLO
+        Tue, 7 Jun 2022 16:01:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354266AbiFGSz7 (ORCPT
+        with ESMTP id S1347200AbiFGSyQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:55:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F3D14B671;
-        Tue,  7 Jun 2022 11:04:02 -0700 (PDT)
+        Tue, 7 Jun 2022 14:54:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7369914AF71;
+        Tue,  7 Jun 2022 11:03:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2741F617B4;
-        Tue,  7 Jun 2022 18:04:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 375DFC385A5;
-        Tue,  7 Jun 2022 18:04:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625041;
-        bh=SnhfKEe0MKs7yReaOKbjYZ3mwtheNlwZ3SANedtDVI4=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66B3BB8236C;
+        Tue,  7 Jun 2022 18:03:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFCC9C36B00;
+        Tue,  7 Jun 2022 18:03:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654625032;
+        bh=ZbzBs39XZYEIr01mYJiJsXTEB9wR7xUlcmhU/QgTZy0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v2vUKRhyNxEZywLu5KRkv1Sp7rXj9BLH9k1PJtu8OdZMEqUJwrBgvmnhtwRSyzsAR
-         nVAw8Epj9frxFpVeveIXaPcSmC1oxK5MN4bCUFO/PjaHgFNmsdmUskTwLF5lawshDD
-         zw4zuGF/NB1iOXSXU2U92a7vvfRiWVY6rq8R6Cjs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Theodore Tso <tytso@mit.edu>,
-        syzbot+c7358a3cd05ee786eb31@syzkaller.appspotmail.com
-Subject: [PATCH 5.15 545/667] ext4: filter out EXT4_FC_REPLAY from on-disk superblock field s_state
-Date:   Tue,  7 Jun 2022 19:03:30 +0200
-Message-Id: <20220607164951.045941234@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=djvX6hqAJ7UyYvaMNRxfiZh9CVXEULYdMxadrjwkVmrzkOLICUeQnS0XGeFSkR1ZC
+         p0P0pDKVY2b71snpdTJxxDhVlDGuyYwSVlogL/uhtP1nfOmSTWSVjLwnlgmwCrj1lN
+         E9Sa2sNGTQCnLtdARhrxZOpRHvRSjItjRjdK1uGhKNLGTOvRD7lUnoXxqh55KV+3w3
+         eud85HI62IHKlCYsKwxo7gMmqlORC1YihhT1qb6B6MApTOOM0jpZR8VcwbuHdUmLre
+         qE5/4YcLuSuA9IiSOQWvVPRm6SkOnupIrhq+H5Dlg+UqbcEQHLrGRuyZhcYhyjsawR
+         nQHCmeIRKxE4Q==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Michal Kubecek <mkubecek@suse.cz>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 16/19] Revert "net: af_key: add check for pfkey_broadcast in function pfkey_process"
+Date:   Tue,  7 Jun 2022 14:03:11 -0400
+Message-Id: <20220607180317.482354-16-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180317.482354-1-sashal@kernel.org>
+References: <20220607180317.482354-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+From: Michal Kubecek <mkubecek@suse.cz>
 
-commit c878bea3c9d724ddfa05a813f30de3d25a0ba83f upstream.
+[ Upstream commit 9c90c9b3e50e16d03c7f87d63e9db373974781e0 ]
 
-The EXT4_FC_REPLAY bit in sbi->s_mount_state is used to indicate that
-we are in the middle of replay the fast commit journal.  This was
-actually a mistake, since the sbi->s_mount_info is initialized from
-es->s_state.  Arguably s_mount_state is misleadingly named, but the
-name is historical --- s_mount_state and s_state dates back to ext2.
+This reverts commit 4dc2a5a8f6754492180741facf2a8787f2c415d7.
 
-What should have been used is the ext4_{set,clear,test}_mount_flag()
-inline functions, which sets EXT4_MF_* bits in sbi->s_mount_flags.
+A non-zero return value from pfkey_broadcast() does not necessarily mean
+an error occurred as this function returns -ESRCH when no registered
+listener received the message. In particular, a call with
+BROADCAST_PROMISC_ONLY flag and null one_sk argument can never return
+zero so that this commit in fact prevents processing any PF_KEY message.
+One visible effect is that racoon daemon fails to find encryption
+algorithms like aes and refuses to start.
 
-The problem with using EXT4_FC_REPLAY is that a maliciously corrupted
-superblock could result in EXT4_FC_REPLAY getting set in
-s_mount_state.  This bypasses some sanity checks, and this can trigger
-a BUG() in ext4_es_cache_extent().  As a easy-to-backport-fix, filter
-out the EXT4_FC_REPLAY bit for now.  We should eventually transition
-away from EXT4_FC_REPLAY to something like EXT4_MF_REPLAY.
+Excluding -ESRCH return value would fix this but it's not obvious that
+we really want to bail out here and most other callers of
+pfkey_broadcast() also ignore the return value. Also, as pointed out by
+Steffen Klassert, PF_KEY is kind of deprecated and newer userspace code
+should use netlink instead so that we should only disturb the code for
+really important fixes.
 
-Cc: stable@kernel.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Link: https://lore.kernel.org/r/20220420192312.1655305-1-phind.uet@gmail.com
-Link: https://lore.kernel.org/r/20220517174028.942119-1-tytso@mit.edu
-Reported-by: syzbot+c7358a3cd05ee786eb31@syzkaller.appspotmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+v2: add a comment explaining why is the return value ignored
+
+Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/super.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/key/af_key.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -4391,7 +4391,7 @@ static int ext4_fill_super(struct super_
- 					sbi->s_inodes_per_block;
- 	sbi->s_desc_per_block = blocksize / EXT4_DESC_SIZE(sb);
- 	sbi->s_sbh = bh;
--	sbi->s_mount_state = le16_to_cpu(es->s_state);
-+	sbi->s_mount_state = le16_to_cpu(es->s_state) & ~EXT4_FC_REPLAY;
- 	sbi->s_addr_per_block_bits = ilog2(EXT4_ADDR_PER_BLOCK(sb));
- 	sbi->s_desc_per_block_bits = ilog2(EXT4_DESC_PER_BLOCK(sb));
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index d5dc614af2f9..0737fc7b7ebd 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2861,10 +2861,12 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
+ 	void *ext_hdrs[SADB_EXT_MAX];
+ 	int err;
  
-@@ -5937,7 +5937,8 @@ static int ext4_remount(struct super_blo
- 				if (err)
- 					goto restore_opts;
- 			}
--			sbi->s_mount_state = le16_to_cpu(es->s_state);
-+			sbi->s_mount_state = (le16_to_cpu(es->s_state) &
-+					      ~EXT4_FC_REPLAY);
+-	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
+-			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
+-	if (err)
+-		return err;
++	/* Non-zero return value of pfkey_broadcast() does not always signal
++	 * an error and even on an actual error we may still want to process
++	 * the message so rather ignore the return value.
++	 */
++	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
++			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
  
- 			err = ext4_setup_super(sb, es, 0);
- 			if (err)
-
+ 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
+ 	err = parse_exthdrs(skb, hdr, ext_hdrs);
+-- 
+2.35.1
 
