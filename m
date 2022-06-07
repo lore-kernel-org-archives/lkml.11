@@ -2,174 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2889ECCA497
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53FE7CCA496
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:52:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349643AbiFGRv0 (ORCPT
+        id S1349881AbiFGRvl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:51:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36150 "EHLO
+        Tue, 7 Jun 2022 13:51:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347226AbiFGReH (ORCPT
+        with ESMTP id S1347450AbiFGRfR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:34:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0330106A74;
-        Tue,  7 Jun 2022 10:30:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA4FAB8220B;
-        Tue,  7 Jun 2022 17:30:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48592C385A5;
-        Tue,  7 Jun 2022 17:30:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623027;
-        bh=+0p7qofnLLVjCrG5l7ddjcx9rEZK1w2mhtvI3AGAyZU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FQuh/GrHkb48qgbpFGoDrZVEZX5/m2wDZQfjMZNgLZHaNIpd44You0yTw2ZqbB6+4
-         EQyWevYUk96SZAskzfihqbzUFYOc4jqmHFS41Wm31HP/Cy7fY0gxYyDWse0m0LuMH1
-         +qfGDapj7glNv9G4J8r0Ybh7KGtMWLu7K5Yw060E=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chenyi Qiang <chenyi.qiang@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 269/452] KVM: nVMX: Clear IDT vectoring on nested VM-Exit for double/triple fault
-Date:   Tue,  7 Jun 2022 19:02:06 +0200
-Message-Id: <20220607164916.568284306@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
-References: <20220607164908.521895282@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 13:35:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5967710EA46
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:30:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654623002;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=Cd64zesxXwO9DDUxUPRw9NFg82m3SyiLm8HJHcXtYxs=;
+        b=EwQhh1GWs+NSlGnRIt3oBdfVII2m5AN1KPc3oWfndVsOMQb2V3MS09eu3qRMgtDHORYUHw
+        f4zS86Ip0irL26pwejhBAC/F/ibctbjP2l1jHnsP/0DcfmPDZBhyUzGa3pcHPDIROJphsA
+        8NPcWn1WcASgdB7tiIrPxOu3+kbZLwg=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-643-iqv0KzgbPQm3IeQVzHxfAg-1; Tue, 07 Jun 2022 13:30:01 -0400
+X-MC-Unique: iqv0KzgbPQm3IeQVzHxfAg-1
+Received: by mail-qk1-f199.google.com with SMTP id i5-20020a05620a404500b006a6d7a765d9so2031572qko.7
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:30:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=Cd64zesxXwO9DDUxUPRw9NFg82m3SyiLm8HJHcXtYxs=;
+        b=gajckhAjcTgHTDpmtHuHcD60+utFpn/pp0+slDKGuLrsefusoG0G6AeOnu9lvgvtbn
+         mVMPAoGc2xtk/L3FnAzj9MlR7xo4XT2+7K/akCf0r69klYklsTw7zoie8ucnkN4zv+31
+         d5QFBwFveb4KIGCdwi0tArnwgh5bjbpnV1IaeBVfEK4KHjymOzMLMiKP2aguZTsQNy9w
+         TJAYl34F3aZNfmgAaw+qwmndyxfjN5r+wKo/S5wW/a6xmmfhEAhqBCd7XdrTLq1aStTw
+         IO+cExfw/tfkkTtMWCo6YOUd6aqGRDdKZOAgTjtQLrgbGA7PAiKW1zZuspLF800iF+KY
+         AKew==
+X-Gm-Message-State: AOAM5325Fj9Ab5sgCdCIL9PtiQol3FvXhM+waH9cvxTLwx1/6ifVwYFD
+        WepPFQmQkJZltEm/7uXAf0P9S8bKnEkgRsiOTuQmW8dchu/Q79F9mC6X/HracAAQTjBGVvp5aIs
+        mr4/+jZ/tcS+UGA5qhsGE9cB5MwRb57YbYdpUQQr2
+X-Received: by 2002:a37:510:0:b0:6a6:ab9e:1b80 with SMTP id 16-20020a370510000000b006a6ab9e1b80mr12714397qkf.770.1654623000847;
+        Tue, 07 Jun 2022 10:30:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyzBLb3AR0/c4UB2dMyC54NtqNuvP7ErFpaHdRPIuWyOScdvAhUmZE3B0ZcDDKCwgmCaug3oBt7gQ4WiS/BOaY=
+X-Received: by 2002:a37:510:0:b0:6a6:ab9e:1b80 with SMTP id
+ 16-20020a370510000000b006a6ab9e1b80mr12714382qkf.770.1654623000642; Tue, 07
+ Jun 2022 10:30:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Tue, 7 Jun 2022 13:29:49 -0400
+Message-ID: <CAK-6q+gzQSbsfCEu5Gma_X7H16p0UipbK+nZeGNAqOi-czP+XA@mail.gmail.com>
+Subject: ANNOUNCE: Linux Distributed Lock Manager Viewer
+To:     cluster-devel <cluster-devel@redhat.com>
+Cc:     David Teigland <teigland@redhat.com>,
+        Christine Caulfield <ccaulfie@redhat.com>, rostedt@goodmis.org,
+        tz.stoyanov@gmail.com, chan@mcs.anl.gov, gropp@mcs.anl.gov,
+        lusk@mcs.anl.gov, song@kernel.org,
+        linux-trace-users@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org, ocfs2-devel@oss.oracle.com,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+Hi,
 
-[ Upstream commit 9bd1f0efa859b61950d109b32ff8d529cc33a3ad ]
+I've built with existing open source software a Linux DLM (Distributed
+Lock Manager) viewer [0]. The Linux DLM subsystem can be found in
+"fs/dlm" and its main users are gfs2, ocfs2 and cluster-md. It is like
+the name already propagates a distributed lock manager for Linux
+clusters. A cluster can have shared resources among several nodes. DLM
+offers to protect shared resources against mutual access e.g. cluster
+file system gfs2 which operates on shared block devices among several
+nodes. The viewer offers a graphical view about the used lock states
+over time in a cluster.
 
-Clear the IDT vectoring field in vmcs12 on next VM-Exit due to a double
-or triple fault.  Per the SDM, a VM-Exit isn't considered to occur during
-event delivery if the exit is due to an intercepted double fault or a
-triple fault.  Opportunistically move the default clearing (no event
-"pending") into the helper so that it's more obvious that KVM does indeed
-handle this case.
+Therefore we need to capture Linux DLM traces on all cluster nodes.
+This is done by using the trace-cmd record command with the time
+synchronization feature between multiple Linux machines which are part
+of the DLM cluster. Another tool is dlm2slog2 [1] reads the recorded
+Linux trace files, merges and converts them into a "drawable" open
+format known as "slog2" [2] by using the open slog2 sdk. The slog2sdk
+contains a viewer named "jumpshot" [3] which can be used to visualize
+the slog2 file. Originally this drawable format was invented to trace
+MPI (Message Passing Interface) applications, however it does not
+depend on MPI and offers a graphical tracing for distributed
+applications which I adapted for DLM lock states.
 
-Note, the double fault case is worded rather wierdly in the SDM:
+The only "missing" piece here was the convert and merge of the
+recorded Linux traces to the slog2 fileformat. Hereby I would like to
+thank all trace-cmd developers (especially those who made the time
+synchronization feature) and slog2sdk developers which offered they
+work as open source so it was easy for me to make a small piece of
+software "dlm2slog2" that works as a bridge between trace-cmd/linux
+tracing and slog2sdk.
 
-  The original event results in a double-fault exception that causes the
-  VM exit directly.
+As the slog2sdk is written in Java I did Java bindings similar to the
+existing python bindings for libtracecmd, similar classes, etc.
+underneath it uses swig. I would like to try to bring those bindings
+upstream to trace-cmd. It's _not_ necessary to have a Java dependency
+on trace-cmd, there should be some trace-cmd-java package available
+which installs the necessary swig library libctracecmdjava that offers
+jni access to libtracecmd. As well a jar file which can be seen as a
+library/python module and follows the same license as libtracecmd. The
+alternative here would be to maintain an out-of-tree trace-cmd-java
+package. I would like to hear some feedback for it, the current code
+can be found at [4].
 
-Temporarily ignoring injected events, double faults can _only_ occur if
-an exception occurs while attempting to deliver a different exception,
-i.e. there's _always_ an original event.  And for injected double fault,
-while there's no original event, injected events are never subject to
-interception.
+If you want to get started or simply see what this is all about
+inclusive screenshots, see [0].
 
-Presumably the SDM is calling out that a the vectoring info will be valid
-if a different exit occurs after a double fault, e.g. if a #PF occurs and
-is intercepted while vectoring #DF, then the vectoring info will show the
-double fault.  In other words, the clause can simply be read as:
+- Alex
 
-  The VM exit is caused by a double-fault exception.
-
-Fixes: 4704d0befb07 ("KVM: nVMX: Exiting from L2 to L1")
-Cc: Chenyi Qiang <chenyi.qiang@intel.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220407002315.78092-4-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/x86/kvm/vmx/nested.c | 32 ++++++++++++++++++++++++++++----
- arch/x86/kvm/vmx/vmcs.h   |  5 +++++
- 2 files changed, 33 insertions(+), 4 deletions(-)
-
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index fe53cab1a8a6..90881d7b42ea 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -3668,12 +3668,34 @@ vmcs12_guest_cr4(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12)
- }
- 
- static void vmcs12_save_pending_event(struct kvm_vcpu *vcpu,
--				      struct vmcs12 *vmcs12)
-+				      struct vmcs12 *vmcs12,
-+				      u32 vm_exit_reason, u32 exit_intr_info)
- {
- 	u32 idt_vectoring;
- 	unsigned int nr;
- 
--	if (vcpu->arch.exception.injected) {
-+	/*
-+	 * Per the SDM, VM-Exits due to double and triple faults are never
-+	 * considered to occur during event delivery, even if the double/triple
-+	 * fault is the result of an escalating vectoring issue.
-+	 *
-+	 * Note, the SDM qualifies the double fault behavior with "The original
-+	 * event results in a double-fault exception".  It's unclear why the
-+	 * qualification exists since exits due to double fault can occur only
-+	 * while vectoring a different exception (injected events are never
-+	 * subject to interception), i.e. there's _always_ an original event.
-+	 *
-+	 * The SDM also uses NMI as a confusing example for the "original event
-+	 * causes the VM exit directly" clause.  NMI isn't special in any way,
-+	 * the same rule applies to all events that cause an exit directly.
-+	 * NMI is an odd choice for the example because NMIs can only occur on
-+	 * instruction boundaries, i.e. they _can't_ occur during vectoring.
-+	 */
-+	if ((u16)vm_exit_reason == EXIT_REASON_TRIPLE_FAULT ||
-+	    ((u16)vm_exit_reason == EXIT_REASON_EXCEPTION_NMI &&
-+	     is_double_fault(exit_intr_info))) {
-+		vmcs12->idt_vectoring_info_field = 0;
-+	} else if (vcpu->arch.exception.injected) {
- 		nr = vcpu->arch.exception.nr;
- 		idt_vectoring = nr | VECTORING_INFO_VALID_MASK;
- 
-@@ -3706,6 +3728,8 @@ static void vmcs12_save_pending_event(struct kvm_vcpu *vcpu,
- 			idt_vectoring |= INTR_TYPE_EXT_INTR;
- 
- 		vmcs12->idt_vectoring_info_field = idt_vectoring;
-+	} else {
-+		vmcs12->idt_vectoring_info_field = 0;
- 	}
- }
- 
-@@ -4160,8 +4184,8 @@ static void prepare_vmcs12(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
- 		 * Transfer the event that L0 or L1 may wanted to inject into
- 		 * L2 to IDT_VECTORING_INFO_FIELD.
- 		 */
--		vmcs12->idt_vectoring_info_field = 0;
--		vmcs12_save_pending_event(vcpu, vmcs12);
-+		vmcs12_save_pending_event(vcpu, vmcs12,
-+					  vm_exit_reason, exit_intr_info);
- 
- 		vmcs12->vm_exit_intr_info = exit_intr_info;
- 		vmcs12->vm_exit_instruction_len = vmcs_read32(VM_EXIT_INSTRUCTION_LEN);
-diff --git a/arch/x86/kvm/vmx/vmcs.h b/arch/x86/kvm/vmx/vmcs.h
-index 571d9ad80a59..69c147df957f 100644
---- a/arch/x86/kvm/vmx/vmcs.h
-+++ b/arch/x86/kvm/vmx/vmcs.h
-@@ -102,6 +102,11 @@ static inline bool is_breakpoint(u32 intr_info)
- 	return is_exception_n(intr_info, BP_VECTOR);
- }
- 
-+static inline bool is_double_fault(u32 intr_info)
-+{
-+	return is_exception_n(intr_info, DF_VECTOR);
-+}
-+
- static inline bool is_page_fault(u32 intr_info)
- {
- 	return is_exception_n(intr_info, PF_VECTOR);
--- 
-2.35.1
-
-
+[0] https://gitlab.com/netcoder/dlm2slog2/-/wikis/home
+[1] https://gitlab.com/netcoder/dlm2slog2
+[2] https://www.mcs.anl.gov/research/projects/perfvis/software/log_format/index.htm#SLOG-2
+[3] https://www.mcs.anl.gov/research/projects/perfvis/software/viewers/index.htm#Jumpshot-4
+[4] https://gitlab.com/netcoder/trace-cmd/-/commits/java_bindings
 
