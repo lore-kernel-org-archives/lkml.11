@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A753CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F64BCCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386056AbiFGWmY (ORCPT
+        id S1385913AbiFGWmO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:42:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52796 "EHLO
+        Tue, 7 Jun 2022 18:42:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380675AbiFGVbJ (ORCPT
+        with ESMTP id S1380583AbiFGVbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:31:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7152622AE51;
-        Tue,  7 Jun 2022 12:03:20 -0700 (PDT)
+        Tue, 7 Jun 2022 17:31:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3373322A470;
+        Tue,  7 Jun 2022 12:03:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C5FC6B8233E;
-        Tue,  7 Jun 2022 19:03:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35B92C385A2;
-        Tue,  7 Jun 2022 19:03:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 79DFB61807;
+        Tue,  7 Jun 2022 19:03:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 870AAC385A5;
+        Tue,  7 Jun 2022 19:03:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628597;
-        bh=spiReyOjOYDqeb1zsBh97ggWT78W6Mw8bZj/fRwx4rs=;
+        s=korg; t=1654628588;
+        bh=cFeusVUHh93/ZS4CD5qfsZDoRcjc5b0/MbLxB2ZoJzA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=donxoJjpfyfKoiqpool73OT2cMD20KflRVJmuEkoVQjQ9PcKyarFqnLHI+w/7HwMH
-         FxL87IiJ5DOAtGnHHGXA+GA2DEI7lIPIyi8WbRSEonsMlxv3gsX2yykY5NJGzacdc1
-         4dbEUt7XES53vVRem/rmAfphRVIaH0HjAr4gGdIM=
+        b=maEpXAB8VasdMiPQxyukuRgM4vDTTIhLdjf3Hwcjd4B4p34B27rs1PpBJ1F8f/mun
+         vCVX7ZXd85GUyNvrX2N1/z1ZCSUSvrBZHHF3K5hJc03akEuINThuOTyVX92Grz16M5
+         JRwX0SYcp3LQ13b+DMa08H0LpNjohIZXsOzZvV7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 370/879] drm/msm/dp: fix error check return value of irq_of_parse_and_map()
-Date:   Tue,  7 Jun 2022 18:58:08 +0200
-Message-Id: <20220607165013.612330180@linuxfoundation.org>
+Subject: [PATCH 5.18 385/879] nl80211: dont hold RTNL in color change request
+Date:   Tue,  7 Jun 2022 18:58:23 +0200
+Message-Id: <20220607165014.041521310@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,43 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit e92d0d93f86699b7b25c7906613fdc374d66c8ca ]
+[ Upstream commit 1b550a0bebfc0b69d6ec08fe6eb58953a8aec48a ]
 
-The irq_of_parse_and_map() function returns 0 on failure, and does not
-return an negative value.
+It's not necessary to hold the RTNL across color change
+requests, since all the inner locking needs only the
+wiphy mutex which we already hold as well.
 
-Fixes: 8ede2ecc3e5e ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/483176/
-Link: https://lore.kernel.org/r/20220424032418.3173632-1-lv.ruyi@zte.com.cn
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fixes: 0d2ab3aea50b ("nl80211: add support for BSS coloring")
+Link: https://lore.kernel.org/r/20220414140402.32e03e8c261b.I5e7dc6bc563a129b938c43298da6bb4e812400a5@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_display.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ net/wireless/nl80211.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 332065b882af..b3bfe9ac9d80 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -1255,10 +1255,9 @@ int dp_display_request_irq(struct msm_dp *dp_display)
- 	dp = container_of(dp_display, struct dp_display_private, dp_display);
- 
- 	dp->irq = irq_of_parse_and_map(dp->pdev->dev.of_node, 0);
--	if (dp->irq < 0) {
--		rc = dp->irq;
--		DRM_ERROR("failed to get irq: %d\n", rc);
--		return rc;
-+	if (!dp->irq) {
-+		DRM_ERROR("failed to get irq\n");
-+		return -EINVAL;
- 	}
- 
- 	rc = devm_request_irq(&dp->pdev->dev, dp->irq,
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 02a29052e41d..fd8b48b88968 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -16287,8 +16287,7 @@ static const struct genl_small_ops nl80211_small_ops[] = {
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = nl80211_color_change,
+ 		.flags = GENL_UNS_ADMIN_PERM,
+-		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+-				  NL80211_FLAG_NEED_RTNL,
++		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP,
+ 	},
+ 	{
+ 		.cmd = NL80211_CMD_SET_FILS_AAD,
 -- 
 2.35.1
 
