@@ -2,113 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CDECCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38421CCA48F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386401AbiFHBgp (ORCPT
+        id S1386600AbiFHBhE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:36:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45966 "EHLO
+        Tue, 7 Jun 2022 21:37:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383465AbiFGVxN (ORCPT
+        with ESMTP id S1381302AbiFGXjC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:53:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54079244F47;
-        Tue,  7 Jun 2022 12:11:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CF086187F;
-        Tue,  7 Jun 2022 19:11:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 451FEC385A2;
-        Tue,  7 Jun 2022 19:11:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629105;
-        bh=BVS30Ri3Nw0GyaQoY80jOTh/+gVIBSzugnPkzKzAh24=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xaMuPk5pOpxrTEexXjKaUt80PHggnRBkR6JnmhYWGbQTg/clWV+jfC4OSkhfHmcCQ
-         yPK1G3JgtBIAnKtnwaWt8vXTkKQwNLl/Y89JvyJJmNutP9GZUvz+X9su8+MZN4RO5K
-         qPMp2JtdqWwWoJnG+YzyW0WsYib48fiW7HNUlBI4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladis Dronov <vdronov@redhat.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 571/879] hwrng: cn10k - Optimize cn10k_rng_read()
-Date:   Tue,  7 Jun 2022 19:01:29 +0200
-Message-Id: <20220607165019.430259307@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 7 Jun 2022 19:39:02 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4665822DFAE
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:25 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id t14-20020a65608e000000b003fa321e8ea3so9153770pgu.18
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=EJfk8nwbrnmO1UuI866I8yMqvfudRDGtQGXb6HNwIrM=;
+        b=cn1958um9WkdotZSF69FsUeBfSeTHbq+FyWFm/QqdUOkrDZ20ANQK0PPQrxi/NLkrE
+         EOzpX4xgCHfHqrGscVBpazqOyxk3P+phvhtPDrTGhOxUsewtUdzwQHQaIVUg0xhSIXTb
+         eMI18H3mg6NDelffkVysacbr4O/KHNry1/qOM9B+ptmEA3jvqd82zUILmyxqj3GOZmTn
+         JBd2U/5PRnm/VVZBlu9TSd1gbDdXCDHSkQKJ44gSooijmAJPLmXhMOgOyy2ZbGk8cIV3
+         mx2S3mDkwmj8zyAyHIfRq2V6TNIMTeyMzG/0cVYzVOSxBmrwSEEstbIEfIAWeE0sj+/p
+         G9wA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=EJfk8nwbrnmO1UuI866I8yMqvfudRDGtQGXb6HNwIrM=;
+        b=Ky2sLtaWk8e7RsK0IUk1sTiSZxv6sVu3E+P4gqjXmiRUHSvuQ/gZwlth4Kt1Ej0oBG
+         uR85E/qsldwNLuC3sagvdBQ+sMbeguXQlOa8g4w4+qHtbDqji6WYP/BVHVfSyu81JF2w
+         3EhjaEKMWhlrxalBHJvcKNzaFQ85RIT8kVnsLGJcKk6XlXdMY86UV111QnZ+dLoLlOrg
+         4wWHtGck1y226IQDbotP64HeCCvlvYOHQY66DdcWb1i62ACo32x6OCoQUr6nYY2MsUmP
+         L2DXPkpURsgCAmUOh4A6Q5GLEIv/CGgc4EidgNI2N6z86J8WtIjUtLps6CKmX8jmipcX
+         GjMA==
+X-Gm-Message-State: AOAM530f0nUCxlRZ1qgF9GA2+4WyQLc08us4rbH/LdH/c15BRhRros0q
+        cUKHpYeYSFMtcQe9gZWHQm6bV+rgyGY=
+X-Google-Smtp-Source: ABdhPJzHHxYpwDw7PZZ+h5cYuSRuLOiUBVayajr26XmFr4L8q40OPMapzi4SZKc/+lJsQarfzYlXjX9kFLU=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a17:902:da87:b0:166:423d:f3be with SMTP id
+ j7-20020a170902da8700b00166423df3bemr29143461plx.150.1654637784762; Tue, 07
+ Jun 2022 14:36:24 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Tue,  7 Jun 2022 21:35:53 +0000
+In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
+Message-Id: <20220607213604.3346000-5-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220607213604.3346000-1-seanjc@google.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH v5 04/15] KVM: nVMX: Rename handle_vm{on,off}() to handle_vmx{on,off}()
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
+        David Matlack <dmatlack@google.com>,
+        Oliver Upton <oupton@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladis Dronov <vdronov@redhat.com>
+Rename the exit handlers for VMXON and VMXOFF to match the instruction
+names, the terms "vmon" and "vmoff" are not used anywhere in Intel's
+documentation, nor are they used elsehwere in KVM.
 
-[ Upstream commit 753d6770879894de10d74b437ab99ea380f1cad7 ]
+Sadly, the exit reasons are exposed to userspace and so cannot be renamed
+without breaking userspace. :-(
 
-This function assumes that sizeof(void) is 1 and arithmetic works for
-void pointers. This is a GNU C extention and may not work with other
-compilers. Change this by using an u8 pointer.
-
-Also move cn10k_read_trng() out of a loop thus saving some cycles.
-
-Fixes: 38e9791a0209 ("hwrng: cn10k - Add random number generator support")
-Signed-off-by: Vladis Dronov <vdronov@redhat.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: ec378aeef9df ("KVM: nVMX: Implement VMXON and VMXOFF")
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- drivers/char/hw_random/cn10k-rng.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ arch/x86/kvm/vmx/nested.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/char/hw_random/cn10k-rng.c b/drivers/char/hw_random/cn10k-rng.c
-index 35001c63648b..dd226630b67d 100644
---- a/drivers/char/hw_random/cn10k-rng.c
-+++ b/drivers/char/hw_random/cn10k-rng.c
-@@ -90,6 +90,7 @@ static int cn10k_rng_read(struct hwrng *hwrng, void *data,
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index 9a5b6ef16c1c..00c7b00c017a 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -4958,7 +4958,7 @@ static int enter_vmx_operation(struct kvm_vcpu *vcpu)
+ }
+ 
+ /* Emulate the VMXON instruction. */
+-static int handle_vmon(struct kvm_vcpu *vcpu)
++static int handle_vmxon(struct kvm_vcpu *vcpu)
  {
- 	struct cn10k_rng *rng = (struct cn10k_rng *)hwrng->priv;
- 	unsigned int size;
-+	u8 *pos = data;
- 	int err = 0;
- 	u64 value;
+ 	int ret;
+ 	gpa_t vmptr;
+@@ -5055,7 +5055,7 @@ static inline void nested_release_vmcs12(struct kvm_vcpu *vcpu)
+ }
  
-@@ -102,17 +103,20 @@ static int cn10k_rng_read(struct hwrng *hwrng, void *data,
- 	while (size >= 8) {
- 		cn10k_read_trng(rng, &value);
- 
--		*((u64 *)data) = (u64)value;
-+		*((u64 *)pos) = value;
- 		size -= 8;
--		data += 8;
-+		pos += 8;
- 	}
- 
--	while (size > 0) {
-+	if (size > 0) {
- 		cn10k_read_trng(rng, &value);
- 
--		*((u8 *)data) = (u8)value;
--		size--;
--		data++;
-+		while (size > 0) {
-+			*pos = (u8)value;
-+			value >>= 8;
-+			size--;
-+			pos++;
-+		}
- 	}
- 
- 	return max - size;
+ /* Emulate the VMXOFF instruction */
+-static int handle_vmoff(struct kvm_vcpu *vcpu)
++static int handle_vmxoff(struct kvm_vcpu *vcpu)
+ {
+ 	if (!nested_vmx_check_permission(vcpu))
+ 		return 1;
+@@ -6832,8 +6832,8 @@ __init int nested_vmx_hardware_setup(int (*exit_handlers[])(struct kvm_vcpu *))
+ 	exit_handlers[EXIT_REASON_VMREAD]	= handle_vmread;
+ 	exit_handlers[EXIT_REASON_VMRESUME]	= handle_vmresume;
+ 	exit_handlers[EXIT_REASON_VMWRITE]	= handle_vmwrite;
+-	exit_handlers[EXIT_REASON_VMOFF]	= handle_vmoff;
+-	exit_handlers[EXIT_REASON_VMON]		= handle_vmon;
++	exit_handlers[EXIT_REASON_VMOFF]	= handle_vmxoff;
++	exit_handlers[EXIT_REASON_VMON]		= handle_vmxon;
+ 	exit_handlers[EXIT_REASON_INVEPT]	= handle_invept;
+ 	exit_handlers[EXIT_REASON_INVVPID]	= handle_invvpid;
+ 	exit_handlers[EXIT_REASON_VMFUNC]	= handle_vmfunc;
 -- 
-2.35.1
-
-
+2.36.1.255.ge46751e96f-goog
 
