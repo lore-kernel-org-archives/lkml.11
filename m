@@ -2,515 +2,697 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69612C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51C42C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:06:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353158AbiFGTGt (ORCPT
+        id S1354081AbiFGTFM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:06:49 -0400
+        Tue, 7 Jun 2022 15:05:12 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352092AbiFGSQx (ORCPT
+        with ESMTP id S1352768AbiFGSRb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7CCBCB7;
-        Tue,  7 Jun 2022 10:50:29 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A22113CA2A;
+        Tue,  7 Jun 2022 10:52:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B9B76159C;
-        Tue,  7 Jun 2022 17:50:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9908EC385A5;
-        Tue,  7 Jun 2022 17:50:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624228;
-        bh=pLy5mbLjgbIXtXDaMp4Ql07BTWTauNKxrvjdn4BfG6o=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A3E4617A7;
+        Tue,  7 Jun 2022 17:52:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E73AC36B00;
+        Tue,  7 Jun 2022 17:52:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624361;
+        bh=/piWOeJup+MD5ETE7pEpLUnzV8DUBFXrOaSc7qVNt1c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1jV7/stqhOKmEYn2iiNh3Qeb2K/DmZdn0xH9gW0ar8L8mKjdd68GKuGLSsQntjUro
-         edm+XOvHzdSRHrmO7YllUWN3HvngA0hOvHgN+LgkG9zER9jHcfM81I1HzdbaangA4g
-         UNqvV4GPv+njhGULydqF3t6dLFpplMneUuRiT96Y=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 250/667] drm/msm/hdmi: switch to drm_bridge_connector
-Date:   Tue,  7 Jun 2022 18:58:35 +0200
-Message-Id: <20220607164942.282971596@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=qix70+Zxn6C46uUzMQ0UnnEHeX4QVaI6mU5bQMxUr4WtrgUqTacbW1OjNWw8dxAgK
+         nceGppJ/GsbRpIcBeeUGSvvVCRODKQEj2DDiRljUXQ0BBFDiZWAjv9lcJHoZM+zXoI
+         gOn3um5BMCkCjz3aNHHtkhZf9Gr7gWJo7YBuX3q/LF+9E3R7a6S9SY2Ch0VBSD1BzM
+         21RzAgVxrP5kFDdnSlI/fZyEEb25uYdp54iO7xmuyx2sQC0+PK4oNuXY4iOnodmoCx
+         OXPT/c9pATwmkQiVRpFBQjpFAWK+3K2hEiktxwLMkuya0UrpMa9Vf96cgW2UUeR9XU
+         8ANdd3SlVq2+w==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        Shyam Prasad N <nspmangalore@gmail.com>,
+        Lars Persson <larper@axis.com>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Enzo Matsumiya <ematsumiya@suse.de>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
+Subject: [PATCH AUTOSEL 5.18 64/68] cifs: fix potential deadlock in direct reclaim
+Date:   Tue,  7 Jun 2022 13:48:30 -0400
+Message-Id: <20220607174846.477972-64-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Vincent Whitchurch <vincent.whitchurch@axis.com>
 
-[ Upstream commit caa24223463dfd75702a24daac13c93edb4aafac ]
+[ Upstream commit cc391b694ff085f62f133e6b8f864d43a8e69dfd ]
 
-Merge old hdmi_bridge and hdmi_connector implementations. Use
-drm_bridge_connector instead.
+The srv_mutex is used during writeback so cifs should ensure that
+allocations done when that mutex is held are done with GFP_NOFS, to
+avoid having direct reclaim ending up waiting for the same mutex and
+causing a deadlock.  This is detected by lockdep with the splat below:
 
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Link: https://lore.kernel.org/r/20211015001100.4193241-2-dmitry.baryshkov@linaro.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+ ======================================================
+ WARNING: possible circular locking dependency detected
+ 5.18.0 #70 Not tainted
+ ------------------------------------------------------
+ kswapd0/49 is trying to acquire lock:
+ ffff8880195782e0 (&tcp_ses->srv_mutex){+.+.}-{3:3}, at: compound_send_recv
+
+ but task is already holding lock:
+ ffffffffa98e66c0 (fs_reclaim){+.+.}-{0:0}, at: balance_pgdat
+
+ which lock already depends on the new lock.
+
+ the existing dependency chain (in reverse order) is:
+
+ -> #1 (fs_reclaim){+.+.}-{0:0}:
+        fs_reclaim_acquire
+        kmem_cache_alloc_trace
+        __request_module
+        crypto_alg_mod_lookup
+        crypto_alloc_tfm_node
+        crypto_alloc_shash
+        cifs_alloc_hash
+        smb311_crypto_shash_allocate
+        smb311_update_preauth_hash
+        compound_send_recv
+        cifs_send_recv
+        SMB2_negotiate
+        smb2_negotiate
+        cifs_negotiate_protocol
+        cifs_get_smb_ses
+        cifs_mount
+        cifs_smb3_do_mount
+        smb3_get_tree
+        vfs_get_tree
+        path_mount
+        __x64_sys_mount
+        do_syscall_64
+        entry_SYSCALL_64_after_hwframe
+
+ -> #0 (&tcp_ses->srv_mutex){+.+.}-{3:3}:
+        __lock_acquire
+        lock_acquire
+        __mutex_lock
+        mutex_lock_nested
+        compound_send_recv
+        cifs_send_recv
+        SMB2_write
+        smb2_sync_write
+        cifs_write
+        cifs_writepage_locked
+        cifs_writepage
+        shrink_page_list
+        shrink_lruvec
+        shrink_node
+        balance_pgdat
+        kswapd
+        kthread
+        ret_from_fork
+
+ other info that might help us debug this:
+
+  Possible unsafe locking scenario:
+
+        CPU0                    CPU1
+        ----                    ----
+   lock(fs_reclaim);
+                                lock(&tcp_ses->srv_mutex);
+                                lock(fs_reclaim);
+   lock(&tcp_ses->srv_mutex);
+
+  *** DEADLOCK ***
+
+ 1 lock held by kswapd0/49:
+  #0: ffffffffa98e66c0 (fs_reclaim){+.+.}-{0:0}, at: balance_pgdat
+
+ stack backtrace:
+ CPU: 2 PID: 49 Comm: kswapd0 Not tainted 5.18.0 #70
+ Call Trace:
+  <TASK>
+  dump_stack_lvl
+  dump_stack
+  print_circular_bug.cold
+  check_noncircular
+  __lock_acquire
+  lock_acquire
+  __mutex_lock
+  mutex_lock_nested
+  compound_send_recv
+  cifs_send_recv
+  SMB2_write
+  smb2_sync_write
+  cifs_write
+  cifs_writepage_locked
+  cifs_writepage
+  shrink_page_list
+  shrink_lruvec
+  shrink_node
+  balance_pgdat
+  kswapd
+  kthread
+  ret_from_fork
+  </TASK>
+
+Fix this by using the memalloc_nofs_save/restore APIs around the places
+where the srv_mutex is held.  Do this in a wrapper function for the
+lock/unlock of the srv_mutex, and rename the srv_mutex to avoid missing
+call sites in the conversion.
+
+Note that there is another lockdep warning involving internal crypto
+locks, which was masked by this problem and is visible after this fix,
+see the discussion in this thread:
+
+ https://lore.kernel.org/all/20220523123755.GA13668@axis.com/
+
+Link: https://lore.kernel.org/r/CANT5p=rqcYfYMVHirqvdnnca4Mo+JQSw5Qu12v=kPfpk5yhhmg@mail.gmail.com/
+Reported-by: Shyam Prasad N <nspmangalore@gmail.com>
+Suggested-by: Lars Persson <larper@axis.com>
+Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Reviewed-by: Enzo Matsumiya <ematsumiya@suse.de>
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/Makefile                  |   2 +-
- drivers/gpu/drm/msm/hdmi/hdmi.c               |  12 +-
- drivers/gpu/drm/msm/hdmi/hdmi.h               |  19 ++-
- drivers/gpu/drm/msm/hdmi/hdmi_bridge.c        |  81 ++++++++-
- .../msm/hdmi/{hdmi_connector.c => hdmi_hpd.c} | 154 ++----------------
- 5 files changed, 109 insertions(+), 159 deletions(-)
- rename drivers/gpu/drm/msm/hdmi/{hdmi_connector.c => hdmi_hpd.c} (63%)
+ fs/cifs/cifs_swn.c    |  4 ++--
+ fs/cifs/cifsencrypt.c |  8 ++++----
+ fs/cifs/cifsglob.h    | 20 +++++++++++++++++++-
+ fs/cifs/connect.c     | 26 +++++++++++++-------------
+ fs/cifs/dfs_cache.c   |  4 ++--
+ fs/cifs/sess.c        |  6 +++---
+ fs/cifs/smb1ops.c     |  6 +++---
+ fs/cifs/smb2pdu.c     |  6 +++---
+ fs/cifs/smbdirect.c   |  4 ++--
+ fs/cifs/transport.c   | 40 ++++++++++++++++++++--------------------
+ 10 files changed, 71 insertions(+), 53 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/Makefile b/drivers/gpu/drm/msm/Makefile
-index 904535eda0c4..91b09cda8a9c 100644
---- a/drivers/gpu/drm/msm/Makefile
-+++ b/drivers/gpu/drm/msm/Makefile
-@@ -19,7 +19,7 @@ msm-y := \
- 	hdmi/hdmi.o \
- 	hdmi/hdmi_audio.o \
- 	hdmi/hdmi_bridge.o \
--	hdmi/hdmi_connector.o \
-+	hdmi/hdmi_hpd.o \
- 	hdmi/hdmi_i2c.o \
- 	hdmi/hdmi_phy.o \
- 	hdmi/hdmi_phy_8960.o \
-diff --git a/drivers/gpu/drm/msm/hdmi/hdmi.c b/drivers/gpu/drm/msm/hdmi/hdmi.c
-index 94f948ef279d..d5a80fa3e625 100644
---- a/drivers/gpu/drm/msm/hdmi/hdmi.c
-+++ b/drivers/gpu/drm/msm/hdmi/hdmi.c
-@@ -8,6 +8,8 @@
- #include <linux/of_irq.h>
- #include <linux/of_gpio.h>
+diff --git a/fs/cifs/cifs_swn.c b/fs/cifs/cifs_swn.c
+index 180c234c2f46..1e4c7cc5287f 100644
+--- a/fs/cifs/cifs_swn.c
++++ b/fs/cifs/cifs_swn.c
+@@ -465,7 +465,7 @@ static int cifs_swn_reconnect(struct cifs_tcon *tcon, struct sockaddr_storage *a
+ 	int ret = 0;
  
-+#include <drm/drm_bridge_connector.h>
-+
- #include <sound/hdmi-codec.h>
- #include "hdmi.h"
+ 	/* Store the reconnect address */
+-	mutex_lock(&tcon->ses->server->srv_mutex);
++	cifs_server_lock(tcon->ses->server);
+ 	if (cifs_sockaddr_equal(&tcon->ses->server->dstaddr, addr))
+ 		goto unlock;
  
-@@ -41,7 +43,7 @@ static irqreturn_t msm_hdmi_irq(int irq, void *dev_id)
- 	struct hdmi *hdmi = dev_id;
+@@ -501,7 +501,7 @@ static int cifs_swn_reconnect(struct cifs_tcon *tcon, struct sockaddr_storage *a
+ 	cifs_signal_cifsd_for_reconnect(tcon->ses->server, false);
  
- 	/* Process HPD: */
--	msm_hdmi_connector_irq(hdmi->connector);
-+	msm_hdmi_hpd_irq(hdmi->bridge);
+ unlock:
+-	mutex_unlock(&tcon->ses->server->srv_mutex);
++	cifs_server_unlock(tcon->ses->server);
  
- 	/* Process DDC: */
- 	msm_hdmi_i2c_irq(hdmi->i2c);
-@@ -302,7 +304,7 @@ int msm_hdmi_modeset_init(struct hdmi *hdmi,
- 		goto fail;
- 	}
- 
--	hdmi->connector = msm_hdmi_connector_init(hdmi);
-+	hdmi->connector = drm_bridge_connector_init(hdmi->dev, encoder);
- 	if (IS_ERR(hdmi->connector)) {
- 		ret = PTR_ERR(hdmi->connector);
- 		DRM_DEV_ERROR(dev->dev, "failed to create HDMI connector: %d\n", ret);
-@@ -310,6 +312,8 @@ int msm_hdmi_modeset_init(struct hdmi *hdmi,
- 		goto fail;
- 	}
- 
-+	drm_connector_attach_encoder(hdmi->connector, hdmi->encoder);
-+
- 	hdmi->irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
- 	if (hdmi->irq < 0) {
- 		ret = hdmi->irq;
-@@ -326,7 +330,9 @@ int msm_hdmi_modeset_init(struct hdmi *hdmi,
- 		goto fail;
- 	}
- 
--	ret = msm_hdmi_hpd_enable(hdmi->connector);
-+	drm_bridge_connector_enable_hpd(hdmi->connector);
-+
-+	ret = msm_hdmi_hpd_enable(hdmi->bridge);
- 	if (ret < 0) {
- 		DRM_DEV_ERROR(&hdmi->pdev->dev, "failed to enable HPD: %d\n", ret);
- 		goto fail;
-diff --git a/drivers/gpu/drm/msm/hdmi/hdmi.h b/drivers/gpu/drm/msm/hdmi/hdmi.h
-index d0b84f0abee1..8d2706bec3b9 100644
---- a/drivers/gpu/drm/msm/hdmi/hdmi.h
-+++ b/drivers/gpu/drm/msm/hdmi/hdmi.h
-@@ -114,6 +114,13 @@ struct hdmi_platform_config {
- 	struct hdmi_gpio_data gpios[HDMI_MAX_NUM_GPIO];
- };
- 
-+struct hdmi_bridge {
-+	struct drm_bridge base;
-+	struct hdmi *hdmi;
-+	struct work_struct hpd_work;
-+};
-+#define to_hdmi_bridge(x) container_of(x, struct hdmi_bridge, base)
-+
- void msm_hdmi_set_mode(struct hdmi *hdmi, bool power_on);
- 
- static inline void hdmi_write(struct hdmi *hdmi, u32 reg, u32 data)
-@@ -230,13 +237,11 @@ void msm_hdmi_audio_set_sample_rate(struct hdmi *hdmi, int rate);
- struct drm_bridge *msm_hdmi_bridge_init(struct hdmi *hdmi);
- void msm_hdmi_bridge_destroy(struct drm_bridge *bridge);
- 
--/*
-- * hdmi connector:
-- */
--
--void msm_hdmi_connector_irq(struct drm_connector *connector);
--struct drm_connector *msm_hdmi_connector_init(struct hdmi *hdmi);
--int msm_hdmi_hpd_enable(struct drm_connector *connector);
-+void msm_hdmi_hpd_irq(struct drm_bridge *bridge);
-+enum drm_connector_status msm_hdmi_bridge_detect(
-+		struct drm_bridge *bridge);
-+int msm_hdmi_hpd_enable(struct drm_bridge *bridge);
-+void msm_hdmi_hpd_disable(struct hdmi_bridge *hdmi_bridge);
- 
- /*
-  * i2c adapter for ddc:
-diff --git a/drivers/gpu/drm/msm/hdmi/hdmi_bridge.c b/drivers/gpu/drm/msm/hdmi/hdmi_bridge.c
-index 6e380db9287b..efcfdd70a02e 100644
---- a/drivers/gpu/drm/msm/hdmi/hdmi_bridge.c
-+++ b/drivers/gpu/drm/msm/hdmi/hdmi_bridge.c
-@@ -5,17 +5,16 @@
-  */
- 
- #include <linux/delay.h>
-+#include <drm/drm_bridge_connector.h>
- 
-+#include "msm_kms.h"
- #include "hdmi.h"
- 
--struct hdmi_bridge {
--	struct drm_bridge base;
--	struct hdmi *hdmi;
--};
--#define to_hdmi_bridge(x) container_of(x, struct hdmi_bridge, base)
--
- void msm_hdmi_bridge_destroy(struct drm_bridge *bridge)
- {
-+	struct hdmi_bridge *hdmi_bridge = to_hdmi_bridge(bridge);
-+
-+	msm_hdmi_hpd_disable(hdmi_bridge);
- }
- 
- static void msm_hdmi_power_on(struct drm_bridge *bridge)
-@@ -259,14 +258,76 @@ static void msm_hdmi_bridge_mode_set(struct drm_bridge *bridge,
- 		msm_hdmi_audio_update(hdmi);
- }
- 
-+static struct edid *msm_hdmi_bridge_get_edid(struct drm_bridge *bridge,
-+		struct drm_connector *connector)
-+{
-+	struct hdmi_bridge *hdmi_bridge = to_hdmi_bridge(bridge);
-+	struct hdmi *hdmi = hdmi_bridge->hdmi;
-+	struct edid *edid;
-+	uint32_t hdmi_ctrl;
-+
-+	hdmi_ctrl = hdmi_read(hdmi, REG_HDMI_CTRL);
-+	hdmi_write(hdmi, REG_HDMI_CTRL, hdmi_ctrl | HDMI_CTRL_ENABLE);
-+
-+	edid = drm_get_edid(connector, hdmi->i2c);
-+
-+	hdmi_write(hdmi, REG_HDMI_CTRL, hdmi_ctrl);
-+
-+	hdmi->hdmi_mode = drm_detect_hdmi_monitor(edid);
-+
-+	return edid;
-+}
-+
-+static enum drm_mode_status msm_hdmi_bridge_mode_valid(struct drm_bridge *bridge,
-+		const struct drm_display_info *info,
-+		const struct drm_display_mode *mode)
-+{
-+	struct hdmi_bridge *hdmi_bridge = to_hdmi_bridge(bridge);
-+	struct hdmi *hdmi = hdmi_bridge->hdmi;
-+	const struct hdmi_platform_config *config = hdmi->config;
-+	struct msm_drm_private *priv = bridge->dev->dev_private;
-+	struct msm_kms *kms = priv->kms;
-+	long actual, requested;
-+
-+	requested = 1000 * mode->clock;
-+	actual = kms->funcs->round_pixclk(kms,
-+			requested, hdmi_bridge->hdmi->encoder);
-+
-+	/* for mdp5/apq8074, we manage our own pixel clk (as opposed to
-+	 * mdp4/dtv stuff where pixel clk is assigned to mdp/encoder
-+	 * instead):
-+	 */
-+	if (config->pwr_clk_cnt > 0)
-+		actual = clk_round_rate(hdmi->pwr_clks[0], actual);
-+
-+	DBG("requested=%ld, actual=%ld", requested, actual);
-+
-+	if (actual != requested)
-+		return MODE_CLOCK_RANGE;
-+
-+	return 0;
-+}
-+
- static const struct drm_bridge_funcs msm_hdmi_bridge_funcs = {
- 		.pre_enable = msm_hdmi_bridge_pre_enable,
- 		.enable = msm_hdmi_bridge_enable,
- 		.disable = msm_hdmi_bridge_disable,
- 		.post_disable = msm_hdmi_bridge_post_disable,
- 		.mode_set = msm_hdmi_bridge_mode_set,
-+		.mode_valid = msm_hdmi_bridge_mode_valid,
-+		.get_edid = msm_hdmi_bridge_get_edid,
-+		.detect = msm_hdmi_bridge_detect,
- };
- 
-+static void
-+msm_hdmi_hotplug_work(struct work_struct *work)
-+{
-+	struct hdmi_bridge *hdmi_bridge =
-+		container_of(work, struct hdmi_bridge, hpd_work);
-+	struct drm_bridge *bridge = &hdmi_bridge->base;
-+
-+	drm_bridge_hpd_notify(bridge, drm_bridge_detect(bridge));
-+}
- 
- /* initialize bridge */
- struct drm_bridge *msm_hdmi_bridge_init(struct hdmi *hdmi)
-@@ -283,11 +344,17 @@ struct drm_bridge *msm_hdmi_bridge_init(struct hdmi *hdmi)
- 	}
- 
- 	hdmi_bridge->hdmi = hdmi;
-+	INIT_WORK(&hdmi_bridge->hpd_work, msm_hdmi_hotplug_work);
- 
- 	bridge = &hdmi_bridge->base;
- 	bridge->funcs = &msm_hdmi_bridge_funcs;
-+	bridge->ddc = hdmi->i2c;
-+	bridge->type = DRM_MODE_CONNECTOR_HDMIA;
-+	bridge->ops = DRM_BRIDGE_OP_HPD |
-+		DRM_BRIDGE_OP_DETECT |
-+		DRM_BRIDGE_OP_EDID;
- 
--	ret = drm_bridge_attach(hdmi->encoder, bridge, NULL, 0);
-+	ret = drm_bridge_attach(hdmi->encoder, bridge, NULL, DRM_BRIDGE_ATTACH_NO_CONNECTOR);
- 	if (ret)
- 		goto fail;
- 
-diff --git a/drivers/gpu/drm/msm/hdmi/hdmi_connector.c b/drivers/gpu/drm/msm/hdmi/hdmi_hpd.c
-similarity index 63%
-rename from drivers/gpu/drm/msm/hdmi/hdmi_connector.c
-rename to drivers/gpu/drm/msm/hdmi/hdmi_hpd.c
-index 58707a1f3878..c3a236bb952c 100644
---- a/drivers/gpu/drm/msm/hdmi/hdmi_connector.c
-+++ b/drivers/gpu/drm/msm/hdmi/hdmi_hpd.c
-@@ -11,13 +11,6 @@
- #include "msm_kms.h"
- #include "hdmi.h"
- 
--struct hdmi_connector {
--	struct drm_connector base;
--	struct hdmi *hdmi;
--	struct work_struct hpd_work;
--};
--#define to_hdmi_connector(x) container_of(x, struct hdmi_connector, base)
--
- static void msm_hdmi_phy_reset(struct hdmi *hdmi)
- {
- 	unsigned int val;
-@@ -139,10 +132,10 @@ static void enable_hpd_clocks(struct hdmi *hdmi, bool enable)
- 	}
- }
- 
--int msm_hdmi_hpd_enable(struct drm_connector *connector)
-+int msm_hdmi_hpd_enable(struct drm_bridge *bridge)
- {
--	struct hdmi_connector *hdmi_connector = to_hdmi_connector(connector);
--	struct hdmi *hdmi = hdmi_connector->hdmi;
-+	struct hdmi_bridge *hdmi_bridge = to_hdmi_bridge(bridge);
-+	struct hdmi *hdmi = hdmi_bridge->hdmi;
- 	const struct hdmi_platform_config *config = hdmi->config;
- 	struct device *dev = &hdmi->pdev->dev;
- 	uint32_t hpd_ctrl;
-@@ -202,9 +195,9 @@ int msm_hdmi_hpd_enable(struct drm_connector *connector)
  	return ret;
  }
+diff --git a/fs/cifs/cifsencrypt.c b/fs/cifs/cifsencrypt.c
+index 0912d8bbbac1..663cb9db4908 100644
+--- a/fs/cifs/cifsencrypt.c
++++ b/fs/cifs/cifsencrypt.c
+@@ -236,9 +236,9 @@ int cifs_verify_signature(struct smb_rqst *rqst,
+ 					cpu_to_le32(expected_sequence_number);
+ 	cifs_pdu->Signature.Sequence.Reserved = 0;
  
--static void hdp_disable(struct hdmi_connector *hdmi_connector)
-+void msm_hdmi_hpd_disable(struct hdmi_bridge *hdmi_bridge)
- {
--	struct hdmi *hdmi = hdmi_connector->hdmi;
-+	struct hdmi *hdmi = hdmi_bridge->hdmi;
- 	const struct hdmi_platform_config *config = hdmi->config;
- 	struct device *dev = &hdmi->pdev->dev;
- 	int i, ret = 0;
-@@ -233,19 +226,10 @@ static void hdp_disable(struct hdmi_connector *hdmi_connector)
+-	mutex_lock(&server->srv_mutex);
++	cifs_server_lock(server);
+ 	rc = cifs_calc_signature(rqst, server, what_we_think_sig_should_be);
+-	mutex_unlock(&server->srv_mutex);
++	cifs_server_unlock(server);
+ 
+ 	if (rc)
+ 		return rc;
+@@ -626,7 +626,7 @@ setup_ntlmv2_rsp(struct cifs_ses *ses, const struct nls_table *nls_cp)
+ 
+ 	memcpy(ses->auth_key.response + baselen, tiblob, tilen);
+ 
+-	mutex_lock(&ses->server->srv_mutex);
++	cifs_server_lock(ses->server);
+ 
+ 	rc = cifs_alloc_hash("hmac(md5)",
+ 			     &ses->server->secmech.hmacmd5,
+@@ -678,7 +678,7 @@ setup_ntlmv2_rsp(struct cifs_ses *ses, const struct nls_table *nls_cp)
+ 		cifs_dbg(VFS, "%s: Could not generate md5 hash\n", __func__);
+ 
+ unlock:
+-	mutex_unlock(&ses->server->srv_mutex);
++	cifs_server_unlock(ses->server);
+ setup_ntlmv2_rsp_ret:
+ 	kfree(tiblob);
+ 
+diff --git a/fs/cifs/cifsglob.h b/fs/cifs/cifsglob.h
+index 8de977c359b1..719d419a0a06 100644
+--- a/fs/cifs/cifsglob.h
++++ b/fs/cifs/cifsglob.h
+@@ -16,6 +16,7 @@
+ #include <linux/mempool.h>
+ #include <linux/workqueue.h>
+ #include <linux/utsname.h>
++#include <linux/sched/mm.h>
+ #include <linux/netfs.h>
+ #include "cifs_fs_sb.h"
+ #include "cifsacl.h"
+@@ -621,7 +622,8 @@ struct TCP_Server_Info {
+ 	unsigned int in_flight;  /* number of requests on the wire to server */
+ 	unsigned int max_in_flight; /* max number of requests that were on wire */
+ 	spinlock_t req_lock;  /* protect the two values above */
+-	struct mutex srv_mutex;
++	struct mutex _srv_mutex;
++	unsigned int nofs_flag;
+ 	struct task_struct *tsk;
+ 	char server_GUID[16];
+ 	__u16 sec_mode;
+@@ -736,6 +738,22 @@ struct TCP_Server_Info {
+ #endif
+ };
+ 
++static inline void cifs_server_lock(struct TCP_Server_Info *server)
++{
++	unsigned int nofs_flag = memalloc_nofs_save();
++
++	mutex_lock(&server->_srv_mutex);
++	server->nofs_flag = nofs_flag;
++}
++
++static inline void cifs_server_unlock(struct TCP_Server_Info *server)
++{
++	unsigned int nofs_flag = server->nofs_flag;
++
++	mutex_unlock(&server->_srv_mutex);
++	memalloc_nofs_restore(nofs_flag);
++}
++
+ struct cifs_credits {
+ 	unsigned int value;
+ 	unsigned int instance;
+diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
+index 42e14f408856..5226f975d8e4 100644
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -148,7 +148,7 @@ static void cifs_resolve_server(struct work_struct *work)
+ 	struct TCP_Server_Info *server = container_of(work,
+ 					struct TCP_Server_Info, resolve.work);
+ 
+-	mutex_lock(&server->srv_mutex);
++	cifs_server_lock(server);
+ 
+ 	/*
+ 	 * Resolve the hostname again to make sure that IP address is up-to-date.
+@@ -159,7 +159,7 @@ static void cifs_resolve_server(struct work_struct *work)
+ 				__func__, rc);
+ 	}
+ 
+-	mutex_unlock(&server->srv_mutex);
++	cifs_server_unlock(server);
+ }
+ 
+ /*
+@@ -267,7 +267,7 @@ cifs_abort_connection(struct TCP_Server_Info *server)
+ 
+ 	/* do not want to be sending data on a socket we are freeing */
+ 	cifs_dbg(FYI, "%s: tearing down socket\n", __func__);
+-	mutex_lock(&server->srv_mutex);
++	cifs_server_lock(server);
+ 	if (server->ssocket) {
+ 		cifs_dbg(FYI, "State: 0x%x Flags: 0x%lx\n", server->ssocket->state,
+ 			 server->ssocket->flags);
+@@ -296,7 +296,7 @@ cifs_abort_connection(struct TCP_Server_Info *server)
+ 		mid->mid_flags |= MID_DELETED;
+ 	}
+ 	spin_unlock(&GlobalMid_Lock);
+-	mutex_unlock(&server->srv_mutex);
++	cifs_server_unlock(server);
+ 
+ 	cifs_dbg(FYI, "%s: issuing mid callbacks\n", __func__);
+ 	list_for_each_entry_safe(mid, nmid, &retry_list, qhead) {
+@@ -306,9 +306,9 @@ cifs_abort_connection(struct TCP_Server_Info *server)
+ 	}
+ 
+ 	if (cifs_rdma_enabled(server)) {
+-		mutex_lock(&server->srv_mutex);
++		cifs_server_lock(server);
+ 		smbd_destroy(server);
+-		mutex_unlock(&server->srv_mutex);
++		cifs_server_unlock(server);
  	}
  }
  
--static void
--msm_hdmi_hotplug_work(struct work_struct *work)
--{
--	struct hdmi_connector *hdmi_connector =
--		container_of(work, struct hdmi_connector, hpd_work);
--	struct drm_connector *connector = &hdmi_connector->base;
--	drm_helper_hpd_irq_event(connector->dev);
--}
--
--void msm_hdmi_connector_irq(struct drm_connector *connector)
-+void msm_hdmi_hpd_irq(struct drm_bridge *bridge)
- {
--	struct hdmi_connector *hdmi_connector = to_hdmi_connector(connector);
--	struct hdmi *hdmi = hdmi_connector->hdmi;
-+	struct hdmi_bridge *hdmi_bridge = to_hdmi_bridge(bridge);
-+	struct hdmi *hdmi = hdmi_bridge->hdmi;
- 	uint32_t hpd_int_status, hpd_int_ctrl;
+@@ -359,7 +359,7 @@ static int __cifs_reconnect(struct TCP_Server_Info *server,
  
- 	/* Process HPD: */
-@@ -268,7 +252,7 @@ void msm_hdmi_connector_irq(struct drm_connector *connector)
- 			hpd_int_ctrl |= HDMI_HPD_INT_CTRL_INT_CONNECT;
- 		hdmi_write(hdmi, REG_HDMI_HPD_INT_CTRL, hpd_int_ctrl);
+ 	do {
+ 		try_to_freeze();
+-		mutex_lock(&server->srv_mutex);
++		cifs_server_lock(server);
  
--		queue_work(hdmi->workq, &hdmi_connector->hpd_work);
-+		queue_work(hdmi->workq, &hdmi_bridge->hpd_work);
+ 		if (!cifs_swn_set_server_dstaddr(server)) {
+ 			/* resolve the hostname again to make sure that IP address is up-to-date */
+@@ -372,7 +372,7 @@ static int __cifs_reconnect(struct TCP_Server_Info *server,
+ 		else
+ 			rc = generic_ip_connect(server);
+ 		if (rc) {
+-			mutex_unlock(&server->srv_mutex);
++			cifs_server_unlock(server);
+ 			cifs_dbg(FYI, "%s: reconnect error %d\n", __func__, rc);
+ 			msleep(3000);
+ 		} else {
+@@ -383,7 +383,7 @@ static int __cifs_reconnect(struct TCP_Server_Info *server,
+ 				server->tcpStatus = CifsNeedNegotiate;
+ 			spin_unlock(&cifs_tcp_ses_lock);
+ 			cifs_swn_reset_server_dstaddr(server);
+-			mutex_unlock(&server->srv_mutex);
++			cifs_server_unlock(server);
+ 			mod_delayed_work(cifsiod_wq, &server->reconnect, 0);
+ 		}
+ 	} while (server->tcpStatus == CifsNeedReconnect);
+@@ -488,12 +488,12 @@ static int reconnect_dfs_server(struct TCP_Server_Info *server)
+ 
+ 	do {
+ 		try_to_freeze();
+-		mutex_lock(&server->srv_mutex);
++		cifs_server_lock(server);
+ 
+ 		rc = reconnect_target_unlocked(server, &tl, &target_hint);
+ 		if (rc) {
+ 			/* Failed to reconnect socket */
+-			mutex_unlock(&server->srv_mutex);
++			cifs_server_unlock(server);
+ 			cifs_dbg(FYI, "%s: reconnect error %d\n", __func__, rc);
+ 			msleep(3000);
+ 			continue;
+@@ -510,7 +510,7 @@ static int reconnect_dfs_server(struct TCP_Server_Info *server)
+ 			server->tcpStatus = CifsNeedNegotiate;
+ 		spin_unlock(&cifs_tcp_ses_lock);
+ 		cifs_swn_reset_server_dstaddr(server);
+-		mutex_unlock(&server->srv_mutex);
++		cifs_server_unlock(server);
+ 		mod_delayed_work(cifsiod_wq, &server->reconnect, 0);
+ 	} while (server->tcpStatus == CifsNeedReconnect);
+ 
+@@ -1565,7 +1565,7 @@ cifs_get_tcp_session(struct smb3_fs_context *ctx,
+ 	init_waitqueue_head(&tcp_ses->response_q);
+ 	init_waitqueue_head(&tcp_ses->request_q);
+ 	INIT_LIST_HEAD(&tcp_ses->pending_mid_q);
+-	mutex_init(&tcp_ses->srv_mutex);
++	mutex_init(&tcp_ses->_srv_mutex);
+ 	memcpy(tcp_ses->workstation_RFC1001_name,
+ 		ctx->source_rfc1001_name, RFC1001_NAME_LEN_WITH_NULL);
+ 	memcpy(tcp_ses->server_RFC1001_name,
+diff --git a/fs/cifs/dfs_cache.c b/fs/cifs/dfs_cache.c
+index 956f8e5cf3e7..261ebe88a328 100644
+--- a/fs/cifs/dfs_cache.c
++++ b/fs/cifs/dfs_cache.c
+@@ -1327,9 +1327,9 @@ static bool target_share_equal(struct TCP_Server_Info *server, const char *s1, c
+ 		cifs_dbg(VFS, "%s: failed to convert address \'%s\'. skip address matching.\n",
+ 			 __func__, ip);
+ 	} else {
+-		mutex_lock(&server->srv_mutex);
++		cifs_server_lock(server);
+ 		match = cifs_match_ipaddr((struct sockaddr *)&server->dstaddr, &sa);
+-		mutex_unlock(&server->srv_mutex);
++		cifs_server_unlock(server);
  	}
- }
  
-@@ -299,11 +283,11 @@ static enum drm_connector_status detect_gpio(struct hdmi *hdmi)
- 			connector_status_disconnected;
- }
+ 	kfree(ip);
+diff --git a/fs/cifs/sess.c b/fs/cifs/sess.c
+index 32f478c7a66d..dadfc3c6ba60 100644
+--- a/fs/cifs/sess.c
++++ b/fs/cifs/sess.c
+@@ -1093,14 +1093,14 @@ sess_establish_session(struct sess_data *sess_data)
+ 	struct cifs_ses *ses = sess_data->ses;
+ 	struct TCP_Server_Info *server = sess_data->server;
  
--static enum drm_connector_status hdmi_connector_detect(
--		struct drm_connector *connector, bool force)
-+enum drm_connector_status msm_hdmi_bridge_detect(
-+		struct drm_bridge *bridge)
- {
--	struct hdmi_connector *hdmi_connector = to_hdmi_connector(connector);
--	struct hdmi *hdmi = hdmi_connector->hdmi;
-+	struct hdmi_bridge *hdmi_bridge = to_hdmi_bridge(bridge);
-+	struct hdmi *hdmi = hdmi_bridge->hdmi;
- 	const struct hdmi_platform_config *config = hdmi->config;
- 	struct hdmi_gpio_data hpd_gpio = config->gpios[HPD_GPIO_INDEX];
- 	enum drm_connector_status stat_gpio, stat_reg;
-@@ -337,115 +321,3 @@ static enum drm_connector_status hdmi_connector_detect(
+-	mutex_lock(&server->srv_mutex);
++	cifs_server_lock(server);
+ 	if (!server->session_estab) {
+ 		if (server->sign) {
+ 			server->session_key.response =
+ 				kmemdup(ses->auth_key.response,
+ 				ses->auth_key.len, GFP_KERNEL);
+ 			if (!server->session_key.response) {
+-				mutex_unlock(&server->srv_mutex);
++				cifs_server_unlock(server);
+ 				return -ENOMEM;
+ 			}
+ 			server->session_key.len =
+@@ -1109,7 +1109,7 @@ sess_establish_session(struct sess_data *sess_data)
+ 		server->sequence_number = 0x2;
+ 		server->session_estab = true;
+ 	}
+-	mutex_unlock(&server->srv_mutex);
++	cifs_server_unlock(server);
  
- 	return stat_gpio;
- }
--
--static void hdmi_connector_destroy(struct drm_connector *connector)
--{
--	struct hdmi_connector *hdmi_connector = to_hdmi_connector(connector);
--
--	hdp_disable(hdmi_connector);
--
--	drm_connector_cleanup(connector);
--
--	kfree(hdmi_connector);
--}
--
--static int msm_hdmi_connector_get_modes(struct drm_connector *connector)
--{
--	struct hdmi_connector *hdmi_connector = to_hdmi_connector(connector);
--	struct hdmi *hdmi = hdmi_connector->hdmi;
--	struct edid *edid;
--	uint32_t hdmi_ctrl;
--	int ret = 0;
--
--	hdmi_ctrl = hdmi_read(hdmi, REG_HDMI_CTRL);
--	hdmi_write(hdmi, REG_HDMI_CTRL, hdmi_ctrl | HDMI_CTRL_ENABLE);
--
--	edid = drm_get_edid(connector, hdmi->i2c);
--
--	hdmi_write(hdmi, REG_HDMI_CTRL, hdmi_ctrl);
--
--	hdmi->hdmi_mode = drm_detect_hdmi_monitor(edid);
--	drm_connector_update_edid_property(connector, edid);
--
--	if (edid) {
--		ret = drm_add_edid_modes(connector, edid);
--		kfree(edid);
--	}
--
--	return ret;
--}
--
--static int msm_hdmi_connector_mode_valid(struct drm_connector *connector,
--				 struct drm_display_mode *mode)
--{
--	struct hdmi_connector *hdmi_connector = to_hdmi_connector(connector);
--	struct hdmi *hdmi = hdmi_connector->hdmi;
--	const struct hdmi_platform_config *config = hdmi->config;
--	struct msm_drm_private *priv = connector->dev->dev_private;
--	struct msm_kms *kms = priv->kms;
--	long actual, requested;
--
--	requested = 1000 * mode->clock;
--	actual = kms->funcs->round_pixclk(kms,
--			requested, hdmi_connector->hdmi->encoder);
--
--	/* for mdp5/apq8074, we manage our own pixel clk (as opposed to
--	 * mdp4/dtv stuff where pixel clk is assigned to mdp/encoder
--	 * instead):
--	 */
--	if (config->pwr_clk_cnt > 0)
--		actual = clk_round_rate(hdmi->pwr_clks[0], actual);
--
--	DBG("requested=%ld, actual=%ld", requested, actual);
--
--	if (actual != requested)
--		return MODE_CLOCK_RANGE;
--
--	return 0;
--}
--
--static const struct drm_connector_funcs hdmi_connector_funcs = {
--	.detect = hdmi_connector_detect,
--	.fill_modes = drm_helper_probe_single_connector_modes,
--	.destroy = hdmi_connector_destroy,
--	.reset = drm_atomic_helper_connector_reset,
--	.atomic_duplicate_state = drm_atomic_helper_connector_duplicate_state,
--	.atomic_destroy_state = drm_atomic_helper_connector_destroy_state,
--};
--
--static const struct drm_connector_helper_funcs msm_hdmi_connector_helper_funcs = {
--	.get_modes = msm_hdmi_connector_get_modes,
--	.mode_valid = msm_hdmi_connector_mode_valid,
--};
--
--/* initialize connector */
--struct drm_connector *msm_hdmi_connector_init(struct hdmi *hdmi)
--{
--	struct drm_connector *connector = NULL;
--	struct hdmi_connector *hdmi_connector;
--
--	hdmi_connector = kzalloc(sizeof(*hdmi_connector), GFP_KERNEL);
--	if (!hdmi_connector)
--		return ERR_PTR(-ENOMEM);
--
--	hdmi_connector->hdmi = hdmi;
--	INIT_WORK(&hdmi_connector->hpd_work, msm_hdmi_hotplug_work);
--
--	connector = &hdmi_connector->base;
--
--	drm_connector_init_with_ddc(hdmi->dev, connector,
--				    &hdmi_connector_funcs,
--				    DRM_MODE_CONNECTOR_HDMIA,
--				    hdmi->i2c);
--	drm_connector_helper_add(connector, &msm_hdmi_connector_helper_funcs);
--
--	connector->polled = DRM_CONNECTOR_POLL_CONNECT |
--			DRM_CONNECTOR_POLL_DISCONNECT;
--
--	connector->interlace_allowed = 0;
--	connector->doublescan_allowed = 0;
--
--	drm_connector_attach_encoder(connector, hdmi->encoder);
--
--	return connector;
--}
+ 	cifs_dbg(FYI, "CIFS session established successfully\n");
+ 	return 0;
+diff --git a/fs/cifs/smb1ops.c b/fs/cifs/smb1ops.c
+index c71c9a44bef4..2e20ee4dab7b 100644
+--- a/fs/cifs/smb1ops.c
++++ b/fs/cifs/smb1ops.c
+@@ -38,10 +38,10 @@ send_nt_cancel(struct TCP_Server_Info *server, struct smb_rqst *rqst,
+ 	in_buf->WordCount = 0;
+ 	put_bcc(0, in_buf);
+ 
+-	mutex_lock(&server->srv_mutex);
++	cifs_server_lock(server);
+ 	rc = cifs_sign_smb(in_buf, server, &mid->sequence_number);
+ 	if (rc) {
+-		mutex_unlock(&server->srv_mutex);
++		cifs_server_unlock(server);
+ 		return rc;
+ 	}
+ 
+@@ -55,7 +55,7 @@ send_nt_cancel(struct TCP_Server_Info *server, struct smb_rqst *rqst,
+ 	if (rc < 0)
+ 		server->sequence_number--;
+ 
+-	mutex_unlock(&server->srv_mutex);
++	cifs_server_unlock(server);
+ 
+ 	cifs_dbg(FYI, "issued NT_CANCEL for mid %u, rc = %d\n",
+ 		 get_mid(in_buf), rc);
+diff --git a/fs/cifs/smb2pdu.c b/fs/cifs/smb2pdu.c
+index 1b7ad0c09566..2397bcf22235 100644
+--- a/fs/cifs/smb2pdu.c
++++ b/fs/cifs/smb2pdu.c
+@@ -1369,13 +1369,13 @@ SMB2_sess_establish_session(struct SMB2_sess_data *sess_data)
+ 	struct cifs_ses *ses = sess_data->ses;
+ 	struct TCP_Server_Info *server = sess_data->server;
+ 
+-	mutex_lock(&server->srv_mutex);
++	cifs_server_lock(server);
+ 	if (server->ops->generate_signingkey) {
+ 		rc = server->ops->generate_signingkey(ses, server);
+ 		if (rc) {
+ 			cifs_dbg(FYI,
+ 				"SMB3 session key generation failed\n");
+-			mutex_unlock(&server->srv_mutex);
++			cifs_server_unlock(server);
+ 			return rc;
+ 		}
+ 	}
+@@ -1383,7 +1383,7 @@ SMB2_sess_establish_session(struct SMB2_sess_data *sess_data)
+ 		server->sequence_number = 0x2;
+ 		server->session_estab = true;
+ 	}
+-	mutex_unlock(&server->srv_mutex);
++	cifs_server_unlock(server);
+ 
+ 	cifs_dbg(FYI, "SMB2/3 session established successfully\n");
+ 	return rc;
+diff --git a/fs/cifs/smbdirect.c b/fs/cifs/smbdirect.c
+index 31ef64eb7fbb..35829d2a0918 100644
+--- a/fs/cifs/smbdirect.c
++++ b/fs/cifs/smbdirect.c
+@@ -1382,9 +1382,9 @@ void smbd_destroy(struct TCP_Server_Info *server)
+ 	log_rdma_event(INFO, "freeing mr list\n");
+ 	wake_up_interruptible_all(&info->wait_mr);
+ 	while (atomic_read(&info->mr_used_count)) {
+-		mutex_unlock(&server->srv_mutex);
++		cifs_server_unlock(server);
+ 		msleep(1000);
+-		mutex_lock(&server->srv_mutex);
++		cifs_server_lock(server);
+ 	}
+ 	destroy_mr_list(info);
+ 
+diff --git a/fs/cifs/transport.c b/fs/cifs/transport.c
+index c667e6ddfe2f..71750cf7bf55 100644
+--- a/fs/cifs/transport.c
++++ b/fs/cifs/transport.c
+@@ -822,7 +822,7 @@ cifs_call_async(struct TCP_Server_Info *server, struct smb_rqst *rqst,
+ 	} else
+ 		instance = exist_credits->instance;
+ 
+-	mutex_lock(&server->srv_mutex);
++	cifs_server_lock(server);
+ 
+ 	/*
+ 	 * We can't use credits obtained from the previous session to send this
+@@ -830,14 +830,14 @@ cifs_call_async(struct TCP_Server_Info *server, struct smb_rqst *rqst,
+ 	 * return -EAGAIN in such cases to let callers handle it.
+ 	 */
+ 	if (instance != server->reconnect_instance) {
+-		mutex_unlock(&server->srv_mutex);
++		cifs_server_unlock(server);
+ 		add_credits_and_wake_if(server, &credits, optype);
+ 		return -EAGAIN;
+ 	}
+ 
+ 	mid = server->ops->setup_async_request(server, rqst);
+ 	if (IS_ERR(mid)) {
+-		mutex_unlock(&server->srv_mutex);
++		cifs_server_unlock(server);
+ 		add_credits_and_wake_if(server, &credits, optype);
+ 		return PTR_ERR(mid);
+ 	}
+@@ -868,7 +868,7 @@ cifs_call_async(struct TCP_Server_Info *server, struct smb_rqst *rqst,
+ 		cifs_delete_mid(mid);
+ 	}
+ 
+-	mutex_unlock(&server->srv_mutex);
++	cifs_server_unlock(server);
+ 
+ 	if (rc == 0)
+ 		return 0;
+@@ -1109,7 +1109,7 @@ compound_send_recv(const unsigned int xid, struct cifs_ses *ses,
+ 	 * of smb data.
+ 	 */
+ 
+-	mutex_lock(&server->srv_mutex);
++	cifs_server_lock(server);
+ 
+ 	/*
+ 	 * All the parts of the compound chain belong obtained credits from the
+@@ -1119,7 +1119,7 @@ compound_send_recv(const unsigned int xid, struct cifs_ses *ses,
+ 	 * handle it.
+ 	 */
+ 	if (instance != server->reconnect_instance) {
+-		mutex_unlock(&server->srv_mutex);
++		cifs_server_unlock(server);
+ 		for (j = 0; j < num_rqst; j++)
+ 			add_credits(server, &credits[j], optype);
+ 		return -EAGAIN;
+@@ -1131,7 +1131,7 @@ compound_send_recv(const unsigned int xid, struct cifs_ses *ses,
+ 			revert_current_mid(server, i);
+ 			for (j = 0; j < i; j++)
+ 				cifs_delete_mid(midQ[j]);
+-			mutex_unlock(&server->srv_mutex);
++			cifs_server_unlock(server);
+ 
+ 			/* Update # of requests on wire to server */
+ 			for (j = 0; j < num_rqst; j++)
+@@ -1163,7 +1163,7 @@ compound_send_recv(const unsigned int xid, struct cifs_ses *ses,
+ 		server->sequence_number -= 2;
+ 	}
+ 
+-	mutex_unlock(&server->srv_mutex);
++	cifs_server_unlock(server);
+ 
+ 	/*
+ 	 * If sending failed for some reason or it is an oplock break that we
+@@ -1190,9 +1190,9 @@ compound_send_recv(const unsigned int xid, struct cifs_ses *ses,
+ 	if ((ses->status == CifsNew) || (optype & CIFS_NEG_OP) || (optype & CIFS_SESS_OP)) {
+ 		spin_unlock(&cifs_tcp_ses_lock);
+ 
+-		mutex_lock(&server->srv_mutex);
++		cifs_server_lock(server);
+ 		smb311_update_preauth_hash(ses, server, rqst[0].rq_iov, rqst[0].rq_nvec);
+-		mutex_unlock(&server->srv_mutex);
++		cifs_server_unlock(server);
+ 
+ 		spin_lock(&cifs_tcp_ses_lock);
+ 	}
+@@ -1266,9 +1266,9 @@ compound_send_recv(const unsigned int xid, struct cifs_ses *ses,
+ 			.iov_len = resp_iov[0].iov_len
+ 		};
+ 		spin_unlock(&cifs_tcp_ses_lock);
+-		mutex_lock(&server->srv_mutex);
++		cifs_server_lock(server);
+ 		smb311_update_preauth_hash(ses, server, &iov, 1);
+-		mutex_unlock(&server->srv_mutex);
++		cifs_server_unlock(server);
+ 		spin_lock(&cifs_tcp_ses_lock);
+ 	}
+ 	spin_unlock(&cifs_tcp_ses_lock);
+@@ -1385,11 +1385,11 @@ SendReceive(const unsigned int xid, struct cifs_ses *ses,
+ 	   and avoid races inside tcp sendmsg code that could cause corruption
+ 	   of smb data */
+ 
+-	mutex_lock(&server->srv_mutex);
++	cifs_server_lock(server);
+ 
+ 	rc = allocate_mid(ses, in_buf, &midQ);
+ 	if (rc) {
+-		mutex_unlock(&server->srv_mutex);
++		cifs_server_unlock(server);
+ 		/* Update # of requests on wire to server */
+ 		add_credits(server, &credits, 0);
+ 		return rc;
+@@ -1397,7 +1397,7 @@ SendReceive(const unsigned int xid, struct cifs_ses *ses,
+ 
+ 	rc = cifs_sign_smb(in_buf, server, &midQ->sequence_number);
+ 	if (rc) {
+-		mutex_unlock(&server->srv_mutex);
++		cifs_server_unlock(server);
+ 		goto out;
+ 	}
+ 
+@@ -1411,7 +1411,7 @@ SendReceive(const unsigned int xid, struct cifs_ses *ses,
+ 	if (rc < 0)
+ 		server->sequence_number -= 2;
+ 
+-	mutex_unlock(&server->srv_mutex);
++	cifs_server_unlock(server);
+ 
+ 	if (rc < 0)
+ 		goto out;
+@@ -1530,18 +1530,18 @@ SendReceiveBlockingLock(const unsigned int xid, struct cifs_tcon *tcon,
+ 	   and avoid races inside tcp sendmsg code that could cause corruption
+ 	   of smb data */
+ 
+-	mutex_lock(&server->srv_mutex);
++	cifs_server_lock(server);
+ 
+ 	rc = allocate_mid(ses, in_buf, &midQ);
+ 	if (rc) {
+-		mutex_unlock(&server->srv_mutex);
++		cifs_server_unlock(server);
+ 		return rc;
+ 	}
+ 
+ 	rc = cifs_sign_smb(in_buf, server, &midQ->sequence_number);
+ 	if (rc) {
+ 		cifs_delete_mid(midQ);
+-		mutex_unlock(&server->srv_mutex);
++		cifs_server_unlock(server);
+ 		return rc;
+ 	}
+ 
+@@ -1554,7 +1554,7 @@ SendReceiveBlockingLock(const unsigned int xid, struct cifs_tcon *tcon,
+ 	if (rc < 0)
+ 		server->sequence_number -= 2;
+ 
+-	mutex_unlock(&server->srv_mutex);
++	cifs_server_unlock(server);
+ 
+ 	if (rc < 0) {
+ 		cifs_delete_mid(midQ);
 -- 
 2.35.1
-
-
 
