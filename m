@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC0CC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A901CCCA49A
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351862AbiFGSZF (ORCPT
+        id S1351950AbiFGSZP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55832 "EHLO
+        Tue, 7 Jun 2022 14:25:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350862AbiFGSB2 (ORCPT
+        with ESMTP id S1350898AbiFGSB3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:01:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3083414CA04;
-        Tue,  7 Jun 2022 10:43:43 -0700 (PDT)
+        Tue, 7 Jun 2022 14:01:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF9A14CDC2;
+        Tue,  7 Jun 2022 10:43:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93873B822A6;
-        Tue,  7 Jun 2022 17:43:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 063FCC3411C;
-        Tue,  7 Jun 2022 17:43:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 837CC6159B;
+        Tue,  7 Jun 2022 17:43:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CD22C385A5;
+        Tue,  7 Jun 2022 17:43:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623821;
-        bh=ENYoUzxPB664IG1sN5huDvIcLEy/V+cCgsIQBznRbKg=;
+        s=korg; t=1654623807;
+        bh=7jqS2tTlnNZbrQ98eK9OJ7pRMtBHKuwDuhlgk5Xc4Sk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ieUvqlqNCeLIJW7wBb/F+dO+cRKPQG2vywzz9zk5mmqhN52YsmQf3JLS14dr8Ep25
-         byoZBLpBz5IU4tf771izhD7zDyfNPKLmomth6MSoawE/qK+cs/pJdvPpb5GnbxgqTq
-         BnOxXkwRYodypEaopq43pOGGonGIcBPHBBXY53bA=
+        b=kvbIN+tA3AqU/ybwHqjTdzgHvwq+P1ZpePkMZhA1YAeU7qoFdqqG9ZrV2/+kUeCwV
+         hJ1bRAsvI1XR8VAhwKqLvBrQUWI20gCWmewca5bppzwtgwWpRw+x/znxP6RZDw7zGG
+         tasrd/Sm9l942h8skBEwcfJSPN8bhDo/GfBcH8l0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 104/667] net: remove two BUG() from skb_checksum_help()
-Date:   Tue,  7 Jun 2022 18:56:09 +0200
-Message-Id: <20220607164937.941480315@linuxfoundation.org>
+        stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 100/667] HID: bigben: fix slab-out-of-bounds Write in bigben_probe
+Date:   Tue,  7 Jun 2022 18:56:05 +0200
+Message-Id: <20220607164937.822068896@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,47 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit d7ea0d9df2a6265b2b180d17ebc64b38105968fc ]
+[ Upstream commit fc4ef9d5724973193bfa5ebed181dba6de3a56db ]
 
-I have a syzbot report that managed to get a crash in skb_checksum_help()
+There is a slab-out-of-bounds Write bug in hid-bigbenff driver.
+The problem is the driver assumes the device must have an input but
+some malicious devices violate this assumption.
 
-If syzbot can trigger these BUG(), it makes sense to replace
-them with more friendly WARN_ON_ONCE() since skb_checksum_help()
-can instead return an error code.
+Fix this by checking hid_device's input is non-empty before its usage.
 
-Note that syzbot will still crash there, until real bug is fixed.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/dev.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/hid/hid-bigbenff.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 5907212c00f3..b9731b267d07 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3233,11 +3233,15 @@ int skb_checksum_help(struct sk_buff *skb)
- 	}
+diff --git a/drivers/hid/hid-bigbenff.c b/drivers/hid/hid-bigbenff.c
+index 74ad8bf98bfd..e8c5e3ac9fff 100644
+--- a/drivers/hid/hid-bigbenff.c
++++ b/drivers/hid/hid-bigbenff.c
+@@ -347,6 +347,12 @@ static int bigben_probe(struct hid_device *hid,
+ 	bigben->report = list_entry(report_list->next,
+ 		struct hid_report, list);
  
- 	offset = skb_checksum_start_offset(skb);
--	BUG_ON(offset >= skb_headlen(skb));
-+	ret = -EINVAL;
-+	if (WARN_ON_ONCE(offset >= skb_headlen(skb)))
-+		goto out;
++	if (list_empty(&hid->inputs)) {
++		hid_err(hid, "no inputs found\n");
++		error = -ENODEV;
++		goto error_hw_stop;
++	}
 +
- 	csum = skb_checksum(skb, offset, skb->len - offset, 0);
+ 	hidinput = list_first_entry(&hid->inputs, struct hid_input, list);
+ 	set_bit(FF_RUMBLE, hidinput->input->ffbit);
  
- 	offset += skb->csum_offset;
--	BUG_ON(offset + sizeof(__sum16) > skb_headlen(skb));
-+	if (WARN_ON_ONCE(offset + sizeof(__sum16) > skb_headlen(skb)))
-+		goto out;
- 
- 	ret = skb_ensure_writable(skb, offset + sizeof(__sum16));
- 	if (ret)
 -- 
 2.35.1
 
