@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D3B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:34:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B35A0C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:34:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346571AbiFGReD (ORCPT
+        id S1344803AbiFGReJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:34:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46480 "EHLO
+        Tue, 7 Jun 2022 13:34:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346365AbiFGRYO (ORCPT
+        with ESMTP id S1346416AbiFGRZA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:24:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 315E63C492;
-        Tue,  7 Jun 2022 10:22:23 -0700 (PDT)
+        Tue, 7 Jun 2022 13:25:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF06DF5D09;
+        Tue,  7 Jun 2022 10:22:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A69C860AE5;
-        Tue,  7 Jun 2022 17:22:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0E2FC385A5;
-        Tue,  7 Jun 2022 17:22:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E49D6009B;
+        Tue,  7 Jun 2022 17:22:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A236C385A5;
+        Tue,  7 Jun 2022 17:22:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622542;
-        bh=ozh1G02jBvU/LggvUu4u7Djg4oaIrmGMdGp9z3bVmYs=;
+        s=korg; t=1654622561;
+        bh=VZt2nOdWMwFzurUHIONWPqfBKwllbRhQspuztDZ+FDA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EH0GSzosyqXYY3yONcsSsRzvY8eUHIvPH9d33hvCCILod2rujWuDZOolsXmRVbynD
-         0HCwTOSwSV8cF6hWTY4tsAkP4CleZgXwRMBjGVE0VXQiZvm81TayXVi/7kl5EJVUMu
-         MRx5U7gNBz50sk38q5EXCyIY/jlbEm6B4MhUCRpQ=
+        b=Lc9LMoKlBy0HJ6bzz19JNGSY8LOEHTsQrNoYHN2rQ61AJK9+qv74wH/pKB+fpeRXY
+         dN8Hh4XxNP16jIgve0VVe1Kk4G0YyetWNQ+hcE90L7WIu+e5vkX2Sjzq2ThMY8ECxM
+         dMhQCyDupY1Sa1y8zDEi4wylixhZkJv2SmezfqIg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bob Peterson <rpeterso@redhat.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>,
+        stable@vger.kernel.org, Gilad Ben-Yossef <gilad@benyossef.com>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 096/452] gfs2: use i_lock spin_lock for inode qadata
-Date:   Tue,  7 Jun 2022 18:59:13 +0200
-Message-Id: <20220607164911.419523793@linuxfoundation.org>
+Subject: [PATCH 5.10 102/452] crypto: ccree - use fine grained DMA mapping dir
+Date:   Tue,  7 Jun 2022 18:59:19 +0200
+Message-Id: <20220607164911.595991172@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,86 +51,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bob Peterson <rpeterso@redhat.com>
+From: Gilad Ben-Yossef <gilad@benyossef.com>
 
-[ Upstream commit 5fcff61eea9efd1f4b60e89d2d686b5feaea100f ]
+[ Upstream commit a260436c98171cd825955a84a7f6e62bc8f4f00d ]
 
-Before this patch, functions gfs2_qa_get and _put used the i_rw_mutex to
-prevent simultaneous access to its i_qadata. But i_rw_mutex is now used
-for many other things, including iomap_begin and end, which causes a
-conflict according to lockdep. We cannot just remove the lock since
-simultaneous opens (gfs2_open -> gfs2_open_common -> gfs2_qa_get) can
-then stomp on each others values for i_qadata.
+Use a fine grained specification of DMA mapping directions
+in certain cases, allowing both a more optimized operation
+as well as shushing out a harmless, though persky
+dma-debug warning.
 
-This patch solves the conflict by using the i_lock spin_lock in the inode
-to prevent simultaneous access.
-
-Signed-off-by: Bob Peterson <rpeterso@redhat.com>
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Gilad Ben-Yossef <gilad@benyossef.com>
+Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/gfs2/quota.c | 32 ++++++++++++++++++++------------
- 1 file changed, 20 insertions(+), 12 deletions(-)
+ drivers/crypto/ccree/cc_buffer_mgr.c | 27 +++++++++++++++------------
+ 1 file changed, 15 insertions(+), 12 deletions(-)
 
-diff --git a/fs/gfs2/quota.c b/fs/gfs2/quota.c
-index 6e173ae378c4..ad953ecb5853 100644
---- a/fs/gfs2/quota.c
-+++ b/fs/gfs2/quota.c
-@@ -531,34 +531,42 @@ static void qdsb_put(struct gfs2_quota_data *qd)
-  */
- int gfs2_qa_get(struct gfs2_inode *ip)
- {
--	int error = 0;
- 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
-+	struct inode *inode = &ip->i_inode;
- 
- 	if (sdp->sd_args.ar_quota == GFS2_QUOTA_OFF)
- 		return 0;
- 
--	down_write(&ip->i_rw_mutex);
-+	spin_lock(&inode->i_lock);
- 	if (ip->i_qadata == NULL) {
--		ip->i_qadata = kmem_cache_zalloc(gfs2_qadata_cachep, GFP_NOFS);
--		if (!ip->i_qadata) {
--			error = -ENOMEM;
--			goto out;
--		}
-+		struct gfs2_qadata *tmp;
-+
-+		spin_unlock(&inode->i_lock);
-+		tmp = kmem_cache_zalloc(gfs2_qadata_cachep, GFP_NOFS);
-+		if (!tmp)
-+			return -ENOMEM;
-+
-+		spin_lock(&inode->i_lock);
-+		if (ip->i_qadata == NULL)
-+			ip->i_qadata = tmp;
-+		else
-+			kmem_cache_free(gfs2_qadata_cachep, tmp);
+diff --git a/drivers/crypto/ccree/cc_buffer_mgr.c b/drivers/crypto/ccree/cc_buffer_mgr.c
+index 11e0278c8631..6140e4927322 100644
+--- a/drivers/crypto/ccree/cc_buffer_mgr.c
++++ b/drivers/crypto/ccree/cc_buffer_mgr.c
+@@ -356,12 +356,14 @@ void cc_unmap_cipher_request(struct device *dev, void *ctx,
+ 			      req_ctx->mlli_params.mlli_dma_addr);
  	}
- 	ip->i_qadata->qa_ref++;
--out:
--	up_write(&ip->i_rw_mutex);
--	return error;
-+	spin_unlock(&inode->i_lock);
-+	return 0;
+ 
+-	dma_unmap_sg(dev, src, req_ctx->in_nents, DMA_BIDIRECTIONAL);
+-	dev_dbg(dev, "Unmapped req->src=%pK\n", sg_virt(src));
+-
+ 	if (src != dst) {
+-		dma_unmap_sg(dev, dst, req_ctx->out_nents, DMA_BIDIRECTIONAL);
++		dma_unmap_sg(dev, src, req_ctx->in_nents, DMA_TO_DEVICE);
++		dma_unmap_sg(dev, dst, req_ctx->out_nents, DMA_FROM_DEVICE);
+ 		dev_dbg(dev, "Unmapped req->dst=%pK\n", sg_virt(dst));
++		dev_dbg(dev, "Unmapped req->src=%pK\n", sg_virt(src));
++	} else {
++		dma_unmap_sg(dev, src, req_ctx->in_nents, DMA_BIDIRECTIONAL);
++		dev_dbg(dev, "Unmapped req->src=%pK\n", sg_virt(src));
+ 	}
  }
  
- void gfs2_qa_put(struct gfs2_inode *ip)
- {
--	down_write(&ip->i_rw_mutex);
-+	struct inode *inode = &ip->i_inode;
-+
-+	spin_lock(&inode->i_lock);
- 	if (ip->i_qadata && --ip->i_qadata->qa_ref == 0) {
- 		kmem_cache_free(gfs2_qadata_cachep, ip->i_qadata);
- 		ip->i_qadata = NULL;
- 	}
--	up_write(&ip->i_rw_mutex);
-+	spin_unlock(&inode->i_lock);
- }
+@@ -377,6 +379,7 @@ int cc_map_cipher_request(struct cc_drvdata *drvdata, void *ctx,
+ 	u32 dummy = 0;
+ 	int rc = 0;
+ 	u32 mapped_nents = 0;
++	int src_direction = (src != dst ? DMA_TO_DEVICE : DMA_BIDIRECTIONAL);
  
- int gfs2_quota_hold(struct gfs2_inode *ip, kuid_t uid, kgid_t gid)
+ 	req_ctx->dma_buf_type = CC_DMA_BUF_DLLI;
+ 	mlli_params->curr_pool = NULL;
+@@ -399,7 +402,7 @@ int cc_map_cipher_request(struct cc_drvdata *drvdata, void *ctx,
+ 	}
+ 
+ 	/* Map the src SGL */
+-	rc = cc_map_sg(dev, src, nbytes, DMA_BIDIRECTIONAL, &req_ctx->in_nents,
++	rc = cc_map_sg(dev, src, nbytes, src_direction, &req_ctx->in_nents,
+ 		       LLI_MAX_NUM_OF_DATA_ENTRIES, &dummy, &mapped_nents);
+ 	if (rc)
+ 		goto cipher_exit;
+@@ -416,7 +419,7 @@ int cc_map_cipher_request(struct cc_drvdata *drvdata, void *ctx,
+ 		}
+ 	} else {
+ 		/* Map the dst sg */
+-		rc = cc_map_sg(dev, dst, nbytes, DMA_BIDIRECTIONAL,
++		rc = cc_map_sg(dev, dst, nbytes, DMA_FROM_DEVICE,
+ 			       &req_ctx->out_nents, LLI_MAX_NUM_OF_DATA_ENTRIES,
+ 			       &dummy, &mapped_nents);
+ 		if (rc)
+@@ -456,6 +459,7 @@ void cc_unmap_aead_request(struct device *dev, struct aead_request *req)
+ 	struct aead_req_ctx *areq_ctx = aead_request_ctx(req);
+ 	unsigned int hw_iv_size = areq_ctx->hw_iv_size;
+ 	struct cc_drvdata *drvdata = dev_get_drvdata(dev);
++	int src_direction = (req->src != req->dst ? DMA_TO_DEVICE : DMA_BIDIRECTIONAL);
+ 
+ 	if (areq_ctx->mac_buf_dma_addr) {
+ 		dma_unmap_single(dev, areq_ctx->mac_buf_dma_addr,
+@@ -514,13 +518,11 @@ void cc_unmap_aead_request(struct device *dev, struct aead_request *req)
+ 		sg_virt(req->src), areq_ctx->src.nents, areq_ctx->assoc.nents,
+ 		areq_ctx->assoclen, req->cryptlen);
+ 
+-	dma_unmap_sg(dev, req->src, areq_ctx->src.mapped_nents,
+-		     DMA_BIDIRECTIONAL);
++	dma_unmap_sg(dev, req->src, areq_ctx->src.mapped_nents, src_direction);
+ 	if (req->src != req->dst) {
+ 		dev_dbg(dev, "Unmapping dst sgl: req->dst=%pK\n",
+ 			sg_virt(req->dst));
+-		dma_unmap_sg(dev, req->dst, areq_ctx->dst.mapped_nents,
+-			     DMA_BIDIRECTIONAL);
++		dma_unmap_sg(dev, req->dst, areq_ctx->dst.mapped_nents, DMA_FROM_DEVICE);
+ 	}
+ 	if (drvdata->coherent &&
+ 	    areq_ctx->gen_ctx.op_type == DRV_CRYPTO_DIRECTION_DECRYPT &&
+@@ -843,7 +845,7 @@ static int cc_aead_chain_data(struct cc_drvdata *drvdata,
+ 		else
+ 			size_for_map -= authsize;
+ 
+-		rc = cc_map_sg(dev, req->dst, size_for_map, DMA_BIDIRECTIONAL,
++		rc = cc_map_sg(dev, req->dst, size_for_map, DMA_FROM_DEVICE,
+ 			       &areq_ctx->dst.mapped_nents,
+ 			       LLI_MAX_NUM_OF_DATA_ENTRIES, &dst_last_bytes,
+ 			       &dst_mapped_nents);
+@@ -1056,7 +1058,8 @@ int cc_map_aead_request(struct cc_drvdata *drvdata, struct aead_request *req)
+ 		size_to_map += authsize;
+ 	}
+ 
+-	rc = cc_map_sg(dev, req->src, size_to_map, DMA_BIDIRECTIONAL,
++	rc = cc_map_sg(dev, req->src, size_to_map,
++		       (req->src != req->dst ? DMA_TO_DEVICE : DMA_BIDIRECTIONAL),
+ 		       &areq_ctx->src.mapped_nents,
+ 		       (LLI_MAX_NUM_OF_ASSOC_DATA_ENTRIES +
+ 			LLI_MAX_NUM_OF_DATA_ENTRIES),
 -- 
 2.35.1
 
