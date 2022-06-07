@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35BEECCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:46:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD5C7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:46:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352360AbiFGTqU (ORCPT
+        id S1357104AbiFGTq3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57804 "EHLO
+        Tue, 7 Jun 2022 15:46:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354618AbiFGSrb (ORCPT
+        with ESMTP id S1354621AbiFGSrb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:47:31 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B4FD3585D;
-        Tue,  7 Jun 2022 11:02:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F25C237A92;
+        Tue,  7 Jun 2022 11:02:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C735B82182;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70294B82343;
+        Tue,  7 Jun 2022 18:02:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8244CC34115;
         Tue,  7 Jun 2022 18:02:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E399C34115;
-        Tue,  7 Jun 2022 18:02:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624952;
-        bh=LtWRdp+pRimpsjuHTcv0lC8/M5fAbpiffwBSYWWitDM=;
+        s=k20201202; t=1654624955;
+        bh=c+ctPUQM9DoagDrIqdEoBv221V9tAwf8N+RV88BNbt4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=knNid0Jq2cIIr3NpNnOATdk71iOYzcJX04Sx7o8PjgKC/QBxA98IDpDOeXNKdVEU0
-         jtDICPwic2STmdYQd6O/9Fn0O1Y2YiXaQ5vfMqt/pXT1Wt3Kr9PzRVIM1BQOJRBgAW
-         /4dby9rKhM3LJ1jhdLEx0wgBl3Od0/IJNvrQj4+s0gqzCDGwBMotaJB3r+wf0h4bC4
-         dJuT7wX5Cc2WAKACkUWTw34KlW0DGDuX4hhRcQH6Nxom/s+yAD3X3Xm+7d8dXscVIZ
-         ahfONt/Nz0udlWghj7qHQeAY6+mXydL2ELt/Fy7fOTu4G6vttXqYtWfI+AR183Xv3V
-         wErY112gJc+WA==
+        b=d95VIjwXL6pEs2r3Oz0kttrf9uQpRPzPLCaw1UihxaXSEnNRWl7zaLwzKLvN4U9ZL
+         hFSj6TYRnoCQkNx2uBdltIc8HIaLh4Ps0pqbofEc2eIiasIoO2QKa1SHLpJAELFCGk
+         pqGydTT75uRo/AXsSboC6ldN/UfYGmzS9zC1wD6+6H/lrqqpROfl/UNFWGeHD+rFgK
+         ZFn7Rwr3roUafU41r3vyWgic7Kib8bP2ZrTZAmiUnBbsZcZiimpHxwmTH5R/MBxxJz
+         b1b9K280RZHlswbXy0iB0Le7G4Y/IIZTUkOZj3Fr5rzmDD1vOPBxp0ihCCXrqRLIye
+         FG4cftyi7ZfeA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Arnd Bergmann <arnd@arndb.de>,
+Cc:     Huang Guobin <huangguobin4@huawei.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 02/25] lkdtm/usercopy: Expand size of "out of frame" object
-Date:   Tue,  7 Jun 2022 14:02:03 -0400
-Message-Id: <20220607180229.482040-2-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 04/25] tty: Fix a possible resource leak in icom_probe
+Date:   Tue,  7 Jun 2022 14:02:05 -0400
+Message-Id: <20220607180229.482040-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607180229.482040-1-sashal@kernel.org>
 References: <20220607180229.482040-1-sashal@kernel.org>
@@ -54,73 +53,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Huang Guobin <huangguobin4@huawei.com>
 
-[ Upstream commit f387e86d3a74407bdd9c5815820ac9d060962840 ]
+[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
 
-To be sufficiently out of range for the usercopy test to see the lifetime
-mismatch, expand the size of the "bad" buffer, which will let it be
-beyond current_stack_pointer regardless of stack growth direction.
-Paired with the recent addition of stack depth checking under
-CONFIG_HARDENED_USERCOPY=y, this will correctly start tripping again.
+When pci_read_config_dword failed, call pci_release_regions() and
+pci_disable_device() to recycle the resource previously allocated.
 
-Reported-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-Link: https://lore.kernel.org/lkml/762faf1b-0443-5ddf-4430-44a20cf2ec4d@collabora.com/
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
+Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/lkdtm_usercopy.c | 17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
+ drivers/tty/serial/icom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/misc/lkdtm_usercopy.c b/drivers/misc/lkdtm_usercopy.c
-index a64372cc148d..178b55141772 100644
---- a/drivers/misc/lkdtm_usercopy.c
-+++ b/drivers/misc/lkdtm_usercopy.c
-@@ -30,12 +30,12 @@ static const unsigned char test_text[] = "This is a test.\n";
-  */
- static noinline unsigned char *trick_compiler(unsigned char *stack)
- {
--	return stack + 0;
-+	return stack + unconst;
- }
- 
- static noinline unsigned char *do_usercopy_stack_callee(int value)
- {
--	unsigned char buf[32];
-+	unsigned char buf[128];
- 	int i;
- 
- 	/* Exercise stack to avoid everything living in registers. */
-@@ -43,7 +43,12 @@ static noinline unsigned char *do_usercopy_stack_callee(int value)
- 		buf[i] = value & 0xff;
+diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
+index fe92d74f4ea5..4711b3ec2c56 100644
+--- a/drivers/tty/serial/icom.c
++++ b/drivers/tty/serial/icom.c
+@@ -1515,7 +1515,7 @@ static int icom_probe(struct pci_dev *dev,
+ 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
+ 	if (retval) {
+ 		dev_err(&dev->dev, "PCI Config read FAILED\n");
+-		return retval;
++		goto probe_exit0;
  	}
  
--	return trick_compiler(buf);
-+	/*
-+	 * Put the target buffer in the middle of stack allocation
-+	 * so that we don't step on future stack users regardless
-+	 * of stack growth direction.
-+	 */
-+	return trick_compiler(&buf[(128/2)-32]);
- }
- 
- static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
-@@ -66,6 +71,12 @@ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
- 		bad_stack -= sizeof(unsigned long);
- 	}
- 
-+#ifdef ARCH_HAS_CURRENT_STACK_POINTER
-+	pr_info("stack     : %px\n", (void *)current_stack_pointer);
-+#endif
-+	pr_info("good_stack: %px-%px\n", good_stack, good_stack + sizeof(good_stack));
-+	pr_info("bad_stack : %px-%px\n", bad_stack, bad_stack + sizeof(good_stack));
-+
- 	user_addr = vm_mmap(NULL, 0, PAGE_SIZE,
- 			    PROT_READ | PROT_WRITE | PROT_EXEC,
- 			    MAP_ANONYMOUS | MAP_PRIVATE, 0);
+ 	pci_write_config_dword(dev, PCI_COMMAND,
 -- 
 2.35.1
 
