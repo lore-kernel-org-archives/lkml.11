@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 653A7CCA488
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:33:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B945C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351411AbiFGSdr (ORCPT
+        id S1351686AbiFGSdx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:33:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60982 "EHLO
+        Tue, 7 Jun 2022 14:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351486AbiFGSCG (ORCPT
+        with ESMTP id S1351440AbiFGSCD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:02:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A66152BBC;
-        Tue,  7 Jun 2022 10:44:44 -0700 (PDT)
+        Tue, 7 Jun 2022 14:02:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2D11152B8C;
+        Tue,  7 Jun 2022 10:44:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7ABEAB822CE;
-        Tue,  7 Jun 2022 17:44:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4911C34115;
-        Tue,  7 Jun 2022 17:44:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5ED9EB822B8;
+        Tue,  7 Jun 2022 17:44:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4CEEC385A5;
+        Tue,  7 Jun 2022 17:44:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623882;
-        bh=T15obBoK9jnnCw3q+tDyb87O4G8KAWIklECNXn5nR3U=;
+        s=korg; t=1654623871;
+        bh=FXpiOAXaZbLiKNiDcTOuQElJDUuEn+qZXqf2OSRLOuo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LIhF/qshNzTBI5l7wEcl1OKJJ6g4ScLU4jqwDP/YqSUjIdNE6Z6EmFxl2f0tptFsu
-         dPoAJZGc979tyRQ3VQ7/7Wysbp6TvFSFsn1ZQK+HLBx60fetqoD4oOznZTSf9aO28m
-         upNxAWrQfji/Eilhe0x9PQHIvnjxxaumcpgPDxMw=
+        b=EoSLgle7z1F6Ih3mbDhp8ex8fiw+Vdsf5kFXOa2Z223ijNTErk0BN2Gjkr42bzvau
+         ERra7Cfp+IVqXpaI31O/8gWkQ1hAGh9/a8krUu9HbVueUixWgFwQGeorJWho3x6IBA
+         +MYGk9gAGo0MRf8ub93ieYj2VKDXEaLa9lPYDuwI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kyle Smith <kyles@hpe.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>,
+        stable@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 124/667] nvme-pci: fix a NULL pointer dereference in nvme_alloc_admin_tags
-Date:   Tue,  7 Jun 2022 18:56:29 +0200
-Message-Id: <20220607164938.544698822@linuxfoundation.org>
+Subject: [PATCH 5.15 121/667] media: cec-adap.c: fix is_configuring state
+Date:   Tue,  7 Jun 2022 18:56:26 +0200
+Message-Id: <20220607164938.453287910@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,43 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Smith, Kyle Miller (Nimble Kernel) <kyles@hpe.com>
+From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
-[ Upstream commit da42761181627e9bdc37d18368b827948a583929 ]
+[ Upstream commit 59267fc34f4900dcd2ec3295f6be04b79aee2186 ]
 
-In nvme_alloc_admin_tags, the admin_q can be set to an error (typically
--ENOMEM) if the blk_mq_init_queue call fails to set up the queue, which
-is checked immediately after the call. However, when we return the error
-message up the stack, to nvme_reset_work the error takes us to
-nvme_remove_dead_ctrl()
-  nvme_dev_disable()
-   nvme_suspend_queue(&dev->queues[0]).
+If an adapter is trying to claim a free logical address then it is
+in the 'is_configuring' state. If during that process the cable is
+disconnected (HPD goes low, which in turn invalidates the physical
+address), then cec_adap_unconfigure() is called, and that set the
+is_configuring boolean to false, even though the thread that's
+trying to claim an LA is still running.
 
-Here, we only check that the admin_q is non-NULL, rather than not
-an error or NULL, and begin quiescing a queue that never existed, leading
-to bad / NULL pointer dereference.
+Don't touch the is_configuring bool in cec_adap_unconfigure(), it
+will eventually be cleared by the thread. By making that change
+the cec_config_log_addr() function also had to change: it was
+aborting if is_configuring became false (since that is what
+cec_adap_unconfigure() did), but that no longer works. Instead
+check if the physical address is invalid. That is a much
+more appropriate check anyway.
 
-Signed-off-by: Kyle Smith <kyles@hpe.com>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+This fixes a bug where the the adapter could be disabled even
+though the device was still configuring. This could cause POLL
+transmits to time out.
+
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/pci.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/media/cec/core/cec-adap.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index e6f55cf6e494..3ddd24a42043 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -1680,6 +1680,7 @@ static int nvme_alloc_admin_tags(struct nvme_dev *dev)
- 		dev->ctrl.admin_q = blk_mq_init_queue(&dev->admin_tagset);
- 		if (IS_ERR(dev->ctrl.admin_q)) {
- 			blk_mq_free_tag_set(&dev->admin_tagset);
-+			dev->ctrl.admin_q = NULL;
- 			return -ENOMEM;
- 		}
- 		if (!blk_get_queue(dev->ctrl.admin_q)) {
+diff --git a/drivers/media/cec/core/cec-adap.c b/drivers/media/cec/core/cec-adap.c
+index 1f599e300e42..67776a0d31e8 100644
+--- a/drivers/media/cec/core/cec-adap.c
++++ b/drivers/media/cec/core/cec-adap.c
+@@ -1272,7 +1272,7 @@ static int cec_config_log_addr(struct cec_adapter *adap,
+ 		 * While trying to poll the physical address was reset
+ 		 * and the adapter was unconfigured, so bail out.
+ 		 */
+-		if (!adap->is_configuring)
++		if (adap->phys_addr == CEC_PHYS_ADDR_INVALID)
+ 			return -EINTR;
+ 
+ 		if (err)
+@@ -1329,7 +1329,6 @@ static void cec_adap_unconfigure(struct cec_adapter *adap)
+ 	    adap->phys_addr != CEC_PHYS_ADDR_INVALID)
+ 		WARN_ON(adap->ops->adap_log_addr(adap, CEC_LOG_ADDR_INVALID));
+ 	adap->log_addrs.log_addr_mask = 0;
+-	adap->is_configuring = false;
+ 	adap->is_configured = false;
+ 	cec_flush(adap);
+ 	wake_up_interruptible(&adap->kthread_waitq);
+@@ -1521,9 +1520,10 @@ static int cec_config_thread_func(void *arg)
+ 	for (i = 0; i < las->num_log_addrs; i++)
+ 		las->log_addr[i] = CEC_LOG_ADDR_INVALID;
+ 	cec_adap_unconfigure(adap);
++	adap->is_configuring = false;
+ 	adap->kthread_config = NULL;
+-	mutex_unlock(&adap->lock);
+ 	complete(&adap->config_completion);
++	mutex_unlock(&adap->lock);
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
