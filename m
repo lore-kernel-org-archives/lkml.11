@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B31DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:23:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9928DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:23:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346200AbiFGRXK (ORCPT
+        id S1346207AbiFGRXQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:23:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44480 "EHLO
+        Tue, 7 Jun 2022 13:23:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346127AbiFGRUd (ORCPT
+        with ESMTP id S237273AbiFGRUh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:20:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BACB61053CF;
-        Tue,  7 Jun 2022 10:20:32 -0700 (PDT)
+        Tue, 7 Jun 2022 13:20:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6C21053DA;
+        Tue,  7 Jun 2022 10:20:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B67E7608CD;
-        Tue,  7 Jun 2022 17:20:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5BFAC385A5;
-        Tue,  7 Jun 2022 17:20:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 404AAB8220C;
+        Tue,  7 Jun 2022 17:20:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A19B7C385A5;
+        Tue,  7 Jun 2022 17:20:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622431;
-        bh=/EVIXbXHVhz6z6r4WZ74kyE/k9deasy2cPR5W3Pn0Rk=;
+        s=korg; t=1654622434;
+        bh=1vh6uLlXuKPeXSt+PFMmKOp5dM+g4UIJejgmIJewkbU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dSiF5zoUK3mP3z+ZjH0FVQ2/hmao3WsavfPD3oofEgU9ln0dX0TyRZZm3eZyQf9A1
-         EqwVA2HlmPQjMkDgpZPCi+/eRGRuEvqPyW8S4Qf+NCMcVdkPIy4bBLghgGp9zVmnE/
-         HgnCnwzwkNAtAQEP7ioDkelz89Fn1XyxAabP7mt8=
+        b=cfHVAN2CP30J5Ku4xww0LCYF6GuKoxHeY0eWimRxzhDMq2lhkTaLsge2x+uzJpBpc
+         tPW3YGsUnDD786sNoAKjcqe03ntn510oegfxTkRJV9DiQ3fmyXj2YJnkZn3LQRhORi
+         eXw+tlnyykQmImGEq58zyOc56AGpSfvc6ilRiOE8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steven Price <steven.price@arm.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 055/452] drm/plane: Move range check for format_count earlier
-Date:   Tue,  7 Jun 2022 18:58:32 +0200
-Message-Id: <20220607164910.187820716@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Evan Quan <evan.quan@amd.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 056/452] drm/amd/pm: fix the compile warning
+Date:   Tue,  7 Jun 2022 18:58:33 +0200
+Message-Id: <20220607164910.217125268@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,57 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Price <steven.price@arm.com>
+From: Evan Quan <evan.quan@amd.com>
 
-[ Upstream commit 4b674dd69701c2e22e8e7770c1706a69f3b17269 ]
+[ Upstream commit 555238d92ac32dbad2d77ad2bafc48d17391990c ]
 
-While the check for format_count > 64 in __drm_universal_plane_init()
-shouldn't be hit (it's a WARN_ON), in its current position it will then
-leak the plane->format_types array and fail to call
-drm_mode_object_unregister() leaking the modeset identifier. Move it to
-the start of the function to avoid allocating those resources in the
-first place.
+Fix the compile warning below:
+drivers/gpu/drm/amd/amdgpu/../pm/legacy-dpm/kv_dpm.c:1641
+kv_get_acp_boot_level() warn: always true condition '(table->entries[i]->clk >= 0) => (0-u32max >= 0)'
 
-Signed-off-by: Steven Price <steven.price@arm.com>
-Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
-Link: https://lore.kernel.org/dri-devel/20211203102815.38624-1-steven.price@arm.com/
+Reported-by: kernel test robot <lkp@intel.com>
+CC: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_plane.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/amd/pm/powerplay/kv_dpm.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_plane.c b/drivers/gpu/drm/drm_plane.c
-index affe1cfed009..24f643982903 100644
---- a/drivers/gpu/drm/drm_plane.c
-+++ b/drivers/gpu/drm/drm_plane.c
-@@ -186,6 +186,13 @@ int drm_universal_plane_init(struct drm_device *dev, struct drm_plane *plane,
- 	if (WARN_ON(config->num_total_plane >= 32))
- 		return -EINVAL;
+diff --git a/drivers/gpu/drm/amd/pm/powerplay/kv_dpm.c b/drivers/gpu/drm/amd/pm/powerplay/kv_dpm.c
+index 4b3faaccecb9..c8a5a5698edd 100644
+--- a/drivers/gpu/drm/amd/pm/powerplay/kv_dpm.c
++++ b/drivers/gpu/drm/amd/pm/powerplay/kv_dpm.c
+@@ -1609,19 +1609,7 @@ static int kv_update_samu_dpm(struct amdgpu_device *adev, bool gate)
  
-+	/*
-+	 * First driver to need more than 64 formats needs to fix this. Each
-+	 * format is encoded as a bit and the current code only supports a u64.
-+	 */
-+	if (WARN_ON(format_count > 64))
-+		return -EINVAL;
-+
- 	WARN_ON(drm_drv_uses_atomic_modeset(dev) &&
- 		(!funcs->atomic_destroy_state ||
- 		 !funcs->atomic_duplicate_state));
-@@ -207,13 +214,6 @@ int drm_universal_plane_init(struct drm_device *dev, struct drm_plane *plane,
- 		return -ENOMEM;
- 	}
- 
--	/*
--	 * First driver to need more than 64 formats needs to fix this. Each
--	 * format is encoded as a bit and the current code only supports a u64.
--	 */
--	if (WARN_ON(format_count > 64))
--		return -EINVAL;
+ static u8 kv_get_acp_boot_level(struct amdgpu_device *adev)
+ {
+-	u8 i;
+-	struct amdgpu_clock_voltage_dependency_table *table =
+-		&adev->pm.dpm.dyn_state.acp_clock_voltage_dependency_table;
 -
- 	if (format_modifiers) {
- 		const uint64_t *temp_modifiers = format_modifiers;
+-	for (i = 0; i < table->count; i++) {
+-		if (table->entries[i].clk >= 0) /* XXX */
+-			break;
+-	}
+-
+-	if (i >= table->count)
+-		i = table->count - 1;
+-
+-	return i;
++	return 0;
+ }
  
+ static void kv_update_acp_boot_level(struct amdgpu_device *adev)
 -- 
 2.35.1
 
