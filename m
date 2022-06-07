@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D53CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17DEDCCA485
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385853AbiFGWrM (ORCPT
+        id S1385770AbiFGWqj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:47:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35124 "EHLO
+        Tue, 7 Jun 2022 18:46:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380124AbiFGViN (ORCPT
+        with ESMTP id S1381141AbiFGVgd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:38:13 -0400
+        Tue, 7 Jun 2022 17:36:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E6223144F;
-        Tue,  7 Jun 2022 12:05:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1899814087F;
+        Tue,  7 Jun 2022 12:04:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26118B8220B;
-        Tue,  7 Jun 2022 19:05:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F138C385A2;
-        Tue,  7 Jun 2022 19:05:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 85961B823B0;
+        Tue,  7 Jun 2022 19:04:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0DDCC385A2;
+        Tue,  7 Jun 2022 19:04:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628711;
-        bh=enkXLlOMaVEcu6u+aCpOHVMFbZ5zMyBAllMcpO7dxzg=;
+        s=korg; t=1654628695;
+        bh=ldGhd7bSBWMTDEq9RvkJwTdry4k2qspt5cCyIwrHyVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d0r0vgYiYlZhsvc9jJ6R+Iyn+X1YR9fRk49A4u4/ZxKbRge/MK2ikCyHoXnnH4tZq
-         y7lcs15PG/yITIm1tBjEcQMKS1Q/eypvcm9wWvx5ST2cWFpFG2cgaJYTfVwsttOB30
-         EApQXeArKW47d7A5sj0gcyeNlRLdpkkn5ucqzJ84=
+        b=odDAOy5Q+GORoSe/DdlY2JYPaqLZa+DHLsl+asNtyackLQL4r2uFCILI2nyC30fZz
+         W0KPbSbRdXAClePrh5z6gqz3VzIDQg1yL3UDUCfGn2rxC/UNs29/hmk8VbOXkCZtRV
+         T2vcjbn0WQcjPwdlMsXVI3QaOdUcGVSTXtauQjeI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 429/879] mt76: mt7915: fix DBDC default band selection on MT7915D
-Date:   Tue,  7 Jun 2022 18:59:07 +0200
-Message-Id: <20220607165015.320549965@linuxfoundation.org>
+Subject: [PATCH 5.18 423/879] ASoC: samsung: Fix refcount leak in aries_audio_probe
+Date:   Tue,  7 Jun 2022 18:59:01 +0200
+Message-Id: <20220607165015.144184549@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,32 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 96c777708bcac53f73a1c079e416495647f69553 ]
+[ Upstream commit bf4a9b2467b775717d0e9034ad916888e19713a3 ]
 
-This code was accidentally dropped while adding 6 GHz support
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+If extcon_find_edev_by_node() fails, it doesn't call of_node_put()
+Calling of_node_put() after extcon_find_edev_by_node() to fix this.
 
-Fixes: b4d093e321bd ("mt76: mt7915: add 6 GHz support")
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Fixes: 7a3a7671fa6c ("ASoC: samsung: Add driver for Aries boards")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220512043828.496-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/eeprom.c | 2 ++
- 1 file changed, 2 insertions(+)
+ sound/soc/samsung/aries_wm8994.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/eeprom.c b/drivers/net/wireless/mediatek/mt76/mt7915/eeprom.c
-index 5b133bcdab17..4b1a9811646f 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/eeprom.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/eeprom.c
-@@ -152,6 +152,8 @@ static void mt7915_eeprom_parse_band_config(struct mt7915_phy *phy)
- 			phy->mt76->cap.has_2ghz = true;
- 			return;
- 		}
-+	} else if (val == MT_EE_BAND_SEL_DEFAULT && dev->dbdc_support) {
-+		val = phy->band_idx ? MT_EE_BAND_SEL_5GHZ : MT_EE_BAND_SEL_2GHZ;
- 	}
+diff --git a/sound/soc/samsung/aries_wm8994.c b/sound/soc/samsung/aries_wm8994.c
+index 5265e546b124..83acbe57b248 100644
+--- a/sound/soc/samsung/aries_wm8994.c
++++ b/sound/soc/samsung/aries_wm8994.c
+@@ -585,10 +585,10 @@ static int aries_audio_probe(struct platform_device *pdev)
  
- 	switch (val) {
+ 	extcon_np = of_parse_phandle(np, "extcon", 0);
+ 	priv->usb_extcon = extcon_find_edev_by_node(extcon_np);
++	of_node_put(extcon_np);
+ 	if (IS_ERR(priv->usb_extcon))
+ 		return dev_err_probe(dev, PTR_ERR(priv->usb_extcon),
+ 				     "Failed to get extcon device");
+-	of_node_put(extcon_np);
+ 
+ 	priv->adc = devm_iio_channel_get(dev, "headset-detect");
+ 	if (IS_ERR(priv->adc))
 -- 
 2.35.1
 
