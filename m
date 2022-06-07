@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4815CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:29:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE7E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:31:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378448AbiFGV3u (ORCPT
+        id S1379194AbiFGVaA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:29:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46274 "EHLO
+        Tue, 7 Jun 2022 17:30:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378012AbiFGUep (ORCPT
+        with ESMTP id S1378094AbiFGUeu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 584951E8E99;
-        Tue,  7 Jun 2022 11:37:13 -0700 (PDT)
+        Tue, 7 Jun 2022 16:34:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C533F1EA043;
+        Tue,  7 Jun 2022 11:37:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89416B82182;
-        Tue,  7 Jun 2022 18:37:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC68DC341CC;
-        Tue,  7 Jun 2022 18:37:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6367DB823A0;
+        Tue,  7 Jun 2022 18:37:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0517C385A5;
+        Tue,  7 Jun 2022 18:37:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627030;
-        bh=4JI497rn1w5jLXa3fsVUm1N8VcEniotvqADpCf5bPZE=;
+        s=korg; t=1654627044;
+        bh=Oz+plO2iRurQYDPDw9ZV4i0l5/QPC6FIt06Lw0gRW90=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ja4WJ22YzyOvma5gJiv8teeHYwN4j6oZRtiNdtXLH/Jk5CK0Otoc5/Dr8TuyxJCuk
-         cg5EkIbhHD2IrDW4jxy5HY70WoGvh0kvG4IsEogeVDRwrXsmvoz01SKLjVG9kOSHOB
-         k/VDAs7UWB6Cpe3g9T7J2eQ7NvkhkGtNtAOndC/4=
+        b=YVxl42hYaR8glijHHA8TyxtzrdCn/3rfATM0huE1v6NuUYm7Q2CKRGun2t2+Qy8nw
+         T4b8CMuX4tuP6dMQ4yRiQP9OCkbepRmPL6gmkCKKHh03BtfS9JsTXlsXaNyBGO/1U4
+         MeX9o8eoYG232Ps7F3QMHKlgiXrMipKh/QtoqOP4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tali Perry <tali.perry1@gmail.com>,
-        Tyrone Ting <kfting@nuvoton.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 591/772] i2c: npcm: Fix timeout calculation
-Date:   Tue,  7 Jun 2022 19:03:03 +0200
-Message-Id: <20220607165006.361041110@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Ren <guoren@kernel.org>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 596/772] RISC-V: Fix the XIP build
+Date:   Tue,  7 Jun 2022 19:03:08 +0200
+Message-Id: <20220607165006.505285204@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,60 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tali Perry <tali.perry1@gmail.com>
+From: Palmer Dabbelt <palmer@rivosinc.com>
 
-[ Upstream commit 288b204492fddf28889cea6dc95a23976632c7a0 ]
+[ Upstream commit d9e418d0ca1c464fe361468b772d4aa870d54e63 ]
 
-Use adap.timeout for timeout calculation instead of hard-coded
-value of 35ms.
+A handful of functions unused functions were enabled during XIP builds,
+which themselves didn't build correctly.  This just disables the
+functions entirely.
 
-Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
-Signed-off-by: Tali Perry <tali.perry1@gmail.com>
-Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Fixes: e8a62cc26ddf ("riscv: Implement sv48 support")
+Reviewed-by: Guo Ren <guoren@kernel.org>
+Link: https://lore.kernel.org/r/20220420184056.7886-5-palmer@rivosinc.com
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-npcm7xx.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/riscv/mm/init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
-index 2ad166355ec9..92fd88a3f415 100644
---- a/drivers/i2c/busses/i2c-npcm7xx.c
-+++ b/drivers/i2c/busses/i2c-npcm7xx.c
-@@ -2047,7 +2047,7 @@ static int npcm_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
- 	u16 nwrite, nread;
- 	u8 *write_data, *read_data;
- 	u8 slave_addr;
--	int timeout;
-+	unsigned long timeout;
- 	int ret = 0;
- 	bool read_block = false;
- 	bool read_PEC = false;
-@@ -2099,13 +2099,13 @@ static int npcm_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
- 	 * 9: bits per transaction (including the ack/nack)
- 	 */
- 	timeout_usec = (2 * 9 * USEC_PER_SEC / bus->bus_freq) * (2 + nread + nwrite);
--	timeout = max(msecs_to_jiffies(35), usecs_to_jiffies(timeout_usec));
-+	timeout = max_t(unsigned long, bus->adap.timeout, usecs_to_jiffies(timeout_usec));
- 	if (nwrite >= 32 * 1024 || nread >= 32 * 1024) {
- 		dev_err(bus->dev, "i2c%d buffer too big\n", bus->num);
- 		return -EINVAL;
- 	}
+diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
+index 697a9aed4f77..e42c51196995 100644
+--- a/arch/riscv/mm/init.c
++++ b/arch/riscv/mm/init.c
+@@ -591,7 +591,7 @@ static __init pgprot_t pgprot_from_va(uintptr_t va)
+ }
+ #endif /* CONFIG_STRICT_KERNEL_RWX */
  
--	time_left = jiffies + msecs_to_jiffies(DEFAULT_STALL_COUNT) + 1;
-+	time_left = jiffies + timeout + 1;
- 	do {
- 		/*
- 		 * we must clear slave address immediately when the bus is not
-@@ -2269,7 +2269,7 @@ static int npcm_i2c_probe_bus(struct platform_device *pdev)
- 	adap = &bus->adap;
- 	adap->owner = THIS_MODULE;
- 	adap->retries = 3;
--	adap->timeout = HZ;
-+	adap->timeout = msecs_to_jiffies(35);
- 	adap->algo = &npcm_i2c_algo;
- 	adap->quirks = &npcm_i2c_quirks;
- 	adap->algo_data = bus;
+-#ifdef CONFIG_64BIT
++#if defined(CONFIG_64BIT) && !defined(CONFIG_XIP_KERNEL)
+ static void __init disable_pgtable_l4(void)
+ {
+ 	pgtable_l4_enabled = false;
 -- 
 2.35.1
 
