@@ -2,184 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD689C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CCC4CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386562AbiFGWtK (ORCPT
+        id S1382218AbiFGWnq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:49:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40836 "EHLO
+        Tue, 7 Jun 2022 18:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381400AbiFGVkm (ORCPT
+        with ESMTP id S1381041AbiFGVbe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:40:42 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40EB4232A45
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:06:51 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id 129so16760084pgc.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 12:06:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Am5aGfsC1axZlOULyuACem/6+XgiQ9wXJ5AxdoUZZyw=;
-        b=BGOwhJTnVdp3I5vsGAiMaSPty5yVDLkvo0iFxUWaRbLO48HZDG2m2g31IRd/i61RJD
-         cplVpC/n6+a9WUpARLyGuyHaIrbjXSGdtTeLPzgvpeOYyuGy2atgUBjtc6b4N1vAcdt6
-         wabuMv7xZ2cpk1nStoT2ujhjkI+PBH8IM/Bvs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Am5aGfsC1axZlOULyuACem/6+XgiQ9wXJ5AxdoUZZyw=;
-        b=2GJPde3jizG2IAtOWu3T5Kk4eZHks4ZHfCHu3wbQYxlHhvNah1kxITxQjHV679XbKI
-         Wyt3nau/T1LchYGyKcSXlIDjX6Zi8lnD5ZQW8vyx+UBkZMlxy8DmlbS27zKst73//eFa
-         vMe8hWR3MeExaK4B2JaiGwGXrvl3HJUw/R/0S6pJQZKPhsmXe3v/+22J6Tx/zfzwtK0r
-         ptC8LYlhELMPOWXaheJDKigCMS7Q203qj5qaynsOo0kyZEHU3Ty+O6Kl9k/ynx+u3NiQ
-         54QEGZab1bjI+4IEwG+MEvgBMXOkKY3zd2GuHwNu1CtSGvE3i3GjyvA/1WjWfwQ6gF9q
-         iecg==
-X-Gm-Message-State: AOAM531RVBYQqjjyv33+0XmAUaHB/TbNzWgBL2O2i5PxXglCERALMHD+
-        JjyuvrJctZo/SyNIoE1Uo2DoH9iyN6id+w==
-X-Google-Smtp-Source: ABdhPJwK88zzGqSUFlf6HNcaHNY6NeEJA3B8fT0RLY7q7mLsnknl0nXD4wTz+3eWL0ef64qxs1Ro+w==
-X-Received: by 2002:a63:2c89:0:b0:3fe:1c0a:75d2 with SMTP id s131-20020a632c89000000b003fe1c0a75d2mr2077597pgs.310.1654628809959;
-        Tue, 07 Jun 2022 12:06:49 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id g29-20020aa79ddd000000b0050dc762819esm13236084pfq.120.2022.06.07.12.06.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 12:06:49 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     bleung@chromium.org, swboyd@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Tzung-Bi Shih <tzungbi@google.com>,
-        Xin Ji <xji@analogixsemi.com>
-Subject: [PATCH 3/7] dt-bindings: usb: Add Type-C switch binding
-Date:   Tue,  7 Jun 2022 19:00:21 +0000
-Message-Id: <20220607190131.1647511-4-pmalani@chromium.org>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-In-Reply-To: <20220607190131.1647511-1-pmalani@chromium.org>
-References: <20220607190131.1647511-1-pmalani@chromium.org>
+        Tue, 7 Jun 2022 17:31:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FAF822CBCA;
+        Tue,  7 Jun 2022 12:03:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B9A8D617CC;
+        Tue,  7 Jun 2022 19:03:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFF07C385A2;
+        Tue,  7 Jun 2022 19:03:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628637;
+        bh=TQ3Y3rgG9grSoqcDMuYepeiWXwXwF02pRKQIscNhIF0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zODXs2KpLCbt9UfK4A+R8cHAWgVDFMafSseHPfOC3kyZLUBKFhI1muoZgvGJR3v2U
+         3IPtj/yYsizw8tebm2lQm5S95yvtuo8duqxWxycDMViaTr4bde3ORgXHdXFFOWr2BC
+         /z3XywpZDydLN6e2iUT4sR2eRvweGltCWvXsP8ew=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Jessica Zhang <quic_jesszhan@quicinc.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 400/879] drm/msm/mdp5: Return error code in mdp5_mixer_release when deadlock is detected
+Date:   Tue,  7 Jun 2022 18:58:38 +0200
+Message-Id: <20220607165014.473515299@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce a binding which represents a component that can control the
-routing of USB Type-C data lines as well as address data line
-orientation (based on CC lines' orientation).
+From: Jessica Zhang <quic_jesszhan@quicinc.com>
 
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
+[ Upstream commit ca75f6f7c6f89365e40f10f641b15981b1f07c31 ]
+
+There is a possibility for mdp5_get_global_state to return
+-EDEADLK when acquiring the modeset lock, but currently global_state in
+mdp5_mixer_release doesn't check for if an error is returned.
+
+To avoid a NULL dereference error, let's have mdp5_mixer_release
+check if an error is returned and propagate that error.
+
+Reported-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Signed-off-by: Jessica Zhang <quic_jesszhan@quicinc.com>
+Fixes: 7907a0d77cb4 ("drm/msm/mdp5: Use the new private_obj state")
+Reviewed-by: Rob Clark <robdclark@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/485181/
+Link: https://lore.kernel.org/r/20220505214051.155-2-quic_jesszhan@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../devicetree/bindings/usb/typec-switch.yaml | 76 +++++++++++++++++++
- 1 file changed, 76 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/usb/typec-switch.yaml
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c  | 10 ++++++++--
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c | 15 +++++++++++----
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h |  4 ++--
+ 3 files changed, 21 insertions(+), 8 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/usb/typec-switch.yaml b/Documentation/devicetree/bindings/usb/typec-switch.yaml
-new file mode 100644
-index 000000000000..60a600a63fef
---- /dev/null
-+++ b/Documentation/devicetree/bindings/usb/typec-switch.yaml
-@@ -0,0 +1,76 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/usb/typec-switch.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
+index b966cd69f99d..fe2922c8d21b 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
+@@ -612,9 +612,15 @@ static int mdp5_crtc_setup_pipeline(struct drm_crtc *crtc,
+ 		if (ret)
+ 			return ret;
+ 
+-		mdp5_mixer_release(new_crtc_state->state, old_mixer);
++		ret = mdp5_mixer_release(new_crtc_state->state, old_mixer);
++		if (ret)
++			return ret;
 +
-+title: USB Type-C Switch
+ 		if (old_r_mixer) {
+-			mdp5_mixer_release(new_crtc_state->state, old_r_mixer);
++			ret = mdp5_mixer_release(new_crtc_state->state, old_r_mixer);
++			if (ret)
++				return ret;
 +
-+maintainers:
-+  - Prashant Malani <pmalani@chromium.org>
+ 			if (!need_right_mixer)
+ 				pipeline->r_mixer = NULL;
+ 		}
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
+index 954db683ae44..2536def2a000 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
+@@ -116,21 +116,28 @@ int mdp5_mixer_assign(struct drm_atomic_state *s, struct drm_crtc *crtc,
+ 	return 0;
+ }
+ 
+-void mdp5_mixer_release(struct drm_atomic_state *s, struct mdp5_hw_mixer *mixer)
++int mdp5_mixer_release(struct drm_atomic_state *s, struct mdp5_hw_mixer *mixer)
+ {
+ 	struct mdp5_global_state *global_state = mdp5_get_global_state(s);
+-	struct mdp5_hw_mixer_state *new_state = &global_state->hwmixer;
++	struct mdp5_hw_mixer_state *new_state;
+ 
+ 	if (!mixer)
+-		return;
++		return 0;
 +
-+description:
-+  A USB Type-C switch represents a component which routes USB Type-C data
-+  lines to various protocol host controllers (e.g USB, VESA DisplayPort,
-+  Thunderbolt etc.) depending on which mode the Type-C port, port partner
-+  and cable are operating in. It can also modify lane routing based on
-+  the orientation of a connected Type-C peripheral.
++	if (IS_ERR(global_state))
++		return PTR_ERR(global_state);
 +
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - typec-switch
++	new_state = &global_state->hwmixer;
+ 
+ 	if (WARN_ON(!new_state->hwmixer_to_crtc[mixer->idx]))
+-		return;
++		return -EINVAL;
+ 
+ 	DBG("%s: release from crtc %s", mixer->name,
+ 	    new_state->hwmixer_to_crtc[mixer->idx]->name);
+ 
+ 	new_state->hwmixer_to_crtc[mixer->idx] = NULL;
 +
-+  mode-switch:
-+    type: boolean
-+    description: Specify that this switch can handle alternate mode switching.
-+
-+  orientation-switch:
-+    type: boolean
-+    description: Specify that this switch can handle orientation switching.
-+
-+  ports:
-+    $ref: /schemas/graph.yaml#/properties/ports
-+    description: OF graph binding modelling data lines to the Type-C switch.
-+
-+    properties:
-+      port@0:
-+        $ref: /schemas/graph.yaml#/properties/port
-+        description: Link between the switch and a Type-C connector.
-+
-+    required:
-+      - port@0
-+
-+required:
-+  - compatible
-+  - ports
-+
-+anyOf:
-+  - required:
-+      - mode-switch
-+  - required:
-+      - orientation-switch
-+
-+additionalProperties: true
-+
-+examples:
-+  - |
-+    anx7625 {
-+      typecswitch {
-+        compatible = "typec-switch";
-+        mode-switch;
-+        orientation-switch;
-+        ports {
-+          #address-cells = <1>;
-+          #size-cells = <0>;
-+
-+          port@0 {
-+            reg = <0>;
-+            anx_ep: endpoint {
-+              remote-endpoint = <&typec_controller>;
-+            };
-+          };
-+        };
-+      };
-+    };
++	return 0;
+ }
+ 
+ void mdp5_mixer_destroy(struct mdp5_hw_mixer *mixer)
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
+index 43c9ba43ce18..545ee223b9d7 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
+@@ -30,7 +30,7 @@ void mdp5_mixer_destroy(struct mdp5_hw_mixer *lm);
+ int mdp5_mixer_assign(struct drm_atomic_state *s, struct drm_crtc *crtc,
+ 		      uint32_t caps, struct mdp5_hw_mixer **mixer,
+ 		      struct mdp5_hw_mixer **r_mixer);
+-void mdp5_mixer_release(struct drm_atomic_state *s,
+-			struct mdp5_hw_mixer *mixer);
++int mdp5_mixer_release(struct drm_atomic_state *s,
++		       struct mdp5_hw_mixer *mixer);
+ 
+ #endif /* __MDP5_LM_H__ */
 -- 
-2.36.1.255.ge46751e96f-goog
+2.35.1
+
+
 
