@@ -2,145 +2,365 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C61ACCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C27ECCA486
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:31:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351653AbiFGSaT (ORCPT
+        id S1351778AbiFGSaZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:30:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55846 "EHLO
+        Tue, 7 Jun 2022 14:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351394AbiFGSCB (ORCPT
+        with ESMTP id S1351953AbiFGSC1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:02:01 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD9C12E33D
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:44:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654623863; x=1686159863;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=dcjI6c1qBy+95NmJsucYe4f7ZIyMQ6H0lcQn32Io+mw=;
-  b=kcdLAD9lfNKgPYw7HIbTpdHjUeLd+YnwyjK/iEqixt0qzlog8YKBNGxr
-   /ew6zD2AJZxEWNIfcK7VrCwbBgPjVNdnDdMnhT3HjCI8bv5KYiWFEK8uW
-   Zlz3uhY92Am2MXuYTQd1lS2TgtzZIo2HCmhs+qSDCDw/IEVW6wqjK4X9t
-   kUCC6Ceq40ourys/Rop5gv+RqhQSy6P4HlVCWLjqJ6jOyB+dua9uOzxIr
-   w+BEX7NwYdIxXXzZsDfxUKQg5v6aUYYZ2bF9nlSi7rGjfQ0XCz2i3jO/V
-   HfO8Q8s+YDyO5zxM5Mc3z4iva2bPPZm4tkCVUKJJbrEsrZSkbReAoPxTd
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="274267366"
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="274267366"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 10:44:23 -0700
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="609291334"
-Received: from schen9-mobl.amr.corp.intel.com ([10.251.8.166])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 10:44:22 -0700
-Message-ID: <35202f2acb9367b926b2066af3f7f4731a9c5f47.camel@linux.intel.com>
-Subject: Re: [PATCH] x86: topology_update_package_map function doesn't use
- the return value
-From:   Tim Chen <tim.c.chen@linux.intel.com>
-To:     Li kunyu <kunyu@nfschina.com>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, rafael.j.wysocki@intel.com, tony.luck@intel.com,
-        tim.gardner@canonical.com, boris.ostrovsky@oracle.com
-Cc:     peterz@infradead.org, ray.huang@amd.com, paulmck@kernel.org,
-        ionela.voinescu@arm.com, linux-kernel@vger.kernel.org
-Date:   Tue, 07 Jun 2022 10:44:22 -0700
-In-Reply-To: <20220606122316.291022-1-kunyu@nfschina.com>
-References: <20220606122316.291022-1-kunyu@nfschina.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+        Tue, 7 Jun 2022 14:02:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7933B10F374;
+        Tue,  7 Jun 2022 10:46:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2482FB822CD;
+        Tue,  7 Jun 2022 17:46:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8120FC385A5;
+        Tue,  7 Jun 2022 17:46:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654623984;
+        bh=8YTBb/y06p9bUmkDTqdpbZdm6d31m4hJrQ5IhM3kZbs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jopI0rGYdQ43EF/g8p5Q+dR1OyN0Z+pheD96oer7qmQvpug1/CgLZpj1tuFNPyUGZ
+         yvjegw5goP8X2wM2naf8KsT0/1tfF5HRlERvHYWFnocu0fjdJw1tm5nE/rZgedOXh2
+         /71oBVYF44XkRyIoGFPdp98FUkdtOv3KxLHQfJ+s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hari Bathini <hbathini@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 162/667] powerpc/fadump: Fix fadump to work with a different endian capture kernel
+Date:   Tue,  7 Jun 2022 18:57:07 +0200
+Message-Id: <20220607164939.673487994@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-06-06 at 20:23 +0800, Li kunyu wrote:
-> topology_update_package_map function could remove the return value, and
-> it could remove the BUG_ON check.
-> 
-> Signed-off-by: Li kunyu <kunyu@nfschina.com>
+From: Hari Bathini <hbathini@linux.ibm.com>
 
-As far as I can tell, topology_update_package_map() should always succeed and return 0.
-Either there is an existing mapping of the physical package to a logical
-package id and we don't have to do anything, or we assign a new logical package id to this
-physical package id that doesn't have a mapping.
+[ Upstream commit b74196af372f7cb4902179009265fe63ac81824f ]
 
-So I agree that checking for the failure and non-zero return of topology_update_package_map()
-is useless.
+Dump capture would fail if capture kernel is not of the endianess as the
+production kernel, because the in-memory data structure (struct
+opal_fadump_mem_struct) shared across production kernel and capture
+kernel assumes the same endianess for both the kernels, which doesn't
+have to be true always. Fix it by having a well-defined endianess for
+struct opal_fadump_mem_struct.
 
-Likewise, I think topology_update_die_map() should always succeed and we can remove
-checking of its return value.  
+Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/161902744901.86147.14719228311655123526.stgit@hbathini
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/powerpc/platforms/powernv/opal-fadump.c | 94 +++++++++++---------
+ arch/powerpc/platforms/powernv/opal-fadump.h | 10 +--
+ 2 files changed, 57 insertions(+), 47 deletions(-)
 
-Reviewed-by: Tim Chen <tim.c.chen@linux.intel.com>
+diff --git a/arch/powerpc/platforms/powernv/opal-fadump.c b/arch/powerpc/platforms/powernv/opal-fadump.c
+index 9a360ced663b..e23a51a05f99 100644
+--- a/arch/powerpc/platforms/powernv/opal-fadump.c
++++ b/arch/powerpc/platforms/powernv/opal-fadump.c
+@@ -60,7 +60,7 @@ void __init opal_fadump_dt_scan(struct fw_dump *fadump_conf, u64 node)
+ 	addr = be64_to_cpu(addr);
+ 	pr_debug("Kernel metadata addr: %llx\n", addr);
+ 	opal_fdm_active = (void *)addr;
+-	if (opal_fdm_active->registered_regions == 0)
++	if (be16_to_cpu(opal_fdm_active->registered_regions) == 0)
+ 		return;
+ 
+ 	ret = opal_mpipl_query_tag(OPAL_MPIPL_TAG_BOOT_MEM, &addr);
+@@ -95,17 +95,17 @@ static int opal_fadump_unregister(struct fw_dump *fadump_conf);
+ static void opal_fadump_update_config(struct fw_dump *fadump_conf,
+ 				      const struct opal_fadump_mem_struct *fdm)
+ {
+-	pr_debug("Boot memory regions count: %d\n", fdm->region_cnt);
++	pr_debug("Boot memory regions count: %d\n", be16_to_cpu(fdm->region_cnt));
+ 
+ 	/*
+ 	 * The destination address of the first boot memory region is the
+ 	 * destination address of boot memory regions.
+ 	 */
+-	fadump_conf->boot_mem_dest_addr = fdm->rgn[0].dest;
++	fadump_conf->boot_mem_dest_addr = be64_to_cpu(fdm->rgn[0].dest);
+ 	pr_debug("Destination address of boot memory regions: %#016llx\n",
+ 		 fadump_conf->boot_mem_dest_addr);
+ 
+-	fadump_conf->fadumphdr_addr = fdm->fadumphdr_addr;
++	fadump_conf->fadumphdr_addr = be64_to_cpu(fdm->fadumphdr_addr);
+ }
+ 
+ /*
+@@ -126,9 +126,9 @@ static void opal_fadump_get_config(struct fw_dump *fadump_conf,
+ 	fadump_conf->boot_memory_size = 0;
+ 
+ 	pr_debug("Boot memory regions:\n");
+-	for (i = 0; i < fdm->region_cnt; i++) {
+-		base = fdm->rgn[i].src;
+-		size = fdm->rgn[i].size;
++	for (i = 0; i < be16_to_cpu(fdm->region_cnt); i++) {
++		base = be64_to_cpu(fdm->rgn[i].src);
++		size = be64_to_cpu(fdm->rgn[i].size);
+ 		pr_debug("\t[%03d] base: 0x%lx, size: 0x%lx\n", i, base, size);
+ 
+ 		fadump_conf->boot_mem_addr[i] = base;
+@@ -143,7 +143,7 @@ static void opal_fadump_get_config(struct fw_dump *fadump_conf,
+ 	 * Start address of reserve dump area (permanent reservation) for
+ 	 * re-registering FADump after dump capture.
+ 	 */
+-	fadump_conf->reserve_dump_area_start = fdm->rgn[0].dest;
++	fadump_conf->reserve_dump_area_start = be64_to_cpu(fdm->rgn[0].dest);
+ 
+ 	/*
+ 	 * Rarely, but it can so happen that system crashes before all
+@@ -155,13 +155,14 @@ static void opal_fadump_get_config(struct fw_dump *fadump_conf,
+ 	 * Hope the memory that could not be preserved only has pages
+ 	 * that are usually filtered out while saving the vmcore.
+ 	 */
+-	if (fdm->region_cnt > fdm->registered_regions) {
++	if (be16_to_cpu(fdm->region_cnt) > be16_to_cpu(fdm->registered_regions)) {
+ 		pr_warn("Not all memory regions were saved!!!\n");
+ 		pr_warn("  Unsaved memory regions:\n");
+-		i = fdm->registered_regions;
+-		while (i < fdm->region_cnt) {
++		i = be16_to_cpu(fdm->registered_regions);
++		while (i < be16_to_cpu(fdm->region_cnt)) {
+ 			pr_warn("\t[%03d] base: 0x%llx, size: 0x%llx\n",
+-				i, fdm->rgn[i].src, fdm->rgn[i].size);
++				i, be64_to_cpu(fdm->rgn[i].src),
++				be64_to_cpu(fdm->rgn[i].size));
+ 			i++;
+ 		}
+ 
+@@ -170,7 +171,7 @@ static void opal_fadump_get_config(struct fw_dump *fadump_conf,
+ 	}
+ 
+ 	fadump_conf->boot_mem_top = (fadump_conf->boot_memory_size + hole_size);
+-	fadump_conf->boot_mem_regs_cnt = fdm->region_cnt;
++	fadump_conf->boot_mem_regs_cnt = be16_to_cpu(fdm->region_cnt);
+ 	opal_fadump_update_config(fadump_conf, fdm);
+ }
+ 
+@@ -178,35 +179,38 @@ static void opal_fadump_get_config(struct fw_dump *fadump_conf,
+ static void opal_fadump_init_metadata(struct opal_fadump_mem_struct *fdm)
+ {
+ 	fdm->version = OPAL_FADUMP_VERSION;
+-	fdm->region_cnt = 0;
+-	fdm->registered_regions = 0;
+-	fdm->fadumphdr_addr = 0;
++	fdm->region_cnt = cpu_to_be16(0);
++	fdm->registered_regions = cpu_to_be16(0);
++	fdm->fadumphdr_addr = cpu_to_be64(0);
+ }
+ 
+ static u64 opal_fadump_init_mem_struct(struct fw_dump *fadump_conf)
+ {
+ 	u64 addr = fadump_conf->reserve_dump_area_start;
++	u16 reg_cnt;
+ 	int i;
+ 
+ 	opal_fdm = __va(fadump_conf->kernel_metadata);
+ 	opal_fadump_init_metadata(opal_fdm);
+ 
+ 	/* Boot memory regions */
++	reg_cnt = be16_to_cpu(opal_fdm->region_cnt);
+ 	for (i = 0; i < fadump_conf->boot_mem_regs_cnt; i++) {
+-		opal_fdm->rgn[i].src	= fadump_conf->boot_mem_addr[i];
+-		opal_fdm->rgn[i].dest	= addr;
+-		opal_fdm->rgn[i].size	= fadump_conf->boot_mem_sz[i];
++		opal_fdm->rgn[i].src	= cpu_to_be64(fadump_conf->boot_mem_addr[i]);
++		opal_fdm->rgn[i].dest	= cpu_to_be64(addr);
++		opal_fdm->rgn[i].size	= cpu_to_be64(fadump_conf->boot_mem_sz[i]);
+ 
+-		opal_fdm->region_cnt++;
++		reg_cnt++;
+ 		addr += fadump_conf->boot_mem_sz[i];
+ 	}
++	opal_fdm->region_cnt = cpu_to_be16(reg_cnt);
+ 
+ 	/*
+ 	 * Kernel metadata is passed to f/w and retrieved in capture kerenl.
+ 	 * So, use it to save fadump header address instead of calculating it.
+ 	 */
+-	opal_fdm->fadumphdr_addr = (opal_fdm->rgn[0].dest +
+-				    fadump_conf->boot_memory_size);
++	opal_fdm->fadumphdr_addr = cpu_to_be64(be64_to_cpu(opal_fdm->rgn[0].dest) +
++					       fadump_conf->boot_memory_size);
+ 
+ 	opal_fadump_update_config(fadump_conf, opal_fdm);
+ 
+@@ -269,18 +273,21 @@ static u64 opal_fadump_get_bootmem_min(void)
+ static int opal_fadump_register(struct fw_dump *fadump_conf)
+ {
+ 	s64 rc = OPAL_PARAMETER;
++	u16 registered_regs;
+ 	int i, err = -EIO;
+ 
+-	for (i = 0; i < opal_fdm->region_cnt; i++) {
++	registered_regs = be16_to_cpu(opal_fdm->registered_regions);
++	for (i = 0; i < be16_to_cpu(opal_fdm->region_cnt); i++) {
+ 		rc = opal_mpipl_update(OPAL_MPIPL_ADD_RANGE,
+-				       opal_fdm->rgn[i].src,
+-				       opal_fdm->rgn[i].dest,
+-				       opal_fdm->rgn[i].size);
++				       be64_to_cpu(opal_fdm->rgn[i].src),
++				       be64_to_cpu(opal_fdm->rgn[i].dest),
++				       be64_to_cpu(opal_fdm->rgn[i].size));
+ 		if (rc != OPAL_SUCCESS)
+ 			break;
+ 
+-		opal_fdm->registered_regions++;
++		registered_regs++;
+ 	}
++	opal_fdm->registered_regions = cpu_to_be16(registered_regs);
+ 
+ 	switch (rc) {
+ 	case OPAL_SUCCESS:
+@@ -291,7 +298,8 @@ static int opal_fadump_register(struct fw_dump *fadump_conf)
+ 	case OPAL_RESOURCE:
+ 		/* If MAX regions limit in f/w is hit, warn and proceed. */
+ 		pr_warn("%d regions could not be registered for MPIPL as MAX limit is reached!\n",
+-			(opal_fdm->region_cnt - opal_fdm->registered_regions));
++			(be16_to_cpu(opal_fdm->region_cnt) -
++			 be16_to_cpu(opal_fdm->registered_regions)));
+ 		fadump_conf->dump_registered = 1;
+ 		err = 0;
+ 		break;
+@@ -312,7 +320,7 @@ static int opal_fadump_register(struct fw_dump *fadump_conf)
+ 	 * If some regions were registered before OPAL_MPIPL_ADD_RANGE
+ 	 * OPAL call failed, unregister all regions.
+ 	 */
+-	if ((err < 0) && (opal_fdm->registered_regions > 0))
++	if ((err < 0) && (be16_to_cpu(opal_fdm->registered_regions) > 0))
+ 		opal_fadump_unregister(fadump_conf);
+ 
+ 	return err;
+@@ -328,7 +336,7 @@ static int opal_fadump_unregister(struct fw_dump *fadump_conf)
+ 		return -EIO;
+ 	}
+ 
+-	opal_fdm->registered_regions = 0;
++	opal_fdm->registered_regions = cpu_to_be16(0);
+ 	fadump_conf->dump_registered = 0;
+ 	return 0;
+ }
+@@ -563,19 +571,20 @@ static void opal_fadump_region_show(struct fw_dump *fadump_conf,
+ 	else
+ 		fdm_ptr = opal_fdm;
+ 
+-	for (i = 0; i < fdm_ptr->region_cnt; i++) {
++	for (i = 0; i < be16_to_cpu(fdm_ptr->region_cnt); i++) {
+ 		/*
+ 		 * Only regions that are registered for MPIPL
+ 		 * would have dump data.
+ 		 */
+ 		if ((fadump_conf->dump_active) &&
+-		    (i < fdm_ptr->registered_regions))
+-			dumped_bytes = fdm_ptr->rgn[i].size;
++		    (i < be16_to_cpu(fdm_ptr->registered_regions)))
++			dumped_bytes = be64_to_cpu(fdm_ptr->rgn[i].size);
+ 
+ 		seq_printf(m, "DUMP: Src: %#016llx, Dest: %#016llx, ",
+-			   fdm_ptr->rgn[i].src, fdm_ptr->rgn[i].dest);
++			   be64_to_cpu(fdm_ptr->rgn[i].src),
++			   be64_to_cpu(fdm_ptr->rgn[i].dest));
+ 		seq_printf(m, "Size: %#llx, Dumped: %#llx bytes\n",
+-			   fdm_ptr->rgn[i].size, dumped_bytes);
++			   be64_to_cpu(fdm_ptr->rgn[i].size), dumped_bytes);
+ 	}
+ 
+ 	/* Dump is active. Show reserved area start address. */
+@@ -624,6 +633,7 @@ void __init opal_fadump_dt_scan(struct fw_dump *fadump_conf, u64 node)
+ {
+ 	const __be32 *prop;
+ 	unsigned long dn;
++	__be64 be_addr;
+ 	u64 addr = 0;
+ 	int i, len;
+ 	s64 ret;
+@@ -680,13 +690,13 @@ void __init opal_fadump_dt_scan(struct fw_dump *fadump_conf, u64 node)
+ 	if (!prop)
+ 		return;
+ 
+-	ret = opal_mpipl_query_tag(OPAL_MPIPL_TAG_KERNEL, &addr);
+-	if ((ret != OPAL_SUCCESS) || !addr) {
++	ret = opal_mpipl_query_tag(OPAL_MPIPL_TAG_KERNEL, &be_addr);
++	if ((ret != OPAL_SUCCESS) || !be_addr) {
+ 		pr_err("Failed to get Kernel metadata (%lld)\n", ret);
+ 		return;
+ 	}
+ 
+-	addr = be64_to_cpu(addr);
++	addr = be64_to_cpu(be_addr);
+ 	pr_debug("Kernel metadata addr: %llx\n", addr);
+ 
+ 	opal_fdm_active = __va(addr);
+@@ -697,14 +707,14 @@ void __init opal_fadump_dt_scan(struct fw_dump *fadump_conf, u64 node)
+ 	}
+ 
+ 	/* Kernel regions not registered with f/w for MPIPL */
+-	if (opal_fdm_active->registered_regions == 0) {
++	if (be16_to_cpu(opal_fdm_active->registered_regions) == 0) {
+ 		opal_fdm_active = NULL;
+ 		return;
+ 	}
+ 
+-	ret = opal_mpipl_query_tag(OPAL_MPIPL_TAG_CPU, &addr);
+-	if (addr) {
+-		addr = be64_to_cpu(addr);
++	ret = opal_mpipl_query_tag(OPAL_MPIPL_TAG_CPU, &be_addr);
++	if (be_addr) {
++		addr = be64_to_cpu(be_addr);
+ 		pr_debug("CPU metadata addr: %llx\n", addr);
+ 		opal_cpu_metadata = __va(addr);
+ 	}
+diff --git a/arch/powerpc/platforms/powernv/opal-fadump.h b/arch/powerpc/platforms/powernv/opal-fadump.h
+index f1e9ecf548c5..3f715efb0aa6 100644
+--- a/arch/powerpc/platforms/powernv/opal-fadump.h
++++ b/arch/powerpc/platforms/powernv/opal-fadump.h
+@@ -31,14 +31,14 @@
+  * OPAL FADump kernel metadata
+  *
+  * The address of this structure will be registered with f/w for retrieving
+- * and processing during crash dump.
++ * in the capture kernel to process the crash dump.
+  */
+ struct opal_fadump_mem_struct {
+ 	u8	version;
+ 	u8	reserved[3];
+-	u16	region_cnt;		/* number of regions */
+-	u16	registered_regions;	/* Regions registered for MPIPL */
+-	u64	fadumphdr_addr;
++	__be16	region_cnt;		/* number of regions */
++	__be16	registered_regions;	/* Regions registered for MPIPL */
++	__be64	fadumphdr_addr;
+ 	struct opal_mpipl_region	rgn[FADUMP_MAX_MEM_REGS];
+ } __packed;
+ 
+@@ -135,7 +135,7 @@ static inline void opal_fadump_read_regs(char *bufp, unsigned int regs_cnt,
+ 	for (i = 0; i < regs_cnt; i++, bufp += reg_entry_size) {
+ 		reg_entry = (struct hdat_fadump_reg_entry *)bufp;
+ 		val = (cpu_endian ? be64_to_cpu(reg_entry->reg_val) :
+-		       reg_entry->reg_val);
++		       (u64)(reg_entry->reg_val));
+ 		opal_fadump_set_regval_regnum(regs,
+ 					      be32_to_cpu(reg_entry->reg_type),
+ 					      be32_to_cpu(reg_entry->reg_num),
+-- 
+2.35.1
 
 
-> ---
->  arch/x86/include/asm/topology.h | 6 +++---
->  arch/x86/kernel/cpu/common.c    | 2 +-
->  arch/x86/kernel/smpboot.c       | 3 +--
->  3 files changed, 5 insertions(+), 6 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/topology.h b/arch/x86/include/asm/topology.h
-> index 458c891a8273..eabfb44b63ed 100644
-> --- a/arch/x86/include/asm/topology.h
-> +++ b/arch/x86/include/asm/topology.h
-> @@ -136,7 +136,7 @@ static inline int topology_max_smt_threads(void)
->  	return __max_smt_threads;
->  }
->  
-> -int topology_update_package_map(unsigned int apicid, unsigned int cpu);
-> +void topology_update_package_map(unsigned int apicid, unsigned int cpu);
->  int topology_update_die_map(unsigned int dieid, unsigned int cpu);
->  int topology_phys_to_logical_pkg(unsigned int pkg);
->  int topology_phys_to_logical_die(unsigned int die, unsigned int cpu);
-> @@ -144,8 +144,8 @@ bool topology_is_primary_thread(unsigned int cpu);
->  bool topology_smt_supported(void);
->  #else
->  #define topology_max_packages()			(1)
-> -static inline int
-> -topology_update_package_map(unsigned int apicid, unsigned int cpu) { return 0; }
-> +static inline void
-> +topology_update_package_map(unsigned int apicid, unsigned int cpu) { }
->  static inline int
->  topology_update_die_map(unsigned int dieid, unsigned int cpu) { return 0; }
->  static inline int topology_phys_to_logical_pkg(unsigned int pkg) { return 0; }
-> diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-> index c296cb1c0113..22d19a1feafd 100644
-> --- a/arch/x86/kernel/cpu/common.c
-> +++ b/arch/x86/kernel/cpu/common.c
-> @@ -1673,7 +1673,7 @@ static void validate_apic_and_package_id(struct cpuinfo_x86 *c)
->  		pr_err(FW_BUG "CPU%u: APIC id mismatch. Firmware: %x APIC: %x\n",
->  		       cpu, apicid, c->initial_apicid);
->  	}
-> -	BUG_ON(topology_update_package_map(c->phys_proc_id, cpu));
-> +	topology_update_package_map(c->phys_proc_id, cpu);
->  	BUG_ON(topology_update_die_map(c->cpu_die_id, cpu));
->  #else
->  	c->logical_proc_id = 0;
-> diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
-> index 5e7f9532a10d..20c67cca245b 100644
-> --- a/arch/x86/kernel/smpboot.c
-> +++ b/arch/x86/kernel/smpboot.c
-> @@ -327,7 +327,7 @@ EXPORT_SYMBOL(topology_phys_to_logical_die);
->   * @pkg:	The physical package id as retrieved via CPUID
->   * @cpu:	The cpu for which this is updated
->   */
-> -int topology_update_package_map(unsigned int pkg, unsigned int cpu)
-> +void topology_update_package_map(unsigned int pkg, unsigned int cpu)
->  {
->  	int new;
->  
-> @@ -343,7 +343,6 @@ int topology_update_package_map(unsigned int pkg, unsigned int cpu)
->  	}
->  found:
->  	cpu_data(cpu).logical_proc_id = new;
-> -	return 0;
->  }
->  /**
->   * topology_update_die_map - Update the physical to logical die map
 
