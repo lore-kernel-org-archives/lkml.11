@@ -2,83 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22562C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:48:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB5FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:48:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245144AbiFHBsE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:48:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38032 "EHLO
+        id S233717AbiFHBsU convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:48:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383072AbiFGVwQ (ORCPT
+        with ESMTP id S1447089AbiFGXGX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:52:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CB442408FC;
-        Tue,  7 Jun 2022 12:10:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18CDF617DA;
-        Tue,  7 Jun 2022 19:10:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2757DC34115;
-        Tue,  7 Jun 2022 19:10:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629025;
-        bh=4JIrRICiYrnw1c2ygg9e+MEN7EFrlrJShWuE87GFz/4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VPf4ouNmZs6EbT8etkn2uKPmn7ASyP1HLH12et8rXhJj8CrL9j77uEbNxbgTrLDDx
-         jfv+/C/IVj2WU7aOpXQvDb+k6NjU7/YR7Vzt1Tayd+n0W2Hc6vpifKwaB6UpKgdT0P
-         LMY9dnqqDJ4GPNr9U/vQXT7qRjgUxtqt/U2Y/fT4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 540/879] soc: qcom: smsm: Fix missing of_node_put() in smsm_parse_ipc
-Date:   Tue,  7 Jun 2022 19:00:58 +0200
-Message-Id: <20220607165018.547238284@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 19:06:23 -0400
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66DAA1DE8C4
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 13:30:51 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 39C0361B8B4C;
+        Tue,  7 Jun 2022 22:30:29 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id HT-WCvRXO0X0; Tue,  7 Jun 2022 22:30:28 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id AFAB261B8B68;
+        Tue,  7 Jun 2022 22:30:28 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 13BXEJVUW9oh; Tue,  7 Jun 2022 22:30:28 +0200 (CEST)
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 8F1A061B8B4C;
+        Tue,  7 Jun 2022 22:30:28 +0200 (CEST)
+Date:   Tue, 7 Jun 2022 22:30:28 +0200 (CEST)
+From:   Richard Weinberger <richard@nod.at>
+To:     =?utf-8?B?TWljaGHFgiBLxJlwaWXFhA==?= <kernel@kempniu.pl>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-mtd <linux-mtd@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Message-ID: <75745632.147517.1654633828458.JavaMail.zimbra@nod.at>
+In-Reply-To: <20220516070601.11428-3-kernel@kempniu.pl>
+References: <20220516070601.11428-1-kernel@kempniu.pl> <20220516070601.11428-3-kernel@kempniu.pl>
+Subject: Re: [PATCH 2/2] mtdchar: use kvmalloc() for potentially large
+ allocations
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [195.201.40.130]
+X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
+Thread-Topic: mtdchar: use kvmalloc() for potentially large allocations
+Thread-Index: GV6LOGkacTyBnlb9cH8NJV3ZRtoFFQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+----- Ursprüngliche Mail -----
+> Von: "Michał Kępień" <kernel@kempniu.pl>
+> An: "Miquel Raynal" <miquel.raynal@bootlin.com>, "richard" <richard@nod.at>, "Vignesh Raghavendra" <vigneshr@ti.com>
+> CC: "linux-mtd" <linux-mtd@lists.infradead.org>, "linux-kernel" <linux-kernel@vger.kernel.org>
+> Gesendet: Montag, 16. Mai 2022 09:06:01
+> Betreff: [PATCH 2/2] mtdchar: use kvmalloc() for potentially large allocations
 
-[ Upstream commit aad66a3c78da668f4506356c2fdb70b7a19ecc76 ]
+> mtdchar_write_ioctl() calls kmalloc() with the 'size' argument set to
+> the smaller of two values: the write request's data/OOB length provided
+> by user space and the erase block size of the MTD device.  If the latter
+> is large, kmalloc() may not be able to serve such allocation requests.
+> Use kvmalloc() instead.  Correspondingly, replace kfree() calls with
+> kvfree() calls.
+> 
+> Suggested-by: Richard Weinberger <richard@nod.at>
+> Signed-off-by: Michał Kępień <kernel@kempniu.pl>
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+Looks good to me.
+Acked-by: Richard Weinberger <richard@nod.at>
 
-Fixes: c97c4090ff72 ("soc: qcom: smsm: Add driver for Qualcomm SMSM")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220308073648.24634-1-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/soc/qcom/smsm.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/soc/qcom/smsm.c b/drivers/soc/qcom/smsm.c
-index ef15d014c03a..9df9bba242f3 100644
---- a/drivers/soc/qcom/smsm.c
-+++ b/drivers/soc/qcom/smsm.c
-@@ -374,6 +374,7 @@ static int smsm_parse_ipc(struct qcom_smsm *smsm, unsigned host_id)
- 		return 0;
- 
- 	host->ipc_regmap = syscon_node_to_regmap(syscon);
-+	of_node_put(syscon);
- 	if (IS_ERR(host->ipc_regmap))
- 		return PTR_ERR(host->ipc_regmap);
- 
--- 
-2.35.1
-
-
-
+Thanks,
+//richard
