@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C509BCCA487
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A2CCCA48E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:11:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384398AbiFGWLP (ORCPT
+        id S1384440AbiFGWLn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:11:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33214 "EHLO
+        Tue, 7 Jun 2022 18:11:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235181AbiFGVIB (ORCPT
+        with ESMTP id S1379321AbiFGVJ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:08:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B75212C9F;
-        Tue,  7 Jun 2022 11:50:50 -0700 (PDT)
+        Tue, 7 Jun 2022 17:09:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F26A214402;
+        Tue,  7 Jun 2022 11:51:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED63D616B6;
-        Tue,  7 Jun 2022 18:50:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3FFBC385A2;
-        Tue,  7 Jun 2022 18:50:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 413C3616C2;
+        Tue,  7 Jun 2022 18:51:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 548FCC34115;
+        Tue,  7 Jun 2022 18:51:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627849;
-        bh=Dif+QLRgomHeNwIGglbOydkrFgua16Gw8/jn/i5m3BU=;
+        s=korg; t=1654627879;
+        bh=0um7h6J74b9iCwQNa3KP+UZfrgaiwOgLoUiCqYjh1tU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WAOT9/XrZfUK4iqHJhOWHafgZnxVRHBr+Ck55+DdkMwcz2H3RfrLZBZ8zWN7jDcgk
-         /+C2K7E/4rYbqFqexHAZehArOe+1U004Pak3nC6k3Uo6SLIucuhakXtxvAgyM4U/Cy
-         H3eJcdM+4EiA53nVMB+b3Q0a9rIhgLx9n7QMxOxI=
+        b=n3E+xSyOmJimLQ6uTx0x2CoXlaEPsp24+N88ZlaHcvwq8phLPRm8H5Vr+yQQ9e0C5
+         UfuiQRWNYLTCd2+eObCMNxA5/7k7S1Ii/9KPZYnEPFQGFBSfMphGUkxjwtG28PHQOv
+         98Qg+m6Qz+/wjRsvoK42Ax295WKeHqdVcLEmAFcE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vignesh Raghavendra <vigneshr@ti.com>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 108/879] drivers: mmc: sdhci_am654: Add the quirk to set TESTCD bit
-Date:   Tue,  7 Jun 2022 18:53:46 +0200
-Message-Id: <20220607165005.832701868@linuxfoundation.org>
+Subject: [PATCH 5.18 109/879] scsi: megaraid: Fix error check return value of register_chrdev()
+Date:   Tue,  7 Jun 2022 18:53:47 +0200
+Message-Id: <20220607165005.861445419@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,83 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vignesh Raghavendra <vigneshr@ti.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit c7666240ec76422cb7546bd07cc8ae80dc0ccdd2 ]
+[ Upstream commit c5acd61dbb32b6bda0f3a354108f2b8dcb788985 ]
 
-The ARASAN MMC controller on Keystone 3 class of devices need the SDCD
-line to be connected for proper functioning. Similar to the issue pointed
-out in sdhci-of-arasan.c driver, commit 3794c542641f ("mmc:
-sdhci-of-arasan: Set controller to test mode when no CD bit").
+If major equals 0, register_chrdev() returns an error code when it fails.
+This function dynamically allocates a major and returns its number on
+success, so we should use "< 0" to check it instead of "!".
 
-In cases where this can't be connected, add a quirk to force the
-controller into test mode and set the TESTCD bit. Use the flag
-"ti,fails-without-test-cd", to implement this above quirk when required.
-
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
-Link: https://lore.kernel.org/r/20220425063120.10135-3-a-govindraju@ti.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20220418105755.2558828-1-lv.ruyi@zte.com.cn
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/sdhci_am654.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+ drivers/scsi/megaraid.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/host/sdhci_am654.c b/drivers/mmc/host/sdhci_am654.c
-index e54fe24d47e7..e7ced1496a07 100644
---- a/drivers/mmc/host/sdhci_am654.c
-+++ b/drivers/mmc/host/sdhci_am654.c
-@@ -147,6 +147,9 @@ struct sdhci_am654_data {
- 	int drv_strength;
- 	int strb_sel;
- 	u32 flags;
-+	u32 quirks;
-+
-+#define SDHCI_AM654_QUIRK_FORCE_CDTEST BIT(0)
- };
- 
- struct sdhci_am654_driver_data {
-@@ -369,6 +372,21 @@ static void sdhci_am654_write_b(struct sdhci_host *host, u8 val, int reg)
+diff --git a/drivers/scsi/megaraid.c b/drivers/scsi/megaraid.c
+index a5d8cee2d510..bf491af9f0d6 100644
+--- a/drivers/scsi/megaraid.c
++++ b/drivers/scsi/megaraid.c
+@@ -4607,7 +4607,7 @@ static int __init megaraid_init(void)
+ 	 * major number allocation.
+ 	 */
+ 	major = register_chrdev(0, "megadev_legacy", &megadev_fops);
+-	if (!major) {
++	if (major < 0) {
+ 		printk(KERN_WARNING
+ 				"megaraid: failed to register char device\n");
  	}
- }
- 
-+static void sdhci_am654_reset(struct sdhci_host *host, u8 mask)
-+{
-+	u8 ctrl;
-+	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
-+	struct sdhci_am654_data *sdhci_am654 = sdhci_pltfm_priv(pltfm_host);
-+
-+	sdhci_reset(host, mask);
-+
-+	if (sdhci_am654->quirks & SDHCI_AM654_QUIRK_FORCE_CDTEST) {
-+		ctrl = sdhci_readb(host, SDHCI_HOST_CONTROL);
-+		ctrl |= SDHCI_CTRL_CDTEST_INS | SDHCI_CTRL_CDTEST_EN;
-+		sdhci_writeb(host, ctrl, SDHCI_HOST_CONTROL);
-+	}
-+}
-+
- static int sdhci_am654_execute_tuning(struct mmc_host *mmc, u32 opcode)
- {
- 	struct sdhci_host *host = mmc_priv(mmc);
-@@ -500,7 +518,7 @@ static struct sdhci_ops sdhci_j721e_4bit_ops = {
- 	.set_clock = sdhci_j721e_4bit_set_clock,
- 	.write_b = sdhci_am654_write_b,
- 	.irq = sdhci_am654_cqhci_irq,
--	.reset = sdhci_reset,
-+	.reset = sdhci_am654_reset,
- };
- 
- static const struct sdhci_pltfm_data sdhci_j721e_4bit_pdata = {
-@@ -719,6 +737,9 @@ static int sdhci_am654_get_of_property(struct platform_device *pdev,
- 	device_property_read_u32(dev, "ti,clkbuf-sel",
- 				 &sdhci_am654->clkbuf_sel);
- 
-+	if (device_property_read_bool(dev, "ti,fails-without-test-cd"))
-+		sdhci_am654->quirks |= SDHCI_AM654_QUIRK_FORCE_CDTEST;
-+
- 	sdhci_get_of_property(pdev);
- 
- 	return 0;
 -- 
 2.35.1
 
