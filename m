@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7DF2CCA48B
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:32:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2681ACCA490
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:32:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385651AbiFGWbp (ORCPT
+        id S1385140AbiFGWbQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54462 "EHLO
+        Tue, 7 Jun 2022 18:31:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378121AbiFGVTQ (ORCPT
+        with ESMTP id S1380739AbiFGVQz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:19:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B12224D00;
-        Tue,  7 Jun 2022 11:59:37 -0700 (PDT)
+        Tue, 7 Jun 2022 17:16:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7A114B2C7;
+        Tue,  7 Jun 2022 11:57:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA21D61794;
-        Tue,  7 Jun 2022 18:59:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4DECC385A2;
-        Tue,  7 Jun 2022 18:59:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F10D6B822C0;
+        Tue,  7 Jun 2022 18:56:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62185C385A2;
+        Tue,  7 Jun 2022 18:56:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628355;
-        bh=VAviqKYGftzlRyzmZRvF+4cD8P+ChbWou2Y1iRyuJ3w=;
+        s=korg; t=1654628218;
+        bh=Ir0V9XdICgoZ/GLaYLNxw9Lpqttbk/iKdMQZZJbOrvw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WzNh28gxGQ6+8zDDFbt/NHEQNU3z4x7wMnHkRHix2XPCNzMsnOH5Yze5SKvDpDCcA
-         ZXi5gEPCOtkboQ86usRPTmRFXLO25kPpPFP5K/lxgfncHAvoBRR64/K7tRxwn8N2/L
-         Yw0N4OE3JP6/gUeA25iunU4HttwTr28+DSdo8hWM=
+        b=aT7E4isx7Rc6an5m9J+kN17vK/zwakXoE1yU+A/vofdnPfVGv9zn9RMdCAywuwCg6
+         c+JSIKUyrS04r4X7bfFQgKejBuKlNiST8+gRuRuAUa52mP0iGbeUVvEjJ6QRRlEdBq
+         FcoR5n8mOhzxbGr8pU33DWsAdaXoCntIkQmGkSkE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        stable@vger.kernel.org,
+        Douglas Miller <doug.miller@cornelisnetworks.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 300/879] nl80211: show SSID for P2P_GO interfaces
-Date:   Tue,  7 Jun 2022 18:56:58 +0200
-Message-Id: <20220607165011.555342951@linuxfoundation.org>
+Subject: [PATCH 5.18 250/879] RDMA/hfi1: Prevent panic when SDMA is disabled
+Date:   Tue,  7 Jun 2022 18:56:08 +0200
+Message-Id: <20220607165010.106598195@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,35 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Douglas Miller <doug.miller@cornelisnetworks.com>
 
-[ Upstream commit a75971bc2b8453630e9f85e0beaa4da8db8277a3 ]
+[ Upstream commit 629e052d0c98e46dde9f0824f0aa437f678d9b8f ]
 
-There's no real reason not to send the SSID to userspace
-when it requests information about P2P_GO, it is, in that
-respect, exactly the same as AP interfaces. Fix that.
+If the hfi1 module is loaded with HFI1_CAP_SDMA off, a call to
+hfi1_write_iter() will dereference a NULL pointer and panic. A typical
+stack frame is:
 
-Fixes: 44905265bc15 ("nl80211: don't expose wdev->ssid for most interfaces")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20220318134656.14354ae223f0.Ia25e85a512281b92e1645d4160766a4b1a471597@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+  sdma_select_user_engine [hfi1]
+  hfi1_user_sdma_process_request [hfi1]
+  hfi1_write_iter [hfi1]
+  do_iter_readv_writev
+  do_iter_write
+  vfs_writev
+  do_writev
+  do_syscall_64
+
+The fix is to test for SDMA in hfi1_write_iter() and fail the I/O with
+EINVAL.
+
+Link: https://lore.kernel.org/r/20220520183706.48973.79803.stgit@awfm-01.cornelisnetworks.com
+Signed-off-by: Douglas Miller <doug.miller@cornelisnetworks.com>
+Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/nl80211.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/infiniband/hw/hfi1/file_ops.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 1a3551b6d18b..02a29052e41d 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -3719,6 +3719,7 @@ static int nl80211_send_iface(struct sk_buff *msg, u32 portid, u32 seq, int flag
- 	wdev_lock(wdev);
- 	switch (wdev->iftype) {
- 	case NL80211_IFTYPE_AP:
-+	case NL80211_IFTYPE_P2P_GO:
- 		if (wdev->ssid_len &&
- 		    nla_put(msg, NL80211_ATTR_SSID, wdev->ssid_len, wdev->ssid))
- 			goto nla_put_failure_locked;
+diff --git a/drivers/infiniband/hw/hfi1/file_ops.c b/drivers/infiniband/hw/hfi1/file_ops.c
+index 1783a6ea5427..3ebdd42fec36 100644
+--- a/drivers/infiniband/hw/hfi1/file_ops.c
++++ b/drivers/infiniband/hw/hfi1/file_ops.c
+@@ -265,6 +265,8 @@ static ssize_t hfi1_write_iter(struct kiocb *kiocb, struct iov_iter *from)
+ 	unsigned long dim = from->nr_segs;
+ 	int idx;
+ 
++	if (!HFI1_CAP_IS_KSET(SDMA))
++		return -EINVAL;
+ 	idx = srcu_read_lock(&fd->pq_srcu);
+ 	pq = srcu_dereference(fd->pq, &fd->pq_srcu);
+ 	if (!cq || !pq) {
 -- 
 2.35.1
 
