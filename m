@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9B6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:39:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AA1DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:39:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347474AbiFGRjW (ORCPT
+        id S1347489AbiFGRj3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:39:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41784 "EHLO
+        Tue, 7 Jun 2022 13:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347311AbiFGRaT (ORCPT
+        with ESMTP id S1347367AbiFGRal (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:30:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D93AF11045C;
-        Tue,  7 Jun 2022 10:26:17 -0700 (PDT)
+        Tue, 7 Jun 2022 13:30:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A1AF110998;
+        Tue,  7 Jun 2022 10:26:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D05C60C7C;
-        Tue,  7 Jun 2022 17:26:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A262C385A5;
-        Tue,  7 Jun 2022 17:26:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AAC396127C;
+        Tue,  7 Jun 2022 17:26:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1CD6C34115;
+        Tue,  7 Jun 2022 17:26:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622776;
-        bh=NL7gGFOHv+cLPWl7gYW+d3Yk50XlZ7XMtbFH16fvmSg=;
+        s=korg; t=1654622788;
+        bh=dR/THZNtWL+NiVqBxd1fBR0kBiqITc3LcBx/INTW/dI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yemNG19H+8ye4EJPIdHlF656bzBNYNtOYl5V6tWGeWj864mU18tMzCWHiA5UFKBl/
-         dg9nbzT7WWPhb7iQa9JN+4tsUc+iEuv3NbBvdAmlAZVb1XEfokwyj/aPjUniuGdPxU
-         m9n2ryLHQnd6l+faWsl8R+PTmzYWDa/cR90sroVw=
+        b=rjMY/2dVLIqPI7seJS3hcW7TUaKnzZQAP25WLAJcVMP0AKXdzOZdmK3QB1+dhFLgj
+         c4ti72yNfCe/Hgu1wFoxHQjs7GQr9yyYp+ux95UylLH/UQBz/E1J1taw1MlTeUjidV
+         McOZU7o/iMyMqnGcZC/4BqMpqjlOvBKKxOf0OIfI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 179/452] drm/msm: add missing include to msm_drv.c
-Date:   Tue,  7 Jun 2022 19:00:36 +0200
-Message-Id: <20220607164913.896561547@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 183/452] virtio_blk: fix the discard_granularity and discard_alignment queue limits
+Date:   Tue,  7 Jun 2022 19:00:40 +0200
+Message-Id: <20220607164914.013469070@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,39 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit 8123fe83c3a3448bbfa5b5b1cacfdfe7d076fca6 ]
+[ Upstream commit 62952cc5bccd89b76d710de1d0b43244af0f2903 ]
 
-Add explicit include of drm_bridge.h to the msm_drv.c to fix the
-following warning:
+The discard_alignment queue limit is named a bit misleading means the
+offset into the block device at which the discard granularity starts.
 
-drivers/gpu/drm/msm/msm_drv.c:236:17: error: implicit declaration of function 'drm_bridge_remove'; did you mean 'drm_bridge_detach'? [-Werror=implicit-function-declaration]
+On the other hand the discard_sector_alignment from the virtio 1.1 looks
+similar to what Linux uses as discard granularity (even if not very well
+described):
 
-Fixes: d28ea556267c ("drm/msm: properly add and remove internal bridges")
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/484310/
-Link: https://lore.kernel.org/r/20220430180917.3819294-1-dmitry.baryshkov@linaro.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+  "discard_sector_alignment can be used by OS when splitting a request
+   based on alignment. "
+
+And at least qemu does set it to the discard granularity.
+
+So stop setting the discard_alignment and use the virtio
+discard_sector_alignment to set the discard granularity.
+
+Fixes: 1f23816b8eb8 ("virtio_blk: add discard and write zeroes support")
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Martin K. Petersen <martin.petersen@oracle.com>
+Link: https://lore.kernel.org/r/20220418045314.360785-5-hch@lst.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/msm_drv.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/block/virtio_blk.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
-index e37e5afc680a..087efcb1f34c 100644
---- a/drivers/gpu/drm/msm/msm_drv.c
-+++ b/drivers/gpu/drm/msm/msm_drv.c
-@@ -10,6 +10,7 @@
- #include <linux/uaccess.h>
- #include <uapi/linux/sched/types.h>
+diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
+index 02e2056780ad..9b54eec9b17e 100644
+--- a/drivers/block/virtio_blk.c
++++ b/drivers/block/virtio_blk.c
+@@ -865,11 +865,12 @@ static int virtblk_probe(struct virtio_device *vdev)
+ 		blk_queue_io_opt(q, blk_size * opt_io_size);
  
-+#include <drm/drm_bridge.h>
- #include <drm/drm_drv.h>
- #include <drm/drm_file.h>
- #include <drm/drm_ioctl.h>
+ 	if (virtio_has_feature(vdev, VIRTIO_BLK_F_DISCARD)) {
+-		q->limits.discard_granularity = blk_size;
+-
+ 		virtio_cread(vdev, struct virtio_blk_config,
+ 			     discard_sector_alignment, &v);
+-		q->limits.discard_alignment = v ? v << SECTOR_SHIFT : 0;
++		if (v)
++			q->limits.discard_granularity = v << SECTOR_SHIFT;
++		else
++			q->limits.discard_granularity = blk_size;
+ 
+ 		virtio_cread(vdev, struct virtio_blk_config,
+ 			     max_discard_sectors, &v);
 -- 
 2.35.1
 
