@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FDBFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:28:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D495DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:28:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231852AbiFGV2k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:28:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46282 "EHLO
+        id S1380012AbiFGV2q (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 17:28:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377824AbiFGUeI (ORCPT
+        with ESMTP id S1377839AbiFGUeJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D95A1E7ACB;
-        Tue,  7 Jun 2022 11:36:10 -0700 (PDT)
+        Tue, 7 Jun 2022 16:34:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 022071E7BC0;
+        Tue,  7 Jun 2022 11:36:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5AA3DB82349;
-        Tue,  7 Jun 2022 18:36:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C01B0C34115;
-        Tue,  7 Jun 2022 18:36:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FE796156D;
+        Tue,  7 Jun 2022 18:36:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B562C385A5;
+        Tue,  7 Jun 2022 18:36:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626967;
-        bh=orotY9yh0VRi6pSD8OAtOrzD0+p/UEIglTPufgVHd1I=;
+        s=korg; t=1654626972;
+        bh=P0JhZEhnX0JrfUblM9gr7pRAlhvGRIoAzFxWTDmIUCM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A0tsjxBvQ/CJVYhV92V4G5ysNxaDmzUo9w6gmOXF5F3hvS0iwL0VE+Lez7FAo9rfo
-         RsE0jqpPoFeAV4DP5pDSFkJkZxrZ95lRHrwYQlRdOLUnLz8EgqTXQLG9IkURPOiIpG
-         cJbMKvxo8h2AqQXBwuso+OioNam96zqUYr1/WTAE=
+        b=Ku9fiOTiivyYkfcJOwWp7/FVnwFkis0VS0QMB6trpiAqg9OK9X95oUyOI7w5PsfFB
+         oFwBdbRStuHMlx4AfIWONg90IEhaQ0SFWp/NIEQ1PcoEvuRxYLTe+6XIq5ejVCbL6t
+         o7S6b/7djI183W4OPlZAIAaNk0Z/pKdv1qUijsvE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hsin-Yi Wang <hsinyi@chromium.org>,
-        Yong Wu <yong.wu@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 570/772] iommu/mediatek: Remove clk_disable in mtk_iommu_remove
-Date:   Tue,  7 Jun 2022 19:02:42 +0200
-Message-Id: <20220607165005.749717566@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 572/772] i2c: at91: use dma safe buffers
+Date:   Tue,  7 Jun 2022 19:02:44 +0200
+Message-Id: <20220607165005.808743827@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,63 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yong Wu <yong.wu@mediatek.com>
+From: Michael Walle <michael@walle.cc>
 
-[ Upstream commit 98df772bdd1c4ce717a26289efea15cbbe4b64ed ]
+[ Upstream commit 03fbb903c8bf7e53e101e8d9a7b261264317c411 ]
 
-After the commit b34ea31fe013 ("iommu/mediatek: Always enable the clk on
-resume"), the iommu clock is controlled by the runtime callback.
-thus remove the clk control in the mtk_iommu_remove.
+The supplied buffer might be on the stack and we get the following error
+message:
+[    3.312058] at91_i2c e0070600.i2c: rejecting DMA map of vmalloc memory
 
-Otherwise, it will warning like:
+Use i2c_{get,put}_dma_safe_msg_buf() to get a DMA-able memory region if
+necessary.
 
-echo 14018000.iommu > /sys/bus/platform/drivers/mtk-iommu/unbind
-
-[   51.413044] ------------[ cut here ]------------
-[   51.413648] vpp0_smi_iommu already disabled
-[   51.414233] WARNING: CPU: 2 PID: 157 at */v5.15-rc1/kernel/mediatek/
-                          drivers/clk/clk.c:952 clk_core_disable+0xb0/0xb8
-[   51.417174] Hardware name: MT8195V/C(ENG) (DT)
-[   51.418635] pc : clk_core_disable+0xb0/0xb8
-[   51.419177] lr : clk_core_disable+0xb0/0xb8
-...
-[   51.429375] Call trace:
-[   51.429694]  clk_core_disable+0xb0/0xb8
-[   51.430193]  clk_core_disable_lock+0x24/0x40
-[   51.430745]  clk_disable+0x20/0x30
-[   51.431189]  mtk_iommu_remove+0x58/0x118
-[   51.431705]  platform_remove+0x28/0x60
-[   51.432197]  device_release_driver_internal+0x110/0x1f0
-[   51.432873]  device_driver_detach+0x18/0x28
-[   51.433418]  unbind_store+0xd4/0x108
-[   51.433886]  drv_attr_store+0x24/0x38
-[   51.434363]  sysfs_kf_write+0x40/0x58
-[   51.434843]  kernfs_fop_write_iter+0x164/0x1e0
-
-Fixes: b34ea31fe013 ("iommu/mediatek: Always enable the clk on resume")
-Reported-by: Hsin-Yi Wang <hsinyi@chromium.org>
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Link: https://lore.kernel.org/r/20220503071427.2285-7-yong.wu@mediatek.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Fixes: 60937b2cdbf9 ("i2c: at91: add dma support")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/mtk_iommu.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/i2c/busses/i2c-at91-master.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 2285507d3354..b9d690327eae 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -956,7 +956,6 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+diff --git a/drivers/i2c/busses/i2c-at91-master.c b/drivers/i2c/busses/i2c-at91-master.c
+index b0eae94909f4..5eca3b3bb609 100644
+--- a/drivers/i2c/busses/i2c-at91-master.c
++++ b/drivers/i2c/busses/i2c-at91-master.c
+@@ -656,6 +656,7 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
+ 	unsigned int_addr_flag = 0;
+ 	struct i2c_msg *m_start = msg;
+ 	bool is_read;
++	u8 *dma_buf;
  
- 	list_del(&data->list);
+ 	dev_dbg(&adap->dev, "at91_xfer: processing %d messages:\n", num);
  
--	clk_disable_unprepare(data->bclk);
- 	device_link_remove(data->smicomm_dev, &pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
- 	devm_free_irq(&pdev->dev, data->irq, data);
+@@ -703,7 +704,17 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
+ 	dev->msg = m_start;
+ 	dev->recv_len_abort = false;
+ 
++	if (dev->use_dma) {
++		dma_buf = i2c_get_dma_safe_msg_buf(m_start, 1);
++		if (!dma_buf) {
++			ret = -ENOMEM;
++			goto out;
++		}
++		dev->buf = dma_buf;
++	}
++
+ 	ret = at91_do_twi_transfer(dev);
++	i2c_put_dma_safe_msg_buf(dma_buf, m_start, !ret);
+ 
+ 	ret = (ret < 0) ? ret : num;
+ out:
 -- 
 2.35.1
 
