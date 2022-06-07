@@ -2,98 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B941ECCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E7B6CCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:14:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444170AbiFHCJr (ORCPT
+        id S1444088AbiFHCJM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46082 "EHLO
+        Tue, 7 Jun 2022 22:09:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1575265AbiFGX06 (ORCPT
+        with ESMTP id S1442480AbiFHAye (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:26:58 -0400
-Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC62D682C
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:38:54 -0700 (PDT)
-Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-f16a3e0529so24893764fac.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:38:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zdB88eF3i8XSLLLYG0iiDeptdNTdVi4N3QCkwcA2170=;
-        b=zfI7ux9gTBHY1LriHzIkWCEvdSmBvTpvcDcbAjPXfZ2s6QigByqMBGNA5jwuSXavQq
-         Q/VrJnaqx65qm8FwxpXNaYjRfSIzSAth3b3qC3AGKeJDRVqer6llSZDndI2QRDbVRv+l
-         fZeSxJj1JfOGJxZEenywaqTBE3Fn+mZ8f5z3RcfXkYZPsAs+F8NErPgTYWFpu2jrcyy0
-         Ed9NAb9waCGRrwMxkU+hRR7qSd90MFclize28k2m7G+h/fO7tggLWX4zH1LftkwE8e4s
-         ne0zrmatqeTgoJPgOBeTEpIU5QU1YFkczk7WJi+lHymZ8DxL2i9z094ou+eDFXIkwiNc
-         F82w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zdB88eF3i8XSLLLYG0iiDeptdNTdVi4N3QCkwcA2170=;
-        b=KkDOAE2iEYPTLvj6UVmQ9h1iNOh9YCfzrNi+4kL+5IOdfPTsAIDPe3MZPAMqjGCsWF
-         U1HsiJcSmW4H89whn4gAdfrrFX/WPZVPoushCZWv/kUv73J51llXfUy0cBpfGLyf8J38
-         tDa5tOIyOGSdlV94uMBRIJRG031olFW/lB6IMc18BfHW3EouIGbc8KWOgZcg/C7/7Ons
-         Lo0bwX2hAxwegEsQILZDWHX6p7llyMITReNY1nrp5Gqo8YFL8BZcUtlUJy8GZIXtrQVR
-         EHuReHGe59fqAFOFbJOvq70XR7beCx50+jdjKxto+Df8y9zLqvgK60+NXIZ8ab/HC4cp
-         RxzQ==
-X-Gm-Message-State: AOAM531BK0UgxmLqEK90JXlouroT9KOy2t78ugY5UFFdY+cFRI+UPHE/
-        U0T/sTL0oLxxks9JeEIwNGoqgQ==
-X-Google-Smtp-Source: ABdhPJzWJYJT4K/H3ClolNP09gCRkSoURkNWkEzKuKLvLtVyJkAg3IMYSML9skQOWIubBxX1umJ7VA==
-X-Received: by 2002:a05:6870:434b:b0:f1:e2d9:dc66 with SMTP id x11-20020a056870434b00b000f1e2d9dc66mr571092oah.86.1654637930418;
-        Tue, 07 Jun 2022 14:38:50 -0700 (PDT)
-Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id cr11-20020a056870ebcb00b000f33a37411dsm8554122oab.26.2022.06.07.14.38.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 14:38:49 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>
-Cc:     Johan Hovold <johan+linaro@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/4] dt-bindings: mailbox: qcom-ipcc: Add NSP1 client
-Date:   Tue,  7 Jun 2022 14:41:10 -0700
-Message-Id: <20220607214113.4057684-2-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607214113.4057684-1-bjorn.andersson@linaro.org>
-References: <20220607214113.4057684-1-bjorn.andersson@linaro.org>
+        Tue, 7 Jun 2022 20:54:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A6F19BC01;
+        Tue,  7 Jun 2022 12:21:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC25FB82182;
+        Tue,  7 Jun 2022 19:21:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3174BC385A2;
+        Tue,  7 Jun 2022 19:21:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629691;
+        bh=YdTQ0DxyDqXgO4kk5oAbF39iZyrEOqj+FEmQCwUfOSA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YQwtSsgtPmjoJ50GsG/GGudQ4su4vijfUrwkpHmPf58EtaFc57YQNVsApviaAsiz7
+         NlxoJsUfajSluxU+GWBpjxc2PNgWz4Grn3InrrIvP8FEH8lvwfxeWHjjVNuqt4oePb
+         ymJ161Jf/4t70/keo+Jcm6CoE1M0EZqfZFiBHsck=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
+Subject: [PATCH 5.18 782/879] selftests/landlock: Fully test file rename with "remove" access
+Date:   Tue,  7 Jun 2022 19:05:00 +0200
+Message-Id: <20220607165025.569347256@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a client for the NSP1 found in some recent Qualcomm platforms.
+From: Mickaël Salaün <mic@digikod.net>
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+commit 6a1bdd4a0bfc30fa4fa2b3a979e6525f28996db9 upstream.
+
+These tests were missing to check the check_access_path() call with all
+combinations of maybe_remove(old_dentry) and maybe_remove(new_dentry).
+
+Extend layout1.link with a new complementary test and check that
+REMOVE_FILE is not required to link a file.
+
+Cc: Shuah Khan <shuah@kernel.org>
+Link: https://lore.kernel.org/r/20220506160820.524344-7-mic@digikod.net
+Cc: stable@vger.kernel.org
+Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
+ tools/testing/selftests/landlock/fs_test.c |   41 ++++++++++++++++++++++++++---
+ 1 file changed, 37 insertions(+), 4 deletions(-)
 
-Jassi, there's no code dependency on this constant, so it's only going to be
-referenced from the dts (patch 2/4). I would appreciate if I could get an Ack
-and merge this together with the dts changes.
-
- include/dt-bindings/mailbox/qcom-ipcc.h | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/include/dt-bindings/mailbox/qcom-ipcc.h b/include/dt-bindings/mailbox/qcom-ipcc.h
-index 9296d0bb5f34..fbfa3febc66d 100644
---- a/include/dt-bindings/mailbox/qcom-ipcc.h
-+++ b/include/dt-bindings/mailbox/qcom-ipcc.h
-@@ -30,6 +30,7 @@
- #define IPCC_CLIENT_PCIE1		14
- #define IPCC_CLIENT_PCIE2		15
- #define IPCC_CLIENT_SPSS		16
-+#define IPCC_CLIENT_NSP1		18
- #define IPCC_CLIENT_TME			23
- #define IPCC_CLIENT_WPSS		24
+--- a/tools/testing/selftests/landlock/fs_test.c
++++ b/tools/testing/selftests/landlock/fs_test.c
+@@ -1659,15 +1659,21 @@ TEST_F_FORK(layout1, execute)
  
--- 
-2.35.1
+ TEST_F_FORK(layout1, link)
+ {
+-	const struct rule rules[] = {
++	const struct rule layer1[] = {
+ 		{
+ 			.path = dir_s1d2,
+ 			.access = LANDLOCK_ACCESS_FS_MAKE_REG,
+ 		},
+ 		{},
+ 	};
+-	const int ruleset_fd =
+-		create_ruleset(_metadata, rules[0].access, rules);
++	const struct rule layer2[] = {
++		{
++			.path = dir_s1d3,
++			.access = LANDLOCK_ACCESS_FS_REMOVE_FILE,
++		},
++		{},
++	};
++	int ruleset_fd = create_ruleset(_metadata, layer1[0].access, layer1);
+ 
+ 	ASSERT_LE(0, ruleset_fd);
+ 
+@@ -1680,14 +1686,30 @@ TEST_F_FORK(layout1, link)
+ 
+ 	ASSERT_EQ(-1, link(file2_s1d1, file1_s1d1));
+ 	ASSERT_EQ(EACCES, errno);
++
+ 	/* Denies linking because of reparenting. */
+ 	ASSERT_EQ(-1, link(file1_s2d1, file1_s1d2));
+ 	ASSERT_EQ(EXDEV, errno);
+ 	ASSERT_EQ(-1, link(file2_s1d2, file1_s1d3));
+ 	ASSERT_EQ(EXDEV, errno);
++	ASSERT_EQ(-1, link(file2_s1d3, file1_s1d2));
++	ASSERT_EQ(EXDEV, errno);
+ 
+ 	ASSERT_EQ(0, link(file2_s1d2, file1_s1d2));
+ 	ASSERT_EQ(0, link(file2_s1d3, file1_s1d3));
++
++	/* Prepares for next unlinks. */
++	ASSERT_EQ(0, unlink(file2_s1d2));
++	ASSERT_EQ(0, unlink(file2_s1d3));
++
++	ruleset_fd = create_ruleset(_metadata, layer2[0].access, layer2);
++	ASSERT_LE(0, ruleset_fd);
++	enforce_ruleset(_metadata, ruleset_fd);
++	ASSERT_EQ(0, close(ruleset_fd));
++
++	/* Checks that linkind doesn't require the ability to delete a file. */
++	ASSERT_EQ(0, link(file1_s1d2, file2_s1d2));
++	ASSERT_EQ(0, link(file1_s1d3, file2_s1d3));
+ }
+ 
+ TEST_F_FORK(layout1, rename_file)
+@@ -1708,7 +1730,6 @@ TEST_F_FORK(layout1, rename_file)
+ 
+ 	ASSERT_LE(0, ruleset_fd);
+ 
+-	ASSERT_EQ(0, unlink(file1_s1d1));
+ 	ASSERT_EQ(0, unlink(file1_s1d2));
+ 
+ 	enforce_ruleset(_metadata, ruleset_fd);
+@@ -1744,9 +1765,15 @@ TEST_F_FORK(layout1, rename_file)
+ 	ASSERT_EQ(-1, renameat2(AT_FDCWD, dir_s2d2, AT_FDCWD, file1_s2d1,
+ 				RENAME_EXCHANGE));
+ 	ASSERT_EQ(EACCES, errno);
++	/* Checks that file1_s2d1 cannot be removed (instead of ENOTDIR). */
++	ASSERT_EQ(-1, rename(dir_s2d2, file1_s2d1));
++	ASSERT_EQ(EACCES, errno);
+ 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file1_s2d1, AT_FDCWD, dir_s2d2,
+ 				RENAME_EXCHANGE));
+ 	ASSERT_EQ(EACCES, errno);
++	/* Checks that file1_s1d1 cannot be removed (instead of EISDIR). */
++	ASSERT_EQ(-1, rename(file1_s1d1, dir_s1d2));
++	ASSERT_EQ(EACCES, errno);
+ 
+ 	/* Renames files with different parents. */
+ 	ASSERT_EQ(-1, rename(file1_s2d2, file1_s1d2));
+@@ -1809,9 +1836,15 @@ TEST_F_FORK(layout1, rename_dir)
+ 	ASSERT_EQ(-1, renameat2(AT_FDCWD, dir_s1d1, AT_FDCWD, dir_s2d1,
+ 				RENAME_EXCHANGE));
+ 	ASSERT_EQ(EACCES, errno);
++	/* Checks that dir_s1d2 cannot be removed (instead of ENOTDIR). */
++	ASSERT_EQ(-1, rename(dir_s1d2, file1_s1d1));
++	ASSERT_EQ(EACCES, errno);
+ 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file1_s1d1, AT_FDCWD, dir_s1d2,
+ 				RENAME_EXCHANGE));
+ 	ASSERT_EQ(EACCES, errno);
++	/* Checks that dir_s1d2 cannot be removed (instead of EISDIR). */
++	ASSERT_EQ(-1, rename(file1_s1d1, dir_s1d2));
++	ASSERT_EQ(EACCES, errno);
+ 
+ 	/*
+ 	 * Exchanges and renames directory to the same parent, which allows
+
 
