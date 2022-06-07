@@ -2,249 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 486DACCA499
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 693C9CCA497
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352359AbiFGSRD (ORCPT
+        id S1353051AbiFGSSA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:17:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39998 "EHLO
+        Tue, 7 Jun 2022 14:18:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348716AbiFGR5f (ORCPT
+        with ESMTP id S1349116AbiFGR6Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:57:35 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E789340D1;
-        Tue,  7 Jun 2022 10:40:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654623637; x=1686159637;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=+B4Iq6G37tAIJlQY0aVggAP2/4atVoACS5r1tyjM8L0=;
-  b=R/yYwROjOMH2nY4mjpS/Xg8WvFgVV4UiSb71qGC6n6BVJWV1nKGAN79P
-   2NZEAYd6J47eN6Q0pteZBbKPlK3tKqYy5eJmUs8jqIiWeg05kRMh/rjST
-   ZzQwql+bwGHTutPznZF5TPQwpiiy2Leq8pF80W2KxXWGhlrctTJiknbo6
-   8=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 07 Jun 2022 10:40:34 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 10:40:33 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 7 Jun 2022 10:40:32 -0700
-Received: from [10.216.0.16] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 7 Jun 2022
- 10:40:29 -0700
-Message-ID: <da18c508-f32e-fece-6392-e6a95f7c7968@quicinc.com>
-Date:   Tue, 7 Jun 2022 23:10:25 +0530
+        Tue, 7 Jun 2022 13:58:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8AD75DE68;
+        Tue,  7 Jun 2022 10:41:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71D40B80B66;
+        Tue,  7 Jun 2022 17:41:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFA73C385A5;
+        Tue,  7 Jun 2022 17:41:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654623668;
+        bh=YICky5YUFFXyV/gVsB5bsIEIJgQB8zFuaF0KlA+NgKQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hjZdt0CzLFSie/UxWhrIpxgJz17qVS3OxSoSSyX1EbsY0u2Yx9nJImy2EhKFAH0hl
+         LfupRVZQ8H2qMfh/eRh+IWrP/mwX10MJRlWYL+gB0ztwMG5WoD07xFjDvLPEKB0SGv
+         lgJ5IJ6N2qajUzS1Age4h/mNAbAOxaYVFfRxpTX4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Luca=20B=C3=A9la=20Palkovics?= 
+        <luca.bela.palkovics@gmail.com>, Qu Wenruo <wqu@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 041/667] btrfs: repair super block num_devices automatically
+Date:   Tue,  7 Jun 2022 18:55:06 +0200
+Message-Id: <20220607164936.033396823@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] tty: serial: qcom-geni-serial: minor fixes to
- get_clk_div_rate()
-Content-Language: en-CA
-To:     Doug Anderson <dianders@chromium.org>
-CC:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, <quic_msavaliy@quicinc.com>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        "Stephen Boyd" <swboyd@chromium.org>
-References: <1654021066-13341-1-git-send-email-quic_vnivarth@quicinc.com>
- <CAD=FV=UF3x5RHrQH-m1X-4kQSsKiufLnkew=VuJz7W9EAi3GHQ@mail.gmail.com>
- <5d950007-7a92-a41b-e569-79e806adb06a@quicinc.com>
- <CAD=FV=Xm1LJEoU5dKa5pMgqsHuAXuFVpdHvc1REULhAKTPbGnQ@mail.gmail.com>
- <ad393ad2-a247-3c61-5033-185d39b5596d@quicinc.com>
- <CAD=FV=XD+LozhkJZp0C7RUO01T-XuqBA-SJ0EQeyvGk0CxC3JQ@mail.gmail.com>
- <e677fd02-011f-4f4e-fa73-17dc96aea7d0@quicinc.com>
- <CAD=FV=UzjnEjMTLTRVXTrz6aoiBymJtnJ1o8dzPN9hn0Be3tng@mail.gmail.com>
-From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-In-Reply-To: <CAD=FV=UzjnEjMTLTRVXTrz6aoiBymJtnJ1o8dzPN9hn0Be3tng@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Qu Wenruo <wqu@suse.com>
 
-On 6/7/2022 1:29 AM, Doug Anderson wrote:
-> Hi,
->
-> On Mon, Jun 6, 2022 at 11:19 AM Vijaya Krishna Nivarthi
-> <quic_vnivarth@quicinc.com> wrote:
->> Hi,
->>
->>
->> On 6/4/2022 12:10 AM, Doug Anderson wrote:
->>> Hi,
->>>
->>> On Fri, Jun 3, 2022 at 10:43 AM Vijaya Krishna Nivarthi
->>> <quic_vnivarth@quicinc.com> wrote:
->>>> Ah, or I guess what you're saying is that the table historically
->>>> contained "rounded" rates but that clk_round_rate() isn't returning
->>>> nice round rates. OK, but if we truly want to support an inexact
->>>> match, you'd want to pick the rate that reduces the error, not just
->>>> pick the first one. In other words, something like this (untested):
->>>>
->>>> freq = clk_round_rate(clk, mult);
->>>> diff = abs(((long)mult - freq) / div);
->>>> if (diff < best_diff) {
->>>>      best_diff = diff;
->>>>      ser_clk = freq;
->>>>      best_div = div;
->>>> }
->>>> I am not sure if its required that freq is a multiple of best_div now
->>>> that we don't have a multiple of desired_clk anyway.
->>> How about just this (untested):
->>>
->>> freq = clk_round_rate(clk, mult);
->>> candidate_div = max(1, DIV_ROUND_CLOSEST(freq, desired_clk));
->>> candidate_freq = freq / candidate_div;
->>> diff = abs((long)desired_clk - candidate_freq);
->>> if (diff < best_diff) {
->>>     best_diff = diff;
->>>     ser_clk = freq;
->>>     best_div = candidate_div;
->>> }
->> I am afraid this still doesn't guarantee that ser_clk is a multiple of
->> best_div
-> OK. ...I guess my question would be: does it matter for some reason?
-> "ser_clk" is just a local variable in this function. Who cares if it's
-> not a multiple of best_div? This is why we're keeping track of
-> "best_div" in the first place, so that later in the function instead
-> of:
->
-> *clk_div = ser_clk / desired_clk;
-> if (!(*clk_div))
->    *clk_div = 1;
->
-> You just do:
->
-> *clk_div = best_div;
+commit d201238ccd2f30b9bfcfadaeae0972e3a486a176 upstream.
 
-My only concern continues to be...
+[BUG]
+There is a report that a btrfs has a bad super block num devices.
 
-Given ser_clk is the final frequency that this function is going to 
-return and best_div is going to be the clk_divider, is it ok if the 
-divider cant divide the frequency exactly?
+This makes btrfs to reject the fs completely.
 
-In other words, Can this function output combinations like (402,4)  
-(501,5) ?
+  BTRFS error (device sdd3): super_num_devices 3 mismatch with num_devices 2 found here
+  BTRFS error (device sdd3): failed to read chunk tree: -22
+  BTRFS error (device sdd3): open_ctree failed
 
-If ok, then we can go ahead with this patch or even previous perhaps.
+[CAUSE]
+During btrfs device removal, chunk tree and super block num devs are
+updated in two different transactions:
 
->
->> I tested it with a function simulates clk_round_rate.
->>
->> static unsigned long clk_round_rate_test(struct clk *clk, unsigned long
->> in_freq)
->> {
->>       unsigned long root_freq[6] = {105, 204, 303, 402, 501, 602};
->>       int i;
->>
->>       for (i = 0; i < 6; i++) {
->>           if (root_freq[i] >= in_freq)
->>               return root_freq[i];
->>       }
->>       return root_freq[6];
->> }
->>
->>       {
->>           unsigned long ser_clk;
->>           unsigned long desired_clk;
->>           unsigned long freq;
->>           int div_round_closest;
->>           unsigned long div;
->>           unsigned long mult;
->>           unsigned long candidate_div, candidate_freq;
->>
->>           unsigned long diff, best_diff, best_div;
->>           unsigned long one;
->>
->>           desired_clk = 100;
->>           one = 1;
->>           best_diff = ULONG_MAX;
->>           pr_err("\ndesired_clk-%d\n", desired_clk);
->>           for (div = 1; div <= 10; div++) {
->>               mult = div * desired_clk;
->>
->>               freq = clk_round_rate_test(clk, mult);
->>               div_round_closest = DIV_ROUND_CLOSEST(freq, desired_clk);
->>               candidate_div = max(one, (unsigned long)div_round_closest);
->>               candidate_freq = freq / candidate_div;
->>               diff = abs((long)desired_clk - candidate_freq);
->>               pr_err("div-%d, mult-%d, freq-%d, div_round_closest-%d,
->> candidate_div-%d, candidate_freq-%d, diff-%d\n",
->>                   div, mult, freq, div_round_closest, candidate_div,
->> candidate_freq, diff);
->>               if (diff < best_diff) {
->>                   pr_err("This is best so far\n");
->>                   best_diff = diff;
->>                   ser_clk = freq;
->>                   best_div = candidate_div;
->>               }
->>           }
->>           pr_err("\nbest_diff-%d, ser_clk-%d, best_div-%d\n",
->>               best_diff, ser_clk, best_div);
->>       }
->>
->> And here is the output
->>
->> [   17.835167] desired_clk-100
->> [   17.839567] div-1, mult-100, freq-105, div_round_closest-1,
->> candidate_div-1, candidate_freq-105, diff-5
->> [   17.849220] This is best so far
->> [   17.852458] div-2, mult-200, freq-204, div_round_closest-2,
->> candidate_div-2, candidate_freq-102, diff-2
->> [   17.862104] This is best so far
->> [   17.865345] div-3, mult-300, freq-303, div_round_closest-3,
->> candidate_div-3, candidate_freq-101, diff-1
->> [   17.874995] This is best so far
->> [   17.878237] div-4, mult-400, freq-402, div_round_closest-4,
->> candidate_div-4, candidate_freq-100, diff-0
->> [   17.887882] This is best so far
->> [   17.891118] div-5, mult-500, freq-501, div_round_closest-5,
->> candidate_div-5, candidate_freq-100, diff-0
->> [   17.900770] div-6, mult-600, freq-602, div_round_closest-6,
->> candidate_div-6, candidate_freq-100, diff-0
->> [   17.910415] div-7, mult-700, freq-602, div_round_closest-6,
->> candidate_div-6, candidate_freq-100, diff-0
->> [   17.920057] div-8, mult-800, freq-602, div_round_closest-6,
->> candidate_div-6, candidate_freq-100, diff-0
->> [   17.929703] div-9, mult-900, freq-602, div_round_closest-6,
->> candidate_div-6, candidate_freq-100, diff-0
->> [   17.939353] div-10, mult-1000, freq-602, div_round_closest-6,
->> candidate_div-6, candidate_freq-100, diff-0
->> [   17.949181]
->> [   17.949181] best_diff-0, ser_clk-402, best_div-4
-> That doesn't look like a terrible result. I guess nominally 602 is a
-> better approximation, but if we're accepting that we're not going to
-> have an exact rate anyway then maybe being off by that tiny amount
-> doesn't matter and we'd do better with the slow clock (maybe saves
-> power?)
-Actually power saving was the anticipation behind returning first 
-frequency in original patch, when we cant find exact frequency.
->
->> Please note that we go past cases when we have an divider that can
->> exactly divide the frequency(105/1, 204/2, 303/3) and end up with one
->> that doesn't.
-> Ah, good point. Luckily that's a 1-line fix, right?
+  btrfs_rm_device()
+  |- btrfs_rm_dev_item(device)
+  |  |- trans = btrfs_start_transaction()
+  |  |  Now we got transaction X
+  |  |
+  |  |- btrfs_del_item()
+  |  |  Now device item is removed from chunk tree
+  |  |
+  |  |- btrfs_commit_transaction()
+  |     Transaction X got committed, super num devs untouched,
+  |     but device item removed from chunk tree.
+  |     (AKA, super num devs is already incorrect)
+  |
+  |- cur_devices->num_devices--;
+  |- cur_devices->total_devices--;
+  |- btrfs_set_super_num_devices()
+     All those operations are not in transaction X, thus it will
+     only be written back to disk in next transaction.
 
-Apologies, I could not figure out how.
+So after the transaction X in btrfs_rm_dev_item() committed, but before
+transaction X+1 (which can be minutes away), a power loss happen, then
+we got the super num mismatch.
 
-Thank you.
+This has been fixed by commit bbac58698a55 ("btrfs: remove device item
+and update super block in the same transaction").
 
->
->
-> -Doug
+[FIX]
+Make the super_num_devices check less strict, converting it from a hard
+error to a warning, and reset the value to a correct one for the current
+or next transaction commit.
+
+As the number of device items is the critical information where the
+super block num_devices is only a cached value (and also useful for
+cross checking), it's safe to automatically update it. Other device
+related problems like missing device are handled after that and may
+require other means to resolve, like degraded mount. With this fix,
+potentially affected filesystems won't fail mount and require the manual
+repair by btrfs check.
+
+Reported-by: Luca Béla Palkovics <luca.bela.palkovics@gmail.com>
+Link: https://lore.kernel.org/linux-btrfs/CA+8xDSpvdm_U0QLBAnrH=zqDq_cWCOH5TiV46CKmp3igr44okQ@mail.gmail.com/
+CC: stable@vger.kernel.org # 4.14+
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/btrfs/volumes.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+--- a/fs/btrfs/volumes.c
++++ b/fs/btrfs/volumes.c
+@@ -7596,12 +7596,12 @@ int btrfs_read_chunk_tree(struct btrfs_f
+ 	 * do another round of validation checks.
+ 	 */
+ 	if (total_dev != fs_info->fs_devices->total_devices) {
+-		btrfs_err(fs_info,
+-	   "super_num_devices %llu mismatch with num_devices %llu found here",
++		btrfs_warn(fs_info,
++"super block num_devices %llu mismatch with DEV_ITEM count %llu, will be repaired on next transaction commit",
+ 			  btrfs_super_num_devices(fs_info->super_copy),
+ 			  total_dev);
+-		ret = -EINVAL;
+-		goto error;
++		fs_info->fs_devices->total_devices = total_dev;
++		btrfs_set_super_num_devices(fs_info->super_copy, total_dev);
+ 	}
+ 	if (btrfs_super_total_bytes(fs_info->super_copy) <
+ 	    fs_info->fs_devices->total_rw_bytes) {
+
+
