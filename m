@@ -2,88 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E981CCA47E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19666C43334
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354147AbiFGTFT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:05:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58124 "EHLO
+        id S238269AbiFGTFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 15:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352598AbiFGSRV (ORCPT
+        with ESMTP id S1352774AbiFGSRb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:21 -0400
+        Tue, 7 Jun 2022 14:17:31 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9514013A2EF;
-        Tue,  7 Jun 2022 10:52:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 395D713C4F4;
+        Tue,  7 Jun 2022 10:52:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C983EB8236C;
-        Tue,  7 Jun 2022 17:52:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33889C3411C;
-        Tue,  7 Jun 2022 17:52:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624343;
-        bh=N2G7P5kX8WC/LFedJRSAAVNnpl8GrNl/yZz/XNcovSg=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7050B8236C;
+        Tue,  7 Jun 2022 17:52:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12342C36B00;
+        Tue,  7 Jun 2022 17:52:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624357;
+        bh=VTvq0DoklwJ8cuV8EuXnfHoOTTTgZ4Wt5bHyoeuOH9w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1X5CHBmq/dpcPcyNVF1FSz1FGOFGjmuCyVUGWqSxRR94d49W/bYwO22gX6kLXQFIa
-         Bi5RD7NOWDAelrXwsJc6B0h4+OksQerrXsrXBQlcYhgm7IMs17NkUkBGoIgIPnfGS3
-         vwzfML3HOZUtmHpnf7MguVKRAiK+5OoRLb/8WT3M=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 292/667] drm/msm: return an error pointer in msm_gem_prime_get_sg_table()
-Date:   Tue,  7 Jun 2022 18:59:17 +0200
-Message-Id: <20220607164943.535767570@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=kL0lDk0xn9C1AbGdHbJomC15eGnFncCTGVvFHeYjgP40m+K+XQNhyJZv7roWeVLbd
+         SPtm28c4LD781nMwi3a0h2o4NzBbZMhsnYrnYhIsZqX9bG/Zpi71qFKjZSUryAoaU3
+         pYcJZ3oJXcFy+qeVU85s1NLUlj01YvzPHHhQC9tYEwLjX9vhzAbvKYV1FcCyjXWKgQ
+         +NpYKKXFIhgz5eEfvmqb6sBH0po9u4RfvXup+E9W+FU5XJWBeJqXw6jbOQAIrG7Cgf
+         T5b0WBzeWiAkdaWmtJ4JgKDx0MFdWC4uy3DNfVs3F/R/x+rG8xEY4PwPkWKK+IM32d
+         /nHEtxvWejbzA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Cyril Brulebois <kibi@debian.org>,
+        Sasha Levin <sashal@kernel.org>, jim2101024@gmail.com,
+        nsaenz@kernel.org, f.fainelli@gmail.com, lpieralisi@kernel.org,
+        linux-pci@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 62/68] Revert "PCI: brcmstb: Add mechanism to turn on subdev regulators"
+Date:   Tue,  7 Jun 2022 13:48:28 -0400
+Message-Id: <20220607174846.477972-62-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-[ Upstream commit cf575e31611eb6dccf08fad02e57e35b2187704d ]
+[ Upstream commit 420be2f7ebe60c9ba3e332f5290017cd168e2bf8 ]
 
-The msm_gem_prime_get_sg_table() needs to return error pointers on
-error.  This is called from drm_gem_map_dma_buf() and returning a
-NULL will lead to a crash in that function.
+This reverts commit 67211aadcb4b968d0fdc57bc27240fa71500c2d4.
 
-Fixes: ac45146733b0 ("drm/msm: fix msm_gem_prime_get_sg_table()")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/485023/
-Link: https://lore.kernel.org/r/YnOmtS5tfENywR9m@kili
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+This is part of a revert of the following commits:
+
+  11ed8b8624b8 ("PCI: brcmstb: Do not turn off WOL regulators on suspend")
+  93e41f3fca3d ("PCI: brcmstb: Add control of subdevice voltage regulators")
+  67211aadcb4b ("PCI: brcmstb: Add mechanism to turn on subdev regulators")
+  830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup() into two funcs")
+
+Cyril reported that 830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup()
+into two funcs"), which appeared in v5.17-rc1, broke booting on the
+Raspberry Pi Compute Module 4.  Apparently 830aa6f29f07 panics with an
+Asynchronous SError Interrupt, and after further commits here is a black
+screen on HDMI and no output on the serial console.
+
+This does not seem to affect the Raspberry Pi 4 B.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215925
+Link: https://lore.kernel.org/r/20220511201856.808690-4-helgaas@kernel.org
+Reported-by: Cyril Brulebois <kibi@debian.org>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/msm_gem_prime.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pci/controller/pcie-brcmstb.c | 76 ---------------------------
+ 1 file changed, 76 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/msm_gem_prime.c b/drivers/gpu/drm/msm/msm_gem_prime.c
-index fc94e061d6a7..8a2d94bd5df2 100644
---- a/drivers/gpu/drm/msm/msm_gem_prime.c
-+++ b/drivers/gpu/drm/msm/msm_gem_prime.c
-@@ -17,7 +17,7 @@ struct sg_table *msm_gem_prime_get_sg_table(struct drm_gem_object *obj)
- 	int npages = obj->size >> PAGE_SHIFT;
+diff --git a/drivers/pci/controller/pcie-brcmstb.c b/drivers/pci/controller/pcie-brcmstb.c
+index fd464d38fecb..0e8346114a8d 100644
+--- a/drivers/pci/controller/pcie-brcmstb.c
++++ b/drivers/pci/controller/pcie-brcmstb.c
+@@ -24,7 +24,6 @@
+ #include <linux/pci.h>
+ #include <linux/pci-ecam.h>
+ #include <linux/printk.h>
+-#include <linux/regulator/consumer.h>
+ #include <linux/reset.h>
+ #include <linux/sizes.h>
+ #include <linux/slab.h>
+@@ -284,14 +283,6 @@ static const struct pcie_cfg_data bcm2711_cfg = {
+ 	.bridge_sw_init_set = brcm_pcie_bridge_sw_init_set_generic,
+ };
  
- 	if (WARN_ON(!msm_obj->pages))  /* should have already pinned! */
--		return NULL;
-+		return ERR_PTR(-ENOMEM);
- 
- 	return drm_prime_pages_to_sg(obj->dev, msm_obj->pages, npages);
+-struct subdev_regulators {
+-	unsigned int num_supplies;
+-	struct regulator_bulk_data supplies[];
+-};
+-
+-static int pci_subdev_regulators_add_bus(struct pci_bus *bus);
+-static void pci_subdev_regulators_remove_bus(struct pci_bus *bus);
+-
+ struct brcm_msi {
+ 	struct device		*dev;
+ 	void __iomem		*base;
+@@ -445,71 +436,6 @@ static int brcm_pcie_set_ssc(struct brcm_pcie *pcie)
+ 	return ssc && pll ? 0 : -EIO;
  }
+ 
+-static void *alloc_subdev_regulators(struct device *dev)
+-{
+-	static const char * const supplies[] = {
+-		"vpcie3v3",
+-		"vpcie3v3aux",
+-		"vpcie12v",
+-	};
+-	const size_t size = sizeof(struct subdev_regulators)
+-		+ sizeof(struct regulator_bulk_data) * ARRAY_SIZE(supplies);
+-	struct subdev_regulators *sr;
+-	int i;
+-
+-	sr = devm_kzalloc(dev, size, GFP_KERNEL);
+-	if (sr) {
+-		sr->num_supplies = ARRAY_SIZE(supplies);
+-		for (i = 0; i < ARRAY_SIZE(supplies); i++)
+-			sr->supplies[i].supply = supplies[i];
+-	}
+-
+-	return sr;
+-}
+-
+-static int pci_subdev_regulators_add_bus(struct pci_bus *bus)
+-{
+-	struct device *dev = &bus->dev;
+-	struct subdev_regulators *sr;
+-	int ret;
+-
+-	if (!dev->of_node || !bus->parent || !pci_is_root_bus(bus->parent))
+-		return 0;
+-
+-	if (dev->driver_data)
+-		dev_err(dev, "dev.driver_data unexpectedly non-NULL\n");
+-
+-	sr = alloc_subdev_regulators(dev);
+-	if (!sr)
+-		return -ENOMEM;
+-
+-	dev->driver_data = sr;
+-	ret = regulator_bulk_get(dev, sr->num_supplies, sr->supplies);
+-	if (ret)
+-		return ret;
+-
+-	ret = regulator_bulk_enable(sr->num_supplies, sr->supplies);
+-	if (ret) {
+-		dev_err(dev, "failed to enable regulators for downstream device\n");
+-		return ret;
+-	}
+-
+-	return 0;
+-}
+-
+-static void pci_subdev_regulators_remove_bus(struct pci_bus *bus)
+-{
+-	struct device *dev = &bus->dev;
+-	struct subdev_regulators *sr = dev->driver_data;
+-
+-	if (!sr || !bus->parent || !pci_is_root_bus(bus->parent))
+-		return;
+-
+-	if (regulator_bulk_disable(sr->num_supplies, sr->supplies))
+-		dev_err(dev, "failed to disable regulators for downstream device\n");
+-	dev->driver_data = NULL;
+-}
+-
+ /* Limits operation to a specific generation (1, 2, or 3) */
+ static void brcm_pcie_set_gen(struct brcm_pcie *pcie, int gen)
+ {
+@@ -853,8 +779,6 @@ static struct pci_ops brcm_pcie_ops = {
+ 	.map_bus = brcm_pcie_map_conf,
+ 	.read = pci_generic_config_read,
+ 	.write = pci_generic_config_write,
+-	.add_bus = pci_subdev_regulators_add_bus,
+-	.remove_bus = pci_subdev_regulators_remove_bus,
+ };
+ 
+ static struct pci_ops brcm_pcie_ops32 = {
 -- 
 2.35.1
-
-
 
