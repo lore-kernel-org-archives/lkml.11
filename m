@@ -2,115 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2225CCA496
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 789C0CCA49A
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356586AbiFGT2A (ORCPT
+        id S1356658AbiFGT2D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:28:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58764 "EHLO
+        Tue, 7 Jun 2022 15:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352386AbiFGSdm (ORCPT
+        with ESMTP id S1351721AbiFGSd4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:33:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19FC147837;
-        Tue,  7 Jun 2022 10:57:36 -0700 (PDT)
+        Tue, 7 Jun 2022 14:33:56 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25E81483C2;
+        Tue,  7 Jun 2022 10:57:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5102F61896;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 030A5CE2424;
         Tue,  7 Jun 2022 17:57:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4FF9C34115;
-        Tue,  7 Jun 2022 17:57:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624655;
-        bh=ePu/TFxZhlL/47ffI9miQGre6cc/+lefNGf4A6NqDWk=;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0A95C34119;
+        Tue,  7 Jun 2022 17:57:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624654;
+        bh=tXpFV1oq8s2qSwjMPFj5GjP5i35kucSjkrQzFXm++X0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CJVayjU1wgZCLxrRTgZAyx0nzjko4WV/I/Ih0JIN8cp5+GJoy0XCDbm/+le0oTtX7
-         J8OXPq9x5dEvqO6thBlw+bLSqP2dVgMnlo+7QgGdx66fvAGVCIEVThZrMk4/Y6hdAy
-         Uh97krG8/d18vECBGbYFqtiAa2gSOwJuuPZMvI1a5i5QWBHwBUYKLTmKbOAjVHQq2L
-         GtDBXzGoKQRa0nnYgzrbMSDRfhlNWyYRWpwe/wKZCxsL51YPz0LQDbdB4riInRLGfe
-         z5wfzMqu/j/9BVe4YSRXFnxdGjeMW5d6iY3N7rrdWY6623LiOXkUgFFtG2wiac3cCP
-         qhW5PRREwWQ+Q==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Venky Shankar <vshankar@redhat.com>, Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 35/51] ceph: allow ceph.dir.rctime xattr to be updatable
-Date:   Tue,  7 Jun 2022 13:55:34 -0400
-Message-Id: <20220607175552.479948-35-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
-References: <20220607175552.479948-1-sashal@kernel.org>
+        b=eGxNaFes9WWENbjjaHskWx6IUxUES1FK6lHfsV4OHrv3fS9Fb6BrypvhNgN+1TEEm
+         LUrPTvGhWp6+EgmjULAkpjI/oZHug+hDKk4YcaMVgQ4jlfUsJe/zOrYiDmciFg0e+k
+         yQ1ljstf1LFrZjAfKw57URxEN8CstU+BxpLno67A=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Patrick Delaunay <patrick.delaunay@foss.st.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 406/667] ARM: dts: stm32: Fix PHY post-reset delay on Avenger96
+Date:   Tue,  7 Jun 2022 19:01:11 +0200
+Message-Id: <20220607164946.918592920@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Venky Shankar <vshankar@redhat.com>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit d7a2dc523085f8b8c60548ceedc696934aefeb0e ]
+[ Upstream commit ef2d90708883f4025a801feb0ba8411a7a4387e1 ]
 
-`rctime' has been a pain point in cephfs due to its buggy
-nature - inconsistent values reported and those sorts.
-Fixing rctime is non-trivial needing an overall redesign
-of the entire nested statistics infrastructure.
+Per KSZ9031RNX PHY datasheet FIGURE 7-5: POWER-UP/POWER-DOWN/RESET TIMING
+Note 2: After the de-assertion of reset, wait a minimum of 100 μs before
+starting programming on the MIIM (MDC/MDIO) interface.
 
-As a workaround, PR
+Add 1ms post-reset delay to guarantee this figure.
 
-     http://github.com/ceph/ceph/pull/37938
-
-allows this extended attribute to be manually set. This allows
-users to "fixup" inconsistent rctime values. While this sounds
-messy, its probably the wisest approach allowing users/scripts
-to workaround buggy rctime values.
-
-The above PR enables Ceph MDS to allow manually setting
-rctime extended attribute with the corresponding user-land
-changes. We may as well allow the same to be done via kclient
-for parity.
-
-Signed-off-by: Venky Shankar <vshankar@redhat.com>
-Reviewed-by: Xiubo Li <xiubli@redhat.com>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Fixes: 010ca9fe500bf ("ARM: dts: stm32: Add missing ethernet PHY reset on AV96")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: Patrice Chotard <patrice.chotard@foss.st.com>
+Cc: Patrick Delaunay <patrick.delaunay@foss.st.com>
+Cc: linux-stm32@st-md-mailman.stormreply.com
+To: linux-arm-kernel@lists.infradead.org
+Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/xattr.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/ceph/xattr.c b/fs/ceph/xattr.c
-index 159a1ffa4f4b..db288b4aee6d 100644
---- a/fs/ceph/xattr.c
-+++ b/fs/ceph/xattr.c
-@@ -366,6 +366,14 @@ static ssize_t ceph_vxattrcb_auth_mds(struct ceph_inode_info *ci,
- 	}
- #define XATTR_RSTAT_FIELD(_type, _name)			\
- 	XATTR_NAME_CEPH(_type, _name, VXATTR_FLAG_RSTAT)
-+#define XATTR_RSTAT_FIELD_UPDATABLE(_type, _name)			\
-+	{								\
-+		.name = CEPH_XATTR_NAME(_type, _name),			\
-+		.name_size = sizeof (CEPH_XATTR_NAME(_type, _name)),	\
-+		.getxattr_cb = ceph_vxattrcb_ ## _type ## _ ## _name,	\
-+		.exists_cb = NULL,					\
-+		.flags = VXATTR_FLAG_RSTAT,				\
-+	}
- #define XATTR_LAYOUT_FIELD(_type, _name, _field)			\
- 	{								\
- 		.name = CEPH_XATTR_NAME2(_type, _name, _field),	\
-@@ -404,7 +412,7 @@ static struct ceph_vxattr ceph_dir_vxattrs[] = {
- 	XATTR_RSTAT_FIELD(dir, rsubdirs),
- 	XATTR_RSTAT_FIELD(dir, rsnaps),
- 	XATTR_RSTAT_FIELD(dir, rbytes),
--	XATTR_RSTAT_FIELD(dir, rctime),
-+	XATTR_RSTAT_FIELD_UPDATABLE(dir, rctime),
- 	{
- 		.name = "ceph.dir.pin",
- 		.name_size = sizeof("ceph.dir.pin"),
+diff --git a/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi b/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
+index 6885948f3024..8eb51d84b698 100644
+--- a/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
++++ b/arch/arm/boot/dts/stm32mp15xx-dhcor-avenger96.dtsi
+@@ -141,6 +141,7 @@
+ 		compatible = "snps,dwmac-mdio";
+ 		reset-gpios = <&gpioz 2 GPIO_ACTIVE_LOW>;
+ 		reset-delay-us = <1000>;
++		reset-post-delay-us = <1000>;
+ 
+ 		phy0: ethernet-phy@7 {
+ 			reg = <7>;
 -- 
 2.35.1
+
+
 
