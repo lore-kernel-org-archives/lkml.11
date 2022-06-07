@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29A4ECCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13C30CCA48B
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351412AbiFGSQU (ORCPT
+        id S1351326AbiFGSQS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:16:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48708 "EHLO
+        Tue, 7 Jun 2022 14:16:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348997AbiFGRzU (ORCPT
+        with ESMTP id S1349172AbiFGRzn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:55:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4DF1455BE;
-        Tue,  7 Jun 2022 10:40:00 -0700 (PDT)
+        Tue, 7 Jun 2022 13:55:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A53B13F40D;
+        Tue,  7 Jun 2022 10:40:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1EE41B8232D;
-        Tue,  7 Jun 2022 17:34:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8037AC385A5;
-        Tue,  7 Jun 2022 17:34:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DBAF60BC6;
+        Tue,  7 Jun 2022 17:40:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5421FC385A5;
+        Tue,  7 Jun 2022 17:40:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623296;
-        bh=uspeOvcsPAihGpE95qLNWAc0gOrkEI/psGUiN6gWuYo=;
+        s=korg; t=1654623601;
+        bh=qO2K96LJDhbirD99gp0YVHECVMdEPs1haKCeGlOd7O0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V657PzTa7oprNjXk1yO6nZpuTj+4TtCJfdzG7z/WZzyIlfjRDmFV755cvrUjyCJsA
-         wrvBcU06Nt+5RInGDLUoxvQ5aGhMWo5G20AKBf+Ndhoe9/jBm+or4oveXEUxnpB379
-         bOKVcwcuol+gmlkebBe1Y/oyfPOVC2XBdbb4RgDs=
+        b=obCMdzKLBWWG0iGUHnlVeN+EHOxl7GTGmT0RH1Amg4EnZVj792YwWCDawjE6i2gQo
+         HXg8b+hli/RjAWEXGKPUicaA5xQmdbCuSu6gboscXZh50xAOkVQ2leC3yuu2Se9KH7
+         Hz5DDvkBgZZJicq8NbqCfOdTL1H/ar60j8IFQtbM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.10 365/452] ext4: avoid cycles in directory h-tree
-Date:   Tue,  7 Jun 2022 19:03:42 +0200
-Message-Id: <20220607164919.440405860@linuxfoundation.org>
+        stable@vger.kernel.org, Joe Perches <joe@perches.com>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH 5.15 024/667] fs/ntfs3: In function ntfs_set_acl_ex do not change inode->i_mode if called from function ntfs_init_acl
+Date:   Tue,  7 Jun 2022 18:54:49 +0200
+Message-Id: <20220607164935.522664237@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
-References: <20220607164908.521895282@linuxfoundation.org>
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,81 +49,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 
-commit 3ba733f879c2a88910744647e41edeefbc0d92b2 upstream.
+commit 9186d472ee780fabf74424756c4c00545166157e upstream.
 
-A maliciously corrupted filesystem can contain cycles in the h-tree
-stored inside a directory. That can easily lead to the kernel corrupting
-tree nodes that were already verified under its hands while doing a node
-split and consequently accessing unallocated memory. Fix the problem by
-verifying traversed block numbers are unique.
+ntfs_init_acl sets mode. ntfs_init_acl calls ntfs_set_acl_ex.
+ntfs_set_acl_ex must not change this mode.
+Fixes xfstest generic/444
+Fixes: be71b5cba2e6 ("fs/ntfs3: Add attrib operations")
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220518093332.13986-2-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Joe Perches <joe@perches.com>
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/namei.c |   22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+ fs/ntfs3/xattr.c |   13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -756,12 +756,14 @@ static struct dx_frame *
- dx_probe(struct ext4_filename *fname, struct inode *dir,
- 	 struct dx_hash_info *hinfo, struct dx_frame *frame_in)
- {
--	unsigned count, indirect;
-+	unsigned count, indirect, level, i;
- 	struct dx_entry *at, *entries, *p, *q, *m;
- 	struct dx_root *root;
- 	struct dx_frame *frame = frame_in;
- 	struct dx_frame *ret_err = ERR_PTR(ERR_BAD_DX_DIR);
- 	u32 hash;
-+	ext4_lblk_t block;
-+	ext4_lblk_t blocks[EXT4_HTREE_LEVEL];
+--- a/fs/ntfs3/xattr.c
++++ b/fs/ntfs3/xattr.c
+@@ -541,7 +541,7 @@ struct posix_acl *ntfs_get_acl(struct in
  
- 	memset(frame_in, 0, EXT4_HTREE_LEVEL * sizeof(frame_in[0]));
- 	frame->bh = ext4_read_dirblock(dir, 0, INDEX);
-@@ -817,6 +819,8 @@ dx_probe(struct ext4_filename *fname, st
+ static noinline int ntfs_set_acl_ex(struct user_namespace *mnt_userns,
+ 				    struct inode *inode, struct posix_acl *acl,
+-				    int type)
++				    int type, bool init_acl)
+ {
+ 	const char *name;
+ 	size_t size, name_len;
+@@ -554,8 +554,9 @@ static noinline int ntfs_set_acl_ex(stru
+ 
+ 	switch (type) {
+ 	case ACL_TYPE_ACCESS:
+-		if (acl) {
+-			umode_t mode = inode->i_mode;
++		/* Do not change i_mode if we are in init_acl */
++		if (acl && !init_acl) {
++			umode_t mode;
+ 
+ 			err = posix_acl_update_mode(mnt_userns, inode, &mode,
+ 						    &acl);
+@@ -616,7 +617,7 @@ out:
+ int ntfs_set_acl(struct user_namespace *mnt_userns, struct inode *inode,
+ 		 struct posix_acl *acl, int type)
+ {
+-	return ntfs_set_acl_ex(mnt_userns, inode, acl, type);
++	return ntfs_set_acl_ex(mnt_userns, inode, acl, type, false);
+ }
+ 
+ /*
+@@ -636,7 +637,7 @@ int ntfs_init_acl(struct user_namespace
+ 
+ 	if (default_acl) {
+ 		err = ntfs_set_acl_ex(mnt_userns, inode, default_acl,
+-				      ACL_TYPE_DEFAULT);
++				      ACL_TYPE_DEFAULT, true);
+ 		posix_acl_release(default_acl);
+ 	} else {
+ 		inode->i_default_acl = NULL;
+@@ -647,7 +648,7 @@ int ntfs_init_acl(struct user_namespace
+ 	else {
+ 		if (!err)
+ 			err = ntfs_set_acl_ex(mnt_userns, inode, acl,
+-					      ACL_TYPE_ACCESS);
++					      ACL_TYPE_ACCESS, true);
+ 		posix_acl_release(acl);
  	}
  
- 	dxtrace(printk("Look up %x", hash));
-+	level = 0;
-+	blocks[0] = 0;
- 	while (1) {
- 		count = dx_get_count(entries);
- 		if (!count || count > dx_get_limit(entries)) {
-@@ -858,15 +862,27 @@ dx_probe(struct ext4_filename *fname, st
- 			       dx_get_block(at)));
- 		frame->entries = entries;
- 		frame->at = at;
--		if (!indirect--)
-+
-+		block = dx_get_block(at);
-+		for (i = 0; i <= level; i++) {
-+			if (blocks[i] == block) {
-+				ext4_warning_inode(dir,
-+					"dx entry: tree cycle block %u points back to block %u",
-+					blocks[level], block);
-+				goto fail;
-+			}
-+		}
-+		if (++level > indirect)
- 			return frame;
-+		blocks[level] = block;
- 		frame++;
--		frame->bh = ext4_read_dirblock(dir, dx_get_block(at), INDEX);
-+		frame->bh = ext4_read_dirblock(dir, block, INDEX);
- 		if (IS_ERR(frame->bh)) {
- 			ret_err = (struct dx_frame *) frame->bh;
- 			frame->bh = NULL;
- 			goto fail;
- 		}
-+
- 		entries = ((struct dx_node *) frame->bh->b_data)->entries;
- 
- 		if (dx_get_limit(entries) != dx_node_limit(dir)) {
 
 
