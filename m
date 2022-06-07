@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB725CCA486
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D040CCA485
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384613AbiFGWPq (ORCPT
+        id S1384630AbiFGWPu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:15:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39970 "EHLO
+        Tue, 7 Jun 2022 18:15:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379032AbiFGVJy (ORCPT
+        with ESMTP id S1379678AbiFGVKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:09:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7081A214888;
-        Tue,  7 Jun 2022 11:51:44 -0700 (PDT)
+        Tue, 7 Jun 2022 17:10:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E13215655;
+        Tue,  7 Jun 2022 11:51:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A370AB81FE1;
-        Tue,  7 Jun 2022 18:51:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FF97C385A5;
-        Tue,  7 Jun 2022 18:51:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B381BB8237F;
+        Tue,  7 Jun 2022 18:51:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07161C385A5;
+        Tue,  7 Jun 2022 18:51:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627901;
-        bh=cB/zmou4JNBatz0EsRvy0e6Im6lxkG/oKJCnqFwoMfc=;
+        s=korg; t=1654627912;
+        bh=2aro4hsaizbmehGAHGgs444aSUzly18lMFz3EQEQqnA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e+GkkndBp7GHWpnnptze6274rPwbaNnCBy76XXOPni1AFY194my/MZqPNpIVKxB3a
-         iYrRo5E39nQ+IzK3BPRBT0M83pHjVclol3QLGWexIERbnak9QLMBgntT45N1jcYuMh
-         NmJBfhT67L8s29ZjAlb39XFAmiRRX+FBF73Ofzgw=
+        b=KmCk9sDDXAyJHJZ+0akEDbqlU392ixJio9H4PKhhRoCWYNp+KUTGw/opS0QQiQ/nw
+         hlap3czSpPWuhN1c9RzFcqqi3IyOCFdAzDHy7im0woAaqwneMVFJO8uo44ufgUIDWf
+         HHEKyfZA2F38Tzf8im0juUkzTreGJgQQ10AvX4hw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>, Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Thierry Reding <treding@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 134/879] regulator: mt6315: Enforce regulator-compatible, not name
-Date:   Tue,  7 Jun 2022 18:54:12 +0200
-Message-Id: <20220607165006.592659436@linuxfoundation.org>
+Subject: [PATCH 5.18 137/879] drm/tegra: gem: Do not try to dereference ERR_PTR()
+Date:   Tue,  7 Jun 2022 18:54:15 +0200
+Message-Id: <20220607165006.680667412@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,39 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+From: Thierry Reding <treding@nvidia.com>
 
-[ Upstream commit 6d435a94ba5bb4f2ad381c0828fbae89c66b50fe ]
+[ Upstream commit cb7e1abc2c73633e1eefa168ab2dad6e838899c9 ]
 
-The MT6315 PMIC dt-binding should enforce that one of the valid
-regulator-compatible is set in each regulator node. However it was
-mistakenly matching against regulator-name instead.
+When mapping the DMA-BUF attachment fails, map->sgt will be an ERR_PTR-
+encoded error code and the cleanup code would try to free that memory,
+which obviously would fail.
 
-Fix the typo. This not only fixes the compatible verification, but also
-lifts the regulator-name restriction, so that more meaningful names can
-be set for each platform.
+Zero out that pointer after extracting the error code when this happens
+so that kfree() can do the right thing.
 
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Link: https://lore.kernel.org/r/20220429201325.2205799-1-nfraprado@collabora.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../devicetree/bindings/regulator/mt6315-regulator.yaml         | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/tegra/gem.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-index 61dd5af80db6..5d2d989de893 100644
---- a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-@@ -31,7 +31,7 @@ properties:
-         $ref: "regulator.yaml#"
+diff --git a/drivers/gpu/drm/tegra/gem.c b/drivers/gpu/drm/tegra/gem.c
+index 0063403ab5e1..7c7dd84e6db8 100644
+--- a/drivers/gpu/drm/tegra/gem.c
++++ b/drivers/gpu/drm/tegra/gem.c
+@@ -88,6 +88,7 @@ static struct host1x_bo_mapping *tegra_bo_pin(struct device *dev, struct host1x_
+ 		if (IS_ERR(map->sgt)) {
+ 			dma_buf_detach(buf, map->attach);
+ 			err = PTR_ERR(map->sgt);
++			map->sgt = NULL;
+ 			goto free;
+ 		}
  
-         properties:
--          regulator-name:
-+          regulator-compatible:
-             pattern: "^vbuck[1-4]$"
- 
-     additionalProperties: false
 -- 
 2.35.1
 
