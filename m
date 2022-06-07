@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99642CCA493
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A963CCA496
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:47:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354248AbiFGSqu (ORCPT
+        id S1354480AbiFGSrE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:46:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42142 "EHLO
+        Tue, 7 Jun 2022 14:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352134AbiFGSQz (ORCPT
+        with ESMTP id S1352170AbiFGSQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CADC1DFE9;
-        Tue,  7 Jun 2022 10:50:38 -0700 (PDT)
+        Tue, 7 Jun 2022 14:16:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC95410FEA;
+        Tue,  7 Jun 2022 10:50:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F950B8233D;
-        Tue,  7 Jun 2022 17:50:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEB08C385A5;
-        Tue,  7 Jun 2022 17:50:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 683D36146F;
+        Tue,  7 Jun 2022 17:50:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74B7BC385A5;
+        Tue,  7 Jun 2022 17:50:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624236;
-        bh=DxFszKx2N6Ngf9HkA5IBe/+I+X4ZtA6pvkdCGaK8szY=;
+        s=korg; t=1654624252;
+        bh=V0A15KGNTP79nevGVL19IAPwtWI6OsU/xrSJL/2kwQ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fWbptNXVz2QJPvppVqoavcKQ3RlxFR9GJuPr25mHyffm8odKCZSF87KkSm6jPrETl
-         G782tVeKGLsDbmy1spIypX1HDdRq2Wi1Qz8RKPuVDC/J4H+6LQD3j/HGnhxDBLsQtp
-         v5F35xfE8i9Z0Toy2iOxu6X+2XoSUeRD+yQUdEXs=
+        b=zA4KCtZ3oclvb45t2CRsdfVnvuBQE/SQiliijRPD2aZlijXV6vJT6acCL/9aW7sKi
+         jhufbaIGBMqnwQl7g4WcrKgt3njOQP+hNN+ONa4Si2BFwRqQfxBSWZp1wqzLuFjVF2
+         thPnUJ6YuNaAYQFS/i1DhR/BkERf/SrOOd4TTxNg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bean Huo <beanhuo@micron.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Bart Van Assche <bvanassche@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Chen-Tsung Hsieh <chentsung@chromium.org>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Michael Walle <michael@walle.cc>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 253/667] scsi: ufs: qcom: Fix ufs_qcom_resume()
-Date:   Tue,  7 Jun 2022 18:58:38 +0200
-Message-Id: <20220607164942.371416807@linuxfoundation.org>
+Subject: [PATCH 5.15 258/667] mtd: spi-nor: core: Check written SR value in spi_nor_write_16bit_sr_and_check()
+Date:   Tue,  7 Jun 2022 18:58:43 +0200
+Message-Id: <20220607164942.520598329@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,45 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Chen-Tsung Hsieh <chentsung@chromium.org>
 
-[ Upstream commit bee40dc167da159ea5b939c074e1da258610a3d6 ]
+[ Upstream commit 70dd83d737d8900b2d98db6dc6b928c596334d37 ]
 
-Clearing hba->is_sys_suspended if ufs_qcom_resume() succeeds is wrong. That
-variable must only be cleared if all actions involved in a resume succeed.
-Hence remove the statement that clears hba->is_sys_suspended from
-ufs_qcom_resume().
+Read back Status Register 1 to ensure that the written byte match the
+received value and return -EIO if read back test failed.
 
-Link: https://lore.kernel.org/r/20220419225811.4127248-23-bvanassche@acm.org
-Fixes: 81c0fc51b7a7 ("ufs-qcom: add support for Qualcomm Technologies Inc platforms")
-Tested-by: Bean Huo <beanhuo@micron.com>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Bean Huo <beanhuo@micron.com>
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Without this patch, spi_nor_write_16bit_sr_and_check() only check the
+second half of the 16bit. It causes errors like spi_nor_sr_unlock()
+return success incorrectly when spi_nor_write_16bit_sr_and_check()
+doesn't write SR successfully.
+
+Fixes: 39d1e3340c73 ("mtd: spi-nor: Fix clearing of QE bit on lock()/unlock()")
+Signed-off-by: Chen-Tsung Hsieh <chentsung@chromium.org>
+Signed-off-by: Pratyush Yadav <p.yadav@ti.com>
+Reviewed-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Acked-by: Pratyush Yadav <p.yadav@ti.com>
+Link: https://lore.kernel.org/r/20220126073227.3401275-1-chentsung@chromium.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufs-qcom.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/mtd/spi-nor/core.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/scsi/ufs/ufs-qcom.c b/drivers/scsi/ufs/ufs-qcom.c
-index 9d9770f1db4f..c781c132d48f 100644
---- a/drivers/scsi/ufs/ufs-qcom.c
-+++ b/drivers/scsi/ufs/ufs-qcom.c
-@@ -637,12 +637,7 @@ static int ufs_qcom_resume(struct ufs_hba *hba, enum ufs_pm_op pm_op)
- 			return err;
- 	}
+diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+index cc08bd707378..90f39aabc1ff 100644
+--- a/drivers/mtd/spi-nor/core.c
++++ b/drivers/mtd/spi-nor/core.c
+@@ -1007,6 +1007,15 @@ static int spi_nor_write_16bit_sr_and_check(struct spi_nor *nor, u8 sr1)
+ 	if (ret)
+ 		return ret;
  
--	err = ufs_qcom_ice_resume(host);
--	if (err)
--		return err;
--
--	hba->is_sys_suspended = false;
--	return 0;
-+	return ufs_qcom_ice_resume(host);
- }
++	ret = spi_nor_read_sr(nor, sr_cr);
++	if (ret)
++		return ret;
++
++	if (sr1 != sr_cr[0]) {
++		dev_dbg(nor->dev, "SR: Read back test failed\n");
++		return -EIO;
++	}
++
+ 	if (nor->flags & SNOR_F_NO_READ_CR)
+ 		return 0;
  
- static void ufs_qcom_dev_ref_clk_ctrl(struct ufs_qcom_host *host, bool enable)
 -- 
 2.35.1
 
