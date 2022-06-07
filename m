@@ -2,87 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5D49C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:07:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B385C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:07:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353598AbiFGTHB (ORCPT
+        id S1353617AbiFGTHG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:07:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48306 "EHLO
+        Tue, 7 Jun 2022 15:07:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352086AbiFGSQx (ORCPT
+        with ESMTP id S1351818AbiFGSQp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:53 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6DE9133932;
-        Tue,  7 Jun 2022 10:50:25 -0700 (PDT)
+        Tue, 7 Jun 2022 14:16:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40AB16A263;
+        Tue,  7 Jun 2022 10:49:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 46D51CE21CD;
-        Tue,  7 Jun 2022 17:50:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 212E1C385A5;
-        Tue,  7 Jun 2022 17:50:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624222;
-        bh=2R1mQvAJ3EHxKA7Z2wDfWH5G/0RmduuCe6zF8RkqES4=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B91D8617A7;
+        Tue,  7 Jun 2022 17:49:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3833C34115;
+        Tue,  7 Jun 2022 17:49:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624198;
+        bh=ux7IuVmMI8o15RzsRZcZNkGPWCqiFNkdIdCURxZuwdY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i9An50rywmhPLOZj7QfmKbYAumG8ZdKsxVSkYxkOSsYw5yr34VdZHBJK5tZ493BNV
-         eMwr6RI/f/iufdue05K1qKpf+6Jw3GmjWf7OqdKvc52qnRnRn0w1nrr1SUmCzEysY1
-         Dt9Z4G2dixHk00RH0jxdoCvrzHrEZj5lc0noiD1Q=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, SeongJae Park <sj@kernel.org>,
-        Yuanchu Xie <yuanchu@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 248/667] selftests/damon: add damon to selftests root Makefile
-Date:   Tue,  7 Jun 2022 18:58:33 +0200
-Message-Id: <20220607164942.223235036@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=Hb2JWkdYUoW+4CZMRPNQl9J8JRm2lKaC1C8GrYr2jr6eEj5TmOTFdeB//PrD2lecc
+         NWQ8UJIN1E9BhXwxlVDH0j48oxymf+Xt4wmvUV+5Kt3ZpOSstst9oIUIA2DXJ1ujII
+         /b3M/q/b1Fgw5gGGu0A2MpQ8OIeEG05wmnoxh8J2vJPIzZ7qwIPUsqoC543GaPCLwP
+         Toh6GIJkYa3x6ES01TnrNqjEEHitId3xItUDyy4zl4gMRH0S9vWOP69/jAvIt7Hw2N
+         kzDGAM5KqAo/6p6v18CObhe7uXW1aA45f1DC4TttAIhrbJlUxm337+Ilm3AyM01GGK
+         tbz3nJSO4RuGg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, baihaowen@meizu.com,
+        dave@stgolabs.net, len.baker@gmx.com, wangborong@cdjrlc.com,
+        linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.18 11/68] drivers: staging: rtl8192u: Fix deadlock in ieee80211_beacons_stop()
+Date:   Tue,  7 Jun 2022 13:47:37 -0400
+Message-Id: <20220607174846.477972-11-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuanchu Xie <yuanchu@google.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 678f0cdc572c5fda940cb038d70eebb8d818adc8 ]
+[ Upstream commit 806c7b53414934ba2a39449b31fd1a038e500273 ]
 
-Currently the damon selftests are not built with the rest of the
-selftests. We add damon to the list of targets.
+There is a deadlock in ieee80211_beacons_stop(), which is shown below:
 
-Fixes: b348eb7abd09 ("mm/damon: add user space selftests")
-Reviewed-by: SeongJae Park <sj@kernel.org>
-Signed-off-by: Yuanchu Xie <yuanchu@google.com>
-Acked-by: David Rientjes <rientjes@google.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+   (Thread 1)              |      (Thread 2)
+                           | ieee80211_send_beacon()
+ieee80211_beacons_stop()   |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | ieee80211_send_beacon_cb()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
+
+We hold ieee->beacon_lock in position (1) of thread 1 and use
+del_timer_sync() to wait timer to stop, but timer handler
+also need ieee->beacon_lock in position (2) of thread 2.
+As a result, ieee80211_beacons_stop() will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417135407.109536-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index c852eb40c4f7..14206d1d1efe 100644
---- a/tools/testing/selftests/Makefile
-+++ b/tools/testing/selftests/Makefile
-@@ -8,6 +8,7 @@ TARGETS += clone3
- TARGETS += core
- TARGETS += cpufreq
- TARGETS += cpu-hotplug
-+TARGETS += damon
- TARGETS += drivers/dma-buf
- TARGETS += efivarfs
- TARGETS += exec
+diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+index 1a43979939a8..79f3fbe25556 100644
+--- a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
++++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+@@ -528,9 +528,9 @@ static void ieee80211_beacons_stop(struct ieee80211_device *ieee)
+ 	spin_lock_irqsave(&ieee->beacon_lock, flags);
+ 
+ 	ieee->beacon_txing = 0;
+-	del_timer_sync(&ieee->beacon_timer);
+ 
+ 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
++	del_timer_sync(&ieee->beacon_timer);
+ }
+ 
+ void ieee80211_stop_send_beacons(struct ieee80211_device *ieee)
 -- 
 2.35.1
-
-
 
