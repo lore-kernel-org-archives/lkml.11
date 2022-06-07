@@ -2,95 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17766C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:22:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF73C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:22:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346782AbiFGTWC (ORCPT
+        id S1355108AbiFGTWJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:22:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56830 "EHLO
+        Tue, 7 Jun 2022 15:22:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352535AbiFGSbE (ORCPT
+        with ESMTP id S1352496AbiFGSbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:31:04 -0400
+        Tue, 7 Jun 2022 14:31:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9597417B87A;
-        Tue,  7 Jun 2022 10:56:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A6714558A;
+        Tue,  7 Jun 2022 10:56:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D161DB82373;
-        Tue,  7 Jun 2022 17:56:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E80A8C3411F;
-        Tue,  7 Jun 2022 17:56:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624584;
-        bh=EbHpsNQsZRgTMF45CSYfLlirVAaStJQ+cyuj+aVwgLI=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 309A0B82368;
+        Tue,  7 Jun 2022 17:56:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B4EAC385A5;
+        Tue,  7 Jun 2022 17:56:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624576;
+        bh=s+TZyYCAjcs72aLPTkcMgMcyOxUoBNSc3jMP77WNwEA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IBJj9869wU0qgysbyPlB5vl0cdMfEkxwW9s9jTM+O3/QFmxerXjVZ4Bj2FMuNaor9
-         70lOtLfSPQ2thI9576tlXzO5AVZgb3biWzBunB6ouzMjNE8S2JaUof/5B86V12bk9v
-         oyghVQECqIHoKTJ7XkWjZUVe1to4VM8yTeVvL3ha7yxPYFCmQOolh/6nKyyjlKS1PP
-         o3yLXPhoJB1J9b8NXDOdWBuB1/lZW7LBOchjvwqsCY5tCKAi5PhjFDsnnAImOmtuDp
-         KZ3iZFzVrDjZk30zJQjLyRhByD/HBCe0q43S+1ebsvJSkOrpoHqu6nxFowLe82VvnD
-         5miV7/RKPKnyA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>, Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        b=0u38tDbSGueqCI3aR+8D0prMnu58UQdtQBF7/DfipnVc3h/6rMP4um3Ol697l6oGY
+         r87JrHLSOg6b3bfiFBBJkCqie6sMqcWN4QAbQwxNmA/59zmH/tsh0ezzLnbd5n8QqG
+         8BoplxfEiL9xGhiUhhe5V3hK0v93JIY5G88JsLSs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Robin Murphy <robin.murphy@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.15 07/51] tty: synclink_gt: Fix null-pointer-dereference in slgt_clean()
-Date:   Tue,  7 Jun 2022 13:55:06 -0400
-Message-Id: <20220607175552.479948-7-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
-References: <20220607175552.479948-1-sashal@kernel.org>
+Subject: [PATCH 5.15 377/667] dma-direct: factor out dma_set_{de,en}crypted helpers
+Date:   Tue,  7 Jun 2022 19:00:42 +0200
+Message-Id: <20220607164946.056219979@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit 689ca31c542687709ba21ec2195c1fbce34fd029 ]
+[ Upstream commit 4d0564785bb03841e4b5c5b31aa4ecd1eb0d01bb ]
 
-When the driver fails at alloc_hdlcdev(), and then we remove the driver
-module, we will get the following splat:
+Factor out helpers the make dealing with memory encryption a little less
+cumbersome.
 
-[   25.065966] general protection fault, probably for non-canonical address 0xdffffc0000000182: 0000 [#1] PREEMPT SMP KASAN PTI
-[   25.066914] KASAN: null-ptr-deref in range [0x0000000000000c10-0x0000000000000c17]
-[   25.069262] RIP: 0010:detach_hdlc_protocol+0x2a/0x3e0
-[   25.077709] Call Trace:
-[   25.077924]  <TASK>
-[   25.078108]  unregister_hdlc_device+0x16/0x30
-[   25.078481]  slgt_cleanup+0x157/0x9f0 [synclink_gt]
-
-Fix this by checking whether the 'info->netdev' is a null pointer first.
-
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220410114814.3920474-1-zheyuma97@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/synclink_gt.c | 2 ++
- 1 file changed, 2 insertions(+)
+ kernel/dma/direct.c | 56 ++++++++++++++++++++-------------------------
+ 1 file changed, 25 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
-index 25c558e65ece..9bc2a9265277 100644
---- a/drivers/tty/synclink_gt.c
-+++ b/drivers/tty/synclink_gt.c
-@@ -1746,6 +1746,8 @@ static int hdlcdev_init(struct slgt_info *info)
-  */
- static void hdlcdev_exit(struct slgt_info *info)
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index a1573ed2ea18..b9513fd68239 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -75,6 +75,20 @@ static bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
+ 		min_not_zero(dev->coherent_dma_mask, dev->bus_dma_limit);
+ }
+ 
++static int dma_set_decrypted(struct device *dev, void *vaddr, size_t size)
++{
++	if (!force_dma_unencrypted(dev))
++		return 0;
++	return set_memory_decrypted((unsigned long)vaddr, 1 << get_order(size));
++}
++
++static int dma_set_encrypted(struct device *dev, void *vaddr, size_t size)
++{
++	if (!force_dma_unencrypted(dev))
++		return 0;
++	return set_memory_encrypted((unsigned long)vaddr, 1 << get_order(size));
++}
++
+ static void __dma_direct_free_pages(struct device *dev, struct page *page,
+ 				    size_t size)
  {
-+	if (!info->netdev)
-+		return;
- 	unregister_hdlc_device(info->netdev);
- 	free_netdev(info->netdev);
- 	info->netdev = NULL;
+@@ -175,7 +189,6 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ {
+ 	struct page *page;
+ 	void *ret;
+-	int err;
+ 
+ 	size = PAGE_ALIGN(size);
+ 	if (attrs & DMA_ATTR_NO_WARN)
+@@ -228,12 +241,8 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 				__builtin_return_address(0));
+ 		if (!ret)
+ 			goto out_free_pages;
+-		if (force_dma_unencrypted(dev)) {
+-			err = set_memory_decrypted((unsigned long)ret,
+-						   1 << get_order(size));
+-			if (err)
+-				goto out_free_pages;
+-		}
++		if (dma_set_decrypted(dev, ret, size))
++			goto out_free_pages;
+ 		memset(ret, 0, size);
+ 		goto done;
+ 	}
+@@ -250,13 +259,8 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 	}
+ 
+ 	ret = page_address(page);
+-	if (force_dma_unencrypted(dev)) {
+-		err = set_memory_decrypted((unsigned long)ret,
+-					   1 << get_order(size));
+-		if (err)
+-			goto out_free_pages;
+-	}
+-
++	if (dma_set_decrypted(dev, ret, size))
++		goto out_free_pages;
+ 	memset(ret, 0, size);
+ 
+ 	if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED) &&
+@@ -271,13 +275,9 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 	return ret;
+ 
+ out_encrypt_pages:
+-	if (force_dma_unencrypted(dev)) {
+-		err = set_memory_encrypted((unsigned long)page_address(page),
+-					   1 << get_order(size));
+-		/* If memory cannot be re-encrypted, it must be leaked */
+-		if (err)
+-			return NULL;
+-	}
++	/* If memory cannot be re-encrypted, it must be leaked */
++	if (dma_set_encrypted(dev, page_address(page), size))
++		return NULL;
+ out_free_pages:
+ 	__dma_direct_free_pages(dev, page, size);
+ 	return NULL;
+@@ -316,8 +316,7 @@ void dma_direct_free(struct device *dev, size_t size,
+ 	    dma_free_from_pool(dev, cpu_addr, PAGE_ALIGN(size)))
+ 		return;
+ 
+-	if (force_dma_unencrypted(dev))
+-		set_memory_encrypted((unsigned long)cpu_addr, 1 << page_order);
++	dma_set_encrypted(dev, cpu_addr, 1 << page_order);
+ 
+ 	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr))
+ 		vunmap(cpu_addr);
+@@ -343,11 +342,8 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 		return NULL;
+ 
+ 	ret = page_address(page);
+-	if (force_dma_unencrypted(dev)) {
+-		if (set_memory_decrypted((unsigned long)ret,
+-				1 << get_order(size)))
+-			goto out_free_pages;
+-	}
++	if (dma_set_decrypted(dev, ret, size))
++		goto out_free_pages;
+ 	memset(ret, 0, size);
+ 	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
+ 	return page;
+@@ -368,9 +364,7 @@ void dma_direct_free_pages(struct device *dev, size_t size,
+ 	    dma_free_from_pool(dev, vaddr, size))
+ 		return;
+ 
+-	if (force_dma_unencrypted(dev))
+-		set_memory_encrypted((unsigned long)vaddr, 1 << page_order);
+-
++	dma_set_encrypted(dev, vaddr, 1 << page_order);
+ 	__dma_direct_free_pages(dev, page, size);
+ }
+ 
 -- 
 2.35.1
+
+
 
