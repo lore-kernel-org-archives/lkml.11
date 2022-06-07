@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF6DFCCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D900ACCA48F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:06:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379500AbiFGVGB (ORCPT
+        id S1379674AbiFGVGN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:06:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46380 "EHLO
+        Tue, 7 Jun 2022 17:06:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358488AbiFGUHA (ORCPT
+        with ESMTP id S1359065AbiFGUIA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:07:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028A91C4269;
-        Tue,  7 Jun 2022 11:26:00 -0700 (PDT)
+        Tue, 7 Jun 2022 16:08:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0AD4EBEAE;
+        Tue,  7 Jun 2022 11:26:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D076612F2;
-        Tue,  7 Jun 2022 18:26:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58987C385A2;
-        Tue,  7 Jun 2022 18:25:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4FBC5B82340;
+        Tue,  7 Jun 2022 18:26:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B94C2C385A5;
+        Tue,  7 Jun 2022 18:26:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626359;
-        bh=4FWVvpGIVHGySV3NM6oA2OJC61WladjaOASJ3N08TN0=;
+        s=korg; t=1654626365;
+        bh=LbqyjluyiwqorG7sAuTBbY2h6uEWrKDh7XnSBWLGDfw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jbE7BjJ5gTsGkEcolIRXoxUzuQjejm1eaJkp6y+TmsWpLVJiVFbVhEW3CFXMJ0HzG
-         9mJs3I2heyOgIF9PTltY7X8jluMNxrYCIQ/IN0hshh1SoUD8JNKtLVPV3VgTA2j2as
-         lB9z99KPIj2x0B7D6kBxK7KB6vISkVjLkulUc+ZA=
+        b=xp1UPVvtQKI9vFG6lhcZzqUdYkVXuuzY0FXTDpPIAHwNlc/qCUGaDusU6KgrgzlC/
+         lQzj5UHOWJ5IDQp7UfpQmPYd2KRG0ScUsvdQPZnDK1l+8uQqu+FWXwmMBj9/nWmq/Y
+         m0XKRIMKSqtjnmaTp0S3UKuFVDsJmkzHi0Vnj73c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ravi Bangoria <ravi.bangoria@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 351/772] perf/amd/ibs: Use interrupt regs ip for stack unwinding
-Date:   Tue,  7 Jun 2022 18:59:03 +0200
-Message-Id: <20220607164959.362821184@linuxfoundation.org>
+        stable@vger.kernel.org, Ajay Singh <ajay.kathat@microchip.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 353/772] wilc1000: fix crash observed in AP mode with cfg80211_register_netdevice()
+Date:   Tue,  7 Jun 2022 18:59:05 +0200
+Message-Id: <20220607164959.421406328@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,66 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ravi Bangoria <ravi.bangoria@amd.com>
+From: Ajay Singh <ajay.kathat@microchip.com>
 
-[ Upstream commit 3d47083b9ff46863e8374ad3bb5edb5e464c75f8 ]
+[ Upstream commit 868f0e28290c7a33e8cb79bfe97ebdcbb756e048 ]
 
-IbsOpRip is recorded when IBS interrupt is triggered. But there is
-a skid from the time IBS interrupt gets triggered to the time the
-interrupt is presented to the core. Meanwhile processor would have
-moved ahead and thus IbsOpRip will be inconsistent with rsp and rbp
-recorded as part of the interrupt regs. This causes issues while
-unwinding stack using the ORC unwinder as it needs consistent rip,
-rsp and rbp. Fix this by using rip from interrupt regs instead of
-IbsOpRip for stack unwinding.
+Monitor(mon.) interface is used for handling the AP mode and 'ieee80211_ptr'
+reference is not getting set for it. Like earlier implementation,
+use register_netdevice() instead of cfg80211_register_netdevice() which
+expects valid 'ieee80211_ptr' reference to avoid the possible crash.
 
-Fixes: ee9f8fce99640 ("x86/unwind: Add the ORC unwinder")
-Reported-by: Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220429051441.14251-1-ravi.bangoria@amd.com
+Fixes: 2fe8ef106238 ("cfg80211: change netdev registration/unregistration semantics")
+Signed-off-by: Ajay Singh <ajay.kathat@microchip.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220504161924.2146601-3-ajay.kathat@microchip.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/events/amd/ibs.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/net/wireless/microchip/wilc1000/mon.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/events/amd/ibs.c b/arch/x86/events/amd/ibs.c
-index 367ca899e6e8..2704ec1e42a3 100644
---- a/arch/x86/events/amd/ibs.c
-+++ b/arch/x86/events/amd/ibs.c
-@@ -304,6 +304,16 @@ static int perf_ibs_init(struct perf_event *event)
- 	hwc->config_base = perf_ibs->msr;
- 	hwc->config = config;
+diff --git a/drivers/net/wireless/microchip/wilc1000/mon.c b/drivers/net/wireless/microchip/wilc1000/mon.c
+index 6bd63934c2d8..b5a1b65c087c 100644
+--- a/drivers/net/wireless/microchip/wilc1000/mon.c
++++ b/drivers/net/wireless/microchip/wilc1000/mon.c
+@@ -233,7 +233,7 @@ struct net_device *wilc_wfi_init_mon_interface(struct wilc *wl,
+ 	wl->monitor_dev->netdev_ops = &wilc_wfi_netdev_ops;
+ 	wl->monitor_dev->needs_free_netdev = true;
  
-+	/*
-+	 * rip recorded by IbsOpRip will not be consistent with rsp and rbp
-+	 * recorded as part of interrupt regs. Thus we need to use rip from
-+	 * interrupt regs while unwinding call stack. Setting _EARLY flag
-+	 * makes sure we unwind call-stack before perf sample rip is set to
-+	 * IbsOpRip.
-+	 */
-+	if (event->attr.sample_type & PERF_SAMPLE_CALLCHAIN)
-+		event->attr.sample_type |= __PERF_SAMPLE_CALLCHAIN_EARLY;
-+
- 	return 0;
- }
+-	if (cfg80211_register_netdevice(wl->monitor_dev)) {
++	if (register_netdevice(wl->monitor_dev)) {
+ 		netdev_err(real_dev, "register_netdevice failed\n");
+ 		free_netdev(wl->monitor_dev);
+ 		return NULL;
+@@ -251,7 +251,7 @@ void wilc_wfi_deinit_mon_interface(struct wilc *wl, bool rtnl_locked)
+ 		return;
  
-@@ -687,6 +697,14 @@ static int perf_ibs_handle_irq(struct perf_ibs *perf_ibs, struct pt_regs *iregs)
- 		data.raw = &raw;
- 	}
- 
-+	/*
-+	 * rip recorded by IbsOpRip will not be consistent with rsp and rbp
-+	 * recorded as part of interrupt regs. Thus we need to use rip from
-+	 * interrupt regs while unwinding call stack.
-+	 */
-+	if (event->attr.sample_type & PERF_SAMPLE_CALLCHAIN)
-+		data.callchain = perf_callchain(event, iregs);
-+
- 	throttle = perf_event_overflow(event, &data, &regs);
- out:
- 	if (throttle) {
+ 	if (rtnl_locked)
+-		cfg80211_unregister_netdevice(wl->monitor_dev);
++		unregister_netdevice(wl->monitor_dev);
+ 	else
+ 		unregister_netdev(wl->monitor_dev);
+ 	wl->monitor_dev = NULL;
 -- 
 2.35.1
 
