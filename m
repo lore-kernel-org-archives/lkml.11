@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC316CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB725CCA486
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384594AbiFGWPi (ORCPT
+        id S1384613AbiFGWPq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:15:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33208 "EHLO
+        Tue, 7 Jun 2022 18:15:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379211AbiFGVJj (ORCPT
+        with ESMTP id S1379032AbiFGVJy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:09:39 -0400
+        Tue, 7 Jun 2022 17:09:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0DE412E80E;
-        Tue,  7 Jun 2022 11:51:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7081A214888;
+        Tue,  7 Jun 2022 11:51:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0289CB81FE1;
-        Tue,  7 Jun 2022 18:51:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F6CAC385A5;
-        Tue,  7 Jun 2022 18:51:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A370AB81FE1;
+        Tue,  7 Jun 2022 18:51:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FF97C385A5;
+        Tue,  7 Jun 2022 18:51:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627887;
-        bh=4jTvK2lpoiEdeQm+qpzHyCZoxAUPXJcXPmcaCJ93CzI=;
+        s=korg; t=1654627901;
+        bh=cB/zmou4JNBatz0EsRvy0e6Im6lxkG/oKJCnqFwoMfc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DWxb8c3ysWmQ7k5oVLTInjsbVwnEORJcBI+fygSB7mM3FfVduYnwmwEaPzfwVXeju
-         MpQ+uDvVUZqF+WdLeIcr3S7wCTj+Tm6qZlIA0XwTyh6XLuMzau5GNmWLTFF3srh+Vr
-         9seftkbymh/E4Jgv6qkgiG0fVi83GtFP21dEmmYs=
+        b=e+GkkndBp7GHWpnnptze6274rPwbaNnCBy76XXOPni1AFY194my/MZqPNpIVKxB3a
+         iYrRo5E39nQ+IzK3BPRBT0M83pHjVclol3QLGWexIERbnak9QLMBgntT45N1jcYuMh
+         NmJBfhT67L8s29ZjAlb39XFAmiRRX+FBF73Ofzgw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>, Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 129/879] ASoC: SOF: ipc3-topology: Correct get_control_data for non bytes payload
-Date:   Tue,  7 Jun 2022 18:54:07 +0200
-Message-Id: <20220607165006.447365727@linuxfoundation.org>
+Subject: [PATCH 5.18 134/879] regulator: mt6315: Enforce regulator-compatible, not name
+Date:   Tue,  7 Jun 2022 18:54:12 +0200
+Message-Id: <20220607165006.592659436@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,106 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-[ Upstream commit a962890a5a3cce903ff7c7a19fadee63ed9efdc7 ]
+[ Upstream commit 6d435a94ba5bb4f2ad381c0828fbae89c66b50fe ]
 
-It is possible to craft a topology where sof_get_control_data() would do
-out of bounds access because it expects that it is only called when the
-payload is bytes type.
-Confusingly it also handles other types of controls, but the payload
-parsing implementation is only valid for bytes.
+The MT6315 PMIC dt-binding should enforce that one of the valid
+regulator-compatible is set in each regulator node. However it was
+mistakenly matching against regulator-name instead.
 
-Fix the code to count the non bytes controls and instead of storing a
-pointer to sof_abi_hdr in sof_widget_data (which is only valid for bytes),
-store the pointer to the data itself and add a new member to save the size
-of the data.
+Fix the typo. This not only fixes the compatible verification, but also
+lifts the regulator-name restriction, so that more meaningful names can
+be set for each platform.
 
-In case of non bytes controls we store the pointer to the chanv itself,
-which is just an array of values at the end.
-
-In case of bytes control, drop the wrong cdata->data (wdata[i].pdata) check
-against NULL since it is incorrect and invalid in this context.
-The data is pointing to the end of cdata struct, so it should never be
-null.
-
-Reported-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-Tested-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-Link: https://lore.kernel.org/r/20220427185221.28928-1-peter.ujfalusi@linux.intel.com
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Link: https://lore.kernel.org/r/20220429201325.2205799-1-nfraprado@collabora.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/ipc3-topology.c | 39 +++++++++++++++++++++++------------
- 1 file changed, 26 insertions(+), 13 deletions(-)
+ .../devicetree/bindings/regulator/mt6315-regulator.yaml         | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/sof/ipc3-topology.c b/sound/soc/sof/ipc3-topology.c
-index 2f8450a8c0a1..af1bbd34213c 100644
---- a/sound/soc/sof/ipc3-topology.c
-+++ b/sound/soc/sof/ipc3-topology.c
-@@ -20,7 +20,8 @@
- struct sof_widget_data {
- 	int ctrl_type;
- 	int ipc_cmd;
--	struct sof_abi_hdr *pdata;
-+	void *pdata;
-+	size_t pdata_size;
- 	struct snd_sof_control *control;
- };
+diff --git a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
+index 61dd5af80db6..5d2d989de893 100644
+--- a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
++++ b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
+@@ -31,7 +31,7 @@ properties:
+         $ref: "regulator.yaml#"
  
-@@ -784,16 +785,26 @@ static int sof_get_control_data(struct snd_soc_component *scomp,
- 		}
+         properties:
+-          regulator-name:
++          regulator-compatible:
+             pattern: "^vbuck[1-4]$"
  
- 		cdata = wdata[i].control->ipc_control_data;
--		wdata[i].pdata = cdata->data;
--		if (!wdata[i].pdata)
--			return -EINVAL;
- 
--		/* make sure data is valid - data can be updated at runtime */
--		if (widget->dobj.widget.kcontrol_type[i] == SND_SOC_TPLG_TYPE_BYTES &&
--		    wdata[i].pdata->magic != SOF_ABI_MAGIC)
--			return -EINVAL;
-+		if (widget->dobj.widget.kcontrol_type[i] == SND_SOC_TPLG_TYPE_BYTES) {
-+			/* make sure data is valid - data can be updated at runtime */
-+			if (cdata->data->magic != SOF_ABI_MAGIC)
-+				return -EINVAL;
-+
-+			wdata[i].pdata = cdata->data->data;
-+			wdata[i].pdata_size = cdata->data->size;
-+		} else {
-+			/* points to the control data union */
-+			wdata[i].pdata = cdata->chanv;
-+			/*
-+			 * wdata[i].control->size is calculated with struct_size
-+			 * and includes the size of struct sof_ipc_ctrl_data
-+			 */
-+			wdata[i].pdata_size = wdata[i].control->size -
-+					      sizeof(struct sof_ipc_ctrl_data);
-+		}
- 
--		*size += wdata[i].pdata->size;
-+		*size += wdata[i].pdata_size;
- 
- 		/* get data type */
- 		switch (cdata->cmd) {
-@@ -876,10 +887,12 @@ static int sof_process_load(struct snd_soc_component *scomp,
- 	 */
- 	if (ipc_data_size) {
- 		for (i = 0; i < widget->num_kcontrols; i++) {
--			memcpy(&process->data[offset],
--			       wdata[i].pdata->data,
--			       wdata[i].pdata->size);
--			offset += wdata[i].pdata->size;
-+			if (!wdata[i].pdata_size)
-+				continue;
-+
-+			memcpy(&process->data[offset], wdata[i].pdata,
-+			       wdata[i].pdata_size);
-+			offset += wdata[i].pdata_size;
- 		}
- 	}
- 
+     additionalProperties: false
 -- 
 2.35.1
 
