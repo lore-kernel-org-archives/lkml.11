@@ -2,86 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05405CCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:54:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6F5BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:54:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349606AbiFHCtW (ORCPT
+        id S1346539AbiFHCtH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:49:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45224 "EHLO
+        Tue, 7 Jun 2022 22:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391769AbiFHClF (ORCPT
+        with ESMTP id S1345799AbiFHCeD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:41:05 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B57118E44B;
-        Tue,  7 Jun 2022 17:20:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A5DDBCE252F;
-        Wed,  8 Jun 2022 00:19:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1AECC34114;
-        Wed,  8 Jun 2022 00:19:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654647591;
-        bh=fq4GpmIoMBpe6Gkv7KefRfP5KgwGRQ83n3I5kKZKWGM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RH7DATHTyY+lEXNxdqkE4reMrwRkel4Bdp3YHDJH3l8vdj9DUxExUl2WPoNz7QNnm
-         TZBTZbprN1yh6oon7E2HlEm/YldiyYkHbITWDpcOAdLsnSUt0nEGx1DQsTJtslgE3J
-         AwubBSFNgAaV0OiiYfB+cF6kAL7LeNKLb2iFdd/9rqRkslaedHaTcPwjwyFrvlNk98
-         bxXl121UoqrpMDURAqIfMVORdioSXDgWnIsJC5c8EIfDARi0baa0nEOd/PmwvgiRwn
-         sEfEeMm7bd5lwqAT8qcXA3kk9ZJpcG+1R9WkeQQ1wMNqHhzTqGzmUoPdCT04HM5Dw5
-         HUCz7evZCnvzA==
-Date:   Tue, 7 Jun 2022 17:19:49 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jonathan Toppins <jtoppins@redhat.com>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Subject: Re: [net-next 1/2] bonding: netlink error message support for
- options
-Message-ID: <20220607171949.764e3286@kernel.org>
-In-Reply-To: <ac422216e35732c59ef8ca543fb4b381655da2bf.1654528729.git.jtoppins@redhat.com>
-References: <cover.1654528729.git.jtoppins@redhat.com>
-        <ac422216e35732c59ef8ca543fb4b381655da2bf.1654528729.git.jtoppins@redhat.com>
+        Tue, 7 Jun 2022 22:34:03 -0400
+Received: from 3.mo550.mail-out.ovh.net (3.mo550.mail-out.ovh.net [46.105.60.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6288318C47
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:59:34 -0700 (PDT)
+Received: from player797.ha.ovh.net (unknown [10.111.208.192])
+        by mo550.mail-out.ovh.net (Postfix) with ESMTP id 5295D23DC3
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:09:57 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player797.ha.ovh.net (Postfix) with ESMTPSA id 647C5273DCAA9;
+        Tue,  7 Jun 2022 19:09:48 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-102R004cfc32490-50c5-4837-a6e8-e39166bfb3cd,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>, Helge Deller <deller@gmx.de>
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 1/4] backlight: aat2870: Use backlight helper
+Date:   Tue,  7 Jun 2022 21:09:22 +0200
+Message-Id: <20220607190925.1134737-2-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220607190925.1134737-1-steve@sk2.org>
+References: <20220607190925.1134737-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11710766409107932806
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudeffecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejleejrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheehtd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon,  6 Jun 2022 11:26:52 -0400 Jonathan Toppins wrote:
-> Add support for reporting errors via extack in both bond_newlink
-> and bond_changelink.
-> 
-> Instead of having to look in the kernel log for why an option was not
-> correct just report the error to the user via the extack variable.
-> 
-> What is currently reported today:
->   ip link add bond0 type bond
->   ip link set bond0 up
->   ip link set bond0 type bond mode 4
->  RTNETLINK answers: Device or resource busy
-> 
-> After this change:
->   ip link add bond0 type bond
->   ip link set bond0 up
->   ip link set bond0 type bond mode 4
->  Error: unable to set option because the bond is up.
-> 
-> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
-> ---
-> 
-> Notes:
->     Removed the printf support and just added static messages for various
->     error events.
+Instead of retrieving the backlight brightness in struct
+backlight_properties manually, and then checking whether the backlight
+should be on at all, use backlight_get_brightness() which does all
+this and insulates this from future changes.
 
-Thanks! nit, missing kdoc:
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Jingoo Han <jingoohan1@gmail.com>
+Cc: Helge Deller <deller@gmx.de>
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-fbdev@vger.kernel.org
+---
+ drivers/video/backlight/aat2870_bl.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-drivers/net/bonding/bond_options.c:729: warning: Function parameter or member 'bad_attr' not described in '__bond_opt_set'
-drivers/net/bonding/bond_options.c:729: warning: Function parameter or member 'extack' not described in '__bond_opt_set'
+diff --git a/drivers/video/backlight/aat2870_bl.c b/drivers/video/backlight/aat2870_bl.c
+index a7af9adafad6..1cbb303e9c88 100644
+--- a/drivers/video/backlight/aat2870_bl.c
++++ b/drivers/video/backlight/aat2870_bl.c
+@@ -59,7 +59,7 @@ static int aat2870_bl_update_status(struct backlight_device *bd)
+ 	struct aat2870_bl_driver_data *aat2870_bl = bl_get_data(bd);
+ 	struct aat2870_data *aat2870 =
+ 			dev_get_drvdata(aat2870_bl->pdev->dev.parent);
+-	int brightness = bd->props.brightness;
++	int brightness = backlight_get_brightness(bd);
+ 	int ret;
+ 
+ 	if ((brightness < 0) || (bd->props.max_brightness < brightness)) {
+@@ -70,11 +70,6 @@ static int aat2870_bl_update_status(struct backlight_device *bd)
+ 	dev_dbg(&bd->dev, "brightness=%d, power=%d, state=%d\n",
+ 		 bd->props.brightness, bd->props.power, bd->props.state);
+ 
+-	if ((bd->props.power != FB_BLANK_UNBLANK) ||
+-			(bd->props.state & BL_CORE_FBBLANK) ||
+-			(bd->props.state & BL_CORE_SUSPENDED))
+-		brightness = 0;
+-
+ 	ret = aat2870->write(aat2870, AAT2870_BLM,
+ 			     (u8)aat2870_brightness(aat2870_bl, brightness));
+ 	if (ret < 0)
+-- 
+2.30.2
+
