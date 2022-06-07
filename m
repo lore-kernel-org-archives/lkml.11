@@ -2,148 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40AE2CCA494
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 390B1CCA487
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443504AbiFHCCh (ORCPT
+        id S1442992AbiFHCBi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:02:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50348 "EHLO
+        Tue, 7 Jun 2022 22:01:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1842144AbiFHAIt (ORCPT
+        with ESMTP id S1840369AbiFHAFG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:08:49 -0400
-Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [85.215.255.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6909FA3383;
-        Tue,  7 Jun 2022 13:13:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1654632773;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=Gst6T9vPJJaniT6EGkMvyNGdNEUusbhezNnjdPnMqmg=;
-    b=g1VjUKQATbB0IZd8VWSCRFshb/yOD6xJfQE3NXB3Kvi9R5u8sXOCG7AdarC/E98UbS
-    DyZnu8VuR99GNxcC41Vj0cOXlAY5TBGuf2ku4hohnvaBEisgrl9MWu9X5apaRMTJE44o
-    O1XxKUWDosL4oaUljokmeqTrUzGv3uknTdGPiM5Gfr/Yty1MJpmrL2bYyVj2xD6vRZA/
-    n9833TLOjV7jJBAEer8V08fv0kRqZxuBhyCXtEGmsllyPR/rhXbDbKMi2zIQpucu+Mg5
-    WHl0DydCzu6DUXkISNhP/8R1rMNhf+3YTdmHG2L8HwX1HywbhecMalmBW9y7GVXI1sZW
-    BlHw==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1q3DbdV+Ofo7wY7W6Qxgy"
-X-RZG-CLASS-ID: mo00
-Received: from [172.20.10.8]
-    by smtp.strato.de (RZmta 47.45.0 DYNA|AUTH)
-    with ESMTPSA id R0691fy57KCq8b5
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Tue, 7 Jun 2022 22:12:52 +0200 (CEST)
-Subject: Re: [PATCH v5 0/7] can: refactoring of can-dev module and of Kbuild
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can <linux-can@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Max Staudt <max@enpas.org>, netdev <netdev@vger.kernel.org>
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
- <2e8666f3-1bd9-8610-6b72-e56e669d3484@hartkopp.net>
- <CAMZ6RqKWUyf6dZmxG809-yvjg5wbLwPSLtEfv-MgPpJ5ra=iGQ@mail.gmail.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <f161fdd0-415a-8ea1-0aad-3a3a19f1bfa8@hartkopp.net>
-Date:   Tue, 7 Jun 2022 22:12:46 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Tue, 7 Jun 2022 20:05:06 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A881D0BEA;
+        Tue,  7 Jun 2022 13:21:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654633261; x=1686169261;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=TOBWj/d3INrH0x6zLmSNwJlgmp7Kh2t/gQb1rcSIgAs=;
+  b=R86wmGQA1M3jPdWDkfYGln+kT0wQufVxSzZ1R9k3lEhpKSEjLoXCNBnR
+   FaYxzb8sGieVxkTtjq/HWCd9hiffCxOw6IjpQWKWZqzwtM6xOJeJ+NBSI
+   NkW2VLP9Foy9GEtCCGyj1eyrd+/ajeJfjIctPBXdrZ1+lmPjFX+wcQrTo
+   +h9sA25BAa52zmjCppP7NU8CED7oMtUi20ozg/58N7qUBNkQnTHOUeIih
+   UQVeUdsV1Q93poQ+cJUr756u9g0kKoz62l36DhIlhOndKJAphMDUBsfVy
+   patpfPx3BmfYDjZIUdOrb2RuiAsUftOxKXk0OcVsCIhnV5ozdwcX6RZyO
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="257187474"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="257187474"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 13:21:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="709631225"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga004.jf.intel.com with ESMTP; 07 Jun 2022 13:20:58 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 1DD3F109; Tue,  7 Jun 2022 23:21:01 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-spi@vger.kernel.org
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/2] driver core: Introduce device_find_first_child() helper
+Date:   Tue,  7 Jun 2022 23:20:57 +0300
+Message-Id: <20220607202058.8304-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-In-Reply-To: <CAMZ6RqKWUyf6dZmxG809-yvjg5wbLwPSLtEfv-MgPpJ5ra=iGQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vincent,
+There are several places in the kernel where this kind of functionality is
+being used. Provide a generic helper for such cases.
 
-On 07.06.22 04:49, Vincent MAILHOL wrote:
-> On Tue. 7 Jun. 2022 at 04:43, Oliver Hartkopp <socketcan@hartkopp.net> wrote:
->>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/base/core.c    | 24 ++++++++++++++++++++++++
+ include/linux/device.h |  1 +
+ 2 files changed, 25 insertions(+)
 
->>>             |
->>>             +-> All other CAN devices not relying on RX offload
->>>             |
->>>             +-> CAN rx offload
->>>                 symbol: CONFIG_CAN_RX_OFFLOAD
->>
->> Is this still true in patch series 5?
->>
->> If I understood it correctly CONFIG_CAN_BITTIMING and
->> CONFIG_CAN_RX_OFFLOAD can be enabled by the user and
->> (alternatively/additionally) the selection of "flexcan, m_can, mcp251xfd
->> and ti_hecc" enables CONFIG_CAN_RX_OFFLOAD too.
->>
->> Right?
-> 
-> Yes, this is correct. Maybe what troubles you is the meaning of the
-> "x --> y" arrow in the graph. I said it denotes that "y depends on x".
-> Here "depends on" has a loose meaning. It translates to either:
->    * Feature Y is encapsulated in Kbuild by some "if X/endif" and won't
-> show up unless X is selected.
->    * Feature Y has a "selects X" tag and will forcibly enable X if selected.
-> 
-> CONFIG_CAN_*CALC*_BITTIMING is on the left side of an arrow starting
-> from CONFIG_CAN_NETLINK so it "depends" on CONFIG_CAN_NETLINK. On the
-> other hand, CONFIG_CAN_*CALC*_BITTIMING does not have any arrow
-> starting from it so indeed, it can be enabled by the user
-> independently of the other features as long as CONFIG_CAN_NETLINK is
-> selected.
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index 7cd789c4985d..972bfe975cd0 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -3832,6 +3832,30 @@ struct device *device_find_child_by_name(struct device *parent,
+ }
+ EXPORT_SYMBOL_GPL(device_find_child_by_name);
+ 
++/**
++ * device_find_first_child - device iterator for locating the fist child device.
++ * @parent: parent struct device
++ *
++ * This is similar to the device_find_child() function above, but it
++ * returns a reference to the first child device.
++ *
++ * NOTE: you will need to drop the reference with put_device() after use.
++ */
++struct device *device_find_first_child(struct device *parent)
++{
++	struct klist_iter i;
++	struct device *child;
++
++	if (!parent)
++		return NULL;
++
++	klist_iter_init(&parent->p->klist_children, &i);
++	child = get_device(next_device(&i));
++	klist_iter_exit(&i);
++	return child;
++}
++EXPORT_SYMBOL_GPL(device_find_first_child);
++
+ int __init devices_init(void)
+ {
+ 	devices_kset = kset_create_and_add("devices", &device_uevent_ops, NULL);
+diff --git a/include/linux/device.h b/include/linux/device.h
+index dc941997795c..20171a4358df 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -905,6 +905,7 @@ struct device *device_find_child(struct device *dev, void *data,
+ 				 int (*match)(struct device *dev, void *data));
+ struct device *device_find_child_by_name(struct device *parent,
+ 					 const char *name);
++struct device *device_find_first_child(struct device *parent);
+ int device_rename(struct device *dev, const char *new_name);
+ int device_move(struct device *dev, struct device *new_parent,
+ 		enum dpm_order dpm_order);
+-- 
+2.35.1
 
-Ok.
-
-> CONFIG_CAN_RX_OFFLOAD is also on the left side of an arrow starting
-> from CONFIG_CAN_NETLINK. Furthermore, there is an arrow starting from
-> CONFIG_CAN_RX_OFFLOAD going to the "rx offload drivers". So those
-> drivers need CONFIG_CAN_RX_OFFLOAD (which is implemented using the
-> "selects CONFIG_CAN_RX_OFFLOAD"). However, CONFIG_CAN_RX_OFFLOAD can
-> be selected independently of the "rx offload drivers" as long as its
-> CONFIG_CAN_NETLINK dependency is met.
-> 
-> So I think that the diagram is correct. Maybe rephrasing the cover
-> letter as below would address your concerns?
-I applied your series and played with the options and it works like 
-charm - and as expected.
-
-But the point remains that from your figure I would still assume that 
-the M_CAN driver would only show up when CONFIG_CAN_RX_OFFLOAD was 
-selected by the user.
-
-But the current (good) implementation shows *all* drivers and selects 
-CONFIG_CAN_RX_OFFLOAD when e.g. M_CAN is selected.
-
-So what about:
-
-   symbol: CONFIG_NETDEVICES
-   |
-   +-> CAN Device Drivers
-       symbol: CONFIG_CAN_DEV
-       |
-       +-> software/virtual CAN device drivers
-       |   (at time of writing: slcan, vcan, vxcan)
-       |
-       +-> hardware CAN device drivers with Netlink support
-           symbol: CONFIG_CAN_NETLINK (matches previous CONFIG_CAN_DEV)
-           |
-           +-> CAN bit-timing calculation (optional for all drivers)
-           |   symbol: CONFIG_CAN_BITTIMING
-           |
-           +-> CAN rx offload (optional but selected by some drivers)
-           |   symbol: CONFIG_CAN_RX_OFFLOAD
-           |
-           +-> CAN devices drivers
-               (some may select CONFIG_CAN_RX_OFFLOAD)
-
-(I also added 'hardware' to CAN device drivers with Netlink support) to 
-have a distinction to 'software/virtual' CAN device drivers)
-
-At least this would help me to understand the new configuration setup.
-
-Best regards,
-Oliver
