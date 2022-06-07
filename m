@@ -2,142 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A299EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:36:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0AB1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:37:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239734AbiFGJgw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:36:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37872 "EHLO
+        id S238775AbiFGJhW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:37:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239781AbiFGJgq (ORCPT
+        with ESMTP id S239767AbiFGJhR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:36:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8AF96E7303
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 02:36:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654594604;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TMMeeMzg716+0kOPZ1kJNvGjEZ2CaNLxMnft4GZfeHg=;
-        b=LyTGbruzfIMPJ0Wr8bsONkXhgYqIZjKrEOCT6p4+xHn+PvkigTff440SSf4m520DZhQvSX
-        PMKLLf8WiVtfcw9WBdK3jHYssCH+4a3eyfk8yzPdFnm6QQFLA+sulvSjq0Wm9eO6TdZpiM
-        PNkaZ3eANqi7tcz5OSwW1zncMG0FF/E=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-643-_eitluRsNH2XWF-hbyOrzg-1; Tue, 07 Jun 2022 05:36:43 -0400
-X-MC-Unique: _eitluRsNH2XWF-hbyOrzg-1
-Received: by mail-qt1-f199.google.com with SMTP id s7-20020ac85cc7000000b00304e11cb41fso8553110qta.4
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 02:36:43 -0700 (PDT)
+        Tue, 7 Jun 2022 05:37:17 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB1822C5;
+        Tue,  7 Jun 2022 02:37:10 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id d22so14348098plr.9;
+        Tue, 07 Jun 2022 02:37:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Gxs0+aWvYM3LWxC7EUUZ0v49Q04+LWa6qfJ61uUqW8g=;
+        b=itMtcieRDU81frhTBFtGjbAXgvv62YzbLl8XRi7v/gXGpy/tIM3BYjMKK5ECQAfPOB
+         03sfW6r2inxS0tC9t3Wd4oKlafJW5M8VyVTCvYWhod8n9gfgXGYVl9s5pPVMbQL4DBga
+         0P385VzeZYDMhyCAnwfSEL2Bbsvd4ONTAuvIQadPIQzTToZJhmKSdNMJpM9A0r2SRd5b
+         T2EKmwPlNaetQrQ1WTfXGWXiTrO0SGXherfMFEzyZ/TjQAcchxEynd2Q8OyjN5isFrxz
+         imO6VmrkTIwFvVIMsytoqp64ejZOj6LQ512hzOFbBh4c1ODe2iGYwqNLa3LqzBtT1Oys
+         l1iA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=TMMeeMzg716+0kOPZ1kJNvGjEZ2CaNLxMnft4GZfeHg=;
-        b=z0V6++8dCCYquPkaozlhpY2Abe9UEp08RHnSCCtDhjTagCFuNKVlASXiM0tCryYtlc
-         7ck/JMVyo+/3my3fcjyW93xBBhqJX/HXc94O3iYt8YJyG+uuG4sJO9HcFtYDgMIJ9S2G
-         ro3Tto9Q7cz45ymbN9geDJ9HZlU2Rv+wjHg60TX3P4pl9gAwLWon0p1V7z1XKca3pYoF
-         vB6UzqbbCa2qsYhgSAIH4xGfQRdS56FMGmxePx1dxZBQ2XKHy24izXTMbLMOisnndBKF
-         3IoztgbBxp4XVg1J4Bx9eS/9YSc7iX2n7okjTDiHMGOrYXGvT1nW5bw4tax4nauhcKl/
-         seDA==
-X-Gm-Message-State: AOAM532f2mf3PQ80NrZFEsu8f+vKmh3fcDOlwLBODC4Nzsu0KnCcclVu
-        W+bm9LJdenUB3oPXFy1rSA1425fUNEWrGIJjPlBIDjlRECmAgWZEFqUR7CLLrInHgDijEet9J/S
-        azU8uX5YF7PMRVM5yks0xs1RA
-X-Received: by 2002:a05:6214:27cc:b0:46b:bc28:7d4f with SMTP id ge12-20020a05621427cc00b0046bbc287d4fmr846708qvb.80.1654594603148;
-        Tue, 07 Jun 2022 02:36:43 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyxCcLZX3ofJobo0dvjnhTkv9nwj9+XltzUdXK0HEeglyTnAe0VqZK4gyQ2MmA2ovb/JOXvEg==
-X-Received: by 2002:a05:6214:27cc:b0:46b:bc28:7d4f with SMTP id ge12-20020a05621427cc00b0046bbc287d4fmr846702qvb.80.1654594602958;
-        Tue, 07 Jun 2022 02:36:42 -0700 (PDT)
-Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
-        by smtp.gmail.com with ESMTPSA id bm13-20020a05620a198d00b006a6d83fc9efsm1031130qkb.21.2022.06.07.02.36.40
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Gxs0+aWvYM3LWxC7EUUZ0v49Q04+LWa6qfJ61uUqW8g=;
+        b=f9NvTc5GVf/CXvSi6pIr12gGpDLqHJw0d4XXm6793L24amxcW5WjIopKamomt/OsPW
+         s6Pz8LExlZI+EhSzcI4yqrhjts3BITZWwm9icEiJU7kjp5uXO8GzTjvTQTKW2dNnbKKm
+         CVX+XP6sSx93zRxM0UTx5o4V54n4wJsehUd9ddrn7d1UgSsp1gQHf2epUG/3SaxsFjj7
+         YXwCOLh0suarzvVe/JEa0Ato+Q1Kw3br/wiXIzseWfrFtVXTpyA2gzoYF0jeFVBi/zDi
+         f8kQ+IUrVuJT5Ft7cC6hqEVuTLUTmSBILjreAlD9XKizG4aX6Ti1dlj8/f6hP0uV6ABa
+         jXLw==
+X-Gm-Message-State: AOAM532m4rgEEKfz1MH6UDBaZr7VODHPGoqcO7+tv2mDd+/5Le/yMWxK
+        oFN6V9FfL/KmKIMSpnZ0A85kGZ3eONg=
+X-Google-Smtp-Source: ABdhPJxraJAaBzAWGKH5jd/RrR8C7QJhzYi9X0l8/MFx2nfDP7LAo4FI4dWrWi/EW0pd0RtCLb81VA==
+X-Received: by 2002:a17:90b:503:b0:1e2:f129:5135 with SMTP id r3-20020a17090b050300b001e2f1295135mr31179593pjz.22.1654594630407;
+        Tue, 07 Jun 2022 02:37:10 -0700 (PDT)
+Received: from localhost (subs28-116-206-12-32.three.co.id. [116.206.12.32])
+        by smtp.gmail.com with ESMTPSA id f6-20020a170902ab8600b0015e8d4eb25fsm11971380plr.169.2022.06.07.02.37.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 02:36:42 -0700 (PDT)
-Message-ID: <c89186f11fa1eb3563b791ba68cca4a533aa537f.camel@redhat.com>
-Subject: Re: [PATCH v6 14/38] KVM: nSVM: Keep track of Hyper-V
- hv_vm_id/hv_vp_id
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        Yuan Yao <yuan.yao@linux.intel.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 07 Jun 2022 12:36:38 +0300
-In-Reply-To: <20220606083655.2014609-15-vkuznets@redhat.com>
-References: <20220606083655.2014609-1-vkuznets@redhat.com>
-         <20220606083655.2014609-15-vkuznets@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-2.fc34) 
+        Tue, 07 Jun 2022 02:37:09 -0700 (PDT)
+Date:   Tue, 7 Jun 2022 16:37:07 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        linux-doc@vger.kernel.org
+Subject: Re: linux-next: build warnings after merge of the hwmon-staging tree
+Message-ID: <Yp8cQ1BcDXuZ9Cv4@debian.me>
+References: <20220607141958.1e31971d@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220607141958.1e31971d@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-06-06 at 10:36 +0200, Vitaly Kuznetsov wrote:
-> Similar to nSVM, KVM needs to know L2's VM_ID/VP_ID and Partition
-> assist page address to handle L2 TLB flush requests.
+On Tue, Jun 07, 2022 at 02:19:58PM +1000, Stephen Rothwell wrote:
+> Hi all,
 > 
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> ---
->  arch/x86/kvm/svm/hyperv.h | 16 ++++++++++++++++
->  arch/x86/kvm/svm/nested.c |  2 ++
->  2 files changed, 18 insertions(+)
+> After merging the hwmon-staging tree, today's linux-next build (htmldocs)
+> produced these warnings:
 > 
-> diff --git a/arch/x86/kvm/svm/hyperv.h b/arch/x86/kvm/svm/hyperv.h
-> index 7d6d97968fb9..8cf702fed7e5 100644
-> --- a/arch/x86/kvm/svm/hyperv.h
-> +++ b/arch/x86/kvm/svm/hyperv.h
-> @@ -9,6 +9,7 @@
->  #include <asm/mshyperv.h>
->  
->  #include "../hyperv.h"
-> +#include "svm.h"
->  
->  /*
->   * Hyper-V uses the software reserved 32 bytes in VMCB
-> @@ -32,4 +33,19 @@ struct hv_enlightenments {
->   */
->  #define VMCB_HV_NESTED_ENLIGHTENMENTS VMCB_SW
->  
-> +static inline void nested_svm_hv_update_vm_vp_ids(struct kvm_vcpu *vcpu)
-> +{
-> +       struct vcpu_svm *svm = to_svm(vcpu);
-> +       struct hv_enlightenments *hve =
-> +               (struct hv_enlightenments *)svm->nested.ctl.reserved_sw;
-> +       struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-> +
-> +       if (!hv_vcpu)
-> +               return;
-> +
-> +       hv_vcpu->nested.pa_page_gpa = hve->partition_assist_page;
-> +       hv_vcpu->nested.vm_id = hve->hv_vm_id;
-> +       hv_vcpu->nested.vp_id = hve->hv_vp_id;
-> +}
-> +
->  #endif /* __ARCH_X86_KVM_SVM_HYPERV_H__ */
-> diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-> index 88da8edbe1e1..e8908cc56e22 100644
-> --- a/arch/x86/kvm/svm/nested.c
-> +++ b/arch/x86/kvm/svm/nested.c
-> @@ -811,6 +811,8 @@ int enter_svm_guest_mode(struct kvm_vcpu *vcpu, u64 vmcb12_gpa,
->         if (kvm_vcpu_apicv_active(vcpu))
->                 kvm_make_request(KVM_REQ_APICV_UPDATE, vcpu);
->  
-> +       nested_svm_hv_update_vm_vp_ids(vcpu);
-> +
->         return 0;
->  }
->  
+> Documentation/hwmon/lt7182s.rst:2: WARNING: Explicit markup ends without a blank line; unexpected unindent.
+> Documentation/hwmon/lt7182s.rst:75: WARNING: Malformed table.
+> Text in column margin in table line 33.
+> 
+> ======================  ====================================
+> curr[1-2]_label         "iin[12]"
+> curr[1-2]_input         Measured input current
+> curr[1-2]_max           Maximum input current
+> curr[1-2]_max_alarm     Current high alarm
+> 
+> curr[3-4]_label         "iout[1-2]"
+> curr[3-4]_input         Measured output current
+> curr[3-4]_highest       Highest measured output current
+> curr[3-4]_max           Maximum output current
+> curr[3-4]_max_alarm     Output current high alarm
+> 
+> in[1-2]_label           "vin[12]"
+> in[1-2]_input           Measured input voltage
+> in[1-2]_highest         Highest measured input voltage
+> in[1-2]_crit            Critical maximum input voltage
+> in[1-2]_crit_alarm      Input voltage critical high alarm
+> in[1-2]_min             Minimum input voltage
+> in[1-2]_min_alarm       Input voltage low alarm
+> in[1-2]_rated_min       Rated minimum input voltage
+> in[1-2]_rated_max       Rated maximum input voltage
+> in1_reset_history       Write to reset history for all attributes
+> 
+> in[3-5]_label           "vmon[1-3]"
+> in[3-5]_input           Measured voltage on ITH1/ITH2/EXTVCC pins
+>                         Only available if enabled with MFR_ADC_CONTROL_LT7182S
+>                         command.
+> 
+> in[3-4|6-7]_label       "vout[1-2]"
+> in[3-4|6-7]_input       Measured output voltage
+> in[3-4|6-7]_highest     Highest measured output voltage
+> in[3-4|6-7]_lcrit       Critical minimum output voltage
+> in[3-4|6-7]_lcrit_alarm Output voltage critical low alarm
+> in[3-4|6-7]_min         Minimum output voltage
+> in[3-4|6-7]_max_alarm   Output voltage low alarm
+> in[3-4|6-7]_max         Maximum output voltage
+> in[3-4|6-7]_max_alarm   Output voltage high alarm
+> in[3-4|6-7]_crit        Critical maximum output voltage
+> in[3-4|6-7]_crit_alarm  Output voltage critical high alarm
+> 
+> power[1-2]_label        "pout[1-2]"
+> power[1-2]_input        Measured output power
+> 
+> temp1_input             Measured temperature
+> temp1_crit              Critical high temperature
+> temp1_crit_alarm        Chip temperature critical high alarm
+> temp1_max               Maximum temperature
+> temp1_max_alarm         Chip temperature high alarm
+> ======================  ====================================
+> 
+> Introduced by commit
+> 
+>   3d6bcaa21fbd ("hwmon: (pmbus) Add support for Analog Devices LT7182S")
+> 
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Hi Stephen,
 
-Best regards,
-	Maxim Levitsky
+The warning above doesn't appear when doing htmldocs build using Sphinx
+installed from pip on my system.
 
+Cc-ing linux-doc list.
+
+-- 
+An old man doll... just what I always wanted! - Clara
