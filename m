@@ -2,242 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A103CCA48B
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:30:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 341E4C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:30:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378112AbiFHB3K (ORCPT
+        id S1387673AbiFHB1a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:29:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37648 "EHLO
+        Tue, 7 Jun 2022 21:27:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379270AbiFGWC1 (ORCPT
+        with ESMTP id S1453564AbiFGXPi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:02:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E0724E1F3;
-        Tue,  7 Jun 2022 12:14:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0C1E618DE;
-        Tue,  7 Jun 2022 19:14:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E967FC385A5;
-        Tue,  7 Jun 2022 19:14:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629269;
-        bh=wtRpv9QwfoalmL4GN3rNYbstJt18keKOX4M31pundK4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H5/KNcfbL8T05x52i7bzVdVOPqTdgZCyPYVvJbP8wEG7OYiyycHIAexnyBSJ0b7pM
-         2rWa9qEV+6SqJ4siLzotThUS8bl9rt29gd3l+CVWplCXQg0fZ9jBn6wTSB4mgmDzY6
-         Tf8sZ5sv0D7mSUKG81XYTsm/UhV55ES5z0+BwCXM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Jane Chu <jane.chu@oracle.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 628/879] mce: fix set_mce_nospec to always unmap the whole page
-Date:   Tue,  7 Jun 2022 19:02:26 +0200
-Message-Id: <20220607165021.077610687@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 19:15:38 -0400
+Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75743248561
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:07:43 -0700 (PDT)
+Received: by mail-vs1-xe34.google.com with SMTP id e11so3345652vsh.13
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:07:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BgxQ0h6I958Y2GI2JoqVGW/OESE9fxrXKfh9ZN0Zq08=;
+        b=oKoX3EKP+If3Pg3CSsiIzp7MdgwGoVt1eWuoV8GtnXDvuCJWY+M7wmLS8sygJpkjaK
+         iOAb0QC3WVE1pARsV9XTNGUaZNsCEia7M1Y1OMdqEzCr2DXhR1x2R0fjgls2GHghq0DJ
+         kmV9VrpihV+4mk7fDF1AIBg06e8OMvXc5a6mzwLGlAFIx2PS+fPJA4xnLb/RNoCfe/qz
+         5sLk3qDe0vNhpDymnq40eNUHcQXuLAYm2G/O3hH9F58tM1JmX/d7h9aWfcX3LmHxBJIg
+         ulq8z9he5xJHfSCzWyqQiUlWhK6wtsKlDnmt21fI11y8OSoQVCEq2KhLU5sFa9gV6pa0
+         7+zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BgxQ0h6I958Y2GI2JoqVGW/OESE9fxrXKfh9ZN0Zq08=;
+        b=4TsVOPqGZ66Ay0eKJwnanJlUPjdoFI2EBZdQ3mjbzh6Mdr4uQnbqEdHlXqm7RZFYFa
+         6iUs9bKWYY7vsEcvO7+x50OxvT/akLVScknQDUzElFRpHvrpc+mJhGe5rlzsydLzd7+h
+         zzvZT3We6/aRTXhoCmPD8tP61atelWAOX5AsoFGStPFoyEtrSpWNzWRYxBgS8Bx8sRj8
+         cALbbpVzaVHxtJZt+7ulvDMU59FPd/pqbLvlnij+XrSqxgUsmDTOpI+vmkTuddFnV8fk
+         YlwRGt8WkSpYkrK5lkFfV0WEex2512rj62OKDaOkd3LzE8/4xSi9vBQuyXW0gIg6IUh1
+         V6pw==
+X-Gm-Message-State: AOAM530MRNIij+91BnEuBjNA5XILAvVReLMkQ4myD1nzfDi448FT3dUa
+        KrDCGqEckVo78JkEregbzPYnylZkk1FXimFoISCtHg==
+X-Google-Smtp-Source: ABdhPJyjqcySNrRwXkeaEuBGNMG5NFNqHbpYoFwoZhrkb2oGCeTEFoqKeluO9Bya5UCEshSWAgyv3unWIgN/r4anB6o=
+X-Received: by 2002:a67:f3d0:0:b0:34b:b52d:d676 with SMTP id
+ j16-20020a67f3d0000000b0034bb52dd676mr6635528vsn.6.1654636053943; Tue, 07 Jun
+ 2022 14:07:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220518014632.922072-1-yuzhao@google.com> <20220518014632.922072-8-yuzhao@google.com>
+ <CAGsJ_4yboZEY9OfyujPxBa_AEuGM3OAq5y_L9gvzSMUv70BxeQ@mail.gmail.com>
+ <CAGsJ_4w3S_8Kaw2GyB3hg7b4N_D+6yBO7D6qmgxD9Fqz3_dhAg@mail.gmail.com>
+ <20220607102135.GA32448@willie-the-truck> <CAGsJ_4zGEdHDv0ObZ-5y8sFKLO7Y6ZjTsZFs0KvdLwA_-iGJ5A@mail.gmail.com>
+ <20220607104358.GA32583@willie-the-truck>
+In-Reply-To: <20220607104358.GA32583@willie-the-truck>
+From:   Yu Zhao <yuzhao@google.com>
+Date:   Tue, 7 Jun 2022 15:06:57 -0600
+Message-ID: <CAOUHufZh46A2hh_fn-8vVBDi_621rgbZq64_afDt8VxrzqJz1g@mail.gmail.com>
+Subject: Re: [PATCH v11 07/14] mm: multi-gen LRU: exploit locality in rmap
+To:     Will Deacon <will@kernel.org>
+Cc:     Barry Song <21cnbao@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Tejun Heo <tj@kernel.org>, Vlastimil Babka <vbabka@suse.cz>,
+        LAK <linux-arm-kernel@lists.infradead.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, x86 <x86@kernel.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>, huzhanyuan@oppo.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jane Chu <jane.chu@oracle.com>
+On Tue, Jun 7, 2022 at 4:44 AM Will Deacon <will@kernel.org> wrote:
+>
+> On Tue, Jun 07, 2022 at 10:37:46AM +1200, Barry Song wrote:
+> > On Tue, Jun 7, 2022 at 10:21 PM Will Deacon <will@kernel.org> wrote:
+> > > On Tue, Jun 07, 2022 at 07:37:10PM +1200, Barry Song wrote:
+> > > > I can't really explain why we are getting a random app/java vm crash in monkey
+> > > > test by using ptep_test_and_clear_young() only in lru_gen_look_around() on an
+> > > > armv8-a machine without hardware PTE young support.
+> > > >
+> > > > Moving to  ptep_clear_flush_young() in look_around can make the random
+> > > > hang disappear according to zhanyuan(Cc-ed).
+> > > >
+> > > > On x86, ptep_clear_flush_young() is exactly ptep_test_and_clear_young()
+> > > > after
+> > > >  'commit b13b1d2d8692 ("x86/mm: In the PTE swapout page reclaim case clear
+> > > > the accessed bit instead of flushing the TLB")'
+> > > >
+> > > > But on arm64, they are different. according to Will's comments in this
+> > > > thread which
+> > > > tried to make arm64 same with x86,
+> > > > https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1793881.html
+> > > >
+> > > > "
+> > > > This is blindly copied from x86 and isn't true for us: we don't invalidate
+> > > > the TLB on context switch. That means our window for keeping the stale
+> > > > entries around is potentially much bigger and might not be a great idea.
+> > > >
+> > > > If we roll a TLB invalidation routine without the trailing DSB, what sort of
+> > > > performance does that get you?
+> > > > "
+> > > > We shouldn't think ptep_clear_flush_young() is safe enough in LRU to
+> > > > clear PTE young? Any comments from Will?
+> > >
+> > > Given that this issue is specific to the multi-gen LRU work, I think Yu is
+> > > the best person to comment. However, looking quickly at your analysis above,
+> > > I wonder if the code is relying on this sequence:
+> > >
+> > >
+> > >         ptep_test_and_clear_young(vma, address, ptep);
+> > >         ptep_clear_flush_young(vma, address, ptep);
+> > >
+> > >
+> > > to invalidate the TLB. On arm64, that won't be the case, as the invalidation
+> > > in ptep_clear_flush_young() is predicated on the pte being young (and this
+> > > patches the generic implementation in mm/pgtable-generic.c. In fact, that
+> > > second function call is always going to be a no-op unless the pte became
+> > > young again in the middle.
+> >
+> > thanks for your reply, sorry for failing to let you understand my question.
+> > my question is actually as below,
+> > right now  lru_gen_look_around() is using ptep_test_and_clear_young()
+> > only without flush to clear pte for a couple of pages including the specific
+> > address:
+> > void lru_gen_look_around(struct page_vma_mapped_walk *pvmw)
+> > {
+> >        ...
+> >
+> >        for (i = 0, addr = start; addr != end; i++, addr += PAGE_SIZE) {
+> >                ...
+> >
+> >                if (!ptep_test_and_clear_young(pvmw->vma, addr, pte + i))
+> >                        continue;
+> >
+> >                ...
+> > }
+> >
+> > I wonder if it is safe to arm64. Do we need to move to ptep_clear_flush_young()
+> > in the loop?
+>
+> I don't know what this code is doing, so Yu is the best person to answer
+> that. There's nothing inherently dangerous about eliding the TLB
+> maintenance; it really depends on the guarantees needed by the caller.
 
-[ Upstream commit 5898b43af954b83c4a4ee4ab85c4dbafa395822a ]
+Ack.
 
-The set_memory_uc() approach doesn't work well in all cases.
-As Dan pointed out when "The VMM unmapped the bad page from
-guest physical space and passed the machine check to the guest."
-"The guest gets virtual #MC on an access to that page. When
-the guest tries to do set_memory_uc() and instructs cpa_flush()
-to do clean caches that results in taking another fault / exception
-perhaps because the VMM unmapped the page from the guest."
+> However, the snippet you posted from folio_referenced_one():
+>
+>  |                  if (pvmw.pte) {
+>  |  +                       if (lru_gen_enabled() && pte_young(*pvmw.pte) &&
+>  |  +                           !(vma->vm_flags & (VM_SEQ_READ | VM_RAND_READ))) {
+>  |  +                               lru_gen_look_around(&pvmw);
+>  |  +                               referenced++;
+>  |  +                       }
+>  |  +
+>  |                          if (ptep_clear_flush_young_notify(vma, address,
+>
+>
+> Does seem to call lru_gen_look_around() *and*
+> ptep_clear_flush_young_notify(), which is what prompted my question as it
+> looks pretty suspicious to me.
 
-Since the driver has special knowledge to handle NP or UC,
-mark the poisoned page with NP and let driver handle it when
-it comes down to repair.
+The _notify varint reaches into the MMU notifier --
+lru_gen_look_around() doesn't do that because GPA space generally has
+no locality. I hope this explains why both.
 
-Please refer to discussions here for more details.
-https://lore.kernel.org/all/CAPcyv4hrXPb1tASBZUg-GgdVs0OOFKXMXLiHmktg_kFi7YBMyQ@mail.gmail.com/
-
-Now since poisoned page is marked as not-present, in order to
-avoid writing to a not-present page and trigger kernel Oops,
-also fix pmem_do_write().
-
-Fixes: 284ce4011ba6 ("x86/memory_failure: Introduce {set, clear}_mce_nospec()")
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Jane Chu <jane.chu@oracle.com>
-Acked-by: Tony Luck <tony.luck@intel.com>
-Link: https://lore.kernel.org/r/165272615484.103830.2563950688772226611.stgit@dwillia2-desk3.amr.corp.intel.com
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/x86/kernel/cpu/mce/core.c |  6 +++---
- arch/x86/mm/pat/set_memory.c   | 23 +++++++++++------------
- drivers/nvdimm/pmem.c          | 30 +++++++-----------------------
- include/linux/set_memory.h     |  4 ++--
- 4 files changed, 23 insertions(+), 40 deletions(-)
-
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 981496e6bc0e..fa67bb9d1afe 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -579,7 +579,7 @@ static int uc_decode_notifier(struct notifier_block *nb, unsigned long val,
- 
- 	pfn = mce->addr >> PAGE_SHIFT;
- 	if (!memory_failure(pfn, 0)) {
--		set_mce_nospec(pfn, whole_page(mce));
-+		set_mce_nospec(pfn);
- 		mce->kflags |= MCE_HANDLED_UC;
- 	}
- 
-@@ -1316,7 +1316,7 @@ static void kill_me_maybe(struct callback_head *cb)
- 
- 	ret = memory_failure(p->mce_addr >> PAGE_SHIFT, flags);
- 	if (!ret) {
--		set_mce_nospec(p->mce_addr >> PAGE_SHIFT, p->mce_whole_page);
-+		set_mce_nospec(p->mce_addr >> PAGE_SHIFT);
- 		sync_core();
- 		return;
- 	}
-@@ -1342,7 +1342,7 @@ static void kill_me_never(struct callback_head *cb)
- 	p->mce_count = 0;
- 	pr_err("Kernel accessed poison in user space at %llx\n", p->mce_addr);
- 	if (!memory_failure(p->mce_addr >> PAGE_SHIFT, 0))
--		set_mce_nospec(p->mce_addr >> PAGE_SHIFT, p->mce_whole_page);
-+		set_mce_nospec(p->mce_addr >> PAGE_SHIFT);
- }
- 
- static void queue_task_work(struct mce *m, char *msg, void (*func)(struct callback_head *))
-diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
-index 417440c6bf80..1abd5438f126 100644
---- a/arch/x86/mm/pat/set_memory.c
-+++ b/arch/x86/mm/pat/set_memory.c
-@@ -1914,14 +1914,9 @@ int set_memory_wb(unsigned long addr, int numpages)
- }
- EXPORT_SYMBOL(set_memory_wb);
- 
--/*
-- * Prevent speculative access to the page by either unmapping
-- * it (if we do not require access to any part of the page) or
-- * marking it uncacheable (if we want to try to retrieve data
-- * from non-poisoned lines in the page).
-- */
-+/* Prevent speculative access to a page by marking it not-present */
- #ifdef CONFIG_X86_64
--int set_mce_nospec(unsigned long pfn, bool unmap)
-+int set_mce_nospec(unsigned long pfn)
- {
- 	unsigned long decoy_addr;
- 	int rc;
-@@ -1943,19 +1938,23 @@ int set_mce_nospec(unsigned long pfn, bool unmap)
- 	 */
- 	decoy_addr = (pfn << PAGE_SHIFT) + (PAGE_OFFSET ^ BIT(63));
- 
--	if (unmap)
--		rc = set_memory_np(decoy_addr, 1);
--	else
--		rc = set_memory_uc(decoy_addr, 1);
-+	rc = set_memory_np(decoy_addr, 1);
- 	if (rc)
- 		pr_warn("Could not invalidate pfn=0x%lx from 1:1 map\n", pfn);
- 	return rc;
- }
- 
-+static int set_memory_present(unsigned long *addr, int numpages)
-+{
-+	return change_page_attr_set(addr, numpages, __pgprot(_PAGE_PRESENT), 0);
-+}
-+
- /* Restore full speculative operation to the pfn. */
- int clear_mce_nospec(unsigned long pfn)
- {
--	return set_memory_wb((unsigned long) pfn_to_kaddr(pfn), 1);
-+	unsigned long addr = (unsigned long) pfn_to_kaddr(pfn);
-+
-+	return set_memory_present(&addr, 1);
- }
- EXPORT_SYMBOL_GPL(clear_mce_nospec);
- #endif /* CONFIG_X86_64 */
-diff --git a/drivers/nvdimm/pmem.c b/drivers/nvdimm/pmem.c
-index 58d95242a836..4aa17132a557 100644
---- a/drivers/nvdimm/pmem.c
-+++ b/drivers/nvdimm/pmem.c
-@@ -158,36 +158,20 @@ static blk_status_t pmem_do_write(struct pmem_device *pmem,
- 			struct page *page, unsigned int page_off,
- 			sector_t sector, unsigned int len)
- {
--	blk_status_t rc = BLK_STS_OK;
--	bool bad_pmem = false;
- 	phys_addr_t pmem_off = sector * 512 + pmem->data_offset;
- 	void *pmem_addr = pmem->virt_addr + pmem_off;
- 
--	if (unlikely(is_bad_pmem(&pmem->bb, sector, len)))
--		bad_pmem = true;
-+	if (unlikely(is_bad_pmem(&pmem->bb, sector, len))) {
-+		blk_status_t rc = pmem_clear_poison(pmem, pmem_off, len);
-+
-+		if (rc != BLK_STS_OK)
-+			return rc;
-+	}
- 
--	/*
--	 * Note that we write the data both before and after
--	 * clearing poison.  The write before clear poison
--	 * handles situations where the latest written data is
--	 * preserved and the clear poison operation simply marks
--	 * the address range as valid without changing the data.
--	 * In this case application software can assume that an
--	 * interrupted write will either return the new good
--	 * data or an error.
--	 *
--	 * However, if pmem_clear_poison() leaves the data in an
--	 * indeterminate state we need to perform the write
--	 * after clear poison.
--	 */
- 	flush_dcache_page(page);
- 	write_pmem(pmem_addr, page, page_off, len);
--	if (unlikely(bad_pmem)) {
--		rc = pmem_clear_poison(pmem, pmem_off, len);
--		write_pmem(pmem_addr, page, page_off, len);
--	}
- 
--	return rc;
-+	return BLK_STS_OK;
- }
- 
- static void pmem_submit_bio(struct bio *bio)
-diff --git a/include/linux/set_memory.h b/include/linux/set_memory.h
-index 683a6c3f7179..369769ce7399 100644
---- a/include/linux/set_memory.h
-+++ b/include/linux/set_memory.h
-@@ -43,10 +43,10 @@ static inline bool can_set_direct_map(void)
- #endif /* CONFIG_ARCH_HAS_SET_DIRECT_MAP */
- 
- #ifdef CONFIG_X86_64
--int set_mce_nospec(unsigned long pfn, bool unmap);
-+int set_mce_nospec(unsigned long pfn);
- int clear_mce_nospec(unsigned long pfn);
- #else
--static inline int set_mce_nospec(unsigned long pfn, bool unmap)
-+static inline int set_mce_nospec(unsigned long pfn)
- {
- 	return 0;
- }
--- 
-2.35.1
-
-
-
+As to why the code is organized this way -- it depends on the point of
+view. Mine is that lru_gen_look_around() is an add-on, since its logic
+is independent/separable from ptep_clear_flush_young_notify(). We can
+make lru_gen_look_around() include ptep_clear_flush_young_notify(),
+but that would make the code functionally interwinted, which is bad
+for my taste.
