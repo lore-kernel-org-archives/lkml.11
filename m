@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E85C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:53:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55157C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:53:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348789AbiFGRx2 (ORCPT
+        id S1348746AbiFGRxq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:53:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36200 "EHLO
+        Tue, 7 Jun 2022 13:53:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347821AbiFGRft (ORCPT
+        with ESMTP id S1347822AbiFGRft (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:35:49 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7506C10A627;
-        Tue,  7 Jun 2022 10:31:43 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A1D410A632;
+        Tue,  7 Jun 2022 10:31:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9CD0DCE23CF;
-        Tue,  7 Jun 2022 17:31:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AECDEC385A5;
-        Tue,  7 Jun 2022 17:31:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04C03B82285;
+        Tue,  7 Jun 2022 17:31:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F00BC385A5;
+        Tue,  7 Jun 2022 17:31:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623100;
-        bh=zX8lzbqxhfOlrj0q8h8Cav/lxo8godD981MPSPuUDXs=;
+        s=korg; t=1654623105;
+        bh=v09xPAsk/yP3Wxx2wRm66/yibzyov9NUjjZG7AkDYyE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gEa5TjiCl7WsnOxrP0AxEVjuFO687Koo1+yxVylIRMY+f7wkWpN1JVy5aIhQ9mSpC
-         EfqTeAN2+GQuW5837QvVgRsClZdfD+o9OCDtAKtObR48mdxtE3PPW5EFLSdCNTXuOH
-         XA4rrIiRzU+pfos+MiV5v3RV7D/tB2ipvtfcMShg=
+        b=KcxdNrOg2Xm+Zqx2IkiiaDRCRBaElwjFoLy8M34fPsm6qizNW86xIQJa1odaF3ZxQ
+         MTYB/mzmlpmzP0zSoO5ylDRwUxR8fkst2lCIrvLZ6gu/9I+tN69KVHA7pRM6Zyu1bU
+         FWTY/BI1CqgUEKz5wNaGPsLsV5V3qAeq5Zi4yHQk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
+        stable@vger.kernel.org,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 288/452] nvdimm: Fix firmware activation deadlock scenarios
-Date:   Tue,  7 Jun 2022 19:02:25 +0200
-Message-Id: <20220607164917.132585746@linuxfoundation.org>
+Subject: [PATCH 5.10 298/452] ASoC: atmel-pdmic: Remove endianness flag on pdmic component
+Date:   Tue,  7 Jun 2022 19:02:35 +0200
+Message-Id: <20220607164917.436609143@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,110 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit e6829d1bd3c4b58296ee9e412f7ed4d6cb390192 ]
+[ Upstream commit 52857c3baa0e5ddeba7b2c84e56bb71c9674e048 ]
 
-Lockdep reports the following deadlock scenarios for CXL root device
-power-management, device_prepare(), operations, and device_shutdown()
-operations for 'nd_region' devices:
+The endianness flag should have been removed when the driver was
+ported across from having both a CODEC and CPU side component, to
+just having a CPU component and using the dummy for the CODEC. The
+endianness flag is used to indicate that the device is completely
+ambivalent to the endianness of the data, typically due to the
+endianness being lost over the hardware link (ie. the link defines
+bit ordering). It's usage didn't have any effect when the driver
+had both a CPU and CODEC component, since the union of those equals
+the CPU side settings, but now causes the driver to falsely report
+it supports big endian. Correct this by removing the flag.
 
- Chain exists of:
-   &nvdimm_region_key --> &nvdimm_bus->reconfig_mutex --> system_transition_mutex
-
-  Possible unsafe locking scenario:
-
-        CPU0                    CPU1
-        ----                    ----
-   lock(system_transition_mutex);
-                                lock(&nvdimm_bus->reconfig_mutex);
-                                lock(system_transition_mutex);
-   lock(&nvdimm_region_key);
-
- Chain exists of:
-   &cxl_nvdimm_bridge_key --> acpi_scan_lock --> &cxl_root_key
-
-  Possible unsafe locking scenario:
-
-        CPU0                    CPU1
-        ----                    ----
-   lock(&cxl_root_key);
-                                lock(acpi_scan_lock);
-                                lock(&cxl_root_key);
-   lock(&cxl_nvdimm_bridge_key);
-
-These stem from holding nvdimm_bus_lock() over hibernate_quiet_exec()
-which walks the entire system device topology taking device_lock() along
-the way. The nvdimm_bus_lock() is protecting against unregistration,
-multiple simultaneous ops callers, and preventing activate_show() from
-racing activate_store(). For the first 2, the lock is redundant.
-Unregistration already flushes all ops users, and sysfs already prevents
-multiple threads to be active in an ops handler at the same time. For
-the last userspace should already be waiting for its last
-activate_store() to complete, and does not need activate_show() to flush
-the write side, so this lock usage can be deleted in these attributes.
-
-Fixes: 48001ea50d17 ("PM, libnvdimm: Add runtime firmware activation support")
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-Link: https://lore.kernel.org/r/165074883800.4116052.10737040861825806582.stgit@dwillia2-desk3.amr.corp.intel.com
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Fixes: f3c668074a04 ("ASoC: atmel-pdmic: remove codec component")
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220504170905.332415-3-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvdimm/core.c | 9 ---------
- 1 file changed, 9 deletions(-)
+ sound/soc/atmel/atmel-pdmic.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/nvdimm/core.c b/drivers/nvdimm/core.c
-index c21ba0602029..1c92c883afdd 100644
---- a/drivers/nvdimm/core.c
-+++ b/drivers/nvdimm/core.c
-@@ -400,9 +400,7 @@ static ssize_t capability_show(struct device *dev,
- 	if (!nd_desc->fw_ops)
- 		return -EOPNOTSUPP;
+diff --git a/sound/soc/atmel/atmel-pdmic.c b/sound/soc/atmel/atmel-pdmic.c
+index 8e1d8230b180..049383e5405e 100644
+--- a/sound/soc/atmel/atmel-pdmic.c
++++ b/sound/soc/atmel/atmel-pdmic.c
+@@ -481,7 +481,6 @@ static const struct snd_soc_component_driver atmel_pdmic_cpu_dai_component = {
+ 	.num_controls		= ARRAY_SIZE(atmel_pdmic_snd_controls),
+ 	.idle_bias_on		= 1,
+ 	.use_pmdown_time	= 1,
+-	.endianness		= 1,
+ };
  
--	nvdimm_bus_lock(dev);
- 	cap = nd_desc->fw_ops->capability(nd_desc);
--	nvdimm_bus_unlock(dev);
- 
- 	switch (cap) {
- 	case NVDIMM_FWA_CAP_QUIESCE:
-@@ -427,10 +425,8 @@ static ssize_t activate_show(struct device *dev,
- 	if (!nd_desc->fw_ops)
- 		return -EOPNOTSUPP;
- 
--	nvdimm_bus_lock(dev);
- 	cap = nd_desc->fw_ops->capability(nd_desc);
- 	state = nd_desc->fw_ops->activate_state(nd_desc);
--	nvdimm_bus_unlock(dev);
- 
- 	if (cap < NVDIMM_FWA_CAP_QUIESCE)
- 		return -EOPNOTSUPP;
-@@ -475,7 +471,6 @@ static ssize_t activate_store(struct device *dev,
- 	else
- 		return -EINVAL;
- 
--	nvdimm_bus_lock(dev);
- 	state = nd_desc->fw_ops->activate_state(nd_desc);
- 
- 	switch (state) {
-@@ -493,7 +488,6 @@ static ssize_t activate_store(struct device *dev,
- 	default:
- 		rc = -ENXIO;
- 	}
--	nvdimm_bus_unlock(dev);
- 
- 	if (rc == 0)
- 		rc = len;
-@@ -516,10 +510,7 @@ static umode_t nvdimm_bus_firmware_visible(struct kobject *kobj, struct attribut
- 	if (!nd_desc->fw_ops)
- 		return 0;
- 
--	nvdimm_bus_lock(dev);
- 	cap = nd_desc->fw_ops->capability(nd_desc);
--	nvdimm_bus_unlock(dev);
--
- 	if (cap < NVDIMM_FWA_CAP_QUIESCE)
- 		return 0;
- 
+ /* ASoC sound card */
 -- 
 2.35.1
 
