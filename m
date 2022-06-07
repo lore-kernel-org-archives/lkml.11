@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D3FCCA48E
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD8A8C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386317AbiFHBgm (ORCPT
+        id S1387100AbiFHBhW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:36:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49782 "EHLO
+        Tue, 7 Jun 2022 21:37:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384810AbiFGWUs (ORCPT
+        with ESMTP id S1382537AbiFGVvd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:20:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8FF9263286;
-        Tue,  7 Jun 2022 12:20:44 -0700 (PDT)
+        Tue, 7 Jun 2022 17:51:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B1523CF4E;
+        Tue,  7 Jun 2022 12:09:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7361060A21;
-        Tue,  7 Jun 2022 19:20:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81A46C385A2;
-        Tue,  7 Jun 2022 19:20:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C966B81F6D;
+        Tue,  7 Jun 2022 19:08:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F4185C385A2;
+        Tue,  7 Jun 2022 19:08:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629643;
-        bh=qVgSGNTA10yoXOmVS9eSdEfnCYfxg4a9wPi4RdE+Q6o=;
+        s=korg; t=1654628937;
+        bh=3OKsLM3PdTvFsnGDdJ4gnDKs9haShgP9DYiKDLfyvtU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NLugf7DGnePok2QMzFSSwdUzIF+2y/G4UhWIJ+cMJUD/de0Ua8EJYrgvgeizkiedy
-         GfTcRGDtVAbVUl3iujvrBTtxMe9o35HE8TXzowhBR9isdHtSduHjjfblO69PubLp8s
-         fXl7K6QIHFBBo0zdcG5NujhraNsOYefEWrtDvw5A=
+        b=w83Ie8HhbQUvQFX42gXjsoODi9LahIsQATLCA2TW2tAR3MWzhBIt25wXCrTueShwN
+         C+Cw+cqDfSCiJFOSDZZn9uOfIOzKMz9rxBNyImM1fQ0CmQb532aeVhVQAFSdmSLJy3
+         lI40dC951Qx8eJGrSjeIiPQrSUOr13Q5iNGewsas=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Corey Minyard <cminyard@mvista.com>
-Subject: [PATCH 5.18 724/879] ipmi:ipmb: Fix refcount leak in ipmi_ipmb_probe
-Date:   Tue,  7 Jun 2022 19:04:02 +0200
-Message-Id: <20220607165023.869056542@linuxfoundation.org>
+        stable@vger.kernel.org, Taehee Yoo <ap420073@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 511/879] amt: fix gateway mode stuck
+Date:   Tue,  7 Jun 2022 19:00:29 +0200
+Message-Id: <20220607165017.708001334@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,33 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Taehee Yoo <ap420073@gmail.com>
 
-commit a508e33956b538e034ed5df619a73ec7c15bda72 upstream.
+[ Upstream commit 937956ba404e70a765ca5aa39d3d7564d86a8872 ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+If a gateway can not receive any response to requests from a relay,
+gateway resets status from SENT_REQUEST to INIT and variable about a
+relay as well. And then it should start the full establish step
+from sending a discovery message and receiving advertisement message.
+But, after failure in amt_req_work() it continues sending a request
+message step with flushed(invalid) relay information and sets SENT_REQUEST.
+So, a gateway can't be established with a relay.
+In order to avoid this situation, it stops sending the request message
+step if it fails.
 
-Fixes: 00d93611f002 ("ipmi:ipmb: Add the ability to have a separate slave and master device")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Message-Id: <20220512044445.3102-1-linmq006@gmail.com>
-Cc: stable@vger.kernel.org # v5.17+
-Signed-off-by: Corey Minyard <cminyard@mvista.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/ipmi/ipmi_ipmb.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/amt.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/char/ipmi/ipmi_ipmb.c
-+++ b/drivers/char/ipmi/ipmi_ipmb.c
-@@ -476,6 +476,7 @@ static int ipmi_ipmb_probe(struct i2c_cl
- 	slave_np = of_parse_phandle(dev->of_node, "slave-dev", 0);
- 	if (slave_np) {
- 		slave_adap = of_get_i2c_adapter_by_node(slave_np);
-+		of_node_put(slave_np);
- 		if (!slave_adap) {
- 			dev_notice(&client->dev,
- 				   "Could not find slave adapter\n");
+diff --git a/drivers/net/amt.c b/drivers/net/amt.c
+index 10455c9b9da0..2b4ce3869f08 100644
+--- a/drivers/net/amt.c
++++ b/drivers/net/amt.c
+@@ -943,7 +943,7 @@ static void amt_req_work(struct work_struct *work)
+ 	if (amt->status < AMT_STATUS_RECEIVED_ADVERTISEMENT)
+ 		goto out;
+ 
+-	if (amt->req_cnt++ > AMT_MAX_REQ_COUNT) {
++	if (amt->req_cnt > AMT_MAX_REQ_COUNT) {
+ 		netdev_dbg(amt->dev, "Gateway is not ready");
+ 		amt->qi = AMT_INIT_REQ_TIMEOUT;
+ 		amt->ready4 = false;
+@@ -951,13 +951,15 @@ static void amt_req_work(struct work_struct *work)
+ 		amt->remote_ip = 0;
+ 		__amt_update_gw_status(amt, AMT_STATUS_INIT, false);
+ 		amt->req_cnt = 0;
++		goto out;
+ 	}
+ 	spin_unlock_bh(&amt->lock);
+ 
+ 	amt_send_request(amt, false);
+ 	amt_send_request(amt, true);
+-	amt_update_gw_status(amt, AMT_STATUS_SENT_REQUEST, true);
+ 	spin_lock_bh(&amt->lock);
++	__amt_update_gw_status(amt, AMT_STATUS_SENT_REQUEST, true);
++	amt->req_cnt++;
+ out:
+ 	exp = min_t(u32, (1 * (1 << amt->req_cnt)), AMT_MAX_REQ_TIMEOUT);
+ 	mod_delayed_work(amt_wq, &amt->req_wq, msecs_to_jiffies(exp * 1000));
+-- 
+2.35.1
+
 
 
