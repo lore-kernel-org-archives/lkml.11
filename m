@@ -2,50 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B88BFCCA487
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C488CCA48D
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355537AbiFGTQK (ORCPT
+        id S1355596AbiFGTQb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:16:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56834 "EHLO
+        Tue, 7 Jun 2022 15:16:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350488AbiFGS1s (ORCPT
+        with ESMTP id S1351198AbiFGS2m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:27:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25FD0171242;
-        Tue,  7 Jun 2022 10:55:03 -0700 (PDT)
+        Tue, 7 Jun 2022 14:28:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CDE816BE32;
+        Tue,  7 Jun 2022 10:54:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 115D7617AE;
-        Tue,  7 Jun 2022 17:54:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D33DFC385A5;
-        Tue,  7 Jun 2022 17:54:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C4A9DB82373;
+        Tue,  7 Jun 2022 17:54:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5A91C341C4;
+        Tue,  7 Jun 2022 17:54:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624496;
-        bh=kvqvrS7aBXFQLen3K2YQokr1nKqkLNmgu1NIMizyz9w=;
+        s=k20201202; t=1654624475;
+        bh=7x+kvaAGBYnjwKY1A04rLcfFo43yJeOkojHUWswIhIA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RDnxXDx2zd9BM8btPrJjRtva9NzKukSu+teFYey0FcTpdttR1uoZflyCO3hiNAnhq
-         5a4qyWnAYgpcHNn0W029pkW1v1kPIPhIWEP1z/raH7cXIipDbm2tDp6L9mhV2f6vP2
-         eA6GUdM7rJ7TMTXibbEXbHYBVO7aOJ6Fg4AcgJS53jvK2cTX/cKzB7r4JiI7qAe1/U
-         /Tbc9Fcx9sT15comxLeaj7x5q+ee5cRCkbaYUaA98UqVzqxBuCeQFLrwrHhnwlQNUM
-         7qwG/4bet64d4u00kIw1fObLY7VAn4HtFwOHjgs2UEeM4f4MKmMNmesXjQd3pAUBnY
-         GNEQF00LMa3zw==
+        b=CFekoLL5nxfGkvcZnWbqQvx3nEkpxruP3WMpvMRaZzbmbWMNGRjVc2+g3zKVLpbuF
+         xbG40iUj7r3RmhwkImHpu2Q1Ca0+MZRQNXQYq+ZlAi2yHZM4icnI5Q5ZYOqd6xrxlW
+         C3MSWUkrZ3ZxlR8IdiJKMu7yhKE9WLLMVJmX3tmSZP2UxUnQGRh1K8OuoMNcoATho1
+         4pFrZrPawcmjP04TE463g5uIBGfpjS3PTSD1YkcvAHouzOCjuXo4zv6yWF5emPpCY7
+         vRbjMAe8h1XOGF8z8j2q+q/19XTMAj88hyBMJeXoNZWUmUzCCWVOeTaDzGb+FVF3q3
+         Ns5SJj7Nr9XFQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lijo Lazar <lijo.lazar@amd.com>,
-        Yang Wang <kevinyang.wang@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, evan.quan@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, kevin1.wang@amd.com, luben.tuikov@amd.com,
-        Stanley.Yang@amd.com, tao.zhou1@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.17 44/60] drm/amd/pm: Fix missing thermal throttler status
-Date:   Tue,  7 Jun 2022 13:52:41 -0400
-Message-Id: <20220607175259.478835-44-sashal@kernel.org>
+Cc:     Venky Shankar <vshankar@redhat.com>, Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 38/60] ceph: allow ceph.dir.rctime xattr to be updatable
+Date:   Tue,  7 Jun 2022 13:52:35 -0400
+Message-Id: <20220607175259.478835-38-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
 References: <20220607175259.478835-1-sashal@kernel.org>
@@ -57,34 +52,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lijo Lazar <lijo.lazar@amd.com>
+From: Venky Shankar <vshankar@redhat.com>
 
-[ Upstream commit b0f4d663fce6a4232d3c20ce820f919111b1c60b ]
+[ Upstream commit d7a2dc523085f8b8c60548ceedc696934aefeb0e ]
 
-On aldebaran, when thermal throttling happens due to excessive GPU
-temperature, the reason for throttling event is missed in warning
-message. This patch fixes it.
+`rctime' has been a pain point in cephfs due to its buggy
+nature - inconsistent values reported and those sorts.
+Fixing rctime is non-trivial needing an overall redesign
+of the entire nested statistics infrastructure.
 
-Signed-off-by: Lijo Lazar <lijo.lazar@amd.com>
-Reviewed-by: Yang Wang <kevinyang.wang@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+As a workaround, PR
+
+     http://github.com/ceph/ceph/pull/37938
+
+allows this extended attribute to be manually set. This allows
+users to "fixup" inconsistent rctime values. While this sounds
+messy, its probably the wisest approach allowing users/scripts
+to workaround buggy rctime values.
+
+The above PR enables Ceph MDS to allow manually setting
+rctime extended attribute with the corresponding user-land
+changes. We may as well allow the same to be done via kclient
+for parity.
+
+Signed-off-by: Venky Shankar <vshankar@redhat.com>
+Reviewed-by: Xiubo Li <xiubli@redhat.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/ceph/xattr.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
-index 4885c4ae78b7..27a54145d352 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
-@@ -1643,6 +1643,7 @@ static const struct throttling_logging_label {
- 	uint32_t feature_mask;
- 	const char *label;
- } logging_label[] = {
-+	{(1U << THROTTLER_TEMP_GPU_BIT), "GPU"},
- 	{(1U << THROTTLER_TEMP_MEM_BIT), "HBM"},
- 	{(1U << THROTTLER_TEMP_VR_GFX_BIT), "VR of GFX rail"},
- 	{(1U << THROTTLER_TEMP_VR_MEM_BIT), "VR of HBM rail"},
+diff --git a/fs/ceph/xattr.c b/fs/ceph/xattr.c
+index fcf7dfdecf96..e41b22bd66ce 100644
+--- a/fs/ceph/xattr.c
++++ b/fs/ceph/xattr.c
+@@ -366,6 +366,14 @@ static ssize_t ceph_vxattrcb_auth_mds(struct ceph_inode_info *ci,
+ 	}
+ #define XATTR_RSTAT_FIELD(_type, _name)			\
+ 	XATTR_NAME_CEPH(_type, _name, VXATTR_FLAG_RSTAT)
++#define XATTR_RSTAT_FIELD_UPDATABLE(_type, _name)			\
++	{								\
++		.name = CEPH_XATTR_NAME(_type, _name),			\
++		.name_size = sizeof (CEPH_XATTR_NAME(_type, _name)),	\
++		.getxattr_cb = ceph_vxattrcb_ ## _type ## _ ## _name,	\
++		.exists_cb = NULL,					\
++		.flags = VXATTR_FLAG_RSTAT,				\
++	}
+ #define XATTR_LAYOUT_FIELD(_type, _name, _field)			\
+ 	{								\
+ 		.name = CEPH_XATTR_NAME2(_type, _name, _field),	\
+@@ -404,7 +412,7 @@ static struct ceph_vxattr ceph_dir_vxattrs[] = {
+ 	XATTR_RSTAT_FIELD(dir, rsubdirs),
+ 	XATTR_RSTAT_FIELD(dir, rsnaps),
+ 	XATTR_RSTAT_FIELD(dir, rbytes),
+-	XATTR_RSTAT_FIELD(dir, rctime),
++	XATTR_RSTAT_FIELD_UPDATABLE(dir, rctime),
+ 	{
+ 		.name = "ceph.dir.pin",
+ 		.name_size = sizeof("ceph.dir.pin"),
 -- 
 2.35.1
 
