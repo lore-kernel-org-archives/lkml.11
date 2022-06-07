@@ -2,101 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61979C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E685CCA485
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:43:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356685AbiFGTnJ (ORCPT
+        id S1356736AbiFGTnT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:43:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43250 "EHLO
+        Tue, 7 Jun 2022 15:43:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354542AbiFGSrH (ORCPT
+        with ESMTP id S1354559AbiFGSrI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BF64B0A46;
-        Tue,  7 Jun 2022 11:02:00 -0700 (PDT)
+        Tue, 7 Jun 2022 14:47:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E22BC5DD1F;
+        Tue,  7 Jun 2022 11:02:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DF37B82182;
-        Tue,  7 Jun 2022 18:01:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DF6AC34115;
-        Tue,  7 Jun 2022 18:01:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624917;
-        bh=mQ+W1qhY1vuzh0iFc4QMfQDJKXgJ1o37qRKHnW21/Bo=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BC5761804;
+        Tue,  7 Jun 2022 18:02:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9068DC341C0;
+        Tue,  7 Jun 2022 18:02:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624930;
+        bh=XAGJ6U13VmkrVh5Zc7zRwbkmBQUzO0nmuegqfoYHRKQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O70+xxRVqhOR6pt+I67tME3qsCB59loOI2RE11Wl6YX6A/YCuaSc/ZPbqr2XqZ16V
-         laXU5WgaBqYxwHyPaSlkkbADvEQvRECD9VCuFjiRFAJoPbfhniJpaFFI9nodYqFhyJ
-         vHzBB0k4BbSV5knJbopywG4S8kgJ2gHO0WjUlvucOtlMOFFqfpuyApcIt/GvEds0TP
-         785aF/7hQGOy9sK9sBydybrjEFCxzH6+wLeUWGKWi859VUr3rEEOFosMtNaTOG/vzC
-         liYU/v/3cvNy536nAUf1nVfHqsFRT9+rqqH5egyIkzuuazhQEB9kJ7pDB0oZbjGNI0
-         Fl1EfbabuxqOw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Evan Green <evgreen@chromium.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, bhelgaas@google.com,
-        rafael.j.wysocki@intel.com, christophe.leroy@csgroup.eu,
-        yj84.jang@samsung.com, linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 10/27] USB: hcd-pci: Fully suspend across freeze/thaw cycle
-Date:   Tue,  7 Jun 2022 14:01:14 -0400
-Message-Id: <20220607180133.481701-10-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180133.481701-1-sashal@kernel.org>
-References: <20220607180133.481701-1-sashal@kernel.org>
+        b=PsI29JOCn7k/UB5WmLepI8rlcHxzyF1oDsXM1TcQMqABSRCxWOXxgFqIGjJhV/I6a
+         tMzFd8TGTOz3ClzaMIdkEbExxCMzLk5VxpttHuuRBmsbF8HW7XH6B/gH/b1I1bgaQz
+         kD6oClvX0bNfvdyNICzJJOQ04m9IlXXYcbYLdPRs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tyrone Ting <kfting@nuvoton.com>,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 505/667] i2c: npcm: Correct register access width
+Date:   Tue,  7 Jun 2022 19:02:50 +0200
+Message-Id: <20220607164949.847757337@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Green <evgreen@chromium.org>
+From: Tyrone Ting <kfting@nuvoton.com>
 
-[ Upstream commit 63acaa8e9c65dc34dc249440216f8e977f5d2748 ]
+[ Upstream commit ea9f8426d17620214ee345ffb77ee6cc196ff14f ]
 
-The documentation for the freeze() method says that it "should quiesce
-the device so that it doesn't generate IRQs or DMA". The unspoken
-consequence of not doing this is that MSIs aimed at non-boot CPUs may
-get fully lost if they're sent during the period where the target CPU is
-offline.
+The SMBnCTL3 register is 8-bit wide and the 32-bit access was always
+incorrect, but simply didn't cause a visible error on the 32-bit machine.
 
-The current callbacks for USB HCD do not fully quiesce interrupts,
-specifically on XHCI. Change to use the full suspend/resume flow for
-freeze/thaw to ensure interrupts are fully quiesced. This fixes issues
-where USB devices fail to thaw during hibernation because XHCI misses
-its interrupt and cannot recover.
+On the 64-bit machine, the kernel message reports that ESR value is
+0x96000021. Checking Arm Architecture Reference Manual Armv8 suggests that
+it's the alignment fault.
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Evan Green <evgreen@chromium.org>
-Link: https://lore.kernel.org/r/20220421103751.v3.2.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+SMBnCTL3's address is 0xE.
+
+Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
+Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
+Reviewed-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/core/hcd-pci.c | 4 ++--
+ drivers/i2c/busses/i2c-npcm7xx.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/core/hcd-pci.c b/drivers/usb/core/hcd-pci.c
-index 7537681355f6..fed331d786e2 100644
---- a/drivers/usb/core/hcd-pci.c
-+++ b/drivers/usb/core/hcd-pci.c
-@@ -605,10 +605,10 @@ const struct dev_pm_ops usb_hcd_pci_pm_ops = {
- 	.suspend_noirq	= hcd_pci_suspend_noirq,
- 	.resume_noirq	= hcd_pci_resume_noirq,
- 	.resume		= hcd_pci_resume,
--	.freeze		= check_root_hub_suspended,
-+	.freeze		= hcd_pci_suspend,
- 	.freeze_noirq	= check_root_hub_suspended,
- 	.thaw_noirq	= NULL,
--	.thaw		= NULL,
-+	.thaw		= hcd_pci_resume,
- 	.poweroff	= hcd_pci_suspend,
- 	.poweroff_noirq	= hcd_pci_suspend_noirq,
- 	.restore_noirq	= hcd_pci_resume_noirq,
+diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
+index 92fd88a3f415..cdea7f440a9e 100644
+--- a/drivers/i2c/busses/i2c-npcm7xx.c
++++ b/drivers/i2c/busses/i2c-npcm7xx.c
+@@ -359,14 +359,14 @@ static int npcm_i2c_get_SCL(struct i2c_adapter *_adap)
+ {
+ 	struct npcm_i2c *bus = container_of(_adap, struct npcm_i2c, adap);
+ 
+-	return !!(I2CCTL3_SCL_LVL & ioread32(bus->reg + NPCM_I2CCTL3));
++	return !!(I2CCTL3_SCL_LVL & ioread8(bus->reg + NPCM_I2CCTL3));
+ }
+ 
+ static int npcm_i2c_get_SDA(struct i2c_adapter *_adap)
+ {
+ 	struct npcm_i2c *bus = container_of(_adap, struct npcm_i2c, adap);
+ 
+-	return !!(I2CCTL3_SDA_LVL & ioread32(bus->reg + NPCM_I2CCTL3));
++	return !!(I2CCTL3_SDA_LVL & ioread8(bus->reg + NPCM_I2CCTL3));
+ }
+ 
+ static inline u16 npcm_i2c_get_index(struct npcm_i2c *bus)
 -- 
 2.35.1
+
+
 
