@@ -2,140 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A749CCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:54:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2AF5CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376323AbiFHByW (ORCPT
+        id S1350006AbiFHByM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:54:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35498 "EHLO
+        Tue, 7 Jun 2022 21:54:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1586635AbiFGXve (ORCPT
+        with ESMTP id S1584664AbiFGXs3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:51:34 -0400
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 261A128DC1D
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 15:43:09 -0700 (PDT)
-Received: by mail-ot1-x32b.google.com with SMTP id r14-20020a056830418e00b0060b8da9ff75so13887791otu.11
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 15:43:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2fKoWW6NOg5lxeXgt4oK9futpOxTdvNtK6BCDtPAU98=;
-        b=SolS7aXqDUswytp1fIPeZ8E1O3SQf6wC7YBU78MIsnycc/aht7NFwCUavHoI6an47Y
-         TUuuc48GSuMVJYOpJ14Z5Y+qsODzrZYwDUObm1f8e4XyCvphW5hPQrTajc6XPdZKzCb5
-         LlCje7mUunZrQIvSOEXGVBawzYxgCxwUeMkYQ+SkapFy5RW4cxafIQosi3FzQhYE/G6u
-         aqQW/J4nFuZ2gbrnANdIzSDKP1fwBuWLt40+SkGe1cGhRDeMOojyaJPQG64uf6DJ/buU
-         Fi9TXW46Rs2RP/CenV0BX0mwXdkI4o+sHrahqRUdSVkraBny2sYLjM9Hs90H4S/+7FYl
-         li8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2fKoWW6NOg5lxeXgt4oK9futpOxTdvNtK6BCDtPAU98=;
-        b=F4eVtOdokACHqWtPH4vT7bxm/2D0wIsZSAs4Q9Ar7qvgcwyNMxLjzCahWfipj0eEwd
-         yG4+I17nH1Dbrhtoto2/OXRA/dJxJYJ850wS0YkRnU5seneZiiGzonyS47NkKKDszB6+
-         hT3u+8FV2iqPC8uHDOzWSm/v4CDc/Kt1Zaa3PwdI10lyC7b976VNkvVRcRcREPpb9oE3
-         zN5lxvfBnaTLnZAUlRZ60PXuOurnz5I2XCbO1SMDA80QHTJu2XtW082NQs3V/UzJCQOr
-         UI0lrWX1NEJX6xOZsH+Q3x/QQHk3m3G+gFB5T8hJX2vVWx7Zmqe1kyCuQ1nK0fpyPilz
-         QpZQ==
-X-Gm-Message-State: AOAM531Bk2Fdnz7LDN7OgRaTV1EiwYaCzqFb5PzDN+qPWTpIrUm3pl+C
-        6yfhGfMlZuSJscSMJNwMTDUH+w==
-X-Google-Smtp-Source: ABdhPJySCSkrxVapnCB2pbL3mqq6c/Ha6taOEPIvN6imZnQFuRSIOn++8Bc839jTB8lMMNU1tRmMyA==
-X-Received: by 2002:a05:6830:9c2:b0:606:1e0a:cc8d with SMTP id y2-20020a05683009c200b006061e0acc8dmr13468851ott.265.1654641787842;
-        Tue, 07 Jun 2022 15:43:07 -0700 (PDT)
-Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id u13-20020a056871008d00b000f5d4e5b9a0sm8903477oaa.2.2022.06.07.15.43.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 15:43:07 -0700 (PDT)
-Date:   Tue, 7 Jun 2022 15:45:30 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Manu Gautam <mgautam@codeaurora.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/5] phy: qcom-qmp: Add USB3 5NM QMP UNI registers
-Message-ID: <Yp/VCg3UznbLKLuk@ripper>
-References: <20220607213543.4057620-1-bjorn.andersson@linaro.org>
- <20220607213543.4057620-3-bjorn.andersson@linaro.org>
- <f16657a3-15e5-f7d6-1f2b-58e2ea83dddc@linaro.org>
+        Tue, 7 Jun 2022 19:48:29 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B25048989D;
+        Tue,  7 Jun 2022 15:25:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=0YiMkBagw10WMJGuNob9S5dY4o5Fq5z46VhZ483pA3A=; b=sCSF0zEDHJ1FuAcGsEAIZaTXYd
+        fNmlETUv1/cYtfUE3DNw/KfFCn2nGzCNmDNdQQ9HlYu2CtB6I1TGW9jCVycqcuLYGKpW05N/4jw+l
+        upDe9ygg/ws6o5RUvqaxgw+q1JTYJk1FAV40lw4+6DXhPlKwwVBwiaUOFrGzfnBrChJipc//5Egia
+        tnVA0Wx3TYkzrT4rqu1M6hmTwPBYzvS2A0Cy0rSBu7uRwAAYHLckPQLY7sSG2ZqBhIwS0HJoXwUwE
+        esPvo7cdxnKvslmhZI+QDa8WNx7ka15Pz2C3NBMm82ud+evXBSGsuouRH4qoXcQjsyQLtVwrvhr0t
+        JYAPPybQ==;
+Received: from [179.110.79.194] (helo=localhost)
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
+        id 1nyhdV-00DgtH-7s; Wed, 08 Jun 2022 00:25:18 +0200
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+To:     linux-acpi@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        rafael.j.wysocki@intel.com, kernel@gpiccoli.net,
+        kernel-dev@igalia.com,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Len Brown <lenb@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>
+Subject: [PATCH] ACPI: processor/idle: Annotate more functions to live in cpuidle section
+Date:   Tue,  7 Jun 2022 19:24:58 -0300
+Message-Id: <20220607222458.1864805-1-gpiccoli@igalia.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f16657a3-15e5-f7d6-1f2b-58e2ea83dddc@linaro.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 07 Jun 14:58 PDT 2022, Dmitry Baryshkov wrote:
-> On 08/06/2022 00:35, Bjorn Andersson wrote:
-[..]
-> > +#define USB3_V5_5NM_UNI_QSERDES_COM_BIN_VCOCAL_CMP_CODE2_MODE0	0x1b0
-> > +#define USB3_V5_5NM_UNI_QSERDES_COM_BIN_VCOCAL_CMP_CODE1_MODE1	0x1b4
-> > +#define USB3_V5_5NM_UNI_QSERDES_COM_BIN_VCOCAL_CMP_CODE2_MODE1	0x1b8
-> > +#define USB3_V5_5NM_UNI_QSERDES_COM_BIN_VCOCAL_HSCLK_SEL		0x1bc
-> > +#define USB3_V5_5NM_UNI_QSERDES_COM_RESERVED_1			0x1c0
-> > +#define USB3_V5_5NM_UNI_QSERDES_COM_MODE_OPERATION_STATUS		0x1c4
-> 
-> These defines look completely compatible with the existing ones in the
-> QSERDES_V5_COM_ namespace. Please use them instead.
-> 
+Commit 6727ad9e206c ("nmi_backtrace: generate one-line reports for idle cpus")
+introduced a new text section called cpuidle; with that, we have a mechanism
+to add idling functions in such section and skip them from nmi_backtrace
+output, since they're useless and potentially flooding for such report.
 
-Can you please confirm that all these constants are exactly the same as
-the existing V5 entries?
+Happens that inlining might cause some real idle functions to end-up
+outside of such section; this is currently the case of ACPI processor_idle
+driver; the functions acpi_idle_enter_* do inline acpi_idle_do_entry(),
+hence they stay out of the cpuidle section.
+Fix that by marking such functions to also live in the cpuidle section.
 
-[..]
-> > +/* Module: USB3_UNI_PCS_USB3_PCIE_USB3_UNI_PCS_USB3 */
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_POWER_STATE_CONFIG1		0x00
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_AUTONOMOUS_MODE_STATUS		0x04
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_AUTONOMOUS_MODE_CTRL		0x08
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_AUTONOMOUS_MODE_CTRL2		0x0c
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_RXTERM_IRQ_SOURCE_STATUS	0x10
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_RXTERM_IRQ_CLEAR		0x14
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_DET_HIGH_COUNT_VAL		0x18
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_TX_ECSTART			0x1c
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_PER_TIMER_VAL		0x20
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_TX_END_CNT_U3_START		0x24
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_LFPS_CONFIG1			0x28
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_LOCK_TIME		0x2c
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_WAIT_TIME		0x30
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_CTLE_TIME		0x34
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_WAIT_TIME_S2		0x38
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_RXEQTRAINING_DFE_TIME_S2		0x3c
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_RCVR_DTCT_DLY_U3_L		0x40
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_RCVR_DTCT_DLY_U3_H		0x44
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_ARCVR_DTCT_EN_PERIOD		0x48
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_ARCVR_DTCT_CM_DLY			0x4c
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_TXONESZEROS_RUN_LENGTH		0x50
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_ALFPS_DEGLITCH_VAL		0x54
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_SIGDET_STARTUP_TIMER_VAL		0x58
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_TEST_CONTROL			0x5c
-> > +#define USB3_V5_5NM_UNI_PCS_USB3_RXTERMINATION_DLY_SEL		0x60
-> 
-> These look like QPHY_V5_PCS_USB3, but without additional 0x300 offset. I'd
-> suggest modifying qcom-qmp-phy-usb.c to allocate another register space for
-> pcs_usb and updating QPHY_V4_PCS_USB3_foo / QPHY_V5_PCS_USB3_foo defines to
-> remove this offset.
-> 
-> Afterwards most if not all constants from this header can be merged into
-> phy-qcom-qmp.h I do not think that it makes sense to split this header at
-> this moment. The QSERDES_COM/_TX/_RX/_PCS defines are common to all PHY
-> types.
-> 
+Fixes: 6727ad9e206c ("nmi_backtrace: generate one-line reports for idle cpus")
+Cc: Len Brown <lenb@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Rafael J. Wysocki <rafael@kernel.org>
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+---
 
-You might be right, but I spent considerable time debugging the combo
-phy (which is version 5.0.0) and in the end it turned out that it's not
-the same offsets.
+Hi folks, this was tested on top of v5.19-rc1, with sysrq-l.
 
-I really would prefer that we stop haphazardly try to fit things into
-the phy-qcom-qmp.h with version numbers that we essentially make up
-base, when Qualcomm dumps the register layout for each generation in
-their downstream kernel.
+An alternative for this approach would be to mark acpi_idle_do_entry()
+as noinline, but I'd risk to say that's a bit worse performance-wise.
+Let me know your preference, I can rework the patch if you prefer =)
 
-Regards,
-Bjorn
+Thanks in advance for reviews,
+
+
+Guilherme
+
+
+ drivers/acpi/processor_idle.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/acpi/processor_idle.c b/drivers/acpi/processor_idle.c
+index 6a5572a1a80c..13200969ccf3 100644
+--- a/drivers/acpi/processor_idle.c
++++ b/drivers/acpi/processor_idle.c
+@@ -607,7 +607,7 @@ static DEFINE_RAW_SPINLOCK(c3_lock);
+  * @cx: Target state context
+  * @index: index of target state
+  */
+-static int acpi_idle_enter_bm(struct cpuidle_driver *drv,
++static int __cpuidle acpi_idle_enter_bm(struct cpuidle_driver *drv,
+ 			       struct acpi_processor *pr,
+ 			       struct acpi_processor_cx *cx,
+ 			       int index)
+@@ -664,7 +664,7 @@ static int acpi_idle_enter_bm(struct cpuidle_driver *drv,
+ 	return index;
+ }
+ 
+-static int acpi_idle_enter(struct cpuidle_device *dev,
++static int __cpuidle acpi_idle_enter(struct cpuidle_device *dev,
+ 			   struct cpuidle_driver *drv, int index)
+ {
+ 	struct acpi_processor_cx *cx = per_cpu(acpi_cstate[index], dev->cpu);
+@@ -693,7 +693,7 @@ static int acpi_idle_enter(struct cpuidle_device *dev,
+ 	return index;
+ }
+ 
+-static int acpi_idle_enter_s2idle(struct cpuidle_device *dev,
++static int __cpuidle acpi_idle_enter_s2idle(struct cpuidle_device *dev,
+ 				  struct cpuidle_driver *drv, int index)
+ {
+ 	struct acpi_processor_cx *cx = per_cpu(acpi_cstate[index], dev->cpu);
+-- 
+2.36.0
+
