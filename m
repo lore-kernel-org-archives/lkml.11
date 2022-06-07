@@ -2,118 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 507E2CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 311F5CCA47F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380149AbiFGVaQ (ORCPT
+        id S1380005AbiFGVaL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44876 "EHLO
+        Tue, 7 Jun 2022 17:30:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377851AbiFGUeJ (ORCPT
+        with ESMTP id S1377838AbiFGUeI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:09 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C6F1E7AEC
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:36:16 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id i66so24990889oia.11
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 11:36:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=et5d4DM7Qkz5qPPCoiTPlM6P1258hTgQ0iEkTPrpV+I=;
-        b=PuFBuqldb4cHgsAojupGIYPzKREKfkNatPa7bNJQ3T7Y+VXcNNgnWsYkvgJ/efgrh3
-         6Tn3ounWD12Wg3D59zmyEuUSXPLON+5y+Nue/CWFFSBVH4f/G7rc7jpirEo3w6c2wPxC
-         xHFhs/2y9CqjlPp5zehXBRxbhz6Hoz43R/XOkXaUR/jU++0Rvqfu/8tpLqh0ykZLOqCM
-         E7ev37DY+9K9VrD5xzMbiLXP5yu8PUfmJjpJ3AjJKgAR28c36eSF84wSsYmuVxp65Dy0
-         ocOiAaBGBT87tJfATIkqFQLfoCX1V2jcq2zXGsnmZpjMeZ56p2G8QVcGYYZG4KFtFwo8
-         JjHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=et5d4DM7Qkz5qPPCoiTPlM6P1258hTgQ0iEkTPrpV+I=;
-        b=4Gg/7YwpEOrtmzp8YI9v+H6XIHNupcmqGeEs14X394CNbF3BVFqmFZbfMnCRZnb7Xs
-         uvbzWb6udN2Sb+z7d2k4Z1V+XtNeYpEaXl6O7CGnOw1Z8yMAcb7BuoWysUIZONDchSZF
-         kOkqPY+s8eKGy8hB7ZTTfXZDzSXm8Ff/yZGg1Zhh23b/fDhPqfjP4wmyLmlGkdJNCkk0
-         tJrkFj2FvPgx0JMYdXCwDLW3YetcGf6oSlIHdp98nAgTVNySBTfGdfynyPZGub5DXMpD
-         ro5zL5lILMNko9/lkCC4vNflTWeDyDYrYyWDCfrgd++OQYKmLJ3qIyNOT64//MrsHHWS
-         hkEg==
-X-Gm-Message-State: AOAM531o9oZmxYzW0J4WpEiVt+/Atwdz7sMXXVQ+EiwJeoc2SJ/8b1kJ
-        FfF9N3IZ+/DGjyMpb1RDIBtjTU4Wlc0JdB+y6n0=
-X-Google-Smtp-Source: ABdhPJzmUwUQfQ1DjEveyo8nz4KlADt9ph70/XrvL3Meqmc0UgfuQHYvRofrgjdJ+ret0rbkQJflWwhjvu8RZcC6Ftk=
-X-Received: by 2002:a54:4f01:0:b0:32e:726c:bced with SMTP id
- e1-20020a544f01000000b0032e726cbcedmr128014oiy.253.1654626973764; Tue, 07 Jun
- 2022 11:36:13 -0700 (PDT)
+        Tue, 7 Jun 2022 16:34:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E79571E7AF8;
+        Tue,  7 Jun 2022 11:36:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 302C4B8233E;
+        Tue,  7 Jun 2022 18:36:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88FF8C385A2;
+        Tue,  7 Jun 2022 18:36:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654626969;
+        bh=1fnCYEHFdDXiebIMF3JIQlXednadZc3hyC/x3Lsi5wA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=yRT5AMx5Dua92RtYwUqTSeLf6E5I16GaWq4Yqca04p07/5MPt4sw0mXjKGsIPu402
+         kRWAe1ReeGt1gzTTkSqX5k0oA/S9fpyXEM/XkeNrGg+BduXLZd40MoeAc3uCb8TtmM
+         Q9GG27ujrcbEdqI9IzjJfu8qjCLBeDqLEqit4vjk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yunfei Wang <yf.wang@mediatek.com>,
+        Yong Wu <yong.wu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 571/772] iommu/mediatek: Add mutex for m4u_group and m4u_dom in data
+Date:   Tue,  7 Jun 2022 19:02:43 +0200
+Message-Id: <20220607165005.779832757@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220607151933.32850-1-xiaohuizhang@ruc.edu.cn>
-In-Reply-To: <20220607151933.32850-1-xiaohuizhang@ruc.edu.cn>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Tue, 7 Jun 2022 14:36:02 -0400
-Message-ID: <CADnq5_MiHN=iXt4E5AKSixRqMR5bkqwoxXd_KUj02DFtcwhS6w@mail.gmail.com>
-Subject: Re: [PATCH 1/1] drm/radeon: Initialize fences array entries in radeon_sa_bo_next_hole
-To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
-        Christian Koenig <christian.koenig@amd.com>,
-        xinhui pan <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+From: Yong Wu <yong.wu@mediatek.com>
 
-Alex
+[ Upstream commit 0e5a3f2e630b28e88e018655548212ef8eb4dfcb ]
 
-On Tue, Jun 7, 2022 at 12:04 PM Xiaohui Zhang <xiaohuizhang@ruc.edu.cn> wrote:
->
-> Similar to the handling of amdgpu_sa_bo_next_hole in commit 6a15f3ff19a8
-> ("drm/amdgpu: Initialize fences array entries in amdgpu_sa_bo_next_hole"),
-> we thought a patch might be needed here as well.
->
-> The entries were only initialized once in radeon_sa_bo_new. If a fence
-> wasn't signalled yet in the first radeon_sa_bo_next_hole call, but then
-> got signalled before a later radeon_sa_bo_next_hole call, it could
-> destroy the fence but leave its pointer in the array, resulting in
-> use-after-free in radeon_sa_bo_new.
->
-> Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-> ---
->  drivers/gpu/drm/radeon/radeon_sa.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/gpu/drm/radeon/radeon_sa.c b/drivers/gpu/drm/radeon/radeon_sa.c
-> index 310c322c7112..0981948bd9ed 100644
-> --- a/drivers/gpu/drm/radeon/radeon_sa.c
-> +++ b/drivers/gpu/drm/radeon/radeon_sa.c
-> @@ -267,6 +267,8 @@ static bool radeon_sa_bo_next_hole(struct radeon_sa_manager *sa_manager,
->         for (i = 0; i < RADEON_NUM_RINGS; ++i) {
->                 struct radeon_sa_bo *sa_bo;
->
-> +               fences[i] = NULL;
-> +
->                 if (list_empty(&sa_manager->flist[i])) {
->                         continue;
->                 }
-> @@ -332,10 +334,8 @@ int radeon_sa_bo_new(struct radeon_device *rdev,
->
->         spin_lock(&sa_manager->wq.lock);
->         do {
-> -               for (i = 0; i < RADEON_NUM_RINGS; ++i) {
-> -                       fences[i] = NULL;
-> +               for (i = 0; i < RADEON_NUM_RINGS; ++i)
->                         tries[i] = 0;
-> -               }
->
->                 do {
->                         radeon_sa_bo_try_free(sa_manager);
-> --
-> 2.17.1
->
+Add a mutex to protect the data in the structure mtk_iommu_data,
+like ->"m4u_group" ->"m4u_dom". For the internal data, we should
+protect it in ourselves driver. Add a mutex for this.
+This could be a fix for the multi-groups support.
+
+Fixes: c3045f39244e ("iommu/mediatek: Support for multi domains")
+Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Link: https://lore.kernel.org/r/20220503071427.2285-8-yong.wu@mediatek.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/mtk_iommu.c | 13 +++++++++++--
+ drivers/iommu/mtk_iommu.h |  2 ++
+ 2 files changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index b9d690327eae..9b3ded518f83 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -469,15 +469,16 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 		dom->data = data;
+ 	}
+ 
++	mutex_lock(&data->mutex);
+ 	if (!data->m4u_dom) { /* Initialize the M4U HW */
+ 		ret = pm_runtime_resume_and_get(m4udev);
+ 		if (ret < 0)
+-			return ret;
++			goto err_unlock;
+ 
+ 		ret = mtk_iommu_hw_init(data);
+ 		if (ret) {
+ 			pm_runtime_put(m4udev);
+-			return ret;
++			goto err_unlock;
+ 		}
+ 		data->m4u_dom = dom;
+ 		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
+@@ -485,9 +486,14 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 
+ 		pm_runtime_put(m4udev);
+ 	}
++	mutex_unlock(&data->mutex);
+ 
+ 	mtk_iommu_config(data, dev, true, domid);
+ 	return 0;
++
++err_unlock:
++	mutex_unlock(&data->mutex);
++	return ret;
+ }
+ 
+ static void mtk_iommu_detach_device(struct iommu_domain *domain,
+@@ -627,6 +633,7 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
+ 	if (domid < 0)
+ 		return ERR_PTR(domid);
+ 
++	mutex_lock(&data->mutex);
+ 	group = data->m4u_group[domid];
+ 	if (!group) {
+ 		group = iommu_group_alloc();
+@@ -635,6 +642,7 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
+ 	} else {
+ 		iommu_group_ref_get(group);
+ 	}
++	mutex_unlock(&data->mutex);
+ 	return group;
+ }
+ 
+@@ -909,6 +917,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	platform_set_drvdata(pdev, data);
++	mutex_init(&data->mutex);
+ 
+ 	ret = iommu_device_sysfs_add(&data->iommu, dev, NULL,
+ 				     "mtk-iommu.%pa", &ioaddr);
+diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+index f81fa8862ed0..f413546ac6e5 100644
+--- a/drivers/iommu/mtk_iommu.h
++++ b/drivers/iommu/mtk_iommu.h
+@@ -80,6 +80,8 @@ struct mtk_iommu_data {
+ 
+ 	struct dma_iommu_mapping	*mapping; /* For mtk_iommu_v1.c */
+ 
++	struct mutex			mutex; /* Protect m4u_group/m4u_dom above */
++
+ 	struct list_head		list;
+ 	struct mtk_smi_larb_iommu	larb_imu[MTK_LARB_NR_MAX];
+ };
+-- 
+2.35.1
+
+
+
