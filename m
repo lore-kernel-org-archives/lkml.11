@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36A24C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B2E0CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377125AbiFGUuM (ORCPT
+        id S1377176AbiFGUuT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47334 "EHLO
+        Tue, 7 Jun 2022 16:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358020AbiFGTv2 (ORCPT
+        with ESMTP id S1358085AbiFGTvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:51:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F758CCE7;
+        Tue, 7 Jun 2022 15:51:42 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E72718CB0D;
         Tue,  7 Jun 2022 11:19:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C32CB8237D;
-        Tue,  7 Jun 2022 18:19:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4A67C385A5;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 74E4CCE2439;
         Tue,  7 Jun 2022 18:19:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38817C385A2;
+        Tue,  7 Jun 2022 18:19:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625983;
-        bh=rZ2OXPCITf7LRFHCb0HH1soMLzMUo8JEpL8zp4zSYqI=;
+        s=korg; t=1654625980;
+        bh=aD2bwhTaBdhLJlZgj84uncUpqKZ/Ttho7VUAKt9ILjo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=USlYvuf9x/KvX+i/Vs8kAYBe9Y78GKIxwg76e2J+f73fcdsMjxwriYkqR+XLoIva6
-         s5VAy4oHHA1+39RWsgHijsZH6QY6Z/lMFfZ8YNjMtmZ0Nr6TCGi7za9CBqOrodxE92
-         o5KOsEqbivkCRCy4ahOS35eqe41RkbWwcLo/XyI8=
+        b=EPxWDnyBFW+6ryfuxW4zbuTDxfRc7Zn0S8IVBmsaYXubfxr8jEp2MN585t1KBXjzo
+         IRh/KS6xiCVLEaEO64VLZlmk9q+mO2O5g1b6yuClqKHXgV/YZi2dEEORniZS484h6K
+         UzMswgRHHxuAlBKaUDsOfF/gNKAmFd1eaRtFRiA4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Laibin Qiu <qiulaibin@huawei.com>,
+        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 208/772] powerpc/rtas: Keep MSR[RI] set when calling RTAS
-Date:   Tue,  7 Jun 2022 18:56:40 +0200
-Message-Id: <20220607164955.162505805@linuxfoundation.org>
+Subject: [PATCH 5.17 163/772] blk-throttle: Set BIO_THROTTLED when bio has been throttled
+Date:   Tue,  7 Jun 2022 18:55:55 +0200
+Message-Id: <20220607164953.844118036@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,162 +50,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Laurent Dufour <ldufour@linux.ibm.com>
+From: Laibin Qiu <qiulaibin@huawei.com>
 
-[ Upstream commit b6b1c3ce06ca438eb24e0f45bf0e63ecad0369f5 ]
+[ Upstream commit 5a011f889b4832aa80c2a872a5aade5c48d2756f ]
 
-RTAS runs in real mode (MSR[DR] and MSR[IR] unset) and in 32-bit big
-endian mode (MSR[SF,LE] unset).
+1.In current process, all bio will set the BIO_THROTTLED flag
+after __blk_throtl_bio().
 
-The change in MSR is done in enter_rtas() in a relatively complex way,
-since the MSR value could be hardcoded.
+2.If bio needs to be throttled, it will start the timer and
+stop submit bio directly. Bio will submit in
+blk_throtl_dispatch_work_fn() when the timer expires.But in
+the current process, if bio is throttled. The BIO_THROTTLED
+will be set to bio after timer start. If the bio has been
+completed, it may cause use-after-free blow.
 
-Furthermore, a panic has been reported when hitting the watchdog interrupt
-while running in RTAS, this leads to the following stack trace:
+BUG: KASAN: use-after-free in blk_throtl_bio+0x12f0/0x2c70
+Read of size 2 at addr ffff88801b8902d4 by task fio/26380
 
-  watchdog: CPU 24 Hard LOCKUP
-  watchdog: CPU 24 TB:997512652051031, last heartbeat TB:997504470175378 (15980ms ago)
-  ...
-  Supported: No, Unreleased kernel
-  CPU: 24 PID: 87504 Comm: drmgr Kdump: loaded Tainted: G            E  X    5.14.21-150400.71.1.bz196362_2-default #1 SLE15-SP4 (unreleased) 0d821077ef4faa8dfaf370efb5fdca1fa35f4e2c
-  NIP:  000000001fb41050 LR: 000000001fb4104c CTR: 0000000000000000
-  REGS: c00000000fc33d60 TRAP: 0100   Tainted: G            E  X     (5.14.21-150400.71.1.bz196362_2-default)
-  MSR:  8000000002981000 <SF,VEC,VSX,ME>  CR: 48800002  XER: 20040020
-  CFAR: 000000000000011c IRQMASK: 1
-  GPR00: 0000000000000003 ffffffffffffffff 0000000000000001 00000000000050dc
-  GPR04: 000000001ffb6100 0000000000000020 0000000000000001 000000001fb09010
-  GPR08: 0000000020000000 0000000000000000 0000000000000000 0000000000000000
-  GPR12: 80040000072a40a8 c00000000ff8b680 0000000000000007 0000000000000034
-  GPR16: 000000001fbf6e94 000000001fbf6d84 000000001fbd1db0 000000001fb3f008
-  GPR20: 000000001fb41018 ffffffffffffffff 000000000000017f fffffffffffff68f
-  GPR24: 000000001fb18fe8 000000001fb3e000 000000001fb1adc0 000000001fb1cf40
-  GPR28: 000000001fb26000 000000001fb460f0 000000001fb17f18 000000001fb17000
-  NIP [000000001fb41050] 0x1fb41050
-  LR [000000001fb4104c] 0x1fb4104c
-  Call Trace:
-  Instruction dump:
-  XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
-  XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
-  Oops: Unrecoverable System Reset, sig: 6 [#1]
-  LE PAGE_SIZE=64K MMU=Hash SMP NR_CPUS=2048 NUMA pSeries
-  ...
-  Supported: No, Unreleased kernel
-  CPU: 24 PID: 87504 Comm: drmgr Kdump: loaded Tainted: G            E  X    5.14.21-150400.71.1.bz196362_2-default #1 SLE15-SP4 (unreleased) 0d821077ef4faa8dfaf370efb5fdca1fa35f4e2c
-  NIP:  000000001fb41050 LR: 000000001fb4104c CTR: 0000000000000000
-  REGS: c00000000fc33d60 TRAP: 0100   Tainted: G            E  X     (5.14.21-150400.71.1.bz196362_2-default)
-  MSR:  8000000002981000 <SF,VEC,VSX,ME>  CR: 48800002  XER: 20040020
-  CFAR: 000000000000011c IRQMASK: 1
-  GPR00: 0000000000000003 ffffffffffffffff 0000000000000001 00000000000050dc
-  GPR04: 000000001ffb6100 0000000000000020 0000000000000001 000000001fb09010
-  GPR08: 0000000020000000 0000000000000000 0000000000000000 0000000000000000
-  GPR12: 80040000072a40a8 c00000000ff8b680 0000000000000007 0000000000000034
-  GPR16: 000000001fbf6e94 000000001fbf6d84 000000001fbd1db0 000000001fb3f008
-  GPR20: 000000001fb41018 ffffffffffffffff 000000000000017f fffffffffffff68f
-  GPR24: 000000001fb18fe8 000000001fb3e000 000000001fb1adc0 000000001fb1cf40
-  GPR28: 000000001fb26000 000000001fb460f0 000000001fb17f18 000000001fb17000
-  NIP [000000001fb41050] 0x1fb41050
-  LR [000000001fb4104c] 0x1fb4104c
-  Call Trace:
-  Instruction dump:
-  XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
-  XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
-  ---[ end trace 3ddec07f638c34a2 ]---
+ dump_stack+0x9b/0xce
+ print_address_description.constprop.6+0x3e/0x60
+ kasan_report.cold.9+0x22/0x3a
+ blk_throtl_bio+0x12f0/0x2c70
+ submit_bio_checks+0x701/0x1550
+ submit_bio_noacct+0x83/0xc80
+ submit_bio+0xa7/0x330
+ mpage_readahead+0x380/0x500
+ read_pages+0x1c1/0xbf0
+ page_cache_ra_unbounded+0x471/0x6f0
+ do_page_cache_ra+0xda/0x110
+ ondemand_readahead+0x442/0xae0
+ page_cache_async_ra+0x210/0x300
+ generic_file_buffered_read+0x4d9/0x2130
+ generic_file_read_iter+0x315/0x490
+ blkdev_read_iter+0x113/0x1b0
+ aio_read+0x2ad/0x450
+ io_submit_one+0xc8e/0x1d60
+ __se_sys_io_submit+0x125/0x350
+ do_syscall_64+0x2d/0x40
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-This happens because MSR[RI] is unset when entering RTAS but there is no
-valid reason to not set it here.
+Allocated by task 26380:
+ kasan_save_stack+0x19/0x40
+ __kasan_kmalloc.constprop.2+0xc1/0xd0
+ kmem_cache_alloc+0x146/0x440
+ mempool_alloc+0x125/0x2f0
+ bio_alloc_bioset+0x353/0x590
+ mpage_alloc+0x3b/0x240
+ do_mpage_readpage+0xddf/0x1ef0
+ mpage_readahead+0x264/0x500
+ read_pages+0x1c1/0xbf0
+ page_cache_ra_unbounded+0x471/0x6f0
+ do_page_cache_ra+0xda/0x110
+ ondemand_readahead+0x442/0xae0
+ page_cache_async_ra+0x210/0x300
+ generic_file_buffered_read+0x4d9/0x2130
+ generic_file_read_iter+0x315/0x490
+ blkdev_read_iter+0x113/0x1b0
+ aio_read+0x2ad/0x450
+ io_submit_one+0xc8e/0x1d60
+ __se_sys_io_submit+0x125/0x350
+ do_syscall_64+0x2d/0x40
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-RTAS is expected to be called with MSR[RI] as specified in PAPR+ section
-"7.2.1 Machine State":
+Freed by task 0:
+ kasan_save_stack+0x19/0x40
+ kasan_set_track+0x1c/0x30
+ kasan_set_free_info+0x1b/0x30
+ __kasan_slab_free+0x111/0x160
+ kmem_cache_free+0x94/0x460
+ mempool_free+0xd6/0x320
+ bio_free+0xe0/0x130
+ bio_put+0xab/0xe0
+ bio_endio+0x3a6/0x5d0
+ blk_update_request+0x590/0x1370
+ scsi_end_request+0x7d/0x400
+ scsi_io_completion+0x1aa/0xe50
+ scsi_softirq_done+0x11b/0x240
+ blk_mq_complete_request+0xd4/0x120
+ scsi_mq_done+0xf0/0x200
+ virtscsi_vq_done+0xbc/0x150
+ vring_interrupt+0x179/0x390
+ __handle_irq_event_percpu+0xf7/0x490
+ handle_irq_event_percpu+0x7b/0x160
+ handle_irq_event+0xcc/0x170
+ handle_edge_irq+0x215/0xb20
+ common_interrupt+0x60/0x120
+ asm_common_interrupt+0x1e/0x40
 
-  R1–7.2.1–9. If called with MSR[RI] equal to 1, then RTAS must protect
-  its own critical regions from recursion by setting the MSR[RI] bit to
-  0 when in the critical regions.
+Fix this by move BIO_THROTTLED set into the queue_lock.
 
-Fixing this by reviewing the way MSR is compute before calling RTAS. Now a
-hardcoded value meaning real mode, 32 bits big endian mode and Recoverable
-Interrupt is loaded. In the case MSR[S] is set, it will remain set while
-entering RTAS as only urfid can unset it (thanks Fabiano).
-
-In addition a check is added in do_enter_rtas() to detect calls made with
-MSR[RI] unset, as we are forcing it on later.
-
-This patch has been tested on the following machines:
-Power KVM Guest
-  P8 S822L (host Ubuntu kernel 5.11.0-49-generic)
-PowerVM LPAR
-  P8 9119-MME (FW860.A1)
-  p9 9008-22L (FW950.00)
-  P10 9080-HEX (FW1010.00)
-
-Suggested-by: Nicholas Piggin <npiggin@gmail.com>
-Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220504101244.12107-1-ldufour@linux.ibm.com
+Signed-off-by: Laibin Qiu <qiulaibin@huawei.com>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+Link: https://lore.kernel.org/r/20220301123919.2381579-1-qiulaibin@huawei.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/entry_64.S | 24 ++++++++++++------------
- arch/powerpc/kernel/rtas.c     |  9 +++++++++
- 2 files changed, 21 insertions(+), 12 deletions(-)
+ block/blk-throttle.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/kernel/entry_64.S b/arch/powerpc/kernel/entry_64.S
-index 9581906b5ee9..da18f83ef883 100644
---- a/arch/powerpc/kernel/entry_64.S
-+++ b/arch/powerpc/kernel/entry_64.S
-@@ -330,22 +330,22 @@ _GLOBAL(enter_rtas)
- 	clrldi	r4,r4,2			/* convert to realmode address */
-        	mtlr	r4
+diff --git a/block/blk-throttle.c b/block/blk-throttle.c
+index 87769b337fc5..e1b253775a56 100644
+--- a/block/blk-throttle.c
++++ b/block/blk-throttle.c
+@@ -2167,13 +2167,14 @@ bool __blk_throtl_bio(struct bio *bio)
+ 	}
  
--	li	r0,0
--	ori	r0,r0,MSR_EE|MSR_SE|MSR_BE|MSR_RI
--	andc	r0,r6,r0
--	
--        li      r9,1
--        rldicr  r9,r9,MSR_SF_LG,(63-MSR_SF_LG)
--	ori	r9,r9,MSR_IR|MSR_DR|MSR_FE0|MSR_FE1|MSR_FP|MSR_RI|MSR_LE
--	andc	r6,r0,r9
--
- __enter_rtas:
--	sync				/* disable interrupts so SRR0/1 */
--	mtmsrd	r0			/* don't get trashed */
--
- 	LOAD_REG_ADDR(r4, rtas)
- 	ld	r5,RTASENTRY(r4)	/* get the rtas->entry value */
- 	ld	r4,RTASBASE(r4)		/* get the rtas->base value */
-+
-+	/*
-+	 * RTAS runs in 32-bit big endian real mode, but leave MSR[RI] on as we
-+	 * may hit NMI (SRESET or MCE) while in RTAS. RTAS should disable RI in
-+	 * its critical regions (as specified in PAPR+ section 7.2.1). MSR[S]
-+	 * is not impacted by RFI_TO_KERNEL (only urfid can unset it). So if
-+	 * MSR[S] is set, it will remain when entering RTAS.
-+	 */
-+	LOAD_REG_IMMEDIATE(r6, MSR_ME | MSR_RI)
-+
-+	li      r0,0
-+	mtmsrd  r0,1                    /* disable RI before using SRR0/1 */
- 	
- 	mtspr	SPRN_SRR0,r5
- 	mtspr	SPRN_SRR1,r6
-diff --git a/arch/powerpc/kernel/rtas.c b/arch/powerpc/kernel/rtas.c
-index 1f42aabbbab3..6bc89d9ccf63 100644
---- a/arch/powerpc/kernel/rtas.c
-+++ b/arch/powerpc/kernel/rtas.c
-@@ -49,6 +49,15 @@ void enter_rtas(unsigned long);
+ out_unlock:
+-	spin_unlock_irq(&q->queue_lock);
+ 	bio_set_flag(bio, BIO_THROTTLED);
  
- static inline void do_enter_rtas(unsigned long args)
- {
-+	unsigned long msr;
+ #ifdef CONFIG_BLK_DEV_THROTTLING_LOW
+ 	if (throttled || !td->track_bio_latency)
+ 		bio->bi_issue.value |= BIO_ISSUE_THROTL_SKIP_LATENCY;
+ #endif
++	spin_unlock_irq(&q->queue_lock);
 +
-+	/*
-+	 * Make sure MSR[RI] is currently enabled as it will be forced later
-+	 * in enter_rtas.
-+	 */
-+	msr = mfmsr();
-+	BUG_ON(!(msr & MSR_RI));
-+
- 	enter_rtas(args);
- 
- 	srr_regs_clobbered(); /* rtas uses SRRs, invalidate */
+ 	rcu_read_unlock();
+ 	return throttled;
+ }
 -- 
 2.35.1
 
