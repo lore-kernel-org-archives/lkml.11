@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BCCDCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48D34CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350633AbiFGSYp (ORCPT
+        id S1349222AbiFGSWK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40342 "EHLO
+        Tue, 7 Jun 2022 14:22:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350381AbiFGSAz (ORCPT
+        with ESMTP id S1349301AbiFGR7I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:00:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFFFF12DBDB;
-        Tue,  7 Jun 2022 10:43:05 -0700 (PDT)
+        Tue, 7 Jun 2022 13:59:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E321208B5;
+        Tue,  7 Jun 2022 10:41:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9CAC6159B;
-        Tue,  7 Jun 2022 17:43:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0600FC385A5;
-        Tue,  7 Jun 2022 17:43:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97A21614BC;
+        Tue,  7 Jun 2022 17:41:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5444C385A5;
+        Tue,  7 Jun 2022 17:41:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623783;
-        bh=nQbb+Dvg94Bd3lpBOt9d1emxz4LV6Rz434ipGpczzEo=;
+        s=korg; t=1654623701;
+        bh=lf/6Y4rbIRE2r8y1XIjTcfxBGOF6A6YKLaXjA0DcB9Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uwWCmtMOGrOfcueOjV06m639w3Gt6k6Fqr3jqhuAhInRLYi81QPZ4sjWdr21+cSnH
-         kxeiJaMhFuBA0GdwfKMRR8BpXmOVH5C90ej8/HHknIp/N8XBKBvCRAtvrCJcup54ht
-         dmh/2O7w3L5ryp8255u7htI+ATU9TU71Vi+XguV8=
+        b=sqY43FLI3nHfW7lp2brAJXxkdGR8NWT4Mq/ctmH1X/UqPF9qB89hxO0S7fz9l1Jj7
+         n6IJPcww2TsO22ZO9KDsm22SoMjkuQs5MwIRTzKnqJtcYOXZ61IjKEZNGoiawZlkTZ
+         9BmwJlR/her7HcaJLLofaIMjV1XWDL71Mf9s009o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 049/667] b43legacy: Fix assigning negative value to unsigned variable
-Date:   Tue,  7 Jun 2022 18:55:14 +0200
-Message-Id: <20220607164936.277151591@linuxfoundation.org>
+        stable@vger.kernel.org, Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 060/667] rcu: Make TASKS_RUDE_RCU select IRQ_WORK
+Date:   Tue,  7 Jun 2022 18:55:25 +0200
+Message-Id: <20220607164936.613469572@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -49,35 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haowen Bai <baihaowen@meizu.com>
+From: Paul E. McKenney <paulmck@kernel.org>
 
-[ Upstream commit 3f6b867559b3d43a7ce1b4799b755e812fc0d503 ]
+[ Upstream commit 46e861be589881e0905b9ade3d8439883858721c ]
 
-fix warning reported by smatch:
-drivers/net/wireless/broadcom/b43legacy/phy.c:1181 b43legacy_phy_lo_b_measure()
-warn: assigning (-772) to unsigned variable 'fval'
+The TASKS_RUDE_RCU does not select IRQ_WORK, which can result in build
+failures for kernels that do not otherwise select IRQ_WORK.  This commit
+therefore causes the TASKS_RUDE_RCU Kconfig option to select IRQ_WORK.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/1648203433-8736-1-git-send-email-baihaowen@meizu.com
+Reported-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/b43legacy/phy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/rcu/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/broadcom/b43legacy/phy.c b/drivers/net/wireless/broadcom/b43legacy/phy.c
-index 05404fbd1e70..c1395e622759 100644
---- a/drivers/net/wireless/broadcom/b43legacy/phy.c
-+++ b/drivers/net/wireless/broadcom/b43legacy/phy.c
-@@ -1123,7 +1123,7 @@ void b43legacy_phy_lo_b_measure(struct b43legacy_wldev *dev)
- 	struct b43legacy_phy *phy = &dev->phy;
- 	u16 regstack[12] = { 0 };
- 	u16 mls;
--	u16 fval;
-+	s16 fval;
- 	int i;
- 	int j;
+diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
+index 3128b7cf8e1f..f73cf17fcee9 100644
+--- a/kernel/rcu/Kconfig
++++ b/kernel/rcu/Kconfig
+@@ -86,6 +86,7 @@ config TASKS_RCU
  
+ config TASKS_RUDE_RCU
+ 	def_bool 0
++	select IRQ_WORK
+ 	help
+ 	  This option enables a task-based RCU implementation that uses
+ 	  only context switch (including preemption) and user-mode
 -- 
 2.35.1
 
