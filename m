@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18634CCA48D
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A96C5CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344029AbiFGS1f (ORCPT
+        id S1352742AbiFGS0u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:27:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34448 "EHLO
+        Tue, 7 Jun 2022 14:26:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351776AbiFGSCU (ORCPT
+        with ESMTP id S1351444AbiFGSCE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:02:20 -0400
+        Tue, 7 Jun 2022 14:02:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E1121207F8;
-        Tue,  7 Jun 2022 10:45:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7A612DBEE;
+        Tue,  7 Jun 2022 10:44:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE3136146F;
-        Tue,  7 Jun 2022 17:45:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA073C34115;
-        Tue,  7 Jun 2022 17:45:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 691AC615B8;
+        Tue,  7 Jun 2022 17:44:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 778C6C341C0;
+        Tue,  7 Jun 2022 17:44:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623921;
-        bh=UEtTKC+segok9K/ynO7AyNzCmnn7J3j6y8rLTN8HqF0=;
+        s=korg; t=1654623873;
+        bh=x4B8zV580+azv9vAE3GUqPaunN3G/DT9gCW5iU7BFrQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o8IJ3UWF990tdTNF+ts7/jIbQSYfwU+WEELlg4gqRpq2rLD8//VfJepbgLkouu8fy
-         PClScVTnjOgEmuUhGka2ePxbporH7129BnuMJiUAEfIWBpGCFHGebRdA9tX3JeI6j/
-         HI6XYacBPCz9ptQ0EOKoOtiSvCDrVaL0VsRy0i88=
+        b=I5eDg/SyaIEMOhge/8ac07vnpL4iKurnMhQgJfb0AvxLMEWUvVOfLpt8+41OW0a7X
+         DcvT5MyMtAfTVfpAMk4FXCu3AMarfm0ZS5+gXBROUzVTzmwjFHTeEZD9VplhdBX4or
+         GyBZfZ3FY72RH0iawSUCWFoMxt99zHxlPmkcXQ8A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeffrey Altman <jaltman@auristor.com>,
-        David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
+        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
+        Oliver Neukum <oneukum@suse.com>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 141/667] rxrpc, afs: Fix selection of abort codes
-Date:   Tue,  7 Jun 2022 18:56:46 +0200
-Message-Id: <20220607164939.049319045@linuxfoundation.org>
+        Sasha Levin <sashal@kernel.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Ferry Toth <fntoth@gmail.com>
+Subject: [PATCH 5.15 122/667] usbnet: Run unregister_netdev() before unbind() again
+Date:   Tue,  7 Jun 2022 18:56:27 +0200
+Message-Id: <20220607164938.482771057@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -53,112 +55,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit de696c4784f0706884458893c5a6c39b3a3ff65c ]
+[ Upstream commit d1408f6b4dd78fb1b9e26bcf64477984e5f85409 ]
 
-The RX_USER_ABORT code should really only be used to indicate that the user
-of the rxrpc service (ie. userspace) implicitly caused a call to be aborted
-- for instance if the AF_RXRPC socket is closed whilst the call was in
-progress.  (The user may also explicitly abort a call and specify the abort
-code to use).
+Commit 2c9d6c2b871d ("usbnet: run unbind() before unregister_netdev()")
+sought to fix a use-after-free on disconnect of USB Ethernet adapters.
 
-Change some of the points of generation to use other abort codes instead:
+It turns out that a different fix is necessary to address the issue:
+https://lore.kernel.org/netdev/18b3541e5372bc9b9fc733d422f4e698c089077c.1650177997.git.lukas@wunner.de/
 
- (1) Abort the call with RXGEN_SS_UNMARSHAL or RXGEN_CC_UNMARSHAL if we see
-     ENOMEM and EFAULT during received data delivery and abort with
-     RX_CALL_DEAD in the default case.
+So the commit was not necessary.
 
- (2) Abort with RXGEN_SS_MARSHAL if we get ENOMEM whilst trying to send a
-     reply.
+The commit made binding and unbinding of USB Ethernet asymmetrical:
+Before, usbnet_probe() first invoked the ->bind() callback and then
+register_netdev().  usbnet_disconnect() mirrored that by first invoking
+unregister_netdev() and then ->unbind().
 
- (3) Abort with RX_CALL_DEAD if we stop hearing from the peer if we had
-     heard from the peer and abort with RX_CALL_TIMEOUT if we hadn't.
+Since the commit, the order in usbnet_disconnect() is reversed and no
+longer mirrors usbnet_probe().
 
- (4) Abort with RX_CALL_DEAD if we try to disconnect a call that's not
-     completed successfully or been aborted.
+One consequence is that a PHY disconnected (and stopped) in ->unbind()
+is afterwards stopped once more by unregister_netdev() as it closes the
+netdev before unregistering.  That necessitates a contortion in ->stop()
+because the PHY may only be stopped if it hasn't already been
+disconnected.
 
-Reported-by: Jeffrey Altman <jaltman@auristor.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
+Reverting the commit allows making the call to phy_stop() unconditional
+in ->stop().
+
+Tested-by: Oleksij Rempel <o.rempel@pengutronix.de> # LAN9514/9512/9500
+Tested-by: Ferry Toth <fntoth@gmail.com> # LAN9514
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Acked-by: Oliver Neukum <oneukum@suse.com>
+Cc: Martyn Welch <martyn.welch@collabora.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/afs/rxrpc.c          | 8 +++++---
- net/rxrpc/call_event.c  | 4 ++--
- net/rxrpc/conn_object.c | 2 +-
- 3 files changed, 8 insertions(+), 6 deletions(-)
+ drivers/net/usb/asix_devices.c | 6 +-----
+ drivers/net/usb/smsc95xx.c     | 3 +--
+ drivers/net/usb/usbnet.c       | 6 +++---
+ 3 files changed, 5 insertions(+), 10 deletions(-)
 
-diff --git a/fs/afs/rxrpc.c b/fs/afs/rxrpc.c
-index 23a1a92d64bb..a5434f3e57c6 100644
---- a/fs/afs/rxrpc.c
-+++ b/fs/afs/rxrpc.c
-@@ -537,6 +537,8 @@ static void afs_deliver_to_call(struct afs_call *call)
- 		case -ENODATA:
- 		case -EBADMSG:
- 		case -EMSGSIZE:
-+		case -ENOMEM:
-+		case -EFAULT:
- 			abort_code = RXGEN_CC_UNMARSHAL;
- 			if (state != AFS_CALL_CL_AWAIT_REPLY)
- 				abort_code = RXGEN_SS_UNMARSHAL;
-@@ -544,7 +546,7 @@ static void afs_deliver_to_call(struct afs_call *call)
- 						abort_code, ret, "KUM");
- 			goto local_abort;
- 		default:
--			abort_code = RX_USER_ABORT;
-+			abort_code = RX_CALL_DEAD;
- 			rxrpc_kernel_abort_call(call->net->socket, call->rxcall,
- 						abort_code, ret, "KER");
- 			goto local_abort;
-@@ -836,7 +838,7 @@ void afs_send_empty_reply(struct afs_call *call)
- 	case -ENOMEM:
- 		_debug("oom");
- 		rxrpc_kernel_abort_call(net->socket, call->rxcall,
--					RX_USER_ABORT, -ENOMEM, "KOO");
-+					RXGEN_SS_MARSHAL, -ENOMEM, "KOO");
- 		fallthrough;
- 	default:
- 		_leave(" [error]");
-@@ -878,7 +880,7 @@ void afs_send_simple_reply(struct afs_call *call, const void *buf, size_t len)
- 	if (n == -ENOMEM) {
- 		_debug("oom");
- 		rxrpc_kernel_abort_call(net->socket, call->rxcall,
--					RX_USER_ABORT, -ENOMEM, "KOO");
-+					RXGEN_SS_MARSHAL, -ENOMEM, "KOO");
- 	}
- 	_leave(" [error]");
+diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
+index bd8f8619ad6f..396505396a2e 100644
+--- a/drivers/net/usb/asix_devices.c
++++ b/drivers/net/usb/asix_devices.c
+@@ -799,11 +799,7 @@ static int ax88772_stop(struct usbnet *dev)
+ {
+ 	struct asix_common_private *priv = dev->driver_priv;
+ 
+-	/* On unplugged USB, we will get MDIO communication errors and the
+-	 * PHY will be set in to PHY_HALTED state.
+-	 */
+-	if (priv->phydev->state != PHY_HALTED)
+-		phy_stop(priv->phydev);
++	phy_stop(priv->phydev);
+ 
+ 	return 0;
  }
-diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
-index 22e05de5d1ca..e426f6831aab 100644
---- a/net/rxrpc/call_event.c
-+++ b/net/rxrpc/call_event.c
-@@ -377,9 +377,9 @@ void rxrpc_process_call(struct work_struct *work)
- 		if (test_bit(RXRPC_CALL_RX_HEARD, &call->flags) &&
- 		    (int)call->conn->hi_serial - (int)call->rx_serial > 0) {
- 			trace_rxrpc_call_reset(call);
--			rxrpc_abort_call("EXP", call, 0, RX_USER_ABORT, -ECONNRESET);
-+			rxrpc_abort_call("EXP", call, 0, RX_CALL_DEAD, -ECONNRESET);
- 		} else {
--			rxrpc_abort_call("EXP", call, 0, RX_USER_ABORT, -ETIME);
-+			rxrpc_abort_call("EXP", call, 0, RX_CALL_TIMEOUT, -ETIME);
- 		}
- 		set_bit(RXRPC_CALL_EV_ABORT, &call->events);
- 		goto recheck_state;
-diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
-index b2159dbf5412..660cd9b1a465 100644
---- a/net/rxrpc/conn_object.c
-+++ b/net/rxrpc/conn_object.c
-@@ -183,7 +183,7 @@ void __rxrpc_disconnect_call(struct rxrpc_connection *conn,
- 			chan->last_type = RXRPC_PACKET_TYPE_ABORT;
- 			break;
- 		default:
--			chan->last_abort = RX_USER_ABORT;
-+			chan->last_abort = RX_CALL_DEAD;
- 			chan->last_type = RXRPC_PACKET_TYPE_ABORT;
- 			break;
- 		}
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index eb0d325e92b7..4e39e4345084 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -1217,8 +1217,7 @@ static int smsc95xx_start_phy(struct usbnet *dev)
+ 
+ static int smsc95xx_stop(struct usbnet *dev)
+ {
+-	if (dev->net->phydev)
+-		phy_stop(dev->net->phydev);
++	phy_stop(dev->net->phydev);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index a33d7fb82a00..af2bbaff2478 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -1614,9 +1614,6 @@ void usbnet_disconnect (struct usb_interface *intf)
+ 		   xdev->bus->bus_name, xdev->devpath,
+ 		   dev->driver_info->description);
+ 
+-	if (dev->driver_info->unbind)
+-		dev->driver_info->unbind(dev, intf);
+-
+ 	net = dev->net;
+ 	unregister_netdev (net);
+ 
+@@ -1624,6 +1621,9 @@ void usbnet_disconnect (struct usb_interface *intf)
+ 
+ 	usb_scuttle_anchored_urbs(&dev->deferred);
+ 
++	if (dev->driver_info->unbind)
++		dev->driver_info->unbind(dev, intf);
++
+ 	usb_kill_urb(dev->interrupt);
+ 	usb_free_urb(dev->interrupt);
+ 	kfree(dev->padding_pkt);
 -- 
 2.35.1
 
