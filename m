@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C190C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:04:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7512CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:06:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357576AbiFGVEq (ORCPT
+        id S1378868AbiFGVFB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41246 "EHLO
+        Tue, 7 Jun 2022 17:05:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358060AbiFGUCs (ORCPT
+        with ESMTP id S1358163AbiFGUDO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:02:48 -0400
+        Tue, 7 Jun 2022 16:03:14 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62398E8BA2;
-        Tue,  7 Jun 2022 11:25:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567581C206F;
+        Tue,  7 Jun 2022 11:25:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20908B82389;
-        Tue,  7 Jun 2022 18:25:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79E9BC385A2;
-        Tue,  7 Jun 2022 18:25:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C464DB82368;
+        Tue,  7 Jun 2022 18:25:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CAC0C385A5;
+        Tue,  7 Jun 2022 18:25:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626303;
-        bh=bECevGEJQRm9zlwoTsq4nSUU2ACxTtNGL7gJ4lWePVc=;
+        s=korg; t=1654626337;
+        bh=n8/GnrtqBN+ElbM5hRTEvorINHVSuxJ+d0Ck/aQi8+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZPVqThyBtxgBOvI6VdSJgmawB3eBna5Q2ALXsaMoqnTx6SKjEveSOjLBpUmgveoG/
-         KmEbDBNWJEf+nvcwAAGo4ZKLgub+EnQT6mI2bJu7oMCwpoG5WGDC8Vy6+mxH3kjMRh
-         vj6PNJRea5lJt3o8uciENGoPdUHF/qUFt/Nk4Plo=
+        b=FleGU3XwSU6Wnrc7mdAloxlOw5GR+nc7nbz2XYaMnzTSptmrCxFbNYGe9do0nrpJC
+         t/u/e6cczJ8pw85M3NdjuXAR6wcEhLbLNPzhd/twLebK/O616KctGuc5QK8wArq3XL
+         0dSpTwWEPztBTDLaz/J8mb8DoHJbtG2ENEs67ZWg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        stable@vger.kernel.org,
+        Mike Christie <michael.christie@oracle.com>,
+        Lee Duncan <lduncan@suse.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 329/772] nl80211: dont hold RTNL in color change request
-Date:   Tue,  7 Jun 2022 18:58:41 +0200
-Message-Id: <20220607164958.718055320@linuxfoundation.org>
+Subject: [PATCH 5.17 301/772] scsi: iscsi: Fix harmless double shift bug
+Date:   Tue,  7 Jun 2022 18:58:13 +0200
+Message-Id: <20220607164957.894310666@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,36 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 1b550a0bebfc0b69d6ec08fe6eb58953a8aec48a ]
+[ Upstream commit 565138ac5f8a5330669a20e5f94759764e9165ec ]
 
-It's not necessary to hold the RTNL across color change
-requests, since all the inner locking needs only the
-wiphy mutex which we already hold as well.
+These flags are supposed to be bit numbers.  Right now they cause a double
+shift bug where we use BIT(BIT(2)) instead of BIT(2).  Fortunately, the bit
+numbers are small and it's done consistently so it does not cause an issue
+at run time.
 
-Fixes: 0d2ab3aea50b ("nl80211: add support for BSS coloring")
-Link: https://lore.kernel.org/r/20220414140402.32e03e8c261b.I5e7dc6bc563a129b938c43298da6bb4e812400a5@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Link: https://lore.kernel.org/r/YmFyWHf8nrrx+SHa@kili
+Fixes: 5bd856256f8c ("scsi: iscsi: Merge suspend fields")
+Reviewed-by: Mike Christie <michael.christie@oracle.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/nl80211.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ include/scsi/libiscsi.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index ba53bc820d81..0aad974f17a7 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -16194,8 +16194,7 @@ static const struct genl_small_ops nl80211_small_ops[] = {
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = nl80211_color_change,
- 		.flags = GENL_UNS_ADMIN_PERM,
--		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
--				  NL80211_FLAG_NEED_RTNL,
-+		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP,
- 	},
- 	{
- 		.cmd = NL80211_CMD_SET_FILS_AAD,
+diff --git a/include/scsi/libiscsi.h b/include/scsi/libiscsi.h
+index d1e282f0d6f1..6ad01d7de480 100644
+--- a/include/scsi/libiscsi.h
++++ b/include/scsi/libiscsi.h
+@@ -53,9 +53,9 @@ enum {
+ #define ISID_SIZE			6
+ 
+ /* Connection flags */
+-#define ISCSI_CONN_FLAG_SUSPEND_TX	BIT(0)
+-#define ISCSI_CONN_FLAG_SUSPEND_RX	BIT(1)
+-#define ISCSI_CONN_FLAG_BOUND		BIT(2)
++#define ISCSI_CONN_FLAG_SUSPEND_TX	0
++#define ISCSI_CONN_FLAG_SUSPEND_RX	1
++#define ISCSI_CONN_FLAG_BOUND		2
+ 
+ #define ISCSI_ITT_MASK			0x1fff
+ #define ISCSI_TOTAL_CMDS_MAX		4096
 -- 
 2.35.1
 
