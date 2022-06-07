@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F358CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B193CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:17:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359321AbiFGUPG (ORCPT
+        id S1359455AbiFGUPV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:15:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39806 "EHLO
+        Tue, 7 Jun 2022 16:15:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355687AbiFGTVT (ORCPT
+        with ESMTP id S1355059AbiFGTWG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:21:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE30A19BC01;
-        Tue,  7 Jun 2022 11:08:46 -0700 (PDT)
+        Tue, 7 Jun 2022 15:22:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B838D49F81;
+        Tue,  7 Jun 2022 11:08:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 570A861903;
-        Tue,  7 Jun 2022 18:08:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FB73C385A5;
-        Tue,  7 Jun 2022 18:08:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 492AFB82340;
+        Tue,  7 Jun 2022 18:08:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACD6BC385A5;
+        Tue,  7 Jun 2022 18:08:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625324;
-        bh=WQOEOZu+GFtit9nfZ0CRil1D8zDpzePz2KgoVdWnlhA=;
+        s=korg; t=1654625336;
+        bh=t3hrAwWBwsBzAgzMagjHfQFc8tnCTd0Z2UGGpiYnyUE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pl+o4dpIo2EG2AEp/BVsTzayoaOdVB9DDqWlSZxeihkp2BpMnFeLtDvv4S0mXblZE
-         +YkG4I/BXvG+YXPriokpNCtHmp7K5zyW0U6Kz6/zIyfZ9u4/m8sGFugl3Ydg38gjd5
-         intHh5ci9K0K15bq71TFIpwyVgqxOjeNXkxIZwxE=
+        b=dEbmHm0SFW1t5FHXevpK6wmsqPX6R2NYUVyz6wQLL+lff6cZRQKAyW3cXV4naFjo/
+         4e3J5oqlt6UXRNgmQjI8Y42hrnNtbF7qwURL5ZZ3u7bVZyDwQAw/I6mbx4ggd9lBjj
+         spJrj1GunVizn+GaRDuMo+w1268PL8ZmbIbPSOAU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>
-Subject: [PATCH 5.15 645/667] vdpasim: allow to enable a vq repeatedly
-Date:   Tue,  7 Jun 2022 19:05:10 +0200
-Message-Id: <20220607164953.999166633@linuxfoundation.org>
+        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 649/667] net: ipa: fix page free in ipa_endpoint_trans_release()
+Date:   Tue,  7 Jun 2022 19:05:14 +0200
+Message-Id: <20220607164954.118180898@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,44 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eugenio Pérez <eperezma@redhat.com>
+From: Alex Elder <elder@linaro.org>
 
-commit 242436973831aa97e8ce19533c6c912ea8def31b upstream.
+commit 155c0c90bca918de6e4327275dfc1d97fd604115 upstream.
 
-Code must be resilient to enable a queue many times.
+Currently the (possibly compound) page used for receive buffers are
+freed using __free_pages().  But according to this comment above the
+definition of that function, that's wrong:
+    If you want to use the page's reference count to decide when
+    to free the allocation, you should allocate a compound page,
+    and use put_page() instead of __free_pages().
 
-At the moment the queue is resetting so it's definitely not the expected
-behavior.
+Convert the call to __free_pages() in ipa_endpoint_trans_release()
+to use put_page() instead.
 
-v2: set vq->ready = 0 at disable.
-
-Fixes: 2c53d0f64c06 ("vdpasim: vDPA device simulator")
-Cc: stable@vger.kernel.org
-Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
-Message-Id: <20220519145919.772896-1-eperezma@redhat.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Fixes: ed23f02680caa ("net: ipa: define per-endpoint receive buffer size")
+Signed-off-by: Alex Elder <elder@linaro.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/vdpa/vdpa_sim/vdpa_sim.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ipa/ipa_endpoint.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
-+++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-@@ -353,11 +353,14 @@ static void vdpasim_set_vq_ready(struct
- {
- 	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
- 	struct vdpasim_virtqueue *vq = &vdpasim->vqs[idx];
-+	bool old_ready;
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -1389,7 +1389,7 @@ void ipa_endpoint_trans_release(struct i
+ 		struct page *page = trans->data;
  
- 	spin_lock(&vdpasim->lock);
-+	old_ready = vq->ready;
- 	vq->ready = ready;
--	if (vq->ready)
-+	if (vq->ready && !old_ready) {
- 		vdpasim_queue_ready(vdpasim, idx);
-+	}
- 	spin_unlock(&vdpasim->lock);
+ 		if (page)
+-			__free_pages(page, get_order(IPA_RX_BUFFER_SIZE));
++			put_page(page);
+ 	}
  }
  
 
