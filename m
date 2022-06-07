@@ -2,105 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 156B5CCA48C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:30:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F02B3CCA48A
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:30:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390196AbiFHB3D (ORCPT
+        id S1390051AbiFHB3A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:29:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41532 "EHLO
+        Tue, 7 Jun 2022 21:29:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382591AbiFGWEw (ORCPT
+        with ESMTP id S1441967AbiFGW6W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:04:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ACA8195911;
-        Tue,  7 Jun 2022 12:16:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 275EA61846;
-        Tue,  7 Jun 2022 19:16:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BE2AC385A2;
-        Tue,  7 Jun 2022 19:16:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629364;
-        bh=XWpk6V/154R5tELQENQl5ceIwIAimCa0bLUYtlrSCjM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ede9HT0Kg5kHnwAkf7R7a100f5SsZM+3hQhMvkcn2NJ+pFhH0eEcq/NgcdmPSYaZz
-         GsaDEIrQVhF4XXkvsEtY5rYv0/fIFoDJgkQt9LllU4Mz9TcLOQQWsVjpvGx+xWyyyH
-         HV2FU78HiowTeTbokQXtSHf7oXhWuHuD8UGt0PSg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yong Wu <yong.wu@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 664/879] iommu/mediatek: Fix 2 HW sharing pgtable issue
-Date:   Tue,  7 Jun 2022 19:03:02 +0200
-Message-Id: <20220607165022.119559056@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 18:58:22 -0400
+Received: from 18.mo581.mail-out.ovh.net (18.mo581.mail-out.ovh.net [188.165.56.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED4032EB8B
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 13:03:44 -0700 (PDT)
+Received: from player698.ha.ovh.net (unknown [10.111.208.235])
+        by mo581.mail-out.ovh.net (Postfix) with ESMTP id 62BB9242B2
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:24:38 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player698.ha.ovh.net (Postfix) with ESMTPSA id 4F4D12B4804CC;
+        Tue,  7 Jun 2022 19:24:29 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-110S0042cd40763-c023-4ca6-b106-f074094dbf1e,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Antonino Daplas <adaplas@gmail.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Helge Deller <deller@gmx.de>, Paul Mackerras <paulus@samba.org>
+Cc:     linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>, dri-devel@lists.freedesktop.org
+Subject: [PATCH 5/7] fbdev: nvidia: Use backlight helper
+Date:   Tue,  7 Jun 2022 21:23:33 +0200
+Message-Id: <20220607192335.1137249-6-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220607192335.1137249-1-steve@sk2.org>
+References: <20220607192335.1137249-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11958745864637351657
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudefjecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgepheenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekud
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yong Wu <yong.wu@mediatek.com>
+Instead of retrieving the backlight brightness in struct
+backlight_properties manually, and then checking whether the backlight
+should be on at all, use backlight_get_brightness() which does all
+this and insulates this from future changes.
 
-[ Upstream commit 645b87c190c959e9bb4f216b8c4add4ee880451a ]
-
-In the commit 4f956c97d26b ("iommu/mediatek: Move domain_finalise into
-attach_device"), I overlooked the sharing pgtable case.
-After that commit, the "data" in the mtk_iommu_domain_finalise always is
-the data of the current IOMMU HW. Fix this for the sharing pgtable case.
-
-Only affect mt2712 which is the only SoC that share pgtable currently.
-
-Fixes: 4f956c97d26b ("iommu/mediatek: Move domain_finalise into attach_device")
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Link: https://lore.kernel.org/r/20220503071427.2285-5-yong.wu@mediatek.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Cc: Antonino Daplas <adaplas@gmail.com>
+Cc: Helge Deller <deller@gmx.de>
+Cc: linux-fbdev@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
 ---
- drivers/iommu/mtk_iommu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/video/fbdev/nvidia/nv_backlight.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 6fd75a60abd6..95c82b8bcc35 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -446,7 +446,7 @@ static void mtk_iommu_domain_free(struct iommu_domain *domain)
- static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 				   struct device *dev)
+diff --git a/drivers/video/fbdev/nvidia/nv_backlight.c b/drivers/video/fbdev/nvidia/nv_backlight.c
+index 2ce53529f636..503a7a683855 100644
+--- a/drivers/video/fbdev/nvidia/nv_backlight.c
++++ b/drivers/video/fbdev/nvidia/nv_backlight.c
+@@ -49,17 +49,11 @@ static int nvidia_bl_update_status(struct backlight_device *bd)
  {
--	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
-+	struct mtk_iommu_data *data = dev_iommu_priv_get(dev), *frstdata;
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
- 	struct device *m4udev = data->dev;
- 	int ret, domid;
-@@ -456,7 +456,10 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 		return domid;
+ 	struct nvidia_par *par = bl_get_data(bd);
+ 	u32 tmp_pcrt, tmp_pmc, fpcontrol;
+-	int level;
++	int level = backlight_get_brightness(bd);
  
- 	if (!dom->data) {
--		if (mtk_iommu_domain_finalise(dom, data, domid))
-+		/* Data is in the frstdata in sharing pgtable case. */
-+		frstdata = mtk_iommu_get_m4u_data();
-+
-+		if (mtk_iommu_domain_finalise(dom, frstdata, domid))
- 			return -ENODEV;
- 		dom->data = data;
- 	}
+ 	if (!par->FlatPanel)
+ 		return 0;
+ 
+-	if (bd->props.power != FB_BLANK_UNBLANK ||
+-	    bd->props.fb_blank != FB_BLANK_UNBLANK)
+-		level = 0;
+-	else
+-		level = bd->props.brightness;
+-
+ 	tmp_pmc = NV_RD32(par->PMC, 0x10F0) & 0x0000FFFF;
+ 	tmp_pcrt = NV_RD32(par->PCRTC0, 0x081C) & 0xFFFFFFFC;
+ 	fpcontrol = NV_RD32(par->PRAMDAC, 0x0848) & 0xCFFFFFCC;
 -- 
-2.35.1
-
-
+2.30.2
 
