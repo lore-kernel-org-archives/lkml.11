@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B039DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1B91C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:08:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382932AbiFGWIv (ORCPT
+        id S1383583AbiFGWIz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:08:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53632 "EHLO
+        Tue, 7 Jun 2022 18:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379932AbiFGVGg (ORCPT
+        with ESMTP id S1379729AbiFGVGQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:06:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF22212554;
-        Tue,  7 Jun 2022 11:50:39 -0700 (PDT)
+        Tue, 7 Jun 2022 17:06:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD1462109FC;
+        Tue,  7 Jun 2022 11:50:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B930BB822C0;
-        Tue,  7 Jun 2022 18:50:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28F91C385A2;
-        Tue,  7 Jun 2022 18:50:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F98361734;
+        Tue,  7 Jun 2022 18:50:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FE90C385A5;
+        Tue,  7 Jun 2022 18:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627835;
-        bh=+ehzoZ1+4/6eIf04m+qPZ2eANMxYBdwQHqalydfBe80=;
+        s=korg; t=1654627810;
+        bh=CHObYO3QTAakNe5T3Fe914iXUbpSy1aT88lWYZtUQ/Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dh5HsKV2XLmrkmrY8COdebUURFLNNXq2ZZdcMfjQGu9Nty94quS4mp3lK1HNzmv+I
-         oqPFGRWxiwJMUSk4LqB4cDWg4s/v5twUtNzs2sTyU5xDftadS7TU8YN33yIbNjaytV
-         avHat42Bj4CDYoGv+ubMR28YJu/6SVVhaWAoraRY=
+        b=DdWjTtJMisMc+TDXrS+pSGp4xjALh81EB7M+cVpbddyONwjR9SxtcZJu6lFNeFtJ/
+         zhFKccXY636b/Fj4B4Pf8M/Wnk4Z1Kj0RHIHWqPFkvtTXZXmKM5z5Bij2EHvc+x1Jk
+         6XyfABvz+veIGTOZVndYtwZR82jqtoA4F9tbPebM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sam Ravnborg <sam@ravnborg.org>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>, Du Cheng <ducheng2@gmail.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Claudio Suarez <cssk@net-c.es>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
+        stable@vger.kernel.org,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Bingbu Cao <bingbu.cao@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 070/879] fbcon: Consistently protect deferred_takeover with console_lock()
-Date:   Tue,  7 Jun 2022 18:53:08 +0200
-Message-Id: <20220607165004.723924768@linuxfoundation.org>
+Subject: [PATCH 5.18 100/879] media: Revert "media: dw9768: activate runtime PM and turn off device"
+Date:   Tue,  7 Jun 2022 18:53:38 +0200
+Message-Id: <20220607165005.598260361@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -54,52 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Vetter <daniel.vetter@ffwll.ch>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-[ Upstream commit 43553559121ca90965b572cf8a1d6d0fd618b449 ]
+[ Upstream commit 7dd0f93a31af03cba81c684c4c361bba510ffe71 ]
 
-This shouldn't be a problem in practice since until we've actually
-taken over the console there's nothing we've registered with the
-console/vt subsystem, so the exit/unbind path that check this can't
-do the wrong thing. But it's confusing, so fix it by moving it a tad
-later.
+This reverts commit c09d776eaa060534a1663e3b89d842db3e1d9076.
 
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Du Cheng <ducheng2@gmail.com>
-Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc: Claudio Suarez <cssk@net-c.es>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220405210335.3434130-14-daniel.vetter@ffwll.ch
+Revert the commit as it breaks runtime PM support on OF based systems.
+More fixes to the driver are needed.
+
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+Reviewed-by: Bingbu Cao <bingbu.cao@intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/core/fbcon.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/media/i2c/dw9768.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index 2fc1b80a26ad..9a8ae6fa6ecb 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -3265,6 +3265,9 @@ static void fbcon_register_existing_fbs(struct work_struct *work)
+diff --git a/drivers/media/i2c/dw9768.c b/drivers/media/i2c/dw9768.c
+index 65c6acf3ced9..c086580efac7 100644
+--- a/drivers/media/i2c/dw9768.c
++++ b/drivers/media/i2c/dw9768.c
+@@ -469,11 +469,6 @@ static int dw9768_probe(struct i2c_client *client)
  
- 	console_lock();
+ 	dw9768->sd.entity.function = MEDIA_ENT_F_LENS;
  
-+	deferred_takeover = false;
-+	logo_shown = FBCON_LOGO_DONTSHOW;
-+
- 	for_each_registered_fb(i)
- 		fbcon_fb_registered(registered_fb[i]);
+-	/*
+-	 * Device is already turned on by i2c-core with ACPI domain PM.
+-	 * Attempt to turn off the device to satisfy the privacy LED concerns.
+-	 */
+-	pm_runtime_set_active(dev);
+ 	pm_runtime_enable(dev);
+ 	if (!pm_runtime_enabled(dev)) {
+ 		ret = dw9768_runtime_resume(dev);
+@@ -488,7 +483,6 @@ static int dw9768_probe(struct i2c_client *client)
+ 		dev_err(dev, "failed to register V4L2 subdev: %d", ret);
+ 		goto err_power_off;
+ 	}
+-	pm_runtime_idle(dev);
  
-@@ -3282,8 +3285,6 @@ static int fbcon_output_notifier(struct notifier_block *nb,
- 	pr_info("fbcon: Taking over console\n");
+ 	return 0;
  
- 	dummycon_unregister_output_notifier(&fbcon_output_nb);
--	deferred_takeover = false;
--	logo_shown = FBCON_LOGO_DONTSHOW;
- 
- 	/* We may get called in atomic context */
- 	schedule_work(&fbcon_deferred_takeover_work);
 -- 
 2.35.1
 
