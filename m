@@ -2,159 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D8C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:39:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93381C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:42:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381132AbiFGVjv (ORCPT
+        id S1381160AbiFGVj7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:39:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50084 "EHLO
+        Tue, 7 Jun 2022 17:39:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377369AbiFGUui (ORCPT
+        with ESMTP id S1377418AbiFGUuk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:50:38 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C8B71F89A3
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:40:11 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 257F9Q7h010564;
-        Tue, 7 Jun 2022 18:39:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=n0t/o05B8ULNOSmNZOVwHI54TDanTcDkem3xBt/a3GA=;
- b=B4uzPKjSuRaBRdishKtGbE/Cl25CEzpBxuwXOn7dZ5Ve2146cNT2XuWy+3+oc1UARUoV
- 5aMOygajQ1Y9M5ELNNSCui4hhqCT/mlV+LMSUZEwojVegXsK9n5F3P3BbEfqlFqYsjO1
- W0JKcRc2BZLHwHFhvS2fBXYvwUHU3nSA0wWPgvy9LeGaUjh4x0+ESSqfG4MUi3VyO/Pp
- DBKeey7MARcAEQmCk381wy34sxT5jLfghGReZZNOVckp2alFWKTO70t0IZMpXIQZTcil
- dxZ3QPAGf4fMb4x0brcI1y8uF/TbJtU2y54IAZe0s5NJ0XupqPlngvaZjpUd2jhryNJS dg== 
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3ghvs3a1q7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 07 Jun 2022 18:39:40 +0000
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 257IGHLN031478;
-        Tue, 7 Jun 2022 18:39:39 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2049.outbound.protection.outlook.com [104.47.66.49])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3gfwu3ah08-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 07 Jun 2022 18:39:39 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y8WwILqVadIXZomS/KygpvPJlzxP7zfqZ7JFLtOp48LvjX9X+C5OaS/mvsierGdqITskMoHayY1B0pK6cEKe6zTNzf+uhQCqblO4VsYRmu8DB4f8BVYa3LhLKFcCVC+evElTn2iMpm34gpoYa2uD5akY9mlqxeZxHaK9q3tkOzomr2nnv8H0CPlemrZ2yrCZ6ioI7yUELqe/VfhT+lJD+804kky3jGWXHLbeOdRpV30KSj3lbqk+PG+D32C1TnQAOmstlal9i+qviAHN3O9QeOeV3w20lGTbl0AKXaVa03XWFVCueVF91zzoEWFtM7osv9MtbaqBM3LD9zjZLUZqsw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=n0t/o05B8ULNOSmNZOVwHI54TDanTcDkem3xBt/a3GA=;
- b=WHSHLkSi3CELw5nTILQ1VbgMuYgKxp7n7z/zP/QrVGCwM0r1A3hyWGadprYs4wco60tf3Sqm/38TFC498GB9Ih1qI+heIxF9w62ztDPGJZm74hdern90evGGSF0XS23eJM+mDsjC4LAL8S5h2qCwBLrlHau7hiZY3MMysCySx+0/zTYfhfSWea0FUhHFwJ9hjar1RR4uCPJvVBEMt/kcgG7MLs3MTj+XYx/gNLGaJgKKpvwW6Twz3OLf7ldUh5neY19vVwYrrCsm1DTC5iR3K5anORUhS4D0Q52l98sasfbOaDWtd/z1fnN/YlAKikJi3dlRynoioHBCvrlvHOXXNQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n0t/o05B8ULNOSmNZOVwHI54TDanTcDkem3xBt/a3GA=;
- b=YKJzbyI1jKYzZroZL6NzWGfqt1WLZmd9YuXrGZGUyyZwDIjkqZd0GcV2ZoO4qrXHWhJO1arR2UF5HRfdb0nEkIrNpx53jMCvdg22VQpcrCHNpCwjldvNuWM8p/0b7NMOrUS3Et2KYT85+0M3oeulMsDsRsafs69s6NJEKr1XxnU=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CY4PR10MB1400.namprd10.prod.outlook.com
- (2603:10b6:903:22::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.17; Tue, 7 Jun
- 2022 18:39:32 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b%6]) with mapi id 15.20.5314.019; Tue, 7 Jun 2022
- 18:39:32 +0000
-Date:   Tue, 7 Jun 2022 21:39:21 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Jared Kangas <kangas.jd@gmail.com>
-Cc:     vaibhav.sr@gmail.com, mgreer@animalcreek.com, elder@kernel.org,
-        gregkh@linuxfoundation.org, greybus-dev@lists.linaro.org,
-        johan@kernel.org, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev
-Subject: Re: [PATCH] staging: greybus: audio: fix loop cursor use after
- iteration
-Message-ID: <20220607183921.GQ2168@kadam>
-References: <20220605231806.720085-1-kangas.jd@gmail.com>
- <20220606130626.GX2146@kadam>
- <Yp9/kqBUzpArfPdn@fedora>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yp9/kqBUzpArfPdn@fedora>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: MR2P264CA0097.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:500:33::13) To MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28)
+        Tue, 7 Jun 2022 16:50:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E511F98C6;
+        Tue,  7 Jun 2022 11:40:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BEBA6B8237B;
+        Tue,  7 Jun 2022 18:40:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37393C385A5;
+        Tue,  7 Jun 2022 18:40:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654627212;
+        bh=9E8DLy1jXcYjYN0wqF0KZRXbQUMR5XhMKZCP7s2JCPY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZnqTMJiCy2Dk4KYgPFXNwkIbEYWsGUTkvfovoAFpgQy60lMTlLoiQW7RRRZRwlhd1
+         RcWj1DSUx645vo130REmwgzYbeJMRvYAYlYP4zGXmwXK0xM0DwaTwQ1eIE5Ukc//Tf
+         9gp4p7W8DqbxXnLMnxS3muvZTN481Mk57jt2pp2o=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Nico Boehr <nrb@linux.ibm.com>
+Subject: [PATCH 5.17 659/772] s390/perf: obtain sie_block from the right address
+Date:   Tue,  7 Jun 2022 19:04:11 +0200
+Message-Id: <20220607165008.479850822@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
+References: <20220607164948.980838585@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e3c026ed-8758-4c98-c78f-08da48b51041
-X-MS-TrafficTypeDiagnostic: CY4PR10MB1400:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR10MB14000D734CF4E959A4CF50918EA59@CY4PR10MB1400.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Io7+VLBZ/OE4PVEsn5T3lZndzSjcBCFMK0RelDAndj91iKjtNv7p7dvaGYCJo/1jUkHUm0Xrte4Xvuq54+fC+Vkr8/GK/69QnYEBscUYNkU/d+QYsxKwyoZC03EZJdsIDJFWxKu7Yl+/WElRxZiS1om/iJMMeQP+N7jpXshpd8oP/C5UvCnfgVIDC2FDZBNFIKYyQrMcWOBp4SyGZ+MApcLm7BCyvabmyv/qnFaQ9VFxEVeZxbKVumabycEm84CvQpA/tbKWhnc/t+3HGkft2qNVsrbzkN05bcZED3zCqOvOLJwuAkPohjYv/FPMPDbbY23h403hYYLLyUXWPZtfHGov/IvL+1MTbleKkB17bw1Q36Z5SrfgZm2l0wLoGrYbZZUzH0pU2L23Q8/qiX/IFvJaI8kHw9hkbgDX2RuhQwT19PpFUzQUnCYy1Sf7Kdr1oRgqK9XP55zBh099JJ3D96sxyFzl7Vs/X5Ox+dSyL0WTp4WhnqOO43khsKMPQyRMo0CP8hZ+TitQ7BrK/3/lvQp4F/UTLLGDjXDs8lM3UtBFnqs4XpNmgSqMYUMsTI2n7DFhCXXTAJGejJxwnVeFGyy08VMsaUqBaHxCEARxskzqCond0rDjcEgi+HTn9QRLFokt7ApmKtCgER90z9MUuiDvYLQU2/YT7b3gKy7m5060YtWJWwaVGrpx/aYHLon2FLahzj0OFMceJdYAQhoomg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(86362001)(2906002)(38350700002)(508600001)(38100700002)(4744005)(8936002)(9686003)(52116002)(6512007)(5660300002)(26005)(316002)(6506007)(6486002)(1076003)(44832011)(6666004)(6916009)(8676002)(66556008)(66946007)(66476007)(4326008)(186003)(33716001)(33656002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YbtHq6W6ODYP75zMx7kj1gEON3/QTjv0Amvpj0c4kjSbcEe1sDu2gWzm/Q85?=
- =?us-ascii?Q?pcS2Y7A7j9sEYR86fMvNmKrP1wb8/umJ18bkr0tF1Yx0ft5SpalQsvFcVija?=
- =?us-ascii?Q?aOezUvSts3hcngWdl7E/Ncr+22hUPWbwGRFbWm/fodyY5f0GxxhpNXOIQN1g?=
- =?us-ascii?Q?PAe5I2pmpDqdzbk98hIlt9b1e8yCykj5gNPJMSx+BjURzv1D+VnanU6pYkf7?=
- =?us-ascii?Q?ghJHsFKFLm0bukOGeLzHQgwDXfbKSU50p8BCpZ775nWOJrULuGmnzV1tKmnm?=
- =?us-ascii?Q?3QV8tpqtkjcRvksW3ggaTIkcJENGJFV2wE/KYjsdNb7jgNib+z2x9bzuL0DS?=
- =?us-ascii?Q?Xc1KmDkLTL4Hvai4KQ7Uey4lcQXfNXC//TWN6q0DZ2tJX8KLUrIwvUo1x7fL?=
- =?us-ascii?Q?Irivdgjc5SGIOXeuNATYTE/Rz/rgHAgk1jwkd9QBxzrSvQ+GRt+9f36386ih?=
- =?us-ascii?Q?F4THf64wSLu6vbLIxPkTqMfsQTwg0Y7x8ro1Uu1UW1X1A/aRa1EpuASsvsxF?=
- =?us-ascii?Q?Z+Ja3jOO5OAI1bZGo9hISyvEOGVIUBXb1NxyIA6IiDGSzuCfxA0/WH3qH7TH?=
- =?us-ascii?Q?SwCsEp3XUrSlIVR/7xhoxrgshPMh15KQR0Ia1MVZjyrghd2ONYAl37H4vWK1?=
- =?us-ascii?Q?gm7DLnIgGU19XB74K74bmibXm6YysoXrAFvSW92B8Q2qWj8Bj1EMIaYDXt6F?=
- =?us-ascii?Q?6qOhGlX/7bXls/kOlqmjCx16xsrob66YxVkwr/DCvVbg4Qp911n7KU4U+zpg?=
- =?us-ascii?Q?3g2nBOl2+KqwS58kNc+bRr5kTXN4wYUUVKFsuFeheqb8Q4l9Oay2EXkT/WqH?=
- =?us-ascii?Q?OkJkTFfyEtQ3tfnTlZDhAFshuD27LmLySybvuG3hVL28ONzS5lWqOZpnL2Ff?=
- =?us-ascii?Q?jP5DvN42+U9nti8sXxvCbwjFS0E4csFEFzuycLk+e8jQa9hwQViKQFT962+q?=
- =?us-ascii?Q?gn3RlMezsK9lM0COGNh3f3Emeh4/Pnj63sFm/PELUSnM/svtDpeWg52S53wD?=
- =?us-ascii?Q?v1uiKW4jHr4JTEgvF5Kim1lVCfCMNa5xDEmEe8UWI3j3+snRN2k3SmY+FJbl?=
- =?us-ascii?Q?AgERP40ExeOm+PBmLGQmoVdZ9pqsi8/tbtHGm8PB8faYlAXfcN1sDIdDPyN2?=
- =?us-ascii?Q?s4oRIUZ2ep9bBsNN+huiYip+dchArXDmJXKp+alI9JpY0YtzankDOKO52iDV?=
- =?us-ascii?Q?N1tBMS+FOW5dIxd+iDU5ChrVrLpELJoiAp6Q+h/QbdImAy0EujgxBX3/16CY?=
- =?us-ascii?Q?ssOCFYobzSpNA1Oxad1bKL4fyeG5Zix4ijf3/Pjvsh0jzuYzUWaeLzuCsElo?=
- =?us-ascii?Q?fEBOWSbdBkIqHM5b5A1JeP8/bhD22lClU8tF+tbLJ/vn1JjTm68K2dRyBfiQ?=
- =?us-ascii?Q?4m5mP35qRi8O9KF1liEiUJkhIW3BTM3qF0wIKt9ykGYF9+7G9AaSFHYZg5bR?=
- =?us-ascii?Q?XAnBUd/VL70OfrfylJ7iUdcrrWUnh+qS4tHzBMZuV4whSC1dSLhxLAfGMtQ9?=
- =?us-ascii?Q?DBlTHIhrJdytLug2C+0VOu/UR02rRJiCP7rK1IGLmSNehSsqGVAHw9NumA7l?=
- =?us-ascii?Q?Spe6kPR6PnlW0v8pxs7CeaXA0rlSc8RLAIkNL9UFbumEtqLw+Ea+sZ0HzaHR?=
- =?us-ascii?Q?FSz8nNq/EDVKCTdADkCKfJrARgiwAZSLEm5LJXJCglc+N2Yq1lAD2ffOpnCM?=
- =?us-ascii?Q?0VSpeOfb91WBiEIR8A7Cs8P4rEairprWznYy78nuxhrHxWUwlTYSSlyN+uZK?=
- =?us-ascii?Q?21PsfJazOVr1Y/K3cmTZp1xERtqjp44=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e3c026ed-8758-4c98-c78f-08da48b51041
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2022 18:39:32.7248
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Lr450dseS3rjOeZfc/ac9RpihGjCyYygmnICqihLf3oE4DXtGQnsNmA6fcShs8a44bk/iTj7b9FTzCQJjQy1ciZcujlCpu/y308FL+D5RnE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR10MB1400
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.874
- definitions=2022-06-07_08:2022-06-07,2022-06-07 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxscore=0 bulkscore=0
- malwarescore=0 phishscore=0 adultscore=0 suspectscore=0 mlxlogscore=519
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2206070076
-X-Proofpoint-ORIG-GUID: Xw2o78V-rqyT5R0TJEUBMl8M6d6_a3vK
-X-Proofpoint-GUID: Xw2o78V-rqyT5R0TJEUBMl8M6d6_a3vK
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 09:40:50AM -0700, Jared Kangas wrote:
-> Thanks for catching that! Is there anything I need to do to add the
-> 'Fixes:' tag to the patch? From my understanding, adding tags is done by
-> a maintainer later on, but I'm new to the patch submission process so I
-> want to make sure I'm not missing anything.
+From: Nico Boehr <nrb@linux.ibm.com>
 
-No, it's up to the person sending the patch to add the fixes tag.
+commit c9bfb460c3e4da2462e16b0f0b200990b36b1dd2 upstream.
 
-regards,
-dan carpenter
+Since commit 1179f170b6f0 ("s390: fix fpu restore in entry.S"), the
+sie_block pointer is located at empty1[1], but in sie_block() it was
+taken from empty1[0].
+
+This leads to a random pointer being dereferenced, possibly causing
+system crash.
+
+This problem can be observed when running a simple guest with an endless
+loop and recording the cpu-clock event:
+
+  sudo perf kvm --guestvmlinux=<guestkernel> --guest top -e cpu-clock
+
+With this fix, the correct guest address is shown.
+
+Fixes: 1179f170b6f0 ("s390: fix fpu restore in entry.S")
+Cc: stable@vger.kernel.org
+Acked-by: Christian Borntraeger <borntraeger@de.ibm.com>
+Acked-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Nico Boehr <nrb@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/s390/kernel/perf_event.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/arch/s390/kernel/perf_event.c
++++ b/arch/s390/kernel/perf_event.c
+@@ -30,7 +30,7 @@ static struct kvm_s390_sie_block *sie_bl
+ 	if (!stack)
+ 		return NULL;
+ 
+-	return (struct kvm_s390_sie_block *) stack->empty1[0];
++	return (struct kvm_s390_sie_block *)stack->empty1[1];
+ }
+ 
+ static bool is_in_guest(struct pt_regs *regs)
+
 
