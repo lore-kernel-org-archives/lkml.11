@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B49FC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3EF5CCA483
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:15:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386207AbiFGWsj (ORCPT
+        id S1387077AbiFGWtw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:48:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45346 "EHLO
+        Tue, 7 Jun 2022 18:49:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381294AbiFGVk0 (ORCPT
+        with ESMTP id S1381462AbiFGVkp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:40:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA96C4D9C1;
-        Tue,  7 Jun 2022 12:06:15 -0700 (PDT)
+        Tue, 7 Jun 2022 17:40:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5EA12332D7;
+        Tue,  7 Jun 2022 12:07:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4762661846;
-        Tue,  7 Jun 2022 19:06:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59699C385A2;
-        Tue,  7 Jun 2022 19:06:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F3E766185A;
+        Tue,  7 Jun 2022 19:06:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A7B0C3411C;
+        Tue,  7 Jun 2022 19:06:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628774;
-        bh=MKXYq3zsco4CGUkzrvPtgdSTX73quzIXig0cbYbwW5Y=;
+        s=korg; t=1654628819;
+        bh=T6MiXZpB06tcLxMbXmqVOWVYpW3czv+bImNQtA0WiII=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0tmLOyydIDuxI+rNhweGGmQh5DzuJ+oZFpnrgkCuoO7ASO3upOe+f8spEYZgsY1eP
-         DrjcTxoP9P/zffViHaRGWK9FfC/omvjaLAPnyByF0A8Vzo6xfpWkhiLQjGrFvQERuW
-         arYH5mhhZOHaxG/GnaXyshSKSHP63UU+PeFFQJCo=
+        b=HhuZuvjHe+jteG1pxNqhHNviF0W2q4pEtoG9ilh5KGq1Uvz332LdVYkmiyIHJ6SzT
+         T6S7sOPLfSv0cL4AlhLLPCn8beyLzd/vdIHBzPn47isZCc39f+QFrC+A/0rlzsULVr
+         oKPtWmV9suSwrh9KCaSLRbl/fzRCKDmZBJj5UMc4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 450/879] media: hantro: HEVC: Fix tile info buffer value computation
-Date:   Tue,  7 Jun 2022 18:59:28 +0200
-Message-Id: <20220607165015.930440638@linuxfoundation.org>
+Subject: [PATCH 5.18 468/879] sctp: read sk->sk_bound_dev_if once in sctp_rcv()
+Date:   Tue,  7 Jun 2022 18:59:46 +0200
+Message-Id: <20220607165016.462618613@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,37 +53,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit d7f4149df818463c1d7094b35db6ebd79f46c7bd ]
+[ Upstream commit a20ea298071f46effa3aaf965bf9bb34c901db3f ]
 
-Use pps->column_width_minus1[j] + 1 as value for the tile info buffer
-instead of pps->column_width_minus1[j + 1].
-The patch fixes DBLK_E_VIXS_2, DBLK_F_VIXS_2, DBLK_G_VIXS_2,
-SAO_B_MediaTek_5, TILES_A_Cisco_2 and TILES_B_Cisco_1 tests in fluster.
+sctp_rcv() reads sk->sk_bound_dev_if twice while the socket
+is not locked. Another cpu could change this field under us.
 
-Fixes: cb5dd5a0fa51 ("media: hantro: Introduce G2/HEVC decoder")
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 0fd9a65a76e8 ("[SCTP] Support SO_BINDTODEVICE socket option on incoming packets.")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Neil Horman <nhorman@tuxdriver.com>
+Cc: Vlad Yasevich <vyasevich@gmail.com>
+Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sctp/input.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-index 2e7eec0372cd..5f3178bac9c8 100644
---- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-+++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-@@ -60,7 +60,7 @@ static void prepare_tile_info_buffer(struct hantro_ctx *ctx)
- 					no_chroma = 1;
- 				for (j = 0, tmp_w = 0; j < num_tile_cols - 1; j++) {
- 					tmp_w += pps->column_width_minus1[j] + 1;
--					*p++ = pps->column_width_minus1[j + 1];
-+					*p++ = pps->column_width_minus1[j] + 1;
- 					*p++ = h;
- 					if (i == 0 && h == 1 && ctb_size == 16)
- 						no_chroma = 1;
+diff --git a/net/sctp/input.c b/net/sctp/input.c
+index 90e12bafdd48..4f43afa8678f 100644
+--- a/net/sctp/input.c
++++ b/net/sctp/input.c
+@@ -92,6 +92,7 @@ int sctp_rcv(struct sk_buff *skb)
+ 	struct sctp_chunk *chunk;
+ 	union sctp_addr src;
+ 	union sctp_addr dest;
++	int bound_dev_if;
+ 	int family;
+ 	struct sctp_af *af;
+ 	struct net *net = dev_net(skb->dev);
+@@ -169,7 +170,8 @@ int sctp_rcv(struct sk_buff *skb)
+ 	 * If a frame arrives on an interface and the receiving socket is
+ 	 * bound to another interface, via SO_BINDTODEVICE, treat it as OOTB
+ 	 */
+-	if (sk->sk_bound_dev_if && (sk->sk_bound_dev_if != af->skb_iif(skb))) {
++	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
++	if (bound_dev_if && (bound_dev_if != af->skb_iif(skb))) {
+ 		if (transport) {
+ 			sctp_transport_put(transport);
+ 			asoc = NULL;
 -- 
 2.35.1
 
