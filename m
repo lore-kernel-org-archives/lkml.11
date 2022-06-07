@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF86BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:19:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 462D9CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348520AbiFGUTD (ORCPT
+        id S1358555AbiFGUTM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:19:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47278 "EHLO
+        Tue, 7 Jun 2022 16:19:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356864AbiFGT2S (ORCPT
+        with ESMTP id S1355377AbiFGTZE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:28:18 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05FE798766;
-        Tue,  7 Jun 2022 11:11:15 -0700 (PDT)
+        Tue, 7 Jun 2022 15:25:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1EF527175;
+        Tue,  7 Jun 2022 11:09:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6EB71CE2439;
-        Tue,  7 Jun 2022 18:11:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 581D7C385A2;
-        Tue,  7 Jun 2022 18:11:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 09A896191F;
+        Tue,  7 Jun 2022 18:09:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11139C385A5;
+        Tue,  7 Jun 2022 18:09:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625471;
-        bh=OQNA3pbhO751SWW63OLtmzQBzHLEIHa7GSdyG62NU3k=;
+        s=korg; t=1654625358;
+        bh=p6AyCMNuodEwCOkW6r5sEFSQXrSzPjcthGFZPDEb/Xg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g5Z4fHyzrl/i7h+cqOK9JDMBIMI4xXaBTwL5kxFOc6/ZAfqIqwxVoDxIBFzqxvr4Q
-         eaXDPIVffyLFdpNu41SrMGnMHfHWa84vH83hRB3Cr64pidjEwTzBbePJWK/6K4yLhD
-         axEPfzJHYR0RxMC2TcRBgXdoIXqTUmJZxenTo7Jw=
+        b=L1YUE23uRM/paOIvIp1D6MeTKmWccS3gfDhoKAUTlGMa9Xx0cD3ROKMRA9qAUrSVr
+         A2FovseyFbZ+JjCsgm/lnDGTxqLMgqatjqI0bMjfrrzqnA/Yu5pSLjB48sfW1kvorK
+         tVHrKVed2lEd6P3rWwQlfzikjVYbpBvoK9xwbLdo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.17 003/772] parisc/stifb: Implement fb_is_primary_device()
-Date:   Tue,  7 Jun 2022 18:53:15 +0200
-Message-Id: <20220607164949.091339911@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Joerg Roedel <jroedel@suse.de>
+Subject: [PATCH 5.15 617/667] iommu/msm: Fix an incorrect NULL check on list iterator
+Date:   Tue,  7 Jun 2022 19:04:42 +0200
+Message-Id: <20220607164953.175903801@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,87 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit cf936af790a3ef5f41ff687ec91bfbffee141278 upstream.
+commit 8b9ad480bd1dd25f4ff4854af5685fa334a2f57a upstream.
 
-Implement fb_is_primary_device() function, so that fbcon detects if this
-framebuffer belongs to the default graphics card which was used to start
-the system.
+The bug is here:
+	if (!iommu || iommu->dev->of_node != spec->np) {
 
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: stable@vger.kernel.org   # v5.10+
+The list iterator value 'iommu' will *always* be set and non-NULL by
+list_for_each_entry(), so it is incorrect to assume that the iterator
+value will be NULL if the list is empty or no element is found (in fact,
+it will point to a invalid structure object containing HEAD).
+
+To fix the bug, use a new value 'iter' as the list iterator, while use
+the old value 'iommu' as a dedicated variable to point to the found one,
+and remove the unneeded check for 'iommu->dev->of_node != spec->np'
+outside the loop.
+
+Cc: stable@vger.kernel.org
+Fixes: f78ebca8ff3d6 ("iommu/msm: Add support for generic master bindings")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220501132823.12714-1-xiam0nd.tong@gmail.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/include/asm/fb.h    |    4 ++++
- drivers/video/console/sticore.c |   17 +++++++++++++++++
- drivers/video/fbdev/stifb.c     |    4 ++--
- 3 files changed, 23 insertions(+), 2 deletions(-)
+ drivers/iommu/msm_iommu.c |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
---- a/arch/parisc/include/asm/fb.h
-+++ b/arch/parisc/include/asm/fb.h
-@@ -12,9 +12,13 @@ static inline void fb_pgprotect(struct f
- 	pgprot_val(vma->vm_page_prot) |= _PAGE_NO_CACHE;
- }
- 
-+#if defined(CONFIG_STI_CONSOLE) || defined(CONFIG_FB_STI)
-+int fb_is_primary_device(struct fb_info *info);
-+#else
- static inline int fb_is_primary_device(struct fb_info *info)
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -615,16 +615,19 @@ static void insert_iommu_master(struct d
+ static int qcom_iommu_of_xlate(struct device *dev,
+ 			       struct of_phandle_args *spec)
  {
- 	return 0;
- }
-+#endif
+-	struct msm_iommu_dev *iommu;
++	struct msm_iommu_dev *iommu = NULL, *iter;
+ 	unsigned long flags;
+ 	int ret = 0;
  
- #endif /* _ASM_FB_H_ */
---- a/drivers/video/console/sticore.c
-+++ b/drivers/video/console/sticore.c
-@@ -30,6 +30,7 @@
- #include <asm/pdc.h>
- #include <asm/cacheflush.h>
- #include <asm/grfioctl.h>
-+#include <asm/fb.h>
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+-	list_for_each_entry(iommu, &qcom_iommu_devices, dev_node)
+-		if (iommu->dev->of_node == spec->np)
++	list_for_each_entry(iter, &qcom_iommu_devices, dev_node) {
++		if (iter->dev->of_node == spec->np) {
++			iommu = iter;
+ 			break;
++		}
++	}
  
- #include "../fbdev/sticore.h"
- 
-@@ -1127,6 +1128,22 @@ int sti_call(const struct sti_struct *st
- 	return ret;
- }
- 
-+/* check if given fb_info is the primary device */
-+int fb_is_primary_device(struct fb_info *info)
-+{
-+	struct sti_struct *sti;
-+
-+	sti = sti_get_rom(0);
-+
-+	/* if no built-in graphics card found, allow any fb driver as default */
-+	if (!sti)
-+		return true;
-+
-+	/* return true if it's the default built-in framebuffer driver */
-+	return (sti->info == info);
-+}
-+EXPORT_SYMBOL(fb_is_primary_device);
-+
- MODULE_AUTHOR("Philipp Rumpf, Helge Deller, Thomas Bogendoerfer");
- MODULE_DESCRIPTION("Core STI driver for HP's NGLE series graphics cards in HP PARISC machines");
- MODULE_LICENSE("GPL v2");
---- a/drivers/video/fbdev/stifb.c
-+++ b/drivers/video/fbdev/stifb.c
-@@ -1317,11 +1317,11 @@ static int __init stifb_init_fb(struct s
- 		goto out_err3;
+-	if (!iommu || iommu->dev->of_node != spec->np) {
++	if (!iommu) {
+ 		ret = -ENODEV;
+ 		goto fail;
  	}
- 
-+	/* save for primary gfx device detection & unregister_framebuffer() */
-+	sti->info = info;
- 	if (register_framebuffer(&fb->info) < 0)
- 		goto out_err4;
- 
--	sti->info = info; /* save for unregister_framebuffer() */
--
- 	fb_info(&fb->info, "%s %dx%d-%d frame buffer device, %s, id: %04x, mmio: 0x%04lx\n",
- 		fix->id,
- 		var->xres, 
 
 
