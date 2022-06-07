@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3E6ECCA481
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:33:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4AD7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:33:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352060AbiFGSdS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:33:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32872 "EHLO
+        id S232869AbiFGSd2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 14:33:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351618AbiFGSCL (ORCPT
+        with ESMTP id S1351545AbiFGSCI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:02:11 -0400
+        Tue, 7 Jun 2022 14:02:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F316B156474;
-        Tue,  7 Jun 2022 10:44:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE18154B26;
+        Tue,  7 Jun 2022 10:44:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8876A6159C;
-        Tue,  7 Jun 2022 17:44:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9776BC385A5;
-        Tue,  7 Jun 2022 17:44:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 247B860C7C;
+        Tue,  7 Jun 2022 17:44:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35552C34119;
+        Tue,  7 Jun 2022 17:44:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623899;
-        bh=DtOx1O0XiaLlxSWEw4zXLFc27dFqLNs2qRbn4pPwBT0=;
+        s=korg; t=1654623890;
+        bh=BrmU2q/cxigeabEKhzsjzIcdbxKZm27SnJIADA1gcgo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GD5PhAMqH3Mx/ZDKYoTB5WBjqTFsbd/JRu/V3+NBSZOwF+xKfIoNHh07jKeQKi5OE
-         OOrZqcpjdNyIntgdTiZpwGbTKgncXeMXl7LBP9CbQ7PWpQtj6h/sdQsZKr5A36yVX8
-         zRXLudzm66wP/SA0pIt8UPk/eUBOvo6PrI3PbnfY=
+        b=KwDORkGfFGqYSHv0c91Af5paRoTlfvstkhup+aDaiGd7U1ZrsGaLNS8SE1WjboYEi
+         K73U2Ccn7BogMZ2CNBF/nSs5j3b/3Wvjl4TTe+VX/o9ecNhXAiSTBMZ8+jAZQynAyP
+         QKE2TETp5IMjuMkcK/1ytLAfhWkLyFfroqKgM8do=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bodo Stroesser <bostroesser@gmail.com>,
-        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org,
+        Sathishkumar S <sathishkumar.sundararaju@amd.com>,
+        Lijo Lazar <lijo.lazar@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 091/667] scsi: target: tcmu: Fix possible data corruption
-Date:   Tue,  7 Jun 2022 18:55:56 +0200
-Message-Id: <20220607164937.550033493@linuxfoundation.org>
+Subject: [PATCH 5.15 127/667] drm/amd/pm: update smartshift powerboost calc for smu12
+Date:   Tue,  7 Jun 2022 18:56:32 +0200
+Message-Id: <20220607164938.635222750@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,144 +51,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+From: Sathishkumar S <sathishkumar.sundararaju@amd.com>
 
-[ Upstream commit bb9b9eb0ae2e9d3f6036f0ad907c3a83dcd43485 ]
+[ Upstream commit 138292f1dc00e7e0724f44769f9da39cf2f3bf0b ]
 
-When tcmu_vma_fault() gets a page successfully, before the current context
-completes page fault procedure, find_free_blocks() may run and call
-unmap_mapping_range() to unmap the page. Assume that when
-find_free_blocks() initially completes and the previous page fault
-procedure starts to run again and completes, then one truncated page has
-been mapped to userspace. But note that tcmu_vma_fault() has gotten a
-refcount for the page so any other subsystem won't be able to use the page
-unless the userspace address is unmapped later.
+smartshift apu and dgpu power boost are reported as percentage with
+respect to their power limits. This value[0-100] reflects the boost
+for the respective device.
 
-If another command subsequently runs and needs to extend dbi_thresh it may
-reuse the corresponding slot for the previous page in data_bitmap. Then
-though we'll allocate new page for this slot in data_area, no page fault
-will happen because we have a valid map and the real request's data will be
-lost.
-
-Filesystem implementations will also run into this issue but they usually
-lock the page when vm_operations_struct->fault gets a page and unlock the
-page after finish_fault() completes. For truncate filesystems lock pages in
-truncate_inode_pages() to protect against racing wrt. page faults.
-
-To fix this possible data corruption scenario we can apply a method similar
-to the filesystems.  For pages that are to be freed, tcmu_blocks_release()
-locks and unlocks. Make tcmu_vma_fault() also lock found page under
-cmdr_lock. At the same time, since tcmu_vma_fault() gets an extra page
-refcount, tcmu_blocks_release() won't free pages if pages are in page fault
-procedure, which means it is safe to call tcmu_blocks_release() before
-unmap_mapping_range().
-
-With these changes tcmu_blocks_release() will wait for all page faults to
-be completed before calling unmap_mapping_range(). And later, if
-unmap_mapping_range() is called, it will ensure stale mappings are removed.
-
-Link: https://lore.kernel.org/r/20220421023735.9018-1-xiaoguang.wang@linux.alibaba.com
-Reviewed-by: Bodo Stroesser <bostroesser@gmail.com>
-Signed-off-by: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sathishkumar S <sathishkumar.sundararaju@amd.com>
+Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/target/target_core_user.c | 40 ++++++++++++++++++++++++++++---
- 1 file changed, 37 insertions(+), 3 deletions(-)
+ .../gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c   | 60 ++++++++++++++-----
+ 1 file changed, 44 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
-index 0ca5ec14d3db..0173f44b015a 100644
---- a/drivers/target/target_core_user.c
-+++ b/drivers/target/target_core_user.c
-@@ -20,6 +20,7 @@
- #include <linux/configfs.h>
- #include <linux/mutex.h>
- #include <linux/workqueue.h>
-+#include <linux/pagemap.h>
- #include <net/genetlink.h>
- #include <scsi/scsi_common.h>
- #include <scsi/scsi_proto.h>
-@@ -1667,6 +1668,26 @@ static u32 tcmu_blocks_release(struct tcmu_dev *udev, unsigned long first,
- 	xas_lock(&xas);
- 	xas_for_each(&xas, page, (last + 1) * udev->data_pages_per_blk - 1) {
- 		xas_store(&xas, NULL);
-+		/*
-+		 * While reaching here there may be page faults occurring on
-+		 * the to-be-released pages. A race condition may occur if
-+		 * unmap_mapping_range() is called before page faults on these
-+		 * pages have completed; a valid but stale map is created.
-+		 *
-+		 * If another command subsequently runs and needs to extend
-+		 * dbi_thresh, it may reuse the slot corresponding to the
-+		 * previous page in data_bitmap. Though we will allocate a new
-+		 * page for the slot in data_area, no page fault will happen
-+		 * because we have a valid map. Therefore the command's data
-+		 * will be lost.
-+		 *
-+		 * We lock and unlock pages that are to be released to ensure
-+		 * all page faults have completed. This way
-+		 * unmap_mapping_range() can ensure stale maps are cleanly
-+		 * removed.
-+		 */
-+		lock_page(page);
-+		unlock_page(page);
- 		__free_page(page);
- 		pages_freed++;
- 	}
-@@ -1822,6 +1843,7 @@ static struct page *tcmu_try_get_data_page(struct tcmu_dev *udev, uint32_t dpi)
- 	page = xa_load(&udev->data_pages, dpi);
- 	if (likely(page)) {
- 		get_page(page);
-+		lock_page(page);
- 		mutex_unlock(&udev->cmdr_lock);
- 		return page;
- 	}
-@@ -1863,6 +1885,7 @@ static vm_fault_t tcmu_vma_fault(struct vm_fault *vmf)
- 	struct page *page;
- 	unsigned long offset;
- 	void *addr;
-+	vm_fault_t ret = 0;
- 
- 	int mi = tcmu_find_mem_index(vmf->vma);
- 	if (mi < 0)
-@@ -1887,10 +1910,11 @@ static vm_fault_t tcmu_vma_fault(struct vm_fault *vmf)
- 		page = tcmu_try_get_data_page(udev, dpi);
- 		if (!page)
- 			return VM_FAULT_SIGBUS;
-+		ret = VM_FAULT_LOCKED;
- 	}
- 
- 	vmf->page = page;
--	return 0;
-+	return ret;
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c
+index 145f13b8c977..138466081875 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c
+@@ -1127,6 +1127,39 @@ static int renoir_get_power_profile_mode(struct smu_context *smu,
+ 	return size;
  }
  
- static const struct vm_operations_struct tcmu_vm_ops = {
-@@ -3153,12 +3177,22 @@ static void find_free_blocks(void)
- 			udev->dbi_max = block;
- 		}
- 
-+		/*
-+		 * Release the block pages.
-+		 *
-+		 * Also note that since tcmu_vma_fault() gets an extra page
-+		 * refcount, tcmu_blocks_release() won't free pages if pages
-+		 * are mapped. This means it is safe to call
-+		 * tcmu_blocks_release() before unmap_mapping_range() which
-+		 * drops the refcount of any pages it unmaps and thus releases
-+		 * them.
-+		 */
-+		pages_freed = tcmu_blocks_release(udev, start, end - 1);
++static void renoir_get_ss_power_percent(SmuMetrics_t *metrics,
++					uint32_t *apu_percent, uint32_t *dgpu_percent)
++{
++	uint32_t apu_boost = 0;
++	uint32_t dgpu_boost = 0;
++	uint16_t apu_limit = 0;
++	uint16_t dgpu_limit = 0;
++	uint16_t apu_power = 0;
++	uint16_t dgpu_power = 0;
 +
- 		/* Here will truncate the data area from off */
- 		off = udev->data_off + (loff_t)start * udev->data_blk_size;
- 		unmap_mapping_range(udev->inode->i_mapping, off, 0, 1);
++	apu_power = metrics->ApuPower;
++	apu_limit = metrics->StapmOriginalLimit;
++	if (apu_power > apu_limit && apu_limit != 0)
++		apu_boost =  ((apu_power - apu_limit) * 100) / apu_limit;
++	apu_boost = (apu_boost > 100) ? 100 : apu_boost;
++
++	dgpu_power = metrics->dGpuPower;
++	if (metrics->StapmCurrentLimit > metrics->StapmOriginalLimit)
++		dgpu_limit = metrics->StapmCurrentLimit - metrics->StapmOriginalLimit;
++	if (dgpu_power > dgpu_limit && dgpu_limit != 0)
++		dgpu_boost = ((dgpu_power - dgpu_limit) * 100) / dgpu_limit;
++	dgpu_boost = (dgpu_boost > 100) ? 100 : dgpu_boost;
++
++	if (dgpu_boost >= apu_boost)
++		apu_boost = 0;
++	else
++		dgpu_boost = 0;
++
++	*apu_percent = apu_boost;
++	*dgpu_percent = dgpu_boost;
++}
++
++
+ static int renoir_get_smu_metrics_data(struct smu_context *smu,
+ 				       MetricsMember_t member,
+ 				       uint32_t *value)
+@@ -1135,6 +1168,9 @@ static int renoir_get_smu_metrics_data(struct smu_context *smu,
  
--		/* Release the block pages */
--		pages_freed = tcmu_blocks_release(udev, start, end - 1);
- 		mutex_unlock(&udev->cmdr_lock);
+ 	SmuMetrics_t *metrics = (SmuMetrics_t *)smu_table->metrics_table;
+ 	int ret = 0;
++	uint32_t apu_percent = 0;
++	uint32_t dgpu_percent = 0;
++
  
- 		total_pages_freed += pages_freed;
+ 	mutex_lock(&smu->metrics_lock);
+ 
+@@ -1183,26 +1219,18 @@ static int renoir_get_smu_metrics_data(struct smu_context *smu,
+ 		*value = metrics->Voltage[1];
+ 		break;
+ 	case METRICS_SS_APU_SHARE:
+-		/* return the percentage of APU power with respect to APU's power limit.
+-		 * percentage is reported, this isn't boost value. Smartshift power
+-		 * boost/shift is only when the percentage is more than 100.
++		/* return the percentage of APU power boost
++		 * with respect to APU's power limit.
+ 		 */
+-		if (metrics->StapmOriginalLimit > 0)
+-			*value =  (metrics->ApuPower * 100) / metrics->StapmOriginalLimit;
+-		else
+-			*value = 0;
++		renoir_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
++		*value = apu_percent;
+ 		break;
+ 	case METRICS_SS_DGPU_SHARE:
+-		/* return the percentage of dGPU power with respect to dGPU's power limit.
+-		 * percentage is reported, this isn't boost value. Smartshift power
+-		 * boost/shift is only when the percentage is more than 100.
++		/* return the percentage of dGPU power boost
++		 * with respect to dGPU's power limit.
+ 		 */
+-		if ((metrics->dGpuPower > 0) &&
+-		    (metrics->StapmCurrentLimit > metrics->StapmOriginalLimit))
+-			*value = (metrics->dGpuPower * 100) /
+-				  (metrics->StapmCurrentLimit - metrics->StapmOriginalLimit);
+-		else
+-			*value = 0;
++		renoir_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
++		*value = dgpu_percent;
+ 		break;
+ 	default:
+ 		*value = UINT_MAX;
 -- 
 2.35.1
 
