@@ -2,76 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 788A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:30:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34B69CCA483
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:31:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245511AbiFGOaq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 10:30:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53742 "EHLO
+        id S245519AbiFGObe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 10:31:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244411AbiFGOao (ORCPT
+        with ESMTP id S244411AbiFGObc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 10:30:44 -0400
-Received: from smtp.ruc.edu.cn (m177126.mail.qiye.163.com [123.58.177.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F5FCE5C9
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 07:30:43 -0700 (PDT)
-Received: from localhost.localdomain (unknown [202.112.113.212])
-        by smtp.ruc.edu.cn (Hmail) with ESMTPSA id C45008009E;
-        Tue,  7 Jun 2022 22:30:40 +0800 (CST)
-From:   Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>,
-        Varun Prakash <varun@chelsio.com>, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] cxgbit_target: Reject immediate data underflow larger than SCSI transfer length
-Date:   Tue,  7 Jun 2022 22:30:35 +0800
-Message-Id: <20220607143035.29541-1-xiaohuizhang@ruc.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWUIZGU9WQhgaTkhNS0weSx
-        1CVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktITUpVS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NDY6Mzo4ED0rKRcfEU5JSw0a
-        SgwaCi5VSlVKTU5PTUpJSU9KT0pIVTMWGhIXVQMSGhQTDhIBExoVHDsJDhhVHh8OVRgVRVlXWRIL
-        WUFZSUtJVUpKSVVKSkhVSUpJWVdZCAFZQUlPQ0s3Bg++
-X-HM-Tid: 0a813e932aaa2c20kusnc45008009e
+        Tue, 7 Jun 2022 10:31:32 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17A6FD106
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 07:31:29 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
+        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <heiko@sntech.de>)
+        id 1nyaEv-0008Ra-ME; Tue, 07 Jun 2022 16:31:25 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     palmer@dabbelt.com, paul.walmsley@sifive.com
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        wefu@redhat.com, guoren@kernel.org, mick@ics.forth.gr,
+        samuel@sholland.org, cmuellner@linux.com, philipp.tomsich@vrull.eu,
+        hch@lst.de, Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH 1/2] riscv: introduce nops and __nops macros for NOP sequences
+Date:   Tue,  7 Jun 2022 16:30:58 +0200
+Message-Id: <20220607143059.1054074-2-heiko@sntech.de>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607143059.1054074-1-heiko@sntech.de>
+References: <20220607143059.1054074-1-heiko@sntech.de>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Similar to the handling of iscsit_get_immediate_data in commit abb85a9b512e
-("iscsi-target: Reject immediate data underflow larger than SCSI transfer length"),
-we thought a patch might be needed here as well.
+NOP sequences tend to get used for padding out alternative sections
 
-Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+This change adds macros for generating these sequences as both inline
+asm blocks, but also as strings suitable for embedding in other asm
+blocks directly.
+
+It essentially mimics similar functionality from arm64 introduced by
+Wil Deacon in commit f99a250cb6a3 ("arm64: barriers: introduce nops
+and __nops macros for NOP sequences").
+
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
- drivers/target/iscsi/cxgbit/cxgbit_target.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ arch/riscv/include/asm/asm.h     | 15 +++++++++++++++
+ arch/riscv/include/asm/barrier.h |  2 ++
+ 2 files changed, 17 insertions(+)
 
-diff --git a/drivers/target/iscsi/cxgbit/cxgbit_target.c b/drivers/target/iscsi/cxgbit/cxgbit_target.c
-index acfc39683c87..800bec4b1e88 100644
---- a/drivers/target/iscsi/cxgbit/cxgbit_target.c
-+++ b/drivers/target/iscsi/cxgbit/cxgbit_target.c
-@@ -920,6 +920,18 @@ cxgbit_get_immediate_data(struct iscsit_cmd *cmd, struct iscsi_scsi_req *hdr,
- 	 */
- 	if (dump_payload)
- 		goto after_immediate_data;
-+	/*
-+	 * Check for underflow case where both EDTL and immediate data payload
-+	 * exceeds what is presented by CDB's TRANSFER LENGTH, and what has
-+	 * already been set in target_cmd_size_check() as se_cmd->data_length.
-+	 *
-+	 * For this special case, fail the command and dump the immediate data
-+	 * payload.
-+	 */
-+	if (cmd->first_burst_len > cmd->se_cmd.data_length) {
-+		cmd->sense_reason = TCM_INVALID_CDB_FIELD;
-+		goto after_immediate_data;
-+	}
+diff --git a/arch/riscv/include/asm/asm.h b/arch/riscv/include/asm/asm.h
+index 618d7c5af1a2..1b471ff73178 100644
+--- a/arch/riscv/include/asm/asm.h
++++ b/arch/riscv/include/asm/asm.h
+@@ -67,4 +67,19 @@
+ #error "Unexpected __SIZEOF_SHORT__"
+ #endif
  
- 	immed_ret = cxgbit_handle_immediate_data(cmd, hdr,
- 						 cmd->first_burst_len);
++#ifdef __ASSEMBLY__
++
++/* Common assembly source macros */
++
++/*
++ * NOP sequence
++ */
++.macro	nops, num
++	.rept	\num
++	nop
++	.endr
++.endm
++
++#endif /* __ASSEMBLY__ */
++
+ #endif /* _ASM_RISCV_ASM_H */
+diff --git a/arch/riscv/include/asm/barrier.h b/arch/riscv/include/asm/barrier.h
+index d0e24aaa2aa0..110752594228 100644
+--- a/arch/riscv/include/asm/barrier.h
++++ b/arch/riscv/include/asm/barrier.h
+@@ -13,6 +13,8 @@
+ #ifndef __ASSEMBLY__
+ 
+ #define nop()		__asm__ __volatile__ ("nop")
++#define __nops(n)	".rept	" #n "\nnop\n.endr\n"
++#define nops(n)		__asm__ __volatile__ (__nops(n))
+ 
+ #define RISCV_FENCE(p, s) \
+ 	__asm__ __volatile__ ("fence " #p "," #s : : : "memory")
 -- 
-2.17.1
+2.35.1
 
