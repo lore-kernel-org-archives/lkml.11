@@ -2,87 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD016CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3EE9CCA481
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:11:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355019AbiFGTKm (ORCPT
+        id S1355046AbiFGTKs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:10:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40154 "EHLO
+        Tue, 7 Jun 2022 15:10:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350546AbiFGSXA (ORCPT
+        with ESMTP id S1350995AbiFGSXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:23:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3245C5D88;
-        Tue,  7 Jun 2022 10:54:17 -0700 (PDT)
+        Tue, 7 Jun 2022 14:23:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FBB3C9EED;
+        Tue,  7 Jun 2022 10:54:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C9CD61782;
-        Tue,  7 Jun 2022 17:54:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DED6C34119;
-        Tue,  7 Jun 2022 17:54:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624457;
-        bh=kIlz6fbgs6kUa12+4YYyDHqgJrft+vKyeXY0ujJmCUc=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62C0B617A5;
+        Tue,  7 Jun 2022 17:54:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00303C385A5;
+        Tue,  7 Jun 2022 17:54:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624441;
+        bh=wH7/90BcNZzwB2bJOgzMEcaResWqJwE5uqhLmPT9ENA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PvSPKyCoaF4NjXfzUwP8rjbY7tU/uTo8BY9pEI+fbhJNe4RMfAWni+BQ8VC5zrqly
-         uWRjvGkoHuZ73sPAYbDLWYifY0S+6YhuSo5zXInbKUqlBYWxYHCya/9cwZDkMabe3R
-         xYoxv6xuFkmzsdialoExxS89tnfyrAR4WOjG1MKE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 307/667] ASoC: imx-hdmi: Fix refcount leak in imx_hdmi_probe
-Date:   Tue,  7 Jun 2022 18:59:32 +0200
-Message-Id: <20220607164943.984022402@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=gjEFQKBCHo5R2E8o6Yp+g740/z6I8C5FqWkd5Jz5buDTfbNYHxJIipy2JeLVN87lt
+         0ZHYSf/ARLKru4K1Jx3ASj63xCdyiCiL7vMSnOpXxQ10UUgBn/1X/E+GRYGRmxH71m
+         57fP2Y8Nj/ZkrSPFEg8k9U5Y99wmaDBMyhIKJyRk4oF6QITFXWeLfPEeO6cbmMSN97
+         hMzewIHcpvYLy+VLgCrmUFvxFgMQB5lYRpOCOP3E05tzSTdN3E29+kLvESlLsJYg1V
+         U2ciy6r/Lztmy269mqM8/+l+6BkTERe2eAofqFX/tj1KYPl6s3yfEDUUYAr6/yWyO6
+         I/pdEu1RvdQLg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Andre Przywara <andre.przywara@arm.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de
+Subject: [PATCH AUTOSEL 5.17 24/60] clocksource/drivers/sp804: Avoid error on multiple instances
+Date:   Tue,  7 Jun 2022 13:52:21 -0400
+Message-Id: <20220607175259.478835-24-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Andre Przywara <andre.przywara@arm.com>
 
-[ Upstream commit ed46731d8e86c8d65f5fc717671e1f1f6c3146d2 ]
+[ Upstream commit a98399cbc1e05f7b977419f03905501d566cf54e ]
 
-of_find_device_by_node() takes reference, we should use put_device()
-to release it. when devm_kzalloc() fails, it doesn't have a
-put_device(), it will cause refcount leak.
-Add missing put_device() to fix this.
+When a machine sports more than one SP804 timer instance, we only bring
+up the first one, since multiple timers of the same kind are not useful
+to Linux. As this is intentional behaviour, we should not return an
+error message, as we do today:
+===============
+[    0.000800] Failed to initialize '/bus@8000000/motherboard-bus@8000000/iofpga-bus@300000000/timer@120000': -22
+===============
 
-Fixes: 6a5f850aa83a ("ASoC: fsl: Add imx-hdmi machine driver")
-Fixes: f670b274f7f6 ("ASoC: imx-hdmi: add put_device() after of_find_device_by_node()")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220511052740.46903-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Replace the -EINVAL return with a debug message and return 0 instead.
+
+Also we do not reach the init function anymore if the DT node is
+disabled (as this is now handled by OF_DECLARE), so remove the explicit
+check for that case.
+
+This fixes a long standing bogus error when booting ARM's fastmodels.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Link: https://lore.kernel.org/r/20220506162522.3675399-1-andre.przywara@arm.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/imx-hdmi.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/clocksource/timer-sp804.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/sound/soc/fsl/imx-hdmi.c b/sound/soc/fsl/imx-hdmi.c
-index ef8d7a65ebc6..d61e3c841e26 100644
---- a/sound/soc/fsl/imx-hdmi.c
-+++ b/sound/soc/fsl/imx-hdmi.c
-@@ -126,6 +126,7 @@ static int imx_hdmi_probe(struct platform_device *pdev)
- 	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
- 	if (!data) {
- 		ret = -ENOMEM;
-+		put_device(&cpu_pdev->dev);
- 		goto fail;
- 	}
+diff --git a/drivers/clocksource/timer-sp804.c b/drivers/clocksource/timer-sp804.c
+index 401d592e85f5..e6a87f4af2b5 100644
+--- a/drivers/clocksource/timer-sp804.c
++++ b/drivers/clocksource/timer-sp804.c
+@@ -259,6 +259,11 @@ static int __init sp804_of_init(struct device_node *np, struct sp804_timer *time
+ 	struct clk *clk1, *clk2;
+ 	const char *name = of_get_property(np, "compatible", NULL);
  
++	if (initialized) {
++		pr_debug("%pOF: skipping further SP804 timer device\n", np);
++		return 0;
++	}
++
+ 	base = of_iomap(np, 0);
+ 	if (!base)
+ 		return -ENXIO;
+@@ -270,11 +275,6 @@ static int __init sp804_of_init(struct device_node *np, struct sp804_timer *time
+ 	writel(0, timer1_base + timer->ctrl);
+ 	writel(0, timer2_base + timer->ctrl);
+ 
+-	if (initialized || !of_device_is_available(np)) {
+-		ret = -EINVAL;
+-		goto err;
+-	}
+-
+ 	clk1 = of_clk_get(np, 0);
+ 	if (IS_ERR(clk1))
+ 		clk1 = NULL;
 -- 
 2.35.1
-
-
 
