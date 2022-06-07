@@ -2,145 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E4C7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:17:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0AB3CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:17:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231869AbiFHCRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40708 "EHLO
+        id S1352221AbiFHCRR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:17:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352590AbiFHBtJ (ORCPT
+        with ESMTP id S1358720AbiFHBtT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 21:49:09 -0400
-Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2056.outbound.protection.outlook.com [40.107.113.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B72DC12DBDB
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 15:42:13 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=blxFegx4JmUIhur9cZn4iiRFrgn40J0h5CBGbQBw+Ga+bXxuUYwLxPQ9aofK5SRq/PJ3839QCdAIXPTHd7Ls6ZKuvWAatAm/gNJvI77aTZwDr9t/7YRhZy2DXGdyTvRGmudL5RAFLcDlL9FLJ4b+TDrgjxWv+Gu+kaoAGovGAFDebEf7cL9/zgPHslMlJTtTb/UOUaJ0l+yO8htf6iif8P023/Azb9I5fuK6z0fvfeVC9V3+gBjHhXaNt9lbSaUZ6UR5fF1oqdUJdb2Edp+JjbuJsLa37qagdbXvS+GvfEz3uz09jfaurBz5S2P6HQUC7USQWij9ohYwj5tQXToXaA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yjyx5XXdzf/kB2bhE5f4ngg3x+h3QW4I45XkwrHA7x8=;
- b=n0tMnrGiBaURuqQlNNB/iypFSXDQfBHrfEvNQ5whHfB5m64WuIHXt3x3nr/Ixm7a+Y9F/LwMCP76xtTM1JYFiiSFNn7P4C2pxbau+LbIvegVIhH08f4nbanozi+lPDVs1WQY9654MNnRFKyzQYjs50nGWMN9rA2UdGtbyLoRWFXQStKTUn2I8Gw32OgPeZ1+SHPo95BqEFShuIMXyQ2OuSaQiQ9R58+e4Vmnvee+4jW0FY9h7eeznOycJ0dhjpSqBK6jtJR9eGiOU7CRK/OXTWuYKTBF/7MPYYq8hYiRnWjXPN/imkPBuStc8eOTzlWEDReYTCxmssYAEOep0INCwQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nec.com; dmarc=pass action=none header.from=nec.com; dkim=pass
- header.d=nec.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nec.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yjyx5XXdzf/kB2bhE5f4ngg3x+h3QW4I45XkwrHA7x8=;
- b=KW9fHGcyQYmPU5zj/XDqsU+e1xAgUhWQUbh/JK5cBnCtHMflanfCnE8CXrdYWYLyjZrMpid+Peny/PuOZ0PpirvWAloGm2MslUTbmAH9JIscz4Wli2lCIUydlX8R3344fYZL1eikwNBknVWv2sQc/yOxrZJj7bUNLgbcBHP+Wn0=
-Received: from TYWPR01MB8591.jpnprd01.prod.outlook.com (2603:1096:400:13c::10)
- by TYAPR01MB5263.jpnprd01.prod.outlook.com (2603:1096:404:11f::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.13; Tue, 7 Jun
- 2022 22:42:10 +0000
-Received: from TYWPR01MB8591.jpnprd01.prod.outlook.com
- ([fe80::246b:9355:73ad:b995]) by TYWPR01MB8591.jpnprd01.prod.outlook.com
- ([fe80::246b:9355:73ad:b995%2]) with mapi id 15.20.5314.019; Tue, 7 Jun 2022
- 22:42:10 +0000
-From:   =?utf-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPo+OAgOebtOS5nyk=?= 
-        <naoya.horiguchi@nec.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-CC:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] MAINTAINERS: add myself as a memory-failure reviewer
-Thread-Topic: [PATCH] MAINTAINERS: add myself as a memory-failure reviewer
-Thread-Index: AQHYen4YN/7nURNaD0+cUE3DAfCV0a1EiqkA
-Date:   Tue, 7 Jun 2022 22:42:10 +0000
-Message-ID: <20220607224210.GA1400450@hori.linux.bs1.fc.nec.co.jp>
-References: <20220607145135.38670-1-linmiaohe@huawei.com>
-In-Reply-To: <20220607145135.38670-1-linmiaohe@huawei.com>
-Accept-Language: ja-JP, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nec.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e2595d85-cb97-4d09-acbb-08da48d6f5b3
-x-ms-traffictypediagnostic: TYAPR01MB5263:EE_
-x-microsoft-antispam-prvs: <TYAPR01MB5263447148C52B034F22ECD3E7A59@TYAPR01MB5263.jpnprd01.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: EjUp6pIqci4s/qaHj0gb0/MjoY187wkQDbv3HwtcrUEaQxL2AeQLXukR9b/xWVR9kKdNSiZSt6jl2SrWKx1k3Ei9t/lSK1BVn3rFtQ9/PONn50sVe7emCNRbe2ldu4NeMI5Fp4VwbXGmJyp4KHIcR2hvhAqnH2z4q8z2cFWC0qiFdsyxNy41oqbavDlAB0IepOwSi5/imcK1PRlynhjbHtY4gI4txDlaqz4bnPF79EuU3sp+MztIBy5wZTslZB9ArUck2r9+7BhYIQMTMDL4MF6yMK6CIiMNh2R31VesxqSkmVuL86ljlXayxLtsFiD1b4WaQvPHsF5RR6WrapSniayOdbGhaCy6zZZQOnN8MslFAJNrkGtSV0FQ/uGeEx1CMPpI/2vDDERw0kN51RENVOu+kUaqGUHPf3IBoPatSnoWM89NPqcZr5qbJP2uKAbgIQcc/jneoQbLrlfRy7U0ph5eDl1l848KBYmig/a+bgiUM1XRbQHNsQbceyKqVwE6JlRnn3nOgDRPCFcpFVp/7vmP5mw9LwldXMT6yUFkb1OhvCHqRHfyiEZupLiqcOu5FoTs1Rz3VacFmPxMRlnjfc0+Ms1uyrkQoxhDA59slrkfxZ00wYk5hNngv+C25PrnaiA0Z0KKi8ULnQlPPWOHmQoa7IvWskouwVE63u58oYPXmMnWLO5p9L4XYC87whVMY5VLQSMvKp9iZ0O1koyfaQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYWPR01MB8591.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4744005)(186003)(66946007)(6512007)(55236004)(1076003)(316002)(83380400001)(38100700002)(508600001)(8936002)(71200400001)(33656002)(86362001)(82960400001)(26005)(9686003)(122000001)(85182001)(66446008)(38070700005)(64756008)(5660300002)(6486002)(76116006)(2906002)(8676002)(54906003)(4326008)(66476007)(66556008)(6916009)(6506007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?M05FeWlqOCtCVFpCanNPdWJ2dTJiVGNkV2ZDTGhuc3Zjcm50U1FSbkRrUkVj?=
- =?utf-8?B?aDk3ZGUxWmZWSjhGTjRGQUR0b3B0VTlRUVkyVWtCMTROM3NjdFVMdWFzcnJU?=
- =?utf-8?B?RTVNL1JTU1M1QWNYc1oySENxbVJaRUU4cHl4bWtNRHIwdytnNWVlV0VFVnJU?=
- =?utf-8?B?Mm1SdnlTaUJUMktweVMzZDU2SkhYdTFxTWIxZXAwSytlbzcwRUZObWgrL0NN?=
- =?utf-8?B?TnVLSjlNZGxGTEhzb1pWVnhoazJRWUtOQWw3d0xIYkdTcHdtSCs3NS91OVp5?=
- =?utf-8?B?d3lxUFlWQW4zQ1BURjFHTTI0WUZnbGx3NUFCUG54azE2Z2d3ZitjNFZUTlVp?=
- =?utf-8?B?MGpPNGszUzF3cWl1M1R3MDNTY0ZpRlVoWmF4dVNpclkwRDl4L2txTEtWZkZJ?=
- =?utf-8?B?TlhITjhpU3Q5TnhXRTdSYTFBRlp5Rk1aa3hiaW9HaUcvL0l6TzBYd0VOMTVy?=
- =?utf-8?B?M240MVErQkRDVm5jYytWZWcvdmd2Qi9iU1ZualNBd0Rvbi9Fdm03aCsvL0FY?=
- =?utf-8?B?Zk05Ry9YYkVJd3hiMEQ5TmhZVFYzd3d6MnE0WWJMWGNYL2NEcDRkQ0l5WjhC?=
- =?utf-8?B?OTllODFvSzR4Y1U4M2E2anhHZTN4SFJLY0NId3cyaDRsUmN6c3NvUVdvUEFp?=
- =?utf-8?B?SFY5V3haL3J4WnRkWjR6U3JjRzdVWW5saFRsWDBNdWJLVFUvR25BZ1FVY0JK?=
- =?utf-8?B?OVJCK2duQXZNR1h4Q0lkbGhEeTRXRFNaRW9lR2FLRE12SDJJQjlQY1hxeXh2?=
- =?utf-8?B?U1EwWGZhRmdkUTYyVjNsem9GR1U2aldPak1aUWM5Zit5NTVNbTZHckU5Ykpp?=
- =?utf-8?B?VnVKRzUwQmh5cTZmaVFENytZaXVrTy82eDdidDkxOUc2Q083YVd5ZnJFYnd4?=
- =?utf-8?B?d00rSHpTd2gyWmRCZlcrQVJ4Ukpja3hwU1JLMUpsNlZnOHpvZFJOYk9pS1Rz?=
- =?utf-8?B?b0NqSSt6a1ozdjJUa1oyU1pDYWlFRW5IbjdjSFhJajhrZys3L3kwVzdnUC92?=
- =?utf-8?B?VjQ5cDlZUE9YTWo5MnZ2VnRWblQvYkJYM2MycktSLzQyQnlwT0Q1OVd2U1da?=
- =?utf-8?B?QjhrWkdIMWJkMTFUbnNIdGZLWHVuUzh6WXhyaDFpbU00eTdaY3l6ZEZYMmIx?=
- =?utf-8?B?YlRTbnE5aC9PSDg1dndYY01Ucmp4eC91eWczZSsxYjFCUlZmMTlqMmVzWHk4?=
- =?utf-8?B?b2EvWnNOcnlmcjdKMVp6cXltQ1g1aTFoWUtVeDNxbnpYWnlydW5LNkFsMjN0?=
- =?utf-8?B?bnBWU25pazJKYm9FN0wrdi96c295MWdKeHowc3RhM0VKWkdzNU1VUHJnRCtI?=
- =?utf-8?B?RHhxQ0dqTW1qMTFkNzR3UWFsRXZiaEVEVXhxd1FpWHlyMDc3RVNvMjJPVzY0?=
- =?utf-8?B?S0c5eno4dDR3M04ya0RkbHFjd09wMGg0eGhXbHJhSVFQNlgvOTk4SWdMVURO?=
- =?utf-8?B?N2YzQnNESllCeVM5TFFIc280VTZnd0NuWWkrV3lMc1RWVGN5YXBrZDBYdkhL?=
- =?utf-8?B?NE9DdlNFY1UwSm43UFNCSjhmMGlNL0xVOFZJSXhka2RFZXc0dzh1bWQvSEUx?=
- =?utf-8?B?VUI4NUYxVXVqL0lMM1hIeFFLamc1SWxRaXg1ckFIWk44Nng2aTM2bzJTSGZK?=
- =?utf-8?B?cnlTc255MVp6ZFZOcGllQmZjaDF4Rlp3U2plY1lvbml5cGJSYStQcGdWZVEv?=
- =?utf-8?B?WXpva21xT1NTbjA1Y1RpemJGWXprS3N6U2Y3Q2FNaEZ3dGFzcEdOQlg5NnRo?=
- =?utf-8?B?WktNRkplWDF6bkJ4bkd3dUhXd0FHcjYyMEgxR3Q1aWt2d3lSYXZhZ05jSXlp?=
- =?utf-8?B?Y0xOZkdzUmZOcEIyVVU1QXA4NHpPbmlYTE1KaWJXa0w0dFdERWo3QWVqZXVP?=
- =?utf-8?B?NjlBOVQ0NnJmd0RSMmtBaXYvd20yZktQM0pCVlp5WDRxdzdJK0swbXA3UTZ1?=
- =?utf-8?B?bDRmakYzb29BQW9VeE5iek1tVFVCS3NPdzZUYWE2cUFWU0lHK3VoSFVSckhI?=
- =?utf-8?B?NFZwSE13SjREMHlzREVNYnQwWE5QV2ErMGM3ZDlrQ0Y0MVd3Z3ROazFkMnZE?=
- =?utf-8?B?UzNxc0crOWRJQSsvL1IzM0h4dUpZWDlZTVNxMkZtRitkcDBiWnI5c3lCRjFy?=
- =?utf-8?B?U1Mza0Vja2ptb2o1ZjgzZ3h2OWx2elFRYWxTUDI4aFVyNkcwMy9tb0FsQ0Fj?=
- =?utf-8?B?b0UrOXAweXBpVjNDNVNnUU9YRUExNlFMYXJEUFlTK0wxb3paUU1JTU05SVFv?=
- =?utf-8?B?Y0NPUVNmOVorbytDZ3k0R3lRV2dGSExnQUcwRHlDRjVmRmEvcmFNTlpjU2Qr?=
- =?utf-8?B?NlYvNE9HWkRqZGlBVnB6ZWs2dG1KYVV2UWNkL09taWFUa0l5SXpxWWh4Sk55?=
- =?utf-8?Q?T+Kw7VhlDOSgFmM0=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <6E6F9697E6524A4384CB7B069CD0096E@jpnprd01.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Tue, 7 Jun 2022 21:49:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E8339B8D;
+        Tue,  7 Jun 2022 12:18:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 41594B8237B;
+        Tue,  7 Jun 2022 19:18:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC4F4C385A2;
+        Tue,  7 Jun 2022 19:18:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629483;
+        bh=Csp2I1zQnXxibFFydZTSP8SxG7Y68Iy4CSd19K5lV9E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LoK69xUfE4IYIBhrRu7k1eyUPgj1bsduezHEqG02qAHue1QoyZ/c5Fid0DtOxF7QN
+         5bw4LdVserZb7KmlneRo1iyaxNTOBl4rgFa47j2/sWAaJDfkVh++ePiJwc43iF2jZH
+         S1AnoSvdWxX1XlgYrKYog8u+nuD7uMdwNjl7jwjg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Trond Myklebust <trondmy@hammerspace.com>,
+        Benjamin Coddington <bcodding@redhat.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 706/879] NFSv4: Fix free of uninitialized nfs4_label on referral lookup.
+Date:   Tue,  7 Jun 2022 19:03:44 +0200
+Message-Id: <20220607165023.339266243@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-OriginatorOrg: nec.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYWPR01MB8591.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e2595d85-cb97-4d09-acbb-08da48d6f5b3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jun 2022 22:42:10.8271
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: e67df547-9d0d-4f4d-9161-51c6ed1f7d11
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NARxk4+Hw890I3EonmiL9UL8P0soqa46A3+vj1qgEzcMBsVcjFFoyJ1sFsSuw8JojEEpbAHhhPQkkIwuga4+SA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB5263
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gVHVlLCBKdW4gMDcsIDIwMjIgYXQgMTA6NTE6MzVQTSArMDgwMCwgTWlhb2hlIExpbiB3cm90
-ZToNCj4gSSBoYXZlIGJlZW4gZm9jdXNpbmcgb24gbW0gZm9yIHRoZSBwYXN0IHR3byB5ZWFycy4g
-ZS5nLiBmaXhpbmcgYnVncywNCj4gY2xlYW5pbmcgdXAgdGhlIGNvZGUgYW5kIHJldmlld2luZy4g
-SSB3b3VsZCBsaWtlIHRvIGhlbHAgbWFpbnRhaW5lcnMNCj4gYW5kIHBlb3BsZSB3b3JraW5nIG9u
-IG1lbW9yeS1mYWlsdXJlIGJ5IHJldmlld2luZyB0aGVpciB3b3JrLg0KPiANCj4gTGV0IG1lIGJl
-IENjJ2Qgb24gcGF0Y2hlcyByZWxhdGVkIHRvIG1lbW9yeS1mYWlsdXJlLg0KPiANCj4gU2lnbmVk
-LW9mZi1ieTogTWlhb2hlIExpbiA8bGlubWlhb2hlQGh1YXdlaS5jb20+DQoNClRoYW5rIHlvdSBm
-b3IgcmFpc2luZyBhIGhhbmQsIHRoaXMgaXMgcmVhbGx5IG5pY2UuDQoNCkFja2VkLWJ5OiBOYW95
-YSBIb3JpZ3VjaGkgPG5hb3lhLmhvcmlndWNoaUBuZWMuY29tPg0KDQo+IC0tLQ0KPiAgTUFJTlRB
-SU5FUlMgfCAxICsNCj4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKQ0KPiANCj4gZGlm
-ZiAtLWdpdCBhL01BSU5UQUlORVJTIGIvTUFJTlRBSU5FUlMNCj4gaW5kZXggNmU0YWQ0NTBiZjNj
-Li42NDMwYWViZmUyOTYgMTAwNjQ0DQo+IC0tLSBhL01BSU5UQUlORVJTDQo+ICsrKyBiL01BSU5U
-QUlORVJTDQo+IEBAIC05MTM2LDYgKzkxMzYsNyBAQCBGOglkcml2ZXJzL21lZGlhL3BsYXRmb3Jt
-L3N0L3N0aS9odmENCj4gIA0KPiAgSFdQT0lTT04gTUVNT1JZIEZBSUxVUkUgSEFORExJTkcNCj4g
-IE06CU5hb3lhIEhvcmlndWNoaSA8bmFveWEuaG9yaWd1Y2hpQG5lYy5jb20+DQo+ICtSOglNaWFv
-aGUgTGluIDxsaW5taWFvaGVAaHVhd2VpLmNvbT4NCj4gIEw6CWxpbnV4LW1tQGt2YWNrLm9yZw0K
-PiAgUzoJTWFpbnRhaW5lZA0KPiAgRjoJbW0vaHdwb2lzb24taW5qZWN0LmMNCj4gLS0gDQo+IDIu
-MjMuMA==
+From: Benjamin Coddington <bcodding@redhat.com>
+
+[ Upstream commit c3ed222745d9ad7b69299b349a64ba533c64a34f ]
+
+Send along the already-allocated fattr along with nfs4_fs_locations, and
+drop the memcpy of fattr.  We end up growing two more allocations, but this
+fixes up a crash as:
+
+PID: 790    TASK: ffff88811b43c000  CPU: 0   COMMAND: "ls"
+ #0 [ffffc90000857920] panic at ffffffff81b9bfde
+ #1 [ffffc900008579c0] do_trap at ffffffff81023a9b
+ #2 [ffffc90000857a10] do_error_trap at ffffffff81023b78
+ #3 [ffffc90000857a58] exc_stack_segment at ffffffff81be1f45
+ #4 [ffffc90000857a80] asm_exc_stack_segment at ffffffff81c009de
+ #5 [ffffc90000857b08] nfs_lookup at ffffffffa0302322 [nfs]
+ #6 [ffffc90000857b70] __lookup_slow at ffffffff813a4a5f
+ #7 [ffffc90000857c60] walk_component at ffffffff813a86c4
+ #8 [ffffc90000857cb8] path_lookupat at ffffffff813a9553
+ #9 [ffffc90000857cf0] filename_lookup at ffffffff813ab86b
+
+Suggested-by: Trond Myklebust <trondmy@hammerspace.com>
+Fixes: 9558a007dbc3 ("NFS: Remove the label from the nfs4_lookup_res struct")
+Signed-off-by: Benjamin Coddington <bcodding@redhat.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/nfs/nfs4namespace.c  |  9 +++++++--
+ fs/nfs/nfs4proc.c       | 15 +++++++--------
+ fs/nfs/nfs4state.c      |  9 ++++++++-
+ fs/nfs/nfs4xdr.c        |  4 ++--
+ include/linux/nfs_xdr.h |  2 +-
+ 5 files changed, 25 insertions(+), 14 deletions(-)
+
+diff --git a/fs/nfs/nfs4namespace.c b/fs/nfs/nfs4namespace.c
+index 3680c8da510c..f2dbf904c598 100644
+--- a/fs/nfs/nfs4namespace.c
++++ b/fs/nfs/nfs4namespace.c
+@@ -417,6 +417,9 @@ static int nfs_do_refmount(struct fs_context *fc, struct rpc_clnt *client)
+ 	fs_locations = kmalloc(sizeof(struct nfs4_fs_locations), GFP_KERNEL);
+ 	if (!fs_locations)
+ 		goto out_free;
++	fs_locations->fattr = nfs_alloc_fattr();
++	if (!fs_locations->fattr)
++		goto out_free_2;
+ 
+ 	/* Get locations */
+ 	dentry = ctx->clone_data.dentry;
+@@ -427,14 +430,16 @@ static int nfs_do_refmount(struct fs_context *fc, struct rpc_clnt *client)
+ 	err = nfs4_proc_fs_locations(client, d_inode(parent), &dentry->d_name, fs_locations, page);
+ 	dput(parent);
+ 	if (err != 0)
+-		goto out_free_2;
++		goto out_free_3;
+ 
+ 	err = -ENOENT;
+ 	if (fs_locations->nlocations <= 0 ||
+ 	    fs_locations->fs_path.ncomponents <= 0)
+-		goto out_free_2;
++		goto out_free_3;
+ 
+ 	err = nfs_follow_referral(fc, fs_locations);
++out_free_3:
++	kfree(fs_locations->fattr);
+ out_free_2:
+ 	kfree(fs_locations);
+ out_free:
+diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
+index a79f66432bd3..0600f85b6016 100644
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -4243,6 +4243,8 @@ static int nfs4_get_referral(struct rpc_clnt *client, struct inode *dir,
+ 	if (locations == NULL)
+ 		goto out;
+ 
++	locations->fattr = fattr;
++
+ 	status = nfs4_proc_fs_locations(client, dir, name, locations, page);
+ 	if (status != 0)
+ 		goto out;
+@@ -4252,17 +4254,14 @@ static int nfs4_get_referral(struct rpc_clnt *client, struct inode *dir,
+ 	 * referral.  Cause us to drop into the exception handler, which
+ 	 * will kick off migration recovery.
+ 	 */
+-	if (nfs_fsid_equal(&NFS_SERVER(dir)->fsid, &locations->fattr.fsid)) {
++	if (nfs_fsid_equal(&NFS_SERVER(dir)->fsid, &fattr->fsid)) {
+ 		dprintk("%s: server did not return a different fsid for"
+ 			" a referral at %s\n", __func__, name->name);
+ 		status = -NFS4ERR_MOVED;
+ 		goto out;
+ 	}
+ 	/* Fixup attributes for the nfs_lookup() call to nfs_fhget() */
+-	nfs_fixup_referral_attributes(&locations->fattr);
+-
+-	/* replace the lookup nfs_fattr with the locations nfs_fattr */
+-	memcpy(fattr, &locations->fattr, sizeof(struct nfs_fattr));
++	nfs_fixup_referral_attributes(fattr);
+ 	memset(fhandle, 0, sizeof(struct nfs_fh));
+ out:
+ 	if (page)
+@@ -7902,7 +7901,7 @@ static int _nfs4_proc_fs_locations(struct rpc_clnt *client, struct inode *dir,
+ 	else
+ 		bitmask[1] &= ~FATTR4_WORD1_MOUNTED_ON_FILEID;
+ 
+-	nfs_fattr_init(&fs_locations->fattr);
++	nfs_fattr_init(fs_locations->fattr);
+ 	fs_locations->server = server;
+ 	fs_locations->nlocations = 0;
+ 	status = nfs4_call_sync(client, server, &msg, &args.seq_args, &res.seq_res, 0);
+@@ -7967,7 +7966,7 @@ static int _nfs40_proc_get_locations(struct nfs_server *server,
+ 	unsigned long now = jiffies;
+ 	int status;
+ 
+-	nfs_fattr_init(&locations->fattr);
++	nfs_fattr_init(locations->fattr);
+ 	locations->server = server;
+ 	locations->nlocations = 0;
+ 
+@@ -8032,7 +8031,7 @@ static int _nfs41_proc_get_locations(struct nfs_server *server,
+ 	};
+ 	int status;
+ 
+-	nfs_fattr_init(&locations->fattr);
++	nfs_fattr_init(locations->fattr);
+ 	locations->server = server;
+ 	locations->nlocations = 0;
+ 
+diff --git a/fs/nfs/nfs4state.c b/fs/nfs/nfs4state.c
+index 9e1c987c81e7..9656d40bb488 100644
+--- a/fs/nfs/nfs4state.c
++++ b/fs/nfs/nfs4state.c
+@@ -2106,6 +2106,11 @@ static int nfs4_try_migration(struct nfs_server *server, const struct cred *cred
+ 		dprintk("<-- %s: no memory\n", __func__);
+ 		goto out;
+ 	}
++	locations->fattr = nfs_alloc_fattr();
++	if (locations->fattr == NULL) {
++		dprintk("<-- %s: no memory\n", __func__);
++		goto out;
++	}
+ 
+ 	inode = d_inode(server->super->s_root);
+ 	result = nfs4_proc_get_locations(server, NFS_FH(inode), locations,
+@@ -2120,7 +2125,7 @@ static int nfs4_try_migration(struct nfs_server *server, const struct cred *cred
+ 	if (!locations->nlocations)
+ 		goto out;
+ 
+-	if (!(locations->fattr.valid & NFS_ATTR_FATTR_V4_LOCATIONS)) {
++	if (!(locations->fattr->valid & NFS_ATTR_FATTR_V4_LOCATIONS)) {
+ 		dprintk("<-- %s: No fs_locations data, migration skipped\n",
+ 			__func__);
+ 		goto out;
+@@ -2145,6 +2150,8 @@ static int nfs4_try_migration(struct nfs_server *server, const struct cred *cred
+ out:
+ 	if (page != NULL)
+ 		__free_page(page);
++	if (locations != NULL)
++		kfree(locations->fattr);
+ 	kfree(locations);
+ 	if (result) {
+ 		pr_err("NFS: migration recovery failed (server %s)\n",
+diff --git a/fs/nfs/nfs4xdr.c b/fs/nfs/nfs4xdr.c
+index 86a5f6516928..5d822594336d 100644
+--- a/fs/nfs/nfs4xdr.c
++++ b/fs/nfs/nfs4xdr.c
+@@ -7051,7 +7051,7 @@ static int nfs4_xdr_dec_fs_locations(struct rpc_rqst *req,
+ 	if (res->migration) {
+ 		xdr_enter_page(xdr, PAGE_SIZE);
+ 		status = decode_getfattr_generic(xdr,
+-					&res->fs_locations->fattr,
++					res->fs_locations->fattr,
+ 					 NULL, res->fs_locations,
+ 					 res->fs_locations->server);
+ 		if (status)
+@@ -7064,7 +7064,7 @@ static int nfs4_xdr_dec_fs_locations(struct rpc_rqst *req,
+ 			goto out;
+ 		xdr_enter_page(xdr, PAGE_SIZE);
+ 		status = decode_getfattr_generic(xdr,
+-					&res->fs_locations->fattr,
++					res->fs_locations->fattr,
+ 					 NULL, res->fs_locations,
+ 					 res->fs_locations->server);
+ 	}
+diff --git a/include/linux/nfs_xdr.h b/include/linux/nfs_xdr.h
+index 2863e5a69c6a..20e97329fe46 100644
+--- a/include/linux/nfs_xdr.h
++++ b/include/linux/nfs_xdr.h
+@@ -1212,7 +1212,7 @@ struct nfs4_fs_location {
+ 
+ #define NFS4_FS_LOCATIONS_MAXENTRIES 10
+ struct nfs4_fs_locations {
+-	struct nfs_fattr fattr;
++	struct nfs_fattr *fattr;
+ 	const struct nfs_server *server;
+ 	struct nfs4_pathname fs_path;
+ 	int nlocations;
+-- 
+2.35.1
+
+
+
