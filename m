@@ -2,145 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52697C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:39:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6174AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:39:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381602AbiFGWj2 (ORCPT
+        id S1380372AbiFGWjf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:39:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38942 "EHLO
+        Tue, 7 Jun 2022 18:39:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379397AbiFGVZd (ORCPT
+        with ESMTP id S1379192AbiFGVZT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:25:33 -0400
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B62228713;
-        Tue,  7 Jun 2022 12:01:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1654628511; x=1686164511;
-  h=references:from:to:cc:subject:date:in-reply-to:
-   message-id:mime-version;
-  bh=pniHEHRrB59YTtTNBTHlm1oMkttAh1nN6oBL1H5yKWM=;
-  b=ANVUJX2nD5MBjE4xE8mXlELzhYCcWe/+Jjk6Fn2gQX00oNSvIIJlolKa
-   tVCbgKKGTkwO9bX1MTdvsYvgG2skpgojt3B9HwlKWco+VxO9zz7BSj3DT
-   rBt20It5InNCsLFmj91Vo9HOkGE5fVr0veBOhmgCifeK6q6FGRdyKjOsL
-   4=;
-X-IronPort-AV: E=Sophos;i="5.91,284,1647302400"; 
-   d="scan'208";a="200518085"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-2d7489a4.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 07 Jun 2022 19:01:36 +0000
-Received: from EX13D28EUC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1a-2d7489a4.us-east-1.amazon.com (Postfix) with ESMTPS id 9C7E4A2532;
-        Tue,  7 Jun 2022 19:01:33 +0000 (UTC)
-Received: from u570694869fb251.ant.amazon.com.amazon.com (10.43.160.26) by
- EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Tue, 7 Jun 2022 19:01:27 +0000
-References: <20220607122831.32738-1-xiaohuizhang@ruc.edu.cn>
-User-agent: mu4e 1.6.10; emacs 28.0.91
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-CC:     Arthur Kiyanovski <akiyano@amazon.com>,
-        David Arinzon <darinzon@amazon.com>,
-        Noam Dagan <ndagan@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sameeh Jubran <sameehj@amazon.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1] net: ena_netdev: fix resource leak
-Date:   Tue, 7 Jun 2022 21:57:43 +0300
-In-Reply-To: <20220607122831.32738-1-xiaohuizhang@ruc.edu.cn>
-Message-ID: <pj41zly1y8pabi.fsf@u570694869fb251.ant.amazon.com>
+        Tue, 7 Jun 2022 17:25:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C4C151FC2;
+        Tue,  7 Jun 2022 12:01:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90934617E4;
+        Tue,  7 Jun 2022 19:01:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A32EC385A2;
+        Tue,  7 Jun 2022 19:01:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628504;
+        bh=0uOFFPdIeWfLQVGhSuOKxBV0n0DGr/7rX+eGYHfcdrs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=F/MFSo0dTv5/FJ8umh3VqodvuswdhHv5BrX2PfnyKzV+9C9YDAtcd5jGHAXgPyIoi
+         SMN/tTjQoRrB93a59EYGLAeT1Jhn2rb/0h3On3nqXPZrLZSJeTYa/9QkpkAXtslpYu
+         RwV9QYzkyZ0Dmj8e1tDP5WZGcgPHcpfilK3609rk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 353/879] drm/msm: properly add and remove internal bridges
+Date:   Tue,  7 Jun 2022 18:57:51 +0200
+Message-Id: <20220607165013.107582528@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Originating-IP: [10.43.160.26]
-X-ClientProxiedBy: EX13D32UWB003.ant.amazon.com (10.43.161.220) To
- EX13D28EUC001.ant.amazon.com (10.43.164.4)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-Xiaohui Zhang <xiaohuizhang@ruc.edu.cn> writes:
+[ Upstream commit d28ea556267c4f2ec7264ab49f1b1296834321ec ]
 
-> Similar to the handling of u132_hcd_init in commit f276e002793c
-> ("usb: u132-hcd: fix resource leak"), we thought a patch might 
-> be
-> needed here as well.
->
-> If platform_driver_register fails, cleanup the allocated 
-> resource
-> gracefully.
->
-> Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-> ---
->  drivers/net/ethernet/amazon/ena/ena_netdev.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c 
-> b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> index 6a356a6cee15..c0624ee8d867 100644
-> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> @@ -4545,13 +4545,17 @@ static struct pci_driver ena_pci_driver 
-> = {
->  
->  static int __init ena_init(void)
->  {
-> +	int retval;
->  	ena_wq = create_singlethread_workqueue(DRV_MODULE_NAME);
->  	if (!ena_wq) {
->  		pr_err("Failed to create workqueue\n");
->  		return -ENOMEM;
->  	}
-> +	retval = pci_register_driver(&ena_pci_driver);
-> +	if (retval)
-> +		destroy_workqueue(ena_wq);
->  
-> -	return pci_register_driver(&ena_pci_driver);
-> +	return retval;
->  }
->  
->  static void __exit ena_cleanup(void)
+Add calls to drm_bridge_add()/drm_bridge_remove() DRM bridges created by
+the driver. This fixes the following warning.
 
-Hi,
-thanks a lot for this patch. I made a few small changes in it to 
-make it more consistent with the rest of driver's code
-(sorry don't really know how to insert an inline diff)
+WARNING: CPU: 0 PID: 1 at kernel/locking/mutex.c:579 __mutex_lock+0x840/0x9f4
+DEBUG_LOCKS_WARN_ON(lock->magic != lock)
+Modules linked in:
+CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.18.0-rc1-00002-g3054695a0d27-dirty #55
+Hardware name: Generic DT based system
+ unwind_backtrace from show_stack+0x10/0x14
+ show_stack from dump_stack_lvl+0x58/0x70
+ dump_stack_lvl from __warn+0xc8/0x1e8
+ __warn from warn_slowpath_fmt+0x78/0xa8
+ warn_slowpath_fmt from __mutex_lock+0x840/0x9f4
+ __mutex_lock from mutex_lock_nested+0x1c/0x24
+ mutex_lock_nested from drm_bridge_hpd_enable+0x2c/0x84
+ drm_bridge_hpd_enable from msm_hdmi_modeset_init+0xc0/0x21c
+ msm_hdmi_modeset_init from mdp4_kms_init+0x53c/0x90c
+ mdp4_kms_init from msm_drm_bind+0x514/0x698
+ msm_drm_bind from try_to_bring_up_aggregate_device+0x160/0x1bc
+ try_to_bring_up_aggregate_device from component_master_add_with_match+0xc4/0xf8
+ component_master_add_with_match from msm_pdev_probe+0x274/0x350
+ msm_pdev_probe from platform_probe+0x5c/0xbc
+ platform_probe from really_probe.part.0+0x9c/0x290
+ really_probe.part.0 from __driver_probe_device+0xa8/0x13c
+ __driver_probe_device from driver_probe_device+0x34/0x10c
+ driver_probe_device from __driver_attach+0xbc/0x178
+ __driver_attach from bus_for_each_dev+0x74/0xc0
+ bus_for_each_dev from bus_add_driver+0x160/0x1e4
+ bus_add_driver from driver_register+0x88/0x118
+ driver_register from do_one_initcall+0x6c/0x334
+ do_one_initcall from kernel_init_freeable+0x1bc/0x220
+ kernel_init_freeable from kernel_init+0x18/0x12c
+ kernel_init from ret_from_fork+0x14/0x2c
 
-thanks,
-Shay
-
+Fixes: 3d3f8b1f8b62 ("drm/bridge: make bridge registration independent of drm flow")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Patchwork: https://patchwork.freedesktop.org/patch/481778/
+Link: https://lore.kernel.org/r/20220411234953.2425280-1-dmitry.baryshkov@linaro.org
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c 
-b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 6a356a6cee15..be8d3c26c9bb 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -4545,13 +4545,19 @@ static struct pci_driver ena_pci_driver = 
-{
+ drivers/gpu/drm/msm/dp/dp_drm.c        | 4 ++++
+ drivers/gpu/drm/msm/dsi/dsi_manager.c  | 3 +++
+ drivers/gpu/drm/msm/hdmi/hdmi_bridge.c | 3 +++
+ drivers/gpu/drm/msm/msm_drv.c          | 3 +++
+ 4 files changed, 13 insertions(+)
+
+diff --git a/drivers/gpu/drm/msm/dp/dp_drm.c b/drivers/gpu/drm/msm/dp/dp_drm.c
+index 80f59cf99089..262744914f97 100644
+--- a/drivers/gpu/drm/msm/dp/dp_drm.c
++++ b/drivers/gpu/drm/msm/dp/dp_drm.c
+@@ -230,9 +230,13 @@ struct drm_bridge *msm_dp_bridge_init(struct msm_dp *dp_display, struct drm_devi
+ 	bridge->funcs = &dp_bridge_ops;
+ 	bridge->encoder = encoder;
  
- static int __init ena_init(void)
- {
-+	int rc;
++	drm_bridge_add(bridge);
 +
- 	ena_wq = create_singlethread_workqueue(DRV_MODULE_NAME);
- 	if (!ena_wq) {
- 		pr_err("Failed to create workqueue\n");
- 		return -ENOMEM;
+ 	rc = drm_bridge_attach(encoder, bridge, NULL, DRM_BRIDGE_ATTACH_NO_CONNECTOR);
+ 	if (rc) {
+ 		DRM_ERROR("failed to attach bridge, rc=%d\n", rc);
++		drm_bridge_remove(bridge);
++
+ 		return ERR_PTR(rc);
  	}
  
--	return pci_register_driver(&ena_pci_driver);
-+	rc = pci_register_driver(&ena_pci_driver);
-+	if (rc)
-+		destroy_workqueue(ena_wq);
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_manager.c b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+index 9f6af0f0fe00..1db93e562fe6 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_manager.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+@@ -665,6 +665,8 @@ struct drm_bridge *msm_dsi_manager_bridge_init(u8 id)
+ 	bridge = &dsi_bridge->base;
+ 	bridge->funcs = &dsi_mgr_bridge_funcs;
+ 
++	drm_bridge_add(bridge);
 +
-+	return rc;
+ 	ret = drm_bridge_attach(encoder, bridge, NULL, 0);
+ 	if (ret)
+ 		goto fail;
+@@ -735,6 +737,7 @@ struct drm_connector *msm_dsi_manager_ext_bridge_init(u8 id)
+ 
+ void msm_dsi_manager_bridge_destroy(struct drm_bridge *bridge)
+ {
++	drm_bridge_remove(bridge);
  }
  
- static void __exit ena_cleanup(void)
+ int msm_dsi_manager_cmd_xfer(int id, const struct mipi_dsi_msg *msg)
+diff --git a/drivers/gpu/drm/msm/hdmi/hdmi_bridge.c b/drivers/gpu/drm/msm/hdmi/hdmi_bridge.c
+index 10ebe2089cb6..97c24010c4d1 100644
+--- a/drivers/gpu/drm/msm/hdmi/hdmi_bridge.c
++++ b/drivers/gpu/drm/msm/hdmi/hdmi_bridge.c
+@@ -15,6 +15,7 @@ void msm_hdmi_bridge_destroy(struct drm_bridge *bridge)
+ 	struct hdmi_bridge *hdmi_bridge = to_hdmi_bridge(bridge);
+ 
+ 	msm_hdmi_hpd_disable(hdmi_bridge);
++	drm_bridge_remove(bridge);
+ }
+ 
+ static void msm_hdmi_power_on(struct drm_bridge *bridge)
+@@ -349,6 +350,8 @@ struct drm_bridge *msm_hdmi_bridge_init(struct hdmi *hdmi)
+ 		DRM_BRIDGE_OP_DETECT |
+ 		DRM_BRIDGE_OP_EDID;
+ 
++	drm_bridge_add(bridge);
++
+ 	ret = drm_bridge_attach(hdmi->encoder, bridge, NULL, DRM_BRIDGE_ATTACH_NO_CONNECTOR);
+ 	if (ret)
+ 		goto fail;
+diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+index affa95eb05fc..71e1b7393f6f 100644
+--- a/drivers/gpu/drm/msm/msm_drv.c
++++ b/drivers/gpu/drm/msm/msm_drv.c
+@@ -232,6 +232,9 @@ static int msm_drm_uninit(struct device *dev)
+ 
+ 	drm_mode_config_cleanup(ddev);
+ 
++	for (i = 0; i < priv->num_bridges; i++)
++		drm_bridge_remove(priv->bridges[i]);
++
+ 	pm_runtime_get_sync(dev);
+ 	msm_irq_uninstall(ddev);
+ 	pm_runtime_put_sync(dev);
+-- 
+2.35.1
+
 
 
