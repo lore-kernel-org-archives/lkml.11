@@ -2,104 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA2F8C3F2D4
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:30:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC66AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:30:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344728AbiFHB3u (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:29:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
+        id S234418AbiFHBaa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:30:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384363AbiFGVy3 (ORCPT
+        with ESMTP id S1380635AbiFGVrr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:54:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 11ACD24AED9
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:13:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654629153;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8PKbb/kNEHwMbrLFgS7c+rz5+fFiqO5VtrkEPhcXyas=;
-        b=MZm+fuGKOyBU9PW0R7h+e4LPChcR7GYreEfkIsC9NvlWDe8qHofxHWQRnmffcFgcT1MQBD
-        IZ6qKuWIt4HY1RItF55tK+0fE5ThKjKuBo1bPc5AgIYgpg3Wm2qEA00GtOeOilsLFmn2Dk
-        dhUBvd2+AJHWLK2I4FrVbMZxn+xrtWU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-360-UEonE6C2O9mx1gGNd_cnMQ-1; Tue, 07 Jun 2022 15:12:29 -0400
-X-MC-Unique: UEonE6C2O9mx1gGNd_cnMQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 7 Jun 2022 17:47:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 792C11900E5;
+        Tue,  7 Jun 2022 12:08:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AD672101A54E;
-        Tue,  7 Jun 2022 19:11:03 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.9.252])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 35F3D421773E;
-        Tue,  7 Jun 2022 19:10:33 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org
-Cc:     Wayne Lin <Wayne.Lin@amd.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [RFC 05/18] drm/display/dp_mst: Fix confusing docs for drm_dp_atomic_release_time_slots()
-Date:   Tue,  7 Jun 2022 15:07:02 -0400
-Message-Id: <20220607190715.1331124-6-lyude@redhat.com>
-In-Reply-To: <20220607190715.1331124-1-lyude@redhat.com>
-References: <20220607190715.1331124-1-lyude@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B418D61768;
+        Tue,  7 Jun 2022 19:08:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFFA0C385A2;
+        Tue,  7 Jun 2022 19:08:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628888;
+        bh=InK2P2719+ucxNiXUq5akHXves7w4RjNdOe6zfMyDME=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=caDUBd4xVwOT2DeimpyvL9ri4My1VfIbzB7qZo4fk8a/nr+TrJg+9mq/13YOQTqdb
+         iIdIs3zTdtHN3Nsy8udAsnruWAxBPWIbhr4DScElhuvAFofF/tpGlNyIeTFjZIC1xc
+         ZIl9jEr/7FtAvT09WrhnWvuG+shoebEk8C2DFEzg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 491/879] thermal/drivers/bcm2711: Dont clamp temperature at zero
+Date:   Tue,  7 Jun 2022 19:00:09 +0200
+Message-Id: <20220607165017.123408598@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For some reason we mention returning 0 if "slots have been added back to
-drm_dp_mst_topology_state->avail_slots". This is totally misleading,
-avail_slots is simply for figuring out the total number of slots available
-in total on the topology and has no relation to the current payload
-allocations.
+From: Stefan Wahren <stefan.wahren@i2se.com>
 
-So, let's get rid of that comment.
+[ Upstream commit 106e0121e243de4da7d634338089a68a8da2abe9 ]
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: Wayne Lin <Wayne.Lin@amd.com>
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Imre Deak <imre.deak@intel.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Sean Paul <sean@poorly.run>
+The thermal sensor on BCM2711 is capable of negative temperatures, so don't
+clamp the measurements at zero. Since this was the only use for variable t,
+drop it.
+
+This change based on a patch by Dom Cobley, who also tested the fix.
+
+Fixes: 59b781352dc4 ("thermal: Add BCM2711 thermal driver")
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220412195423.104511-1-stefan.wahren@i2se.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/display/drm_dp_mst_topology.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/thermal/broadcom/bcm2711_thermal.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-index 702ff5d9ecc7..ec52f91b1f0e 100644
---- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
-+++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-@@ -4467,8 +4467,7 @@ EXPORT_SYMBOL(drm_dp_atomic_find_time_slots);
-  * drm_dp_mst_atomic_check()
-  *
-  * Returns:
-- * 0 if all slots for this port were added back to
-- * &drm_dp_mst_topology_state.avail_slots or negative error code
-+ * 0 on success, negative error code otherwise
-  */
- int drm_dp_atomic_release_time_slots(struct drm_atomic_state *state,
- 				     struct drm_dp_mst_topology_mgr *mgr,
+diff --git a/drivers/thermal/broadcom/bcm2711_thermal.c b/drivers/thermal/broadcom/bcm2711_thermal.c
+index 1ec57d9ecf53..e9bef5c3414b 100644
+--- a/drivers/thermal/broadcom/bcm2711_thermal.c
++++ b/drivers/thermal/broadcom/bcm2711_thermal.c
+@@ -38,7 +38,6 @@ static int bcm2711_get_temp(void *data, int *temp)
+ 	int offset = thermal_zone_get_offset(priv->thermal);
+ 	u32 val;
+ 	int ret;
+-	long t;
+ 
+ 	ret = regmap_read(priv->regmap, AVS_RO_TEMP_STATUS, &val);
+ 	if (ret)
+@@ -50,9 +49,7 @@ static int bcm2711_get_temp(void *data, int *temp)
+ 	val &= AVS_RO_TEMP_STATUS_DATA_MSK;
+ 
+ 	/* Convert a HW code to a temperature reading (millidegree celsius) */
+-	t = slope * val + offset;
+-
+-	*temp = t < 0 ? 0 : t;
++	*temp = slope * val + offset;
+ 
+ 	return 0;
+ }
 -- 
-2.35.3
+2.35.1
+
+
 
