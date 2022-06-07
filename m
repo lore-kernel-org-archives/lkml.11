@@ -2,105 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6A2BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:07:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6071C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:07:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443986AbiFHCH0 (ORCPT
+        id S1442632AbiFHCGZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:07:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52690 "EHLO
+        Tue, 7 Jun 2022 22:06:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391009AbiFHAgq (ORCPT
+        with ESMTP id S1841755AbiFHAIN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:36:46 -0400
-X-Greylist: delayed 5978 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 14:02:45 PDT
-Received: from 20.mo582.mail-out.ovh.net (20.mo582.mail-out.ovh.net [178.32.124.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F4F6110AFD
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:02:43 -0700 (PDT)
-Received: from player739.ha.ovh.net (unknown [10.108.4.54])
-        by mo582.mail-out.ovh.net (Postfix) with ESMTP id 54E522414E
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 21:02:42 +0000 (UTC)
+        Tue, 7 Jun 2022 20:08:13 -0400
+Received: from 8.mo576.mail-out.ovh.net (8.mo576.mail-out.ovh.net [46.105.56.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C0D25227A
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:18:19 -0700 (PDT)
+Received: from player797.ha.ovh.net (unknown [10.111.208.229])
+        by mo576.mail-out.ovh.net (Postfix) with ESMTP id 6C63A241AE
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:09:48 +0000 (UTC)
 Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
         (Authenticated sender: steve@sk2.org)
-        by player739.ha.ovh.net (Postfix) with ESMTPSA id 95405274946B0;
-        Tue,  7 Jun 2022 21:02:38 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-107S00141dc07c7-5d7b-4e1e-8dda-b9878c058f71,
+        by player797.ha.ovh.net (Postfix) with ESMTPSA id 21EE9273DCA85;
+        Tue,  7 Jun 2022 19:09:40 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-102R004703d033f-7500-4aba-a619-332a081ea3f9,
                     38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
 X-OVh-ClientIp: 82.65.25.201
-Date:   Tue, 7 Jun 2022 23:02:31 +0200
 From:   Stephen Kitt <steve@sk2.org>
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc:     Robin van der Gracht <robin@protonic.nl>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] auxdisplay: ht16k33: Use backlight helper
-Message-ID: <20220607230231.07e36338@heffalump.sk2.org>
-In-Reply-To: <CANiq72kRhmT37H1FAGYGny83ONYXeqJuO8ZPbym0ajQOWKY4Kw@mail.gmail.com>
-References: <20220607180406.1116277-1-steve@sk2.org>
-        <CANiq72kRhmT37H1FAGYGny83ONYXeqJuO8ZPbym0ajQOWKY4Kw@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+To:     Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>, Helge Deller <deller@gmx.de>
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 0/4] video/backlight: Use backlight helpers
+Date:   Tue,  7 Jun 2022 21:09:21 +0200
+Message-Id: <20220607190925.1134737-1-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/PUlUnIq0mXPgwAmIA0b49MF";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Ovh-Tracer-Id: 13614944625785603718
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11708233135120418438
 X-VR-SPAMSTATE: OK
 X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudehiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeffhffvvefukfgjfhfogggtsehgtderreertdejnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeiheevvdeugeejffefteffvefhieegjeevhfekjeejvdelgfefkeehhfdufffhjeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejfeelrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekvd
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudeffecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejleejrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheejie
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/PUlUnIq0mXPgwAmIA0b49MF
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+This started with work on the removal of backlight_properties'
+deprecated fb_blank field, much of which can be taken care of by using
+helper functions provided by backlight.h instead of directly accessing
+fields in backlight_properties. This patch series doesn't involve
+fb_blank, but it still seems useful to use helper functions where
+appropriate.
 
-Hi Miguel,
+Stephen Kitt (4):
+  backlight: aat2870: Use backlight helper
+  backlight: arcxcnn: Use backlight helper
+  backlight: ipaq_micro: Use backlight helper
+  backlight: tosa: Use backlight helper
 
-On Tue, 7 Jun 2022 21:08:34 +0200, Miguel Ojeda
-<miguel.ojeda.sandonis@gmail.com> wrote:
-> On Tue, Jun 7, 2022 at 8:04 PM Stephen Kitt <steve@sk2.org> wrote:
-> > backlight_properties.fb_blank is deprecated. The states it represents
-> > are handled by other properties; but instead of accessing those
-> > properties directly, drivers should use the helpers provided by
-> > backlight.h.
-> >
-> > Instead of retrieving the backlight brightness in struct
-> > backlight_properties manually, and then checking whether the backlight
-> > should be on at all, use backlight_get_brightness() which does all
-> > this and insulates this from future changes. =20
->=20
-> Thanks for the patch! Looks good to me.
->=20
-> There is a functional change in that `BL_CORE_SUSPENDED` is taken into
-> account with this change, but I assume that is expected. In that case,
-> it could be good to mention it in the commit message.
+ drivers/video/backlight/aat2870_bl.c    | 7 +------
+ drivers/video/backlight/arcxcnn_bl.c    | 5 +----
+ drivers/video/backlight/ipaq_micro_bl.c | 7 +------
+ drivers/video/backlight/tosa_bl.c       | 7 +------
+ 4 files changed, 4 insertions(+), 22 deletions(-)
 
-That=E2=80=99s a good point, and it is indeed expected; I=E2=80=99ll add it=
- to the commit
-message.
 
-Regards,
+base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+-- 
+2.30.2
 
-Stephen
-
---Sig_/PUlUnIq0mXPgwAmIA0b49MF
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEnPVX/hPLkMoq7x0ggNMC9Yhtg5wFAmKfvOcACgkQgNMC9Yht
-g5zYOQ/9H3YNK2TyqQSG4j7HQk9Wj4DrSnbALPbkQ+Ej+PNa/OrE5SDk+bfhFJig
-Ctiu1ja2SQHnCoda0Wxy9FuXJXNXp9YNO64Bo1GrQ6zSSNJO5MiDBr82HwF2GfvU
-sbLnsDipylStz7F5+qHfVbUSFvWT3xOFZJwB62JiSrNL5Y7qQr3OR+50BW1s2gid
-rU9MPTfyRBkIeR/JrkyN2ZO1TZweAhVFzn5QVfOxCBmdE1Qzj1Drw9+C3wxaXtfL
-rsLhUaBcvUi0xl9BCavgB/Zk+dIq0k9jXJKOyddp/M0utEf9daCPJswN85I98RKe
-mhKWACHvx8zTh1G7/86+hyV8VLhG995zuPW13TMRR5hSJ3RIGyadwo/MAw8+3Jaf
-31F3g+0e/cbux4a8WRu2VOICrbv9ZfYf6LG9dN3qyj7uwujVMfAbR4j2tphxOIb0
-Z0T85E+gr82uZHDVT7Hyr+cK/dSSxhYU6xjW+ywdlXjGLy86qVr2QwTBjUxRI35I
-aPLrarw8prP3nch47JnfUsfjO65vXqcy9/EHY4FjwFuxRjbxisY7VDZw458suid6
-yk7VdYU/EAYhj2I9E6+NZEtQVCV/XnMqZw7Ma82aHf/7HRWuOkat10PpPXH/mnN1
-XOkR6MTcxLz89MqCZIu5+HyY/haBcWSpq5WCd4U3oPm7jnVG2+8=
-=//gF
------END PGP SIGNATURE-----
-
---Sig_/PUlUnIq0mXPgwAmIA0b49MF--
