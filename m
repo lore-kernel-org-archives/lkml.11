@@ -2,135 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6782ACCA481
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:32:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D290AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355319AbiFGTcX (ORCPT
+        id S1355432AbiFGTcg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:32:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55242 "EHLO
+        Tue, 7 Jun 2022 15:32:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353386AbiFGSlE (ORCPT
+        with ESMTP id S1353346AbiFGSkp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:41:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C864F1862A4;
+        Tue, 7 Jun 2022 14:40:45 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B107C1862A3;
         Tue,  7 Jun 2022 10:58:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3C31B82368;
-        Tue,  7 Jun 2022 17:58:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B53FCC34115;
-        Tue,  7 Jun 2022 17:58:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624718;
-        bh=aT6YvPhoPElGUTTysLZKWXB1UMLXmkhkzGyEYMZj38o=;
-        h=From:To:Cc:Subject:Date:From;
-        b=uo/ozRlTosVoVigCqbPc+aQn/rZ7yBCWaR2t1QjHcYCeldmyN/hKc2+yM7PXHETGe
-         CivODhzjZTICLQeJxtN8aAog09KQTK4wa8Ma/9aD3tfybZ+BxPz+wv93s6xS0CcEF/
-         9eLfsQ3J54xensAc6ZRD0LH6InAzH3XCfLaJi9DTkvrPx/6q00JyUuRJjuVZQI3kkW
-         GQXq0X9x1DxDGOI4OM2xsCVuilBiPkfUUQyEaNysY0O3K3dG6lSVyFTc8vvT+hlDQn
-         +NzMxQ4Cdr2sKLAt2SeNDO2f/2mhgAM7K8OaGsdBKBZqL3mdQNMFgsBoYELdeK1YgI
-         ibL9oZZyCXKYQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, jic23@kernel.org,
-        linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 01/38] iio: dummy: iio_simple_dummy: check the return value of kstrdup()
-Date:   Tue,  7 Jun 2022 13:57:56 -0400
-Message-Id: <20220607175835.480735-1-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8CDD9CE2428;
+        Tue,  7 Jun 2022 17:58:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 967C4C34115;
+        Tue,  7 Jun 2022 17:58:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624709;
+        bh=3KKKZtJ4sFeXRC/0k5HsH1u7OtlOH5IUU4Szu7BmfA8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uX5Vd64bnezOWYYRdpPDsv1l+aYxXuh2ivkdcWOauO7dWyFDvFuv5WczFfkOyCyA5
+         DOV9DxLhzvGJuI/MtuyQoKzzPsj+ApshhTO57A+jZAZu/wQU8tlB4qvtAYlQ14ge8d
+         uf7ZA/6i2q5eVjFHm8YcnNekPe+ys094BHw3bpmE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 424/667] arm64: dts: ti: k3-am64-mcu: remove incorrect UART base clock rates
+Date:   Tue,  7 Jun 2022 19:01:29 +0200
+Message-Id: <20220607164947.447335342@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 
-[ Upstream commit ba93642188a6fed754bf7447f638bc410e05a929 ]
+[ Upstream commit 439677d416b17dd39964d5f7d64b742a2e51da5b ]
 
-kstrdup() is also a memory allocation-related function, it returns NULL
-when some memory errors happen. So it is better to check the return
-value of it so to catch the memory error in time. Besides, there should
-have a kfree() to clear up the allocation if we get a failure later in
-this function to prevent memory leak.
+We found that (at least some versions of) the sci-fw set the base clock
+rate for UARTs in the MCU domain to 96 MHz instead of the expected 48 MHz,
+leading to incorrect baud rates when used from Linux.
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Link: https://lore.kernel.org/r/tencent_C920CFCC33B9CC1C63141FE1334A39FF8508@qq.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+As the 8250_omap driver will query the actual clock rate from the clk
+driver when clock-frequency is unset, removing the incorrect property is
+sufficient to fix the baud rate.
+
+Fixes: 8abae9389bdb ("arm64: dts: ti: Add support for AM642 SoC")
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+Reviewed-by: Vignesh Raghavendra <vigneshr@ti.com>
+Link: https://lore.kernel.org/r/20220419075157.189347-1-matthias.schiffer@ew.tq-group.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/dummy/iio_simple_dummy.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
-index c0b7ef900735..c24f609c2ade 100644
---- a/drivers/iio/dummy/iio_simple_dummy.c
-+++ b/drivers/iio/dummy/iio_simple_dummy.c
-@@ -575,10 +575,9 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	 */
- 
- 	swd = kzalloc(sizeof(*swd), GFP_KERNEL);
--	if (!swd) {
--		ret = -ENOMEM;
--		goto error_kzalloc;
--	}
-+	if (!swd)
-+		return ERR_PTR(-ENOMEM);
-+
- 	/*
- 	 * Allocate an IIO device.
- 	 *
-@@ -590,7 +589,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	indio_dev = iio_device_alloc(parent, sizeof(*st));
- 	if (!indio_dev) {
- 		ret = -ENOMEM;
--		goto error_ret;
-+		goto error_free_swd;
- 	}
- 
- 	st = iio_priv(indio_dev);
-@@ -616,6 +615,10 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	 *    indio_dev->name = spi_get_device_id(spi)->name;
- 	 */
- 	indio_dev->name = kstrdup(name, GFP_KERNEL);
-+	if (!indio_dev->name) {
-+		ret = -ENOMEM;
-+		goto error_free_device;
-+	}
- 
- 	/* Provide description of available channels */
- 	indio_dev->channels = iio_dummy_channels;
-@@ -632,7 +635,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 
- 	ret = iio_simple_dummy_events_register(indio_dev);
- 	if (ret < 0)
--		goto error_free_device;
-+		goto error_free_name;
- 
- 	ret = iio_simple_dummy_configure_buffer(indio_dev);
- 	if (ret < 0)
-@@ -649,11 +652,12 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	iio_simple_dummy_unconfigure_buffer(indio_dev);
- error_unregister_events:
- 	iio_simple_dummy_events_unregister(indio_dev);
-+error_free_name:
-+	kfree(indio_dev->name);
- error_free_device:
- 	iio_device_free(indio_dev);
--error_ret:
-+error_free_swd:
- 	kfree(swd);
--error_kzalloc:
- 	return ERR_PTR(ret);
- }
- 
+diff --git a/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi b/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi
+index 59cc58f7d0c8..93e684bbd66c 100644
+--- a/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi
+@@ -10,7 +10,6 @@
+ 		compatible = "ti,am64-uart", "ti,am654-uart";
+ 		reg = <0x00 0x04a00000 0x00 0x100>;
+ 		interrupts = <GIC_SPI 185 IRQ_TYPE_LEVEL_HIGH>;
+-		clock-frequency = <48000000>;
+ 		current-speed = <115200>;
+ 		power-domains = <&k3_pds 149 TI_SCI_PD_EXCLUSIVE>;
+ 		clocks = <&k3_clks 149 0>;
+@@ -21,7 +20,6 @@
+ 		compatible = "ti,am64-uart", "ti,am654-uart";
+ 		reg = <0x00 0x04a10000 0x00 0x100>;
+ 		interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>;
+-		clock-frequency = <48000000>;
+ 		current-speed = <115200>;
+ 		power-domains = <&k3_pds 160 TI_SCI_PD_EXCLUSIVE>;
+ 		clocks = <&k3_clks 160 0>;
 -- 
 2.35.1
+
+
 
