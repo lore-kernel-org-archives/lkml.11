@@ -2,54 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00669CCA48A
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:21:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 379A1CCA48C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:21:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359722AbiFGUU7 (ORCPT
+        id S1359815AbiFGUVT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:20:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49264 "EHLO
+        Tue, 7 Jun 2022 16:21:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356590AbiFGT2A (ORCPT
+        with ESMTP id S1356503AbiFGT1t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:28:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABEFB1A075B;
-        Tue,  7 Jun 2022 11:10:14 -0700 (PDT)
+        Tue, 7 Jun 2022 15:27:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8501A0047;
+        Tue,  7 Jun 2022 11:10:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A95AA6191F;
-        Tue,  7 Jun 2022 18:10:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4060C385A2;
-        Tue,  7 Jun 2022 18:10:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 623286194C;
+        Tue,  7 Jun 2022 18:10:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72130C385A2;
+        Tue,  7 Jun 2022 18:09:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625408;
-        bh=s6qD6yjv6eYKp+r/EsmCt8ddfsgFJ4IIoDGAa0pot5w=;
+        s=korg; t=1654625399;
+        bh=szR72GWSqH7x+phHBBmxy1siDxqYSsbp9og3m7l+Jsc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PVK4W2XsVh/2kLt99MG1Ok0vN7dWKQOg32GWYwi1JDIPLa1HIH3/V1Hgzt7ps3ipL
-         BsdvK9lbehtnL3G89hWraIjSYRjYs2YKbXN918lZkUE5ezoBJFpW/GhTzX61/pVTWX
-         o977tGklvuwEMLpup+/2wd65w6Dy+YjZs+7YEe2k=
+        b=KYlKeoym6dbP9CKFPmQOFI71vZDqO2wr5QbKYm/7rtAtGEwO7Gwvw8X3U3oA6uhxc
+         i8UXoiukF8Ka2O1jAFlLJrcmISj2qy2w/pO5dakTr64Frx+WURw/XHjRcPIXq8ah+4
+         ov346OGR6TbsANfJPvvrRZFP6oWck42cUSewlVcI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hsin-Yi Wang <hsinyi@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: [PATCH 5.17 001/772] arm64: Initialize jump labels before setup_machine_fdt()
-Date:   Tue,  7 Jun 2022 18:53:13 +0200
-Message-Id: <20220607164949.031154328@linuxfoundation.org>
+        stable@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Giuseppe Scrivano <gscrivan@redhat.com>,
+        Amir Goldstein <amir73il@gmail.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
+        Miklos Szeredi <mszeredi@redhat.com>
+Subject: [PATCH 5.15 662/667] fs: add two trivial lookup helpers
+Date:   Tue,  7 Jun 2022 19:05:27 +0200
+Message-Id: <20220607164954.498288205@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -57,89 +53,146 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Boyd <swboyd@chromium.org>
+From: Christian Brauner <brauner@kernel.org>
 
-commit 73e2d827a501d48dceeb5b9b267a4cd283d6b1ae upstream.
+commit 00675017e0aeba5305665c52ded4ddce6a4c0231 upstream.
 
-A static key warning splat appears during early boot on arm64 systems
-that credit randomness from devicetrees that contain an "rng-seed"
-property. This is because setup_machine_fdt() is called before
-jump_label_init() during setup_arch(). Let's swap the order of these two
-calls so that jump labels are initialized before the devicetree is
-unflattened and the rng seed is credited.
+Similar to the addition of lookup_one() add a version of
+lookup_one_unlocked() and lookup_one_positive_unlocked() that take
+idmapped mounts into account. This is required to port overlay to
+support idmapped base layers.
 
- static_key_enable_cpuslocked(): static key '0xffffffe51c6fcfc0' used before call to jump_label_init()
- WARNING: CPU: 0 PID: 0 at kernel/jump_label.c:166 static_key_enable_cpuslocked+0xb0/0xb8
- Modules linked in:
- CPU: 0 PID: 0 Comm: swapper Not tainted 5.18.0+ #224 44b43e377bfc84bc99bb5ab885ff694984ee09ff
- pstate: 600001c9 (nZCv dAIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
- pc : static_key_enable_cpuslocked+0xb0/0xb8
- lr : static_key_enable_cpuslocked+0xb0/0xb8
- sp : ffffffe51c393cf0
- x29: ffffffe51c393cf0 x28: 000000008185054c x27: 00000000f1042f10
- x26: 0000000000000000 x25: 00000000f10302b2 x24: 0000002513200000
- x23: 0000002513200000 x22: ffffffe51c1c9000 x21: fffffffdfdc00000
- x20: ffffffe51c2f0831 x19: ffffffe51c6fcfc0 x18: 00000000ffff1020
- x17: 00000000e1e2ac90 x16: 00000000000000e0 x15: ffffffe51b710708
- x14: 0000000000000066 x13: 0000000000000018 x12: 0000000000000000
- x11: 0000000000000000 x10: 00000000ffffffff x9 : 0000000000000000
- x8 : 0000000000000000 x7 : 61632065726f6665 x6 : 6220646573752027
- x5 : ffffffe51c641d25 x4 : ffffffe51c13142c x3 : ffff0a00ffffff05
- x2 : 40000000ffffe003 x1 : 00000000000001c0 x0 : 0000000000000065
- Call trace:
-  static_key_enable_cpuslocked+0xb0/0xb8
-  static_key_enable+0x2c/0x40
-  crng_set_ready+0x24/0x30
-  execute_in_process_context+0x80/0x90
-  _credit_init_bits+0x100/0x154
-  add_bootloader_randomness+0x64/0x78
-  early_init_dt_scan_chosen+0x140/0x184
-  early_init_dt_scan_nodes+0x28/0x4c
-  early_init_dt_scan+0x40/0x44
-  setup_machine_fdt+0x7c/0x120
-  setup_arch+0x74/0x1d8
-  start_kernel+0x84/0x44c
-  __primary_switched+0xc0/0xc8
- ---[ end trace 0000000000000000 ]---
- random: crng init done
- Machine model: Google Lazor (rev1 - 2) with LTE
-
-Cc: Hsin-Yi Wang <hsinyi@chromium.org>
-Cc: Douglas Anderson <dianders@chromium.org>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Fixes: f5bda35fba61 ("random: use static branch for crng_ready()")
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Link: https://lore.kernel.org/r/20220602022109.780348-1-swboyd@chromium.org
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Cc: <linux-fsdevel@vger.kernel.org>
+Tested-by: Giuseppe Scrivano <gscrivan@redhat.com>
+Reviewed-by: Amir Goldstein <amir73il@gmail.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/setup.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ fs/namei.c            |   70 ++++++++++++++++++++++++++++++++++++++++++--------
+ include/linux/namei.h |    6 ++++
+ 2 files changed, 66 insertions(+), 10 deletions(-)
 
---- a/arch/arm64/kernel/setup.c
-+++ b/arch/arm64/kernel/setup.c
-@@ -314,13 +314,14 @@ void __init __no_sanitize_address setup_
- 	early_fixmap_init();
- 	early_ioremap_init();
+--- a/fs/namei.c
++++ b/fs/namei.c
+@@ -2718,7 +2718,8 @@ struct dentry *lookup_one(struct user_na
+ EXPORT_SYMBOL(lookup_one);
  
--	setup_machine_fdt(__fdt_pointer);
--
- 	/*
- 	 * Initialise the static keys early as they may be enabled by the
--	 * cpufeature code and early parameters.
-+	 * cpufeature code, early parameters, and DT setup.
- 	 */
- 	jump_label_init();
-+
-+	setup_machine_fdt(__fdt_pointer);
-+
- 	parse_early_param();
+ /**
+- * lookup_one_len_unlocked - filesystem helper to lookup single pathname component
++ * lookup_one_unlocked - filesystem helper to lookup single pathname component
++ * @mnt_userns:	idmapping of the mount the lookup is performed from
+  * @name:	pathname component to lookup
+  * @base:	base directory to lookup from
+  * @len:	maximum length @len should be interpreted to
+@@ -2729,14 +2730,15 @@ EXPORT_SYMBOL(lookup_one);
+  * Unlike lookup_one_len, it should be called without the parent
+  * i_mutex held, and will take the i_mutex itself if necessary.
+  */
+-struct dentry *lookup_one_len_unlocked(const char *name,
+-				       struct dentry *base, int len)
++struct dentry *lookup_one_unlocked(struct user_namespace *mnt_userns,
++				   const char *name, struct dentry *base,
++				   int len)
+ {
+ 	struct qstr this;
+ 	int err;
+ 	struct dentry *ret;
  
- 	/*
+-	err = lookup_one_common(&init_user_ns, name, base, len, &this);
++	err = lookup_one_common(mnt_userns, name, base, len, &this);
+ 	if (err)
+ 		return ERR_PTR(err);
+ 
+@@ -2745,6 +2747,59 @@ struct dentry *lookup_one_len_unlocked(c
+ 		ret = lookup_slow(&this, base, 0);
+ 	return ret;
+ }
++EXPORT_SYMBOL(lookup_one_unlocked);
++
++/**
++ * lookup_one_positive_unlocked - filesystem helper to lookup single
++ *				  pathname component
++ * @mnt_userns:	idmapping of the mount the lookup is performed from
++ * @name:	pathname component to lookup
++ * @base:	base directory to lookup from
++ * @len:	maximum length @len should be interpreted to
++ *
++ * This helper will yield ERR_PTR(-ENOENT) on negatives. The helper returns
++ * known positive or ERR_PTR(). This is what most of the users want.
++ *
++ * Note that pinned negative with unlocked parent _can_ become positive at any
++ * time, so callers of lookup_one_unlocked() need to be very careful; pinned
++ * positives have >d_inode stable, so this one avoids such problems.
++ *
++ * Note that this routine is purely a helper for filesystem usage and should
++ * not be called by generic code.
++ *
++ * The helper should be called without i_mutex held.
++ */
++struct dentry *lookup_one_positive_unlocked(struct user_namespace *mnt_userns,
++					    const char *name,
++					    struct dentry *base, int len)
++{
++	struct dentry *ret = lookup_one_unlocked(mnt_userns, name, base, len);
++
++	if (!IS_ERR(ret) && d_flags_negative(smp_load_acquire(&ret->d_flags))) {
++		dput(ret);
++		ret = ERR_PTR(-ENOENT);
++	}
++	return ret;
++}
++EXPORT_SYMBOL(lookup_one_positive_unlocked);
++
++/**
++ * lookup_one_len_unlocked - filesystem helper to lookup single pathname component
++ * @name:	pathname component to lookup
++ * @base:	base directory to lookup from
++ * @len:	maximum length @len should be interpreted to
++ *
++ * Note that this routine is purely a helper for filesystem usage and should
++ * not be called by generic code.
++ *
++ * Unlike lookup_one_len, it should be called without the parent
++ * i_mutex held, and will take the i_mutex itself if necessary.
++ */
++struct dentry *lookup_one_len_unlocked(const char *name,
++				       struct dentry *base, int len)
++{
++	return lookup_one_unlocked(&init_user_ns, name, base, len);
++}
+ EXPORT_SYMBOL(lookup_one_len_unlocked);
+ 
+ /*
+@@ -2758,12 +2813,7 @@ EXPORT_SYMBOL(lookup_one_len_unlocked);
+ struct dentry *lookup_positive_unlocked(const char *name,
+ 				       struct dentry *base, int len)
+ {
+-	struct dentry *ret = lookup_one_len_unlocked(name, base, len);
+-	if (!IS_ERR(ret) && d_flags_negative(smp_load_acquire(&ret->d_flags))) {
+-		dput(ret);
+-		ret = ERR_PTR(-ENOENT);
+-	}
+-	return ret;
++	return lookup_one_positive_unlocked(&init_user_ns, name, base, len);
+ }
+ EXPORT_SYMBOL(lookup_positive_unlocked);
+ 
+--- a/include/linux/namei.h
++++ b/include/linux/namei.h
+@@ -69,6 +69,12 @@ extern struct dentry *lookup_one_len(con
+ extern struct dentry *lookup_one_len_unlocked(const char *, struct dentry *, int);
+ extern struct dentry *lookup_positive_unlocked(const char *, struct dentry *, int);
+ struct dentry *lookup_one(struct user_namespace *, const char *, struct dentry *, int);
++struct dentry *lookup_one_unlocked(struct user_namespace *mnt_userns,
++				   const char *name, struct dentry *base,
++				   int len);
++struct dentry *lookup_one_positive_unlocked(struct user_namespace *mnt_userns,
++					    const char *name,
++					    struct dentry *base, int len);
+ 
+ extern int follow_down_one(struct path *);
+ extern int follow_down(struct path *);
 
 
