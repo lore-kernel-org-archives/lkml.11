@@ -2,154 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9445C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 05:04:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9994DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 05:28:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236765AbiFGFEY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 01:04:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54700 "EHLO
+        id S230006AbiFGF2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 01:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236722AbiFGFEV (ORCPT
+        with ESMTP id S229724AbiFGF17 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 01:04:21 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 595E8C1ECE;
-        Mon,  6 Jun 2022 22:04:19 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 25754BWT013755;
-        Tue, 7 Jun 2022 00:04:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1654578251;
-        bh=LuyJp6N2+OSRRSCMTgRGlAsY50dcRaUtJNXh97nhDcw=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=LGQLeIUFehUMVRddXGsbBAUwn98Txzayy1mu+Htw/cWRp1SqI7xa54Z0vWJw1v8VS
-         PoC03iinNDyZRo2HttU17al509mLTTroHnvyrlXczBgGM/in0zgvi9xB+2A1bBr5Gx
-         3XmqiVcpApZ2STi6dLMlVI3JcmfB5Am4WsrqMDmI=
-Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 25754Bro003108
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 7 Jun 2022 00:04:11 -0500
-Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 7
- Jun 2022 00:04:10 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 7 Jun 2022 00:04:10 -0500
-Received: from [172.24.220.119] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 25753v3M120195;
-        Tue, 7 Jun 2022 00:03:59 -0500
-Message-ID: <37bbd74e-17e2-5b45-43da-f1103dd0c752@ti.com>
-Date:   Tue, 7 Jun 2022 10:33:56 +0530
+        Tue, 7 Jun 2022 01:27:59 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47EB4BB9E
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 22:27:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=v5EnYcovArD4OSt7S5RJFQjxE1fmtrYeexg0Oh7zsXA=; b=kMjbbyOtHNOK46H1tp7iathRaX
+        7BebtK0+f2fli7C4RkLW81saetKvQz/q2G+U7nT6NcV6GhBAJDa/N1teXU1oXlFNRh+RlrzwOZcYG
+        vot4cNE1mSL+6UpbjU8PCoae+O4u1V96s8/Vqjl5WheoAcXtoKVcSZ5jj28OCiw2o7N7bZIMqkmUc
+        hyR66NtxdcKqEaMB2jAqBAThxBPgVO3KUZuoT5Vc13NhHHDCG4fdqJxaHulIEnVr8euxDhB3fcOXW
+        7lNRoJ8AAQ2EJKvVLuzdOoHrrbXA8HSNSQkdjmiq7ClUd3bhbtODzeD9USbdXaXzSWyNhRgthaB9d
+        Wc0HI3Yw==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nyRkm-004paF-G9; Tue, 07 Jun 2022 05:27:44 +0000
+Date:   Mon, 6 Jun 2022 22:27:44 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Baoquan He <bhe@redhat.com>
+Cc:     akpm@linux-foundation.org, npiggin@gmail.com, urezki@gmail.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 5/5] mm: ioremap: rename ioremap_page_range() to
+ ioremap_range()
+Message-ID: <Yp7h0Jv6vpgt6xdZ@infradead.org>
+References: <20220606083909.363350-1-bhe@redhat.com>
+ <20220606083909.363350-6-bhe@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v4 0/6] Introduce PRU remoteproc consumer API
-Content-Language: en-US
-To:     Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     <linux-kernel@vger.kernel.org>, <bjorn.andersson@linaro.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
-        <linux-arm-kernel@lists.infradead.org>, <rogerq@kernel.org>,
-        <grygorii.strashko@ti.com>, <vigneshr@ti.com>, <kishon@ti.com>,
-        <robh@kernel.org>
-References: <20220603121520.13730-1-p-mohan@ti.com>
- <20220606155612.GA809345@p14s> <20220606161518.GB809345@p14s>
-From:   Puranjay Mohan <p-mohan@ti.com>
-In-Reply-To: <20220606161518.GB809345@p14s>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220606083909.363350-6-bhe@redhat.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mathieu,
-
-On 06/06/22 21:45, Mathieu Poirier wrote:
-> On Mon, Jun 06, 2022 at 09:56:12AM -0600, Mathieu Poirier wrote:
->> I have started to review this set, comments will come over the next few days.  I
->> will clearly inform you when I am done reviewing.
+On Mon, Jun 06, 2022 at 04:39:09PM +0800, Baoquan He wrote:
+> Because the current ioremap_page_range() only maps IO address to kernel
+> virtual address, no struct page pointer passed in or page handling related.
+> So rename it here.
 > 
-> This patch is giving me several checkpatch warnings that should have been caught
-> before sending the patches out to the mailing list.  As such I will not review
-> this work and seriously considering adding your next revision at the very bottom
-> of my queue.
+> The renaming is done with below command:
+> sed -i "s/ioremap_page_range/ioremap_range/g" `git grep -l ioremap_page_range`
 
-I am sorry for this. I had introduced the 6th patch in v4 and it is
-giving these errors. I have fixed them and sent a v5. Please don't move
-the v5 to the bottom of the queue. I will be extra cautious from next time.
+This creates a lot of churn without much of a benefit.  If you want
+to get rid of the name please convert most architectures to the
+generioc ioremap code first so that all these callers go away..
 
-Thanks,
-Puranjay Mohan
-
-> 
->>
->> Thanks,
->> Mathieu
->>
->> On Fri, Jun 03, 2022 at 05:45:14PM +0530, Puranjay Mohan wrote:
->>> This is the v4 of the patch series [1]. The v3 had some comments
->>> on the DT patch that have been addressed here. The 6th patch in this
->>> series was missed in the previous versions, so, it has been added now.
->>>
->>> I have posted two more patch series that depend on this series, one to
->>> the soc tree and another to the networking tree. I had sent all the 3
->>> series, including this one as RFC [2] to get comments and to explain the
->>> dependencies.
->>>
->>> The Programmable Real-Time Unit and Industrial Communication Subsystem
->>> (PRU-ICSS or simply PRUSS) on various TI SoCs consists of dual 32-bit
->>> RISC cores (Programmable Real-Time Units, or PRUs) for program execution.
->>>
->>> There are 3 foundation components for PRUSS subsystem: the PRUSS platform
->>> driver, the PRUSS INTC driver and the PRUSS remoteproc driver. All were
->>> already merged and can be found under:
->>> 1) drivers/soc/ti/pruss.c
->>>    Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
->>> 2) drivers/irqchip/irq-pruss-intc.c
->>>    Documentation/devicetree/bindings/interrupt-controller/ti,pruss-intc.yaml
->>> 3) drivers/remoteproc/pru_rproc.c
->>>    Documentation/devicetree/bindings/remoteproc/ti,pru-rproc.yaml
->>>
->>> The programmable nature of the PRUs provide flexibility to implement custom
->>> peripheral interfaces, fast real-time responses, or specialized data handling.
->>> Example of a PRU consumer drivers will be:
->>>   - Software UART over PRUSS
->>>   - PRU-ICSS Ethernet EMAC
->>>
->>> In order to make usage of common PRU resources and allow the consumer drivers to
->>> configure the PRU hardware for specific usage the PRU API is introduced.
->>>
->>> [1] https://patchwork.kernel.org/project/linux-remoteproc/cover/20220418104118.12878-1-p-mohan@ti.com/
->>> [2] https://patchwork.kernel.org/project/linux-remoteproc/cover/20220406094358.7895-1-p-mohan@ti.com/
->>>
->>> Thanks and Regards,
->>> Puranjay Mohan
->>>
->>> Roger Quadros (1):
->>>   remoteproc: pru: Add pru_rproc_set_ctable() function
->>>
->>> Suman Anna (2):
->>>   dt-bindings: remoteproc: Add PRU consumer bindings
->>>   remoteproc: pru: Make sysfs entries read-only for PRU client driven
->>>     boots
->>>
->>> Tero Kristo (3):
->>>   remoteproc: pru: Add APIs to get and put the PRU cores
->>>   remoteproc: pru: Configure firmware based on client setup
->>>   remoteproc: pru: add support for configuring GPMUX based on client
->>>     setup
->>>
->>>  .../bindings/remoteproc/ti,pru-consumer.yaml  |  69 +++++
->>>  drivers/remoteproc/pru_rproc.c                | 254 +++++++++++++++++-
->>>  include/linux/pruss.h                         |  78 ++++++
->>>  3 files changed, 396 insertions(+), 5 deletions(-)
->>>  create mode 100644 Documentation/devicetree/bindings/remoteproc/ti,pru-consumer.yaml
->>>  create mode 100644 include/linux/pruss.h
->>>
->>> -- 
->>> 2.17.1
->>>
