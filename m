@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 500ABCCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD34CCA483
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:26:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353046AbiFHAYG (ORCPT
+        id S1379961AbiFHAYa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:24:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
+        Tue, 7 Jun 2022 20:24:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382510AbiFGV56 (ORCPT
+        with ESMTP id S1381531AbiFGVoQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:57:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 737D024CC93;
-        Tue,  7 Jun 2022 12:13:59 -0700 (PDT)
+        Tue, 7 Jun 2022 17:44:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A01712342B2;
+        Tue,  7 Jun 2022 12:07:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23C30B823AE;
-        Tue,  7 Jun 2022 19:13:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 936EAC385A5;
-        Tue,  7 Jun 2022 19:13:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94236B823B0;
+        Tue,  7 Jun 2022 19:07:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF61CC34115;
+        Tue,  7 Jun 2022 19:07:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629235;
-        bh=BosxUKO/27/7KBdUbBO+j64psIFPo88G9Hi6DZud58k=;
+        s=korg; t=1654628830;
+        bh=z9mF0vJTOcJM8P1H/x/lKWNpzNoK2T2OoNZu9lJkCpw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NwgiBwqpsRGjvVkV1v4D6tWjvmiztU3PYCMSyiKC8kk7I0jiC4tYiVwgBekyYTekV
-         NvwoliY7Iz915/9jcs2GNOnYNhYHvqGmBVMu8WzqXbXeNw7aFLKfoGuWCwoPZkVZdH
-         QEQBmAAw2NCcXYFxLECy0sdG/N0GFmFpEmXKCW2k=
+        b=ENb4RzGBtmtee3HHqTmPfCilphWLllFTqpQrf4KF2IHOqL12/iHDSqBCkPZJVLHPV
+         +H+/sAbT0Uadx80BS5NMBy2xqz4+i8TwBgqiGy5uEgAwwfZph9Dtv11qznbHBk+hjI
+         2SV5LDjgCGwRhdtsoHFgblzO9lmGFJyS+4Bw1fYo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        stable@vger.kernel.org, Dongliang Mu <mudongliangabcd@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 617/879] PCI: mediatek-gen3: Assert resets to ensure expected init state
-Date:   Tue,  7 Jun 2022 19:02:15 +0200
-Message-Id: <20220607165020.757146074@linuxfoundation.org>
+Subject: [PATCH 5.18 472/879] media: ov7670: remove ov7670_power_off from ov7670_remove
+Date:   Tue,  7 Jun 2022 18:59:50 +0200
+Message-Id: <20220607165016.580398159@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,49 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit 1d565935e3b9ccc682631e0bc6e415a7f48295d9 ]
+[ Upstream commit 5bf19572e31375368f19edd2dbb2e0789518bb99 ]
 
-The controller may have been left out of reset by the bootloader,
-in which case, before the powerup sequence, the controller will be
-found preconfigured with values that were set before booting the
-kernel: this produces a controller failure, with the result of
-a failure during the mtk_pcie_startup_port() sequence as the PCIe
-link never gets up.
+In ov7670_probe, it always invokes ov7670_power_off() no matter
+the execution is successful or failed. So we cannot invoke it
+agiain in ov7670_remove().
 
-To ensure that we get a clean start in an expected state, assert
-both the PHY and MAC resets before executing the controller
-power-up sequence.
+Fix this by removing ov7670_power_off from ov7670_remove.
 
-Link: https://lore.kernel.org/r/20220404144858.92390-1-angelogioacchino.delregno@collabora.com
-Fixes: d3bf75b579b9 ("PCI: mediatek-gen3: Add MediaTek Gen3 driver for MT8192")
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Fixes: 030f9f682e66 ("media: ov7670: control clock along with power")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pcie-mediatek-gen3.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/media/i2c/ov7670.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
-index 3e8d70bfabc6..5d9fd36b02d1 100644
---- a/drivers/pci/controller/pcie-mediatek-gen3.c
-+++ b/drivers/pci/controller/pcie-mediatek-gen3.c
-@@ -838,6 +838,14 @@ static int mtk_pcie_setup(struct mtk_gen3_pcie *pcie)
- 	if (err)
- 		return err;
+diff --git a/drivers/media/i2c/ov7670.c b/drivers/media/i2c/ov7670.c
+index 196746423116..1be2c0e5bdc1 100644
+--- a/drivers/media/i2c/ov7670.c
++++ b/drivers/media/i2c/ov7670.c
+@@ -2017,7 +2017,6 @@ static int ov7670_remove(struct i2c_client *client)
+ 	v4l2_async_unregister_subdev(sd);
+ 	v4l2_ctrl_handler_free(&info->hdl);
+ 	media_entity_cleanup(&info->sd.entity);
+-	ov7670_power_off(sd);
+ 	return 0;
+ }
  
-+	/*
-+	 * The controller may have been left out of reset by the bootloader
-+	 * so make sure that we get a clean start by asserting resets here.
-+	 */
-+	reset_control_assert(pcie->phy_reset);
-+	reset_control_assert(pcie->mac_reset);
-+	usleep_range(10, 20);
-+
- 	/* Don't touch the hardware registers before power up */
- 	err = mtk_pcie_power_up(pcie);
- 	if (err)
 -- 
 2.35.1
 
