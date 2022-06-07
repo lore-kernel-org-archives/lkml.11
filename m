@@ -2,82 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE508C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:16:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1796C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 09:16:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239150AbiFGJQA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:16:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39824 "EHLO
+        id S239133AbiFGJQk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:16:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239101AbiFGJPf (ORCPT
+        with ESMTP id S239198AbiFGJQf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:15:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823FBAE24B;
-        Tue,  7 Jun 2022 02:15:33 -0700 (PDT)
+        Tue, 7 Jun 2022 05:16:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD1DDFF79;
+        Tue,  7 Jun 2022 02:16:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1392960B04;
-        Tue,  7 Jun 2022 09:15:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E9E9C385A5;
-        Tue,  7 Jun 2022 09:15:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654593332;
-        bh=71J8tbY0PQ1Gu6dEU4y9Z9et5FuCkQMlodd8idd5KuM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nczUUTzvaL2rPA3pyJ+2us4OihBNRyXBW1HvEDaW9szUdVPUpY8l3s+hoCo4dgvaY
-         S2Ga6GashrGJNf7R5tdJSROyx+/F8glH4seWbHdMxF1kQ2eo9o6vcX7wS9gx+2eKkP
-         rChlwRrdZJkIJObli+LI+zfD0REWr7CPHXVsdQ1g=
-Date:   Tue, 7 Jun 2022 11:10:29 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Phil Elwell <phil@raspberrypi.com>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6103AB81E09;
+        Tue,  7 Jun 2022 09:16:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFB17C3411F;
+        Tue,  7 Jun 2022 09:16:28 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="DnYxqIuP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1654593386;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8JxrXr9JI6SCO4Edcm5jD4dlFLfy78aly9kboFioEZ8=;
+        b=DnYxqIuP+4rADUna88H7IsDE+r7H2bsdZDRsM69bEjDnYNgfvMuSeeZ+SfrhmEPKz5kiLo
+        LKHcKm4NVfYGzNv4wjT2xKdWZcktNpmwx5o2bCOG+rr42LHUKAoP8140Tp1T29YIxVUpo+
+        klXZhlzflwr4w7GJlvTZo5KS+i3qAeo=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e5e86f92 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 7 Jun 2022 09:16:25 +0000 (UTC)
+Received: by mail-yb1-f175.google.com with SMTP id l204so30083034ybf.10;
+        Tue, 07 Jun 2022 02:16:25 -0700 (PDT)
+X-Gm-Message-State: AOAM532sLhpa8hzfpnIWReOikSfeGwyRefxIOvv4G7wB1zRMnTfuco73
+        1D56W/B7c/SRQ8yTv2SVredz151Ii1WAmPV3mFo=
+X-Google-Smtp-Source: ABdhPJyNWSzlwWjTxvo6G7qJuMtryN7Cm9X99MgTvRBPUejF+9jh9gfuzlcoYwg8GImZLDhzOr1cNA4BOcayZFhTCJs=
+X-Received: by 2002:a5b:dcf:0:b0:64a:6923:bbba with SMTP id
+ t15-20020a5b0dcf000000b0064a6923bbbamr30583298ybr.398.1654593384225; Tue, 07
+ Jun 2022 02:16:24 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 2002:a05:7110:6407:b0:181:6914:78f6 with HTTP; Tue, 7 Jun 2022
+ 02:16:23 -0700 (PDT)
+In-Reply-To: <Yp8W68o37X6aAD86@shell.armlinux.org.uk>
+References: <8cc7ebe4-442b-a24b-9bb0-fce6e0425ee6@raspberrypi.com>
+ <CAHmME9pL=g7Gz9-QOHnTosLHAL9YSPsW+CnE=9=u3iTQaFzomg@mail.gmail.com> <Yp8W68o37X6aAD86@shell.armlinux.org.uk>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 7 Jun 2022 11:16:23 +0200
+X-Gmail-Original-Message-ID: <CAHmME9r21wP324DCbBSZWd+mFR+=4M4pjgkJ83HdbhZ=prJdpg@mail.gmail.com>
+Message-ID: <CAHmME9r21wP324DCbBSZWd+mFR+=4M4pjgkJ83HdbhZ=prJdpg@mail.gmail.com>
+Subject: Re: [PATCH v2] ARM: initialize jump labels before setup_machine_fdt()
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Phil Elwell <phil@raspberrypi.com>,
         linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
         LKML <linux-kernel@vger.kernel.org>,
         Catalin Marinas <catalin.marinas@arm.com>,
         Stephen Boyd <swboyd@chromium.org>,
         Ard Biesheuvel <ardb@kernel.org>,
         stable <stable@vger.kernel.org>
-Subject: Re: [PATCH v2] ARM: initialize jump labels before setup_machine_fdt()
-Message-ID: <Yp8WBaqr+sLInNnc@kroah.com>
-References: <8cc7ebe4-442b-a24b-9bb0-fce6e0425ee6@raspberrypi.com>
- <CAHmME9pL=g7Gz9-QOHnTosLHAL9YSPsW+CnE=9=u3iTQaFzomg@mail.gmail.com>
- <0f6458d7-037a-fa4d-8387-7de833288fb9@raspberrypi.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0f6458d7-037a-fa4d-8387-7de833288fb9@raspberrypi.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 09:47:30AM +0100, Phil Elwell wrote:
-> Hi Jason,
-> 
-> On 07/06/2022 09:30, Jason A. Donenfeld wrote:
-> > Hi Phil,
-> > 
-> > Thanks for testing this. Can you let me know if v1 of this works?
-> > 
-> > https://lore.kernel.org/lkml/20220602212234.344394-1-Jason@zx2c4.com/
-> > 
-> > (I'll also fashion a revert for this part of stable.)
-> > 
-> > Jason
-> 
-> Thanks for the quick response, but that doesn't work for me either. Let me
-> say again that I'm on a downstream kernel (rpi-5.15.y) so this may not be a
-> universal problem, but merging either of these fixing patches would be fatal
-> for us.
+On 6/7/22, Russell King (Oracle) <linux@armlinux.org.uk> wrote:
+> On Tue, Jun 07, 2022 at 10:30:49AM +0200, Jason A. Donenfeld wrote:
+>> Hi Phil,
+>>
+>> Thanks for testing this. Can you let me know if v1 of this works?
+>>
+>> https://lore.kernel.org/lkml/20220602212234.344394-1-Jason@zx2c4.com/
+>>
+>> (I'll also fashion a revert for this part of stable.)
+>
+> As the arm32 version hasn't been merged yet, how is it in stable already?
+> If it is in stable, isn't that a yet another violation of the stable
+> kernel rules?
 
-I have reports of a "clean" 5.15.45 working just fine on a rpi.
-Anything special in your tree that isn't upstream yet that might be
-conflicting with this?  Any chance you can try a kernel.org release
-instead?
+You misunderstood my ambiguous sentence, sorry. I meant a revert of
+the thing in stable that makes this discussion here a stable
+discussion rather than a 5.19 discussion. No arm32 stuff has been
+committed anywhere.
 
-thanks,
-
-greg k-h
+Jason
