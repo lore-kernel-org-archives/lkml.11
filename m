@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFC03CCA482
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B31B5CCA486
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388536AbiFHAc0 (ORCPT
+        id S1388704AbiFHAco (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42944 "EHLO
+        Tue, 7 Jun 2022 20:32:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382756AbiFGVvw (ORCPT
+        with ESMTP id S1382702AbiFGV7i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:51:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8048F23D5FD;
-        Tue,  7 Jun 2022 12:09:25 -0700 (PDT)
+        Tue, 7 Jun 2022 17:59:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 267EF24E009;
+        Tue,  7 Jun 2022 12:14:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C3BC618D6;
-        Tue,  7 Jun 2022 19:09:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F6C7C385A2;
-        Tue,  7 Jun 2022 19:09:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F3E056187F;
+        Tue,  7 Jun 2022 19:14:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A428C385A2;
+        Tue,  7 Jun 2022 19:14:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628964;
-        bh=0VYyAQ2udBMl6TW3hWYknv3XLOr7ZmsuQTyd3In4K4c=;
+        s=korg; t=1654629241;
+        bh=5NVwfizFJYa+rVoBcHgPIn0dLHQ3kWh10mrNptlL5ho=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QBkGgHSeF3jGEP5nAWJ677jnQMkmk/lwHQg3xCJ8q9hSNFTThmc+MuC90IEoskkFD
-         dEg43F1auVo+nTQSTDs9DOfq43sBF6XLpIEfJOYi/DwKOtyrbCJYuYjQqThdHUfEoI
-         5H2zhaBw+Rlg91BLEDGya0/VxarF7lmtzS4alA2I=
+        b=puvmC65iLdPQEPaDzBB6WZ+9hwWLdiYexgbeKbCiT8CQNA3n/olqlt3DcsogJQYQl
+         g0dlelLIFyj9EE2Zins/eJJ2CtCYGjsg+nd3HDxNpQd31q4AMk3D3c53s2D8i9Kxy6
+         YpvP/fKtAs9Hp5Idre44q0LRsIjN9LhCS9dBnM18=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Alexey Dobriyan <adobriyan@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 520/879] rxrpc: Dont let ack.previousPacket regress
-Date:   Tue,  7 Jun 2022 19:00:38 +0200
-Message-Id: <20220607165017.972830189@linuxfoundation.org>
+Subject: [PATCH 5.18 619/879] module: fix [e_shstrndx].sh_size=0 OOB access
+Date:   Tue,  7 Jun 2022 19:02:17 +0200
+Message-Id: <20220607165020.817539600@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,83 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Alexey Dobriyan <adobriyan@gmail.com>
 
-[ Upstream commit 81524b6312535897707f2942695da1d359a5e56b ]
+[ Upstream commit 391e982bfa632b8315235d8be9c0a81374c6a19c ]
 
-The previousPacket field in the rx ACK packet should never go backwards -
-it's now the highest DATA sequence number received, not the last on
-received (it used to be used for out of sequence detection).
+It is trivial to craft a module to trigger OOB access in this line:
 
-Fixes: 248f219cb8bc ("rxrpc: Rewrite the data and ack handling code")
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Signed-off-by: David S. Miller <davem@davemloft.net>
+	if (info->secstrings[strhdr->sh_size - 1] != '\0') {
+
+BUG: unable to handle page fault for address: ffffc90000aa0fff
+PGD 100000067 P4D 100000067 PUD 100066067 PMD 10436f067 PTE 0
+Oops: 0000 [#1] PREEMPT SMP PTI
+CPU: 7 PID: 1215 Comm: insmod Not tainted 5.18.0-rc5-00007-g9bf578647087-dirty #10
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/01/2014
+RIP: 0010:load_module+0x19b/0x2391
+
+Fixes: ec2a29593c83 ("module: harden ELF info handling")
+Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+[rebased patch onto modules-next]
+Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/ar-internal.h | 4 ++--
- net/rxrpc/input.c       | 4 +++-
- net/rxrpc/output.c      | 2 +-
- 3 files changed, 6 insertions(+), 4 deletions(-)
+ kernel/module.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index cc1fe6d00eca..4ba51e6d3d85 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -679,7 +679,7 @@ struct rxrpc_call {
- 	/* Receive-phase ACK management (ACKs we send). */
- 	u8			ackr_reason;	/* reason to ACK */
- 	rxrpc_serial_t		ackr_serial;	/* serial of packet being ACK'd */
--	rxrpc_seq_t		ackr_prev_seq;	/* previous sequence number received */
-+	rxrpc_seq_t		ackr_highest_seq; /* Higest sequence number received */
- 	rxrpc_seq_t		ackr_consumed;	/* Highest packet shown consumed */
- 	rxrpc_seq_t		ackr_seen;	/* Highest packet shown seen */
- 
-@@ -694,7 +694,7 @@ struct rxrpc_call {
- 	/* Transmission-phase ACK management (ACKs we've received). */
- 	ktime_t			acks_latest_ts;	/* Timestamp of latest ACK received */
- 	rxrpc_seq_t		acks_first_seq;	/* first sequence number received */
--	rxrpc_seq_t		acks_prev_seq;	/* previous sequence number received */
-+	rxrpc_seq_t		acks_prev_seq;	/* Highest previousPacket received */
- 	rxrpc_seq_t		acks_lowest_nak; /* Lowest NACK in the buffer (or ==tx_hard_ack) */
- 	rxrpc_seq_t		acks_lost_top;	/* tx_top at the time lost-ack ping sent */
- 	rxrpc_serial_t		acks_lost_ping;	/* Serial number of probe ACK */
-diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index 3da33b5c13b2..680b984ef87f 100644
---- a/net/rxrpc/input.c
-+++ b/net/rxrpc/input.c
-@@ -453,7 +453,6 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
- 	    !rxrpc_receiving_reply(call))
- 		goto unlock;
- 
--	call->ackr_prev_seq = seq0;
- 	hard_ack = READ_ONCE(call->rx_hard_ack);
- 
- 	nr_subpackets = sp->nr_subpackets;
-@@ -534,6 +533,9 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
- 			ack_serial = serial;
- 		}
- 
-+		if (after(seq0, call->ackr_highest_seq))
-+			call->ackr_highest_seq = seq0;
-+
- 		/* Queue the packet.  We use a couple of memory barriers here as need
- 		 * to make sure that rx_top is perceived to be set after the buffer
- 		 * pointer and that the buffer pointer is set after the annotation and
-diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
-index a45c83f22236..46aae9b7006f 100644
---- a/net/rxrpc/output.c
-+++ b/net/rxrpc/output.c
-@@ -89,7 +89,7 @@ static size_t rxrpc_fill_out_ack(struct rxrpc_connection *conn,
- 	pkt->ack.bufferSpace	= htons(8);
- 	pkt->ack.maxSkew	= htons(0);
- 	pkt->ack.firstPacket	= htonl(hard_ack + 1);
--	pkt->ack.previousPacket	= htonl(call->ackr_prev_seq);
-+	pkt->ack.previousPacket	= htonl(call->ackr_highest_seq);
- 	pkt->ack.serial		= htonl(serial);
- 	pkt->ack.reason		= reason;
- 	pkt->ack.nAcks		= top - hard_ack;
+diff --git a/kernel/module.c b/kernel/module.c
+index 6cea788fd965..6529c84c536f 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -3033,6 +3033,10 @@ static int elf_validity_check(struct load_info *info)
+ 	 * strings in the section safe.
+ 	 */
+ 	info->secstrings = (void *)info->hdr + strhdr->sh_offset;
++	if (strhdr->sh_size == 0) {
++		pr_err("empty section name table\n");
++		goto no_exec;
++	}
+ 	if (info->secstrings[strhdr->sh_size - 1] != '\0') {
+ 		pr_err("ELF Spec violation: section name table isn't null terminated\n");
+ 		goto no_exec;
 -- 
 2.35.1
 
