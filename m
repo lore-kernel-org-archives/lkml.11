@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6B57C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:49:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14FE0C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:49:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348314AbiFGRtp (ORCPT
+        id S1348621AbiFGRts (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:49:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39762 "EHLO
+        Tue, 7 Jun 2022 13:49:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347763AbiFGRbD (ORCPT
+        with ESMTP id S1347464AbiFGRap (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:31:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B533410656A;
-        Tue,  7 Jun 2022 10:28:19 -0700 (PDT)
+        Tue, 7 Jun 2022 13:30:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913231116FD;
+        Tue,  7 Jun 2022 10:26:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D270B8220B;
-        Tue,  7 Jun 2022 17:28:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA279C3411F;
-        Tue,  7 Jun 2022 17:28:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D478613F8;
+        Tue,  7 Jun 2022 17:26:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BABDC385A5;
+        Tue,  7 Jun 2022 17:26:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622897;
-        bh=uvnMnN9uGlszsyZ7DlTNeAo0/Gil1CZqQZ0yF6JsYMY=;
+        s=korg; t=1654622810;
+        bh=Ne7KVx6tMWNa+nAq3BGWlIAOefOfu5GOIIKzDMxoiXE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KWo5CBv0KcsQgpg59pfABrkeSgYOIp9ufDPvoyznNTJTmWWEPpiRW05pJMUqvrNO4
-         3neH45z0bjyRAlz5mKCzpWuErPoCLw8sejE5zyOMvYg3OMYSWatZ+4QwvOPo0Jyizi
-         puwf3BuX9GCVThjRAi7kkDuRxjKxZJeHfY2qsukg=
+        b=K97OtODj6fJlS/p0eaNS3+e2LGycDLVhKV60DbulbA2Qb4ej32FEUxyanBSpHzhkT
+         2VJzGA6GLhApVwrNSLJhdlqc6K7cxK2XzX/8lTiToW/kP/SFT7paslkbf6jEybsYrA
+         D3ngVSN8tIWZVIUqr5HWYniKrdnlwoG1sLBGu6fo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Keith Busch <kbusch@kernel.org>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 222/452] nvme: set dma alignment to dword
-Date:   Tue,  7 Jun 2022 19:01:19 +0200
-Message-Id: <20220607164915.177254190@linuxfoundation.org>
+        stable@vger.kernel.org, Zev Weiss <zev@bewilderbeest.net>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 190/452] regulator: core: Fix enable_count imbalance with EXCLUSIVE_GET
+Date:   Tue,  7 Jun 2022 19:00:47 +0200
+Message-Id: <20220607164914.224384055@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,39 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keith Busch <kbusch@kernel.org>
+From: Zev Weiss <zev@bewilderbeest.net>
 
-[ Upstream commit 52fde2c07da606f3f120af4f734eadcfb52b04be ]
+[ Upstream commit c3e3ca05dae37f8f74bb80358efd540911cbc2c8 ]
 
-The nvme specification only requires qword alignment for segment
-descriptors, and the driver already guarantees that. The spec has always
-allowed user data to be dword aligned, which is what the queue's
-attribute is for, so relax the alignment requirement to that value.
+Since the introduction of regulator->enable_count, a driver that did
+an exclusive get on an already-enabled regulator would end up with
+enable_count initialized to 0 but rdev->use_count initialized to 1.
+With that starting point the regulator is effectively stuck enabled,
+because if the driver attempted to disable it it would fail the
+enable_count underflow check in _regulator_handle_consumer_disable().
 
-While we could allow byte alignment for some controllers when using
-SGLs, we still need to support PRP, and that only allows dword.
+The EXCLUSIVE_GET path in _regulator_get() now initializes
+enable_count along with rdev->use_count so that the regulator can be
+disabled without underflowing the former.
 
-Fixes: 3b2a1ebceba3 ("nvme: set dma alignment to qword")
-Signed-off-by: Keith Busch <kbusch@kernel.org>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+Fixes: 5451781dadf85 ("regulator: core: Only count load for enabled consumers")
+Link: https://lore.kernel.org/r/20220505043152.12933-1-zev@bewilderbeest.net
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/regulator/core.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index e73a5c62a858..d301f0280ff6 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -2024,7 +2024,7 @@ static void nvme_set_queue_limits(struct nvme_ctrl *ctrl,
- 		blk_queue_max_segments(q, min_t(u32, max_segments, USHRT_MAX));
- 	}
- 	blk_queue_virt_boundary(q, NVME_CTRL_PAGE_SIZE - 1);
--	blk_queue_dma_alignment(q, 7);
-+	blk_queue_dma_alignment(q, 3);
- 	blk_queue_write_cache(q, vwc, vwc);
- }
+diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
+index 2c48e55c4104..6e3f3511e7dd 100644
+--- a/drivers/regulator/core.c
++++ b/drivers/regulator/core.c
+@@ -2027,10 +2027,13 @@ struct regulator *_regulator_get(struct device *dev, const char *id,
+ 		rdev->exclusive = 1;
  
+ 		ret = _regulator_is_enabled(rdev);
+-		if (ret > 0)
++		if (ret > 0) {
+ 			rdev->use_count = 1;
+-		else
++			regulator->enable_count = 1;
++		} else {
+ 			rdev->use_count = 0;
++			regulator->enable_count = 0;
++		}
+ 	}
+ 
+ 	link = device_link_add(dev, &rdev->dev, DL_FLAG_STATELESS);
 -- 
 2.35.1
 
