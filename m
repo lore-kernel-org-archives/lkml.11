@@ -2,185 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 185A9C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B462CCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392580AbiFHCGE (ORCPT
+        id S1443846AbiFHCGr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:06:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47928 "EHLO
+        Tue, 7 Jun 2022 22:06:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1841792AbiFHAIP (ORCPT
+        with ESMTP id S1587993AbiFGXx7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:08:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6355E277F99;
-        Tue,  7 Jun 2022 12:24:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 7 Jun 2022 19:53:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1739A26147C
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:20:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654629543;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jzPfLQqqrOOrtPSbwWM44VdH1zcU6PIWuEvhTsmS8xA=;
+        b=R37Y1GVPekIj+Q9A8xdbBvgan4hijYyZJjp2+jI2t0rI217WWrh/GR2MRDJyC4w7hBGMrO
+        308O/VcHzVyq6M5+ogKNSpDC8IN5ZzUJvkcK54DbzqLrjMHdls8u1fBDFfQ6Nm5Zj1OTSa
+        6JUPKY40lL8UUxQtdviV+XYf0zMAhbM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-634-L--pSe0POhiARLMLyaMN1g-1; Tue, 07 Jun 2022 15:12:58 -0400
+X-MC-Unique: L--pSe0POhiARLMLyaMN1g-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB029B8220B;
-        Tue,  7 Jun 2022 19:24:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48C95C385A2;
-        Tue,  7 Jun 2022 19:24:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629857;
-        bh=vpSNYfIzcxUQoPILJ0ylefa5STRl67qyKm19jCNCdZM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kCo4P1OgK74SPF2W2mKM5/J5k25ge9WDwlia7+IgYe1+XKvd5edbaBGz4VDt21yhO
-         OnDG0CTdeexKceMuzQQfSCL3SOdD4tisntgMPMQFxLGoDE3NGlH032nUELQ8lvLkMx
-         YzFT4Xr/+iCtJ07i6W4IiAn/AAxmgqBa4cWcvVg8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Coly Li <colyli@suse.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.18 841/879] bcache: remove incremental dirty sector counting for bch_sectors_dirty_init()
-Date:   Tue,  7 Jun 2022 19:05:59 +0200
-Message-Id: <20220607165027.262912637@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7106A101E165;
+        Tue,  7 Jun 2022 19:11:27 +0000 (UTC)
+Received: from emerald.redhat.com (unknown [10.22.9.252])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 88D26412C4B0;
+        Tue,  7 Jun 2022 19:10:57 +0000 (UTC)
+From:   Lyude Paul <lyude@redhat.com>
+To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org
+Cc:     Wayne Lin <Wayne.Lin@amd.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Imre Deak <imre.deak@intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RFC 06/18] drm/display/dp_mst: Add some missing kdocs for atomic MST structs
+Date:   Tue,  7 Jun 2022 15:07:03 -0400
+Message-Id: <20220607190715.1331124-7-lyude@redhat.com>
+In-Reply-To: <20220607190715.1331124-1-lyude@redhat.com>
+References: <20220607190715.1331124-1-lyude@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Coly Li <colyli@suse.de>
+Since we're about to start adding some stuff here, we may as well fill in
+any missing documentation that we forgot to write.
 
-commit 80db4e4707e78cb22287da7d058d7274bd4cb370 upstream.
-
-After making bch_sectors_dirty_init() being multithreaded, the existing
-incremental dirty sector counting in bch_root_node_dirty_init() doesn't
-release btree occupation after iterating 500000 (INIT_KEYS_EACH_TIME)
-bkeys. Because a read lock is added on btree root node to prevent the
-btree to be split during the dirty sectors counting, other I/O requester
-has no chance to gain the write lock even restart bcache_btree().
-
-That is to say, the incremental dirty sectors counting is incompatible
-to the multhreaded bch_sectors_dirty_init(). We have to choose one and
-drop another one.
-
-In my testing, with 512 bytes random writes, I generate 1.2T dirty data
-and a btree with 400K nodes. With single thread and incremental dirty
-sectors counting, it takes 30+ minites to register the backing device.
-And with multithreaded dirty sectors counting, the backing device
-registration can be accomplished within 2 minutes.
-
-The 30+ minutes V.S. 2- minutes difference makes me decide to keep
-multithreaded bch_sectors_dirty_init() and drop the incremental dirty
-sectors counting. This is what this patch does.
-
-But INIT_KEYS_EACH_TIME is kept, in sectors_dirty_init_fn() the CPU
-will be released by cond_resched() after every INIT_KEYS_EACH_TIME keys
-iterated. This is to avoid the watchdog reports a bogus soft lockup
-warning.
-
-Fixes: b144e45fc576 ("bcache: make bch_sectors_dirty_init() to be multithreaded")
-Signed-off-by: Coly Li <colyli@suse.de>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220524102336.10684-4-colyli@suse.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Cc: Wayne Lin <Wayne.Lin@amd.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Imre Deak <imre.deak@intel.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Sean Paul <sean@poorly.run>
 ---
- drivers/md/bcache/writeback.c |   39 ++++++++++++---------------------------
- 1 file changed, 12 insertions(+), 27 deletions(-)
+ include/drm/display/drm_dp_mst_helper.h | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
---- a/drivers/md/bcache/writeback.c
-+++ b/drivers/md/bcache/writeback.c
-@@ -805,13 +805,11 @@ static int bch_writeback_thread(void *ar
+diff --git a/include/drm/display/drm_dp_mst_helper.h b/include/drm/display/drm_dp_mst_helper.h
+index 8ab4f14f2344..eb0ea578b227 100644
+--- a/include/drm/display/drm_dp_mst_helper.h
++++ b/include/drm/display/drm_dp_mst_helper.h
+@@ -542,19 +542,43 @@ struct drm_dp_payload {
  
- /* Init */
- #define INIT_KEYS_EACH_TIME	500000
--#define INIT_KEYS_SLEEP_MS	100
+ #define to_dp_mst_topology_state(x) container_of(x, struct drm_dp_mst_topology_state, base)
  
- struct sectors_dirty_init {
- 	struct btree_op	op;
- 	unsigned int	inode;
- 	size_t		count;
--	struct bkey	start;
++/**
++ * struct drm_dp_mst_atomic_payload - Atomic state struct for an MST payload
++ *
++ * The primary atomic state structure for a given MST payload. Stores information like current
++ * bandwidth allocation, intended action for this payload, etc.
++ */
+ struct drm_dp_mst_atomic_payload {
++	/** @port: The MST port assigned to this payload */
+ 	struct drm_dp_mst_port *port;
++	/** @time_slots: The number of timeslots allocated to this payload */
+ 	int time_slots;
++	/** @pbn: The payload bandwidth for this payload */
+ 	int pbn;
++	/** @dsc_enabled: Whether or not this payload has DSC enabled */
+ 	bool dsc_enabled;
++
++	/** @next: The list node for this payload */
+ 	struct list_head next;
  };
  
- static int sectors_dirty_init_fn(struct btree_op *_op, struct btree *b,
-@@ -827,11 +825,8 @@ static int sectors_dirty_init_fn(struct
- 					     KEY_START(k), KEY_SIZE(k));
- 
- 	op->count++;
--	if (atomic_read(&b->c->search_inflight) &&
--	    !(op->count % INIT_KEYS_EACH_TIME)) {
--		bkey_copy_key(&op->start, k);
--		return -EAGAIN;
--	}
-+	if (!(op->count % INIT_KEYS_EACH_TIME))
-+		cond_resched();
- 
- 	return MAP_CONTINUE;
- }
-@@ -846,24 +841,16 @@ static int bch_root_node_dirty_init(stru
- 	bch_btree_op_init(&op.op, -1);
- 	op.inode = d->id;
- 	op.count = 0;
--	op.start = KEY(op.inode, 0, 0);
- 
--	do {
--		ret = bcache_btree(map_keys_recurse,
--				   k,
--				   c->root,
--				   &op.op,
--				   &op.start,
--				   sectors_dirty_init_fn,
--				   0);
--		if (ret == -EAGAIN)
--			schedule_timeout_interruptible(
--				msecs_to_jiffies(INIT_KEYS_SLEEP_MS));
--		else if (ret < 0) {
--			pr_warn("sectors dirty init failed, ret=%d!\n", ret);
--			break;
--		}
--	} while (ret == -EAGAIN);
-+	ret = bcache_btree(map_keys_recurse,
-+			   k,
-+			   c->root,
-+			   &op.op,
-+			   &KEY(op.inode, 0, 0),
-+			   sectors_dirty_init_fn,
-+			   0);
-+	if (ret < 0)
-+		pr_warn("sectors dirty init failed, ret=%d!\n", ret);
- 
- 	return ret;
- }
-@@ -907,7 +894,6 @@ static int bch_dirty_init_thread(void *a
- 				goto out;
- 			}
- 			skip_nr--;
--			cond_resched();
- 		}
- 
- 		if (p) {
-@@ -917,7 +903,6 @@ static int bch_dirty_init_thread(void *a
- 
- 		p = NULL;
- 		prev_idx = cur_idx;
--		cond_resched();
- 	}
- 
- out:
-@@ -956,11 +941,11 @@ void bch_sectors_dirty_init(struct bcach
- 		bch_btree_op_init(&op.op, -1);
- 		op.inode = d->id;
- 		op.count = 0;
--		op.start = KEY(op.inode, 0, 0);
- 
- 		for_each_key_filter(&c->root->keys,
- 				    k, &iter, bch_ptr_invalid)
- 			sectors_dirty_init_fn(&op.op, c->root, k);
++/**
++ * struct drm_dp_mst_topology_state - DisplayPort MST topology atomic state
++ *
++ * This struct represents the atomic state of the toplevel DisplayPort MST manager
++ */
+ struct drm_dp_mst_topology_state {
++	/** @base: Base private state for atomic */
+ 	struct drm_private_state base;
 +
- 		rw_unlock(0, c->root);
- 		return;
- 	}
-
++	/** @payloads: The list of payloads being created/destroyed in this state */
+ 	struct list_head payloads;
++	/** @mgr: The topology manager */
+ 	struct drm_dp_mst_topology_mgr *mgr;
++
++	/** @total_avail_slots: The total number of slots this topology can handle (63 or 64) */
+ 	u8 total_avail_slots;
++	/** @start_slot: The first usable time slot in this topology (1 or 0) */
+ 	u8 start_slot;
+ };
+ 
+-- 
+2.35.3
 
