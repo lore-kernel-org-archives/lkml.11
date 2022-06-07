@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA8BFC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C085CC43334
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355295AbiFGTPB (ORCPT
+        id S1355317AbiFGTPL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:15:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41422 "EHLO
+        Tue, 7 Jun 2022 15:15:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350973AbiFGSYp (ORCPT
+        with ESMTP id S1351789AbiFGSZA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:24:45 -0400
+        Tue, 7 Jun 2022 14:25:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95E6E27B7;
-        Tue,  7 Jun 2022 10:54:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F96CED8C4;
+        Tue,  7 Jun 2022 10:54:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7EB4FB8236D;
-        Tue,  7 Jun 2022 17:54:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D007C3411C;
-        Tue,  7 Jun 2022 17:54:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16141B82375;
+        Tue,  7 Jun 2022 17:54:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0137BC385A5;
+        Tue,  7 Jun 2022 17:54:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624465;
-        bh=rzHCAQ5UzDKammaUA5HwNj6q7Oj8w5VhjLtCboM6+1A=;
+        s=k20201202; t=1654624476;
+        bh=JOgQfKsk4lnzYzLZ2hqnQAoqsKCIfymaPjmRrx2OWVM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D4FBRvvmAW+zCEbP/YjoFUsfIQ7CheKnEmT4VPlElXmUo/eeUAgDdKT/Qf5JkCWLp
-         rdc+6O1b32Bxl6tE3dqWEwv8CCWldloODcgf8DbOp21k+h3Ssbzll4to+oEsOBV4Dh
-         kUIlnu92D3VHDBag63W8EhTQsqbRdc/JR1O+Wr/KIxPhYSjFoFIJjHvURrIV5wQjzf
-         bQv5kRwnS4zcQWmGrfYCexZjwZ3MGYE2QNKHBF5Rsj4zlBZTeDg4W9f6FTECVHJ+Ic
-         n3R4vT3XWuHnz/tGA0onKkK6rd9+hj9sSjZxy/Prsn/+cQG6qV5U/Al5fnQ6E3nLeM
-         8ZyjYLgctaw5A==
+        b=dprTLKVpgul6EEr+KQW9I2LlyamqCphE+cmKTyvTjq98BVLDK/TRZegFJjuFfxqrc
+         Jd0KSomvc2s/SUAbboA6X+U9CxiPWU37VGwAQeDcF/4rG4LrLHGyjBM4SBn0Um/Jzb
+         heddnWqb3+4HWjaOojZ7GHOVp05f9V0GtND68bst4CnrjWBAhuRs32PnD/kLX07B/3
+         +VzLSxqz9ILE55bpkd1sf1wCSmZ136LIOuohVUlXtAfPIZkBjiB2ndET1WSuooAlLj
+         VWv56BjoK+4iAnlyrqspTw6/d9S403aifvmY5Ag/JsLRyW5Js2AvmtAJt5Vg9cyQWm
+         mYX0l2/paOS8w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
-        Donald Buczek <buczek@molgen.mpg.de>,
-        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        agk@redhat.com, snitzer@kernel.org, dm-devel@redhat.com,
-        linux-raid@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 33/60] md: don't unregister sync_thread with reconfig_mutex held
-Date:   Tue,  7 Jun 2022 13:52:30 -0400
-Message-Id: <20220607175259.478835-33-sashal@kernel.org>
+Cc:     Xiubo Li <xiubli@redhat.com>, Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 39/60] ceph: flush the mdlog for filesystem sync
+Date:   Tue,  7 Jun 2022 13:52:36 -0400
+Message-Id: <20220607175259.478835-39-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
 References: <20220607175259.478835-1-sashal@kernel.org>
@@ -54,125 +52,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
+From: Xiubo Li <xiubli@redhat.com>
 
-[ Upstream commit 8b48ec23cc51a4e7c8dbaef5f34ebe67e1a80934 ]
+[ Upstream commit 1b2ba3c5616e17ff951359e25c658a1c3f146f1e ]
 
-Unregister sync_thread doesn't need to hold reconfig_mutex since it
-doesn't reconfigure array.
+Before waiting for a request's safe reply, we will send the mdlog flush
+request to the relevant MDS. And this will also flush the mdlog for all
+the other unsafe requests in the same session, so we can record the last
+session and no need to flush mdlog again in the next loop. But there
+still have cases that it may send the mdlog flush requst twice or more,
+but that should be not often.
 
-And it could cause deadlock problem for raid5 as follows:
+Rename wait_unsafe_requests() to
+flush_mdlog_and_wait_mdsc_unsafe_requests() to make it more
+descriptive.
 
-1. process A tried to reap sync thread with reconfig_mutex held after echo
-   idle to sync_action.
-2. raid5 sync thread was blocked if there were too many active stripes.
-3. SB_CHANGE_PENDING was set (because of write IO comes from upper layer)
-   which causes the number of active stripes can't be decreased.
-4. SB_CHANGE_PENDING can't be cleared since md_check_recovery was not able
-   to hold reconfig_mutex.
+[xiubli: fold in MDS request refcount leak fix from Jeff]
 
-More details in the link:
-https://lore.kernel.org/linux-raid/5ed54ffc-ce82-bf66-4eff-390cb23bc1ac@molgen.mpg.de/T/#t
-
-And add one parameter to md_reap_sync_thread since it could be called by
-dm-raid which doesn't hold reconfig_mutex.
-
-Reported-and-tested-by: Donald Buczek <buczek@molgen.mpg.de>
-Signed-off-by: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
-Signed-off-by: Song Liu <song@kernel.org>
+URL: https://tracker.ceph.com/issues/55284
+URL: https://tracker.ceph.com/issues/55411
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-raid.c |  2 +-
- drivers/md/md.c      | 14 +++++++++-----
- drivers/md/md.h      |  2 +-
- 3 files changed, 11 insertions(+), 7 deletions(-)
+ fs/ceph/mds_client.c | 33 +++++++++++++++++++++++++++------
+ 1 file changed, 27 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/md/dm-raid.c b/drivers/md/dm-raid.c
-index 2b26435a6946..a5cc73d8f535 100644
---- a/drivers/md/dm-raid.c
-+++ b/drivers/md/dm-raid.c
-@@ -3730,7 +3730,7 @@ static int raid_message(struct dm_target *ti, unsigned int argc, char **argv,
- 	if (!strcasecmp(argv[0], "idle") || !strcasecmp(argv[0], "frozen")) {
- 		if (mddev->sync_thread) {
- 			set_bit(MD_RECOVERY_INTR, &mddev->recovery);
--			md_reap_sync_thread(mddev);
-+			md_reap_sync_thread(mddev, false);
- 		}
- 	} else if (decipher_sync_action(mddev, mddev->recovery) != st_idle)
- 		return -EBUSY;
-diff --git a/drivers/md/md.c b/drivers/md/md.c
-index 4d38bd7dadd6..8efe9c8ff937 100644
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -4844,7 +4844,7 @@ action_store(struct mddev *mddev, const char *page, size_t len)
- 				flush_workqueue(md_misc_wq);
- 			if (mddev->sync_thread) {
- 				set_bit(MD_RECOVERY_INTR, &mddev->recovery);
--				md_reap_sync_thread(mddev);
-+				md_reap_sync_thread(mddev, true);
- 			}
- 			mddev_unlock(mddev);
- 		}
-@@ -6214,7 +6214,7 @@ static void __md_stop_writes(struct mddev *mddev)
- 		flush_workqueue(md_misc_wq);
- 	if (mddev->sync_thread) {
- 		set_bit(MD_RECOVERY_INTR, &mddev->recovery);
--		md_reap_sync_thread(mddev);
-+		md_reap_sync_thread(mddev, true);
- 	}
- 
- 	del_timer_sync(&mddev->safemode_timer);
-@@ -9321,7 +9321,7 @@ void md_check_recovery(struct mddev *mddev)
- 			 * ->spare_active and clear saved_raid_disk
- 			 */
- 			set_bit(MD_RECOVERY_INTR, &mddev->recovery);
--			md_reap_sync_thread(mddev);
-+			md_reap_sync_thread(mddev, true);
- 			clear_bit(MD_RECOVERY_RECOVER, &mddev->recovery);
- 			clear_bit(MD_RECOVERY_NEEDED, &mddev->recovery);
- 			clear_bit(MD_SB_CHANGE_PENDING, &mddev->sb_flags);
-@@ -9356,7 +9356,7 @@ void md_check_recovery(struct mddev *mddev)
- 			goto unlock;
- 		}
- 		if (mddev->sync_thread) {
--			md_reap_sync_thread(mddev);
-+			md_reap_sync_thread(mddev, true);
- 			goto unlock;
- 		}
- 		/* Set RUNNING before clearing NEEDED to avoid
-@@ -9429,14 +9429,18 @@ void md_check_recovery(struct mddev *mddev)
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index c30eefc0ac19..97098920b305 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -4705,15 +4705,17 @@ void ceph_mdsc_pre_umount(struct ceph_mds_client *mdsc)
  }
- EXPORT_SYMBOL(md_check_recovery);
  
--void md_reap_sync_thread(struct mddev *mddev)
-+void md_reap_sync_thread(struct mddev *mddev, bool reconfig_mutex_held)
+ /*
+- * wait for all write mds requests to flush.
++ * flush the mdlog and wait for all write mds requests to flush.
+  */
+-static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
++static void flush_mdlog_and_wait_mdsc_unsafe_requests(struct ceph_mds_client *mdsc,
++						 u64 want_tid)
  {
- 	struct md_rdev *rdev;
- 	sector_t old_dev_sectors = mddev->dev_sectors;
- 	bool is_reshaped = false;
+ 	struct ceph_mds_request *req = NULL, *nextreq;
++	struct ceph_mds_session *last_session = NULL;
+ 	struct rb_node *n;
  
-+	if (reconfig_mutex_held)
-+		mddev_unlock(mddev);
- 	/* resync has finished, collect result */
- 	md_unregister_thread(&mddev->sync_thread);
-+	if (reconfig_mutex_held)
-+		mddev_lock_nointr(mddev);
- 	if (!test_bit(MD_RECOVERY_INTR, &mddev->recovery) &&
- 	    !test_bit(MD_RECOVERY_REQUESTED, &mddev->recovery) &&
- 	    mddev->degraded != mddev->raid_disks) {
-diff --git a/drivers/md/md.h b/drivers/md/md.h
-index f1bf3625ef4c..577f0c5ef2ed 100644
---- a/drivers/md/md.h
-+++ b/drivers/md/md.h
-@@ -711,7 +711,7 @@ extern struct md_thread *md_register_thread(
- extern void md_unregister_thread(struct md_thread **threadp);
- extern void md_wakeup_thread(struct md_thread *thread);
- extern void md_check_recovery(struct mddev *mddev);
--extern void md_reap_sync_thread(struct mddev *mddev);
-+extern void md_reap_sync_thread(struct mddev *mddev, bool reconfig_mutex_held);
- extern int mddev_init_writes_pending(struct mddev *mddev);
- extern bool md_write_start(struct mddev *mddev, struct bio *bi);
- extern void md_write_inc(struct mddev *mddev, struct bio *bi);
+ 	mutex_lock(&mdsc->mutex);
+-	dout("wait_unsafe_requests want %lld\n", want_tid);
++	dout("%s want %lld\n", __func__, want_tid);
+ restart:
+ 	req = __get_oldest_req(mdsc);
+ 	while (req && req->r_tid <= want_tid) {
+@@ -4725,14 +4727,32 @@ static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
+ 			nextreq = NULL;
+ 		if (req->r_op != CEPH_MDS_OP_SETFILELOCK &&
+ 		    (req->r_op & CEPH_MDS_OP_WRITE)) {
++			struct ceph_mds_session *s = req->r_session;
++
++			if (!s) {
++				req = nextreq;
++				continue;
++			}
++
+ 			/* write op */
+ 			ceph_mdsc_get_request(req);
+ 			if (nextreq)
+ 				ceph_mdsc_get_request(nextreq);
++			s = ceph_get_mds_session(s);
+ 			mutex_unlock(&mdsc->mutex);
+-			dout("wait_unsafe_requests  wait on %llu (want %llu)\n",
++
++			/* send flush mdlog request to MDS */
++			if (last_session != s) {
++				send_flush_mdlog(s);
++				ceph_put_mds_session(last_session);
++				last_session = s;
++			} else {
++				ceph_put_mds_session(s);
++			}
++			dout("%s wait on %llu (want %llu)\n", __func__,
+ 			     req->r_tid, want_tid);
+ 			wait_for_completion(&req->r_safe_completion);
++
+ 			mutex_lock(&mdsc->mutex);
+ 			ceph_mdsc_put_request(req);
+ 			if (!nextreq)
+@@ -4747,7 +4767,8 @@ static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
+ 		req = nextreq;
+ 	}
+ 	mutex_unlock(&mdsc->mutex);
+-	dout("wait_unsafe_requests done\n");
++	ceph_put_mds_session(last_session);
++	dout("%s done\n", __func__);
+ }
+ 
+ void ceph_mdsc_sync(struct ceph_mds_client *mdsc)
+@@ -4776,7 +4797,7 @@ void ceph_mdsc_sync(struct ceph_mds_client *mdsc)
+ 	dout("sync want tid %lld flush_seq %lld\n",
+ 	     want_tid, want_flush);
+ 
+-	wait_unsafe_requests(mdsc, want_tid);
++	flush_mdlog_and_wait_mdsc_unsafe_requests(mdsc, want_tid);
+ 	wait_caps_flush(mdsc, want_flush);
+ }
+ 
 -- 
 2.35.1
 
