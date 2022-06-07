@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E833ACCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D26B3CCA483
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386297AbiFHA7i (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:59:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51782 "EHLO
+        id S236718AbiFHBCs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:02:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385098AbiFGWU7 (ORCPT
+        with ESMTP id S1382463AbiFGWCi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:20:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25E6263DFF;
-        Tue,  7 Jun 2022 12:20:59 -0700 (PDT)
+        Tue, 7 Jun 2022 18:02:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A35C924F793;
+        Tue,  7 Jun 2022 12:14:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 081D2B8237B;
-        Tue,  7 Jun 2022 19:20:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73378C385A2;
-        Tue,  7 Jun 2022 19:20:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 096CF61923;
+        Tue,  7 Jun 2022 19:14:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 158B9C385A2;
+        Tue,  7 Jun 2022 19:14:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629654;
-        bh=hmOnrUcH7670N2tE92uyQ8lRAcXD4hwB3zS1oR7mbno=;
+        s=korg; t=1654629277;
+        bh=1ASL6fBMDAmWBj3axiWH/dhSFOu0lxh5MMkutiN/P/U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SCV0chrCyrjb5WV7CPJEK4uGp7kah22FnuDzdayKqXW21Gu/EtoHg22foeCMdwqtU
-         eOFIGJEy2BN9bQEq6m6i/L3MYDt35jruIN2rR8LIm7E+DJXVDstkMM/2070mu3hhpP
-         QXVSgf7JGZdnmQpDJFOYCcEW0J8aqihTPpW9eM5c=
+        b=Jk21CeqihnFCBNCHO39k6kFO6FiYMpjofrmFqFiG+MEApGpUtcb57u6PUaKWgw04+
+         6+56AeqooZte/1/noyqIaNVFseJzBppyHg6nkpF9HIB0sN6yMQaMwtXakLNc04S3rc
+         wexkiUQNn38XT841WTqCWinS2It4yvmNgmA/PEGs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sven Schnelle <svens@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>
-Subject: [PATCH 5.18 762/879] s390/stp: clock_delta should be signed
-Date:   Tue,  7 Jun 2022 19:04:40 +0200
-Message-Id: <20220607165024.982490421@linuxfoundation.org>
+        stable@vger.kernel.org, Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Jeff Moyer <jmoyer@redhat.com>,
+        Krzysztof Kensicki <krzysztof.kensicki@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 592/879] nvdimm: Allow overwrite in the presence of disabled dimms
+Date:   Tue,  7 Jun 2022 19:01:50 +0200
+Message-Id: <20220607165020.036905415@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,94 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Schnelle <svens@linux.ibm.com>
+From: Dan Williams <dan.j.williams@intel.com>
 
-commit 5ace65ebb5ce9fe1cc8fdbdd97079fb566ef0ea4 upstream.
+[ Upstream commit bb7bf697fed58eae9d3445944e457ab0de4da54f ]
 
-clock_delta is declared as unsigned long in various places. However,
-the clock sync delta can be negative. This would add a huge positive
-offset in clock_sync_global where clock_delta is added to clk.eitod
-which is a 72 bit integer. Declare it as signed long to fix this.
+It is not clear why the original implementation of overwrite support
+required the dimm driver to be active before overwrite could proceed. In
+fact that can lead to cases where the kernel retains an invalid cached
+copy of the labels from before the overwrite. Unfortunately the kernel
+has not only allowed that case, but enforced it.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
-Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Going forward, allow for overwrite to happen while the label area is
+offline, and follow-on with updates to 'ndctl sanitize-dimm --overwrite'
+to trigger the label area invalidation by default.
+
+Cc: Vishal Verma <vishal.l.verma@intel.com>
+Cc: Dave Jiang <dave.jiang@intel.com>
+Cc: Ira Weiny <ira.weiny@intel.com>
+Cc: Jeff Moyer <jmoyer@redhat.com>
+Reported-by: Krzysztof Kensicki <krzysztof.kensicki@intel.com>
+Fixes: 7d988097c546 ("acpi/nfit, libnvdimm/security: Add security DSM overwrite support")
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/include/asm/cio.h |    2 +-
- arch/s390/kernel/time.c     |    8 ++++----
- drivers/s390/cio/chsc.c     |    4 ++--
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/nvdimm/security.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
---- a/arch/s390/include/asm/cio.h
-+++ b/arch/s390/include/asm/cio.h
-@@ -369,7 +369,7 @@ void cio_gp_dma_destroy(struct gen_pool
- struct gen_pool *cio_gp_dma_create(struct device *dma_dev, int nr_pages);
+diff --git a/drivers/nvdimm/security.c b/drivers/nvdimm/security.c
+index 4b80150e4afa..b5aa55c61461 100644
+--- a/drivers/nvdimm/security.c
++++ b/drivers/nvdimm/security.c
+@@ -379,11 +379,6 @@ static int security_overwrite(struct nvdimm *nvdimm, unsigned int keyid)
+ 			|| !nvdimm->sec.flags)
+ 		return -EOPNOTSUPP;
  
- /* Function from drivers/s390/cio/chsc.c */
--int chsc_sstpc(void *page, unsigned int op, u16 ctrl, u64 *clock_delta);
-+int chsc_sstpc(void *page, unsigned int op, u16 ctrl, long *clock_delta);
- int chsc_sstpi(void *page, void *result, size_t size);
- int chsc_stzi(void *page, void *result, size_t size);
- int chsc_sgib(u32 origin);
---- a/arch/s390/kernel/time.c
-+++ b/arch/s390/kernel/time.c
-@@ -364,7 +364,7 @@ static inline int check_sync_clock(void)
-  * Apply clock delta to the global data structures.
-  * This is called once on the CPU that performed the clock sync.
-  */
--static void clock_sync_global(unsigned long delta)
-+static void clock_sync_global(long delta)
- {
- 	unsigned long now, adj;
- 	struct ptff_qto qto;
-@@ -400,7 +400,7 @@ static void clock_sync_global(unsigned l
-  * Apply clock delta to the per-CPU data structures of this CPU.
-  * This is called for each online CPU after the call to clock_sync_global.
-  */
--static void clock_sync_local(unsigned long delta)
-+static void clock_sync_local(long delta)
- {
- 	/* Add the delta to the clock comparator. */
- 	if (S390_lowcore.clock_comparator != clock_comparator_max) {
-@@ -424,7 +424,7 @@ static void __init time_init_wq(void)
- struct clock_sync_data {
- 	atomic_t cpus;
- 	int in_sync;
--	unsigned long clock_delta;
-+	long clock_delta;
- };
- 
- /*
-@@ -544,7 +544,7 @@ static int stpinfo_valid(void)
- static int stp_sync_clock(void *data)
- {
- 	struct clock_sync_data *sync = data;
--	u64 clock_delta, flags;
-+	long clock_delta, flags;
- 	static int first;
- 	int rc;
- 
---- a/drivers/s390/cio/chsc.c
-+++ b/drivers/s390/cio/chsc.c
-@@ -1255,7 +1255,7 @@ exit:
- EXPORT_SYMBOL_GPL(css_general_characteristics);
- EXPORT_SYMBOL_GPL(css_chsc_characteristics);
- 
--int chsc_sstpc(void *page, unsigned int op, u16 ctrl, u64 *clock_delta)
-+int chsc_sstpc(void *page, unsigned int op, u16 ctrl, long *clock_delta)
- {
- 	struct {
- 		struct chsc_header request;
-@@ -1266,7 +1266,7 @@ int chsc_sstpc(void *page, unsigned int
- 		unsigned int rsvd2[5];
- 		struct chsc_header response;
- 		unsigned int rsvd3[3];
--		u64 clock_delta;
-+		s64 clock_delta;
- 		unsigned int rsvd4[2];
- 	} *rr;
- 	int rc;
+-	if (dev->driver == NULL) {
+-		dev_dbg(dev, "Unable to overwrite while DIMM active.\n");
+-		return -EINVAL;
+-	}
+-
+ 	rc = check_security_state(nvdimm);
+ 	if (rc)
+ 		return rc;
+-- 
+2.35.1
+
 
 
