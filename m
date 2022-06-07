@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55049CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B2C1CCA486
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355412AbiFGTPl (ORCPT
+        id S1355439AbiFGTPq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:15:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49086 "EHLO
+        Tue, 7 Jun 2022 15:15:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352527AbiFGS0Q (ORCPT
+        with ESMTP id S1352546AbiFGS0Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:26:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5297316B2D6;
-        Tue,  7 Jun 2022 10:54:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C95B016F351;
+        Tue,  7 Jun 2022 10:54:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 035BDB8234A;
-        Tue,  7 Jun 2022 17:54:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A3F6C34115;
-        Tue,  7 Jun 2022 17:54:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4DBC8B82368;
+        Tue,  7 Jun 2022 17:54:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A648C34119;
+        Tue,  7 Jun 2022 17:54:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624487;
-        bh=ocfS7A3RXskJpAaCX74xsV9vLCUzdp7U0CdD+K9j1Jc=;
+        s=korg; t=1654624493;
+        bh=+G5GEmz+BT2JKSlxb2wRNzIYN6rxnqFYaiTdGexDj70=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2gmkhg0x7Ra2taD9/UHEic0NFvDtaiDDhhI/1mrKyhs4c+hB50U+EDRylgRrFalX3
-         GR2b4iL0TKThBe32Pyno9WP8nqTgLXaOYKtTEQu0QDXzIgjUA+IAkVy3fFNjwcO4yu
-         uOblABf6legiAkFudT1PYLlPIEakx359iZ/RMsvY=
+        b=r46ps2o+0IzlWkQRFHJZ/EhbB4ddVx8meCIoAn87qdhfgrzIfSB4MzS2znrxmpaxI
+         waFpJcFFgghaKdt8qRQMSkSvXdcdvmt9twBTt87m7UWFV2I+AbETl4ynfWYqVao9Ku
+         ++l9bjCv8M/coVZcrjkD12puLMu6sUulwWqlOsHI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Ritesh Harjani <ritesh.list@gmail.com>,
+        Lukas Czerner <lczerner@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 308/667] ASoC: mxs-saif: Fix refcount leak in mxs_saif_probe
-Date:   Tue,  7 Jun 2022 18:59:33 +0200
-Message-Id: <20220607164944.013008903@linuxfoundation.org>
+Subject: [PATCH 5.15 345/667] ext4: reject the commit option on ext2 filesystems
+Date:   Tue,  7 Jun 2022 19:00:10 +0200
+Message-Id: <20220607164945.107545099@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,34 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Eric Biggers <ebiggers@google.com>
 
-[ Upstream commit 2be84f73785fa9ed6443e3c5b158730266f1c2ee ]
+[ Upstream commit cb8435dc8ba33bcafa41cf2aa253794320a3b8df ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
+The 'commit' option is only applicable for ext3 and ext4 filesystems,
+and has never been accepted by the ext2 filesystem driver, so the ext4
+driver shouldn't allow it on ext2 filesystems.
 
-Fixes: 08641c7c74dd ("ASoC: mxs: add device tree support for mxs-saif")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220511133725.39039-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This fixes a failure in xfstest ext4/053.
+
+Fixes: 8dc0aa8cf0f7 ("ext4: check incompatible mount options while mounting ext2/3")
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Ritesh Harjani <ritesh.list@gmail.com>
+Reviewed-by: Lukas Czerner <lczerner@redhat.com>
+Link: https://lore.kernel.org/r/20220510183232.172615-1-ebiggers@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mxs/mxs-saif.c | 1 +
+ fs/ext4/super.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/mxs/mxs-saif.c b/sound/soc/mxs/mxs-saif.c
-index 879c1221a809..7afe1a1acc56 100644
---- a/sound/soc/mxs/mxs-saif.c
-+++ b/sound/soc/mxs/mxs-saif.c
-@@ -754,6 +754,7 @@ static int mxs_saif_probe(struct platform_device *pdev)
- 		saif->master_id = saif->id;
- 	} else {
- 		ret = of_alias_get_id(master, "saif");
-+		of_node_put(master);
- 		if (ret < 0)
- 			return ret;
- 		else
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index d12f11c6fbf2..10d5ee6c3edd 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -1934,6 +1934,7 @@ static const struct mount_opts {
+ 	 MOPT_EXT4_ONLY | MOPT_CLEAR},
+ 	{Opt_warn_on_error, EXT4_MOUNT_WARN_ON_ERROR, MOPT_SET},
+ 	{Opt_nowarn_on_error, EXT4_MOUNT_WARN_ON_ERROR, MOPT_CLEAR},
++	{Opt_commit, 0, MOPT_NO_EXT2},
+ 	{Opt_nojournal_checksum, EXT4_MOUNT_JOURNAL_CHECKSUM,
+ 	 MOPT_EXT4_ONLY | MOPT_CLEAR},
+ 	{Opt_journal_checksum, EXT4_MOUNT_JOURNAL_CHECKSUM,
 -- 
 2.35.1
 
