@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F03B7CCA491
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6154CCA48F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376784AbiFGU2I (ORCPT
+        id S1376692AbiFGU13 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43646 "EHLO
+        Tue, 7 Jun 2022 16:27:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355810AbiFGTh2 (ORCPT
+        with ESMTP id S1355674AbiFGTh0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:37:28 -0400
+        Tue, 7 Jun 2022 15:37:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CDA52458C;
-        Tue,  7 Jun 2022 11:13:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C1B147838;
+        Tue,  7 Jun 2022 11:13:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB937609FA;
-        Tue,  7 Jun 2022 18:13:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3757C385A5;
-        Tue,  7 Jun 2022 18:13:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 046316062B;
+        Tue,  7 Jun 2022 18:13:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EC0FC385A2;
+        Tue,  7 Jun 2022 18:13:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625620;
-        bh=q2Xpkw+onYKKa4/Us+LoQ26hoDxY+NiVrhxSovEPERo=;
+        s=korg; t=1654625617;
+        bh=1j72S5O2DBHhhGxv0HK6Aui7WmFeAYDl4SZ8qVhieTk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yq27JBg4H6GwfQ356GZn6UWjlUOTtlLACcpd+yTgyjpi8SdQN/gfeq7gTULAFtZ1P
-         unTF2Cjiaquv3CXbc8uxj5PZZi96IAwt/t/lsW4b5DJZZmu5vXMVgJfiwmP50vjPHN
-         4aRVfHAVha4jgjYxYINIbiu+FhcdPzkgR/ZwBApw=
+        b=P1urLTZHkiTTy0HpXAwkWdD+79UnEIp81ikvyyyaMYfEfBwvdoltO7K1jViYz9V/f
+         zdYmCJ73RP9jNa8LMXXXcJDTd0LxmmBI5xXX5WfStNuXIcdl6qmcUcACDvHDzr0z0C
+         cmMK31d1+GDJ4lSoYZ4VkcLE1CGV5iWeRccrDxYE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Gopal Vamshi Krishna <vamshi.krishna.gopal@intel.com>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.17 032/772] xhci: Allow host runtime PM as default for Intel Alder Lake N xHCI
-Date:   Tue,  7 Jun 2022 18:53:44 +0200
-Message-Id: <20220607164949.968207354@linuxfoundation.org>
+        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
+        Kees Cook <keescook@chromium.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.17 041/772] ptrace: Reimplement PTRACE_KILL by always sending SIGKILL
+Date:   Tue,  7 Jun 2022 18:53:53 +0200
+Message-Id: <20220607164950.235607096@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,39 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathias Nyman <mathias.nyman@linux.intel.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit 74f55a62c4c354f43a6d75f77dd184c4f57b9a26 upstream.
+commit 6a2d90ba027adba528509ffa27097cffd3879257 upstream.
 
-Alder Lake N TCSS xHCI needs to be runtime suspended whenever possible
-to allow the TCSS hardware block to enter D3 and thus save energy
+The current implementation of PTRACE_KILL is buggy and has been for
+many years as it assumes it's target has stopped in ptrace_stop.  At a
+quick skim it looks like this assumption has existed since ptrace
+support was added in linux v1.0.
 
-Cc: stable@kernel.org
-Suggested-by: Gopal Vamshi Krishna <vamshi.krishna.gopal@intel.com>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220511220450.85367-10-mathias.nyman@linux.intel.com
+While PTRACE_KILL has been deprecated we can not remove it as
+a quick search with google code search reveals many existing
+programs calling it.
+
+When the ptracee is not stopped at ptrace_stop some fields would be
+set that are ignored except in ptrace_stop.  Making the userspace
+visible behavior of PTRACE_KILL a noop in those case.
+
+As the usual rules are not obeyed it is not clear what the
+consequences are of calling PTRACE_KILL on a running process.
+Presumably userspace does not do this as it achieves nothing.
+
+Replace the implementation of PTRACE_KILL with a simple
+send_sig_info(SIGKILL) followed by a return 0.  This changes the
+observable user space behavior only in that PTRACE_KILL on a process
+not stopped in ptrace_stop will also kill it.  As that has always
+been the intent of the code this seems like a reasonable change.
+
+Cc: stable@vger.kernel.org
+Reported-by: Al Viro <viro@zeniv.linux.org.uk>
+Suggested-by: Al Viro <viro@zeniv.linux.org.uk>
+Tested-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Oleg Nesterov <oleg@redhat.com>
+Link: https://lkml.kernel.org/r/20220505182645.497868-7-ebiederm@xmission.com
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci-pci.c |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/x86/kernel/step.c |    3 +--
+ kernel/ptrace.c        |    5 ++---
+ 2 files changed, 3 insertions(+), 5 deletions(-)
 
---- a/drivers/usb/host/xhci-pci.c
-+++ b/drivers/usb/host/xhci-pci.c
-@@ -59,6 +59,7 @@
- #define PCI_DEVICE_ID_INTEL_TIGER_LAKE_XHCI		0x9a13
- #define PCI_DEVICE_ID_INTEL_MAPLE_RIDGE_XHCI		0x1138
- #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI		0x461e
-+#define PCI_DEVICE_ID_INTEL_ALDER_LAKE_N_XHCI		0x464e
- #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_PCH_XHCI	0x51ed
+--- a/arch/x86/kernel/step.c
++++ b/arch/x86/kernel/step.c
+@@ -180,8 +180,7 @@ void set_task_blockstep(struct task_stru
+ 	 *
+ 	 * NOTE: this means that set/clear TIF_BLOCKSTEP is only safe if
+ 	 * task is current or it can't be running, otherwise we can race
+-	 * with __switch_to_xtra(). We rely on ptrace_freeze_traced() but
+-	 * PTRACE_KILL is not safe.
++	 * with __switch_to_xtra(). We rely on ptrace_freeze_traced().
+ 	 */
+ 	local_irq_disable();
+ 	debugctl = get_debugctlmsr();
+--- a/kernel/ptrace.c
++++ b/kernel/ptrace.c
+@@ -1236,9 +1236,8 @@ int ptrace_request(struct task_struct *c
+ 		return ptrace_resume(child, request, data);
  
- #define PCI_DEVICE_ID_AMD_RENOIR_XHCI			0x1639
-@@ -268,6 +269,7 @@ static void xhci_pci_quirks(struct devic
- 	     pdev->device == PCI_DEVICE_ID_INTEL_TIGER_LAKE_XHCI ||
- 	     pdev->device == PCI_DEVICE_ID_INTEL_MAPLE_RIDGE_XHCI ||
- 	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI ||
-+	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_N_XHCI ||
- 	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_PCH_XHCI))
- 		xhci->quirks |= XHCI_DEFAULT_PM_RUNTIME_ALLOW;
+ 	case PTRACE_KILL:
+-		if (child->exit_state)	/* already dead */
+-			return 0;
+-		return ptrace_resume(child, request, SIGKILL);
++		send_sig_info(SIGKILL, SEND_SIG_NOINFO, child);
++		return 0;
  
+ #ifdef CONFIG_HAVE_ARCH_TRACEHOOK
+ 	case PTRACE_GETREGSET:
 
 
