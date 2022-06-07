@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82850CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66347CCA488
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356271AbiFGTbz (ORCPT
+        id S1356546AbiFGTbr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34752 "EHLO
+        Tue, 7 Jun 2022 15:31:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353450AbiFGSlX (ORCPT
+        with ESMTP id S1353385AbiFGSlE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:41:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E1818629C;
-        Tue,  7 Jun 2022 10:58:40 -0700 (PDT)
+        Tue, 7 Jun 2022 14:41:04 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5FA5C671;
+        Tue,  7 Jun 2022 10:58:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8AF69B8236C;
-        Tue,  7 Jun 2022 17:58:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDEC5C34115;
-        Tue,  7 Jun 2022 17:58:25 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D9203CE2422;
+        Tue,  7 Jun 2022 17:58:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48B92C34119;
+        Tue,  7 Jun 2022 17:58:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624706;
-        bh=zH/pSgAZjZwfNYbHLmOYRBuLfI0NNzWZ3BELSFKBlck=;
+        s=korg; t=1654624711;
+        bh=k32QWyel7cy6/Oa0d/HxzbKatPGuFjuCdFxAh7YF7Jo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YO2e98vTN2LKZTeTxMqnm/9PdtUbZMVWjNKZ2PIsCSvt137RJ0TzbuIBL26d2Vf/R
-         wSwWjqIFqhNDzb2e2Lq53Yw9git8pUKtpgmVbPv4oDkizEqXmX9RiXUseLR8kXmwC5
-         D5CIi1Oe4g2XRNAfTezp5jT6A6Dowpg1rsFcGdrU=
+        b=zeb330liQ17SYstSFdXSzjvSGA1ROP7qvvLAzeGv0WA6DKnP95w1trTAwyh+tzlHV
+         6WNs6lBUSuxgOCzwLwFFb7fpMEMais1VJgSMH2NsFqmU2ZcdkDzPfOdpfIdQQRMDge
+         ogWaOC7YH45qe2n9E8sR6eCWZolr1hT5Ny6LOucc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, QintaoShen <unSimple1993@163.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 423/667] soc: bcm: Check for NULL return of devm_kzalloc()
-Date:   Tue,  7 Jun 2022 19:01:28 +0200
-Message-Id: <20220607164947.418341271@linuxfoundation.org>
+Subject: [PATCH 5.15 425/667] ASoC: sh: rz-ssi: Check return value of pm_runtime_resume_and_get()
+Date:   Tue,  7 Jun 2022 19:01:30 +0200
+Message-Id: <20220607164947.476379941@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,38 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: QintaoShen <unSimple1993@163.com>
+From: Heiner Kallweit <hkallweit1@gmail.com>
 
-[ Upstream commit b4bd2aafacce48db26b0a213d849818d940556dd ]
+[ Upstream commit f04b4fb47d83b110a5b007fb2eddea862cfeb151 ]
 
-As the potential failure of allocation, devm_kzalloc() may return NULL.  Then
-the 'pd->pmb' and the follow lines of code may bring null pointer dereference.
+The return value of pm_runtime_resume_and_get() needs to be checked to
+avoid a usage count imbalance in the error case. This fix is basically
+the same as 92c959bae2e5 ("reset: renesas: Fix Runtime PM usage"),
+and the last step before pm_runtime_resume_and_get() can be annotated
+as __must_check.
 
-Therefore, it is better to check the return value of devm_kzalloc() to avoid
-this confusion.
-
-Fixes: 8bcac4011ebe ("soc: bcm: add PM driver for Broadcom's PMB")
-Signed-off-by: QintaoShen <unSimple1993@163.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Link: https://lore.kernel.org/r/9fed506d-b780-55cd-45a4-9bd2407c910f@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/bcm/bcm63xx/bcm-pmb.c | 3 +++
- 1 file changed, 3 insertions(+)
+ sound/soc/sh/rz-ssi.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/soc/bcm/bcm63xx/bcm-pmb.c b/drivers/soc/bcm/bcm63xx/bcm-pmb.c
-index 774465c119be..2ac20084e5a5 100644
---- a/drivers/soc/bcm/bcm63xx/bcm-pmb.c
-+++ b/drivers/soc/bcm/bcm63xx/bcm-pmb.c
-@@ -314,6 +314,9 @@ static int bcm_pmb_probe(struct platform_device *pdev)
- 	for (e = table; e->name; e++) {
- 		struct bcm_pmb_pm_domain *pd = devm_kzalloc(dev, sizeof(*pd), GFP_KERNEL);
+diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
+index 16de2633a873..7379b1489e35 100644
+--- a/sound/soc/sh/rz-ssi.c
++++ b/sound/soc/sh/rz-ssi.c
+@@ -1025,7 +1025,12 @@ static int rz_ssi_probe(struct platform_device *pdev)
  
-+		if (!pd)
-+			return -ENOMEM;
-+
- 		pd->pmb = pmb;
- 		pd->data = e;
- 		pd->genpd.name = e->name;
+ 	reset_control_deassert(ssi->rstc);
+ 	pm_runtime_enable(&pdev->dev);
+-	pm_runtime_resume_and_get(&pdev->dev);
++	ret = pm_runtime_resume_and_get(&pdev->dev);
++	if (ret < 0) {
++		pm_runtime_disable(ssi->dev);
++		reset_control_assert(ssi->rstc);
++		return dev_err_probe(ssi->dev, ret, "pm_runtime_resume_and_get failed\n");
++	}
+ 
+ 	ret = devm_snd_soc_register_component(&pdev->dev, &rz_ssi_soc_component,
+ 					      rz_ssi_soc_dai,
 -- 
 2.35.1
 
