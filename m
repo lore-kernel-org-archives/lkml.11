@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08217C19F56
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B26BEC2BBE7
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:57:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354234AbiFGSzz (ORCPT
+        id S1354473AbiFGS4K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:55:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42296 "EHLO
+        Tue, 7 Jun 2022 14:56:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352654AbiFGSRZ (ORCPT
+        with ESMTP id S1351276AbiFGSSs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA82E13AF2F;
-        Tue,  7 Jun 2022 10:52:27 -0700 (PDT)
+        Tue, 7 Jun 2022 14:18:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E88C4E91;
+        Tue,  7 Jun 2022 10:53:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3240AB8236F;
-        Tue,  7 Jun 2022 17:52:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 190E0C341C5;
-        Tue,  7 Jun 2022 17:52:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A84F1617A5;
+        Tue,  7 Jun 2022 17:53:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B220C3411F;
+        Tue,  7 Jun 2022 17:53:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624344;
-        bh=4YAS2hxdgSWEjTSJ+tXksYA0mkYVnKdZ8x4YsHB7YBo=;
+        s=k20201202; t=1654624411;
+        bh=ux7IuVmMI8o15RzsRZcZNkGPWCqiFNkdIdCURxZuwdY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CXVBr1EX8u5F6xqeYyZEc38IDm7Nz+TvxSCQJ7bYrOyTIpgT44zswDrblnbJ4EnoD
-         YbzXi54h5UPT+33UDpusmD7zK9Y1hvg/ZZs5ykzmFg8h4ZyYNHdo+ZwZkIaGw6C8uF
-         W6BVuWHsuHzFeYFR0CAQNxGkuzFZct45ZOwUeuG79bjbMPDryZiUSIyBSUjouRTj8r
-         yEbunTuPjwDhVpH5tQGX45V4oj5+yfAqcyeh74HnffExZF1dWRjF5WB1zlagQ4dxbB
-         CnMdrNIffmydMQkEMzM6Zcko3yCEAZPz5zjTfVOuU6aaoEw21mxJqoqZa17ejgWwtE
-         oE+zRxHt6DZGg==
+        b=QNM/Vvgy+zaeZP0/7NxLJBnkiBrvwnyfBb9lc/bMw3lScP2qoHNAk1WHV/BkVeEio
+         Zx5GIe3nFZaHLbA7+42TIe9dD0ShlS69kNAUbgd6na/o66o5MXaEeINZkuln+fVHY/
+         sagsv6OtnDrUhkxpJ4ViXdLTNvou4oLQDLNmF6zSMm2q2eYux3HxxJqSJ7EAg1qRUw
+         PyI2oVBenehAbqy2R6TM+JQCReFQlhedgeylW8vnt+9dQfLNJ64o3Mkul/D16xI7HQ
+         zw9sT1lakKRUohuQ4lE0fJKa47xnw0ARbbMOdGeZq4PWVpT92r5q9N0suHwE2mLyXX
+         6ExnJ6tZMkRsQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Sasha Levin <sashal@kernel.org>, jpoimboe@kernel.org,
-        jbaron@akamai.com
-Subject: [PATCH AUTOSEL 5.18 55/68] jump_label,noinstr: Avoid instrumentation for JUMP_LABEL=n builds
-Date:   Tue,  7 Jun 2022 13:48:21 -0400
-Message-Id: <20220607174846.477972-55-sashal@kernel.org>
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, baihaowen@meizu.com,
+        dave@stgolabs.net, wangborong@cdjrlc.com, len.baker@gmx.com,
+        linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.17 10/60] drivers: staging: rtl8192u: Fix deadlock in ieee80211_beacons_stop()
+Date:   Tue,  7 Jun 2022 13:52:07 -0400
+Message-Id: <20220607175259.478835-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,42 +54,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 656d054e0a15ec327bd82801ccd58201e59f6896 ]
+[ Upstream commit 806c7b53414934ba2a39449b31fd1a038e500273 ]
 
-When building x86_64 with JUMP_LABEL=n it's possible for
-instrumentation to sneak into noinstr:
+There is a deadlock in ieee80211_beacons_stop(), which is shown below:
 
-vmlinux.o: warning: objtool: exit_to_user_mode+0x14: call to static_key_count.constprop.0() leaves .noinstr.text section
-vmlinux.o: warning: objtool: syscall_exit_to_user_mode+0x2d: call to static_key_count.constprop.0() leaves .noinstr.text section
-vmlinux.o: warning: objtool: irqentry_exit_to_user_mode+0x1b: call to static_key_count.constprop.0() leaves .noinstr.text section
+   (Thread 1)              |      (Thread 2)
+                           | ieee80211_send_beacon()
+ieee80211_beacons_stop()   |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | ieee80211_send_beacon_cb()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-Switch to arch_ prefixed atomic to avoid the explicit instrumentation.
+We hold ieee->beacon_lock in position (1) of thread 1 and use
+del_timer_sync() to wait timer to stop, but timer handler
+also need ieee->beacon_lock in position (2) of thread 2.
+As a result, ieee80211_beacons_stop() will block forever.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417135407.109536-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/jump_label.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/jump_label.h b/include/linux/jump_label.h
-index 107751cc047b..bf1eef337a07 100644
---- a/include/linux/jump_label.h
-+++ b/include/linux/jump_label.h
-@@ -256,9 +256,9 @@ extern void static_key_disable_cpuslocked(struct static_key *key);
- #include <linux/atomic.h>
- #include <linux/bug.h>
+diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+index 1a43979939a8..79f3fbe25556 100644
+--- a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
++++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+@@ -528,9 +528,9 @@ static void ieee80211_beacons_stop(struct ieee80211_device *ieee)
+ 	spin_lock_irqsave(&ieee->beacon_lock, flags);
  
--static inline int static_key_count(struct static_key *key)
-+static __always_inline int static_key_count(struct static_key *key)
- {
--	return atomic_read(&key->enabled);
-+	return arch_atomic_read(&key->enabled);
+ 	ieee->beacon_txing = 0;
+-	del_timer_sync(&ieee->beacon_timer);
+ 
+ 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
++	del_timer_sync(&ieee->beacon_timer);
  }
  
- static __always_inline void jump_label_init(void)
+ void ieee80211_stop_send_beacons(struct ieee80211_device *ieee)
 -- 
 2.35.1
 
