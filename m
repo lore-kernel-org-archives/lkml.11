@@ -2,150 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4277BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:58:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 635EDCCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:59:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344644AbiFGP6s (ORCPT
+        id S1344639AbiFGP7K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 11:58:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45398 "EHLO
+        Tue, 7 Jun 2022 11:59:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245728AbiFGP6m (ORCPT
+        with ESMTP id S1344674AbiFGP67 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 11:58:42 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED4215A145;
-        Tue,  7 Jun 2022 08:58:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654617521; x=1686153521;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=GdLuGXeq1XXduXvqxLVSvWcsygaT1e118Ro8QGLmiwo=;
-  b=gG1MeZNGLxpUktLFexr2U81SkagSx8hhCotZDY6HYe+fTSEeqKE+THnO
-   g07gerOvkE6EliV/hmZN9+AH4AscJtoivx7V3NJBRQCCr++zdLaw56B82
-   YCbpzQVYYEoyLkHKyqnjDhcPQLFccMInCoHdjogVPX11uqgAfP/F39sG/
-   i+WuMqApf+qCTBg4lrcpUXZhlym73VkjC/B1BrdrNlVqwsvPKI7oQlqOO
-   zXfaXCTWc+P8HfXFnlos2/5lYtLd6ZGlZCjAZM20TiZLy1WnFFW7WIS20
-   pfe4JESQSxRBGZWYhyOYPCO6GuARPmLVFhZz+xBNeqBhOzoivRWK9edm3
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="256563553"
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="256563553"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 08:58:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="614971769"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga001.jf.intel.com with ESMTP; 07 Jun 2022 08:58:34 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 257FwWT6032707;
-        Tue, 7 Jun 2022 16:58:32 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Marco Elver <elver@google.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Richard Henderson <rth@twiddle.net>,
-        Matt Turner <mattst88@gmail.com>,
-        Brian Cain <bcain@quicinc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/6] bitops: define gen_test_bit() the same way as the rest of functions
-Date:   Tue,  7 Jun 2022 17:57:22 +0200
-Message-Id: <20220607155722.44040-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <Yp9WFREfdfkho0hm@elver.google.com>
-References: <20220606114908.962562-1-alexandr.lobakin@intel.com> <20220606114908.962562-4-alexandr.lobakin@intel.com> <Yp9WFREfdfkho0hm@elver.google.com>
+        Tue, 7 Jun 2022 11:58:59 -0400
+Received: from relayaws-01.paragon-software.com (relayaws-01.paragon-software.com [35.157.23.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74ED5DE4E
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:58:56 -0700 (PDT)
+Received: from relayfre-01.paragon-software.com (unknown [172.30.72.12])
+        by relayaws-01.paragon-software.com (Postfix) with ESMTPS id 5FA5B255B;
+        Tue,  7 Jun 2022 15:58:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paragon-software.com; s=mail; t=1654617497;
+        bh=gyeTbiR+uUhE29A+RGuh6i8rdvYUlUvUGCn1xr1k4cs=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=E9D9zVOYRdWoge0CnkXB7UdtfsA3h/RovelUsR30YXMLNOThcmNY5zWXcevyMIw/Q
+         3eCOD2nG2R+3aLqY8ZGWKCJx+9DiwE0RBwNrdkR2D3GjubNIVFOvyxH48FP0tMAON3
+         Uv+Gj6A4iEawWW7EDTGe4C0v6StfNftJ4zYbhw8s=
+Received: from dlg2.mail.paragon-software.com (vdlg-exch-02.paragon-software.com [172.30.1.105])
+        by relayfre-01.paragon-software.com (Postfix) with ESMTPS id 6C7481D0B;
+        Tue,  7 Jun 2022 15:58:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paragon-software.com; s=mail; t=1654617534;
+        bh=gyeTbiR+uUhE29A+RGuh6i8rdvYUlUvUGCn1xr1k4cs=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=pqBlGqW6xS6n3BWqW/81M589K6ALyy85JH0UEAahiZxABf8Z0GwvzPioqJXHZnbLI
+         clBXZyjEH412XG3NHfnqLNEBpR0dpNBqqz6lBPwotKWopecHCbnZ1gcz+qxKBVFj/o
+         QvS+0J5c+2tkBgkcEFk+AsJMy1fcsjBc5QCxwimE=
+Received: from [172.30.8.65] (172.30.8.65) by
+ vdlg-exch-02.paragon-software.com (172.30.1.105) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Tue, 7 Jun 2022 18:58:54 +0300
+Message-ID: <4f66239a-2209-6375-95ad-e8be0d28cf85@paragon-software.com>
+Date:   Tue, 7 Jun 2022 18:58:53 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] fs/ntfs3: Remove a useless test
+Content-Language: en-US
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+CC:     <ntfs3@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>
+References: <ade97ac1a1506fd322b008bdf8c24f0fb01b02a0.1640261993.git.christophe.jaillet@wanadoo.fr>
+From:   Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+In-Reply-To: <ade97ac1a1506fd322b008bdf8c24f0fb01b02a0.1640261993.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.30.8.65]
+X-ClientProxiedBy: vdlg-exch-02.paragon-software.com (172.30.1.105) To
+ vdlg-exch-02.paragon-software.com (172.30.1.105)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marco Elver <elver@google.com>
-Date: Tue, 7 Jun 2022 15:43:49 +0200
 
-> On Mon, Jun 06, 2022 at 01:49PM +0200, Alexander Lobakin wrote:
-> > Currently, the generic test_bit() function is defined as a one-liner
-> > and in case with constant bitmaps the compiler is unable to optimize
-> > it to a constant. At the same time, gen_test_and_*_bit() are being
-> > optimized pretty good.
-> > Define gen_test_bit() the same way as they are defined.
-> > 
-> > Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > ---
-> >  include/asm-generic/bitops/generic-non-atomic.h | 6 +++++-
-> >  1 file changed, 5 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/include/asm-generic/bitops/generic-non-atomic.h b/include/asm-generic/bitops/generic-non-atomic.h
-> > index 7a60adfa6e7d..202d8a3b40e1 100644
-> > --- a/include/asm-generic/bitops/generic-non-atomic.h
-> > +++ b/include/asm-generic/bitops/generic-non-atomic.h
-> > @@ -118,7 +118,11 @@ gen___test_and_change_bit(unsigned int nr, volatile unsigned long *addr)
-> >  static __always_inline int
-> >  gen_test_bit(unsigned int nr, const volatile unsigned long *addr)
-> >  {
-> > -	return 1UL & (addr[BIT_WORD(nr)] >> (nr & (BITS_PER_LONG-1)));
-> > +	const unsigned long *p = (const unsigned long *)addr + BIT_WORD(nr);
-> > +	unsigned long mask = BIT_MASK(nr);
-> > +	unsigned long val = *p;
-> > +
-> > +	return !!(val & mask);
+
+On 12/23/21 15:20, Christophe JAILLET wrote:
+> 'new_free' has just been allocated by kmalloc() and is known to be not
+> NULL.
+> So this pointer can't be equal to a previous memory allocation, or there
+> would be trouble in paradise.
 > 
-> Unfortunately this makes the dereference of 'addr' non-volatile, and
-> effectively weakens test_bit() to the point where I'd no longer consider
-> it atomic. Per atomic_bitops.txt, test_bit() is atomic.
+> Axe the always true test and make the code more readable.
 > 
-> The generic version has been using a volatile access to make it atomic
-> (akin to generic READ_ONCE() casting to volatile). The volatile is also
-> the reason the compiler can't optimize much, because volatile forces a
-> real memory access.
-
-Ah-ha, I see now. Thanks for catching and explaining this!
-
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>   fs/ntfs3/bitmap.c | 4 +---
+>   1 file changed, 1 insertion(+), 3 deletions(-)
 > 
-> Yes, confusingly, test_bit() lives in non-atomic.h, and this had caused
-> confusion before, but the decision was made that moving it will cause
-> headaches for ppc so it was left alone:
-> https://lore.kernel.org/all/87a78xgu8o.fsf@dja-thinkpad.axtens.net/T/#u
-> 
-> As for how to make test_bit() more compiler-optimization friendly, I'm
-> guessing that test_bit() needs some special casing where even the
-> generic arch_test_bit() is different from the gen_test_bit().
-> gen_test_bit() should probably assert that whatever it is called with
-> can actually be evaluated at compile-time so it is never accidentally
-> used otherwise.
+> diff --git a/fs/ntfs3/bitmap.c b/fs/ntfs3/bitmap.c
+> index aa184407520f..e3b5680fd516 100644
+> --- a/fs/ntfs3/bitmap.c
+> +++ b/fs/ntfs3/bitmap.c
+> @@ -1333,9 +1333,7 @@ int wnd_extend(struct wnd_bitmap *wnd, size_t new_bits)
+>   		if (!new_free)
+>   			return -ENOMEM;
+>   
+> -		if (new_free != wnd->free_bits)
+> -			memcpy(new_free, wnd->free_bits,
+> -			       wnd->nwnd * sizeof(short));
+> +		memcpy(new_free, wnd->free_bits, wnd->nwnd * sizeof(short));
+>   		memset(new_free + wnd->nwnd, 0,
+>   		       (new_wnd - wnd->nwnd) * sizeof(short));
+>   		kfree(wnd->free_bits);
 
-I like the idea! Will do in v2.
-I can move the generics and after, right below them, define
-'const_*' helpers which will mostly redirect to 'generic_*', but
-for test_bit() it will be a separate function with no `volatile`
-and with an assertion that the input args are constants.
-
-> 
-> I would also propose adding a comment close to the deref that test_bit()
-> is atomic and the deref needs to remain volatile, so future people will
-> not try to do the same optimization.
-
-I think that's also the reason why it's not underscored, right?
-
-> 
-> Thanks,
-> -- Marco
-
-Thanks,
-Olek
+Thanks for patch, applied!
