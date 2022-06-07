@@ -2,135 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78962CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9786CCCA489
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392619AbiFHAxA (ORCPT
+        id S1441848AbiFHAxL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:53:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51524 "EHLO
+        Tue, 7 Jun 2022 20:53:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382933AbiFGWM7 (ORCPT
+        with ESMTP id S1385381AbiFGWVf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:12:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079D225F430;
-        Tue,  7 Jun 2022 12:19:48 -0700 (PDT)
+        Tue, 7 Jun 2022 18:21:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D22B31994A3;
+        Tue,  7 Jun 2022 12:21:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B551F61935;
-        Tue,  7 Jun 2022 19:19:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1801C385A2;
-        Tue,  7 Jun 2022 19:19:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629588;
-        bh=jk3GPX/z1hEDFjC03/RcNKJq/h0HQGSSLN8X7A3cII8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VwhS8G4u9U/gVou8hYx+Je3g6I6MsFMQU9a+iO8yvSakVr63VaRE61YbUjYqjXptf
-         YWpGJSkZtFSz4REff9Efg5wx54J5Oo7PgEIfkDHE0xtZ56RB7a+kPy3KQd41sJQpy3
-         vFgoOdW/WAMTHWLrubDyci5KoCjs2R4uN8Y3tMYw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.18 745/879] ext4: verify dir block before splitting it
-Date:   Tue,  7 Jun 2022 19:04:23 +0200
-Message-Id: <20220607165024.481567191@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CCF960906;
+        Tue,  7 Jun 2022 19:21:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EF4FC3411C;
+        Tue,  7 Jun 2022 19:21:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654629687;
+        bh=ErEmBZd3G+2nCeZwKqv3UDzHU86hysk68o0uchcsTnE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iMrxxJJVlB/KVuBZmk4eOUrThqeqR3mCWDLGLjT19/9FVY4iwJhsnYCO9qj6nX+Vo
+         KmJAgkvfGdSF2uB8DobBDYTHQ77BWzXWmrYc1LW6yPjKKFkW3MmikIE0DO8bUUleFx
+         5HBwJh0RMz5iIejETu8ACYocZ78pZ6JO2xtNZvKn9JitLU4b7zZGijaDSwsUGOq+jh
+         D4uEtTveg9XJPSEsVHO/wBouTb6T4FWEmLYeKC316fV3l8rYYy3w7D8Owwx7qp1KlF
+         Pl1xv72R0bsv/dTlc7yQwptnedhMOveFRDmwb9QXuuNO8C9Mpd+GSELpTITQ7OvoRK
+         kZRe1BiJKh7qQ==
+Date:   Tue, 7 Jun 2022 20:21:22 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Robert Marko <robimarko@gmail.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] regulator: qcom_smd: correct MP5496 ranges
+Message-ID: <Yp+lMm66+imh1wvk@sirena.org.uk>
+References: <20220604193300.125758-1-robimarko@gmail.com>
+ <20220604193300.125758-2-robimarko@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="PVVUTsmlegdQ6yDN"
+Content-Disposition: inline
+In-Reply-To: <20220604193300.125758-2-robimarko@gmail.com>
+X-Cookie: Where's SANDY DUNCAN?
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
 
-commit 46c116b920ebec58031f0a78c5ea9599b0d2a371 upstream.
+--PVVUTsmlegdQ6yDN
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Before splitting a directory block verify its directory entries are sane
-so that the splitting code does not access memory it should not.
+On Sat, Jun 04, 2022 at 09:33:00PM +0200, Robert Marko wrote:
+> Currently set MP5496 Buck and LDO ranges dont match its datasheet[1].
+> According to the datasheet:
+> Buck range is 0.6-2.1875V with a 12.5mV step
+> LDO range is 0.8-3.975V with a 25mV step.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220518093332.13986-1-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/ext4/namei.c |   32 +++++++++++++++++++++-----------
- 1 file changed, 21 insertions(+), 11 deletions(-)
+Doesn't make much difference here but in general fixes like this should
+come before new features in a series so they can be applied without
+dependency issues.
 
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -277,9 +277,9 @@ static struct dx_frame *dx_probe(struct
- 				 struct dx_hash_info *hinfo,
- 				 struct dx_frame *frame);
- static void dx_release(struct dx_frame *frames);
--static int dx_make_map(struct inode *dir, struct ext4_dir_entry_2 *de,
--		       unsigned blocksize, struct dx_hash_info *hinfo,
--		       struct dx_map_entry map[]);
-+static int dx_make_map(struct inode *dir, struct buffer_head *bh,
-+		       struct dx_hash_info *hinfo,
-+		       struct dx_map_entry *map_tail);
- static void dx_sort_map(struct dx_map_entry *map, unsigned count);
- static struct ext4_dir_entry_2 *dx_move_dirents(struct inode *dir, char *from,
- 					char *to, struct dx_map_entry *offsets,
-@@ -1249,15 +1249,23 @@ static inline int search_dirblock(struct
-  * Create map of hash values, offsets, and sizes, stored at end of block.
-  * Returns number of entries mapped.
-  */
--static int dx_make_map(struct inode *dir, struct ext4_dir_entry_2 *de,
--		       unsigned blocksize, struct dx_hash_info *hinfo,
-+static int dx_make_map(struct inode *dir, struct buffer_head *bh,
-+		       struct dx_hash_info *hinfo,
- 		       struct dx_map_entry *map_tail)
- {
- 	int count = 0;
--	char *base = (char *) de;
-+	struct ext4_dir_entry_2 *de = (struct ext4_dir_entry_2 *)bh->b_data;
-+	unsigned int buflen = bh->b_size;
-+	char *base = bh->b_data;
- 	struct dx_hash_info h = *hinfo;
- 
--	while ((char *) de < base + blocksize) {
-+	if (ext4_has_metadata_csum(dir->i_sb))
-+		buflen -= sizeof(struct ext4_dir_entry_tail);
-+
-+	while ((char *) de < base + buflen) {
-+		if (ext4_check_dir_entry(dir, NULL, de, bh, base, buflen,
-+					 ((char *)de) - base))
-+			return -EFSCORRUPTED;
- 		if (de->name_len && de->inode) {
- 			if (ext4_hash_in_dirent(dir))
- 				h.hash = EXT4_DIRENT_HASH(de);
-@@ -1270,8 +1278,7 @@ static int dx_make_map(struct inode *dir
- 			count++;
- 			cond_resched();
- 		}
--		/* XXX: do we need to check rec_len == 0 case? -Chris */
--		de = ext4_next_entry(de, blocksize);
-+		de = ext4_next_entry(de, dir->i_sb->s_blocksize);
- 	}
- 	return count;
- }
-@@ -1943,8 +1950,11 @@ static struct ext4_dir_entry_2 *do_split
- 
- 	/* create map in the end of data2 block */
- 	map = (struct dx_map_entry *) (data2 + blocksize);
--	count = dx_make_map(dir, (struct ext4_dir_entry_2 *) data1,
--			     blocksize, hinfo, map);
-+	count = dx_make_map(dir, *bh, hinfo, map);
-+	if (count < 0) {
-+		err = count;
-+		goto journal_error;
-+	}
- 	map -= count;
- 	dx_sort_map(map, count);
- 	/* Ensure that neither split block is over half full */
+--PVVUTsmlegdQ6yDN
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKfpTEACgkQJNaLcl1U
+h9AhTgf+Od+PkiFj34Fq+VGSFfiNc7og5D8mxgVCFTFSZ3zf4liijqW0zWl2kJFw
+auCo3cJ75iR7DlDFOUGoU57JQeVRTKFI8oiy22abWM8/X06HWyV8MJhwwII6Clk9
+m/muvCiPowA9AWT0VvXu5r4Z8G6TC8ANmcNlw21pHtmX7fhDpPlQGaW1beF3YkOJ
++8FZvaNWwC7mCx5ARiDmfW0EfBtjcFl7NQK2uozEiYRmTe2EzWDfA4jx8dPH/sTf
+qxgwEfeGn2Souy+Ax3ns4XiiVSoFJX+R3UGyU+MpcJ33/gtlkz7i6JQgf2whuXMP
+u1S1lOtUHQRp44gA03oVbHqMP00XBw==
+=TPNT
+-----END PGP SIGNATURE-----
+
+--PVVUTsmlegdQ6yDN--
