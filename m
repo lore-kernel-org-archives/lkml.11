@@ -2,86 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E8DECCA483
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E47CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384802AbiFGWpD (ORCPT
+        id S1385795AbiFGWqt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:45:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51148 "EHLO
+        Tue, 7 Jun 2022 18:46:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380639AbiFGVbF (ORCPT
+        with ESMTP id S1380120AbiFGVhc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:31:05 -0400
-Received: from 8.mo575.mail-out.ovh.net (8.mo575.mail-out.ovh.net [46.105.74.219])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231BC22A472
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:03:17 -0700 (PDT)
-Received: from player796.ha.ovh.net (unknown [10.110.208.89])
-        by mo575.mail-out.ovh.net (Postfix) with ESMTP id C9F2624497
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 18:47:39 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player796.ha.ovh.net (Postfix) with ESMTPSA id 940D82B437457;
-        Tue,  7 Jun 2022 18:47:29 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-100R003051d3411-4c77-4f1a-9d56-85e7694b308c,
-                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     "Lee, Chun-Yi" <jlee@suse.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Cezary Jackiewicz <cezary.jackiewicz@gmail.com>,
-        Henrique de Moraes Holschuh <hmh@hmh.eng.br>
-Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>,
-        ibm-acpi-devel@lists.sourceforge.net
-Subject: [PATCH 4/4] platform/x86: thinkpad_acpi: Use backlight helper
-Date:   Tue,  7 Jun 2022 20:46:35 +0200
-Message-Id: <20220607184635.1127913-5-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220607184635.1127913-1-steve@sk2.org>
-References: <20220607184635.1127913-1-steve@sk2.org>
+        Tue, 7 Jun 2022 17:37:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B90E1EA883;
+        Tue,  7 Jun 2022 12:05:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19979B822C0;
+        Tue,  7 Jun 2022 19:05:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66417C385A2;
+        Tue,  7 Jun 2022 19:05:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628700;
+        bh=rsPwkGNK9GIoywZVByF5Yv2MTWSczBPHM5FyQ9egQNU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UfyQefQ6BY7u4HpMGtOqxlwT7gMSznw2okX6UHx7WAgAHhbFQzbi5cRiv2bC0zP4Z
+         Bdt3aK2hUyPCfzuv5bJrHWRDb2BP+eStuy126AVYGIyFI8DWENeOI+przM4oo/PW5C
+         ooUyDLiz65hdsagdRmtojAhot3hx7j+rRQcl/pIY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Phil Auld <pauld@redhat.com>,
+        Tejun Heo <tj@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 425/879] kselftest/cgroup: fix test_stress.sh to use OUTPUT dir
+Date:   Tue,  7 Jun 2022 18:59:03 +0200
+Message-Id: <20220607165015.201990234@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 11334152890935182935
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedguddvlecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejleeirdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheejhe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of retrieving the backlight brightness in struct
-backlight_properties manually, and then checking whether the backlight
-should be on at all, use backlight_get_brightness() which does all
-this and insulates this from future changes.
+From: Phil Auld <pauld@redhat.com>
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
-Cc: Henrique de Moraes Holschuh <hmh@hmh.eng.br>
-Cc: Hans de Goede <hdegoede@redhat.com>
-Cc: Mark Gross <markgross@kernel.org>
-Cc: ibm-acpi-devel@lists.sourceforge.net
-Cc: platform-driver-x86@vger.kernel.org
+[ Upstream commit 54de76c0123915e7533ce352de30a1f2d80fe81f ]
+
+Running cgroup kselftest with O= fails to run the with_stress test due
+to hardcoded ./test_core. Find test_core binary using the OUTPUT directory.
+
+Fixes: 1a99fcc035fb ("selftests: cgroup: Run test_core under interfering stress")
+Signed-off-by: Phil Auld <pauld@redhat.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/thinkpad_acpi.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ tools/testing/selftests/cgroup/test_stress.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
-index e6cb4a14cdd4..a9337bd1d125 100644
---- a/drivers/platform/x86/thinkpad_acpi.c
-+++ b/drivers/platform/x86/thinkpad_acpi.c
-@@ -6796,10 +6796,7 @@ static int brightness_set(unsigned int value)
+diff --git a/tools/testing/selftests/cgroup/test_stress.sh b/tools/testing/selftests/cgroup/test_stress.sh
+index 15d9d5896394..109c044f715f 100755
+--- a/tools/testing/selftests/cgroup/test_stress.sh
++++ b/tools/testing/selftests/cgroup/test_stress.sh
+@@ -1,4 +1,4 @@
+ #!/bin/bash
+ # SPDX-License-Identifier: GPL-2.0
  
- static int brightness_update_status(struct backlight_device *bd)
- {
--	unsigned int level =
--		(bd->props.fb_blank == FB_BLANK_UNBLANK &&
--		 bd->props.power == FB_BLANK_UNBLANK) ?
--				bd->props.brightness : 0;
-+	int level = backlight_get_brightness(bd);
- 
- 	dbg_printk(TPACPI_DBG_BRGHT,
- 			"backlight: attempt to set level to %d\n",
+-./with_stress.sh -s subsys -s fork ./test_core
++./with_stress.sh -s subsys -s fork ${OUTPUT}/test_core
 -- 
-2.30.2
+2.35.1
+
+
 
