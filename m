@@ -2,215 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C4CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA48CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:15:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343881AbiFGPL6 (ORCPT
+        id S1343899AbiFGPPP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 11:11:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58748 "EHLO
+        Tue, 7 Jun 2022 11:15:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343890AbiFGPLz (ORCPT
+        with ESMTP id S1343900AbiFGPO7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 11:11:55 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E446FF551D
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:11:51 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 257EwMXL025759;
-        Tue, 7 Jun 2022 15:08:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=references : from :
- to : cc : subject : in-reply-to : date : message-id : content-type :
- mime-version; s=corp-2021-07-09;
- bh=t8I0DFBoeABdXcz+GmrPuikpzK5+dFSIQDUhZR+v5pw=;
- b=kkI2jCNNKSu5lImcKPlT7DlRZMLbdBx6Whxf1wXZByVdrLjuILYVLGCRGtM4zoa/vLVD
- to89kE2vnjjzgtFwMQbP/rPs8FcDYTX57MgaSkr7RbOCnhyFCuQvr6kpc5eqCoQ99rf2
- Xf07PZdDPoD4GS5w3yASpySC6yGhZjRL3q+8NU8gH8m72AFm0xD1rvBJAvNEiVBDo92b
- GsV2WtEnYEYhy+TFmsSm5BtLiGc/nDQgCAGjPj+AYitfLv+B8FXZgIHW36DUZtmDFTor
- xjhOE0bloX0JZheQd+LAiDTb+W72GPg1JQ6snoBdtH/VlVsU5oyBihG3tdEjSTdH5oFE xA== 
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gfyxse6r0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 07 Jun 2022 15:08:20 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 257F6WsH005803;
-        Tue, 7 Jun 2022 15:08:19 GMT
-Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2170.outbound.protection.outlook.com [104.47.59.170])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3gfwu2mrg9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 07 Jun 2022 15:08:19 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bOHN5ToRIzr0zLRAy33oVQXLyf3gJde+jUs8E0vaQ0doKy/MvaKrltXm6ngc9e5opmtBxgMxd2rEph8e3UNf0ie9XPPV8xAL6cug6yxosuEZLajXpBsyhPiQYSByGp2xNVydOwinII5u11bSI1n8BFS64RJMMe6qwLgsKeg62hdJDY4/+Oq6sAQkKv+ErtH49CTqmjbPKGG1vHq1OZcW4PX7PQrzJ3mhocg8nSRRSk4MLnlH0q6oGr3rpC56TDuCTbFzFzfa9DPHXzbV92ZATM3Rlq2Dq3GHK6Wpmi9czQ+KdQIeOJTWdqZesiew7/0sfv+tnYQIxLZp/7xabDmllQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=t8I0DFBoeABdXcz+GmrPuikpzK5+dFSIQDUhZR+v5pw=;
- b=ZHVUB5nhSKjwb9KfXm1w5+M9GbGC7yR+9Iqovna67DNLDYa+Ivw9ALh8F8GutzulfCBvIuJ15sGj74zcJpmp7TgkZPAh04nq3y3RUAkIv/0MQ2V3FH3a92CgCP/mysDmRr6lzRqkL35rf8prkUbt16/Vw9zeAq85pUKLUVP4GbK3geYG8oKY4r7ecDodY2jCUUhQQh/rFTdqQa47f3UPllmJwsCiCPOqiAFrwueqCNgvr2BBMEiQBDr40YFgy3wRoDM2G+gyJSpF9OrKPJpBlKBRLtHokg3VO+DVVRX9m3mQDPDvY99L1UEuJbsC/dJ2j95y0OfqbdEfaMaoi4QC/w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t8I0DFBoeABdXcz+GmrPuikpzK5+dFSIQDUhZR+v5pw=;
- b=eER7pYj7ElpDChD1tsbfJVbEo/UGGIQxmVu4ed7OteDX0iAa4O5fZJOOTUntBg9RL0F9L26hhSBuCxL4LB6OnYKB0p6Dg/XGJF5Szitc7wLGy6pkYm7mu3HcKhEdv/wSu/Nq4MGICywdDZdOPnF34K64SoNQjwoJeHcrRu/Z0Cw=
-Received: from DM8PR10MB5416.namprd10.prod.outlook.com (2603:10b6:8:3f::19) by
- CH0PR10MB5244.namprd10.prod.outlook.com (2603:10b6:610:d9::15) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5314.12; Tue, 7 Jun 2022 15:08:17 +0000
-Received: from DM8PR10MB5416.namprd10.prod.outlook.com
- ([fe80::49dc:6a95:a2d5:fc08]) by DM8PR10MB5416.namprd10.prod.outlook.com
- ([fe80::49dc:6a95:a2d5:fc08%5]) with mapi id 15.20.5314.018; Tue, 7 Jun 2022
- 15:08:17 +0000
-References: <20220606202109.1306034-1-ankur.a.arora@oracle.com>
- <CAHk-=wh89D_69JZtB0MNKbrTM4dPJisK6E0yFKH-hA++F13mzw@mail.gmail.com>
-User-agent: mu4e 1.4.10; emacs 27.2
-From:   Ankur Arora <ankur.a.arora@oracle.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Ankur Arora <ankur.a.arora@oracle.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Andrew Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andi Kleen <ak@linux.intel.com>, Arnd Bergmann <arnd@arndb.de>,
-        Jason Gunthorpe <jgg@nvidia.com>, jon.grimm@amd.com,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        joao.m.martins@oracle.com
-Subject: Re: [PATCH v3 00/21] huge page clearing optimizations
-In-reply-to: <CAHk-=wh89D_69JZtB0MNKbrTM4dPJisK6E0yFKH-hA++F13mzw@mail.gmail.com>
-Date:   Tue, 07 Jun 2022 20:38:07 +0530
-Message-ID: <87k09s1pgo.fsf@oracle.com>
-Content-Type: text/plain
-X-ClientProxiedBy: PN3PR01CA0169.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:de::13) To DM8PR10MB5416.namprd10.prod.outlook.com
- (2603:10b6:8:3f::19)
+        Tue, 7 Jun 2022 11:14:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AD3971AF2D
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:14:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654614893;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6/ubDDYUq7JsSD5y7BKE6Pnt9grBbg8NpCvbzWDfuGc=;
+        b=NQbWoUFv7cezwYTHlXbqmgDo9GuspCEaimV5dfKlug6uukNyh07LnyHaqKRfWA/9EoJQir
+        PKbRuHk+mNSAtviVM4YV7dIYm7GJR7nGadYNLh9jOsoGby5H1yZ0PzUZPJUBNRBkBpPuo8
+        j7AvACs7U7fncK/+HtKC9rSE9roWWrk=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-653-Fe2PgdDFM1W7KBGwPNzQ1Q-1; Tue, 07 Jun 2022 11:14:52 -0400
+X-MC-Unique: Fe2PgdDFM1W7KBGwPNzQ1Q-1
+Received: by mail-wr1-f69.google.com with SMTP id i10-20020a5d55ca000000b002103d76ffcaso4046910wrw.17
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 08:14:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6/ubDDYUq7JsSD5y7BKE6Pnt9grBbg8NpCvbzWDfuGc=;
+        b=ySFov6Z1LIM7iMawfdMkEQ6F2IIS4NrdrtzNziVxnhe3sVWD3FG2Lm8qpJMxqqTWN/
+         sQjETo8KZgb3kNSnMA4wvkor46gvm6NASnjJeQr3INvx4MNcFKPu96BHeb5jbaI7FIiR
+         hwMUX0PXknd1KW1nGEyBojE97Nv1AaB/myt5RNcETtFey+OnhAJ+f1mDiJdDqQS6/byk
+         v3pvnsqFm/4ND3wlBSTWpUa+0VNxFZwYX1kjrthsQ0NWevG1fuVnj32DcLLKrW4BIrcF
+         SetUUCg4jI/sGTMIu1kS40ETJmPSX+cN79y/fMjmZgzOVc0I2hInQ5nfcaKfWmZtpstV
+         ZVfg==
+X-Gm-Message-State: AOAM533PmWZYnYUkzDcrNsKert65itpaQg8pZ42y0In3MePdggfPDW31
+        +H02dgeF1zIMfbAABP7coE7UfIGLeyecRitjAdA9Kfq8ubTf2U1tAo3VQgWlTCBanMSRPhR/E8s
+        3coFvp76u1HZI+oPT4Wu62ULv
+X-Received: by 2002:a7b:c341:0:b0:37b:ed90:7dad with SMTP id l1-20020a7bc341000000b0037bed907dadmr28506807wmj.138.1654614891007;
+        Tue, 07 Jun 2022 08:14:51 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzUdbpCo/MOt8IWw71ZrXkaFebf2wItJLgp9HKWhrVYS9665oEGQ/r6dzZuLlTCgCgb4RxP8g==
+X-Received: by 2002:a7b:c341:0:b0:37b:ed90:7dad with SMTP id l1-20020a7bc341000000b0037bed907dadmr28506758wmj.138.1654614890592;
+        Tue, 07 Jun 2022 08:14:50 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id u10-20020adfdd4a000000b002102cc4d63asm21428082wrm.81.2022.06.07.08.14.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 08:14:49 -0700 (PDT)
+Message-ID: <97789f9e-a33e-bb8d-d5b1-9be31232b64a@redhat.com>
+Date:   Tue, 7 Jun 2022 17:14:47 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cda2fea4-f28a-43c5-12c3-08da48978d37
-X-MS-TrafficTypeDiagnostic: CH0PR10MB5244:EE_
-X-Microsoft-Antispam-PRVS: <CH0PR10MB5244BE7D6D62866CC35FC189CEA59@CH0PR10MB5244.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bb8z3t+mMoScFD7SrPzmOemNjFt1kZvKrQ6cqDqDbBD7i6T6ZbZy2E3FxJQONQR/dhDzDLJHdXX/4RZq0nxVZGiekGgzSy28ETc2jM9lvobd39JPbCan6UaAq4dfrPbL+fBg18E6vq1jXYL5DYPF+uYv630lMbEWIrNkHgwptiGvyt+e77USTID8hqFXpT4of2gCY/g4F2WNO8WgthDUW5tC3KUXrk8UZk4cDii+EM+sdSC5Z/+hQbrN06UanbWUl/V6Q9IkQwAxOYlnYjNuGX6BAtRvcXwC0AJjE5dY3/jiVZY7/hcaV+sPtzQfSiJop9XdKljW3BVnszNXxt9DLHgv38DHCFaU8zD3+7EIEOd8rDKJy5jdiKuL5aqmruoVNRyntpsBiATQEvWRLiihAkEfwJHd7uNnbotOAz7OqF3o5g4dAY31P0ZWa6xnUbXMqKNNg+EC4psT0t8bbVMWHRua+4In1r5VeLYJkkE7VpsmiNua6+j1PgaCfddm6m13pLkGVQ9UGta/0XlHpHthOlfq2G46IB4HFbfCilnbrOnzdVoLoZ/Btu9T+kPFnme10b7T2dbsZq3rqHzhhkHWootMsP0jBrRW9VyNi4oS7LLNQT0+rcjYj4VpLRRwZu9m7pB7p5mOAEGf/E39q+S0lDd1m3zeDcxkr76K418Z190jxH00oKe8fgf5ULdSKf59
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR10MB5416.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66946007)(66476007)(53546011)(6506007)(38100700002)(6666004)(52116002)(6486002)(86362001)(4326008)(2616005)(7416002)(107886003)(8936002)(186003)(5660300002)(36756003)(2906002)(66556008)(508600001)(83380400001)(54906003)(6512007)(6916009)(316002)(8676002)(14583001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SLv6FZAFWKLKZ4LDmi0z6yPjU91EBmB7LVhvn1gYx5U99hqO6E1cvNJBoFtG?=
- =?us-ascii?Q?Zl97Tu5ovTKxqx4dBGeIuAX0LiEvILnjFVD+OvNrkujuQIptrT6IKjA+JHym?=
- =?us-ascii?Q?Xl+1GNxgIdCs/yNgR4+otgHgXAGZ+t/x85GQj70h5mEgxSa5o1oQS8IFLcyo?=
- =?us-ascii?Q?ZRxANLuT+EQQgi8T6E6Yr/nYCfltsYCvyDlX8oUawbHaDg9qaVw2RLNRUMg+?=
- =?us-ascii?Q?OeY/iPKNJUKJr2ylQD1LcJdzl2od94vxzeqMZZUeIKMZam/719XkL/SzBpOz?=
- =?us-ascii?Q?1vOXonpygLK8HLnISQX6L5+Q7EWVBdckZloDMEZ2eHHG82Vb5t3xmrLEcCaY?=
- =?us-ascii?Q?r/4L8/3HSZHUXMZMsaNeaFK5uhMZuSIhHONzI6byHGLCyi8zwci67Hnoa7kc?=
- =?us-ascii?Q?j5+pzB42ShWQKKjSWW9HRdNXUA9FFKGEtnQsY0GYMxUV99LntXiiAL5evcam?=
- =?us-ascii?Q?dkvNqqO+z4HfHY9iI5rv8/6wizec3ewigR7GVEywkMzR7Vc52mCIcZVaffE6?=
- =?us-ascii?Q?/sjTFmIplEuKUZWYUr/rc0XTra3XF21yFLMbC4amBDP8Qb87Wb6Sa23u8dL0?=
- =?us-ascii?Q?Kj0QBpqQJ6j08lm3q5BPCGI++x3xTOTM3gDZ6B3qmlVsyIrhlkWDwo9nNaKc?=
- =?us-ascii?Q?bFdLhpk1jgaV1NDap6aEEuKX8MvBA/seqIVJmK2GTt0dRN20Mx1RODdLIJXO?=
- =?us-ascii?Q?uGmuTtXS5mhOXVfrRr6a1aEGDcWeDqWlxuTGPJ31N9/DlpHf6/832KAK3twd?=
- =?us-ascii?Q?Ue6azw9WKWNYm4K03rG6zYLLRBT18kUhOFcDmM8WFSyvVusPglKT2HOo+Zgh?=
- =?us-ascii?Q?4bToKXAuV/yhYa4RB0qVLP2Kn7WPA6fsa0ui9NrNlo5J4VK1NXHh1S1hUeQm?=
- =?us-ascii?Q?ncrBPOoL8lmkLJqxevF98faogeBmpHpkVthdthVMR2RQj6cGPtRZxy90wSTK?=
- =?us-ascii?Q?p/rSNdck+Uef7UgtLqjKACZ34FpkyJTwsNfusv1OrL6dzifKrXcrWPGXYIY3?=
- =?us-ascii?Q?dqyi5Ol608m3/ONYPVLw4hE7x+FNUnDMCUjINjDoE5DlHXWYvUyBRX5ypOGQ?=
- =?us-ascii?Q?wF7Kh/d7mAKBjNOYf63LoPJ7sHonVg02kYzEqV7mTlDOqTLENfithQMVGQr9?=
- =?us-ascii?Q?841rVpmin+hdA+BDiK6ji3OccYFI0wRuY8Bn/VLB4ktYqDrb3IlKaGV0iKMr?=
- =?us-ascii?Q?CFvDj1zTKZtd99Gl0h/O++HC/l6PXdNu6C+C6nttSjUaB8zVzhgTo1CN7Y/l?=
- =?us-ascii?Q?lhJKvcEUeL9V2m2fvJ5gejavsDfUcAXxtgufPz+Ck/Ct2HWc95yPvNkVgTHi?=
- =?us-ascii?Q?mMlhCfoNYeREkhw4YzxkL5zqm4xlZbAxP3vzfZN4iaetfegnRmJsR3oQosVR?=
- =?us-ascii?Q?8S1CnSU5hF9CNN2q2SZCx+e43k6J4+ZaxUr7oDtGHB+yICogqloBsNE58gln?=
- =?us-ascii?Q?cg/hAeizMnRXdRMYG5VIICltMvIiouk8lx2jIpBafvzKfQCg48pulf7D2/L+?=
- =?us-ascii?Q?vXbIKBYyCYHgGKlETARHSMbEiGrCDUwxlmbuCsp1UiMl8j0Kh3XciyHkSE+1?=
- =?us-ascii?Q?zQZR8dLmexWIHuvQihHErV/6PjBumH1gmPUVB5MuBS/qCiZxAseVHYcZddRH?=
- =?us-ascii?Q?tUMvWzNDGuw2xC/Q/lBnshjGXK5aCeUAqD0g0Rb8gOoXc6No5r1ILi9HTlZ+?=
- =?us-ascii?Q?xA7zQTXkF3uhk4kTB9FFtUpv5Wdp0pJKS8cIwRKQ26i4H/wEalx1fekceud1?=
- =?us-ascii?Q?VvZsB0qdBVkB613dG7OtLCGjT6yxFZkfM3L00aZlaTg2NbshVp247TMliJCa?=
-X-MS-Exchange-AntiSpam-MessageData-1: SjdbI+R7P2gHC5mafH8oTudvb8AnU9Cglio=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cda2fea4-f28a-43c5-12c3-08da48978d37
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR10MB5416.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2022 15:08:17.7179
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: p03mMH5fJhkIfn+7OhhFDm/8vYyqQn5zB4C6bMaJbse/ZPzD6YT9QEVDrQBtMdaCS9+7H6FHWf4ROcyR8TYHnMlFZXya+FOzmLMun9sg5g0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR10MB5244
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.874
- definitions=2022-06-07_06:2022-06-07,2022-06-07 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=980 spamscore=0
- adultscore=0 suspectscore=0 malwarescore=0 phishscore=0 bulkscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206070061
-X-Proofpoint-ORIG-GUID: FMB1O9TD0zuUF5f1FSVvImRr3SBaO7GR
-X-Proofpoint-GUID: FMB1O9TD0zuUF5f1FSVvImRr3SBaO7GR
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2] KVM: x86/mmu: Check every prev_roots in
+ __kvm_mmu_free_obsolete_roots()
+Content-Language: en-US
+To:     shaoqin.huang@intel.com
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, Ben Gardon <bgardon@google.com>,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220607005905.2933378-1-shaoqin.huang@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220607005905.2933378-1-shaoqin.huang@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[ Fixed email for Joao Martins. ]
+On 6/7/22 02:59, shaoqin.huang@intel.com wrote:
+> From: Shaoqin Huang <shaoqin.huang@intel.com>
+> 
+> When freeing obsolete previous roots, check prev_roots as intended, not
+> the current root.
+> 
+> Signed-off-by: Shaoqin Huang <shaoqin.huang@intel.com>
+> Fixes: 527d5cd7eece ("KVM: x86/mmu: Zap only obsolete roots if a root shadow page is zapped")
+> ---
+> Changes in v2:
+>    - Make the commit message more clearer.
+>    - Fixed the missing idx.
+> 
+>   arch/x86/kvm/mmu/mmu.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index f4653688fa6d..e826ee9138fa 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -5179,7 +5179,7 @@ static void __kvm_mmu_free_obsolete_roots(struct kvm *kvm, struct kvm_mmu *mmu)
+>   		roots_to_free |= KVM_MMU_ROOT_CURRENT;
+>   
+>   	for (i = 0; i < KVM_MMU_NUM_PREV_ROOTS; i++) {
+> -		if (is_obsolete_root(kvm, mmu->root.hpa))
+> +		if (is_obsolete_root(kvm, mmu->prev_roots[i].hpa))
+>   			roots_to_free |= KVM_MMU_ROOT_PREVIOUS(i);
+>   	}
+>   
 
-Linus Torvalds <torvalds@linux-foundation.org> writes:
+Queued, thanks.
 
-> On Mon, Jun 6, 2022 at 1:22 PM Ankur Arora <ankur.a.arora@oracle.com> wrote:
-[snip]
+Paolo
 
-> So I really don't like this series. A *lot* of it comes from that
-> horrible process_huge_page() model, and the whole model is just wrong
-> and pointless. You're literally trying to fix the mess that that
-> function is, but you're keeping the fundamental problem around.
->
-> The whole *point* of your patch-set is to use non-temporal stores,
-> which makes all the process_huge_page() things entirely pointless, and
-> only complicates things.
->
-> And even if we don't use non-temporal stores, that process_huge_page()
-> thing makes for trouble for any "rep stos/movs" implementation that
-> might actualyl do a better job if it was just chunked up in bigger
-> chunks.
-
-This makes sense to me. There is a lot of unnecessary machinery
-around process_huge_page() and this series adds more of it.
-
-For highmem and page-at-a-time archs we would need to keep some
-of the same optimizations (via the common clear/copy_user_highpages().)
-
-Still that rids the arch code from pointless constraints as you
-say below.
-
-> Yes, yes, you probably still want to chunk that up somewhat due to
-> latency reasons, but even then architectures might as well just make
-> their own decisions, rather than have the core mm code make one
-> clearly bad decision for them. Maybe chunking it up in bigger chunks
-> than one page.
-
-Right. Or doing the whole contiguous area in one or a few chunks
-chunks, and then touching the faulting cachelines towards the end.
-
-> Maybe an architecture could do even more radical things like "let's
-> just 'rep stos' for the whole area, but set a special thread flag that
-> causes the interrupt return to break it up on return to kernel space".
-> IOW, the "latency fix" might not even be about chunking it up, it
-> might look more like our exception handling thing.
-
-When I was thinking about this earlier, I had a vague inkling of
-setting a thread flag and defer writes to the last few cachelines
-for just before returning to user-space.
-Can you elaborate a little about what you are describing above?
-
-> So I really think that crapectomy should be the first thing you do,
-> and that should be that first part of "extends the clear_page()
-> machinery to also handle extents larger than a single page"
-
-Ack that. And, thanks for the detailed comments.
-
---
-ankur
