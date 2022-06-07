@@ -2,95 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17DFEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:42:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 234BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:43:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244094AbiFGMmy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:42:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49244 "EHLO
+        id S244090AbiFGMm6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:42:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244075AbiFGMms (ORCPT
+        with ESMTP id S244081AbiFGMmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:42:48 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41229248EB;
-        Tue,  7 Jun 2022 05:42:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654605766; x=1686141766;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=7CnaOaKftZFuU6zS5ejOPSw/a0TRQ7MfLEcH+ST55pI=;
-  b=npA/EwVLm80RPrCVVatUyQvh9x9gm5H6ghJ6dgiol7bnt46yPC4MAeIP
-   hodIq74n82eCvLkbY6D4n1U5g+cmclFLiS1lWHbglspj33Yx0VXhpW1xu
-   XXW9UHZ96K+9IXY9b2Fj6DgEmQ3WeVzrXk0/t33U8iB4Eu56WDtZMlNUm
-   pxMK+4gZexYxZYaxfCiELvhZ9RnU5kjk71ZGLbc98m1622I3PzO/VRn3x
-   XFvHXiaR2OZx8kR0okSiNW3ZGnzZm376te9757QJrrGqkayUVpgzKPh+f
-   935LMOkD4M2Ww6r8zdK9pommUkbicGZ9Jd72qeSG0NnIawB8Rb10j8+x0
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="259493235"
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="259493235"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 05:42:44 -0700
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="584184405"
-Received: from zwang64-mobl1.ccr.corp.intel.com (HELO [10.249.174.202]) ([10.249.174.202])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 05:42:34 -0700
-Message-ID: <3d0b2863-bb4f-31e1-d54e-09ddf4762d43@linux.intel.com>
-Date:   Tue, 7 Jun 2022 20:42:32 +0800
+        Tue, 7 Jun 2022 08:42:52 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78F671C93D
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:42:50 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id i19so12212587qvu.13
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 05:42:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=KCA+Y9dgW4Jgevx79kF7IXZRJWrbeJFPviDARnJw5Mc=;
+        b=qknqJjglN56ohEAbFyDfNeXUIP9FeORmYBmG/najnECYVQ6aERWwK3uNx/5aLZaH9V
+         6DpOhAFl9r19IYVWnRXrEpmoW3D5UkDfBp8DcWHy8dD4QVPHDpW+B4/YSvcG/JoIiitm
+         BUx7m4W+baMryknlVA4UPqRxIluniQ0hlMWfK08uVWpWTaxHcGUVagzJwo7lWcOhA8En
+         1n5+rwoecE7EbguzW7fmGpz7Jh+bIpbuy1uy8qWQbg0ovwXMykXX3WEv06Tu7F9Osngq
+         og1oAM8PvbTalUVyhQH1hMeb84cKkT80sO37aXhLSrDn9WCTrjFcS4umI1E7zm+K/sRk
+         J2vQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=KCA+Y9dgW4Jgevx79kF7IXZRJWrbeJFPviDARnJw5Mc=;
+        b=hTVCC/CGRaQS7nHFnWy5aimSVZ92UirZa88h1tlAn1Ap/a9H0JfISS29pX2LAnUJRU
+         ap+2D5hWYjxz6LdSuMJ+wuvtwrgjoXLhoE+aI72JUHteCXL3rv0ySmiLwaXtVpFWZrTR
+         BHkyu13RZXa3jWFEIVqBhuYQS8tCdkmhpzD/zek4IgJ0maKqaYxaU07xUoTV6ermF4jh
+         Gb3Isp1Q8yi1WX4XVYR9kzQ5YDHP31I853TUyZ0bJ8d8vDVFwzjsoE254L+AWARcDd2M
+         qIspocNJvXFqbLapL9X5DZSLAIhTcUKjYqClQDqlr07yyfUwk2HZ8pSwVn3jNxate+Rq
+         a5Ww==
+X-Gm-Message-State: AOAM530qbWhAhvaEq1m8xghgAOHtRO1GtpmFm5YnqF11eQU95Bh3J3gl
+        GgE5outsf3jHTKb47MD3cqySAPWBkgZ87ZE8Lac=
+X-Google-Smtp-Source: ABdhPJzURX7nJxppBGO7nDeeb8f3GP7bnqNS72VUGNXWWCu86vAljqYLzZLTtFNKiAx/tprPSJr3CHJUCQnf5FDThVg=
+X-Received: by 2002:a05:6214:2422:b0:467:d777:7cda with SMTP id
+ gy2-20020a056214242200b00467d7777cdamr17957263qvb.118.1654605769540; Tue, 07
+ Jun 2022 05:42:49 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc:     baolu.lu@linux.intel.com, Nicolin Chen <nicolinc@nvidia.com>,
-        joro@8bytes.org, will@kernel.org, marcan@marcan.st,
-        sven@svenpeter.dev, robin.murphy@arm.com, robdclark@gmail.com,
-        m.szyprowski@samsung.com, krzysztof.kozlowski@linaro.org,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        matthias.bgg@gmail.com, heiko@sntech.de, orsonzhai@gmail.com,
-        baolin.wang7@gmail.com, zhang.lyra@gmail.com, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org,
-        jean-philippe@linaro.org, alex.williamson@redhat.com,
-        suravee.suthikulpanit@amd.com, alyssa@rosenzweig.io,
-        alim.akhtar@samsung.com, dwmw2@infradead.org, yong.wu@mediatek.com,
-        mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
-        cohuck@redhat.com, iommu@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org
-Subject: Re: [PATCH 0/5] Simplify vfio_iommu_type1 attach/detach routine
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
-References: <20220606061927.26049-1-nicolinc@nvidia.com>
- <d357966b-7abd-f8f3-3ca7-3c99f5e075b9@linux.intel.com>
- <20220607115820.GH1343366@nvidia.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220607115820.GH1343366@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220604145624.47326-1-robimarko@gmail.com> <a08c5dd0-279d-724a-4836-6e66bfa183e8@wanadoo.fr>
+In-Reply-To: <a08c5dd0-279d-724a-4836-6e66bfa183e8@wanadoo.fr>
+From:   Robert Marko <robimarko@gmail.com>
+Date:   Tue, 7 Jun 2022 14:42:38 +0200
+Message-ID: <CAOX2RU5zUMEVZeScSPV6MvzvxwghECJy1DHDTfW5CFDeyPuE+A@mail.gmail.com>
+Subject: Re: [PATCH 1/3] regulator: mp5416: alphabetically sort header includes
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     sravanhome@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/7 19:58, Jason Gunthorpe wrote:
-> On Tue, Jun 07, 2022 at 03:44:43PM +0800, Baolu Lu wrote:
->> On 2022/6/6 14:19, Nicolin Chen wrote:
->>> Worths mentioning the exact match for enforce_cache_coherency is removed
->>> with this series, since there's very less value in doing that since KVM
->>> won't be able to take advantage of it -- this just wastes domain memory.
->>> Instead, we rely on Intel IOMMU driver taking care of that internally.
->>
->> After reading this series, I don't see that Intel IOMMU driver needs any
->> further change to support the new scheme. Did I miss anything?
-> 
-> You already did it :)
+On Sat, 4 Jun 2022 at 17:41, Christophe JAILLET
+<christophe.jaillet@wanadoo.fr> wrote:
+>
+> Le 04/06/2022 =C3=A0 16:56, Robert Marko a =C3=A9crit :
+> > Sort the header include list alphabetically.
+> >
+> > Signed-off-by: Robert Marko <robimarko@gmail.com>
+> > ---
+> >   drivers/regulator/mp5416.c | 6 +++---
+> >   1 file changed, 3 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/regulator/mp5416.c b/drivers/regulator/mp5416.c
+> > index 39cebec0edb6..d8245080df03 100644
+> > --- a/drivers/regulator/mp5416.c
+> > +++ b/drivers/regulator/mp5416.c
+> > @@ -6,14 +6,14 @@
+> >   //
+> >   // Author: Saravanan Sekar <sravanhome@gmail.com>
+> >
+> > +#include <linux/err.h>
+> > +#include <linux/i2c.h>
+> > +#include <linux/init.h>
+> >   #include <linux/kernel.h>
+>
+> Nitpick: it seems that kernel.h is not needed here. (at least it compile
+> without it).
 
-Just as I thought. Thank you!
+Hi,
 
-Best regards,
-baolu
+It also seems to work fine without it, will send a patch to remove it.
 
+Regards,
+Robert
+>
+> CJ
+>
+> >   #include <linux/module.h>
+> > -#include <linux/init.h>
+> > -#include <linux/err.h>
+> >   #include <linux/platform_device.h>
+> >   #include <linux/regmap.h>
+> >   #include <linux/regulator/driver.h>
+> > -#include <linux/i2c.h>
+> >
+> >   #define MP5416_REG_CTL0                     0x00
+> >   #define MP5416_REG_CTL1                     0x01
+>
