@@ -2,272 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC161CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA95FCCA486
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380166AbiFHBZ2 (ORCPT
+        id S1381989AbiFHBZm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:25:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59530 "EHLO
+        Tue, 7 Jun 2022 21:25:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382207AbiFGW3U (ORCPT
+        with ESMTP id S1379891AbiFGXi6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:29:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EEEB19C3B8;
-        Tue,  7 Jun 2022 12:23:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EDDD7B823D7;
-        Tue,  7 Jun 2022 19:23:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B34CC385A2;
-        Tue,  7 Jun 2022 19:23:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629816;
-        bh=ku5YTNPMuHhIbMoZL86YvQrSbKQnLEi3PrYEdByeb9U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F782440ib52djO4uKppH2smCPylSfMzap8XO1zATHhbWysGuRDb0AFtQng5kUsRXy
-         AeCX0nyU/A8+J5domrpaX+NupFTZEDd+JIzJ1odxoTNi+k8RjmsnJAVi8GLRV4Gxmi
-         JcvANbdM8CHFmbRr9XM00hBIvMorU2p1fkJqCg/0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.18 827/879] kprobes: Fix build errors with CONFIG_KRETPROBES=n
-Date:   Tue,  7 Jun 2022 19:05:45 +0200
-Message-Id: <20220607165026.858589971@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 7 Jun 2022 19:38:58 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A08D4007AE
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:45 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id w36-20020a17090a6ba700b001e876698a01so4951147pjj.5
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=+20MfJ0vMHfzAJ9JVz3Ilf+oLJVPek78HYKPnn8c9cI=;
+        b=GzaZwmfFP8vFYNZLORNpuD7awBp8Rety7blOC/GnKJeayC/QNhz/rVrqEoqPDIDJQ5
+         Gr2bc9ghv6mUfiehiQpYB4cc9jcB+245qLe/uhRNEj1b40aCflSfQLnp3cG/pT12Y7k5
+         LT+HWvQvuJ8ap7Rr7vj5EUwiqKVuwtVjnwTYDIk9bkqqLHVHrTHR8nlGRm5VMZDpzpNh
+         7gllhD9j1UHaO3sB0xDYg0SJ+sZ4zTLEYK4X7Iecwa7qUSwAS8l4lCizJH3kXyeZD1mZ
+         yhy7k8BbqWJ3eYRrbHvT+s0gvTS3IGbIp1nwvb6PoywDwjLY/9Mgncb0EHEgtDIAqlsP
+         JAgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=+20MfJ0vMHfzAJ9JVz3Ilf+oLJVPek78HYKPnn8c9cI=;
+        b=RCClV7Fn/tDuFxhNutnB6sBYi/qSkSCX+4Y3j7I5xAMwFRBnvdvxKgd0+//JWDRgt9
+         wwcIfebVOovFmJj1R4vXKM9vEK4BWLZkHdfxSlBTfRmi9MN6pod5QLnrrPFCB5JdV2Zm
+         34WljHoU26c6u9k4uyKIWsUj3Pvlwfqd/BVmPDS01bw8TMzSK415Ite1A9nRfw+w6ydh
+         VaqIdLs0L6L/y5EN+KUFha0SXG3rcSbmO6eULBIisSmZBuqaLAjbyyEO5pecg0UzkifB
+         ZU2n0cAKteiTgV+gwdgmvc3FchSkJT3pvcW8NrO6tH0I43Z4fWlLPF8XUIIhoGzZl99W
+         5Tug==
+X-Gm-Message-State: AOAM531rL9E6jghQNEzVGHwwKHyC8NFkjZnNA4yCfrQsyD2W3TEu7yWT
+        L3EGu9WHb8geb9B959vny1z0ksq5tJg=
+X-Google-Smtp-Source: ABdhPJy8nvbk5N1f7eP43igaN6g5k1eob5EoUhjXROY9e4dJsbpdsRU4dDRkNiIQIOlD9np8KBtmGdLZlhc=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:1788:b0:51b:f462:b16 with SMTP id
+ s8-20020a056a00178800b0051bf4620b16mr19566862pfg.42.1654637804006; Tue, 07
+ Jun 2022 14:36:44 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Tue,  7 Jun 2022 21:36:04 +0000
+In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
+Message-Id: <20220607213604.3346000-16-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220607213604.3346000-1-seanjc@google.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH v5 15/15] KVM: selftests: Verify VMX MSRs can be restored to
+ KVM-supported values
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
+        David Matlack <dmatlack@google.com>,
+        Oliver Upton <oupton@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masami Hiramatsu <mhiramat@kernel.org>
+Verify that KVM allows toggling VMX MSR bits to be "more" restrictive,
+and also allows restoring each MSR to KVM's original, less restrictive
+value.
 
-commit 43994049180704fd1faf78623fabd9a5cd443708 upstream.
-
-Max Filippov reported:
-
-When building kernel with CONFIG_KRETPROBES=n kernel/kprobes.c
-compilation fails with the following messages:
-
-  kernel/kprobes.c: In function ‘recycle_rp_inst’:
-  kernel/kprobes.c:1273:32: error: implicit declaration of function
-                                   ‘get_kretprobe’
-
-  kernel/kprobes.c: In function ‘kprobe_flush_task’:
-  kernel/kprobes.c:1299:35: error: ‘struct task_struct’ has no member
-                                   named ‘kretprobe_instances’
-
-This came from the commit d741bf41d7c7 ("kprobes: Remove
-kretprobe hash") which introduced get_kretprobe() and
-kretprobe_instances member in task_struct when CONFIG_KRETPROBES=y,
-but did not make recycle_rp_inst() and kprobe_flush_task()
-depending on CONFIG_KRETPORBES.
-
-Since those functions are only used for kretprobe, move those
-functions into #ifdef CONFIG_KRETPROBE area.
-
-Link: https://lkml.kernel.org/r/165163539094.74407.3838114721073251225.stgit@devnote2
-
-Reported-by: Max Filippov <jcmvbkbc@gmail.com>
-Fixes: d741bf41d7c7 ("kprobes: Remove kretprobe hash")
-Cc: "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>
-Cc: Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
-Cc: "David S . Miller" <davem@davemloft.net>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: stable@vger.kernel.org
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-Tested-by: Max Filippov <jcmvbkbc@gmail.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- include/linux/kprobes.h |    2 
- kernel/kprobes.c        |  144 +++++++++++++++++++++++-------------------------
- 2 files changed, 72 insertions(+), 74 deletions(-)
+ .../selftests/kvm/x86_64/vmx_msrs_test.c      | 61 +++++++++++++++++++
+ 1 file changed, 61 insertions(+)
 
---- a/include/linux/kprobes.h
-+++ b/include/linux/kprobes.h
-@@ -424,7 +424,7 @@ void unregister_kretprobe(struct kretpro
- int register_kretprobes(struct kretprobe **rps, int num);
- void unregister_kretprobes(struct kretprobe **rps, int num);
+diff --git a/tools/testing/selftests/kvm/x86_64/vmx_msrs_test.c b/tools/testing/selftests/kvm/x86_64/vmx_msrs_test.c
+index c0c4252a6a03..99d9614999c9 100644
+--- a/tools/testing/selftests/kvm/x86_64/vmx_msrs_test.c
++++ b/tools/testing/selftests/kvm/x86_64/vmx_msrs_test.c
+@@ -8,6 +8,7 @@
+  * that KVM will set owned bits where appropriate, and will not if
+  * KVM_X86_QUIRK_TWEAK_VMX_CTRL_MSRS is disabled.
+  */
++#include <linux/bitmap.h>
  
--#ifdef CONFIG_KRETPROBE_ON_RETHOOK
-+#if defined(CONFIG_KRETPROBE_ON_RETHOOK) || !defined(CONFIG_KRETPROBES)
- #define kprobe_flush_task(tk)	do {} while (0)
- #else
- void kprobe_flush_task(struct task_struct *tk);
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -1257,79 +1257,6 @@ void kprobe_busy_end(void)
- 	preempt_enable();
+ #include "kvm_util.h"
+ #include "vmx.h"
+@@ -207,6 +208,65 @@ static void cr4_reserved_bits_test(struct kvm_vm *vm, struct kvm_vcpu *vcpu)
+ 	cr4_reserved_bit_test(vm, vcpu, X86_CR4_LA57,       X86_FEATURE_LA57);
  }
  
--#if !defined(CONFIG_KRETPROBE_ON_RETHOOK)
--static void free_rp_inst_rcu(struct rcu_head *head)
--{
--	struct kretprobe_instance *ri = container_of(head, struct kretprobe_instance, rcu);
--
--	if (refcount_dec_and_test(&ri->rph->ref))
--		kfree(ri->rph);
--	kfree(ri);
--}
--NOKPROBE_SYMBOL(free_rp_inst_rcu);
--
--static void recycle_rp_inst(struct kretprobe_instance *ri)
--{
--	struct kretprobe *rp = get_kretprobe(ri);
--
--	if (likely(rp))
--		freelist_add(&ri->freelist, &rp->freelist);
--	else
--		call_rcu(&ri->rcu, free_rp_inst_rcu);
--}
--NOKPROBE_SYMBOL(recycle_rp_inst);
--
--/*
-- * This function is called from delayed_put_task_struct() when a task is
-- * dead and cleaned up to recycle any kretprobe instances associated with
-- * this task. These left over instances represent probed functions that
-- * have been called but will never return.
-- */
--void kprobe_flush_task(struct task_struct *tk)
--{
--	struct kretprobe_instance *ri;
--	struct llist_node *node;
--
--	/* Early boot, not yet initialized. */
--	if (unlikely(!kprobes_initialized))
--		return;
--
--	kprobe_busy_begin();
--
--	node = __llist_del_all(&tk->kretprobe_instances);
--	while (node) {
--		ri = container_of(node, struct kretprobe_instance, llist);
--		node = node->next;
--
--		recycle_rp_inst(ri);
--	}
--
--	kprobe_busy_end();
--}
--NOKPROBE_SYMBOL(kprobe_flush_task);
--
--static inline void free_rp_inst(struct kretprobe *rp)
--{
--	struct kretprobe_instance *ri;
--	struct freelist_node *node;
--	int count = 0;
--
--	node = rp->freelist.head;
--	while (node) {
--		ri = container_of(node, struct kretprobe_instance, freelist);
--		node = node->next;
--
--		kfree(ri);
--		count++;
--	}
--
--	if (refcount_sub_and_test(count, &rp->rph->ref)) {
--		kfree(rp->rph);
--		rp->rph = NULL;
--	}
--}
--#endif	/* !CONFIG_KRETPROBE_ON_RETHOOK */
--
- /* Add the new probe to 'ap->list'. */
- static int add_new_kprobe(struct kprobe *ap, struct kprobe *p)
++static void vmx_fixed1_msr_test(struct kvm_vcpu *vcpu, uint32_t msr_index,
++				  uint64_t mask)
++{
++	uint64_t val = vcpu_get_msr(vcpu, msr_index);
++	uint64_t bit;
++
++	mask &= val;
++
++	for_each_set_bit(bit, &mask, 64) {
++		vcpu_set_msr(vcpu, msr_index, val & ~BIT_ULL(bit));
++		vcpu_set_msr(vcpu, msr_index, val);
++	}
++}
++
++static void vmx_fixed0_msr_test(struct kvm_vcpu *vcpu, uint32_t msr_index,
++				uint64_t mask)
++{
++	uint64_t val = vcpu_get_msr(vcpu, msr_index);
++	uint64_t bit;
++
++	mask = ~mask | val;
++
++	for_each_clear_bit(bit, &mask, 64) {
++		vcpu_set_msr(vcpu, msr_index, val | BIT_ULL(bit));
++		vcpu_set_msr(vcpu, msr_index, val);
++	}
++}
++
++static void vmx_fixed0and1_msr_test(struct kvm_vcpu *vcpu, uint32_t msr_index)
++{
++	vmx_fixed0_msr_test(vcpu, msr_index, GENMASK_ULL(31, 0));
++	vmx_fixed1_msr_test(vcpu, msr_index, GENMASK_ULL(63, 32));
++}
++
++static void vmx_save_restore_msrs_test(struct kvm_vcpu *vcpu)
++{
++	vcpu_set_msr(vcpu, MSR_IA32_VMX_VMCS_ENUM, 0);
++	vcpu_set_msr(vcpu, MSR_IA32_VMX_VMCS_ENUM, -1ull);
++
++	vmx_fixed1_msr_test(vcpu, MSR_IA32_VMX_BASIC,
++			    BIT_ULL(49) | BIT_ULL(54) | BIT_ULL(55));
++
++	vmx_fixed1_msr_test(vcpu, MSR_IA32_VMX_BASIC,
++			    BIT_ULL(5) | GENMASK_ULL(8, 6) | BIT_ULL(14) |
++			    BIT_ULL(15) | BIT_ULL(28) | BIT_ULL(29) | BIT_ULL(30));
++
++	vmx_fixed0_msr_test(vcpu, MSR_IA32_VMX_CR0_FIXED0, -1ull);
++	vmx_fixed1_msr_test(vcpu, MSR_IA32_VMX_CR0_FIXED1, -1ull);
++	vmx_fixed0_msr_test(vcpu, MSR_IA32_VMX_CR4_FIXED0, -1ull);
++	vmx_fixed1_msr_test(vcpu, MSR_IA32_VMX_CR4_FIXED1, -1ull);
++	vmx_fixed0and1_msr_test(vcpu, MSR_IA32_VMX_PROCBASED_CTLS2);
++	vmx_fixed1_msr_test(vcpu, MSR_IA32_VMX_EPT_VPID_CAP, -1ull);
++	vmx_fixed0and1_msr_test(vcpu, MSR_IA32_VMX_TRUE_PINBASED_CTLS);
++	vmx_fixed0and1_msr_test(vcpu, MSR_IA32_VMX_TRUE_PROCBASED_CTLS);
++	vmx_fixed0and1_msr_test(vcpu, MSR_IA32_VMX_TRUE_EXIT_CTLS);
++	vmx_fixed0and1_msr_test(vcpu, MSR_IA32_VMX_TRUE_ENTRY_CTLS);
++	vmx_fixed1_msr_test(vcpu, MSR_IA32_VMX_VMFUNC, -1ull);
++}
++
+ int main(void)
  {
-@@ -1928,6 +1855,77 @@ static struct notifier_block kprobe_exce
- #ifdef CONFIG_KRETPROBES
+ 	struct kvm_vcpu *vcpu;
+@@ -221,6 +281,7 @@ int main(void)
+ 	load_perf_global_ctrl_test(vm, vcpu);
+ 	load_and_clear_bndcfgs_test(vm, vcpu);
+ 	cr4_reserved_bits_test(vm, vcpu);
++	vmx_save_restore_msrs_test(vcpu);
  
- #if !defined(CONFIG_KRETPROBE_ON_RETHOOK)
-+static void free_rp_inst_rcu(struct rcu_head *head)
-+{
-+	struct kretprobe_instance *ri = container_of(head, struct kretprobe_instance, rcu);
-+
-+	if (refcount_dec_and_test(&ri->rph->ref))
-+		kfree(ri->rph);
-+	kfree(ri);
-+}
-+NOKPROBE_SYMBOL(free_rp_inst_rcu);
-+
-+static void recycle_rp_inst(struct kretprobe_instance *ri)
-+{
-+	struct kretprobe *rp = get_kretprobe(ri);
-+
-+	if (likely(rp))
-+		freelist_add(&ri->freelist, &rp->freelist);
-+	else
-+		call_rcu(&ri->rcu, free_rp_inst_rcu);
-+}
-+NOKPROBE_SYMBOL(recycle_rp_inst);
-+
-+/*
-+ * This function is called from delayed_put_task_struct() when a task is
-+ * dead and cleaned up to recycle any kretprobe instances associated with
-+ * this task. These left over instances represent probed functions that
-+ * have been called but will never return.
-+ */
-+void kprobe_flush_task(struct task_struct *tk)
-+{
-+	struct kretprobe_instance *ri;
-+	struct llist_node *node;
-+
-+	/* Early boot, not yet initialized. */
-+	if (unlikely(!kprobes_initialized))
-+		return;
-+
-+	kprobe_busy_begin();
-+
-+	node = __llist_del_all(&tk->kretprobe_instances);
-+	while (node) {
-+		ri = container_of(node, struct kretprobe_instance, llist);
-+		node = node->next;
-+
-+		recycle_rp_inst(ri);
-+	}
-+
-+	kprobe_busy_end();
-+}
-+NOKPROBE_SYMBOL(kprobe_flush_task);
-+
-+static inline void free_rp_inst(struct kretprobe *rp)
-+{
-+	struct kretprobe_instance *ri;
-+	struct freelist_node *node;
-+	int count = 0;
-+
-+	node = rp->freelist.head;
-+	while (node) {
-+		ri = container_of(node, struct kretprobe_instance, freelist);
-+		node = node->next;
-+
-+		kfree(ri);
-+		count++;
-+	}
-+
-+	if (refcount_sub_and_test(count, &rp->rph->ref)) {
-+		kfree(rp->rph);
-+		rp->rph = NULL;
-+	}
-+}
-+
- /* This assumes the 'tsk' is the current task or the is not running. */
- static kprobe_opcode_t *__kretprobe_find_ret_addr(struct task_struct *tsk,
- 						  struct llist_node **cur)
-
+ 	kvm_vm_free(vm);
+ }
+-- 
+2.36.1.255.ge46751e96f-goog
 
