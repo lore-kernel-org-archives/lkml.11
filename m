@@ -2,44 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC582CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F20CCA47F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381095AbiFGVRT (ORCPT
+        id S1380968AbiFGVRM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:17:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44004 "EHLO
+        Tue, 7 Jun 2022 17:17:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359620AbiFGUU4 (ORCPT
+        with ESMTP id S1359827AbiFGUVU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:20:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A4121D2ACD;
-        Tue,  7 Jun 2022 11:30:30 -0700 (PDT)
+        Tue, 7 Jun 2022 16:21:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35DF179C14;
+        Tue,  7 Jun 2022 11:30:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F65A60906;
-        Tue,  7 Jun 2022 18:30:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A87B7C385A2;
-        Tue,  7 Jun 2022 18:30:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B07FB8237C;
+        Tue,  7 Jun 2022 18:30:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D8BBC385A2;
+        Tue,  7 Jun 2022 18:30:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626630;
-        bh=/2cRZZofhCsGovbVpJHacWl9+GjWFOYpyD1Dq8Sq050=;
+        s=korg; t=1654626643;
+        bh=l53PuloLp8snpYt+EpBaWYwIsGqjonPLm9LcERIFfJw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LIBQ/pctMqmzr6tU9HESdqsEnNoz7w4ClDZrVBWaIgqg4BRLp2z0pI+d/ipL7/Ijb
-         ikPF/452FYikaUuQw8eak8bS9uTRuVLqHANH3yT18LSdG7nBfnHawtiBjJshUISctR
-         Inbtn3SXuagN8bwnvkWvR9+nvaOovf04scgy7pQc=
+        b=q0iylEJhikylgfvDEMUnvTNGRqE7vZpTrZ75vcHXFZ5QI4eFM3/zA+ju7aozFvjWW
+         XvkvlGbdoEX1cv9/vogms3t3JCiHCDTYo9vyOMGZrnC+G3eq0VL0tTliTxCQGKZts6
+         5Wfg1aCocgVtnkaGt2OacFO2shBJgSAhAN91ImN0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        David Rientjes <rientjes@google.com>,
+        stable@vger.kernel.org,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 447/772] dma-direct: dont over-decrypt memory
-Date:   Tue,  7 Jun 2022 19:00:39 +0200
-Message-Id: <20220607165002.174370953@linuxfoundation.org>
+Subject: [PATCH 5.17 452/772] arm64: dts: mt8192: Fix nor_flash status disable typo
+Date:   Tue,  7 Jun 2022 19:00:44 +0200
+Message-Id: <20220607165002.321644159@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,54 +56,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 
-[ Upstream commit 4a37f3dd9a83186cb88d44808ab35b78375082c9 ]
+[ Upstream commit 27f0eb16b0d417c155e96b5d3b89074699944e09 ]
 
-The original x86 sev_alloc() only called set_memory_decrypted() on
-memory returned by alloc_pages_node(), so the page order calculation
-fell out of that logic. However, the common dma-direct code has several
-potential allocators, not all of which are guaranteed to round up the
-underlying allocation to a power-of-two size, so carrying over that
-calculation for the encryption/decryption size was a mistake. Fix it by
-rounding to a *number* of pages, rather than an order.
+Correct nor_flash status disable typo of mt8192 SoC.
 
-Until recently there was an even worse interaction with DMA_DIRECT_REMAP
-where we could have ended up decrypting part of the next adjacent
-vmalloc area, only averted by no architecture actually supporting both
-configs at once. Don't ask how I found that one out...
+Fixes: d0a197a0d064a ("arm64: dts: mt8192: add nor_flash device node")
 
-Fixes: c10f07aa27da ("dma/direct: Handle force decryption for DMA coherent buffers in common code")
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Acked-by: David Rientjes <rientjes@google.com>
+Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Link: https://lore.kernel.org/r/20220318144534.17996-11-allen-kh.cheng@mediatek.com
+Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/direct.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 0be095579010..54b1a5d21187 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -79,7 +79,7 @@ static int dma_set_decrypted(struct device *dev, void *vaddr, size_t size)
- {
- 	if (!force_dma_unencrypted(dev))
- 		return 0;
--	return set_memory_decrypted((unsigned long)vaddr, 1 << get_order(size));
-+	return set_memory_decrypted((unsigned long)vaddr, PFN_UP(size));
- }
+diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+index 53d790c335f9..cd010185753e 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+@@ -470,7 +470,7 @@
+ 			clock-names = "spi", "sf", "axi";
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+-			status = "disable";
++			status = "disabled";
+ 		};
  
- static int dma_set_encrypted(struct device *dev, void *vaddr, size_t size)
-@@ -88,7 +88,7 @@ static int dma_set_encrypted(struct device *dev, void *vaddr, size_t size)
- 
- 	if (!force_dma_unencrypted(dev))
- 		return 0;
--	ret = set_memory_encrypted((unsigned long)vaddr, 1 << get_order(size));
-+	ret = set_memory_encrypted((unsigned long)vaddr, PFN_UP(size));
- 	if (ret)
- 		pr_warn_ratelimited("leaking DMA memory that can't be re-encrypted\n");
- 	return ret;
+ 		audsys: clock-controller@11210000 {
 -- 
 2.35.1
 
