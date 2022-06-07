@@ -2,102 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B9A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:51:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93411CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:51:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345204AbiFGQv2 (ORCPT
+        id S1345206AbiFGQvn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 12:51:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41138 "EHLO
+        Tue, 7 Jun 2022 12:51:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345195AbiFGQvY (ORCPT
+        with ESMTP id S1345197AbiFGQvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 12:51:24 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C26F7481
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 09:51:23 -0700 (PDT)
-Date:   Tue, 7 Jun 2022 18:51:20 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1654620681;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ASmZspFJg7SV1th3PAV0hYBncv3mqyKHYuJqFLoK79U=;
-        b=Uu53B0FCYjKCGgIGhdmtDk5V5kP1tMTCyYsEpurQvLdT3nM9VfzbLmTJiLYfF6bnuWN4Wu
-        lJ2qFEtMwkc2g2IabQ2wU4LRIxc/Im+rAXLfWHXTw+g7VKDqlJwqIE3ZDD/aNIp81VycE0
-        qf3j/J783AOnDU7H37PWJWRIOy9IB+crbNUlgS8DXWCsn/bXfvnIgrI1Bbb5QWl3zG09ZN
-        2eAC/ss3AtPTNERb9L3jVM95CRqPlLNFZNdUGu672TKxOzyIiblx6a1BvIcwMM6frL+UtT
-        s7NBIKKAqJMyUB1aqQLDHMJAEYI5SJZZA/Bcb6PsA0gtG6iLYOnO3aQ36q634Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1654620681;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ASmZspFJg7SV1th3PAV0hYBncv3mqyKHYuJqFLoK79U=;
-        b=aHKgUN3uP4JBhjv6rhRk3McIGb9hUM8HApx/EWVmRq9yFz+ChgfeLF/UR1CuxYcs+MIfB3
-        0m0xpb2/iTjHXVAA==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     linux-kernel@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH] locking/lockdep: Use sched_clock() for random numbers.
-Message-ID: <Yp+CCGIdrIFZbJKs@linutronix.de>
-References: <YoNn3pTkm5+QzE5k@linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YoNn3pTkm5+QzE5k@linutronix.de>
+        Tue, 7 Jun 2022 12:51:42 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA52F6889
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 09:51:39 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id s22-20020a252d56000000b0065d1ef35f9dso15596806ybe.5
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 09:51:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=utThYmevKONU/9m2pQGdDHA12doEH9idunElwn0Wp+Y=;
+        b=gUIQMQl0JQzhYd3S4fyRf5XmWfJe5lmGtNGJawPlt9xGCh6iVfChXa73AoojCUrlbl
+         IVXeOtMoTYUHDpAFH3A8brBwPVcti7T1TXiYbRGm9WL+wI2w1S/KEwaSu9WutVR9tygx
+         84Kvg+VfGwL6M1f0ziUNEjgMhLSuSnn44AbVKJ9wncUs/50JTgmnIHf+wQmtrOV7M8Mt
+         K4uO5mPCKZewDVjZ3Ihsg/rY8/0Ud5jqcoTKOFhCTALO+vhAlMfVTPQqBzexRVTQ5AE6
+         AWpm7eIByU/UruiBwIFFfpmgXXAyJwhbholwIR4cxXKH/anXN/52PMZ9cQYrHOq/XYDw
+         pDWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=utThYmevKONU/9m2pQGdDHA12doEH9idunElwn0Wp+Y=;
+        b=CpGyKSEn7XLH3/1dWBHr3H5NIq2OwmQSHJMomUoavH4sTtTs5p0bDEwgtDlsE1ICsR
+         AV5uOWMP4mDAF8K1eJH6g/+Im3mABV+ZxJZ6HZHG8/tPPlSFeqyq17o16ADm5Xm5BUN+
+         E1T1qOs8L60CZDEQo8j1Uk5iIuCrSleW6EoIdia/Slu3PFfok9Sg9Ijxd/zfcIYKX9Z0
+         x0c6dZFomWU6qH27fZAQNU4Mo9uKcP6laVRaNVCdulCLbYzrvl/z0rC8X6JMGMYCahz7
+         xGRTjb6GZTbo7RJ+LoUKI5fWA0PWg5le2zvQs1hevCA61F2mTLXFG+LtxAqCsM120p/D
+         ZjwA==
+X-Gm-Message-State: AOAM533xIr7zbEPbi9rCDmwUtdCzFC9TQXKPVzF0QLo0ppoOyxWj5x6n
+        beWUsVZoYRdV6Rv2QwYV+8h9Ag1HeiUvApXSOw==
+X-Google-Smtp-Source: ABdhPJzuHcHlzERjFFs10J5b1VKR548pg9LJge0vp7jHTNhan1WTvDRj/6ZH8ppj3YV0piRTv9xwQbWhp9qkOIWgBQ==
+X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:7091:8518:ec1e:93dc])
+ (user=kaleshsingh job=sendgmr) by 2002:a81:57d6:0:b0:30c:a234:140d with SMTP
+ id l205-20020a8157d6000000b0030ca234140dmr33093505ywb.269.1654620698862; Tue,
+ 07 Jun 2022 09:51:38 -0700 (PDT)
+Date:   Tue,  7 Jun 2022 09:50:43 -0700
+In-Reply-To: <20220607165105.639716-1-kaleshsingh@google.com>
+Message-Id: <20220607165105.639716-2-kaleshsingh@google.com>
+Mime-Version: 1.0
+References: <20220607165105.639716-1-kaleshsingh@google.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH v3 1/5] KVM: arm64: Factor out common stack unwinding logic
+From:   Kalesh Singh <kaleshsingh@google.com>
+To:     mark.rutland@arm.com, broonie@kernel.org, maz@kernel.org
+Cc:     will@kernel.org, qperret@google.com, tabba@google.com,
+        surenb@google.com, tjmercier@google.com, kernel-team@android.com,
+        Kalesh Singh <kaleshsingh@google.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Jones <drjones@redhat.com>,
+        Marco Elver <elver@google.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        Keir Fraser <keirf@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Oliver Upton <oupton@google.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-05-17 11:16:14 [+0200], To linux-kernel@vger.kernel.org wrote:
-> Since the rewrote of prandom_u32(), in the commit mentioned below, the
-> function uses sleeping locks which extracing random numbers and filling
-> the batch.
-> This breaks lockdep on PREEMPT_RT because lock_pin_lock() disables
-> interrupts while calling __lock_pin_lock(). This can't be moved earlier
-> because the main user of the function (rq_pin_lock()) invokes that
-> function after disabling interrupts in order to acquire the lock.
-> 
-> The cookie does not require random numbers as its goal is to provide a
-> random value in order to notice unexpected "unlock + lock" sites.
-> 
-> Use sched_clock() to provide random numbers.
-> 
-> Fixes: a0103f4d86f88 ("random32: use real rng for non-deterministic randomness")
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> ---
-> 
-> So if the architecture does not provide sched_clock() and does not
-> enabled GENERIC_SCHED_CLOCK then we use jiffies here. Most of them do
-> one or the other except for alpha, csky, hexagon, ... but I don't worry
-> here since arm*, power*, x86* do provide it.
+Factor out the stack unwinding logic common to both the host kernel and
+the nVHE hypersivor into __unwind_next(). This allows for reuse in the
+nVHE hypervisor stack unwinding (later in this series).
 
-ping.
+Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+Reviewed-by: Mark Brown <broonie@kernel.org>
+---
 
-Jason suggested atomic_inc_return(&some_global).
+Changes in v3:
+  - Add Mark's Reviewed-by tag
 
->  kernel/locking/lockdep.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
-> index 81e87280513ea..f06b91ca6482d 100644
-> --- a/kernel/locking/lockdep.c
-> +++ b/kernel/locking/lockdep.c
-> @@ -5432,7 +5432,7 @@ static struct pin_cookie __lock_pin_lock(struct lockdep_map *lock)
->  			 * be guessable and still allows some pin nesting in
->  			 * our u32 pin_count.
->  			 */
-> -			cookie.val = 1 + (prandom_u32() >> 16);
-> +			cookie.val = 1 + (sched_clock() & 0xffff);
->  			hlock->pin_count += cookie.val;
->  			return cookie;
->  		}
+ arch/arm64/kernel/stacktrace.c | 36 +++++++++++++++++++++++-----------
+ 1 file changed, 25 insertions(+), 11 deletions(-)
 
-Sebastian
+diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+index 0467cb79f080..ee60c279511c 100644
+--- a/arch/arm64/kernel/stacktrace.c
++++ b/arch/arm64/kernel/stacktrace.c
+@@ -81,23 +81,19 @@ NOKPROBE_SYMBOL(unwind_init);
+  * records (e.g. a cycle), determined based on the location and fp value of A
+  * and the location (but not the fp value) of B.
+  */
+-static int notrace unwind_next(struct task_struct *tsk,
+-			       struct unwind_state *state)
++static int notrace __unwind_next(struct task_struct *tsk,
++				 struct unwind_state *state,
++				 struct stack_info *info)
+ {
+ 	unsigned long fp = state->fp;
+-	struct stack_info info;
+-
+-	/* Final frame; nothing to unwind */
+-	if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
+-		return -ENOENT;
+ 
+ 	if (fp & 0x7)
+ 		return -EINVAL;
+ 
+-	if (!on_accessible_stack(tsk, fp, 16, &info))
++	if (!on_accessible_stack(tsk, fp, 16, info))
+ 		return -EINVAL;
+ 
+-	if (test_bit(info.type, state->stacks_done))
++	if (test_bit(info->type, state->stacks_done))
+ 		return -EINVAL;
+ 
+ 	/*
+@@ -113,7 +109,7 @@ static int notrace unwind_next(struct task_struct *tsk,
+ 	 * stack to another, it's never valid to unwind back to that first
+ 	 * stack.
+ 	 */
+-	if (info.type == state->prev_type) {
++	if (info->type == state->prev_type) {
+ 		if (fp <= state->prev_fp)
+ 			return -EINVAL;
+ 	} else {
+@@ -127,7 +123,25 @@ static int notrace unwind_next(struct task_struct *tsk,
+ 	state->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp));
+ 	state->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp + 8));
+ 	state->prev_fp = fp;
+-	state->prev_type = info.type;
++	state->prev_type = info->type;
++
++	return 0;
++}
++NOKPROBE_SYMBOL(__unwind_next);
++
++static int notrace unwind_next(struct task_struct *tsk,
++			       struct unwind_state *state)
++{
++	struct stack_info info;
++	int err;
++
++	/* Final frame; nothing to unwind */
++	if (state->fp == (unsigned long)task_pt_regs(tsk)->stackframe)
++		return -ENOENT;
++
++	err = __unwind_next(tsk, state, &info);
++	if (err)
++		return err;
+ 
+ 	state->pc = ptrauth_strip_insn_pac(state->pc);
+ 
+-- 
+2.36.1.255.ge46751e96f-goog
+
