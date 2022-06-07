@@ -2,86 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB8DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:26:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD0D3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:28:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245459AbiFGO0x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 10:26:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40950 "EHLO
+        id S245473AbiFGO2a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 10:28:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244376AbiFGO0t (ORCPT
+        with ESMTP id S242419AbiFGO22 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 10:26:49 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF601F1355;
-        Tue,  7 Jun 2022 07:26:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654612007; x=1686148007;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=hCMgvCBkBCY4Vcl2F8PVd99E2NYd2skQpnhgyg7W0XQ=;
-  b=AcTIAvb1Cx1WTfyZgQY5cbglB6tNndtD6O7azIWq42mx914IeTzDOosh
-   lLb8lJlTScCtpbCzMQGKJ8ujrOVoSyptfBkQ+V/u4carj2IeUKgE+lwYa
-   8iQX4Bmmmfu4JGypiJiNzSBL3lAhPCgz3fSohvcNOhKQqm1hrwUROLhFp
-   fxtAgeYKidSJx4BVoHotkfP2+n0coawer6M4kkPXXIaBOgUBoNO6+xDFB
-   GrozcP8qc8Fm9cz09UuvZn/5jLfhpArFp9gkkKOIy2HhAFkC8WP6fKgzV
-   Ue371mGubefyw1LXkXFDL3m4Wk1kaWaxEG48OM+tA2QoDKyJADd0gVxkG
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277538376"
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="277538376"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:19:22 -0700
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="636144213"
-Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:19:20 -0700
-Date:   Tue, 7 Jun 2022 17:19:18 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 16/36] tty/vt: consolemap: check put_user() in
- con_get_unimap()
-In-Reply-To: <20220607104946.18710-16-jslaby@suse.cz>
-Message-ID: <8ad44d3b-449f-4a30-1a4c-dffd43bbbd1@linux.intel.com>
-References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-16-jslaby@suse.cz>
+        Tue, 7 Jun 2022 10:28:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4F38A336
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 07:28:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 461A6B82028
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:28:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8D33C385A5;
+        Tue,  7 Jun 2022 14:28:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654612103;
+        bh=aPLYd3KgtEjQHeA9cBl3JPZVGNS5SWH0+fVtRGJZ+VE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nCBoApsn3vKD2DmhSQk6kJ8oEXtmEpDRV7Ad08bX2Vuq6UBt7nJqu4FW54iTsoaC/
+         L8VZ3o5MoeoTrFFtLzihSp9a2Z5FOscnwbp0NmomH5srjeB9NyRfF/RiRP7wSmtcjK
+         1ltVwCUW29kRXcVqaqZ8pmujAXBYh6a/8xigk9KCyy5e2tViQGzM3C99N9GWhLXv7d
+         b4q6Wh+c8k5B+0nH/m0ccvFOWLeNJ/gsq9iL+Nsh06dGPPnLidHYUcfBrXXnte8mTc
+         VXWTxWW7afmsTjhG8M6xMhIGAs6n3uJh688WG91zQgML5Gb7ozZVc1IUZ+63uHlSSB
+         MW2q/zjhKaG1g==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=valley-girl.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nyaBx-00GCvF-EX; Tue, 07 Jun 2022 15:28:21 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     james.morse@arm.com, julien.grall@arm.com, catalin.marinas@arm.com,
+        sunliming <sunliming@kylinos.cn>, will@kernel.org,
+        suzuki.poulose@arm.com
+Cc:     linux-kernel@vger.kernel.org, kvmarm@lists.cs.columbia.edu,
+        linux-arm-kernel@lists.infradead.org, kelulanainsley@gmail.com,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] KVM: arm64: fix the inconsistent indenting
+Date:   Tue,  7 Jun 2022 15:28:10 +0100
+Message-Id: <165461208429.127112.9553887915528964109.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220602024805.511457-1-sunliming@kylinos.cn>
+References: <20220602024805.511457-1-sunliming@kylinos.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: james.morse@arm.com, julien.grall@arm.com, catalin.marinas@arm.com, sunliming@kylinos.cn, will@kernel.org, suzuki.poulose@arm.com, linux-kernel@vger.kernel.org, kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org, kelulanainsley@gmail.com, lkp@intel.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 7 Jun 2022, Jiri Slaby wrote:
-
-> Only the return value of copy_to_user() is checked in con_get_unimap().
-> Do the same for put_user() of the count too.
+On Thu, 2 Jun 2022 10:48:05 +0800, sunliming wrote:
+> Fix the inconsistent indenting in function flush_context.
 > 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> ---
->  drivers/tty/vt/consolemap.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> Fix the following smatch warnings:
 > 
-> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-> index 831450f2bfd1..92b5dddb00d9 100644
-> --- a/drivers/tty/vt/consolemap.c
-> +++ b/drivers/tty/vt/consolemap.c
-> @@ -813,7 +813,8 @@ int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct,
->  	console_unlock();
->  	if (copy_to_user(list, unilist, min(ect, ct) * sizeof(*unilist)))
->  		ret = -EFAULT;
-> -	put_user(ect, uct);
-> +	if (put_user(ect, uct))
-> +		ret = -EFAULT;
->  	kvfree(unilist);
->  	return ret ? ret : (ect <= ct) ? 0 : -ENOMEM;
->  }
-> 
+> arch/arm64/kvm/vmid.c:62 flush_context() warn: inconsistent indenting
 
-Doesn't this fix something?
+Applied to fixes, thanks!
 
+[1/1] KVM: arm64: fix the inconsistent indenting
+      commit: e3fe65e0d3671ee5ae8a2723e429ee4830a7c89c
+
+Cheers,
+
+	M.
 -- 
- i.
+Marc Zyngier <maz@kernel.org>
 
