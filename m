@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DBDBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:03:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4219BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:03:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358053AbiFGUDd (ORCPT
+        id S1358371AbiFGUDo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:03:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52730 "EHLO
+        Tue, 7 Jun 2022 16:03:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353267AbiFGTDo (ORCPT
+        with ESMTP id S1353901AbiFGTFH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:03:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6336617997B;
-        Tue,  7 Jun 2022 11:05:20 -0700 (PDT)
+        Tue, 7 Jun 2022 15:05:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E015318F2FC;
+        Tue,  7 Jun 2022 11:05:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D9DB617AE;
-        Tue,  7 Jun 2022 18:05:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E00BC385A5;
-        Tue,  7 Jun 2022 18:05:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09283B82182;
+        Tue,  7 Jun 2022 18:05:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57F5FC385A5;
+        Tue,  7 Jun 2022 18:05:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625108;
-        bh=z16glOCFgiD3g2TkfWOUF6DAFKVA0fXskdcPq/Fr26U=;
+        s=korg; t=1654625111;
+        bh=0fgwY7A2jzCW5cIl5/v6shFYlSHrPQ631Nbl+kQl+PA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MRanorilaiFemHLDd3Vs2jvykbgwWYzMNjfWFVkP/ayAUqGLnXlFMWS460lhZFxSv
-         Gp9wpgOhDnKT31f4GLhfHC+LiTNKIA6RLkYrcYqhTWul2TETpJIJ8pDjGt0suFMneh
-         RadcIlKe9BG52RzQiTWskPz8Y/yEq02hbNol1xy0=
+        b=vtXgUykzF/4FJt8vLWnkgiYOtX4ViXE8ohvIjavCKrVITpa5g2T/zCOhFhy5o7a84
+         fr17AZ3lVVNm7JmxumfgO7L6aTlVSOnIUN0GXRi3vnG6sHml9kr03lUCx/Bg3viCPW
+         HxLMjGkJ1/ONr2lZrdEEwn0eokPloRItNRIMQGUA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.15 528/667] iwlwifi: mvm: fix assert 1F04 upon reconfig
-Date:   Tue,  7 Jun 2022 19:03:13 +0200
-Message-Id: <20220607164950.539226478@linuxfoundation.org>
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: =?UTF-8?q?=5BPATCH=205=2E15=20529/667=5D=20fs-writeback=3A=20writeback=5Fsb=5Finodes=EF=BC=9ARecalculate=20wrote=20according=20skipped=20pages?=
+Date:   Tue,  7 Jun 2022 19:03:14 +0200
+Message-Id: <20220607164950.568896602@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,36 +50,151 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-commit 9d096e3d3061dbf4ee10e2b59fc2c06e05bdb997 upstream.
+commit 68f4c6eba70df70a720188bce95c85570ddfcc87 upstream.
 
-When we reconfig we must not send the MAC_POWER command that relates to
-a MAC that was not yet added to the firmware.
+Commit 505a666ee3fc ("writeback: plug writeback in wb_writeback() and
+writeback_inodes_wb()") has us holding a plug during wb_writeback, which
+may cause a potential ABBA dead lock:
 
-Ignore those in the iterator.
+    wb_writeback		fat_file_fsync
+blk_start_plug(&plug)
+for (;;) {
+  iter i-1: some reqs have been added into plug->mq_list  // LOCK A
+  iter i:
+    progress = __writeback_inodes_wb(wb, work)
+    . writeback_sb_inodes // fat's bdev
+    .   __writeback_single_inode
+    .   . generic_writepages
+    .   .   __block_write_full_page
+    .   .   . . 	    __generic_file_fsync
+    .   .   . . 	      sync_inode_metadata
+    .   .   . . 	        writeback_single_inode
+    .   .   . . 		  __writeback_single_inode
+    .   .   . . 		    fat_write_inode
+    .   .   . . 		      __fat_write_inode
+    .   .   . . 		        sync_dirty_buffer	// fat's bdev
+    .   .   . . 			  lock_buffer(bh)	// LOCK B
+    .   .   . . 			    submit_bh
+    .   .   . . 			      blk_mq_get_tag	// LOCK A
+    .   .   . trylock_buffer(bh)  // LOCK B
+    .   .   .   redirty_page_for_writepage
+    .   .   .     wbc->pages_skipped++
+    .   .   --wbc->nr_to_write
+    .   wrote += write_chunk - wbc.nr_to_write  // wrote > 0
+    .   requeue_inode
+    .     redirty_tail_locked
+    if (progress)    // progress > 0
+      continue;
+  iter i+1:
+      queue_io
+      // similar process with iter i, infinite for-loop !
+}
+blk_finish_plug(&plug)   // flush plug won't be called
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
-Link: https://lore.kernel.org/r/20220517120044.ed2ffc8ce732.If786e19512d0da4334a6382ea6148703422c7d7b@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Above process triggers a hungtask like:
+[  399.044861] INFO: task bb:2607 blocked for more than 30 seconds.
+[  399.046824]       Not tainted 5.18.0-rc1-00005-gefae4d9eb6a2-dirty
+[  399.051539] task:bb              state:D stack:    0 pid: 2607 ppid:
+2426 flags:0x00004000
+[  399.051556] Call Trace:
+[  399.051570]  __schedule+0x480/0x1050
+[  399.051592]  schedule+0x92/0x1a0
+[  399.051602]  io_schedule+0x22/0x50
+[  399.051613]  blk_mq_get_tag+0x1d3/0x3c0
+[  399.051640]  __blk_mq_alloc_requests+0x21d/0x3f0
+[  399.051657]  blk_mq_submit_bio+0x68d/0xca0
+[  399.051674]  __submit_bio+0x1b5/0x2d0
+[  399.051708]  submit_bio_noacct+0x34e/0x720
+[  399.051718]  submit_bio+0x3b/0x150
+[  399.051725]  submit_bh_wbc+0x161/0x230
+[  399.051734]  __sync_dirty_buffer+0xd1/0x420
+[  399.051744]  sync_dirty_buffer+0x17/0x20
+[  399.051750]  __fat_write_inode+0x289/0x310
+[  399.051766]  fat_write_inode+0x2a/0xa0
+[  399.051783]  __writeback_single_inode+0x53c/0x6f0
+[  399.051795]  writeback_single_inode+0x145/0x200
+[  399.051803]  sync_inode_metadata+0x45/0x70
+[  399.051856]  __generic_file_fsync+0xa3/0x150
+[  399.051880]  fat_file_fsync+0x1d/0x80
+[  399.051895]  vfs_fsync_range+0x40/0xb0
+[  399.051929]  __x64_sys_fsync+0x18/0x30
+
+In my test, 'need_resched()' (which is imported by 590dca3a71 "fs-writeback:
+unplug before cond_resched in writeback_sb_inodes") in function
+'writeback_sb_inodes()' seldom comes true, unless cond_resched() is deleted
+from write_cache_pages().
+
+Fix it by correcting wrote number according number of skipped pages
+in writeback_sb_inodes().
+
+Goto Link to find a reproducer.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215837
+Cc: stable@vger.kernel.org # v4.3
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220510133805.1988292-1-chengzhihao1@huawei.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/power.c |    3 +++
- 1 file changed, 3 insertions(+)
+ fs/fs-writeback.c |   13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
---- a/drivers/net/wireless/intel/iwlwifi/mvm/power.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/power.c
-@@ -563,6 +563,9 @@ static void iwl_mvm_power_get_vifs_itera
- 	struct iwl_power_vifs *power_iterator = _data;
- 	bool active = mvmvif->phy_ctxt && mvmvif->phy_ctxt->id < NUM_PHY_CTX;
+--- a/fs/fs-writeback.c
++++ b/fs/fs-writeback.c
+@@ -1806,11 +1806,12 @@ static long writeback_sb_inodes(struct s
+ 	};
+ 	unsigned long start_time = jiffies;
+ 	long write_chunk;
+-	long wrote = 0;  /* count both pages and inodes */
++	long total_wrote = 0;  /* count both pages and inodes */
  
-+	if (!mvmvif->uploaded)
-+		return;
-+
- 	switch (ieee80211_vif_type_p2p(vif)) {
- 	case NL80211_IFTYPE_P2P_DEVICE:
- 		break;
+ 	while (!list_empty(&wb->b_io)) {
+ 		struct inode *inode = wb_inode(wb->b_io.prev);
+ 		struct bdi_writeback *tmp_wb;
++		long wrote;
+ 
+ 		if (inode->i_sb != sb) {
+ 			if (work->sb) {
+@@ -1886,7 +1887,9 @@ static long writeback_sb_inodes(struct s
+ 
+ 		wbc_detach_inode(&wbc);
+ 		work->nr_pages -= write_chunk - wbc.nr_to_write;
+-		wrote += write_chunk - wbc.nr_to_write;
++		wrote = write_chunk - wbc.nr_to_write - wbc.pages_skipped;
++		wrote = wrote < 0 ? 0 : wrote;
++		total_wrote += wrote;
+ 
+ 		if (need_resched()) {
+ 			/*
+@@ -1908,7 +1911,7 @@ static long writeback_sb_inodes(struct s
+ 		tmp_wb = inode_to_wb_and_lock_list(inode);
+ 		spin_lock(&inode->i_lock);
+ 		if (!(inode->i_state & I_DIRTY_ALL))
+-			wrote++;
++			total_wrote++;
+ 		requeue_inode(inode, tmp_wb, &wbc);
+ 		inode_sync_complete(inode);
+ 		spin_unlock(&inode->i_lock);
+@@ -1922,14 +1925,14 @@ static long writeback_sb_inodes(struct s
+ 		 * bail out to wb_writeback() often enough to check
+ 		 * background threshold and other termination conditions.
+ 		 */
+-		if (wrote) {
++		if (total_wrote) {
+ 			if (time_is_before_jiffies(start_time + HZ / 10UL))
+ 				break;
+ 			if (work->nr_pages <= 0)
+ 				break;
+ 		}
+ 	}
+-	return wrote;
++	return total_wrote;
+ }
+ 
+ static long __writeback_inodes_wb(struct bdi_writeback *wb,
 
 
