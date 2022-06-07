@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68FC5CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 920E4CCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354295AbiFGTFj (ORCPT
+        id S1354376AbiFGTFy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:05:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60538 "EHLO
+        Tue, 7 Jun 2022 15:05:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352522AbiFGSRP (ORCPT
+        with ESMTP id S1349148AbiFGSTi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A09136417;
-        Tue,  7 Jun 2022 10:52:18 -0700 (PDT)
+        Tue, 7 Jun 2022 14:19:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66665B36C0;
+        Tue,  7 Jun 2022 10:53:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 984E2B80B66;
-        Tue,  7 Jun 2022 17:52:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06602C34115;
-        Tue,  7 Jun 2022 17:52:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E39AB82366;
+        Tue,  7 Jun 2022 17:53:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C61C4C34119;
+        Tue,  7 Jun 2022 17:53:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624335;
-        bh=uZOwd6s3kVhfsImudmQXu07CdvivTkI16naom/J1bL4=;
+        s=korg; t=1654624399;
+        bh=M8Pp6pza3e588Ahg60DnN2QhEs1nBBAuhap4x/rPUHI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hTe92qRg+aPZ48J1fZNS2MvL3ZxlDOo/tDzKaGDg7p/UaaOkwZygb2NRWeD7sEaBy
-         C3ZVHr4/l/ctHBuSfgAKsk0rw5GUCNOBomuh3GXbSbLeLsPPFm/afjwOEAGYh1CUO5
-         9v5eQ1BxxMrt8JuyHqZownVsof+l/4AVmmFX3QgY=
+        b=1/rpBg75bWlPLK21qxp98DHVZqOn4cidH+/CliRgYsqQ/cj0pklAb/aS0b48rSCBS
+         lHuQK2iukolPvvmSkCLk0g2bbWFclc7rWFqQub0NJpyfAER5UD0exl+Qvh+kASKPMH
+         SOhfDKzZ3neGDD+kMHt4u1aE1EIHbYNIVsfr2/n4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        Katsuhiro Suzuki <katsuhiro@katsuster.net>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 263/667] ASoC: rk3328: fix disabling mclk on pclk probe failure
-Date:   Tue,  7 Jun 2022 18:58:48 +0200
-Message-Id: <20220607164942.670355929@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Ming Lei <ming.lei@redhat.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 314/667] block: Fix the bio.bi_opf comment
+Date:   Tue,  7 Jun 2022 18:59:39 +0200
+Message-Id: <20220607164944.189598565@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,37 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+From: Bart Van Assche <bvanassche@acm.org>
 
-[ Upstream commit dd508e324cdde1c06ace08a8143fa50333a90703 ]
+[ Upstream commit 5d2ae14276e698c76fa0c8ce870103f343b38263 ]
 
-If preparing/enabling the pclk fails, the probe function should
-unprepare and disable the previously prepared and enabled mclk,
-which it doesn't do. This commit rectifies this.
+Commit ef295ecf090d modified the Linux kernel such that the bottom bits
+of the bi_opf member contain the operation instead of the topmost bits.
+That commit did not update the comment next to bi_opf. Hence this patch.
 
-Fixes: c32759035ad2 ("ASoC: rockchip: support ACODEC for rk3328")
-Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
-Reviewed-by: Katsuhiro Suzuki <katsuhiro@katsuster.net>
-Link: https://lore.kernel.org/r/20220427172310.138638-1-frattaroli.nicolas@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+>From commit ef295ecf090d:
+-#define bio_op(bio)    ((bio)->bi_opf >> BIO_OP_SHIFT)
++#define bio_op(bio)    ((bio)->bi_opf & REQ_OP_MASK)
+
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Ming Lei <ming.lei@redhat.com>
+Fixes: ef295ecf090d ("block: better op and flags encoding")
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220511235152.1082246-1-bvanassche@acm.org
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rk3328_codec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/blk_types.h | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/codecs/rk3328_codec.c b/sound/soc/codecs/rk3328_codec.c
-index 758d439e8c7a..86b679cf7aef 100644
---- a/sound/soc/codecs/rk3328_codec.c
-+++ b/sound/soc/codecs/rk3328_codec.c
-@@ -481,7 +481,7 @@ static int rk3328_platform_probe(struct platform_device *pdev)
- 	ret = clk_prepare_enable(rk3328->pclk);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to enable acodec pclk\n");
--		return ret;
-+		goto err_unprepare_mclk;
- 	}
- 
- 	base = devm_platform_ioremap_resource(pdev, 0);
+diff --git a/include/linux/blk_types.h b/include/linux/blk_types.h
+index be622b5a21ed..17c92c0f15b2 100644
+--- a/include/linux/blk_types.h
++++ b/include/linux/blk_types.h
+@@ -215,9 +215,8 @@ static inline void bio_issue_init(struct bio_issue *issue,
+ struct bio {
+ 	struct bio		*bi_next;	/* request queue link */
+ 	struct block_device	*bi_bdev;
+-	unsigned int		bi_opf;		/* bottom bits req flags,
+-						 * top bits REQ_OP. Use
+-						 * accessors.
++	unsigned int		bi_opf;		/* bottom bits REQ_OP, top bits
++						 * req_flags.
+ 						 */
+ 	unsigned short		bi_flags;	/* BIO_* below */
+ 	unsigned short		bi_ioprio;
 -- 
 2.35.1
 
