@@ -2,134 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBED9CCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F782CCA485
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382464AbiFHBos (ORCPT
+        id S1388836AbiFHBpc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:44:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
+        Tue, 7 Jun 2022 21:45:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385352AbiFGWpx (ORCPT
+        with ESMTP id S1383149AbiFGVwU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:45:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BBCB92997AB
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:35:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654630478;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jzPfLQqqrOOrtPSbwWM44VdH1zcU6PIWuEvhTsmS8xA=;
-        b=YTi1HKoQ+DIya6fl00SLsIfORiTlzes+dtGFWGp4DqnRloJmqBdwpy3tF+nH3dzggxyYdA
-        4sFHNnDg/I+ORWFF5dbO9oKMc2yCTaaP9/gDlsn41yrDLiuWFJDBnHFLvZR0C5kqgl7A9B
-        ykxqT1Bx1qixFrA0GNzv51RYOdlg4aU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-632-XXJsXSB2OnO9ZoOoodX3nQ-1; Tue, 07 Jun 2022 15:34:33 -0400
-X-MC-Unique: XXJsXSB2OnO9ZoOoodX3nQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 7 Jun 2022 17:52:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A8F82428E4;
+        Tue,  7 Jun 2022 12:10:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CD7DD18019F9;
-        Tue,  7 Jun 2022 19:33:02 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.9.252])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0301D2BB9C88;
-        Tue,  7 Jun 2022 19:32:32 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org
-Cc:     Wayne Lin <Wayne.Lin@amd.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [RESEND RFC 06/18] drm/display/dp_mst: Add some missing kdocs for atomic MST structs
-Date:   Tue,  7 Jun 2022 15:29:21 -0400
-Message-Id: <20220607192933.1333228-7-lyude@redhat.com>
-In-Reply-To: <20220607192933.1333228-1-lyude@redhat.com>
-References: <20220607192933.1333228-1-lyude@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC6B2617D0;
+        Tue,  7 Jun 2022 19:10:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BE8CC385A5;
+        Tue,  7 Jun 2022 19:10:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629036;
+        bh=mCQHmNsaRFd+gnI4Oto6NcCrMml2VebXVqV8yAX6psg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=heYNGFK/iz1CBgyQKWlxXCoQ3nSvyn1Ab9i6CwlBA1LawyKJ+VgM/wfPCw1VXm9Iu
+         UxSNRRQQaYHurQ3mPc7x+JEaGFz470V6wVKppYhxZs7IJJ3cyT0lRPOtXqCUi77beR
+         miobiP8k1hrnEA5vF+lKM5g1wf63Y2IUXontGBAM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yihang Li <liyihang6@hisilicon.com>,
+        John Garry <john.garry@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 505/879] scsi: hisi_sas: Fix memory ordering in hisi_sas_task_deliver()
+Date:   Tue,  7 Jun 2022 19:00:23 +0200
+Message-Id: <20220607165017.534549158@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since we're about to start adding some stuff here, we may as well fill in
-any missing documentation that we forgot to write.
+From: John Garry <john.garry@huawei.com>
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: Wayne Lin <Wayne.Lin@amd.com>
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Imre Deak <imre.deak@intel.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Sean Paul <sean@poorly.run>
+[ Upstream commit 6c6ac8b7773f05f93dc4e4044686e059d1f78dea ]
+
+The memories for the slot should be observed to be written prior to
+observing the slot as ready.
+
+Prior to commit 26fc0ea74fcb ("scsi: libsas: Drop SAS_TASK_AT_INITIATOR"),
+we had a spin_lock() + spin_unlock() immediately before marking the slot as
+ready. The spin_unlock() - with release semantics - caused the slot memory
+to be observed to be written.
+
+Now that the spin_lock() + spin_unlock() is gone, use a smp_wmb().
+
+Link: https://lore.kernel.org/r/1652774661-12935-1-git-send-email-john.garry@huawei.com
+Fixes: 26fc0ea74fcb ("scsi: libsas: Drop SAS_TASK_AT_INITIATOR")
+Reported-by: Yihang Li <liyihang6@hisilicon.com>
+Tested-by: Yihang Li <liyihang6@hisilicon.com>
+Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/drm/display/drm_dp_mst_helper.h | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ drivers/scsi/hisi_sas/hisi_sas_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/drm/display/drm_dp_mst_helper.h b/include/drm/display/drm_dp_mst_helper.h
-index 8ab4f14f2344..eb0ea578b227 100644
---- a/include/drm/display/drm_dp_mst_helper.h
-+++ b/include/drm/display/drm_dp_mst_helper.h
-@@ -542,19 +542,43 @@ struct drm_dp_payload {
+diff --git a/drivers/scsi/hisi_sas/hisi_sas_main.c b/drivers/scsi/hisi_sas/hisi_sas_main.c
+index 86cbfab78dfe..849cc5fc86af 100644
+--- a/drivers/scsi/hisi_sas/hisi_sas_main.c
++++ b/drivers/scsi/hisi_sas/hisi_sas_main.c
+@@ -446,6 +446,8 @@ void hisi_sas_task_deliver(struct hisi_hba *hisi_hba,
+ 		return;
+ 	}
  
- #define to_dp_mst_topology_state(x) container_of(x, struct drm_dp_mst_topology_state, base)
++	/* Make slot memories observable before marking as ready */
++	smp_wmb();
+ 	WRITE_ONCE(slot->ready, 1);
  
-+/**
-+ * struct drm_dp_mst_atomic_payload - Atomic state struct for an MST payload
-+ *
-+ * The primary atomic state structure for a given MST payload. Stores information like current
-+ * bandwidth allocation, intended action for this payload, etc.
-+ */
- struct drm_dp_mst_atomic_payload {
-+	/** @port: The MST port assigned to this payload */
- 	struct drm_dp_mst_port *port;
-+	/** @time_slots: The number of timeslots allocated to this payload */
- 	int time_slots;
-+	/** @pbn: The payload bandwidth for this payload */
- 	int pbn;
-+	/** @dsc_enabled: Whether or not this payload has DSC enabled */
- 	bool dsc_enabled;
-+
-+	/** @next: The list node for this payload */
- 	struct list_head next;
- };
- 
-+/**
-+ * struct drm_dp_mst_topology_state - DisplayPort MST topology atomic state
-+ *
-+ * This struct represents the atomic state of the toplevel DisplayPort MST manager
-+ */
- struct drm_dp_mst_topology_state {
-+	/** @base: Base private state for atomic */
- 	struct drm_private_state base;
-+
-+	/** @payloads: The list of payloads being created/destroyed in this state */
- 	struct list_head payloads;
-+	/** @mgr: The topology manager */
- 	struct drm_dp_mst_topology_mgr *mgr;
-+
-+	/** @total_avail_slots: The total number of slots this topology can handle (63 or 64) */
- 	u8 total_avail_slots;
-+	/** @start_slot: The first usable time slot in this topology (1 or 0) */
- 	u8 start_slot;
- };
- 
+ 	spin_lock(&dq->lock);
 -- 
-2.35.3
+2.35.1
+
+
 
