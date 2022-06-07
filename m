@@ -2,174 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 07:10:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E779AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 07:12:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237550AbiFGHKK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 03:10:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34488 "EHLO
+        id S237502AbiFGHMm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 03:12:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237498AbiFGHJw (ORCPT
+        with ESMTP id S237277AbiFGHMj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 03:09:52 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5758813C6;
-        Tue,  7 Jun 2022 00:09:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654585790; x=1686121790;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=b7w0Jo4X5Q0tbJ+Lb1gNZkkGF0RFAjloOAMdaSUTUHM=;
-  b=aKVsvKxQhE3yKVlXRWjUoihs2OB74OR01RPGt5hXLb2dhEGkq/IehFff
-   4ezjB8ds9G+/8KU9lL75emBVPY9wiWjfaFLmPNO+aCbP0GRq/YuwlL4Ti
-   AfkGDenUke08OspHDgfB9pyyMj27VHPS9PL5yaNaWYKuvUtnFhW1qmvqQ
-   8Js/snQZQ8tPrHBlxCAFUEnxqjivm1oRrkS/DZzyW1NPJvXQOuIIry3bM
-   VtaJbWMv2Vdl8ngpBMhL2K9IDsRvaS2QdaI7/a7BN/U4kemS66VpBfTO1
-   /huZtwlKtdR151hBuU2ENEuG8OBblV+vGCz5zkr9R5u7MUeFaMIDD0i5s
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="340335748"
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="340335748"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 00:09:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="579488785"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 07 Jun 2022 00:09:46 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nyTLV-000DSR-GA;
-        Tue, 07 Jun 2022 07:09:45 +0000
-Date:   Tue, 7 Jun 2022 15:09:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>
-Cc:     kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Darrick J. Wong" <djwong@kernel.org>, linux-xfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [linux-next:master 728/1207] fs/xfs/xfs_file.c:1266:31: sparse:
- sparse: incorrect type in return expression (different base types)
-Message-ID: <202206071511.FI7WLdZo-lkp@intel.com>
+        Tue, 7 Jun 2022 03:12:39 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D5464D9
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 00:12:34 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id p5-20020a1c2905000000b003970dd5404dso9009931wmp.0
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 00:12:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=hV9ibKa+5FNAjQgy5QNiMgxjWN0tLjtbBZr6sMB8+Q8=;
+        b=zvk7iA/34h/WCj5IyLEzFyarVpBveV+Ub4CzbBtdV7qFdQFCeBaBVp1VyjjmZfZ06M
+         PbeRy2dP5bbH0dZRJUpHdmRTPoO3RzyEZNMmRdyhOFIXO6wsci8zXehtX2EKqFRk94Sz
+         yGLX4rOgtCxD9W3RPr8Fw5CHA/8Inl6ERNabJW9gKsmrbDYVCL78/DG/CXz76EBS4Xmj
+         3hQ3Uf6GckYlGgHHDLzfxVy1U9elpvnYxH7FnzFhKuWRR2jYqMmqHMMheB+LHviI7YUN
+         MyNkrXn9Qu+mBs7z2/YWm23lEqtem7Iqk+n3hZNYnSaky9CX5WiL62yeReaMwEDvARUo
+         VVNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=hV9ibKa+5FNAjQgy5QNiMgxjWN0tLjtbBZr6sMB8+Q8=;
+        b=ex5z1nDg2KiDdEuf61hE+Ju3OBeCjuFvu7+2VzrR+9ATlrUlAJm9qQpJybB1eM+j2n
+         wA1GC9qXdy0T1q/xVB05N4DqiVaB9p9y5s61WrhPhrudNnJuxGRJl1CcFYU5BadG0LZV
+         Mt3mgApvJcXCy+m9p/Pt+Aq+Wcek0ctwDjudXwIqN46zXKa/Sa+L+F6evoAuK0OkiqzJ
+         C9cOlAO9ILS0AUfAlxMspaAF3g/M4Jo7RfEhE7Hhp6bIVopl8jgOLB32MGUdG+FK8u3t
+         evmnQKjgj8+106VpLHv79Av08bUFhiWWmWk5rHJLEJR9G170kSBn+DxoAeSOwZ90iiSx
+         /hIA==
+X-Gm-Message-State: AOAM5333k8Vmkny9Sg6QvVw8OL6OcPEZTA5FWzFfwz2SS41y5j4rhuHq
+        Y/xO/UuLhySEeY7whhCFnaT/Jw==
+X-Google-Smtp-Source: ABdhPJzlssNl6pDyIvExhHNcmbJ/WP0P23bmwp4ZRY1qET14Oc7c06VwNQoOLjo6L5f2tNzIkvpUkw==
+X-Received: by 2002:a05:600c:3513:b0:39c:2a32:37a6 with SMTP id h19-20020a05600c351300b0039c2a3237a6mr25770455wmq.161.1654585953165;
+        Tue, 07 Jun 2022 00:12:33 -0700 (PDT)
+Received: from ?IPV6:2001:861:44c0:66c0:87c5:1f51:1550:2ebc? ([2001:861:44c0:66c0:87c5:1f51:1550:2ebc])
+        by smtp.gmail.com with ESMTPSA id h4-20020adffd44000000b002102d4ed579sm17017696wrs.39.2022.06.07.00.12.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 00:12:32 -0700 (PDT)
+Message-ID: <791b3e4e-7348-997a-0ead-136739ec10bf@baylibre.com>
+Date:   Tue, 7 Jun 2022 09:12:35 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v6 5/5] mtd: rawnand: meson: not support legacy clock
+Content-Language: en-US
+To:     Liang Yang <liang.yang@amlogic.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-mtd@lists.infradead.org
+Cc:     kernel test robot <lkp@intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jianxin Pan <jianxin.pan@amlogic.com>,
+        Victor Wan <victor.wan@amlogic.com>,
+        XianWei Zhao <xianwei.zhao@amlogic.com>,
+        Kelvin Zhang <kelvin.zhang@amlogic.com>,
+        BiChao Zheng <bichao.zheng@amlogic.com>,
+        YongHui Yu <yonghui.yu@amlogic.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220607064731.13367-1-liang.yang@amlogic.com>
+ <20220607064731.13367-6-liang.yang@amlogic.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+In-Reply-To: <20220607064731.13367-6-liang.yang@amlogic.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-head:   73d0e32571a0786151eb72634f1a4c5891166176
-commit: d5f5b32dee7c09e3152cbbce45c73f0b1ea7d94c [728/1207] xfs: support CoW in fsdax mode
-config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220607/202206071511.FI7WLdZo-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-18-g56afb504-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=d5f5b32dee7c09e3152cbbce45c73f0b1ea7d94c
-        git remote add linux-next https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-        git fetch --no-tags linux-next master
-        git checkout d5f5b32dee7c09e3152cbbce45c73f0b1ea7d94c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/xfs/
+Hi,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On 07/06/2022 08:47, Liang Yang wrote:
+> meson NFC driver use common clock interfaces. so the test robot report
+> some errors once using the legacy clock with HAVE_LEGACY_CLK on.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Liang Yang <liang.yang@amlogic.com>
+> ---
+>   drivers/mtd/nand/raw/Kconfig | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/mtd/nand/raw/Kconfig b/drivers/mtd/nand/raw/Kconfig
+> index 67b7cb67c030..5169412a4af4 100644
+> --- a/drivers/mtd/nand/raw/Kconfig
+> +++ b/drivers/mtd/nand/raw/Kconfig
+> @@ -395,7 +395,7 @@ config MTD_NAND_STM32_FMC2
+>   
+>   config MTD_NAND_MESON
+>   	tristate "Support for NAND controller on Amlogic's Meson SoCs"
+> -	depends on ARCH_MESON || COMPILE_TEST
+> +	depends on ARCH_MESON || COMPILE_TEST || !HAVE_LEGACY_CLK
 
+I think depending on CCF would be better than excluding legacy clock.
 
-sparse warnings: (new ones prefixed by >>)
->> fs/xfs/xfs_file.c:1266:31: sparse: sparse: incorrect type in return expression (different base types) @@     expected int @@     got restricted vm_fault_t @@
-   fs/xfs/xfs_file.c:1266:31: sparse:     expected int
-   fs/xfs/xfs_file.c:1266:31: sparse:     got restricted vm_fault_t
->> fs/xfs/xfs_file.c:1260:1: sparse: sparse: symbol 'xfs_dax_fault' was not declared. Should it be static?
->> fs/xfs/xfs_file.c:1314:21: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted vm_fault_t [usertype] ret @@     got int @@
-   fs/xfs/xfs_file.c:1314:21: sparse:     expected restricted vm_fault_t [usertype] ret
-   fs/xfs/xfs_file.c:1314:21: sparse:     got int
+>   	select MFD_SYSCON
+>   	help
+>   	  Enables support for NAND controller on Amlogic's Meson SoCs.
 
-Please review and possibly fold the followup patch.
-
-vim +1266 fs/xfs/xfs_file.c
-
-  1257	
-  1258	#ifdef CONFIG_FS_DAX
-  1259	int
-> 1260	xfs_dax_fault(
-  1261		struct vm_fault		*vmf,
-  1262		enum page_entry_size	pe_size,
-  1263		bool			write_fault,
-  1264		pfn_t			*pfn)
-  1265	{
-> 1266		return dax_iomap_fault(vmf, pe_size, pfn, NULL,
-  1267				(write_fault && !vmf->cow_page) ?
-  1268					&xfs_dax_write_iomap_ops :
-  1269					&xfs_read_iomap_ops);
-  1270	}
-  1271	#else
-  1272	int
-  1273	xfs_dax_fault(
-  1274		struct vm_fault		*vmf,
-  1275		enum page_entry_size	pe_size,
-  1276		bool			write_fault,
-  1277		pfn_t			*pfn)
-  1278	{
-  1279		return 0;
-  1280	}
-  1281	#endif
-  1282	
-  1283	/*
-  1284	 * Locking for serialisation of IO during page faults. This results in a lock
-  1285	 * ordering of:
-  1286	 *
-  1287	 * mmap_lock (MM)
-  1288	 *   sb_start_pagefault(vfs, freeze)
-  1289	 *     invalidate_lock (vfs/XFS_MMAPLOCK - truncate serialisation)
-  1290	 *       page_lock (MM)
-  1291	 *         i_lock (XFS - extent map serialisation)
-  1292	 */
-  1293	static vm_fault_t
-  1294	__xfs_filemap_fault(
-  1295		struct vm_fault		*vmf,
-  1296		enum page_entry_size	pe_size,
-  1297		bool			write_fault)
-  1298	{
-  1299		struct inode		*inode = file_inode(vmf->vma->vm_file);
-  1300		struct xfs_inode	*ip = XFS_I(inode);
-  1301		vm_fault_t		ret;
-  1302	
-  1303		trace_xfs_filemap_fault(ip, pe_size, write_fault);
-  1304	
-  1305		if (write_fault) {
-  1306			sb_start_pagefault(inode->i_sb);
-  1307			file_update_time(vmf->vma->vm_file);
-  1308		}
-  1309	
-  1310		if (IS_DAX(inode)) {
-  1311			pfn_t pfn;
-  1312	
-  1313			xfs_ilock(XFS_I(inode), XFS_MMAPLOCK_SHARED);
-> 1314			ret = xfs_dax_fault(vmf, pe_size, write_fault, &pfn);
-  1315			if (ret & VM_FAULT_NEEDDSYNC)
-  1316				ret = dax_finish_sync_fault(vmf, pe_size, pfn);
-  1317			xfs_iunlock(XFS_I(inode), XFS_MMAPLOCK_SHARED);
-  1318		} else {
-  1319			if (write_fault) {
-  1320				xfs_ilock(XFS_I(inode), XFS_MMAPLOCK_SHARED);
-  1321				ret = iomap_page_mkwrite(vmf,
-  1322						&xfs_buffered_write_iomap_ops);
-  1323				xfs_iunlock(XFS_I(inode), XFS_MMAPLOCK_SHARED);
-  1324			} else {
-  1325				ret = filemap_fault(vmf);
-  1326			}
-  1327		}
-  1328	
-  1329		if (write_fault)
-  1330			sb_end_pagefault(inode->i_sb);
-  1331		return ret;
-  1332	}
-  1333	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Neil
