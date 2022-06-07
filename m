@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78DDFCCA496
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C403CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388242AbiFHBhz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:37:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46010 "EHLO
+        id S232653AbiFHBil (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:38:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382421AbiFGVv0 (ORCPT
+        with ESMTP id S1383325AbiFGVxD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:51:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B5E220759;
-        Tue,  7 Jun 2022 12:08:47 -0700 (PDT)
+        Tue, 7 Jun 2022 17:53:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 311012D1D1;
+        Tue,  7 Jun 2022 12:11:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 174576188D;
-        Tue,  7 Jun 2022 19:08:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 261C3C385A2;
-        Tue,  7 Jun 2022 19:08:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73256612EC;
+        Tue,  7 Jun 2022 19:11:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E2C9C385A2;
+        Tue,  7 Jun 2022 19:11:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628926;
-        bh=aYqZE8TxvhvL5QEdtOPcHD/GbVTx3XHTQlLjadvSmYE=;
+        s=korg; t=1654629088;
+        bh=7KnDXt2IhoTx0a8oStiA4n1AOIYZqrwuBMqgu/mvnbk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uAb5FAC9zlJaxQa4VPY7NkrRxVLsS5mTLb0SQA2SZZgk8DHSloYuSycu3PeTlSCxD
-         x5XzPeCPs1lDFbb2qpTEYof1mTjb7p2mGZ2V+WzVqTJqYSy0QsvkuWlNRAVFmAtVCx
-         U5aVW9p9UlP9yg69qledYX7bScsn3G/Hib+LEEjw=
+        b=J2MGY0hWe8daEpR+jZYZ/QKqlCoOWf5pv3QwIB2EvMByFyFEexXHHf4YDW9QJwHrC
+         e7uR6z47VDttXmr06XrGaNWEXTFy3HpArvtiKuXjiJo2bTuqwcnIl+i3lNMv9fv0oJ
+         7K3jqB/S6Ruflh+jZb1nOrpTpcyvhM/h49AL9mcg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yake Yang <yake.yang@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 456/879] Bluetooth: btmtksdio: fix use-after-free at btmtksdio_recv_event
-Date:   Tue,  7 Jun 2022 18:59:34 +0200
-Message-Id: <20220607165016.107348190@linuxfoundation.org>
+Subject: [PATCH 5.18 565/879] arm64: dts: qcom: sm8450: Fix missing iommus for qup1
+Date:   Tue,  7 Jun 2022 19:01:23 +0200
+Message-Id: <20220607165019.261141072@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,84 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+From: Vinod Koul <vkoul@kernel.org>
 
-[ Upstream commit 0fab6361c4ba17d1b43a991bef4238a3c1754d35 ]
+[ Upstream commit 67ebdc6dd1e2049fd9620f0572bc81a809afbe24 ]
 
-We should not access skb buffer data anymore after hci_recv_frame was
-called.
+qupv3_id_1 was missing iommus property which cause any dma transaction
+to fail and board crash. So add the missing iommus.
 
-[   39.634809] BUG: KASAN: use-after-free in btmtksdio_recv_event+0x1b0
-[   39.634855] Read of size 1 at addr ffffff80cf28a60d by task kworker
-[   39.634962] Call trace:
-[   39.634974]  dump_backtrace+0x0/0x3b8
-[   39.634999]  show_stack+0x20/0x2c
-[   39.635016]  dump_stack_lvl+0x60/0x78
-[   39.635040]  print_address_description+0x70/0x2f0
-[   39.635062]  kasan_report+0x154/0x194
-[   39.635079]  __asan_report_load1_noabort+0x44/0x50
-[   39.635099]  btmtksdio_recv_event+0x1b0/0x1c4
-[   39.635129]  btmtksdio_txrx_work+0x6cc/0xac4
-[   39.635157]  process_one_work+0x560/0xc5c
-[   39.635177]  worker_thread+0x7ec/0xcc0
-[   39.635195]  kthread+0x2d0/0x3d0
-[   39.635215]  ret_from_fork+0x10/0x20
-[   39.635247] Allocated by task 0:
-[   39.635260] (stack is not available)
-[   39.635281] Freed by task 2392:
-[   39.635295]  kasan_save_stack+0x38/0x68
-[   39.635319]  kasan_set_track+0x28/0x3c
-[   39.635338]  kasan_set_free_info+0x28/0x4c
-[   39.635357]  ____kasan_slab_free+0x104/0x150
-[   39.635374]  __kasan_slab_free+0x18/0x28
-[   39.635391]  slab_free_freelist_hook+0x114/0x248
-[   39.635410]  kfree+0xf8/0x2b4
-[   39.635427]  skb_free_head+0x58/0x98
-[   39.635447]  skb_release_data+0x2f4/0x410
-[   39.635464]  skb_release_all+0x50/0x60
-[   39.635481]  kfree_skb+0xc8/0x25c
-[   39.635498]  hci_event_packet+0x894/0xca4 [bluetooth]
-[   39.635721]  hci_rx_work+0x1c8/0x68c [bluetooth]
-[   39.635925]  process_one_work+0x560/0xc5c
-[   39.635951]  worker_thread+0x7ec/0xcc0
-[   39.635970]  kthread+0x2d0/0x3d0
-[   39.635990]  ret_from_fork+0x10/0x20
-[   39.636021] The buggy address belongs to the object at ffffff80cf28a600
-                which belongs to the cache kmalloc-512 of size 512
-[   39.636039] The buggy address is located 13 bytes inside of
-                512-byte region [ffffff80cf28a600, ffffff80cf28a800)
-
-Fixes: 9aebfd4a2200 ("Bluetooth: mediatek: add support for MediaTek MT7663S and MT7668S SDIO devices")
-Co-developed-by: Yake Yang <yake.yang@mediatek.com>
-Signed-off-by: Yake Yang <yake.yang@mediatek.com>
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: 5188049c9b36 ("arm64: dts: qcom: Add base SM8450 DTSI")
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220414101630.1189052-7-vkoul@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/btmtksdio.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/sm8450.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
-index b6d77e04240c..4ae6631a7c29 100644
---- a/drivers/bluetooth/btmtksdio.c
-+++ b/drivers/bluetooth/btmtksdio.c
-@@ -379,6 +379,7 @@ static int btmtksdio_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
- {
- 	struct btmtksdio_dev *bdev = hci_get_drvdata(hdev);
- 	struct hci_event_hdr *hdr = (void *)skb->data;
-+	u8 evt = hdr->evt;
- 	int err;
- 
- 	/* When someone waits for the WMT event, the skb is being cloned
-@@ -396,7 +397,7 @@ static int btmtksdio_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
- 	if (err < 0)
- 		goto err_free_skb;
- 
--	if (hdr->evt == HCI_EV_WMT) {
-+	if (evt == HCI_EV_WMT) {
- 		if (test_and_clear_bit(BTMTKSDIO_TX_WAIT_VND_EVT,
- 				       &bdev->tx_state)) {
- 			/* Barrier to sync with other CPUs */
+diff --git a/arch/arm64/boot/dts/qcom/sm8450.dtsi b/arch/arm64/boot/dts/qcom/sm8450.dtsi
+index 5facb4a5bf63..e63b7b0458cf 100644
+--- a/arch/arm64/boot/dts/qcom/sm8450.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8450.dtsi
+@@ -721,6 +721,9 @@
+ 			clock-names = "m-ahb", "s-ahb";
+ 			clocks = <&gcc GCC_QUPV3_WRAP_1_M_AHB_CLK>,
+ 				 <&gcc GCC_QUPV3_WRAP_1_S_AHB_CLK>;
++			iommus = <&apps_smmu 0x43 0x0>;
++			interconnects = <&clk_virt MASTER_QUP_CORE_1 0 &clk_virt SLAVE_QUP_CORE_1 0>;
++			interconnect-names = "qup-core";
+ 			#address-cells = <2>;
+ 			#size-cells = <2>;
+ 			ranges;
 -- 
 2.35.1
 
