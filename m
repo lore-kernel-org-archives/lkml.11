@@ -2,26 +2,27 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE36C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:10:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 963DACCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:10:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243491AbiFGMIZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:08:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51482 "EHLO
+        id S243431AbiFGMHz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:07:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243460AbiFGMIC (ORCPT
+        with ESMTP id S243419AbiFGMHj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:08:02 -0400
+        Tue, 7 Jun 2022 08:07:39 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C1BC8B0AD
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:08:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4824830541
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:07:37 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 291411480;
-        Tue,  7 Jun 2022 05:08:00 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0DACB11FB;
+        Tue,  7 Jun 2022 05:07:37 -0700 (PDT)
 Received: from [10.1.196.218] (eglon.cambridge.arm.com [10.1.196.218])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8B48F3F73B;
-        Tue,  7 Jun 2022 05:07:54 -0700 (PDT)
-Subject: Re: [PATCH v4 15/21] x86/resctrl: Abstract __rmid_read()
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 36CF43F73B;
+        Tue,  7 Jun 2022 05:07:31 -0700 (PDT)
+Subject: Re: [PATCH v4 08/21] x86/resctrl: Switch over to the resctrl mbps_val
+ list
 To:     Reinette Chatre <reinette.chatre@intel.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Fenghua Yu <fenghua.yu@intel.com>,
@@ -37,15 +38,15 @@ Cc:     Fenghua Yu <fenghua.yu@intel.com>,
         Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
         baolin.wang@linux.alibaba.com
 References: <20220412124419.30689-1-james.morse@arm.com>
- <20220412124419.30689-16-james.morse@arm.com>
- <39264d40-265e-b41f-913f-c21325678735@intel.com>
+ <20220412124419.30689-9-james.morse@arm.com>
+ <93459560-0740-57f3-ed15-caae370aa80a@intel.com>
 From:   James Morse <james.morse@arm.com>
-Message-ID: <63845ed3-f09e-43b2-5ded-394bbbd874c4@arm.com>
-Date:   Tue, 7 Jun 2022 13:07:40 +0100
+Message-ID: <ad3b0290-9419-5763-6f20-306af0d8521d@arm.com>
+Date:   Tue, 7 Jun 2022 13:07:24 +0100
 User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:78.0) Gecko/20100101
  Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <39264d40-265e-b41f-913f-c21325678735@intel.com>
+In-Reply-To: <93459560-0740-57f3-ed15-caae370aa80a@intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
@@ -55,55 +56,108 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi Reinette,
 
-On 17/05/2022 22:23, Reinette Chatre wrote:
+On 17/05/2022 17:19, Reinette Chatre wrote:
 > On 4/12/2022 5:44 AM, James Morse wrote:
-> 
->> @@ -180,14 +180,24 @@ static u64 __rmid_read(u32 rmid, enum resctrl_event_id eventid)
->>  	 * are error bits.
->>  	 */
->>  	wrmsr(MSR_IA32_QM_EVTSEL, eventid, rmid);
->> -	rdmsrl(MSR_IA32_QM_CTR, val);
->> +	rdmsrl(MSR_IA32_QM_CTR, msr_val);
+>> Updates to resctrl's software controller follow the same path as
+>> other configuration updates, but they don't modify the hardware state.
+>> rdtgroup_schemata_write() uses parse_line() and the resource's
+>> parse_ctrlval() function to stage the configuration.
+>> resctrl_arch_update_domains() then updates the mbps_val[] array
+>> instead, and resctrl_arch_update_domains() skips the rdt_ctrl_update()
+>> call that would update hardware.
+>>
+>> This complicates the interface between resctrl's filesystem parts
+>> and architecture specific code. It should be possible for mba_sc
+>> to be completely implemented by the filesystem parts of resctrl. This
+>> would allow it to work on a second architecture with no additional code.
+>> resctrl_arch_update_domains() using the mbps_val[] array prevents this.
+>>
+>> Change parse_bw() to write the configuration value directly to the
+>> mbps_val[] array in the domain structure. Change rdtgroup_schemata_write()
+>> to skip the call to resctrl_arch_update_domains(), meaning all the
+>> mba_sc specific code in resctrl_arch_update_domains() can be removed.
+>> On the read-side, show_doms() and update_mba_bw() are changed to read
+>> the mbps_val[] array from the domain structure. With this,
+>> resctrl_arch_get_config() no longer needs to consider mba_sc resources.
+
+> This sounds like a good cleanup and I understand it to not intend 
+> functional change, so a bit more information is needed on the change
+> in rdtgroup_init_alloc(). More below.
+
+>> diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+>> index 9d5be6a73644..07904308245c 100644
+>> --- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+>> +++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+>> @@ -1932,11 +1937,6 @@ static int set_mba_sc(bool mba_sc)
 >>  
->> -	return val;
->> +	if (msr_val & RMID_VAL_ERROR)
->> +		return -EIO;
->> +	if (msr_val & RMID_VAL_UNAVAIL)
->> +		return -EINVAL;
->> +
->> +	*val = msr_val;
->> +
->> +	return 0;
+>>  	r->membw.mba_sc = mba_sc;
+>>  
+>> -	list_for_each_entry(d, &r->domains, list) {
+>> -		for (i = 0; i < num_closid; i++)
+>> -			d->mbps_val[i] = MBA_MAX_MBPS;
+>> -	}
+>> -
+>>  	return 0;
+>>  }
+
+> With this removed, where is rdt_domain->mbps_val reset on remount of resctrl?
+
+Oops, this is a bug. Its a left over from when the rdt_domain->mbps_val[] array was only
+allocated when mba_sc was enabled.
+
+
+>> @@ -2809,15 +2809,18 @@ static int rdtgroup_init_cat(struct resctrl_schema *s, u32 closid)
 >>  }
 >>  
-> 
-> In above EIO is used to represent RMID_VAL_ERROR ...
-> 
->> @@ -343,7 +355,7 @@ static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
->>  		 * Code would never reach here because an invalid
->>  		 * event id would fail the __rmid_read.
-
-(I'll fix this comment)
-
->>  		 */
->> -		return RMID_VAL_ERROR;
->> +		return -EINVAL;
->>  	}
+>>  /* Initialize MBA resource with default values. */
+>> -static void rdtgroup_init_mba(struct rdt_resource *r)
+>> +static void rdtgroup_init_mba(struct rdt_resource *r, u32 closid)
+>>  {
+>>  	struct resctrl_staged_config *cfg;
+>>  	struct rdt_domain *d;
 >>  
->>  	if (rr->first) {
+>>  	list_for_each_entry(d, &r->domains, list) {
+>>  		cfg = &d->staged_config[CDP_NONE];
+>> -		cfg->new_ctrl = is_mba_sc(r) ? MBA_MAX_MBPS : r->default_ctrl;
+>> +		cfg->new_ctrl = r->default_ctrl;
+>>  		cfg->have_new_ctrl = true;
+>> +
+>> +		if (is_mba_sc(r))
+>> +			d->mbps_val[closid] = MBA_MAX_MBPS;
+>>  	}
+>>  }
+>>  
+>> @@ -2831,7 +2834,7 @@ static int rdtgroup_init_alloc(struct rdtgroup *rdtgrp)
+>>  	list_for_each_entry(s, &resctrl_schema_all, list) {
+>>  		r = s->res;
+>>  		if (r->rid == RDT_RESOURCE_MBA) {
+>> -			rdtgroup_init_mba(r);
+>> +			rdtgroup_init_mba(r, rdtgrp->closid);
+>>  		} else {
+>>  			ret = rdtgroup_init_cat(s, rdtgrp->closid);
+>>  			if (ret < 0)
 > 
-> I understand it can be seen as a symbolic change but could
-> RMID_VAL_ERROR consistently be associated with the same error?
+> What follows this hunk and continues to be called is:
+> 
+> 	ret = resctrl_arch_update_domains(r, rdtgrp->closid);
+> 
+> before this patch resctrl_arch_update_domains() would just have updated
+> the mbps_val but not made any configuration changed if is_mba_sc() is true.
+> Before this patch configuration changes done in
+> resctrl_arch_update_domains() is omitted when is_mba_sc() is true
+> but after earlier change in this patch it proceeds and will result in
+> configuration change.
 
-This one isn't really RMID_VAL_ERROR - it was never read from the hardware, this was an
-invalid argument supplied by the caller.
+Yes, this will write the default ctrl_val into hardware. Previously it may have an unknown
+value from a previous allocation of the closid, update_mba_bw() will eventually adjust
+that to something sensible.
 
-You can only hit this if resctrl_arch_rmid_read() doesn't read RMID_VAL_ERROR from the
-hardware, because the hardware supports the event, but its an invalid argument as far as
-this code is concerned.
+I think I ignored this as harmless, but I agree its better to keep the existing behaviour.
+I'll add:
+|		if (is_mba_sc(r))
+|			continue;
 
-I'd prefer to avoid EIO as the error was not reported from hardware - its only reachable
-if the hardware does support the event!
+to both rdtgroup_init_mba() and rdtgroup_init_alloc().
 
 
 Thanks,
