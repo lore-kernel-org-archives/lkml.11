@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 311F5CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E6EECCA482
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380005AbiFGVaL (ORCPT
+        id S1380212AbiFGVa2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43828 "EHLO
+        Tue, 7 Jun 2022 17:30:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377838AbiFGUeI (ORCPT
+        with ESMTP id S1377886AbiFGUei (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E79571E7AF8;
-        Tue,  7 Jun 2022 11:36:12 -0700 (PDT)
+        Tue, 7 Jun 2022 16:34:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F52C1E7BE2;
+        Tue,  7 Jun 2022 11:36:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 302C4B8233E;
-        Tue,  7 Jun 2022 18:36:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88FF8C385A2;
-        Tue,  7 Jun 2022 18:36:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB2516156D;
+        Tue,  7 Jun 2022 18:36:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04882C385A2;
+        Tue,  7 Jun 2022 18:36:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626969;
-        bh=1fnCYEHFdDXiebIMF3JIQlXednadZc3hyC/x3Lsi5wA=;
+        s=korg; t=1654626989;
+        bh=qOG8Y18WbTQ5OroftqQAArGQvZPIVLqJFUdTH/Dey4Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yRT5AMx5Dua92RtYwUqTSeLf6E5I16GaWq4Yqca04p07/5MPt4sw0mXjKGsIPu402
-         kRWAe1ReeGt1gzTTkSqX5k0oA/S9fpyXEM/XkeNrGg+BduXLZd40MoeAc3uCb8TtmM
-         Q9GG27ujrcbEdqI9IzjJfu8qjCLBeDqLEqit4vjk=
+        b=W9cxfMtOajDcK7Dndn4BBpAFiLJsrbv4Ety0uT7fbtFviAUiF+3IBB7JwhaTACxnR
+         xTKR3MSzL8yESJzZPzYa/dkr4lqbJjozDbtC8bl3HKCPLWCITOT8uVTvIiaWhKoza8
+         gpQhyPPoGBNKFPf+rze8aIKeAIGo0ylnMmoBKxzM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yunfei Wang <yf.wang@mediatek.com>,
+        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
         Yong Wu <yong.wu@mediatek.com>,
+        kernel test robot <lkp@intel.com>,
+        Miles Chen <miles.chen@mediatek.com>,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
         Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 571/772] iommu/mediatek: Add mutex for m4u_group and m4u_dom in data
-Date:   Tue,  7 Jun 2022 19:02:43 +0200
-Message-Id: <20220607165005.779832757@linuxfoundation.org>
+Subject: [PATCH 5.17 577/772] iommu/mediatek: Fix NULL pointer dereference when printing dev_name
+Date:   Tue,  7 Jun 2022 19:02:49 +0200
+Message-Id: <20220607165005.953607487@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,103 +54,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yong Wu <yong.wu@mediatek.com>
+From: Miles Chen <miles.chen@mediatek.com>
 
-[ Upstream commit 0e5a3f2e630b28e88e018655548212ef8eb4dfcb ]
+[ Upstream commit de78657e16f41417da9332f09c2d67d100096939 ]
 
-Add a mutex to protect the data in the structure mtk_iommu_data,
-like ->"m4u_group" ->"m4u_dom". For the internal data, we should
-protect it in ourselves driver. Add a mutex for this.
-This could be a fix for the multi-groups support.
+When larbdev is NULL (in the case I hit, the node is incorrectly set
+iommus = <&iommu NUM>), it will cause device_link_add() fail and
+kernel crashes when we try to print dev_name(larbdev).
 
-Fixes: c3045f39244e ("iommu/mediatek: Support for multi domains")
-Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Let's fail the probe if a larbdev is NULL to avoid invalid inputs from
+dts.
+
+It should work for normal correct setting and avoid the crash caused
+by my incorrect setting.
+
+Error log:
+[   18.189042][  T301] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000050
+...
+[   18.344519][  T301] pstate: a0400005 (NzCv daif +PAN -UAO)
+[   18.345213][  T301] pc : mtk_iommu_probe_device+0xf8/0x118 [mtk_iommu]
+[   18.346050][  T301] lr : mtk_iommu_probe_device+0xd0/0x118 [mtk_iommu]
+[   18.346884][  T301] sp : ffffffc00a5635e0
+[   18.347392][  T301] x29: ffffffc00a5635e0 x28: ffffffd44a46c1d8
+[   18.348156][  T301] x27: ffffff80c39a8000 x26: ffffffd44a80cc38
+[   18.348917][  T301] x25: 0000000000000000 x24: ffffffd44a80cc38
+[   18.349677][  T301] x23: ffffffd44e4da4c6 x22: ffffffd44a80cc38
+[   18.350438][  T301] x21: ffffff80cecd1880 x20: 0000000000000000
+[   18.351198][  T301] x19: ffffff80c439f010 x18: ffffffc00a50d0c0
+[   18.351959][  T301] x17: ffffffffffffffff x16: 0000000000000004
+[   18.352719][  T301] x15: 0000000000000004 x14: ffffffd44eb5d420
+[   18.353480][  T301] x13: 0000000000000ad2 x12: 0000000000000003
+[   18.354241][  T301] x11: 00000000fffffad2 x10: c0000000fffffad2
+[   18.355003][  T301] x9 : a0d288d8d7142d00 x8 : a0d288d8d7142d00
+[   18.355763][  T301] x7 : ffffffd44c2bc640 x6 : 0000000000000000
+[   18.356524][  T301] x5 : 0000000000000080 x4 : 0000000000000001
+[   18.357284][  T301] x3 : 0000000000000000 x2 : 0000000000000005
+[   18.358045][  T301] x1 : 0000000000000000 x0 : 0000000000000000
+[   18.360208][  T301] Hardware name: MT6873 (DT)
+[   18.360771][  T301] Call trace:
+[   18.361168][  T301]  dump_backtrace+0xf8/0x1f0
+[   18.361737][  T301]  dump_stack_lvl+0xa8/0x11c
+[   18.362305][  T301]  dump_stack+0x1c/0x2c
+[   18.362816][  T301]  mrdump_common_die+0x184/0x40c [mrdump]
+[   18.363575][  T301]  ipanic_die+0x24/0x38 [mrdump]
+[   18.364230][  T301]  atomic_notifier_call_chain+0x128/0x2b8
+[   18.364937][  T301]  die+0x16c/0x568
+[   18.365394][  T301]  __do_kernel_fault+0x1e8/0x214
+[   18.365402][  T301]  do_page_fault+0xb8/0x678
+[   18.366934][  T301]  do_translation_fault+0x48/0x64
+[   18.368645][  T301]  do_mem_abort+0x68/0x148
+[   18.368652][  T301]  el1_abort+0x40/0x64
+[   18.368660][  T301]  el1h_64_sync_handler+0x54/0x88
+[   18.368668][  T301]  el1h_64_sync+0x68/0x6c
+[   18.368673][  T301]  mtk_iommu_probe_device+0xf8/0x118 [mtk_iommu]
+...
+
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Yong Wu <yong.wu@mediatek.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 635319a4a744 ("media: iommu/mediatek: Add device_link between the consumer and the larb devices")
+Signed-off-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: Yong Wu <yong.wu@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Link: https://lore.kernel.org/r/20220503071427.2285-8-yong.wu@mediatek.com
+Link: https://lore.kernel.org/r/20220505132731.21628-1-miles.chen@mediatek.com
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/mtk_iommu.c | 13 +++++++++++--
- drivers/iommu/mtk_iommu.h |  2 ++
- 2 files changed, 13 insertions(+), 2 deletions(-)
+ drivers/iommu/mtk_iommu.c    | 6 ++++++
+ drivers/iommu/mtk_iommu_v1.c | 7 +++++++
+ 2 files changed, 13 insertions(+)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index b9d690327eae..9b3ded518f83 100644
+index 9b3ded518f83..2ae46fa6b3de 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -469,15 +469,16 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 		dom->data = data;
- 	}
- 
-+	mutex_lock(&data->mutex);
- 	if (!data->m4u_dom) { /* Initialize the M4U HW */
- 		ret = pm_runtime_resume_and_get(m4udev);
- 		if (ret < 0)
--			return ret;
-+			goto err_unlock;
- 
- 		ret = mtk_iommu_hw_init(data);
- 		if (ret) {
- 			pm_runtime_put(m4udev);
--			return ret;
-+			goto err_unlock;
+@@ -586,6 +586,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+ 	 * All the ports in each a device should be in the same larbs.
+ 	 */
+ 	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
++	if (larbid >= MTK_LARB_NR_MAX)
++		return ERR_PTR(-EINVAL);
++
+ 	for (i = 1; i < fwspec->num_ids; i++) {
+ 		larbidx = MTK_M4U_TO_LARB(fwspec->ids[i]);
+ 		if (larbid != larbidx) {
+@@ -595,6 +598,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
  		}
- 		data->m4u_dom = dom;
- 		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
-@@ -485,9 +486,14 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 
- 		pm_runtime_put(m4udev);
  	}
-+	mutex_unlock(&data->mutex);
- 
- 	mtk_iommu_config(data, dev, true, domid);
- 	return 0;
+ 	larbdev = data->larb_imu[larbid].dev;
++	if (!larbdev)
++		return ERR_PTR(-EINVAL);
 +
-+err_unlock:
-+	mutex_unlock(&data->mutex);
-+	return ret;
- }
+ 	link = device_link_add(dev, larbdev,
+ 			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
+ 	if (!link)
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index bc7ee90b9373..254530ad6c48 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -80,6 +80,7 @@
+ /* MTK generation one iommu HW only support 4K size mapping */
+ #define MT2701_IOMMU_PAGE_SHIFT			12
+ #define MT2701_IOMMU_PAGE_SIZE			(1UL << MT2701_IOMMU_PAGE_SHIFT)
++#define MT2701_LARB_NR_MAX			3
  
- static void mtk_iommu_detach_device(struct iommu_domain *domain,
-@@ -627,6 +633,7 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
- 	if (domid < 0)
- 		return ERR_PTR(domid);
+ /*
+  * MTK m4u support 4GB iova address space, and only support 4K page
+@@ -457,6 +458,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
  
-+	mutex_lock(&data->mutex);
- 	group = data->m4u_group[domid];
- 	if (!group) {
- 		group = iommu_group_alloc();
-@@ -635,6 +642,7 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
- 	} else {
- 		iommu_group_ref_get(group);
- 	}
-+	mutex_unlock(&data->mutex);
- 	return group;
- }
- 
-@@ -909,6 +917,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	}
- 
- 	platform_set_drvdata(pdev, data);
-+	mutex_init(&data->mutex);
- 
- 	ret = iommu_device_sysfs_add(&data->iommu, dev, NULL,
- 				     "mtk-iommu.%pa", &ioaddr);
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index f81fa8862ed0..f413546ac6e5 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -80,6 +80,8 @@ struct mtk_iommu_data {
- 
- 	struct dma_iommu_mapping	*mapping; /* For mtk_iommu_v1.c */
- 
-+	struct mutex			mutex; /* Protect m4u_group/m4u_dom above */
+ 	/* Link the consumer device with the smi-larb device(supplier) */
+ 	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
++	if (larbid >= MT2701_LARB_NR_MAX)
++		return ERR_PTR(-EINVAL);
 +
- 	struct list_head		list;
- 	struct mtk_smi_larb_iommu	larb_imu[MTK_LARB_NR_MAX];
- };
+ 	for (idx = 1; idx < fwspec->num_ids; idx++) {
+ 		larbidx = mt2701_m4u_to_larb(fwspec->ids[idx]);
+ 		if (larbid != larbidx) {
+@@ -467,6 +471,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+ 	}
+ 
+ 	larbdev = data->larb_imu[larbid].dev;
++	if (!larbdev)
++		return ERR_PTR(-EINVAL);
++
+ 	link = device_link_add(dev, larbdev,
+ 			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
+ 	if (!link)
 -- 
 2.35.1
 
