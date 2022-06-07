@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39632CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BDDEC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:47:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377298AbiFGVrB (ORCPT
+        id S1378825AbiFGVrM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:47:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51474 "EHLO
+        Tue, 7 Jun 2022 17:47:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378127AbiFGUv2 (ORCPT
+        with ESMTP id S1378087AbiFGUvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:51:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147251FE39B;
-        Tue,  7 Jun 2022 11:41:46 -0700 (PDT)
+        Tue, 7 Jun 2022 16:51:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326431862A4;
+        Tue,  7 Jun 2022 11:41:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30A28B82182;
-        Tue,  7 Jun 2022 18:41:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C7A0C385A2;
-        Tue,  7 Jun 2022 18:41:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3061561295;
+        Tue,  7 Jun 2022 18:41:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37A16C385A2;
+        Tue,  7 Jun 2022 18:41:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627304;
-        bh=PFB7LMWW2PhVhGHlYnGEb+7WfOIbTaZ+ZxhAhllowaA=;
+        s=korg; t=1654627298;
+        bh=JResAk/B+hthY8xeZahQu9QuVQDbRBIYLvFy6476UII=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gtzJuhqWn0RI1K6kSLMSVzXlZCM25fQsQaMKwA3xDj0IjVEE0g5/9HG+eX63bLv8B
-         cDqEmCPu38ovlPOibOTEQKuZBc4sVEUh/jGjmVPNdogCiBAcLFsNsaW06Qvf32JO83
-         e1vI/43gccWHxixUAdHRosinKoVV81x5QjJVsdzg=
+        b=Fm6yaoUYXRM1WhLjRl5jbn4lqI0QQ67Gt0T2x34ve20+rQK4XkcWbG2EXl1FYV13o
+         im7DTvH74RQc7aKyG7I/OwytNRmGmlniY5DePnqMbLJpN4fQ5P/xxS1nhDRx/PxiBI
+         Rdnl2HFvyjdGJXufxY7m5TB67HwznBXAZPnPFbG4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        Baik Song An <bsahn@etri.re.kr>,
-        Hong Yeon Kim <kimhy@etri.re.kr>,
-        Taeung Song <taeung@reallinux.co.kr>, linuxgeek@linuxgeek.io,
-        Wonhyuk Yang <vvghjk1234@gmail.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.17 650/772] tracing: Fix return value of trace_pid_write()
-Date:   Tue,  7 Jun 2022 19:04:02 +0200
-Message-Id: <20220607165008.218851412@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Moore <paul@paul-moore.com>,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
+Subject: [PATCH 5.17 687/772] landlock: Create find_rule() from unmask_layers()
+Date:   Tue,  7 Jun 2022 19:04:39 +0200
+Message-Id: <20220607165009.299261838@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,79 +49,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wonhyuk Yang <vvghjk1234@gmail.com>
+From: Mickaël Salaün <mic@digikod.net>
 
-commit b27f266f74fbda4ee36c2b2b04d15992860cf23b upstream.
+commit 2cd7cd6eed88b8383cfddce589afe9c0ae1d19b4 upstream.
 
-Setting set_event_pid with trailing whitespace lead to endless write
-system calls like below.
+This refactoring will be useful in a following commit.
 
-    $ strace echo "123 " > /sys/kernel/debug/tracing/set_event_pid
-    execve("/usr/bin/echo", ["echo", "123 "], ...) = 0
-    ...
-    write(1, "123 \n", 5)                   = 4
-    write(1, "\n", 1)                       = 0
-    write(1, "\n", 1)                       = 0
-    write(1, "\n", 1)                       = 0
-    write(1, "\n", 1)                       = 0
-    write(1, "\n", 1)                       = 0
-    ....
-
-This is because, the result of trace_get_user's are not returned when it
-read at least one pid. To fix it, update read variable even if
-parser->idx == 0.
-
-The result of applied patch is below.
-
-    $ strace echo "123 " > /sys/kernel/debug/tracing/set_event_pid
-    execve("/usr/bin/echo", ["echo", "123 "], ...) = 0
-    ...
-    write(1, "123 \n", 5)                   = 5
-    close(1)                                = 0
-
-Link: https://lkml.kernel.org/r/20220503050546.288911-1-vvghjk1234@gmail.com
-
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Baik Song An <bsahn@etri.re.kr>
-Cc: Hong Yeon Kim <kimhy@etri.re.kr>
-Cc: Taeung Song <taeung@reallinux.co.kr>
-Cc: linuxgeek@linuxgeek.io
+Reviewed-by: Paul Moore <paul@paul-moore.com>
+Link: https://lore.kernel.org/r/20220506161102.525323-4-mic@digikod.net
 Cc: stable@vger.kernel.org
-Fixes: 4909010788640 ("tracing: Add set_event_pid directory for future use")
-Signed-off-by: Wonhyuk Yang <vvghjk1234@gmail.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Mickaël Salaün <mic@digikod.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ security/landlock/fs.c |   41 ++++++++++++++++++++++++++++-------------
+ 1 file changed, 28 insertions(+), 13 deletions(-)
 
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -711,13 +711,16 @@ int trace_pid_write(struct trace_pid_lis
- 		pos = 0;
+--- a/security/landlock/fs.c
++++ b/security/landlock/fs.c
+@@ -183,23 +183,36 @@ int landlock_append_fs_rule(struct landl
  
- 		ret = trace_get_user(&parser, ubuf, cnt, &pos);
--		if (ret < 0 || !trace_parser_loaded(&parser))
-+		if (ret < 0)
- 			break;
+ /* Access-control management */
  
- 		read += ret;
- 		ubuf += ret;
- 		cnt -= ret;
+-static inline layer_mask_t
+-unmask_layers(const struct landlock_ruleset *const domain,
+-	      const struct path *const path, const access_mask_t access_request,
+-	      layer_mask_t layer_mask)
++/*
++ * The lifetime of the returned rule is tied to @domain.
++ *
++ * Returns NULL if no rule is found or if @dentry is negative.
++ */
++static inline const struct landlock_rule *
++find_rule(const struct landlock_ruleset *const domain,
++	  const struct dentry *const dentry)
+ {
+ 	const struct landlock_rule *rule;
+ 	const struct inode *inode;
+-	size_t i;
  
-+		if (!trace_parser_loaded(&parser))
-+			break;
+-	if (d_is_negative(path->dentry))
+-		/* Ignore nonexistent leafs. */
+-		return layer_mask;
+-	inode = d_backing_inode(path->dentry);
++	/* Ignores nonexistent leafs. */
++	if (d_is_negative(dentry))
++		return NULL;
 +
- 		ret = -EINVAL;
- 		if (kstrtoul(parser.buffer, 0, &val))
- 			break;
-@@ -743,7 +746,6 @@ int trace_pid_write(struct trace_pid_lis
- 	if (!nr_pids) {
- 		/* Cleared the list of pids */
- 		trace_pid_list_free(pid_list);
--		read = ret;
- 		pid_list = NULL;
- 	}
++	inode = d_backing_inode(dentry);
+ 	rcu_read_lock();
+ 	rule = landlock_find_rule(
+ 		domain, rcu_dereference(landlock_inode(inode)->object));
+ 	rcu_read_unlock();
++	return rule;
++}
++
++static inline layer_mask_t unmask_layers(const struct landlock_rule *const rule,
++					 const access_mask_t access_request,
++					 layer_mask_t layer_mask)
++{
++	size_t layer_level;
++
+ 	if (!rule)
+ 		return layer_mask;
  
+@@ -210,8 +223,9 @@ unmask_layers(const struct landlock_rule
+ 	 * the remaining layers for each inode, from the first added layer to
+ 	 * the last one.
+ 	 */
+-	for (i = 0; i < rule->num_layers; i++) {
+-		const struct landlock_layer *const layer = &rule->layers[i];
++	for (layer_level = 0; layer_level < rule->num_layers; layer_level++) {
++		const struct landlock_layer *const layer =
++			&rule->layers[layer_level];
+ 		const layer_mask_t layer_bit = BIT_ULL(layer->level - 1);
+ 
+ 		/* Checks that the layer grants access to the full request. */
+@@ -269,8 +283,9 @@ static int check_access_path(const struc
+ 	while (true) {
+ 		struct dentry *parent_dentry;
+ 
+-		layer_mask = unmask_layers(domain, &walker_path, access_request,
+-					   layer_mask);
++		layer_mask =
++			unmask_layers(find_rule(domain, walker_path.dentry),
++				      access_request, layer_mask);
+ 		if (layer_mask == 0) {
+ 			/* Stops when a rule from each layer grants access. */
+ 			allowed = true;
 
 
