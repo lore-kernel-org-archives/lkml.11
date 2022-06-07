@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E75B3CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:41:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08A4FCCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:41:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347723AbiFGRkE (ORCPT
+        id S1347816AbiFGRkO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:40:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39762 "EHLO
+        Tue, 7 Jun 2022 13:40:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347404AbiFGRan (ORCPT
+        with ESMTP id S1347478AbiFGRas (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:30:43 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 317BC1109BA;
-        Tue,  7 Jun 2022 10:26:37 -0700 (PDT)
+        Tue, 7 Jun 2022 13:30:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1247B111B94;
+        Tue,  7 Jun 2022 10:27:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 71310CE21CD;
-        Tue,  7 Jun 2022 17:26:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56FDDC385A5;
-        Tue,  7 Jun 2022 17:26:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9939B6127C;
+        Tue,  7 Jun 2022 17:27:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0988C385A5;
+        Tue,  7 Jun 2022 17:27:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622793;
-        bh=uD3kUOkQq+jybqex1hsntI82/ulhgLwlE89synK6EKA=;
+        s=korg; t=1654622822;
+        bh=M25JXcvDykKqIPIZeQD3S3WaYhxCDWlKyqcnmgUM6WE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DPhpahdBratiuYK3akUEUGixozf9Zcb0sTGcYXloVu/hgPbyzY0C6cD9p7paYL/BP
-         oS8m78/gFSC9kJ4TRj8/OFt6Yf1wHH8QyzI08BnqZnRoKLi6ZgmsHANrobeLG9xxB/
-         2AfQSAU7kneuKlckHKAepfm+Z3BvYbdK9a/dLZkg=
+        b=KGNS18jwW1+h43HNTQjwicbqHMzm+uMrgNVNa9HSewJslCIPHfxri2Nby0fxYtEjD
+         hwbCEQARs7WPCj+GfW0ZqLcIS66mkHf6qcf/rLM4XxF71nmI3hBwdpTyQe4y6yQOa8
+         Av0d3qO015wSEo0KKIeWQ91GITq/FovNPWAob3eQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 158/452] ALSA: pcm: Check for null pointer of pointer substream before dereferencing it
-Date:   Tue,  7 Jun 2022 19:00:15 +0200
-Message-Id: <20220607164913.268195102@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 194/452] drm/msm: return an error pointer in msm_gem_prime_get_sg_table()
+Date:   Tue,  7 Jun 2022 19:00:51 +0200
+Message-Id: <20220607164914.345654338@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,45 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Ian King <colin.i.king@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 011b559be832194f992f73d6c0d5485f5925a10b ]
+[ Upstream commit cf575e31611eb6dccf08fad02e57e35b2187704d ]
 
-Pointer substream is being dereferenced on the assignment of pointer card
-before substream is being null checked with the macro PCM_RUNTIME_CHECK.
-Although PCM_RUNTIME_CHECK calls BUG_ON, it still is useful to perform the
-the pointer check before card is assigned.
+The msm_gem_prime_get_sg_table() needs to return error pointers on
+error.  This is called from drm_gem_map_dma_buf() and returning a
+NULL will lead to a crash in that function.
 
-Fixes: d4cfb30fce03 ("ALSA: pcm: Set per-card upper limit of PCM buffer allocations")
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-Link: https://lore.kernel.org/r/20220424205945.1372247-1-colin.i.king@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: ac45146733b0 ("drm/msm: fix msm_gem_prime_get_sg_table()")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/485023/
+Link: https://lore.kernel.org/r/YnOmtS5tfENywR9m@kili
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/core/pcm_memory.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/msm/msm_gem_prime.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/core/pcm_memory.c b/sound/core/pcm_memory.c
-index a9a0d74f3165..191883842a35 100644
---- a/sound/core/pcm_memory.c
-+++ b/sound/core/pcm_memory.c
-@@ -434,7 +434,6 @@ EXPORT_SYMBOL(snd_pcm_lib_malloc_pages);
-  */
- int snd_pcm_lib_free_pages(struct snd_pcm_substream *substream)
- {
--	struct snd_card *card = substream->pcm->card;
- 	struct snd_pcm_runtime *runtime;
+diff --git a/drivers/gpu/drm/msm/msm_gem_prime.c b/drivers/gpu/drm/msm/msm_gem_prime.c
+index 515ef80816a0..8c64ce7288f1 100644
+--- a/drivers/gpu/drm/msm/msm_gem_prime.c
++++ b/drivers/gpu/drm/msm/msm_gem_prime.c
+@@ -17,7 +17,7 @@ struct sg_table *msm_gem_prime_get_sg_table(struct drm_gem_object *obj)
+ 	int npages = obj->size >> PAGE_SHIFT;
  
- 	if (PCM_RUNTIME_CHECK(substream))
-@@ -443,6 +442,8 @@ int snd_pcm_lib_free_pages(struct snd_pcm_substream *substream)
- 	if (runtime->dma_area == NULL)
- 		return 0;
- 	if (runtime->dma_buffer_p != &substream->dma_buffer) {
-+		struct snd_card *card = substream->pcm->card;
-+
- 		/* it's a newly allocated buffer.  release it now. */
- 		do_free_pages(card, runtime->dma_buffer_p);
- 		kfree(runtime->dma_buffer_p);
+ 	if (WARN_ON(!msm_obj->pages))  /* should have already pinned! */
+-		return NULL;
++		return ERR_PTR(-ENOMEM);
+ 
+ 	return drm_prime_pages_to_sg(obj->dev, msm_obj->pages, npages);
+ }
 -- 
 2.35.1
 
