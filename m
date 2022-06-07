@@ -2,238 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CD5DCCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C703CCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349480AbiFHAjM (ORCPT
+        id S1359568AbiFHAkW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:39:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38594 "EHLO
+        Tue, 7 Jun 2022 20:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382245AbiFGVuZ (ORCPT
+        with ESMTP id S1389878AbiFGWx5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:50:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D306F190D37;
-        Tue,  7 Jun 2022 12:08:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD382618D5;
-        Tue,  7 Jun 2022 19:08:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF89CC385A5;
-        Tue,  7 Jun 2022 19:08:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628918;
-        bh=48mLBrfjhKNdMqxK+VO5NBG7tpqLhjZ89rygkSAQFXQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DRYx9dtnRH42SoeADzGkr+9GUwXzFzsuJO3+6OAmPPxdndtHk0sS6Ovar5TVJT32f
-         Y+1AamKPV3In/bvbHoKPItSB6GzFjOOjN40tX8ZkU3XA2QakEMVc50UvxX2dYN1SR/
-         DcJrMxgUr3bXZ4slwWhAxPDb4PaLxyeUl7B40VYo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will.deacon@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 463/879] irqchip/gic-v3: Refactor ISB + EOIR at ack time
-Date:   Tue,  7 Jun 2022 18:59:41 +0200
-Message-Id: <20220607165016.313615146@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 18:53:57 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53282E93F4;
+        Tue,  7 Jun 2022 12:49:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654631375; x=1686167375;
+  h=date:from:to:subject:message-id:references:mime-version:
+   in-reply-to;
+  bh=0MGJANZmWUnpCpze3iYseISZvaFBDIUwvfaKvGZBEhc=;
+  b=HlldldWDFVq2K80AtluzAiGMNv7SmwXFSiE2whZ/qkhC4A6WiQfnPFcY
+   fuBifpayGpgfVJdtbHqI2oLMwQztFrexEZ06UT07yDPvmiCRImxefie7d
+   4ulnQm93+xtzk5mRZYFEOS1i/RcG4gUh+X/FkZOxRFJhBBw7SjQevhzhj
+   5KwtEho0irF38vCwKOkP2Z9tNvoFggvzWwygbhpqNEvvQM0uL+/iq8aFJ
+   NKWavt9TxqJK1DNXP9w9gEGFjMfYq+NLM7ofqZYaoP+t/B3siqEgNp5Xd
+   LkAHk5RFV9+7Tp15/sS4ZnPIE3EisUCTI9ij5LePij/Z3R27DXf2wUISt
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="257184956"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="257184956"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 12:49:34 -0700
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="636298348"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 12:49:33 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nyfCl-000W1G-3i;
+        Tue, 07 Jun 2022 22:49:31 +0300
+Date:   Tue, 7 Jun 2022 22:49:30 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 1/1] spi: Replace match_true() by device_match_any()
+Message-ID: <Yp+rymvjN2KzsMz/@smile.fi.intel.com>
+References: <20220607190601.47363-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607190601.47363-1-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Rutland <mark.rutland@arm.com>
+On Tue, Jun 07, 2022 at 10:06:01PM +0300, Andy Shevchenko wrote:
+> We have already a helper to match any device, use it and drop match_true().
 
-[ Upstream commit 6efb50923771f392122f5ce69dfc43b08f16e449 ]
+Scratch this, it seems I compiled against wrong config and haven't noticed
+types mismatch.
 
-There are cases where a context synchronization event is necessary
-between an IRQ being raised and being handled, and there are races such
-that we cannot rely upon the exception entry being subsequent to the
-interrupt being raised. To fix this, we place an ISB between a read of
-IAR and the subsequent invocation of an IRQ handler.
+We can't use the proposed helper since it's only for for_each type of
+functions.
 
-When EOI mode 1 is in use, we need to EOI an interrupt prior to invoking
-its handler, and we have a write to EOIR for this. As this write to EOIR
-requires an ISB, and this is provided by the gic_write_eoir() helper, we
-omit the usual ISB in this case, with the logic being:
-
-|	if (static_branch_likely(&supports_deactivate_key))
-|		gic_write_eoir(irqnr);
-|	else
-|		isb();
-
-This is somewhat opaque, and it would be a little clearer if there were
-an unconditional ISB, with only the write to EOIR being conditional,
-e.g.
-
-|	if (static_branch_likely(&supports_deactivate_key))
-|		write_gicreg(irqnr, ICC_EOIR1_EL1);
-|
-|	isb();
-
-This patch rewrites the code that way, with this logic factored into a
-new helper function with comments explaining what the ISB is for, as
-were originally laid out in commit:
-
-  39a06b67c2c1256b ("irqchip/gic: Ensure we have an ISB between ack and ->handle_irq")
-
-Note that since then, we removed the IAR polling in commit:
-
-  342677d70ab92142 ("irqchip/gic-v3: Remove acknowledge loop")
-
-... which removed one of the two race conditions.
-
-For consistency, other portions of the driver are made to manipulate
-EOIR using write_gicreg() and explcit ISBs, and the gic_write_eoir()
-helper function is removed.
-
-There should be no functional change as a result of this patch.
-
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Will Deacon <will.deacon@arm.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220513133038.226182-3-mark.rutland@arm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm/include/asm/arch_gicv3.h   |  7 +----
- arch/arm64/include/asm/arch_gicv3.h |  6 ----
- drivers/irqchip/irq-gic-v3.c        | 43 ++++++++++++++++++++++-------
- 3 files changed, 34 insertions(+), 22 deletions(-)
-
-diff --git a/arch/arm/include/asm/arch_gicv3.h b/arch/arm/include/asm/arch_gicv3.h
-index 413abfb42989..f82a819eb0db 100644
---- a/arch/arm/include/asm/arch_gicv3.h
-+++ b/arch/arm/include/asm/arch_gicv3.h
-@@ -48,6 +48,7 @@ static inline u32 read_ ## a64(void)		\
- 	return read_sysreg(a32); 		\
- }						\
- 
-+CPUIF_MAP(ICC_EOIR1, ICC_EOIR1_EL1)
- CPUIF_MAP(ICC_PMR, ICC_PMR_EL1)
- CPUIF_MAP(ICC_AP0R0, ICC_AP0R0_EL1)
- CPUIF_MAP(ICC_AP0R1, ICC_AP0R1_EL1)
-@@ -63,12 +64,6 @@ CPUIF_MAP(ICC_AP1R3, ICC_AP1R3_EL1)
- 
- /* Low-level accessors */
- 
--static inline void gic_write_eoir(u32 irq)
--{
--	write_sysreg(irq, ICC_EOIR1);
--	isb();
--}
--
- static inline void gic_write_dir(u32 val)
- {
- 	write_sysreg(val, ICC_DIR);
-diff --git a/arch/arm64/include/asm/arch_gicv3.h b/arch/arm64/include/asm/arch_gicv3.h
-index 8bd5afc7b692..48d4473e8eee 100644
---- a/arch/arm64/include/asm/arch_gicv3.h
-+++ b/arch/arm64/include/asm/arch_gicv3.h
-@@ -26,12 +26,6 @@
-  * sets the GP register's most significant bits to 0 with an explicit cast.
-  */
- 
--static inline void gic_write_eoir(u32 irq)
--{
--	write_sysreg_s(irq, SYS_ICC_EOIR1_EL1);
--	isb();
--}
--
- static __always_inline void gic_write_dir(u32 irq)
- {
- 	write_sysreg_s(irq, SYS_ICC_DIR_EL1);
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index 7305d84f2df5..0cbc4e25c48d 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -556,7 +556,8 @@ static void gic_irq_nmi_teardown(struct irq_data *d)
- 
- static void gic_eoi_irq(struct irq_data *d)
- {
--	gic_write_eoir(gic_irq(d));
-+	write_gicreg(gic_irq(d), ICC_EOIR1_EL1);
-+	isb();
- }
- 
- static void gic_eoimode1_eoi_irq(struct irq_data *d)
-@@ -640,10 +641,38 @@ static void gic_deactivate_unhandled(u32 irqnr)
- 		if (irqnr < 8192)
- 			gic_write_dir(irqnr);
- 	} else {
--		gic_write_eoir(irqnr);
-+		write_gicreg(irqnr, ICC_EOIR1_EL1);
-+		isb();
- 	}
- }
- 
-+/*
-+ * Follow a read of the IAR with any HW maintenance that needs to happen prior
-+ * to invoking the relevant IRQ handler. We must do two things:
-+ *
-+ * (1) Ensure instruction ordering between a read of IAR and subsequent
-+ *     instructions in the IRQ handler using an ISB.
-+ *
-+ *     It is possible for the IAR to report an IRQ which was signalled *after*
-+ *     the CPU took an IRQ exception as multiple interrupts can race to be
-+ *     recognized by the GIC, earlier interrupts could be withdrawn, and/or
-+ *     later interrupts could be prioritized by the GIC.
-+ *
-+ *     For devices which are tightly coupled to the CPU, such as PMUs, a
-+ *     context synchronization event is necessary to ensure that system
-+ *     register state is not stale, as these may have been indirectly written
-+ *     *after* exception entry.
-+ *
-+ * (2) Deactivate the interrupt when EOI mode 1 is in use.
-+ */
-+static inline void gic_complete_ack(u32 irqnr)
-+{
-+	if (static_branch_likely(&supports_deactivate_key))
-+		write_gicreg(irqnr, ICC_EOIR1_EL1);
-+
-+	isb();
-+}
-+
- static inline void gic_handle_nmi(u32 irqnr, struct pt_regs *regs)
- {
- 	bool irqs_enabled = interrupts_enabled(regs);
-@@ -652,10 +681,7 @@ static inline void gic_handle_nmi(u32 irqnr, struct pt_regs *regs)
- 	if (irqs_enabled)
- 		nmi_enter();
- 
--	if (static_branch_likely(&supports_deactivate_key))
--		gic_write_eoir(irqnr);
--	else
--		isb()
-+	gic_complete_ack(irqnr);
- 
- 	/*
- 	 * Leave the PSR.I bit set to prevent other NMIs to be
-@@ -726,10 +752,7 @@ static asmlinkage void __exception_irq_entry gic_handle_irq(struct pt_regs *regs
- 		gic_arch_enable_irqs();
- 	}
- 
--	if (static_branch_likely(&supports_deactivate_key))
--		gic_write_eoir(irqnr);
--	else
--		isb();
-+	gic_complete_ack(irqnr);
- 
- 	if (generic_handle_domain_irq(gic_data.domain, irqnr)) {
- 		WARN_ONCE(true, "Unexpected interrupt received!\n");
 -- 
-2.35.1
-
+With Best Regards,
+Andy Shevchenko
 
 
