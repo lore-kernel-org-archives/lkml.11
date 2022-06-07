@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9184CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:43:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5212AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:43:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376376AbiFGUng (ORCPT
+        id S1376408AbiFGUnq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:43:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55194 "EHLO
+        Tue, 7 Jun 2022 16:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357482AbiFGTmC (ORCPT
+        with ESMTP id S1357428AbiFGTl7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:42:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E188E1B216B;
-        Tue,  7 Jun 2022 11:15:09 -0700 (PDT)
+        Tue, 7 Jun 2022 15:41:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55AB71B1F62;
+        Tue,  7 Jun 2022 11:14:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5FF16B8233E;
-        Tue,  7 Jun 2022 18:15:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B381DC385A2;
-        Tue,  7 Jun 2022 18:15:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77437608CD;
+        Tue,  7 Jun 2022 18:14:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87980C34115;
+        Tue,  7 Jun 2022 18:14:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625706;
-        bh=4XChG8Mn9Ckp+o5xpIAJPICimju0Ixs9wovnr8tIqy0=;
+        s=korg; t=1654625694;
+        bh=tgODfi+gRHj0Fd3l9puJo3xP/s51i+HPf2rAmZCL/Kc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bkh1ldocEy3Nl2zD422kZ+HNaWJF+9Y8STUhgtsXYhpiRjqPWaRcGH/L4Ms7hqDqT
-         w297t57+u6mt+DBbuP+KmLLVa5UCg7xlO0Jc3eAGdLdBtRI8ec/6rhvpTrCxu+SwBn
-         U6DeiVKy4JzyCVSqLnMUEx5YsnXQILiYGzgqya7E=
+        b=wZ5pVw+AeDEGVlchIl+55TWwOm9CEGi0XzLK0vQbafKiz5g4rH8SCNmNUmgzoMxf3
+         zo2exRBftgOefJsZpq0U8jDqO0HeR0Ukr3yI3bCOG9RWgBDEkowdXtevlQAa1eeRu7
+         po4rYkA6SnLfjHE6nWp0nw7CBHuReohX/nD0l/uw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maksym Yaremchuk <maksymy@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Bodo Stroesser <bostroesser@gmail.com>,
+        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 113/772] mlxsw: spectrum_dcb: Do not warn about priority changes
-Date:   Tue,  7 Jun 2022 18:55:05 +0200
-Message-Id: <20220607164952.379123725@linuxfoundation.org>
+Subject: [PATCH 5.17 109/772] scsi: target: tcmu: Fix possible data corruption
+Date:   Tue,  7 Jun 2022 18:55:01 +0200
+Message-Id: <20220607164952.258326760@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,82 +51,144 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+From: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
 
-[ Upstream commit b6b584562cbe7dc357083459d6dd5b171e12cadb ]
+[ Upstream commit bb9b9eb0ae2e9d3f6036f0ad907c3a83dcd43485 ]
 
-The idea behind the warnings is that the user would get warned in case when
-more than one priority is configured for a given DSCP value on a netdevice.
+When tcmu_vma_fault() gets a page successfully, before the current context
+completes page fault procedure, find_free_blocks() may run and call
+unmap_mapping_range() to unmap the page. Assume that when
+find_free_blocks() initially completes and the previous page fault
+procedure starts to run again and completes, then one truncated page has
+been mapped to userspace. But note that tcmu_vma_fault() has gotten a
+refcount for the page so any other subsystem won't be able to use the page
+unless the userspace address is unmapped later.
 
-The warning is currently wrong, because dcb_ieee_getapp_mask() returns
-the first matching entry, not all of them, and the warning will then claim
-that some priority is "current", when in fact it is not.
+If another command subsequently runs and needs to extend dbi_thresh it may
+reuse the corresponding slot for the previous page in data_bitmap. Then
+though we'll allocate new page for this slot in data_area, no page fault
+will happen because we have a valid map and the real request's data will be
+lost.
 
-But more importantly, the warning is misleading in general. Consider the
-following commands:
+Filesystem implementations will also run into this issue but they usually
+lock the page when vm_operations_struct->fault gets a page and unlock the
+page after finish_fault() completes. For truncate filesystems lock pages in
+truncate_inode_pages() to protect against racing wrt. page faults.
 
- # dcb app flush dev swp19 dscp-prio
- # dcb app add dev swp19 dscp-prio 24:3
- # dcb app replace dev swp19 dscp-prio 24:2
+To fix this possible data corruption scenario we can apply a method similar
+to the filesystems.  For pages that are to be freed, tcmu_blocks_release()
+locks and unlocks. Make tcmu_vma_fault() also lock found page under
+cmdr_lock. At the same time, since tcmu_vma_fault() gets an extra page
+refcount, tcmu_blocks_release() won't free pages if pages are in page fault
+procedure, which means it is safe to call tcmu_blocks_release() before
+unmap_mapping_range().
 
-The last command will issue the following warning:
+With these changes tcmu_blocks_release() will wait for all page faults to
+be completed before calling unmap_mapping_range(). And later, if
+unmap_mapping_range() is called, it will ensure stale mappings are removed.
 
- mlxsw_spectrum3 0000:07:00.0 swp19: Ignoring new priority 2 for DSCP 24 in favor of current value of 3
-
-The reason is that the "replace" command works by first adding the new
-value, and then removing all old values. This is the only way to make the
-replacement without causing the traffic to be prioritized to whatever the
-chip defaults to. The warning is issued in response to adding the new
-priority, and then no warning is shown when the old priority is removed.
-The upshot is that the canonical way to change traffic prioritization
-always produces a warning about ignoring the new priority, but what gets
-configured is in fact what the user intended.
-
-An option to just emit warning every time that the prioritization changes
-just to make it clear that it happened is obviously unsatisfactory.
-
-Therefore, in this patch, remove the warnings.
-
-Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/20220421023735.9018-1-xiaoguang.wang@linux.alibaba.com
+Reviewed-by: Bodo Stroesser <bostroesser@gmail.com>
+Signed-off-by: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c | 13 -------------
- 1 file changed, 13 deletions(-)
+ drivers/target/target_core_user.c | 40 ++++++++++++++++++++++++++++---
+ 1 file changed, 37 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
-index 5f92b1691360..aff6d4f35cd2 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
-@@ -168,8 +168,6 @@ static int mlxsw_sp_dcbnl_ieee_setets(struct net_device *dev,
- static int mlxsw_sp_dcbnl_app_validate(struct net_device *dev,
- 				       struct dcb_app *app)
- {
--	int prio;
--
- 	if (app->priority >= IEEE_8021QAZ_MAX_TCS) {
- 		netdev_err(dev, "APP entry with priority value %u is invalid\n",
- 			   app->priority);
-@@ -183,17 +181,6 @@ static int mlxsw_sp_dcbnl_app_validate(struct net_device *dev,
- 				   app->protocol);
- 			return -EINVAL;
- 		}
--
--		/* Warn about any DSCP APP entries with the same PID. */
--		prio = fls(dcb_ieee_getapp_mask(dev, app));
--		if (prio--) {
--			if (prio < app->priority)
--				netdev_warn(dev, "Choosing priority %d for DSCP %d in favor of previously-active value of %d\n",
--					    app->priority, app->protocol, prio);
--			else if (prio > app->priority)
--				netdev_warn(dev, "Ignoring new priority %d for DSCP %d in favor of current value of %d\n",
--					    app->priority, app->protocol, prio);
--		}
- 		break;
+diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
+index 06a5c4086551..f26767a55d38 100644
+--- a/drivers/target/target_core_user.c
++++ b/drivers/target/target_core_user.c
+@@ -20,6 +20,7 @@
+ #include <linux/configfs.h>
+ #include <linux/mutex.h>
+ #include <linux/workqueue.h>
++#include <linux/pagemap.h>
+ #include <net/genetlink.h>
+ #include <scsi/scsi_common.h>
+ #include <scsi/scsi_proto.h>
+@@ -1666,6 +1667,26 @@ static u32 tcmu_blocks_release(struct tcmu_dev *udev, unsigned long first,
+ 	xas_lock(&xas);
+ 	xas_for_each(&xas, page, (last + 1) * udev->data_pages_per_blk - 1) {
+ 		xas_store(&xas, NULL);
++		/*
++		 * While reaching here there may be page faults occurring on
++		 * the to-be-released pages. A race condition may occur if
++		 * unmap_mapping_range() is called before page faults on these
++		 * pages have completed; a valid but stale map is created.
++		 *
++		 * If another command subsequently runs and needs to extend
++		 * dbi_thresh, it may reuse the slot corresponding to the
++		 * previous page in data_bitmap. Though we will allocate a new
++		 * page for the slot in data_area, no page fault will happen
++		 * because we have a valid map. Therefore the command's data
++		 * will be lost.
++		 *
++		 * We lock and unlock pages that are to be released to ensure
++		 * all page faults have completed. This way
++		 * unmap_mapping_range() can ensure stale maps are cleanly
++		 * removed.
++		 */
++		lock_page(page);
++		unlock_page(page);
+ 		__free_page(page);
+ 		pages_freed++;
+ 	}
+@@ -1821,6 +1842,7 @@ static struct page *tcmu_try_get_data_page(struct tcmu_dev *udev, uint32_t dpi)
+ 	page = xa_load(&udev->data_pages, dpi);
+ 	if (likely(page)) {
+ 		get_page(page);
++		lock_page(page);
+ 		mutex_unlock(&udev->cmdr_lock);
+ 		return page;
+ 	}
+@@ -1862,6 +1884,7 @@ static vm_fault_t tcmu_vma_fault(struct vm_fault *vmf)
+ 	struct page *page;
+ 	unsigned long offset;
+ 	void *addr;
++	vm_fault_t ret = 0;
  
- 	case IEEE_8021QAZ_APP_SEL_ETHERTYPE:
+ 	int mi = tcmu_find_mem_index(vmf->vma);
+ 	if (mi < 0)
+@@ -1886,10 +1909,11 @@ static vm_fault_t tcmu_vma_fault(struct vm_fault *vmf)
+ 		page = tcmu_try_get_data_page(udev, dpi);
+ 		if (!page)
+ 			return VM_FAULT_SIGBUS;
++		ret = VM_FAULT_LOCKED;
+ 	}
+ 
+ 	vmf->page = page;
+-	return 0;
++	return ret;
+ }
+ 
+ static const struct vm_operations_struct tcmu_vm_ops = {
+@@ -3152,12 +3176,22 @@ static void find_free_blocks(void)
+ 			udev->dbi_max = block;
+ 		}
+ 
++		/*
++		 * Release the block pages.
++		 *
++		 * Also note that since tcmu_vma_fault() gets an extra page
++		 * refcount, tcmu_blocks_release() won't free pages if pages
++		 * are mapped. This means it is safe to call
++		 * tcmu_blocks_release() before unmap_mapping_range() which
++		 * drops the refcount of any pages it unmaps and thus releases
++		 * them.
++		 */
++		pages_freed = tcmu_blocks_release(udev, start, end - 1);
++
+ 		/* Here will truncate the data area from off */
+ 		off = udev->data_off + (loff_t)start * udev->data_blk_size;
+ 		unmap_mapping_range(udev->inode->i_mapping, off, 0, 1);
+ 
+-		/* Release the block pages */
+-		pages_freed = tcmu_blocks_release(udev, start, end - 1);
+ 		mutex_unlock(&udev->cmdr_lock);
+ 
+ 		total_pages_freed += pages_freed;
 -- 
 2.35.1
 
