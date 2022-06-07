@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDDF2CCA497
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D575CCA495
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:02:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347407AbiFGUCS (ORCPT
+        id S1358754AbiFGUCH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:02:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49496 "EHLO
+        Tue, 7 Jun 2022 16:02:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353738AbiFGTAl (ORCPT
+        with ESMTP id S1354370AbiFGTBM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:00:41 -0400
+        Tue, 7 Jun 2022 15:01:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77BD5150B55;
-        Tue,  7 Jun 2022 11:04:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B092150A16;
+        Tue,  7 Jun 2022 11:04:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF5A06183C;
-        Tue,  7 Jun 2022 18:04:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6F13C34119;
-        Tue,  7 Jun 2022 18:04:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6305861804;
+        Tue,  7 Jun 2022 18:04:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70E6EC385A5;
+        Tue,  7 Jun 2022 18:04:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625075;
-        bh=4YzTjUMpY9+Fl4KOFqdW1pidmgrh6KodE0bz5AFmQzI=;
+        s=korg; t=1654625080;
+        bh=tTRXdsZk3qVL7leSZdmAYurzYGCe14BTkNs7eIceQfc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jzehE16g+YPhok/GosjUZ6c6DOXBHWc30kml1SUw+XiNcbJhksyxIhZpdI+aqKS3w
-         8a2hJL57tdFHBqT56NsbKVvCQOBNO19FR3Yi7Jugx7cjaIunihjo1iZw3/j0o5JRX5
-         ppgW4SPeZrkgFyoxZiT4ceOSZjEv4mO/8ZZ1442Y=
+        b=kdtusdGwUY2GrUWoVHsF14dgsi0MDDfM5Ei9Gb8z0JCNceeuKGaVEiNXv/BBgJ5yo
+         zLe8UunfwzK2mz7wXBYr0BWJfdL5J1DcuM7aJM7FwekqXOaddw7ivmCi5CWKqo81n4
+         hKk4j4MkkzufRLpnYeRHkcQzUZLbpP8GZ7g0m+Us=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>
-Subject: [PATCH 5.15 556/667] PCI: qcom: Fix unbalanced PHY init on probe errors
-Date:   Tue,  7 Jun 2022 19:03:41 +0200
-Message-Id: <20220607164951.374913710@linuxfoundation.org>
+        stable@vger.kernel.org, Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Oscar Salvador <osalvador@suse.de>,
+        Don Dutile <ddutile@redhat.com>,
+        Wonhyuk Yang <vvghjk1234@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.15 558/667] mm, compaction: fast_find_migrateblock() should return pfn in the target zone
+Date:   Tue,  7 Jun 2022 19:03:43 +0200
+Message-Id: <20220607164951.435153923@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -52,42 +54,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+From: Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
 
-commit 83013631f0f9961416abd812e228c8efbc2f6069 upstream.
+commit bbe832b9db2e1ad21522f8f0bf02775fff8a0e0e upstream.
 
-Undo the PHY initialisation (e.g. balance runtime PM) if host
-initialisation fails during probe.
+At present, pages not in the target zone are added to cc->migratepages
+list in isolate_migratepages_block().  As a result, pages may migrate
+between nodes unintentionally.
 
-Link: https://lore.kernel.org/r/20220401133854.10421-3-johan+linaro@kernel.org
-Fixes: 82a823833f4e ("PCI: qcom: Add Qualcomm PCIe controller driver")
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Acked-by: Stanimir Varbanov <svarbanov@mm-sol.com>
-Cc: stable@vger.kernel.org      # 4.5
+This would be a serious problem for older kernels without commit
+a984226f457f849e ("mm: memcontrol: remove the pgdata parameter of
+mem_cgroup_page_lruvec"), because it can corrupt the lru list by
+handling pages in list without holding proper lru_lock.
+
+Avoid returning a pfn outside the target zone in the case that it is
+not aligned with a pageblock boundary.  Otherwise
+isolate_migratepages_block() will handle pages not in the target zone.
+
+Link: https://lkml.kernel.org/r/20220511044300.4069-1-yamamoto.rei@jp.fujitsu.com
+Fixes: 70b44595eafe ("mm, compaction: use free lists to quickly locate a migration source")
+Signed-off-by: Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Acked-by: Mel Gorman <mgorman@techsingularity.net>
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
+Cc: Don Dutile <ddutile@redhat.com>
+Cc: Wonhyuk Yang <vvghjk1234@gmail.com>
+Cc: Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/dwc/pcie-qcom.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ mm/compaction.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -1529,11 +1529,13 @@ static int qcom_pcie_probe(struct platfo
- 	ret = dw_pcie_host_init(pp);
- 	if (ret) {
- 		dev_err(dev, "cannot initialize host\n");
--		goto err_pm_runtime_put;
-+		goto err_phy_exit;
- 	}
+--- a/mm/compaction.c
++++ b/mm/compaction.c
+@@ -1815,6 +1815,8 @@ static unsigned long fast_find_migratebl
  
- 	return 0;
- 
-+err_phy_exit:
-+	phy_exit(pcie->phy);
- err_pm_runtime_put:
- 	pm_runtime_put(dev);
- 	pm_runtime_disable(dev);
+ 				update_fast_start_pfn(cc, free_pfn);
+ 				pfn = pageblock_start_pfn(free_pfn);
++				if (pfn < cc->zone->zone_start_pfn)
++					pfn = cc->zone->zone_start_pfn;
+ 				cc->fast_search_fail = 0;
+ 				found_block = true;
+ 				set_pageblock_skip(freepage);
 
 
