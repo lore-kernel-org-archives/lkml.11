@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E6F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:42:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF10ECCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378373AbiFGVmY (ORCPT
+        id S1380817AbiFGVm2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:42:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46126 "EHLO
+        Tue, 7 Jun 2022 17:42:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378552AbiFGUwP (ORCPT
+        with ESMTP id S1378620AbiFGUwT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:52:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F4231248F1;
-        Tue,  7 Jun 2022 11:42:26 -0700 (PDT)
+        Tue, 7 Jun 2022 16:52:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FDCE11AFD0;
+        Tue,  7 Jun 2022 11:42:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CBFA1615CE;
-        Tue,  7 Jun 2022 18:42:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8B92C385A2;
-        Tue,  7 Jun 2022 18:42:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BAA9B82018;
+        Tue,  7 Jun 2022 18:42:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2C02C385A2;
+        Tue,  7 Jun 2022 18:42:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627345;
-        bh=M/NcB8WX6Wqp97huGdzefR0XgbpT9OSioDVVk20zTLM=;
+        s=korg; t=1654627356;
+        bh=s88LYf1pFdDDcHZeXM4fiQIU0i0g0org+rLeRSkBlFg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RCa9l8ut/cWRrsnqajJkEYS34MOkrnn9/jdsxUSGavt/d9en5Leoze0miDDv/xd3G
-         qC/OSvQ3IYp223ekJaLEJ+lmv7beNN4PbKihBPCFqbjn1TqnN7XxmdxEn3oS1CNjJ4
-         bklndcumDA34WXP7yRPZeVcyY2YTEPuYJuwEUAbM=
+        b=xCpHSEjhM1kTbsGLhCb190zxdXYhP7zBk3JMTccZ+sGcwIluFT5csXr3JuA6hBb8P
+         dW5V/f930dgTmeqx9rlfK8PH7WC63ur2bD7uO454pNbcTXi4ero76vPCM1QndHVU2w
+         jyiaslqEKc2d6Xs6OtOOfbWQzkIjsyvqhdXBjPAQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
-        Guo Ren <guoren@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [PATCH 5.17 707/772] csky: patch_text: Fixup last cpu should be master
-Date:   Tue,  7 Jun 2022 19:04:59 +0200
-Message-Id: <20220607165009.881028038@linuxfoundation.org>
+        stable@vger.kernel.org, Kant Fan <kant@allwinnertech.com>,
+        Lukasz Luba <lukasz.luba@arm.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.17 710/772] thermal: devfreq_cooling: use local ops instead of global ops
+Date:   Tue,  7 Jun 2022 19:05:02 +0200
+Message-Id: <20220607165009.968371419@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,37 +50,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+From: Kant Fan <kant@allwinnertech.com>
 
-commit 8c4d16471e2babe9bdfe41d6ef724526629696cb upstream.
+commit b947769b8f778db130aad834257fcaca25df2edc upstream.
 
-These patch_text implementations are using stop_machine_cpuslocked
-infrastructure with atomic cpu_count. The original idea: When the
-master CPU patch_text, the others should wait for it. But current
-implementation is using the first CPU as master, which couldn't
-guarantee the remaining CPUs are waiting. This patch changes the
-last CPU as the master to solve the potential risk.
+Fix access illegal address problem in following condition:
 
-Fixes: 33e53ae1ce41 ("csky: Add kprobes supported")
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: <stable@vger.kernel.org>
+There are multiple devfreq cooling devices in system, some of them has
+EM model but others do not. Energy model ops such as state2power will
+append to global devfreq_cooling_ops when the cooling device with
+EM model is registered. It makes the cooling device without EM model
+also use devfreq_cooling_ops after appending when registered later by
+of_devfreq_cooling_register_power() or of_devfreq_cooling_register().
+
+The IPA governor regards the cooling devices without EM model as a power
+actor, because they also have energy model ops, and will access illegal
+address at dfc->em_pd when execute cdev->ops->get_requested_power,
+cdev->ops->state2power or cdev->ops->power2state.
+
+Fixes: 615510fe13bd2 ("thermal: devfreq_cooling: remove old power model and use EM")
+Cc: 5.13+ <stable@vger.kernel.org> # 5.13+
+Signed-off-by: Kant Fan <kant@allwinnertech.com>
+Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/csky/kernel/probes/kprobes.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/thermal/devfreq_cooling.c |   25 ++++++++++++++++++-------
+ 1 file changed, 18 insertions(+), 7 deletions(-)
 
---- a/arch/csky/kernel/probes/kprobes.c
-+++ b/arch/csky/kernel/probes/kprobes.c
-@@ -30,7 +30,7 @@ static int __kprobes patch_text_cb(void
- 	struct csky_insn_patch *param = priv;
- 	unsigned int addr = (unsigned int)param->addr;
+--- a/drivers/thermal/devfreq_cooling.c
++++ b/drivers/thermal/devfreq_cooling.c
+@@ -358,21 +358,28 @@ of_devfreq_cooling_register_power(struct
+ 	struct thermal_cooling_device *cdev;
+ 	struct device *dev = df->dev.parent;
+ 	struct devfreq_cooling_device *dfc;
++	struct thermal_cooling_device_ops *ops;
+ 	char *name;
+ 	int err, num_opps;
  
--	if (atomic_inc_return(&param->cpu_count) == 1) {
-+	if (atomic_inc_return(&param->cpu_count) == num_online_cpus()) {
- 		*(u16 *) addr = cpu_to_le16(param->opcode);
- 		dcache_wb_range(addr, addr + 2);
- 		atomic_inc(&param->cpu_count);
+-	dfc = kzalloc(sizeof(*dfc), GFP_KERNEL);
+-	if (!dfc)
++	ops = kmemdup(&devfreq_cooling_ops, sizeof(*ops), GFP_KERNEL);
++	if (!ops)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	dfc = kzalloc(sizeof(*dfc), GFP_KERNEL);
++	if (!dfc) {
++		err = -ENOMEM;
++		goto free_ops;
++	}
++
+ 	dfc->devfreq = df;
+ 
+ 	dfc->em_pd = em_pd_get(dev);
+ 	if (dfc->em_pd) {
+-		devfreq_cooling_ops.get_requested_power =
++		ops->get_requested_power =
+ 			devfreq_cooling_get_requested_power;
+-		devfreq_cooling_ops.state2power = devfreq_cooling_state2power;
+-		devfreq_cooling_ops.power2state = devfreq_cooling_power2state;
++		ops->state2power = devfreq_cooling_state2power;
++		ops->power2state = devfreq_cooling_power2state;
+ 
+ 		dfc->power_ops = dfc_power;
+ 
+@@ -407,8 +414,7 @@ of_devfreq_cooling_register_power(struct
+ 	if (!name)
+ 		goto remove_qos_req;
+ 
+-	cdev = thermal_of_cooling_device_register(np, name, dfc,
+-						  &devfreq_cooling_ops);
++	cdev = thermal_of_cooling_device_register(np, name, dfc, ops);
+ 	kfree(name);
+ 
+ 	if (IS_ERR(cdev)) {
+@@ -429,6 +435,8 @@ free_table:
+ 	kfree(dfc->freq_table);
+ free_dfc:
+ 	kfree(dfc);
++free_ops:
++	kfree(ops);
+ 
+ 	return ERR_PTR(err);
+ }
+@@ -510,11 +518,13 @@ EXPORT_SYMBOL_GPL(devfreq_cooling_em_reg
+ void devfreq_cooling_unregister(struct thermal_cooling_device *cdev)
+ {
+ 	struct devfreq_cooling_device *dfc;
++	const struct thermal_cooling_device_ops *ops;
+ 	struct device *dev;
+ 
+ 	if (IS_ERR_OR_NULL(cdev))
+ 		return;
+ 
++	ops = cdev->ops;
+ 	dfc = cdev->devdata;
+ 	dev = dfc->devfreq->dev.parent;
+ 
+@@ -525,5 +535,6 @@ void devfreq_cooling_unregister(struct t
+ 
+ 	kfree(dfc->freq_table);
+ 	kfree(dfc);
++	kfree(ops);
+ }
+ EXPORT_SYMBOL_GPL(devfreq_cooling_unregister);
 
 
