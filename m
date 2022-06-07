@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF23CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:37:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70A63C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380383AbiFGVho (ORCPT
+        id S1380426AbiFGVhu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34220 "EHLO
+        Tue, 7 Jun 2022 17:37:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376320AbiFGUnL (ORCPT
+        with ESMTP id S1357573AbiFGUnU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:43:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AECE63EB8B;
-        Tue,  7 Jun 2022 11:39:05 -0700 (PDT)
+        Tue, 7 Jun 2022 16:43:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C631F2F25;
+        Tue,  7 Jun 2022 11:39:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C63D8B81FE1;
-        Tue,  7 Jun 2022 18:39:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 276C5C385A2;
-        Tue,  7 Jun 2022 18:39:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 368FC60B3D;
+        Tue,  7 Jun 2022 18:38:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B58FC385A2;
+        Tue,  7 Jun 2022 18:38:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627143;
-        bh=8n65b4W0D13H1VusYskSw10GI6Nc3hno/LvUC8WQrGk=;
+        s=korg; t=1654627113;
+        bh=z16glOCFgiD3g2TkfWOUF6DAFKVA0fXskdcPq/Fr26U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tn3yJztXLHsvEXD7pZnvMfnqk4aHxj6J1EDRam3Drtmd1c0b8bCcNuYhLVmX5Z7KP
-         FMI3YAT1CYOIBIkiWK8u6pbupHblbDgNJSLhISJtmVmTof9eT9ScHKFyjKyZdgaf3K
-         gADp4GzADj8HMQ2Klckb6YjLfcjcvDlVec9M9BNU=
+        b=yyR4xq9eOeLPJ/Aq5iZsAAvdPmNnmLfbBz2nTHSAdVZt1unfJnhvKIaFpSmesSle0
+         uhMQjnpclipKIabfkghkzRi9hxXZspUCSIwBDgv6rlIpuTbQoJq8OtTtZ5QurjbppT
+         kLQma1PRBSOwaWMH3adqPyF0nONIqoXcx7WBNpf8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 632/772] bfq: Remove pointless bfq_init_rq() calls
-Date:   Tue,  7 Jun 2022 19:03:44 +0200
-Message-Id: <20220607165007.559339399@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.17 622/772] iwlwifi: mvm: fix assert 1F04 upon reconfig
+Date:   Tue,  7 Jun 2022 19:03:34 +0200
+Message-Id: <20220607165007.263895548@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,84 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
 
-commit 5f550ede5edf846ecc0067be1ba80514e6fe7f8e upstream.
+commit 9d096e3d3061dbf4ee10e2b59fc2c06e05bdb997 upstream.
 
-We call bfq_init_rq() from request merging functions where requests we
-get should have already gone through bfq_init_rq() during insert and
-anyway we want to do anything only if the request is already tracked by
-BFQ. So replace calls to bfq_init_rq() with RQ_BFQQ() instead to simply
-skip requests untracked by BFQ. We move bfq_init_rq() call in
-bfq_insert_request() a bit earlier to cover request merging and thus
-can transfer FIFO position in case of a merge.
+When we reconfig we must not send the MAC_POWER command that relates to
+a MAC that was not yet added to the firmware.
 
-CC: stable@vger.kernel.org
-Tested-by: "yukuai (C)" <yukuai3@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220401102752.8599-6-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Ignore those in the iterator.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
+Link: https://lore.kernel.org/r/20220517120044.ed2ffc8ce732.If786e19512d0da4334a6382ea6148703422c7d7b@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/bfq-iosched.c |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/power.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -2501,8 +2501,6 @@ static int bfq_request_merge(struct requ
- 	return ELEVATOR_NO_MERGE;
- }
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/power.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/power.c
+@@ -563,6 +563,9 @@ static void iwl_mvm_power_get_vifs_itera
+ 	struct iwl_power_vifs *power_iterator = _data;
+ 	bool active = mvmvif->phy_ctxt && mvmvif->phy_ctxt->id < NUM_PHY_CTX;
  
--static struct bfq_queue *bfq_init_rq(struct request *rq);
--
- static void bfq_request_merged(struct request_queue *q, struct request *req,
- 			       enum elv_merge type)
- {
-@@ -2511,7 +2509,7 @@ static void bfq_request_merged(struct re
- 	    blk_rq_pos(req) <
- 	    blk_rq_pos(container_of(rb_prev(&req->rb_node),
- 				    struct request, rb_node))) {
--		struct bfq_queue *bfqq = bfq_init_rq(req);
-+		struct bfq_queue *bfqq = RQ_BFQQ(req);
- 		struct bfq_data *bfqd;
- 		struct request *prev, *next_rq;
- 
-@@ -2563,8 +2561,8 @@ static void bfq_request_merged(struct re
- static void bfq_requests_merged(struct request_queue *q, struct request *rq,
- 				struct request *next)
- {
--	struct bfq_queue *bfqq = bfq_init_rq(rq),
--		*next_bfqq = bfq_init_rq(next);
-+	struct bfq_queue *bfqq = RQ_BFQQ(rq),
-+		*next_bfqq = RQ_BFQQ(next);
- 
- 	if (!bfqq)
- 		goto remove;
-@@ -6133,6 +6131,8 @@ static inline void bfq_update_insert_sta
- 					   unsigned int cmd_flags) {}
- #endif /* CONFIG_BFQ_CGROUP_DEBUG */
- 
-+static struct bfq_queue *bfq_init_rq(struct request *rq);
++	if (!mvmvif->uploaded)
++		return;
 +
- static void bfq_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
- 			       bool at_head)
- {
-@@ -6148,6 +6148,7 @@ static void bfq_insert_request(struct bl
- 		bfqg_stats_update_legacy_io(q, rq);
- #endif
- 	spin_lock_irq(&bfqd->lock);
-+	bfqq = bfq_init_rq(rq);
- 	if (blk_mq_sched_try_insert_merge(q, rq, &free)) {
- 		spin_unlock_irq(&bfqd->lock);
- 		blk_mq_free_requests(&free);
-@@ -6156,7 +6157,6 @@ static void bfq_insert_request(struct bl
- 
- 	trace_block_rq_insert(rq);
- 
--	bfqq = bfq_init_rq(rq);
- 	if (!bfqq || at_head) {
- 		if (at_head)
- 			list_add(&rq->queuelist, &bfqd->dispatch);
+ 	switch (ieee80211_vif_type_p2p(vif)) {
+ 	case NL80211_IFTYPE_P2P_DEVICE:
+ 		break;
 
 
