@@ -2,84 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE19CCA49E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:56:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E113BC19F56
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:56:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357591AbiFGTzj (ORCPT
+        id S1357672AbiFGTzn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:55:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57806 "EHLO
+        Tue, 7 Jun 2022 15:55:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353769AbiFGSqE (ORCPT
+        with ESMTP id S1353778AbiFGSqF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA3A618A85E;
+        Tue, 7 Jun 2022 14:46:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA91D18A861;
         Tue,  7 Jun 2022 10:59:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25EFAB82182;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B758B8236D;
         Tue,  7 Jun 2022 17:59:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D25BC385A5;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A9FBC34115;
         Tue,  7 Jun 2022 17:59:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624766;
-        bh=WgDIF/Nn5X3L6731oKP1wO+QcgYZIyvshq7IQHL/d4w=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624766;
+        bh=Z8y4Ur00BaodPmkMwPEOuEZOmogimHyCXKlYHZ+liec=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hzYngrxGUCS21E4DoHJekS23yJyxO6YblOZlfKPzub1v0l/jSEkh77aWYFoFzp6LE
-         5RzUbBy2NPT2ED6KV/H2K1tR17cujnXpiNSKbAPG7yzjiY/P32Ajx+trpH/JEVrUxB
-         mOFF+rvrQzqfEgqzRmt+8z2rMfFdp5Jl56icJ5kc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robert.marko@sartura.hr>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 447/667] arm64: dts: marvell: espressobin-ultra: enable front USB3 port
-Date:   Tue,  7 Jun 2022 19:01:52 +0200
-Message-Id: <20220607164948.124124610@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=DDMWqygAtonS1k6Bx+1NNCu18eTRKYOBLIz0IoLFI0Q8RowcULeIMt/k/0bk/oS4+
+         ZLj1p6YVAyrjQxV++Eu1eQoNJwmfTbawhQG2Z+sqHi6T/hTbq1wyJTHdJGpmEnlJbx
+         0zm9AXgybHcGsfJ+drqUg1DCij7XPxGzD+P8DR93w6KfSGRgapakQGzS2TZE0n8BXy
+         1adRhlyg9Cj4JtgkBq/4pszQZnM5FtHrrHs9WBydLDrfYQNS07pJJ4KkUx/OCdQnWe
+         foSZw8Bk02WvZg4TnwHouV1v/M3eEeSI5d1z1wyYmy6mjMbgxLiZz5m+TLMURBpGTg
+         T9drGzFeM86qw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     bumwoo lee <bw365.lee@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Sasha Levin <sashal@kernel.org>, myungjoo.ham@samsung.com
+Subject: [PATCH AUTOSEL 5.10 16/38] extcon: Modify extcon device to be created after driver data is set
+Date:   Tue,  7 Jun 2022 13:58:11 -0400
+Message-Id: <20220607175835.480735-16-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
+References: <20220607175835.480735-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robert.marko@sartura.hr>
+From: bumwoo lee <bw365.lee@samsung.com>
 
-[ Upstream commit eacec7ebc16cf5d2f6a6c7cf5d57156da2c3e98f ]
+[ Upstream commit 5dcc2afe716d69f5112ce035cb14f007461ff189 ]
 
-Espressobin Ultra has a front panel USB3.0 Type-A port which works
-just fine so enable it.
-I dont see a reason why it was disabled in the first place anyway.
+Currently, someone can invoke the sysfs such as state_show()
+intermittently before dev_set_drvdata() is done.
+And it can be a cause of kernel Oops because of edev is Null at that time.
+So modified the driver registration to after setting drviver data.
 
-Fixes: 3404fe15a60f ("arm64: dts: marvell: add DT for ESPRESSObin-Ultra")
-Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+- Oops's backtrace.
+
+Backtrace:
+[<c067865c>] (state_show) from [<c05222e8>] (dev_attr_show)
+[<c05222c0>] (dev_attr_show) from [<c02c66e0>] (sysfs_kf_seq_show)
+[<c02c6648>] (sysfs_kf_seq_show) from [<c02c496c>] (kernfs_seq_show)
+[<c02c4938>] (kernfs_seq_show) from [<c025e2a0>] (seq_read)
+[<c025e11c>] (seq_read) from [<c02c50a0>] (kernfs_fop_read)
+[<c02c5064>] (kernfs_fop_read) from [<c0231cac>] (__vfs_read)
+[<c0231c5c>] (__vfs_read) from [<c0231ee0>] (vfs_read)
+[<c0231e34>] (vfs_read) from [<c0232464>] (ksys_read)
+[<c02323f0>] (ksys_read) from [<c02324fc>] (sys_read)
+[<c02324e4>] (sys_read) from [<c00091d0>] (__sys_trace_return)
+
+Signed-off-by: bumwoo lee <bw365.lee@samsung.com>
+Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/extcon/extcon.c | 29 +++++++++++++++++------------
+ 1 file changed, 17 insertions(+), 12 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-index 610ff6f385c7..119db6b541b7 100644
---- a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-@@ -108,7 +108,6 @@
+diff --git a/drivers/extcon/extcon.c b/drivers/extcon/extcon.c
+index e7a9561a826d..356610404bb4 100644
+--- a/drivers/extcon/extcon.c
++++ b/drivers/extcon/extcon.c
+@@ -1230,19 +1230,14 @@ int extcon_dev_register(struct extcon_dev *edev)
+ 		edev->dev.type = &edev->extcon_dev_type;
+ 	}
  
- &usb3 {
- 	usb-phy = <&usb3_phy>;
--	status = "disabled";
- };
+-	ret = device_register(&edev->dev);
+-	if (ret) {
+-		put_device(&edev->dev);
+-		goto err_dev;
+-	}
+-
+ 	spin_lock_init(&edev->lock);
+-	edev->nh = devm_kcalloc(&edev->dev, edev->max_supported,
+-				sizeof(*edev->nh), GFP_KERNEL);
+-	if (!edev->nh) {
+-		ret = -ENOMEM;
+-		device_unregister(&edev->dev);
+-		goto err_dev;
++	if (edev->max_supported) {
++		edev->nh = kcalloc(edev->max_supported, sizeof(*edev->nh),
++				GFP_KERNEL);
++		if (!edev->nh) {
++			ret = -ENOMEM;
++			goto err_alloc_nh;
++		}
+ 	}
  
- &mdio {
+ 	for (index = 0; index < edev->max_supported; index++)
+@@ -1253,6 +1248,12 @@ int extcon_dev_register(struct extcon_dev *edev)
+ 	dev_set_drvdata(&edev->dev, edev);
+ 	edev->state = 0;
+ 
++	ret = device_register(&edev->dev);
++	if (ret) {
++		put_device(&edev->dev);
++		goto err_dev;
++	}
++
+ 	mutex_lock(&extcon_dev_list_lock);
+ 	list_add(&edev->entry, &extcon_dev_list);
+ 	mutex_unlock(&extcon_dev_list_lock);
+@@ -1260,6 +1261,9 @@ int extcon_dev_register(struct extcon_dev *edev)
+ 	return 0;
+ 
+ err_dev:
++	if (edev->max_supported)
++		kfree(edev->nh);
++err_alloc_nh:
+ 	if (edev->max_supported)
+ 		kfree(edev->extcon_dev_type.groups);
+ err_alloc_groups:
+@@ -1320,6 +1324,7 @@ void extcon_dev_unregister(struct extcon_dev *edev)
+ 	if (edev->max_supported) {
+ 		kfree(edev->extcon_dev_type.groups);
+ 		kfree(edev->cables);
++		kfree(edev->nh);
+ 	}
+ 
+ 	put_device(&edev->dev);
 -- 
 2.35.1
-
-
 
