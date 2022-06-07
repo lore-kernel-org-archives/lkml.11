@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47B97C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D74C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:59:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353098AbiFGS7B (ORCPT
+        id S1353406AbiFGS7E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:59:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42264 "EHLO
+        Tue, 7 Jun 2022 14:59:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352289AbiFGSVD (ORCPT
+        with ESMTP id S1352136AbiFGSUu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:21:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A996313BC;
-        Tue,  7 Jun 2022 10:53:52 -0700 (PDT)
+        Tue, 7 Jun 2022 14:20:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 250F823BE9;
+        Tue,  7 Jun 2022 10:53:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B5FFB8234A;
-        Tue,  7 Jun 2022 17:53:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D84A9C3411C;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4126617A5;
         Tue,  7 Jun 2022 17:53:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE4ECC36B00;
+        Tue,  7 Jun 2022 17:53:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624428;
-        bh=qEFM6Y/m49ew+bIdAWMk/6fCX+AMxgaGnAGMbhM9BJo=;
+        s=k20201202; t=1654624427;
+        bh=H/ojBjv8RedJ1tRhj7i5pR0yqtBqO8nR4KB/LsnXy2I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sY4X4Rx3FARbkxB+GtDa3Lmq/u6ssi+gmKjttnQIpfcUXudDGhCxKXbhVoZP+v+I4
-         JOrn7TbLl3c3qCWqGvziPIXIdqL4wOriMJWd6doae4EAwwbclCm8XDcFFrmICXqqG4
-         bcg2Y0MivN/ALljdoR//DPGJA2Fs+N5B8SxN48NGaqxLfBWhtwOFoilBwyNSv54kU/
-         sQraKy7PO6uRukQtyAx2QbExj2+iDdDOR8gAA6y30GTxUyostabhdl3Op9HRiaNhCM
-         +R25aGax9vAFZE/vXbfQwZsI0UUnvdTzgOybzXZvUKW2gXp2mWTnNU/VsZNF2lNVij
-         BR6GNYzC4F4ww==
+        b=Ca1VytFutja0JqZ/VCGPPZa6M13aKaZLNZv5EPORhzqseaQpUPiIy35hzw73bj8r/
+         ssmnkSHWvNMmer6ZUi8bqj3vjHQpF0fdUquiin6Mg/lgwgYr+ku2lRgba1pARxn/vZ
+         eDxYRkYdWwTIFqLpo6VX/HZTAhNa2/mAy7G/IQcoW+wsDX1wU6O3CExOMzKIcka9z1
+         kuW/e9Z2qtrwRRgu8lQ4Nu6jsiMnPcr9YBqxq6F14pP4fwugnbh9KQcstximPfS/XI
+         eFPiX0ImjdSgALK0PQeQojubJTmOE4C6ohrSTe0i6HGzn3NQzDVAYN79x4LN3VG1Ki
+         9HEqsQq4qKPxg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Changbin Du <changbin.du@gmail.com>,
+Cc:     Hangyu Hua <hbh25y@gmail.com>,
+        Eli Billauer <eli.billauer@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 17/60] sysrq: do not omit current cpu when showing backtrace of all active CPUs
-Date:   Tue,  7 Jun 2022 13:52:14 -0400
-Message-Id: <20220607175259.478835-17-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 16/60] char: xillybus: fix a refcount leak in cleanup_dev()
+Date:   Tue,  7 Jun 2022 13:52:13 -0400
+Message-Id: <20220607175259.478835-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
 References: <20220607175259.478835-1-sashal@kernel.org>
@@ -54,87 +53,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Changbin Du <changbin.du@gmail.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 5390e7f46b9d5546d45a83e6463bc656678b1d0e ]
+[ Upstream commit b67d19662fdee275c479d21853bc1239600a798f ]
 
-The backtrace of current CPU also should be printed as it is active. This
-change add stack trace for current CPU and print a hint for idle CPU for
-the generic workqueue based printing. (x86 already does this)
+usb_get_dev is called in xillyusb_probe. So it is better to call
+usb_put_dev before xdev is released.
 
-Now it looks like below:
-[  279.401567] sysrq: Show backtrace of all active CPUs
-[  279.407234] sysrq: CPU5:
-[  279.407505] Call Trace:
-[  279.408789] [<ffffffff8000606c>] dump_backtrace+0x2c/0x3a
-[  279.411698] [<ffffffff800060ac>] show_stack+0x32/0x3e
-[  279.411809] [<ffffffff80542258>] sysrq_handle_showallcpus+0x4c/0xc6
-[  279.411929] [<ffffffff80542f16>] __handle_sysrq+0x106/0x26c
-[  279.412034] [<ffffffff805436a8>] write_sysrq_trigger+0x64/0x74
-[  279.412139] [<ffffffff8029cd48>] proc_reg_write+0x8e/0xe2
-[  279.412252] [<ffffffff8021a8f8>] vfs_write+0x90/0x2be
-[  279.412362] [<ffffffff8021acd2>] ksys_write+0xa6/0xce
-[  279.412467] [<ffffffff8021ad24>] sys_write+0x2a/0x38
-[  279.412689] [<ffffffff80003ff8>] ret_from_syscall+0x0/0x2
-[  279.417173] sysrq: CPU6: backtrace skipped as idling
-[  279.417185] sysrq: CPU4: backtrace skipped as idling
-[  279.417187] sysrq: CPU0: backtrace skipped as idling
-[  279.417181] sysrq: CPU7: backtrace skipped as idling
-[  279.417190] sysrq: CPU1: backtrace skipped as idling
-[  279.417193] sysrq: CPU3: backtrace skipped as idling
-[  279.417219] sysrq: CPU2:
-[  279.419179] Call Trace:
-[  279.419440] [<ffffffff8000606c>] dump_backtrace+0x2c/0x3a
-[  279.419782] [<ffffffff800060ac>] show_stack+0x32/0x3e
-[  279.420015] [<ffffffff80542b30>] showacpu+0x5c/0x96
-[  279.420317] [<ffffffff800ba71c>] flush_smp_call_function_queue+0xd6/0x218
-[  279.420569] [<ffffffff800bb438>] generic_smp_call_function_single_interrupt+0x14/0x1c
-[  279.420798] [<ffffffff800079ae>] handle_IPI+0xaa/0x13a
-[  279.421024] [<ffffffff804dcb92>] riscv_intc_irq+0x56/0x70
-[  279.421274] [<ffffffff80a05b70>] generic_handle_arch_irq+0x6a/0xfa
-[  279.421518] [<ffffffff80004006>] ret_from_exception+0x0/0x10
-[  279.421750] [<ffffffff80096492>] rcu_idle_enter+0x16/0x1e
-
-Signed-off-by: Changbin Du <changbin.du@gmail.com>
-Link: https://lore.kernel.org/r/20220117154300.2808-1-changbin.du@gmail.com
+Acked-by: Eli Billauer <eli.billauer@gmail.com>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20220406075703.23464-1-hbh25y@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/sysrq.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/char/xillybus/xillyusb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-index bbfd004449b5..34cfdda4aff5 100644
---- a/drivers/tty/sysrq.c
-+++ b/drivers/tty/sysrq.c
-@@ -232,8 +232,10 @@ static void showacpu(void *dummy)
- 	unsigned long flags;
+diff --git a/drivers/char/xillybus/xillyusb.c b/drivers/char/xillybus/xillyusb.c
+index dc3551796e5e..39bcbfd908b4 100644
+--- a/drivers/char/xillybus/xillyusb.c
++++ b/drivers/char/xillybus/xillyusb.c
+@@ -549,6 +549,7 @@ static void cleanup_dev(struct kref *kref)
+ 	if (xdev->workq)
+ 		destroy_workqueue(xdev->workq);
  
- 	/* Idle CPUs have no interesting backtrace. */
--	if (idle_cpu(smp_processor_id()))
-+	if (idle_cpu(smp_processor_id())) {
-+		pr_info("CPU%d: backtrace skipped as idling\n", smp_processor_id());
- 		return;
-+	}
- 
- 	raw_spin_lock_irqsave(&show_lock, flags);
- 	pr_info("CPU%d:\n", smp_processor_id());
-@@ -260,10 +262,13 @@ static void sysrq_handle_showallcpus(int key)
- 
- 		if (in_hardirq())
- 			regs = get_irq_regs();
--		if (regs) {
--			pr_info("CPU%d:\n", smp_processor_id());
-+
-+		pr_info("CPU%d:\n", smp_processor_id());
-+		if (regs)
- 			show_regs(regs);
--		}
-+		else
-+			show_stack(NULL, NULL, KERN_INFO);
-+
- 		schedule_work(&sysrq_showallcpus);
- 	}
++	usb_put_dev(xdev->udev);
+ 	kfree(xdev->channels); /* Argument may be NULL, and that's fine */
+ 	kfree(xdev);
  }
 -- 
 2.35.1
