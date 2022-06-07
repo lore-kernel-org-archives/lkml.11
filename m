@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 438C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:43:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B15C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:43:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241511AbiFHBnC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:43:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49406 "EHLO
+        id S1350861AbiFHBnY (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:43:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381670AbiFGWVy (ORCPT
+        with ESMTP id S1383644AbiFGVxX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:21:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D6926C0D5;
-        Tue,  7 Jun 2022 12:22:22 -0700 (PDT)
+        Tue, 7 Jun 2022 17:53:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477782453B5;
+        Tue,  7 Jun 2022 12:12:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E291B82182;
-        Tue,  7 Jun 2022 19:22:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6D43C34115;
-        Tue,  7 Jun 2022 19:22:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 563FF618EC;
+        Tue,  7 Jun 2022 19:11:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67A97C385A2;
+        Tue,  7 Jun 2022 19:11:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629739;
-        bh=AZp9GM2aIQXcY2X/5Buvw7LgLptr9W3PQ57LG/PVk8Q=;
+        s=korg; t=1654629113;
+        bh=yCzJMVCUlRwnYxLiqzwsBgrMgG0o7TJdZI532aPA9YI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KX1kOkY7DDLTzK4JaNBVoLx0lvjKHaByH4Ld0tzAAED8pq0vPMU1YzVrN67wwacbB
-         LFOurdvUVJmF/E2a7NZqt03xJU4jrS/yzduT+gTKAP6ar5ZOaSLsuwINamHUc0GtEW
-         lA7z3cpy/NtK1wBbFNJzCOHY0v+i4NcoDmKl7MC4=
+        b=NDc2UfhdZd44JJXxR8tghzUQ1YxxN4JUkelML7gFBP3mW/QmehUFWZQk0nMQoN5DI
+         KoRwiK501k809m48VjY7pLkzCw0T3oqrHOHBPXe8zbxkpzwEzi41bQqeKabTRwGbcE
+         fc2RZw2kx/op0+Pd7jAfjUUqP5iMB+v2Fyl8eFio=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Goldwyn Rodrigues <rgoldwyn@suse.com>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH 5.18 798/879] md: fix an incorrect NULL check in does_sb_need_changing
-Date:   Tue,  7 Jun 2022 19:05:16 +0200
-Message-Id: <20220607165026.024032950@linuxfoundation.org>
+        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 573/879] crypto: marvell/cesa - ECB does not IV
+Date:   Tue,  7 Jun 2022 19:01:31 +0200
+Message-Id: <20220607165019.487265247@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,55 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Corentin Labbe <clabbe@baylibre.com>
 
-commit fc8738343eefc4ea8afb6122826dea48eacde514 upstream.
+[ Upstream commit 4ffa1763622ae5752961499588f3f8874315f974 ]
 
-The bug is here:
-	if (!rdev)
+The DES3 ECB has an IV size set but ECB does not need one.
 
-The list iterator value 'rdev' will *always* be set and non-NULL
-by rdev_for_each(), so it is incorrect to assume that the iterator
-value will be NULL if the list is empty or no element found.
-Otherwise it will bypass the NULL check and lead to invalid memory
-access passing the check.
-
-To fix the bug, use a new variable 'iter' as the list iterator,
-while using the original variable 'rdev' as a dedicated pointer to
-point to the found element.
-
-Cc: stable@vger.kernel.org
-Fixes: 2aa82191ac36 ("md-cluster: Perform a lazy update")
-Acked-by: Guoqing Jiang <guoqing.jiang@linux.dev>
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Acked-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
-Signed-off-by: Song Liu <song@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4ada483978237 ("crypto: marvell/cesa - add Triple-DES support")
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/md.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/crypto/marvell/cesa/cipher.c | 1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -2627,14 +2627,16 @@ static void sync_sbs(struct mddev *mddev
- 
- static bool does_sb_need_changing(struct mddev *mddev)
- {
--	struct md_rdev *rdev;
-+	struct md_rdev *rdev = NULL, *iter;
- 	struct mdp_superblock_1 *sb;
- 	int role;
- 
- 	/* Find a good rdev */
--	rdev_for_each(rdev, mddev)
--		if ((rdev->raid_disk >= 0) && !test_bit(Faulty, &rdev->flags))
-+	rdev_for_each(iter, mddev)
-+		if ((iter->raid_disk >= 0) && !test_bit(Faulty, &iter->flags)) {
-+			rdev = iter;
- 			break;
-+		}
- 
- 	/* No good device found. */
- 	if (!rdev)
+diff --git a/drivers/crypto/marvell/cesa/cipher.c b/drivers/crypto/marvell/cesa/cipher.c
+index b739d3b873dc..c6f2fa753b7c 100644
+--- a/drivers/crypto/marvell/cesa/cipher.c
++++ b/drivers/crypto/marvell/cesa/cipher.c
+@@ -624,7 +624,6 @@ struct skcipher_alg mv_cesa_ecb_des3_ede_alg = {
+ 	.decrypt = mv_cesa_ecb_des3_ede_decrypt,
+ 	.min_keysize = DES3_EDE_KEY_SIZE,
+ 	.max_keysize = DES3_EDE_KEY_SIZE,
+-	.ivsize = DES3_EDE_BLOCK_SIZE,
+ 	.base = {
+ 		.cra_name = "ecb(des3_ede)",
+ 		.cra_driver_name = "mv-ecb-des3-ede",
+-- 
+2.35.1
+
 
 
