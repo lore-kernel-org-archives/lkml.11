@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10360CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:38:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D241EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:38:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380711AbiFGVh5 (ORCPT
+        id S1380808AbiFGViC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:37:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34198 "EHLO
+        Tue, 7 Jun 2022 17:38:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376275AbiFGUnL (ORCPT
+        with ESMTP id S1359731AbiFGUnu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:43:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12BF31F1BEA;
-        Tue,  7 Jun 2022 11:38:59 -0700 (PDT)
+        Tue, 7 Jun 2022 16:43:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84BE01F42B3;
+        Tue,  7 Jun 2022 11:39:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A0B7B82182;
-        Tue,  7 Jun 2022 18:38:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3A5BC385A2;
-        Tue,  7 Jun 2022 18:38:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E26F76157B;
+        Tue,  7 Jun 2022 18:38:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFBA9C385A2;
+        Tue,  7 Jun 2022 18:38:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627119;
-        bh=wgKRNI73T2zZGmaV8LU9D8Jm69k2YDtN51rVD4phD80=;
+        s=korg; t=1654627116;
+        bh=ZB5KUxuvNQ0yTaFTUxeKiF3Scpi+CLvkddXIlq4z0cY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eJ43Y8DizaRUh9SXNdRbZwokRNJ5b/tVF4on/sVQcxdBIEdYQcUArC+hVPLZaMBbH
-         3Ab4INGmV9PnEduPhxdh7O4xoi+tVDktcqvv9IcPgWs6xO6W9v36j0naUDLQLaowb3
-         laLeIIKdJVCBriVlXz7iE6pcntCtmf864dYmknlk=
+        b=G9DhyQBoOe9XVgzwc6Gh0Y/VMC461s4pqmJtQCicwZ384UEGQCBpbv2Meb2vXVXof
+         Sw0B4ilsJlxPg7r+a1CnaPv5qWCWJM3TZQD+rLR4LDuK/hzeHY2WDe9giAgNKMirLw
+         +xch6hY+v9X+gV/TdzghqBcdYu2cYBCfwYHc7uqM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Gregory Greenman <gregory.greenman@intel.com>
-Subject: [PATCH 5.17 624/772] iwlwifi: mei: fix potential NULL-ptr deref
-Date:   Tue,  7 Jun 2022 19:03:36 +0200
-Message-Id: <20220607165007.323818841@linuxfoundation.org>
+        stable@vger.kernel.org, Avraham Stern <avraham.stern@intel.com>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.17 623/772] iwlwifi: mei: clear the sap data header before sending
+Date:   Tue,  7 Jun 2022 19:03:35 +0200
+Message-Id: <20220607165007.294243307@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,36 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Avraham Stern <avraham.stern@intel.com>
 
-commit 78488a64aea94a3336ee97f345c1496e9bc5ebdf upstream.
+commit 55cf10488d7a9fa1b1b473a5e44a80666932e094 upstream.
 
-If SKB allocation fails, continue rather than using the NULL
-pointer.
-
-Coverity CID: 1497650
+The SAP data header has some fields that are marked as reserved
+but are actually in use by CSME. Clear those fields before sending
+the data to avoid having random values in those fields.
 
 Cc: stable@vger.kernel.org
-Fixes: 2da4366f9e2c ("iwlwifi: mei: add the driver to allow cooperation with CSME")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Avraham Stern <avraham.stern@intel.com>
 Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
-Link: https://lore.kernel.org/r/20220517120045.90c1b1fd534e.Ibb42463e74d0ec7d36ec81df22e171ae1f6268b0@changeid
+Link: https://lore.kernel.org/r/20220517120045.8dd3423cf683.I02976028eaa6aab395cb2e701fa7127212762eb7@changeid
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mei/main.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/mei/main.c |    1 +
+ 1 file changed, 1 insertion(+)
 
 --- a/drivers/net/wireless/intel/iwlwifi/mei/main.c
 +++ b/drivers/net/wireless/intel/iwlwifi/mei/main.c
-@@ -1020,6 +1020,8 @@ static void iwl_mei_handle_sap_data(stru
+@@ -493,6 +493,7 @@ void iwl_mei_add_data_to_ring(struct sk_
+ 	if (cb_tx) {
+ 		struct iwl_sap_cb_data *cb_hdr = skb_push(skb, sizeof(*cb_hdr));
  
- 		/* We need enough room for the WiFi header + SNAP + IV */
- 		skb = netdev_alloc_skb(netdev, len + QOS_HDR_IV_SNAP_LEN);
-+		if (!skb)
-+			continue;
- 
- 		skb_reserve(skb, QOS_HDR_IV_SNAP_LEN);
- 		ethhdr = skb_push(skb, sizeof(*ethhdr));
++		memset(cb_hdr, 0, sizeof(*cb_hdr));
+ 		cb_hdr->hdr.type = cpu_to_le16(SAP_MSG_CB_DATA_PACKET);
+ 		cb_hdr->hdr.len = cpu_to_le16(skb->len - sizeof(cb_hdr->hdr));
+ 		cb_hdr->hdr.seq_num = cpu_to_le32(atomic_inc_return(&mei->sap_seq_no));
 
 
