@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D7B7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:53:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F074BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378804AbiFHBtl (ORCPT
+        id S1353843AbiFHBtM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38582 "EHLO
+        Tue, 7 Jun 2022 21:49:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383641AbiFGWGF (ORCPT
+        with ESMTP id S1383900AbiFGWIU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:06:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7716019595B;
-        Tue,  7 Jun 2022 12:16:49 -0700 (PDT)
+        Tue, 7 Jun 2022 18:08:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6524256959;
+        Tue,  7 Jun 2022 12:18:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04F86618EC;
-        Tue,  7 Jun 2022 19:16:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1505DC385A2;
-        Tue,  7 Jun 2022 19:16:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 542E0B823D5;
+        Tue,  7 Jun 2022 19:18:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A543EC385A5;
+        Tue,  7 Jun 2022 19:18:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629408;
-        bh=BUUyuJwqsmQ8ppwNkzVju8FLysHPnnjZRg/0W7ctp2w=;
+        s=korg; t=1654629516;
+        bh=9R5ZdtnFBk0LJ87brCjYh7QbNZwGS+6WpNNS9NjwiEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rn9/RqC8NPobfc98cJ811h3yVaUeCELZhnTfRZzWTdFcfJX3KXJeFgclZ4BCkw5dh
-         x84YajPMFrDE9GcBQsXeudYHz3qBY1ENWTnvrm0ob8WaUwnZ33xlA9WQ5gsNs8j3YQ
-         kQy/lwr0fOnz03MhE4eGV5ucED6jDFcludvhlDII=
+        b=y2/hzhXXLaQ8HdZvctMivsyfFhOuXE8UUxKuyFxgXBLOC9aM1wiF1DHfxmODhE78w
+         rTuDyBMfrlCCvkUCumnmcn2ftQaXNv0QIZBgEfqUPJWI+vTuZ+6U586uImmulVj+Hu
+         6r3et7PmYnR3dIXCBvsIYJsBE8gSlin96hDZXvEA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Badger <ebadger@purestorage.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Ashok Raj <ashok.raj@intel.com>,
+        stable@vger.kernel.org, ChenXiaoSong <chenxiaosong2@huawei.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 630/879] PCI/AER: Clear MULTI_ERR_COR/UNCOR_RCV bits
-Date:   Tue,  7 Jun 2022 19:02:28 +0200
-Message-Id: <20220607165021.136028307@linuxfoundation.org>
+Subject: [PATCH 5.18 678/879] NFS: Dont report ENOSPC write errors twice
+Date:   Tue,  7 Jun 2022 19:03:16 +0200
+Message-Id: <20220607165022.528205277@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,86 +51,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 203926da2bff8e172200a2f11c758987af112d4a ]
+[ Upstream commit e6005436f6cc9ed13288f936903f0151e5543485 ]
 
-When a Root Port or Root Complex Event Collector receives an error Message
-e.g., ERR_COR, it sets PCI_ERR_ROOT_COR_RCV in the Root Error Status
-register and logs the Requester ID in the Error Source Identification
-register.  If it receives a second ERR_COR Message before software clears
-PCI_ERR_ROOT_COR_RCV, hardware sets PCI_ERR_ROOT_MULTI_COR_RCV and the
-Requester ID is lost.
+Any errors reported by the write() system call need to be cleared from
+the file descriptor's error tracking. The current call to nfs_wb_all()
+causes the error to be reported, but since it doesn't call
+file_check_and_advance_wb_err(), we can end up reporting the same error
+a second time when the application calls fsync().
 
-In the following scenario, PCI_ERR_ROOT_MULTI_COR_RCV was never cleared:
+Note that since Linux 4.13, the rule is that EIO may be reported for
+write(), but it must be reported by a subsequent fsync(), so let's just
+drop reporting it in write.
 
-  - hardware receives ERR_COR message
-  - hardware sets PCI_ERR_ROOT_COR_RCV
-  - aer_irq() entered
-  - aer_irq(): status = pci_read_config_dword(PCI_ERR_ROOT_STATUS)
-  - aer_irq(): now status == PCI_ERR_ROOT_COR_RCV
-  - hardware receives second ERR_COR message
-  - hardware sets PCI_ERR_ROOT_MULTI_COR_RCV
-  - aer_irq(): pci_write_config_dword(PCI_ERR_ROOT_STATUS, status)
-  - PCI_ERR_ROOT_COR_RCV is cleared; PCI_ERR_ROOT_MULTI_COR_RCV is set
-  - aer_irq() entered again
-  - aer_irq(): status = pci_read_config_dword(PCI_ERR_ROOT_STATUS)
-  - aer_irq(): now status == PCI_ERR_ROOT_MULTI_COR_RCV
-  - aer_irq() exits because PCI_ERR_ROOT_COR_RCV not set
-  - PCI_ERR_ROOT_MULTI_COR_RCV is still set
+The check for nfs_ctx_key_to_expire() is just a duplicate to the one
+already in nfs_write_end(), so let's drop that too.
 
-The same problem occurred with ERR_NONFATAL/ERR_FATAL Messages and
-PCI_ERR_ROOT_UNCOR_RCV and PCI_ERR_ROOT_MULTI_UNCOR_RCV.
-
-Fix the problem by queueing an AER event and clearing the Root Error Status
-bits when any of these bits are set:
-
-  PCI_ERR_ROOT_COR_RCV
-  PCI_ERR_ROOT_UNCOR_RCV
-  PCI_ERR_ROOT_MULTI_COR_RCV
-  PCI_ERR_ROOT_MULTI_UNCOR_RCV
-
-See the bugzilla link for details from Eric about how to reproduce this
-problem.
-
-[bhelgaas: commit log, move repro details to bugzilla]
-Fixes: e167bfcaa4cd ("PCI: aerdrv: remove magical ROOT_ERR_STATUS_MASKS")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215992
-Link: https://lore.kernel.org/r/20220418150237.1021519-1-sathyanarayanan.kuppuswamy@linux.intel.com
-Reported-by: Eric Badger <ebadger@purestorage.com>
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Ashok Raj <ashok.raj@intel.com>
+Reported-by: ChenXiaoSong <chenxiaosong2@huawei.com>
+Fixes: ce368536dd61 ("nfs: nfs_file_write() should check for writeback errors")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pcie/aer.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ fs/nfs/file.c | 34 ++++++++++++++--------------------
+ 1 file changed, 14 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
-index 9fa1f97e5b27..7952e5efd6cf 100644
---- a/drivers/pci/pcie/aer.c
-+++ b/drivers/pci/pcie/aer.c
-@@ -101,6 +101,11 @@ struct aer_stats {
- #define ERR_COR_ID(d)			(d & 0xffff)
- #define ERR_UNCOR_ID(d)			(d >> 16)
+diff --git a/fs/nfs/file.c b/fs/nfs/file.c
+index 7c380e555224..87e4cd5e8fe2 100644
+--- a/fs/nfs/file.c
++++ b/fs/nfs/file.c
+@@ -598,18 +598,6 @@ static const struct vm_operations_struct nfs_file_vm_ops = {
+ 	.page_mkwrite = nfs_vm_page_mkwrite,
+ };
  
-+#define AER_ERR_STATUS_MASK		(PCI_ERR_ROOT_UNCOR_RCV |	\
-+					PCI_ERR_ROOT_COR_RCV |		\
-+					PCI_ERR_ROOT_MULTI_COR_RCV |	\
-+					PCI_ERR_ROOT_MULTI_UNCOR_RCV)
-+
- static int pcie_aer_disable;
- static pci_ers_result_t aer_root_reset(struct pci_dev *dev);
+-static int nfs_need_check_write(struct file *filp, struct inode *inode,
+-				int error)
+-{
+-	struct nfs_open_context *ctx;
+-
+-	ctx = nfs_file_open_context(filp);
+-	if (nfs_error_is_fatal_on_server(error) ||
+-	    nfs_ctx_key_to_expire(ctx, inode))
+-		return 1;
+-	return 0;
+-}
+-
+ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
+ {
+ 	struct file *file = iocb->ki_filp;
+@@ -637,7 +625,7 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
+ 	if (iocb->ki_flags & IOCB_APPEND || iocb->ki_pos > i_size_read(inode)) {
+ 		result = nfs_revalidate_file_size(inode, file);
+ 		if (result)
+-			goto out;
++			return result;
+ 	}
  
-@@ -1196,7 +1201,7 @@ static irqreturn_t aer_irq(int irq, void *context)
- 	struct aer_err_source e_src = {};
+ 	nfs_clear_invalid_mapping(file->f_mapping);
+@@ -656,6 +644,7 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
  
- 	pci_read_config_dword(rp, aer + PCI_ERR_ROOT_STATUS, &e_src.status);
--	if (!(e_src.status & (PCI_ERR_ROOT_UNCOR_RCV|PCI_ERR_ROOT_COR_RCV)))
-+	if (!(e_src.status & AER_ERR_STATUS_MASK))
- 		return IRQ_NONE;
+ 	written = result;
+ 	iocb->ki_pos += written;
++	nfs_add_stats(inode, NFSIOS_NORMALWRITTENBYTES, written);
  
- 	pci_read_config_dword(rp, aer + PCI_ERR_ROOT_ERR_SRC, &e_src.id);
+ 	if (mntflags & NFS_MOUNT_WRITE_EAGER) {
+ 		result = filemap_fdatawrite_range(file->f_mapping,
+@@ -673,17 +662,22 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
+ 	}
+ 	result = generic_write_sync(iocb, written);
+ 	if (result < 0)
+-		goto out;
++		return result;
+ 
++out:
+ 	/* Return error values */
+ 	error = filemap_check_wb_err(file->f_mapping, since);
+-	if (nfs_need_check_write(file, inode, error)) {
+-		int err = nfs_wb_all(inode);
+-		if (err < 0)
+-			result = err;
++	switch (error) {
++	default:
++		break;
++	case -EDQUOT:
++	case -EFBIG:
++	case -ENOSPC:
++		nfs_wb_all(inode);
++		error = file_check_and_advance_wb_err(file);
++		if (error < 0)
++			result = error;
+ 	}
+-	nfs_add_stats(inode, NFSIOS_NORMALWRITTENBYTES, written);
+-out:
+ 	return result;
+ 
+ out_swapfile:
 -- 
 2.35.1
 
