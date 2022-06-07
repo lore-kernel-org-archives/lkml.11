@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB29AC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFC03CCA482
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388397AbiFHAcE (ORCPT
+        id S1388536AbiFHAc0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38064 "EHLO
+        Tue, 7 Jun 2022 20:32:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382984AbiFGVwJ (ORCPT
+        with ESMTP id S1382756AbiFGVvw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:52:09 -0400
+        Tue, 7 Jun 2022 17:51:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91AB23F8B8;
-        Tue,  7 Jun 2022 12:10:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8048F23D5FD;
+        Tue,  7 Jun 2022 12:09:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97C7D61846;
-        Tue,  7 Jun 2022 19:10:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F222C385A2;
-        Tue,  7 Jun 2022 19:10:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C3BC618D6;
+        Tue,  7 Jun 2022 19:09:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F6C7C385A2;
+        Tue,  7 Jun 2022 19:09:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629009;
-        bh=HqtckCoozvnAEIgyX3o97EC9y/0AYR/3JgAn6NzOiUo=;
+        s=korg; t=1654628964;
+        bh=0VYyAQ2udBMl6TW3hWYknv3XLOr7ZmsuQTyd3In4K4c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B3E+RWIUSxuSR2Giz0rZws1yy2z4isA5jaiwu1cJNBajiCvELeSAmZ5P3aBINo/39
-         rRQqtG0pyqTgeXngL8Z/1JHELx+H2glGEUh5dsUDzjbvzGLx4EdlC68NukpsKzGIft
-         XRsTOLzJhanqxPsLF1UGuJYgrHR5QzcXo8ZeB02Q=
+        b=QBkGgHSeF3jGEP5nAWJ677jnQMkmk/lwHQg3xCJ8q9hSNFTThmc+MuC90IEoskkFD
+         dEg43F1auVo+nTQSTDs9DOfq43sBF6XLpIEfJOYi/DwKOtyrbCJYuYjQqThdHUfEoI
+         5H2zhaBw+Rlg91BLEDGya0/VxarF7lmtzS4alA2I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 535/879] PCI/ACPI: Allow D3 only if Root Port can signal and wake from D3
-Date:   Tue,  7 Jun 2022 19:00:53 +0200
-Message-Id: <20220607165018.402266700@linuxfoundation.org>
+Subject: [PATCH 5.18 520/879] rxrpc: Dont let ack.previousPacket regress
+Date:   Tue,  7 Jun 2022 19:00:38 +0200
+Message-Id: <20220607165017.972830189@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,122 +52,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit dff6139015dc68e93be3822a7bd406a1d138628b ]
+[ Upstream commit 81524b6312535897707f2942695da1d359a5e56b ]
 
-acpi_pci_bridge_d3(dev) returns "true" if "dev" is a hotplug bridge that
-can handle hotplug events while in D3.  Previously this meant either:
+The previousPacket field in the rx ACK packet should never go backwards -
+it's now the highest DATA sequence number received, not the last on
+received (it used to be used for out of sequence detection).
 
-  - "dev" has a _PS0 or _PR0 method (acpi_pci_power_manageable()), or
-
-  - The Root Port above "dev" has a _DSD with a "HotPlugSupportInD3"
-    property with value 1.
-
-This did not consider _PRW, which tells us about wakeup GPEs (ACPI v6.4,
-sec 7.3.13).  Without a wakeup GPE, from an ACPI perspective the Root Port
-has no way of generating wakeup signals, so hotplug events will be lost if
-we use D3.
-
-Similarly, it did not consider _S0W, which tells us the deepest D-state
-from which a device can wake itself (sec 7.3.20).  If _S0W tells us the
-device cannot wake from D3, hotplug events will again be lost if we use D3.
-
-Some platforms, e.g., AMD Yellow Carp, supply "HotPlugSupportInD3" without
-_PRW or with an _S0W that says the Root Port cannot wake from D3.  On those
-platforms, we previously put bridges in D3hot, hotplug events were lost,
-and hotplugged devices would not be recognized without manually rescanning.
-
-Allow bridges to be put in D3 only if the Root Port can generate wakeup
-GPEs (wakeup.flags.valid), it can wake from D3 (_S0W), AND it has the
-"HotPlugSupportInD3" property.
-
-Neither Windows 10 nor Windows 11 puts the bridge in D3 when the firmware
-is configured this way, and this change aligns the handling of the
-situation to be the same.
-
-[bhelgaas: commit log, tidy "HotPlugSupportInD3" check and comment]
-Link: https://uefi.org/htmlspecs/ACPI_Spec_6_4_html/07_Power_and_Performance_Mgmt/device-power-management-objects.html?highlight=s0w#s0w-s0-device-wake-state
-Link: https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-pcie-root-ports-supporting-hot-plug-in-d3
-Link: https://lore.kernel.org/r/20220401034003.3166-1-mario.limonciello@amd.com
-Fixes: 26ad34d510a87 ("PCI / ACPI: Whitelist D3 for more PCIe hotplug ports")
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 248f219cb8bc ("rxrpc: Rewrite the data and ack handling code")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pci-acpi.c | 41 ++++++++++++++++++++++++++++++-----------
- 1 file changed, 30 insertions(+), 11 deletions(-)
+ net/rxrpc/ar-internal.h | 4 ++--
+ net/rxrpc/input.c       | 4 +++-
+ net/rxrpc/output.c      | 2 +-
+ 3 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
-index 1f15ab7eabf8..3ae435beaf0a 100644
---- a/drivers/pci/pci-acpi.c
-+++ b/drivers/pci/pci-acpi.c
-@@ -974,9 +974,11 @@ bool acpi_pci_power_manageable(struct pci_dev *dev)
+diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+index cc1fe6d00eca..4ba51e6d3d85 100644
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -679,7 +679,7 @@ struct rxrpc_call {
+ 	/* Receive-phase ACK management (ACKs we send). */
+ 	u8			ackr_reason;	/* reason to ACK */
+ 	rxrpc_serial_t		ackr_serial;	/* serial of packet being ACK'd */
+-	rxrpc_seq_t		ackr_prev_seq;	/* previous sequence number received */
++	rxrpc_seq_t		ackr_highest_seq; /* Higest sequence number received */
+ 	rxrpc_seq_t		ackr_consumed;	/* Highest packet shown consumed */
+ 	rxrpc_seq_t		ackr_seen;	/* Highest packet shown seen */
  
- bool acpi_pci_bridge_d3(struct pci_dev *dev)
- {
--	const union acpi_object *obj;
--	struct acpi_device *adev;
- 	struct pci_dev *rpdev;
-+	struct acpi_device *adev;
-+	acpi_status status;
-+	unsigned long long state;
-+	const union acpi_object *obj;
+@@ -694,7 +694,7 @@ struct rxrpc_call {
+ 	/* Transmission-phase ACK management (ACKs we've received). */
+ 	ktime_t			acks_latest_ts;	/* Timestamp of latest ACK received */
+ 	rxrpc_seq_t		acks_first_seq;	/* first sequence number received */
+-	rxrpc_seq_t		acks_prev_seq;	/* previous sequence number received */
++	rxrpc_seq_t		acks_prev_seq;	/* Highest previousPacket received */
+ 	rxrpc_seq_t		acks_lowest_nak; /* Lowest NACK in the buffer (or ==tx_hard_ack) */
+ 	rxrpc_seq_t		acks_lost_top;	/* tx_top at the time lost-ack ping sent */
+ 	rxrpc_serial_t		acks_lost_ping;	/* Serial number of probe ACK */
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index 3da33b5c13b2..680b984ef87f 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -453,7 +453,6 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 	    !rxrpc_receiving_reply(call))
+ 		goto unlock;
  
- 	if (acpi_pci_disabled || !dev->is_hotplug_bridge)
- 		return false;
-@@ -985,12 +987,6 @@ bool acpi_pci_bridge_d3(struct pci_dev *dev)
- 	if (acpi_pci_power_manageable(dev))
- 		return true;
+-	call->ackr_prev_seq = seq0;
+ 	hard_ack = READ_ONCE(call->rx_hard_ack);
  
--	/*
--	 * The ACPI firmware will provide the device-specific properties through
--	 * _DSD configuration object. Look for the 'HotPlugSupportInD3' property
--	 * for the root port and if it is set we know the hierarchy behind it
--	 * supports D3 just fine.
--	 */
- 	rpdev = pcie_find_root_port(dev);
- 	if (!rpdev)
- 		return false;
-@@ -999,11 +995,34 @@ bool acpi_pci_bridge_d3(struct pci_dev *dev)
- 	if (!adev)
- 		return false;
+ 	nr_subpackets = sp->nr_subpackets;
+@@ -534,6 +533,9 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 			ack_serial = serial;
+ 		}
  
--	if (acpi_dev_get_property(adev, "HotPlugSupportInD3",
--				   ACPI_TYPE_INTEGER, &obj) < 0)
-+	/*
-+	 * If the Root Port cannot signal wakeup signals at all, i.e., it
-+	 * doesn't supply a wakeup GPE via _PRW, it cannot signal hotplug
-+	 * events from low-power states including D3hot and D3cold.
-+	 */
-+	if (!adev->wakeup.flags.valid)
- 		return false;
- 
--	return obj->integer.value == 1;
-+	/*
-+	 * If the Root Port cannot wake itself from D3hot or D3cold, we
-+	 * can't use D3.
-+	 */
-+	status = acpi_evaluate_integer(adev->handle, "_S0W", NULL, &state);
-+	if (ACPI_SUCCESS(status) && state < ACPI_STATE_D3_HOT)
-+		return false;
++		if (after(seq0, call->ackr_highest_seq))
++			call->ackr_highest_seq = seq0;
 +
-+	/*
-+	 * The "HotPlugSupportInD3" property in a Root Port _DSD indicates
-+	 * the Port can signal hotplug events while in D3.  We assume any
-+	 * bridges *below* that Root Port can also signal hotplug events
-+	 * while in D3.
-+	 */
-+	if (!acpi_dev_get_property(adev, "HotPlugSupportInD3",
-+				   ACPI_TYPE_INTEGER, &obj) &&
-+	    obj->integer.value == 1)
-+		return true;
-+
-+	return false;
- }
- 
- int acpi_pci_set_power_state(struct pci_dev *dev, pci_power_t state)
+ 		/* Queue the packet.  We use a couple of memory barriers here as need
+ 		 * to make sure that rx_top is perceived to be set after the buffer
+ 		 * pointer and that the buffer pointer is set after the annotation and
+diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
+index a45c83f22236..46aae9b7006f 100644
+--- a/net/rxrpc/output.c
++++ b/net/rxrpc/output.c
+@@ -89,7 +89,7 @@ static size_t rxrpc_fill_out_ack(struct rxrpc_connection *conn,
+ 	pkt->ack.bufferSpace	= htons(8);
+ 	pkt->ack.maxSkew	= htons(0);
+ 	pkt->ack.firstPacket	= htonl(hard_ack + 1);
+-	pkt->ack.previousPacket	= htonl(call->ackr_prev_seq);
++	pkt->ack.previousPacket	= htonl(call->ackr_highest_seq);
+ 	pkt->ack.serial		= htonl(serial);
+ 	pkt->ack.reason		= reason;
+ 	pkt->ack.nAcks		= top - hard_ack;
 -- 
 2.35.1
 
