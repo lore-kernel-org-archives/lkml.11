@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81178C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:39:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380812AbiFGVjE (ORCPT
+        id S1380847AbiFGVjK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:39:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39002 "EHLO
+        Tue, 7 Jun 2022 17:39:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376933AbiFGUsb (ORCPT
+        with ESMTP id S1376932AbiFGUsb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 16:48:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D90E1F62FC;
-        Tue,  7 Jun 2022 11:39:47 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46A164EDE6;
+        Tue,  7 Jun 2022 11:39:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D94DFB81FE1;
-        Tue,  7 Jun 2022 18:39:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43A65C385A2;
-        Tue,  7 Jun 2022 18:39:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B278612E9;
+        Tue,  7 Jun 2022 18:39:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CE16C385A2;
+        Tue,  7 Jun 2022 18:39:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627151;
-        bh=QkiFAHOJFLYpTE4pDqY8HSQkwJMKiiJioaFUGFDAQSM=;
+        s=korg; t=1654627182;
+        bh=89aS9sChBE0uC4rtSi3/Rsye6Bz0kDSRZbd1HiyuD8Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a++uQWqQTw9BIazdjHYlqv56UguIkM4FS5kXrULLb6+orv+c398zHhqF1jjiRrmXg
-         lxgl18AwAzwewQQB/s6vJ2Mj7TDmfW/j2I1yLWQ4lQMAhvdjC1uzc2snAMfg9UX7Zs
-         QR9SuAjlvtJlVDzFDbYyCkso+KcjKA8r9pSW/8WE=
+        b=qs0lpnoZKRbyDdZbWSF0AcvtTff0SpNd2tsqQIrAheJ42qISq08ePMWsxFIBZ2yIb
+         Tdy8ZJLbbacRviAvGQshlj4Kd5GOiSA75LipaHY5fptqz0B0vQlHv+NjriRg5jUDsA
+         p1uYPaosBuUGRAbboVe8liJinPFM8DtRn9YWRiSU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 635/772] bfq: Make sure bfqg for which we are queueing requests is online
-Date:   Tue,  7 Jun 2022 19:03:47 +0200
-Message-Id: <20220607165007.647021878@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 607/772] NFS: Convert GFP_NOFS to GFP_KERNEL
+Date:   Tue,  7 Jun 2022 19:03:19 +0200
+Message-Id: <20220607165006.828054476@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,54 +50,159 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 075a53b78b815301f8d3dd1ee2cd99554e34f0dd upstream.
+[ Upstream commit da48f267f90d9dc9f930fd9a67753643657b404f ]
 
-Bios queued into BFQ IO scheduler can be associated with a cgroup that
-was already offlined. This may then cause insertion of this bfq_group
-into a service tree. But this bfq_group will get freed as soon as last
-bio associated with it is completed leading to use after free issues for
-service tree users. Fix the problem by making sure we always operate on
-online bfq_group. If the bfq_group associated with the bio is not
-online, we pick the first online parent.
+Assume that sections that should not re-enter the filesystem are already
+protected with memalloc_nofs_save/restore call, so relax those GFP_NOFS
+instances which might be used by other contexts.
 
-CC: stable@vger.kernel.org
-Fixes: e21b7a0b9887 ("block, bfq: add full hierarchical scheduling and cgroups support")
-Tested-by: "yukuai (C)" <yukuai3@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220401102752.8599-9-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bfq-cgroup.c |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ fs/nfs/inode.c     |  6 +++---
+ fs/nfs/nfs4proc.c  | 15 +++++++--------
+ fs/nfs/nfs4state.c |  2 +-
+ fs/nfs/pnfs.c      |  4 ++--
+ 4 files changed, 13 insertions(+), 14 deletions(-)
 
---- a/block/bfq-cgroup.c
-+++ b/block/bfq-cgroup.c
-@@ -612,10 +612,19 @@ static void bfq_link_bfqg(struct bfq_dat
- struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
+diff --git a/fs/nfs/inode.c b/fs/nfs/inode.c
+index e4fb939a2904..c32040c968b6 100644
+--- a/fs/nfs/inode.c
++++ b/fs/nfs/inode.c
+@@ -1582,7 +1582,7 @@ struct nfs_fattr *nfs_alloc_fattr(void)
  {
- 	struct blkcg_gq *blkg = bio->bi_blkg;
-+	struct bfq_group *bfqg;
+ 	struct nfs_fattr *fattr;
  
--	if (!blkg)
--		return bfqd->root_group;
--	return blkg_to_bfqg(blkg);
-+	while (blkg) {
-+		bfqg = blkg_to_bfqg(blkg);
-+		if (bfqg->online) {
-+			bio_associate_blkg_from_css(bio, &blkg->blkcg->css);
-+			return bfqg;
-+		}
-+		blkg = blkg->parent;
-+	}
-+	bio_associate_blkg_from_css(bio,
-+				&bfqg_to_blkg(bfqd->root_group)->blkcg->css);
-+	return bfqd->root_group;
+-	fattr = kmalloc(sizeof(*fattr), GFP_NOFS);
++	fattr = kmalloc(sizeof(*fattr), GFP_KERNEL);
+ 	if (fattr != NULL) {
+ 		nfs_fattr_init(fattr);
+ 		fattr->label = NULL;
+@@ -1598,7 +1598,7 @@ struct nfs_fattr *nfs_alloc_fattr_with_label(struct nfs_server *server)
+ 	if (!fattr)
+ 		return NULL;
+ 
+-	fattr->label = nfs4_label_alloc(server, GFP_NOFS);
++	fattr->label = nfs4_label_alloc(server, GFP_KERNEL);
+ 	if (IS_ERR(fattr->label)) {
+ 		kfree(fattr);
+ 		return NULL;
+@@ -1612,7 +1612,7 @@ struct nfs_fh *nfs_alloc_fhandle(void)
+ {
+ 	struct nfs_fh *fh;
+ 
+-	fh = kmalloc(sizeof(struct nfs_fh), GFP_NOFS);
++	fh = kmalloc(sizeof(struct nfs_fh), GFP_KERNEL);
+ 	if (fh != NULL)
+ 		fh->size = 0;
+ 	return fh;
+diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
+index 7d78ace0f025..bbc99dbb3df5 100644
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -5911,7 +5911,7 @@ static ssize_t __nfs4_get_acl_uncached(struct inode *inode, void *buf, size_t bu
+ 		buflen = server->rsize;
+ 
+ 	npages = DIV_ROUND_UP(buflen, PAGE_SIZE) + 1;
+-	pages = kmalloc_array(npages, sizeof(struct page *), GFP_NOFS);
++	pages = kmalloc_array(npages, sizeof(struct page *), GFP_KERNEL);
+ 	if (!pages)
+ 		return -ENOMEM;
+ 
+@@ -6618,7 +6618,7 @@ static int _nfs4_proc_delegreturn(struct inode *inode, const struct cred *cred,
+ 	};
+ 	int status = 0;
+ 
+-	data = kzalloc(sizeof(*data), GFP_NOFS);
++	data = kzalloc(sizeof(*data), GFP_KERNEL);
+ 	if (data == NULL)
+ 		return -ENOMEM;
+ 
+@@ -6806,7 +6806,7 @@ static struct nfs4_unlockdata *nfs4_alloc_unlockdata(struct file_lock *fl,
+ 	struct nfs4_state *state = lsp->ls_state;
+ 	struct inode *inode = state->inode;
+ 
+-	p = kzalloc(sizeof(*p), GFP_NOFS);
++	p = kzalloc(sizeof(*p), GFP_KERNEL);
+ 	if (p == NULL)
+ 		return NULL;
+ 	p->arg.fh = NFS_FH(inode);
+@@ -7211,8 +7211,7 @@ static int _nfs4_do_setlk(struct nfs4_state *state, int cmd, struct file_lock *f
+ 		task_setup_data.flags |= RPC_TASK_MOVEABLE;
+ 
+ 	data = nfs4_alloc_lockdata(fl, nfs_file_open_context(fl->fl_file),
+-			fl->fl_u.nfs4_fl.owner,
+-			recovery_type == NFS_LOCK_NEW ? GFP_KERNEL : GFP_NOFS);
++				   fl->fl_u.nfs4_fl.owner, GFP_KERNEL);
+ 	if (data == NULL)
+ 		return -ENOMEM;
+ 	if (IS_SETLKW(cmd))
+@@ -7635,7 +7634,7 @@ nfs4_release_lockowner(struct nfs_server *server, struct nfs4_lock_state *lsp)
+ 	if (server->nfs_client->cl_mvops->minor_version != 0)
+ 		return;
+ 
+-	data = kmalloc(sizeof(*data), GFP_NOFS);
++	data = kmalloc(sizeof(*data), GFP_KERNEL);
+ 	if (!data)
+ 		return;
+ 	data->lsp = lsp;
+@@ -9301,7 +9300,7 @@ static struct rpc_task *_nfs41_proc_sequence(struct nfs_client *clp,
+ 		goto out_err;
+ 
+ 	ret = ERR_PTR(-ENOMEM);
+-	calldata = kzalloc(sizeof(*calldata), GFP_NOFS);
++	calldata = kzalloc(sizeof(*calldata), GFP_KERNEL);
+ 	if (calldata == NULL)
+ 		goto out_put_clp;
+ 	nfs4_init_sequence(&calldata->args, &calldata->res, 0, is_privileged);
+@@ -10232,7 +10231,7 @@ static int nfs41_free_stateid(struct nfs_server *server,
+ 		&task_setup.rpc_client, &msg);
+ 
+ 	dprintk("NFS call  free_stateid %p\n", stateid);
+-	data = kmalloc(sizeof(*data), GFP_NOFS);
++	data = kmalloc(sizeof(*data), GFP_KERNEL);
+ 	if (!data)
+ 		return -ENOMEM;
+ 	data->server = server;
+diff --git a/fs/nfs/nfs4state.c b/fs/nfs/nfs4state.c
+index 9d312a28b2f0..7f406d4b4cee 100644
+--- a/fs/nfs/nfs4state.c
++++ b/fs/nfs/nfs4state.c
+@@ -821,7 +821,7 @@ static void __nfs4_close(struct nfs4_state *state,
+ 
+ void nfs4_close_state(struct nfs4_state *state, fmode_t fmode)
+ {
+-	__nfs4_close(state, fmode, GFP_NOFS, 0);
++	__nfs4_close(state, fmode, GFP_KERNEL, 0);
  }
  
- /**
+ void nfs4_close_sync(struct nfs4_state *state, fmode_t fmode)
+diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
+index 9203a17b3f09..1b4dd8b828de 100644
+--- a/fs/nfs/pnfs.c
++++ b/fs/nfs/pnfs.c
+@@ -1244,7 +1244,7 @@ pnfs_send_layoutreturn(struct pnfs_layout_hdr *lo,
+ 	int status = 0;
+ 
+ 	*pcred = NULL;
+-	lrp = kzalloc(sizeof(*lrp), GFP_NOFS);
++	lrp = kzalloc(sizeof(*lrp), GFP_KERNEL);
+ 	if (unlikely(lrp == NULL)) {
+ 		status = -ENOMEM;
+ 		spin_lock(&ino->i_lock);
+@@ -3263,7 +3263,7 @@ struct nfs4_threshold *pnfs_mdsthreshold_alloc(void)
+ {
+ 	struct nfs4_threshold *thp;
+ 
+-	thp = kzalloc(sizeof(*thp), GFP_NOFS);
++	thp = kzalloc(sizeof(*thp), GFP_KERNEL);
+ 	if (!thp) {
+ 		dprintk("%s mdsthreshold allocation failed\n", __func__);
+ 		return NULL;
+-- 
+2.35.1
+
 
 
