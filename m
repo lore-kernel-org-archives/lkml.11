@@ -2,157 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63969CCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFF8ECCA48A
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389214AbiFHBpy (ORCPT
+        id S1389764AbiFHBqQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:45:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43894 "EHLO
+        Tue, 7 Jun 2022 21:46:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385577AbiFGWbi (ORCPT
+        with ESMTP id S1382466AbiFGXjF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:31:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EBE4279E58;
-        Tue,  7 Jun 2022 12:24:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37EBAB8220B;
-        Tue,  7 Jun 2022 19:24:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F499C385A2;
-        Tue,  7 Jun 2022 19:24:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629887;
-        bh=s88LYf1pFdDDcHZeXM4fiQIU0i0g0org+rLeRSkBlFg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zt74k6AboFeAMpOpEROpUZzoKPdiIzeI8ll2Wizf/BSw1WUDN/Rqx8L7qP5EbFhTn
-         DGy58JiXa/bw91Tlw0zwLWJipoV/jaHYxnLZOUz1QZ5XcgwgcsBm2cJeok7gWiK0cH
-         T3HsNi1bTDiLllhGMNjw7u2HoyHU+hCD8sa1Cu4w=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kant Fan <kant@allwinnertech.com>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.18 812/879] thermal: devfreq_cooling: use local ops instead of global ops
-Date:   Tue,  7 Jun 2022 19:05:30 +0200
-Message-Id: <20220607165026.426095182@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 7 Jun 2022 19:39:05 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 209DB1742B1
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:32 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id i16-20020a170902cf1000b001540b6a09e3so10037554plg.0
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=xglW57R7dPrxeD1+iu7KlOWod3vvDTBjvAqs2DB9Tyo=;
+        b=Z8n2j8d/l+NC3N9+mbSwNLqH3Dk5xFYh3W8mbYfNzq6SnxKTw2miTYcRgW55MA898M
+         tmofR+kdMmdNHI4Ukui4H9GO2TaNKM1ORixz8VRgMCvGIBmAFOimwOB+cmuXfel+5/Q8
+         wmI/GlXJFGuExnuB2R051rnXIKjHh8mXRiGXe0GsvU/ke6Z2UFuzAycPdzJLmrqYUVNt
+         u0757aLcVkOOPfwGMK8VmL5NOw5E6tMyLH7XQY94dWQS5DUwDJMA4buwRvXpM0cNjGLX
+         Ri77c5iIuMaAm6afVDTEFcuQgsRqJZPMXnoDhaUyRHigFNl1sYnLGmktT7uVpepWchos
+         Hf9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=xglW57R7dPrxeD1+iu7KlOWod3vvDTBjvAqs2DB9Tyo=;
+        b=lnbV0bKXOyIU7cIM48xlU0XdLOgzpQoUgj8i7rR3sGK3sWJ7n9GY3+qHwUSOFmwP5D
+         ++iGOUZXnXxRyIHII7B3OFdh4Sh/dtlf9MHm5x9X0tqDBr/BhslJ7bzOWT4BG+Kb8zDY
+         pB47cUcelhfm1jv39SQHWCoEYFmBQ5vbEAFsAsvztt1JbpYuR9x78IaMXtHAH+GczY9H
+         2n4OeddpWB7/Rz5WDCGD8sGReTLOL6EzzJKUm//w5ZZyNIE1/RaUUSr9g792Q47hd2T9
+         dAa5sLHww+KSaB2JNt+n0dfV1YvRblRGYc3i/Ig6JwnNlU7ojP+m+TX835ynncuOJR5N
+         6u6w==
+X-Gm-Message-State: AOAM533gv/TXH1txCkv4EkRRBLpT2kc9vmFTNxoAvhAQQVrCuDDnzsOk
+        sKHxhSUr069G94aWg4PVAqOEtt5aiYc=
+X-Google-Smtp-Source: ABdhPJyYWskGfqg7Lzc1BANxoat/HX9oJuMU6eVjhdTVKgpGqjo/fAChIvEUAOBwu0ruJlwRyubKpPudm4k=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a17:902:9b8a:b0:163:d0ad:f9e8 with SMTP id
+ y10-20020a1709029b8a00b00163d0adf9e8mr30305164plp.79.1654637791642; Tue, 07
+ Jun 2022 14:36:31 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Tue,  7 Jun 2022 21:35:57 +0000
+In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
+Message-Id: <20220607213604.3346000-9-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220607213604.3346000-1-seanjc@google.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH v5 08/15] KVM: nVMX: Keep KVM updates to PERF_GLOBAL_CTRL ctrl
+ bits across MSR write
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
+        David Matlack <dmatlack@google.com>,
+        Oliver Upton <oupton@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kant Fan <kant@allwinnertech.com>
+From: Oliver Upton <oupton@google.com>
 
-commit b947769b8f778db130aad834257fcaca25df2edc upstream.
+Since commit 03a8871add95 ("KVM: nVMX: Expose load IA32_PERF_GLOBAL_CTRL
+VM-{Entry,Exit} control"), KVM has taken ownership of the "load
+IA32_PERF_GLOBAL_CTRL" VMX entry/exit control bits. The ABI is that
+these bits will be set in the IA32_VMX_TRUE_{ENTRY,EXIT}_CTLS MSRs if
+the guest's CPUID exposes a vPMU that supports the IA32_PERF_GLOBAL_CTRL
+MSR (CPUID.0AH:EAX[7:0] > 1), and clear otherwise.
 
-Fix access illegal address problem in following condition:
+However, commit aedbaf4f6afd ("KVM: x86: Extract kvm_update_cpuid_runtime()
+from kvm_update_cpuid()") partially broke KVM ownership of the
+aforementioned bits. Before, kvm_update_cpuid() was exercised frequently
+when running a guest and constantly applied its own changes to the "load
+IA32_PERF_GLOBAL_CTRL" bits. Now, the "load IA32_PERF_GLOBAL_CTRL" bits
+are only ever updated after a KVM_SET_CPUID/KVM_SET_CPUID2 ioctl, meaning
+that a subsequent MSR write from userspace will clobber these values.
 
-There are multiple devfreq cooling devices in system, some of them has
-EM model but others do not. Energy model ops such as state2power will
-append to global devfreq_cooling_ops when the cooling device with
-EM model is registered. It makes the cooling device without EM model
-also use devfreq_cooling_ops after appending when registered later by
-of_devfreq_cooling_register_power() or of_devfreq_cooling_register().
+Note that older kernels without commit c44d9b34701d ("KVM: x86: Invoke
+vendor's vcpu_after_set_cpuid() after all common updates") still require
+that the entry/exit controls be updated from kvm_pmu_refresh(). Leave
+the benign call in place to allow for cleaner backporting and punt the
+cleanup to a later change.
 
-The IPA governor regards the cooling devices without EM model as a power
-actor, because they also have energy model ops, and will access illegal
-address at dfc->em_pd when execute cdev->ops->get_requested_power,
-cdev->ops->state2power or cdev->ops->power2state.
+Uphold the old ABI by reapplying KVM's tweaks to the "load
+IA32_PERF_GLOBAL_CTRL" bits after an MSR write from userspace.
 
-Fixes: 615510fe13bd2 ("thermal: devfreq_cooling: remove old power model and use EM")
-Cc: 5.13+ <stable@vger.kernel.org> # 5.13+
-Signed-off-by: Kant Fan <kant@allwinnertech.com>
-Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Note, the old ABI that is being preserved is misguided KVM behavior that
+was introduced by commit 03a8871add95 ("KVM: nVMX: Expose load
+IA32_PERF_GLOBAL_CTRL VM-{Entry,Exit} control").  KVM's bogus tweaking of
+VMX MSRs was first implemented by commit 5f76f6f5ff96 ("KVM: nVMX: Do not
+expose MPX VMX controls when guest MPX disabled") to hack around a QEMU
+bug, and that bad behavior was unfortunately applied to PERF_GLOBAL_CTRL
+before it could be stamped out.
+
+Fixes: aedbaf4f6afd ("KVM: x86: Extract kvm_update_cpuid_runtime() from kvm_update_cpuid()")
+Reported-by: Jim Mattson <jmattson@google.com>
+Signed-off-by: Oliver Upton <oupton@google.com>
+[sean: explicitly document the original KVM hack, set bits iff CPU
+       supports the control]
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- drivers/thermal/devfreq_cooling.c |   25 ++++++++++++++++++-------
- 1 file changed, 18 insertions(+), 7 deletions(-)
+ arch/x86/kvm/vmx/vmx.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/drivers/thermal/devfreq_cooling.c
-+++ b/drivers/thermal/devfreq_cooling.c
-@@ -358,21 +358,28 @@ of_devfreq_cooling_register_power(struct
- 	struct thermal_cooling_device *cdev;
- 	struct device *dev = df->dev.parent;
- 	struct devfreq_cooling_device *dfc;
-+	struct thermal_cooling_device_ops *ops;
- 	char *name;
- 	int err, num_opps;
- 
--	dfc = kzalloc(sizeof(*dfc), GFP_KERNEL);
--	if (!dfc)
-+	ops = kmemdup(&devfreq_cooling_ops, sizeof(*ops), GFP_KERNEL);
-+	if (!ops)
- 		return ERR_PTR(-ENOMEM);
- 
-+	dfc = kzalloc(sizeof(*dfc), GFP_KERNEL);
-+	if (!dfc) {
-+		err = -ENOMEM;
-+		goto free_ops;
-+	}
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 3f1671d7cbe4..73ec4746a4e6 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -7413,6 +7413,20 @@ void nested_vmx_entry_exit_ctls_update(struct kvm_vcpu *vcpu)
+ 			vmx->nested.msrs.exit_ctls_high &= ~VM_EXIT_CLEAR_BNDCFGS;
+ 		}
+ 	}
 +
- 	dfc->devfreq = df;
- 
- 	dfc->em_pd = em_pd_get(dev);
- 	if (dfc->em_pd) {
--		devfreq_cooling_ops.get_requested_power =
-+		ops->get_requested_power =
- 			devfreq_cooling_get_requested_power;
--		devfreq_cooling_ops.state2power = devfreq_cooling_state2power;
--		devfreq_cooling_ops.power2state = devfreq_cooling_power2state;
-+		ops->state2power = devfreq_cooling_state2power;
-+		ops->power2state = devfreq_cooling_power2state;
- 
- 		dfc->power_ops = dfc_power;
- 
-@@ -407,8 +414,7 @@ of_devfreq_cooling_register_power(struct
- 	if (!name)
- 		goto remove_qos_req;
- 
--	cdev = thermal_of_cooling_device_register(np, name, dfc,
--						  &devfreq_cooling_ops);
-+	cdev = thermal_of_cooling_device_register(np, name, dfc, ops);
- 	kfree(name);
- 
- 	if (IS_ERR(cdev)) {
-@@ -429,6 +435,8 @@ free_table:
- 	kfree(dfc->freq_table);
- free_dfc:
- 	kfree(dfc);
-+free_ops:
-+	kfree(ops);
- 
- 	return ERR_PTR(err);
++	/*
++	 * KVM supports a 1-setting of the "load IA32_PERF_GLOBAL_CTRL"
++	 * VM-{Entry,Exit} controls if the vPMU supports IA32_PERF_GLOBAL_CTRL.
++	 */
++	if (cpu_has_load_perf_global_ctrl()) {
++		if (intel_pmu_has_perf_global_ctrl(vcpu_to_pmu(vcpu))) {
++			vmx->nested.msrs.entry_ctls_high |= VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL;
++			vmx->nested.msrs.exit_ctls_high |= VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL;
++		} else {
++			vmx->nested.msrs.entry_ctls_high &= ~VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL;
++			vmx->nested.msrs.exit_ctls_high &= ~VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL;
++		}
++	}
  }
-@@ -510,11 +518,13 @@ EXPORT_SYMBOL_GPL(devfreq_cooling_em_reg
- void devfreq_cooling_unregister(struct thermal_cooling_device *cdev)
- {
- 	struct devfreq_cooling_device *dfc;
-+	const struct thermal_cooling_device_ops *ops;
- 	struct device *dev;
  
- 	if (IS_ERR_OR_NULL(cdev))
- 		return;
- 
-+	ops = cdev->ops;
- 	dfc = cdev->devdata;
- 	dev = dfc->devfreq->dev.parent;
- 
-@@ -525,5 +535,6 @@ void devfreq_cooling_unregister(struct t
- 
- 	kfree(dfc->freq_table);
- 	kfree(dfc);
-+	kfree(ops);
- }
- EXPORT_SYMBOL_GPL(devfreq_cooling_unregister);
-
+ static void update_intel_pt_cfg(struct kvm_vcpu *vcpu)
+-- 
+2.36.1.255.ge46751e96f-goog
 
