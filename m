@@ -2,186 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9B37C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 06:43:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96DB7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 06:44:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237162AbiFGGnB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 02:43:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53624 "EHLO
+        id S237166AbiFGGod (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 02:44:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237074AbiFGGm6 (ORCPT
+        with ESMTP id S232554AbiFGGo0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 02:42:58 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B027C50E20
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 23:42:56 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 081BF143D;
-        Mon,  6 Jun 2022 23:42:56 -0700 (PDT)
-Received: from [10.163.39.210] (unknown [10.163.39.210])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 28E743F766;
-        Mon,  6 Jun 2022 23:42:52 -0700 (PDT)
-Message-ID: <c5ca2c49-94a3-d835-2627-48488296e7fc@arm.com>
-Date:   Tue, 7 Jun 2022 12:12:52 +0530
+        Tue, 7 Jun 2022 02:44:26 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8195253C
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 23:44:25 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id w13-20020a17090a780d00b001e8961b355dso2760055pjk.5
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 23:44:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GzEm5jqlekQS2E69TLpvZ6DXTFb1mHUyOolgBivv5/c=;
+        b=KvJDycZnUMrvh8JswpwAudxPqdgqMKXeNkRKM6/ll5Sbpo3gVxMfPTteKcUV+K0ODe
+         wV2/k4Pqve82ruqgqp5WA5ayFmvdn66gJIXFOzxJHHD1zZq4dFovK75YWMJGnPqOr+5U
+         uxll4W0fCcbEcMql6qhrx7UlOIyfTOLrqMPlnyPmF/z0aLFUJnxOja5iRhzmkFMWM9Uo
+         OOi6J1HBmxbA6whXfvlZoKZs0WCF4fP31wQpk6SY0rmO/6epmzMaeBI1kBenj8fRYkej
+         j9RM4qz6QNrnNpM1SXPaG3yucpNMCUPK8QCH/Cb9fMXzfrqo/o7yzOTnbqKneyXJZWxb
+         KzRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GzEm5jqlekQS2E69TLpvZ6DXTFb1mHUyOolgBivv5/c=;
+        b=H5YQJWV0O2td+y84npYgFty/px1Yn0ae9LfSPRZivUJXcBdvwObOYgMxvZF3kOe2E+
+         i+SavRtLosKc3RbUFiu2wa2j2ZxWdpjIMgfJRIfvKiKmoYARqg8nMSn/k/aoC9o6AmeP
+         xFzR9OMm0j+tZgQm7alR2BArDQJE/bAKcvwdhgj0iGqLBIAOIdbdG1MOHyjW1uiJVIzJ
+         r3FbMWAR+7jYUi+wHa3yHybDFdBZZ6AcarORXpOqmDf5gb8wAdXxTxC/hEGc4K4E1BOw
+         14dCu5xQ22HvvI33TYklO4g2yqbfaMdhSha3KvUUiTRC8dJi65Cm3TPvKQ6J5B8STW7p
+         +C+Q==
+X-Gm-Message-State: AOAM5303Nvk3jyagEs6PaA2D75iTO422/IP7e+qXVWLoLiWUgo/6yUXK
+        nFzN5uWsW5qRgkYvN5pKCNA9gUey6lUbmipqscenIQ==
+X-Google-Smtp-Source: ABdhPJyiJ1kgXF3d95mk6ZoiyKqVYZuzzYbnd0ek3tLxWUwtNIRKftrWoMNME7yKuVGl6/jJoQTBLqzz/oYipJAixq0=
+X-Received: by 2002:a17:902:ab8c:b0:167:4d5c:3542 with SMTP id
+ f12-20020a170902ab8c00b001674d5c3542mr19708637plr.6.1654584264279; Mon, 06
+ Jun 2022 23:44:24 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v3] memblock,arm64: Expand the static memblock memory
- table
-Content-Language: en-US
-To:     Zhou Guanghui <zhouguanghui1@huawei.com>,
-        akpm@linux-foundation.org, rppt@kernel.org, will@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-arm-kernel@lists.infradead.org, xuqiang36@huawei.com
-References: <20220527091832.63489-1-zhouguanghui1@huawei.com>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-In-Reply-To: <20220527091832.63489-1-zhouguanghui1@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <CA+G9fYv7fESqpGoeKmHoJsst6wfRNMi2wQLGm+PsjbLDuDjdMQ@mail.gmail.com>
+ <CA+G9fYsJThWFAxXTbAcJmjshx+oYxVVd+gMM680hS0X1z37+FQ@mail.gmail.com>
+ <20220607162504.7fd5a92a@canb.auug.org.au> <CALvZod5XBjw7MZfYSNv-UnE7pHMKTquUNomqyC5T05Qu_ef6Zw@mail.gmail.com>
+In-Reply-To: <CALvZod5XBjw7MZfYSNv-UnE7pHMKTquUNomqyC5T05Qu_ef6Zw@mail.gmail.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Mon, 6 Jun 2022 23:44:13 -0700
+Message-ID: <CALvZod4DhM00LXsPty=cnYyv3Ci5YS5otasu_tr9o7ujQekKLw@mail.gmail.com>
+Subject: Re: [next] arm64: boot failed - next-20220606
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        regressions@lists.linux.dev, lkft-triage@lists.linaro.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-mm <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Raghuram Thammiraju <raghuram.thammiraju@arm.com>,
+        Mark Brown <broonie@kernel.org>, Will Deacon <will@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Vasily Averin <vvs@openvz.org>,
+        Qian Cai <quic_qiancai@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Zhou,
+On Mon, Jun 6, 2022 at 11:36 PM Shakeel Butt <shakeelb@google.com> wrote:
+>
+> On Mon, Jun 6, 2022 at 11:25 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> >
+> > Hi Naresh,
+> >
+> > On Tue, 7 Jun 2022 11:00:39 +0530 Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
+> > >
+> > > On Mon, 6 Jun 2022 at 17:16, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
+> > > >
+> > > > Linux next-20220606 arm64 boot failed. The kernel boot log is empty.
+> > > > I am bisecting this problem.
+> > > >
+> > > > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> > > >
+> > > > The initial investigation show that,
+> > > >
+> > > > GOOD: next-20220603
+> > > > BAD:  next-20220606
+> > > >
+> > > > Boot log:
+> > > > Starting kernel ...
+> > >
+> > > Linux next-20220606 and next-20220607 arm64 boot failed.
+> > > The kernel panic log showing after earlycon.
+> > >
+> > > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> >
+> > Can you test v5.19-rc1, please?  If that does not fail, then you could
+> > bisect between that and next-20220606 ...
+> >
+>
+> This is already reported at
+> https://lore.kernel.org/all/Yp4F6n2Ie32re7Ed@qian/ and I think we know
+> the underlying issue (which is calling virt_to_page() on a vmalloc
+> address).
 
-On 5/27/22 14:48, Zhou Guanghui wrote:
-> In a system using HBM, a multi-bit ECC error occurs, and the BIOS
-> will mark the corresponding area (for example, 2 MB) as unusable.
-> When the system restarts next time, these areas are not reported
-> or reported as EFI_UNUSABLE_MEMORY. Both cases lead to an increase
-> in the number of memblocks, whereas EFI_UNUSABLE_MEMORY leads to a
-> larger number of memblocks.
-> 
-> For example, if the EFI_UNUSABLE_MEMORY type is reported:
-> ...
-> memory[0x92]    [0x0000200834a00000-0x0000200835bfffff], 0x0000000001200000 bytes on node 7 flags: 0x0
-> memory[0x93]    [0x0000200835c00000-0x0000200835dfffff], 0x0000000000200000 bytes on node 7 flags: 0x4
-> memory[0x94]    [0x0000200835e00000-0x00002008367fffff], 0x0000000000a00000 bytes on node 7 flags: 0x0
-> memory[0x95]    [0x0000200836800000-0x00002008369fffff], 0x0000000000200000 bytes on node 7 flags: 0x4
-> memory[0x96]    [0x0000200836a00000-0x0000200837bfffff], 0x0000000001200000 bytes on node 7 flags: 0x0
-> memory[0x97]    [0x0000200837c00000-0x0000200837dfffff], 0x0000000000200000 bytes on node 7 flags: 0x4
-> memory[0x98]    [0x0000200837e00000-0x000020087fffffff], 0x0000000048200000 bytes on node 7 flags: 0x0
-> memory[0x99]    [0x0000200880000000-0x0000200bcfffffff], 0x0000000350000000 bytes on node 6 flags: 0x0
-> memory[0x9a]    [0x0000200bd0000000-0x0000200bd01fffff], 0x0000000000200000 bytes on node 6 flags: 0x4
-> memory[0x9b]    [0x0000200bd0200000-0x0000200bd07fffff], 0x0000000000600000 bytes on node 6 flags: 0x0
-> memory[0x9c]    [0x0000200bd0800000-0x0000200bd09fffff], 0x0000000000200000 bytes on node 6 flags: 0x4
-> memory[0x9d]    [0x0000200bd0a00000-0x0000200fcfffffff], 0x00000003ff600000 bytes on node 6 flags: 0x0
-> memory[0x9e]    [0x0000200fd0000000-0x0000200fd01fffff], 0x0000000000200000 bytes on node 6 flags: 0x4
-> memory[0x9f]    [0x0000200fd0200000-0x0000200fffffffff], 0x000000002fe00000 bytes on node 6 flags: 0x0
-> ...
+Sorry, I might be wrong. Just checked the stacktrace again and it
+seems like the failure is happening in early boot in this report.
+Though the error "Unable to handle kernel paging request at virtual
+address" is happening in the function mem_cgroup_from_obj().
 
-Although this patch did not mention about a real world system requiring
-this support, as been reported on the thread, Ampere Altra does seem to
-get benefited. Regardless, it's always better to describe platform test
-scenarios in more detail.
-
-> 
-> The EFI memory map is parsed to construct the memblock arrays before
-> the memblock arrays can be resized. As the result, memory regions
-> beyond INIT_MEMBLOCK_REGIONS are lost.
-> 
-> Allow overriding memblock.memory array size with architecture defined
-> INIT_MEMBLOCK_MEMORY_REGIONS and make arm64 to set
-> INIT_MEMBLOCK_MEMORY_REGIONS to 1024 when CONFIG_EFI is enabled.
-
-Right, but first this needs to mention that INIT_MEMBLOCK_MEMORY_REGIONS
-(new macro) is being added to replace INIT_MEMBLOCK_REGIONS, representing
-max memory regions in the memblock. Platform override comes afterwards.
-
-> 
-> Signed-off-by: Zhou Guanghui <zhouguanghui1@huawei.com>
-> Acked-by: Mike Rapoport <rppt@linux.ibm.com>
-> ---
->  arch/arm64/include/asm/memory.h |  9 +++++++++
->  mm/memblock.c                   | 14 +++++++++-----
->  2 files changed, 18 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/arm64/include/asm/memory.h b/arch/arm64/include/asm/memory.h
-> index 0af70d9abede..eda61c0389c4 100644
-> --- a/arch/arm64/include/asm/memory.h
-> +++ b/arch/arm64/include/asm/memory.h
-> @@ -364,6 +364,15 @@ void dump_mem_limit(void);
->  # define INIT_MEMBLOCK_RESERVED_REGIONS	(INIT_MEMBLOCK_REGIONS + NR_CPUS + 1)
->  #endif
->  
-> +/*
-> + * memory regions which marked with flag MEMBLOCK_NOMAP may divide a continuous
-> + * memory block into multiple parts. As a result, the number of memory regions
-> + * is large.
-> + */
-
-As mentioned in the previous version's thread,
-
-This comment needs be more specific about this increased static array size, being
-applicable ONLY for MEMBLOCK_NOMAP regions on EFI system with EFI_UNUSABLE_MEMORY
-tagging/flag support.
-
-> +#ifdef CONFIG_EFI
-> +#define INIT_MEMBLOCK_MEMORY_REGIONS	1024
-
-Although 1024 seems adequate as compared to 128 memory regions in the memblock to
-handle such error scenarios, but a co-relation with INIT_MEMBLOCK_REGIONS would
-be preferred similar to when INIT_MEMBLOCK_RESERVED_REGIONS gets overridden. This
-avoid a precedence when random numbers could get assigned in other archs later on.
-
-$git grep INIT_MEMBLOCK_RESERVED_REGIONS arch/
-arch/arm64/include/asm/memory.h:# define INIT_MEMBLOCK_RESERVED_REGIONS (INIT_MEMBLOCK_REGIONS + NR_CPUS + 1)
-arch/loongarch/include/asm/sparsemem.h:#define INIT_MEMBLOCK_RESERVED_REGIONS   (INIT_MEMBLOCK_REGIONS + NR_CPUS)
-
-Something like
-
-#define INIT_MEMBLOCK_MEMORY_REGIONS	(INIT_MEMBLOCK_REGIONS * 8)
-
-> +#endif
-> +
->  #include <asm-generic/memory_model.h>
->  
->  #endif /* __ASM_MEMORY_H */
-> diff --git a/mm/memblock.c b/mm/memblock.c
-> index e4f03a6e8e56..7c63571a69d7 100644
-> --- a/mm/memblock.c
-> +++ b/mm/memblock.c
-> @@ -29,6 +29,10 @@
->  # define INIT_MEMBLOCK_RESERVED_REGIONS		INIT_MEMBLOCK_REGIONS
->  #endif
->  
-> +#ifndef INIT_MEMBLOCK_MEMORY_REGIONS
-> +#define INIT_MEMBLOCK_MEMORY_REGIONS		INIT_MEMBLOCK_REGIONS
-> +#endif
-> +
->  /**
->   * DOC: memblock overview
->   *
-> @@ -55,9 +59,9 @@
->   * the allocator metadata. The "memory" and "reserved" types are nicely
->   * wrapped with struct memblock. This structure is statically
->   * initialized at build time. The region arrays are initially sized to
-> - * %INIT_MEMBLOCK_REGIONS for "memory" and %INIT_MEMBLOCK_RESERVED_REGIONS
-> - * for "reserved". The region array for "physmem" is initially sized to
-> - * %INIT_PHYSMEM_REGIONS.
-> + * %INIT_MEMBLOCK_MEMORY_REGIONS for "memory" and
-> + * %INIT_MEMBLOCK_RESERVED_REGIONS for "reserved". The region array
-> + * for "physmem" is initially sized to %INIT_PHYSMEM_REGIONS.
->   * The memblock_allow_resize() enables automatic resizing of the region
->   * arrays during addition of new regions. This feature should be used
->   * with care so that memory allocated for the region array will not
-> @@ -102,7 +106,7 @@ unsigned long min_low_pfn;
->  unsigned long max_pfn;
->  unsigned long long max_possible_pfn;
->  
-> -static struct memblock_region memblock_memory_init_regions[INIT_MEMBLOCK_REGIONS] __initdata_memblock;
-> +static struct memblock_region memblock_memory_init_regions[INIT_MEMBLOCK_MEMORY_REGIONS] __initdata_memblock;
->  static struct memblock_region memblock_reserved_init_regions[INIT_MEMBLOCK_RESERVED_REGIONS] __initdata_memblock;
->  #ifdef CONFIG_HAVE_MEMBLOCK_PHYS_MAP
->  static struct memblock_region memblock_physmem_init_regions[INIT_PHYSMEM_REGIONS];
-> @@ -111,7 +115,7 @@ static struct memblock_region memblock_physmem_init_regions[INIT_PHYSMEM_REGIONS
->  struct memblock memblock __initdata_memblock = {
->  	.memory.regions		= memblock_memory_init_regions,
->  	.memory.cnt		= 1,	/* empty dummy entry */
-> -	.memory.max		= INIT_MEMBLOCK_REGIONS,
-> +	.memory.max		= INIT_MEMBLOCK_MEMORY_REGIONS,
->  	.memory.name		= "memory",
->  
->  	.reserved.regions	= memblock_reserved_init_regions,
-
-- Anshuman
+Naresh, can you repro the issue if you revert the patch "net: set
+proper memcg for net_init hooks allocations"?
