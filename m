@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7AD1CCA486
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05CCECCA489
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384798AbiFGW0F (ORCPT
+        id S1384874AbiFGW0K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:26:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54454 "EHLO
+        Tue, 7 Jun 2022 18:26:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380718AbiFGVQv (ORCPT
+        with ESMTP id S1380710AbiFGVQr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:16:51 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F67821F9CC;
-        Tue,  7 Jun 2022 11:56:40 -0700 (PDT)
+        Tue, 7 Jun 2022 17:16:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 764FE21F9B9;
+        Tue,  7 Jun 2022 11:56:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A4AC9CE2475;
-        Tue,  7 Jun 2022 18:56:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFF99C385A2;
-        Tue,  7 Jun 2022 18:56:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0699E61724;
+        Tue,  7 Jun 2022 18:56:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F94AC385A2;
+        Tue,  7 Jun 2022 18:56:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628197;
-        bh=UEtTKC+segok9K/ynO7AyNzCmnn7J3j6y8rLTN8HqF0=;
+        s=korg; t=1654628191;
+        bh=g0u/pd5I5cajoFlJAmHmEkUnMh+QPi0LxEXCIF7xBjo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pk/PxLu2Mn+tGF6e8h5QjD1zy/7vR5ffTYPl77ZimMuSd39TrC4wpnPHVbB9aPgUY
-         c6LxQpPyPOGyUtkKHnt9U0cjlSlNu5UT2/WJOa/+N/MB5k7/huR1xsbHMLEShI13JM
-         N/vLNPC4+mlg4JJd2UVrLVPI6Sj7i3+DCyR053zA=
+        b=ey7HmNvpcplrQm/AXqRmZOQ+gRV5upvMtWsupfCH0XtPnH6dlfGAx+yoXWk7uuINU
+         sEMSLnd/31CMdesM0ioJJKPYCxpPdP0ohrVGc6ESFtOxPyXUwgErrNEWV1vH0XE5Rg
+         y3bq1msW25Gq3pVhZioWlFX9HtYrhcfuoVDNbwvI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeffrey Altman <jaltman@auristor.com>,
-        David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 200/879] rxrpc, afs: Fix selection of abort codes
-Date:   Tue,  7 Jun 2022 18:55:18 +0200
-Message-Id: <20220607165008.650924569@linuxfoundation.org>
+        stable@vger.kernel.org, Yicong Yang <yangyicong@hisilicon.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Jay Zhou <jianjay.zhou@huawei.com>
+Subject: [PATCH 5.18 237/879] PCI: Avoid pci_dev_lock() AB/BA deadlock with sriov_numvfs_store()
+Date:   Tue,  7 Jun 2022 18:55:55 +0200
+Message-Id: <20220607165009.732563014@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,112 +51,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Yicong Yang <yangyicong@hisilicon.com>
 
-[ Upstream commit de696c4784f0706884458893c5a6c39b3a3ff65c ]
+[ Upstream commit a91ee0e9fca9d7501286cfbced9b30a33e52740a ]
 
-The RX_USER_ABORT code should really only be used to indicate that the user
-of the rxrpc service (ie. userspace) implicitly caused a call to be aborted
-- for instance if the AF_RXRPC socket is closed whilst the call was in
-progress.  (The user may also explicitly abort a call and specify the abort
-code to use).
+The sysfs sriov_numvfs_store() path acquires the device lock before the
+config space access lock:
 
-Change some of the points of generation to use other abort codes instead:
+  sriov_numvfs_store
+    device_lock                 # A (1) acquire device lock
+    sriov_configure
+      vfio_pci_sriov_configure  # (for example)
+        vfio_pci_core_sriov_configure
+          pci_disable_sriov
+            sriov_disable
+              pci_cfg_access_lock
+                pci_wait_cfg    # B (4) wait for dev->block_cfg_access == 0
 
- (1) Abort the call with RXGEN_SS_UNMARSHAL or RXGEN_CC_UNMARSHAL if we see
-     ENOMEM and EFAULT during received data delivery and abort with
-     RX_CALL_DEAD in the default case.
+Previously, pci_dev_lock() acquired the config space access lock before the
+device lock:
 
- (2) Abort with RXGEN_SS_MARSHAL if we get ENOMEM whilst trying to send a
-     reply.
+  pci_dev_lock
+    pci_cfg_access_lock
+      dev->block_cfg_access = 1 # B (2) set dev->block_cfg_access = 1
+    device_lock                 # A (3) wait for device lock
 
- (3) Abort with RX_CALL_DEAD if we stop hearing from the peer if we had
-     heard from the peer and abort with RX_CALL_TIMEOUT if we hadn't.
+Any path that uses pci_dev_lock(), e.g., pci_reset_function(), may
+deadlock with sriov_numvfs_store() if the operations occur in the sequence
+(1) (2) (3) (4).
 
- (4) Abort with RX_CALL_DEAD if we try to disconnect a call that's not
-     completed successfully or been aborted.
+Avoid the deadlock by reversing the order in pci_dev_lock() so it acquires
+the device lock before the config space access lock, the same as the
+sriov_numvfs_store() path.
 
-Reported-by: Jeffrey Altman <jaltman@auristor.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Signed-off-by: David S. Miller <davem@davemloft.net>
+[bhelgaas: combined and adapted commit log from Jay Zhou's independent
+subsequent posting:
+https://lore.kernel.org/r/20220404062539.1710-1-jianjay.zhou@huawei.com]
+Link: https://lore.kernel.org/linux-pci/1583489997-17156-1-git-send-email-yangyicong@hisilicon.com/
+Also-posted-by: Jay Zhou <jianjay.zhou@huawei.com>
+Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/afs/rxrpc.c          | 8 +++++---
- net/rxrpc/call_event.c  | 4 ++--
- net/rxrpc/conn_object.c | 2 +-
- 3 files changed, 8 insertions(+), 6 deletions(-)
+ drivers/pci/pci.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/fs/afs/rxrpc.c b/fs/afs/rxrpc.c
-index 23a1a92d64bb..a5434f3e57c6 100644
---- a/fs/afs/rxrpc.c
-+++ b/fs/afs/rxrpc.c
-@@ -537,6 +537,8 @@ static void afs_deliver_to_call(struct afs_call *call)
- 		case -ENODATA:
- 		case -EBADMSG:
- 		case -EMSGSIZE:
-+		case -ENOMEM:
-+		case -EFAULT:
- 			abort_code = RXGEN_CC_UNMARSHAL;
- 			if (state != AFS_CALL_CL_AWAIT_REPLY)
- 				abort_code = RXGEN_SS_UNMARSHAL;
-@@ -544,7 +546,7 @@ static void afs_deliver_to_call(struct afs_call *call)
- 						abort_code, ret, "KUM");
- 			goto local_abort;
- 		default:
--			abort_code = RX_USER_ABORT;
-+			abort_code = RX_CALL_DEAD;
- 			rxrpc_kernel_abort_call(call->net->socket, call->rxcall,
- 						abort_code, ret, "KER");
- 			goto local_abort;
-@@ -836,7 +838,7 @@ void afs_send_empty_reply(struct afs_call *call)
- 	case -ENOMEM:
- 		_debug("oom");
- 		rxrpc_kernel_abort_call(net->socket, call->rxcall,
--					RX_USER_ABORT, -ENOMEM, "KOO");
-+					RXGEN_SS_MARSHAL, -ENOMEM, "KOO");
- 		fallthrough;
- 	default:
- 		_leave(" [error]");
-@@ -878,7 +880,7 @@ void afs_send_simple_reply(struct afs_call *call, const void *buf, size_t len)
- 	if (n == -ENOMEM) {
- 		_debug("oom");
- 		rxrpc_kernel_abort_call(net->socket, call->rxcall,
--					RX_USER_ABORT, -ENOMEM, "KOO");
-+					RXGEN_SS_MARSHAL, -ENOMEM, "KOO");
- 	}
- 	_leave(" [error]");
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index d25122fbe98a..1af69e298ac3 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -5113,19 +5113,19 @@ static int pci_reset_bus_function(struct pci_dev *dev, bool probe)
+ 
+ void pci_dev_lock(struct pci_dev *dev)
+ {
+-	pci_cfg_access_lock(dev);
+ 	/* block PM suspend, driver probe, etc. */
+ 	device_lock(&dev->dev);
++	pci_cfg_access_lock(dev);
  }
-diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
-index 22e05de5d1ca..e426f6831aab 100644
---- a/net/rxrpc/call_event.c
-+++ b/net/rxrpc/call_event.c
-@@ -377,9 +377,9 @@ void rxrpc_process_call(struct work_struct *work)
- 		if (test_bit(RXRPC_CALL_RX_HEARD, &call->flags) &&
- 		    (int)call->conn->hi_serial - (int)call->rx_serial > 0) {
- 			trace_rxrpc_call_reset(call);
--			rxrpc_abort_call("EXP", call, 0, RX_USER_ABORT, -ECONNRESET);
-+			rxrpc_abort_call("EXP", call, 0, RX_CALL_DEAD, -ECONNRESET);
- 		} else {
--			rxrpc_abort_call("EXP", call, 0, RX_USER_ABORT, -ETIME);
-+			rxrpc_abort_call("EXP", call, 0, RX_CALL_TIMEOUT, -ETIME);
- 		}
- 		set_bit(RXRPC_CALL_EV_ABORT, &call->events);
- 		goto recheck_state;
-diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
-index b2159dbf5412..660cd9b1a465 100644
---- a/net/rxrpc/conn_object.c
-+++ b/net/rxrpc/conn_object.c
-@@ -183,7 +183,7 @@ void __rxrpc_disconnect_call(struct rxrpc_connection *conn,
- 			chan->last_type = RXRPC_PACKET_TYPE_ABORT;
- 			break;
- 		default:
--			chan->last_abort = RX_USER_ABORT;
-+			chan->last_abort = RX_CALL_DEAD;
- 			chan->last_type = RXRPC_PACKET_TYPE_ABORT;
- 			break;
- 		}
+ EXPORT_SYMBOL_GPL(pci_dev_lock);
+ 
+ /* Return 1 on successful lock, 0 on contention */
+ int pci_dev_trylock(struct pci_dev *dev)
+ {
+-	if (pci_cfg_access_trylock(dev)) {
+-		if (device_trylock(&dev->dev))
++	if (device_trylock(&dev->dev)) {
++		if (pci_cfg_access_trylock(dev))
+ 			return 1;
+-		pci_cfg_access_unlock(dev);
++		device_unlock(&dev->dev);
+ 	}
+ 
+ 	return 0;
+@@ -5134,8 +5134,8 @@ EXPORT_SYMBOL_GPL(pci_dev_trylock);
+ 
+ void pci_dev_unlock(struct pci_dev *dev)
+ {
+-	device_unlock(&dev->dev);
+ 	pci_cfg_access_unlock(dev);
++	device_unlock(&dev->dev);
+ }
+ EXPORT_SYMBOL_GPL(pci_dev_unlock);
+ 
 -- 
 2.35.1
 
