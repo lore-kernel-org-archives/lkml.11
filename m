@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E4A9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:58:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 496DACCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:58:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377316AbiFGU6C (ORCPT
+        id S1377349AbiFGU6I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:58:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49152 "EHLO
+        Tue, 7 Jun 2022 16:58:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358688AbiFGTwv (ORCPT
+        with ESMTP id S1358703AbiFGTxF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:52:51 -0400
+        Tue, 7 Jun 2022 15:53:05 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95221A7766;
-        Tue,  7 Jun 2022 11:22:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDFED26554;
+        Tue,  7 Jun 2022 11:22:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E6BE6116C;
-        Tue,  7 Jun 2022 18:22:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29C56C385A2;
-        Tue,  7 Jun 2022 18:22:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CE72A60DDF;
+        Tue,  7 Jun 2022 18:22:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBA59C385A2;
+        Tue,  7 Jun 2022 18:22:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626126;
-        bh=Nr0GsDq1lPZMXGHdCvbllxG6r0A1j6M+21zI00WBKGo=;
+        s=korg; t=1654626129;
+        bh=7QQ5grX8R7fbK834V+H9zWsoK0HdlbCrvTqdcW37FDI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ctlsUSirH5dS8zxDCoHKWNw8SwUQIl5tppQZPbkoAQzXz02/wvWcJ8TI4z4IrcHMZ
-         9hPzxA7NNGPm6KmYtL1QC5RObcof47XGmx/umRPnK6XBw8Ysvw2UCUS5wZGsHStBZz
-         9WYTZzfkmX8LwSzV+S4VW8wDNGzL6by/B5XqYDds=
+        b=NCNYoc1A6dH/JTx8AS0Y4W+qLj5XGMrFzV0csTqRTQKA936HFpD+Vyd5QX0ptSsb6
+         1qyXbiXigVegEM3p6f4Z8vAPBuNLBq9kY1fkV7xAHi3VGPNUPNI+mNYX+mwDPE9Wag
+         3tJtzc8bioYoDMkxf11+bwsniy9vFft6h/0uZgkY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 268/772] drbd: fix duplicate array initializer
-Date:   Tue,  7 Jun 2022 18:57:40 +0200
-Message-Id: <20220607164956.922459075@linuxfoundation.org>
+        stable@vger.kernel.org, Sinan Kaya <okaya@kernel.org>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 269/772] EDAC/dmc520: Dont print an error for each unconfigured interrupt line
+Date:   Tue,  7 Jun 2022 18:57:41 +0200
+Message-Id: <20220607164956.951769630@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,88 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Tyler Hicks <tyhicks@linux.microsoft.com>
 
-[ Upstream commit 33cb0917bbe241dd17a2b87ead63514c1b7e5615 ]
+[ Upstream commit ad2df24732e8956a45a00894d2163c4ee8fb0e1f ]
 
-There are two initializers for P_RETRY_WRITE:
+The dmc520 driver requires that at least one interrupt line, out of the
+ten possible, is configured. The driver prints an error and returns
+-EINVAL from its .probe function if there are no interrupt lines
+configured.
 
-drivers/block/drbd/drbd_main.c:3676:22: warning: initialized field overwritten [-Woverride-init]
+Don't print a KERN_ERR level message for each interrupt line that's
+unconfigured as that can confuse users into thinking that there is an
+error condition.
 
-Remove the first one since it was already ignored by the compiler
-and reorder the list to match the enum definition. As P_ZEROES had
-no entry, add that one instead.
+Before this change, the following KERN_ERR level messages would be
+reported if only dram_ecc_errc and dram_ecc_errd were configured in the
+device tree:
 
-Fixes: 036b17eaab93 ("drbd: Receiving part for the PROTOCOL_UPDATE packet")
-Fixes: f31e583aa2c2 ("drbd: introduce P_ZEROES (REQ_OP_WRITE_ZEROES on the "wire")")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Reviewed-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
-Link: https://lore.kernel.org/r/20220406190715.1938174-2-christoph.boehmwalder@linbit.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+  dmc520 68000000.dmc: IRQ ram_ecc_errc not found
+  dmc520 68000000.dmc: IRQ ram_ecc_errd not found
+  dmc520 68000000.dmc: IRQ failed_access not found
+  dmc520 68000000.dmc: IRQ failed_prog not found
+  dmc520 68000000.dmc: IRQ link_err not
+  dmc520 68000000.dmc: IRQ temperature_event not found
+  dmc520 68000000.dmc: IRQ arch_fsm not found
+  dmc520 68000000.dmc: IRQ phy_request not found
+
+Fixes: 1088750d7839 ("EDAC: Add EDAC driver for DMC520")
+Reported-by: Sinan Kaya <okaya@kernel.org>
+Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220111163800.22362-1-tyhicks@linux.microsoft.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/drbd/drbd_main.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/edac/dmc520_edac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
-index 416f4f48f69b..8d17dd647187 100644
---- a/drivers/block/drbd/drbd_main.c
-+++ b/drivers/block/drbd/drbd_main.c
-@@ -3609,9 +3609,8 @@ const char *cmdname(enum drbd_packet cmd)
- 	 * when we want to support more than
- 	 * one PRO_VERSION */
- 	static const char *cmdnames[] = {
-+
- 		[P_DATA]	        = "Data",
--		[P_WSAME]	        = "WriteSame",
--		[P_TRIM]	        = "Trim",
- 		[P_DATA_REPLY]	        = "DataReply",
- 		[P_RS_DATA_REPLY]	= "RSDataReply",
- 		[P_BARRIER]	        = "Barrier",
-@@ -3622,7 +3621,6 @@ const char *cmdname(enum drbd_packet cmd)
- 		[P_DATA_REQUEST]	= "DataRequest",
- 		[P_RS_DATA_REQUEST]     = "RSDataRequest",
- 		[P_SYNC_PARAM]	        = "SyncParam",
--		[P_SYNC_PARAM89]	= "SyncParam89",
- 		[P_PROTOCOL]            = "ReportProtocol",
- 		[P_UUIDS]	        = "ReportUUIDs",
- 		[P_SIZES]	        = "ReportSizes",
-@@ -3630,6 +3628,7 @@ const char *cmdname(enum drbd_packet cmd)
- 		[P_SYNC_UUID]           = "ReportSyncUUID",
- 		[P_AUTH_CHALLENGE]      = "AuthChallenge",
- 		[P_AUTH_RESPONSE]	= "AuthResponse",
-+		[P_STATE_CHG_REQ]       = "StateChgRequest",
- 		[P_PING]		= "Ping",
- 		[P_PING_ACK]	        = "PingAck",
- 		[P_RECV_ACK]	        = "RecvAck",
-@@ -3640,23 +3639,25 @@ const char *cmdname(enum drbd_packet cmd)
- 		[P_NEG_DREPLY]	        = "NegDReply",
- 		[P_NEG_RS_DREPLY]	= "NegRSDReply",
- 		[P_BARRIER_ACK]	        = "BarrierAck",
--		[P_STATE_CHG_REQ]       = "StateChgRequest",
- 		[P_STATE_CHG_REPLY]     = "StateChgReply",
- 		[P_OV_REQUEST]          = "OVRequest",
- 		[P_OV_REPLY]            = "OVReply",
- 		[P_OV_RESULT]           = "OVResult",
- 		[P_CSUM_RS_REQUEST]     = "CsumRSRequest",
- 		[P_RS_IS_IN_SYNC]	= "CsumRSIsInSync",
-+		[P_SYNC_PARAM89]	= "SyncParam89",
- 		[P_COMPRESSED_BITMAP]   = "CBitmap",
- 		[P_DELAY_PROBE]         = "DelayProbe",
- 		[P_OUT_OF_SYNC]		= "OutOfSync",
--		[P_RETRY_WRITE]		= "RetryWrite",
- 		[P_RS_CANCEL]		= "RSCancel",
- 		[P_CONN_ST_CHG_REQ]	= "conn_st_chg_req",
- 		[P_CONN_ST_CHG_REPLY]	= "conn_st_chg_reply",
- 		[P_PROTOCOL_UPDATE]	= "protocol_update",
-+		[P_TRIM]	        = "Trim",
- 		[P_RS_THIN_REQ]         = "rs_thin_req",
- 		[P_RS_DEALLOCATED]      = "rs_deallocated",
-+		[P_WSAME]	        = "WriteSame",
-+		[P_ZEROES]		= "Zeroes",
+diff --git a/drivers/edac/dmc520_edac.c b/drivers/edac/dmc520_edac.c
+index b8a7d9594afd..1fa5ca57e9ec 100644
+--- a/drivers/edac/dmc520_edac.c
++++ b/drivers/edac/dmc520_edac.c
+@@ -489,7 +489,7 @@ static int dmc520_edac_probe(struct platform_device *pdev)
+ 	dev = &pdev->dev;
  
- 		/* enum drbd_packet, but not commands - obsoleted flags:
- 		 *	P_MAY_IGNORE
+ 	for (idx = 0; idx < NUMBER_OF_IRQS; idx++) {
+-		irq = platform_get_irq_byname(pdev, dmc520_irq_configs[idx].name);
++		irq = platform_get_irq_byname_optional(pdev, dmc520_irq_configs[idx].name);
+ 		irqs[idx] = irq;
+ 		masks[idx] = dmc520_irq_configs[idx].mask;
+ 		if (irq >= 0) {
 -- 
 2.35.1
 
