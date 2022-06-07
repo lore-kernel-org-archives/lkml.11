@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B132C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:39:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A12F7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:39:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347553AbiFGRjl (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39734 "EHLO
+        id S242562AbiFGRjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 13:39:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347358AbiFGRal (ORCPT
+        with ESMTP id S1347405AbiFGRan (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:30:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C36A11098D;
-        Tue,  7 Jun 2022 10:26:26 -0700 (PDT)
+        Tue, 7 Jun 2022 13:30:43 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06836110AC6;
+        Tue,  7 Jun 2022 10:26:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A6CB660C7C;
-        Tue,  7 Jun 2022 17:26:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B99BDC34115;
-        Tue,  7 Jun 2022 17:26:24 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 51080CE2015;
+        Tue,  7 Jun 2022 17:26:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25622C385A5;
+        Tue,  7 Jun 2022 17:26:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622785;
-        bh=jCaW6LClPnj/5rx9gWl3M6iDgCeuonhtA+fLeVdnJsc=;
+        s=korg; t=1654622796;
+        bh=fIRIph3IAV3UW7VoBvpbLF6EznCgmW6Q6wKycaEVmVA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LU88kO6GXeWfXgmweZxrQuHTLK5fxcZpMVpcdtmyQJyadDgnVImvOtg1JLrTWNvnA
-         8gSVxaJ8WveNNG+37K3u8nD5pxPynd+va76tA7SH+vuJMsq6xbw4Q037O+7xGtBlpS
-         CRNbUw9TnQC/e0+KCMwezJD/aKVKrQJktEzt5zQc=
+        b=iH6wQmINai21IEUMXPjIxXj3B4lOK62UgaX2zhzKn7DpBrbFbfYa1pdFkRjSOHWB9
+         tXA6PqQ5dfEfss2Q0oRauNnQpfFCG1FstcXa+fVqsd4Hs0lHpvsyIXSV1VJWuojHGV
+         U00j4WAxQcnzpl7dC8++CO8oBpGUdaKY6G0SaHCU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 182/452] perf tools: Use Python devtools for version autodetection rather than runtime
-Date:   Tue,  7 Jun 2022 19:00:39 +0200
-Message-Id: <20220607164913.984431805@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 185/452] irqchip/exiu: Fix acknowledgment of edge triggered interrupts
+Date:   Tue,  7 Jun 2022 19:00:42 +0200
+Message-Id: <20220607164914.072873398@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -54,98 +50,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Clark <james.clark@arm.com>
+From: Daniel Thompson <daniel.thompson@linaro.org>
 
-[ Upstream commit 630af16eee495f583db5202c3613d1b191f10694 ]
+[ Upstream commit 4efc851c36e389f7ed432edac0149acc5f94b0c7 ]
 
-This fixes the issue where the build will fail if only the Python2
-runtime is installed but the Python3 devtools are installed. Currently
-the workaround is 'make PYTHON=python3'.
+Currently the EXIU uses the fasteoi interrupt flow that is configured by
+it's parent (irq-gic-v3.c). With this flow the only chance to clear the
+interrupt request happens during .irq_eoi() and (obviously) this happens
+after the interrupt handler has run. EXIU requires edge triggered
+interrupts to be acked prior to interrupt handling. Without this we
+risk incorrect interrupt dismissal when a new interrupt is delivered
+after the handler reads and acknowledges the peripheral but before the
+irq_eoi() takes place.
 
-Fix it by autodetecting Python based on whether python[x]-config exists
-rather than just python[x] because both are needed for the build. Then
--config is stripped to find the Python runtime.
+Fix this by clearing the interrupt request from .irq_ack() if we are
+configured for edge triggered interrupts. This requires adopting the
+fasteoi-ack flow instead of the fasteoi to ensure the ack gets called.
 
-Testing
-=======
+These changes have been tested using the power button on a
+Developerbox/SC2A11 combined with some hackery in gpio-keys so I can
+play with the different trigger mode [and an mdelay(500) so I can
+can check what happens on a double click in both modes].
 
- * Auto detect links with Python3 when the v3 devtools are installed
-   and only Python 2 runtime is installed
- * Auto detect links with Python2 when both devtools are installed
- * Sensible warning is printed if no Python devtools are installed
- * 'make PYTHON=x' still automatically sets PYTHON_CONFIG=x-config
- * 'make PYTHON=x' fails if x-config doesn't exist
- * 'make PYTHON=python3' overrides Python2 devtools
- * 'make PYTHON=python2' overrides Python3 devtools
- * 'make PYTHON_CONFIG=x-config' works
- * 'make PYTHON=x PYTHON_CONFIG=x' works
- * 'make PYTHON=missing' reports an error
- * 'make PYTHON_CONFIG=missing' reports an error
-
-Fixes: 79373082fa9de8be ("perf python: Autodetect python3 binary")
-Signed-off-by: James Clark <james.clark@arm.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: James Clark <james.clark@arm.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Link: https://lore.kernel.org/r/20220309194313.3350126-2-james.clark@arm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 706cffc1b912 ("irqchip/exiu: Add support for Socionext Synquacer EXIU controller")
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220503134541.2566457-1-daniel.thompson@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/Makefile.config | 39 ++++++++++++++++++++++++++------------
- 1 file changed, 27 insertions(+), 12 deletions(-)
+ arch/arm64/Kconfig.platforms   |  1 +
+ drivers/irqchip/irq-sni-exiu.c | 25 ++++++++++++++++++++++---
+ 2 files changed, 23 insertions(+), 3 deletions(-)
 
-diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
-index 41dff8d38448..5ee3c4d1fbb2 100644
---- a/tools/perf/Makefile.config
-+++ b/tools/perf/Makefile.config
-@@ -222,18 +222,33 @@ ifdef PARSER_DEBUG
- endif
+diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+index 5c4ac1c9f4e0..889e78f40a25 100644
+--- a/arch/arm64/Kconfig.platforms
++++ b/arch/arm64/Kconfig.platforms
+@@ -250,6 +250,7 @@ config ARCH_STRATIX10
  
- # Try different combinations to accommodate systems that only have
--# python[2][-config] in weird combinations but always preferring
--# python2 and python2-config as per pep-0394. If python2 or python
--# aren't found, then python3 is used.
--PYTHON_AUTO := python
--PYTHON_AUTO := $(if $(call get-executable,python3),python3,$(PYTHON_AUTO))
--PYTHON_AUTO := $(if $(call get-executable,python),python,$(PYTHON_AUTO))
--PYTHON_AUTO := $(if $(call get-executable,python2),python2,$(PYTHON_AUTO))
--override PYTHON := $(call get-executable-or-default,PYTHON,$(PYTHON_AUTO))
--PYTHON_AUTO_CONFIG := \
--  $(if $(call get-executable,$(PYTHON)-config),$(PYTHON)-config,python-config)
--override PYTHON_CONFIG := \
--  $(call get-executable-or-default,PYTHON_CONFIG,$(PYTHON_AUTO_CONFIG))
-+# python[2][3]-config in weird combinations in the following order of
-+# priority from lowest to highest:
-+#   * python3-config
-+#   * python-config
-+#   * python2-config as per pep-0394.
-+#   * $(PYTHON)-config (If PYTHON is user supplied but PYTHON_CONFIG isn't)
-+#
-+PYTHON_AUTO := python-config
-+PYTHON_AUTO := $(if $(call get-executable,python3-config),python3-config,$(PYTHON_AUTO))
-+PYTHON_AUTO := $(if $(call get-executable,python-config),python-config,$(PYTHON_AUTO))
-+PYTHON_AUTO := $(if $(call get-executable,python2-config),python2-config,$(PYTHON_AUTO))
-+
-+# If PYTHON is defined but PYTHON_CONFIG isn't, then take $(PYTHON)-config as if it was the user
-+# supplied value for PYTHON_CONFIG. Because it's "user supplied", error out if it doesn't exist.
-+ifdef PYTHON
-+  ifndef PYTHON_CONFIG
-+    PYTHON_CONFIG_AUTO := $(call get-executable,$(PYTHON)-config)
-+    PYTHON_CONFIG := $(if $(PYTHON_CONFIG_AUTO),$(PYTHON_CONFIG_AUTO),\
-+                          $(call $(error $(PYTHON)-config not found)))
-+  endif
-+endif
-+
-+# Select either auto detected python and python-config or use user supplied values if they are
-+# defined. get-executable-or-default fails with an error if the first argument is supplied but
-+# doesn't exist.
-+override PYTHON_CONFIG := $(call get-executable-or-default,PYTHON_CONFIG,$(PYTHON_AUTO))
-+override PYTHON := $(call get-executable-or-default,PYTHON,$(subst -config,,$(PYTHON_AUTO)))
+ config ARCH_SYNQUACER
+ 	bool "Socionext SynQuacer SoC Family"
++	select IRQ_FASTEOI_HIERARCHY_HANDLERS
  
- grep-libs  = $(filter -l%,$(1))
- strip-libs  = $(filter-out -l%,$(1))
+ config ARCH_TEGRA
+ 	bool "NVIDIA Tegra SoC Family"
+diff --git a/drivers/irqchip/irq-sni-exiu.c b/drivers/irqchip/irq-sni-exiu.c
+index abd011fcecf4..c7db617e1a2f 100644
+--- a/drivers/irqchip/irq-sni-exiu.c
++++ b/drivers/irqchip/irq-sni-exiu.c
+@@ -37,11 +37,26 @@ struct exiu_irq_data {
+ 	u32		spi_base;
+ };
+ 
+-static void exiu_irq_eoi(struct irq_data *d)
++static void exiu_irq_ack(struct irq_data *d)
+ {
+ 	struct exiu_irq_data *data = irq_data_get_irq_chip_data(d);
+ 
+ 	writel(BIT(d->hwirq), data->base + EIREQCLR);
++}
++
++static void exiu_irq_eoi(struct irq_data *d)
++{
++	struct exiu_irq_data *data = irq_data_get_irq_chip_data(d);
++
++	/*
++	 * Level triggered interrupts are latched and must be cleared during
++	 * EOI or the interrupt will be jammed on. Of course if a level
++	 * triggered interrupt is still asserted then the write will not clear
++	 * the interrupt.
++	 */
++	if (irqd_is_level_type(d))
++		writel(BIT(d->hwirq), data->base + EIREQCLR);
++
+ 	irq_chip_eoi_parent(d);
+ }
+ 
+@@ -91,10 +106,13 @@ static int exiu_irq_set_type(struct irq_data *d, unsigned int type)
+ 	writel_relaxed(val, data->base + EILVL);
+ 
+ 	val = readl_relaxed(data->base + EIEDG);
+-	if (type == IRQ_TYPE_LEVEL_LOW || type == IRQ_TYPE_LEVEL_HIGH)
++	if (type == IRQ_TYPE_LEVEL_LOW || type == IRQ_TYPE_LEVEL_HIGH) {
+ 		val &= ~BIT(d->hwirq);
+-	else
++		irq_set_handler_locked(d, handle_fasteoi_irq);
++	} else {
+ 		val |= BIT(d->hwirq);
++		irq_set_handler_locked(d, handle_fasteoi_ack_irq);
++	}
+ 	writel_relaxed(val, data->base + EIEDG);
+ 
+ 	writel_relaxed(BIT(d->hwirq), data->base + EIREQCLR);
+@@ -104,6 +122,7 @@ static int exiu_irq_set_type(struct irq_data *d, unsigned int type)
+ 
+ static struct irq_chip exiu_irq_chip = {
+ 	.name			= "EXIU",
++	.irq_ack		= exiu_irq_ack,
+ 	.irq_eoi		= exiu_irq_eoi,
+ 	.irq_enable		= exiu_irq_enable,
+ 	.irq_mask		= exiu_irq_mask,
 -- 
 2.35.1
 
