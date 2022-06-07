@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9263CCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:56:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BBA4CCA485
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377758AbiFGUzA (ORCPT
+        id S1378048AbiFGUz1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50080 "EHLO
+        Tue, 7 Jun 2022 16:55:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358850AbiFGTxR (ORCPT
+        with ESMTP id S1358892AbiFGTxU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:53:17 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F3DAE4D;
-        Tue,  7 Jun 2022 11:22:43 -0700 (PDT)
+        Tue, 7 Jun 2022 15:53:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E486CF4E;
+        Tue,  7 Jun 2022 11:22:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C6C1DCE2424;
-        Tue,  7 Jun 2022 18:22:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABE3BC385A2;
-        Tue,  7 Jun 2022 18:22:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32EA460DDF;
+        Tue,  7 Jun 2022 18:22:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C6AFC3411C;
+        Tue,  7 Jun 2022 18:22:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626160;
-        bh=i0e136J9ViTHcA4OXA4kR6SgTxHZK4UV/2VaZhZrrnE=;
+        s=korg; t=1654626178;
+        bh=o0MfHiFg0qTpc2nNL/SOYVQq3GUqMujoqpOGgasXE9E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b265UFbh86mbqL57M6Jpa/7EZ4E2TieKFoYjbgiuIX5Al+XhTZqQPej2WCSReVPwt
-         yBmLM4HxQhR+VV/JBp5/9FbLw/pZlmlD2yr7zC6KVxYIeB86z3Nl2lYcqn51mh+qG8
-         8GBitLzu2koxL7ObjuhRGeU3PeP9ombjGHOYVPvI=
+        b=yG/psrwqxt2lyJFV3lUQSXFj3qIJpMVAVInpFKQatwwp9wwMPXddQZ7z2WWmVN5JQ
+         vvQShthmD0wDO3jKyR6t3g0Z8eglTyoG9Zr323ONhJF6c/WNFvdl0AVO+BEGCdiOoV
+         CQ9K5qo3u1XgzSQXNKc0df1PG+TxSaNwnFYO3ikc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Martin Steigerwald <Martin.Steigerwald@proact.de>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 279/772] sched/psi: report zeroes for CPU full at the system level
-Date:   Tue,  7 Jun 2022 18:57:51 +0200
-Message-Id: <20220607164957.247110666@linuxfoundation.org>
+        stable@vger.kernel.org, John Ogness <john.ogness@linutronix.de>,
+        Petr Mladek <pmladek@suse.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 284/772] printk: wake waiters for safe and NMI contexts
+Date:   Tue,  7 Jun 2022 18:57:56 +0200
+Message-Id: <20220607164957.394816652@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -53,102 +49,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengming Zhou <zhouchengming@bytedance.com>
+From: John Ogness <john.ogness@linutronix.de>
 
-[ Upstream commit 890d550d7dbac7a31ecaa78732aa22be282bb6b8 ]
+[ Upstream commit 5341b93dea8c39d7612f7a227015d4b1d5cf30db ]
 
-Martin find it confusing when look at the /proc/pressure/cpu output,
-and found no hint about that CPU "full" line in psi Documentation.
+When printk() is called from safe or NMI contexts, it will directly
+store the record (vprintk_store()) and then defer the console output.
+However, defer_console_output() only causes console printing and does
+not wake any waiters of new records.
 
-% cat /proc/pressure/cpu
-some avg10=0.92 avg60=0.91 avg300=0.73 total=933490489
-full avg10=0.22 avg60=0.23 avg300=0.16 total=358783277
+Wake waiters from defer_console_output() so that they also are aware
+of the new records from safe and NMI contexts.
 
-The PSI_CPU_FULL state is introduced by commit e7fcd7622823
-("psi: Add PSI_CPU_FULL state"), which mainly for cgroup level,
-but also counted at the system level as a side effect.
-
-Naturally, the FULL state doesn't exist for the CPU resource at
-the system level. These "full" numbers can come from CPU idle
-schedule latency. For example, t1 is the time when task wakeup
-on an idle CPU, t2 is the time when CPU pick and switch to it.
-The delta of (t2 - t1) will be in CPU_FULL state.
-
-Another case all processes can be stalled is when all cgroups
-have been throttled at the same time, which unlikely to happen.
-
-Anyway, CPU_FULL metric is meaningless and confusing at the
-system level. So this patch will report zeroes for CPU full
-at the system level, and update psi Documentation accordingly.
-
-Fixes: e7fcd7622823 ("psi: Add PSI_CPU_FULL state")
-Reported-by: Martin Steigerwald <Martin.Steigerwald@proact.de>
-Suggested-by: Johannes Weiner <hannes@cmpxchg.org>
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
-Link: https://lore.kernel.org/r/20220408121914.82855-1-zhouchengming@bytedance.com
+Fixes: 03fc7f9c99c1 ("printk/nmi: Prevent deadlock when accessing the main log buffer in NMI")
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/20220421212250.565456-6-john.ogness@linutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/accounting/psi.rst |  9 ++++-----
- kernel/sched/psi.c               | 15 +++++++++------
- 2 files changed, 13 insertions(+), 11 deletions(-)
+ kernel/printk/printk.c | 28 ++++++++++++++++------------
+ 1 file changed, 16 insertions(+), 12 deletions(-)
 
-diff --git a/Documentation/accounting/psi.rst b/Documentation/accounting/psi.rst
-index 860fe651d645..5e40b3f437f9 100644
---- a/Documentation/accounting/psi.rst
-+++ b/Documentation/accounting/psi.rst
-@@ -37,11 +37,7 @@ Pressure interface
- Pressure information for each resource is exported through the
- respective file in /proc/pressure/ -- cpu, memory, and io.
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 8964b1db2745..4f344e7b2878 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -743,7 +743,7 @@ static ssize_t devkmsg_read(struct file *file, char __user *buf,
+ 		 * prepare_to_wait_event() pairs with the full memory barrier
+ 		 * within wq_has_sleeper().
+ 		 *
+-		 * This pairs with wake_up_klogd:A.
++		 * This pairs with __wake_up_klogd:A.
+ 		 */
+ 		ret = wait_event_interruptible(log_wait,
+ 				prb_read_valid(prb,
+@@ -1521,7 +1521,7 @@ static int syslog_print(char __user *buf, int size)
+ 		 * prepare_to_wait_event() pairs with the full memory barrier
+ 		 * within wq_has_sleeper().
+ 		 *
+-		 * This pairs with wake_up_klogd:A.
++		 * This pairs with __wake_up_klogd:A.
+ 		 */
+ 		len = wait_event_interruptible(log_wait,
+ 				prb_read_valid(prb, seq, NULL)); /* LMM(syslog_print:A) */
+@@ -3267,7 +3267,7 @@ static void wake_up_klogd_work_func(struct irq_work *irq_work)
+ static DEFINE_PER_CPU(struct irq_work, wake_up_klogd_work) =
+ 	IRQ_WORK_INIT_LAZY(wake_up_klogd_work_func);
  
--The format for CPU is as such::
--
--	some avg10=0.00 avg60=0.00 avg300=0.00 total=0
--
--and for memory and IO::
-+The format is as such::
+-void wake_up_klogd(void)
++static void __wake_up_klogd(int val)
+ {
+ 	if (!printk_percpu_data_ready())
+ 		return;
+@@ -3284,22 +3284,26 @@ void wake_up_klogd(void)
+ 	 *
+ 	 * This pairs with devkmsg_read:A and syslog_print:A.
+ 	 */
+-	if (wq_has_sleeper(&log_wait)) { /* LMM(wake_up_klogd:A) */
+-		this_cpu_or(printk_pending, PRINTK_PENDING_WAKEUP);
++	if (wq_has_sleeper(&log_wait) || /* LMM(__wake_up_klogd:A) */
++	    (val & PRINTK_PENDING_OUTPUT)) {
++		this_cpu_or(printk_pending, val);
+ 		irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
+ 	}
+ 	preempt_enable();
+ }
  
- 	some avg10=0.00 avg60=0.00 avg300=0.00 total=0
- 	full avg10=0.00 avg60=0.00 avg300=0.00 total=0
-@@ -58,6 +54,9 @@ situation from a state where some tasks are stalled but the CPU is
- still doing productive work. As such, time spent in this subset of the
- stall state is tracked separately and exported in the "full" averages.
+-void defer_console_output(void)
++void wake_up_klogd(void)
+ {
+-	if (!printk_percpu_data_ready())
+-		return;
++	__wake_up_klogd(PRINTK_PENDING_WAKEUP);
++}
  
-+CPU full is undefined at the system level, but has been reported
-+since 5.13, so it is set to zero for backward compatibility.
-+
- The ratios (in %) are tracked as recent trends over ten, sixty, and
- three hundred second windows, which gives insight into short term events
- as well as medium and long term trends. The total absolute stall time
-diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
-index e14358178849..97fd85c5143c 100644
---- a/kernel/sched/psi.c
-+++ b/kernel/sched/psi.c
-@@ -1062,14 +1062,17 @@ int psi_show(struct seq_file *m, struct psi_group *group, enum psi_res res)
- 	mutex_unlock(&group->avgs_lock);
+-	preempt_disable();
+-	this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
+-	irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
+-	preempt_enable();
++void defer_console_output(void)
++{
++	/*
++	 * New messages may have been added directly to the ringbuffer
++	 * using vprintk_store(), so wake any waiters as well.
++	 */
++	__wake_up_klogd(PRINTK_PENDING_WAKEUP | PRINTK_PENDING_OUTPUT);
+ }
  
- 	for (full = 0; full < 2; full++) {
--		unsigned long avg[3];
--		u64 total;
-+		unsigned long avg[3] = { 0, };
-+		u64 total = 0;
- 		int w;
- 
--		for (w = 0; w < 3; w++)
--			avg[w] = group->avg[res * 2 + full][w];
--		total = div_u64(group->total[PSI_AVGS][res * 2 + full],
--				NSEC_PER_USEC);
-+		/* CPU FULL is undefined at the system level */
-+		if (!(group == &psi_system && res == PSI_CPU && full)) {
-+			for (w = 0; w < 3; w++)
-+				avg[w] = group->avg[res * 2 + full][w];
-+			total = div_u64(group->total[PSI_AVGS][res * 2 + full],
-+					NSEC_PER_USEC);
-+		}
- 
- 		seq_printf(m, "%s avg10=%lu.%02lu avg60=%lu.%02lu avg300=%lu.%02lu total=%llu\n",
- 			   full ? "full" : "some",
+ void printk_trigger_flush(void)
 -- 
 2.35.1
 
