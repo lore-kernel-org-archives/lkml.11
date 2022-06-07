@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8F7ACCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4804CCA485
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:30:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382713AbiFHBaE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:30:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45906 "EHLO
+        id S238873AbiFHB3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:29:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383537AbiFGVxR (ORCPT
+        with ESMTP id S1382464AbiFGWYC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:53:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FEBF24538D;
-        Tue,  7 Jun 2022 12:11:53 -0700 (PDT)
+        Tue, 7 Jun 2022 18:24:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFCC126EE9C;
+        Tue,  7 Jun 2022 12:22:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D3A2B81F6D;
-        Tue,  7 Jun 2022 19:11:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3F06C385A2;
-        Tue,  7 Jun 2022 19:11:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35FFA608CD;
+        Tue,  7 Jun 2022 19:22:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43023C385A2;
+        Tue,  7 Jun 2022 19:22:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629111;
-        bh=2jA/GTMKTJHBY2Oc4pOOiy4bZGaqPB82S9nyCCUHw2Y=;
+        s=korg; t=1654629766;
+        bh=NEWA8RjCSVtHMZ/gIwVntnVIbb+hxC/r1ater9BUcEo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N687B+zBO2byor9J28k6YGWFTgFnNS5heM0XlevgJJajU3FKlMNBYxHjsHJTOPLx4
-         YNuNyUlIdiZQLGwxqtiBI+l8M0ShOAJ/MLWNYatfMJa9JliMHUBrjI15JlOSCR5lF4
-         1bmUslaOyXBW2WsDDlxm1nb152iGMh/xWaKVLIrY=
+        b=luive1cWJcSyPlQ72CEUV6IiSXZT6jUR8KlmNM1Mt/n/9tdrprguJRLcMbb/Qq2qF
+         LHulWPLF5hYxSKyMgMaKB7mxGek1UTdpSBbZ73D4rjC+Qt5M1TRQHaHftK/V+4+WgX
+         g1lJj+5q81h3L9dbuKQXFgoHPGvRCqQjv9l+js+M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thorsten Scherer <t.scherer@eckelmann.de>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 546/879] ARM: dts: ci4x10: Adapt to changes in imx6qdl.dtsi regarding fec clocks
-Date:   Tue,  7 Jun 2022 19:01:04 +0200
-Message-Id: <20220607165018.716632578@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.18 769/879] scsi: ufs: qcom: Add a readl() to make sure ref_clk gets enabled
+Date:   Tue,  7 Jun 2022 19:04:47 +0200
+Message-Id: <20220607165025.183175140@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,49 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thorsten Scherer <t.scherer@eckelmann.de>
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-[ Upstream commit 3d397a1277853498e8b7b305f2610881357c033f ]
+commit 8eecddfca30e1651dc1c74531ed5eef21dcce7e3 upstream.
 
-Commit f3e7dae323ab ("ARM: dts: imx6qdl: add enet_out clk
-support") added another item to the list of clocks for the fec
-device. As imx6dl-eckelmann-ci4x10.dts only overwrites clocks,
-but not clock-names this resulted in an inconsistency with
-clocks having one item more than clock-names.
+In ufs_qcom_dev_ref_clk_ctrl(), it was noted that the ref_clk needs to be
+stable for at least 1us. Even though there is wmb() to make sure the write
+gets "completed", there is no guarantee that the write actually reached the
+UFS device. There is a good chance that the write could be stored in a
+Write Buffer (WB). In that case, even though the CPU waits for 1us, the
+ref_clk might not be stable for that period.
 
-Also overwrite clock-names with the same value as in
-imx6qdl.dtsi. This is a no-op today, but prevents similar
-inconsistencies if the soc file will be changed in a similar way
-in the future.
+So lets do a readl() to make sure that the previous write has reached the
+UFS device before udelay().
 
-Signed-off-by: Thorsten Scherer <t.scherer@eckelmann.de>
-Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Fixes: f3e7dae323ab ("ARM: dts: imx6qdl: add enet_out clk support")
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Also, the wmb() after writel_relaxed() is not really needed. Both writel()
+and readl() are ordered on all architectures and the CPU won't speculate
+instructions after readl() due to the in-built control dependency with read
+value on weakly ordered architectures. So it can be safely removed.
+
+Link: https://lore.kernel.org/r/20220504084212.11605-4-manivannan.sadhasivam@linaro.org
+Fixes: f06fcc7155dc ("scsi: ufs-qcom: add QUniPro hardware support and power optimizations")
+Cc: stable@vger.kernel.org
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dts | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/scsi/ufs/ufs-qcom.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dts b/arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dts
-index b4a9523e325b..864dc5018451 100644
---- a/arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dts
-+++ b/arch/arm/boot/dts/imx6dl-eckelmann-ci4x10.dts
-@@ -297,7 +297,11 @@
- 	phy-mode = "rmii";
- 	phy-reset-gpios = <&gpio1 18 GPIO_ACTIVE_LOW>;
- 	phy-handle = <&phy>;
--	clocks = <&clks IMX6QDL_CLK_ENET>, <&clks IMX6QDL_CLK_ENET>, <&rmii_clk>;
-+	clocks = <&clks IMX6QDL_CLK_ENET>,
-+		 <&clks IMX6QDL_CLK_ENET>,
-+		 <&rmii_clk>,
-+		 <&clks IMX6QDL_CLK_ENET_REF>;
-+	clock-names = "ipg", "ahb", "ptp", "enet_out";
- 	status = "okay";
+--- a/drivers/scsi/ufs/ufs-qcom.c
++++ b/drivers/scsi/ufs/ufs-qcom.c
+@@ -682,8 +682,11 @@ static void ufs_qcom_dev_ref_clk_ctrl(st
  
- 	mdio {
--- 
-2.35.1
-
+ 		writel_relaxed(temp, host->dev_ref_clk_ctrl_mmio);
+ 
+-		/* ensure that ref_clk is enabled/disabled before we return */
+-		wmb();
++		/*
++		 * Make sure the write to ref_clk reaches the destination and
++		 * not stored in a Write Buffer (WB).
++		 */
++		readl(host->dev_ref_clk_ctrl_mmio);
+ 
+ 		/*
+ 		 * If we call hibern8 exit after this, we need to make sure that
 
 
