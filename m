@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DD61C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BC80CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383028AbiFGWkI (ORCPT
+        id S1383289AbiFGWkX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:40:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46236 "EHLO
+        Tue, 7 Jun 2022 18:40:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379087AbiFGVZL (ORCPT
+        with ESMTP id S1380147AbiFGV01 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:25:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF716150B5D;
-        Tue,  7 Jun 2022 12:01:30 -0700 (PDT)
+        Tue, 7 Jun 2022 17:26:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F44922872B;
+        Tue,  7 Jun 2022 12:01:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8991861768;
-        Tue,  7 Jun 2022 19:01:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98FDFC385A2;
-        Tue,  7 Jun 2022 19:01:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 11EDF617E1;
+        Tue,  7 Jun 2022 19:01:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DBE4C34115;
+        Tue,  7 Jun 2022 19:01:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628490;
-        bh=EFyZopC0NhI4QmX1Xz/RSlu+pmSVcB0t0WKz9AarTs8=;
+        s=korg; t=1654628512;
+        bh=w+MagUlKTRVQeduCnzXsbmwB37LA3qchQOIHBHtTyP4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dc74W2XsOxZWDeWMsHoXLNRWrcNxfXgFm9mVu6XpvNO798XbVPyMFCZd1efBv5cRV
-         9+lZh7e8gy1JWseBbI/QhgjmYfo9/mplJzyAnid9F+qW8ez/YXWf1sTMapnDhvxUgn
-         rEvdfnc8fhogB+hJGrmOicRPfoQuj59Xu960olGg=
+        b=crnfDhmT7LwRNDrDw6mCwsUIvQkBk8YUc66LHGmEbxJys9S6bIZ4vQU9wNsNEEMEp
+         SZVkT9Rwt6MLsARCEnQNy5bJNTPbVWIHQMlXSVUmPEkLMH+1aVT0iCCLAq5KxjL7dn
+         cvwyKhaOA8yHKcGPRMB0aJWDixOQ7zFh5EJzZsUg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Amir Goldstein <amir73il@gmail.com>,
-        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 348/879] inotify: show inotify mask flags in proc fdinfo
-Date:   Tue,  7 Jun 2022 18:57:46 +0200
-Message-Id: <20220607165012.962358623@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mike Christie <michael.christie@oracle.com>,
+        Lee Duncan <lduncan@suse.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 355/879] scsi: iscsi: Fix harmless double shift bug
+Date:   Tue,  7 Jun 2022 18:57:53 +0200
+Message-Id: <20220607165013.167730718@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,84 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amir Goldstein <amir73il@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit a32e697cda27679a0327ae2cafdad8c7170f548f ]
+[ Upstream commit 565138ac5f8a5330669a20e5f94759764e9165ec ]
 
-The inotify mask flags IN_ONESHOT and IN_EXCL_UNLINK are not "internal
-to kernel" and should be exposed in procfs fdinfo so CRIU can restore
-them.
+These flags are supposed to be bit numbers.  Right now they cause a double
+shift bug where we use BIT(BIT(2)) instead of BIT(2).  Fortunately, the bit
+numbers are small and it's done consistently so it does not cause an issue
+at run time.
 
-Fixes: 6933599697c9 ("inotify: hide internal kernel bits from fdinfo")
-Link: https://lore.kernel.org/r/20220422120327.3459282-2-amir73il@gmail.com
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/YmFyWHf8nrrx+SHa@kili
+Fixes: 5bd856256f8c ("scsi: iscsi: Merge suspend fields")
+Reviewed-by: Mike Christie <michael.christie@oracle.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/notify/fdinfo.c               | 11 ++---------
- fs/notify/inotify/inotify.h      | 12 ++++++++++++
- fs/notify/inotify/inotify_user.c |  2 +-
- 3 files changed, 15 insertions(+), 10 deletions(-)
+ include/scsi/libiscsi.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/fs/notify/fdinfo.c b/fs/notify/fdinfo.c
-index 57f0d5d9f934..3451708fd035 100644
---- a/fs/notify/fdinfo.c
-+++ b/fs/notify/fdinfo.c
-@@ -83,16 +83,9 @@ static void inotify_fdinfo(struct seq_file *m, struct fsnotify_mark *mark)
- 	inode_mark = container_of(mark, struct inotify_inode_mark, fsn_mark);
- 	inode = igrab(fsnotify_conn_inode(mark->connector));
- 	if (inode) {
--		/*
--		 * IN_ALL_EVENTS represents all of the mask bits
--		 * that we expose to userspace.  There is at
--		 * least one bit (FS_EVENT_ON_CHILD) which is
--		 * used only internally to the kernel.
--		 */
--		u32 mask = mark->mask & IN_ALL_EVENTS;
--		seq_printf(m, "inotify wd:%x ino:%lx sdev:%x mask:%x ignored_mask:%x ",
-+		seq_printf(m, "inotify wd:%x ino:%lx sdev:%x mask:%x ignored_mask:0 ",
- 			   inode_mark->wd, inode->i_ino, inode->i_sb->s_dev,
--			   mask, mark->ignored_mask);
-+			   inotify_mark_user_mask(mark));
- 		show_mark_fhandle(m, inode);
- 		seq_putc(m, '\n');
- 		iput(inode);
-diff --git a/fs/notify/inotify/inotify.h b/fs/notify/inotify/inotify.h
-index 2007e3711916..8f00151eb731 100644
---- a/fs/notify/inotify/inotify.h
-+++ b/fs/notify/inotify/inotify.h
-@@ -22,6 +22,18 @@ static inline struct inotify_event_info *INOTIFY_E(struct fsnotify_event *fse)
- 	return container_of(fse, struct inotify_event_info, fse);
- }
+diff --git a/include/scsi/libiscsi.h b/include/scsi/libiscsi.h
+index d0a24779c52d..c0703cd20a99 100644
+--- a/include/scsi/libiscsi.h
++++ b/include/scsi/libiscsi.h
+@@ -54,9 +54,9 @@ enum {
+ #define ISID_SIZE			6
  
-+/*
-+ * INOTIFY_USER_FLAGS represents all of the mask bits that we expose to
-+ * userspace.  There is at least one bit (FS_EVENT_ON_CHILD) which is
-+ * used only internally to the kernel.
-+ */
-+#define INOTIFY_USER_MASK (IN_ALL_EVENTS | IN_ONESHOT | IN_EXCL_UNLINK)
-+
-+static inline __u32 inotify_mark_user_mask(struct fsnotify_mark *fsn_mark)
-+{
-+	return fsn_mark->mask & INOTIFY_USER_MASK;
-+}
-+
- extern void inotify_ignored_and_remove_idr(struct fsnotify_mark *fsn_mark,
- 					   struct fsnotify_group *group);
- extern int inotify_handle_inode_event(struct fsnotify_mark *inode_mark,
-diff --git a/fs/notify/inotify/inotify_user.c b/fs/notify/inotify/inotify_user.c
-index 54583f62dc44..3ef57db0ec9d 100644
---- a/fs/notify/inotify/inotify_user.c
-+++ b/fs/notify/inotify/inotify_user.c
-@@ -110,7 +110,7 @@ static inline __u32 inotify_arg_to_mask(struct inode *inode, u32 arg)
- 		mask |= FS_EVENT_ON_CHILD;
+ /* Connection flags */
+-#define ISCSI_CONN_FLAG_SUSPEND_TX	BIT(0)
+-#define ISCSI_CONN_FLAG_SUSPEND_RX	BIT(1)
+-#define ISCSI_CONN_FLAG_BOUND		BIT(2)
++#define ISCSI_CONN_FLAG_SUSPEND_TX	0
++#define ISCSI_CONN_FLAG_SUSPEND_RX	1
++#define ISCSI_CONN_FLAG_BOUND		2
  
- 	/* mask off the flags used to open the fd */
--	mask |= (arg & (IN_ALL_EVENTS | IN_ONESHOT | IN_EXCL_UNLINK));
-+	mask |= (arg & INOTIFY_USER_MASK);
- 
- 	return mask;
- }
+ #define ISCSI_ITT_MASK			0x1fff
+ #define ISCSI_TOTAL_CMDS_MAX		4096
 -- 
 2.35.1
 
