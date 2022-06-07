@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD35CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:14:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10FD6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:14:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350778AbiFGSO2 (ORCPT
+        id S1350339AbiFGSOb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:14:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57848 "EHLO
+        Tue, 7 Jun 2022 14:14:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348540AbiFGRtH (ORCPT
+        with ESMTP id S1350180AbiFGRv4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:49:07 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30746134E0C;
-        Tue,  7 Jun 2022 10:37:15 -0700 (PDT)
+        Tue, 7 Jun 2022 13:51:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4F42143840;
+        Tue,  7 Jun 2022 10:39:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 35D2DCE23E7;
-        Tue,  7 Jun 2022 17:37:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43B73C34115;
-        Tue,  7 Jun 2022 17:37:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29A8861499;
+        Tue,  7 Jun 2022 17:38:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34416C385A5;
+        Tue,  7 Jun 2022 17:38:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623431;
-        bh=fKOmGeRYgG3j50YlOQ0Vw/r7fBFkPvZ8bFRh8oMkVvk=;
+        s=korg; t=1654623524;
+        bh=fzyvPfZ+ti4QPxz21VI+b5/oRwIhz37nEWqk4JcZc8o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AjaT4n+n9DDZOz07RHO3yutbc42dfUVgMkJP7SqaSFMoIet0AqnNZYI4WWypxgtnZ
-         wqyL1ovZqowqa7o31qdX1qIuyfLoewKB7EVCgqp3uAmYSVxRRfUP+4DmxAk+ih618u
-         4rxAfjQmb5wBsaJatsX0R/zX4ZGSW3kcyhoVL/8k=
+        b=L4SdBqqkmMiT2rPsi7wdrFdD0quPxl7ZPwNZRJxkSR7jeJKZ0z4oQM5TNUu2y7OGX
+         n1oP/BbiSGSJKj+z6RkdxZ3iGuhvdUVm2Z+CtEdHJGNYMOIiM9kyCmuUpCi9k5QDfW
+         Kq92/TRMOAs2c/z7sEVkBTsC1+EOd3wEzChxAH4o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dave Airlie <airlied@redhat.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.10 378/452] drm/amdgpu/cs: make commands with 0 chunks illegal behaviour.
-Date:   Tue,  7 Jun 2022 19:03:55 +0200
-Message-Id: <20220607164919.827940164@linuxfoundation.org>
+        stable@vger.kernel.org, Xiao Yang <yangx.jy@fujitsu.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.10 448/452] RDMA/rxe: Generate a completion for unsupported/invalid opcode
+Date:   Tue,  7 Jun 2022 19:05:05 +0200
+Message-Id: <20220607164921.920610632@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,64 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Airlie <airlied@redhat.com>
+From: Xiao Yang <yangx.jy@fujitsu.com>
 
-commit 31ab27b14daaa75541a415c6794d6f3567fea44a upstream.
+commit 2f917af777011c88e977b9b9a5d00b280d3a59ce upstream.
 
-Submitting a cs with 0 chunks, causes an oops later, found trying
-to execute the wrong userspace driver.
+Current rxe_requester() doesn't generate a completion when processing an
+unsupported/invalid opcode. If rxe driver doesn't support a new opcode
+(e.g. RDMA Atomic Write) and RDMA library supports it, an application
+using the new opcode can reproduce this issue. Fix the issue by calling
+"goto err;".
 
-MESA_LOADER_DRIVER_OVERRIDE=v3d glxinfo
-
-[172536.665184] BUG: kernel NULL pointer dereference, address: 00000000000001d8
-[172536.665188] #PF: supervisor read access in kernel mode
-[172536.665189] #PF: error_code(0x0000) - not-present page
-[172536.665191] PGD 6712a0067 P4D 6712a0067 PUD 5af9ff067 PMD 0
-[172536.665195] Oops: 0000 [#1] SMP NOPTI
-[172536.665197] CPU: 7 PID: 2769838 Comm: glxinfo Tainted: P           O      5.10.81 #1-NixOS
-[172536.665199] Hardware name: To be filled by O.E.M. To be filled by O.E.M./CROSSHAIR V FORMULA-Z, BIOS 2201 03/23/2015
-[172536.665272] RIP: 0010:amdgpu_cs_ioctl+0x96/0x1ce0 [amdgpu]
-[172536.665274] Code: 75 18 00 00 4c 8b b2 88 00 00 00 8b 46 08 48 89 54 24 68 49 89 f7 4c 89 5c 24 60 31 d2 4c 89 74 24 30 85 c0 0f 85 c0 01 00 00 <48> 83 ba d8 01 00 00 00 48 8b b4 24 90 00 00 00 74 16 48 8b 46 10
-[172536.665276] RSP: 0018:ffffb47c0e81bbe0 EFLAGS: 00010246
-[172536.665277] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-[172536.665278] RDX: 0000000000000000 RSI: ffffb47c0e81be28 RDI: ffffb47c0e81bd68
-[172536.665279] RBP: ffff936524080010 R08: 0000000000000000 R09: ffffb47c0e81be38
-[172536.665281] R10: ffff936524080010 R11: ffff936524080000 R12: ffffb47c0e81bc40
-[172536.665282] R13: ffffb47c0e81be28 R14: ffff9367bc410000 R15: ffffb47c0e81be28
-[172536.665283] FS:  00007fe35e05d740(0000) GS:ffff936c1edc0000(0000) knlGS:0000000000000000
-[172536.665284] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[172536.665286] CR2: 00000000000001d8 CR3: 0000000532e46000 CR4: 00000000000406e0
-[172536.665287] Call Trace:
-[172536.665322]  ? amdgpu_cs_find_mapping+0x110/0x110 [amdgpu]
-[172536.665332]  drm_ioctl_kernel+0xaa/0xf0 [drm]
-[172536.665338]  drm_ioctl+0x201/0x3b0 [drm]
-[172536.665369]  ? amdgpu_cs_find_mapping+0x110/0x110 [amdgpu]
-[172536.665372]  ? selinux_file_ioctl+0x135/0x230
-[172536.665399]  amdgpu_drm_ioctl+0x49/0x80 [amdgpu]
-[172536.665403]  __x64_sys_ioctl+0x83/0xb0
-[172536.665406]  do_syscall_64+0x33/0x40
-[172536.665409]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/2018
-Signed-off-by: Dave Airlie <airlied@redhat.com>
-Cc: stable@vger.kernel.org
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: 8700e3e7c485 ("Soft RoCE driver")
+Link: https://lore.kernel.org/r/20220410113513.27537-1-yangx.jy@fujitsu.com
+Signed-off-by: Xiao Yang <yangx.jy@fujitsu.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c |    2 +-
+ drivers/infiniband/sw/rxe/rxe_req.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-@@ -116,7 +116,7 @@ static int amdgpu_cs_parser_init(struct
- 	int ret;
+--- a/drivers/infiniband/sw/rxe/rxe_req.c
++++ b/drivers/infiniband/sw/rxe/rxe_req.c
+@@ -650,7 +650,7 @@ next_wqe:
+ 	opcode = next_opcode(qp, wqe, wqe->wr.opcode);
+ 	if (unlikely(opcode < 0)) {
+ 		wqe->status = IB_WC_LOC_QP_OP_ERR;
+-		goto exit;
++		goto err;
+ 	}
  
- 	if (cs->in.num_chunks == 0)
--		return 0;
-+		return -EINVAL;
- 
- 	chunk_array = kmalloc_array(cs->in.num_chunks, sizeof(uint64_t), GFP_KERNEL);
- 	if (!chunk_array)
+ 	mask = rxe_opcode[opcode].mask;
 
 
