@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B8FCCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44A6ACCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:56:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349281AbiFGR4B (ORCPT
+        id S1349306AbiFGR4E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:56:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53298 "EHLO
+        Tue, 7 Jun 2022 13:56:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347836AbiFGRfu (ORCPT
+        with ESMTP id S1347815AbiFGRft (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:35:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31609110991;
-        Tue,  7 Jun 2022 10:31:52 -0700 (PDT)
+        Tue, 7 Jun 2022 13:35:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FCE71059F5;
+        Tue,  7 Jun 2022 10:31:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1FAC60BC6;
-        Tue,  7 Jun 2022 17:31:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D28D6C385A5;
-        Tue,  7 Jun 2022 17:31:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ABCE1B82185;
+        Tue,  7 Jun 2022 17:31:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 041E3C385A5;
+        Tue,  7 Jun 2022 17:31:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623111;
-        bh=hpHZm2hdq6YzSfFDfUFKjf/mbBCahDRKcsLFaCrwalA=;
+        s=korg; t=1654623097;
+        bh=Oa09tsOvQ9Bl2U03X5wl5mPwZC6XEVRvJHjy6u3ZsTY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QhukTvsRjjvbyYiltIoLEmp+9McpjyjR1f+fWwD1hO8VYX4RtNv5BJnfPDzEwvYLF
-         sRIgztnrwcvdF5aon2AZglDhQ8ob/PmMTV9X6A14YMk89czA3NTUl1UhiasC6ZH50N
-         j5wW1YCJ940KF9VhoptQN7y0iCJHqMkApY53/DuI=
+        b=bfyqv2F7vnxQw2obQsmBlpahvscpkX60sbM2qVMl0PPJ18LELljGa3fhFdDqqH2IY
+         nO8wmh/QgaZVHyXGpZamJFrlgIbb5W4H1EJUsGnc9wONLX+rOg0smWakT9k0StbBTF
+         Z4Hi0/sxFc+eKDw4SFw6MpsCCZH7/RdE6NcbSsPs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Dobriyan <adobriyan@gmail.com>,
-        hui li <juanfengpy@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 300/452] proc: fix dentry/inode overinstantiating under /proc/${pid}/net
-Date:   Tue,  7 Jun 2022 19:02:37 +0200
-Message-Id: <20220607164917.497853904@linuxfoundation.org>
+Subject: [PATCH 5.10 243/452] thermal/drivers/imx_sc_thermal: Fix refcount leak in imx_sc_thermal_probe
+Date:   Tue,  7 Jun 2022 19:01:40 +0200
+Message-Id: <20220607164915.801427364@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -52,59 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Dobriyan <adobriyan@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 7055197705709c59b8ab77e6a5c7d46d61edd96e ]
+[ Upstream commit 09700c504d8e63faffd2a2235074e8c5d130cb8f ]
 
-When a process exits, /proc/${pid}, and /proc/${pid}/net dentries are
-flushed.  However some leaf dentries like /proc/${pid}/net/arp_cache
-aren't.  That's because respective PDEs have proc_misc_d_revalidate() hook
-which returns 1 and leaves dentries/inodes in the LRU.
+of_find_node_by_name() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-Force revalidation/lookup on everything under /proc/${pid}/net by
-inheriting proc_net_dentry_ops.
-
-[akpm@linux-foundation.org: coding-style cleanups]
-Link: https://lkml.kernel.org/r/YjdVHgildbWO7diJ@localhost.localdomain
-Fixes: c6c75deda813 ("proc: fix lookup in /proc/net subdirectories after setns(2)")
-Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
-Reported-by: hui li <juanfengpy@gmail.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: e20db70dba1c ("thermal: imx_sc: add i.MX system controller thermal support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220517055121.18092-1-linmq006@gmail.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/proc/generic.c  | 3 +++
- fs/proc/proc_net.c | 3 +++
- 2 files changed, 6 insertions(+)
+ drivers/thermal/imx_sc_thermal.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/fs/proc/generic.c b/fs/proc/generic.c
-index 09e4d8a499a3..5898761698c2 100644
---- a/fs/proc/generic.c
-+++ b/fs/proc/generic.c
-@@ -453,6 +453,9 @@ static struct proc_dir_entry *__proc_create(struct proc_dir_entry **parent,
- 	proc_set_user(ent, (*parent)->uid, (*parent)->gid);
+diff --git a/drivers/thermal/imx_sc_thermal.c b/drivers/thermal/imx_sc_thermal.c
+index 8d76dbfde6a9..331a241eb0ef 100644
+--- a/drivers/thermal/imx_sc_thermal.c
++++ b/drivers/thermal/imx_sc_thermal.c
+@@ -94,8 +94,8 @@ static int imx_sc_thermal_probe(struct platform_device *pdev)
+ 		sensor = devm_kzalloc(&pdev->dev, sizeof(*sensor), GFP_KERNEL);
+ 		if (!sensor) {
+ 			of_node_put(child);
+-			of_node_put(sensor_np);
+-			return -ENOMEM;
++			ret = -ENOMEM;
++			goto put_node;
+ 		}
  
- 	ent->proc_dops = &proc_misc_dentry_ops;
-+	/* Revalidate everything under /proc/${pid}/net */
-+	if ((*parent)->proc_dops == &proc_net_dentry_ops)
-+		pde_force_lookup(ent);
+ 		ret = thermal_zone_of_get_sensor_id(child,
+@@ -124,7 +124,9 @@ static int imx_sc_thermal_probe(struct platform_device *pdev)
+ 			dev_warn(&pdev->dev, "failed to add hwmon sysfs attributes\n");
+ 	}
  
- out:
- 	return ent;
-diff --git a/fs/proc/proc_net.c b/fs/proc/proc_net.c
-index 1aa9236bf1af..707477e27f83 100644
---- a/fs/proc/proc_net.c
-+++ b/fs/proc/proc_net.c
-@@ -362,6 +362,9 @@ static __net_init int proc_net_ns_init(struct net *net)
++put_node:
+ 	of_node_put(sensor_np);
++	of_node_put(np);
  
- 	proc_set_user(netd, uid, gid);
- 
-+	/* Seed dentry revalidation for /proc/${pid}/net */
-+	pde_force_lookup(netd);
-+
- 	err = -EEXIST;
- 	net_statd = proc_net_mkdir(net, "stat", netd);
- 	if (!net_statd)
+ 	return ret;
+ }
 -- 
 2.35.1
 
