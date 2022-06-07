@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8B57CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:56:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 835A7CCA494
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:56:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382037AbiFGVzg (ORCPT
+        id S1382204AbiFGVzo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50286 "EHLO
+        Tue, 7 Jun 2022 17:55:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379223AbiFGVCN (ORCPT
+        with ESMTP id S1379234AbiFGVCN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:02:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9026EBBC;
-        Tue,  7 Jun 2022 11:46:58 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C84DD34BA7;
+        Tue,  7 Jun 2022 11:47:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48D7EB81FE1;
-        Tue,  7 Jun 2022 18:46:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95656C34115;
-        Tue,  7 Jun 2022 18:46:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 220466156D;
+        Tue,  7 Jun 2022 18:47:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EA39C385A5;
+        Tue,  7 Jun 2022 18:47:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627615;
-        bh=InTEJxokk0gSldDDmnuCDCLtUbImqooZSkroi+Xe/fA=;
+        s=korg; t=1654627621;
+        bh=+XXbB3EX5auKXAmZDxmRIalEhFPa2J9WLidrIDueP3E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ConUKPUQljQl8f38nIqrienv97ERXDR3w6xAlTNtPpPL/jVfYK3pFEM19lfwX/9Tn
-         YJrucOM6WBEpzotHj+TndYqP8H7aeT9SelNbqJHaVyXte1oqLW3c7WZFAGoEXrhpVh
-         0cbzaBx1j4k3/dtU1qqZWpu1x8K2y9iK8gc2BmxQ=
+        b=JV2IxWa4KIw7wv2ijXXLN4Sl0EcTHLjj60M2MCHGENxvsxcaGzHkewNOVuWaSm1Rj
+         RzcLOYzYU7wYMbBBpc3bUjnBzEWp32cYhaknAjnLks2eh4dJh5sPTRIaP2heiC0axs
+         HhkfdqwdLqOp7CJZgHWcw15vJRgzKxGWW0Rqr19k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Roberto Bergantinos <rbergant@redhat.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.18 032/879] cifs: fix potential double free during failed mount
-Date:   Tue,  7 Jun 2022 18:52:30 +0200
-Message-Id: <20220607165003.608638078@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mathias Nyman <mathias.nyman@linux.intel.com>,
+        Chris Chiu <chris.chiu@canonical.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>
+Subject: [PATCH 5.18 034/879] xhci: Set HCD flag to defer primary roothub registration
+Date:   Tue,  7 Jun 2022 18:52:32 +0200
+Message-Id: <20220607165003.665844631@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,46 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+From: Kishon Vijay Abraham I <kishon@ti.com>
 
-commit 8378a51e3f8140f60901fb27208cc7a6e47047b5 upstream.
+commit b7a4f9b5d0e4b6dd937678c546c0b322dd1a4054 upstream.
 
-RHBZ: https://bugzilla.redhat.com/show_bug.cgi?id=2088799
+Set "HCD_FLAG_DEFER_RH_REGISTER" to hcd->flags in xhci_run() to defer
+registering primary roothub in usb_add_hcd() if xhci has two roothubs.
+This will make sure both primary roothub and secondary roothub will be
+registered along with the second HCD.
+This is required for cold plugged USB devices to be detected in certain
+PCIe USB cards (like Inateck USB card connected to AM64 EVM or J7200 EVM).
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Roberto Bergantinos <rbergant@redhat.com>
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+This patch has been added and reverted earier as it triggered a race
+in usb device enumeration.
+That race is now fixed in 5.16-rc3, and in stable back to 5.4
+commit 6cca13de26ee ("usb: hub: Fix locking issues with address0_mutex")
+commit 6ae6dc22d2d1 ("usb: hub: Fix usb enumeration issue due to address0
+race")
+
+[minor rebase change, and commit message update -Mathias]
+
+CC: stable@vger.kernel.org # 5.4+
+Suggested-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Tested-by: Chris Chiu <chris.chiu@canonical.com>
+Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+Link: https://lore.kernel.org/r/20220510091630.16564-3-kishon@ti.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/cifsfs.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/usb/host/xhci.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/cifs/cifsfs.c
-+++ b/fs/cifs/cifsfs.c
-@@ -836,7 +836,7 @@ cifs_smb3_do_mount(struct file_system_ty
- 	      int flags, struct smb3_fs_context *old_ctx)
- {
- 	int rc;
--	struct super_block *sb;
-+	struct super_block *sb = NULL;
- 	struct cifs_sb_info *cifs_sb = NULL;
- 	struct cifs_mnt_data mnt_data;
- 	struct dentry *root;
-@@ -932,9 +932,11 @@ out_super:
- 	return root;
- out:
- 	if (cifs_sb) {
--		kfree(cifs_sb->prepath);
--		smb3_cleanup_fs_context(cifs_sb->ctx);
--		kfree(cifs_sb);
-+		if (!sb || IS_ERR(sb)) {  /* otherwise kill_sb will handle */
-+			kfree(cifs_sb->prepath);
-+			smb3_cleanup_fs_context(cifs_sb->ctx);
-+			kfree(cifs_sb);
-+		}
- 	}
- 	return root;
- }
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -696,6 +696,8 @@ int xhci_run(struct usb_hcd *hcd)
+ 	xhci_dbg_trace(xhci, trace_xhci_dbg_init,
+ 			"Finished xhci_run for USB2 roothub");
+ 
++	set_bit(HCD_FLAG_DEFER_RH_REGISTER, &hcd->flags);
++
+ 	xhci_create_dbc_dev(xhci);
+ 
+ 	xhci_debugfs_init(xhci);
 
 
