@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1FBCCCA489
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:23:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C6DFCCA48C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:24:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386857AbiFHAWl (ORCPT
+        id S1386961AbiFHAWr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:22:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45778 "EHLO
+        Tue, 7 Jun 2022 20:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382776AbiFGVvy (ORCPT
+        with ESMTP id S1382203AbiFGVuE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:51:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7C219224E;
-        Tue,  7 Jun 2022 12:09:31 -0700 (PDT)
+        Tue, 7 Jun 2022 17:50:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7469C190D22;
+        Tue,  7 Jun 2022 12:08:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F247861768;
-        Tue,  7 Jun 2022 19:09:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C8D7C36AFF;
-        Tue,  7 Jun 2022 19:09:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D39A1B8220B;
+        Tue,  7 Jun 2022 19:08:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C685C385A5;
+        Tue,  7 Jun 2022 19:08:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628970;
-        bh=iasyDf3C8+XgFrEDFoVVMOvzOcKHCYOqMTpYsSEiVDM=;
+        s=korg; t=1654628915;
+        bh=7ADwI4ceJ9tEh1nUpeN96td1EOsOqnWLQPLVG7+l0rw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hichmx3s2Na1Aa95i0VUtA2IKyd99rkS6dE1byrR4BKlTSE2xV1bM1NqCs2XqbZLW
-         KhsUDsM+x4+wz4SZFiFx1uSRynnQNUF56Q1uD72DXivlPl8XI/UMtOStXjP+E7jS9a
-         gmeZpg5nvtmtlXsYR7WYBFnoyyof+UgRTjX8D8/Y=
+        b=hDxBsa2wHxHxlkz7O5p3KWa4gLp1OuTUrwpekJYrlNse7Pb70g/TwsUc7Pum/WcoB
+         DZ3NoU1Nh4RxF+hbvXS7l3Jeqoc33AjlWAbUinslWGOpA1iAfk8KsP9WeZcda+iTQf
+         vaKU1TjXi1yMwc+gasCwmes/UyUso43jZqplCWEg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will.deacon@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 522/879] hinic: Avoid some over memory allocation
-Date:   Tue,  7 Jun 2022 19:00:40 +0200
-Message-Id: <20220607165018.029131475@linuxfoundation.org>
+Subject: [PATCH 5.18 462/879] irqchip/gic-v3: Ensure pseudo-NMIs have an ISB between ack and handling
+Date:   Tue,  7 Jun 2022 18:59:40 +0200
+Message-Id: <20220607165016.284240302@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,34 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Mark Rutland <mark.rutland@arm.com>
 
-[ Upstream commit 15d221d0c345b76947911a3ac91897ffe2f1cc4e ]
+[ Upstream commit adf14453d2c037ab529040c1186ea32e277e783a ]
 
-'prod_idx' (atomic_t) is larger than 'shadow_idx' (u16), so some memory is
-over-allocated.
+There are cases where a context synchronization event is necessary
+between an IRQ being raised and being handled, and there are races such
+that we cannot rely upon the exception entry being subsequent to the
+interrupt being raised.
 
-Fixes: b15a9f37be2b ("net-next/hinic: Add wq")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+We identified and fixes this for regular IRQs in commit:
+
+  39a06b67c2c1256b ("irqchip/gic: Ensure we have an ISB between ack and ->handle_irq")
+
+Unfortunately, we forgot to do the same for psuedo-NMIs when support for
+those was added in commit:
+
+  f32c926651dcd168 ("irqchip/gic-v3: Handle pseudo-NMIs")
+
+Which means that when pseudo-NMIs are used for PMU support, we'll hit
+the same problem.
+
+Apply the same fix as for regular IRQs. Note that when EOI mode 1 is in
+use, the call to gic_write_eoir() will provide an ISB.
+
+Fixes: f32c926651dcd168 ("irqchip/gic-v3: Handle pseudo-NMIs")
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Will Deacon <will.deacon@arm.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220513133038.226182-2-mark.rutland@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/irqchip/irq-gic-v3.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
-index f7dc7d825f63..4daf6bf291ec 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
-@@ -386,7 +386,7 @@ static int alloc_wqes_shadow(struct hinic_wq *wq)
- 		return -ENOMEM;
+diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index b252d5534547..7305d84f2df5 100644
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -654,6 +654,9 @@ static inline void gic_handle_nmi(u32 irqnr, struct pt_regs *regs)
  
- 	wq->shadow_idx = devm_kcalloc(&pdev->dev, wq->num_q_pages,
--				      sizeof(wq->prod_idx), GFP_KERNEL);
-+				      sizeof(*wq->shadow_idx), GFP_KERNEL);
- 	if (!wq->shadow_idx)
- 		goto err_shadow_idx;
- 
+ 	if (static_branch_likely(&supports_deactivate_key))
+ 		gic_write_eoir(irqnr);
++	else
++		isb()
++
+ 	/*
+ 	 * Leave the PSR.I bit set to prevent other NMIs to be
+ 	 * received while handling this one.
 -- 
 2.35.1
 
