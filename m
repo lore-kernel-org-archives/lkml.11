@@ -2,158 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5478EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:16:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B79BCCA481
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:16:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344798AbiFGQQL (ORCPT
+        id S1344823AbiFGQQj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 12:16:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39948 "EHLO
+        Tue, 7 Jun 2022 12:16:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343740AbiFGQQI (ORCPT
+        with ESMTP id S1344914AbiFGQQg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 12:16:08 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0041710170F
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 09:16:04 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id f34so31966309ybj.6
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 09:16:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KNz0hVj8TG6Qzpx0G5NqXTIz0xDB0KuRYCCZOpgg7qY=;
-        b=a0XfGH8keS8BNyDEJAqFX9LsZ0KYzMl9tMyc2KvxF8rj4cWg0GMKO1iFWzd8v9SxGh
-         qeIGa7tW6ioE5zIZGl5FYOjoz+A6163+aI5rfjTQtS9RxzeK+6WSGvKy5pAfcBuUr9MJ
-         ec5u64qTYW2PApKtNVs5bfEdbrtZ0uyvJDmbDvgGnCoeD3qE5oZLj5NRvjZbEBJlshJ0
-         ML9wJ2nRCTgilIbJEv6Hf/wiuwZTGMiZaMU1q2szNU6afrSmDAqT459SmwiFHetNHJFE
-         daT7TEHdSe4s7CoKN8HEXNZR4uRd6mhonRnzMVLn2mpCFZvPe1SSt7D0eQpOqJdI60iN
-         m+iA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KNz0hVj8TG6Qzpx0G5NqXTIz0xDB0KuRYCCZOpgg7qY=;
-        b=rxs/WmIaIfE3J0FFnvEJnPUY6laKVUOi+o5bJpjp1JC9F0YJWmbhrZAZ8LI5vEf76/
-         jbJRQprMPHPkDiHsJGQqDXsMAcvYkunoObpr+RY0BdNM6tKPbv1KNDbZcOPPzyixsa9K
-         /OtafTuQbVIhmSXIvW+IGGnrLsX/dw0d9X3Fyuccv7V6nwEBdopiQA8WOb3nWLl3/0I7
-         ukuyeb5WAhWzpbdks9FrfD+UHzOvjAhJk/9Ebkq5p7yhnKKUAg3NvnxOCWdqUfE3Gp6W
-         l0ER2EL17ilMt0WkqYZlWgVq0+KK+X+TxT+Z6kpFD2gbd1pEE+v3W1iJWHi6gjC9dRgn
-         5opA==
-X-Gm-Message-State: AOAM533fXEtIssXtFh18u3hZnY0h5d/9slf6aBqspa6F3xdHUDxgbFLr
-        sbm8X4aDeNV91v9MJbykIQhXNNox6bon8llL1PiAQA==
-X-Google-Smtp-Source: ABdhPJyTF15h5DVfmYl2uUZTtWHgfXtFmwbH8H44XY+k9hFqHuby4m37s7CBYMHQBZwu0pbvq5OJzmjb8kkAoLIbdWo=
-X-Received: by 2002:a5b:49:0:b0:656:151d:a1e3 with SMTP id e9-20020a5b0049000000b00656151da1e3mr129130ybp.425.1654618563958;
- Tue, 07 Jun 2022 09:16:03 -0700 (PDT)
+        Tue, 7 Jun 2022 12:16:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28BA1100536;
+        Tue,  7 Jun 2022 09:16:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B56FA617CC;
+        Tue,  7 Jun 2022 16:16:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12E1DC385A5;
+        Tue,  7 Jun 2022 16:16:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654618581;
+        bh=pZ0N3kVmID+M42htHeCDWI/UBkUn4DOHwjZbPNx736A=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=UIV3IEAAq9umOzgHxHRMDm+JQ9rRW/rCgMfjUe4JFKLAGLG1mWx0oAy5xuTqa8N9D
+         ZMHZm+aa9W7dcOvRKVm74Sy/6yMuijoKJcbx6braoXJA0F1mjIdTfXRm/ECj/B+8B+
+         zURMMpv2iihqCjWcP2e+TnOBgSA+stsXWEnUcfpOxe8RnRd7BRHp5I8PTPA34hioht
+         EHdBW+qyWxAjbOyQX12NK23TnE/0V4nKE2+qL0G3nqpgoEgQ/JvSC5ZZdF7qbt6QYI
+         qqGkHJDFLc73S52n3GBgNVdtoMuef+AcsJprU0+s15SvRgrBtDQk1gp3c3kMfjrOy0
+         v5LwwExSsHVTg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id ADB205C05DA; Tue,  7 Jun 2022 09:16:20 -0700 (PDT)
+Date:   Tue, 7 Jun 2022 09:16:20 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Zqiang <qiang1.zhang@intel.com>
+Cc:     frederic@kernel.org, rcu@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] rcu/nocb: Avoid polling when myrdp->nocb_head_rdp
+ list is empty
+Message-ID: <20220607161620.GH1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220607075057.909070-1-qiang1.zhang@intel.com>
 MIME-Version: 1.0
-References: <20220606114908.962562-1-alexandr.lobakin@intel.com>
- <20220606114908.962562-4-alexandr.lobakin@intel.com> <Yp9WFREfdfkho0hm@elver.google.com>
- <20220607155722.44040-1-alexandr.lobakin@intel.com>
-In-Reply-To: <20220607155722.44040-1-alexandr.lobakin@intel.com>
-From:   Marco Elver <elver@google.com>
-Date:   Tue, 7 Jun 2022 18:15:27 +0200
-Message-ID: <CANpmjNOZRGW7CutQDAzWKKhYT4W_AotBFWpmgci8O4xMpDPrqw@mail.gmail.com>
-Subject: Re: [PATCH 3/6] bitops: define gen_test_bit() the same way as the
- rest of functions
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Richard Henderson <rth@twiddle.net>,
-        Matt Turner <mattst88@gmail.com>,
-        Brian Cain <bcain@quicinc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607075057.909070-1-qiang1.zhang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 7 Jun 2022 at 18:05, Alexander Lobakin
-<alexandr.lobakin@intel.com> wrote:
->
-> From: Marco Elver <elver@google.com>
-> Date: Tue, 7 Jun 2022 15:43:49 +0200
->
-> > On Mon, Jun 06, 2022 at 01:49PM +0200, Alexander Lobakin wrote:
-> > > Currently, the generic test_bit() function is defined as a one-liner
-> > > and in case with constant bitmaps the compiler is unable to optimize
-> > > it to a constant. At the same time, gen_test_and_*_bit() are being
-> > > optimized pretty good.
-> > > Define gen_test_bit() the same way as they are defined.
-> > >
-> > > Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > > ---
-> > >  include/asm-generic/bitops/generic-non-atomic.h | 6 +++++-
-> > >  1 file changed, 5 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/include/asm-generic/bitops/generic-non-atomic.h b/include/asm-generic/bitops/generic-non-atomic.h
-> > > index 7a60adfa6e7d..202d8a3b40e1 100644
-> > > --- a/include/asm-generic/bitops/generic-non-atomic.h
-> > > +++ b/include/asm-generic/bitops/generic-non-atomic.h
-> > > @@ -118,7 +118,11 @@ gen___test_and_change_bit(unsigned int nr, volatile unsigned long *addr)
-> > >  static __always_inline int
-> > >  gen_test_bit(unsigned int nr, const volatile unsigned long *addr)
-> > >  {
-> > > -   return 1UL & (addr[BIT_WORD(nr)] >> (nr & (BITS_PER_LONG-1)));
-> > > +   const unsigned long *p = (const unsigned long *)addr + BIT_WORD(nr);
-> > > +   unsigned long mask = BIT_MASK(nr);
-> > > +   unsigned long val = *p;
-> > > +
-> > > +   return !!(val & mask);
-> >
-> > Unfortunately this makes the dereference of 'addr' non-volatile, and
-> > effectively weakens test_bit() to the point where I'd no longer consider
-> > it atomic. Per atomic_bitops.txt, test_bit() is atomic.
-> >
-> > The generic version has been using a volatile access to make it atomic
-> > (akin to generic READ_ONCE() casting to volatile). The volatile is also
-> > the reason the compiler can't optimize much, because volatile forces a
-> > real memory access.
->
-> Ah-ha, I see now. Thanks for catching and explaining this!
->
-> >
-> > Yes, confusingly, test_bit() lives in non-atomic.h, and this had caused
-> > confusion before, but the decision was made that moving it will cause
-> > headaches for ppc so it was left alone:
-> > https://lore.kernel.org/all/87a78xgu8o.fsf@dja-thinkpad.axtens.net/T/#u
-> >
-> > As for how to make test_bit() more compiler-optimization friendly, I'm
-> > guessing that test_bit() needs some special casing where even the
-> > generic arch_test_bit() is different from the gen_test_bit().
-> > gen_test_bit() should probably assert that whatever it is called with
-> > can actually be evaluated at compile-time so it is never accidentally
-> > used otherwise.
->
-> I like the idea! Will do in v2.
-> I can move the generics and after, right below them, define
-> 'const_*' helpers which will mostly redirect to 'generic_*', but
-> for test_bit() it will be a separate function with no `volatile`
-> and with an assertion that the input args are constants.
+On Tue, Jun 07, 2022 at 03:50:57PM +0800, Zqiang wrote:
+> Currently, If the 'rcu_nocb_poll' bootargs is enable, all rcuog kthreads
+> enter polling mode. however, due to only insert CPU's rdp which belong to
+> rcu_nocb_mask to 'nocb_head_rdp' list or all CPU's rdp served by rcuog
+> kthread have been de-offloaded, these cause the 'nocb_head_rdp' list
+> served by rcuog kthread is empty, when the 'nocb_head_rdp' is empty,
+> the rcuog kthread in polling mode not actually do anything. fix it by
+> exiting polling mode when the 'nocb_head_rdp'list is empty, otherwise
+> entering polling mode.
+> 
+> Signed-off-by: Zqiang <qiang1.zhang@intel.com>
 
-Be aware that there's already a "constant_test_bit()" in
-arch/x86/include/asm/bitops.h, which uses 2 versions of test_bit() if
-'nr' is constant or not. I guess you can steer clear of that if you
-use "const_", but they do sound similar.
+This looks a bit more plausible, but what have you done to test this?
 
-> >
-> > I would also propose adding a comment close to the deref that test_bit()
-> > is atomic and the deref needs to remain volatile, so future people will
-> > not try to do the same optimization.
->
-> I think that's also the reason why it's not underscored, right?
+							Thanx, Paul
 
-Yes, the naming convention is that double-underscored ones are
-non-atomic so that's one clue indeed. Documentation/atomic_bitops.txt
-another, and unlike the other non-atomic bitops, its kernel-doc
-comment also does not mention "This operation is non-atomic...".
+> ---
+>  v1->v2:
+>  Move rcu_nocb_poll flags check from rdp_offload_toggle() to
+>  rcu_nocb_rdp_offload/deoffload(), avoid unnecessary setting of
+>  rdp_gp->nocb_gp_sleep flags, because when rcu_nocb_poll is set
+>  the rdp_gp->nocb_gp_sleep is not used.
+> 
+>  kernel/rcu/tree_nocb.h | 16 ++++++++++------
+>  1 file changed, 10 insertions(+), 6 deletions(-)
+> 
+> diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
+> index fa8e4f82e60c..2a52c9abc681 100644
+> --- a/kernel/rcu/tree_nocb.h
+> +++ b/kernel/rcu/tree_nocb.h
+> @@ -698,10 +698,14 @@ static void nocb_gp_wait(struct rcu_data *my_rdp)
+>  				   TPS("WakeBypassIsDeferred"));
+>  	}
+>  	if (rcu_nocb_poll) {
+> -		/* Polling, so trace if first poll in the series. */
+> -		if (gotcbs)
+> -			trace_rcu_nocb_wake(rcu_state.name, cpu, TPS("Poll"));
+> -		schedule_timeout_idle(1);
+> +		if (list_empty(&my_rdp->nocb_head_rdp)) {
+> +			rcu_wait(READ_ONCE(my_rdp->nocb_toggling_rdp));
+> +		} else {
+> +			/* Polling, so trace if first poll in the series. */
+> +			if (gotcbs)
+> +				trace_rcu_nocb_wake(rcu_state.name, cpu, TPS("Poll"));
+> +			schedule_timeout_idle(1);
+> +		}
+>  	} else if (!needwait_gp) {
+>  		/* Wait for callbacks to appear. */
+>  		trace_rcu_nocb_wake(rcu_state.name, cpu, TPS("Sleep"));
+> @@ -1030,7 +1034,7 @@ static long rcu_nocb_rdp_deoffload(void *arg)
+>  
+>  	mutex_lock(&rdp_gp->nocb_gp_kthread_mutex);
+>  	if (rdp_gp->nocb_gp_kthread) {
+> -		if (wake_gp)
+> +		if (wake_gp || rcu_nocb_poll)
+>  			wake_up_process(rdp_gp->nocb_gp_kthread);
+>  
+>  		/*
+> @@ -1152,7 +1156,7 @@ static long rcu_nocb_rdp_offload(void *arg)
+>  	 *      rcu_nocb_unlock()         rcu_nocb_unlock()
+>  	 */
+>  	wake_gp = rdp_offload_toggle(rdp, true, flags);
+> -	if (wake_gp)
+> +	if (wake_gp || rcu_nocb_poll)
+>  		wake_up_process(rdp_gp->nocb_gp_kthread);
+>  	swait_event_exclusive(rdp->nocb_state_wq,
+>  			      rcu_segcblist_test_flags(cblist, SEGCBLIST_KTHREAD_CB) &&
+> -- 
+> 2.25.1
+> 
