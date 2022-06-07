@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF8C2CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE100CCA489
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377109AbiFGUci (ORCPT
+        id S1377132AbiFGUcp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49240 "EHLO
+        Tue, 7 Jun 2022 16:32:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356776AbiFGTjs (ORCPT
+        with ESMTP id S1356910AbiFGTkW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:39:48 -0400
+        Tue, 7 Jun 2022 15:40:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98B7FF583;
-        Tue,  7 Jun 2022 11:14:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D88F1AFAF0;
+        Tue,  7 Jun 2022 11:14:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 23EA060C1B;
-        Tue,  7 Jun 2022 18:14:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36F7CC385A2;
-        Tue,  7 Jun 2022 18:14:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E3EF6062B;
+        Tue,  7 Jun 2022 18:14:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91DBAC341C0;
+        Tue,  7 Jun 2022 18:14:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625667;
-        bh=AblWjtA8CPTC3IoqQWt8yq7oRCv0iVKowhnhrwAHlr8=;
+        s=korg; t=1654625672;
+        bh=AmtNEIONDz4TR6XNEOBdkvo95XyT+gqj55BrSboz7xA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z5znlLxSlTxhax7qU6lMxhLNa1AoRL41xOcBGQowaNyAlBJgn4cIz+CU/6J3rnkhF
-         jry+RQiHm2zj4dovc9CQ0B8hU+04eaPNL3er9ukBv5aYukvXzelxELsaS7lqXY5NzC
-         YbOY8V0/B217Ewsc9cG7WRSNcCA4cdJInkxAUHZY=
+        b=kahkxBYEJntq/T9iJNl0tpryhx+8Wz1UEUfOOLRySy4xs4wfT5cGy2M3VN2njlsc6
+         p7BwUsiEgod4xwzSCX18nRLFJ3/T0EGyODL9Q7Bl/rXFmDsRItsNhB0RvXAPFqxbo+
+         +U2zmpCiZ8M1Erk5sZ4EiZH9YqHfHClTjkDLCJDo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 100/772] ASoC: Intel: bytcr_rt5640: Add quirk for the HP Pro Tablet 408
-Date:   Tue,  7 Jun 2022 18:54:52 +0200
-Message-Id: <20220607164951.995428749@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Evan Quan <evan.quan@amd.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 102/772] drm/amd/pm: fix the compile warning
+Date:   Tue,  7 Jun 2022 18:54:54 +0200
+Message-Id: <20220607164952.052369606@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,50 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Evan Quan <evan.quan@amd.com>
 
-[ Upstream commit ce216cfa84a4e1c23b105e652c550bdeaac9e922 ]
+[ Upstream commit 555238d92ac32dbad2d77ad2bafc48d17391990c ]
 
-Add a quirk for the HP Pro Tablet 408, this BYTCR tablet has no CHAN
-package in its ACPI tables and uses SSP0-AIF1 rather then SSP0-AIF2 which
-is the default for BYTCR devices.
+Fix the compile warning below:
+drivers/gpu/drm/amd/amdgpu/../pm/legacy-dpm/kv_dpm.c:1641
+kv_get_acp_boot_level() warn: always true condition '(table->entries[i]->clk >= 0) => (0-u32max >= 0)'
 
-It also uses DMIC1 for the internal mic rather then the default IN3
-and it uses JD2 rather then the default JD1 for jack-detect.
-
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=211485
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220427134918.527381-1-hdegoede@redhat.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+CC: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/intel/boards/bytcr_rt5640.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/gpu/drm/amd/pm/powerplay/kv_dpm.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
-diff --git a/sound/soc/intel/boards/bytcr_rt5640.c b/sound/soc/intel/boards/bytcr_rt5640.c
-index 2ace32c03ec9..b5ac226c59e1 100644
---- a/sound/soc/intel/boards/bytcr_rt5640.c
-+++ b/sound/soc/intel/boards/bytcr_rt5640.c
-@@ -773,6 +773,18 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
- 					BYT_RT5640_OVCD_SF_0P75 |
- 					BYT_RT5640_MCLK_EN),
- 	},
-+	{	/* HP Pro Tablet 408 */
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "HP Pro Tablet 408"),
-+		},
-+		.driver_data = (void *)(BYT_RT5640_DMIC1_MAP |
-+					BYT_RT5640_JD_SRC_JD2_IN4N |
-+					BYT_RT5640_OVCD_TH_1500UA |
-+					BYT_RT5640_OVCD_SF_0P75 |
-+					BYT_RT5640_SSP0_AIF1 |
-+					BYT_RT5640_MCLK_EN),
-+	},
- 	{	/* HP Stream 7 */
- 		.matches = {
- 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
+diff --git a/drivers/gpu/drm/amd/pm/powerplay/kv_dpm.c b/drivers/gpu/drm/amd/pm/powerplay/kv_dpm.c
+index bcae42cef374..6ba4c2ae69a6 100644
+--- a/drivers/gpu/drm/amd/pm/powerplay/kv_dpm.c
++++ b/drivers/gpu/drm/amd/pm/powerplay/kv_dpm.c
+@@ -1609,19 +1609,7 @@ static int kv_update_samu_dpm(struct amdgpu_device *adev, bool gate)
+ 
+ static u8 kv_get_acp_boot_level(struct amdgpu_device *adev)
+ {
+-	u8 i;
+-	struct amdgpu_clock_voltage_dependency_table *table =
+-		&adev->pm.dpm.dyn_state.acp_clock_voltage_dependency_table;
+-
+-	for (i = 0; i < table->count; i++) {
+-		if (table->entries[i].clk >= 0) /* XXX */
+-			break;
+-	}
+-
+-	if (i >= table->count)
+-		i = table->count - 1;
+-
+-	return i;
++	return 0;
+ }
+ 
+ static void kv_update_acp_boot_level(struct amdgpu_device *adev)
 -- 
 2.35.1
 
