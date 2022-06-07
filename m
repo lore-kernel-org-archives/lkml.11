@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B30CEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:53:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30EAAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244744AbiFGRw7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:52:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36038 "EHLO
+        id S1348587AbiFGRxI (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 13:53:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347803AbiFGRfs (ORCPT
+        with ESMTP id S1347806AbiFGRfs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 13:35:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8A6106A43;
-        Tue,  7 Jun 2022 10:31:28 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B80A410A605;
+        Tue,  7 Jun 2022 10:31:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65D4BB822B7;
-        Tue,  7 Jun 2022 17:31:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB77FC385A5;
-        Tue,  7 Jun 2022 17:31:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56ADC60C7C;
+        Tue,  7 Jun 2022 17:31:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68F32C385A5;
+        Tue,  7 Jun 2022 17:31:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623086;
-        bh=uq/JekMtaPZ0oAHRiPHyKQrtVt39E49VpuMaXECQb5E=;
+        s=korg; t=1654623091;
+        bh=d5f3waSstqFwsHwR92Wq26SEDDhS6+RyUHdRiynwipA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jIBh0/iNM8JnxL7+ep4OPwOn1NULisB/SXd7xFeF+apDsI2zSDbEp7fJODP4XKT4h
-         R6JL6wsSQ4ffKtSaaTE5nWLMK8srMrDdyk45dmr29Fj/K3AfWDtwkSf1saqnO2yNh2
-         gUqb3R8VAeJ+LEp30HqtAbWJ7u20N7x7YFgjhvu8=
+        b=I4oumvtJ/Zw+J4gniIhXwUOfQe2JkxRcEvbpxNZXdhoK7VMGz05bM2mPB7HAz0gFH
+         X8ceJ/N7tiaayJp0c8c2K4ZHBgBPlTH8Bf5z2bXEN33ZKICC/BhiOeS5jEXbkezRv9
+         d/BIQ5m5K7frtwucWAIeezcqB2NQ5fdAh4gXxMp8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 249/452] hv_netvsc: Fix potential dereference of NULL pointer
-Date:   Tue,  7 Jun 2022 19:01:46 +0200
-Message-Id: <20220607164915.979358110@linuxfoundation.org>
+Subject: [PATCH 5.10 251/452] rxrpc: Dont try to resend the request if were receiving the reply
+Date:   Tue,  7 Jun 2022 19:01:48 +0200
+Message-Id: <20220607164916.038411271@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,40 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit eb4c0788964730d12e8dd520bd8f5217ca48321c ]
+[ Upstream commit 114af61f88fbe34d641b13922d098ffec4c1be1b ]
 
-The return value of netvsc_devinfo_get()
-needs to be checked to avoid use of NULL
-pointer in case of an allocation failure.
+rxrpc has a timer to trigger resending of unacked data packets in a call.
+This is not cancelled when a client call switches to the receive phase on
+the basis that most calls don't last long enough for it to ever expire.
+However, if it *does* expire after we've started to receive the reply, we
+shouldn't then go into trying to retransmit or pinging the server to find
+out if an ack got lost.
 
-Fixes: 0efeea5fb153 ("hv_netvsc: Add the support of hibernation")
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
-Link: https://lore.kernel.org/r/1652962188-129281-1-git-send-email-lyz_cs@pku.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fix this by skipping the resend code if we're into receiving the reply to a
+client call.
+
+Fixes: 17926a79320a ("[AF_RXRPC]: Provide secure RxRPC sockets for use by userspace and kernel both")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-afs@lists.infradead.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/hyperv/netvsc_drv.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/rxrpc/call_event.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index e3676386d0ee..18484370da0d 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -2629,7 +2629,10 @@ static int netvsc_suspend(struct hv_device *dev)
+diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
+index e426f6831aab..f8ecad2b730e 100644
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -406,7 +406,8 @@ void rxrpc_process_call(struct work_struct *work)
+ 		goto recheck_state;
+ 	}
  
- 	/* Save the current config info */
- 	ndev_ctx->saved_netvsc_dev_info = netvsc_devinfo_get(nvdev);
--
-+	if (!ndev_ctx->saved_netvsc_dev_info) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
- 	ret = netvsc_detach(net, nvdev);
- out:
- 	rtnl_unlock();
+-	if (test_and_clear_bit(RXRPC_CALL_EV_RESEND, &call->events)) {
++	if (test_and_clear_bit(RXRPC_CALL_EV_RESEND, &call->events) &&
++	    call->state != RXRPC_CALL_CLIENT_RECV_REPLY) {
+ 		rxrpc_resend(call, now);
+ 		goto recheck_state;
+ 	}
 -- 
 2.35.1
 
