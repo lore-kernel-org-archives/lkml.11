@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77BCACCA49C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08319CCA497
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379384AbiFGVCZ (ORCPT
+        id S1379422AbiFGVC1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:02:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35000 "EHLO
+        Tue, 7 Jun 2022 17:02:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357822AbiFGT76 (ORCPT
+        with ESMTP id S1358095AbiFGT77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:59:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 985491BC7A2;
-        Tue,  7 Jun 2022 11:24:49 -0700 (PDT)
+        Tue, 7 Jun 2022 15:59:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645B91BF17B;
+        Tue,  7 Jun 2022 11:24:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4AA0B82381;
-        Tue,  7 Jun 2022 18:24:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D448C385A5;
-        Tue,  7 Jun 2022 18:24:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F109960C1A;
+        Tue,  7 Jun 2022 18:24:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 103BCC385A2;
+        Tue,  7 Jun 2022 18:24:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626281;
-        bh=k00PGqpVtxK9KLo7iAoZAFvR4/b9+f03yvXnP+ndJCY=;
+        s=korg; t=1654626284;
+        bh=7Z2KxvVJ+3FGQMwdhJnGW+vdnJ6EEGTY368YjwG6vIk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Il8SB3tzeYjjFFT6uytf27pctqIyex+ObJcOaoKqzieEAFz+Lwy1Y2rY/rLQWapfw
-         Qy7cIElSBlVWvops/cK8jTUlB/GbKwPp++ufagJUwtAPhC+xOyyAKZkZBZdFU6zdjm
-         Fw54btCD/p1XKg+j1MwWTxaFrlHw3RR7ZE/5OPQY=
+        b=Pc3VKcjqjHAV/eYwh2A94acuXhmt4Jl72sbNz+rSSQGN6MDEclk4VZH9wFF3EYzMI
+         EQn1r0ef1WciBqj4AZuTTjlmSiwY+2kMmSXFIT5e/CIz4WajbE03AdVN8ug34wxfXt
+         MpuuIpbLrNkuKYeWiKoEgYln47kotJ7al4ecHcNk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org, Jagan Teki <jagan@amarulasolutions.com>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 322/772] drm/msm: add missing include to msm_drv.c
-Date:   Tue,  7 Jun 2022 18:58:34 +0200
-Message-Id: <20220607164958.511369794@linuxfoundation.org>
+Subject: [PATCH 5.17 323/772] drm/panel: panel-simple: Fix proper bpc for AM-1280800N3TZQW-T00H
+Date:   Tue,  7 Jun 2022 18:58:35 +0200
+Message-Id: <20220607164958.539686608@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,39 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Jagan Teki <jagan@amarulasolutions.com>
 
-[ Upstream commit 8123fe83c3a3448bbfa5b5b1cacfdfe7d076fca6 ]
+[ Upstream commit 7eafbecd2288c542ea15ea20cf1a7e64a25c21bc ]
 
-Add explicit include of drm_bridge.h to the msm_drv.c to fix the
-following warning:
+AM-1280800N3TZQW-T00H panel support 8 bpc not 6 bpc as per
+recent testing in i.MX8MM platform.
 
-drivers/gpu/drm/msm/msm_drv.c:236:17: error: implicit declaration of function 'drm_bridge_remove'; did you mean 'drm_bridge_detach'? [-Werror=implicit-function-declaration]
+Fix it.
 
-Fixes: d28ea556267c ("drm/msm: properly add and remove internal bridges")
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/484310/
-Link: https://lore.kernel.org/r/20220430180917.3819294-1-dmitry.baryshkov@linaro.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fixes: bca684e69c4c ("drm/panel: simple: Add AM-1280800N3TZQW-T00H")
+Signed-off-by: Jagan Teki <jagan@amarulasolutions.com>
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211111094103.494831-1-jagan@amarulasolutions.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/msm_drv.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/panel/panel-simple.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
-index ef47bd449b46..bd0384e7111c 100644
---- a/drivers/gpu/drm/msm/msm_drv.c
-+++ b/drivers/gpu/drm/msm/msm_drv.c
-@@ -11,6 +11,7 @@
- #include <linux/uaccess.h>
- #include <uapi/linux/sched/types.h>
- 
-+#include <drm/drm_bridge.h>
- #include <drm/drm_drv.h>
- #include <drm/drm_file.h>
- #include <drm/drm_ioctl.h>
+diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
+index 7598824ea848..725055edb67e 100644
+--- a/drivers/gpu/drm/panel/panel-simple.c
++++ b/drivers/gpu/drm/panel/panel-simple.c
+@@ -720,7 +720,7 @@ static const struct drm_display_mode ampire_am_1280800n3tzqw_t00h_mode = {
+ static const struct panel_desc ampire_am_1280800n3tzqw_t00h = {
+ 	.modes = &ampire_am_1280800n3tzqw_t00h_mode,
+ 	.num_modes = 1,
+-	.bpc = 6,
++	.bpc = 8,
+ 	.size = {
+ 		.width = 217,
+ 		.height = 136,
 -- 
 2.35.1
 
