@@ -2,83 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49FF0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 13:25:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BCB3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 13:25:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244648AbiFGNZ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 09:25:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46526 "EHLO
+        id S243508AbiFGNZi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 09:25:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243473AbiFGNZK (ORCPT
+        with ESMTP id S244650AbiFGNZ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 09:25:10 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECFD1BE15F;
-        Tue,  7 Jun 2022 06:25:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1654608309; x=1686144309;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Pj2tfW8mZzif7jlpRh0HExia+x5zaVcrwbz9+Z9tZBk=;
-  b=UUjYWNR/kkpDVXafiJdJeBgsBYhQ/R7XbCd3nu7Q5Lrq5PXK3/N8sR8W
-   cj6Zm+HV1ORd4KTK5iGIusUDmDHigUunZq8B4xWjGtxuV7gcRJEHpuEpp
-   eutjkDEN+bdcyIaITc/fmR9qkEyDdU2m9MJJ16+nxHV1pDyi0Dht3UtUH
-   EkrkrNVz+bxT2LOpWCtVFCel7d9SZFXPH43aQGiZdtDp+xY5RT276aEz3
-   cVs0ZOo2XOW8G6/a8uMCUho6XsaBdRJCZIX52pRzs2Sk3tEYu7KUBRVZT
-   8uoWe7A+QayGebucWGLoDXx1XTFOou8iz3DQIBOs+VacCULDCySXlJUP/
-   g==;
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="162235989"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Jun 2022 06:25:05 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 7 Jun 2022 06:25:04 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Tue, 7 Jun 2022 06:25:02 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Bin Liu <b-liu@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Daire McNamara <daire.mcnamara@microchip.com>,
-        Valentina Fernandez <valentina.fernandezalanis@microchip.com>,
-        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>,
-        Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH 2/3] MAINTAINERS: add musb to PolarFire SoC entry
-Date:   Tue, 7 Jun 2022 14:22:03 +0100
-Message-ID: <20220607132204.746180-3-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607132204.746180-1-conor.dooley@microchip.com>
-References: <20220607132204.746180-1-conor.dooley@microchip.com>
+        Tue, 7 Jun 2022 09:25:28 -0400
+X-Greylist: delayed 488 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 06:25:25 PDT
+Received: from forward501o.mail.yandex.net (forward501o.mail.yandex.net [37.140.190.203])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C8C1BE164;
+        Tue,  7 Jun 2022 06:25:25 -0700 (PDT)
+Received: from myt5-a76c7b0c543c.qloud-c.yandex.net (myt5-a76c7b0c543c.qloud-c.yandex.net [IPv6:2a02:6b8:c12:2908:0:640:a76c:7b0c])
+        by forward501o.mail.yandex.net (Yandex) with ESMTP id F3ED745C4C8B;
+        Tue,  7 Jun 2022 16:17:06 +0300 (MSK)
+Received: from myt6-654ec0a0ab93.qloud-c.yandex.net (myt6-654ec0a0ab93.qloud-c.yandex.net [2a02:6b8:c12:1d80:0:640:654e:c0a0])
+        by myt5-a76c7b0c543c.qloud-c.yandex.net (mxback/Yandex) with ESMTP id 0JqJ9qHZUZ-H6fOeVsZ;
+        Tue, 07 Jun 2022 16:17:06 +0300
+X-Yandex-Fwd: 2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maquefel.me; s=mail; t=1654607826;
+        bh=H5ZJSB+X5ZPk+u9IuwBsHvhkdVj5IngYfZMVK2pBn+Q=;
+        h=In-Reply-To:References:Date:Subject:Cc:To:From:Message-Id;
+        b=nYhgRjYg+zJOPmbF47oV3H7hZ0cLH7P5Uk6Ki6HcvRMzoaJb0SsL1tRVTCoW953Q6
+         yfG5q9/auzw8JMI3gNKAPFT+Rp/Zb4YWDXcPQkaRSI2h8d7QRw56mBlOg2TUpKWqkr
+         4YwbpAkC8jkQv7KTU6thzeGxEKvPmGsZsaAnSR2s=
+Authentication-Results: myt5-a76c7b0c543c.qloud-c.yandex.net; dkim=pass header.i=@maquefel.me
+Received: by myt6-654ec0a0ab93.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id sOXgg17Zrk-H5M4o90G;
+        Tue, 07 Jun 2022 16:17:05 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+From:   Nikita Shubin <nikita.shubin@maquefel.me>
+Cc:     Genevieve Chan <genevieve.chan@starfivetech.com>,
+        =?UTF-8?q?Jo=C3=A3o=20M=C3=A1rio=20Domingos?= 
+        <joao.mario@tecnico.ulisboa.pt>,
+        Nikita Shubin <n.shubin@yadro.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-kernel@vger.kernel.org (open list),
+        linux-perf-users@vger.kernel.org (open list:PERFORMANCE EVENTS
+        SUBSYSTEM),
+        linux-riscv@lists.infradead.org (open list:RISC-V ARCHITECTURE)
+Subject: [PATCH v3 3/4] RISC-V: Added generic pmu-events mapfile
+Date:   Tue,  7 Jun 2022 16:16:46 +0300
+Message-Id: <20220607131648.29439-4-nikita.shubin@maquefel.me>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607131648.29439-1-nikita.shubin@maquefel.me>
+References: <20220607131648.29439-1-nikita.shubin@maquefel.me>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the newly introduced musb driver to the existing PolarFire SoC entry.
+From: João Mário Domingos <joao.mario@tecnico.ulisboa.pt>
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+The pmu-events now supports custom events for RISC-V, plus the cycle,
+time and instret events were defined.
+
+Signed-off-by: João Mário Domingos <joao.mario@tecnico.ulisboa.pt>
+Tested-by: Nikita Shubin <n.shubin@yadro.com>
 ---
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+ tools/perf/pmu-events/arch/riscv/mapfile.csv  | 14 +++++++++++++
+ .../pmu-events/arch/riscv/riscv-generic.json  | 20 +++++++++++++++++++
+ 2 files changed, 34 insertions(+)
+ create mode 100644 tools/perf/pmu-events/arch/riscv/mapfile.csv
+ create mode 100644 tools/perf/pmu-events/arch/riscv/riscv-generic.json
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a6d3bd9d2a8d..b07b2cfa3567 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17143,6 +17143,7 @@ S:	Supported
- F:	arch/riscv/boot/dts/microchip/
- F:	drivers/mailbox/mailbox-mpfs.c
- F:	drivers/soc/microchip/
-+F:	drivers/usb/musb/mpfs.c
- F:	include/soc/microchip/mpfs.h
- 
- RNBD BLOCK DRIVERS
+diff --git a/tools/perf/pmu-events/arch/riscv/mapfile.csv b/tools/perf/pmu-events/arch/riscv/mapfile.csv
+new file mode 100644
+index 000000000000..4f2aa199d9cb
+--- /dev/null
++++ b/tools/perf/pmu-events/arch/riscv/mapfile.csv
+@@ -0,0 +1,14 @@
++# Format:
++#	MIDR,Version,JSON/file/pathname,Type
++#
++# where
++#	MIDR	Processor version
++#		Variant[23:20] and Revision [3:0] should be zero.
++#	Version could be used to track version of JSON file
++#		but currently unused.
++#	JSON/file/pathname is the path to JSON file, relative
++#		to tools/perf/pmu-events/arch/riscv/.
++#	Type is core, uncore etc
++#
++#
++#Family-model,Version,Filename,EventType
+diff --git a/tools/perf/pmu-events/arch/riscv/riscv-generic.json b/tools/perf/pmu-events/arch/riscv/riscv-generic.json
+new file mode 100644
+index 000000000000..013e50efad99
+--- /dev/null
++++ b/tools/perf/pmu-events/arch/riscv/riscv-generic.json
+@@ -0,0 +1,20 @@
++[
++  {
++    "PublicDescription": "CPU Cycles",
++    "EventCode": "0x00",
++    "EventName": "riscv_cycles",
++    "BriefDescription": "CPU cycles RISC-V generic counter"
++  },
++  {
++    "PublicDescription": "CPU Time",
++      "EventCode": "0x01",
++      "EventName": "riscv_time",
++      "BriefDescription": "CPU time RISC-V generic counter"
++  },
++  {
++    "PublicDescription": "CPU Instructions",
++      "EventCode": "0x02",
++      "EventName": "riscv_instret",
++      "BriefDescription": "CPU retired instructions RISC-V generic counter"
++  }
++]
+\ No newline at end of file
 -- 
-2.36.1
+2.35.1
 
