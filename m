@@ -2,92 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6874BCCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29E9CCCA49F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442682AbiFHAzq (ORCPT
+        id S1442532AbiFHAzZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:55:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53860 "EHLO
+        Tue, 7 Jun 2022 20:55:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382083AbiFGVqY (ORCPT
+        with ESMTP id S1575962AbiFGX15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:46:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B88235B11;
-        Tue,  7 Jun 2022 12:07:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B5A0B8220B;
-        Tue,  7 Jun 2022 19:07:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B84F1C385A2;
-        Tue,  7 Jun 2022 19:07:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628866;
-        bh=4C1h2APh3CwOXJj7ov7hB5hxZUv1g2wu/xSwijirYak=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z9k6rp69SAxoOwZfc0HyW4I89gxWfFQmo5PQ9/5UcXGgiwBoFEt8Zj+aTLR5CkfWU
-         vHEGto887FzEZRfsJRTOsIcrKnFQI2EBAtBzE3g4fhs+XygLE/WxszcJ9f3MP3BYd2
-         /QxHXEVD7UCl5tG50pKNxq/t5mRFKIjnC1Ok7fVs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 484/879] drm/msm/a6xx: Fix refcount leak in a6xx_gpu_init
-Date:   Tue,  7 Jun 2022 19:00:02 +0200
-Message-Id: <20220607165016.922249286@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 19:27:57 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBA8C16FEEF
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:40:44 -0700 (PDT)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id E33C52C0272;
+        Tue,  7 Jun 2022 21:40:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1654638039;
+        bh=96oErJ8zD+XXujfdEyvt2Gd4Gbhvl7gCYR2TkJ8IyDg=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=RQf8h6Tc/GrJ2q9Iv3ba0UlUfoifRG8FJICikRGM6N6yUhDWadFssyJbYHZ8HDG5m
+         q+McxnKj7QAkE7/gp0Pcy+/LMO2Xszj7mTf3SbNQMqfj4jA0CwACIUbJygyIpy5+n3
+         Vkc3IU01UGWOkc8nPrgTD9VdfUThjzmtbWFzOHTrWNXAXWuPc9oJv2wKJ5O8sURxif
+         4gStptPLBO5JhRhbx+rEAFW+I3F4duC3fkYM1RXzv1RkFzW7EHMkroBONatU/CM9ME
+         pTGNUr1CvRcEXOMI8U8CGhRcGXje9edelLDK/YViDsyiG1wYjtfW9FYwHTNbHc9PlQ
+         89+9/qmZJC/hA==
+Received: from svr-chch-ex1.atlnz.lc (Not Verified[2001:df5:b000:bc8::77]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B629fc5d70001>; Wed, 08 Jun 2022 09:40:39 +1200
+Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) by
+ svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.36; Wed, 8 Jun 2022 09:40:39 +1200
+Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
+ svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
+ 15.00.1497.036; Wed, 8 Jun 2022 09:40:39 +1200
+From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
+        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
+        "kostap@marvell.com" <kostap@marvell.com>,
+        "robert.marko@sartura.hr" <robert.marko@sartura.hr>,
+        "vadym.kochan@plvision.eu" <vadym.kochan@plvision.eu>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v8 2/3] arm64: dts: marvell: Add Armada 98DX2530 SoC and
+ RD-AC5X board
+Thread-Topic: [PATCH v8 2/3] arm64: dts: marvell: Add Armada 98DX2530 SoC and
+ RD-AC5X board
+Thread-Index: AQHYaLPUD+oibO1AYUujXl5i0rei+a1DLsAAgAAFAYCAAKAigA==
+Date:   Tue, 7 Jun 2022 21:40:39 +0000
+Message-ID: <1e968eb4-e0c3-1fe0-c7d6-3a967654cbf9@alliedtelesis.co.nz>
+References: <20220515233047.531979-3-chris.packham@alliedtelesis.co.nz>
+ <20220607114936.GA18404@plvision.eu> <Yp8/g0m0xWiRmOq9@lunn.ch>
+In-Reply-To: <Yp8/g0m0xWiRmOq9@lunn.ch>
+Accept-Language: en-NZ, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.32.1.11]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <04066A73B1004044921AF650C55085E1@atlnz.lc>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=G+Ni7Os5 c=1 sm=1 tr=0 a=Xf/6aR1Nyvzi7BryhOrcLQ==:117 a=xqWC_Br6kY4A:10 a=oKJsc7D3gJEA:10 a=IkcTkHD0fZMA:10 a=JPEYwPQDsx4A:10 a=nKnlM8vPjNwglxpXPE8A:9 a=QEXdDO2ut3YA:10
+X-SEG-SpamProfiler-Score: 0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
-
-[ Upstream commit c56de483093d7ad0782327f95dda7da97bc4c315 ]
-
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-
-a6xx_gmu_init() passes the node to of_find_device_by_node()
-and of_dma_configure(), of_find_device_by_node() will takes its
-reference, of_dma_configure() doesn't need the node after usage.
-
-Add missing of_node_put() to avoid refcount leak.
-
-Fixes: 4b565ca5a2cb ("drm/msm: Add A6XX device support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
-Link: https://lore.kernel.org/r/20220512121955.56937-1-linmq006@gmail.com
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index ccc4fcf7a630..a8f6d73197b1 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -1919,6 +1919,7 @@ struct msm_gpu *a6xx_gpu_init(struct drm_device *dev)
- 	BUG_ON(!node);
- 
- 	ret = a6xx_gmu_init(a6xx_gpu, node);
-+	of_node_put(node);
- 	if (ret) {
- 		a6xx_destroy(&(a6xx_gpu->base.base));
- 		return ERR_PTR(ret);
--- 
-2.35.1
-
-
-
+DQpPbiA4LzA2LzIyIDAwOjA3LCBBbmRyZXcgTHVubiB3cm90ZToNCj4gT24gVHVlLCBKdW4gMDcs
+IDIwMjIgYXQgMDI6NDk6MzZQTSArMDMwMCwgVmFkeW0gS29jaGFuIHdyb3RlOg0KPj4gSGkgQWxs
+LA0KPj4NCj4+PiBhcmNoL2FybTY0L2Jvb3QvZHRzL21hcnZlbGwvTWFrZWZpbGUgICAgICAgICAg
+fCAgIDEgKw0KPj4+IC4uLi9ib290L2R0cy9tYXJ2ZWxsL2FybWFkYS05OGR4MjV4eC5kdHNpICAg
+ICB8IDI5NyArKysrKysrKysrKysrKysrKysNCj4+PiAuLi4vYm9vdC9kdHMvbWFydmVsbC9hcm1h
+ZGEtOThkeDM1eHgtcmQuZHRzICAgfCAxMDEgKysrKysrDQo+Pj4gLi4uL2Jvb3QvZHRzL21hcnZl
+bGwvYXJtYWRhLTk4ZHgzNXh4LmR0c2kgICAgIHwgIDEzICsNCj4+IFRoZXJlIGlzIGEgcHJvcG9z
+YWwgZnJvbSB0aGUgTWFydmVsbCB0byByZXBsYWNlICJhcm1hZGEtIiBwcmVmaXggdG8gImFjNS0i
+IGluIERUUyBuYW1pbmcgYXMgdGhlcmUNCj4+IGlzIG5vIG11Y2ggY29tbW9uIHdpdGggQXJtYWRh
+IFNvQydzLg0KPiBPLksuIFdlIGNhbiBkbyB0aGlzLiBCdXQgaSBob3BlIGl0IGlzIG5vdCBNYXJ2
+ZWxsIGJlaW5nIGxhenkuDQo+DQo+IEkgY2FuIGFsc28gc2VlIGFuIGFkdmFudGFnZSBvZiB1c2lu
+ZyBhcm1hZGEtLCBzaW5jZSBpdCBtYWtlcyBpdCBjbGVhcg0KPiB3ZSBhcmUgdGFsa2luZyBhYm91
+dCBtYWlubGluZSBkZXZpY2UgdHJlZSBmaWxlcywgbm90IE1hcnZlbGwgdmVuZG9yDQo+IGRldmlj
+ZSB0cmVlIGZpbGVzLiBJdCBpcyBub3QgZ2l2ZW4gdGhleSB3aWxsIGJlIGNvbXBhdGlibGUuDQoN
+CldlJ2xsIHN0aWxsIGhhdmUgdGhlIDk4ZHgyNXh4IHN1ZmZpeGVzIHNvIGl0IHNob3VsZCBzdGls
+bCBiZSBkaXN0aW5jdCANCmZyb20gdGhlIE1hcnZlbGwgU0RLIG9uZXMuIEFsc28gaG9wZWZ1bGx5
+IG9uY2UgdGhpcyBsYW5kcyB1cHN0cmVhbSBpdCANCndpbGwgZW5jb3VyYWdlIE1hcnZlbGwgdG8g
+dXBkYXRlIHRoZWlyIFNESyB0byBhIG5ld2VyIGtlcm5lbC4NCg==
