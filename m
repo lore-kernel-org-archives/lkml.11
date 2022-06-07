@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2270BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:27:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D081C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:28:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379128AbiFGV1q (ORCPT
+        id S1379363AbiFGV15 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
+        Tue, 7 Jun 2022 17:27:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377710AbiFGUeA (ORCPT
+        with ESMTP id S1377754AbiFGUeD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB2AE1E7175;
-        Tue,  7 Jun 2022 11:35:46 -0700 (PDT)
+        Tue, 7 Jun 2022 16:34:03 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6281E7373;
+        Tue,  7 Jun 2022 11:35:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D286C612EC;
-        Tue,  7 Jun 2022 18:35:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DACA4C385A2;
-        Tue,  7 Jun 2022 18:35:44 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7A5BBCE2439;
+        Tue,  7 Jun 2022 18:35:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B19BC385A2;
+        Tue,  7 Jun 2022 18:35:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626945;
-        bh=WgDIF/Nn5X3L6731oKP1wO+QcgYZIyvshq7IQHL/d4w=;
+        s=korg; t=1654626950;
+        bh=ahpB3z3e2xSNZkK8vXSnKkUONv9J/XSv9U0JcNldZX8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tQlAf+OZbTS6LzPK3bebo46HqbIocj/6hHv9190yYOZatDkkWIK44yIDg/rwbgb7K
-         4A++pgOD1GaClEFOI4SAnh0hYWsr2AbQe13OZBId9QNDsWzLUUktSuFNzZ/TcoVVIH
-         esdS9lpZDF7+7H5vax00dvcrqf83ekSZK9ZeoVlQ=
+        b=tCiN84RwxEXHVMfzaQTKmLM2ke+tzfTgOGTwOA5AXCLeLuuNQO6PCxVo1gtLU7yTw
+         86xagI03EYiQu4fDfAA2AetcoQKLdoPBZyJYCzqI8rOH7NUZfvtMz/QqH+rNAxOgyx
+         b+v30WM2zPXn4BG007YyGgn+/JRA/ATjkCdD8ASg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robert.marko@sartura.hr>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        stable@vger.kernel.org,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 520/772] arm64: dts: marvell: espressobin-ultra: enable front USB3 port
-Date:   Tue,  7 Jun 2022 19:01:52 +0200
-Message-Id: <20220607165004.300755113@linuxfoundation.org>
+Subject: [PATCH 5.17 522/772] ASoC: atmel-classd: Remove endianness flag on class d component
+Date:   Tue,  7 Jun 2022 19:01:54 +0200
+Message-Id: <20220607165004.359092617@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,34 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robert.marko@sartura.hr>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit eacec7ebc16cf5d2f6a6c7cf5d57156da2c3e98f ]
+[ Upstream commit 0104d52a6a69b06b0e8167f7c1247e8c76aca070 ]
 
-Espressobin Ultra has a front panel USB3.0 Type-A port which works
-just fine so enable it.
-I dont see a reason why it was disabled in the first place anyway.
+The endianness flag should have been removed when the driver was
+ported across from having both a CODEC and CPU side component, to
+just having a CPU component and using the dummy for the CODEC. The
+endianness flag is used to indicate that the device is completely
+ambivalent to the endianness of the data, typically due to the
+endianness being lost over the hardware link (ie. the link defines
+bit ordering). It's usage didn't have any effect when the driver
+had both a CPU and CODEC component, since the union of those equals
+the CPU side settings, but now causes the driver to falsely report
+it supports big endian. Correct this by removing the flag.
 
-Fixes: 3404fe15a60f ("arm64: dts: marvell: add DT for ESPRESSObin-Ultra")
-Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Fixes: 1dfdbe73ccf9 ("ASoC: atmel-classd: remove codec component")
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220504170905.332415-4-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts | 1 -
+ sound/soc/atmel/atmel-classd.c | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-index 610ff6f385c7..119db6b541b7 100644
---- a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-@@ -108,7 +108,6 @@
- 
- &usb3 {
- 	usb-phy = <&usb3_phy>;
--	status = "disabled";
+diff --git a/sound/soc/atmel/atmel-classd.c b/sound/soc/atmel/atmel-classd.c
+index a9f9f449c48c..74b7b2611aa7 100644
+--- a/sound/soc/atmel/atmel-classd.c
++++ b/sound/soc/atmel/atmel-classd.c
+@@ -458,7 +458,6 @@ static const struct snd_soc_component_driver atmel_classd_cpu_dai_component = {
+ 	.num_controls		= ARRAY_SIZE(atmel_classd_snd_controls),
+ 	.idle_bias_on		= 1,
+ 	.use_pmdown_time	= 1,
+-	.endianness		= 1,
  };
  
- &mdio {
+ /* ASoC sound card */
 -- 
 2.35.1
 
