@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 511E4CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CA80CCA485
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357186AbiFHBYw (ORCPT
+        id S1378736AbiFHBZV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:24:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49792 "EHLO
+        Tue, 7 Jun 2022 21:25:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383654AbiFGWZO (ORCPT
+        with ESMTP id S1382883AbiFGVwC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:25:14 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01FDE26EEBC;
-        Tue,  7 Jun 2022 12:22:54 -0700 (PDT)
+        Tue, 7 Jun 2022 17:52:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E95C23F234;
+        Tue,  7 Jun 2022 12:09:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2F147CE2476;
-        Tue,  7 Jun 2022 19:22:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1079CC385A2;
-        Tue,  7 Jun 2022 19:22:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58017617DA;
+        Tue,  7 Jun 2022 19:09:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62AD8C385A2;
+        Tue,  7 Jun 2022 19:09:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629769;
-        bh=jAfyJdtY7AW8Hezy+hcbPYqE7q7fX2MgEkIpU715TEs=;
+        s=korg; t=1654628992;
+        bh=6+X3r+SmwZkR8Bjt3sCvukd/lbvONYbu3LJTaLIiXWY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S9qAgRuQfJ5DJKuGukxR1HGvx0WzGSoLBV7g9Yygg6NUoRDUg2Epgy8qLuesnuf0J
-         SR8pWwG0Bq2cXWr+2hxTyt6L6kYjgsHief3vDEdvSLZPYzK13TyDKJQs0IHnHR+fP+
-         ZBomMO+ayGG4wsXz7wua4/6E60YU0n1qzQTuQNKk=
+        b=rGgvXs7YFnGKyHolotee7YLspmwcWqp5s41EV7yHgSOZW2uTZPmQs20a5nj0W37Tf
+         bFOb7V2UUWOGUL3lT1tVzcQOIs+NiyF3gTz6iOpWwQAyMLGNGHr0X1X2kSXIuOFXTj
+         bgh3S/Y76JqJ8m5hSKaObjkY+0OjWtnJaua58OiM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.18 770/879] landlock: Add clang-format exceptions
-Date:   Tue,  7 Jun 2022 19:04:48 +0200
-Message-Id: <20220607165025.211939028@linuxfoundation.org>
+        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        David Rientjes <rientjes@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 529/879] dma-direct: dont over-decrypt memory
+Date:   Tue,  7 Jun 2022 19:00:47 +0200
+Message-Id: <20220607165018.230271846@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,83 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@digikod.net>
+From: Robin Murphy <robin.murphy@arm.com>
 
-commit 6cc2df8e3a3967e7c13a424f87f6efb1d4a62d80 upstream.
+[ Upstream commit 4a37f3dd9a83186cb88d44808ab35b78375082c9 ]
 
-In preparation to a following commit, add clang-format on and
-clang-format off stanzas around constant definitions.  This enables to
-keep aligned values, which is much more readable than packed
-definitions.
+The original x86 sev_alloc() only called set_memory_decrypted() on
+memory returned by alloc_pages_node(), so the page order calculation
+fell out of that logic. However, the common dma-direct code has several
+potential allocators, not all of which are guaranteed to round up the
+underlying allocation to a power-of-two size, so carrying over that
+calculation for the encryption/decryption size was a mistake. Fix it by
+rounding to a *number* of pages, rather than an order.
 
-Link: https://lore.kernel.org/r/20220506160513.523257-2-mic@digikod.net
-Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Until recently there was an even worse interaction with DMA_DIRECT_REMAP
+where we could have ended up decrypting part of the next adjacent
+vmalloc area, only averted by no architecture actually supporting both
+configs at once. Don't ask how I found that one out...
+
+Fixes: c10f07aa27da ("dma/direct: Handle force decryption for DMA coherent buffers in common code")
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Acked-by: David Rientjes <rientjes@google.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/landlock.h |    4 ++++
- security/landlock/fs.c        |    2 ++
- security/landlock/limits.h    |    4 ++++
- 3 files changed, 10 insertions(+)
+ kernel/dma/direct.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/include/uapi/linux/landlock.h
-+++ b/include/uapi/linux/landlock.h
-@@ -33,7 +33,9 @@ struct landlock_ruleset_attr {
-  * - %LANDLOCK_CREATE_RULESET_VERSION: Get the highest supported Landlock ABI
-  *   version.
-  */
-+/* clang-format off */
- #define LANDLOCK_CREATE_RULESET_VERSION			(1U << 0)
-+/* clang-format on */
- 
- /**
-  * enum landlock_rule_type - Landlock rule type
-@@ -120,6 +122,7 @@ struct landlock_path_beneath_attr {
-  *   :manpage:`access(2)`.
-  *   Future Landlock evolutions will enable to restrict them.
-  */
-+/* clang-format off */
- #define LANDLOCK_ACCESS_FS_EXECUTE			(1ULL << 0)
- #define LANDLOCK_ACCESS_FS_WRITE_FILE			(1ULL << 1)
- #define LANDLOCK_ACCESS_FS_READ_FILE			(1ULL << 2)
-@@ -133,5 +136,6 @@ struct landlock_path_beneath_attr {
- #define LANDLOCK_ACCESS_FS_MAKE_FIFO			(1ULL << 10)
- #define LANDLOCK_ACCESS_FS_MAKE_BLOCK			(1ULL << 11)
- #define LANDLOCK_ACCESS_FS_MAKE_SYM			(1ULL << 12)
-+/* clang-format on */
- 
- #endif /* _UAPI_LINUX_LANDLOCK_H */
---- a/security/landlock/fs.c
-+++ b/security/landlock/fs.c
-@@ -141,10 +141,12 @@ retry:
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 3e7f4aab740e..e978f36e6be8 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -79,7 +79,7 @@ static int dma_set_decrypted(struct device *dev, void *vaddr, size_t size)
+ {
+ 	if (!force_dma_unencrypted(dev))
+ 		return 0;
+-	return set_memory_decrypted((unsigned long)vaddr, 1 << get_order(size));
++	return set_memory_decrypted((unsigned long)vaddr, PFN_UP(size));
  }
  
- /* All access rights that can be tied to files. */
-+/* clang-format off */
- #define ACCESS_FILE ( \
- 	LANDLOCK_ACCESS_FS_EXECUTE | \
- 	LANDLOCK_ACCESS_FS_WRITE_FILE | \
- 	LANDLOCK_ACCESS_FS_READ_FILE)
-+/* clang-format on */
+ static int dma_set_encrypted(struct device *dev, void *vaddr, size_t size)
+@@ -88,7 +88,7 @@ static int dma_set_encrypted(struct device *dev, void *vaddr, size_t size)
  
- /*
-  * @path: Should have been checked by get_path_from_fd().
---- a/security/landlock/limits.h
-+++ b/security/landlock/limits.h
-@@ -12,10 +12,14 @@
- #include <linux/limits.h>
- #include <uapi/linux/landlock.h>
- 
-+/* clang-format off */
-+
- #define LANDLOCK_MAX_NUM_LAYERS		64
- #define LANDLOCK_MAX_NUM_RULES		U32_MAX
- 
- #define LANDLOCK_LAST_ACCESS_FS		LANDLOCK_ACCESS_FS_MAKE_SYM
- #define LANDLOCK_MASK_ACCESS_FS		((LANDLOCK_LAST_ACCESS_FS << 1) - 1)
- 
-+/* clang-format on */
-+
- #endif /* _SECURITY_LANDLOCK_LIMITS_H */
+ 	if (!force_dma_unencrypted(dev))
+ 		return 0;
+-	ret = set_memory_encrypted((unsigned long)vaddr, 1 << get_order(size));
++	ret = set_memory_encrypted((unsigned long)vaddr, PFN_UP(size));
+ 	if (ret)
+ 		pr_warn_ratelimited("leaking DMA memory that can't be re-encrypted\n");
+ 	return ret;
+-- 
+2.35.1
+
 
 
