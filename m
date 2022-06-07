@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DD87CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FBCCCCA482
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381151AbiFGVbk (ORCPT
+        id S1381243AbiFGVbu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:31:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
+        Tue, 7 Jun 2022 17:31:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377980AbiFGUem (ORCPT
+        with ESMTP id S1356411AbiFGUe6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74A431E7BFC;
-        Tue,  7 Jun 2022 11:37:00 -0700 (PDT)
+        Tue, 7 Jun 2022 16:34:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DADC91EB431;
+        Tue,  7 Jun 2022 11:37:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD3186156D;
-        Tue,  7 Jun 2022 18:36:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D28E6C385A2;
-        Tue,  7 Jun 2022 18:36:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C59D66157B;
+        Tue,  7 Jun 2022 18:37:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC498C385A2;
+        Tue,  7 Jun 2022 18:37:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627019;
-        bh=3OcrHuuslHJW746sRgbFrkTfkh1EDYsMyRzBnULldjg=;
+        s=korg; t=1654627066;
+        bh=7GVSzPHphQc2+Ish2I4eyvamIhqbHAOrOfl/h31fIe0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NF/sHwH5/FQPyq1uuzdr2NsdNAnyQgbLJodfOh8jXp8s4Sm1P3J2fbQ9NCFhSMuOR
-         ZzLzOZot9n7n5+iIf5HH3063dbOS/B6W2YJakaJk5ABDnSgNRmECWrUKRpZx4mz5o7
-         J+/mXHRdN4dIHNYWKu/xXwJj92C8CT4vYoktuenk=
+        b=NSScwCHZyDQ6sBQsGROV1A7fYwMrQR9ARtuUj/cCCTygXGkUslAM/BYecMyXvOfO0
+         Qtf2pWNqwp7uqzhYvFPmM18mVsjugAykCvOlWBXSESHwosa1cPEweCFspMDGGGonrp
+         xdGfWe/AY7HDICbGrII6p2X3gHsNCJYq66o9p6RE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 587/772] video: fbdev: clcdfb: Fix refcount leak in clcdfb_of_vram_setup
-Date:   Tue,  7 Jun 2022 19:02:59 +0200
-Message-Id: <20220607165006.244342012@linuxfoundation.org>
+        stable@vger.kernel.org, Wenqing Liu <wenqingliu0120@gmail.com>,
+        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 564/772] f2fs: fix to do sanity check on inline_dots inode
+Date:   Tue,  7 Jun 2022 19:02:36 +0200
+Message-Id: <20220607165005.575873327@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,43 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit b23789a59fa6f00e98a319291819f91fbba0deb8 ]
+[ Upstream commit 12662d19467b391b5b509ac5e9ab4f583c6dde16 ]
 
-of_parse_phandle() returns a node pointer with refcount incremented, we should
-use of_node_put() on it when not need anymore.  Add missing of_node_put() to
-avoid refcount leak.
+As Wenqing reported in bugzilla:
 
-Fixes: d10715be03bd ("video: ARM CLCD: Add DT support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+https://bugzilla.kernel.org/show_bug.cgi?id=215765
+
+It will cause a kernel panic with steps:
+- mkdir mnt
+- mount tmp40.img mnt
+- ls mnt
+
+folio_mark_dirty+0x33/0x50
+f2fs_add_regular_entry+0x541/0xad0 [f2fs]
+f2fs_add_dentry+0x6c/0xb0 [f2fs]
+f2fs_do_add_link+0x182/0x230 [f2fs]
+__recover_dot_dentries+0x2d6/0x470 [f2fs]
+f2fs_lookup+0x5af/0x6a0 [f2fs]
+__lookup_slow+0xac/0x200
+lookup_slow+0x45/0x70
+walk_component+0x16c/0x250
+path_lookupat+0x8b/0x1f0
+filename_lookup+0xef/0x250
+user_path_at_empty+0x46/0x70
+vfs_statx+0x98/0x190
+__do_sys_newlstat+0x41/0x90
+__x64_sys_newlstat+0x1a/0x30
+do_syscall_64+0x37/0xb0
+entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+The root cause is for special file: e.g. character, block, fifo or
+socket file, f2fs doesn't assign address space operations pointer array
+for mapping->a_ops field, so, in a fuzzed image, if inline_dots flag was
+tagged in special file, during lookup(), when f2fs runs into
+__recover_dot_dentries(), it will cause NULL pointer access once
+f2fs_add_regular_entry() calls a_ops->set_dirty_page().
+
+Fixes: 510022a85839 ("f2fs: add F2FS_INLINE_DOTS to recover missing dot dentries")
+Reported-by: Wenqing Liu <wenqingliu0120@gmail.com>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/amba-clcd.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ fs/f2fs/namei.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/video/fbdev/amba-clcd.c b/drivers/video/fbdev/amba-clcd.c
-index 9ec969e136bf..8080116aea84 100644
---- a/drivers/video/fbdev/amba-clcd.c
-+++ b/drivers/video/fbdev/amba-clcd.c
-@@ -758,12 +758,15 @@ static int clcdfb_of_vram_setup(struct clcd_fb *fb)
- 		return -ENODEV;
+diff --git a/fs/f2fs/namei.c b/fs/f2fs/namei.c
+index 5f213f05556d..53273aec2627 100644
+--- a/fs/f2fs/namei.c
++++ b/fs/f2fs/namei.c
+@@ -460,6 +460,13 @@ static int __recover_dot_dentries(struct inode *dir, nid_t pino)
+ 		return 0;
+ 	}
  
- 	fb->fb.screen_base = of_iomap(memory, 0);
--	if (!fb->fb.screen_base)
-+	if (!fb->fb.screen_base) {
-+		of_node_put(memory);
- 		return -ENOMEM;
++	if (!S_ISDIR(dir->i_mode)) {
++		f2fs_err(sbi, "inconsistent inode status, skip recovering inline_dots inode (ino:%lu, i_mode:%u, pino:%u)",
++			  dir->i_ino, dir->i_mode, pino);
++		set_sbi_flag(sbi, SBI_NEED_FSCK);
++		return -ENOTDIR;
 +	}
- 
- 	fb->fb.fix.smem_start = of_translate_address(memory,
- 			of_get_address(memory, 0, &size, NULL));
- 	fb->fb.fix.smem_len = size;
-+	of_node_put(memory);
- 
- 	return 0;
- }
++
+ 	err = f2fs_dquot_initialize(dir);
+ 	if (err)
+ 		return err;
 -- 
 2.35.1
 
