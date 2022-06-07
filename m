@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFADBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:19:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA674C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345814AbiFGRTy (ORCPT
+        id S1345830AbiFGRUB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:19:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39956 "EHLO
+        Tue, 7 Jun 2022 13:20:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345616AbiFGRTA (ORCPT
+        with ESMTP id S1345674AbiFGRTC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:19:00 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E53911053C4
+        Tue, 7 Jun 2022 13:19:02 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137DD1053E6
         for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:18:58 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id me5so36027938ejb.2
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:18:58 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id b8so7198009edj.11
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:18:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=aW5lcXdvQf4J4PO1iOWHLSignywIfaQQ2Xa3bmmGUpQ=;
-        b=wDQRJ3PG91CJhs5zm7ZZd7a/QdHKY9mRqHesbxVn9UT0vYNusmbsF0akWKcQlGJTOJ
-         VRKSVpdkBxUEm6ZIieOwi/l3VV24H6PMwwG8+NIHP/Qg2qPRSAC656NRD2fCjLznbzES
-         vc8qG+OCYs2RLXWUqg0ljEThJdm+hAMimeGPZiWdvyqwJ/acJhdZI0aA/+ZlEyNBwxR9
-         5HELynmcJ4FkinHO5c8UEe6F3/O62nRfqWLY5TQYiJl/O4to3Ezh4m+TrYRktNoVXfIV
-         1UXxL5YkeGvBLSfZxXFpOZ5q074T7bdhhV/pM1NDRM4UHJyOTDFcsFzz4B7p5uIHqyHK
-         M8ww==
+        bh=4SXrpcOsQb5w+nGuHXL7N+H56xsmwCAqK9N0xcoqWRY=;
+        b=GNpwt6brx6JPpFqD+gI58jZWL2PiPanNQqDmmN+/UMjAMGaLSZwXAkzLvuJ179XxSK
+         xR8vjoB0IapeQ0BOksvIrAvUA5/wmGNmfBAq6b9V1N1ENVNz3EmFaM/kKonbMEVQeCs8
+         YgLo6NL4FBX1MPB/aini3m+wisQIxTFihfKSdUR4lszsLBkXKfR1dcvra/W40UBcH74I
+         9412/pOzwm93yeLLbG0q6lwfxfyL6j70eTZsoK7R8N/iPfEE/ejtNZLzoKyYu1EUehe1
+         HdlKtiFieUd7k2nnXSYSKG2YyOPIq2ji5dvhth6Wc6P8Qc1joedyqWQ5SsKS/m20yG4U
+         R7yA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=aW5lcXdvQf4J4PO1iOWHLSignywIfaQQ2Xa3bmmGUpQ=;
-        b=QELKD/aKW9x6tBjY/B3beSaoG6YSfk3PckBAAJkaLdTvTb59TM3/9lO21T6Zo9d+6B
-         1D/PtJUhHFdeRUf+zmwbx1NTodwqsPJYQeGc2LK8Y9B/YiWKRezqtjTuMrJDta0NJb9B
-         ZyGdaghPtGyO1vN2pbC87GRQz31yQJxmTd0vaoy/eE1lVjiQDboJI/BWtChAE9sgvLf1
-         u/jOKNH+a09QldiMydhBWoaRvUoJDEWg14Q7tUWT34Qx4Y77VbQSpmNqY616DcCcjVIs
-         hQbfc635rPvq7ezC3/76X6Hf1tbTXmXjUQq6CCi49YGlTcF5NZ/K0A5tNHsZ7UdAfhtP
-         GLzA==
-X-Gm-Message-State: AOAM530JdRsWc5wFBkZB+5rMWakabYn7hPBdZMQ2RoPmVH26FEyl/inD
-        Y08qlY2a5f8ac8Qb1mLf7qqyKw==
-X-Google-Smtp-Source: ABdhPJw5smPtyirsWfiQvZQy4yAwI57DZKC9HbgtyALcAfSOgpc0PkKc2PJJ2d92fnYEGZd8FXWZMw==
-X-Received: by 2002:a17:907:7204:b0:6ff:2142:36e0 with SMTP id dr4-20020a170907720400b006ff214236e0mr27102633ejc.739.1654622337372;
-        Tue, 07 Jun 2022 10:18:57 -0700 (PDT)
+        bh=4SXrpcOsQb5w+nGuHXL7N+H56xsmwCAqK9N0xcoqWRY=;
+        b=09VqCZElbHqYNXXUM3Pkzx8UJRzMDX4ABl+a6KmiaDxWF5w1hJTrHuqJFGvDC/l48c
+         pVGJLuVRJP1jlO2+DP/+nHJVK8PZPl47ehaXW8n+3aaYIBkOBzYPW1yI2tviDhy3O8yy
+         3CxUqab2cgtEu1aJ49V0fb7nMbwFpXLlsQq3LAzvsgCrcU0ywDjLdLHav55z5PD6w2Xr
+         oBu11EB82dtkpi8KOLfSuHv38evexNJeHIEHnsrnVvBPP8bYJrAX62G+rIJLsgU24kMA
+         J9TotGHxB8PNM3QqV5FY+jL7xVY2C19KP0tfRB6xueLORYDl3ptd8m57RuFUada40bvj
+         fEnA==
+X-Gm-Message-State: AOAM532D2rUz7kswn1Ffyor2qjiEhJ3jCYPuwUpcBBcHv/rQJ8+LOL9w
+        HtijHU6Pw4ydKjwPi/gsBBgZag==
+X-Google-Smtp-Source: ABdhPJwKJ+K3x5fnupdryfxy4aVnaPvMf4Qdroe4wjskwsjiQWwx4atRK7tG3ciGOjipRXupJVEexQ==
+X-Received: by 2002:a05:6402:11ca:b0:430:8a77:59 with SMTP id j10-20020a05640211ca00b004308a770059mr21186168edw.376.1654622336390;
+        Tue, 07 Jun 2022 10:18:56 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id i7-20020a170906444700b0070e238ff66fsm5876540ejp.96.2022.06.07.10.18.56
+        by smtp.gmail.com with ESMTPSA id i7-20020a170906444700b0070e238ff66fsm5876540ejp.96.2022.06.07.10.18.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 07 Jun 2022 10:18:56 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
@@ -59,9 +59,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 06/14] ARM: dts: qcom: sdx55: add dedicated IMEM and syscon compatibles
-Date:   Tue,  7 Jun 2022 19:18:40 +0200
-Message-Id: <20220607171848.535128-6-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 05/14] ARM: dts: qcom: msm8974: add dedicated IMEM compatible
+Date:   Tue,  7 Jun 2022 19:18:39 +0200
+Message-Id: <20220607171848.535128-5-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220607171848.535128-1-krzysztof.kozlowski@linaro.org>
 References: <20220607171848.535128-1-krzysztof.kozlowski@linaro.org>
@@ -71,28 +71,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add proper compatibles to the IMEM device node:
-1. syscon to allow accessing memory from other devices,
-2. dedicated compatible as required for syscon and simple-mfd nodes.
+syscon compatible must be preceded with a specific compatible, to
+accurately describe the device.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm/boot/dts/qcom-sdx55.dtsi | 2 +-
+ arch/arm/boot/dts/qcom-msm8974.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/qcom-sdx55.dtsi b/arch/arm/boot/dts/qcom-sdx55.dtsi
-index 710c7f772d42..5a106708a240 100644
---- a/arch/arm/boot/dts/qcom-sdx55.dtsi
-+++ b/arch/arm/boot/dts/qcom-sdx55.dtsi
-@@ -562,7 +562,7 @@ tlmm: pinctrl@f100000 {
+diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
+index 09b181bb5365..5e6b2ae72e62 100644
+--- a/arch/arm/boot/dts/qcom-msm8974.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
+@@ -1651,7 +1651,7 @@ smd-edge {
  		};
  
- 		sram@1468f000 {
--			compatible = "simple-mfd";
-+			compatible = "qcom,sdx55-imem", "syscon", "simple-mfd";
- 			reg = <0x1468f000 0x1000>;
+ 		imem: sram@fe805000 {
+-			compatible = "syscon", "simple-mfd";
++			compatible = "qcom,msm8974-imem", "syscon", "simple-mfd";
+ 			reg = <0xfe805000 0x1000>;
  
- 			#address-cells = <1>;
+ 			reboot-mode {
 -- 
 2.34.1
 
