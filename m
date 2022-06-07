@@ -2,173 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EF2BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06483CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:03:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443524AbiFHBAf (ORCPT
+        id S1444314AbiFHBBk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:00:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52924 "EHLO
+        Tue, 7 Jun 2022 21:01:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1575789AbiFGX1r (ORCPT
+        with ESMTP id S1382567AbiFGWCm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:27:47 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C4D33EAB
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:40:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=x1/V+C9sI/TeUp1PDWZRs88Rbfjxw1JeJjRTekUqC/U=; b=ieiS9PtuJaMPPKIbvSaI4HoSk9
-        4AitW1/BHdonVgVihs/0NP4se3DZY1B/NTL7pgOU8kte1RdgxaURb5RW6cb2HzQc2eOTI7J8vkOe7
-        FE8DT9j4rsbm04PAzsdakyOPBf1WtCI6VjgsRetCjKF4HmE5212LaAXfzv5kYCJqkRryzuxQbrf7A
-        r3/tnoQMHbHJOPMQcsL/dZFeaG7oVUoRh+Sy6F0r+zINpFRsdd0P5BljryiRIePgJgPDuhP/Qcg12
-        EJ/3kETrqTs9r8oKENnhquAacD7t3Kz9gebGlp3eyg5ScrkRL5tfBa3oszk45ec4ELXPwn52QHQdm
-        EFJdU75A==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nygvh-00C134-2G; Tue, 07 Jun 2022 21:40:01 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id C8315302E95;
-        Tue,  7 Jun 2022 23:39:58 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 8CC71202B5DB0; Tue,  7 Jun 2022 23:39:58 +0200 (CEST)
-Date:   Tue, 7 Jun 2022 23:39:58 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Jing-Ting Wu <jing-ting.wu@mediatek.com>
-Cc:     Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>, tglx@linutronix.de,
-        wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, Jonathan.JMChen@mediatek.com,
-        "chris.redpath@arm.com" <chris.redpath@arm.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Vincent Donnefort <vdonnefort@gmail.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Christian Brauner <brauner@kernel.org>
-Subject: [PATCH] sched: Fix balance_push() vs __sched_setscheduler()
-Message-ID: <Yp/Frp7BMp9E5dSp@hirez.programming.kicks-ass.net>
-References: <4a0aa13c99ffd6aea6426f83314aa2a91bc8933f.camel@mediatek.com>
- <20220519134706.GH2578@worktop.programming.kicks-ass.net>
- <52eea711b8ce3151ff73bfb0289cc9da0e8c4a10.camel@mediatek.com>
- <ba7ddde1829ee9eedcd6673f923d731d60719dc5.camel@mediatek.com>
- <78f3347e01a5c46975b9029f93deea2b31bb8393.camel@mediatek.com>
- <Yp+3xFMrypvHcLua@hirez.programming.kicks-ass.net>
+        Tue, 7 Jun 2022 18:02:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A04C24F952;
+        Tue,  7 Jun 2022 12:14:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8902F6192A;
+        Tue,  7 Jun 2022 19:14:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94DB7C385A5;
+        Tue,  7 Jun 2022 19:14:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629283;
+        bh=Pm1sdPAeGW7S0pQyTrq8Rdh0/AYBc4BFWlu2G/4YV0M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=is3+rOrgR588nGUdgXX1fPSRLixvc9BCELoafz9XQMIJi79UvvifGiZC4Nb8BBtBt
+         2xa/avQmF42blcCOyVpi94Mq2Rbp/aq4YsABqxqmKxLCqGNAUijodLzkDMZex7Zcrd
+         nkJTb+GVtZF9Hg6yCQMsfSZ3PaztRfnT6+3+NIzE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jacky Li <jackyli@google.com>,
+        Peter Gonda <pgonda@google.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 594/879] crypto: ccp - Fix the INIT_EX data file open failure
+Date:   Tue,  7 Jun 2022 19:01:52 +0200
+Message-Id: <20220607165020.094510951@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yp+3xFMrypvHcLua@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 10:40:36PM +0200, Peter Zijlstra wrote:
-> On Fri, Jun 03, 2022 at 12:15:51AM +0800, Jing-Ting Wu wrote:
+From: Jacky Li <jackyli@google.com>
 
-> > The patch is helpful to the syndrome, passed stability test over 10
-> > days so far. (as-is: < 48 hours failed)
-> 
-> Excellent, let me go write a Changelog for it, or something.
+[ Upstream commit 05def5cacfa0bd5ba380116046747da07ff5bd78 ]
 
-How's this then?
+There are 2 common cases when INIT_EX data file might not be
+opened successfully and fail the sev initialization:
 
+1. In user namespaces, normal user tasks (e.g. VMM) can change their
+   current->fs->root to point to arbitrary directories. While
+   init_ex_path is provided as a module param related to root file
+   system. Solution: use the root directory of init_task to avoid
+   accessing the wrong file.
+
+2. Normal user tasks (e.g. VMM) don't have the privilege to access
+   the INIT_EX data file. Solution: open the file as root and
+   restore permissions immediately.
+
+Fixes: 3d725965f836 ("crypto: ccp - Add SEV_INIT_EX support")
+Signed-off-by: Jacky Li <jackyli@google.com>
+Reviewed-by: Peter Gonda <pgonda@google.com>
+Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-Subject: sched: Fix balance_push() vs __sched_setscheduler()
-From: Peter Zijlstra <peterz@infradead.org>
-Date: Tue Jun 7 22:41:55 CEST 2022
+ drivers/crypto/ccp/sev-dev.c | 30 ++++++++++++++++++++++++++++--
+ 1 file changed, 28 insertions(+), 2 deletions(-)
 
-The purpose of balance_push() is to act as a filter on task selection
-in the case of CPU hotplug, specifically when taking the CPU out.
-
-It does this by (ab)using the balance callback infrastructure, with
-the express purpose of keeping all the unlikely/odd cases in a single
-place.
-
-In order to serve it's purpose, the balance_push_callback needs to be
-(exclusively) on the callback list at all times (noting that the
-callback always places itself back on the list the moment it runs,
-also noting that when the CPU goes down, regular balancing concerns
-are moot, so ignoring them is fine).
-
-And here-in lies the problem, __sched_setscheduler()'s use of
-splice_balance_callbacks() takes the callbacks off the list across a
-lock-break, making it possible for, an interleaving, __schedule() to
-see an empty list and not get filtered.
-
-Reported-by: Jing-Ting Wu <jing-ting.wu@mediatek.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Tested-by: Jing-Ting Wu <jing-ting.wu@mediatek.com>
-Link: https://lkml.kernel.org/r/20220519134706.GH2578@worktop.programming.kicks-ass.net
----
- kernel/sched/core.c |   36 +++++++++++++++++++++++++++++++++---
- 1 file changed, 33 insertions(+), 3 deletions(-)
-
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -4798,25 +4798,55 @@ static void do_balance_callbacks(struct
+diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
+index 6ab93dfd478a..3aefb177715e 100644
+--- a/drivers/crypto/ccp/sev-dev.c
++++ b/drivers/crypto/ccp/sev-dev.c
+@@ -23,6 +23,7 @@
+ #include <linux/gfp.h>
+ #include <linux/cpufeature.h>
+ #include <linux/fs.h>
++#include <linux/fs_struct.h>
  
- static void balance_push(struct rq *rq);
+ #include <asm/smp.h>
  
-+/*
-+ * balance_push_callback is a right abuse of the callback interface and plays
-+ * by significantly different rules.
-+ *
-+ * Where the normal balance_callback's purpose is to be ran in the same context
-+ * that queued it (only later, when it's safe to drop rq->lock again),
-+ * balance_push_callback is specifically targeted at __schedule().
-+ *
-+ * This abuse is tolerated because it places all the unlikely/odd cases behind
-+ * a single test, namely: rq->balance_callback == NULL.
-+ */
- struct callback_head balance_push_callback = {
- 	.next = NULL,
- 	.func = (void (*)(struct callback_head *))balance_push,
- };
- 
--static inline struct callback_head *splice_balance_callbacks(struct rq *rq)
-+static inline struct callback_head *
-+__splice_balance_callbacks(struct rq *rq, bool split)
- {
- 	struct callback_head *head = rq->balance_callback;
- 
-+	if (likely(!head))
-+		return NULL;
-+
- 	lockdep_assert_rq_held(rq);
--	if (head)
-+	/*
-+	 * Must not take balance_push_callback off the list when
-+	 * splace_balance_callbac() and balance_callbacks() are not
-+	 * in the same rq->lock section.
-+	 *
-+	 * In that case it would be possible for __schedule() to interleave
-+	 * and observe the list empty.
-+	 */
-+	if (split && head == &balance_push_callback)
-+		head = NULL;
-+	else
- 		rq->balance_callback = NULL;
- 
- 	return head;
+@@ -170,6 +171,31 @@ static void *sev_fw_alloc(unsigned long len)
+ 	return page_address(page);
  }
  
-+static inline struct callback_head *splice_balance_callbacks(struct rq *rq)
++static struct file *open_file_as_root(const char *filename, int flags, umode_t mode)
 +{
-+	return __splice_balance_callbacks(rq, true);
++	struct file *fp;
++	struct path root;
++	struct cred *cred;
++	const struct cred *old_cred;
++
++	task_lock(&init_task);
++	get_fs_root(init_task.fs, &root);
++	task_unlock(&init_task);
++
++	cred = prepare_creds();
++	if (!cred)
++		return ERR_PTR(-ENOMEM);
++	cred->fsuid = GLOBAL_ROOT_UID;
++	old_cred = override_creds(cred);
++
++	fp = file_open_root(&root, filename, flags, mode);
++	path_put(&root);
++
++	revert_creds(old_cred);
++
++	return fp;
 +}
 +
- static void __balance_callbacks(struct rq *rq)
+ static int sev_read_init_ex_file(void)
  {
--	do_balance_callbacks(rq, splice_balance_callbacks(rq));
-+	do_balance_callbacks(rq, __splice_balance_callbacks(rq, false));
- }
+ 	struct sev_device *sev = psp_master->sev_data;
+@@ -181,7 +207,7 @@ static int sev_read_init_ex_file(void)
+ 	if (!sev_init_ex_buffer)
+ 		return -EOPNOTSUPP;
  
- static inline void balance_callbacks(struct rq *rq, struct callback_head *head)
+-	fp = filp_open(init_ex_path, O_RDONLY, 0);
++	fp = open_file_as_root(init_ex_path, O_RDONLY, 0);
+ 	if (IS_ERR(fp)) {
+ 		int ret = PTR_ERR(fp);
+ 
+@@ -217,7 +243,7 @@ static void sev_write_init_ex_file(void)
+ 	if (!sev_init_ex_buffer)
+ 		return;
+ 
+-	fp = filp_open(init_ex_path, O_CREAT | O_WRONLY, 0600);
++	fp = open_file_as_root(init_ex_path, O_CREAT | O_WRONLY, 0600);
+ 	if (IS_ERR(fp)) {
+ 		dev_err(sev->dev,
+ 			"SEV: could not open file for write, error %ld\n",
+-- 
+2.35.1
+
+
+
