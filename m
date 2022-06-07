@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84059CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A92F2CCA485
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359305AbiFGUUk (ORCPT
+        id S1359345AbiFGUUr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:20:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53398 "EHLO
+        Tue, 7 Jun 2022 16:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356731AbiFGT2J (ORCPT
+        with ESMTP id S1356614AbiFGT2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:28:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2BE31A15D9;
-        Tue,  7 Jun 2022 11:10:37 -0700 (PDT)
+        Tue, 7 Jun 2022 15:28:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F2A11A076F;
+        Tue,  7 Jun 2022 11:10:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 700E8B81F38;
-        Tue,  7 Jun 2022 18:10:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D70EDC385A2;
-        Tue,  7 Jun 2022 18:10:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62FE66193C;
+        Tue,  7 Jun 2022 18:10:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 712FEC385A5;
+        Tue,  7 Jun 2022 18:10:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625436;
-        bh=EGBFhl10/WxhjBf9f/lkCn81vM2bqbXJhwMAVy/nUBA=;
+        s=korg; t=1654625410;
+        bh=oxt+lJI0phGYi6Fz9+E0Y7jLCz3lY+1YhBAX7BL34qk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X6Qa7//huze+ciata6jbZxuix4zQdcldJwtjpCVQEBfPJqA9b+fK2sFeVhtmQr565
-         8ImaP6jVqfFx73Bl5Xx8W4QPrsM0o1f24DUomjmyTRgEOh+M07Jp2YuAojAoglNR1u
-         N4CPSEDCLuZSY3/4fiSaHisISnTp5LqgRIhIoPrw=
+        b=bk9hfCX1n/hDRk8tm0FpI+mQaHCjk7+FfDR1vLTk0pVSV/0tYXbLPSgONPWFOcYmh
+         6kY40tcGFWIiSrd92mAZSbkSXknRs70ybC1UYX0kGV6jk+ZjGcw22X9NCqd5FhUIOF
+         hpiVmnT5Cw833oh5plcgpayd789HUJygOFTuBTVc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathias Nyman <mathias.nyman@linux.intel.com>,
-        Chris Chiu <chris.chiu@canonical.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Kishon Vijay Abraham I <kishon@ti.com>
-Subject: [PATCH 5.17 019/772] usb: core: hcd: Add support for deferring roothub registration
-Date:   Tue,  7 Jun 2022 18:53:31 +0200
-Message-Id: <20220607164949.575807255@linuxfoundation.org>
+        stable@vger.kernel.org, Kailang Yang <kailang@realtek.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 010/772] ALSA: hda/realtek - Add new type for ALC245
+Date:   Tue,  7 Jun 2022 18:53:22 +0200
+Message-Id: <20220607164949.302544823@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,122 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kishon Vijay Abraham I <kishon@ti.com>
+From: Kailang Yang <kailang@realtek.com>
 
-commit a44623d9279086c89f631201d993aa332f7c9e66 upstream.
+commit 60571929d06b028800f27b51a7c81de1144944cf upstream.
 
-It has been observed with certain PCIe USB cards (like Inateck connected
-to AM64 EVM or J7200 EVM) that as soon as the primary roothub is
-registered, port status change is handled even before xHC is running
-leading to cold plug USB devices not detected. For such cases, registering
-both the root hubs along with the second HCD is required. Add support for
-deferring roothub registration in usb_add_hcd(), so that both primary and
-secondary roothubs are registered along with the second HCD.
+Add new type for ALC245.
 
-This patch has been added and reverted earier as it triggered a race
-in usb device enumeration.
-That race is now fixed in 5.16-rc3, and in stable back to 5.4
-commit 6cca13de26ee ("usb: hub: Fix locking issues with address0_mutex")
-commit 6ae6dc22d2d1 ("usb: hub: Fix usb enumeration issue due to address0
-race")
-
-CC: stable@vger.kernel.org # 5.4+
-Suggested-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Tested-by: Chris Chiu <chris.chiu@canonical.com>
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
-Link: https://lore.kernel.org/r/20220510091630.16564-2-kishon@ti.com
+Signed-off-by: Kailang Yang <kailang@realtek.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/cef26a7cd3d146eb96a3994ce79e34d2@realtek.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/core/hcd.c  |   29 +++++++++++++++++++++++------
- include/linux/usb/hcd.h |    2 ++
- 2 files changed, 25 insertions(+), 6 deletions(-)
+ sound/pci/hda/patch_realtek.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/core/hcd.c
-+++ b/drivers/usb/core/hcd.c
-@@ -2816,6 +2816,7 @@ int usb_add_hcd(struct usb_hcd *hcd,
- {
- 	int retval;
- 	struct usb_device *rhdev;
-+	struct usb_hcd *shared_hcd;
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -3131,6 +3131,7 @@ enum {
+ 	ALC269_TYPE_ALC257,
+ 	ALC269_TYPE_ALC215,
+ 	ALC269_TYPE_ALC225,
++	ALC269_TYPE_ALC245,
+ 	ALC269_TYPE_ALC287,
+ 	ALC269_TYPE_ALC294,
+ 	ALC269_TYPE_ALC300,
+@@ -3168,6 +3169,7 @@ static int alc269_parse_auto_config(stru
+ 	case ALC269_TYPE_ALC257:
+ 	case ALC269_TYPE_ALC215:
+ 	case ALC269_TYPE_ALC225:
++	case ALC269_TYPE_ALC245:
+ 	case ALC269_TYPE_ALC287:
+ 	case ALC269_TYPE_ALC294:
+ 	case ALC269_TYPE_ALC300:
+@@ -3695,7 +3697,8 @@ static void alc225_init(struct hda_codec
+ 	hda_nid_t hp_pin = alc_get_hp_pin(spec);
+ 	bool hp1_pin_sense, hp2_pin_sense;
  
- 	if (!hcd->skip_phy_initialization && usb_hcd_is_primary_hcd(hcd)) {
- 		hcd->phy_roothub = usb_phy_roothub_alloc(hcd->self.sysdev);
-@@ -2976,13 +2977,26 @@ int usb_add_hcd(struct usb_hcd *hcd,
- 		goto err_hcd_driver_start;
- 	}
- 
-+	/* starting here, usbcore will pay attention to the shared HCD roothub */
-+	shared_hcd = hcd->shared_hcd;
-+	if (!usb_hcd_is_primary_hcd(hcd) && shared_hcd && HCD_DEFER_RH_REGISTER(shared_hcd)) {
-+		retval = register_root_hub(shared_hcd);
-+		if (retval != 0)
-+			goto err_register_root_hub;
-+
-+		if (shared_hcd->uses_new_polling && HCD_POLL_RH(shared_hcd))
-+			usb_hcd_poll_rh_status(shared_hcd);
-+	}
-+
- 	/* starting here, usbcore will pay attention to this root hub */
--	retval = register_root_hub(hcd);
--	if (retval != 0)
--		goto err_register_root_hub;
-+	if (!HCD_DEFER_RH_REGISTER(hcd)) {
-+		retval = register_root_hub(hcd);
-+		if (retval != 0)
-+			goto err_register_root_hub;
- 
--	if (hcd->uses_new_polling && HCD_POLL_RH(hcd))
--		usb_hcd_poll_rh_status(hcd);
-+		if (hcd->uses_new_polling && HCD_POLL_RH(hcd))
-+			usb_hcd_poll_rh_status(hcd);
-+	}
- 
- 	return retval;
- 
-@@ -3020,6 +3034,7 @@ EXPORT_SYMBOL_GPL(usb_add_hcd);
- void usb_remove_hcd(struct usb_hcd *hcd)
- {
- 	struct usb_device *rhdev = hcd->self.root_hub;
-+	bool rh_registered;
- 
- 	dev_info(hcd->self.controller, "remove, state %x\n", hcd->state);
- 
-@@ -3030,6 +3045,7 @@ void usb_remove_hcd(struct usb_hcd *hcd)
- 
- 	dev_dbg(hcd->self.controller, "roothub graceful disconnect\n");
- 	spin_lock_irq (&hcd_root_hub_lock);
-+	rh_registered = hcd->rh_registered;
- 	hcd->rh_registered = 0;
- 	spin_unlock_irq (&hcd_root_hub_lock);
- 
-@@ -3039,7 +3055,8 @@ void usb_remove_hcd(struct usb_hcd *hcd)
- 	cancel_work_sync(&hcd->died_work);
- 
- 	mutex_lock(&usb_bus_idr_lock);
--	usb_disconnect(&rhdev);		/* Sets rhdev to NULL */
-+	if (rh_registered)
-+		usb_disconnect(&rhdev);		/* Sets rhdev to NULL */
- 	mutex_unlock(&usb_bus_idr_lock);
- 
- 	/*
---- a/include/linux/usb/hcd.h
-+++ b/include/linux/usb/hcd.h
-@@ -124,6 +124,7 @@ struct usb_hcd {
- #define HCD_FLAG_RH_RUNNING		5	/* root hub is running? */
- #define HCD_FLAG_DEAD			6	/* controller has died? */
- #define HCD_FLAG_INTF_AUTHORIZED	7	/* authorize interfaces? */
-+#define HCD_FLAG_DEFER_RH_REGISTER	8	/* Defer roothub registration */
- 
- 	/* The flags can be tested using these macros; they are likely to
- 	 * be slightly faster than test_bit().
-@@ -134,6 +135,7 @@ struct usb_hcd {
- #define HCD_WAKEUP_PENDING(hcd)	((hcd)->flags & (1U << HCD_FLAG_WAKEUP_PENDING))
- #define HCD_RH_RUNNING(hcd)	((hcd)->flags & (1U << HCD_FLAG_RH_RUNNING))
- #define HCD_DEAD(hcd)		((hcd)->flags & (1U << HCD_FLAG_DEAD))
-+#define HCD_DEFER_RH_REGISTER(hcd) ((hcd)->flags & (1U << HCD_FLAG_DEFER_RH_REGISTER))
- 
- 	/*
- 	 * Specifies if interfaces are authorized by default
+-	if (spec->codec_variant != ALC269_TYPE_ALC287)
++	if (spec->codec_variant != ALC269_TYPE_ALC287 &&
++		spec->codec_variant != ALC269_TYPE_ALC245)
+ 		/* required only at boot or S3 and S4 resume time */
+ 		if (!spec->done_hp_init ||
+ 			is_s3_resume(codec) ||
+@@ -10093,7 +10096,10 @@ static int patch_alc269(struct hda_codec
+ 	case 0x10ec0245:
+ 	case 0x10ec0285:
+ 	case 0x10ec0289:
+-		spec->codec_variant = ALC269_TYPE_ALC215;
++		if (alc_get_coef0(codec) & 0x0010)
++			spec->codec_variant = ALC269_TYPE_ALC245;
++		else
++			spec->codec_variant = ALC269_TYPE_ALC215;
+ 		spec->shutup = alc225_shutup;
+ 		spec->init_hook = alc225_init;
+ 		spec->gen.mixer_nid = 0;
 
 
