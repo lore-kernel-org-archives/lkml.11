@@ -2,43 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1099EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:23:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01DF9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354703AbiFGTXG (ORCPT
+        id S1355086AbiFGTXN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44756 "EHLO
+        Tue, 7 Jun 2022 15:23:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352790AbiFGSbS (ORCPT
+        with ESMTP id S1352892AbiFGSbU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:31:18 -0400
+        Tue, 7 Jun 2022 14:31:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F6B31451C6;
-        Tue,  7 Jun 2022 10:56:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9906517CC88;
+        Tue,  7 Jun 2022 10:56:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 06486B8233D;
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC961B82239;
+        Tue,  7 Jun 2022 17:56:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28FAEC341C0;
         Tue,  7 Jun 2022 17:56:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A8DAC385A5;
-        Tue,  7 Jun 2022 17:56:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624590;
-        bh=o16gdiCI+e/vcS0aPAmhUcf3xEZW+nayP2m184cicPw=;
+        s=korg; t=1654624593;
+        bh=DxbXnSW2uog2tx8FmAG553nlM6XAU98zE5wp9CQKcoQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iOTqX48IupyxlsZvZlbiKn5pQui0qebhWqVabu2z0Fmq7NrKt3z0U3Q9QpE8ZTgBN
-         9RUOtC7cT+g1y3qDOixHCOq/3faXfUD0aGH5tfHuLhivz3CSlU7tl3ZStLZVuiSljE
-         P1yy+p58RVDOjnHVxTF5wvXeO9VgTpSBnz5HNyDw=
+        b=gNHdQxec5iHqP6WqF+i+/Y9hmZlAOsnSK7MoZ4ZX1UVRxgGuKBW2voJk9e+kOd55G
+         xui8f/r8lnSvv9BhoHLPOKk3VIKaHZ+pEbVRTL1gAFgKEU5xI0ZIOMhuoT4QwSOsqk
+         45vjVe1QheuvU/n72r+zCxVRaHkIyAv068nz34tI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shawn Lin <shawn.lin@rock-chips.com>,
-        Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 381/667] arm64: dts: rockchip: Move drive-impedance-ohm to emmc phy on rk3399
-Date:   Tue,  7 Jun 2022 19:00:46 +0200
-Message-Id: <20220607164946.177025095@linuxfoundation.org>
+Subject: [PATCH 5.15 382/667] arm64: dts: mt8192: Fix nor_flash status disable typo
+Date:   Tue,  7 Jun 2022 19:00:47 +0200
+Message-Id: <20220607164946.206588572@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,41 +56,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shawn Lin <shawn.lin@rock-chips.com>
+From: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 
-[ Upstream commit 4246d0bab2a8685e3d4aec2cb0ef8c526689ce96 ]
+[ Upstream commit 27f0eb16b0d417c155e96b5d3b89074699944e09 ]
 
-drive-impedance-ohm is introduced for emmc phy instead of pcie phy.
+Correct nor_flash status disable typo of mt8192 SoC.
 
-Fixes: fb8b7460c995 ("arm64: dts: rockchip: Define drive-impedance-ohm for RK3399's emmc-phy.")
-Signed-off-by: Shawn Lin <shawn.lin@rock-chips.com>
-Link: https://lore.kernel.org/r/1647336426-154797-1-git-send-email-shawn.lin@rock-chips.com
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Fixes: d0a197a0d064a ("arm64: dts: mt8192: add nor_flash device node")
+
+Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Link: https://lore.kernel.org/r/20220318144534.17996-11-allen-kh.cheng@mediatek.com
+Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/rockchip/rk3399.dtsi | 2 +-
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 00f1d036dfe0..4255e2d7a72f 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1477,6 +1477,7 @@
- 			reg = <0xf780 0x24>;
- 			clocks = <&sdhci>;
- 			clock-names = "emmcclk";
-+			drive-impedance-ohm = <50>;
- 			#phy-cells = <0>;
- 			status = "disabled";
+diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+index 9757138a8bbd..cb1e46d2c1ba 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+@@ -433,7 +433,7 @@
+ 			clock-names = "spi", "sf", "axi";
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+-			status = "disable";
++			status = "disabled";
  		};
-@@ -1487,7 +1488,6 @@
- 			clock-names = "refclk";
- 			#phy-cells = <1>;
- 			resets = <&cru SRST_PCIEPHY>;
--			drive-impedance-ohm = <50>;
- 			reset-names = "phy";
- 			status = "disabled";
- 		};
+ 
+ 		i2c3: i2c3@11cb0000 {
 -- 
 2.35.1
 
