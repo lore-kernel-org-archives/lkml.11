@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA986CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:48:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E8CCCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:49:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353940AbiFGSsw (ORCPT
+        id S1346583AbiFGStB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:48:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58048 "EHLO
+        Tue, 7 Jun 2022 14:49:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352398AbiFGSRG (ORCPT
+        with ESMTP id S1352440AbiFGSRL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112672126F;
-        Tue,  7 Jun 2022 10:51:45 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4C8117656;
+        Tue,  7 Jun 2022 10:52:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8871B80B66;
-        Tue,  7 Jun 2022 17:51:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A434C385A5;
-        Tue,  7 Jun 2022 17:51:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9C5261794;
+        Tue,  7 Jun 2022 17:52:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B01EDC34115;
+        Tue,  7 Jun 2022 17:52:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624302;
-        bh=XNm2g0S/w5PkuuKuHkkXAlx5lsE5JPWtVLHfP2/aKY0=;
+        s=korg; t=1654624327;
+        bh=3y8EYkaL4lEkRVnGBiZD2pIdl3/6uSxRyWFL2CmEBd4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CAo33G0SwnnUzLth3hjHU0jttrWXmbFOpPE3hwgQc5//kQiqbi448XAUX1FMCjKxF
-         nz7SC2jgIpHqRauNsiYmGb7B74C2OHjFUepCMASDN9lpXf+drdvV28anjoMRCbsfXS
-         Qx7bttv1lHBLBaJG8SKG8wD89hAfAIc2Wa4OEWUg=
+        b=Ndc5pDtNV70RhHS/TNDBjP7iTGEtQkwtTts7wKTIXTkVLQD1OJQ41NNmuTrIetRiq
+         glXR9nVdkBoHLEpXInse8/ByNTvEemzpZtLXmJgzObF0PmADoaqra4Nn/WitAsZeBM
+         9Muhd+mlYYlLuohvlSktdZbkhXwRreA/oan98wHI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 279/667] virtio_blk: fix the discard_granularity and discard_alignment queue limits
-Date:   Tue,  7 Jun 2022 18:59:04 +0200
-Message-Id: <20220607164943.154750724@linuxfoundation.org>
+        stable@vger.kernel.org, Zev Weiss <zev@bewilderbeest.net>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 287/667] regulator: core: Fix enable_count imbalance with EXCLUSIVE_GET
+Date:   Tue,  7 Jun 2022 18:59:12 +0200
+Message-Id: <20220607164943.387945727@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,55 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Zev Weiss <zev@bewilderbeest.net>
 
-[ Upstream commit 62952cc5bccd89b76d710de1d0b43244af0f2903 ]
+[ Upstream commit c3e3ca05dae37f8f74bb80358efd540911cbc2c8 ]
 
-The discard_alignment queue limit is named a bit misleading means the
-offset into the block device at which the discard granularity starts.
+Since the introduction of regulator->enable_count, a driver that did
+an exclusive get on an already-enabled regulator would end up with
+enable_count initialized to 0 but rdev->use_count initialized to 1.
+With that starting point the regulator is effectively stuck enabled,
+because if the driver attempted to disable it it would fail the
+enable_count underflow check in _regulator_handle_consumer_disable().
 
-On the other hand the discard_sector_alignment from the virtio 1.1 looks
-similar to what Linux uses as discard granularity (even if not very well
-described):
+The EXCLUSIVE_GET path in _regulator_get() now initializes
+enable_count along with rdev->use_count so that the regulator can be
+disabled without underflowing the former.
 
-  "discard_sector_alignment can be used by OS when splitting a request
-   based on alignment. "
-
-And at least qemu does set it to the discard granularity.
-
-So stop setting the discard_alignment and use the virtio
-discard_sector_alignment to set the discard granularity.
-
-Fixes: 1f23816b8eb8 ("virtio_blk: add discard and write zeroes support")
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Martin K. Petersen <martin.petersen@oracle.com>
-Link: https://lore.kernel.org/r/20220418045314.360785-5-hch@lst.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+Fixes: 5451781dadf85 ("regulator: core: Only count load for enabled consumers")
+Link: https://lore.kernel.org/r/20220505043152.12933-1-zev@bewilderbeest.net
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/virtio_blk.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/regulator/core.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
-index c0b8a26892a5..c05138a28475 100644
---- a/drivers/block/virtio_blk.c
-+++ b/drivers/block/virtio_blk.c
-@@ -855,11 +855,12 @@ static int virtblk_probe(struct virtio_device *vdev)
- 		blk_queue_io_opt(q, blk_size * opt_io_size);
+diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
+index 46e76b5b21ef..f4f28e5888b1 100644
+--- a/drivers/regulator/core.c
++++ b/drivers/regulator/core.c
+@@ -2132,10 +2132,13 @@ struct regulator *_regulator_get(struct device *dev, const char *id,
+ 		rdev->exclusive = 1;
  
- 	if (virtio_has_feature(vdev, VIRTIO_BLK_F_DISCARD)) {
--		q->limits.discard_granularity = blk_size;
--
- 		virtio_cread(vdev, struct virtio_blk_config,
- 			     discard_sector_alignment, &v);
--		q->limits.discard_alignment = v ? v << SECTOR_SHIFT : 0;
-+		if (v)
-+			q->limits.discard_granularity = v << SECTOR_SHIFT;
-+		else
-+			q->limits.discard_granularity = blk_size;
+ 		ret = _regulator_is_enabled(rdev);
+-		if (ret > 0)
++		if (ret > 0) {
+ 			rdev->use_count = 1;
+-		else
++			regulator->enable_count = 1;
++		} else {
+ 			rdev->use_count = 0;
++			regulator->enable_count = 0;
++		}
+ 	}
  
- 		virtio_cread(vdev, struct virtio_blk_config,
- 			     max_discard_sectors, &v);
+ 	link = device_link_add(dev, &rdev->dev, DL_FLAG_STATELESS);
 -- 
 2.35.1
 
