@@ -2,43 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82CDBCCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C70CCCA482
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380696AbiFGVbL (ORCPT
+        id S1380537AbiFGVa6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:31:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46202 "EHLO
+        Tue, 7 Jun 2022 17:30:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378071AbiFGUes (ORCPT
+        with ESMTP id S1378133AbiFGUex (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 512921E96D5;
-        Tue,  7 Jun 2022 11:37:22 -0700 (PDT)
+        Tue, 7 Jun 2022 16:34:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4905F1E96C0;
+        Tue,  7 Jun 2022 11:37:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E35661564;
-        Tue,  7 Jun 2022 18:37:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ADECC36B03;
-        Tue,  7 Jun 2022 18:37:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96D4AB82182;
+        Tue,  7 Jun 2022 18:37:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAD91C385A5;
+        Tue,  7 Jun 2022 18:37:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627041;
-        bh=SlBPGji7woA4rGOeBaUnM7hABHCKRDfgOmNlCjm/ZjY=;
+        s=korg; t=1654627052;
+        bh=6oCEsGrH4yCyfhP7SrWq+do8nPz28zA/Cu2zTNcGrHU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B4wtaeu3AwHYMS7NRoflTlrOxaxYSlcouOaVROFHfEnNMh3yBvWdSP5ND4sbuVihj
-         HPm8NKV1XEuqI9a3m2FGPr5pK5OmiY/qL8x7Z1Y2Z+5U0GFoqbFd7lWVbld4nyB4GB
-         eXkp3Jto2fNLiDTaSToFsoSOgrljZLYyp+3AKkls=
+        b=sBcJSjb4FLYJIN0AbtfDrzfG0crsl9qMrD0Io6d4STf9gdDEcgyOa4mieUpYgEyRU
+         nj+EjixqVJyZiitTJN2uijIBPcStOpIGZyd9ePorCvMYBso6bAuPai8kLtb4fk8HCq
+         OKAl7nTLexItu+X0FlXg3TZGTcppFKzV5ixZfJ38=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Li Huafei <lihuafei1@huawei.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        stable@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Ian Rogers <irogers@google.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Sumanth Korikkar <sumanthk@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 595/772] tracing: Reset the function filter after completing trampoline/graph selftest
-Date:   Tue,  7 Jun 2022 19:03:07 +0200
-Message-Id: <20220607165006.475470301@linuxfoundation.org>
+Subject: [PATCH 5.17 598/772] perf build: Fix btf__load_from_kernel_by_id() feature check
+Date:   Tue,  7 Jun 2022 19:03:10 +0200
+Message-Id: <20220607165006.563021102@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,43 +57,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li Huafei <lihuafei1@huawei.com>
+From: Jiri Olsa <jolsa@kernel.org>
 
-[ Upstream commit e35c2d8e22745751cf304ec3fe39616643db2e0a ]
+[ Upstream commit 73534617dfa3c4cd95fe5ffaeff5315e9ffc2de6 ]
 
-The direct trampoline and graph coexistence test sets global_ops to
-trace only 'trace_selftest_dynamic_test_func', but does not reset it
-after the test is completed, resulting in the function filter being set
-already after the system starts. Although it can be reset through the
-tracefs interface, it is more or less confusing to the user, and we
-should reset it to trace all functions after the trampoline/graph test
-completes.
+The btf__load_from_kernel_by_id() only takes one arg, not two.
 
-Link: https://lkml.kernel.org/r/20220427034119.24668-1-lihuafei1@huawei.com
-Link: https://lore.kernel.org/all/20220418073958.104029-1-lihuafei1@huawei.com/
+Committer notes:
 
-Fixes: 130c08065848 ("tracing: Add trampoline/graph selftest")
-Signed-off-by: Li Huafei <lihuafei1@huawei.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+I tested it just with an older libbpf, one where
+btf__load_from_kernel_by_id() wasn't introduced yet.
+
+A test with a newer dynamic libbpf would fail because the
+btf__load_from_kernel_by_id() is there, but takes just one arg.
+
+Fixes: 0ae065a5d265bc5a ("perf build: Fix check for btf__load_from_kernel_by_id() in libbpf")
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Ilya Leoshkevich <iii@linux.ibm.com>
+Cc: Sumanth Korikkar <sumanthk@linux.ibm.com>
+Cc: Sven Schnelle <svens@linux.ibm.com>
+Cc: Thomas Richter <tmricht@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Link: http://lore.kernel.org/linux-perf-users/YozLKby7ITEtchC9@krava
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace_selftest.c | 3 +++
- 1 file changed, 3 insertions(+)
+ .../build/feature/test-libbpf-btf__load_from_kernel_by_id.c  | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/trace/trace_selftest.c b/kernel/trace/trace_selftest.c
-index abcadbe933bb..a2d301f58ced 100644
---- a/kernel/trace/trace_selftest.c
-+++ b/kernel/trace/trace_selftest.c
-@@ -895,6 +895,9 @@ trace_selftest_startup_function_graph(struct tracer *trace,
- 		ret = -1;
- 		goto out;
- 	}
-+
-+	/* Enable tracing on all functions again */
-+	ftrace_set_global_filter(NULL, 0, 1);
- #endif
+diff --git a/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c b/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c
+index f7c084428735..a17647f7d5a4 100644
+--- a/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c
++++ b/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c
+@@ -1,7 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0
+-#include <bpf/libbpf.h>
++#include <bpf/btf.h>
  
- 	/* Don't test dynamic tracing, the function tracer already did */
+ int main(void)
+ {
+-	return btf__load_from_kernel_by_id(20151128, NULL);
++	btf__load_from_kernel_by_id(20151128);
++	return 0;
+ }
 -- 
 2.35.1
 
