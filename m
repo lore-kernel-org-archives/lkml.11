@@ -2,85 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73874C3F2D4
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:51:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F905C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:51:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354379AbiFGSuo (ORCPT
+        id S1347563AbiFGSvU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:50:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60536 "EHLO
+        Tue, 7 Jun 2022 14:51:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352053AbiFGSQw (ORCPT
+        with ESMTP id S1353041AbiFGSRy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A1F71A31;
-        Tue,  7 Jun 2022 10:50:19 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44565ED70A;
+        Tue,  7 Jun 2022 10:53:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B1976159C;
-        Tue,  7 Jun 2022 17:50:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1351AC341C4;
-        Tue,  7 Jun 2022 17:50:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624218;
-        bh=H/ojBjv8RedJ1tRhj7i5pR0yqtBqO8nR4KB/LsnXy2I=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B246B8236C;
+        Tue,  7 Jun 2022 17:52:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED492C34115;
+        Tue,  7 Jun 2022 17:52:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624377;
+        bh=dJRqQxMventHtaB8HhkRjPA3pkLwNwa/wlZDVozbFSs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VoxjbqSGP974L+niTK+6OS/6nhnJGnyZNptbaWapcg3BgajAEaTWW1xZ0ScNE+u4A
-         y/916y001GXtUKNNJERngq7aE3jtlGBIVMdSMSKdajC4raQ1BK+gTtmTOjFYRhIUoB
-         7KMo3bMt4JUASc5vPmVX1L62a5yICa0k7WRGCOplBv1gMTmwXk634+ofCp/M2iv7AZ
-         4wHaxrnc4JsOswdbj2SJISe4QtFDuzG1lySRtKsMk/oA4FF20kqaHHNmRMcsnhm8zC
-         7rIBNzrpzCAcdvLfVR5SerMzbfQD8puq3/c/31+oW2mMWhvmvKWRxO80q5jdp5L4Wm
-         FV//86/kUhH9A==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hangyu Hua <hbh25y@gmail.com>,
-        Eli Billauer <eli.billauer@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.18 17/68] char: xillybus: fix a refcount leak in cleanup_dev()
-Date:   Tue,  7 Jun 2022 13:47:43 -0400
-Message-Id: <20220607174846.477972-17-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+        b=Kg7yCi8PCX3XseE6Th+ZjTfMgHMyI8w9VPYtfij7uuj8y7rpjKzM6xg/cT6c414Gh
+         mCteKMmFmPQtEHrXer1TblcAbe4pYP8RmjIiPViMqg0d/UOHUVM+N6iUCCqH/IR3nB
+         Xu6VxmulxH93IC0a1SxUAYX9lnVhCu9Cepo1AaWU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 303/667] HID: amd_sfh: Modify the bus name
+Date:   Tue,  7 Jun 2022 18:59:28 +0200
+Message-Id: <20220607164943.864862512@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
 
-[ Upstream commit b67d19662fdee275c479d21853bc1239600a798f ]
+[ Upstream commit 206c3c2d85de8847fb732a5fb71443bacd287216 ]
 
-usb_get_dev is called in xillyusb_probe. So it is better to call
-usb_put_dev before xdev is released.
+Modifying the amd-sfh bus name to meaningful name.
 
-Acked-by: Eli Billauer <eli.billauer@gmail.com>
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220406075703.23464-1-hbh25y@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4b2c53d93a4b ("SFH:Transport Driver to add support of AMD Sensor Fusion Hub (SFH)")
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/xillybus/xillyusb.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/hid/amd-sfh-hid/amd_sfh_hid.c | 2 +-
+ drivers/hid/amd-sfh-hid/amd_sfh_hid.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/char/xillybus/xillyusb.c b/drivers/char/xillybus/xillyusb.c
-index dc3551796e5e..39bcbfd908b4 100644
---- a/drivers/char/xillybus/xillyusb.c
-+++ b/drivers/char/xillybus/xillyusb.c
-@@ -549,6 +549,7 @@ static void cleanup_dev(struct kref *kref)
- 	if (xdev->workq)
- 		destroy_workqueue(xdev->workq);
+diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_hid.c b/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
+index 5ad1e7acd294..8b8a7c40ed4e 100644
+--- a/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
++++ b/drivers/hid/amd-sfh-hid/amd_sfh_hid.c
+@@ -139,7 +139,7 @@ int amdtp_hid_probe(u32 cur_hid_dev, struct amdtp_cl_data *cli_data)
  
-+	usb_put_dev(xdev->udev);
- 	kfree(xdev->channels); /* Argument may be NULL, and that's fine */
- 	kfree(xdev);
- }
+ 	hid->driver_data = hid_data;
+ 	cli_data->hid_sensor_hubs[cur_hid_dev] = hid;
+-	hid->bus = BUS_AMD_AMDTP;
++	hid->bus = BUS_AMD_SFH;
+ 	hid->vendor = AMD_SFH_HID_VENDOR;
+ 	hid->product = AMD_SFH_HID_PRODUCT;
+ 	snprintf(hid->name, sizeof(hid->name), "%s %04X:%04X", "hid-amdtp",
+diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_hid.h b/drivers/hid/amd-sfh-hid/amd_sfh_hid.h
+index ae2ac9191ba7..741cff350589 100644
+--- a/drivers/hid/amd-sfh-hid/amd_sfh_hid.h
++++ b/drivers/hid/amd-sfh-hid/amd_sfh_hid.h
+@@ -10,7 +10,7 @@
+ #define AMDSFH_HID_H
+ 
+ #define MAX_HID_DEVICES		5
+-#define BUS_AMD_AMDTP		0x20
++#define BUS_AMD_SFH		0x20
+ #define AMD_SFH_HID_VENDOR	0x1022
+ #define AMD_SFH_HID_PRODUCT	0x0001
+ 
 -- 
 2.35.1
+
+
 
