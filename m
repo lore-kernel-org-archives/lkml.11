@@ -2,109 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4867C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7B53CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:06:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243406AbiFGMFN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:05:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47648 "EHLO
+        id S243358AbiFGMGI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:06:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243344AbiFGMFH (ORCPT
+        with ESMTP id S240340AbiFGMGC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:05:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B2BF5524
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:05:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E6D161725
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:05:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6FB0C385A5;
-        Tue,  7 Jun 2022 12:05:03 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="fLCYiTjf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1654603502;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WX0n+99WwQCrao72endBd42T+qlG0mEcwjlgxCG5GIA=;
-        b=fLCYiTjfT0In+Ev5NqH3le5amnEkT8hfhl+zT2eF1rboaPWVOVKjyJJJFNXGG/oXNGnB8c
-        EhyFl3ugwhPnJMrPnYC2Qqzr4ek5ey84x7iuKQfZm8wgXext+YgTrE5yU5drFXhQogR6nD
-        v/tTdqlpYge3aLZ+JuUeoYsJvzjPafI=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id a18ded3b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 7 Jun 2022 12:05:01 +0000 (UTC)
-Date:   Tue, 7 Jun 2022 14:04:57 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Stephen Boyd <swboyd@chromium.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Phil Elwell <phil@raspberrypi.com>
-Subject: Re: [PATCH] random: defer use of bootloader randomness to
- random_init()
-Message-ID: <Yp8+6Y+bEcmR1LS0@zx2c4.com>
-References: <20220607111514.755009-1-Jason@zx2c4.com>
- <CAMj1kXFDYX3fAdO6hxH9DTFP7+LNYz0fL9Dy8eKsH_xGwXxatQ@mail.gmail.com>
+        Tue, 7 Jun 2022 08:06:02 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12ABF5534;
+        Tue,  7 Jun 2022 05:06:00 -0700 (PDT)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 257BSfaS019178;
+        Tue, 7 Jun 2022 12:05:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=XTeQ+dQstEypyto2xBeV0JnMoP1Xt5ItKNMp4LQKRpk=;
+ b=dgMb0G5Xar93sIp4VySX/1w68CspO6FO1zEuqB++Pi2RFBb33WxgrYzcGgDfSkMR9hM5
+ P6IE0tIsyreW1dK+naD4Yl+LDMUtszP7dml1J0pX9wtZ7UMTD+A+6kahD06aeDgnu8CM
+ g52meEZ+A/phzNQDes192lG//H+KDNapxLgiENKSYZrSVElbonweeL7R01PM7VvJu9nk
+ ivWhWkoeKtYxOWGNqOrFgegE8Zzw8nPmCVk9zQ5Q+NpVmk/uTsD24hUgzutkClb/vLMX
+ 6/Z1VCulkFCLTOzHMU1/I4kTg3KhXEqOQQbZnuZnoCxt0fFTrdR0IQ2OgWr3kBNLHvB6 SA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gj5u38ncq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 07 Jun 2022 12:05:58 +0000
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 257BVjrj031205;
+        Tue, 7 Jun 2022 12:05:58 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gj5u38nbu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 07 Jun 2022 12:05:58 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 257C5dJW014828;
+        Tue, 7 Jun 2022 12:05:56 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma03ams.nl.ibm.com with ESMTP id 3gfy19bqmf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 07 Jun 2022 12:05:56 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 257C5rWJ31064368
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 7 Jun 2022 12:05:53 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4E86111C071;
+        Tue,  7 Jun 2022 12:05:53 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7BE3911C06F;
+        Tue,  7 Jun 2022 12:05:52 +0000 (GMT)
+Received: from li-e979b1cc-23ba-11b2-a85c-dfd230f6cf82 (unknown [9.171.16.221])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with SMTP;
+        Tue,  7 Jun 2022 12:05:52 +0000 (GMT)
+Date:   Tue, 7 Jun 2022 14:05:44 +0200
+From:   Halil Pasic <pasic@linux.ibm.com>
+To:     Tony Krowiak <akrowiak@linux.ibm.com>
+Cc:     jjherne@linux.ibm.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        freude@linux.ibm.com, borntraeger@de.ibm.com, cohuck@redhat.com,
+        mjrosato@linux.ibm.com, alex.williamson@redhat.com,
+        kwankhede@nvidia.com, fiuczy@linux.ibm.com,
+        Halil Pasic <pasic@linux.ibm.com>
+Subject: Re: [PATCH v19 11/20] s390/vfio-ap: prepare for dynamic update of
+ guest's APCB on queue probe/remove
+Message-ID: <20220607140544.32d33f3d.pasic@linux.ibm.com>
+In-Reply-To: <f838f274-ff4d-496d-2393-14423117ff7e@linux.ibm.com>
+References: <20220404221039.1272245-1-akrowiak@linux.ibm.com>
+        <20220404221039.1272245-12-akrowiak@linux.ibm.com>
+        <9364a1b7-9060-20aa-b0d6-88c41a30e7d4@linux.ibm.com>
+        <f838f274-ff4d-496d-2393-14423117ff7e@linux.ibm.com>
+Organization: IBM
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAMj1kXFDYX3fAdO6hxH9DTFP7+LNYz0fL9Dy8eKsH_xGwXxatQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: FV0JSVpMoOjx3jX8H7Bi5nfXD_pNmkXa
+X-Proofpoint-GUID: tADHCpYYpz-awQPvxr_vfJsyJHOnAtkD
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-07_04,2022-06-07_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
+ mlxscore=0 spamscore=0 clxscore=1011 lowpriorityscore=0 malwarescore=0
+ impostorscore=0 priorityscore=1501 bulkscore=0 mlxlogscore=999
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206070052
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ard,
+On Tue, 31 May 2022 06:44:46 -0400
+Tony Krowiak <akrowiak@linux.ibm.com> wrote:
 
-On Tue, Jun 07, 2022 at 01:55:37PM +0200, Ard Biesheuvel wrote:
-> This is not going to work, I'm afraid - please see below.
->
-> The next line says it all, really: the seed is in a firmware table
-> somewhere, and only gets mapped temporarily here. Note that we cannot
-> copy it either, as we are running way before we have discovered where
-> RAM is to begin with.
+> > vfio_ap_mdev_get_update_locks_for_apqn is "crazy long".
+> > How about:
+> >   get_mdev_for_apqn()
+> >
+> > This function is static and the terms mdev and apqn are specific 
+> > enough that I
+> > don't think it needs to start with vfio_ap. And there is no need to 
+> > state in
+> > the function name that locks are acquired. That point will be obvious 
+> > to anyone
+> > reading the prologue or the code.  
+> 
+> The primary purpose of the function is to acquire the locks in the 
+> proper order, so
+> I think the name should state that purpose. It may be obvious to someone 
+> reading
+> the prologue or this function, but not so obvious in the context of the 
+> calling function.
 
-Oh, darn. Okay. The v2 might be a bit more palpable then. It mixes
-immediately, but defers crediting:
+I agree with Tony. To me get_mdev_for_apqn() sounds like getting a
+reference to a matrix_mdev object (and incrementing its refcount) or
+something similar. BTW some more bike shedding: I prefer by_apqn instead
+of for_apqn, because the set of locks we need to take is determined _by_
+the apqn parameter, but it ain't semantically the set of locks we need
+to perform an update operation on the apqn or on the queue associated
+with the apqn. No strong opinion though -- I'm no native speaker and
+prepositions are difficult for me.
 
-[1] https://lore.kernel.org/lkml/20220607113238.769088-1-Jason@zx2c4.com/
-
-> - Even if very convincing replies can be given to the previous two
-> points, wouldn't it be betterr to simply revert the -stable backport
-> that introduces the use of the static key, and find a robust and
-> portable solution for after v5.19?
-
-This has already been done:
-
-[2] https://lore.kernel.org/stable/20220607084005.666059-1-Jason@zx2c4.com/
-
-And mentioned here:
-
-[3] https://lore.kernel.org/lkml/CAHmME9rJif3ydZuFJcSjPxkGMofZkbu2PXcHBF23OWVgGQ4c+A@mail.gmail.com/
-
-You're on this thread.
-
-> So could we please go back to some basic questions here;
-> - Why do we need/want a static key here to begin with? Is is for performance?
-> - Why do we need to enable this static key so early?
-
-We don't need to enable it especially early. I've now sent three
-different approaches for deferring it until later and you suggested one.
-The first of mine is kind of ugly (checking static_key_initialized and
-such at different points).  Your suggested one after that did the same
-but deferred into crng_reseed(), which I'm not a fan of. My second one
-is this patch, which is flawed for the reason you pointed out. But
-perhaps my third one is the right amount of simple and okay? That's the
-one I linked up top, [1]. Let me know what you think of that.
-
-My motivation for not wanting to defer it is that if the arch solution
-winds up being easy and straight forward (as it was for arm64), then it
-would be nice to not need to clutter up random.c as a result. But if
-the arch solution winds up looking fragile or problematic somehow, then
-one of these solutions should do the trick. In particular [1] seems nice
-enough that it doesn't really even clutter things up too much as feared.
-
-Jason
+Regards,
+Halil
