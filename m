@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E135CCA48E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48E25CCA48C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352025AbiFGSQv (ORCPT
+        id S1351617AbiFGSQb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:16:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39612 "EHLO
+        Tue, 7 Jun 2022 14:16:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243117AbiFGR52 (ORCPT
+        with ESMTP id S1348686AbiFGR42 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:57:28 -0400
+        Tue, 7 Jun 2022 13:56:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC9114915D;
-        Tue,  7 Jun 2022 10:40:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A8CE147822;
+        Tue,  7 Jun 2022 10:40:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B82F760BC6;
-        Tue,  7 Jun 2022 17:40:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C444EC385A5;
-        Tue,  7 Jun 2022 17:40:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D2526137B;
+        Tue,  7 Jun 2022 17:40:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14B43C385A5;
+        Tue,  7 Jun 2022 17:40:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623621;
-        bh=q2Xpkw+onYKKa4/Us+LoQ26hoDxY+NiVrhxSovEPERo=;
+        s=korg; t=1654623604;
+        bh=YONjxaeXJNfdjI6X1ZBJqFnOHU4P3dRFG2L57MY6MtM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UdVFHRoj9BlwEFfCI7jMF2nbEBq41tsZXr8Nmv1zy7uEwjSObkELaOx5WZ9WmHSVw
-         a4icCprPBWQSOPNvjLff9EXnggaC40/3RHZ+kA5tKQhYESr6diWI8i+kC4hsTp65NB
-         F9WAlDHfIajy7FfSE0EBTc6totpb6tGs+t2Q5Bio=
+        b=K4Z4Ni/632sVWTFkDnNAd7YyyI6Y20aP1ymyrz44ol1eaOToA0oTfx1prknCw1PIy
+         JqlPr/XiAEC2Yoq/oiRKnf8l5VeTTeiu1wAfxoTws10SFwOBu6JLhiDSaVn33aeWuE
+         69oIjWgUylvkyx4R2y4ie4490z116caySnOhiwQQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Gopal Vamshi Krishna <vamshi.krishna.gopal@intel.com>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.15 030/667] xhci: Allow host runtime PM as default for Intel Alder Lake N xHCI
-Date:   Tue,  7 Jun 2022 18:54:55 +0200
-Message-Id: <20220607164935.699006907@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH 5.15 025/667] fs/ntfs3: Fix some memory leaks in an error handling path of log_replay()
+Date:   Tue,  7 Jun 2022 18:54:50 +0200
+Message-Id: <20220607164935.552060945@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,39 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathias Nyman <mathias.nyman@linux.intel.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 74f55a62c4c354f43a6d75f77dd184c4f57b9a26 upstream.
+commit e589f9b7078e1c0191613cd736f598e81d2390de upstream.
 
-Alder Lake N TCSS xHCI needs to be runtime suspended whenever possible
-to allow the TCSS hardware block to enter D3 and thus save energy
+All error handling paths lead to 'out' where many resources are freed.
 
-Cc: stable@kernel.org
-Suggested-by: Gopal Vamshi Krishna <vamshi.krishna.gopal@intel.com>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220511220450.85367-10-mathias.nyman@linux.intel.com
+Do it as well here instead of a direct return, otherwise 'log', 'ra' and
+'log->one_page_buf' (at least) will leak.
+
+Fixes: b46acd6a6a62 ("fs/ntfs3: Add NTFS journal")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci-pci.c |    2 ++
- 1 file changed, 2 insertions(+)
+ fs/ntfs3/fslog.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/host/xhci-pci.c
-+++ b/drivers/usb/host/xhci-pci.c
-@@ -59,6 +59,7 @@
- #define PCI_DEVICE_ID_INTEL_TIGER_LAKE_XHCI		0x9a13
- #define PCI_DEVICE_ID_INTEL_MAPLE_RIDGE_XHCI		0x1138
- #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI		0x461e
-+#define PCI_DEVICE_ID_INTEL_ALDER_LAKE_N_XHCI		0x464e
- #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_PCH_XHCI	0x51ed
+--- a/fs/ntfs3/fslog.c
++++ b/fs/ntfs3/fslog.c
+@@ -4085,8 +4085,10 @@ process_log:
+ 		if (client == LFS_NO_CLIENT_LE) {
+ 			/* Insert "NTFS" client LogFile. */
+ 			client = ra->client_idx[0];
+-			if (client == LFS_NO_CLIENT_LE)
+-				return -EINVAL;
++			if (client == LFS_NO_CLIENT_LE) {
++				err = -EINVAL;
++				goto out;
++			}
  
- #define PCI_DEVICE_ID_AMD_RENOIR_XHCI			0x1639
-@@ -268,6 +269,7 @@ static void xhci_pci_quirks(struct devic
- 	     pdev->device == PCI_DEVICE_ID_INTEL_TIGER_LAKE_XHCI ||
- 	     pdev->device == PCI_DEVICE_ID_INTEL_MAPLE_RIDGE_XHCI ||
- 	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI ||
-+	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_N_XHCI ||
- 	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_PCH_XHCI))
- 		xhci->quirks |= XHCI_DEFAULT_PM_RUNTIME_ALLOW;
- 
+ 			t16 = le16_to_cpu(client);
+ 			cr = ca + t16;
 
 
