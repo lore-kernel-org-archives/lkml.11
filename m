@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BBDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:19:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC713C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:19:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358602AbiFGUTc (ORCPT
+        id S1358439AbiFGUTi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:19:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50912 "EHLO
+        Tue, 7 Jun 2022 16:19:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356872AbiFGT2S (ORCPT
+        with ESMTP id S1356881AbiFGT2S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 15:28:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D8401A1970;
-        Tue,  7 Jun 2022 11:11:18 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D74351A197B;
+        Tue,  7 Jun 2022 11:11:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 078E1617B3;
-        Tue,  7 Jun 2022 18:11:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 157A0C385A2;
-        Tue,  7 Jun 2022 18:11:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C04561903;
+        Tue,  7 Jun 2022 18:11:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B9DDC385A2;
+        Tue,  7 Jun 2022 18:11:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625477;
-        bh=Lavhzrq0jsCEomc5dXZME1+q67KFdyojZYlnsdCrLH8=;
+        s=korg; t=1654625482;
+        bh=xkQiGxoMysz9EE4tGtqoiVDGv52Ju5dOkOMx/O/9Vvk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zT7z9D53SzTiKSUu0IXWI8+MxbeKM5RIBHDDQrdMDW6Gv0XxO6jpzP8YhIBLdckTX
-         rsNUvqAnalYijUknYHkpN+ybkpgHPdLu4OCKg+l/xvbsHPf0L/b+wbQY4lMaP/VEbt
-         hUygvtVD6Ng4Gm8PjdU3d30Zir+MaKUSNfjzAmkg=
+        b=Qrbdldv25eAM6opPKOpYjwdiJRfc7kgb/rxRm488AmQUkDs8JYEueJ7u4oH0j7Z6p
+         TOIUAmU/Sk/tYK/S5olQhYdzgy5qqWXX2ebIBWWRuQhhUQ3MwKLQ4+Y7HG1qfwP0ay
+         Kwr2XpGSrL7QKe6GO85Ld/Wm0MPnxsXjNUAv2CSE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.17 031/772] cifs: when extending a file with falloc we should make files not-sparse
-Date:   Tue,  7 Jun 2022 18:53:43 +0200
-Message-Id: <20220607164949.937017659@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Huaming Jiang <jianghuaming.jhm@alibaba-inc.com>,
+        Guo Ren <guoren@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
+        Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Nick Kossifidis <mick@ics.forth.gr>
+Subject: [PATCH 5.17 005/772] RISC-V: Mark IORESOURCE_EXCLUSIVE for reserved mem instead of IORESOURCE_BUSY
+Date:   Tue,  7 Jun 2022 18:53:17 +0200
+Message-Id: <20220607164949.154512365@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,32 +53,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+From: Xianting Tian <xianting.tian@linux.alibaba.com>
 
-commit f66f8b94e7f2f4ac9fffe710be231ca8f25c5057 upstream.
+commit e61bf5c071148c80d091f8e7220b3b9130780ae3 upstream.
 
-as this is the only way to make sure the region is allocated.
-Fix the conditional that was wrong and only tried to make already
-non-sparse files non-sparse.
+Commit 00ab027a3b82 ("RISC-V: Add kernel image sections to the resource tree")
+marked IORESOURCE_BUSY for reserved memory, which caused resource map
+failed in subsequent operations of related driver, so remove the
+IORESOURCE_BUSY flag. In order to prohibit userland mapping reserved
+memory, mark IORESOURCE_EXCLUSIVE for it.
 
+The code to reproduce the issue,
+dts:
+        mem0: memory@a0000000 {
+                reg = <0x0 0xa0000000 0 0x1000000>;
+                no-map;
+        };
+
+        &test {
+                status = "okay";
+                memory-region = <&mem0>;
+        };
+
+code:
+        np = of_parse_phandle(pdev->dev.of_node, "memory-region", 0);
+        ret = of_address_to_resource(np, 0, &r);
+        base = devm_ioremap_resource(&pdev->dev, &r);
+        // base = -EBUSY
+
+Fixes: 00ab027a3b82 ("RISC-V: Add kernel image sections to the resource tree")
+Reported-by: Huaming Jiang <jianghuaming.jhm@alibaba-inc.com>
+Reviewed-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+Tested-by: Heiko Stuebner <heiko@sntech.de>
+Co-developed-by: Nick Kossifidis <mick@ics.forth.gr>
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20220518013428.1338983-1-xianting.tian@linux.alibaba.com
 Cc: stable@vger.kernel.org
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/smb2ops.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/riscv/kernel/setup.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -3808,7 +3808,7 @@ static long smb3_simple_falloc(struct fi
- 		if (rc)
- 			goto out;
+--- a/arch/riscv/kernel/setup.c
++++ b/arch/riscv/kernel/setup.c
+@@ -189,7 +189,7 @@ static void __init init_resources(void)
+ 		res = &mem_res[res_idx--];
  
--		if ((cifsi->cifsAttrs & FILE_ATTRIBUTE_SPARSE_FILE) == 0)
-+		if (cifsi->cifsAttrs & FILE_ATTRIBUTE_SPARSE_FILE)
- 			smb2_set_sparse(xid, tcon, cfile, inode, false);
+ 		res->name = "Reserved";
+-		res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
++		res->flags = IORESOURCE_MEM | IORESOURCE_EXCLUSIVE;
+ 		res->start = __pfn_to_phys(memblock_region_reserved_base_pfn(region));
+ 		res->end = __pfn_to_phys(memblock_region_reserved_end_pfn(region)) - 1;
  
- 		eof = cpu_to_le64(off + len);
+@@ -214,7 +214,7 @@ static void __init init_resources(void)
+ 
+ 		if (unlikely(memblock_is_nomap(region))) {
+ 			res->name = "Reserved";
+-			res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
++			res->flags = IORESOURCE_MEM | IORESOURCE_EXCLUSIVE;
+ 		} else {
+ 			res->name = "System RAM";
+ 			res->flags = IORESOURCE_SYSTEM_RAM | IORESOURCE_BUSY;
 
 
