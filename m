@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E86D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84059CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359272AbiFGUU1 (ORCPT
+        id S1359305AbiFGUUk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:20:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49336 "EHLO
+        Tue, 7 Jun 2022 16:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356794AbiFGT2M (ORCPT
+        with ESMTP id S1356731AbiFGT2J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:28:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E7F01A194C;
-        Tue,  7 Jun 2022 11:10:48 -0700 (PDT)
+        Tue, 7 Jun 2022 15:28:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2BE31A15D9;
+        Tue,  7 Jun 2022 11:10:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0E2661903;
-        Tue,  7 Jun 2022 18:10:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDE9BC385A2;
-        Tue,  7 Jun 2022 18:10:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 700E8B81F38;
+        Tue,  7 Jun 2022 18:10:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D70EDC385A2;
+        Tue,  7 Jun 2022 18:10:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625447;
-        bh=0wUPtvcxsDb/X2qUcKd/zlt/iXNEj20UtsVY8xySO5w=;
+        s=korg; t=1654625436;
+        bh=EGBFhl10/WxhjBf9f/lkCn81vM2bqbXJhwMAVy/nUBA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SGXzilW8yIk41KA1DHZE+kcOJ/qR1TrR+80DU74l2LzjbAwGxoBmGyu99H5w7+y6x
-         gEMlUsRWEEki1jeZrCIUEi0nU3sq3e621I+bLnBOojsPUj5cDwlRMBM2ObNcsVwhuH
-         alCRRoHoLNEw4MxMqDTFdwYabasA/Hp8cMX+iIFE=
+        b=X6Qa7//huze+ciata6jbZxuix4zQdcldJwtjpCVQEBfPJqA9b+fK2sFeVhtmQr565
+         8ImaP6jVqfFx73Bl5Xx8W4QPrsM0o1f24DUomjmyTRgEOh+M07Jp2YuAojAoglNR1u
+         N4CPSEDCLuZSY3/4fiSaHisISnTp5LqgRIhIoPrw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ganapathi Kamath <hgkamath@hotmail.com>,
-        Kari Argillander <kari.argillander@gmail.com>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Subject: [PATCH 5.17 022/772] fs/ntfs3: Keep preallocated only if option prealloc enabled
-Date:   Tue,  7 Jun 2022 18:53:34 +0200
-Message-Id: <20220607164949.667015775@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mathias Nyman <mathias.nyman@linux.intel.com>,
+        Chris Chiu <chris.chiu@canonical.com>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Kishon Vijay Abraham I <kishon@ti.com>
+Subject: [PATCH 5.17 019/772] usb: core: hcd: Add support for deferring roothub registration
+Date:   Tue,  7 Jun 2022 18:53:31 +0200
+Message-Id: <20220607164949.575807255@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,34 +52,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+From: Kishon Vijay Abraham I <kishon@ti.com>
 
-commit e95113ed4d428219e3395044e29f5713fc446720 upstream.
+commit a44623d9279086c89f631201d993aa332f7c9e66 upstream.
 
-If size of file was reduced, we still kept allocated blocks.
-This commit makes ntfs3 work as other fs like btrfs.
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=214719
-Fixes: 4342306f0f0d ("fs/ntfs3: Add file operations and implementation")
+It has been observed with certain PCIe USB cards (like Inateck connected
+to AM64 EVM or J7200 EVM) that as soon as the primary roothub is
+registered, port status change is handled even before xHC is running
+leading to cold plug USB devices not detected. For such cases, registering
+both the root hubs along with the second HCD is required. Add support for
+deferring roothub registration in usb_add_hcd(), so that both primary and
+secondary roothubs are registered along with the second HCD.
 
-Reported-by: Ganapathi Kamath <hgkamath@hotmail.com>
-Tested-by: Ganapathi Kamath <hgkamath@hotmail.com>
-Reviewed-by: Kari Argillander <kari.argillander@gmail.com>
-Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+This patch has been added and reverted earier as it triggered a race
+in usb device enumeration.
+That race is now fixed in 5.16-rc3, and in stable back to 5.4
+commit 6cca13de26ee ("usb: hub: Fix locking issues with address0_mutex")
+commit 6ae6dc22d2d1 ("usb: hub: Fix usb enumeration issue due to address0
+race")
+
+CC: stable@vger.kernel.org # 5.4+
+Suggested-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Tested-by: Chris Chiu <chris.chiu@canonical.com>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+Link: https://lore.kernel.org/r/20220510091630.16564-2-kishon@ti.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs3/file.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/core/hcd.c  |   29 +++++++++++++++++++++++------
+ include/linux/usb/hcd.h |    2 ++
+ 2 files changed, 25 insertions(+), 6 deletions(-)
 
---- a/fs/ntfs3/file.c
-+++ b/fs/ntfs3/file.c
-@@ -495,7 +495,7 @@ static int ntfs_truncate(struct inode *i
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -2816,6 +2816,7 @@ int usb_add_hcd(struct usb_hcd *hcd,
+ {
+ 	int retval;
+ 	struct usb_device *rhdev;
++	struct usb_hcd *shared_hcd;
  
- 	down_write(&ni->file.run_lock);
- 	err = attr_set_size(ni, ATTR_DATA, NULL, 0, &ni->file.run, new_size,
--			    &new_valid, true, NULL);
-+			    &new_valid, ni->mi.sbi->options->prealloc, NULL);
- 	up_write(&ni->file.run_lock);
+ 	if (!hcd->skip_phy_initialization && usb_hcd_is_primary_hcd(hcd)) {
+ 		hcd->phy_roothub = usb_phy_roothub_alloc(hcd->self.sysdev);
+@@ -2976,13 +2977,26 @@ int usb_add_hcd(struct usb_hcd *hcd,
+ 		goto err_hcd_driver_start;
+ 	}
  
- 	if (new_valid < ni->i_valid)
++	/* starting here, usbcore will pay attention to the shared HCD roothub */
++	shared_hcd = hcd->shared_hcd;
++	if (!usb_hcd_is_primary_hcd(hcd) && shared_hcd && HCD_DEFER_RH_REGISTER(shared_hcd)) {
++		retval = register_root_hub(shared_hcd);
++		if (retval != 0)
++			goto err_register_root_hub;
++
++		if (shared_hcd->uses_new_polling && HCD_POLL_RH(shared_hcd))
++			usb_hcd_poll_rh_status(shared_hcd);
++	}
++
+ 	/* starting here, usbcore will pay attention to this root hub */
+-	retval = register_root_hub(hcd);
+-	if (retval != 0)
+-		goto err_register_root_hub;
++	if (!HCD_DEFER_RH_REGISTER(hcd)) {
++		retval = register_root_hub(hcd);
++		if (retval != 0)
++			goto err_register_root_hub;
+ 
+-	if (hcd->uses_new_polling && HCD_POLL_RH(hcd))
+-		usb_hcd_poll_rh_status(hcd);
++		if (hcd->uses_new_polling && HCD_POLL_RH(hcd))
++			usb_hcd_poll_rh_status(hcd);
++	}
+ 
+ 	return retval;
+ 
+@@ -3020,6 +3034,7 @@ EXPORT_SYMBOL_GPL(usb_add_hcd);
+ void usb_remove_hcd(struct usb_hcd *hcd)
+ {
+ 	struct usb_device *rhdev = hcd->self.root_hub;
++	bool rh_registered;
+ 
+ 	dev_info(hcd->self.controller, "remove, state %x\n", hcd->state);
+ 
+@@ -3030,6 +3045,7 @@ void usb_remove_hcd(struct usb_hcd *hcd)
+ 
+ 	dev_dbg(hcd->self.controller, "roothub graceful disconnect\n");
+ 	spin_lock_irq (&hcd_root_hub_lock);
++	rh_registered = hcd->rh_registered;
+ 	hcd->rh_registered = 0;
+ 	spin_unlock_irq (&hcd_root_hub_lock);
+ 
+@@ -3039,7 +3055,8 @@ void usb_remove_hcd(struct usb_hcd *hcd)
+ 	cancel_work_sync(&hcd->died_work);
+ 
+ 	mutex_lock(&usb_bus_idr_lock);
+-	usb_disconnect(&rhdev);		/* Sets rhdev to NULL */
++	if (rh_registered)
++		usb_disconnect(&rhdev);		/* Sets rhdev to NULL */
+ 	mutex_unlock(&usb_bus_idr_lock);
+ 
+ 	/*
+--- a/include/linux/usb/hcd.h
++++ b/include/linux/usb/hcd.h
+@@ -124,6 +124,7 @@ struct usb_hcd {
+ #define HCD_FLAG_RH_RUNNING		5	/* root hub is running? */
+ #define HCD_FLAG_DEAD			6	/* controller has died? */
+ #define HCD_FLAG_INTF_AUTHORIZED	7	/* authorize interfaces? */
++#define HCD_FLAG_DEFER_RH_REGISTER	8	/* Defer roothub registration */
+ 
+ 	/* The flags can be tested using these macros; they are likely to
+ 	 * be slightly faster than test_bit().
+@@ -134,6 +135,7 @@ struct usb_hcd {
+ #define HCD_WAKEUP_PENDING(hcd)	((hcd)->flags & (1U << HCD_FLAG_WAKEUP_PENDING))
+ #define HCD_RH_RUNNING(hcd)	((hcd)->flags & (1U << HCD_FLAG_RH_RUNNING))
+ #define HCD_DEAD(hcd)		((hcd)->flags & (1U << HCD_FLAG_DEAD))
++#define HCD_DEFER_RH_REGISTER(hcd) ((hcd)->flags & (1U << HCD_FLAG_DEFER_RH_REGISTER))
+ 
+ 	/*
+ 	 * Specifies if interfaces are authorized by default
 
 
