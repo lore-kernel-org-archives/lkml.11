@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD474CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43AEACCA483
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377169AbiFGUcy (ORCPT
+        id S1376609AbiFGUbf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:32:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43486 "EHLO
+        Tue, 7 Jun 2022 16:31:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356956AbiFGTkc (ORCPT
+        with ESMTP id S1356696AbiFGTiw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:40:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41D01B1868;
-        Tue,  7 Jun 2022 11:14:41 -0700 (PDT)
+        Tue, 7 Jun 2022 15:38:52 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A037F8E7A;
+        Tue,  7 Jun 2022 11:14:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 995A0B81F38;
-        Tue,  7 Jun 2022 18:14:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E37AC385A2;
-        Tue,  7 Jun 2022 18:14:37 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BBF43CE243A;
+        Tue,  7 Jun 2022 18:14:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3030C385A2;
+        Tue,  7 Jun 2022 18:14:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625678;
-        bh=elhLJgnyMsasOtb8cxU+DSEo7qMotW6TsQWH859S98M=;
+        s=korg; t=1654625648;
+        bh=3os4nm//VWdtnukH4DMduEp3AKayG5T+pbN7X5F8Egs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SfYUaZoJrsEWUn2ldsWsXOQ4ta1SW8MbxtofYBeDusyZRBg48QzIkOET8PliLEUBn
-         jRkg6RUNmxvyCjYSCHVubEKeRbOwyJt35Aqr7poOU9dsnFvpcAGcb/7QQUGUVKgEWV
-         BAWoAjcASn3pnEOr/t7k6yKkkyj+FPGvkK/+oWYA=
+        b=yyIUYaGfTYs8YJKhUmrVl/7J0rHW+gyWRfT6OFHMkt3J3UlreeuoXP16bua9lN7B+
+         bNSaYkEWNocOsZjLbUfLmwhXUn4/FWVffUV6FukMpsHD3ryW6o+7P1ZGSyAE/0Fv4e
+         bCdU+xdaRfL8/1NO/Afvapz2ZPmCXhPQI/CME9Jg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org, Vignesh Raghavendra <vigneshr@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 104/772] arm64: compat: Do not treat syscall number as ESR_ELx for a bad syscall
-Date:   Tue,  7 Jun 2022 18:54:56 +0200
-Message-Id: <20220607164952.111424867@linuxfoundation.org>
+Subject: [PATCH 5.17 094/772] drivers: mmc: sdhci_am654: Add the quirk to set TESTCD bit
+Date:   Tue,  7 Jun 2022 18:54:46 +0200
+Message-Id: <20220607164951.816594826@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,74 +51,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandru Elisei <alexandru.elisei@arm.com>
+From: Vignesh Raghavendra <vigneshr@ti.com>
 
-[ Upstream commit 3fed9e551417b84038b15117732ea4505eee386b ]
+[ Upstream commit c7666240ec76422cb7546bd07cc8ae80dc0ccdd2 ]
 
-If a compat process tries to execute an unknown system call above the
-__ARM_NR_COMPAT_END number, the kernel sends a SIGILL signal to the
-offending process. Information about the error is printed to dmesg in
-compat_arm_syscall() -> arm64_notify_die() -> arm64_force_sig_fault() ->
-arm64_show_signal().
+The ARASAN MMC controller on Keystone 3 class of devices need the SDCD
+line to be connected for proper functioning. Similar to the issue pointed
+out in sdhci-of-arasan.c driver, commit 3794c542641f ("mmc:
+sdhci-of-arasan: Set controller to test mode when no CD bit").
 
-arm64_show_signal() interprets a non-zero value for
-current->thread.fault_code as an exception syndrome and displays the
-message associated with the ESR_ELx.EC field (bits 31:26).
-current->thread.fault_code is set in compat_arm_syscall() ->
-arm64_notify_die() with the bad syscall number instead of a valid ESR_ELx
-value. This means that the ESR_ELx.EC field has the value that the user set
-for the syscall number and the kernel can end up printing bogus exception
-messages*. For example, for the syscall number 0x68000000, which evaluates
-to ESR_ELx.EC value of 0x1A (ESR_ELx_EC_FPAC) the kernel prints this error:
+In cases where this can't be connected, add a quirk to force the
+controller into test mode and set the TESTCD bit. Use the flag
+"ti,fails-without-test-cd", to implement this above quirk when required.
 
-[   18.349161] syscall[300]: unhandled exception: ERET/ERETAA/ERETAB, ESR 0x68000000, Oops - bad compat syscall(2) in syscall[10000+50000]
-[   18.350639] CPU: 2 PID: 300 Comm: syscall Not tainted 5.18.0-rc1 #79
-[   18.351249] Hardware name: Pine64 RockPro64 v2.0 (DT)
-[..]
-
-which is misleading, as the bad compat syscall has nothing to do with
-pointer authentication.
-
-Stop arm64_show_signal() from printing exception syndrome information by
-having compat_arm_syscall() set the ESR_ELx value to 0, as it has no
-meaning for an invalid system call number. The example above now becomes:
-
-[   19.935275] syscall[301]: unhandled exception: Oops - bad compat syscall(2) in syscall[10000+50000]
-[   19.936124] CPU: 1 PID: 301 Comm: syscall Not tainted 5.18.0-rc1-00005-g7e08006d4102 #80
-[   19.936894] Hardware name: Pine64 RockPro64 v2.0 (DT)
-[..]
-
-which although shows less information because the syscall number,
-wrongfully advertised as the ESR value, is missing, it is better than
-showing plainly wrong information. The syscall number can be easily
-obtained with strace.
-
-*A 32-bit value above or equal to 0x8000_0000 is interpreted as a negative
-integer in compat_arm_syscal() and the condition scno < __ARM_NR_COMPAT_END
-evaluates to true; the syscall will exit to userspace in this case with the
-ENOSYS error code instead of arm64_notify_die() being called.
-
-Signed-off-by: Alexandru Elisei <alexandru.elisei@arm.com>
-Reviewed-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220425114444.368693-3-alexandru.elisei@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+Link: https://lore.kernel.org/r/20220425063120.10135-3-a-govindraju@ti.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/sys_compat.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mmc/host/sdhci_am654.c | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/kernel/sys_compat.c b/arch/arm64/kernel/sys_compat.c
-index db5159a3055f..b88a52f7188f 100644
---- a/arch/arm64/kernel/sys_compat.c
-+++ b/arch/arm64/kernel/sys_compat.c
-@@ -114,6 +114,6 @@ long compat_arm_syscall(struct pt_regs *regs, int scno)
- 	addr = instruction_pointer(regs) - (compat_thumb_mode(regs) ? 2 : 4);
+diff --git a/drivers/mmc/host/sdhci_am654.c b/drivers/mmc/host/sdhci_am654.c
+index b4891bb26648..a3e62e212631 100644
+--- a/drivers/mmc/host/sdhci_am654.c
++++ b/drivers/mmc/host/sdhci_am654.c
+@@ -147,6 +147,9 @@ struct sdhci_am654_data {
+ 	int drv_strength;
+ 	int strb_sel;
+ 	u32 flags;
++	u32 quirks;
++
++#define SDHCI_AM654_QUIRK_FORCE_CDTEST BIT(0)
+ };
  
- 	arm64_notify_die("Oops - bad compat syscall(2)", regs,
--			 SIGILL, ILL_ILLTRP, addr, scno);
-+			 SIGILL, ILL_ILLTRP, addr, 0);
- 	return 0;
+ struct sdhci_am654_driver_data {
+@@ -369,6 +372,21 @@ static void sdhci_am654_write_b(struct sdhci_host *host, u8 val, int reg)
+ 	}
  }
+ 
++static void sdhci_am654_reset(struct sdhci_host *host, u8 mask)
++{
++	u8 ctrl;
++	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
++	struct sdhci_am654_data *sdhci_am654 = sdhci_pltfm_priv(pltfm_host);
++
++	sdhci_reset(host, mask);
++
++	if (sdhci_am654->quirks & SDHCI_AM654_QUIRK_FORCE_CDTEST) {
++		ctrl = sdhci_readb(host, SDHCI_HOST_CONTROL);
++		ctrl |= SDHCI_CTRL_CDTEST_INS | SDHCI_CTRL_CDTEST_EN;
++		sdhci_writeb(host, ctrl, SDHCI_HOST_CONTROL);
++	}
++}
++
+ static int sdhci_am654_execute_tuning(struct mmc_host *mmc, u32 opcode)
+ {
+ 	struct sdhci_host *host = mmc_priv(mmc);
+@@ -500,7 +518,7 @@ static struct sdhci_ops sdhci_j721e_4bit_ops = {
+ 	.set_clock = sdhci_j721e_4bit_set_clock,
+ 	.write_b = sdhci_am654_write_b,
+ 	.irq = sdhci_am654_cqhci_irq,
+-	.reset = sdhci_reset,
++	.reset = sdhci_am654_reset,
+ };
+ 
+ static const struct sdhci_pltfm_data sdhci_j721e_4bit_pdata = {
+@@ -719,6 +737,9 @@ static int sdhci_am654_get_of_property(struct platform_device *pdev,
+ 	device_property_read_u32(dev, "ti,clkbuf-sel",
+ 				 &sdhci_am654->clkbuf_sel);
+ 
++	if (device_property_read_bool(dev, "ti,fails-without-test-cd"))
++		sdhci_am654->quirks |= SDHCI_AM654_QUIRK_FORCE_CDTEST;
++
+ 	sdhci_get_of_property(pdev);
+ 
+ 	return 0;
 -- 
 2.35.1
 
