@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B74CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC46FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:06:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379856AbiFGVGb (ORCPT
+        id S1345715AbiFGVGk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:06:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50190 "EHLO
+        Tue, 7 Jun 2022 17:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358128AbiFGUIZ (ORCPT
+        with ESMTP id S1355482AbiFGUJN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:08:25 -0400
+        Tue, 7 Jun 2022 16:09:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05DA1EBAB5;
-        Tue,  7 Jun 2022 11:26:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7459EEF066;
+        Tue,  7 Jun 2022 11:26:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 927CC6127C;
-        Tue,  7 Jun 2022 18:26:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A32FDC385A2;
-        Tue,  7 Jun 2022 18:26:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1774660906;
+        Tue,  7 Jun 2022 18:26:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25F2EC385A5;
+        Tue,  7 Jun 2022 18:26:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626377;
-        bh=PxGyuL6ReFTTSA/dQVTf/Ns6fdwTRWGkJOcMF8Ss+2k=;
+        s=korg; t=1654626393;
+        bh=ldGhd7bSBWMTDEq9RvkJwTdry4k2qspt5cCyIwrHyVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xk7LmyQAafxWKY1JXc6kGdF0LbbaqE1jvUEXIR7xUuMJHE04K1+gXWLIiKovCvCKR
-         t40MWHODcml2eEGoAoTzRhdNUHiP05YZ1eOYzw+eLkuik8P/VaECK2yLyLkNxCAO6G
-         usnc0QA4yuJdFLFhBMTN0T0cjsD83rENA9lqqRpo=
+        b=VJBAWK+2ymkA68+2EBezP51M5jFl8GrqLFsWWS2ZZKNJfKltyFIbRoVxlkbOZel+l
+         NKl1hWkZJX2110P7Mt44NJicfeJ7W25ACYDiZ5REuVahyhfL7PQFehRRTkUNde59sM
+         8jGel4aajjOL+f954F/oAR9skHuELIMEBj1rs+W4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 357/772] ASoC: imx-hdmi: Fix refcount leak in imx_hdmi_probe
-Date:   Tue,  7 Jun 2022 18:59:09 +0200
-Message-Id: <20220607164959.538606095@linuxfoundation.org>
+Subject: [PATCH 5.17 362/772] ASoC: samsung: Fix refcount leak in aries_audio_probe
+Date:   Tue,  7 Jun 2022 18:59:14 +0200
+Message-Id: <20220607164959.681023905@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,35 +53,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit ed46731d8e86c8d65f5fc717671e1f1f6c3146d2 ]
+[ Upstream commit bf4a9b2467b775717d0e9034ad916888e19713a3 ]
 
-of_find_device_by_node() takes reference, we should use put_device()
-to release it. when devm_kzalloc() fails, it doesn't have a
-put_device(), it will cause refcount leak.
-Add missing put_device() to fix this.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+If extcon_find_edev_by_node() fails, it doesn't call of_node_put()
+Calling of_node_put() after extcon_find_edev_by_node() to fix this.
 
-Fixes: 6a5f850aa83a ("ASoC: fsl: Add imx-hdmi machine driver")
-Fixes: f670b274f7f6 ("ASoC: imx-hdmi: add put_device() after of_find_device_by_node()")
+Fixes: 7a3a7671fa6c ("ASoC: samsung: Add driver for Aries boards")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220511052740.46903-1-linmq006@gmail.com
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220512043828.496-1-linmq006@gmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/imx-hdmi.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/samsung/aries_wm8994.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/fsl/imx-hdmi.c b/sound/soc/fsl/imx-hdmi.c
-index 929f69b758af..ec149dc73938 100644
---- a/sound/soc/fsl/imx-hdmi.c
-+++ b/sound/soc/fsl/imx-hdmi.c
-@@ -126,6 +126,7 @@ static int imx_hdmi_probe(struct platform_device *pdev)
- 	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
- 	if (!data) {
- 		ret = -ENOMEM;
-+		put_device(&cpu_pdev->dev);
- 		goto fail;
- 	}
+diff --git a/sound/soc/samsung/aries_wm8994.c b/sound/soc/samsung/aries_wm8994.c
+index 5265e546b124..83acbe57b248 100644
+--- a/sound/soc/samsung/aries_wm8994.c
++++ b/sound/soc/samsung/aries_wm8994.c
+@@ -585,10 +585,10 @@ static int aries_audio_probe(struct platform_device *pdev)
  
+ 	extcon_np = of_parse_phandle(np, "extcon", 0);
+ 	priv->usb_extcon = extcon_find_edev_by_node(extcon_np);
++	of_node_put(extcon_np);
+ 	if (IS_ERR(priv->usb_extcon))
+ 		return dev_err_probe(dev, PTR_ERR(priv->usb_extcon),
+ 				     "Failed to get extcon device");
+-	of_node_put(extcon_np);
+ 
+ 	priv->adc = devm_iio_channel_get(dev, "headset-detect");
+ 	if (IS_ERR(priv->adc))
 -- 
 2.35.1
 
