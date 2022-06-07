@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 653F0CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39942CCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:38:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390025AbiFHAgZ (ORCPT
+        id S1389815AbiFHAgN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:36:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45340 "EHLO
+        Tue, 7 Jun 2022 20:36:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383052AbiFGVwM (ORCPT
+        with ESMTP id S1383424AbiFGWHV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:52:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B149811178;
-        Tue,  7 Jun 2022 12:10:22 -0700 (PDT)
+        Tue, 7 Jun 2022 18:07:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0A325697D;
+        Tue,  7 Jun 2022 12:18:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D1BBB823B2;
-        Tue,  7 Jun 2022 19:10:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4747C385A5;
-        Tue,  7 Jun 2022 19:10:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32BF561935;
+        Tue,  7 Jun 2022 19:18:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38A8CC385A2;
+        Tue,  7 Jun 2022 19:18:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629020;
-        bh=ZTwSZD87fdAeVEUj2frEjr7IJiDfgHVX8UWIVufBZcQ=;
+        s=korg; t=1654629521;
+        bh=fiZh7oPlzA9BfrNvHEJe3e3QJVkk8r/GF6fUEAlT2jg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CJuBpY2Jog3Q3qyJWktTE1CbR9icjmqpNpXWeIGBPNeUmkaIxko16U33f+CJmbsGQ
-         +u7gi1hPvJs7JqZJ9cRTYZbQBCopsgGlQOmzAB9PsJvf5Fp9wwnJOWJghXvzIOduP+
-         R/NsfjDJNrkfb6LJaeW+PR3vmKzFPY/8Rr+AjBWI=
+        b=BLG3xYgtnhZcOEsFkLJ0MxsZErFNTvR2YWQOkPgt0SKksVZGYdBic/OFChF0sUzQJ
+         WpeWUPj+yZ93Y7NqhjdJC4WQfls6fJefTuy+yoBpQTghLhMZ6NGm75v5xrWYdTT8AT
+         2TJsfbhAsgWCNw4nMdhOYqjGqfoxIZqv26e1E/vk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Harini Katakam <harini.katakam@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 503/879] net: macb: Fix PTP one step sync support
-Date:   Tue,  7 Jun 2022 19:00:21 +0200
-Message-Id: <20220607165017.474449409@linuxfoundation.org>
+Subject: [PATCH 5.18 680/879] NFS: Dont report errors from nfs_pageio_complete() more than once
+Date:   Tue,  7 Jun 2022 19:03:18 +0200
+Message-Id: <20220607165022.585729914@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,142 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Harini Katakam <harini.katakam@xilinx.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 5cebb40bc9554aafcc492431181f43c6231b0459 ]
+[ Upstream commit c5e483b77cc2edb318da152abe07e33006b975fd ]
 
-PTP one step sync packets cannot have CSUM padding and insertion in
-SW since time stamp is inserted on the fly by HW.
-In addition, ptp4l version 3.0 and above report an error when skb
-timestamps are reported for packets that not processed for TX TS
-after transmission.
-Add a helper to identify PTP one step sync and fix the above two
-errors. Add a common mask for PTP header flag field "twoStepflag".
-Also reset ptp OSS bit when one step is not selected.
+Since errors from nfs_pageio_complete() are already being reported
+through nfs_async_write_error(), we should not be returning them to the
+callers of do_writepages() as well. They will end up being reported
+through the generic mechanism instead.
 
-Fixes: ab91f0a9b5f4 ("net: macb: Add hardware PTP support")
-Fixes: 653e92a9175e ("net: macb: add support for padding and fcs computation")
-Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220518170756.7752-1-harini.katakam@xilinx.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 6fbda89b257f ("NFS: Replace custom error reporting mechanism with generic one")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 40 +++++++++++++++++++++---
- drivers/net/ethernet/cadence/macb_ptp.c  |  4 ++-
- include/linux/ptp_classify.h             |  3 ++
- 3 files changed, 42 insertions(+), 5 deletions(-)
+ fs/nfs/write.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index ed7c2c2c4401..e9e5c3f6027c 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -36,6 +36,7 @@
- #include <linux/iopoll.h>
- #include <linux/phy/phy.h>
- #include <linux/pm_runtime.h>
-+#include <linux/ptp_classify.h>
- #include <linux/reset.h>
- #include "macb.h"
- 
-@@ -1124,6 +1125,36 @@ static void macb_tx_error_task(struct work_struct *work)
- 	spin_unlock_irqrestore(&bp->lock, flags);
+diff --git a/fs/nfs/write.c b/fs/nfs/write.c
+index e437db1791ba..4925d11849cd 100644
+--- a/fs/nfs/write.c
++++ b/fs/nfs/write.c
+@@ -681,11 +681,7 @@ static int nfs_writepage_locked(struct page *page,
+ 	err = nfs_do_writepage(page, wbc, &pgio);
+ 	pgio.pg_error = 0;
+ 	nfs_pageio_complete(&pgio);
+-	if (err < 0)
+-		return err;
+-	if (nfs_error_is_fatal(pgio.pg_error))
+-		return pgio.pg_error;
+-	return 0;
++	return err;
  }
  
-+static bool ptp_one_step_sync(struct sk_buff *skb)
-+{
-+	struct ptp_header *hdr;
-+	unsigned int ptp_class;
-+	u8 msgtype;
-+
-+	/* No need to parse packet if PTP TS is not involved */
-+	if (likely(!(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)))
-+		goto not_oss;
-+
-+	/* Identify and return whether PTP one step sync is being processed */
-+	ptp_class = ptp_classify_raw(skb);
-+	if (ptp_class == PTP_CLASS_NONE)
-+		goto not_oss;
-+
-+	hdr = ptp_parse_header(skb, ptp_class);
-+	if (!hdr)
-+		goto not_oss;
-+
-+	if (hdr->flag_field[0] & PTP_FLAG_TWOSTEP)
-+		goto not_oss;
-+
-+	msgtype = ptp_get_msgtype(hdr, ptp_class);
-+	if (msgtype == PTP_MSGTYPE_SYNC)
-+		return true;
-+
-+not_oss:
-+	return false;
-+}
-+
- static void macb_tx_interrupt(struct macb_queue *queue)
- {
- 	unsigned int tail;
-@@ -1168,8 +1199,8 @@ static void macb_tx_interrupt(struct macb_queue *queue)
+ int nfs_writepage(struct page *page, struct writeback_control *wbc)
+@@ -747,9 +743,6 @@ int nfs_writepages(struct address_space *mapping, struct writeback_control *wbc)
  
- 			/* First, update TX stats if needed */
- 			if (skb) {
--				if (unlikely(skb_shinfo(skb)->tx_flags &
--					     SKBTX_HW_TSTAMP) &&
-+				if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
-+				    !ptp_one_step_sync(skb) &&
- 				    gem_ptp_do_txstamp(queue, skb, desc) == 0) {
- 					/* skb now belongs to timestamp buffer
- 					 * and will be removed later
-@@ -1999,7 +2030,8 @@ static unsigned int macb_tx_map(struct macb *bp,
- 			ctrl |= MACB_BF(TX_LSO, lso_ctrl);
- 			ctrl |= MACB_BF(TX_TCP_SEQ_SRC, seq_ctrl);
- 			if ((bp->dev->features & NETIF_F_HW_CSUM) &&
--			    skb->ip_summed != CHECKSUM_PARTIAL && !lso_ctrl)
-+			    skb->ip_summed != CHECKSUM_PARTIAL && !lso_ctrl &&
-+			    !ptp_one_step_sync(skb))
- 				ctrl |= MACB_BIT(TX_NOCRC);
- 		} else
- 			/* Only set MSS/MFS on payload descriptors
-@@ -2097,7 +2129,7 @@ static int macb_pad_and_fcs(struct sk_buff **skb, struct net_device *ndev)
- 
- 	if (!(ndev->features & NETIF_F_HW_CSUM) ||
- 	    !((*skb)->ip_summed != CHECKSUM_PARTIAL) ||
--	    skb_shinfo(*skb)->gso_size)	/* Not available for GSO */
-+	    skb_shinfo(*skb)->gso_size || ptp_one_step_sync(*skb))
- 		return 0;
- 
- 	if (padlen <= 0) {
-diff --git a/drivers/net/ethernet/cadence/macb_ptp.c b/drivers/net/ethernet/cadence/macb_ptp.c
-index fb6b27f46b15..9559c16078f9 100644
---- a/drivers/net/ethernet/cadence/macb_ptp.c
-+++ b/drivers/net/ethernet/cadence/macb_ptp.c
-@@ -470,8 +470,10 @@ int gem_set_hwtst(struct net_device *dev, struct ifreq *ifr, int cmd)
- 	case HWTSTAMP_TX_ONESTEP_SYNC:
- 		if (gem_ptp_set_one_step_sync(bp, 1) != 0)
- 			return -ERANGE;
--		fallthrough;
-+		tx_bd_control = TSTAMP_ALL_FRAMES;
-+		break;
- 	case HWTSTAMP_TX_ON:
-+		gem_ptp_set_one_step_sync(bp, 0);
- 		tx_bd_control = TSTAMP_ALL_FRAMES;
- 		break;
- 	default:
-diff --git a/include/linux/ptp_classify.h b/include/linux/ptp_classify.h
-index fefa7790dc46..2b6ea36ad162 100644
---- a/include/linux/ptp_classify.h
-+++ b/include/linux/ptp_classify.h
-@@ -43,6 +43,9 @@
- #define OFF_PTP_SOURCE_UUID	22 /* PTPv1 only */
- #define OFF_PTP_SEQUENCE_ID	30
- 
-+/* PTP header flag fields */
-+#define PTP_FLAG_TWOSTEP	BIT(1)
-+
- /* Below defines should actually be removed at some point in time. */
- #define IP6_HLEN	40
- #define UDP_HLEN	8
+ 	if (err < 0)
+ 		goto out_err;
+-	err = pgio.pg_error;
+-	if (nfs_error_is_fatal(err))
+-		goto out_err;
+ 	return 0;
+ out_err:
+ 	return err;
 -- 
 2.35.1
 
