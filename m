@@ -2,152 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84024C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:33:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA74C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:33:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385269AbiFHA3d (ORCPT
+        id S1386330AbiFHA3z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:29:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56648 "EHLO
+        Tue, 7 Jun 2022 20:29:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455645AbiFGXSz (ORCPT
+        with ESMTP id S1385312AbiFGWVa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:18:55 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167E014CA3C;
-        Tue,  7 Jun 2022 14:21:01 -0700 (PDT)
-Received: from nicolas-tpx395.localdomain (192-222-136-102.qc.cable.ebox.net [192.222.136.102])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Tue, 7 Jun 2022 18:21:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A458C19A726;
+        Tue,  7 Jun 2022 12:21:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: nicolas)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id B5C076601871;
-        Tue,  7 Jun 2022 22:20:51 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654636852;
-        bh=dH4ePZwfeLtm9fi79oxsDTUIBw0bx6MHdxM1wE/tZqQ=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=WNvOADoRCCmqcW0ciRe4n/B5kvdvxoJJyqgrUKUAHAR9nFu2Ku1T2a+690+lFyA/S
-         2IDgEVjcC11SDcfX1akflY4OIdQ/bj0Uj2IxoEB+aaIyLlGaDOed642U3BPt8K2BhQ
-         8/Nni2eDQz6US5/y0asqf3RapGjnyJ24LUK82CN8Ov/JHF04L09D0oZPffGtRD2Zov
-         ZpQUQ2wg7HVqhSKQyF5Y58FNo4dNohpAPurdNF+dCWQfQ0tbLaCR+IDcF3HvOFG6dV
-         0FmnwFZKDFjbTZJqi27BvEYUY8a/wALRUJ5nlV+tT5Y3sdhoVenVLWDLs9kLcxtx8J
-         N7lkevwSQJjzQ==
-Message-ID: <253e2771abb13a3e62c07dfb0b420169bb572c2d.camel@collabora.com>
-Subject: Re: [PATCH] arm64: dts: rockchip: Assign RK3399 VDU clock rate
-From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
-To:     Brian Norris <briannorris@chromium.org>,
-        Heiko Stuebner <heiko@sntech.de>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sebastian Fricke <sebastian.fricke@collabora.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        stable@vger.kernel.org
-Date:   Tue, 07 Jun 2022 17:20:41 -0400
-In-Reply-To: <20220607141535.1.Idafe043ffc94756a69426ec68872db0645c5d6e2@changeid>
-References: <20220607141535.1.Idafe043ffc94756a69426ec68872db0645c5d6e2@changeid>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A01F60A1D;
+        Tue,  7 Jun 2022 19:21:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F7C3C385A5;
+        Tue,  7 Jun 2022 19:21:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629688;
+        bh=5or48Sd0+2qQPDKl+woFHQA/id1AA8D8c0YmSyWFprU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UpoZWbTIvLuWoxcMu2sLHJp4ZbqnWhOYe30uiveNxPPf67VgDvj3KpJnpvn07yQmw
+         jZ0Dy3h1xciyIajAFAp1JM1TEpfpmIuLRHgDGntbcx7OXybwSIRpKUI7qgBF490G0R
+         6sbdQL4yla24hv8MS6zBK5RlYW15ddhNkWB2qvzs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
+Subject: [PATCH 5.18 781/879] selftests/landlock: Extend access right tests to directories
+Date:   Tue,  7 Jun 2022 19:04:59 +0200
+Message-Id: <20220607165025.541305893@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le mardi 07 juin 2022 =C3=A0 14:15 -0700, Brian Norris a =C3=A9crit=C2=A0:
-> Before commit 9998943f6dfc ("media: rkvdec: Stop overclocking the
-> decoder"), the rkvdec driver was forcing the VDU clock rate. After that
-> commit, we rely on the default clock rate. That rate works OK on many
-> boards, with the default PLL settings (CPLL is 800MHz, VDU dividers
-> leave it at 400MHz); but some boards change PLL settings.
->=20
-> Assign the expected default clock rate explicitly, so that the rate is
-> consistent, regardless of PLL configuration.
->=20
-> This was particularly broken on RK3399 Gru Scarlet systems, where the
-> rk3399-gru-scarlet.dtsi assigns PLL_CPLL to 1.6 GHz, and so the VDU
-> clock ends up at 800 MHz (twice the expected rate), and causes video
-> artifacts and other issues.
->=20
-> Note: I assign the clock rate in the clock controller instead of the
-> vdec node, because there are multiple nodes that use this clock, and per
-> the clock.yaml specification:
->=20
->   Configuring a clock's parent and rate through the device node that
->   consumes the clock can be done only for clocks that have a single
->   user. Specifying conflicting parent or rate configuration in multiple
->   consumer nodes for a shared clock is forbidden.
->=20
->   Configuration of common clocks, which affect multiple consumer devices
->   can be similarly specified in the clock provider node.
->=20
-> Fixes: 9998943f6dfc ("media: rkvdec: Stop overclocking the decoder")
-> Cc: <stable@vger.kernel.org>
-> Signed-off-by: Brian Norris <briannorris@chromium.org>
+From: Mickaël Salaün <mic@digikod.net>
 
-Reviewed-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+commit d18955d094d09a220cf8f533f5e896a2fe31575a upstream.
 
-My only doubt was if you really needed to duplicate that setting into gru-
-scarlet.dtsi, but I've simply assumed the answer is yes, and that you alrea=
-dy
-checked that.
+Make sure that all filesystem access rights can be tied to directories.
 
-> ---
-> This is a candidate for 5.19 IMO, since commit 9998943f6dfc landed in
-> 5.19-rc1 and is being queued up for -stable as we speak.
->=20
->  arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi | 4 +++-
->  arch/arm64/boot/dts/rockchip/rk3399.dtsi             | 6 ++++--
->  2 files changed, 7 insertions(+), 3 deletions(-)
->=20
-> diff --git a/arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi b/arch/=
-arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi
-> index 913d845eb51a..1977103a5ef4 100644
-> --- a/arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi
-> +++ b/arch/arm64/boot/dts/rockchip/rk3399-gru-scarlet.dtsi
-> @@ -376,7 +376,8 @@ &cru {
->  		<&cru ACLK_VIO>,
->  		<&cru ACLK_GIC_PRE>,
->  		<&cru PCLK_DDR>,
-> -		<&cru ACLK_HDCP>;
-> +		<&cru ACLK_HDCP>,
-> +		<&cru ACLK_VDU>;
->  	assigned-clock-rates =3D
->  		<600000000>, <1600000000>,
->  		<1000000000>,
-> @@ -388,6 +389,7 @@ &cru {
->  		<400000000>,
->  		<200000000>,
->  		<200000000>,
-> +		<400000000>,
->  		<400000000>;
->  };
-> =20
-> diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/d=
-ts/rockchip/rk3399.dtsi
-> index fbd0346624e6..9d5b0e8c9cca 100644
-> --- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-> +++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-> @@ -1462,7 +1462,8 @@ cru: clock-controller@ff760000 {
->  			<&cru HCLK_PERILP1>, <&cru PCLK_PERILP1>,
->  			<&cru ACLK_VIO>, <&cru ACLK_HDCP>,
->  			<&cru ACLK_GIC_PRE>,
-> -			<&cru PCLK_DDR>;
-> +			<&cru PCLK_DDR>,
-> +			<&cru ACLK_VDU>;
->  		assigned-clock-rates =3D
->  			 <594000000>,  <800000000>,
->  			<1000000000>,
-> @@ -1473,7 +1474,8 @@ cru: clock-controller@ff760000 {
->  			 <100000000>,   <50000000>,
->  			 <400000000>, <400000000>,
->  			 <200000000>,
-> -			 <200000000>;
-> +			 <200000000>,
-> +			 <400000000>;
->  	};
-> =20
->  	grf: syscon@ff770000 {
+Rename layout1.file_access_rights to layout1.file_and_dir_access_rights
+to reflect this change.
+
+Cc: Shuah Khan <shuah@kernel.org>
+Link: https://lore.kernel.org/r/20220506160820.524344-6-mic@digikod.net
+Cc: stable@vger.kernel.org
+Signed-off-by: Mickaël Salaün <mic@digikod.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ tools/testing/selftests/landlock/fs_test.c |   30 +++++++++++++++++++++--------
+ 1 file changed, 22 insertions(+), 8 deletions(-)
+
+--- a/tools/testing/selftests/landlock/fs_test.c
++++ b/tools/testing/selftests/landlock/fs_test.c
+@@ -418,11 +418,12 @@ TEST_F_FORK(layout1, inval)
+ 
+ /* clang-format on */
+ 
+-TEST_F_FORK(layout1, file_access_rights)
++TEST_F_FORK(layout1, file_and_dir_access_rights)
+ {
+ 	__u64 access;
+ 	int err;
+-	struct landlock_path_beneath_attr path_beneath = {};
++	struct landlock_path_beneath_attr path_beneath_file = {},
++					  path_beneath_dir = {};
+ 	struct landlock_ruleset_attr ruleset_attr = {
+ 		.handled_access_fs = ACCESS_ALL,
+ 	};
+@@ -432,20 +433,33 @@ TEST_F_FORK(layout1, file_access_rights)
+ 	ASSERT_LE(0, ruleset_fd);
+ 
+ 	/* Tests access rights for files. */
+-	path_beneath.parent_fd = open(file1_s1d2, O_PATH | O_CLOEXEC);
+-	ASSERT_LE(0, path_beneath.parent_fd);
++	path_beneath_file.parent_fd = open(file1_s1d2, O_PATH | O_CLOEXEC);
++	ASSERT_LE(0, path_beneath_file.parent_fd);
++
++	/* Tests access rights for directories. */
++	path_beneath_dir.parent_fd =
++		open(dir_s1d2, O_PATH | O_DIRECTORY | O_CLOEXEC);
++	ASSERT_LE(0, path_beneath_dir.parent_fd);
++
+ 	for (access = 1; access <= ACCESS_LAST; access <<= 1) {
+-		path_beneath.allowed_access = access;
++		path_beneath_dir.allowed_access = access;
++		ASSERT_EQ(0, landlock_add_rule(ruleset_fd,
++					       LANDLOCK_RULE_PATH_BENEATH,
++					       &path_beneath_dir, 0));
++
++		path_beneath_file.allowed_access = access;
+ 		err = landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
+-					&path_beneath, 0);
+-		if ((access | ACCESS_FILE) == ACCESS_FILE) {
++					&path_beneath_file, 0);
++		if (access & ACCESS_FILE) {
+ 			ASSERT_EQ(0, err);
+ 		} else {
+ 			ASSERT_EQ(-1, err);
+ 			ASSERT_EQ(EINVAL, errno);
+ 		}
+ 	}
+-	ASSERT_EQ(0, close(path_beneath.parent_fd));
++	ASSERT_EQ(0, close(path_beneath_file.parent_fd));
++	ASSERT_EQ(0, close(path_beneath_dir.parent_fd));
++	ASSERT_EQ(0, close(ruleset_fd));
+ }
+ 
+ TEST_F_FORK(layout1, unknown_access_rights)
+
 
