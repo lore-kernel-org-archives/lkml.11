@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBA1AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:22:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C13FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:22:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346128AbiFGRWP (ORCPT
+        id S1345938AbiFGRW3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:22:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43020 "EHLO
+        Tue, 7 Jun 2022 13:22:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345938AbiFGRUF (ORCPT
+        with ESMTP id S1345962AbiFGRUH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:20:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE11510657F;
-        Tue,  7 Jun 2022 10:19:54 -0700 (PDT)
+        Tue, 7 Jun 2022 13:20:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5510910656F;
+        Tue,  7 Jun 2022 10:19:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F06FDB822B1;
-        Tue,  7 Jun 2022 17:19:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6567DC34119;
-        Tue,  7 Jun 2022 17:19:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E760C618D6;
+        Tue,  7 Jun 2022 17:19:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08573C385A5;
+        Tue,  7 Jun 2022 17:19:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622391;
-        bh=6GPI7gYf07+zFN1Ol/tp6iH7PZSLrK3qLnRFMdReihY=;
+        s=korg; t=1654622397;
+        bh=IditYZuL5cO1NhdK+/B1QlSFhu7Q8kTz3Xx9VY+eUhI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VmQ6XtZTrM6G4EKhawzUi3tZP02t4oOYAvyw1Hmtn5dReoLdjXiGigEWY+MwT9an7
-         r8JRi/YHFXcZ+4l/fQ48fS3xdrWiWxBufCo7x5yzPd1lOq6EKIQc573NTTmL6fnkl3
-         mNq2bg8SO8lfOGDcrjH9cw78wzYaaVwjADPrNAYc=
+        b=l16KIWedlQFw9adpJHGloAXrwvyxtvogW5sOHMACzYf4pxVEJgq2Iro0VGo4HcpAu
+         QuTz3s4PYI0fauYEswl1KlMt4/nHuK7315Tv178LOc1tyyXWBq6iwwzui7m8uHA58n
+         1x7F+jz1dGJMYKrSD0RolP/5ciqGgBxsFAHrtPmk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Thibaut=20VAR=C3=88NE?= <hacks+kernel@slashdirt.org>,
-        Felix Fietkau <nbd@nbd.name>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Luca Weiss <luca.weiss@fairphone.com>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 043/452] ath9k: fix QCA9561 PA bias level
-Date:   Tue,  7 Jun 2022 18:58:20 +0200
-Message-Id: <20220607164909.831571207@linuxfoundation.org>
+Subject: [PATCH 5.10 044/452] media: venus: hfi: avoid null dereference in deinit
+Date:   Tue,  7 Jun 2022 18:58:21 +0200
+Message-Id: <20220607164909.861501084@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -53,49 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
+From: Luca Weiss <luca.weiss@fairphone.com>
 
-[ Upstream commit e999a5da28a0e0f7de242d841ef7d5e48f4646ae ]
+[ Upstream commit 86594f6af867b5165d2ba7b5a71fae3a5961e56c ]
 
-This patch fixes an invalid TX PA DC bias level on QCA9561, which
-results in a very low output power and very low throughput as devices
-are further away from the AP (compared to other 2.4GHz APs).
+If venus_probe fails at pm_runtime_put_sync the error handling first
+calls hfi_destroy and afterwards hfi_core_deinit. As hfi_destroy sets
+core->ops to NULL, hfi_core_deinit cannot call the core_deinit function
+anymore.
 
-This patch was suggested by Felix Fietkau, who noted[1]:
-"The value written to that register is wrong, because while the mask
-definition AR_CH0_TOP2_XPABIASLVL uses a different value for 9561, the
-shift definition AR_CH0_TOP2_XPABIASLVL_S is hardcoded to 12, which is
-wrong for 9561."
+Avoid this null pointer derefence by skipping the call when necessary.
 
-In real life testing, without this patch the 2.4GHz throughput on
-Yuncore XD3200 is around 10Mbps sitting next to the AP, and closer to
-practical maximum with the patch applied.
-
-[1] https://lore.kernel.org/all/91c58969-c60e-2f41-00ac-737786d435ae@nbd.name
-
-Signed-off-by: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
-Acked-by: Felix Fietkau <nbd@nbd.name>
-Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220417145145.1847-1-hacks+kernel@slashdirt.org
+Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/ar9003_phy.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/platform/qcom/venus/hfi.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath9k/ar9003_phy.h b/drivers/net/wireless/ath/ath9k/ar9003_phy.h
-index a171dbb29fbb..ad949eb02f3d 100644
---- a/drivers/net/wireless/ath/ath9k/ar9003_phy.h
-+++ b/drivers/net/wireless/ath/ath9k/ar9003_phy.h
-@@ -720,7 +720,7 @@
- #define AR_CH0_TOP2		(AR_SREV_9300(ah) ? 0x1628c : \
- 					(AR_SREV_9462(ah) ? 0x16290 : 0x16284))
- #define AR_CH0_TOP2_XPABIASLVL		(AR_SREV_9561(ah) ? 0x1e00 : 0xf000)
--#define AR_CH0_TOP2_XPABIASLVL_S	12
-+#define AR_CH0_TOP2_XPABIASLVL_S	(AR_SREV_9561(ah) ? 9 : 12)
+diff --git a/drivers/media/platform/qcom/venus/hfi.c b/drivers/media/platform/qcom/venus/hfi.c
+index a59022adb14c..966b4d9b57a9 100644
+--- a/drivers/media/platform/qcom/venus/hfi.c
++++ b/drivers/media/platform/qcom/venus/hfi.c
+@@ -104,6 +104,9 @@ int hfi_core_deinit(struct venus_core *core, bool blocking)
+ 		mutex_lock(&core->lock);
+ 	}
  
- #define AR_CH0_XTAL		(AR_SREV_9300(ah) ? 0x16294 : \
- 				 ((AR_SREV_9462(ah) || AR_SREV_9565(ah)) ? 0x16298 : \
++	if (!core->ops)
++		goto unlock;
++
+ 	ret = core->ops->core_deinit(core);
+ 
+ 	if (!ret)
 -- 
 2.35.1
 
