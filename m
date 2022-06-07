@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61272C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:18:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C99C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:18:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352264AbiFGVRz (ORCPT
+        id S1381153AbiFGVRW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:17:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40178 "EHLO
+        Tue, 7 Jun 2022 17:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376316AbiFGUV0 (ORCPT
+        with ESMTP id S1359850AbiFGUVV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:21:26 -0400
+        Tue, 7 Jun 2022 16:21:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A89144FCE;
-        Tue,  7 Jun 2022 11:31:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E61178553;
+        Tue,  7 Jun 2022 11:30:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 369EE612E9;
-        Tue,  7 Jun 2022 18:31:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BD89C385A2;
-        Tue,  7 Jun 2022 18:31:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2AB29611B9;
+        Tue,  7 Jun 2022 18:30:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 325D0C385A2;
+        Tue,  7 Jun 2022 18:30:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626668;
-        bh=RwPRQSyV833cnrScno/aj01YrPInxnibRG2Rvh6F6Ik=;
+        s=korg; t=1654626649;
+        bh=DHhMOTAVSHSY0j7O0/1UO25k14ku7/TFOBskDOIVeLg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ENmqCdN7Xcq9QhoQv6cyqQJO2jRD1CCLeWZL6H/gTn7jzOwe5RZwVtb5crsnkSkis
-         IscKu3u1Froma0ptS41WvUPyUX5mv5qRAmFNAWTyInbXVHojaqY0xTBizm64AdGAfV
-         0C1ptCRiaMuyy0ypWs+pKPWtzkwZYTXI2u1l/PpE=
+        b=mMbe5ukG6dDxT82kP09/tH5clSh6TrkNfdU9c9ZUcsSMqgv42gbxmsYJZNU5S88IY
+         rLbPUUJ+s4MgISLsk482uOIKdpPI3HZ0QIooBbKUsPqsV7bfx9qrkzLRQB1EpyDVNm
+         4n5ohoaXVTDGBrDSBiiqeE91NgRceXuvEh9w5ImA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 460/772] PCI: rockchip: Fix find_first_zero_bit() limit
-Date:   Tue,  7 Jun 2022 19:00:52 +0200
-Message-Id: <20220607165002.556578976@linuxfoundation.org>
+Subject: [PATCH 5.17 454/772] memory: samsung: exynos5422-dmc: Avoid some over memory allocation
+Date:   Tue,  7 Jun 2022 19:00:46 +0200
+Message-Id: <20220607165002.381237755@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,35 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 096950e230b8d83645c7cf408b9f399f58c08b96 ]
+[ Upstream commit 56653827f0d7bc7c2d8bac0e119fd1521fa9990a ]
 
-The ep->ob_region_map bitmap is a long and it has BITS_PER_LONG bits.
+'dmc->counter' is a 'struct devfreq_event_dev **', so there is some
+over memory allocation. 'counters_size' should be computed with
+'sizeof(struct devfreq_event_dev *)'.
 
-Link: https://lore.kernel.org/r/20220315065944.GB13572@kili
-Fixes: cf590b078391 ("PCI: rockchip: Add EP driver for Rockchip PCIe controller")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Use 'sizeof(*dmc->counter)' instead to fix it.
+
+While at it, use devm_kcalloc() instead of devm_kzalloc()+open coded
+multiplication.
+
+Fixes: 6e7674c3c6df ("memory: Add DMC driver for Exynos5422")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/69d7e69346986e2fdb994d4382954c932f9f0993.1647760213.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pcie-rockchip-ep.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/memory/samsung/exynos5422-dmc.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pci/controller/pcie-rockchip-ep.c b/drivers/pci/controller/pcie-rockchip-ep.c
-index 5fb9ce6e536e..d1a200b93b2b 100644
---- a/drivers/pci/controller/pcie-rockchip-ep.c
-+++ b/drivers/pci/controller/pcie-rockchip-ep.c
-@@ -264,8 +264,7 @@ static int rockchip_pcie_ep_map_addr(struct pci_epc *epc, u8 fn, u8 vfn,
- 	struct rockchip_pcie *pcie = &ep->rockchip;
- 	u32 r;
+diff --git a/drivers/memory/samsung/exynos5422-dmc.c b/drivers/memory/samsung/exynos5422-dmc.c
+index 9c8318923ed0..4733e7898ffe 100644
+--- a/drivers/memory/samsung/exynos5422-dmc.c
++++ b/drivers/memory/samsung/exynos5422-dmc.c
+@@ -1322,7 +1322,6 @@ static int exynos5_dmc_init_clks(struct exynos5_dmc *dmc)
+  */
+ static int exynos5_performance_counters_init(struct exynos5_dmc *dmc)
+ {
+-	int counters_size;
+ 	int ret, i;
  
--	r = find_first_zero_bit(&ep->ob_region_map,
--				sizeof(ep->ob_region_map) * BITS_PER_LONG);
-+	r = find_first_zero_bit(&ep->ob_region_map, BITS_PER_LONG);
- 	/*
- 	 * Region 0 is reserved for configuration space and shouldn't
- 	 * be used elsewhere per TRM, so leave it out.
+ 	dmc->num_counters = devfreq_event_get_edev_count(dmc->dev,
+@@ -1332,8 +1331,8 @@ static int exynos5_performance_counters_init(struct exynos5_dmc *dmc)
+ 		return dmc->num_counters;
+ 	}
+ 
+-	counters_size = sizeof(struct devfreq_event_dev) * dmc->num_counters;
+-	dmc->counter = devm_kzalloc(dmc->dev, counters_size, GFP_KERNEL);
++	dmc->counter = devm_kcalloc(dmc->dev, dmc->num_counters,
++				    sizeof(*dmc->counter), GFP_KERNEL);
+ 	if (!dmc->counter)
+ 		return -ENOMEM;
+ 
 -- 
 2.35.1
 
