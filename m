@@ -2,142 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 122F3CCA490
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FC72CCA492
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:46:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382134AbiFGVqh (ORCPT
+        id S1382175AbiFGVql (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:46:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51840 "EHLO
+        Tue, 7 Jun 2022 17:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378540AbiFGUwO (ORCPT
+        with ESMTP id S1378379AbiFGUvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:52:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 849B8BA9B5;
-        Tue,  7 Jun 2022 11:42:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B6146160D;
-        Tue,  7 Jun 2022 18:42:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88BE9C385A5;
-        Tue,  7 Jun 2022 18:42:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627347;
-        bh=wJFVW/I+qZbsg4ltQvCNNL+rG+/iesshOHnsxPxAr4k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BI/dfyZ+ahMWT0w3DfouDE6uDjcNpb54Oe0fTTnEs+WOfTlRc/sOyypwMI2Fwv2+m
-         t1ZI8qIswZOzWj80jYnb/ryqUPFwfJjNtcVXDryivcjNrS2NXQw6saxgENmYEwvQTP
-         3zA8IR7jM8S3j9MBhPu46OpheySqUp/0depzoSUA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>
-Subject: [PATCH 5.17 690/772] drm/nouveau/subdev/bus: Ratelimit logging for fault errors
-Date:   Tue,  7 Jun 2022 19:04:42 +0200
-Message-Id: <20220607165009.385837474@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
-References: <20220607164948.980838585@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 16:51:42 -0400
+Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06C23115A43
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 11:42:10 -0700 (PDT)
+X-ASG-Debug-ID: 1654627329-1cf43917f33965c0001-xx1T2L
+Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with ESMTP id 79iRHZabdgVhHOFB; Tue, 07 Jun 2022 14:42:09 -0400 (EDT)
+X-Barracuda-Envelope-From: tonyb@cybernetics.com
+X-ASG-Whitelist: Client
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=cybernetics.com; s=mail;
+        bh=QbGgNEs9DYDdDETge9nU6qZiAN8p+i0+8LJZVlYu570=;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:Cc:To:From:
+        Content-Language:Subject:MIME-Version:Date:Message-ID; b=jsWpK2MOULqWUEtEYypu
+        BZF113V20OKS/bUvhZVyqHKTY3exH3pnTa1QbMsrI0H9CbQGv9hAAG8PzWuG8R9hLqsUNEYUi26EP
+        8sXIBWYag6D+3OMUTNSodUaPd+OaQi/fx5JrYEKxj7ulxkltkon72+19JDoSSGToGumE1b7Fto=
+Received: from [10.157.2.224] (HELO [192.168.200.1])
+  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
+  with ESMTPS id 11859424; Tue, 07 Jun 2022 14:42:09 -0400
+Message-ID: <6eaea467-cc50-acbd-6232-892011fc803c@cybernetics.com>
+Date:   Tue, 7 Jun 2022 14:42:09 -0400
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: [PATCH v6 04/11] dmapool: fix boundary comparison
+Content-Language: en-US
+X-ASG-Orig-Subj: [PATCH v6 04/11] dmapool: fix boundary comparison
+From:   Tony Battersby <tonyb@cybernetics.com>
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc:     iommu@lists.linux-foundation.org, kernel-team@fb.com,
+        Matthew Wilcox <willy@infradead.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Tony Lindgren <tony@atomide.com>
+References: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
+In-Reply-To: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Barracuda-Connect: UNKNOWN[10.10.4.126]
+X-Barracuda-Start-Time: 1654627329
+X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
+X-Barracuda-BRTS-Status: 1
+X-Virus-Scanned: by bsmtpd at cybernetics.com
+X-Barracuda-Scan-Msg-Size: 1388
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lyude Paul <lyude@redhat.com>
+Fix the boundary comparison when constructing the list of free blocks
+for the case that 'size' is a power of two.  Since 'boundary' is also a
+power of two, that would make 'boundary' a multiple of 'size', in which
+case a single block would never cross the boundary.  This bug would
+cause some of the allocated memory to be wasted (but not leaked).
 
-commit 9887bda0c831df0c044d6de147d002e48024fb4a upstream.
+Example:
 
-There's plenty of ways to fudge the GPU when developing on nouveau by
-mistake, some of which can result in nouveau seriously spamming dmesg with
-fault errors. This can be somewhat annoying, as it can quickly overrun the
-message buffer (or your terminal emulator's buffer) and get rid of actually
-useful feedback from the driver. While working on my new atomic only MST
-branch, I ran into this issue a couple of times.
+size       = 512
+boundary   = 2048
+allocation = 4096
 
-So, let's fix this by adding nvkm_error_ratelimited(), and using it to
-ratelimit errors from faults. This should be fine for developers, since
-it's nearly always only the first few faults that we care about seeing.
-Plus, you can turn off rate limiting in the kernel if you really need to.
+Address range
+   0 -  511
+ 512 - 1023
+1024 - 1535
+1536 - 2047 *
+2048 - 2559
+2560 - 3071
+3072 - 3583
+3584 - 4095 *
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Reviewed-by: Karol Herbst <kherbst@redhat.com>
-Cc: stable@vger.kernel.org
-Link: https://patchwork.freedesktop.org/patch/msgid/20220429195350.85620-1-lyude@redhat.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Prior to this fix, the address ranges marked with "*" would not have
+been used even though they didn't cross the given boundary.
+
+Fixes: e34f44b3517f ("pool: Improve memory usage for devices which can't cross boundaries")
+Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
 ---
- drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h |    2 ++
- drivers/gpu/drm/nouveau/nvkm/subdev/bus/gf100.c    |   14 +++++++-------
- drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv31.c     |    6 +++---
- drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv50.c     |    6 +++---
- 4 files changed, 15 insertions(+), 13 deletions(-)
+ mm/dmapool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h
-+++ b/drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h
-@@ -62,4 +62,6 @@ void nvkm_subdev_intr(struct nvkm_subdev
- #define nvkm_debug(s,f,a...) nvkm_printk((s), DEBUG,   info, f, ##a)
- #define nvkm_trace(s,f,a...) nvkm_printk((s), TRACE,   info, f, ##a)
- #define nvkm_spam(s,f,a...)  nvkm_printk((s),  SPAM,    dbg, f, ##a)
-+
-+#define nvkm_error_ratelimited(s,f,a...) nvkm_printk((s), ERROR, err_ratelimited, f, ##a)
- #endif
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/gf100.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/gf100.c
-@@ -35,13 +35,13 @@ gf100_bus_intr(struct nvkm_bus *bus)
- 		u32 addr = nvkm_rd32(device, 0x009084);
- 		u32 data = nvkm_rd32(device, 0x009088);
+diff --git a/mm/dmapool.c b/mm/dmapool.c
+index f85d6bde2205..122781fe2c03 100644
+--- a/mm/dmapool.c
++++ b/mm/dmapool.c
+@@ -201,7 +201,7 @@ static void pool_initialise_page(struct dma_pool *pool, struct dma_page *page)
  
--		nvkm_error(subdev,
--			   "MMIO %s of %08x FAULT at %06x [ %s%s%s]\n",
--			   (addr & 0x00000002) ? "write" : "read", data,
--			   (addr & 0x00fffffc),
--			   (stat & 0x00000002) ? "!ENGINE " : "",
--			   (stat & 0x00000004) ? "PRIVRING " : "",
--			   (stat & 0x00000008) ? "TIMEOUT " : "");
-+		nvkm_error_ratelimited(subdev,
-+				       "MMIO %s of %08x FAULT at %06x [ %s%s%s]\n",
-+				       (addr & 0x00000002) ? "write" : "read", data,
-+				       (addr & 0x00fffffc),
-+				       (stat & 0x00000002) ? "!ENGINE " : "",
-+				       (stat & 0x00000004) ? "PRIVRING " : "",
-+				       (stat & 0x00000008) ? "TIMEOUT " : "");
- 
- 		nvkm_wr32(device, 0x009084, 0x00000000);
- 		nvkm_wr32(device, 0x001100, (stat & 0x0000000e));
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv31.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv31.c
-@@ -45,9 +45,9 @@ nv31_bus_intr(struct nvkm_bus *bus)
- 		u32 addr = nvkm_rd32(device, 0x009084);
- 		u32 data = nvkm_rd32(device, 0x009088);
- 
--		nvkm_error(subdev, "MMIO %s of %08x FAULT at %06x\n",
--			   (addr & 0x00000002) ? "write" : "read", data,
--			   (addr & 0x00fffffc));
-+		nvkm_error_ratelimited(subdev, "MMIO %s of %08x FAULT at %06x\n",
-+				       (addr & 0x00000002) ? "write" : "read", data,
-+				       (addr & 0x00fffffc));
- 
- 		stat &= ~0x00000008;
- 		nvkm_wr32(device, 0x001100, 0x00000008);
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv50.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bus/nv50.c
-@@ -60,9 +60,9 @@ nv50_bus_intr(struct nvkm_bus *bus)
- 		u32 addr = nvkm_rd32(device, 0x009084);
- 		u32 data = nvkm_rd32(device, 0x009088);
- 
--		nvkm_error(subdev, "MMIO %s of %08x FAULT at %06x\n",
--			   (addr & 0x00000002) ? "write" : "read", data,
--			   (addr & 0x00fffffc));
-+		nvkm_error_ratelimited(subdev, "MMIO %s of %08x FAULT at %06x\n",
-+				       (addr & 0x00000002) ? "write" : "read", data,
-+				       (addr & 0x00fffffc));
- 
- 		stat &= ~0x00000008;
- 		nvkm_wr32(device, 0x001100, 0x00000008);
-
+ 	do {
+ 		unsigned int next = offset + pool->size;
+-		if (unlikely((next + pool->size) >= next_boundary)) {
++		if (unlikely((next + pool->size) > next_boundary)) {
+ 			next = next_boundary;
+ 			next_boundary += pool->boundary;
+ 		}
+-- 
+2.25.1
 
