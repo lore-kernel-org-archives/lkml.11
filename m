@@ -2,90 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50905CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF9C6C2BBED
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354728AbiFGS4e (ORCPT
+        id S1354790AbiFGS4t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:56:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51584 "EHLO
+        Tue, 7 Jun 2022 14:56:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352477AbiFGSRM (ORCPT
+        with ESMTP id S1352407AbiFGSRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:17:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2832314D0A;
-        Tue,  7 Jun 2022 10:52:12 -0700 (PDT)
+        Tue, 7 Jun 2022 14:17:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 968672317E;
+        Tue,  7 Jun 2022 10:51:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3786DB82373;
-        Tue,  7 Jun 2022 17:52:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F2ADC341E8;
-        Tue,  7 Jun 2022 17:52:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624329;
-        bh=5rY6srO4+hqOtNH3/jjdrbd5QNtkrJk2qMwIoIB2REE=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1525D61797;
+        Tue,  7 Jun 2022 17:51:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C0B8C3411C;
+        Tue,  7 Jun 2022 17:51:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624311;
+        bh=CFfPA94IscgZauYe5PcDNGb7kJxSY6aENgveDQCHbKw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MD7qKBlOAXvU9z76jubQVV2YAL5mHlMdUdyotqe5fzKJZXVEFTAIKbeZIIsycDjAH
-         T7J5M8XBYpyS67wNJ4YTuBfaSmVE1F8mREtiry9J6ZMkQGZNABRUTVcLH/vW4/4JKn
-         w+NAGro5bn0vhupQzuvQttI2ik7EjygGjeR2eIes=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 288/667] drm/msm/dsi: fix address for second DSI PHY on SDM660
-Date:   Tue,  7 Jun 2022 18:59:13 +0200
-Message-Id: <20220607164943.416925418@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=VvxrnL1XIc6ajsCZQijyKqbYFTZV4E0mSRzZJ4q/nM7HfabnPitcZah7Xt2a1Vk4s
+         tro2tL4vFXqNMYfShAryAeKmc/7wLdnDlYnIOdWWSamemAcd4GdbOl/5TCox0nu9k8
+         /xMmKDeD/DHN9tp/gUOWDkeP48nM458v9DkcJ9Z7C2j2sHQN+b1a+rBIS2a8uXDnvo
+         kuBtxx9uw2iWXes385uENVdNDSbhc+hWijBXRR2hdRQLUzCMQWlepID+lqK9cs3rU8
+         RtzpSOcMuAsL0z0cy8NXS6QFzHE4ssAfVM9tM/u8iSiUvdyPwCGzG5rH08JeLmG60p
+         mtKU8tm2+R+Rw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Gong Yuanjun <ruc_gongyuanjun@163.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.18 47/68] drm/radeon: fix a possible null pointer dereference
+Date:   Tue,  7 Jun 2022 13:48:13 -0400
+Message-Id: <20220607174846.477972-47-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
+References: <20220607174846.477972-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Gong Yuanjun <ruc_gongyuanjun@163.com>
 
-[ Upstream commit 9208c707650354dff5b164b586837454f7285124 ]
+[ Upstream commit a2b28708b645c5632dc93669ab06e97874c8244f ]
 
-Correct a typo in the address of the second DSI PHY in the SDM660 device
-config.
+In radeon_fp_native_mode(), the return value of drm_mode_duplicate()
+is assigned to mode, which will lead to a NULL pointer dereference
+on failure of drm_mode_duplicate(). Add a check to avoid npd.
 
-Fixes: 694dd304cc29 ("drm/msm/dsi: Add phy configuration for SDM630/636/660")
-Cc: Konrad Dybcio <konrad.dybcio@somainline.org>
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Patchwork: https://patchwork.freedesktop.org/patch/484697/
-Link: https://lore.kernel.org/r/20220503204340.935532-1-dmitry.baryshkov@linaro.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+The failure status of drm_cvt_mode() on the other path is checked too.
+
+Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/radeon/radeon_connectors.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c
-index 1c1e9861b93f..6d3abcdc57bf 100644
---- a/drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c
-+++ b/drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c
-@@ -1064,6 +1064,6 @@ const struct msm_dsi_phy_cfg dsi_phy_14nm_660_cfgs = {
- 	},
- 	.min_pll_rate = VCO_MIN_RATE,
- 	.max_pll_rate = VCO_MAX_RATE,
--	.io_start = { 0xc994400, 0xc996000 },
-+	.io_start = { 0xc994400, 0xc996400 },
- 	.num_dsi_phy = 2,
- };
+diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
+index 0cb1345c6ba4..fabe4f4ca124 100644
+--- a/drivers/gpu/drm/radeon/radeon_connectors.c
++++ b/drivers/gpu/drm/radeon/radeon_connectors.c
+@@ -473,6 +473,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 	    native_mode->vdisplay != 0 &&
+ 	    native_mode->clock != 0) {
+ 		mode = drm_mode_duplicate(dev, native_mode);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		drm_mode_set_name(mode);
+ 
+@@ -487,6 +489,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 		 * simpler.
+ 		 */
+ 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
+ 	}
 -- 
 2.35.1
-
-
 
