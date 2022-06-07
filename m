@@ -2,115 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E15FCCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7672CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358009AbiFGTv1 (ORCPT
+        id S1358143AbiFGTvx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:51:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43130 "EHLO
+        Tue, 7 Jun 2022 15:51:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354336AbiFGSqz (ORCPT
+        with ESMTP id S1354268AbiFGSqv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:55 -0400
+        Tue, 7 Jun 2022 14:46:51 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3EA412719F;
-        Tue,  7 Jun 2022 11:00:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BE743EFF;
+        Tue,  7 Jun 2022 11:00:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A14F3B82239;
-        Tue,  7 Jun 2022 18:00:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EBF8C341C4;
-        Tue,  7 Jun 2022 18:00:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624847;
-        bh=Z9DYUngYcON6a47cxhpviZQO2HQH4IU+z97whtMmzU4=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63963B8236D;
+        Tue,  7 Jun 2022 18:00:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF888C385A5;
+        Tue,  7 Jun 2022 18:00:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624831;
+        bh=1RsreeyJ1480jzihPY5ZlpOHRIzNkF5fmVQoMhErTRo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kpsZqajLus0pIb1jxZsrtreq0kjCDdk8kV//LdbAR9Jn9wz2T65GGYLkkvFtpk7Rx
-         E13JhEObjW/taUMUF+AjFoCvRn8xuLkrATW8IRvQka6o/zjMawFiD/w4zzo5e1AQ5N
-         MbJaH0tb6J9lk5velYnT9/FJAW3Ypm83TJNoR8mgGqiVLcqECjP7Kiqa9nTnvrCSt5
-         aYT6qlb+jSzzJL+5J8+MflFR9jMa6fiWp07HEM42t0CzAIEseZBchypxW02qQ3HzyM
-         e2OvD4lmSEu6CDDVJKgOlYSpsXHG+yt4oPfExeUabQlaC4Urg9BVICA7AMOdq1P753
-         anQMxiM9sE9Lg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, hminas@synopsys.com,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 12/34] usb: dwc2: gadget: don't reset gadget's driver->bus
-Date:   Tue,  7 Jun 2022 13:59:47 -0400
-Message-Id: <20220607180011.481266-12-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
-References: <20220607180011.481266-1-sashal@kernel.org>
+        b=fmJ0qQOF/m7ezzDfYKjY7sVbCDCChBMSVy/9vN/nnw7hneIB3kX7IfDUHvGGNCpRG
+         9N0tgi+JSdzAgXHKegA+F5TuhLrv9+WwFkF2LZtFGEsPq174SxYlk1Nub62JTpx11d
+         SUSihujogZLxYGWR9Fm95T9qguOjjX1xCiq2HCrU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 468/667] powerpc/xive: Fix refcount leak in xive_spapr_init
+Date:   Tue,  7 Jun 2022 19:02:13 +0200
+Message-Id: <20220607164948.743519823@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Szyprowski <m.szyprowski@samsung.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 3120aac6d0ecd9accf56894aeac0e265f74d3d5a ]
+[ Upstream commit 1d1fb9618bdd5a5fbf9a9eb75133da301d33721c ]
 
-UDC driver should not touch gadget's driver internals, especially it
-should not reset driver->bus. This wasn't harmful so far, but since
-commit fc274c1e9973 ("USB: gadget: Add a new bus for gadgets") gadget
-subsystem got it's own bus and messing with ->bus triggers the
-following NULL pointer dereference:
+of_find_compatible_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-dwc2 12480000.hsotg: bound driver g_ether
-8<--- cut here ---
-Unable to handle kernel NULL pointer dereference at virtual address 00000000
-[00000000] *pgd=00000000
-Internal error: Oops: 5 [#1] SMP ARM
-Modules linked in: ...
-CPU: 0 PID: 620 Comm: modprobe Not tainted 5.18.0-rc5-next-20220504 #11862
-Hardware name: Samsung Exynos (Flattened Device Tree)
-PC is at module_add_driver+0x44/0xe8
-LR is at sysfs_do_create_link_sd+0x84/0xe0
-...
-Process modprobe (pid: 620, stack limit = 0x(ptrval))
-...
- module_add_driver from bus_add_driver+0xf4/0x1e4
- bus_add_driver from driver_register+0x78/0x10c
- driver_register from usb_gadget_register_driver_owner+0x40/0xb4
- usb_gadget_register_driver_owner from do_one_initcall+0x44/0x1e0
- do_one_initcall from do_init_module+0x44/0x1c8
- do_init_module from load_module+0x19b8/0x1b9c
- load_module from sys_finit_module+0xdc/0xfc
- sys_finit_module from ret_fast_syscall+0x0/0x54
-Exception stack(0xf1771fa8 to 0xf1771ff0)
-...
-dwc2 12480000.hsotg: new device is high-speed
----[ end trace 0000000000000000 ]---
-
-Fix this by removing driver->bus entry reset.
-
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Link: https://lore.kernel.org/r/20220505104618.22729-1-m.szyprowski@samsung.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: eac1e731b59e ("powerpc/xive: guest exploitation of the XIVE interrupt controller")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Cédric Le Goater <clg@kaod.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220512090535.33397-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc2/gadget.c | 1 -
- 1 file changed, 1 deletion(-)
+ arch/powerpc/sysdev/xive/spapr.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
-index 379bbf27c7ce..8fd6eefc671c 100644
---- a/drivers/usb/dwc2/gadget.c
-+++ b/drivers/usb/dwc2/gadget.c
-@@ -4486,7 +4486,6 @@ static int dwc2_hsotg_udc_start(struct usb_gadget *gadget,
+diff --git a/arch/powerpc/sysdev/xive/spapr.c b/arch/powerpc/sysdev/xive/spapr.c
+index 905dd40bd5cd..a82f32fbe772 100644
+--- a/arch/powerpc/sysdev/xive/spapr.c
++++ b/arch/powerpc/sysdev/xive/spapr.c
+@@ -830,12 +830,12 @@ bool __init xive_spapr_init(void)
+ 	/* Resource 1 is the OS ring TIMA */
+ 	if (of_address_to_resource(np, 1, &r)) {
+ 		pr_err("Failed to get thread mgmnt area resource\n");
+-		return false;
++		goto err_put;
+ 	}
+ 	tima = ioremap(r.start, resource_size(&r));
+ 	if (!tima) {
+ 		pr_err("Failed to map thread mgmnt area\n");
+-		return false;
++		goto err_put;
+ 	}
  
- 	WARN_ON(hsotg->driver);
+ 	if (!xive_get_max_prio(&max_prio))
+@@ -871,6 +871,7 @@ bool __init xive_spapr_init(void)
+ 	if (!xive_core_init(np, &xive_spapr_ops, tima, TM_QW1_OS, max_prio))
+ 		goto err_mem_free;
  
--	driver->driver.bus = NULL;
- 	hsotg->driver = driver;
- 	hsotg->gadget.dev.of_node = hsotg->dev->of_node;
- 	hsotg->gadget.speed = USB_SPEED_UNKNOWN;
++	of_node_put(np);
+ 	pr_info("Using %dkB queues\n", 1 << (xive_queue_shift - 10));
+ 	return true;
+ 
+@@ -878,6 +879,8 @@ bool __init xive_spapr_init(void)
+ 	xive_irq_bitmap_remove_all();
+ err_unmap:
+ 	iounmap(tima);
++err_put:
++	of_node_put(np);
+ 	return false;
+ }
+ 
 -- 
 2.35.1
+
+
 
