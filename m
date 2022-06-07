@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93381C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D82C43334
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:42:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381160AbiFGVj7 (ORCPT
+        id S1381179AbiFGVkJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:39:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48200 "EHLO
+        Tue, 7 Jun 2022 17:40:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377418AbiFGUuk (ORCPT
+        with ESMTP id S1377475AbiFGUuo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:50:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E511F98C6;
-        Tue,  7 Jun 2022 11:40:14 -0700 (PDT)
+        Tue, 7 Jun 2022 16:50:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE1E1F98F3;
+        Tue,  7 Jun 2022 11:40:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BEBA6B8237B;
-        Tue,  7 Jun 2022 18:40:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37393C385A5;
-        Tue,  7 Jun 2022 18:40:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8DA03B8233E;
+        Tue,  7 Jun 2022 18:40:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 060D8C385A2;
+        Tue,  7 Jun 2022 18:40:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627212;
-        bh=9E8DLy1jXcYjYN0wqF0KZRXbQUMR5XhMKZCP7s2JCPY=;
+        s=korg; t=1654627215;
+        bh=hmOnrUcH7670N2tE92uyQ8lRAcXD4hwB3zS1oR7mbno=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZnqTMJiCy2Dk4KYgPFXNwkIbEYWsGUTkvfovoAFpgQy60lMTlLoiQW7RRRZRwlhd1
-         RcWj1DSUx645vo130REmwgzYbeJMRvYAYlYP4zGXmwXK0xM0DwaTwQ1eIE5Ukc//Tf
-         9gp4p7W8DqbxXnLMnxS3muvZTN481Mk57jt2pp2o=
+        b=d54W5v/0dUDE45h1pPQRyFEFqBMxZFtPTy1FkgVvgOBp/RZDeH1nNp3OErckRDWra
+         2xwSbg1M2ISy1LpkfuUMKFSSv9om3E9PGPsQ4BSZgyDERWEfGgJv2LbToV31P+lMvi
+         r5N1RXbPyUsZyjgYU6+X0xoT5wog5kKon4E7+o1I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Nico Boehr <nrb@linux.ibm.com>
-Subject: [PATCH 5.17 659/772] s390/perf: obtain sie_block from the right address
-Date:   Tue,  7 Jun 2022 19:04:11 +0200
-Message-Id: <20220607165008.479850822@linuxfoundation.org>
+        stable@vger.kernel.org, Sven Schnelle <svens@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>
+Subject: [PATCH 5.17 660/772] s390/stp: clock_delta should be signed
+Date:   Tue,  7 Jun 2022 19:04:12 +0200
+Message-Id: <20220607165008.509115168@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -52,46 +49,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nico Boehr <nrb@linux.ibm.com>
+From: Sven Schnelle <svens@linux.ibm.com>
 
-commit c9bfb460c3e4da2462e16b0f0b200990b36b1dd2 upstream.
+commit 5ace65ebb5ce9fe1cc8fdbdd97079fb566ef0ea4 upstream.
 
-Since commit 1179f170b6f0 ("s390: fix fpu restore in entry.S"), the
-sie_block pointer is located at empty1[1], but in sie_block() it was
-taken from empty1[0].
+clock_delta is declared as unsigned long in various places. However,
+the clock sync delta can be negative. This would add a huge positive
+offset in clock_sync_global where clock_delta is added to clk.eitod
+which is a 72 bit integer. Declare it as signed long to fix this.
 
-This leads to a random pointer being dereferenced, possibly causing
-system crash.
-
-This problem can be observed when running a simple guest with an endless
-loop and recording the cpu-clock event:
-
-  sudo perf kvm --guestvmlinux=<guestkernel> --guest top -e cpu-clock
-
-With this fix, the correct guest address is shown.
-
-Fixes: 1179f170b6f0 ("s390: fix fpu restore in entry.S")
 Cc: stable@vger.kernel.org
-Acked-by: Christian Borntraeger <borntraeger@de.ibm.com>
-Acked-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
 Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Nico Boehr <nrb@linux.ibm.com>
 Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/kernel/perf_event.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/s390/include/asm/cio.h |    2 +-
+ arch/s390/kernel/time.c     |    8 ++++----
+ drivers/s390/cio/chsc.c     |    4 ++--
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
---- a/arch/s390/kernel/perf_event.c
-+++ b/arch/s390/kernel/perf_event.c
-@@ -30,7 +30,7 @@ static struct kvm_s390_sie_block *sie_bl
- 	if (!stack)
- 		return NULL;
+--- a/arch/s390/include/asm/cio.h
++++ b/arch/s390/include/asm/cio.h
+@@ -369,7 +369,7 @@ void cio_gp_dma_destroy(struct gen_pool
+ struct gen_pool *cio_gp_dma_create(struct device *dma_dev, int nr_pages);
  
--	return (struct kvm_s390_sie_block *) stack->empty1[0];
-+	return (struct kvm_s390_sie_block *)stack->empty1[1];
- }
+ /* Function from drivers/s390/cio/chsc.c */
+-int chsc_sstpc(void *page, unsigned int op, u16 ctrl, u64 *clock_delta);
++int chsc_sstpc(void *page, unsigned int op, u16 ctrl, long *clock_delta);
+ int chsc_sstpi(void *page, void *result, size_t size);
+ int chsc_stzi(void *page, void *result, size_t size);
+ int chsc_sgib(u32 origin);
+--- a/arch/s390/kernel/time.c
++++ b/arch/s390/kernel/time.c
+@@ -364,7 +364,7 @@ static inline int check_sync_clock(void)
+  * Apply clock delta to the global data structures.
+  * This is called once on the CPU that performed the clock sync.
+  */
+-static void clock_sync_global(unsigned long delta)
++static void clock_sync_global(long delta)
+ {
+ 	unsigned long now, adj;
+ 	struct ptff_qto qto;
+@@ -400,7 +400,7 @@ static void clock_sync_global(unsigned l
+  * Apply clock delta to the per-CPU data structures of this CPU.
+  * This is called for each online CPU after the call to clock_sync_global.
+  */
+-static void clock_sync_local(unsigned long delta)
++static void clock_sync_local(long delta)
+ {
+ 	/* Add the delta to the clock comparator. */
+ 	if (S390_lowcore.clock_comparator != clock_comparator_max) {
+@@ -424,7 +424,7 @@ static void __init time_init_wq(void)
+ struct clock_sync_data {
+ 	atomic_t cpus;
+ 	int in_sync;
+-	unsigned long clock_delta;
++	long clock_delta;
+ };
  
- static bool is_in_guest(struct pt_regs *regs)
+ /*
+@@ -544,7 +544,7 @@ static int stpinfo_valid(void)
+ static int stp_sync_clock(void *data)
+ {
+ 	struct clock_sync_data *sync = data;
+-	u64 clock_delta, flags;
++	long clock_delta, flags;
+ 	static int first;
+ 	int rc;
+ 
+--- a/drivers/s390/cio/chsc.c
++++ b/drivers/s390/cio/chsc.c
+@@ -1255,7 +1255,7 @@ exit:
+ EXPORT_SYMBOL_GPL(css_general_characteristics);
+ EXPORT_SYMBOL_GPL(css_chsc_characteristics);
+ 
+-int chsc_sstpc(void *page, unsigned int op, u16 ctrl, u64 *clock_delta)
++int chsc_sstpc(void *page, unsigned int op, u16 ctrl, long *clock_delta)
+ {
+ 	struct {
+ 		struct chsc_header request;
+@@ -1266,7 +1266,7 @@ int chsc_sstpc(void *page, unsigned int
+ 		unsigned int rsvd2[5];
+ 		struct chsc_header response;
+ 		unsigned int rsvd3[3];
+-		u64 clock_delta;
++		s64 clock_delta;
+ 		unsigned int rsvd4[2];
+ 	} *rr;
+ 	int rc;
 
 
