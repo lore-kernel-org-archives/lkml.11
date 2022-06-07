@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 023C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:27:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C82ECCCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:27:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383067AbiFHAYt (ORCPT
+        id S1384965AbiFHAZI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:24:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49794 "EHLO
+        Tue, 7 Jun 2022 20:25:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385141AbiFGWVB (ORCPT
+        with ESMTP id S1384241AbiFGVyX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:21:01 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F33265612;
-        Tue,  7 Jun 2022 12:21:02 -0700 (PDT)
+        Tue, 7 Jun 2022 17:54:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B84135E753;
+        Tue,  7 Jun 2022 12:13:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D504ECE24B7;
-        Tue,  7 Jun 2022 19:20:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDEEEC34115;
-        Tue,  7 Jun 2022 19:20:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2864E61912;
+        Tue,  7 Jun 2022 19:13:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E198C385A2;
+        Tue,  7 Jun 2022 19:13:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629652;
-        bh=OcqvoIrpHGaxqSVYLx7xboNx4qStc91n6ZMjlVtDwLk=;
+        s=korg; t=1654629191;
+        bh=q2WfSuGehAysC4oWHH5FcLye7l4l9jfwd2iIF05nmrM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qpoCk8WJdDJ4kh1TqffxOHoHDYoMyTqruGtp1wTtNqsjqqytp4JMSt9rFslQiJDG3
-         uWwogecWYA36Wqn+/XINFaParrUqAaSHz5XaLMvYIcasMA6RxIWkYcWthOVkDLQSEt
-         s7XZlZ5edN7aOx+Cbv5mqQUfjWaPSd5/9wNZybn4=
+        b=u32Iv/40ppYd+gkCBaEWohdB/Z4HzZMPCQWxK85F3hYlGcDyCtTofmmGCIInQN+tc
+         ROyyn64mNfGM5Cr4ALb+MuPRROwbIArp7//1QXKn7NIPCf165ydLle6jQndPDUiZiZ
+         u/ienbUh4kxTc5OH9G3wQ2VjWIemuvNNySEUVyyA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.18 717/879] objtool: Fix objtool regression on x32 systems
-Date:   Tue,  7 Jun 2022 19:03:55 +0200
-Message-Id: <20220607165023.666075498@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 603/879] powerpc/8xx: export cpm_setbrg for modules
+Date:   Tue,  7 Jun 2022 19:02:01 +0200
+Message-Id: <20220607165020.354626616@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,101 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 22682a07acc308ef78681572e19502ce8893c4d4 upstream.
+[ Upstream commit 22f8e625ebabd7ed3185b82b44b4f12fc0402113 ]
 
-Commit c087c6e7b551 ("objtool: Fix type of reloc::addend") failed to
-appreciate cross building from ILP32 hosts, where 'int' == 'long' and
-the issue persists.
+Fix missing export for a loadable module build:
 
-As such, use s64/int64_t/Elf64_Sxword for this field and suffer the
-pain that is ISO C99 printf formats for it.
+ERROR: modpost: "cpm_setbrg" [drivers/tty/serial/cpm_uart/cpm_uart.ko] undefined!
 
-Fixes: c087c6e7b551 ("objtool: Fix type of reloc::addend")
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-[peterz: reword changelog, s/long long/s64/]
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: <stable@vger.kernel.org>
-Link: https://lkml.kernel.org/r/alpine.LRH.2.02.2205161041260.11556@file01.intranet.prod.int.rdu2.redhat.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+[chleroy: Changed Fixes: tag]
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20210122010819.30986-1-rdunlap@infradead.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/objtool/check.c               |    9 +++++----
- tools/objtool/elf.c                 |    2 +-
- tools/objtool/include/objtool/elf.h |    4 ++--
- 3 files changed, 8 insertions(+), 7 deletions(-)
+ arch/powerpc/platforms/8xx/cpm1.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -5,6 +5,7 @@
+diff --git a/arch/powerpc/platforms/8xx/cpm1.c b/arch/powerpc/platforms/8xx/cpm1.c
+index c58b6f1c40e3..3ef5e9fd3a9b 100644
+--- a/arch/powerpc/platforms/8xx/cpm1.c
++++ b/arch/powerpc/platforms/8xx/cpm1.c
+@@ -280,6 +280,7 @@ cpm_setbrg(uint brg, uint rate)
+ 		out_be32(bp, (((BRG_UART_CLK_DIV16 / rate) - 1) << 1) |
+ 			      CPM_BRG_EN | CPM_BRG_DIV16);
+ }
++EXPORT_SYMBOL(cpm_setbrg);
  
- #include <string.h>
- #include <stdlib.h>
-+#include <inttypes.h>
- #include <sys/mman.h>
- 
- #include <arch/elf.h>
-@@ -560,12 +561,12 @@ static int add_dead_ends(struct objtool_
- 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
- 			insn = find_last_insn(file, reloc->sym->sec);
- 			if (!insn) {
--				WARN("can't find unreachable insn at %s+0x%lx",
-+				WARN("can't find unreachable insn at %s+0x%" PRIx64,
- 				     reloc->sym->sec->name, reloc->addend);
- 				return -1;
- 			}
- 		} else {
--			WARN("can't find unreachable insn at %s+0x%lx",
-+			WARN("can't find unreachable insn at %s+0x%" PRIx64,
- 			     reloc->sym->sec->name, reloc->addend);
- 			return -1;
- 		}
-@@ -595,12 +596,12 @@ reachable:
- 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
- 			insn = find_last_insn(file, reloc->sym->sec);
- 			if (!insn) {
--				WARN("can't find reachable insn at %s+0x%lx",
-+				WARN("can't find reachable insn at %s+0x%" PRIx64,
- 				     reloc->sym->sec->name, reloc->addend);
- 				return -1;
- 			}
- 		} else {
--			WARN("can't find reachable insn at %s+0x%lx",
-+			WARN("can't find reachable insn at %s+0x%" PRIx64,
- 			     reloc->sym->sec->name, reloc->addend);
- 			return -1;
- 		}
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -546,7 +546,7 @@ static struct section *elf_create_reloc_
- 						int reltype);
- 
- int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
--		  unsigned int type, struct symbol *sym, long addend)
-+		  unsigned int type, struct symbol *sym, s64 addend)
- {
- 	struct reloc *reloc;
- 
---- a/tools/objtool/include/objtool/elf.h
-+++ b/tools/objtool/include/objtool/elf.h
-@@ -73,7 +73,7 @@ struct reloc {
- 	struct symbol *sym;
- 	unsigned long offset;
- 	unsigned int type;
--	long addend;
-+	s64 addend;
- 	int idx;
- 	bool jump_table_start;
- };
-@@ -135,7 +135,7 @@ struct elf *elf_open_read(const char *na
- struct section *elf_create_section(struct elf *elf, const char *name, unsigned int sh_flags, size_t entsize, int nr);
- 
- int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
--		  unsigned int type, struct symbol *sym, long addend);
-+		  unsigned int type, struct symbol *sym, s64 addend);
- int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
- 			  unsigned long offset, unsigned int type,
- 			  struct section *insn_sec, unsigned long insn_off);
+ struct cpm_ioport16 {
+ 	__be16 dir, par, odr_sor, dat, intr;
+-- 
+2.35.1
+
 
 
