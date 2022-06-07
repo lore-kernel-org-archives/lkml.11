@@ -2,78 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A940C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:56:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 792F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 15:57:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344543AbiFGP4N (ORCPT
+        id S1344608AbiFGP5E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 11:56:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37712 "EHLO
+        Tue, 7 Jun 2022 11:57:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344631AbiFGP4J (ORCPT
+        with ESMTP id S1344453AbiFGPyy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 11:56:09 -0400
-Received: from todd.t-8ch.de (todd.t-8ch.de [159.69.126.157])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F9328E12
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:56:05 -0700 (PDT)
-From:   =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=weissschuh.net;
-        s=mail; t=1654617363;
-        bh=UwJaoAVoa61DCnp3vhNmUCc8wPxbMXJadrTLt8SmqCQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=qrntoUTld+NGDiE5Bqw7eLxramszHrt0peuvaCimeBz3YqtUbTTA+OPnBTPFsxOvW
-         xAFMmjL6upk/fe1S282aPfDeyezCHZgCk1j1MJ9Hq0MJXUFW4B1SmzedqWbC63lU7h
-         Xr+KWNhLEUQwNO3rOAW+51Vl1yMAXWDGytoXvPo8=
-To:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>
-Cc:     linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>
-Subject: [PATCH] nvme: add device name to warning in uuid_show()
-Date:   Tue,  7 Jun 2022 17:55:55 +0200
-Message-Id: <20220607155555.8623-1-linux@weissschuh.net>
-X-Mailer: git-send-email 2.36.1
+        Tue, 7 Jun 2022 11:54:54 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A5413D72
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 08:54:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654617293; x=1686153293;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Zq4qMj7BmV5+vvcmcNdpEc9+svzoU+Bzr9zO/b/QpeA=;
+  b=bG0MygdrRkaVbjdnOMF65xf7lU/3UuP0CZQ45P/wbplfz/aA8o6Ljz+X
+   baAxarfMTictLzOnul6/XKC6qtxPoAjJPYJyIFoKH6KjM9dZowvAiYQom
+   o9kjqAlUpEedG8/sceU3tl+V24fRMdPEITHUtDkYQ8d9gIbbFLqqllo2/
+   z4efOz13UJAuXRcPorIcNMmQm2hZkDWWhP+bIlXJZKDphoGeoYPnewbJa
+   HUC+J+otQKl2rurFVtkOpCgOQ8FpEX5IDvWEax1oqNhhMu4rjtpWMTgc+
+   tr4ULoQwsdVLPIiQxBS77DWkihX0fHCR7aIfLqH0tPMdu37hFtlzmVUFL
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277581317"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="277581317"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 08:37:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="579645368"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga007.jf.intel.com with ESMTP; 07 Jun 2022 08:37:49 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 83A36109; Tue,  7 Jun 2022 18:37:52 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Dan Williams <dan.j.williams@intel.com>, nvdimm@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Cc:     Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] nvdimm/namespace: drop unneeded temporary variable in size_store()
+Date:   Tue,  7 Jun 2022 18:37:50 +0300
+Message-Id: <20220607153750.33639-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1654617355; l=1083; s=20211113; h=from:subject; bh=UwJaoAVoa61DCnp3vhNmUCc8wPxbMXJadrTLt8SmqCQ=; b=bg7FhTgM0Iz/uy954ZRKT/GOeWkKox3seP2mKi3+lLyDYj2x7go1RWrifrHKufOY7qmjOXAYWuMl qbOACxxkCX5BXmHEPExMMa7l1rkPmecuQiP15JaPCGZWCZx0R+M/
-X-Developer-Key: i=linux@weissschuh.net; a=ed25519; pk=9LP6KM4vD/8CwHW7nouRBhWLyQLcK1MkP6aTZbzUlj4=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This provides more context to users.
+Refactor size_store() in order to remove temporary variable on stack
+by joining conditionals.
 
-Old message:
-
-[   00.000000] No UUID available providing old NGUID
-
-New message:
-
-[   00.000000] block nvme0n1: No UUID available providing old NGUID
-
-Fixes: d934f9848a77 ("nvme: provide UUID value to userspace")
-Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/nvme/host/core.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/nvdimm/namespace_devs.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 24165daee3c8..189bbd6c0c29 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -3285,8 +3285,7 @@ static ssize_t uuid_show(struct device *dev, struct device_attribute *attr,
- 	 * we have no UUID set
- 	 */
- 	if (uuid_is_null(&ids->uuid)) {
--		printk_ratelimited(KERN_WARNING
--				   "No UUID available providing old NGUID\n");
-+		dev_warn_ratelimited(dev, "No UUID available providing old NGUID\n");
- 		return sysfs_emit(buf, "%pU\n", ids->nguid);
+diff --git a/drivers/nvdimm/namespace_devs.c b/drivers/nvdimm/namespace_devs.c
+index 3dae17c90e8c..0f863fda56e6 100644
+--- a/drivers/nvdimm/namespace_devs.c
++++ b/drivers/nvdimm/namespace_devs.c
+@@ -836,7 +836,6 @@ static ssize_t size_store(struct device *dev,
+ {
+ 	struct nd_region *nd_region = to_nd_region(dev->parent);
+ 	unsigned long long val;
+-	uuid_t **uuid = NULL;
+ 	int rc;
+ 
+ 	rc = kstrtoull(buf, 0, &val);
+@@ -850,16 +849,12 @@ static ssize_t size_store(struct device *dev,
+ 	if (rc >= 0)
+ 		rc = nd_namespace_label_update(nd_region, dev);
+ 
+-	if (is_namespace_pmem(dev)) {
++	/* setting size zero == 'delete namespace' */
++	if (rc == 0 && val == 0 && is_namespace_pmem(dev)) {
+ 		struct nd_namespace_pmem *nspm = to_nd_namespace_pmem(dev);
+ 
+-		uuid = &nspm->uuid;
+-	}
+-
+-	if (rc == 0 && val == 0 && uuid) {
+-		/* setting size zero == 'delete namespace' */
+-		kfree(*uuid);
+-		*uuid = NULL;
++		kfree(nspm->uuid);
++		nspm->uuid = NULL;
  	}
- 	return sysfs_emit(buf, "%pU\n", &ids->uuid);
-
-base-commit: e71e60cd74df9386c3f684c54888f2367050b831
+ 
+ 	dev_dbg(dev, "%llx %s (%d)\n", val, rc < 0 ? "fail" : "success", rc);
 -- 
-2.36.1
+2.35.1
 
