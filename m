@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C98CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7AD1CCA486
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384735AbiFGW0A (ORCPT
+        id S1384798AbiFGW0F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:26:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50152 "EHLO
+        Tue, 7 Jun 2022 18:26:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380692AbiFGVQl (ORCPT
+        with ESMTP id S1380718AbiFGVQv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:16:41 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8E1B14AF61;
-        Tue,  7 Jun 2022 11:56:12 -0700 (PDT)
+        Tue, 7 Jun 2022 17:16:51 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F67821F9CC;
+        Tue,  7 Jun 2022 11:56:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 15853CE244E;
-        Tue,  7 Jun 2022 18:56:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21D55C385A2;
-        Tue,  7 Jun 2022 18:56:08 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A4AC9CE2475;
+        Tue,  7 Jun 2022 18:56:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFF99C385A2;
+        Tue,  7 Jun 2022 18:56:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628169;
-        bh=EVoIgFvb+XVNTHPwe4vjskp+ClintZ4Q0sba7+OJU3g=;
+        s=korg; t=1654628197;
+        bh=UEtTKC+segok9K/ynO7AyNzCmnn7J3j6y8rLTN8HqF0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pogQm98mKvu/WsYjflhOk/+zOXOVuF7jPnSvABHItyI6P2KQb8ec1mQvwdkZ9c8t1
-         VjemITePfYpkqSr9YUpra2slMGqBee3ImfYc9FsflrNz4YjjondZfqgj5UTT8yxhw+
-         feJAhomiNKkkEee9lPxYIYyDIHo5bk9bujp2vViw=
+        b=Pk/PxLu2Mn+tGF6e8h5QjD1zy/7vR5ffTYPl77ZimMuSd39TrC4wpnPHVbB9aPgUY
+         c6LxQpPyPOGyUtkKHnt9U0cjlSlNu5UT2/WJOa/+N/MB5k7/huR1xsbHMLEShI13JM
+         N/vLNPC4+mlg4JJd2UVrLVPI6Sj7i3+DCyR053zA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        stable@vger.kernel.org, Jeffrey Altman <jaltman@auristor.com>,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 230/879] ARM: dts: exynos: add atmel,24c128 fallback to Samsung EEPROM
-Date:   Tue,  7 Jun 2022 18:55:48 +0200
-Message-Id: <20220607165009.529329183@linuxfoundation.org>
+Subject: [PATCH 5.18 200/879] rxrpc, afs: Fix selection of abort codes
+Date:   Tue,  7 Jun 2022 18:55:18 +0200
+Message-Id: <20220607165008.650924569@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,43 +53,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit f038e8186fbc5723d7d38c6fa1d342945107347e ]
+[ Upstream commit de696c4784f0706884458893c5a6c39b3a3ff65c ]
 
-The Samsung s524ad0xd1 EEPROM should use atmel,24c128 fallback,
-according to the AT24 EEPROM bindings.
+The RX_USER_ABORT code should really only be used to indicate that the user
+of the rxrpc service (ie. userspace) implicitly caused a call to be aborted
+- for instance if the AF_RXRPC socket is closed whilst the call was in
+progress.  (The user may also explicitly abort a call and specify the abort
+code to use).
 
-Reported-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220426183443.243113-1-krzysztof.kozlowski@linaro.org
+Change some of the points of generation to use other abort codes instead:
+
+ (1) Abort the call with RXGEN_SS_UNMARSHAL or RXGEN_CC_UNMARSHAL if we see
+     ENOMEM and EFAULT during received data delivery and abort with
+     RX_CALL_DEAD in the default case.
+
+ (2) Abort with RXGEN_SS_MARSHAL if we get ENOMEM whilst trying to send a
+     reply.
+
+ (3) Abort with RX_CALL_DEAD if we stop hearing from the peer if we had
+     heard from the peer and abort with RX_CALL_TIMEOUT if we hadn't.
+
+ (4) Abort with RX_CALL_DEAD if we try to disconnect a call that's not
+     completed successfully or been aborted.
+
+Reported-by: Jeffrey Altman <jaltman@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/exynos5250-smdk5250.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/afs/rxrpc.c          | 8 +++++---
+ net/rxrpc/call_event.c  | 4 ++--
+ net/rxrpc/conn_object.c | 2 +-
+ 3 files changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm/boot/dts/exynos5250-smdk5250.dts b/arch/arm/boot/dts/exynos5250-smdk5250.dts
-index 21fbbf3d8684..71293749ac48 100644
---- a/arch/arm/boot/dts/exynos5250-smdk5250.dts
-+++ b/arch/arm/boot/dts/exynos5250-smdk5250.dts
-@@ -129,7 +129,7 @@
- 	samsung,i2c-max-bus-freq = <20000>;
- 
- 	eeprom@50 {
--		compatible = "samsung,s524ad0xd1";
-+		compatible = "samsung,s524ad0xd1", "atmel,24c128";
- 		reg = <0x50>;
- 	};
- 
-@@ -289,7 +289,7 @@
- 	samsung,i2c-max-bus-freq = <20000>;
- 
- 	eeprom@51 {
--		compatible = "samsung,s524ad0xd1";
-+		compatible = "samsung,s524ad0xd1", "atmel,24c128";
- 		reg = <0x51>;
- 	};
- 
+diff --git a/fs/afs/rxrpc.c b/fs/afs/rxrpc.c
+index 23a1a92d64bb..a5434f3e57c6 100644
+--- a/fs/afs/rxrpc.c
++++ b/fs/afs/rxrpc.c
+@@ -537,6 +537,8 @@ static void afs_deliver_to_call(struct afs_call *call)
+ 		case -ENODATA:
+ 		case -EBADMSG:
+ 		case -EMSGSIZE:
++		case -ENOMEM:
++		case -EFAULT:
+ 			abort_code = RXGEN_CC_UNMARSHAL;
+ 			if (state != AFS_CALL_CL_AWAIT_REPLY)
+ 				abort_code = RXGEN_SS_UNMARSHAL;
+@@ -544,7 +546,7 @@ static void afs_deliver_to_call(struct afs_call *call)
+ 						abort_code, ret, "KUM");
+ 			goto local_abort;
+ 		default:
+-			abort_code = RX_USER_ABORT;
++			abort_code = RX_CALL_DEAD;
+ 			rxrpc_kernel_abort_call(call->net->socket, call->rxcall,
+ 						abort_code, ret, "KER");
+ 			goto local_abort;
+@@ -836,7 +838,7 @@ void afs_send_empty_reply(struct afs_call *call)
+ 	case -ENOMEM:
+ 		_debug("oom");
+ 		rxrpc_kernel_abort_call(net->socket, call->rxcall,
+-					RX_USER_ABORT, -ENOMEM, "KOO");
++					RXGEN_SS_MARSHAL, -ENOMEM, "KOO");
+ 		fallthrough;
+ 	default:
+ 		_leave(" [error]");
+@@ -878,7 +880,7 @@ void afs_send_simple_reply(struct afs_call *call, const void *buf, size_t len)
+ 	if (n == -ENOMEM) {
+ 		_debug("oom");
+ 		rxrpc_kernel_abort_call(net->socket, call->rxcall,
+-					RX_USER_ABORT, -ENOMEM, "KOO");
++					RXGEN_SS_MARSHAL, -ENOMEM, "KOO");
+ 	}
+ 	_leave(" [error]");
+ }
+diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
+index 22e05de5d1ca..e426f6831aab 100644
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -377,9 +377,9 @@ void rxrpc_process_call(struct work_struct *work)
+ 		if (test_bit(RXRPC_CALL_RX_HEARD, &call->flags) &&
+ 		    (int)call->conn->hi_serial - (int)call->rx_serial > 0) {
+ 			trace_rxrpc_call_reset(call);
+-			rxrpc_abort_call("EXP", call, 0, RX_USER_ABORT, -ECONNRESET);
++			rxrpc_abort_call("EXP", call, 0, RX_CALL_DEAD, -ECONNRESET);
+ 		} else {
+-			rxrpc_abort_call("EXP", call, 0, RX_USER_ABORT, -ETIME);
++			rxrpc_abort_call("EXP", call, 0, RX_CALL_TIMEOUT, -ETIME);
+ 		}
+ 		set_bit(RXRPC_CALL_EV_ABORT, &call->events);
+ 		goto recheck_state;
+diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
+index b2159dbf5412..660cd9b1a465 100644
+--- a/net/rxrpc/conn_object.c
++++ b/net/rxrpc/conn_object.c
+@@ -183,7 +183,7 @@ void __rxrpc_disconnect_call(struct rxrpc_connection *conn,
+ 			chan->last_type = RXRPC_PACKET_TYPE_ABORT;
+ 			break;
+ 		default:
+-			chan->last_abort = RX_USER_ABORT;
++			chan->last_abort = RX_CALL_DEAD;
+ 			chan->last_type = RXRPC_PACKET_TYPE_ABORT;
+ 			break;
+ 		}
 -- 
 2.35.1
 
