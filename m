@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E61CCA48D
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:11:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3433C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:11:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384139AbiFGWKV (ORCPT
+        id S1350977AbiFGWLt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:10:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51716 "EHLO
+        Tue, 7 Jun 2022 18:11:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379944AbiFGVGh (ORCPT
+        with ESMTP id S1379288AbiFGVJ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:06:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F10212560;
-        Tue,  7 Jun 2022 11:50:39 -0700 (PDT)
+        Tue, 7 Jun 2022 17:09:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE67213E61;
+        Tue,  7 Jun 2022 11:51:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5071961772;
-        Tue,  7 Jun 2022 18:50:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B9B5C385A2;
-        Tue,  7 Jun 2022 18:50:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F12EB8220B;
+        Tue,  7 Jun 2022 18:51:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2AE7C385A2;
+        Tue,  7 Jun 2022 18:51:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627832;
-        bh=xCNAFf0u7cNDjeIALTJWkSUBwi3rQPoajxPJWvRR0CU=;
+        s=korg; t=1654627874;
+        bh=MDwfBG7S4XMz0GzRuwAmHXVTxzGrPYUTQCoPOICLb8s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MvYxvGmmDmJmKgyY8UfEJpj9UuKHFZ1fFA4QkpxrWCVQuDyl9N2COLtJh3/ee9WJM
-         FEi65ZdyHMNFbKjbNZKsszR73pbvazvhNVW9IQbTgAaH3pHxF3UQewOZdYFrXp1PlF
-         hVkpv0/r7qoK+nijLjN89Gre7rUhG2o3PgFPZOEo=
+        b=kn2fkZpEaw4Wg/C6eFoe8PFdpMYytQFGJ+WF7M2tW9qRhz7WO4594K8Hl1AaUyee5
+         IDBjJAO6jwKusJ6k5O3LzN5aMyczm0XtXIIEN3p5Zs0kVE/olKVsZy4VkCtlLr5vBT
+         Sb5A79AtdMqG9NJHHzamDarX6hljAB6FA1flO6Zo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Niels Dossche <dossche.niels@gmail.com>,
+        stable@vger.kernel.org, jianghaoran <jianghaoran@kylinos.cn>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 069/879] ipv6: fix locking issues with loops over idev->addr_list
-Date:   Tue,  7 Jun 2022 18:53:07 +0200
-Message-Id: <20220607165004.695610455@linuxfoundation.org>
+Subject: [PATCH 5.18 125/879] ipv6: Dont send rs packets to the interface of ARPHRD_TUNNEL
+Date:   Tue,  7 Jun 2022 18:54:03 +0200
+Message-Id: <20220607165006.330043585@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,147 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: jianghaoran <jianghaoran@kylinos.cn>
 
-[ Upstream commit 51454ea42c1ab4e0c2828bb0d4d53957976980de ]
+[ Upstream commit b52e1cce31ca721e937d517411179f9196ee6135 ]
 
-idev->addr_list needs to be protected by idev->lock. However, it is not
-always possible to do so while iterating and performing actions on
-inet6_ifaddr instances. For example, multiple functions (like
-addrconf_{join,leave}_anycast) eventually call down to other functions
-that acquire the idev->lock. The current code temporarily unlocked the
-idev->lock during the loops, which can cause race conditions. Moving the
-locks up is also not an appropriate solution as the ordering of lock
-acquisition will be inconsistent with for example mc_lock.
+ARPHRD_TUNNEL interface can't process rs packets
+and will generate TX errors
 
-This solution adds an additional field to inet6_ifaddr that is used
-to temporarily add the instances to a temporary list while holding
-idev->lock. The temporary list can then be traversed without holding
-idev->lock. This change was done in two places. In addrconf_ifdown, the
-list_for_each_entry_safe variant of the list loop is also no longer
-necessary as there is no deletion within that specific loop.
+ex:
+ip tunnel add ethn mode ipip local 192.168.1.1 remote 192.168.1.2
+ifconfig ethn x.x.x.x
 
-Suggested-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Link: https://lore.kernel.org/r/20220403231523.45843-1-dossche.niels@gmail.com
+ethn: flags=209<UP,POINTOPOINT,RUNNING,NOARP>  mtu 1480
+	inet x.x.x.x  netmask 255.255.255.255  destination x.x.x.x
+	inet6 fe80::5efe:ac1e:3cdb  prefixlen 64  scopeid 0x20<link>
+	tunnel   txqueuelen 1000  (IPIP Tunnel)
+	RX packets 0  bytes 0 (0.0 B)
+	RX errors 0  dropped 0  overruns 0  frame 0
+	TX packets 0  bytes 0 (0.0 B)
+	TX errors 3  dropped 0 overruns 0  carrier 0  collisions 0
+
+Signed-off-by: jianghaoran <jianghaoran@kylinos.cn>
+Link: https://lore.kernel.org/r/20220429053802.246681-1-jianghaoran@kylinos.cn
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/if_inet6.h |  8 ++++++++
- net/ipv6/addrconf.c    | 30 ++++++++++++++++++++++++------
- 2 files changed, 32 insertions(+), 6 deletions(-)
+ net/ipv6/addrconf.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
-index 4cfdef6ca4f6..c8490729b4ae 100644
---- a/include/net/if_inet6.h
-+++ b/include/net/if_inet6.h
-@@ -64,6 +64,14 @@ struct inet6_ifaddr {
- 
- 	struct hlist_node	addr_lst;
- 	struct list_head	if_list;
-+	/*
-+	 * Used to safely traverse idev->addr_list in process context
-+	 * if the idev->lock needed to protect idev->addr_list cannot be held.
-+	 * In that case, add the items to this list temporarily and iterate
-+	 * without holding idev->lock.
-+	 * See addrconf_ifdown and dev_forward_change.
-+	 */
-+	struct list_head	if_list_aux;
- 
- 	struct list_head	tmp_list;
- 	struct inet6_ifaddr	*ifpub;
 diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index b22504176588..1afc4c024981 100644
+index 1afc4c024981..51e77dc6571a 100644
 --- a/net/ipv6/addrconf.c
 +++ b/net/ipv6/addrconf.c
-@@ -797,6 +797,7 @@ static void dev_forward_change(struct inet6_dev *idev)
- {
- 	struct net_device *dev;
- 	struct inet6_ifaddr *ifa;
-+	LIST_HEAD(tmp_addr_list);
+@@ -4219,7 +4219,8 @@ static void addrconf_dad_completed(struct inet6_ifaddr *ifp, bool bump_id,
+ 	send_rs = send_mld &&
+ 		  ipv6_accept_ra(ifp->idev) &&
+ 		  ifp->idev->cnf.rtr_solicits != 0 &&
+-		  (dev->flags&IFF_LOOPBACK) == 0;
++		  (dev->flags & IFF_LOOPBACK) == 0 &&
++		  (dev->type != ARPHRD_TUNNEL);
+ 	read_unlock_bh(&ifp->idev->lock);
  
- 	if (!idev)
- 		return;
-@@ -815,14 +816,24 @@ static void dev_forward_change(struct inet6_dev *idev)
- 		}
- 	}
- 
-+	read_lock_bh(&idev->lock);
- 	list_for_each_entry(ifa, &idev->addr_list, if_list) {
- 		if (ifa->flags&IFA_F_TENTATIVE)
- 			continue;
-+		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
-+	}
-+	read_unlock_bh(&idev->lock);
-+
-+	while (!list_empty(&tmp_addr_list)) {
-+		ifa = list_first_entry(&tmp_addr_list,
-+				       struct inet6_ifaddr, if_list_aux);
-+		list_del(&ifa->if_list_aux);
- 		if (idev->cnf.forwarding)
- 			addrconf_join_anycast(ifa);
- 		else
- 			addrconf_leave_anycast(ifa);
- 	}
-+
- 	inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
- 				     NETCONFA_FORWARDING,
- 				     dev->ifindex, &idev->cnf);
-@@ -3728,7 +3739,8 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
- 	unsigned long event = unregister ? NETDEV_UNREGISTER : NETDEV_DOWN;
- 	struct net *net = dev_net(dev);
- 	struct inet6_dev *idev;
--	struct inet6_ifaddr *ifa, *tmp;
-+	struct inet6_ifaddr *ifa;
-+	LIST_HEAD(tmp_addr_list);
- 	bool keep_addr = false;
- 	bool was_ready;
- 	int state, i;
-@@ -3820,16 +3832,23 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
- 		write_lock_bh(&idev->lock);
- 	}
- 
--	list_for_each_entry_safe(ifa, tmp, &idev->addr_list, if_list) {
-+	list_for_each_entry(ifa, &idev->addr_list, if_list)
-+		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
-+	write_unlock_bh(&idev->lock);
-+
-+	while (!list_empty(&tmp_addr_list)) {
- 		struct fib6_info *rt = NULL;
- 		bool keep;
- 
-+		ifa = list_first_entry(&tmp_addr_list,
-+				       struct inet6_ifaddr, if_list_aux);
-+		list_del(&ifa->if_list_aux);
-+
- 		addrconf_del_dad_work(ifa);
- 
- 		keep = keep_addr && (ifa->flags & IFA_F_PERMANENT) &&
- 			!addr_is_local(&ifa->addr);
- 
--		write_unlock_bh(&idev->lock);
- 		spin_lock_bh(&ifa->lock);
- 
- 		if (keep) {
-@@ -3860,15 +3879,14 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
- 			addrconf_leave_solict(ifa->idev, &ifa->addr);
- 		}
- 
--		write_lock_bh(&idev->lock);
- 		if (!keep) {
-+			write_lock_bh(&idev->lock);
- 			list_del_rcu(&ifa->if_list);
-+			write_unlock_bh(&idev->lock);
- 			in6_ifa_put(ifa);
- 		}
- 	}
- 
--	write_unlock_bh(&idev->lock);
--
- 	/* Step 5: Discard anycast and multicast list */
- 	if (unregister) {
- 		ipv6_ac_destroy_dev(idev);
+ 	/* While dad is in progress mld report's source address is in6_addrany.
 -- 
 2.35.1
 
