@@ -2,90 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D6CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:02:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9677C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 11:02:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242320AbiFGLCB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 07:02:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52908 "EHLO
+        id S234190AbiFGLCO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 07:02:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242017AbiFGK7g (ORCPT
+        with ESMTP id S242469AbiFGLAJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:59:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75A0A1053E6
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 03:55:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 329B3B81F10
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:55:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC235C385A5;
-        Tue,  7 Jun 2022 10:55:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654599303;
-        bh=/FaoEG+0isQTgHaNsrpZwMErN2EgRLXLibACJQzoXko=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=XC7aFtR2xuV8c4i/UJUsJODwhND2GyFYwwKHGIbHrBM2wMup64mo899gbITct2G5I
-         lDhaAjUEVl2as6s9r05rNnISPJzz4acVAHE8qoh1Jd8iNS5k8/q8KKBHkf84eLmdjC
-         8fkFpfekTFYUQLmGorOPC141b+ihhXff2gq2XFfiBOs9Nma6b1ywDAWsHutnDi/A7s
-         BHEQ2LNopp9v7p8aPGVp5ktdiB+gwnWcwrpGUCsKpIH35TqlCX3XUddrY6ApS5rg85
-         6GTntC+V9rbA2qVmxYryks8E4waFVgN5FT4iio6/W/QKjXh7f2+WLeC2rckvNWBUaI
-         jGsLN/i2o6PMA==
-From:   Mark Brown <broonie@kernel.org>
-To:     perex@perex.cz, tiwai@suse.com, vitalyr@opensource.cirrus.com
-Cc:     linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
-        patches@opensource.cirrus.com
-In-Reply-To: <20220525131638.5512-1-vitalyr@opensource.cirrus.com>
-References: <20220525131638.5512-1-vitalyr@opensource.cirrus.com>
-Subject: Re: (subset) [PATCH v4 00/17] ALSA: hda: cirrus: Add initial DSP support and firmware loading
-Message-Id: <165459930242.399031.6035865247693032487.b4-ty@kernel.org>
-Date:   Tue, 07 Jun 2022 11:55:02 +0100
+        Tue, 7 Jun 2022 07:00:09 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5811654028
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 03:56:50 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nyWt5-00072I-Dw; Tue, 07 Jun 2022 12:56:39 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 99EDB8DBC5;
+        Tue,  7 Jun 2022 10:56:37 +0000 (UTC)
+Date:   Tue, 7 Jun 2022 12:56:37 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        michael@amarulasolutions.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 12/13] can: slcan: extend the protocol with error info
+Message-ID: <20220607105637.4vnqtv4vbnczva73@pengutronix.de>
+References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
+ <20220607094752.1029295-13-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ssxfwmq3jxhh5und"
+Content-Disposition: inline
+In-Reply-To: <20220607094752.1029295-13-dario.binacchi@amarulasolutions.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 25 May 2022 14:16:21 +0100, Vitaly Rodionov wrote:
-> The CS35L41 Amplifier contains a DSP, capable of running firmware.
-> The firmware can run algorithms such as Speaker Protection, to ensure
-> that playback at high gains do not harm the speakers.
-> Adding support for CS35L41 firmware into the CS35L41 HDA driver also
-> allows us to support several extra features, such as hiberation
-> and interrupts.
-> 
-> [...]
 
-Applied to
+--ssxfwmq3jxhh5und
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+On 07.06.2022 11:47:51, Dario Binacchi wrote:
+> It extends the protocol to receive the adapter CAN communication errors
+> and forward them to the netdev upper levels.
+>=20
+> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+> ---
+>=20
+>  drivers/net/can/slcan/slcan-core.c | 104 ++++++++++++++++++++++++++++-
+>  1 file changed, 103 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/s=
+lcan-core.c
+> index b813a59534a3..02e7c14de45c 100644
+> --- a/drivers/net/can/slcan/slcan-core.c
+> +++ b/drivers/net/can/slcan/slcan-core.c
+> @@ -182,8 +182,92 @@ int slcan_enable_err_rst_on_open(struct net_device *=
+ndev, bool on)
+>    *			STANDARD SLCAN DECAPSULATION			 *
+>    **********************************************************************=
+**/
+> =20
+> +static void slc_bump_err(struct slcan *sl)
+> +{
+> +	struct net_device *dev =3D sl->dev;
+> +	struct sk_buff *skb;
+> +	struct can_frame *cf;
+> +	char *cmd =3D sl->rbuff;
+> +	bool rx_errors =3D false, tx_errors =3D false;
+> +	int i, len;
+> +
+> +	if (*cmd !=3D 'e')
+> +		return;
+> +
+> +	cmd +=3D SLC_CMD_LEN;
+> +	/* get len from sanitized ASCII value */
 
-Thanks!
+What happens is a malicious device sends a wrong len value, that's
+longer than the RX'ed data?
 
-[09/17] ASoC: cs35l41: Move cs35l41 exit hibernate function into shared code
-        commit: 94e0bc317ad241c022a6bb311b3a28b4d51ea8b6
-[10/17] ASoC: cs35l41: Do not print error when waking from hibernation
-        commit: 97076475e2fdf471348b9ce73215cdbceeb4390f
-[11/17] ASoC: cs35l41: Add common cs35l41 enter hibernate function
-        commit: e341efc308e5374ded6b471f9e1ec01450bcc93e
+> +	len =3D *cmd++;
+> +	if (len >=3D '0' && len < '9')
+> +		len -=3D '0';
+> +	else
+> +		return;
+> +
+> +	skb =3D alloc_can_err_skb(dev, &cf);
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+Please continue error handling, even if no skb can be allocated.
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+> +	if (unlikely(!skb))
+> +		return;
+> +
+> +	cf->can_id |=3D CAN_ERR_PROT | CAN_ERR_BUSERROR;
+> +	for (i =3D 0; i < len; i++, cmd++) {
+> +		switch (*cmd) {
+> +		case 'a':
+> +			netdev_dbg(dev, "ACK error\n");
+> +			cf->can_id |=3D CAN_ERR_ACK;
+> +			cf->data[3] =3D CAN_ERR_PROT_LOC_ACK;
+> +			tx_errors =3D true;
+> +			break;
+> +		case 'b':
+> +			netdev_dbg(dev, "Bit0 error\n");
+> +			cf->data[2] |=3D CAN_ERR_PROT_BIT0;
+> +			tx_errors =3D true;
+> +			break;
+> +		case 'B':
+> +			netdev_dbg(dev, "Bit1 error\n");
+> +			cf->data[2] |=3D CAN_ERR_PROT_BIT1;
+> +			tx_errors =3D true;
+> +			break;
+> +		case 'c':
+> +			netdev_dbg(dev, "CRC error\n");
+> +			cf->data[2] |=3D CAN_ERR_PROT_BIT;
+> +			cf->data[3] =3D CAN_ERR_PROT_LOC_CRC_SEQ;
+> +			rx_errors =3D true;
+> +			break;
+> +		case 'f':
+> +			netdev_dbg(dev, "Form Error\n");
+> +			cf->data[2] |=3D CAN_ERR_PROT_FORM;
+> +			rx_errors =3D true;
+> +			break;
+> +		case 'o':
+> +			netdev_dbg(dev, "Rx overrun error\n");
+> +			cf->can_id |=3D CAN_ERR_CRTL;
+> +			cf->data[1] =3D CAN_ERR_CRTL_RX_OVERFLOW;
+> +			dev->stats.rx_over_errors++;
+> +			dev->stats.rx_errors++;
+> +			break;
+> +		case 'O':
+> +			netdev_dbg(dev, "Tx overrun error\n");
+> +			cf->can_id |=3D CAN_ERR_CRTL;
+> +			cf->data[1] =3D CAN_ERR_CRTL_TX_OVERFLOW;
+> +			dev->stats.tx_errors++;
+> +			break;
+> +		case 's':
+> +			netdev_dbg(dev, "Stuff error\n");
+> +			cf->data[2] |=3D CAN_ERR_PROT_STUFF;
+> +			rx_errors =3D true;
+> +			break;
+> +		}
+> +	}
+> +
+> +	if (rx_errors)
+> +		dev->stats.rx_errors++;
+> +
+> +	if (tx_errors)
+> +		dev->stats.tx_errors++;
+> +
+> +	netif_rx(skb);
+> +}
+> +
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+Marc
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-Thanks,
-Mark
+--ssxfwmq3jxhh5und
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKfLuIACgkQrX5LkNig
+013hsQgAghzB45G5T/d9COtfEWCcub/p6KFBW8Pt5SQfvSlUfEh7yuScPV/B8tum
+Uek/ORPZAes9xoBuNo3UMPsHPCZvaOvbYfY1oNJJuw+rGDYL4v40UismcGr9M9nr
+mqEGUj03KjJDPlf1RPNxDsuH2irS05TOKjpXq90ZaN5zB5f6SZlNvfFDHkGMn+Zm
+1z0ZZCpWNO9+VS/ZfoUJoY6OgXQxMm3Pw3pdwJqGMelFaD9BAw1f6RK2ceRcvGLi
+tY06Tf3mzhzFLAlY856+yPKw8eh7bP2PBLDfa+CVCraCcicUNzEz0a7h8Nf0TaWx
+ZaZdTg/teBjBCYq/cnW2z1NOqD86aA==
+=emqs
+-----END PGP SIGNATURE-----
+
+--ssxfwmq3jxhh5und--
