@@ -2,153 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:11:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AD33C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:11:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243472AbiFGMKi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:10:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51206 "EHLO
+        id S241907AbiFGMLy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:11:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243427AbiFGMHs (ORCPT
+        with ESMTP id S233558AbiFGMLw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:07:48 -0400
-Received: from esa6.hc1455-7.c3s2.iphmx.com (esa6.hc1455-7.c3s2.iphmx.com [68.232.139.139])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7114568FB4
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:07:41 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="76072289"
-X-IronPort-AV: E=Sophos;i="5.91,283,1647270000"; 
-   d="scan'208";a="76072289"
-Received: from unknown (HELO oym-r3.gw.nic.fujitsu.com) ([210.162.30.91])
-  by esa6.hc1455-7.c3s2.iphmx.com with ESMTP; 07 Jun 2022 21:07:40 +0900
-Received: from oym-m4.gw.nic.fujitsu.com (oym-nat-oym-m4.gw.nic.fujitsu.com [192.168.87.61])
-        by oym-r3.gw.nic.fujitsu.com (Postfix) with ESMTP id 1C30FD63BA;
-        Tue,  7 Jun 2022 21:07:38 +0900 (JST)
-Received: from oym-om4.fujitsu.com (oym-om4.o.css.fujitsu.com [10.85.58.164])
-        by oym-m4.gw.nic.fujitsu.com (Postfix) with ESMTP id 1B52BD99E4;
-        Tue,  7 Jun 2022 21:07:37 +0900 (JST)
-Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
-        by oym-om4.fujitsu.com (Postfix) with ESMTP id CCE964007FE5D;
-        Tue,  7 Jun 2022 21:07:36 +0900 (JST)
-From:   Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
-To:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, rafael@kernel.org, lenb@kernel.org,
-        gregkh@linuxfoundation.org, mchehab+huawei@kernel.org,
-        eugenis@google.com, tony.luck@intel.com, pcc@google.com,
-        peterz@infradead.org, marcos@orca.pet, marcan@marcan.st,
-        linus.walleij@linaro.org, nicolas.ferre@microchip.com,
-        conor.dooley@microchip.com, arnd@arndb.de, ast@kernel.org,
-        peter.chen@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-acpi@vger.kernel.org
-Cc:     tarumizu.kohei@fujitsu.com
-Subject: [PATCH v5 2/6] soc: fujitsu: Add Kconfig/Makefile to build hardware prefetch control driver
-Date:   Tue,  7 Jun 2022 21:05:26 +0900
-Message-Id: <20220607120530.2447112-3-tarumizu.kohei@fujitsu.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220607120530.2447112-1-tarumizu.kohei@fujitsu.com>
-References: <20220607120530.2447112-1-tarumizu.kohei@fujitsu.com>
+        Tue, 7 Jun 2022 08:11:52 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C7F939B1;
+        Tue,  7 Jun 2022 05:11:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654603911; x=1686139911;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=5C7CfW0dtrkUf/MoF676vs+y4VS7zCv2dMbSOjoDLDk=;
+  b=Yj4Xcu6QHhlfiVeHAmDrY9EPImvVwh4uDcVwH/ZgdIfSZ/QabCBGwI9U
+   TN19Q0kwaKpVkZ9PtkE3SINID9zfjeOxRpO9Q4Z5pIyCUIOrymY/jwcyq
+   QBtFsp8Jug6I8HsC+kTk5+DMqenyxFu5ftX6E4643cb/LV8ww6AmDcVpj
+   0TdEUC1wKWJmLBF+HgT9JDvU7hTuIlA+5UrIsiNFLWtC4rrjzaZC31G1Y
+   ZZPYbOUdBtxnfbpoyo1Wn+fKL59qtPRqdpLceecstVr1rEdp7ni3lN2cc
+   HK+HVFiIChp1C6dt5FjigIQCRwabYF6oUSHc1bhVG2QI1jmUjZi3hPvA4
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="265110408"
+X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
+   d="scan'208";a="265110408"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 05:11:36 -0700
+X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
+   d="scan'208";a="636100388"
+Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 05:11:34 -0700
+Date:   Tue, 7 Jun 2022 15:11:32 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 4/6] serial: 8250: Adjust misleading LSR related
+ comment
+In-Reply-To: <CAHp75VfK4v15HrBwwD9b7q6EYdcp3VnP5RGKVuPeSWk4TSyq+w@mail.gmail.com>
+Message-ID: <e22db21a-cfc3-b7e4-3fd9-6cee9e189213@linux.intel.com>
+References: <20220607082934.7242-1-ilpo.jarvinen@linux.intel.com> <20220607082934.7242-5-ilpo.jarvinen@linux.intel.com> <CAHp75VfK4v15HrBwwD9b7q6EYdcp3VnP5RGKVuPeSWk4TSyq+w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
+Content-Type: multipart/mixed; boundary="8323329-513457002-1654603896=:1622"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds Kconfig/Makefile to build hardware prefetch control driver for
-A64FX support, and also adds a MAINTAINERS entry.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Signed-off-by: Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
----
- MAINTAINERS                  |  5 +++++
- drivers/soc/Kconfig          |  1 +
- drivers/soc/Makefile         |  1 +
- drivers/soc/fujitsu/Kconfig  | 26 ++++++++++++++++++++++++++
- drivers/soc/fujitsu/Makefile |  2 ++
- 5 files changed, 35 insertions(+)
- create mode 100644 drivers/soc/fujitsu/Kconfig
- create mode 100644 drivers/soc/fujitsu/Makefile
+--8323329-513457002-1654603896=:1622
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d6d879cb0afd..b3e920a8a044 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8620,6 +8620,11 @@ F:	include/linux/hwmon*.h
- F:	include/trace/events/hwmon*.h
- K:	(devm_)?hwmon_device_(un)?register(|_with_groups|_with_info)
- 
-+HARDWARE PREFETCH CONTROL DRIVERS
-+M:	Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
-+S:	Maintained
-+F:	drivers/soc/fujitsu/a64fx-pfctl.c
-+
- HARDWARE RANDOM NUMBER GENERATOR CORE
- M:	Matt Mackall <mpm@selenic.com>
- M:	Herbert Xu <herbert@gondor.apana.org.au>
-diff --git a/drivers/soc/Kconfig b/drivers/soc/Kconfig
-index c5aae42673d3..d87754799d90 100644
---- a/drivers/soc/Kconfig
-+++ b/drivers/soc/Kconfig
-@@ -9,6 +9,7 @@ source "drivers/soc/atmel/Kconfig"
- source "drivers/soc/bcm/Kconfig"
- source "drivers/soc/canaan/Kconfig"
- source "drivers/soc/fsl/Kconfig"
-+source "drivers/soc/fujitsu/Kconfig"
- source "drivers/soc/imx/Kconfig"
- source "drivers/soc/ixp4xx/Kconfig"
- source "drivers/soc/litex/Kconfig"
-diff --git a/drivers/soc/Makefile b/drivers/soc/Makefile
-index 904eec2a7871..6c8ff1792cda 100644
---- a/drivers/soc/Makefile
-+++ b/drivers/soc/Makefile
-@@ -12,6 +12,7 @@ obj-$(CONFIG_SOC_CANAAN)	+= canaan/
- obj-$(CONFIG_ARCH_DOVE)		+= dove/
- obj-$(CONFIG_MACH_DOVE)		+= dove/
- obj-y				+= fsl/
-+obj-y				+= fujitsu/
- obj-$(CONFIG_ARCH_GEMINI)	+= gemini/
- obj-y				+= imx/
- obj-y				+= ixp4xx/
-diff --git a/drivers/soc/fujitsu/Kconfig b/drivers/soc/fujitsu/Kconfig
-new file mode 100644
-index 000000000000..6c5990b75cc5
---- /dev/null
-+++ b/drivers/soc/fujitsu/Kconfig
-@@ -0,0 +1,26 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+
-+menu "Fujitsu SoC drivers"
-+
-+config ALLOW_INCOMPLETE_CACHE_SYSFS
-+	bool
-+
-+config A64FX_HWPF_CONTROL
-+	tristate "A64FX Hardware Prefetch Control driver"
-+	depends on ARM64
-+	select ALLOW_INCOMPLETE_CACHE_SYSFS
-+	help
-+	  This provides a sysfs interface to control the Hardware Prefetch
-+	  behavior for A64FX.
-+
-+	  A64FX has IMP_PF_STREAM_DETECT_CTRL_EL0, which can control the
-+	  hardware prefech behavior. If the processor supports this, the
-+	  module can be loaded with the name a64fx-pfctl.
-+
-+	  Depending on the characteristics of the application, this register
-+	  parameters improve or degrade performance.
-+
-+	  Please see Documentation/ABI/testing/sysfs-devices-system-cpu for
-+	  more information.
-+
-+endmenu
-diff --git a/drivers/soc/fujitsu/Makefile b/drivers/soc/fujitsu/Makefile
-new file mode 100644
-index 000000000000..35e284a548bb
---- /dev/null
-+++ b/drivers/soc/fujitsu/Makefile
-@@ -0,0 +1,2 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+obj-$(CONFIG_A64FX_HWPF_CONTROL)	+= a64fx-pfctl.o
+On Tue, 7 Jun 2022, Andy Shevchenko wrote:
+
+> On Tue, Jun 7, 2022 at 11:16 AM Ilpo Järvinen
+> <ilpo.jarvinen@linux.intel.com> wrote:
+> 
+> > only flags which were not handled). Adjust the comment to match
+> > behavior and warn about which flags can be depended on.
+> >
+> > While I'd have moved LSR read before LSR read and used serial_lsr_in()
+> > also here but I came across this old discussion about the topic:
+> 
+> >   https://www.spinics.net/lists/linux-serial/msg20555.html
+> 
+> Can it be transformed to lore.kernel.org link?
+
+Unfortunately no, AFAICT. I tried searching but I couldn't find one 
+from there (In fact, I tried even before submitting them because you 
+previously told me I should use lore links instead).
+
+More importantly though, it seems that the link was not the one I was 
+supposed to use (I probably copy pasted the url from a wrong window while 
+investigating all turns of it). This is the correct link:
+
+  https://www.spinics.net/lists/linux-serial/msg16220.html
+
+> and maybe even moved as BugLink tag?
+
+What's BugLink? Our documentation isn't particularly helpful:
+
+$ git grep BugLink
+scripts/checkpatch.pl:              $line !~ /^\s*(?:Link|Patchwork|http|https|BugLink|base-commit):/i &&
+$
+
+...It seems mostly about bug trackers such as bugzilla, etc. based on git 
+log so that tag seems not relevant.
+
+I put the correct URL now into Link tag.
+
+I'll resend tomorrow to give the dust some time to settle.
+
 -- 
-2.27.0
+ i.
 
+--8323329-513457002-1654603896=:1622--
