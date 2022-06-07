@@ -2,42 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFCBEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 016B7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:21:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245288AbiFGOU7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 10:20:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53790 "EHLO
+        id S245304AbiFGOVC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 10:21:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245275AbiFGOU5 (ORCPT
+        with ESMTP id S245274AbiFGOU5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 10:20:57 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66383C9649;
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF32C9646;
         Tue,  7 Jun 2022 07:20:56 -0700 (PDT)
-X-UUID: 91ad7e3e433b4ac59b9506384b68210a-20220607
+X-UUID: 75ea1a52b66b4fb89f6f24ac3a04ea3a-20220607
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:22043971-3fe6-4510-ab3b-78b89fde21a1,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:95
-X-CID-INFO: VERSION:1.1.5,REQID:22043971-3fe6-4510-ab3b-78b89fde21a1,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,ACT
-        ION:quarantine,TS:95
-X-CID-META: VersionHash:2a19b09,CLOUDID:62c6f5e4-2ba2-4dc1-b6c5-11feb6c769e0,C
-        OID:2ead74e3a3a1,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:0,BEC:nil
-X-UUID: 91ad7e3e433b4ac59b9506384b68210a-20220607
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+X-CID-O-INFO: VERSION:1.1.5,REQID:e761b5cb-0baa-4d90-8ebe-9e4f6e867580,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:5332807e-c8dc-403a-96e8-6237210dceee,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 75ea1a52b66b4fb89f6f24ac3a04ea3a-20220607
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
         (envelope-from <jiaxin.yu@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1840459844; Tue, 07 Jun 2022 22:20:51 +0800
+        with ESMTP id 175504856; Tue, 07 Jun 2022 22:20:53 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
  mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Tue, 7 Jun 2022 22:20:49 +0800
+ 15.2.792.15; Tue, 7 Jun 2022 22:20:51 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 7 Jun 2022 22:20:48 +0800
+ Transport; Tue, 7 Jun 2022 22:20:50 +0800
 From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
 To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
         <angelogioacchino.delregno@collabora.com>
@@ -49,11 +46,10 @@ CC:     <aaronyu@google.com>, <matthias.bgg@gmail.com>,
         <linux-mediatek@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Jiaxin Yu <jiaxin.yu@mediatek.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v6 1/8] dt-bindings: mediatek: mt6358: add new compatible for using mt6366
-Date:   Tue, 7 Jun 2022 22:20:39 +0800
-Message-ID: <20220607142046.28060-2-jiaxin.yu@mediatek.com>
+        Jiaxin Yu <jiaxin.yu@mediatek.com>
+Subject: [PATCH v6 3/8] ASoC: mediatek: mt8186: add mt8186-mt6366 common driver
+Date:   Tue, 7 Jun 2022 22:20:41 +0800
+Message-ID: <20220607142046.28060-4-jiaxin.yu@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220607142046.28060-1-jiaxin.yu@mediatek.com>
 References: <20220607142046.28060-1-jiaxin.yu@mediatek.com>
@@ -65,29 +61,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add new compatible string "mediatek,mt6366-sound" for using mt6366.
+Add mt8186-mt6366 common driver for mt8186 series machine.
 
 Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
-Acked-by: Rob Herring <robh@kernel.org>
 ---
- Documentation/devicetree/bindings/sound/mt6358.txt | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ .../mediatek/mt8186/mt8186-mt6366-common.c    | 59 +++++++++++++++++++
+ .../mediatek/mt8186/mt8186-mt6366-common.h    | 17 ++++++
+ 2 files changed, 76 insertions(+)
+ create mode 100644 sound/soc/mediatek/mt8186/mt8186-mt6366-common.c
+ create mode 100644 sound/soc/mediatek/mt8186/mt8186-mt6366-common.h
 
-diff --git a/Documentation/devicetree/bindings/sound/mt6358.txt b/Documentation/devicetree/bindings/sound/mt6358.txt
-index 59a73ffdf1d3..fbe9e55c68f5 100644
---- a/Documentation/devicetree/bindings/sound/mt6358.txt
-+++ b/Documentation/devicetree/bindings/sound/mt6358.txt
-@@ -7,7 +7,9 @@ Must be a child node of PMIC wrapper.
- 
- Required properties:
- 
--- compatible : "mediatek,mt6358-sound".
-+- compatible - "string" - One of:
-+    "mediatek,mt6358-sound"
-+    "mediatek,mt6366-sound"
- - Avdd-supply : power source of AVDD
- 
- Optional properties:
+diff --git a/sound/soc/mediatek/mt8186/mt8186-mt6366-common.c b/sound/soc/mediatek/mt8186/mt8186-mt6366-common.c
+new file mode 100644
+index 000000000000..94e1128e8128
+--- /dev/null
++++ b/sound/soc/mediatek/mt8186/mt8186-mt6366-common.c
+@@ -0,0 +1,59 @@
++// SPDX-License-Identifier: GPL-2.0
++//
++// mt8186-mt6366-common.c
++//	--  MT8186 MT6366 ALSA common driver
++//
++// Copyright (c) 2022 MediaTek Inc.
++// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
++//
++#include <sound/soc.h>
++
++#include "../../codecs/mt6358.h"
++#include "../common/mtk-afe-platform-driver.h"
++#include "mt8186-afe-common.h"
++#include "mt8186-mt6366-common.h"
++
++int mt8186_mt6366_init(struct snd_soc_pcm_runtime *rtd)
++{
++	struct snd_soc_component *cmpnt_afe =
++		snd_soc_rtdcom_lookup(rtd, AFE_PCM_NAME);
++	struct snd_soc_component *cmpnt_codec =
++		asoc_rtd_to_codec(rtd, 0)->component;
++	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt_afe);
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++	struct snd_soc_dapm_context *dapm = &rtd->card->dapm;
++	int ret;
++
++	/* set mtkaif protocol */
++	mt6358_set_mtkaif_protocol(cmpnt_codec,
++				   MT6358_MTKAIF_PROTOCOL_1);
++	afe_priv->mtkaif_protocol = MT6358_MTKAIF_PROTOCOL_1;
++
++	ret = snd_soc_dapm_sync(dapm);
++	if (ret) {
++		dev_info(rtd->dev, "failed to snd_soc_dapm_sync\n");
++		return ret;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(mt8186_mt6366_init);
++
++int mt8186_mt6366_card_set_be_link(struct snd_soc_card *card,
++				   struct snd_soc_dai_link *link,
++				   struct device_node *node,
++				   char *link_name)
++{
++	int ret;
++
++	if (node && strcmp(link->name, link_name) == 0) {
++		ret = snd_soc_of_get_dai_link_codecs(card->dev, node, link);
++		if (ret < 0) {
++			dev_err_probe(card->dev, ret, "get dai link codecs fail\n");
++			return ret;
++		}
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(mt8186_mt6366_card_set_be_link);
+diff --git a/sound/soc/mediatek/mt8186/mt8186-mt6366-common.h b/sound/soc/mediatek/mt8186/mt8186-mt6366-common.h
+new file mode 100644
+index 000000000000..907d8f5e46b1
+--- /dev/null
++++ b/sound/soc/mediatek/mt8186/mt8186-mt6366-common.h
+@@ -0,0 +1,17 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * mt8186-mt6366-common.h
++ *
++ * Copyright (c) 2022 MediaTek Inc.
++ * Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
++ */
++
++#ifndef _MT8186_MT6366_COMMON_H_
++#define _MT8186_MT6366_COMMON_H_
++
++int mt8186_mt6366_init(struct snd_soc_pcm_runtime *rtd);
++int mt8186_mt6366_card_set_be_link(struct snd_soc_card *card,
++				   struct snd_soc_dai_link *link,
++				   struct device_node *node,
++				   char *link_name);
++#endif
 -- 
 2.25.1
 
