@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D88CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0E51CCA486
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351161AbiFGSPx (ORCPT
+        id S1351192AbiFGSQA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:15:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48872 "EHLO
+        Tue, 7 Jun 2022 14:16:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349153AbiFGRzn (ORCPT
+        with ESMTP id S1349374AbiFGR4N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:55:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE82E146416;
-        Tue,  7 Jun 2022 10:40:02 -0700 (PDT)
+        Tue, 7 Jun 2022 13:56:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905C93614C;
+        Tue,  7 Jun 2022 10:40:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 64CF56146F;
-        Tue,  7 Jun 2022 17:35:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AB68C385A5;
-        Tue,  7 Jun 2022 17:34:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11029B820C3;
+        Tue,  7 Jun 2022 17:39:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60C8BC385A5;
+        Tue,  7 Jun 2022 17:39:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623299;
-        bh=54fPIN8G1JovSP05z2k3xNR+dvWsXyhzfXkHCXyejmo=;
+        s=korg; t=1654623590;
+        bh=uYiciictdrSEQB12gEqhK2G+ukdTSz3fit8pE6wltZY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N40sMEUQm/Lv0JGi8Ie07s9FUFffkrCcwqD+1FlG7gscSzVCD2oSahz+1dduQmdKT
-         Ri/nXvO4CwAqY4skivGNMlXUXLVLvPL5dgJnUbrW4mV8X0hLImICUrLpbZF+sy4mF5
-         OAsQftg1onk48CqGc6+tBPDRscOIuSPEHiBHv0zg=
+        b=I5l4xstNpuhNUVk7H9qZZrqU0Jn8doux1oCHqaruQIAsfgeJ6C/fSStTv+Vvzs5M6
+         wVvdYIUajqEcIBjuTQbHgPFcUXfYhLkmUnNxf3PhvS3KvxG1rv0Gcz9MkTMA5HQ9qI
+         rcmwb8njTFrTlWQRk3gezrxn8k1JB/IX1xMvdFNc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.10 366/452] ACPI: property: Release subnode properties with data nodes
-Date:   Tue,  7 Jun 2022 19:03:43 +0200
-Message-Id: <20220607164919.469141778@linuxfoundation.org>
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH 5.15 020/667] fs/ntfs3: Update valid size if -EIOCBQUEUED
+Date:   Tue,  7 Jun 2022 18:54:45 +0200
+Message-Id: <20220607164935.401052201@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
-References: <20220607164908.521895282@linuxfoundation.org>
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,70 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 
-commit 3bd561e1572ee02a50cd1a5be339abf1a5b78d56 upstream.
+commit 52e00ea6b26e45fb8159e3b57cdde8d3f9bdd8e9 upstream.
 
-struct acpi_device_properties describes one source of properties present
-on either struct acpi_device or struct acpi_data_node. When properties are
-parsed, both are populated but when released, only those properties that
-are associated with the device node are freed.
+Update valid size if write is still in I/O queue.
+Fixes xfstest generic/240
+Fixes: 82cae269cfa9 ("fs/ntfs3: Add initialization of super block")
 
-Fix this by also releasing memory of the data node properties.
-
-Fixes: 5f5e4890d57a ("ACPI / property: Allow multiple property compatible _DSD entries")
-Cc: 4.20+ <stable@vger.kernel.org> # 4.20+
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/property.c |   18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ fs/ntfs3/inode.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/acpi/property.c
-+++ b/drivers/acpi/property.c
-@@ -433,6 +433,16 @@ void acpi_init_properties(struct acpi_de
- 		acpi_extract_apple_properties(adev);
- }
+--- a/fs/ntfs3/inode.c
++++ b/fs/ntfs3/inode.c
+@@ -757,6 +757,7 @@ static ssize_t ntfs_direct_IO(struct kio
+ 	loff_t vbo = iocb->ki_pos;
+ 	loff_t end;
+ 	int wr = iov_iter_rw(iter) & WRITE;
++	size_t iter_count = iov_iter_count(iter);
+ 	loff_t valid;
+ 	ssize_t ret;
  
-+static void acpi_free_device_properties(struct list_head *list)
-+{
-+	struct acpi_device_properties *props, *tmp;
-+
-+	list_for_each_entry_safe(props, tmp, list, list) {
-+		list_del(&props->list);
-+		kfree(props);
-+	}
-+}
-+
- static void acpi_destroy_nondev_subnodes(struct list_head *list)
- {
- 	struct acpi_data_node *dn, *next;
-@@ -445,22 +455,18 @@ static void acpi_destroy_nondev_subnodes
- 		wait_for_completion(&dn->kobj_done);
- 		list_del(&dn->sibling);
- 		ACPI_FREE((void *)dn->data.pointer);
-+		acpi_free_device_properties(&dn->data.properties);
- 		kfree(dn);
- 	}
- }
+@@ -770,10 +771,13 @@ static ssize_t ntfs_direct_IO(struct kio
+ 				 wr ? ntfs_get_block_direct_IO_W
+ 				    : ntfs_get_block_direct_IO_R);
  
- void acpi_free_properties(struct acpi_device *adev)
- {
--	struct acpi_device_properties *props, *tmp;
--
- 	acpi_destroy_nondev_subnodes(&adev->data.subnodes);
- 	ACPI_FREE((void *)adev->data.pointer);
- 	adev->data.of_compatible = NULL;
- 	adev->data.pointer = NULL;
--	list_for_each_entry_safe(props, tmp, &adev->data.properties, list) {
--		list_del(&props->list);
--		kfree(props);
--	}
-+	acpi_free_device_properties(&adev->data.properties);
- }
+-	if (ret <= 0)
++	if (ret > 0)
++		end = vbo + ret;
++	else if (wr && ret == -EIOCBQUEUED)
++		end = vbo + iter_count;
++	else
+ 		goto out;
  
- /**
+-	end = vbo + ret;
+ 	valid = ni->i_valid;
+ 	if (wr) {
+ 		if (end > valid && !S_ISBLK(inode->i_mode)) {
 
 
