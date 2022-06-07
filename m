@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28461C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:36:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD177CCA48A
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381149AbiFGVge (ORCPT
+        id S1380685AbiFGVft (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:36:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35378 "EHLO
+        Tue, 7 Jun 2022 17:35:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377298AbiFGUdH (ORCPT
+        with ESMTP id S1377233AbiFGUlq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:33:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBFF11E3B23;
-        Tue,  7 Jun 2022 11:34:50 -0700 (PDT)
+        Tue, 7 Jun 2022 16:41:46 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 159B81F0A68;
+        Tue,  7 Jun 2022 11:38:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55D8B60B3D;
-        Tue,  7 Jun 2022 18:34:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61785C385A5;
-        Tue,  7 Jun 2022 18:34:44 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 29F62CE21CD;
+        Tue,  7 Jun 2022 18:38:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31D7AC385A2;
+        Tue,  7 Jun 2022 18:38:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626884;
-        bh=0hnrDxBMOqsivW40nLJd3AIIdOwo4+bA30YVTdbKlFo=;
+        s=korg; t=1654627091;
+        bh=et0y1Nwx774A1CZnOPcGrx2xvsQFprJZsgw+6HiBkW8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rvMQ1Uyd7HYpeZlVg2EXBzOzkcUeydxwL1ZSp5vIAENMEWB56pUii7FjYEm3USeAZ
-         6eAC4Ju1ny1qJeccOfaN6SGUUvnFaKkpNoL62yAddT4HrQ1OoNMYsGHjfiSM8ItZ+i
-         i3JpApDdS4yEnbl0eIA0Rrs8TtNZzJne7858cfbI=
+        b=digazspN0nklm8mgZ9+TRFj0Fy3DJipmEhIvsNHiuUwZ2goTRseNxAwLGz2qPYMWU
+         D6dctoVF8q+PWOKlsFVcVzHJ9+ORQsONt9h9YBqrEvd3uzthIxjz6AnsI15Lw+Cw0b
+         YPjjxfyGPXEZewmP1dawmK9PhNfE+AFUjHmTBhj8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabiano Rosas <farosas@linux.ibm.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 539/772] KVM: PPC: Book3S HV: Fix vcore_blocked tracepoint
-Date:   Tue,  7 Jun 2022 19:02:11 +0200
-Message-Id: <20220607165004.848635400@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Gabriel Krisman Bertazi <krisman@collabora.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.17 615/772] f2fs: dont use casefolded comparison for "." and ".."
+Date:   Tue,  7 Jun 2022 19:03:27 +0200
+Message-Id: <20220607165007.060610005@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,85 +50,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabiano Rosas <farosas@linux.ibm.com>
+From: Eric Biggers <ebiggers@google.com>
 
-[ Upstream commit ad55bae7dc364417434b69dd6c30104f20d0f84d ]
+commit b5639bb4313b9d455fc9fc4768d23a5e4ca8cb9d upstream.
 
-We removed most of the vcore logic from the P9 path but there's still
-a tracepoint that tried to dereference vc->runner.
+Tryng to rename a directory that has all following properties fails with
+EINVAL and triggers the 'WARN_ON_ONCE(!fscrypt_has_encryption_key(dir))'
+in f2fs_match_ci_name():
 
-Fixes: ecb6a7207f92 ("KVM: PPC: Book3S HV P9: Remove most of the vcore logic")
-Signed-off-by: Fabiano Rosas <farosas@linux.ibm.com>
-Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220328215831.320409-1-farosas@linux.ibm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+    - The directory is casefolded
+    - The directory is encrypted
+    - The directory's encryption key is not yet set up
+    - The parent directory is *not* encrypted
+
+The problem is incorrect handling of the lookup of ".." to get the
+parent reference to update.  fscrypt_setup_filename() treats ".." (and
+".") specially, as it's never encrypted.  It's passed through as-is, and
+setting up the directory's key is not attempted.  As the name isn't a
+no-key name, f2fs treats it as a "normal" name and attempts a casefolded
+comparison.  That breaks the assumption of the WARN_ON_ONCE() in
+f2fs_match_ci_name() which assumes that for encrypted directories,
+casefolded comparisons only happen when the directory's key is set up.
+
+We could just remove this WARN_ON_ONCE().  However, since casefolding is
+always a no-op on "." and ".." anyway, let's instead just not casefold
+these names.  This results in the standard bytewise comparison.
+
+Fixes: 7ad08a58bf67 ("f2fs: Handle casefolding with Encryption")
+Cc: <stable@vger.kernel.org> # v5.11+
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Gabriel Krisman Bertazi <krisman@collabora.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kvm/book3s_hv.c | 8 ++++----
- arch/powerpc/kvm/trace_hv.h  | 8 ++++----
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ fs/f2fs/dir.c  |    3 ++-
+ fs/f2fs/f2fs.h |   10 +++++-----
+ fs/f2fs/hash.c |   11 ++++++-----
+ 3 files changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
-index 0da8c0df768d..85a3b756e0b0 100644
---- a/arch/powerpc/kvm/book3s_hv.c
-+++ b/arch/powerpc/kvm/book3s_hv.c
-@@ -4238,13 +4238,13 @@ static void kvmppc_vcore_blocked(struct kvmppc_vcore *vc)
- 	start_wait = ktime_get();
+--- a/fs/f2fs/dir.c
++++ b/fs/f2fs/dir.c
+@@ -82,7 +82,8 @@ int f2fs_init_casefolded_name(const stru
+ #if IS_ENABLED(CONFIG_UNICODE)
+ 	struct super_block *sb = dir->i_sb;
  
- 	vc->vcore_state = VCORE_SLEEPING;
--	trace_kvmppc_vcore_blocked(vc, 0);
-+	trace_kvmppc_vcore_blocked(vc->runner, 0);
- 	spin_unlock(&vc->lock);
- 	schedule();
- 	finish_rcuwait(&vc->wait);
- 	spin_lock(&vc->lock);
- 	vc->vcore_state = VCORE_INACTIVE;
--	trace_kvmppc_vcore_blocked(vc, 1);
-+	trace_kvmppc_vcore_blocked(vc->runner, 1);
- 	++vc->runner->stat.halt_successful_wait;
- 
- 	cur = ktime_get();
-@@ -4624,9 +4624,9 @@ int kvmhv_run_single_vcpu(struct kvm_vcpu *vcpu, u64 time_limit,
- 			if (kvmppc_vcpu_check_block(vcpu))
- 				break;
- 
--			trace_kvmppc_vcore_blocked(vc, 0);
-+			trace_kvmppc_vcore_blocked(vcpu, 0);
- 			schedule();
--			trace_kvmppc_vcore_blocked(vc, 1);
-+			trace_kvmppc_vcore_blocked(vcpu, 1);
- 		}
- 		finish_rcuwait(wait);
- 	}
-diff --git a/arch/powerpc/kvm/trace_hv.h b/arch/powerpc/kvm/trace_hv.h
-index 830a126e095d..9c56da21a075 100644
---- a/arch/powerpc/kvm/trace_hv.h
-+++ b/arch/powerpc/kvm/trace_hv.h
-@@ -408,9 +408,9 @@ TRACE_EVENT(kvmppc_run_core,
- );
- 
- TRACE_EVENT(kvmppc_vcore_blocked,
--	TP_PROTO(struct kvmppc_vcore *vc, int where),
-+	TP_PROTO(struct kvm_vcpu *vcpu, int where),
- 
--	TP_ARGS(vc, where),
-+	TP_ARGS(vcpu, where),
- 
- 	TP_STRUCT__entry(
- 		__field(int,	n_runnable)
-@@ -420,8 +420,8 @@ TRACE_EVENT(kvmppc_vcore_blocked,
- 	),
- 
- 	TP_fast_assign(
--		__entry->runner_vcpu = vc->runner->vcpu_id;
--		__entry->n_runnable  = vc->n_runnable;
-+		__entry->runner_vcpu = vcpu->vcpu_id;
-+		__entry->n_runnable  = vcpu->arch.vcore->n_runnable;
- 		__entry->where       = where;
- 		__entry->tgid	     = current->tgid;
- 	),
--- 
-2.35.1
-
+-	if (IS_CASEFOLDED(dir)) {
++	if (IS_CASEFOLDED(dir) &&
++	    !is_dot_dotdot(fname->usr_fname->name, fname->usr_fname->len)) {
+ 		fname->cf_name.name = f2fs_kmem_cache_alloc(f2fs_cf_name_slab,
+ 					GFP_NOFS, false, F2FS_SB(sb));
+ 		if (!fname->cf_name.name)
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -491,11 +491,11 @@ struct f2fs_filename {
+ #if IS_ENABLED(CONFIG_UNICODE)
+ 	/*
+ 	 * For casefolded directories: the casefolded name, but it's left NULL
+-	 * if the original name is not valid Unicode, if the directory is both
+-	 * casefolded and encrypted and its encryption key is unavailable, or if
+-	 * the filesystem is doing an internal operation where usr_fname is also
+-	 * NULL.  In all these cases we fall back to treating the name as an
+-	 * opaque byte sequence.
++	 * if the original name is not valid Unicode, if the original name is
++	 * "." or "..", if the directory is both casefolded and encrypted and
++	 * its encryption key is unavailable, or if the filesystem is doing an
++	 * internal operation where usr_fname is also NULL.  In all these cases
++	 * we fall back to treating the name as an opaque byte sequence.
+ 	 */
+ 	struct fscrypt_str cf_name;
+ #endif
+--- a/fs/f2fs/hash.c
++++ b/fs/f2fs/hash.c
+@@ -91,7 +91,7 @@ static u32 TEA_hash_name(const u8 *p, si
+ /*
+  * Compute @fname->hash.  For all directories, @fname->disk_name must be set.
+  * For casefolded directories, @fname->usr_fname must be set, and also
+- * @fname->cf_name if the filename is valid Unicode.
++ * @fname->cf_name if the filename is valid Unicode and is not "." or "..".
+  */
+ void f2fs_hash_filename(const struct inode *dir, struct f2fs_filename *fname)
+ {
+@@ -110,10 +110,11 @@ void f2fs_hash_filename(const struct ino
+ 		/*
+ 		 * If the casefolded name is provided, hash it instead of the
+ 		 * on-disk name.  If the casefolded name is *not* provided, that
+-		 * should only be because the name wasn't valid Unicode, so fall
+-		 * back to treating the name as an opaque byte sequence.  Note
+-		 * that to handle encrypted directories, the fallback must use
+-		 * usr_fname (plaintext) rather than disk_name (ciphertext).
++		 * should only be because the name wasn't valid Unicode or was
++		 * "." or "..", so fall back to treating the name as an opaque
++		 * byte sequence.  Note that to handle encrypted directories,
++		 * the fallback must use usr_fname (plaintext) rather than
++		 * disk_name (ciphertext).
+ 		 */
+ 		WARN_ON_ONCE(!fname->usr_fname->name);
+ 		if (fname->cf_name.name) {
 
 
