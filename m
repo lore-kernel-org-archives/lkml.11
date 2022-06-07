@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED426C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:46:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1C8CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 10:46:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241523AbiFGKqa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:46:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42188 "EHLO
+        id S241552AbiFGKqf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:46:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241549AbiFGKpx (ORCPT
+        with ESMTP id S241543AbiFGKqF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:45:53 -0400
+        Tue, 7 Jun 2022 06:46:05 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90EECED798
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 03:45:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37367ED3F2;
+        Tue,  7 Jun 2022 03:45:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3ACE3B81F09
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:45:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BADCC3411F;
-        Tue,  7 Jun 2022 10:45:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93A76B81EF8;
+        Tue,  7 Jun 2022 10:45:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A813C385A5;
+        Tue,  7 Jun 2022 10:45:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654598742;
-        bh=fYxNbwPSVr/66WMOgiyAGOorrBlpKFmsqN5lemf2nIM=;
-        h=From:To:In-Reply-To:References:Subject:Date:From;
-        b=YoA4Ppkdp8AYFYI0bTkAynYDmgn6Kjb0j8j52AYcOjvg2skP8HrPDqsdk7FRjeXJ4
-         8YuXB1NwYrdz1GjnDaHNjm13NRM9a2v4iBfO0ebsSBuOxL6MeaUE5jLs4vvafmk44E
-         Qwx4+Lh5QDoPKqE8IfpWcCnCPjho9CYCEDXj755TdJ8HaJCeuJihXr1S/LVEZXKpb9
-         R4GCmR7+/IcGTAv7mee/R9UdWK3mfcXB55l7bV1kfhdzaHN9n2URpyBiDt2I4lARll
-         y9/vNDqWBBvfeyuGY1zMKR0TggR9hhjahf7Sn2yms33cZXmLCyNv477dofcxi7PhDq
-         PoJGyovBoxX+Q==
+        s=k20201202; t=1654598750;
+        bh=L5UprDm+eFlKd0eGBmXLIaDF8ATDo8XW9lH/TYTLBUc=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=U7ZorcJLYtG28or0KrIhV9ZevaqjS5ymiucoZSkHfYPcE3YjOmj0B/QVxKNkj3da8
+         f+kCqKjDbZSmZtpqK8bYzAcqF+3cPgA67OdHbz08NByI37/CipYjTroKGhS37O26Mz
+         hr5E7cTIpc7LLBrmkE+6fm6SD255/oI2Avclic0U7T/a+B8BEr0qWrDMkX32lisIme
+         1ZMc1qfOgErzEpLbmr90uMNlcVHXuVJqkNqSdW2usEdvoLF00xRJRkbCz58RngY0i+
+         nB4JLb0O1eTfMhmF5sHNDXfyANzPSJcsnd+aLDSFx4RMOrcnC/YIIGw4tUxzPeVLmJ
+         aPG5K1EM/a9Yg==
 From:   Mark Brown <broonie@kernel.org>
-To:     linmq006@gmail.com, Liam Girdwood <lgirdwood@gmail.com>,
-        krzysztof.kozlowski@linaro.org, Takashi Iwai <tiwai@suse.com>,
-        s.nawrocki@samsung.com, xc-racer2@live.ca,
-        linux-kernel@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>,
-        alsa-devel@alsa-project.org
-In-Reply-To: <20220603130640.37624-1-linmq006@gmail.com>
-References: <20220603130640.37624-1-linmq006@gmail.com>
-Subject: Re: [PATCH v2] ASoC: samsung: Fix error handling in aries_audio_probe
-Message-Id: <165459874083.301808.8944605604871415466.b4-ty@kernel.org>
-Date:   Tue, 07 Jun 2022 11:45:40 +0100
+To:     ~postmarketos/upstreaming@lists.sr.ht, amartinz@shiftphones.com
+Cc:     krzysztof.kozlowski+dt@linaro.org, stephan@gerhold.net,
+        Liam Girdwood <lgirdwood@gmail.com>, caleb@connolly.tech,
+        me@dylanvanassche.be, Takashi Iwai <tiwai@suse.com>,
+        devicetree@vger.kernel.org, phone-devel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        Jaroslav Kysela <perex@perex.cz>, alsa-devel@alsa-project.org
+In-Reply-To: <20220602164504.261361-1-amartinz@shiftphones.com>
+References: <20220602164504.261361-1-amartinz@shiftphones.com>
+Subject: Re: [PATCH 1/2] ASoC: codecs: tfa989x: Add support for tfa9890
+Message-Id: <165459874728.301808.2918260334640693383.b4-ty@kernel.org>
+Date:   Tue, 07 Jun 2022 11:45:47 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -50,13 +52,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 3 Jun 2022 17:06:39 +0400, Miaoqian Lin wrote:
-> of_get_child_by_name() returns a node pointer with refcount
-> incremented, we should use of_node_put() on it when not need anymore.
-> This function is missing of_node_put(cpu) in the error path.
-> Fix this by goto out label. of_node_put() will check NULL pointer.
+On Thu, 2 Jun 2022 18:45:03 +0200, Alexander Martinz wrote:
+> The initialization sequence is taken from the version provided
+> by the supplier [1].
 > 
+> This allows speakers using the TFA9890 amplifier to work, which are
+> used by various mobile phones such as the SHIFT6mq.
 > 
+> [1]: https://source.codeaurora.org/external/mas/tfa98xx/tree/src/tfa_init.c?id=d2cd12931fbc48df988b62931fb9960d4e9dc05d#n1827
+> 
+> [...]
 
 Applied to
 
@@ -64,8 +69,10 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: samsung: Fix error handling in aries_audio_probe
-      commit: 3e2649c5e8643bea0867bb1dd970fedadb0eb7f3
+[1/2] ASoC: codecs: tfa989x: Add support for tfa9890
+      commit: ef6c320942a2f057204702d769d507186fd7f0b7
+[2/2] ASoC: dt-bindings: nxp,tfa989x: Add tfa9890 support
+      commit: d0da7c8668dc19df157d927a67721ca00e29ff2b
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
