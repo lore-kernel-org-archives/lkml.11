@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D32B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:43:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A943C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376527AbiFGUnx (ORCPT
+        id S1357884AbiFGUoA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:43:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55152 "EHLO
+        Tue, 7 Jun 2022 16:44:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357357AbiFGTl4 (ORCPT
+        with ESMTP id S1357265AbiFGTli (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:41:56 -0400
+        Tue, 7 Jun 2022 15:41:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 223BB1B2150;
-        Tue,  7 Jun 2022 11:15:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B6E51B1CE9;
+        Tue,  7 Jun 2022 11:14:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4F8D60B25;
-        Tue,  7 Jun 2022 18:15:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB299C385A5;
-        Tue,  7 Jun 2022 18:15:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C3A4B60B16;
+        Tue,  7 Jun 2022 18:14:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D305FC3411C;
+        Tue,  7 Jun 2022 18:14:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625703;
-        bh=0Q1yjL85Q9VVLMlGcX1RPSEALb25xYMd+h3KQ//cJgI=;
+        s=korg; t=1654625692;
+        bh=a6ZbcZ0pyviOct835Ub4+gXpK5eWBK1Jv1/OF+CY8kE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t7eoTCwoIL/Z62CATZphrywVQbMUjblykHAr3T4a/0uj+Sn/NH6jQboaoXe3MkImK
-         dqLro0mDCV4+o7ZpTvjSmxlCoKipin93/cpJkXu2inFbIVlU1kbevbGa8xPx55VRih
-         kj+ol2WnsXjLnv+hYXHAIKxY/cuz+t7W/5eyPXUo=
+        b=RDavsxgfhSfUY08bIpJJTMDfKnSXyqX7ZgPwFk8A+YvblBBvYkyFZWPrK+XVc8j5C
+         DF2RcrpswEoXxJR7b4Nqa51eNct9U2BZzraz0X9C37GmxYhYxdfyfd58e+6KoC89LJ
+         T/fzAFr1YNB/oxjKh8SuHA49hLAowh2HRTM7Y9Ps=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Wen Gong <quic_wgong@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 112/772] ASoC: dapm: Dont fold register value changes into notifications
-Date:   Tue,  7 Jun 2022 18:55:04 +0200
-Message-Id: <20220607164952.349914626@linuxfoundation.org>
+Subject: [PATCH 5.17 108/772] ath11k: fix warning of not found station for bssid in message
+Date:   Tue,  7 Jun 2022 18:55:00 +0200
+Message-Id: <20220607164952.229417340@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -49,48 +50,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Wen Gong <quic_wgong@quicinc.com>
 
-[ Upstream commit ad685980469b9f9b99d4d6ea05f4cb8f57cb2234 ]
+[ Upstream commit 7330e1ec9748948177830c6e1a13379835d577f9 ]
 
-DAPM tracks and reports the value presented to the user from DAPM controls
-separately to the register value, these may diverge during initialisation
-or when an autodisable control is in use.
+When test connect/disconnect to an AP frequently with WCN6855, sometimes
+it show below log.
 
-When writing DAPM controls we currently report that a change has occurred
-if either the DAPM value or the value stored in the register has changed,
-meaning that if the two are out of sync we may appear to report a spurious
-event to userspace. Since we use this folded in value for nothing other
-than the value reported to userspace simply drop the folding in of the
-register change.
+[  277.040121] wls1: deauthenticating from 8c:21:0a:b3:5a:64 by local choice (Reason: 3=DEAUTH_LEAVING)
+[  277.050906] ath11k_pci 0000:05:00.0: wmi stats vdev id 0 mac 00:03:7f:29:61:11
+[  277.050944] ath11k_pci 0000:05:00.0: wmi stats bssid 8c:21:0a:b3:5a:64 vif         pK-error
+[  277.050954] ath11k_pci 0000:05:00.0: not found station for bssid 8c:21:0a:b3:5a:64
+[  277.050961] ath11k_pci 0000:05:00.0: failed to parse rssi chain -71
+[  277.050967] ath11k_pci 0000:05:00.0: failed to pull fw stats: -71
+[  277.050976] ath11k_pci 0000:05:00.0: wmi stats vdev id 0 mac 00:03:7f:29:61:11
+[  277.050983] ath11k_pci 0000:05:00.0: wmi stats bssid 8c:21:0a:b3:5a:64 vif         pK-error
+[  277.050989] ath11k_pci 0000:05:00.0: not found station for bssid 8c:21:0a:b3:5a:64
+[  277.050995] ath11k_pci 0000:05:00.0: failed to parse rssi chain -71
+[  277.051000] ath11k_pci 0000:05:00.0: failed to pull fw stats: -71
+[  278.064050] ath11k_pci 0000:05:00.0: failed to request fw stats: -110
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220428161833.3690050-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reason is:
+When running disconnect operation, sta_info removed from local->sta_hash
+by __sta_info_destroy_part1() from __sta_info_flush(), after this,
+ieee80211_find_sta_by_ifaddr() which called by
+ath11k_wmi_tlv_fw_stats_data_parse() and ath11k_wmi_tlv_rssi_chain_parse()
+cannot find this station, then failed log printed.
+
+steps are like this:
+1. when disconnect from AP, __sta_info_destroy() called __sta_info_destroy_part1()
+and __sta_info_destroy_part2().
+
+2. in __sta_info_destroy_part1(),  it has "sta_info_hash_del(local, sta)"
+and "list_del_rcu(&sta->list)", it will remove the ieee80211_sta from the
+list of ieee80211_hw.
+
+3. in __sta_info_destroy_part2(), it called drv_sta_state()->ath11k_mac_op_sta_state(),
+then peer->sta is clear at this moment.
+
+4. in __sta_info_destroy_part2(), it then called sta_set_sinfo()->drv_sta_statistics()
+->ath11k_mac_op_sta_statistics(), then WMI_REQUEST_STATS_CMDID sent to firmware.
+
+5. WMI_UPDATE_STATS_EVENTID reported from firmware, at this moment, the
+ieee80211_sta can not be found again because it has remove from list in
+step2 and also peer->sta is clear in step3.
+
+6. in __sta_info_destroy_part2(), it then called cleanup_single_sta()->
+sta_info_free()->kfree(sta), at this moment, the ieee80211_sta is freed
+in memory, then the failed log will not happen because function
+ath11k_mac_op_sta_state() will not be called.
+
+Actually this print log is not a real error, it is only to skip parse the
+info, so change to skip print by default debug setting.
+
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3
+
+Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220428022426.2927-1-quic_wgong@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-dapm.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/wireless/ath/ath11k/wmi.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/sound/soc/soc-dapm.c b/sound/soc/soc-dapm.c
-index fb43b331a36e..f62dd119639d 100644
---- a/sound/soc/soc-dapm.c
-+++ b/sound/soc/soc-dapm.c
-@@ -3430,7 +3430,6 @@ int snd_soc_dapm_put_volsw(struct snd_kcontrol *kcontrol,
- 			update.val = val;
- 			card->update = &update;
- 		}
--		change |= reg_change;
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 22921673e956..4ad3fe7d7d1f 100644
+--- a/drivers/net/wireless/ath/ath11k/wmi.c
++++ b/drivers/net/wireless/ath/ath11k/wmi.c
+@@ -5616,9 +5616,9 @@ static int ath11k_wmi_tlv_rssi_chain_parse(struct ath11k_base *ab,
+ 					   arvif->bssid,
+ 					   NULL);
+ 	if (!sta) {
+-		ath11k_warn(ab, "not found station for bssid %pM\n",
+-			    arvif->bssid);
+-		ret = -EPROTO;
++		ath11k_dbg(ab, ATH11K_DBG_WMI,
++			   "not found station of bssid %pM for rssi chain\n",
++			   arvif->bssid);
+ 		goto exit;
+ 	}
  
- 		ret = soc_dapm_mixer_update_power(card, kcontrol, connect,
- 						  rconnect);
-@@ -3532,7 +3531,6 @@ int snd_soc_dapm_put_enum_double(struct snd_kcontrol *kcontrol,
- 			update.val = val;
- 			card->update = &update;
+@@ -5716,8 +5716,9 @@ static int ath11k_wmi_tlv_fw_stats_data_parse(struct ath11k_base *ab,
+ 					   "wmi stats vdev id %d snr %d\n",
+ 					   src->vdev_id, src->beacon_snr);
+ 			} else {
+-				ath11k_warn(ab, "not found station for bssid %pM\n",
+-					    arvif->bssid);
++				ath11k_dbg(ab, ATH11K_DBG_WMI,
++					   "not found station of bssid %pM for vdev stat\n",
++					   arvif->bssid);
+ 			}
  		}
--		change |= reg_change;
- 
- 		ret = soc_dapm_mux_update_power(card, kcontrol, item[0], e);
  
 -- 
 2.35.1
