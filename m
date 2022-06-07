@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDFC3CCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A339DCCA48A
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350611AbiFGSLW (ORCPT
+        id S1350545AbiFGSLL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:11:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59562 "EHLO
+        Tue, 7 Jun 2022 14:11:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348770AbiFGRuI (ORCPT
+        with ESMTP id S1350075AbiFGRvv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:50:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D0A135698;
-        Tue,  7 Jun 2022 10:37:21 -0700 (PDT)
+        Tue, 7 Jun 2022 13:51:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA0D5140402;
+        Tue,  7 Jun 2022 10:39:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E0B4B822B1;
-        Tue,  7 Jun 2022 17:37:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FB01C34115;
-        Tue,  7 Jun 2022 17:37:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 213BF6164A;
+        Tue,  7 Jun 2022 17:39:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31672C341C5;
+        Tue,  7 Jun 2022 17:39:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623425;
-        bh=I5nZunaTSI1APA6FR1bB73DzLc+c/CmY6KplBJR3EAE=;
+        s=korg; t=1654623546;
+        bh=QSrpjKsA6e8dCX/vc5OyvQdnX27al3w1weGwZjQlb5w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wvunafkCoiFXSNy3vd2eM1s3HR5JN0bk1lFUN1uPGnNt64f7ZfWiSSfBhj+FgA3sY
-         HmSecKXW22R+ErvDw3NHA5ItExoahK8r53/z+hJ2X8Di9VPJRz87ayfdEPv0RRSQFk
-         7T0O9xrOvG5Y3p2h6iEPi2G7CG4PhhjMn7WHzUrs=
+        b=BBmCYsbeqstWTTZNyGQutt9M37n6mRhTPFZgxEtyVa4HQzHa/3acywKj+Xzk1evEJ
+         qx+pZknyfz1uLO4D8NzxaH0ulRfneJWAjNCoplTepq4koVOE1FiOGchJyAbrvoq4Df
+         ZI5KL62u5jRtrw+JLiBD7FjmWsxQ23SCJ/XyO30E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Coly Li <colyli@suse.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 412/452] bcache: remove incremental dirty sector counting for bch_sectors_dirty_init()
-Date:   Tue,  7 Jun 2022 19:04:29 +0200
-Message-Id: <20220607164920.834307822@linuxfoundation.org>
+        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Liu Bo <bo.liu@linux.alibaba.com>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 425/452] blk-iolatency: Fix inflight count imbalances and IO hangs on offline
+Date:   Tue,  7 Jun 2022 19:04:42 +0200
+Message-Id: <20220607164921.219702747@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,138 +50,323 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Coly Li <colyli@suse.de>
+From: Tejun Heo <tj@kernel.org>
 
-commit 80db4e4707e78cb22287da7d058d7274bd4cb370 upstream.
+commit 8a177a36da6c54c98b8685d4f914cb3637d53c0d upstream.
 
-After making bch_sectors_dirty_init() being multithreaded, the existing
-incremental dirty sector counting in bch_root_node_dirty_init() doesn't
-release btree occupation after iterating 500000 (INIT_KEYS_EACH_TIME)
-bkeys. Because a read lock is added on btree root node to prevent the
-btree to be split during the dirty sectors counting, other I/O requester
-has no chance to gain the write lock even restart bcache_btree().
+iolatency needs to track the number of inflight IOs per cgroup. As this
+tracking can be expensive, it is disabled when no cgroup has iolatency
+configured for the device. To ensure that the inflight counters stay
+balanced, iolatency_set_limit() freezes the request_queue while manipulating
+the enabled counter, which ensures that no IO is in flight and thus all
+counters are zero.
 
-That is to say, the incremental dirty sectors counting is incompatible
-to the multhreaded bch_sectors_dirty_init(). We have to choose one and
-drop another one.
+Unfortunately, iolatency_set_limit() isn't the only place where the enabled
+counter is manipulated. iolatency_pd_offline() can also dec the counter and
+trigger disabling. As this disabling happens without freezing the q, this
+can easily happen while some IOs are in flight and thus leak the counts.
 
-In my testing, with 512 bytes random writes, I generate 1.2T dirty data
-and a btree with 400K nodes. With single thread and incremental dirty
-sectors counting, it takes 30+ minites to register the backing device.
-And with multithreaded dirty sectors counting, the backing device
-registration can be accomplished within 2 minutes.
+This can be easily demonstrated by turning on iolatency on an one empty
+cgroup while IOs are in flight in other cgroups and then removing the
+cgroup. Note that iolatency shouldn't have been enabled elsewhere in the
+system to ensure that removing the cgroup disables iolatency for the whole
+device.
 
-The 30+ minutes V.S. 2- minutes difference makes me decide to keep
-multithreaded bch_sectors_dirty_init() and drop the incremental dirty
-sectors counting. This is what this patch does.
+The following keeps flipping on and off iolatency on sda:
 
-But INIT_KEYS_EACH_TIME is kept, in sectors_dirty_init_fn() the CPU
-will be released by cond_resched() after every INIT_KEYS_EACH_TIME keys
-iterated. This is to avoid the watchdog reports a bogus soft lockup
-warning.
+  echo +io > /sys/fs/cgroup/cgroup.subtree_control
+  while true; do
+      mkdir -p /sys/fs/cgroup/test
+      echo '8:0 target=100000' > /sys/fs/cgroup/test/io.latency
+      sleep 1
+      rmdir /sys/fs/cgroup/test
+      sleep 1
+  done
 
-Fixes: b144e45fc576 ("bcache: make bch_sectors_dirty_init() to be multithreaded")
-Signed-off-by: Coly Li <colyli@suse.de>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220524102336.10684-4-colyli@suse.de
+and there's concurrent fio generating direct rand reads:
+
+  fio --name test --filename=/dev/sda --direct=1 --rw=randread \
+      --runtime=600 --time_based --iodepth=256 --numjobs=4 --bs=4k
+
+while monitoring with the following drgn script:
+
+  while True:
+    for css in css_for_each_descendant_pre(prog['blkcg_root'].css.address_of_()):
+        for pos in hlist_for_each(container_of(css, 'struct blkcg', 'css').blkg_list):
+            blkg = container_of(pos, 'struct blkcg_gq', 'blkcg_node')
+            pd = blkg.pd[prog['blkcg_policy_iolatency'].plid]
+            if pd.value_() == 0:
+                continue
+            iolat = container_of(pd, 'struct iolatency_grp', 'pd')
+            inflight = iolat.rq_wait.inflight.counter.value_()
+            if inflight:
+                print(f'inflight={inflight} {disk_name(blkg.q.disk).decode("utf-8")} '
+                      f'{cgroup_path(css.cgroup).decode("utf-8")}')
+    time.sleep(1)
+
+The monitoring output looks like the following:
+
+  inflight=1 sda /user.slice
+  inflight=1 sda /user.slice
+  ...
+  inflight=14 sda /user.slice
+  inflight=13 sda /user.slice
+  inflight=17 sda /user.slice
+  inflight=15 sda /user.slice
+  inflight=18 sda /user.slice
+  inflight=17 sda /user.slice
+  inflight=20 sda /user.slice
+  inflight=19 sda /user.slice <- fio stopped, inflight stuck at 19
+  inflight=19 sda /user.slice
+  inflight=19 sda /user.slice
+
+If a cgroup with stuck inflight ends up getting throttled, the throttled IOs
+will never get issued as there's no completion event to wake it up leading
+to an indefinite hang.
+
+This patch fixes the bug by unifying enable handling into a work item which
+is automatically kicked off from iolatency_set_min_lat_nsec() which is
+called from both iolatency_set_limit() and iolatency_pd_offline() paths.
+Punting to a work item is necessary as iolatency_pd_offline() is called
+under spinlocks while freezing a request_queue requires a sleepable context.
+
+This also simplifies the code reducing LOC sans the comments and avoids the
+unnecessary freezes which were happening whenever a cgroup's latency target
+is newly set or cleared.
+
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Cc: Josef Bacik <josef@toxicpanda.com>
+Cc: Liu Bo <bo.liu@linux.alibaba.com>
+Fixes: 8c772a9bfc7c ("blk-iolatency: fix IO hang due to negative inflight counter")
+Cc: stable@vger.kernel.org # v5.0+
+Link: https://lore.kernel.org/r/Yn9ScX6Nx2qIiQQi@slm.duckdns.org
 Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/bcache/writeback.c |   39 ++++++++++++---------------------------
- 1 file changed, 12 insertions(+), 27 deletions(-)
+ block/blk-iolatency.c |  122 ++++++++++++++++++++++++++------------------------
+ 1 file changed, 64 insertions(+), 58 deletions(-)
 
---- a/drivers/md/bcache/writeback.c
-+++ b/drivers/md/bcache/writeback.c
-@@ -756,13 +756,11 @@ static int bch_writeback_thread(void *ar
- 
- /* Init */
- #define INIT_KEYS_EACH_TIME	500000
--#define INIT_KEYS_SLEEP_MS	100
- 
- struct sectors_dirty_init {
- 	struct btree_op	op;
- 	unsigned int	inode;
- 	size_t		count;
--	struct bkey	start;
+--- a/block/blk-iolatency.c
++++ b/block/blk-iolatency.c
+@@ -86,7 +86,17 @@ struct iolatency_grp;
+ struct blk_iolatency {
+ 	struct rq_qos rqos;
+ 	struct timer_list timer;
+-	atomic_t enabled;
++
++	/*
++	 * ->enabled is the master enable switch gating the throttling logic and
++	 * inflight tracking. The number of cgroups which have iolat enabled is
++	 * tracked in ->enable_cnt, and ->enable is flipped on/off accordingly
++	 * from ->enable_work with the request_queue frozen. For details, See
++	 * blkiolatency_enable_work_fn().
++	 */
++	bool enabled;
++	atomic_t enable_cnt;
++	struct work_struct enable_work;
  };
  
- static int sectors_dirty_init_fn(struct btree_op *_op, struct btree *b,
-@@ -778,11 +776,8 @@ static int sectors_dirty_init_fn(struct
- 					     KEY_START(k), KEY_SIZE(k));
- 
- 	op->count++;
--	if (atomic_read(&b->c->search_inflight) &&
--	    !(op->count % INIT_KEYS_EACH_TIME)) {
--		bkey_copy_key(&op->start, k);
--		return -EAGAIN;
--	}
-+	if (!(op->count % INIT_KEYS_EACH_TIME))
-+		cond_resched();
- 
- 	return MAP_CONTINUE;
+ static inline struct blk_iolatency *BLKIOLATENCY(struct rq_qos *rqos)
+@@ -94,11 +104,6 @@ static inline struct blk_iolatency *BLKI
+ 	return container_of(rqos, struct blk_iolatency, rqos);
  }
-@@ -797,24 +792,16 @@ static int bch_root_node_dirty_init(stru
- 	bch_btree_op_init(&op.op, -1);
- 	op.inode = d->id;
- 	op.count = 0;
--	op.start = KEY(op.inode, 0, 0);
  
--	do {
--		ret = bcache_btree(map_keys_recurse,
--				   k,
--				   c->root,
--				   &op.op,
--				   &op.start,
--				   sectors_dirty_init_fn,
--				   0);
--		if (ret == -EAGAIN)
--			schedule_timeout_interruptible(
--				msecs_to_jiffies(INIT_KEYS_SLEEP_MS));
--		else if (ret < 0) {
--			pr_warn("sectors dirty init failed, ret=%d!\n", ret);
--			break;
--		}
--	} while (ret == -EAGAIN);
-+	ret = bcache_btree(map_keys_recurse,
-+			   k,
-+			   c->root,
-+			   &op.op,
-+			   &KEY(op.inode, 0, 0),
-+			   sectors_dirty_init_fn,
-+			   0);
-+	if (ret < 0)
-+		pr_warn("sectors dirty init failed, ret=%d!\n", ret);
+-static inline bool blk_iolatency_enabled(struct blk_iolatency *blkiolat)
+-{
+-	return atomic_read(&blkiolat->enabled) > 0;
+-}
+-
+ struct child_latency_info {
+ 	spinlock_t lock;
  
- 	return ret;
- }
-@@ -858,7 +845,6 @@ static int bch_dirty_init_thread(void *a
- 				goto out;
- 			}
- 			skip_nr--;
--			cond_resched();
- 		}
+@@ -463,7 +468,7 @@ static void blkcg_iolatency_throttle(str
+ 	struct blkcg_gq *blkg = bio->bi_blkg;
+ 	bool issue_as_root = bio_issue_as_root_blkg(bio);
  
- 		if (p) {
-@@ -868,7 +854,6 @@ static int bch_dirty_init_thread(void *a
- 
- 		p = NULL;
- 		prev_idx = cur_idx;
--		cond_resched();
- 	}
- 
- out:
-@@ -907,11 +892,11 @@ void bch_sectors_dirty_init(struct bcach
- 		bch_btree_op_init(&op.op, -1);
- 		op.inode = d->id;
- 		op.count = 0;
--		op.start = KEY(op.inode, 0, 0);
- 
- 		for_each_key_filter(&c->root->keys,
- 				    k, &iter, bch_ptr_invalid)
- 			sectors_dirty_init_fn(&op.op, c->root, k);
-+
- 		rw_unlock(0, c->root);
+-	if (!blk_iolatency_enabled(blkiolat))
++	if (!blkiolat->enabled)
  		return;
+ 
+ 	while (blkg && blkg->parent) {
+@@ -593,7 +598,6 @@ static void blkcg_iolatency_done_bio(str
+ 	u64 window_start;
+ 	u64 now;
+ 	bool issue_as_root = bio_issue_as_root_blkg(bio);
+-	bool enabled = false;
+ 	int inflight = 0;
+ 
+ 	blkg = bio->bi_blkg;
+@@ -604,8 +608,7 @@ static void blkcg_iolatency_done_bio(str
+ 	if (!iolat)
+ 		return;
+ 
+-	enabled = blk_iolatency_enabled(iolat->blkiolat);
+-	if (!enabled)
++	if (!iolat->blkiolat->enabled)
+ 		return;
+ 
+ 	now = ktime_to_ns(ktime_get());
+@@ -644,6 +647,7 @@ static void blkcg_iolatency_exit(struct
+ 	struct blk_iolatency *blkiolat = BLKIOLATENCY(rqos);
+ 
+ 	del_timer_sync(&blkiolat->timer);
++	flush_work(&blkiolat->enable_work);
+ 	blkcg_deactivate_policy(rqos->q, &blkcg_policy_iolatency);
+ 	kfree(blkiolat);
+ }
+@@ -715,6 +719,44 @@ next:
+ 	rcu_read_unlock();
+ }
+ 
++/**
++ * blkiolatency_enable_work_fn - Enable or disable iolatency on the device
++ * @work: enable_work of the blk_iolatency of interest
++ *
++ * iolatency needs to keep track of the number of in-flight IOs per cgroup. This
++ * is relatively expensive as it involves walking up the hierarchy twice for
++ * every IO. Thus, if iolatency is not enabled in any cgroup for the device, we
++ * want to disable the in-flight tracking.
++ *
++ * We have to make sure that the counting is balanced - we don't want to leak
++ * the in-flight counts by disabling accounting in the completion path while IOs
++ * are in flight. This is achieved by ensuring that no IO is in flight by
++ * freezing the queue while flipping ->enabled. As this requires a sleepable
++ * context, ->enabled flipping is punted to this work function.
++ */
++static void blkiolatency_enable_work_fn(struct work_struct *work)
++{
++	struct blk_iolatency *blkiolat = container_of(work, struct blk_iolatency,
++						      enable_work);
++	bool enabled;
++
++	/*
++	 * There can only be one instance of this function running for @blkiolat
++	 * and it's guaranteed to be executed at least once after the latest
++	 * ->enabled_cnt modification. Acting on the latest ->enable_cnt is
++	 * sufficient.
++	 *
++	 * Also, we know @blkiolat is safe to access as ->enable_work is flushed
++	 * in blkcg_iolatency_exit().
++	 */
++	enabled = atomic_read(&blkiolat->enable_cnt);
++	if (enabled != blkiolat->enabled) {
++		blk_mq_freeze_queue(blkiolat->rqos.q);
++		blkiolat->enabled = enabled;
++		blk_mq_unfreeze_queue(blkiolat->rqos.q);
++	}
++}
++
+ int blk_iolatency_init(struct request_queue *q)
+ {
+ 	struct blk_iolatency *blkiolat;
+@@ -740,17 +782,15 @@ int blk_iolatency_init(struct request_qu
  	}
+ 
+ 	timer_setup(&blkiolat->timer, blkiolatency_timer_fn, 0);
++	INIT_WORK(&blkiolat->enable_work, blkiolatency_enable_work_fn);
+ 
+ 	return 0;
+ }
+ 
+-/*
+- * return 1 for enabling iolatency, return -1 for disabling iolatency, otherwise
+- * return 0.
+- */
+-static int iolatency_set_min_lat_nsec(struct blkcg_gq *blkg, u64 val)
++static void iolatency_set_min_lat_nsec(struct blkcg_gq *blkg, u64 val)
+ {
+ 	struct iolatency_grp *iolat = blkg_to_lat(blkg);
++	struct blk_iolatency *blkiolat = iolat->blkiolat;
+ 	u64 oldval = iolat->min_lat_nsec;
+ 
+ 	iolat->min_lat_nsec = val;
+@@ -758,13 +798,15 @@ static int iolatency_set_min_lat_nsec(st
+ 	iolat->cur_win_nsec = min_t(u64, iolat->cur_win_nsec,
+ 				    BLKIOLATENCY_MAX_WIN_SIZE);
+ 
+-	if (!oldval && val)
+-		return 1;
++	if (!oldval && val) {
++		if (atomic_inc_return(&blkiolat->enable_cnt) == 1)
++			schedule_work(&blkiolat->enable_work);
++	}
+ 	if (oldval && !val) {
+ 		blkcg_clear_delay(blkg);
+-		return -1;
++		if (atomic_dec_return(&blkiolat->enable_cnt) == 0)
++			schedule_work(&blkiolat->enable_work);
+ 	}
+-	return 0;
+ }
+ 
+ static void iolatency_clear_scaling(struct blkcg_gq *blkg)
+@@ -796,7 +838,6 @@ static ssize_t iolatency_set_limit(struc
+ 	u64 lat_val = 0;
+ 	u64 oldval;
+ 	int ret;
+-	int enable = 0;
+ 
+ 	ret = blkg_conf_prep(blkcg, &blkcg_policy_iolatency, buf, &ctx);
+ 	if (ret)
+@@ -831,41 +872,12 @@ static ssize_t iolatency_set_limit(struc
+ 	blkg = ctx.blkg;
+ 	oldval = iolat->min_lat_nsec;
+ 
+-	enable = iolatency_set_min_lat_nsec(blkg, lat_val);
+-	if (enable) {
+-		if (!blk_get_queue(blkg->q)) {
+-			ret = -ENODEV;
+-			goto out;
+-		}
+-
+-		blkg_get(blkg);
+-	}
+-
+-	if (oldval != iolat->min_lat_nsec) {
++	iolatency_set_min_lat_nsec(blkg, lat_val);
++	if (oldval != iolat->min_lat_nsec)
+ 		iolatency_clear_scaling(blkg);
+-	}
+-
+ 	ret = 0;
+ out:
+ 	blkg_conf_finish(&ctx);
+-	if (ret == 0 && enable) {
+-		struct iolatency_grp *tmp = blkg_to_lat(blkg);
+-		struct blk_iolatency *blkiolat = tmp->blkiolat;
+-
+-		blk_mq_freeze_queue(blkg->q);
+-
+-		if (enable == 1)
+-			atomic_inc(&blkiolat->enabled);
+-		else if (enable == -1)
+-			atomic_dec(&blkiolat->enabled);
+-		else
+-			WARN_ON_ONCE(1);
+-
+-		blk_mq_unfreeze_queue(blkg->q);
+-
+-		blkg_put(blkg);
+-		blk_put_queue(blkg->q);
+-	}
+ 	return ret ?: nbytes;
+ }
+ 
+@@ -1006,14 +1018,8 @@ static void iolatency_pd_offline(struct
+ {
+ 	struct iolatency_grp *iolat = pd_to_lat(pd);
+ 	struct blkcg_gq *blkg = lat_to_blkg(iolat);
+-	struct blk_iolatency *blkiolat = iolat->blkiolat;
+-	int ret;
+ 
+-	ret = iolatency_set_min_lat_nsec(blkg, 0);
+-	if (ret == 1)
+-		atomic_inc(&blkiolat->enabled);
+-	if (ret == -1)
+-		atomic_dec(&blkiolat->enabled);
++	iolatency_set_min_lat_nsec(blkg, 0);
+ 	iolatency_clear_scaling(blkg);
+ }
+ 
 
 
