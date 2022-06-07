@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C3E1CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97DDFCCA48C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384579AbiFGWlH (ORCPT
+        id S1384815AbiFGWlR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:41:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51630 "EHLO
+        Tue, 7 Jun 2022 18:41:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376813AbiFGV2H (ORCPT
+        with ESMTP id S1380051AbiFGV2u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:28:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B56911C1C;
-        Tue,  7 Jun 2022 12:02:17 -0700 (PDT)
+        Tue, 7 Jun 2022 17:28:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3767228F79;
+        Tue,  7 Jun 2022 12:02:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4589B822C0;
-        Tue,  7 Jun 2022 19:02:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E8C7C385A2;
-        Tue,  7 Jun 2022 19:02:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38135617C8;
+        Tue,  7 Jun 2022 19:02:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42DB2C34115;
+        Tue,  7 Jun 2022 19:02:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628534;
-        bh=CnLwyclVVSbwC4oc11KchLvc8sUbiTu2u0ilES9Syzo=;
+        s=korg; t=1654628539;
+        bh=KMr9qbwkA8fYAqb2hOPdq0teI7fY3uvBUGHNV7CPuCo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QHUfoxGAsCjfP6h4lpKaDRrTEGrhS3oTaP3q2eIjRh7G1DScf+PZ3gEjEFBaipIgX
-         F45uAshu7JcbUuvdw83e1pPfXNCVWYLaZunb7Wz3B79F43DtmH0b/3r2U70KnFfcJ5
-         Z1aIFfe+img/qqD90pfKsFAgdWW/JRQ4zhZXROd0=
+        b=aEY8+NXQDpBTqGYLbYNUnn7iabMqspvxE+ytSzBQkgZhpfK2VSFH2KHnDfyREGKRF
+         c08vB1o2DZsw3WLD85nGNAHZpLyjfSQJoRu9eHlObKdFfVPXhMl3kEALyXIiuvAMck
+         XcQrqqmpNcxIxs3AhnD/JcylU+DCz5VHGaz1C7AQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 363/879] mtd: rawnand: cadence: fix possible null-ptr-deref in cadence_nand_dt_probe()
-Date:   Tue,  7 Jun 2022 18:58:01 +0200
-Message-Id: <20220607165013.398131827@linuxfoundation.org>
+Subject: [PATCH 5.18 329/879] drm/mediatek: dpi: Use mt8183 output formats for mt8192
+Date:   Tue,  7 Jun 2022 18:57:27 +0200
+Message-Id: <20220607165012.404036044@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,42 +55,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-[ Upstream commit a28ed09dafee20da51eb26452950839633afd824 ]
+[ Upstream commit 7112e0b0a58be8575547eba6596c42710922674f ]
 
-It will cause null-ptr-deref when using 'res', if platform_get_resource()
-returns NULL, so move using 'res' after devm_ioremap_resource() that
-will check it to avoid null-ptr-deref.
-And use devm_platform_get_and_ioremap_resource() to simplify code.
+The configuration for mt8192 was incorrectly using the output formats
+from mt8173. Since the output formats for mt8192 are instead the same
+ones as for mt8183, which require two bus samples per pixel, the
+pixelclock and DDR edge setting were misconfigured. This made external
+displays unable to show the image.
 
-Fixes: ec4ba01e894d ("mtd: rawnand: Add new Cadence NAND driver to MTD subsystem")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220426084913.4021868-1-yangyingliang@huawei.com
+Fix the issue by correcting the output format for mt8192 to be the same
+as for mt8183, fixing the usage of external displays for mt8192.
+
+Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220408013950.674477-1-nfraprado@collabora.com/
+Fixes: be63f6e8601f ("drm/mediatek: dpi: Add output bus formats to driver data")
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/cadence-nand-controller.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_dpi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mtd/nand/raw/cadence-nand-controller.c b/drivers/mtd/nand/raw/cadence-nand-controller.c
-index 7eec60ea9056..0d72672f8b64 100644
---- a/drivers/mtd/nand/raw/cadence-nand-controller.c
-+++ b/drivers/mtd/nand/raw/cadence-nand-controller.c
-@@ -2983,11 +2983,10 @@ static int cadence_nand_dt_probe(struct platform_device *ofdev)
- 	if (IS_ERR(cdns_ctrl->reg))
- 		return PTR_ERR(cdns_ctrl->reg);
+diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
+index 4554e2de1430..e61cd67b978f 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dpi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+@@ -819,8 +819,8 @@ static const struct mtk_dpi_conf mt8192_conf = {
+ 	.cal_factor = mt8183_calculate_factor,
+ 	.reg_h_fre_con = 0xe0,
+ 	.max_clock_khz = 150000,
+-	.output_fmts = mt8173_output_fmts,
+-	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
++	.output_fmts = mt8183_output_fmts,
++	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
+ };
  
--	res = platform_get_resource(ofdev, IORESOURCE_MEM, 1);
--	cdns_ctrl->io.dma = res->start;
--	cdns_ctrl->io.virt = devm_ioremap_resource(&ofdev->dev, res);
-+	cdns_ctrl->io.virt = devm_platform_get_and_ioremap_resource(ofdev, 1, &res);
- 	if (IS_ERR(cdns_ctrl->io.virt))
- 		return PTR_ERR(cdns_ctrl->io.virt);
-+	cdns_ctrl->io.dma = res->start;
- 
- 	dt->clk = devm_clk_get(cdns_ctrl->dev, "nf_clk");
- 	if (IS_ERR(dt->clk))
+ static int mtk_dpi_probe(struct platform_device *pdev)
 -- 
 2.35.1
 
