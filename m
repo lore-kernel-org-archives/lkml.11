@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 138ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:02:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B76A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:02:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382893AbiFGWA1 (ORCPT
+        id S1382980AbiFGWAk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:00:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49390 "EHLO
+        Tue, 7 Jun 2022 18:00:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379241AbiFGVCO (ORCPT
+        with ESMTP id S1379226AbiFGVCN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:02:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D012810FDA;
-        Tue,  7 Jun 2022 11:47:06 -0700 (PDT)
+        Tue, 7 Jun 2022 17:02:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3C3A614C;
+        Tue,  7 Jun 2022 11:46:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91E37B8220B;
-        Tue,  7 Jun 2022 18:47:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00AE1C3411F;
-        Tue,  7 Jun 2022 18:47:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F0E96156D;
+        Tue,  7 Jun 2022 18:46:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FAE6C385A5;
+        Tue,  7 Jun 2022 18:46:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627624;
-        bh=q2Xpkw+onYKKa4/Us+LoQ26hoDxY+NiVrhxSovEPERo=;
+        s=korg; t=1654627618;
+        bh=mLvHhE7q4dlXMPcB+5rAF8lzM5mQNsQtmSS0dFF7Lj0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YTNvPsA/wGjRGdOr+24fjmGU7NGIaQUKbpsYFVKQpwfUSL34SUYKq/1nmb+tYz82A
-         Ft6VuTLlRYWXpyyGSSYzeXlFtVTdJ6r55jA3h1GErnlabaNnqVLc+uG6QmvTDrAKe5
-         6XRnzNK4R3FHfK/x/8IIEehl8uEb4LPqT1EVyfAo=
+        b=DpL2iP7xAbuyw+JZ077nHh2PoxGWn60EeXIYLyiIjPwKY82j9fjuyJnDjaj7ovXqx
+         gcqTKuE3JLMrU/xrF0xmL+hkhSjUgcvzrg9eMrGCLgQ7VR/kz09qIChWKNGlZPltxm
+         8KFiQCp/vqTYoImJVJ13/tcDVZvKD9Ftj+bzemD0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Gopal Vamshi Krishna <vamshi.krishna.gopal@intel.com>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.18 035/879] xhci: Allow host runtime PM as default for Intel Alder Lake N xHCI
-Date:   Tue,  7 Jun 2022 18:52:33 +0200
-Message-Id: <20220607165003.696732256@linuxfoundation.org>
+        stable@vger.kernel.org, Ronnie Sahlberg <lsahlber@redhat.com>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.18 033/879] cifs: when extending a file with falloc we should make files not-sparse
+Date:   Tue,  7 Jun 2022 18:52:31 +0200
+Message-Id: <20220607165003.637742817@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,39 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathias Nyman <mathias.nyman@linux.intel.com>
+From: Ronnie Sahlberg <lsahlber@redhat.com>
 
-commit 74f55a62c4c354f43a6d75f77dd184c4f57b9a26 upstream.
+commit f66f8b94e7f2f4ac9fffe710be231ca8f25c5057 upstream.
 
-Alder Lake N TCSS xHCI needs to be runtime suspended whenever possible
-to allow the TCSS hardware block to enter D3 and thus save energy
+as this is the only way to make sure the region is allocated.
+Fix the conditional that was wrong and only tried to make already
+non-sparse files non-sparse.
 
-Cc: stable@kernel.org
-Suggested-by: Gopal Vamshi Krishna <vamshi.krishna.gopal@intel.com>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220511220450.85367-10-mathias.nyman@linux.intel.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci-pci.c |    2 ++
- 1 file changed, 2 insertions(+)
+ fs/cifs/smb2ops.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/host/xhci-pci.c
-+++ b/drivers/usb/host/xhci-pci.c
-@@ -59,6 +59,7 @@
- #define PCI_DEVICE_ID_INTEL_TIGER_LAKE_XHCI		0x9a13
- #define PCI_DEVICE_ID_INTEL_MAPLE_RIDGE_XHCI		0x1138
- #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI		0x461e
-+#define PCI_DEVICE_ID_INTEL_ALDER_LAKE_N_XHCI		0x464e
- #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_PCH_XHCI	0x51ed
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -3837,7 +3837,7 @@ static long smb3_simple_falloc(struct fi
+ 		if (rc)
+ 			goto out;
  
- #define PCI_DEVICE_ID_AMD_RENOIR_XHCI			0x1639
-@@ -268,6 +269,7 @@ static void xhci_pci_quirks(struct devic
- 	     pdev->device == PCI_DEVICE_ID_INTEL_TIGER_LAKE_XHCI ||
- 	     pdev->device == PCI_DEVICE_ID_INTEL_MAPLE_RIDGE_XHCI ||
- 	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI ||
-+	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_N_XHCI ||
- 	     pdev->device == PCI_DEVICE_ID_INTEL_ALDER_LAKE_PCH_XHCI))
- 		xhci->quirks |= XHCI_DEFAULT_PM_RUNTIME_ALLOW;
+-		if ((cifsi->cifsAttrs & FILE_ATTRIBUTE_SPARSE_FILE) == 0)
++		if (cifsi->cifsAttrs & FILE_ATTRIBUTE_SPARSE_FILE)
+ 			smb2_set_sparse(xid, tcon, cfile, inode, false);
  
+ 		eof = cpu_to_le64(off + len);
 
 
