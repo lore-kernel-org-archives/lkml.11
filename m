@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D16CCA487
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F623CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385024AbiFHAUx (ORCPT
+        id S1385282AbiFHAVK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:20:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45814 "EHLO
+        Tue, 7 Jun 2022 20:21:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382771AbiFGVvy (ORCPT
+        with ESMTP id S1383244AbiFGVw6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:51:54 -0400
+        Tue, 7 Jun 2022 17:52:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B0F31512;
-        Tue,  7 Jun 2022 12:09:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E052431B1;
+        Tue,  7 Jun 2022 12:10:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CFC3AB823B1;
-        Tue,  7 Jun 2022 19:09:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CF0EC36B01;
-        Tue,  7 Jun 2022 19:09:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6A83B8220B;
+        Tue,  7 Jun 2022 19:10:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18ABAC385A2;
+        Tue,  7 Jun 2022 19:10:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628967;
-        bh=B0CsIoEyXEN5LtP7h54vXfFTV7az3pTP+cv1ty9bRNk=;
+        s=korg; t=1654629047;
+        bh=Lvhq4E20hiCY4U4uXUpM5ihKqDyUNNnEd67JNgqPIjY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qqxdGIuhokZ55mnPBeyY3/iL1q/6uhUWOvp66koH52TEA8G8I+j6lQvwfgYFHuoWz
-         Gn+dk3VpHfhlGGAvizqlVb52hgYluIT/eeK87OTgxDhZYpi7jHtS7A1CNuYAfpmOhw
-         Fqt7cHBDiLlKJ13+iEHRlCuh1R0xPXf2yqoVZ1zM=
+        b=ahq+6Chp5pxtWxZAobEbmJScQdrW4h0JtV3e5oWXMn3AZDCfV2G8t21N7agL0maOZ
+         CW5K0quJI5c1BVfF2/rP/FywY0zq6ORD0skaLtGjhiF41R/Plq8JRzQvl21maUhypF
+         Y1C7hOaquOAvZBrYsUygIlTLxIDQ8mvF+nA7p3JI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
+        Anup Patel <anup@brainfault.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 521/879] rxrpc: Fix decision on when to generate an IDLE ACK
-Date:   Tue,  7 Jun 2022 19:00:39 +0200
-Message-Id: <20220607165018.001037642@linuxfoundation.org>
+Subject: [PATCH 5.18 499/879] cpuidle: psci: Fix regression leading to no genpd governor
+Date:   Tue,  7 Jun 2022 19:00:17 +0200
+Message-Id: <20220607165017.356200407@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,168 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit 9a3dedcf18096e8f7f22b8777d78c4acfdea1651 ]
+[ Upstream commit 34be27517cb763ea367da21e3cdee5d1bc40f47f ]
 
-Fix the decision on when to generate an IDLE ACK by keeping a count of the
-number of packets we've received, but not yet soft-ACK'd, and the number of
-packets we've processed, but not yet hard-ACK'd, rather than trying to keep
-track of which DATA sequence numbers correspond to those points.
+While factoring out the PM domain related code from PSCI domain driver into
+a set of library functions, a regression when initializing the genpds got
+introduced. More precisely, we fail to assign a genpd governor, so let's
+fix this.
 
-We then generate an ACK when either counter exceeds 2.  The counters are
-both cleared when we transcribe the information into any sort of ACK packet
-for transmission.  IDLE and DELAY ACKs are skipped if both counters are 0
-(ie. no change).
-
-Fixes: 805b21b929e2 ("rxrpc: Send an ACK after every few DATA packets we receive")
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 9d976d6721df ("cpuidle: Factor-out power domain related code from PSCI domain driver")
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Reviewed-by: Anup Patel <anup@brainfault.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/events/rxrpc.h |  2 +-
- net/rxrpc/ar-internal.h      |  4 ++--
- net/rxrpc/input.c            | 11 +++++++++--
- net/rxrpc/output.c           | 18 +++++++++++-------
- net/rxrpc/recvmsg.c          |  8 +++-----
- 5 files changed, 26 insertions(+), 17 deletions(-)
+ drivers/cpuidle/cpuidle-psci-domain.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
-index 4a3ab0ed6e06..1c714336b863 100644
---- a/include/trace/events/rxrpc.h
-+++ b/include/trace/events/rxrpc.h
-@@ -1509,7 +1509,7 @@ TRACE_EVENT(rxrpc_call_reset,
- 		    __entry->call_serial = call->rx_serial;
- 		    __entry->conn_serial = call->conn->hi_serial;
- 		    __entry->tx_seq = call->tx_hard_ack;
--		    __entry->rx_seq = call->ackr_seen;
-+		    __entry->rx_seq = call->rx_hard_ack;
- 			   ),
+diff --git a/drivers/cpuidle/cpuidle-psci-domain.c b/drivers/cpuidle/cpuidle-psci-domain.c
+index 755bbdfc5b82..3db4fca1172b 100644
+--- a/drivers/cpuidle/cpuidle-psci-domain.c
++++ b/drivers/cpuidle/cpuidle-psci-domain.c
+@@ -52,7 +52,7 @@ static int psci_pd_init(struct device_node *np, bool use_osi)
+ 	struct generic_pm_domain *pd;
+ 	struct psci_pd_provider *pd_provider;
+ 	struct dev_power_governor *pd_gov;
+-	int ret = -ENOMEM, state_count = 0;
++	int ret = -ENOMEM;
  
- 	    TP_printk("c=%08x %08x:%08x r=%08x/%08x tx=%08x rx=%08x",
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 4ba51e6d3d85..f2d593e27b64 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -680,8 +680,8 @@ struct rxrpc_call {
- 	u8			ackr_reason;	/* reason to ACK */
- 	rxrpc_serial_t		ackr_serial;	/* serial of packet being ACK'd */
- 	rxrpc_seq_t		ackr_highest_seq; /* Higest sequence number received */
--	rxrpc_seq_t		ackr_consumed;	/* Highest packet shown consumed */
--	rxrpc_seq_t		ackr_seen;	/* Highest packet shown seen */
-+	atomic_t		ackr_nr_unacked; /* Number of unacked packets */
-+	atomic_t		ackr_nr_consumed; /* Number of packets needing hard ACK */
+ 	pd = dt_idle_pd_alloc(np, psci_dt_parse_state_node);
+ 	if (!pd)
+@@ -71,7 +71,7 @@ static int psci_pd_init(struct device_node *np, bool use_osi)
+ 		pd->flags |= GENPD_FLAG_ALWAYS_ON;
  
- 	/* RTT management */
- 	rxrpc_serial_t		rtt_serial[4];	/* Serial number of DATA or PING sent */
-diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index 680b984ef87f..3521ebd0ee41 100644
---- a/net/rxrpc/input.c
-+++ b/net/rxrpc/input.c
-@@ -412,8 +412,8 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
- {
- 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
- 	enum rxrpc_call_state state;
--	unsigned int j, nr_subpackets;
--	rxrpc_serial_t serial = sp->hdr.serial, ack_serial = 0;
-+	unsigned int j, nr_subpackets, nr_unacked = 0;
-+	rxrpc_serial_t serial = sp->hdr.serial, ack_serial = serial;
- 	rxrpc_seq_t seq0 = sp->hdr.seq, hard_ack;
- 	bool immediate_ack = false, jumbo_bad = false;
- 	u8 ack = 0;
-@@ -569,6 +569,8 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
- 			sp = NULL;
- 		}
+ 	/* Use governor for CPU PM domains if it has some states to manage. */
+-	pd_gov = state_count > 0 ? &pm_domain_cpu_gov : NULL;
++	pd_gov = pd->states ? &pm_domain_cpu_gov : NULL;
  
-+		nr_unacked++;
-+
- 		if (last) {
- 			set_bit(RXRPC_CALL_RX_LAST, &call->flags);
- 			if (!ack) {
-@@ -588,9 +590,14 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
- 			}
- 			call->rx_expect_next = seq + 1;
- 		}
-+		if (!ack)
-+			ack_serial = serial;
- 	}
- 
- ack:
-+	if (atomic_add_return(nr_unacked, &call->ackr_nr_unacked) > 2 && !ack)
-+		ack = RXRPC_ACK_IDLE;
-+
- 	if (ack)
- 		rxrpc_propose_ACK(call, ack, ack_serial,
- 				  immediate_ack, true,
-diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
-index 46aae9b7006f..9683617db704 100644
---- a/net/rxrpc/output.c
-+++ b/net/rxrpc/output.c
-@@ -74,11 +74,18 @@ static size_t rxrpc_fill_out_ack(struct rxrpc_connection *conn,
- 				 u8 reason)
- {
- 	rxrpc_serial_t serial;
-+	unsigned int tmp;
- 	rxrpc_seq_t hard_ack, top, seq;
- 	int ix;
- 	u32 mtu, jmax;
- 	u8 *ackp = pkt->acks;
- 
-+	tmp = atomic_xchg(&call->ackr_nr_unacked, 0);
-+	tmp |= atomic_xchg(&call->ackr_nr_consumed, 0);
-+	if (!tmp && (reason == RXRPC_ACK_DELAY ||
-+		     reason == RXRPC_ACK_IDLE))
-+		return 0;
-+
- 	/* Barrier against rxrpc_input_data(). */
- 	serial = call->ackr_serial;
- 	hard_ack = READ_ONCE(call->rx_hard_ack);
-@@ -223,6 +230,10 @@ int rxrpc_send_ack_packet(struct rxrpc_call *call, bool ping,
- 	n = rxrpc_fill_out_ack(conn, call, pkt, &hard_ack, &top, reason);
- 
- 	spin_unlock_bh(&call->lock);
-+	if (n == 0) {
-+		kfree(pkt);
-+		return 0;
-+	}
- 
- 	iov[0].iov_base	= pkt;
- 	iov[0].iov_len	= sizeof(pkt->whdr) + sizeof(pkt->ack) + n;
-@@ -259,13 +270,6 @@ int rxrpc_send_ack_packet(struct rxrpc_call *call, bool ping,
- 					  ntohl(pkt->ack.serial),
- 					  false, true,
- 					  rxrpc_propose_ack_retry_tx);
--		} else {
--			spin_lock_bh(&call->lock);
--			if (after(hard_ack, call->ackr_consumed))
--				call->ackr_consumed = hard_ack;
--			if (after(top, call->ackr_seen))
--				call->ackr_seen = top;
--			spin_unlock_bh(&call->lock);
- 		}
- 
- 		rxrpc_set_keepalive(call);
-diff --git a/net/rxrpc/recvmsg.c b/net/rxrpc/recvmsg.c
-index eca6dda26c77..250f23bc1c07 100644
---- a/net/rxrpc/recvmsg.c
-+++ b/net/rxrpc/recvmsg.c
-@@ -260,11 +260,9 @@ static void rxrpc_rotate_rx_window(struct rxrpc_call *call)
- 		rxrpc_end_rx_phase(call, serial);
- 	} else {
- 		/* Check to see if there's an ACK that needs sending. */
--		if (after_eq(hard_ack, call->ackr_consumed + 2) ||
--		    after_eq(top, call->ackr_seen + 2) ||
--		    (hard_ack == top && after(hard_ack, call->ackr_consumed)))
--			rxrpc_propose_ACK(call, RXRPC_ACK_DELAY, serial,
--					  true, true,
-+		if (atomic_inc_return(&call->ackr_nr_consumed) > 2)
-+			rxrpc_propose_ACK(call, RXRPC_ACK_IDLE, serial,
-+					  true, false,
- 					  rxrpc_propose_ack_rotate_rx);
- 		if (call->ackr_reason && call->ackr_reason != RXRPC_ACK_DELAY)
- 			rxrpc_send_ack_packet(call, false, NULL);
+ 	ret = pm_genpd_init(pd, pd_gov, false);
+ 	if (ret)
 -- 
 2.35.1
 
