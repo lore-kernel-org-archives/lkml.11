@@ -2,81 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DAA1CCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B59D0CCA48F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:17:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384779AbiFGWQP (ORCPT
+        id S1384847AbiFGWQa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:16:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35620 "EHLO
+        Tue, 7 Jun 2022 18:16:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380111AbiFGVLa (ORCPT
+        with ESMTP id S1380181AbiFGVLk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:11:30 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40281217890;
-        Tue,  7 Jun 2022 11:53:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654627994; x=1686163994;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=B/QLFtyjZWjzsp19lvnKhc+TE8eim40eLeEgUFfICJY=;
-  b=JM/CpygC8Mc8T2HvdJSdvO9m8XsMLblKotJQ/vLKK/1NBfSZZ8Un+ME3
-   UTDAdJBXaV/qEcbx0PSANR1FiLPrBaIAN5fpT6rmhXGSy78R+lYuClQL3
-   ulaZvLiHfJHKgpx6v+hgP8oJ9XQIDb0vohHtBvyQTfxtlBMaDyxNbP3+/
-   I=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 07 Jun 2022 11:53:11 -0700
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 07 Jun 2022 11:53:09 -0700
-X-QCInternal: smtphost
-Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 08 Jun 2022 00:22:53 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
-        id 957823F74; Wed,  8 Jun 2022 00:22:52 +0530 (+0530)
-From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
-        swboyd@chromium.org,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Subject: [PATCH 2/2] tty: serial: qcom-geni-serial: Implement start_rx callback
-Date:   Wed,  8 Jun 2022 00:22:45 +0530
-Message-Id: <1654627965-1461-3-git-send-email-quic_vnivarth@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1654627965-1461-1-git-send-email-quic_vnivarth@quicinc.com>
-References: <1654627965-1461-1-git-send-email-quic_vnivarth@quicinc.com>
+        Tue, 7 Jun 2022 17:11:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABD3E218A86;
+        Tue,  7 Jun 2022 11:53:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B1AFB82018;
+        Tue,  7 Jun 2022 18:53:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 807E5C385A5;
+        Tue,  7 Jun 2022 18:53:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654628002;
+        bh=ZY+9bOivnNwE6I+fPAkFM/4luhtBKoOnJATkvk/5Qi4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mgpHxWMjXGYlaEPKef5OYDzfFk66eShA5ewj8JzNRyOa3N6nosmn3wmNjKO43Rj8v
+         MXzBAMm+DTuhxlrlw7AmlIVuEgCrMhcqPzMPhUDOInh8XbnSzYMt3/ia81N1VE5Zal
+         Dinnehu9kjAKiNJLX/frdMm8+EwEz1piYY3/bRn8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zijun Hu <quic_zijuhu@quicinc.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 171/879] Bluetooth: btusb: Set HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA
+Date:   Tue,  7 Jun 2022 18:54:49 +0200
+Message-Id: <20220607165007.675903937@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In suspend sequence stop_rx will be performed only if implementation for
-start_rx callback is present.
+From: Zijun Hu <quic_zijuhu@quicinc.com>
 
-Set qcom_geni_serial_start_rx as callback for start_rx so that stop_rx is
-performed.
+[ Upstream commit 247f226adadfb7be09dd537f177429f4415aef8e ]
 
-Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Set HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA controllers since
+they answer HCI_OP_READ_DEF_ERR_DATA_REPORTING with error code
+"UNKNOWN HCI COMMAND" as shown below:
+
+[  580.517552] Bluetooth: hci0: unexpected cc 0x0c5a length: 1 < 2
+[  580.517660] Bluetooth: hci0: Opcode 0x c5a failed: -38
+
+hcitool -i hci0 cmd 0x03 0x5a
+< HCI Command: ogf 0x03, ocf 0x005a, plen 0
+> HCI Event: 0x0e plen 4
+  01 5A 0C 01
+
+btmon log:
+< HCI Command: Read Default Erroneous Data Reporting (0x03|0x005a) plen 0
+> HCI Event: Command Complete (0x0e) plen 4
+      Read Default Erroneous Data Reporting (0x03|0x005a) ncmd 1
+        Status: Unknown HCI Command (0x01)
+
+Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/qcom_geni_serial.c | 1 +
+ drivers/bluetooth/btusb.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 4733a23..f8f9506 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1306,6 +1306,7 @@ static const struct uart_ops qcom_geni_console_pops = {
- 	.stop_tx = qcom_geni_serial_stop_tx,
- 	.start_tx = qcom_geni_serial_start_tx,
- 	.stop_rx = qcom_geni_serial_stop_rx,
-+	.start_rx = qcom_geni_serial_start_rx,
- 	.set_termios = qcom_geni_serial_set_termios,
- 	.startup = qcom_geni_serial_startup,
- 	.request_port = qcom_geni_serial_request_port,
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index 06a854a2507e..e48c3ad069bb 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -3339,6 +3339,7 @@ static int btusb_setup_qca(struct hci_dev *hdev)
+ 	 * work with the likes of HSP/HFP mSBC.
+ 	 */
+ 	set_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &hdev->quirks);
++	set_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks);
+ 
+ 	return 0;
+ }
 -- 
-Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
+2.35.1
+
+
 
