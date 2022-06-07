@@ -2,195 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D8F3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F170BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:38:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245651AbiFGOiD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 10:38:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42444 "EHLO
+        id S245660AbiFGOiK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 10:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245620AbiFGOhv (ORCPT
+        with ESMTP id S245640AbiFGOh5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 10:37:51 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E522F53E16
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 07:37:48 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id n10so35659026ejk.5
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 07:37:48 -0700 (PDT)
+        Tue, 7 Jun 2022 10:37:57 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF94F39BB9
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 07:37:53 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id y12so15689632ior.7
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 07:37:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ydyhVNyupT/Dmeb5n3xMKR56hHFR+NFisItZZ689beA=;
-        b=AuyNBdE8++FVn31d8JBsLc1B7kDxwDm6Rxhfo1abI+2SxJFZCzV1CYCnZCqJGE5YxT
-         XBUC7f1fTGQUDOdEbZ5kLlI0zrnbnKDpmdFbEY3BFm21eVw9LPxOLp9zTcJIthon+k/k
-         CTZKN6RhsYAw9mixbzhj8lR11avFlGnSNwFkL6ONZDwT9KzJVpXzOlaIqygdLAcnXkV7
-         TW733W8M55ATeqcxsah6jeV97yK2RtJj6zgn8nXjbAGO2zawA1bN/LrON/BmbfaWFIF0
-         yWp6k2g1xJmEBqG1xIZAATd2srf8pFp1pwF2y3zFeyyDbwWBtvwOYFRHnhZ1Wahbvx+9
-         92Ug==
+        bh=QdHJWud4Esb486ECVTxXzI6Kb+rZg4dxyJx1aHp+WQ0=;
+        b=p1yrjVTX25GJuJWQxXO4slQsUE3V2ksOOmrTfHbAiEIx4YmFPIWQa+Uvvkx5Px+e/w
+         hD2DTYGcSlRCngVekdCTc8vZZnmVa9c+bpVJF1dzXGArV3uwhPlrkMVBbC3hUl3FhK0l
+         3sfkIAMa3zzyErynhAax4a2EjY/mHXUCwlhDwIMpqZ4mZXJLueR54TAwM8ZzJJehxlna
+         QW2YPCJL4AcMOeLKeMXenItoNSNzFUBbbVwW69m1XqWBMMP1J429aJDmo6zAAdkqIs80
+         n3EfKAQj2925UrzvDt1DGoMT1KTFIHN/qUDxgGBMh8KnGZ9jBvD5H7h0Gi9YjBVGDLXe
+         IkRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ydyhVNyupT/Dmeb5n3xMKR56hHFR+NFisItZZ689beA=;
-        b=D2WRjy0KCaUx/KowIw/APgDBMaxR4zSc5t+j5PRRtlJllnLOvOeLMe5SsqKMF82ghV
-         aLnXldhgHKcvvMF82gjJibviLvkD/4XSfROSF7B22RzbpDGL7zWZRG30Dlu1fdXzjiWt
-         u8WIowwlsLhT2nS6Gj+NpCLaCauHO8Lwyn8x+0Ep2LLu0BFtN9LwfjiSb6mXYiRiyE9N
-         aE1mq+PyiYemFcQSL/3Dn7tk4sPLbB49hpuuHYV7n0w+cu66StB4vtQzzPmFRyjXcdwp
-         SDq4gqsuooZnLy2YIIgJ40WSZU0reDIPjKc0d4ZIM4p06PkhartBVOQP/BGSrrTSsEnR
-         XWKA==
-X-Gm-Message-State: AOAM531avRSJdCGEMBmv/IIiuHrTjFnfGof3V0HVfL2SDuX8Naa9PZUH
-        KM/X2y0ASijLhUGHlqMPDNQQQ5OHtZpK2EAdLZd+sQ==
-X-Google-Smtp-Source: ABdhPJwSwx5is2iG5pA5nZPbD6j0ERT1QeK+rH99/rZEXuWqA8p7cLVbp7BTk/R2yDqSZOuCnxDp56L7cNALxZKQR78=
-X-Received: by 2002:a17:907:1c06:b0:6df:b257:cbb3 with SMTP id
- nc6-20020a1709071c0600b006dfb257cbb3mr26905346ejc.631.1654612666363; Tue, 07
- Jun 2022 07:37:46 -0700 (PDT)
+        bh=QdHJWud4Esb486ECVTxXzI6Kb+rZg4dxyJx1aHp+WQ0=;
+        b=hsgpv/purB8trHtaHD9BnTZ+Es7NkTnQnqP3xqm7jBdA6XvjVxlvfN5S6bzc+s2Not
+         u4ZBXnPy+bUF09AabYKvzqmkpxp2jx5V5S0XSmRQKbedWxZlZPwLOVuRSXtCUiMyHGMP
+         hfjqORbG91jP2lblmldeto95eHTXKNACJj0NDtBvpx6bmaX/AeJOYIWB7ZZ+OY3mFLxw
+         Txh9LP0d8+jZnJRu4JTMVi9jVoP1l4xGKiB5Inl2daEyE9qbjBbbEb6IxtG5zA7cgdGm
+         to87JRKEBCc7rT/GxzQrJv1Ogl27hRABkQyd9C4bqWnSSBsuJteXbyUSD3glqkd7GSt9
+         EI9Q==
+X-Gm-Message-State: AOAM530K1FR+yV/5MD0Iv9SkDZZLFrOOIFUVtwHVVn38D2fIx5PgZBQ/
+        jTFHbuqsxAAwKGA/35Q/6Em+gjkI0zDjAPMCYy0W8w==
+X-Google-Smtp-Source: ABdhPJzVVT8+GTP9Xb3A4HcsJ3LH8PbvMlQ/UZvnDv/iX6AT50XdZSKBoasNx0AWMpGF6muwHI3IP1pzl9EqRFHvKTY=
+X-Received: by 2002:a05:6638:14cf:b0:330:f947:2ab7 with SMTP id
+ l15-20020a05663814cf00b00330f9472ab7mr15874956jak.309.1654612673055; Tue, 07
+ Jun 2022 07:37:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220606201825.763788-1-pmalani@chromium.org> <20220606201825.763788-2-pmalani@chromium.org>
-In-Reply-To: <20220606201825.763788-2-pmalani@chromium.org>
-From:   Guenter Roeck <groeck@google.com>
-Date:   Tue, 7 Jun 2022 07:37:34 -0700
-Message-ID: <CABXOdTeFQebWvB+7oWvWN_n2YMCvGM==kjxp=D=ZyO1-ypnuRQ@mail.gmail.com>
-Subject: Re: [PATCH 1/3] regulator: cros-ec: Use common cros_ec_command()
-To:     Prashant Malani <pmalani@chromium.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        "open list:CHROME HARDWARE PLATFORM SUPPORT" 
-        <chrome-platform@lists.linux.dev>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Tzung-Bi Shih <tzungbi@kernel.org>
+References: <Yp59WCODvEDbpxOY@sol.localdomain>
+In-Reply-To: <Yp59WCODvEDbpxOY@sol.localdomain>
+From:   Aleksandr Nogikh <nogikh@google.com>
+Date:   Tue, 7 Jun 2022 16:37:42 +0200
+Message-ID: <CANp29Y7yEocOnLMhE_hc37L8wAzpvON9hwpjvuBLoMdQzhw+xA@mail.gmail.com>
+Subject: Re: Auto-invalidating old syzbot reports?
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     syzkaller <syzkaller@googlegroups.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 1:19 PM Prashant Malani <pmalani@chromium.org> wrote:
->
-> Reduce code duplication by using the common cros_ec_command() function
-> instead of the locally defined variant.
->
-> Cc: Stephen Boyd <swboyd@chromium.org>
-> Signed-off-by: Prashant Malani <pmalani@chromium.org>
+Hi Eric,
 
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Thanks for contacting us!
+These are very interesting points.
 
-> ---
->  drivers/regulator/cros-ec-regulator.c | 54 ++++++---------------------
->  1 file changed, 12 insertions(+), 42 deletions(-)
+Syzbot indeed only closes old bugs without a reproducer, because if we
+have a repro, then we can periodically do a fix bisection. And yes,
+this mechanism unfortunately does not always work perfectly.
+
+I think we could split the problem you described into two parts.
+1) Some bugs that are "open" on the dashboard are actually no longer
+relevant and should be closed.
+
+If you know some old opened bugs with repro, which are actually
+already fixed, could you please share them? It would be helpful to
+figure out the exact reason why they are still open.
+There are some cases when we can close bugs with a repro without
+losing too much -- e.g. for bugs from -next there was a discussion in
+https://github.com/google/syzkaller/issues/1957.
+Also, if the fix bisection fails, but the repro no longer triggers the
+crash on the HEAD, then we could probably "cancel" the repro and let
+the bug be auto-closed (actually, auto-invalidated) later?
+
+2) Some bugs were reported to the mailing lists, but became forgotten.
+
+We could periodically take maintainers as per the latest commit and
+send a reminder email to them. What do you think, would people go mad
+if we did that for each bug e.g. every 6 months? :) Only if the bug
+still happens on syzbot, of course.
+
+At some point we were also considering sending aggregated reminders
+(e.g. sth like "we still have X open bugs for the subsystem you
+maintain/have actively contributed to, here they are:"), but to do
+that, we first need to learn how to more or less reliably classify the
+bugs into the subsystems.
+
+--
+Best Regards,
+Aleksandr
+
+On Tue, Jun 7, 2022 at 12:19 AM Eric Biggers <ebiggers@kernel.org> wrote:
 >
-> diff --git a/drivers/regulator/cros-ec-regulator.c b/drivers/regulator/cros-ec-regulator.c
-> index c4754f3cf233..1c5fc74a4776 100644
-> --- a/drivers/regulator/cros-ec-regulator.c
-> +++ b/drivers/regulator/cros-ec-regulator.c
-> @@ -22,36 +22,6 @@ struct cros_ec_regulator_data {
->         u16 num_voltages;
->  };
+> Currently the upstream Linux kernel has 888 open syzbot reports
+> (https://syzkaller.appspot.com/upstream).  However, nearly two-thirds of them
+> (577) were reported more than 1 year ago.  Old reports are often for bugs that
+> were already fixed.  They can also be reports that got overlooked, forgotten
+> about, not sent to the right place, etc.  Kernel maintainers also change over
+> time, so the current maintainer(s) might never have received the original report
+> even if syzbot sent the original report to the correct maintainer(s).
 >
-> -static int cros_ec_cmd(struct cros_ec_device *ec, u32 version, u32 command,
-> -                      void *outdata, u32 outsize, void *indata, u32 insize)
-> -{
-> -       struct cros_ec_command *msg;
-> -       int ret;
-> -
-> -       msg = kzalloc(sizeof(*msg) + max(outsize, insize), GFP_KERNEL);
-> -       if (!msg)
-> -               return -ENOMEM;
-> -
-> -       msg->version = version;
-> -       msg->command = command;
-> -       msg->outsize = outsize;
-> -       msg->insize = insize;
-> -
-> -       if (outdata && outsize > 0)
-> -               memcpy(msg->data, outdata, outsize);
-> -
-> -       ret = cros_ec_cmd_xfer_status(ec, msg);
-> -       if (ret < 0)
-> -               goto cleanup;
-> -
-> -       if (insize)
-> -               memcpy(indata, msg->data, insize);
-> -
-> -cleanup:
-> -       kfree(msg);
-> -       return ret;
-> -}
-> -
->  static int cros_ec_regulator_enable(struct regulator_dev *dev)
->  {
->         struct cros_ec_regulator_data *data = rdev_get_drvdata(dev);
-> @@ -60,8 +30,8 @@ static int cros_ec_regulator_enable(struct regulator_dev *dev)
->                 .enable = 1,
->         };
+> Having these old reports open is preventing syzbot from re-reporting any bugs
+> with the same crash signature (where a crash signature is something like
+> "KASAN: null-ptr-deref Read in percpu_ref_exit") if it is still being seen.
 >
-> -       return cros_ec_cmd(data->ec_dev, 0, EC_CMD_REGULATOR_ENABLE, &cmd,
-> -                         sizeof(cmd), NULL, 0);
-> +       return cros_ec_command(data->ec_dev, 0, EC_CMD_REGULATOR_ENABLE, &cmd,
-> +                              sizeof(cmd), NULL, 0);
->  }
+> syzbot does auto-invalidate some old bugs, but only ones without a reproducer.
 >
->  static int cros_ec_regulator_disable(struct regulator_dev *dev)
-> @@ -72,8 +42,8 @@ static int cros_ec_regulator_disable(struct regulator_dev *dev)
->                 .enable = 0,
->         };
+> Given that humans aren't keeping up with these reports, has it been considered
+> to auto-invalidate all old syzbot reports -- not just ones without a reproducer?
 >
-> -       return cros_ec_cmd(data->ec_dev, 0, EC_CMD_REGULATOR_ENABLE, &cmd,
-> -                         sizeof(cmd), NULL, 0);
-> +       return cros_ec_command(data->ec_dev, 0, EC_CMD_REGULATOR_ENABLE, &cmd,
-> +                              sizeof(cmd), NULL, 0);
->  }
->
->  static int cros_ec_regulator_is_enabled(struct regulator_dev *dev)
-> @@ -85,8 +55,8 @@ static int cros_ec_regulator_is_enabled(struct regulator_dev *dev)
->         struct ec_response_regulator_is_enabled resp;
->         int ret;
->
-> -       ret = cros_ec_cmd(data->ec_dev, 0, EC_CMD_REGULATOR_IS_ENABLED, &cmd,
-> -                         sizeof(cmd), &resp, sizeof(resp));
-> +       ret = cros_ec_command(data->ec_dev, 0, EC_CMD_REGULATOR_IS_ENABLED, &cmd,
-> +                             sizeof(cmd), &resp, sizeof(resp));
->         if (ret < 0)
->                 return ret;
->         return resp.enabled;
-> @@ -112,8 +82,8 @@ static int cros_ec_regulator_get_voltage(struct regulator_dev *dev)
->         struct ec_response_regulator_get_voltage resp;
->         int ret;
->
-> -       ret = cros_ec_cmd(data->ec_dev, 0, EC_CMD_REGULATOR_GET_VOLTAGE, &cmd,
-> -                         sizeof(cmd), &resp, sizeof(resp));
-> +       ret = cros_ec_command(data->ec_dev, 0, EC_CMD_REGULATOR_GET_VOLTAGE, &cmd,
-> +                             sizeof(cmd), &resp, sizeof(resp));
->         if (ret < 0)
->                 return ret;
->         return resp.voltage_mv * 1000;
-> @@ -138,8 +108,8 @@ static int cros_ec_regulator_set_voltage(struct regulator_dev *dev, int min_uV,
->         if (min_mV > max_mV)
->                 return -EINVAL;
->
-> -       return cros_ec_cmd(data->ec_dev, 0, EC_CMD_REGULATOR_SET_VOLTAGE, &cmd,
-> -                          sizeof(cmd), NULL, 0);
-> +       return cros_ec_command(data->ec_dev, 0, EC_CMD_REGULATOR_SET_VOLTAGE, &cmd,
-> +                              sizeof(cmd), NULL, 0);
->  }
->
->  static const struct regulator_ops cros_ec_regulator_voltage_ops = {
-> @@ -160,8 +130,8 @@ static int cros_ec_regulator_init_info(struct device *dev,
->         struct ec_response_regulator_get_info resp;
->         int ret;
->
-> -       ret = cros_ec_cmd(data->ec_dev, 0, EC_CMD_REGULATOR_GET_INFO, &cmd,
-> -                          sizeof(cmd), &resp, sizeof(resp));
-> +       ret = cros_ec_command(data->ec_dev, 0, EC_CMD_REGULATOR_GET_INFO, &cmd,
-> +                             sizeof(cmd), &resp, sizeof(resp));
->         if (ret < 0)
->                 return ret;
+> - Eric
 >
 > --
-> 2.36.1.255.ge46751e96f-goog
->
+> You received this message because you are subscribed to the Google Groups "syzkaller" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller/Yp59WCODvEDbpxOY%40sol.localdomain.
