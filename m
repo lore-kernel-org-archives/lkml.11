@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29A3CCCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D5AFCCA481
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352935AbiFGSRr (ORCPT
+        id S1352995AbiFGSRv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:17:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39764 "EHLO
+        Tue, 7 Jun 2022 14:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349046AbiFGR5t (ORCPT
+        with ESMTP id S1348298AbiFGR6A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:57:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7F74A911;
-        Tue,  7 Jun 2022 10:40:52 -0700 (PDT)
+        Tue, 7 Jun 2022 13:58:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF7854FB0;
+        Tue,  7 Jun 2022 10:40:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 262036165B;
-        Tue,  7 Jun 2022 17:40:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33151C385A5;
-        Tue,  7 Jun 2022 17:40:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B19EB80B66;
+        Tue,  7 Jun 2022 17:40:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2939C34115;
+        Tue,  7 Jun 2022 17:40:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623651;
-        bh=/LhHZS7KZOsRLjw20/Yc+E1iY9xUP5yA1eGvoz1lRmU=;
+        s=korg; t=1654623657;
+        bh=sN1Kk7yA6tgJ56jtZ7RfRBdgp59iuwFaAZOanZaTchg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=va+pQ+JCFJmksengzKwJhm95Sc7YR7x2jvmd1AICbCuSWAkoYaY5Jz2lx+p4Ds6Rd
-         miey4VGDgLQU9BRWjzUoe2KT4W1CIm4a8Jb9JsqjK+8WHI2SBaJb1Fw/+J+FyUHdDk
-         k1rW2uJ5XvSBMbJ79phPgiUYzGVDO+I/7ltZ2f4M=
+        b=r0dvhWKXHchjzZjywaknfwV5KmsFe+d8f77eAuo1ecgK1Yt+/DBuRuMvbkPRXQ7cy
+         dNgRPKFom6NXtcYUK4IGx6AxzhQRUFWAV0Hqgv7+DiDSHj8jUuBCISbSl5nUdIpSRs
+         E/rkKwGHW0KT34Z2UNThwC6mupoWucD8nOVsQ+z8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Huaming Jiang <jianghuaming.jhm@alibaba-inc.com>,
-        Guo Ren <guoren@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
-        Xianting Tian <xianting.tian@linux.alibaba.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Nick Kossifidis <mick@ics.forth.gr>
-Subject: [PATCH 5.15 005/667] RISC-V: Mark IORESOURCE_EXCLUSIVE for reserved mem instead of IORESOURCE_BUSY
-Date:   Tue,  7 Jun 2022 18:54:30 +0200
-Message-Id: <20220607164934.940034192@linuxfoundation.org>
+        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.15 007/667] riscv: Fix irq_work when SMP is disabled
+Date:   Tue,  7 Jun 2022 18:54:32 +0200
+Message-Id: <20220607164935.002231686@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -53,68 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xianting Tian <xianting.tian@linux.alibaba.com>
+From: Samuel Holland <samuel@sholland.org>
 
-commit e61bf5c071148c80d091f8e7220b3b9130780ae3 upstream.
+commit 2273272823db6f67d57761df8116ae32e7f05bed upstream.
 
-Commit 00ab027a3b82 ("RISC-V: Add kernel image sections to the resource tree")
-marked IORESOURCE_BUSY for reserved memory, which caused resource map
-failed in subsequent operations of related driver, so remove the
-IORESOURCE_BUSY flag. In order to prohibit userland mapping reserved
-memory, mark IORESOURCE_EXCLUSIVE for it.
+irq_work is triggered via an IPI, but the IPI infrastructure is not
+included in uniprocessor kernels. As a result, irq_work never runs.
+Fall back to the tick-based irq_work implementation on uniprocessor
+configurations.
 
-The code to reproduce the issue,
-dts:
-        mem0: memory@a0000000 {
-                reg = <0x0 0xa0000000 0 0x1000000>;
-                no-map;
-        };
-
-        &test {
-                status = "okay";
-                memory-region = <&mem0>;
-        };
-
-code:
-        np = of_parse_phandle(pdev->dev.of_node, "memory-region", 0);
-        ret = of_address_to_resource(np, 0, &r);
-        base = devm_ioremap_resource(&pdev->dev, &r);
-        // base = -EBUSY
-
-Fixes: 00ab027a3b82 ("RISC-V: Add kernel image sections to the resource tree")
-Reported-by: Huaming Jiang <jianghuaming.jhm@alibaba-inc.com>
-Reviewed-by: Guo Ren <guoren@kernel.org>
+Fixes: 298447928bb1 ("riscv: Support irq_work via self IPIs")
+Signed-off-by: Samuel Holland <samuel@sholland.org>
 Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-Tested-by: Heiko Stuebner <heiko@sntech.de>
-Co-developed-by: Nick Kossifidis <mick@ics.forth.gr>
-Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20220518013428.1338983-1-xianting.tian@linux.alibaba.com
+Link: https://lore.kernel.org/r/20220430030025.58405-1-samuel@sholland.org
 Cc: stable@vger.kernel.org
 Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kernel/setup.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/riscv/include/asm/irq_work.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/riscv/kernel/setup.c
-+++ b/arch/riscv/kernel/setup.c
-@@ -199,7 +199,7 @@ static void __init init_resources(void)
- 		res = &mem_res[res_idx--];
+--- a/arch/riscv/include/asm/irq_work.h
++++ b/arch/riscv/include/asm/irq_work.h
+@@ -4,7 +4,7 @@
  
- 		res->name = "Reserved";
--		res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
-+		res->flags = IORESOURCE_MEM | IORESOURCE_EXCLUSIVE;
- 		res->start = __pfn_to_phys(memblock_region_reserved_base_pfn(region));
- 		res->end = __pfn_to_phys(memblock_region_reserved_end_pfn(region)) - 1;
- 
-@@ -224,7 +224,7 @@ static void __init init_resources(void)
- 
- 		if (unlikely(memblock_is_nomap(region))) {
- 			res->name = "Reserved";
--			res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
-+			res->flags = IORESOURCE_MEM | IORESOURCE_EXCLUSIVE;
- 		} else {
- 			res->name = "System RAM";
- 			res->flags = IORESOURCE_SYSTEM_RAM | IORESOURCE_BUSY;
+ static inline bool arch_irq_work_has_interrupt(void)
+ {
+-	return true;
++	return IS_ENABLED(CONFIG_SMP);
+ }
+ extern void arch_irq_work_raise(void);
+ #endif /* _ASM_RISCV_IRQ_WORK_H */
 
 
