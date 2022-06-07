@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB190CCA497
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2DE9C43334
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392247AbiFHAwE (ORCPT
+        id S1442732AbiFHAzw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:52:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40400 "EHLO
+        Tue, 7 Jun 2022 20:55:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382817AbiFGWD7 (ORCPT
+        with ESMTP id S1382420AbiFGWDS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:03:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B63A19578A;
-        Tue,  7 Jun 2022 12:14:59 -0700 (PDT)
+        Tue, 7 Jun 2022 18:03:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B53251490;
+        Tue,  7 Jun 2022 12:15:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD997B823C5;
-        Tue,  7 Jun 2022 19:14:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34C37C385A2;
-        Tue,  7 Jun 2022 19:14:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0FC26192F;
+        Tue,  7 Jun 2022 19:15:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFFF0C385A5;
+        Tue,  7 Jun 2022 19:15:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629296;
-        bh=WiFCKulQ99PeGhv0WCZ7muvZMv1xXYlcq2nr0Cxd+lE=;
+        s=korg; t=1654629310;
+        bh=sCJm4CNUlpdZlq5/wMf959urXU8A7uAOb5KzcBc5zkI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XKl8vAYrWVsubpREvEn4OvrpPSEN4LC2Bsda/wWa4aAqIpC6EcT6oCv+z0MxWBwVg
-         aay2zdoBtlxeqnJCV0AkOCXSmPvsgSEXDxHYBuMaWz6mcQyyCsqgt1nq7M1tJDztBX
-         3l/jiVeCvekMy/Pd86LN/LtaRtODsoQ1xcUNiLn4=
+        b=nywHgOj+4dFNOV2S0ovv+5wbUJRAy1veWKhAQucolCRAom5qo6jh5pzQSirdV/g6R
+         sv7rb95SqJ7a8640hjAytXy//A18iaRXZTWlC4ctAN7l9bKjDtRmZhTYeioFnVjy6x
+         J8SOKnoz3Lfzs5YthgQAPMQWRB+r/edD84T0GCF4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kajol Jain <kjain@linux.ibm.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        stable@vger.kernel.org, Vaibhav Jain <vaibhav@linux.ibm.com>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 641/879] powerpc/perf: Fix the threshold compare group constraint for power10
-Date:   Tue,  7 Jun 2022 19:02:39 +0200
-Message-Id: <20220607165021.452557766@linuxfoundation.org>
+Subject: [PATCH 5.18 646/879] powerpc/papr_scm: Fix leaking nvdimm_events_map elements
+Date:   Tue,  7 Jun 2022 19:02:44 +0200
+Message-Id: <20220607165021.598341332@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,111 +50,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kajol Jain <kjain@linux.ibm.com>
+From: Vaibhav Jain <vaibhav@linux.ibm.com>
 
-[ Upstream commit 505d31650ba96d6032313480fdb566d289a4698c ]
+[ Upstream commit 0e0946e22f3665d27325d389ff45ade6e93f3678 ]
 
-Thresh compare bits for a event is used to program thresh compare
-field in Monitor Mode Control Register A (MMCRA: 8-18 bits for power10).
-When scheduling events as a group, all events in that group should
-match value in threshold bits. Otherwise event open for the sibling
-events should fail. But in the current code, incase thresh compare bits are
-not valid, we are not failing in group_constraint function which can result
-in invalid group schduling.
+Right now 'char *' elements allocated for individual 'stat_id' in
+'papr_scm_priv.nvdimm_events_map[]' during papr_scm_pmu_check_events(), get
+leaked in papr_scm_remove() and papr_scm_pmu_register(),
+papr_scm_pmu_check_events() error paths.
 
-Fix the issue by returning -1 incase event is threshold and threshold
-compare value is not valid in group_constraint function.
+Also individual 'stat_id' arent NULL terminated 'char *' instead they are fixed
+8-byte sized identifiers. However papr_scm_pmu_register() assumes it to be a
+NULL terminated 'char *' and at other places it assumes it to be a
+'papr_scm_perf_stat.stat_id' sized string which is 8-byes in size.
 
-Patch also fixes the p10_thresh_cmp_val function to return -1,
-incase threshold bits are not valid and changes corresponding check in
-is_thresh_cmp_valid function to return false only when the thresh_cmp
-value is less then 0.
+Fix this by allocating the memory for papr_scm_priv.nvdimm_events_map to also
+include space for 'stat_id' entries. This is possible since number of available
+events/stat_ids are known upfront. This saves some memory and one extra level of
+indirection from 'nvdimm_events_map' to 'stat_id'. Also rest of the code
+can continue to call 'kfree(papr_scm_priv.nvdimm_events_map)' without needing to
+iterate over the array and free up individual elements.
 
-Thresh control bits in the event code is used to program thresh_ctl
-field in Monitor Mode Control Register A (MMCRA: 48-55). In below example,
-the scheduling of group events PM_MRK_INST_CMPL (3534401e0) and
-PM_THRESH_MET (34340101ec) is expected to fail as both event
-request different thresh control bits.
-
-Result before the patch changes:
-
-[command]# perf stat -e "{r35340401e0,r34340101ec}" sleep 1
-
- Performance counter stats for 'sleep 1':
-
-             8,482      r35340401e0
-                 0      r34340101ec
-
-       1.001474838 seconds time elapsed
-
-       0.001145000 seconds user
-       0.000000000 seconds sys
-
-Result after the patch changes:
-
-[command]# perf stat -e "{r35340401e0,r34340101ec}" sleep 1
-
- Performance counter stats for 'sleep 1':
-
-     <not counted>      r35340401e0
-   <not supported>      r34340101ec
-
-       1.001499607 seconds time elapsed
-
-       0.000204000 seconds user
-       0.000760000 seconds sys
-
-Fixes: 82d2c16b350f7 ("powerpc/perf: Adds support for programming of Thresholding in P10")
-Signed-off-by: Kajol Jain <kjain@linux.ibm.com>
-Reviewed-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Fixes: 4c08d4bbc089 ("powerpc/papr_scm: Add perf interface support")
+Signed-off-by: Vaibhav Jain <vaibhav@linux.ibm.com>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220506061015.43916-1-kjain@linux.ibm.com
+Link: https://lore.kernel.org/r/20220511082637.646714-1-vaibhav@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/perf/isa207-common.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ arch/powerpc/platforms/pseries/papr_scm.c | 54 ++++++++++-------------
+ 1 file changed, 24 insertions(+), 30 deletions(-)
 
-diff --git a/arch/powerpc/perf/isa207-common.c b/arch/powerpc/perf/isa207-common.c
-index a74d382ecbb7..013b06af6fe6 100644
---- a/arch/powerpc/perf/isa207-common.c
-+++ b/arch/powerpc/perf/isa207-common.c
-@@ -108,7 +108,7 @@ static void mmcra_sdar_mode(u64 event, unsigned long *mmcra)
- 		*mmcra |= MMCRA_SDAR_MODE_TLB;
- }
+diff --git a/arch/powerpc/platforms/pseries/papr_scm.c b/arch/powerpc/platforms/pseries/papr_scm.c
+index 39962c905542..181b855b3050 100644
+--- a/arch/powerpc/platforms/pseries/papr_scm.c
++++ b/arch/powerpc/platforms/pseries/papr_scm.c
+@@ -125,8 +125,8 @@ struct papr_scm_priv {
+ 	/* The bits which needs to be overridden */
+ 	u64 health_bitmap_inject_mask;
  
--static u64 p10_thresh_cmp_val(u64 value)
-+static int p10_thresh_cmp_val(u64 value)
+-	 /* array to have event_code and stat_id mappings */
+-	char **nvdimm_events_map;
++	/* array to have event_code and stat_id mappings */
++	u8 *nvdimm_events_map;
+ };
+ 
+ static int papr_scm_pmem_flush(struct nd_region *nd_region,
+@@ -370,7 +370,7 @@ static int papr_scm_pmu_get_value(struct perf_event *event, struct device *dev,
+ 
+ 	stat = &stats->scm_statistic[0];
+ 	memcpy(&stat->stat_id,
+-	       p->nvdimm_events_map[event->attr.config],
++	       &p->nvdimm_events_map[event->attr.config * sizeof(stat->stat_id)],
+ 		sizeof(stat->stat_id));
+ 	stat->stat_val = 0;
+ 
+@@ -462,14 +462,13 @@ static int papr_scm_pmu_check_events(struct papr_scm_priv *p, struct nvdimm_pmu
  {
- 	int exp = 0;
- 	u64 result = value;
-@@ -139,7 +139,7 @@ static u64 p10_thresh_cmp_val(u64 value)
- 		 * exponent is also zero.
- 		 */
- 		if (!(value & 0xC0) && exp)
--			result = 0;
-+			result = -1;
- 		else
- 			result = (exp << 8) | value;
+ 	struct papr_scm_perf_stat *stat;
+ 	struct papr_scm_perf_stats *stats;
+-	int index, rc, count;
+ 	u32 available_events;
+-
+-	if (!p->stat_buffer_len)
+-		return -ENOENT;
++	int index, rc = 0;
+ 
+ 	available_events = (p->stat_buffer_len  - sizeof(struct papr_scm_perf_stats))
+ 			/ sizeof(struct papr_scm_perf_stat);
++	if (available_events == 0)
++		return -EOPNOTSUPP;
+ 
+ 	/* Allocate the buffer for phyp where stats are written */
+ 	stats = kzalloc(p->stat_buffer_len, GFP_KERNEL);
+@@ -478,35 +477,30 @@ static int papr_scm_pmu_check_events(struct papr_scm_priv *p, struct nvdimm_pmu
+ 		return rc;
  	}
-@@ -187,7 +187,7 @@ static bool is_thresh_cmp_valid(u64 event)
- 	unsigned int cmp, exp;
  
- 	if (cpu_has_feature(CPU_FTR_ARCH_31))
--		return p10_thresh_cmp_val(event) != 0;
-+		return p10_thresh_cmp_val(event) >= 0;
- 
- 	/*
- 	 * Check the mantissa upper two bits are not zero, unless the
-@@ -502,7 +502,8 @@ int isa207_get_constraint(u64 event, unsigned long *maskp, unsigned long *valp,
- 			value |= CNST_THRESH_CTL_SEL_VAL(event >> EVENT_THRESH_SHIFT);
- 			mask  |= p10_CNST_THRESH_CMP_MASK;
- 			value |= p10_CNST_THRESH_CMP_VAL(p10_thresh_cmp_val(event_config1));
+-	/* Allocate memory to nvdimm_event_map */
+-	p->nvdimm_events_map = kcalloc(available_events, sizeof(char *), GFP_KERNEL);
+-	if (!p->nvdimm_events_map) {
+-		rc = -ENOMEM;
+-		goto out_stats;
+-	}
+-
+ 	/* Called to get list of events supported */
+ 	rc = drc_pmem_query_stats(p, stats, 0);
+ 	if (rc)
+-		goto out_nvdimm_events_map;
+-
+-	for (index = 0, stat = stats->scm_statistic, count = 0;
+-		     index < available_events; index++, ++stat) {
+-		p->nvdimm_events_map[count] = kmemdup_nul(stat->stat_id, 8, GFP_KERNEL);
+-		if (!p->nvdimm_events_map[count]) {
+-			rc = -ENOMEM;
+-			goto out_nvdimm_events_map;
 -		}
-+		} else if (event_is_threshold(event))
-+			return -1;
- 	} else if (cpu_has_feature(CPU_FTR_ARCH_300))  {
- 		if (event_is_threshold(event) && is_thresh_cmp_valid(event)) {
- 			mask  |= CNST_THRESH_MASK;
++		goto out;
+ 
+-		count++;
++	/*
++	 * Allocate memory and populate nvdimm_event_map.
++	 * Allocate an extra element for NULL entry
++	 */
++	p->nvdimm_events_map = kcalloc(available_events + 1,
++				       sizeof(stat->stat_id),
++				       GFP_KERNEL);
++	if (!p->nvdimm_events_map) {
++		rc = -ENOMEM;
++		goto out;
+ 	}
+-	p->nvdimm_events_map[count] = NULL;
+-	kfree(stats);
+-	return 0;
+ 
+-out_nvdimm_events_map:
+-	kfree(p->nvdimm_events_map);
+-out_stats:
++	/* Copy all stat_ids to event map */
++	for (index = 0, stat = stats->scm_statistic;
++	     index < available_events; index++, ++stat) {
++		memcpy(&p->nvdimm_events_map[index * sizeof(stat->stat_id)],
++		       &stat->stat_id, sizeof(stat->stat_id));
++	}
++out:
+ 	kfree(stats);
+ 	return rc;
+ }
 -- 
 2.35.1
 
