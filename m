@@ -2,94 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 411D9C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:18:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D682C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:18:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232437AbiFHCSI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:18:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44248 "EHLO
+        id S238859AbiFHCSb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 22:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390338AbiFHBuQ (ORCPT
+        with ESMTP id S1390553AbiFHBuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 21:50:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBF5C19D622;
-        Tue,  7 Jun 2022 12:26:14 -0700 (PDT)
+        Tue, 7 Jun 2022 21:50:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE6E1A43EF
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:31:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 52E896077B;
-        Tue,  7 Jun 2022 19:26:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62D37C385A5;
-        Tue,  7 Jun 2022 19:26:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629973;
-        bh=fjh0DjFNqa4PrftEH5DvKhHI7w1fRCD7pD5OezHZF+E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zTk4S31R16iaZLWdkBRvVJcV1blXXFe60diEq+8WmqY6A6EAW59CKO1d+5cVMEBbB
-         t0S10ir+QJCU7/9V3O690ivlBfIVwP/vvKpeJD/heQd+wbUZQ/hfmuG/T0qUbaw5nK
-         l4YXIqdDTTAYTL6sKGTtVn0QqnVASAWdAqKYJubc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH 5.18 855/879] docs/conf.py: Cope with removal of language=None in Sphinx 5.0.0
-Date:   Tue,  7 Jun 2022 19:06:13 +0200
-Message-Id: <20220607165027.672545095@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 019C0B82182
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:31:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0832C385A2;
+        Tue,  7 Jun 2022 19:31:15 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="ezRz14S7"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1654630272;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aIk3Rt4nDto2wWZJ+glqe0AEG6VQh1/nNLxNJJ+VXZQ=;
+        b=ezRz14S7LF6mMOq6Y8L0jlHdpkHv5/MCl5Z6EXV61XdLF/2w+XGyhz5zXj8ZQqSGJlGW3q
+        TKZJw2/TwkTK8xN8pMLyqzHxYkaMGeqWDEaBSHyQuowIiZYvWOrs0+akt9LBRFPvs69ClY
+        BzBioCKFw9TzQO1WYsOtHnzigc1S7js=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e15e7cd2 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 7 Jun 2022 19:31:12 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Phil Elwell <phil@raspberrypi.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Russel King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: [PATCH v3] ARM: initialize jump labels before setup_machine_fdt()
+Date:   Tue,  7 Jun 2022 21:30:44 +0200
+Message-Id: <20220607193044.1063287-1-Jason@zx2c4.com>
+In-Reply-To: <Yp9yUqHNNaAxZ/5y@zx2c4.com>
+References: <Yp9yUqHNNaAxZ/5y@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Akira Yokosawa <akiyks@gmail.com>
+Stephen reported that a static key warning splat appears during early
+boot on arm64 systems that credit randomness from device trees that
+contain an "rng-seed" property, because setup_machine_fdt() is called
+before jump_label_init() during setup_arch(), which was fixed by
+73e2d827a501 ("arm64: Initialize jump labels before
+setup_machine_fdt()").
 
-commit 627f01eab93d8671d4e4afee9b148f9998d20e7c upstream.
+The same basic issue applies to arm32 as well. So this commit adds a
+call to jump_label_init() just before setup_machine_fdt(). Since the
+page maps haven't been set yet, this also requires us to use the early
+patching code in the jump label code.
 
-One of the changes in Sphinx 5.0.0 [1] says [sic]:
-
-    5.0.0 final
-
-     - #10474: language does not accept None as it value.
-       The default value of language becomes to 'en' now.
-
-[1]: https://www.sphinx-doc.org/en/master/changes.html#release-5-0-0-released-may-30-2022
-
-It results in a new warning from Sphinx 5.0.0 [sic]:
-
-    WARNING: Invalid configuration value found: 'language = None'.
-    Update your configuration to a valid langauge code. Falling
-    back to 'en' (English).
-
-Silence the warning by using 'en'.
-It works with all the Sphinx versions required for building
-kernel documentation (1.7.9 or later).
-
-Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-Link: https://lore.kernel.org/r/bd0c2ddc-2401-03cb-4526-79ca664e1cbe@gmail.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Jonathan Corbet <corbet@lwn.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Stephen Boyd <swboyd@chromium.org>
+Reported-by: Phil Elwell <phil@raspberrypi.com>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Russel King <linux@armlinux.org.uk>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Fixes: f5bda35fba61 ("random: use static branch for crng_ready()")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- Documentation/conf.py |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/kernel/jump_label.c | 3 ++-
+ arch/arm/kernel/setup.c      | 1 +
+ arch/arm/mm/mmu.c            | 3 +++
+ 3 files changed, 6 insertions(+), 1 deletion(-)
 
---- a/Documentation/conf.py
-+++ b/Documentation/conf.py
-@@ -161,7 +161,7 @@ finally:
- #
- # This is also used if you do content translation via gettext catalogs.
- # Usually you set "language" from the command line for these cases.
--language = None
-+language = 'en'
+diff --git a/arch/arm/kernel/jump_label.c b/arch/arm/kernel/jump_label.c
+index 303b3ab87f7e..8f8c5312f917 100644
+--- a/arch/arm/kernel/jump_label.c
++++ b/arch/arm/kernel/jump_label.c
+@@ -8,6 +8,7 @@ static void __arch_jump_label_transform(struct jump_entry *entry,
+ 					enum jump_label_type type,
+ 					bool is_static)
+ {
++	extern bool early_mm_initialized;
+ 	void *addr = (void *)entry->code;
+ 	unsigned int insn;
  
- # There are two options for replacing |today|: either, you set today to some
- # non-false value, then it is used:
-
+@@ -16,7 +17,7 @@ static void __arch_jump_label_transform(struct jump_entry *entry,
+ 	else
+ 		insn = arm_gen_nop();
+ 
+-	if (is_static)
++	if (is_static || !early_mm_initialized)
+ 		__patch_text_early(addr, insn);
+ 	else
+ 		patch_text(addr, insn);
+diff --git a/arch/arm/kernel/setup.c b/arch/arm/kernel/setup.c
+index 1e8a50a97edf..3ff80b1ee0b5 100644
+--- a/arch/arm/kernel/setup.c
++++ b/arch/arm/kernel/setup.c
+@@ -1101,6 +1101,7 @@ void __init setup_arch(char **cmdline_p)
+ 		atags_vaddr = FDT_VIRT_BASE(__atags_pointer);
+ 
+ 	setup_processor();
++	jump_label_init();
+ 	if (atags_vaddr) {
+ 		mdesc = setup_machine_fdt(atags_vaddr);
+ 		if (mdesc)
+diff --git a/arch/arm/mm/mmu.c b/arch/arm/mm/mmu.c
+index 5e2be37a198e..3f63a5581966 100644
+--- a/arch/arm/mm/mmu.c
++++ b/arch/arm/mm/mmu.c
+@@ -1754,10 +1754,13 @@ void __init paging_init(const struct machine_desc *mdesc)
+ 	__flush_dcache_page(NULL, empty_zero_page);
+ }
+ 
++bool early_mm_initialized;
++
+ void __init early_mm_init(const struct machine_desc *mdesc)
+ {
+ 	build_mem_type_table();
+ 	early_paging_init(mdesc);
++	early_mm_initialized = true;
+ }
+ 
+ void set_pte_at(struct mm_struct *mm, unsigned long addr,
+-- 
+2.35.1
 
