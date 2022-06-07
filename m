@@ -2,103 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2049CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:38:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 322F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356304AbiFGTiw (ORCPT
+        id S1353923AbiFGTi7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58134 "EHLO
+        Tue, 7 Jun 2022 15:38:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354243AbiFGSqu (ORCPT
+        with ESMTP id S1354291AbiFGSqw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DA871257A7;
-        Tue,  7 Jun 2022 11:00:26 -0700 (PDT)
+        Tue, 7 Jun 2022 14:46:52 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3861059F3;
+        Tue,  7 Jun 2022 11:00:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 187E1617AE;
-        Tue,  7 Jun 2022 18:00:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2843CC385A5;
-        Tue,  7 Jun 2022 18:00:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624825;
-        bh=b2xI1vAuWumL9Pl1KLY/AKMQ4JmYs0MYUQwUJwyOSvA=;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7CB0ACE243D;
+        Tue,  7 Jun 2022 18:00:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29D55C385A5;
+        Tue,  7 Jun 2022 18:00:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624834;
+        bh=5bjCs0Jb6YhCJb+AC+LjaNtTWCV4wyc3dEm0P48ZKAQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j++SylZXrUszwSQ2DKZ7080gUTB+YGOHQ5nBhHIuag2DIcmTS8RgXGEDTAzK7wf1y
-         eAObApVEi591S1mr/tE6ujvO2BisITAmqL5BFcCAPTDdGcayyCZP8/F0n6EBc9x8Bo
-         BtAwFSxsE4/F5hL6Nh/PXKRvFnDxLm5rcvpjoR64=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 466/667] macintosh: via-pmu and via-cuda need RTC_LIB
-Date:   Tue,  7 Jun 2022 19:02:11 +0200
-Message-Id: <20220607164948.685062207@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=tWv8Svhs75Y11i5Bfg7E7f3U/WU2a/b+s2vUqbaSU0kLbs55ioxg70QVudk0Ia0c+
+         A+b/Xyey3kVUMoCD90FtfDxweonn7aiDxujY1Q5N9XBgju9O4pZcS+jDLQMNWRoAkT
+         vAFAezphoCXioGQvOJYi4j7XbCpmgKA2MKjS6ljet9gAiiBTpRWhxbEpUoJXXfHZrZ
+         RDwMY4NxDVHyPGtW9uLFxXUtYrqZaEpHA0+YUxB547+ln4vY0c9H0OLOt3P3X7WBhN
+         Je52rAYOkn3OEATpTYsvyEockGoNEOqZA/hCDXsBpc2V+LVhdyliRYCJX3FSQz2t+7
+         QI4zTuYTSwd9g==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, dan.carpenter@oracle.com,
+        baihaowen@meizu.com, paskripkin@gmail.com, wjsota@gmail.com,
+        edumazet@google.com, yangyingliang@huawei.com, len.baker@gmx.com,
+        dave@stgolabs.net, linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.4 07/34] drivers: staging: rtl8192e: Fix deadlock in rtllib_beacons_stop()
+Date:   Tue,  7 Jun 2022 13:59:42 -0400
+Message-Id: <20220607180011.481266-7-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
+References: <20220607180011.481266-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 9a9c5ff5fff87eb1a43db0d899473554e408fd7b ]
+[ Upstream commit 9b6bdbd9337de3917945847bde262a34a87a6303 ]
 
-Fix build when RTC_LIB is not set/enabled.
-Eliminates these build errors:
+There is a deadlock in rtllib_beacons_stop(), which is shown
+below:
 
-m68k-linux-ld: drivers/macintosh/via-pmu.o: in function `pmu_set_rtc_time':
-drivers/macintosh/via-pmu.c:1769: undefined reference to `rtc_tm_to_time64'
-m68k-linux-ld: drivers/macintosh/via-cuda.o: in function `cuda_set_rtc_time':
-drivers/macintosh/via-cuda.c:797: undefined reference to `rtc_tm_to_time64'
+   (Thread 1)              |      (Thread 2)
+                           | rtllib_send_beacon()
+rtllib_beacons_stop()      |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | rtllib_send_beacon_cb()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-Fixes: 0792a2c8e0bb ("macintosh: Use common code to access RTC")
-Reported-by: kernel test robot <lkp@intel.com>
-Suggested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220410161035.592-1-rdunlap@infradead.org
+We hold ieee->beacon_lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need ieee->beacon_lock in position (2) of thread 2.
+As a result, rtllib_beacons_stop() will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417141641.124388-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/macintosh/Kconfig | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/staging/rtl8192e/rtllib_softmac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/macintosh/Kconfig b/drivers/macintosh/Kconfig
-index 3942db15a2b8..539a2ed4e13d 100644
---- a/drivers/macintosh/Kconfig
-+++ b/drivers/macintosh/Kconfig
-@@ -44,6 +44,7 @@ config ADB_IOP
- config ADB_CUDA
- 	bool "Support for Cuda/Egret based Macs and PowerMacs"
- 	depends on (ADB || PPC_PMAC) && !PPC_PMAC64
-+	select RTC_LIB
- 	help
- 	  This provides support for Cuda/Egret based Macintosh and
- 	  Power Macintosh systems. This includes most m68k based Macs,
-@@ -57,6 +58,7 @@ config ADB_CUDA
- config ADB_PMU
- 	bool "Support for PMU based PowerMacs and PowerBooks"
- 	depends on PPC_PMAC || MAC
-+	select RTC_LIB
- 	help
- 	  On PowerBooks, iBooks, and recent iMacs and Power Macintoshes, the
- 	  PMU is an embedded microprocessor whose primary function is to
+diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
+index 4ff8fd694c60..0154f5791b12 100644
+--- a/drivers/staging/rtl8192e/rtllib_softmac.c
++++ b/drivers/staging/rtl8192e/rtllib_softmac.c
+@@ -651,9 +651,9 @@ static void rtllib_beacons_stop(struct rtllib_device *ieee)
+ 	spin_lock_irqsave(&ieee->beacon_lock, flags);
+ 
+ 	ieee->beacon_txing = 0;
+-	del_timer_sync(&ieee->beacon_timer);
+ 
+ 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
++	del_timer_sync(&ieee->beacon_timer);
+ 
+ }
+ 
 -- 
 2.35.1
-
-
 
