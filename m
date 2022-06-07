@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EED1ECCA48C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:17:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79551CCA491
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380261AbiFGVP7 (ORCPT
+        id S1380542AbiFGVQb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:15:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37272 "EHLO
+        Tue, 7 Jun 2022 17:16:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355434AbiFGURZ (ORCPT
+        with ESMTP id S1359401AbiFGUUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:17:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E0CF1D0582;
-        Tue,  7 Jun 2022 11:30:01 -0700 (PDT)
+        Tue, 7 Jun 2022 16:20:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5371D1050;
+        Tue,  7 Jun 2022 11:30:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C36AB82381;
-        Tue,  7 Jun 2022 18:29:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 967C0C36B0D;
-        Tue,  7 Jun 2022 18:29:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4893160906;
+        Tue,  7 Jun 2022 18:30:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56FABC385A2;
+        Tue,  7 Jun 2022 18:30:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626588;
-        bh=Yv6FI+pLlmEH4JkZSVVxyZBCsQLSSOJb/rHYwVeFxq4=;
+        s=korg; t=1654626620;
+        bh=Lfxl43SYiS2hNLUte9m9PUQz2mdOkxoDQulM4pzaME8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0ZOLsZVd5xdCTFbkMh29ITJjlZSlgcl/+Ih0Agu9fHeXqaa/IrTVXasxHRGNYMAqr
-         pZ5pJZObhkAZPuLBHOKuStozG5Q5bbhl4lW3pH7GaohtzHewdxC1uvJxm2qtNbKTEY
-         Wnfmo9HcNyZQaZkP1iGWQ7LpdJ61RWVHBRfKDEHI=
+        b=nMEjaPt02rWd2lh26sQTLf4ksamSVNc6SViWy/YkgvTZ0XTbCxV+v49Jqg4BN92TP
+         Rvui9Eo3JOpzfsVm/kPuWkp71661rPwiN2DcO9GI/aj75ECvsapkn2qJJkDHSh3StF
+         NkncLqEmE1La0Tz9Q5LbgWVas18JgCENqc21oG0E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+09ad4050dd3a120bfccd@syzkaller.appspotmail.com,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 391/772] io_uring: fix assuming triggered poll waitqueue is the single poll
-Date:   Tue,  7 Jun 2022 18:59:43 +0200
-Message-Id: <20220607165000.534325410@linuxfoundation.org>
+        stable@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 445/772] net/smc: postpone sk_refcnt increment in connect()
+Date:   Tue,  7 Jun 2022 19:00:37 +0200
+Message-Id: <20220607165002.115310983@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,123 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: liuyacan <liuyacan@corp.netease.com>
 
-[ Upstream commit d89a4fac0fbc6fe5fc24d1c9a889440dcf410368 ]
+[ Upstream commit 75c1edf23b95a9c66923d9269d8e86e4dbde151f ]
 
-syzbot reports a recent regression:
+Same trigger condition as commit 86434744. When setsockopt runs
+in parallel to a connect(), and switch the socket into fallback
+mode. Then the sk_refcnt is incremented in smc_connect(), but
+its state stay in SMC_INIT (NOT SMC_ACTIVE). This cause the
+corresponding sk_refcnt decrement in __smc_release() will not be
+performed.
 
-BUG: KASAN: use-after-free in __wake_up_common+0x637/0x650 kernel/sched/wait.c:101
-Read of size 8 at addr ffff888011e8a130 by task syz-executor413/3618
-
-CPU: 0 PID: 3618 Comm: syz-executor413 Tainted: G        W         5.17.0-syzkaller-01402-g8565d64430f8 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0x8d/0x303 mm/kasan/report.c:255
- __kasan_report mm/kasan/report.c:442 [inline]
- kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
- __wake_up_common+0x637/0x650 kernel/sched/wait.c:101
- __wake_up_common_lock+0xd0/0x130 kernel/sched/wait.c:138
- tty_release+0x657/0x1200 drivers/tty/tty_io.c:1781
- __fput+0x286/0x9f0 fs/file_table.c:317
- task_work_run+0xdd/0x1a0 kernel/task_work.c:164
- exit_task_work include/linux/task_work.h:32 [inline]
- do_exit+0xaff/0x29d0 kernel/exit.c:806
- do_group_exit+0xd2/0x2f0 kernel/exit.c:936
- __do_sys_exit_group kernel/exit.c:947 [inline]
- __se_sys_exit_group kernel/exit.c:945 [inline]
- __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:945
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f439a1fac69
-
-which is due to leaving the request on the waitqueue mistakenly. The
-reproducer is using a tty device, which means we end up arming the same
-poll queue twice (it uses the same poll waitqueue for both), but in
-io_poll_wake() we always just clear REQ_F_SINGLE_POLL regardless of which
-entry triggered. This leaves one waitqueue potentially armed after we're
-done, which then blows up in tty when the waitqueue is attempted removed.
-
-We have no room to store this information, so simply encode it in the
-wait_queue_entry->private where we store the io_kiocb request pointer.
-
-Fixes: 91eac1c69c20 ("io_uring: cache poll/double-poll state with a request flag")
-Reported-by: syzbot+09ad4050dd3a120bfccd@syzkaller.appspotmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 86434744fedf ("net/smc: add fallback check to connect()")
+Signed-off-by: liuyacan <liuyacan@corp.netease.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ net/smc/af_smc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 8711d92f4d71..25b0832e0fc3 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -5632,10 +5632,13 @@ static void io_poll_cancel_req(struct io_kiocb *req)
- 	io_poll_execute(req, 0);
- }
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index fd9d9cfd0f3d..b9fe31834354 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -1417,9 +1417,9 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
+ 	if (rc && rc != -EINPROGRESS)
+ 		goto out;
  
-+#define wqe_to_req(wait)	((void *)((unsigned long) (wait)->private & ~1))
-+#define wqe_is_double(wait)	((unsigned long) (wait)->private & 1)
-+
- static int io_poll_wake(struct wait_queue_entry *wait, unsigned mode, int sync,
- 			void *key)
- {
--	struct io_kiocb *req = wait->private;
-+	struct io_kiocb *req = wqe_to_req(wait);
- 	struct io_poll_iocb *poll = container_of(wait, struct io_poll_iocb,
- 						 wait);
- 	__poll_t mask = key_to_poll(key);
-@@ -5673,7 +5676,10 @@ static int io_poll_wake(struct wait_queue_entry *wait, unsigned mode, int sync,
- 		if (mask && poll->events & EPOLLONESHOT) {
- 			list_del_init(&poll->wait.entry);
- 			poll->head = NULL;
--			req->flags &= ~REQ_F_SINGLE_POLL;
-+			if (wqe_is_double(wait))
-+				req->flags &= ~REQ_F_DOUBLE_POLL;
-+			else
-+				req->flags &= ~REQ_F_SINGLE_POLL;
- 		}
- 		__io_poll_execute(req, mask);
- 	}
-@@ -5685,6 +5691,7 @@ static void __io_queue_proc(struct io_poll_iocb *poll, struct io_poll_table *pt,
- 			    struct io_poll_iocb **poll_ptr)
- {
- 	struct io_kiocb *req = pt->req;
-+	unsigned long wqe_private = (unsigned long) req;
- 
- 	/*
- 	 * The file being polled uses multiple waitqueues for poll handling
-@@ -5710,6 +5717,8 @@ static void __io_queue_proc(struct io_poll_iocb *poll, struct io_poll_table *pt,
- 			pt->error = -ENOMEM;
- 			return;
- 		}
-+		/* mark as double wq entry */
-+		wqe_private |= 1;
- 		req->flags |= REQ_F_DOUBLE_POLL;
- 		io_init_poll_iocb(poll, first->events, first->wait.func);
- 		*poll_ptr = poll;
-@@ -5720,7 +5729,7 @@ static void __io_queue_proc(struct io_poll_iocb *poll, struct io_poll_table *pt,
- 	req->flags |= REQ_F_SINGLE_POLL;
- 	pt->nr_entries++;
- 	poll->head = head;
--	poll->wait.private = req;
-+	poll->wait.private = (void *) wqe_private;
- 
- 	if (poll->events & EPOLLEXCLUSIVE)
- 		add_wait_queue_exclusive(head, &poll->wait);
-@@ -5747,7 +5756,6 @@ static int __io_arm_poll_handler(struct io_kiocb *req,
- 	INIT_HLIST_NODE(&req->hash_node);
- 	io_init_poll_iocb(poll, mask, io_poll_wake);
- 	poll->file = req->file;
--	poll->wait.private = req;
- 
- 	ipt->pt._key = mask;
- 	ipt->req = req;
+-	sock_hold(&smc->sk); /* sock put in passive closing */
+ 	if (smc->use_fallback)
+ 		goto out;
++	sock_hold(&smc->sk); /* sock put in passive closing */
+ 	if (flags & O_NONBLOCK) {
+ 		if (queue_work(smc_hs_wq, &smc->connect_work))
+ 			smc->connect_nonblock = 1;
 -- 
 2.35.1
 
