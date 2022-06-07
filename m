@@ -2,162 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91AC9CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B941ECCA485
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:14:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444112AbiFHCJ2 (ORCPT
+        id S1444170AbiFHCJr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45166 "EHLO
+        Tue, 7 Jun 2022 22:09:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442477AbiFHAye (ORCPT
+        with ESMTP id S1575265AbiFGX06 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 20:54:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B56B267CEE;
-        Tue,  7 Jun 2022 12:21:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A2AAC60906;
-        Tue,  7 Jun 2022 19:21:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0CE7C385A2;
-        Tue,  7 Jun 2022 19:21:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629697;
-        bh=J9tuh9jTQAWUyz1dSmwcnH33w65DBg81WLoe1PgnrLs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0y7qU7Jp6OZoXmBApXquVt06HrwR5zUJwiJEpmL0yRTR6NRTiDbumFAxblhIwJlc5
-         /tLAbJxoU2ILXn2wQW3czC6MVJ8jFtPrgDcdjAGxqOkQgIzVhDXu8lQ/+JCSvWWymB
-         d1V9Sz47xUeddW43dedAPXztqMe+6pwmyKhFbmy4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-Subject: [PATCH 5.18 784/879] landlock: Change landlock_add_rule(2) argument check ordering
-Date:   Tue,  7 Jun 2022 19:05:02 +0200
-Message-Id: <20220607165025.626272356@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 19:26:58 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC62D682C
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:38:54 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-f16a3e0529so24893764fac.2
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:38:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=zdB88eF3i8XSLLLYG0iiDeptdNTdVi4N3QCkwcA2170=;
+        b=zfI7ux9gTBHY1LriHzIkWCEvdSmBvTpvcDcbAjPXfZ2s6QigByqMBGNA5jwuSXavQq
+         Q/VrJnaqx65qm8FwxpXNaYjRfSIzSAth3b3qC3AGKeJDRVqer6llSZDndI2QRDbVRv+l
+         fZeSxJj1JfOGJxZEenywaqTBE3Fn+mZ8f5z3RcfXkYZPsAs+F8NErPgTYWFpu2jrcyy0
+         Ed9NAb9waCGRrwMxkU+hRR7qSd90MFclize28k2m7G+h/fO7tggLWX4zH1LftkwE8e4s
+         ne0zrmatqeTgoJPgOBeTEpIU5QU1YFkczk7WJi+lHymZ8DxL2i9z094ou+eDFXIkwiNc
+         F82w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zdB88eF3i8XSLLLYG0iiDeptdNTdVi4N3QCkwcA2170=;
+        b=KkDOAE2iEYPTLvj6UVmQ9h1iNOh9YCfzrNi+4kL+5IOdfPTsAIDPe3MZPAMqjGCsWF
+         U1HsiJcSmW4H89whn4gAdfrrFX/WPZVPoushCZWv/kUv73J51llXfUy0cBpfGLyf8J38
+         tDa5tOIyOGSdlV94uMBRIJRG031olFW/lB6IMc18BfHW3EouIGbc8KWOgZcg/C7/7Ons
+         Lo0bwX2hAxwegEsQILZDWHX6p7llyMITReNY1nrp5Gqo8YFL8BZcUtlUJy8GZIXtrQVR
+         EHuReHGe59fqAFOFbJOvq70XR7beCx50+jdjKxto+Df8y9zLqvgK60+NXIZ8ab/HC4cp
+         RxzQ==
+X-Gm-Message-State: AOAM531BK0UgxmLqEK90JXlouroT9KOy2t78ugY5UFFdY+cFRI+UPHE/
+        U0T/sTL0oLxxks9JeEIwNGoqgQ==
+X-Google-Smtp-Source: ABdhPJzWJYJT4K/H3ClolNP09gCRkSoURkNWkEzKuKLvLtVyJkAg3IMYSML9skQOWIubBxX1umJ7VA==
+X-Received: by 2002:a05:6870:434b:b0:f1:e2d9:dc66 with SMTP id x11-20020a056870434b00b000f1e2d9dc66mr571092oah.86.1654637930418;
+        Tue, 07 Jun 2022 14:38:50 -0700 (PDT)
+Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id cr11-20020a056870ebcb00b000f33a37411dsm8554122oab.26.2022.06.07.14.38.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 14:38:49 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/4] dt-bindings: mailbox: qcom-ipcc: Add NSP1 client
+Date:   Tue,  7 Jun 2022 14:41:10 -0700
+Message-Id: <20220607214113.4057684-2-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607214113.4057684-1-bjorn.andersson@linaro.org>
+References: <20220607214113.4057684-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@digikod.net>
+Add a client for the NSP1 found in some recent Qualcomm platforms.
 
-commit 589172e5636c4d16c40b90e87543d43defe2d968 upstream.
-
-This makes more sense to first check the ruleset FD and then the rule
-attribute.  It will be useful to factor out code for other rule types.
-
-Add inval_add_rule_arguments tests, extension of empty_path_beneath_attr
-tests, to also check error ordering for landlock_add_rule(2).
-
-Link: https://lore.kernel.org/r/20220506160820.524344-9-mic@digikod.net
-Cc: stable@vger.kernel.org
-Signed-off-by: Mickaël Salaün <mic@digikod.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- security/landlock/syscalls.c                 |   22 ++++++++++-------
- tools/testing/selftests/landlock/base_test.c |   34 +++++++++++++++++++++++++--
- 2 files changed, 45 insertions(+), 11 deletions(-)
 
---- a/security/landlock/syscalls.c
-+++ b/security/landlock/syscalls.c
-@@ -318,20 +318,24 @@ SYSCALL_DEFINE4(landlock_add_rule, const
- 	if (flags)
- 		return -EINVAL;
- 
--	if (rule_type != LANDLOCK_RULE_PATH_BENEATH)
--		return -EINVAL;
--
--	/* Copies raw user space buffer, only one type for now. */
--	res = copy_from_user(&path_beneath_attr, rule_attr,
--			     sizeof(path_beneath_attr));
--	if (res)
--		return -EFAULT;
--
- 	/* Gets and checks the ruleset. */
- 	ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
- 	if (IS_ERR(ruleset))
- 		return PTR_ERR(ruleset);
- 
-+	if (rule_type != LANDLOCK_RULE_PATH_BENEATH) {
-+		err = -EINVAL;
-+		goto out_put_ruleset;
-+	}
-+
-+	/* Copies raw user space buffer, only one type for now. */
-+	res = copy_from_user(&path_beneath_attr, rule_attr,
-+			     sizeof(path_beneath_attr));
-+	if (res) {
-+		err = -EFAULT;
-+		goto out_put_ruleset;
-+	}
-+
- 	/*
- 	 * Informs about useless rule: empty allowed_access (i.e. deny rules)
- 	 * are ignored in path walks.
---- a/tools/testing/selftests/landlock/base_test.c
-+++ b/tools/testing/selftests/landlock/base_test.c
-@@ -121,20 +121,50 @@ TEST(inval_create_ruleset_flags)
- 	ASSERT_EQ(EINVAL, errno);
- }
- 
--TEST(empty_path_beneath_attr)
-+/* Tests ordering of syscall argument checks. */
-+TEST(add_rule_checks_ordering)
- {
- 	const struct landlock_ruleset_attr ruleset_attr = {
- 		.handled_access_fs = LANDLOCK_ACCESS_FS_EXECUTE,
- 	};
-+	struct landlock_path_beneath_attr path_beneath_attr = {
-+		.allowed_access = LANDLOCK_ACCESS_FS_EXECUTE,
-+		.parent_fd = -1,
-+	};
- 	const int ruleset_fd =
- 		landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
- 
- 	ASSERT_LE(0, ruleset_fd);
- 
--	/* Similar to struct landlock_path_beneath_attr.parent_fd = 0 */
-+	/* Checks invalid flags. */
-+	ASSERT_EQ(-1, landlock_add_rule(-1, 0, NULL, 1));
-+	ASSERT_EQ(EINVAL, errno);
-+
-+	/* Checks invalid ruleset FD. */
-+	ASSERT_EQ(-1, landlock_add_rule(-1, 0, NULL, 0));
-+	ASSERT_EQ(EBADF, errno);
-+
-+	/* Checks invalid rule type. */
-+	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, 0, NULL, 0));
-+	ASSERT_EQ(EINVAL, errno);
-+
-+	/* Checks invalid rule attr. */
- 	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
- 					NULL, 0));
- 	ASSERT_EQ(EFAULT, errno);
-+
-+	/* Checks invalid path_beneath.parent_fd. */
-+	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
-+					&path_beneath_attr, 0));
-+	ASSERT_EQ(EBADF, errno);
-+
-+	/* Checks valid call. */
-+	path_beneath_attr.parent_fd =
-+		open("/tmp", O_PATH | O_NOFOLLOW | O_DIRECTORY | O_CLOEXEC);
-+	ASSERT_LE(0, path_beneath_attr.parent_fd);
-+	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
-+				       &path_beneath_attr, 0));
-+	ASSERT_EQ(0, close(path_beneath_attr.parent_fd));
- 	ASSERT_EQ(0, close(ruleset_fd));
- }
- 
+Jassi, there's no code dependency on this constant, so it's only going to be
+referenced from the dts (patch 2/4). I would appreciate if I could get an Ack
+and merge this together with the dts changes.
 
+ include/dt-bindings/mailbox/qcom-ipcc.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/dt-bindings/mailbox/qcom-ipcc.h b/include/dt-bindings/mailbox/qcom-ipcc.h
+index 9296d0bb5f34..fbfa3febc66d 100644
+--- a/include/dt-bindings/mailbox/qcom-ipcc.h
++++ b/include/dt-bindings/mailbox/qcom-ipcc.h
+@@ -30,6 +30,7 @@
+ #define IPCC_CLIENT_PCIE1		14
+ #define IPCC_CLIENT_PCIE2		15
+ #define IPCC_CLIENT_SPSS		16
++#define IPCC_CLIENT_NSP1		18
+ #define IPCC_CLIENT_TME			23
+ #define IPCC_CLIENT_WPSS		24
+ 
+-- 
+2.35.1
 
