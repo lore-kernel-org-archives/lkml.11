@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F05CCA483
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:07:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3678CCCA486
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:07:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379938AbiFGVGh (ORCPT
+        id S1348882AbiFGVGy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48834 "EHLO
+        Tue, 7 Jun 2022 17:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359155AbiFGUJC (ORCPT
+        with ESMTP id S1359101AbiFGUJP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:09:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BEFED8D9;
-        Tue,  7 Jun 2022 11:26:23 -0700 (PDT)
+        Tue, 7 Jun 2022 16:09:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CAD1406E5;
+        Tue,  7 Jun 2022 11:26:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17C2E611B9;
-        Tue,  7 Jun 2022 18:26:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27C82C385A2;
-        Tue,  7 Jun 2022 18:26:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8875CB81FF8;
+        Tue,  7 Jun 2022 18:26:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D97FCC385A2;
+        Tue,  7 Jun 2022 18:26:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626382;
-        bh=ocfS7A3RXskJpAaCX74xsV9vLCUzdp7U0CdD+K9j1Jc=;
+        s=korg; t=1654626396;
+        bh=j2Fb0nAZxAw9pFJAaoO0Fz81oQajZ15NykutXoAzCFE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SZCr3i6usJGzqLbyHQTiP5omH1V+zarg5GBpoBq71WZcd3I7BYjuzxk7ySI3Sz1Ku
-         P/nuXSA/bxsRRrX0T07+WIz7pADhgsI8xxXSHVI7JeIqZSm+wrOBFo/TEAAvb9Lx6e
-         DQ+yJPA3nw2FUiTmhm74ToCuS4CteHlkNEFlogKo=
+        b=sVvE1B4fo3op8XSDMBILGZsfP7gygaljDv/p1kae+3yGcd6hMiwtK0RvQ1glGo/9q
+         4I4zys36BSkKGKwMAsKtFUAPNiSTb4y5BTIM0SRgKAJ1SbLUEZyHMKR7VntUwBtYQZ
+         EpIGJXtGKODJYj2MxSBtM/fr3MLvR8GThIL2PEDI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 358/772] ASoC: mxs-saif: Fix refcount leak in mxs_saif_probe
-Date:   Tue,  7 Jun 2022 18:59:10 +0200
-Message-Id: <20220607164959.567561093@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Ming Lei <ming.lei@redhat.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 363/772] block: Fix the bio.bi_opf comment
+Date:   Tue,  7 Jun 2022 18:59:15 +0200
+Message-Id: <20220607164959.710463312@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,34 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Bart Van Assche <bvanassche@acm.org>
 
-[ Upstream commit 2be84f73785fa9ed6443e3c5b158730266f1c2ee ]
+[ Upstream commit 5d2ae14276e698c76fa0c8ce870103f343b38263 ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
+Commit ef295ecf090d modified the Linux kernel such that the bottom bits
+of the bi_opf member contain the operation instead of the topmost bits.
+That commit did not update the comment next to bi_opf. Hence this patch.
 
-Fixes: 08641c7c74dd ("ASoC: mxs: add device tree support for mxs-saif")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220511133725.39039-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+>From commit ef295ecf090d:
+-#define bio_op(bio)    ((bio)->bi_opf >> BIO_OP_SHIFT)
++#define bio_op(bio)    ((bio)->bi_opf & REQ_OP_MASK)
+
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Ming Lei <ming.lei@redhat.com>
+Fixes: ef295ecf090d ("block: better op and flags encoding")
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220511235152.1082246-1-bvanassche@acm.org
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mxs/mxs-saif.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/linux/blk_types.h | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/mxs/mxs-saif.c b/sound/soc/mxs/mxs-saif.c
-index 879c1221a809..7afe1a1acc56 100644
---- a/sound/soc/mxs/mxs-saif.c
-+++ b/sound/soc/mxs/mxs-saif.c
-@@ -754,6 +754,7 @@ static int mxs_saif_probe(struct platform_device *pdev)
- 		saif->master_id = saif->id;
- 	} else {
- 		ret = of_alias_get_id(master, "saif");
-+		of_node_put(master);
- 		if (ret < 0)
- 			return ret;
- 		else
+diff --git a/include/linux/blk_types.h b/include/linux/blk_types.h
+index 86c0f85df8bb..fa6e14b2763f 100644
+--- a/include/linux/blk_types.h
++++ b/include/linux/blk_types.h
+@@ -237,9 +237,8 @@ typedef unsigned int blk_qc_t;
+ struct bio {
+ 	struct bio		*bi_next;	/* request queue link */
+ 	struct block_device	*bi_bdev;
+-	unsigned int		bi_opf;		/* bottom bits req flags,
+-						 * top bits REQ_OP. Use
+-						 * accessors.
++	unsigned int		bi_opf;		/* bottom bits REQ_OP, top bits
++						 * req_flags.
+ 						 */
+ 	unsigned short		bi_flags;	/* BIO_* below */
+ 	unsigned short		bi_ioprio;
 -- 
 2.35.1
 
