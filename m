@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79551CCA491
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69978CCA48F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380542AbiFGVQb (ORCPT
+        id S1380488AbiFGVQW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47392 "EHLO
+        Tue, 7 Jun 2022 17:16:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359401AbiFGUUt (ORCPT
+        with ESMTP id S1359523AbiFGUUy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:20:49 -0400
+        Tue, 7 Jun 2022 16:20:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5371D1050;
-        Tue,  7 Jun 2022 11:30:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B46E1D1062;
+        Tue,  7 Jun 2022 11:30:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4893160906;
-        Tue,  7 Jun 2022 18:30:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56FABC385A2;
-        Tue,  7 Jun 2022 18:30:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 243A161453;
+        Tue,  7 Jun 2022 18:30:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A53FC385A2;
+        Tue,  7 Jun 2022 18:30:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626620;
-        bh=Lfxl43SYiS2hNLUte9m9PUQz2mdOkxoDQulM4pzaME8=;
+        s=korg; t=1654626623;
+        bh=udCQBwS9gtjEG8cgsc7WCtVTsKthbKRZlMyAHfd56Cc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nMEjaPt02rWd2lh26sQTLf4ksamSVNc6SViWy/YkgvTZ0XTbCxV+v49Jqg4BN92TP
-         Rvui9Eo3JOpzfsVm/kPuWkp71661rPwiN2DcO9GI/aj75ECvsapkn2qJJkDHSh3StF
-         NkncLqEmE1La0Tz9Q5LbgWVas18JgCENqc21oG0E=
+        b=sxD4kaNcJq/b61k+Y+9xTfW3Kct+YKzq/2jcJdXTCSE/ohl3NQmAf+T6cEy8AWh0Y
+         DlRifoOPj8XxAQug57e02+ci7tRrfhaM8xHyJMdnkHg5oTUJBI2qKj1Z36cNtEDHy9
+         c2Xti7QhVKJ1pl1zbF0u3iqtE8sszEJw8JiII2R0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 445/772] net/smc: postpone sk_refcnt increment in connect()
-Date:   Tue,  7 Jun 2022 19:00:37 +0200
-Message-Id: <20220607165002.115310983@linuxfoundation.org>
+Subject: [PATCH 5.17 428/772] NFC: hci: fix sleep in atomic context bugs in nfc_hci_hcp_message_tx
+Date:   Tue,  7 Jun 2022 19:00:20 +0200
+Message-Id: <20220607165001.615465528@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,40 +51,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: liuyacan <liuyacan@corp.netease.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 75c1edf23b95a9c66923d9269d8e86e4dbde151f ]
+[ Upstream commit b413b0cb008646e9f24ce5253cb3cf7ee217aff6 ]
 
-Same trigger condition as commit 86434744. When setsockopt runs
-in parallel to a connect(), and switch the socket into fallback
-mode. Then the sk_refcnt is incremented in smc_connect(), but
-its state stay in SMC_INIT (NOT SMC_ACTIVE). This cause the
-corresponding sk_refcnt decrement in __smc_release() will not be
-performed.
+There are sleep in atomic context bugs when the request to secure
+element of st21nfca is timeout. The root cause is that kzalloc and
+alloc_skb with GFP_KERNEL parameter and mutex_lock are called in
+st21nfca_se_wt_timeout which is a timer handler. The call tree shows
+the execution paths that could lead to bugs:
 
-Fixes: 86434744fedf ("net/smc: add fallback check to connect()")
-Signed-off-by: liuyacan <liuyacan@corp.netease.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+   (Interrupt context)
+st21nfca_se_wt_timeout
+  nfc_hci_send_event
+    nfc_hci_hcp_message_tx
+      kzalloc(..., GFP_KERNEL) //may sleep
+      alloc_skb(..., GFP_KERNEL) //may sleep
+      mutex_lock() //may sleep
+
+This patch moves the operations that may sleep into a work item.
+The work item will run in another kernel thread which is in
+process context to execute the bottom half of the interrupt.
+So it could prevent atomic context from sleeping.
+
+Fixes: 2130fb97fecf ("NFC: st21nfca: Adding support for secure element")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220518115733.62111-1-duoming@zju.edu.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/af_smc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/nfc/st21nfca/se.c       | 17 ++++++++++++++---
+ drivers/nfc/st21nfca/st21nfca.h |  1 +
+ 2 files changed, 15 insertions(+), 3 deletions(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index fd9d9cfd0f3d..b9fe31834354 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -1417,9 +1417,9 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
- 	if (rc && rc != -EINPROGRESS)
- 		goto out;
+diff --git a/drivers/nfc/st21nfca/se.c b/drivers/nfc/st21nfca/se.c
+index c922f10d0d7b..7e213f8ddc98 100644
+--- a/drivers/nfc/st21nfca/se.c
++++ b/drivers/nfc/st21nfca/se.c
+@@ -241,7 +241,7 @@ int st21nfca_hci_se_io(struct nfc_hci_dev *hdev, u32 se_idx,
+ }
+ EXPORT_SYMBOL(st21nfca_hci_se_io);
  
--	sock_hold(&smc->sk); /* sock put in passive closing */
- 	if (smc->use_fallback)
- 		goto out;
-+	sock_hold(&smc->sk); /* sock put in passive closing */
- 	if (flags & O_NONBLOCK) {
- 		if (queue_work(smc_hs_wq, &smc->connect_work))
- 			smc->connect_nonblock = 1;
+-static void st21nfca_se_wt_timeout(struct timer_list *t)
++static void st21nfca_se_wt_work(struct work_struct *work)
+ {
+ 	/*
+ 	 * No answer from the secure element
+@@ -254,8 +254,9 @@ static void st21nfca_se_wt_timeout(struct timer_list *t)
+ 	 */
+ 	/* hardware reset managed through VCC_UICC_OUT power supply */
+ 	u8 param = 0x01;
+-	struct st21nfca_hci_info *info = from_timer(info, t,
+-						    se_info.bwi_timer);
++	struct st21nfca_hci_info *info = container_of(work,
++						struct st21nfca_hci_info,
++						se_info.timeout_work);
+ 
+ 	info->se_info.bwi_active = false;
+ 
+@@ -271,6 +272,13 @@ static void st21nfca_se_wt_timeout(struct timer_list *t)
+ 	info->se_info.cb(info->se_info.cb_context, NULL, 0, -ETIME);
+ }
+ 
++static void st21nfca_se_wt_timeout(struct timer_list *t)
++{
++	struct st21nfca_hci_info *info = from_timer(info, t, se_info.bwi_timer);
++
++	schedule_work(&info->se_info.timeout_work);
++}
++
+ static void st21nfca_se_activation_timeout(struct timer_list *t)
+ {
+ 	struct st21nfca_hci_info *info = from_timer(info, t,
+@@ -360,6 +368,7 @@ int st21nfca_apdu_reader_event_received(struct nfc_hci_dev *hdev,
+ 	switch (event) {
+ 	case ST21NFCA_EVT_TRANSMIT_DATA:
+ 		del_timer_sync(&info->se_info.bwi_timer);
++		cancel_work_sync(&info->se_info.timeout_work);
+ 		info->se_info.bwi_active = false;
+ 		r = nfc_hci_send_event(hdev, ST21NFCA_DEVICE_MGNT_GATE,
+ 				ST21NFCA_EVT_SE_END_OF_APDU_TRANSFER, NULL, 0);
+@@ -389,6 +398,7 @@ void st21nfca_se_init(struct nfc_hci_dev *hdev)
+ 	struct st21nfca_hci_info *info = nfc_hci_get_clientdata(hdev);
+ 
+ 	init_completion(&info->se_info.req_completion);
++	INIT_WORK(&info->se_info.timeout_work, st21nfca_se_wt_work);
+ 	/* initialize timers */
+ 	timer_setup(&info->se_info.bwi_timer, st21nfca_se_wt_timeout, 0);
+ 	info->se_info.bwi_active = false;
+@@ -416,6 +426,7 @@ void st21nfca_se_deinit(struct nfc_hci_dev *hdev)
+ 	if (info->se_info.se_active)
+ 		del_timer_sync(&info->se_info.se_active_timer);
+ 
++	cancel_work_sync(&info->se_info.timeout_work);
+ 	info->se_info.bwi_active = false;
+ 	info->se_info.se_active = false;
+ }
+diff --git a/drivers/nfc/st21nfca/st21nfca.h b/drivers/nfc/st21nfca/st21nfca.h
+index cb6ad916be91..ae6771cc9894 100644
+--- a/drivers/nfc/st21nfca/st21nfca.h
++++ b/drivers/nfc/st21nfca/st21nfca.h
+@@ -141,6 +141,7 @@ struct st21nfca_se_info {
+ 
+ 	se_io_cb_t cb;
+ 	void *cb_context;
++	struct work_struct timeout_work;
+ };
+ 
+ struct st21nfca_hci_info {
 -- 
 2.35.1
 
