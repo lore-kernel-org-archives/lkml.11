@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70183C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59BF4CCA496
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442131AbiFHB7f (ORCPT
+        id S1442088AbiFHB70 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:59:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48770 "EHLO
+        Tue, 7 Jun 2022 21:59:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1836555AbiFGX60 (ORCPT
+        with ESMTP id S1836564AbiFGX60 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 19:58:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2566D274D65;
-        Tue,  7 Jun 2022 12:23:53 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C63A27CCE7;
+        Tue,  7 Jun 2022 12:26:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9686EB823CA;
-        Tue,  7 Jun 2022 19:23:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E72C0C385A5;
-        Tue,  7 Jun 2022 19:23:49 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 38497CE24B5;
+        Tue,  7 Jun 2022 19:26:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24CB6C34115;
+        Tue,  7 Jun 2022 19:26:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629830;
-        bh=cP4duHiQlsYYKTcNjw0LjdVpL4shKbQ7EUNXNEjXYCg=;
+        s=korg; t=1654629965;
+        bh=i7uedHnmYzoe8nCdpJv4iFGblLZxY6c0LsUFeH9uEvQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VH8Y3W9YxYKKcDstpkYNWBpgsv2W4V+hq/O2jiIPJBVDhiL3gBoOj3kIccFQiLFWP
-         Vo+pVShUEKMXfCKfVzMIbe4VFflqtar+B13u58k7SBZNX5SgCXiP1ltwlvuuAs13BY
-         k3+5KBPdzSCk439b6s1Z3y2dEuBYY918/5B/y1I0=
+        b=w1nqYV1dDKl4AkMqtNWtxQbGxIKlM5qFvfOGSHz77HA5oCeE+mZ6vDicJ9OSeAJL9
+         jpSjdmuGCz75Ai4fAL/ixMmP2BVIAfbJYt+boOCEkhEZHqAzq4AbOA4zY9x9vSDRXI
+         06qRGZpiyYoPGnbytWsG21rOb1aP2PyCZ+n2JIeU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.18 832/879] hugetlb: fix huge_pmd_unshare address update
-Date:   Tue,  7 Jun 2022 19:05:50 +0200
-Message-Id: <20220607165027.006879939@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
+        Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>
+Subject: [PATCH 5.18 852/879] ceph: fix decoding of client session messages flags
+Date:   Tue,  7 Jun 2022 19:06:10 +0200
+Message-Id: <20220607165027.585511848@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,47 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Kravetz <mike.kravetz@oracle.com>
+From: Luís Henriques <lhenriques@suse.de>
 
-commit 48381273f8734d28ef56a5bdf1966dd8530111bc upstream.
+commit ea16567f11018e2f58e72b667b0c803ff92b8153 upstream.
 
-The routine huge_pmd_unshare() is passed a pointer to an address
-associated with an area which may be unshared.  If unshare is successful
-this address is updated to 'optimize' callers iterating over huge page
-addresses.  For the optimization to work correctly, address should be
-updated to the last huge page in the unmapped/unshared area.  However, in
-the common case where the passed address is PUD_SIZE aligned, the address
-is incorrectly updated to the address of the preceding huge page.  That
-wastes CPU cycles as the unmapped/unshared range is scanned twice.
+The cephfs kernel client started to show  the message:
 
-Link: https://lkml.kernel.org/r/20220524205003.126184-1-mike.kravetz@oracle.com
-Fixes: 39dde65c9940 ("shared page table for hugetlb page")
-Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
-Acked-by: Muchun Song <songmuchun@bytedance.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+ ceph: mds0 session blocklisted
+
+when mounting a filesystem.  This is due to the fact that the session
+messages are being incorrectly decoded: the skip needs to take into
+account the 'len'.
+
+While there, fixed some whitespaces too.
+
+Cc: stable@vger.kernel.org
+Fixes: e1c9788cb397 ("ceph: don't rely on error_string to validate blocklisted session.")
+Signed-off-by: Luís Henriques <lhenriques@suse.de>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/hugetlb.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ fs/ceph/mds_client.c |   14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -6562,7 +6562,14 @@ int huge_pmd_unshare(struct mm_struct *m
- 	pud_clear(pud);
- 	put_page(virt_to_page(ptep));
- 	mm_dec_nr_pmds(mm);
--	*addr = ALIGN(*addr, HPAGE_SIZE * PTRS_PER_PTE) - HPAGE_SIZE;
-+	/*
-+	 * This update of passed address optimizes loops sequentially
-+	 * processing addresses in increments of huge page size (PMD_SIZE
-+	 * in this case).  By clearing the pud, a PUD_SIZE area is unmapped.
-+	 * Update address to the 'last page' in the cleared area so that
-+	 * calling loop can move to first page past this area.
-+	 */
-+	*addr |= PUD_SIZE - PMD_SIZE;
- 	return 1;
- }
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -3375,13 +3375,17 @@ static void handle_session(struct ceph_m
+ 	}
  
+ 	if (msg_version >= 5) {
+-		u32 flags;
+-		/* version >= 4, struct_v, struct_cv, len, metric_spec */
+-	        ceph_decode_skip_n(&p, end, 2 + sizeof(u32) * 2, bad);
++		u32 flags, len;
++
++		/* version >= 4 */
++		ceph_decode_skip_16(&p, end, bad); /* struct_v, struct_cv */
++		ceph_decode_32_safe(&p, end, len, bad); /* len */
++		ceph_decode_skip_n(&p, end, len, bad); /* metric_spec */
++
+ 		/* version >= 5, flags   */
+-                ceph_decode_32_safe(&p, end, flags, bad);
++		ceph_decode_32_safe(&p, end, flags, bad);
+ 		if (flags & CEPH_SESSION_BLOCKLISTED) {
+-		        pr_warn("mds%d session blocklisted\n", session->s_mds);
++			pr_warn("mds%d session blocklisted\n", session->s_mds);
+ 			blocklisted = true;
+ 		}
+ 	}
 
 
