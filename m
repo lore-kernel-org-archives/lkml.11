@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F64BCCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A7BC43334
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:42:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385913AbiFGWmO (ORCPT
+        id S1352181AbiFGWme (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:42:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58214 "EHLO
+        Tue, 7 Jun 2022 18:42:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380583AbiFGVbC (ORCPT
+        with ESMTP id S1380681AbiFGVbK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:31:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3373322A470;
-        Tue,  7 Jun 2022 12:03:10 -0700 (PDT)
+        Tue, 7 Jun 2022 17:31:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7322622AE59;
+        Tue,  7 Jun 2022 12:03:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 79DFB61807;
-        Tue,  7 Jun 2022 19:03:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 870AAC385A5;
-        Tue,  7 Jun 2022 19:03:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9DABBB8220B;
+        Tue,  7 Jun 2022 19:03:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA5F0C385A2;
+        Tue,  7 Jun 2022 19:03:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628588;
-        bh=cFeusVUHh93/ZS4CD5qfsZDoRcjc5b0/MbLxB2ZoJzA=;
+        s=korg; t=1654628600;
+        bh=wKp8HDsungbWvC983amotRgL7FLHO8cc43t/Whwxl/o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=maEpXAB8VasdMiPQxyukuRgM4vDTTIhLdjf3Hwcjd4B4p34B27rs1PpBJ1F8f/mun
-         vCVX7ZXd85GUyNvrX2N1/z1ZCSUSvrBZHHF3K5hJc03akEuINThuOTyVX92Grz16M5
-         JRwX0SYcp3LQ13b+DMa08H0LpNjohIZXsOzZvV7k=
+        b=GHkeGKVcgQwRHTk/hOsctdns71S9D9uGwgNwAMhNxx64cOVlBU06dBbA8ukimc8zU
+         cnHaHDjb40Jol9a6fkuw4wvWj4ufR5Je4V6ZHhB0XCr4ZO2nstdEVNg/pAkcwIzJ3S
+         oAQvzSdTytlFgIyvmj366OmNrTryC/114mE4adoA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 385/879] nl80211: dont hold RTNL in color change request
-Date:   Tue,  7 Jun 2022 18:58:23 +0200
-Message-Id: <20220607165014.041521310@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 388/879] irqchip/aspeed-i2c-ic: Fix irq_of_parse_and_map() return value
+Date:   Tue,  7 Jun 2022 18:58:26 +0200
+Message-Id: <20220607165014.126994002@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,36 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 1b550a0bebfc0b69d6ec08fe6eb58953a8aec48a ]
+[ Upstream commit 50f0f26e7c8665763d0d7d3372dbcf191f94d077 ]
 
-It's not necessary to hold the RTNL across color change
-requests, since all the inner locking needs only the
-wiphy mutex which we already hold as well.
+The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
 
-Fixes: 0d2ab3aea50b ("nl80211: add support for BSS coloring")
-Link: https://lore.kernel.org/r/20220414140402.32e03e8c261b.I5e7dc6bc563a129b938c43298da6bb4e812400a5@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: f48e699ddf70 ("irqchip/aspeed-i2c-ic: Add I2C IRQ controller for Aspeed")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220423094227.33148-1-krzysztof.kozlowski@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/nl80211.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/irqchip/irq-aspeed-i2c-ic.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 02a29052e41d..fd8b48b88968 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -16287,8 +16287,7 @@ static const struct genl_small_ops nl80211_small_ops[] = {
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = nl80211_color_change,
- 		.flags = GENL_UNS_ADMIN_PERM,
--		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
--				  NL80211_FLAG_NEED_RTNL,
-+		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP,
- 	},
- 	{
- 		.cmd = NL80211_CMD_SET_FILS_AAD,
+diff --git a/drivers/irqchip/irq-aspeed-i2c-ic.c b/drivers/irqchip/irq-aspeed-i2c-ic.c
+index a47db16ff960..9c9fc3e2967e 100644
+--- a/drivers/irqchip/irq-aspeed-i2c-ic.c
++++ b/drivers/irqchip/irq-aspeed-i2c-ic.c
+@@ -77,8 +77,8 @@ static int __init aspeed_i2c_ic_of_init(struct device_node *node,
+ 	}
+ 
+ 	i2c_ic->parent_irq = irq_of_parse_and_map(node, 0);
+-	if (i2c_ic->parent_irq < 0) {
+-		ret = i2c_ic->parent_irq;
++	if (!i2c_ic->parent_irq) {
++		ret = -EINVAL;
+ 		goto err_iounmap;
+ 	}
+ 
 -- 
 2.35.1
 
