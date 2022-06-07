@@ -2,96 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 343B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:14:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2CE1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355240AbiFGTOu (ORCPT
+        id S1355275AbiFGTO6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:14:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35488 "EHLO
+        Tue, 7 Jun 2022 15:14:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352466AbiFGS0N (ORCPT
+        with ESMTP id S1351600AbiFGSYr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:26:13 -0400
+        Tue, 7 Jun 2022 14:24:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F161406F3;
-        Tue,  7 Jun 2022 10:54:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30A2D4104;
+        Tue,  7 Jun 2022 10:54:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8E38B82367;
-        Tue,  7 Jun 2022 17:54:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D4E8C34115;
-        Tue,  7 Jun 2022 17:54:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624484;
-        bh=G4QYV8KfCGN2kJuv0APB3ew8HI83mkxuqGlT4tkQ4ak=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67933B8236A;
+        Tue,  7 Jun 2022 17:54:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E929C36AFE;
+        Tue,  7 Jun 2022 17:54:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624462;
+        bh=4aYV3+qesPToYmG7/6BMlAecFB2vSBxvku6tOzoYkcc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=02/V7J3rEWxY98ODD5y08qYgE7iSp2A2eDuVPbvnKOkpceH8oefAe4Vn/g7nSHTZr
-         anP4BgKEcXyTOzSOCUF7pwrzivHof07WgZP8ukXu5CdcR5UKABTKXyTdFMFEXdwTuD
-         jhugBbb+/FaVtINr6TY71egzmEC9SCdc+Vtdw910=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonas Karlman <jonas@kwiboo.se>,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        Ezequiel Garcia <ezequiel@collabora.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 343/667] media: rkvdec: h264: Fix bit depth wrap in pps packet
-Date:   Tue,  7 Jun 2022 19:00:08 +0200
-Message-Id: <20220607164945.047717132@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=mqAAsJpJqDPXUvoFJbdYh494KFrCq3IKikv1ZVpzC8O4oOIkbQwAKd+NXXIrcZSto
+         ALRKCh4r/f9hm8ROWQJScinbKysYJjg+ZYx30oLMb7yeQEjox+IopzxrJw7TA16b8g
+         yrCHp7dp26GfAO+GFVxhdrDhg1JdBka/ZcPA0PA7LUvRBGz1+6w+9ZLg4FE0XqhLpg
+         pS4K6j0VvsuJOTfmm6SI+aNy6wPDSMQlGvE5M9DWGEL9ncMpBcojGeOOHphvLKNj4t
+         vlkFJfjWZhF8RB3t+p9IIbnpbbwelGj1I8oAAL3qW/N0zR7dGtOu9/+B2UM8fnVPvX
+         F8UpUrwnG1rkg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Liu Xinpeng <liuxp11@chinatelecom.cn>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Sasha Levin <sashal@kernel.org>, linux-watchdog@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 31/60] watchdog: wdat_wdt: Stop watchdog when rebooting the system
+Date:   Tue,  7 Jun 2022 13:52:28 -0400
+Message-Id: <20220607175259.478835-31-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonas Karlman <jonas@kwiboo.se>
+From: Liu Xinpeng <liuxp11@chinatelecom.cn>
 
-[ Upstream commit a074aa4760d1dad0bd565c0f66e7250f5f219ab0 ]
+[ Upstream commit 27fdf84510a1374748904db43f6755f912736d92 ]
 
-The luma and chroma bit depth fields in the pps packet are 3 bits wide.
-8 is wrongly added to the bit depth values written to these 3 bit fields.
-Because only the 3 LSB are written, the hardware was configured
-correctly.
+Executing reboot command several times on the machine "Dell
+PowerEdge R740", UEFI security detection stopped machine
+with the following prompt:
 
-Correct this by not adding 8 to the luma and chroma bit depth value.
+UEFI0082: The system was reset due to a timeout from the watchdog
+timer. Check the System Event Log (SEL) or crash dumps from
+Operating Sysstem to identify the source that triggered the
+watchdog timer reset. Update the firmware or driver for the
+identified device.
 
-Fixes: cd33c830448ba ("media: rkvdec: Add the rkvdec driver")
-Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
-Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@collabora.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+iDRAC has warning event: "The watchdog timer reset the system".
+
+This patch fixes this issue by adding the reboot notifier.
+
+Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/1650984810-6247-3-git-send-email-liuxp11@chinatelecom.cn
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/rkvdec/rkvdec-h264.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/watchdog/wdat_wdt.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
-index f5d8c6cb740b..22b4bf9e9ef4 100644
---- a/drivers/staging/media/rkvdec/rkvdec-h264.c
-+++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
-@@ -662,8 +662,8 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
- 	WRITE_PPS(0xff, PROFILE_IDC);
- 	WRITE_PPS(1, CONSTRAINT_SET3_FLAG);
- 	WRITE_PPS(sps->chroma_format_idc, CHROMA_FORMAT_IDC);
--	WRITE_PPS(sps->bit_depth_luma_minus8 + 8, BIT_DEPTH_LUMA);
--	WRITE_PPS(sps->bit_depth_chroma_minus8 + 8, BIT_DEPTH_CHROMA);
-+	WRITE_PPS(sps->bit_depth_luma_minus8, BIT_DEPTH_LUMA);
-+	WRITE_PPS(sps->bit_depth_chroma_minus8, BIT_DEPTH_CHROMA);
- 	WRITE_PPS(0, QPPRIME_Y_ZERO_TRANSFORM_BYPASS_FLAG);
- 	WRITE_PPS(sps->log2_max_frame_num_minus4, LOG2_MAX_FRAME_NUM_MINUS4);
- 	WRITE_PPS(sps->max_num_ref_frames, MAX_NUM_REF_FRAMES);
+diff --git a/drivers/watchdog/wdat_wdt.c b/drivers/watchdog/wdat_wdt.c
+index 195c8c004b69..4fac8148a8e6 100644
+--- a/drivers/watchdog/wdat_wdt.c
++++ b/drivers/watchdog/wdat_wdt.c
+@@ -462,6 +462,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	watchdog_set_nowayout(&wdat->wdd, nowayout);
++	watchdog_stop_on_reboot(&wdat->wdd);
+ 	return devm_watchdog_register_device(dev, &wdat->wdd);
+ }
+ 
 -- 
 2.35.1
-
-
 
