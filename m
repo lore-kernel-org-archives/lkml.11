@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3A0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:04:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA0F8CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:04:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351941AbiFGVEH (ORCPT
+        id S1350356AbiFGVEN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42688 "EHLO
+        Tue, 7 Jun 2022 17:04:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357959AbiFGUCl (ORCPT
+        with ESMTP id S1357948AbiFGUCk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:02:41 -0400
+        Tue, 7 Jun 2022 16:02:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E161C14FA;
-        Tue,  7 Jun 2022 11:25:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94FDF1C14F1;
+        Tue,  7 Jun 2022 11:25:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA1CE6131C;
-        Tue,  7 Jun 2022 18:25:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1A8EC385A2;
-        Tue,  7 Jun 2022 18:25:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F344161326;
+        Tue,  7 Jun 2022 18:25:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A1DCC3411C;
+        Tue,  7 Jun 2022 18:25:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626326;
-        bh=ccEUHQQy2f2V9AzPwFK1n2OW3NKEul9X0Jjqw9iaasc=;
+        s=korg; t=1654626323;
+        bh=n7mdJGl0agHnUCSyXIFfvAF7u5JxOgJlNavYdXtgUdg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZmEXc3zN5n7/9SqIA+gyenIXZtiiLgX/p8/9CYit0tAMVNcy93zhESWmzEPz3sHgd
-         HHQq7LOEq32eNQ9dG76rMopRxalhXg9iNbx0WMYLU/3Phq+Hxsb6TO1gfCa9M2dYwM
-         GHVmzheFTlrerji3oafl8PcwOnGqaC+F8mTFuj6o=
+        b=ynB6FOoIt/vo8SphvRLwxpCE9dioLdXPf8tvRJo9uPbTaLiYe9M8nFEwZTrzsHFND
+         +uraW/9jJHCgqzQAc7dWgp20x0+/SZdF0K5LydRD/4rT2G9mRUI1DcMqe7IcZHtAMZ
+         pP+mADUBkAgZhK3ASZhXYiug5uaVWINVU6pgHtIo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zev Weiss <zev@bewilderbeest.net>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Tong Tiangen <tongtiangen@huawei.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 336/772] regulator: core: Fix enable_count imbalance with EXCLUSIVE_GET
-Date:   Tue,  7 Jun 2022 18:58:48 +0200
-Message-Id: <20220607164958.925185033@linuxfoundation.org>
+Subject: [PATCH 5.17 335/772] arm64: fix types in copy_highpage()
+Date:   Tue,  7 Jun 2022 18:58:47 +0200
+Message-Id: <20220607164958.895738878@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,50 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zev Weiss <zev@bewilderbeest.net>
+From: Tong Tiangen <tongtiangen@huawei.com>
 
-[ Upstream commit c3e3ca05dae37f8f74bb80358efd540911cbc2c8 ]
+[ Upstream commit 921d161f15d6b090599f6a8c23f131969edbd1fa ]
 
-Since the introduction of regulator->enable_count, a driver that did
-an exclusive get on an already-enabled regulator would end up with
-enable_count initialized to 0 but rdev->use_count initialized to 1.
-With that starting point the regulator is effectively stuck enabled,
-because if the driver attempted to disable it it would fail the
-enable_count underflow check in _regulator_handle_consumer_disable().
+In copy_highpage() the `kto` and `kfrom` local variables are pointers to
+struct page, but these are used to hold arbitrary pointers to kernel memory
+. Each call to page_address() returns a void pointer to memory associated
+with the relevant page, and copy_page() expects void pointers to this
+memory.
 
-The EXCLUSIVE_GET path in _regulator_get() now initializes
-enable_count along with rdev->use_count so that the regulator can be
-disabled without underflowing the former.
+This inconsistency was introduced in commit 2563776b41c3 ("arm64: mte:
+Tags-aware copy_{user_,}highpage() implementations") and while this
+doesn't appear to be harmful in practice it is clearly wrong.
 
-Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
-Fixes: 5451781dadf85 ("regulator: core: Only count load for enabled consumers")
-Link: https://lore.kernel.org/r/20220505043152.12933-1-zev@bewilderbeest.net
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Correct this by making `kto` and `kfrom` void pointers.
+
+Fixes: 2563776b41c3 ("arm64: mte: Tags-aware copy_{user_,}highpage() implementations")
+Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+Acked-by: Mark Rutland <mark.rutland@arm.com>
+Reviewed-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Link: https://lore.kernel.org/r/20220420030418.3189040-3-tongtiangen@huawei.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/core.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ arch/arm64/mm/copypage.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
-index d2553970a67b..c4d844ffad7a 100644
---- a/drivers/regulator/core.c
-+++ b/drivers/regulator/core.c
-@@ -2133,10 +2133,13 @@ struct regulator *_regulator_get(struct device *dev, const char *id,
- 		rdev->exclusive = 1;
+diff --git a/arch/arm64/mm/copypage.c b/arch/arm64/mm/copypage.c
+index b5447e53cd73..0dea80bf6de4 100644
+--- a/arch/arm64/mm/copypage.c
++++ b/arch/arm64/mm/copypage.c
+@@ -16,8 +16,8 @@
  
- 		ret = _regulator_is_enabled(rdev);
--		if (ret > 0)
-+		if (ret > 0) {
- 			rdev->use_count = 1;
--		else
-+			regulator->enable_count = 1;
-+		} else {
- 			rdev->use_count = 0;
-+			regulator->enable_count = 0;
-+		}
- 	}
+ void copy_highpage(struct page *to, struct page *from)
+ {
+-	struct page *kto = page_address(to);
+-	struct page *kfrom = page_address(from);
++	void *kto = page_address(to);
++	void *kfrom = page_address(from);
  
- 	link = device_link_add(dev, &rdev->dev, DL_FLAG_STATELESS);
+ 	copy_page(kto, kfrom);
+ 
 -- 
 2.35.1
 
