@@ -2,33 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39B2AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:57:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECC4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:57:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236606AbiFGR5m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:57:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53314 "EHLO
+        id S1348827AbiFGR5q (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 13:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347533AbiFGRfU (ORCPT
+        with ESMTP id S1347488AbiFGRfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:35:20 -0400
+        Tue, 7 Jun 2022 13:35:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A53B6110478;
-        Tue,  7 Jun 2022 10:30:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9614B10F37B;
+        Tue,  7 Jun 2022 10:30:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 598CD614B2;
-        Tue,  7 Jun 2022 17:30:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DA90C385A5;
-        Tue,  7 Jun 2022 17:30:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7024E6146F;
+        Tue,  7 Jun 2022 17:30:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F4C8C385A5;
+        Tue,  7 Jun 2022 17:30:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623049;
-        bh=EFmUdl9NrFEx7bbsKO6ZCv5QzcIZLGeHdaaADbLR9TU=;
+        s=korg; t=1654623046;
+        bh=KNHEsysvgyr0UfZR+UfW1qA7ln9/jGzwJLUCQo8MhZs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E94cVvFVBLfAJceg7hQGBZIYqh9GX+psnkF8kh4zDW9H871WguYtScNnsJTLNgW/3
-         gIb/OfIbCyd3wd4F+xEmKm8fCI43rmcs3JNbTCgLoKSjUsEqN1CeGF4XPWE0LiDghP
-         iw+tjUJ4PnJQa1ESnf5d5AVeAHHI2h/vlYViX4FY=
+        b=oxLM4gSXLkir7vf31K/8OE2vMb/MJP8Qj8erdHOKBEN/iFMz0mQHgrrbOLFzcZ1rD
+         7hnl2NEwICWRSnZDAl8DZ4RIJ3rT2WQFTiUX8n9qN5eJ/h/E8xc3bnWJyw5nc2wLU1
+         DjRP5Z93CT9ahDwLDxFh4l25PMx/Ht/0Ibk1f/rM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Stefan Wahren <stefan.wahren@i2se.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 276/452] ARM: dts: bcm2837-rpi-cm3-io3: Fix GPIO line names for SMPS I2C
-Date:   Tue,  7 Jun 2022 19:02:13 +0200
-Message-Id: <20220607164916.774976870@linuxfoundation.org>
+Subject: [PATCH 5.10 275/452] ARM: dts: bcm2835-rpi-zero-w: Fix GPIO line name for Wifi/BT
+Date:   Tue,  7 Jun 2022 19:02:12 +0200
+Message-Id: <20220607164916.745512848@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -52,35 +53,53 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Phil Elwell <phil@raspberrypi.com>
 
-[ Upstream commit 9fd26fd02749ec964eb0d588a3bab9e09bf77927 ]
+[ Upstream commit 2c663e5e5bbf2a5b85e0f76ccb69663f583c3e33 ]
 
-The GPIOs 46 & 47 are already used for a I2C interface to a SMPS.
+The GPIOs 30 to 39 are connected to the Cypress CYW43438 (Wifi/BT).
 So fix the GPIO line names accordingly.
 
-Fixes: a54fe8a6cf66 ("ARM: dts: add Raspberry Pi Compute Module 3 and IO board")
+Fixes: 2c7c040c73e9 ("ARM: dts: bcm2835: Add Raspberry Pi Zero W")
 Signed-off-by: Phil Elwell <phil@raspberrypi.com>
 Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/bcm2835-rpi-zero-w.dts | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
-diff --git a/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts b/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
-index 588d9411ceb6..3dfce4312dfc 100644
---- a/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
-+++ b/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
-@@ -63,8 +63,8 @@
- 			  "GPIO43",
- 			  "GPIO44",
- 			  "GPIO45",
--			  "GPIO46",
--			  "GPIO47",
-+			  "SMPS_SCL",
-+			  "SMPS_SDA",
- 			  /* Used by eMMC */
- 			  "SD_CLK_R",
- 			  "SD_CMD_R",
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts b/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
+index 33b2b77aa47d..00582eb2c12e 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
+@@ -74,16 +74,18 @@
+ 			  "GPIO27",
+ 			  "SDA0",
+ 			  "SCL0",
+-			  "NC", /* GPIO30 */
+-			  "NC", /* GPIO31 */
+-			  "NC", /* GPIO32 */
+-			  "NC", /* GPIO33 */
+-			  "NC", /* GPIO34 */
+-			  "NC", /* GPIO35 */
+-			  "NC", /* GPIO36 */
+-			  "NC", /* GPIO37 */
+-			  "NC", /* GPIO38 */
+-			  "NC", /* GPIO39 */
++			  /* Used by BT module */
++			  "CTS0",
++			  "RTS0",
++			  "TXD0",
++			  "RXD0",
++			  /* Used by Wifi */
++			  "SD1_CLK",
++			  "SD1_CMD",
++			  "SD1_DATA0",
++			  "SD1_DATA1",
++			  "SD1_DATA2",
++			  "SD1_DATA3",
+ 			  "CAM_GPIO1", /* GPIO40 */
+ 			  "WL_ON", /* GPIO41 */
+ 			  "NC", /* GPIO42 */
 -- 
 2.35.1
 
