@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A354CCA484
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:19:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 072EDCCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345700AbiFGRTG (ORCPT
+        id S1345626AbiFGRTL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:19:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38976 "EHLO
+        Tue, 7 Jun 2022 13:19:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345591AbiFGRSr (ORCPT
+        with ESMTP id S1345602AbiFGRSs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:18:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2938104CAF;
-        Tue,  7 Jun 2022 10:18:45 -0700 (PDT)
+        Tue, 7 Jun 2022 13:18:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 035BF104CB3;
+        Tue,  7 Jun 2022 10:18:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D28BB822B3;
-        Tue,  7 Jun 2022 17:18:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8A0BC385A5;
-        Tue,  7 Jun 2022 17:18:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94EB2618E1;
+        Tue,  7 Jun 2022 17:18:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7009C34115;
+        Tue,  7 Jun 2022 17:18:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622323;
-        bh=SGsxrxQjiDf3YxPvS3sf36CWAtpL5zbV7LMn8+lLD1o=;
+        s=korg; t=1654622326;
+        bh=pxv9TbrB8vWdbYqBOLEi34GIhzwk4cnrfQy/Xlh+FtI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TwDsPAWm1lRxANYRYMCBLPQkb+al7mUJx0ebvFi6Wtuj99MjvOC/YzMTIT24lAm05
-         D0FkSoQjTGC7fViNCBuilyh1YnD51Oyb3b67uqndcw3rwCeslEwJt2kAD1MLMN3IKT
-         lJe9MSQAFLVkIkWN+tPSxbZzYTJYGEn+pkmf62n8=
+        b=J+F0p966gMTvbWoxgXjNe8kh+NGjmXsOts90IG89beb81UAZDMyIk6hR5wa7JTWnc
+         SrHrUT0BB66e2QRdaerTv4Dw2+uAwDWuuiGcJwIM1XIqGRiqhW2OFTzNNvdk0kJr+K
+         v4bX1A28RVAFcVtaPwyfZZcBHSkOZPeUm7x4Uz2U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes@sipsolutions.net>,
+        stable@vger.kernel.org, Niklas Cassel <niklas.cassel@wdc.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Kees Cook <keescook@chromium.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.10 019/452] ptrace/um: Replace PT_DTRACE with TIF_SINGLESTEP
-Date:   Tue,  7 Jun 2022 18:57:56 +0200
-Message-Id: <20220607164909.114662851@linuxfoundation.org>
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH 5.10 002/452] binfmt_flat: do not stop relocating GOT entries prematurely on riscv
+Date:   Tue,  7 Jun 2022 18:57:39 +0200
+Message-Id: <20220607164908.602254098@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -51,140 +51,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Niklas Cassel <niklas.cassel@wdc.com>
 
-commit c200e4bb44e80b343c09841e7caaaca0aac5e5fa upstream.
+commit 6045ab5fea4c849153ebeb0acb532da5f29d69c4 upstream.
 
-User mode linux is the last user of the PT_DTRACE flag.  Using the flag to indicate
-single stepping is a little confusing and worse changing tsk->ptrace without locking
-could potentionally cause problems.
+bFLT binaries are usually created using elf2flt.
 
-So use a thread info flag with a better name instead of flag in tsk->ptrace.
+The linker script used by elf2flt has defined the .data section like the
+following for the last 19 years:
 
-Remove the definition PT_DTRACE as uml is the last user.
+.data : {
+	_sdata = . ;
+	__data_start = . ;
+	data_start = . ;
+	*(.got.plt)
+	*(.got)
+	FILL(0) ;
+	. = ALIGN(0x20) ;
+	LONG(-1)
+	. = ALIGN(0x20) ;
+	...
+}
 
-Cc: stable@vger.kernel.org
-Acked-by: Johannes Berg <johannes@sipsolutions.net>
-Tested-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Oleg Nesterov <oleg@redhat.com>
-Link: https://lkml.kernel.org/r/20220505182645.497868-3-ebiederm@xmission.com
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+It places the .got.plt input section before the .got input section.
+The same is true for the default linker script (ld --verbose) on most
+architectures except x86/x86-64.
+
+The binfmt_flat loader should relocate all GOT entries until it encounters
+a -1 (the LONG(-1) in the linker script).
+
+The problem is that the .got.plt input section starts with a GOTPLT header
+(which has size 16 bytes on elf64-riscv and 8 bytes on elf32-riscv), where
+the first word is set to -1. See the binutils implementation for riscv [1].
+
+This causes the binfmt_flat loader to stop relocating GOT entries
+prematurely and thus causes the application to crash when running.
+
+Fix this by skipping the whole GOTPLT header, since the whole GOTPLT header
+is reserved for the dynamic linker.
+
+The GOTPLT header will only be skipped for bFLT binaries with flag
+FLAT_FLAG_GOTPIC set. This flag is unconditionally set by elf2flt if the
+supplied ELF binary has the symbol _GLOBAL_OFFSET_TABLE_ defined.
+ELF binaries without a .got input section should thus remain unaffected.
+
+Tested on RISC-V Canaan Kendryte K210 and RISC-V QEMU nommu_virt_defconfig.
+
+[1] https://sourceware.org/git/?p=binutils-gdb.git;a=blob;f=bfd/elfnn-riscv.c;hb=binutils-2_38#l3275
+
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Link: https://lore.kernel.org/r/20220414091018.896737-1-niklas.cassel@wdc.com
+Fixed-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/lkml/202204182333.OIUOotK8-lkp@intel.com
+Signed-off-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/um/include/asm/thread_info.h |    2 ++
- arch/um/kernel/exec.c             |    2 +-
- arch/um/kernel/process.c          |    2 +-
- arch/um/kernel/ptrace.c           |    8 ++++----
- arch/um/kernel/signal.c           |    4 ++--
- include/linux/ptrace.h            |    1 -
- 6 files changed, 10 insertions(+), 9 deletions(-)
+ fs/binfmt_flat.c |   27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
 
---- a/arch/um/include/asm/thread_info.h
-+++ b/arch/um/include/asm/thread_info.h
-@@ -63,6 +63,7 @@ static inline struct thread_info *curren
- #define TIF_RESTORE_SIGMASK	7
- #define TIF_NOTIFY_RESUME	8
- #define TIF_SECCOMP		9	/* secure computing */
-+#define TIF_SINGLESTEP		10	/* single stepping userspace */
+--- a/fs/binfmt_flat.c
++++ b/fs/binfmt_flat.c
+@@ -427,6 +427,30 @@ static void old_reloc(unsigned long rl)
  
- #define _TIF_SYSCALL_TRACE	(1 << TIF_SYSCALL_TRACE)
- #define _TIF_SIGPENDING		(1 << TIF_SIGPENDING)
-@@ -70,5 +71,6 @@ static inline struct thread_info *curren
- #define _TIF_MEMDIE		(1 << TIF_MEMDIE)
- #define _TIF_SYSCALL_AUDIT	(1 << TIF_SYSCALL_AUDIT)
- #define _TIF_SECCOMP		(1 << TIF_SECCOMP)
-+#define _TIF_SINGLESTEP		(1 << TIF_SINGLESTEP)
+ /****************************************************************************/
  
- #endif
---- a/arch/um/kernel/exec.c
-+++ b/arch/um/kernel/exec.c
-@@ -44,7 +44,7 @@ void start_thread(struct pt_regs *regs,
++static inline u32 __user *skip_got_header(u32 __user *rp)
++{
++	if (IS_ENABLED(CONFIG_RISCV)) {
++		/*
++		 * RISC-V has a 16 byte GOT PLT header for elf64-riscv
++		 * and 8 byte GOT PLT header for elf32-riscv.
++		 * Skip the whole GOT PLT header, since it is reserved
++		 * for the dynamic linker (ld.so).
++		 */
++		u32 rp_val0, rp_val1;
++
++		if (get_user(rp_val0, rp))
++			return rp;
++		if (get_user(rp_val1, rp + 1))
++			return rp;
++
++		if (rp_val0 == 0xffffffff && rp_val1 == 0xffffffff)
++			rp += 4;
++		else if (rp_val0 == 0xffffffff)
++			rp += 2;
++	}
++	return rp;
++}
++
+ static int load_flat_file(struct linux_binprm *bprm,
+ 		struct lib_info *libinfo, int id, unsigned long *extra_stack)
  {
- 	PT_REGS_IP(regs) = eip;
- 	PT_REGS_SP(regs) = esp;
--	current->ptrace &= ~PT_DTRACE;
-+	clear_thread_flag(TIF_SINGLESTEP);
- #ifdef SUBARCH_EXECVE1
- 	SUBARCH_EXECVE1(regs->regs);
- #endif
---- a/arch/um/kernel/process.c
-+++ b/arch/um/kernel/process.c
-@@ -341,7 +341,7 @@ int singlestepping(void * t)
- {
- 	struct task_struct *task = t ? t : current;
- 
--	if (!(task->ptrace & PT_DTRACE))
-+	if (!test_thread_flag(TIF_SINGLESTEP))
- 		return 0;
- 
- 	if (task->thread.singlestep_syscall)
---- a/arch/um/kernel/ptrace.c
-+++ b/arch/um/kernel/ptrace.c
-@@ -12,7 +12,7 @@
- 
- void user_enable_single_step(struct task_struct *child)
- {
--	child->ptrace |= PT_DTRACE;
-+	set_tsk_thread_flag(child, TIF_SINGLESTEP);
- 	child->thread.singlestep_syscall = 0;
- 
- #ifdef SUBARCH_SET_SINGLESTEPPING
-@@ -22,7 +22,7 @@ void user_enable_single_step(struct task
- 
- void user_disable_single_step(struct task_struct *child)
- {
--	child->ptrace &= ~PT_DTRACE;
-+	clear_tsk_thread_flag(child, TIF_SINGLESTEP);
- 	child->thread.singlestep_syscall = 0;
- 
- #ifdef SUBARCH_SET_SINGLESTEPPING
-@@ -121,7 +121,7 @@ static void send_sigtrap(struct uml_pt_r
- }
- 
- /*
-- * XXX Check PT_DTRACE vs TIF_SINGLESTEP for singlestepping check and
-+ * XXX Check TIF_SINGLESTEP for singlestepping check and
-  * PT_PTRACED vs TIF_SYSCALL_TRACE for syscall tracing check
-  */
- int syscall_trace_enter(struct pt_regs *regs)
-@@ -145,7 +145,7 @@ void syscall_trace_leave(struct pt_regs
- 	audit_syscall_exit(regs);
- 
- 	/* Fake a debug trap */
--	if (ptraced & PT_DTRACE)
-+	if (test_thread_flag(TIF_SINGLESTEP))
- 		send_sigtrap(&regs->regs, 0);
- 
- 	if (!test_thread_flag(TIF_SYSCALL_TRACE))
---- a/arch/um/kernel/signal.c
-+++ b/arch/um/kernel/signal.c
-@@ -53,7 +53,7 @@ static void handle_signal(struct ksignal
- 	unsigned long sp;
- 	int err;
- 
--	if ((current->ptrace & PT_DTRACE) && (current->ptrace & PT_PTRACED))
-+	if (test_thread_flag(TIF_SINGLESTEP) && (current->ptrace & PT_PTRACED))
- 		singlestep = 1;
- 
- 	/* Did we come from a system call? */
-@@ -128,7 +128,7 @@ void do_signal(struct pt_regs *regs)
- 	 * on the host.  The tracing thread will check this flag and
- 	 * PTRACE_SYSCALL if necessary.
+@@ -774,7 +798,8 @@ static int load_flat_file(struct linux_b
+ 	 * image.
  	 */
--	if (current->ptrace & PT_DTRACE)
-+	if (test_thread_flag(TIF_SINGLESTEP))
- 		current->thread.singlestep_syscall =
- 			is_syscall(PT_REGS_IP(&current->thread.regs));
- 
---- a/include/linux/ptrace.h
-+++ b/include/linux/ptrace.h
-@@ -30,7 +30,6 @@ extern int ptrace_access_vm(struct task_
- 
- #define PT_SEIZED	0x00010000	/* SEIZE used, enable new behavior */
- #define PT_PTRACED	0x00000001
--#define PT_DTRACE	0x00000002	/* delayed trace (used on m68k, i386) */
- 
- #define PT_OPT_FLAG_SHIFT	3
- /* PT_TRACE_* event enable flags */
+ 	if (flags & FLAT_FLAG_GOTPIC) {
+-		for (rp = (u32 __user *)datapos; ; rp++) {
++		rp = skip_got_header((u32 __user *) datapos);
++		for (; ; rp++) {
+ 			u32 addr, rp_val;
+ 			if (get_user(rp_val, rp))
+ 				return -EFAULT;
 
 
