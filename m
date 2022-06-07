@@ -2,112 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C84CCA492
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 038A2C43334
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355641AbiFGTQp (ORCPT
+        id S1355731AbiFGTRF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:16:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32840 "EHLO
+        Tue, 7 Jun 2022 15:17:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350164AbiFGS3I (ORCPT
+        with ESMTP id S1351516AbiFGS3c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:29:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BB8E176D6A;
-        Tue,  7 Jun 2022 10:55:14 -0700 (PDT)
+        Tue, 7 Jun 2022 14:29:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B748179971;
+        Tue,  7 Jun 2022 10:55:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B3D32B8236F;
-        Tue,  7 Jun 2022 17:55:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5D15C385A5;
-        Tue,  7 Jun 2022 17:55:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624512;
-        bh=Tosl0sFoHUFGYGLPVrAc1k/YOMdC+7rWigSw3hphFMo=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1779B617C4;
+        Tue,  7 Jun 2022 17:55:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29C78C34115;
+        Tue,  7 Jun 2022 17:55:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624523;
+        bh=CzrLO3e2CgEOzWZRssCzwztDRtE5eWvfjtuaGMykLwI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JWzaLDfB4bqDi1aX+YtnzsP7pM/Hog6BEnSy8LGjkEyyju7xGsOlVvURX43aMKBsS
-         4sy+EMFluT319CvdlXxEez8+nzAkLcSPiVc+a9QrgBmBDV5CbYAeBnfkWCZWwbgMTu
-         ofW2dJD45Yj37EcUM5EyRUX5IlfTSsi/fw/obYASnP845ybc7uK1gxjQdU84xFRG4z
-         aVGbT48LthCP/UtlgdrExB+sxeqElfWLvFA3/f1pzZ1CYaOLxDXOjFMFWy2zVQ7tCR
-         Fn0JEKyKUZWNyfl5kH38SNm3PWRitVlOE5Ty24f+w81xQ6jiDVWQmiEDOd6prbwZul
-         OTnGVr2W2bOHg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sasha Levin <sashal@kernel.org>, michal.lkml@markovi.net,
-        linux-kbuild@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 46/60] modpost: fix undefined behavior of is_arm_mapping_symbol()
-Date:   Tue,  7 Jun 2022 13:52:43 -0400
-Message-Id: <20220607175259.478835-46-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
+        b=VvTlpGPsk48ttU5PCCrH52HtHuHZslxb18fH9MNcrSSDu9hE63jZtzELVPpruAfVM
+         Z9oG3EQU7yK/sxAVfnteODwPo3wKnIqqzXesgu1fyZv5IXjyPANRMoXTKjOiKi/rKB
+         ohbhguG/MUkBrEegixNYRehyxF1B8jus1ktuNPHs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 359/667] ASoC: wm2000: fix missing clk_disable_unprepare() on error in wm2000_anc_transition()
+Date:   Tue,  7 Jun 2022 19:00:24 +0200
+Message-Id: <20220607164945.521939333@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit d6b732666a1bae0df3c3ae06925043bba34502b1 ]
+[ Upstream commit be2af740e2a9c7134f2d8ab4f104006e110b13de ]
 
-The return value of is_arm_mapping_symbol() is unpredictable when "$"
-is passed in.
+Fix the missing clk_disable_unprepare() before return
+from wm2000_anc_transition() in the error handling case.
 
-strchr(3) says:
-  The strchr() and strrchr() functions return a pointer to the matched
-  character or NULL if the character is not found. The terminating null
-  byte is considered part of the string, so that if c is specified as
-  '\0', these functions return a pointer to the terminator.
-
-When str[1] is '\0', strchr("axtd", str[1]) is not NULL, and str[2] is
-referenced (i.e. buffer overrun).
-
-Test code
----------
-
-  char str1[] = "abc";
-  char str2[] = "ab";
-
-  strcpy(str1, "$");
-  strcpy(str2, "$");
-
-  printf("test1: %d\n", is_arm_mapping_symbol(str1));
-  printf("test2: %d\n", is_arm_mapping_symbol(str2));
-
-Result
-------
-
-  test1: 0
-  test2: 1
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Fixes: 514cfd6dd725 ("ASoC: wm2000: Integrate with clock API")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220514091053.686416-1-yangyingliang@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/mod/modpost.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/soc/codecs/wm2000.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index e04ae56931e2..c212a1a31530 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -1260,7 +1260,8 @@ static int secref_whitelist(const struct sectioncheck *mismatch,
- 
- static inline int is_arm_mapping_symbol(const char *str)
+diff --git a/sound/soc/codecs/wm2000.c b/sound/soc/codecs/wm2000.c
+index 72e165cc6443..97ece3114b3d 100644
+--- a/sound/soc/codecs/wm2000.c
++++ b/sound/soc/codecs/wm2000.c
+@@ -536,7 +536,7 @@ static int wm2000_anc_transition(struct wm2000_priv *wm2000,
  {
--	return str[0] == '$' && strchr("axtd", str[1])
-+	return str[0] == '$' &&
-+	       (str[1] == 'a' || str[1] == 'd' || str[1] == 't' || str[1] == 'x')
- 	       && (str[2] == '\0' || str[2] == '.');
+ 	struct i2c_client *i2c = wm2000->i2c;
+ 	int i, j;
+-	int ret;
++	int ret = 0;
+ 
+ 	if (wm2000->anc_mode == mode)
+ 		return 0;
+@@ -566,13 +566,13 @@ static int wm2000_anc_transition(struct wm2000_priv *wm2000,
+ 		ret = anc_transitions[i].step[j](i2c,
+ 						 anc_transitions[i].analogue);
+ 		if (ret != 0)
+-			return ret;
++			break;
+ 	}
+ 
+ 	if (anc_transitions[i].dest == ANC_OFF)
+ 		clk_disable_unprepare(wm2000->mclk);
+ 
+-	return 0;
++	return ret;
  }
  
+ static int wm2000_anc_set_mode(struct wm2000_priv *wm2000)
 -- 
 2.35.1
+
+
 
