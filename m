@@ -2,52 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7507ACCA491
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:27:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37EFBC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:27:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380342AbiFGV0k (ORCPT
+        id S1376913AbiFGV1J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:26:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42656 "EHLO
+        Tue, 7 Jun 2022 17:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377354AbiFGUdK (ORCPT
+        with ESMTP id S1377580AbiFGUdt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:33:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B1251E3B33;
-        Tue,  7 Jun 2022 11:34:59 -0700 (PDT)
+        Tue, 7 Jun 2022 16:33:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94F351E560C;
+        Tue,  7 Jun 2022 11:35:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E905612F2;
-        Tue,  7 Jun 2022 18:34:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6AB8C385A2;
-        Tue,  7 Jun 2022 18:34:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED4DEB8237B;
+        Tue,  7 Jun 2022 18:35:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49D6CC385A2;
+        Tue,  7 Jun 2022 18:35:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626898;
-        bh=s3REUmejm2B+k1Evp0AVpqDRsmJH2BJYafLe0kD8m6g=;
+        s=korg; t=1654626925;
+        bh=4nRfRgqCNmfZw/yGgV5GDkWCujYWgz6MdPLZdP8DLTc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q5/KZuPFs3BIbkyob5UXva/bnpMcwZ8VTp31arPKvg8IxWOjzLRrfzuZv9Z/EO3Le
-         tomnFtAY9kaHgikWaSMbzfjxkLI46EwjlDYFcrygDM78ogiWkp8RH5oTIxtO0qB6L+
-         I35ovPhjVg2x2+ncI/B6cUMPR/NfFoU43d7XJrs4=
+        b=YyZ/A4fXR3qb4awYKkhEUFR9rlC90QM6FjTau95cFxe3utQv+Gg5p56LpQGcxZkDE
+         nEiPKzV3FiCpW3Lb1oQr9h8DmwolS/7Zo9ystjW5XEHR5fl5oVplMpsiVVJr/SwB5u
+         N1PEdhzP+T2RtpRHCGeAPAwBzzIKnFcrH+KXNZ0A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Stephane Eranian <eranian@google.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Igor Zhbanov <izh1979@gmail.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 543/772] perf stat: Always keep perf metrics topdown events in a group
-Date:   Tue,  7 Jun 2022 19:02:15 +0200
-Message-Id: <20220607165004.964889851@linuxfoundation.org>
+Subject: [PATCH 5.17 517/772] powerpc/4xx/cpm: Fix return value of __setup() handler
+Date:   Tue,  7 Jun 2022 19:01:49 +0200
+Message-Id: <20220607165004.214814702@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -59,141 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit e8f4f794d7047dd36f090f44f12cd645fba204d2 ]
+[ Upstream commit 5bb99fd4090fe1acfdb90a97993fcda7f8f5a3d6 ]
 
-If any member in a group has a different cpu mask than the other
-members, the current perf stat disables group. when the perf metrics
-topdown events are part of the group, the below <not supported> error
-will be triggered.
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
 
-  $ perf stat -e "{slots,topdown-retiring,uncore_imc_free_running_0/dclk/}" -a sleep 1
-  WARNING: grouped events cpus do not match, disabling group:
-    anon group { slots, topdown-retiring, uncore_imc_free_running_0/dclk/ }
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) argument or environment
+strings.
 
-   Performance counter stats for 'system wide':
+Also, error return codes don't mean anything to obsolete_checksetup() --
+only non-zero (usually 1) or zero. So return 1 from cpm_powersave_off().
 
-         141,465,174      slots
-     <not supported>      topdown-retiring
-       1,605,330,334      uncore_imc_free_running_0/dclk/
-
-The perf metrics topdown events must always be grouped with a slots
-event as leader.
-
-Factor out evsel__remove_from_group() to only remove the regular events
-from the group.
-
-Remove evsel__must_be_in_group(), since no one use it anymore.
-
-With the patch, the topdown events aren't broken from the group for the
-splitting.
-
-  $ perf stat -e "{slots,topdown-retiring,uncore_imc_free_running_0/dclk/}" -a sleep 1
-  WARNING: grouped events cpus do not match, disabling group:
-    anon group { slots, topdown-retiring, uncore_imc_free_running_0/dclk/ }
-
-   Performance counter stats for 'system wide':
-
-         346,110,588      slots
-         124,608,256      topdown-retiring
-       1,606,869,976      uncore_imc_free_running_0/dclk/
-
-         1.003877592 seconds time elapsed
-
-Fixes: a9a1790247bdcf3b ("perf stat: Ensure group is defined on top of the same cpu mask")
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Acked-by: Ian Rogers <irogers@google.com>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Jiri Olsa <jolsa@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Stephane Eranian <eranian@google.com>
-Cc: Xing Zhengjun <zhengjun.xing@linux.intel.com>
-Link: https://lore.kernel.org/r/20220518143900.1493980-3-kan.liang@linux.intel.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: d164f6d4f910 ("powerpc/4xx: Add suspend and idle support")
+Reported-by: Igor Zhbanov <izh1979@gmail.com>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220502192941.20955-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/builtin-stat.c |  7 ++-----
- tools/perf/util/evlist.c  |  6 +-----
- tools/perf/util/evsel.c   | 13 +++++++++++--
- tools/perf/util/evsel.h   |  2 +-
- 4 files changed, 15 insertions(+), 13 deletions(-)
+ arch/powerpc/platforms/4xx/cpm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
-index 60baa3dadc4b..416a6a4fbcc7 100644
---- a/tools/perf/builtin-stat.c
-+++ b/tools/perf/builtin-stat.c
-@@ -271,11 +271,8 @@ static void evlist__check_cpu_maps(struct evlist *evlist)
- 			pr_warning("     %s: %s\n", evsel->name, buf);
- 		}
- 
--		for_each_group_evsel(pos, leader) {
--			evsel__set_leader(pos, pos);
--			pos->core.nr_members = 0;
--		}
--		evsel->core.leader->nr_members = 0;
-+		for_each_group_evsel(pos, leader)
-+			evsel__remove_from_group(pos, leader);
- 	}
- }
- 
-diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
-index 3ff0de0b6710..ec745209c8b4 100644
---- a/tools/perf/util/evlist.c
-+++ b/tools/perf/util/evlist.c
-@@ -1795,11 +1795,7 @@ struct evsel *evlist__reset_weak_group(struct evlist *evsel_list, struct evsel *
- 			 * them. Some events, like Intel topdown, require being
- 			 * in a group and so keep these in the group.
- 			 */
--			if (!evsel__must_be_in_group(c2) && c2 != leader) {
--				evsel__set_leader(c2, c2);
--				c2->core.nr_members = 0;
--				leader->core.nr_members--;
--			}
-+			evsel__remove_from_group(c2, leader);
- 
- 			/*
- 			 * Set this for all former members of the group
-diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-index 6fb3cf924dd2..63284e98c419 100644
---- a/tools/perf/util/evsel.c
-+++ b/tools/perf/util/evsel.c
-@@ -3054,7 +3054,16 @@ bool __weak arch_evsel__must_be_in_group(const struct evsel *evsel __maybe_unuse
- 	return false;
- }
- 
--bool evsel__must_be_in_group(const struct evsel *evsel)
-+/*
-+ * Remove an event from a given group (leader).
-+ * Some events, e.g., perf metrics Topdown events,
-+ * must always be grouped. Ignore the events.
-+ */
-+void evsel__remove_from_group(struct evsel *evsel, struct evsel *leader)
+diff --git a/arch/powerpc/platforms/4xx/cpm.c b/arch/powerpc/platforms/4xx/cpm.c
+index 2571841625a2..1d3bc35ee1a7 100644
+--- a/arch/powerpc/platforms/4xx/cpm.c
++++ b/arch/powerpc/platforms/4xx/cpm.c
+@@ -327,6 +327,6 @@ late_initcall(cpm_init);
+ static int __init cpm_powersave_off(char *arg)
  {
--	return arch_evsel__must_be_in_group(evsel);
-+	if (!arch_evsel__must_be_in_group(evsel) && evsel != leader) {
-+		evsel__set_leader(evsel, evsel);
-+		evsel->core.nr_members = 0;
-+		leader->core.nr_members--;
-+	}
+ 	cpm.powersave_off = 1;
+-	return 0;
++	return 1;
  }
-diff --git a/tools/perf/util/evsel.h b/tools/perf/util/evsel.h
-index a36172ed4cf6..47f65f8e7c74 100644
---- a/tools/perf/util/evsel.h
-+++ b/tools/perf/util/evsel.h
-@@ -483,7 +483,7 @@ bool evsel__has_leader(struct evsel *evsel, struct evsel *leader);
- bool evsel__is_leader(struct evsel *evsel);
- void evsel__set_leader(struct evsel *evsel, struct evsel *leader);
- int evsel__source_count(const struct evsel *evsel);
--bool evsel__must_be_in_group(const struct evsel *evsel);
-+void evsel__remove_from_group(struct evsel *evsel, struct evsel *leader);
- 
- bool arch_evsel__must_be_in_group(const struct evsel *evsel);
- 
+ __setup("powersave=off", cpm_powersave_off);
 -- 
 2.35.1
 
