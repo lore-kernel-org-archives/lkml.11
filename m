@@ -2,318 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF6FCCCA489
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:27:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FF55CCA488
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 02:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446739AbiFHCZc (ORCPT
+        id S1446755AbiFHCZo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 22:25:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37842 "EHLO
+        Tue, 7 Jun 2022 22:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445103AbiFHCLy (ORCPT
+        with ESMTP id S1446262AbiFHCOL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 22:11:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C64552B2BA2
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:40:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654630798;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dn1ww0KfMFOGUbZ1NH8nrMAwiHe2/j0lpu+3L3aq8vo=;
-        b=hJqZnnTpdHxsooTpiPhkm5sSIRBRG9hEBkZ6DxdRhJhm0xbi7eH4DpnUT4jMyfxD1IpZYv
-        HKhOMNQQVeMHJQ52gKIxiw/+6H4UxuHgbxhWGZP5peYxx3Ud3fyTTRb795ZYdgiw8O0qX5
-        ZoH8O3mfchFyxrF9EBNjQZO32U/1H3I=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-15-XAZTDBmQMQKyEJbWJei65A-1; Tue, 07 Jun 2022 15:39:47 -0400
-X-MC-Unique: XAZTDBmQMQKyEJbWJei65A-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 7 Jun 2022 22:14:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0BC315EA57;
+        Tue,  7 Jun 2022 14:22:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B78A618A653E;
-        Tue,  7 Jun 2022 19:36:29 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.9.252])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 07BBE2BB8DE3;
-        Tue,  7 Jun 2022 19:35:35 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org
-Cc:     Wayne Lin <Wayne.Lin@amd.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sean Paul <sean@poorly.run>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Roman Li <Roman.Li@amd.com>, Jude Shih <shenshih@amd.com>,
-        Simon Ser <contact@emersion.fr>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
-        Uma Shankar <uma.shankar@intel.com>,
-        Manasi Navare <manasi.d.navare@intel.com>,
-        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
-        Sean Paul <seanpaul@chromium.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Luo Jiaxing <luojiaxing@huawei.com>,
-        Fernando Ramos <greenfoo@u92.eu>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org (open list),
-        intel-gfx@lists.freedesktop.org (open list:INTEL DRM DRIVERS)
-Subject: [RESEND RFC 13/18] drm/display/dp_mst: Add helpers for serializing SST <-> MST transitions
-Date:   Tue,  7 Jun 2022 15:29:28 -0400
-Message-Id: <20220607192933.1333228-14-lyude@redhat.com>
-In-Reply-To: <20220607192933.1333228-1-lyude@redhat.com>
-References: <20220607192933.1333228-1-lyude@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 05D6560C3E;
+        Tue,  7 Jun 2022 21:22:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D701C385A2;
+        Tue,  7 Jun 2022 21:22:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654636925;
+        bh=Qpqpjs4zC/NE8w1f2Kkh52Va2IoAJuZ40cSz1THeD0w=;
+        h=From:To:Cc:Subject:Date:From;
+        b=o1ag9DgNNkcfo+LOrhqqS2l97tokLEEYopFUjf2SX+zXSVuQh4hEuAw/kHJs+ouju
+         QsuU35wV5hauIOZ8QlDTV4I01+WxobWSgbgUyPKqml8xEeMA+Sf2o0F/Fi4rBqu5Nn
+         vQ/xvMJ6x6D2gLrYtegmMkCM/jNH3FZBNcJ9+TDttJalwHnU8ov4ktpyu5rHA76hEk
+         SPCCRki0bb9nWU57gCdvu8D+EQ+3CUoKDEOrMgi9q6gCgg7QDPJE7j1DhdgM/Bpk/R
+         tekMC7v2vNUGZ7agDH0X3HI3vrW29tpRWv/I1XVje5etwKlmZgfjb6bpYRJ5Wi+/Y+
+         4j0RHiuQS+iJw==
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Stefan Richter <stefanr@s5r6.in-berlin.de>
+Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        linux1394-devel@lists.sourceforge.net, linux-pm@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH v2] firewire: ohci: Convert to generic power management
+Date:   Tue,  7 Jun 2022 16:21:57 -0500
+Message-Id: <20220607212157.343033-1-helgaas@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There's another kind of situation where we could potentially race with
-nonblocking modesets and MST, especially if we were to only use the locking
-provided by atomic modesetting:
+From: Vaibhav Gupta <vaibhavgupta40@gmail.com>
 
-* Display 1 begins as enabled on DP-1 in SST mode
-* Display 1 switches to MST mode, exposes one sink in MST mode
-* Userspace does non-blocking modeset to disable the SST display
-* Userspace does non-blocking modeset to enable the MST display with a
-  different CRTC, but the SST display hasn't been fully taken down yet
-* Execution order between the last two commits isn't guaranteed since they
-  share no drm resources
+Convert firewire-ohci from legacy PCI power management to the generic power
+management framework.
 
-We can fix this however, by ensuring that we always pull in the atomic
-topology state whenever a connector capable of driving an MST display
-performs its atomic check - and then tracking CRTC commits happening on the
-SST connector in the MST topology state. So, let's add some simple helpers
-for doing that and hook them up in various drivers.
+Previously firewire-ohci used legacy PCI power management, and
+pci_suspend() and pci_resume() were responsible for both device-specific
+things and generic PCI things like saving and restoring config space and
+managing power state:
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: Wayne Lin <Wayne.Lin@amd.com>
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Imre Deak <imre.deak@intel.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Sean Paul <sean@poorly.run>
+  pci_suspend
+    software_reset                         <-- device-specific
+    pci_save_state                         <-- generic PCI
+    pci_set_power_state                    <-- generic PCI
+    pmac_ohci_off                          <-- device-specific
+
+  pci_resume
+    pmac_ohci_on                           <-- device-specific
+    pci_set_power_state(PCI_D0)            <-- generic PCI
+    pci_restore_state                      <-- generic PCI
+    pci_enable_device                      <-- generic PCI
+    ohci_enable                            <-- device-specific
+
+Convert to generic power management where the PCI bus PM methods do the
+generic PCI things, and the driver needs only the device-specific part,
+i.e.,
+
+  suspend_devices_and_enter
+    dpm_suspend_start(PMSG_SUSPEND)
+      pci_pm_suspend                       # PCI bus .suspend() method
+        pci_suspend                        # driver->pm->suspend
+          software_reset                   <-- device-specific
+          pmac_ohci_off                    <-- device-specific
+    suspend_enter
+      dpm_suspend_noirq(PMSG_SUSPEND)
+        pci_pm_suspend_noirq               # PCI bus .suspend_noirq() method
+          pci_save_state                   <-- generic PCI
+          pci_prepare_to_sleep             <-- generic PCI
+            pci_set_power_state
+    ...
+    dpm_resume_end(PMSG_RESUME)
+      pci_pm_resume                        # PCI bus .resume() method
+        pci_restore_standard_config
+          pci_set_power_state(PCI_D0)      <-- generic PCI
+          pci_restore_state                <-- generic PCI
+        pci_resume                         # driver->pm->resume
+          pmac_ohci_on                     <-- device-specific
+          ohci_enable                      <-- device-specific
+
+[bhelgaas: commit log]
+Link: https://lore.kernel.org/r/20200720150715.624520-1-vaibhavgupta40@gmail.com
+Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 ---
- .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |  7 +++
- drivers/gpu/drm/display/drm_dp_mst_topology.c | 59 +++++++++++++++++++
- drivers/gpu/drm/i915/display/intel_dp.c       |  9 +++
- drivers/gpu/drm/nouveau/dispnv50/disp.c       |  2 +-
- drivers/gpu/drm/nouveau/dispnv50/disp.h       |  2 +
- drivers/gpu/drm/nouveau/nouveau_connector.c   | 14 +++++
- include/drm/display/drm_dp_mst_helper.h       |  2 +
- 7 files changed, 94 insertions(+), 1 deletion(-)
+ drivers/firewire/ohci.c | 35 ++++++++---------------------------
+ 1 file changed, 8 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index d9c7393ef151..ac8648e3c1c9 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -7177,10 +7177,17 @@ amdgpu_dm_connector_atomic_check(struct drm_connector *conn,
- 		drm_atomic_get_old_connector_state(state, conn);
- 	struct drm_crtc *crtc = new_con_state->crtc;
- 	struct drm_crtc_state *new_crtc_state;
-+	struct amdgpu_dm_connector *aconn = to_amdgpu_dm_connector(conn);
- 	int ret;
- 
- 	trace_amdgpu_dm_connector_atomic_check(new_con_state);
- 
-+	if (conn->connector_type == DRM_MODE_CONNECTOR_DisplayPort) {
-+		ret = drm_dp_mst_root_conn_atomic_check(new_con_state, &aconn->mst_mgr);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
- 	if (!crtc)
- 		return 0;
- 
-diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-index c5edcf2a26c8..a775f9437868 100644
---- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
-+++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-@@ -4608,6 +4608,65 @@ void drm_dp_mst_atomic_wait_for_dependencies(struct drm_atomic_state *state)
- }
- EXPORT_SYMBOL(drm_dp_mst_atomic_wait_for_dependencies);
- 
-+/**
-+ * drm_dp_mst_root_conn_atomic_check() - Serialize CRTC commits on MST-capable connectors operating
-+ * in SST mode
-+ * @new_conn_state: The new connector state of the &drm_connector
-+ * @mgr: The MST topology manager for the &drm_connector
-+ *
-+ * Since MST uses fake &drm_encoder structs, the generic atomic modesetting code isn't able to
-+ * serialize non-blocking commits happening on the real DP connector of an MST topology switching
-+ * into/away from MST mode - as the CRTC on the real DP connector and the CRTCs on the connector's
-+ * MST topology will never share the same &drm_encoder.
-+ *
-+ * This function takes care of this serialization issue, by checking a root MST connector's atomic
-+ * state to determine if it is about to have a modeset - and then pulling in the MST topology state
-+ * if so, along with adding any relevant CRTCs to &drm_dp_mst_topology_state.pending_crtc_mask.
-+ *
-+ * Drivers implementing MST must call this function from the
-+ * &drm_connector_helper_funcs.atomic_check hook of any physical DP &drm_connector capable of
-+ * driving MST sinks.
-+ *
-+ * Returns:
-+ * 0 on success, negative error code otherwise
-+ */
-+int drm_dp_mst_root_conn_atomic_check(struct drm_connector_state *new_conn_state,
-+				      struct drm_dp_mst_topology_mgr *mgr)
-+{
-+	struct drm_atomic_state *state = new_conn_state->state;
-+	struct drm_connector_state *old_conn_state =
-+		drm_atomic_get_old_connector_state(state, new_conn_state->connector);
-+	struct drm_crtc_state *crtc_state;
-+	struct drm_dp_mst_topology_state *mst_state = NULL;
-+
-+	if (new_conn_state->crtc) {
-+		crtc_state = drm_atomic_get_new_crtc_state(state, new_conn_state->crtc);
-+		if (crtc_state && drm_atomic_crtc_needs_modeset(crtc_state)) {
-+			mst_state = drm_atomic_get_mst_topology_state(state, mgr);
-+			if (IS_ERR(mst_state))
-+				return PTR_ERR(mst_state);
-+
-+			mst_state->pending_crtc_mask |= drm_crtc_mask(new_conn_state->crtc);
-+		}
-+	}
-+
-+	if (old_conn_state->crtc) {
-+		crtc_state = drm_atomic_get_new_crtc_state(state, old_conn_state->crtc);
-+		if (crtc_state && drm_atomic_crtc_needs_modeset(crtc_state)) {
-+			if (!mst_state) {
-+				mst_state = drm_atomic_get_mst_topology_state(state, mgr);
-+				if (IS_ERR(mst_state))
-+					return PTR_ERR(mst_state);
-+			}
-+
-+			mst_state->pending_crtc_mask |= drm_crtc_mask(old_conn_state->crtc);
-+		}
-+	}
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(drm_dp_mst_root_conn_atomic_check);
-+
- /**
-  * drm_dp_mst_update_slots() - updates the slot info depending on the DP ecoding format
-  * @mst_state: mst_state to update
-diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
-index b8e2d3cd4d68..943b7c0acc04 100644
---- a/drivers/gpu/drm/i915/display/intel_dp.c
-+++ b/drivers/gpu/drm/i915/display/intel_dp.c
-@@ -4954,12 +4954,21 @@ static int intel_dp_connector_atomic_check(struct drm_connector *conn,
- {
- 	struct drm_i915_private *dev_priv = to_i915(conn->dev);
- 	struct intel_atomic_state *state = to_intel_atomic_state(_state);
-+	struct drm_connector_state *conn_state = drm_atomic_get_new_connector_state(_state, conn);
-+	struct intel_connector *intel_conn = to_intel_connector(conn);
-+	struct intel_dp *intel_dp = enc_to_intel_dp(intel_conn->encoder);
- 	int ret;
- 
- 	ret = intel_digital_connector_atomic_check(conn, &state->base);
- 	if (ret)
- 		return ret;
- 
-+	if (HAS_DP_MST(dev_priv) && !intel_dp_is_edp(intel_dp)) {
-+		ret = drm_dp_mst_root_conn_atomic_check(conn_state, &intel_dp->mst_mgr);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	/*
- 	 * We don't enable port sync on BDW due to missing w/as and
- 	 * due to not having adjusted the modeset sequence appropriately.
-diff --git a/drivers/gpu/drm/nouveau/dispnv50/disp.c b/drivers/gpu/drm/nouveau/dispnv50/disp.c
-index 834a5c5b77d5..57f74cfcdebf 100644
---- a/drivers/gpu/drm/nouveau/dispnv50/disp.c
-+++ b/drivers/gpu/drm/nouveau/dispnv50/disp.c
-@@ -1815,7 +1815,7 @@ nv50_sor_func = {
- 	.destroy = nv50_sor_destroy,
- };
- 
--static bool nv50_has_mst(struct nouveau_drm *drm)
-+bool nv50_has_mst(struct nouveau_drm *drm)
- {
- 	struct nvkm_bios *bios = nvxx_bios(&drm->client.device);
- 	u32 data;
-diff --git a/drivers/gpu/drm/nouveau/dispnv50/disp.h b/drivers/gpu/drm/nouveau/dispnv50/disp.h
-index 38dec11e7dda..9d66c9c726c3 100644
---- a/drivers/gpu/drm/nouveau/dispnv50/disp.h
-+++ b/drivers/gpu/drm/nouveau/dispnv50/disp.h
-@@ -106,6 +106,8 @@ void nv50_dmac_destroy(struct nv50_dmac *);
-  */
- struct nouveau_encoder *nv50_real_outp(struct drm_encoder *encoder);
- 
-+bool nv50_has_mst(struct nouveau_drm *drm);
-+
- u32 *evo_wait(struct nv50_dmac *, int nr);
- void evo_kick(u32 *, struct nv50_dmac *);
- 
-diff --git a/drivers/gpu/drm/nouveau/nouveau_connector.c b/drivers/gpu/drm/nouveau/nouveau_connector.c
-index ffbd8a9cf2af..1c8235f97737 100644
---- a/drivers/gpu/drm/nouveau/nouveau_connector.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_connector.c
-@@ -1104,11 +1104,25 @@ nouveau_connector_best_encoder(struct drm_connector *connector)
- 	return NULL;
+diff --git a/drivers/firewire/ohci.c b/drivers/firewire/ohci.c
+index 17c9d825188b..aee705132330 100644
+--- a/drivers/firewire/ohci.c
++++ b/drivers/firewire/ohci.c
+@@ -3165,8 +3165,7 @@ static int ohci_set_iso_channels(struct fw_iso_context *base, u64 *channels)
+ 	return ret;
  }
  
-+static int
-+nouveau_connector_atomic_check(struct drm_connector *connector, struct drm_atomic_state *state)
-+{
-+	struct nouveau_connector *nv_conn = nouveau_connector(connector);
-+	struct drm_connector_state *conn_state =
-+		drm_atomic_get_new_connector_state(state, connector);
+-#ifdef CONFIG_PM
+-static void ohci_resume_iso_dma(struct fw_ohci *ohci)
++static void __maybe_unused ohci_resume_iso_dma(struct fw_ohci *ohci)
+ {
+ 	int i;
+ 	struct iso_context *ctx;
+@@ -3183,7 +3182,6 @@ static void ohci_resume_iso_dma(struct fw_ohci *ohci)
+ 			ohci_start_iso(&ctx->base, 0, ctx->sync, ctx->tags);
+ 	}
+ }
+-#endif
+ 
+ static int queue_iso_transmit(struct iso_context *ctx,
+ 			      struct fw_iso_packet *packet,
+@@ -3789,39 +3787,24 @@ static void pci_remove(struct pci_dev *dev)
+ 	dev_notice(&dev->dev, "removed fw-ohci device\n");
+ }
+ 
+-#ifdef CONFIG_PM
+-static int pci_suspend(struct pci_dev *dev, pm_message_t state)
++static int __maybe_unused pci_suspend(struct device *devp)
+ {
++	struct pci_dev *dev = to_pci_dev(devp);
+ 	struct fw_ohci *ohci = pci_get_drvdata(dev);
+-	int err;
+ 
+ 	software_reset(ohci);
+-	err = pci_save_state(dev);
+-	if (err) {
+-		ohci_err(ohci, "pci_save_state failed\n");
+-		return err;
+-	}
+-	err = pci_set_power_state(dev, pci_choose_state(dev, state));
+-	if (err)
+-		ohci_err(ohci, "pci_set_power_state failed with %d\n", err);
+ 	pmac_ohci_off(dev);
+ 
+ 	return 0;
+ }
+ 
+-static int pci_resume(struct pci_dev *dev)
++static int __maybe_unused pci_resume(struct device *devp)
+ {
++	struct pci_dev *dev = to_pci_dev(devp);
+ 	struct fw_ohci *ohci = pci_get_drvdata(dev);
+ 	int err;
+ 
+ 	pmac_ohci_on(dev);
+-	pci_set_power_state(dev, PCI_D0);
+-	pci_restore_state(dev);
+-	err = pci_enable_device(dev);
+-	if (err) {
+-		ohci_err(ohci, "pci_enable_device failed\n");
+-		return err;
+-	}
+ 
+ 	/* Some systems don't setup GUID register on resume from ram  */
+ 	if (!reg_read(ohci, OHCI1394_GUIDLo) &&
+@@ -3838,7 +3821,6 @@ static int pci_resume(struct pci_dev *dev)
+ 
+ 	return 0;
+ }
+-#endif
+ 
+ static const struct pci_device_id pci_table[] = {
+ 	{ PCI_DEVICE_CLASS(PCI_CLASS_SERIAL_FIREWIRE_OHCI, ~0) },
+@@ -3847,15 +3829,14 @@ static const struct pci_device_id pci_table[] = {
+ 
+ MODULE_DEVICE_TABLE(pci, pci_table);
+ 
++static SIMPLE_DEV_PM_OPS(pci_pm_ops, pci_suspend, pci_resume);
 +
-+	if (!nv_conn->dp_encoder || !nv50_has_mst(nouveau_drm(connector->dev)))
-+		return 0;
-+
-+	return drm_dp_mst_root_conn_atomic_check(conn_state, &nv_conn->dp_encoder->dp.mstm->mgr);
-+}
-+
- static const struct drm_connector_helper_funcs
- nouveau_connector_helper_funcs = {
- 	.get_modes = nouveau_connector_get_modes,
- 	.mode_valid = nouveau_connector_mode_valid,
- 	.best_encoder = nouveau_connector_best_encoder,
-+	.atomic_check = nouveau_connector_atomic_check,
+ static struct pci_driver fw_ohci_pci_driver = {
+ 	.name		= ohci_driver_name,
+ 	.id_table	= pci_table,
+ 	.probe		= pci_probe,
+ 	.remove		= pci_remove,
+-#ifdef CONFIG_PM
+-	.resume		= pci_resume,
+-	.suspend	= pci_suspend,
+-#endif
++	.driver.pm	= &pci_pm_ops,
  };
  
- static const struct drm_connector_funcs
-diff --git a/include/drm/display/drm_dp_mst_helper.h b/include/drm/display/drm_dp_mst_helper.h
-index dd74afcee888..690ebcabb51f 100644
---- a/include/drm/display/drm_dp_mst_helper.h
-+++ b/include/drm/display/drm_dp_mst_helper.h
-@@ -906,6 +906,8 @@ int drm_dp_send_query_stream_enc_status(struct drm_dp_mst_topology_mgr *mgr,
- 		struct drm_dp_mst_port *port,
- 		struct drm_dp_query_stream_enc_status_ack_reply *status);
- int __must_check drm_dp_mst_atomic_check(struct drm_atomic_state *state);
-+int __must_check drm_dp_mst_root_conn_atomic_check(struct drm_connector_state *new_conn_state,
-+						   struct drm_dp_mst_topology_mgr *mgr);
- 
- void drm_dp_mst_get_port_malloc(struct drm_dp_mst_port *port);
- void drm_dp_mst_put_port_malloc(struct drm_dp_mst_port *port);
+ static int __init fw_ohci_init(void)
 -- 
-2.35.3
+2.25.1
 
