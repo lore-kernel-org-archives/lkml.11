@@ -2,114 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E78CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:09:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D48C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357941AbiFGUJT (ORCPT
+        id S1359110AbiFGUJZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:09:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54570 "EHLO
+        Tue, 7 Jun 2022 16:09:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355942AbiFGTRr (ORCPT
+        with ESMTP id S1355944AbiFGTRr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 15:17:47 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62A2B47573;
-        Tue,  7 Jun 2022 11:08:00 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id k4so6619139qth.8;
-        Tue, 07 Jun 2022 11:08:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:content-transfer-encoding
-         :user-agent:mime-version;
-        bh=vKR0cSCCmBP1D6WayZKCpy0s8vY4JyUCRmxpMEIEI00=;
-        b=b43JnklWo4Oo+Ct6vD+finWX5yg0ZTzlGB3tAqvpQBEN5+5lF76sCKFf5G+mY/pJIw
-         nCKEc50oVMqiE9thfMJNkhAlehCWR53Vpr+wxD7IByxnF3vCMuschCy5vCeQnCkabUz4
-         WHsSb1NkZfxOtojGkN/X+/khJ64QiFkhttT7XFJyauvugNwEaU6kv/kt2wLbiXM63W+A
-         oLe8sw+/D3tbC7+KidjG9MR4LuQZza2J8Pu6oMGOYKvKFsvOr3G+vRQ+0ihkC4YwDEEh
-         nWusMgflFqnXuTHk9zMR5gm8u6xVViF9U5k5AkIt4pxgjkzPQ2iXUWRxi5uOeo7gnHoU
-         e7Tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=vKR0cSCCmBP1D6WayZKCpy0s8vY4JyUCRmxpMEIEI00=;
-        b=rjUntFnaMvM4JxT5GM0wrCcxxUp+O/sCENe2bvUJSOAqtgUa5acjgbQgM7OHnXb0UP
-         KPF7AmoeOtiyy+1D/DuGGyw8lkTtnCybKcUuSRhrncnS38WFfXdAzWrHcYNXulndiYar
-         nPdILMAJjpNtMzrh2v1YYdCjIlq2snS0kZLYEvJ00OSd9ZlDDYWfOUWI58OaNIY3Nzo1
-         Wn+DaLhuEMM2DIA8r5DI+7hHYg4tzoEOJ0EVJJ/esL+yARqodDX3m5tgogv4t7ZYohQh
-         XBzoIyyMTdAEc3oHsL1rY7VlXPeNa8JzaOx2r/dr7FlBHWcwtt9GrLLmtSrvL3zvyqmt
-         QI6A==
-X-Gm-Message-State: AOAM530YXlhFNCYBB4Ws/QxchlPZJpLUjiYL+EjEjEzmTU4aJ5Ae6+CM
-        GSTvMv1S9NmL2/ZssOd89ls/G8cmXztCnGwu
-X-Google-Smtp-Source: ABdhPJxwNUOzz15qQgSmRRrdY9Lo6MJZ75+8upjPT/tj2PHco4Ec/gQKRUfX9z1FJ1D8jEVjy9TZlw==
-X-Received: by 2002:a05:622a:1905:b0:304:fdb6:a8b6 with SMTP id w5-20020a05622a190500b00304fdb6a8b6mr2618191qtc.645.1654625278378;
-        Tue, 07 Jun 2022 11:07:58 -0700 (PDT)
-Received: from localhost.localdomain (pool-96-250-49-75.nycmny.fios.verizon.net. [96.250.49.75])
-        by smtp.gmail.com with ESMTPSA id e2-20020ac80642000000b002f905347586sm11833999qth.14.2022.06.07.11.07.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 11:07:57 -0700 (PDT)
-Message-ID: <141492344ae13c9842626e696685316ee340d717.camel@gmail.com>
-Subject: [PATCH v2] KEYS: trusted: tpm2: Fix migratable logic
-From:   david.safford@gmail.com
-To:     Jarkko Sakkinen <jarkko@kernel.org>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        James Bottomley <jejb@linux.ibm.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        David Howells <dhowells@redhat.com>,
-        James Morris <jmorris@namei.org>,
-        "SergeE.Hallyn" <serge@hallyn.com>
-Cc:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 07 Jun 2022 14:07:57 -0400
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8FB9419AE;
+        Tue,  7 Jun 2022 11:08:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8A61617AE;
+        Tue,  7 Jun 2022 18:07:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5DDBC34119;
+        Tue,  7 Jun 2022 18:07:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654625275;
+        bh=MNGbb0y6lx7BzfYUSDabvaF+OEPYHabK0nbEfAzr7mo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cPuepxEeHKK/FDk+YPxJclHDBS675hWc2PV0EOfPNvBt1NMUuNpy6g4A8DQTH+QA5
+         r2X4i1b6qf4KqaEW3l36MM9tI9G1ycQJvAjz34hJfyZueqpF+ywXuCuyGumsLF2Kdc
+         JNyxzmAjZhsbbKNwHWb4oxWC14ifMe2ZYD03dQjM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Coly Li <colyli@suse.de>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 629/667] bcache: improve multithreaded bch_btree_check()
+Date:   Tue,  7 Jun 2022 19:04:54 +0200
+Message-Id: <20220607164953.533017559@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When creating (sealing) a new trusted key, migratable
-trusted keys have the FIXED_TPM and FIXED_PARENT attributes
-set, and non-migratable keys don't. This is backwards, and
-also causes creation to fail when creating a migratable key
-under a migratable parent. (The TPM thinks you are trying to
-seal a non-migratable blob under a migratable parent.)
+From: Coly Li <colyli@suse.de>
 
-The following simple patch fixes the logic, and has been
-tested for all four combinations of migratable and non-migratable
-trusted keys and parent storage keys. With this logic, you will
-get a proper failure if you try to create a non-migratable
-trusted key under a migratable parent storage key, and all other
-combinations work correctly.
+commit 622536443b6731ec82c563aae7807165adbe9178 upstream.
 
-Fixes: e5fb5d2c5a03 ("security: keys: trusted: Make sealed key properly int=
-eroperable")
-Signed-off-by: David Safford <david.safford@gmail.com>
+Commit 8e7102273f59 ("bcache: make bch_btree_check() to be
+multithreaded") makes bch_btree_check() to be much faster when checking
+all btree nodes during cache device registration. But it isn't in ideal
+shap yet, still can be improved.
+
+This patch does the following thing to improve current parallel btree
+nodes check by multiple threads in bch_btree_check(),
+- Add read lock to root node while checking all the btree nodes with
+  multiple threads. Although currently it is not mandatory but it is
+  good to have a read lock in code logic.
+- Remove local variable 'char name[32]', and generate kernel thread name
+  string directly when calling kthread_run().
+- Allocate local variable "struct btree_check_state check_state" on the
+  stack and avoid unnecessary dynamic memory allocation for it.
+- Reduce BCH_BTR_CHKTHREAD_MAX from 64 to 12 which is enough indeed.
+- Increase check_state->started to count created kernel thread after it
+  succeeds to create.
+- When wait for all checking kernel threads to finish, use wait_event()
+  to replace wait_event_interruptible().
+
+With this change, the code is more clear, and some potential error
+conditions are avoided.
+
+Fixes: 8e7102273f59 ("bcache: make bch_btree_check() to be multithreaded")
+Signed-off-by: Coly Li <colyli@suse.de>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220524102336.10684-2-colyli@suse.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-Changelog:
- * v2:
-   * added Signed-off-by, Fixes, proper Subject and distribution
-.
- security/keys/trusted-keys/trusted_tpm2.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/md/bcache/btree.c |   58 ++++++++++++++++++++--------------------------
+ drivers/md/bcache/btree.h |    2 -
+ 2 files changed, 27 insertions(+), 33 deletions(-)
 
-diff --git a/security/keys/trusted-keys/trusted_tpm2.c b/security/keys/trus=
-ted-keys/trusted_tpm2.c
-index 0165da386289..2b2c8eb258d5 100644
---- a/security/keys/trusted-keys/trusted_tpm2.c
-+++ b/security/keys/trusted-keys/trusted_tpm2.c
-@@ -283,8 +283,8 @@ int tpm2_seal_trusted(struct tpm_chip *chip,
- 	/* key properties */
- 	flags =3D 0;
- 	flags |=3D options->policydigest_len ? 0 : TPM2_OA_USER_WITH_AUTH;
--	flags |=3D payload->migratable ? (TPM2_OA_FIXED_TPM |
--					TPM2_OA_FIXED_PARENT) : 0;
-+	flags |=3D payload->migratable ? 0 : (TPM2_OA_FIXED_TPM |
-+					    TPM2_OA_FIXED_PARENT);
- 	tpm_buf_append_u32(&buf, flags);
+--- a/drivers/md/bcache/btree.c
++++ b/drivers/md/bcache/btree.c
+@@ -2006,8 +2006,7 @@ int bch_btree_check(struct cache_set *c)
+ 	int i;
+ 	struct bkey *k = NULL;
+ 	struct btree_iter iter;
+-	struct btree_check_state *check_state;
+-	char name[32];
++	struct btree_check_state check_state;
+ 
+ 	/* check and mark root node keys */
+ 	for_each_key_filter(&c->root->keys, k, &iter, bch_ptr_invalid)
+@@ -2018,63 +2017,58 @@ int bch_btree_check(struct cache_set *c)
+ 	if (c->root->level == 0)
+ 		return 0;
+ 
+-	check_state = kzalloc(sizeof(struct btree_check_state), GFP_KERNEL);
+-	if (!check_state)
+-		return -ENOMEM;
+-
+-	check_state->c = c;
+-	check_state->total_threads = bch_btree_chkthread_nr();
+-	check_state->key_idx = 0;
+-	spin_lock_init(&check_state->idx_lock);
+-	atomic_set(&check_state->started, 0);
+-	atomic_set(&check_state->enough, 0);
+-	init_waitqueue_head(&check_state->wait);
++	check_state.c = c;
++	check_state.total_threads = bch_btree_chkthread_nr();
++	check_state.key_idx = 0;
++	spin_lock_init(&check_state.idx_lock);
++	atomic_set(&check_state.started, 0);
++	atomic_set(&check_state.enough, 0);
++	init_waitqueue_head(&check_state.wait);
+ 
++	rw_lock(0, c->root, c->root->level);
+ 	/*
+ 	 * Run multiple threads to check btree nodes in parallel,
+-	 * if check_state->enough is non-zero, it means current
++	 * if check_state.enough is non-zero, it means current
+ 	 * running check threads are enough, unncessary to create
+ 	 * more.
+ 	 */
+-	for (i = 0; i < check_state->total_threads; i++) {
+-		/* fetch latest check_state->enough earlier */
++	for (i = 0; i < check_state.total_threads; i++) {
++		/* fetch latest check_state.enough earlier */
+ 		smp_mb__before_atomic();
+-		if (atomic_read(&check_state->enough))
++		if (atomic_read(&check_state.enough))
+ 			break;
+ 
+-		check_state->infos[i].result = 0;
+-		check_state->infos[i].state = check_state;
+-		snprintf(name, sizeof(name), "bch_btrchk[%u]", i);
+-		atomic_inc(&check_state->started);
++		check_state.infos[i].result = 0;
++		check_state.infos[i].state = &check_state;
+ 
+-		check_state->infos[i].thread =
++		check_state.infos[i].thread =
+ 			kthread_run(bch_btree_check_thread,
+-				    &check_state->infos[i],
+-				    name);
+-		if (IS_ERR(check_state->infos[i].thread)) {
++				    &check_state.infos[i],
++				    "bch_btrchk[%d]", i);
++		if (IS_ERR(check_state.infos[i].thread)) {
+ 			pr_err("fails to run thread bch_btrchk[%d]\n", i);
+ 			for (--i; i >= 0; i--)
+-				kthread_stop(check_state->infos[i].thread);
++				kthread_stop(check_state.infos[i].thread);
+ 			ret = -ENOMEM;
+ 			goto out;
+ 		}
++		atomic_inc(&check_state.started);
+ 	}
+ 
+ 	/*
+ 	 * Must wait for all threads to stop.
+ 	 */
+-	wait_event_interruptible(check_state->wait,
+-				 atomic_read(&check_state->started) == 0);
++	wait_event(check_state.wait, atomic_read(&check_state.started) == 0);
+ 
+-	for (i = 0; i < check_state->total_threads; i++) {
+-		if (check_state->infos[i].result) {
+-			ret = check_state->infos[i].result;
++	for (i = 0; i < check_state.total_threads; i++) {
++		if (check_state.infos[i].result) {
++			ret = check_state.infos[i].result;
+ 			goto out;
+ 		}
+ 	}
+ 
+ out:
+-	kfree(check_state);
++	rw_unlock(0, c->root);
+ 	return ret;
+ }
+ 
+--- a/drivers/md/bcache/btree.h
++++ b/drivers/md/bcache/btree.h
+@@ -226,7 +226,7 @@ struct btree_check_info {
+ 	int				result;
+ };
+ 
+-#define BCH_BTR_CHKTHREAD_MAX	64
++#define BCH_BTR_CHKTHREAD_MAX	12
+ struct btree_check_state {
+ 	struct cache_set		*c;
+ 	int				total_threads;
 
- 	/* policy */
---
-2.36.1
+
