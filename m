@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 981CFCCA47E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AA0CCA481
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350161AbiFGSKe (ORCPT
+        id S1350270AbiFGSKn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47424 "EHLO
+        Tue, 7 Jun 2022 14:10:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349845AbiFGRvj (ORCPT
+        with ESMTP id S1349891AbiFGRvl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:51:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254C32497A;
-        Tue,  7 Jun 2022 10:39:02 -0700 (PDT)
+        Tue, 7 Jun 2022 13:51:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B702013F402;
+        Tue,  7 Jun 2022 10:39:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 16E0060BC6;
-        Tue,  7 Jun 2022 17:38:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25415C34115;
-        Tue,  7 Jun 2022 17:38:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB096615B9;
+        Tue,  7 Jun 2022 17:38:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 095E7C385A5;
+        Tue,  7 Jun 2022 17:38:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623494;
-        bh=h96rxag+E6cq0S1AR/1pcZZD3EluK5LjxM3GIvxyU98=;
+        s=korg; t=1654623519;
+        bh=4y7Ck14Sih/73YdOVk/1vvtwXXSAQU9vHJEbfiUYQ5Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=08iTcnl/0n5d5refiNJjZbPozaWp5ordTZr78Ob3zR6FUFR96OCmzM9ZyVdjjNcs2
-         Oa3CFXjtwUKsGkKoNuZ4Orjml8boQoCQOssVApT0BsC3NeiLdj+QY8/80x4l2juTCU
-         iI7VltPI/BbE1LZOb8s/U2UvwrFS+HjfwZTF2ooQ=
+        b=nCmLhlx36+O/kiKxIUCmU4b0ZBE3bH+5paHnsRv67XlzCcQ3nk6iDKdkpqw5qx/Ce
+         PzzIUrHJHZK17dbIGEPGNkgGjxqVx8SK8/t9EQBEL3Dia7vyBr8LEXFVIFHb4y8bz9
+         8BpUt/C7D+pSxzfrIXIJWDXothYimEG64Ub18Xb0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
-        Tejun Heo <tj@kernel.org>
-Subject: [PATCH 5.10 438/452] kseltest/cgroup: Make test_stress.sh work if run interactively
-Date:   Tue,  7 Jun 2022 19:04:55 +0200
-Message-Id: <20220607164921.615877343@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.10 447/452] Revert "random: use static branch for crng_ready()"
+Date:   Tue,  7 Jun 2022 19:05:04 +0200
+Message-Id: <20220607164921.891640546@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -49,29 +48,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Waiman Long <longman@redhat.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 213adc63dfbcdff9a0c19ec1f2681fda9c05cf6d upstream.
+This reverts upstream commit f5bda35fba615ace70a656d4700423fa6c9bebee
+from stable. It's not essential and will take some time during 5.19 to
+work out properly.
 
-Commit 54de76c01239 ("kselftest/cgroup: fix test_stress.sh to use OUTPUT
-dir") changes the test_core command path from . to $OUTPUT. However,
-variable OUTPUT may not be defined if the command is run interactively.
-Fix that by using ${OUTPUT:-.} to cover both cases.
-
-Signed-off-by: Waiman Long <longman@redhat.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- tools/testing/selftests/cgroup/test_stress.sh |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c |   12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
 
---- a/tools/testing/selftests/cgroup/test_stress.sh
-+++ b/tools/testing/selftests/cgroup/test_stress.sh
-@@ -1,4 +1,4 @@
- #!/bin/bash
- # SPDX-License-Identifier: GPL-2.0
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -79,8 +79,7 @@ static enum {
+ 	CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
+ 	CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
+ } crng_init __read_mostly = CRNG_EMPTY;
+-static DEFINE_STATIC_KEY_FALSE(crng_is_ready);
+-#define crng_ready() (static_branch_likely(&crng_is_ready) || crng_init >= CRNG_READY)
++#define crng_ready() (likely(crng_init >= CRNG_READY))
+ /* Various types of waiters for crng_init->CRNG_READY transition. */
+ static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
+ static struct fasync_struct *fasync;
+@@ -110,11 +109,6 @@ bool rng_is_initialized(void)
+ }
+ EXPORT_SYMBOL(rng_is_initialized);
  
--./with_stress.sh -s subsys -s fork ${OUTPUT}/test_core
-+./with_stress.sh -s subsys -s fork ${OUTPUT:-.}/test_core
+-static void __cold crng_set_ready(struct work_struct *work)
+-{
+-	static_branch_enable(&crng_is_ready);
+-}
+-
+ /* Used by wait_for_random_bytes(), and considered an entropy collector, below. */
+ static void try_to_generate_entropy(void);
+ 
+@@ -268,7 +262,7 @@ static void crng_reseed(void)
+ 		++next_gen;
+ 	WRITE_ONCE(base_crng.generation, next_gen);
+ 	WRITE_ONCE(base_crng.birth, jiffies);
+-	if (!static_branch_likely(&crng_is_ready))
++	if (!crng_ready())
+ 		crng_init = CRNG_READY;
+ 	spin_unlock_irqrestore(&base_crng.lock, flags);
+ 	memzero_explicit(key, sizeof(key));
+@@ -711,7 +705,6 @@ static void extract_entropy(void *buf, s
+ 
+ static void __cold _credit_init_bits(size_t bits)
+ {
+-	static struct execute_work set_ready;
+ 	unsigned int new, orig, add;
+ 	unsigned long flags;
+ 
+@@ -727,7 +720,6 @@ static void __cold _credit_init_bits(siz
+ 
+ 	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
+ 		crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
+-		execute_in_process_context(crng_set_ready, &set_ready);
+ 		process_random_ready_list();
+ 		wake_up_interruptible(&crng_init_wait);
+ 		kill_fasync(&fasync, SIGIO, POLL_IN);
 
 
