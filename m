@@ -2,80 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55B22CCA47E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7694BCCA481
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348410AbiFGRpX (ORCPT
+        id S1348440AbiFGRpZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:45:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45000 "EHLO
+        Tue, 7 Jun 2022 13:45:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348128AbiFGRbf (ORCPT
+        with ESMTP id S1348185AbiFGRbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:31:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F753115A57;
-        Tue,  7 Jun 2022 10:29:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0EE1B82285;
-        Tue,  7 Jun 2022 17:29:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 344BAC385A5;
-        Tue,  7 Jun 2022 17:29:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622969;
-        bh=rsPwkGNK9GIoywZVByF5Yv2MTWSczBPHM5FyQ9egQNU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0t9hWOjbRuLpiyxG10C+ZC5mlKTG2ZHlODYjx4iIX8Mlow0ELXw4NeekETcRJVrK4
-         wtmblQ6GqaQOwmqO0Uu1VfbFu6/E3MS16xWAxXlsRXRJ5Lc+qCVzY06+MEAaK/d3GC
-         VLYXyLGUlY7FNqa3D3QCd7AIAFHFs5bxDA9H5/LA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Phil Auld <pauld@redhat.com>,
-        Tejun Heo <tj@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 207/452] kselftest/cgroup: fix test_stress.sh to use OUTPUT dir
-Date:   Tue,  7 Jun 2022 19:01:04 +0200
-Message-Id: <20220607164914.732314490@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
-References: <20220607164908.521895282@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 13:31:38 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A60F311E4AB
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 10:29:44 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id o7so3323115eja.1
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 10:29:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=6Qly2UIyOE8jeV4UIMO9/cbT7m/yg5zZN4spcrrGBuY=;
+        b=Y6qrBUmNyxndVHvDEdVrGGkau8+wN4t82cmUBnOQFk3GEGZj6VNhHZUy22YizV9ln6
+         EFsltomJCd6kyFokxtvKBcGaDI3XoW2hTCU1g89CMyqfp4I5GvB/LufsevPe/s4XMKV/
+         1pkd5q3lbyqGAHxTmcNE9SFRVJVNGBXW2DAjOBJZ9aFZc9IT6WNWAxXBF3wpngkudFcw
+         bHdeCnMOKba9yc57Rr6ibZtDPGEbb81jC25TjQjc8rJcIiBry7MwafG5Qi5cOHs3S3c0
+         zanlP8LX+2O5fao7T22B3tFmD0l7d4L6JsfPGHojTJQ+urPLihkg0NsLAksVlpDCD368
+         NueQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6Qly2UIyOE8jeV4UIMO9/cbT7m/yg5zZN4spcrrGBuY=;
+        b=ebZSkSDEgSe7aeM8da+/ak2NkEFdSK9ODcV3YmadaEjoAlFpaz+3+AERMkP1ntgJbw
+         4znFO6S5mA/UfBmKXe2rLbKVrfk1aLNVVlrhjGInYrSpcY8lqHLOMG55RQ5sGpWMAqkz
+         Ng33YYVfiXou/kPM3zN7KLgr57dARJDP+Ncvl+EaLVCF9RI6KbJ5VkI0j2KTFR+aQ2p7
+         hLDPLJ1FGHKI9BFl+2YoRTeX1uwnT9TEfXgRgy91V5zVwFJ0QEyLI/JcNt5mSaA2t7x4
+         Y7eAUbra7LMDrkeewqVqz2GeBMfqUOQDD/QHBoAi4yghoi6h5muxoxRUwvVc5Cxsljsv
+         fdbg==
+X-Gm-Message-State: AOAM531nwwdQOTPMj4/Yc/IYZPtOjZ26ZBSNzGcUyB2dlKP5bJglikr0
+        8Ug7VcaRc10GQuDFpIIyA5JAgQ/w1NrmGQ==
+X-Google-Smtp-Source: ABdhPJxQllnLp5MdeAtv1dMJ/Mnqk9ZmQf9PtgCRrHGxsCtsV8I4AO0a7NAAkrbukOGwiVxtIhFLiw==
+X-Received: by 2002:a17:907:16a1:b0:6fe:ffd9:b14f with SMTP id hc33-20020a17090716a100b006feffd9b14fmr27532053ejc.573.1654622982983;
+        Tue, 07 Jun 2022 10:29:42 -0700 (PDT)
+Received: from [192.168.0.187] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id b5-20020a17090691c500b006feaa22e367sm7948656ejx.165.2022.06.07.10.29.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jun 2022 10:29:42 -0700 (PDT)
+Message-ID: <0549347e-1906-a293-ee7a-824578a00227@linaro.org>
+Date:   Tue, 7 Jun 2022 19:29:41 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 06/10] dt-bindings: arm: freescale: Add fsl,scu-pd yaml
+ file
+Content-Language: en-US
+To:     Abel Vesa <abel.vesa@nxp.com>, Rob Herring <robh@kernel.org>
+Cc:     Shawn Guo <shawnguo@kernel.org>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220607105951.1821519-1-abel.vesa@nxp.com>
+ <20220607105951.1821519-7-abel.vesa@nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220607105951.1821519-7-abel.vesa@nxp.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Auld <pauld@redhat.com>
+On 07/06/2022 12:59, Abel Vesa wrote:
+> This documents separately the PD child node of the SCU main node.
+> 
+> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+> ---
+>  .../bindings/arm/freescale/fsl,scu-pd.yaml    | 32 +++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/freescale/fsl,scu-pd.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/freescale/fsl,scu-pd.yaml b/Documentation/devicetree/bindings/arm/freescale/fsl,scu-pd.yaml
+> new file mode 100644
+> index 000000000000..154a63495436
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/arm/freescale/fsl,scu-pd.yaml
+> @@ -0,0 +1,32 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/arm/freescale/fsl,scu-pd.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: i.MX SCU Client Device Node - Power domain bindings based on SCU Message Protocol
+> +
+> +maintainers:
+> +  - Shawn Guo <shawnguo@kernel.org>
+> +
+> +description: i.MX SCU Client Device Node
+> +  Client nodes are maintained as children of the relevant IMX-SCU device node.
+> +  Power domain bindings based on SCU Message Protocol
+> +  This binding for the SCU power domain providers uses the generic power
+> +  domain binding (Documentation/devicetree/bindings/power/power-domain.yaml)
 
-[ Upstream commit 54de76c0123915e7533ce352de30a1f2d80fe81f ]
+Using of other bindings is reflected by '$ref'. Mentioning it in
+description means nothing and it is not helpful. Reference the proper
+schema instead.
 
-Running cgroup kselftest with O= fails to run the with_stress test due
-to hardcoded ./test_core. Find test_core binary using the OUTPUT directory.
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - enum:
+> +          - fsl,imx8qm-scu-pd
+> +          - fsl,imx8qxp-scu-pd
+> +      - const: fsl,scu-pd
+> +  '#power-domain-cells':
+> +    const: 1
+> +
+> +additionalProperties: false
 
-Fixes: 1a99fcc035fb ("selftests: cgroup: Run test_core under interfering stress")
-Signed-off-by: Phil Auld <pauld@redhat.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/testing/selftests/cgroup/test_stress.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Use the same order as in example-schema.yaml, so for regular case:
+properties+required+additionalProperties
 
-diff --git a/tools/testing/selftests/cgroup/test_stress.sh b/tools/testing/selftests/cgroup/test_stress.sh
-index 15d9d5896394..109c044f715f 100755
---- a/tools/testing/selftests/cgroup/test_stress.sh
-+++ b/tools/testing/selftests/cgroup/test_stress.sh
-@@ -1,4 +1,4 @@
- #!/bin/bash
- # SPDX-License-Identifier: GPL-2.0
- 
--./with_stress.sh -s subsys -s fork ./test_core
-+./with_stress.sh -s subsys -s fork ${OUTPUT}/test_core
--- 
-2.35.1
+when referencing other schema, without any if-then-else:
+allOf:properties+required+additionalProperties
+
+When having if-then-else:
+properties+required+allOf+additionalProperties
+
+> +
+> +required:
+> +  - compatible
+> +  - '#power-domain-cells'
 
 
-
+Best regards,
+Krzysztof
