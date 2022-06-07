@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 753D4CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:33:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F85AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:33:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379964AbiFGVdd (ORCPT
+        id S1379343AbiFGVdk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
+        Tue, 7 Jun 2022 17:33:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377498AbiFGUd2 (ORCPT
+        with ESMTP id S1377460AbiFGUdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:33:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75AA1E4B6D;
-        Tue,  7 Jun 2022 11:35:17 -0700 (PDT)
+        Tue, 7 Jun 2022 16:33:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C041E4534;
+        Tue,  7 Jun 2022 11:35:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EA50612EC;
-        Tue,  7 Jun 2022 18:35:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AEB1C385A2;
-        Tue,  7 Jun 2022 18:35:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B6C1B8237C;
+        Tue,  7 Jun 2022 18:35:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFE1EC385A2;
+        Tue,  7 Jun 2022 18:35:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626914;
-        bh=p/mEEgaVRxduYfIb8Rfiqp4KRdQAhjYDhovJPQu9nWc=;
+        s=korg; t=1654626904;
+        bh=2clv+eIChWCU75Deg8PZdCXvoxeLsnNaYAdk+/FkBa4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lQc1BnhH/tROXVeZE1zjL4qZ1bflBW007gFBeFO4JHntL+UJIBQaHCgXAmao1E6JN
-         oghKK0kNjK9cCcUr6XxgPzKvm4m9QbEvoW0+btjE5AGVrqfWKIenrgISyEcDpgW93N
-         NT+9GKbJsWUZNcW4nfQoHYlWV6CWmYI5BedQiG1E=
+        b=oeI7QY/YceDwp4v/kBvBQQwHpRCdjQtEkZfvrQ88RxD8IDDBhr+IGyoh1kJpydXnI
+         7Fkx6sFm28+/oRz0U4OhO8YRVgeipc9o0qNe242tVZRIcrkn/9ZoSpsQhxXshaT7Pj
+         JRUpzwf8NCadh6LhFAwGVYGZIeBJQ9kV+ZMqzldU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kajol Jain <kjain@linux.ibm.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 549/772] powerpc/perf: Fix the threshold compare group constraint for power9
-Date:   Tue,  7 Jun 2022 19:02:21 +0200
-Message-Id: <20220607165005.139776414@linuxfoundation.org>
+Subject: [PATCH 5.17 545/772] powerpc/64: Only WARN if __pa()/__va() called with bad addresses
+Date:   Tue,  7 Jun 2022 19:02:17 +0200
+Message-Id: <20220607165005.023104946@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,74 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kajol Jain <kjain@linux.ibm.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-[ Upstream commit ab0cc6bbf0c812731c703ec757fcc3fc3a457a34 ]
+[ Upstream commit c4bce84d0bd3f396f702d69be2e92bbd8af97583 ]
 
-Thresh compare bits for a event is used to program thresh compare
-field in Monitor Mode Control Register A (MMCRA: 9-18 bits for power9).
-When scheduling events as a group, all events in that group should
-match value in threshold bits (like thresh compare, thresh control,
-thresh select). Otherwise event open for the sibling events should fail.
-But in the current code, incase thresh compare bits are not valid,
-we are not failing in group_constraint function which can result
-in invalid group schduling.
+We added checks to __pa() / __va() to ensure they're only called with
+appropriate addresses. But using BUG_ON() is too strong, it means
+virt_addr_valid() will BUG when DEBUG_VIRTUAL is enabled.
 
-Fix the issue by returning -1 incase event is threshold and threshold
-compare value is not valid.
+Instead switch them to warnings, arm64 does the same.
 
-Thresh control bits in the event code is used to program thresh_ctl
-field in Monitor Mode Control Register A (MMCRA: 48-55). In below example,
-the scheduling of group events PM_MRK_INST_CMPL (873534401e0) and
-PM_THRESH_MET (8734340101ec) is expected to fail as both event
-request different thresh control bits and invalid thresh compare value.
-
-Result before the patch changes:
-
-[command]# perf stat -e "{r8735340401e0,r8734340101ec}" sleep 1
-
- Performance counter stats for 'sleep 1':
-
-            11,048      r8735340401e0
-             1,967      r8734340101ec
-
-       1.001354036 seconds time elapsed
-
-       0.001421000 seconds user
-       0.000000000 seconds sys
-
-Result after the patch changes:
-
-[command]# perf stat -e "{r8735340401e0,r8734340101ec}" sleep 1
-Error:
-The sys_perf_event_open() syscall returned with 22 (Invalid argument)
-for event (r8735340401e0).
-/bin/dmesg | grep -i perf may provide additional information.
-
-Fixes: 78a16d9fc1206 ("powerpc/perf: Avoid FAB_*_MATCH checks for power9")
-Signed-off-by: Kajol Jain <kjain@linux.ibm.com>
-Reviewed-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Fixes: 4dd7554a6456 ("powerpc/64: Add VIRTUAL_BUG_ON checks for __va and __pa addresses")
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220506061015.43916-2-kjain@linux.ibm.com
+Link: https://lore.kernel.org/r/20220406145802.538416-5-mpe@ellerman.id.au
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/perf/isa207-common.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/powerpc/include/asm/page.h | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/perf/isa207-common.c b/arch/powerpc/perf/isa207-common.c
-index 8f0ecf99c96e..abc4c5187dbc 100644
---- a/arch/powerpc/perf/isa207-common.c
-+++ b/arch/powerpc/perf/isa207-common.c
-@@ -508,7 +508,8 @@ int isa207_get_constraint(u64 event, unsigned long *maskp, unsigned long *valp,
- 		if (event_is_threshold(event) && is_thresh_cmp_valid(event)) {
- 			mask  |= CNST_THRESH_MASK;
- 			value |= CNST_THRESH_VAL(event >> EVENT_THRESH_SHIFT);
--		}
-+		} else if (event_is_threshold(event))
-+			return -1;
- 	} else {
- 		/*
- 		 * Special case for PM_MRK_FAB_RSP_MATCH and PM_MRK_FAB_RSP_MATCH_CYC,
+diff --git a/arch/powerpc/include/asm/page.h b/arch/powerpc/include/asm/page.h
+index f2c5c26869f1..03ae544eb6cc 100644
+--- a/arch/powerpc/include/asm/page.h
++++ b/arch/powerpc/include/asm/page.h
+@@ -216,6 +216,9 @@ static inline bool pfn_valid(unsigned long pfn)
+ #define __pa(x) ((phys_addr_t)(unsigned long)(x) - VIRT_PHYS_OFFSET)
+ #else
+ #ifdef CONFIG_PPC64
++
++#define VIRTUAL_WARN_ON(x)	WARN_ON(IS_ENABLED(CONFIG_DEBUG_VIRTUAL) && (x))
++
+ /*
+  * gcc miscompiles (unsigned long)(&static_var) - PAGE_OFFSET
+  * with -mcmodel=medium, so we use & and | instead of - and + on 64-bit.
+@@ -223,13 +226,13 @@ static inline bool pfn_valid(unsigned long pfn)
+  */
+ #define __va(x)								\
+ ({									\
+-	VIRTUAL_BUG_ON((unsigned long)(x) >= PAGE_OFFSET);		\
++	VIRTUAL_WARN_ON((unsigned long)(x) >= PAGE_OFFSET);		\
+ 	(void *)(unsigned long)((phys_addr_t)(x) | PAGE_OFFSET);	\
+ })
+ 
+ #define __pa(x)								\
+ ({									\
+-	VIRTUAL_BUG_ON((unsigned long)(x) < PAGE_OFFSET);		\
++	VIRTUAL_WARN_ON((unsigned long)(x) < PAGE_OFFSET);		\
+ 	(unsigned long)(x) & 0x0fffffffffffffffUL;			\
+ })
+ 
 -- 
 2.35.1
 
