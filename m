@@ -2,85 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1062CCA493
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CB7BCCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356328AbiFGT1a (ORCPT
+        id S1356255AbiFGT1H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:27:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
+        Tue, 7 Jun 2022 15:27:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351323AbiFGScF (ORCPT
+        with ESMTP id S1349645AbiFGSd3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:32:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2403417DDEC;
-        Tue,  7 Jun 2022 10:57:01 -0700 (PDT)
+        Tue, 7 Jun 2022 14:33:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C424517EF69;
+        Tue,  7 Jun 2022 10:57:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DE3AFB81F38;
-        Tue,  7 Jun 2022 17:56:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B70DC385A5;
-        Tue,  7 Jun 2022 17:56:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624618;
-        bh=fRe79pQzQ00SUCgti1liPLwhypqgSHJgjERP8cOsPe8=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5068D618A8;
+        Tue,  7 Jun 2022 17:57:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACE69C341C4;
+        Tue,  7 Jun 2022 17:57:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624650;
+        bh=0nJFzgcaJaJjHa1EQMZdGiu4tL4BUXk5ZBpuvTlFthw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PIYtEFmfDQ/OXAeAo071Y5HKnsaR31Q+LIuhYstFWbjjx0I5+plRrK6TCnrD3p831
-         B2G5Lr7VnwxIdCa0yf6l1y2lVYNNZZY5n0XE2I+vL2R46bafG5UUfJ7jomz9//MSr/
-         Uj2hwI6ti2RmpckEp/9ltg2VxnAwQiYB11O+SyMI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 390/667] PCI: cadence: Fix find_first_zero_bit() limit
-Date:   Tue,  7 Jun 2022 19:00:55 +0200
-Message-Id: <20220607164946.442819172@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=NCfKvFaDhOS10hez+4Po1axVvjsdmMzS8tBWPpJx5OFG96TPCAsC12uXogngGHr7v
+         iL4O0yPzOrDSvTXWO+u6vIGgnzOJ6EHbp2Mmq2S2AKkk6QjCr1OBY0eaW6oE0bQt1J
+         K8YGICjpPvrPoO74jznVhXZt/Yum8Hn9iMUSKhRbwmj5aSO0c0wexXIi12c/ZxTWnM
+         RK+XyKBHAy8tuHVV2B7GrnzWXhE/VArZGuWR5a6Uyw8+hNihR6X/5BWpLnQxqa29G6
+         CD+RJAPBiuXN2tCYv6Bwa44zCo1YId1hOkI8r3tn+5zEPfR81jzfF4FCwpz0Zo7TCe
+         OlQaY4DstN0mQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
+        Donald Buczek <buczek@molgen.mpg.de>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        linux-raid@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 32/51] md: protect md_unregister_thread from reentrancy
+Date:   Tue,  7 Jun 2022 13:55:31 -0400
+Message-Id: <20220607175552.479948-32-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
+References: <20220607175552.479948-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
 
-[ Upstream commit 0aa3a0937feeb91a0e4e438c3c063b749b194192 ]
+[ Upstream commit 1e267742283a4b5a8ca65755c44166be27e9aa0f ]
 
-The ep->ob_region_map bitmap is a long and it has BITS_PER_LONG bits.
+Generally, the md_unregister_thread is called with reconfig_mutex, but
+raid_message in dm-raid doesn't hold reconfig_mutex to unregister thread,
+so md_unregister_thread can be called simulitaneously from two call sites
+in theory.
 
-Link: https://lore.kernel.org/r/20220315065829.GA13572@kili
-Fixes: 37dddf14f1ae ("PCI: cadence: Add EndPoint Controller driver for Cadence PCIe controller")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Then after previous commit which remove the protection of reconfig_mutex
+for md_unregister_thread completely, the potential issue could be worse
+than before.
+
+Let's take pers_lock at the beginning of function to ensure reentrancy.
+
+Reported-by: Donald Buczek <buczek@molgen.mpg.de>
+Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/cadence/pcie-cadence-ep.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/md/md.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pci/controller/cadence/pcie-cadence-ep.c b/drivers/pci/controller/cadence/pcie-cadence-ep.c
-index 88e05b9c2e5b..18e32b8ffd5e 100644
---- a/drivers/pci/controller/cadence/pcie-cadence-ep.c
-+++ b/drivers/pci/controller/cadence/pcie-cadence-ep.c
-@@ -187,8 +187,7 @@ static int cdns_pcie_ep_map_addr(struct pci_epc *epc, u8 fn, u8 vfn,
- 	struct cdns_pcie *pcie = &ep->pcie;
- 	u32 r;
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 8d569db21b1a..96c688b8a0fc 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -7944,17 +7944,22 @@ EXPORT_SYMBOL(md_register_thread);
  
--	r = find_first_zero_bit(&ep->ob_region_map,
--				sizeof(ep->ob_region_map) * BITS_PER_LONG);
-+	r = find_first_zero_bit(&ep->ob_region_map, BITS_PER_LONG);
- 	if (r >= ep->max_regions - 1) {
- 		dev_err(&epc->dev, "no free outbound region\n");
- 		return -EINVAL;
+ void md_unregister_thread(struct md_thread **threadp)
+ {
+-	struct md_thread *thread = *threadp;
+-	if (!thread)
+-		return;
+-	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+-	/* Locking ensures that mddev_unlock does not wake_up a
++	struct md_thread *thread;
++
++	/*
++	 * Locking ensures that mddev_unlock does not wake_up a
+ 	 * non-existent thread
+ 	 */
+ 	spin_lock(&pers_lock);
++	thread = *threadp;
++	if (!thread) {
++		spin_unlock(&pers_lock);
++		return;
++	}
+ 	*threadp = NULL;
+ 	spin_unlock(&pers_lock);
+ 
++	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+ 	kthread_stop(thread->tsk);
+ 	kfree(thread);
+ }
 -- 
 2.35.1
-
-
 
