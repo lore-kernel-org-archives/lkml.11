@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E832DCCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:23:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0CA8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377184AbiFGVXa (ORCPT
+        id S1378142AbiFGVXf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:23:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59326 "EHLO
+        Tue, 7 Jun 2022 17:23:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377068AbiFGU2Y (ORCPT
+        with ESMTP id S1376745AbiFGU2F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:28:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A32061DAE79;
-        Tue,  7 Jun 2022 11:33:49 -0700 (PDT)
+        Tue, 7 Jun 2022 16:28:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F5F61D8725;
+        Tue,  7 Jun 2022 11:33:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0CAAFB82367;
-        Tue,  7 Jun 2022 18:33:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78372C385A2;
-        Tue,  7 Jun 2022 18:33:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C048FB82188;
+        Tue,  7 Jun 2022 18:33:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A56DC385A5;
+        Tue,  7 Jun 2022 18:33:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626826;
-        bh=EFmUdl9NrFEx7bbsKO6ZCv5QzcIZLGeHdaaADbLR9TU=;
+        s=korg; t=1654626785;
+        bh=1ASL6fBMDAmWBj3axiWH/dhSFOu0lxh5MMkutiN/P/U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mnnHyDCOvGutB6aatHO/z6Ig57oHIpCG2cGkXYJbxOlkUA9FaM6B1u7g9yjk9ybo9
-         l9GMY6jEwscTBCRpqT8UmoyB8ln5r6WQ+rFax4m2MWw12SSpTVGC75vUMgKUPoiuXU
-         mnZlbj+Jd3p5SnNx+Plw392v97jXC87AQabYGonc=
+        b=LG6vKHC9madL4yc1I1VGOSmfATbds4WLvb+FvhfTsiriloRJoR4TgMtLIOO8Q7Dzs
+         QV5n+ybtfyoN1N6B9FgYGpuTLYXDcxAj4apmsWKnjK7pqqVDypnY54Cdf+jnT8EUmc
+         frXQso0Lyq3rrekE525CIwRC8g8xBrzGjRvU1bEE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Jeff Moyer <jmoyer@redhat.com>,
+        Krzysztof Kensicki <krzysztof.kensicki@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 477/772] ARM: dts: bcm2837-rpi-cm3-io3: Fix GPIO line names for SMPS I2C
-Date:   Tue,  7 Jun 2022 19:01:09 +0200
-Message-Id: <20220607165003.049352180@linuxfoundation.org>
+Subject: [PATCH 5.17 502/772] nvdimm: Allow overwrite in the presence of disabled dimms
+Date:   Tue,  7 Jun 2022 19:01:34 +0200
+Message-Id: <20220607165003.772483109@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,37 +54,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Elwell <phil@raspberrypi.com>
+From: Dan Williams <dan.j.williams@intel.com>
 
-[ Upstream commit 9fd26fd02749ec964eb0d588a3bab9e09bf77927 ]
+[ Upstream commit bb7bf697fed58eae9d3445944e457ab0de4da54f ]
 
-The GPIOs 46 & 47 are already used for a I2C interface to a SMPS.
-So fix the GPIO line names accordingly.
+It is not clear why the original implementation of overwrite support
+required the dimm driver to be active before overwrite could proceed. In
+fact that can lead to cases where the kernel retains an invalid cached
+copy of the labels from before the overwrite. Unfortunately the kernel
+has not only allowed that case, but enforced it.
 
-Fixes: a54fe8a6cf66 ("ARM: dts: add Raspberry Pi Compute Module 3 and IO board")
-Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Going forward, allow for overwrite to happen while the label area is
+offline, and follow-on with updates to 'ndctl sanitize-dimm --overwrite'
+to trigger the label area invalidation by default.
+
+Cc: Vishal Verma <vishal.l.verma@intel.com>
+Cc: Dave Jiang <dave.jiang@intel.com>
+Cc: Ira Weiny <ira.weiny@intel.com>
+Cc: Jeff Moyer <jmoyer@redhat.com>
+Reported-by: Krzysztof Kensicki <krzysztof.kensicki@intel.com>
+Fixes: 7d988097c546 ("acpi/nfit, libnvdimm/security: Add security DSM overwrite support")
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/nvdimm/security.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts b/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
-index 588d9411ceb6..3dfce4312dfc 100644
---- a/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
-+++ b/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
-@@ -63,8 +63,8 @@
- 			  "GPIO43",
- 			  "GPIO44",
- 			  "GPIO45",
--			  "GPIO46",
--			  "GPIO47",
-+			  "SMPS_SCL",
-+			  "SMPS_SDA",
- 			  /* Used by eMMC */
- 			  "SD_CLK_R",
- 			  "SD_CMD_R",
+diff --git a/drivers/nvdimm/security.c b/drivers/nvdimm/security.c
+index 4b80150e4afa..b5aa55c61461 100644
+--- a/drivers/nvdimm/security.c
++++ b/drivers/nvdimm/security.c
+@@ -379,11 +379,6 @@ static int security_overwrite(struct nvdimm *nvdimm, unsigned int keyid)
+ 			|| !nvdimm->sec.flags)
+ 		return -EOPNOTSUPP;
+ 
+-	if (dev->driver == NULL) {
+-		dev_dbg(dev, "Unable to overwrite while DIMM active.\n");
+-		return -EINVAL;
+-	}
+-
+ 	rc = check_security_state(nvdimm);
+ 	if (rc)
+ 		return rc;
 -- 
 2.35.1
 
