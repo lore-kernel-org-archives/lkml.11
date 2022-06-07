@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B7FECCA485
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC5BC2BBE6
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352710AbiFGS0o (ORCPT
+        id S1352841AbiFGS1M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:26:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42996 "EHLO
+        Tue, 7 Jun 2022 14:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351445AbiFGSCD (ORCPT
+        with ESMTP id S1351581AbiFGSCJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:02:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F95152B97;
-        Tue,  7 Jun 2022 10:44:39 -0700 (PDT)
+        Tue, 7 Jun 2022 14:02:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 277F215644B;
+        Tue,  7 Jun 2022 10:44:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE61CB8232B;
-        Tue,  7 Jun 2022 17:44:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 274EFC34115;
-        Tue,  7 Jun 2022 17:44:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A30E4B82239;
+        Tue,  7 Jun 2022 17:44:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2802C385A5;
+        Tue,  7 Jun 2022 17:44:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623876;
-        bh=HfOrDTLhdUzR7V2uVaro7XE7vKpON/b5Tcu5bw6pI6g=;
+        s=korg; t=1654623893;
+        bh=elhLJgnyMsasOtb8cxU+DSEo7qMotW6TsQWH859S98M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WklYBRk9b0p6Gkh57AklJLOJhoIJJePNjpG6OVkQegBykH2vU4HAfKz2LeFDsyRH/
-         wtGZHbUWEjuVi8LNa34IXkXC6f1gmSeX/2uum/s9pCCuQd58O/Giwmw4JxrTQVn3o1
-         jyWLHLAhCcERx1y0Tn4qFNDhxDttHn5aY1HxtLcY=
+        b=ZlxYPxRt3M5iAF6drZwD9r1t+jwrXv4SAiMadpJk1LERjBftEQ61HAhegQpohAe0B
+         aXDQlbeSgl+QRGDcg8eSb6Nv11s0yA4KxyW7bOYXvyiaTr9wTLlM3pmmPKgQcWm7RO
+         Fjscr8GnYynDHyo0TM+t5H/22GwEIp89TIRpd4us=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, Jonas Bonn <jonas@southpole.se>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Stafford Horne <shorne@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        stable@vger.kernel.org,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 123/667] openrisc: start CPU timer early in boot
-Date:   Tue,  7 Jun 2022 18:56:28 +0200
-Message-Id: <20220607164938.514152622@linuxfoundation.org>
+Subject: [PATCH 5.15 089/667] arm64: compat: Do not treat syscall number as ESR_ELx for a bad syscall
+Date:   Tue,  7 Jun 2022 18:55:54 +0200
+Message-Id: <20220607164937.488778923@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -54,60 +52,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Alexandru Elisei <alexandru.elisei@arm.com>
 
-[ Upstream commit 516dd4aacd67a0f27da94f3fe63fe0f4dbab6e2b ]
+[ Upstream commit 3fed9e551417b84038b15117732ea4505eee386b ]
 
-In order to measure the boot process, the timer should be switched on as
-early in boot as possible. As well, the commit defines the get_cycles
-macro, like the previous patches in this series, so that generic code is
-aware that it's implemented by the platform, as is done on other archs.
+If a compat process tries to execute an unknown system call above the
+__ARM_NR_COMPAT_END number, the kernel sends a SIGILL signal to the
+offending process. Information about the error is printed to dmesg in
+compat_arm_syscall() -> arm64_notify_die() -> arm64_force_sig_fault() ->
+arm64_show_signal().
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Jonas Bonn <jonas@southpole.se>
-Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
-Acked-by: Stafford Horne <shorne@gmail.com>
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+arm64_show_signal() interprets a non-zero value for
+current->thread.fault_code as an exception syndrome and displays the
+message associated with the ESR_ELx.EC field (bits 31:26).
+current->thread.fault_code is set in compat_arm_syscall() ->
+arm64_notify_die() with the bad syscall number instead of a valid ESR_ELx
+value. This means that the ESR_ELx.EC field has the value that the user set
+for the syscall number and the kernel can end up printing bogus exception
+messages*. For example, for the syscall number 0x68000000, which evaluates
+to ESR_ELx.EC value of 0x1A (ESR_ELx_EC_FPAC) the kernel prints this error:
+
+[   18.349161] syscall[300]: unhandled exception: ERET/ERETAA/ERETAB, ESR 0x68000000, Oops - bad compat syscall(2) in syscall[10000+50000]
+[   18.350639] CPU: 2 PID: 300 Comm: syscall Not tainted 5.18.0-rc1 #79
+[   18.351249] Hardware name: Pine64 RockPro64 v2.0 (DT)
+[..]
+
+which is misleading, as the bad compat syscall has nothing to do with
+pointer authentication.
+
+Stop arm64_show_signal() from printing exception syndrome information by
+having compat_arm_syscall() set the ESR_ELx value to 0, as it has no
+meaning for an invalid system call number. The example above now becomes:
+
+[   19.935275] syscall[301]: unhandled exception: Oops - bad compat syscall(2) in syscall[10000+50000]
+[   19.936124] CPU: 1 PID: 301 Comm: syscall Not tainted 5.18.0-rc1-00005-g7e08006d4102 #80
+[   19.936894] Hardware name: Pine64 RockPro64 v2.0 (DT)
+[..]
+
+which although shows less information because the syscall number,
+wrongfully advertised as the ESR value, is missing, it is better than
+showing plainly wrong information. The syscall number can be easily
+obtained with strace.
+
+*A 32-bit value above or equal to 0x8000_0000 is interpreted as a negative
+integer in compat_arm_syscal() and the condition scno < __ARM_NR_COMPAT_END
+evaluates to true; the syscall will exit to userspace in this case with the
+ENOSYS error code instead of arm64_notify_die() being called.
+
+Signed-off-by: Alexandru Elisei <alexandru.elisei@arm.com>
+Reviewed-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220425114444.368693-3-alexandru.elisei@arm.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/openrisc/include/asm/timex.h | 1 +
- arch/openrisc/kernel/head.S       | 9 +++++++++
- 2 files changed, 10 insertions(+)
+ arch/arm64/kernel/sys_compat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/openrisc/include/asm/timex.h b/arch/openrisc/include/asm/timex.h
-index d52b4e536e3f..5487fa93dd9b 100644
---- a/arch/openrisc/include/asm/timex.h
-+++ b/arch/openrisc/include/asm/timex.h
-@@ -23,6 +23,7 @@ static inline cycles_t get_cycles(void)
- {
- 	return mfspr(SPR_TTCR);
+diff --git a/arch/arm64/kernel/sys_compat.c b/arch/arm64/kernel/sys_compat.c
+index db5159a3055f..b88a52f7188f 100644
+--- a/arch/arm64/kernel/sys_compat.c
++++ b/arch/arm64/kernel/sys_compat.c
+@@ -114,6 +114,6 @@ long compat_arm_syscall(struct pt_regs *regs, int scno)
+ 	addr = instruction_pointer(regs) - (compat_thumb_mode(regs) ? 2 : 4);
+ 
+ 	arm64_notify_die("Oops - bad compat syscall(2)", regs,
+-			 SIGILL, ILL_ILLTRP, addr, scno);
++			 SIGILL, ILL_ILLTRP, addr, 0);
+ 	return 0;
  }
-+#define get_cycles get_cycles
- 
- /* This isn't really used any more */
- #define CLOCK_TICK_RATE 1000
-diff --git a/arch/openrisc/kernel/head.S b/arch/openrisc/kernel/head.S
-index 15f1b38dfe03..871f4c858859 100644
---- a/arch/openrisc/kernel/head.S
-+++ b/arch/openrisc/kernel/head.S
-@@ -521,6 +521,15 @@ _start:
- 	l.ori	r3,r0,0x1
- 	l.mtspr	r0,r3,SPR_SR
- 
-+	/*
-+	 * Start the TTCR as early as possible, so that the RNG can make use of
-+	 * measurements of boot time from the earliest opportunity. Especially
-+	 * important is that the TTCR does not return zero by the time we reach
-+	 * rand_initialize().
-+	 */
-+	l.movhi r3,hi(SPR_TTMR_CR)
-+	l.mtspr r0,r3,SPR_TTMR
-+
- 	CLEAR_GPR(r1)
- 	CLEAR_GPR(r2)
- 	CLEAR_GPR(r3)
 -- 
 2.35.1
 
