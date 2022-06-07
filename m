@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1B83CCA492
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 752D5CCA490
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385327AbiFGW05 (ORCPT
+        id S1385420AbiFGW1N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:26:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56226 "EHLO
+        Tue, 7 Jun 2022 18:27:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381428AbiFGVRn (ORCPT
+        with ESMTP id S1381542AbiFGVRv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:17:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4BB0222A51;
-        Tue,  7 Jun 2022 11:58:57 -0700 (PDT)
+        Tue, 7 Jun 2022 17:17:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF8A14CDC4;
+        Tue,  7 Jun 2022 11:59:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C711C6159D;
-        Tue,  7 Jun 2022 18:58:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF814C385A5;
-        Tue,  7 Jun 2022 18:58:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B99FD61787;
+        Tue,  7 Jun 2022 18:59:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CADD9C385A2;
+        Tue,  7 Jun 2022 18:59:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628336;
-        bh=h6OqCUeDOUqyQBLL56rhlWhklL1em65k+Cw8UX3FKp4=;
+        s=korg; t=1654628347;
+        bh=zHarHNHf1vwJOO2GNoR2a6HsIMrQOlbPbQSMOyTCg1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AF/vRRsZgW0Koo0XmYlWo51j9tWtlJzGIpwbg9OREI2gKEUF6egltAfTHR9Wa5PJ8
-         cSFzkjGI2GpzxHrFf5z6/tg4K/YQj5+QXGeSAXPMta7wL8Ktha4fvgZao9pPKiCixE
-         5A67SuczA8ndd9XPgSF4zXGY5cyCZ8V3jP5f4KOA=
+        b=AshWlgGPIUa22IAuXDmqaFYeF4v23+JpLsHRnKSpLqX9GBgVRdVavNky7C3+6bOMk
+         M/NnvWlZJdRLnEzM2bKkSzhZuWbWjsQ2ssk5FrxaCFsulOLCa0WT5q7bCGa0ewyNVw
+         suxUayMx3qW4rz4e/tDFiwoJnkOM8r4ubWmG7ZTo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 293/879] drm/vc4: txp: Dont set TXP_VSTART_AT_EOF
-Date:   Tue,  7 Jun 2022 18:56:51 +0200
-Message-Id: <20220607165011.352932984@linuxfoundation.org>
+Subject: [PATCH 5.18 297/879] mptcp: optimize release_cb for the common case
+Date:   Tue,  7 Jun 2022 18:56:55 +0200
+Message-Id: <20220607165011.467418026@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,41 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Paolo Abeni <pabeni@redhat.com>
 
-[ Upstream commit 234998df929f14d00cbf2f1e81a7facb69fd9266 ]
+[ Upstream commit 65a569b03ca832ebc93ce45a7466137e2bb62254 ]
 
-The TXP_VSTART_AT_EOF will generate a second VSTART signal to the HVS.
-However, the HVS waits for VSTART to enable the FIFO and will thus start
-filling the FIFO before the start of the frame.
+The mptcp release callback checks several flags in atomic
+context, but only MPTCP_CLEAN_UNA can be up frequently.
 
-This leads to corruption at the beginning of the first frame, and
-content from the previous frame at the beginning of the next frames.
+Reorganize the code to avoid multiple conditionals in the
+most common scenarios.
 
-Since one VSTART is enough, let's get rid of it.
+Additional clarify a related comment.
 
-Fixes: 008095e065a8 ("drm/vc4: Add support for the transposer block")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://lore.kernel.org/r/20220328153659.2382206-3-maxime@cerno.tech
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_txp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/mptcp/protocol.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_txp.c b/drivers/gpu/drm/vc4/vc4_txp.c
-index 9809ca3e2945..ace2d03649ba 100644
---- a/drivers/gpu/drm/vc4/vc4_txp.c
-+++ b/drivers/gpu/drm/vc4/vc4_txp.c
-@@ -298,7 +298,7 @@ static void vc4_txp_connector_atomic_commit(struct drm_connector *conn,
- 	if (WARN_ON(i == ARRAY_SIZE(drm_fmts)))
- 		return;
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 0cbea3b6d0a4..2a9335ce5df1 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -3092,15 +3092,17 @@ static void mptcp_release_cb(struct sock *sk)
+ 		spin_lock_bh(&sk->sk_lock.slock);
+ 	}
  
--	ctrl = TXP_GO | TXP_VSTART_AT_EOF | TXP_EI |
-+	ctrl = TXP_GO | TXP_EI |
- 	       VC4_SET_FIELD(0xf, TXP_BYTE_ENABLE) |
- 	       VC4_SET_FIELD(txp_fmts[i], TXP_FORMAT);
+-	/* be sure to set the current sk state before tacking actions
+-	 * depending on sk_state
+-	 */
+-	if (__test_and_clear_bit(MPTCP_CONNECTED, &msk->cb_flags))
+-		__mptcp_set_connected(sk);
+ 	if (__test_and_clear_bit(MPTCP_CLEAN_UNA, &msk->cb_flags))
+ 		__mptcp_clean_una_wakeup(sk);
+-	if (__test_and_clear_bit(MPTCP_ERROR_REPORT, &msk->cb_flags))
+-		__mptcp_error_report(sk);
++	if (unlikely(&msk->cb_flags)) {
++		/* be sure to set the current sk state before tacking actions
++		 * depending on sk_state, that is processing MPTCP_ERROR_REPORT
++		 */
++		if (__test_and_clear_bit(MPTCP_CONNECTED, &msk->cb_flags))
++			__mptcp_set_connected(sk);
++		if (__test_and_clear_bit(MPTCP_ERROR_REPORT, &msk->cb_flags))
++			__mptcp_error_report(sk);
++	}
  
+ 	__mptcp_update_rmem(sk);
+ }
 -- 
 2.35.1
 
