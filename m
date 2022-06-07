@@ -2,83 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FA82CCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CDF8CCA493
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:29:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386254AbiFHB03 (ORCPT
+        id S1386851AbiFHB0y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:26:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43570 "EHLO
+        Tue, 7 Jun 2022 21:26:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387123AbiFGWt5 (ORCPT
+        with ESMTP id S1383440AbiFGWCG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:49:57 -0400
-X-Greylist: delayed 3076 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 12:38:30 PDT
-Received: from 2.mo560.mail-out.ovh.net (2.mo560.mail-out.ovh.net [188.165.53.149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59FF02A90C1
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:38:29 -0700 (PDT)
-Received: from player732.ha.ovh.net (unknown [10.111.208.131])
-        by mo560.mail-out.ovh.net (Postfix) with ESMTP id 5E50D246C9
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:01:08 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player732.ha.ovh.net (Postfix) with ESMTPSA id 5C9AD1D75E8C8;
-        Tue,  7 Jun 2022 19:01:02 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-101G00425171465-c27e-4da5-ab29-ec544616d68f,
-                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Jens Frederich <jfrederich@gmail.com>,
-        Jon Nettleton <jon.nettleton@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>,
-        linux-staging@lists.linux.dev
-Subject: [PATCH] staging: olpc_dcon: Use backlight helper
-Date:   Tue,  7 Jun 2022 21:00:49 +0200
-Message-Id: <20220607190049.1132154-1-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
+        Tue, 7 Jun 2022 18:02:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6A524E034;
+        Tue,  7 Jun 2022 12:14:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B37E861923;
+        Tue,  7 Jun 2022 19:14:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C59A5C385A2;
+        Tue,  7 Jun 2022 19:14:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629261;
+        bh=Kw55ogd+UksAEvHHk1V0dss2Rjc0d6qyG+RxuJsUNVQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FXoOAfpzTps+iNTT4DkF2bvxKxShqQkddaa26NT3gnmUgSZPY/+17IztoNv48zpMK
+         9tcPv+Zp5QcYk4+FOFerUPCcz5CDGw+DnRtBOsvzUesB3/0RmPO+LTp4Quc5hsrMKc
+         /eW0TFEY/HVvncpeyOZrlr3oZz8aIXRw0IOTayH0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 590/879] firmware: arm_scmi: Fix list protocols enumeration in the base protocol
+Date:   Tue,  7 Jun 2022 19:01:48 +0200
+Message-Id: <20220607165019.976475398@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 11561866145982154412
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudefvdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejfedvrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheeitd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of retrieving the backlight brightness in struct
-backlight_properties manually, and then checking whether the backlight
-should be on at all, use backlight_get_brightness() which does all
-this and insulates this from future changes.
+From: Cristian Marussi <cristian.marussi@arm.com>
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
-Cc: Jens Frederich <jfrederich@gmail.com>
-Cc: Jon Nettleton <jon.nettleton@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-staging@lists.linux.dev
+[ Upstream commit 8009120e0354a67068e920eb10dce532391361d0 ]
+
+While enumerating protocols implemented by the SCMI platform using
+BASE_DISCOVER_LIST_PROTOCOLS, the number of returned protocols is
+currently validated in an improper way since the check employs a sum
+between unsigned integers that could overflow and cause the check itself
+to be silently bypassed if the returned value 'loop_num_ret' is big
+enough.
+
+Fix the validation avoiding the addition.
+
+Link: https://lore.kernel.org/r/20220330150551.2573938-4-cristian.marussi@arm.com
+Fixes: b6f20ff8bd94 ("firmware: arm_scmi: add common infrastructure and support for base protocol")
+Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/olpc_dcon/olpc_dcon.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/firmware/arm_scmi/base.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/olpc_dcon/olpc_dcon.c b/drivers/staging/olpc_dcon/olpc_dcon.c
-index 7284cb4ac395..b9d570e9ad3b 100644
---- a/drivers/staging/olpc_dcon/olpc_dcon.c
-+++ b/drivers/staging/olpc_dcon/olpc_dcon.c
-@@ -517,10 +517,7 @@ static struct device_attribute dcon_device_files[] = {
- static int dcon_bl_update(struct backlight_device *dev)
- {
- 	struct dcon_priv *dcon = bl_get_data(dev);
--	u8 level = dev->props.brightness & 0x0F;
--
--	if (dev->props.power != FB_BLANK_UNBLANK)
--		level = 0;
-+	u8 level = backlight_get_brightness(dev) & 0x0F;
+diff --git a/drivers/firmware/arm_scmi/base.c b/drivers/firmware/arm_scmi/base.c
+index f5219334fd3a..3fe172c03c24 100644
+--- a/drivers/firmware/arm_scmi/base.c
++++ b/drivers/firmware/arm_scmi/base.c
+@@ -197,7 +197,7 @@ scmi_base_implementation_list_get(const struct scmi_protocol_handle *ph,
+ 			break;
  
- 	if (level != dcon->bl_val)
- 		dcon_set_backlight(dcon, level);
-
-base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+ 		loop_num_ret = le32_to_cpu(*num_ret);
+-		if (tot_num_ret + loop_num_ret > MAX_PROTOCOLS_IMP) {
++		if (loop_num_ret > MAX_PROTOCOLS_IMP - tot_num_ret) {
+ 			dev_err(dev, "No. of Protocol > MAX_PROTOCOLS_IMP");
+ 			break;
+ 		}
 -- 
-2.30.2
+2.35.1
+
+
 
