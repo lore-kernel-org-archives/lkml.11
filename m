@@ -2,144 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E084CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:51:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FAEFCCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 16:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345215AbiFGQvw (ORCPT
+        id S1345233AbiFGQwH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 12:51:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41584 "EHLO
+        Tue, 7 Jun 2022 12:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345213AbiFGQvo (ORCPT
+        with ESMTP id S1345229AbiFGQwE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 12:51:44 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95916100509;
-        Tue,  7 Jun 2022 09:51:41 -0700 (PDT)
-Received: (Authenticated sender: jacopo@jmondi.org)
-        by mail.gandi.net (Postfix) with ESMTPSA id 003FBFF80C;
-        Tue,  7 Jun 2022 16:51:37 +0000 (UTC)
-Date:   Tue, 7 Jun 2022 18:51:36 +0200
-From:   Jacopo Mondi <jacopo@jmondi.org>
-To:     Quentin Schulz <foss+kernel@0leil.net>
-Cc:     shawnx.tu@intel.com, mchehab@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-media@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Quentin Schulz <quentin.schulz@theobroma-systems.com>
-Subject: Re: [PATCH v6 4/4] media: i2c: ov5675: add .get_selection support
-Message-ID: <20220607165136.bmriu2n7yorc7fx6@uno.localdomain>
-References: <20220607153335.875956-1-foss+kernel@0leil.net>
- <20220607153335.875956-4-foss+kernel@0leil.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220607153335.875956-4-foss+kernel@0leil.net>
+        Tue, 7 Jun 2022 12:52:04 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA92A10192A
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 09:52:03 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-310061f47faso110149097b3.9
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 09:52:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=rjRsj4m79FaG01hh1JM+gnevDQqcLHdW4HjfiuVC0I0=;
+        b=hn7Xx71n2KnaaudPsWoOTWsmIKVH2tEImkA5C6UnP/mD/yBngfMLji74jihCgmGl3i
+         Oe+usDOEZhIztDMPc4rcdCiSldhSIax6bzofbCx/aXbOpHA8gJZb4Yt4b3HyzrEDGavY
+         tz1an+NE9s3+fZ4I/wqrsGluqW7Gl9q8cb52CZ1wNMrgLvNqRIVFbx7acB7jUIs6dy3a
+         z6SeXpB+1tP7RqmG/ZlE2XEI4V6CdBQCR3gjZkV62ZVv42q3eIfxz3DsUvqfdulCdf0n
+         aWtbzj2IgfmtGIcAPuyAQ6d5/2iF/92KY92kI9WA2rv9rcUAH23ftma3wW1dEriJCT6t
+         aD5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=rjRsj4m79FaG01hh1JM+gnevDQqcLHdW4HjfiuVC0I0=;
+        b=oy+lZM3NZWiWS7zo5Tmvd+sBYn8lVjtplxSfMVSM0FSiKm5i1RFd2NIZuYGQgj2Iy/
+         2LsZPmL2/97GGd8AXyAxGjUEUySJprey1y5Kz6teqMU79bO16BtJsbK6mSVQy1qCjXRE
+         BAXA+0dUm4KDPHOR+yHUy8RQeQbmeuX8Bx69mI39EynK5X8b7OBK5nU87mP+TpduTmIB
+         ugqpudRArFWXZeAWUCIwcMwesce+BQjwLfKIbskVt4esUZDJZ2jXB2VpfmkN1Pq2YSs+
+         1h8OjeON1rTvZw4DSR3pMTe1eL2jl1qlHZGrDmJ/GH0NA+3FK9w3FdoQZel4GLimGyLz
+         WAJQ==
+X-Gm-Message-State: AOAM533hkGn6T7UwAMNpemp/hZej3w8XiZbpWA/iiQl3F83q76BgltK3
+        NeHMBhfQd/yFIDyw54havUqQx0xcp2byOnMJ+g==
+X-Google-Smtp-Source: ABdhPJy+IB15B8hsKv/SihsClOR+eo9Nq0yxU4MyQoY67kA3uwyRsLph8BS0L40V/9kbjX+bqF3kZKaMqzx2PJ910Q==
+X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:7091:8518:ec1e:93dc])
+ (user=kaleshsingh job=sendgmr) by 2002:a05:6902:1006:b0:660:6f21:a210 with
+ SMTP id w6-20020a056902100600b006606f21a210mr22111816ybt.178.1654620722845;
+ Tue, 07 Jun 2022 09:52:02 -0700 (PDT)
+Date:   Tue,  7 Jun 2022 09:50:44 -0700
+In-Reply-To: <20220607165105.639716-1-kaleshsingh@google.com>
+Message-Id: <20220607165105.639716-3-kaleshsingh@google.com>
+Mime-Version: 1.0
+References: <20220607165105.639716-1-kaleshsingh@google.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH v3 2/5] KVM: arm64: Compile stacktrace.nvhe.o
+From:   Kalesh Singh <kaleshsingh@google.com>
+To:     mark.rutland@arm.com, broonie@kernel.org, maz@kernel.org
+Cc:     will@kernel.org, qperret@google.com, tabba@google.com,
+        surenb@google.com, tjmercier@google.com, kernel-team@android.com,
+        Kalesh Singh <kaleshsingh@google.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        Andrew Jones <drjones@redhat.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        Keir Fraser <keirf@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Oliver Upton <oupton@google.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Quentin,
+Recompile stack unwinding code for use with the nVHE hypervisor. This is
+a preparatory patch that will allow reusing most of the kernel unwinding
+logic in the nVHE hypervisor.
 
-On Tue, Jun 07, 2022 at 05:33:35PM +0200, Quentin Schulz wrote:
-> From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
->
-> The sensor has 2592*1944 active pixels, surrounded by 16 active dummy
-> pixels and there are an additional 24 black rows "at the bottom".
->
->                      [2624]
->         +-----+------------------+-----+
->         |     |     16 dummy     |     |
->         +-----+------------------+-----+
->         |     |                  |     |
->         |     |     [2592]       |     |
->         |     |                  |     |
->         |16   |      valid       | 16  |[2000]
->         |dummy|                  |dummy|
->         |     |            [1944]|     |
->         |     |                  |     |
->         +-----+------------------+-----+
->         |     |     16 dummy     |     |
->         +-----+------------------+-----+
->         |     |  24 black lines  |     |
->         +-----+------------------+-----+
->
-> The top-left coordinate is gotten from the registers specified in the
-> modes which are identical for both currently supported modes.
->
-> There are currently two modes supported by this driver: 2592*1944 and
-> 1296*972. The second mode is obtained thanks to subsampling while
-> keeping the same field of view (FoV). No cropping involved, hence the
-> harcoded values.
->
-> Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
-> ---
->
-> v6:
->  - explicit a bit more the commit log around subsampling for lower
->  resolution modes,
->  - (again) fixed reporting for V4L2_SEL_TGT_CROP_* thanks to Jacopo's help,
->
-> v4:
->  - explicit a bit more the commit log,
->  - added drawing in the commit log,
->  - fixed reporting for V4L2_SEL_TGT_CROP_* thanks to Jacopo's help,
->
-> added in v3
->
->  drivers/media/i2c/ov5675.c | 21 +++++++++++++++++++++
->  1 file changed, 21 insertions(+)
->
-> diff --git a/drivers/media/i2c/ov5675.c b/drivers/media/i2c/ov5675.c
-> index 80840ad7bbb0..2230ff47ef49 100644
-> --- a/drivers/media/i2c/ov5675.c
-> +++ b/drivers/media/i2c/ov5675.c
-> @@ -1121,6 +1121,26 @@ static int ov5675_get_format(struct v4l2_subdev *sd,
->  	return 0;
->  }
->
-> +static int ov5675_get_selection(struct v4l2_subdev *sd,
-> +				struct v4l2_subdev_state *state,
-> +				struct v4l2_subdev_selection *sel)
-> +{
-> +	if (sel->which != V4L2_SUBDEV_FORMAT_ACTIVE)
-> +		return -EINVAL;
-> +
-> +	switch (sel->target) {
-> +	case V4L2_SEL_TGT_CROP:
-> +	case V4L2_SEL_TGT_CROP_BOUNDS:
+Suggested-by: Mark Rutland <mark.rutland@arm.com>
+Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+Reviewed-by: Mark Brown <broonie@kernel.org>
+---
 
-Seem like we have trouble understanding each other, or better, I have
-troubles explaining myself most probably :)
+Changes in v3:
+  - Add Mark's Reviewed-by tag
 
-If the dummy/black area is readable, this should just be (0, 0, 2624,
-2000) like it was in your previous version. What has changed that I
-have missed ?
+Changes in v2:
+  - Split out refactoring of common unwinding logic into a separate patch,
+    per Mark Brown
 
-Thanks
-  j
+ arch/arm64/include/asm/stacktrace.h | 18 +++++++++-----
+ arch/arm64/kernel/stacktrace.c      | 37 ++++++++++++++++-------------
+ arch/arm64/kvm/hyp/nvhe/Makefile    |  3 ++-
+ 3 files changed, 35 insertions(+), 23 deletions(-)
 
+diff --git a/arch/arm64/include/asm/stacktrace.h b/arch/arm64/include/asm/stacktrace.h
+index aec9315bf156..f5af9a94c5a6 100644
+--- a/arch/arm64/include/asm/stacktrace.h
++++ b/arch/arm64/include/asm/stacktrace.h
+@@ -16,12 +16,14 @@
+ #include <asm/sdei.h>
+ 
+ enum stack_type {
+-	STACK_TYPE_UNKNOWN,
++#ifndef __KVM_NVHE_HYPERVISOR__
+ 	STACK_TYPE_TASK,
+ 	STACK_TYPE_IRQ,
+ 	STACK_TYPE_OVERFLOW,
+ 	STACK_TYPE_SDEI_NORMAL,
+ 	STACK_TYPE_SDEI_CRITICAL,
++#endif /* !__KVM_NVHE_HYPERVISOR__ */
++	STACK_TYPE_UNKNOWN,
+ 	__NR_STACK_TYPES
+ };
+ 
+@@ -31,11 +33,6 @@ struct stack_info {
+ 	enum stack_type type;
+ };
+ 
+-extern void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
+-			   const char *loglvl);
+-
+-DECLARE_PER_CPU(unsigned long *, irq_stack_ptr);
+-
+ static inline bool on_stack(unsigned long sp, unsigned long size,
+ 			    unsigned long low, unsigned long high,
+ 			    enum stack_type type, struct stack_info *info)
+@@ -54,6 +51,12 @@ static inline bool on_stack(unsigned long sp, unsigned long size,
+ 	return true;
+ }
+ 
++#ifndef __KVM_NVHE_HYPERVISOR__
++extern void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
++			   const char *loglvl);
++
++DECLARE_PER_CPU(unsigned long *, irq_stack_ptr);
++
+ static inline bool on_irq_stack(unsigned long sp, unsigned long size,
+ 				struct stack_info *info)
+ {
+@@ -88,6 +91,7 @@ static inline bool on_overflow_stack(unsigned long sp, unsigned long size,
+ static inline bool on_overflow_stack(unsigned long sp, unsigned long size,
+ 			struct stack_info *info) { return false; }
+ #endif
++#endif /* !__KVM_NVHE_HYPERVISOR__ */
+ 
+ 
+ /*
+@@ -101,6 +105,7 @@ static inline bool on_accessible_stack(const struct task_struct *tsk,
+ 	if (info)
+ 		info->type = STACK_TYPE_UNKNOWN;
+ 
++#ifndef __KVM_NVHE_HYPERVISOR__
+ 	if (on_task_stack(tsk, sp, size, info))
+ 		return true;
+ 	if (tsk != current || preemptible())
+@@ -111,6 +116,7 @@ static inline bool on_accessible_stack(const struct task_struct *tsk,
+ 		return true;
+ 	if (on_sdei_stack(sp, size, info))
+ 		return true;
++#endif /* !__KVM_NVHE_HYPERVISOR__ */
+ 
+ 	return false;
+ }
+diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+index ee60c279511c..a84e38d41d38 100644
+--- a/arch/arm64/kernel/stacktrace.c
++++ b/arch/arm64/kernel/stacktrace.c
+@@ -129,6 +129,26 @@ static int notrace __unwind_next(struct task_struct *tsk,
+ }
+ NOKPROBE_SYMBOL(__unwind_next);
+ 
++static int notrace unwind_next(struct task_struct *tsk,
++			       struct unwind_state *state);
++
++static void notrace unwind(struct task_struct *tsk,
++			   struct unwind_state *state,
++			   stack_trace_consume_fn consume_entry, void *cookie)
++{
++	while (1) {
++		int ret;
++
++		if (!consume_entry(cookie, state->pc))
++			break;
++		ret = unwind_next(tsk, state);
++		if (ret < 0)
++			break;
++	}
++}
++NOKPROBE_SYMBOL(unwind);
++
++#ifndef __KVM_NVHE_HYPERVISOR__
+ static int notrace unwind_next(struct task_struct *tsk,
+ 			       struct unwind_state *state)
+ {
+@@ -171,22 +191,6 @@ static int notrace unwind_next(struct task_struct *tsk,
+ }
+ NOKPROBE_SYMBOL(unwind_next);
+ 
+-static void notrace unwind(struct task_struct *tsk,
+-			   struct unwind_state *state,
+-			   stack_trace_consume_fn consume_entry, void *cookie)
+-{
+-	while (1) {
+-		int ret;
+-
+-		if (!consume_entry(cookie, state->pc))
+-			break;
+-		ret = unwind_next(tsk, state);
+-		if (ret < 0)
+-			break;
+-	}
+-}
+-NOKPROBE_SYMBOL(unwind);
+-
+ static bool dump_backtrace_entry(void *arg, unsigned long where)
+ {
+ 	char *loglvl = arg;
+@@ -238,3 +242,4 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
+ 
+ 	unwind(task, &state, consume_entry, cookie);
+ }
++#endif /* !__KVM_NVHE_HYPERVISOR__ */
+diff --git a/arch/arm64/kvm/hyp/nvhe/Makefile b/arch/arm64/kvm/hyp/nvhe/Makefile
+index f9fe4dc21b1f..c0ff0d6fc403 100644
+--- a/arch/arm64/kvm/hyp/nvhe/Makefile
++++ b/arch/arm64/kvm/hyp/nvhe/Makefile
+@@ -14,7 +14,8 @@ lib-objs := $(addprefix ../../../lib/, $(lib-objs))
+ 
+ obj-y := timer-sr.o sysreg-sr.o debug-sr.o switch.o tlb.o hyp-init.o host.o \
+ 	 hyp-main.o hyp-smp.o psci-relay.o early_alloc.o page_alloc.o \
+-	 cache.o setup.o mm.o mem_protect.o sys_regs.o pkvm.o
++	 cache.o setup.o mm.o mem_protect.o sys_regs.o pkvm.o \
++	 ../../../kernel/stacktrace.o
+ obj-y += ../vgic-v3-sr.o ../aarch32.o ../vgic-v2-cpuif-proxy.o ../entry.o \
+ 	 ../fpsimd.o ../hyp-entry.o ../exception.o ../pgtable.o
+ obj-$(CONFIG_DEBUG_LIST) += list_debug.o
+-- 
+2.36.1.255.ge46751e96f-goog
 
-> +	case V4L2_SEL_TGT_CROP_DEFAULT:
-> +		sel->r.top = 16;
-> +		sel->r.left = 16;
-> +		sel->r.width = 2592;
-> +		sel->r.height = 1944;
-> +		return 0;
-> +	}
-> +	return -EINVAL;
-> +}
-> +
->  static int ov5675_enum_mbus_code(struct v4l2_subdev *sd,
->  				 struct v4l2_subdev_state *sd_state,
->  				 struct v4l2_subdev_mbus_code_enum *code)
-> @@ -1170,6 +1190,7 @@ static const struct v4l2_subdev_video_ops ov5675_video_ops = {
->  static const struct v4l2_subdev_pad_ops ov5675_pad_ops = {
->  	.set_fmt = ov5675_set_format,
->  	.get_fmt = ov5675_get_format,
-> +	.get_selection = ov5675_get_selection,
->  	.enum_mbus_code = ov5675_enum_mbus_code,
->  	.enum_frame_size = ov5675_enum_frame_size,
->  };
-> --
-> 2.36.1
->
