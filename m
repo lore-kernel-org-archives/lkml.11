@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C70CCCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C0ADC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380537AbiFGVa6 (ORCPT
+        id S1380407AbiFGVax (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:30:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42324 "EHLO
+        Tue, 7 Jun 2022 17:30:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378133AbiFGUex (ORCPT
+        with ESMTP id S1377910AbiFGUej (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4905F1E96C0;
-        Tue,  7 Jun 2022 11:37:35 -0700 (PDT)
+        Tue, 7 Jun 2022 16:34:39 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4150B11E1DC;
+        Tue,  7 Jun 2022 11:36:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96D4AB82182;
-        Tue,  7 Jun 2022 18:37:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAD91C385A5;
-        Tue,  7 Jun 2022 18:37:31 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8D0BBCE2439;
+        Tue,  7 Jun 2022 18:36:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 852E0C385A2;
+        Tue,  7 Jun 2022 18:36:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627052;
-        bh=6oCEsGrH4yCyfhP7SrWq+do8nPz28zA/Cu2zTNcGrHU=;
+        s=korg; t=1654627002;
+        bh=mnPUu1JeXPuFZCR5TXMgkRyJKUvD49C8Pp3UKVqAxIY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sBcJSjb4FLYJIN0AbtfDrzfG0crsl9qMrD0Io6d4STf9gdDEcgyOa4mieUpYgEyRU
-         nj+EjixqVJyZiitTJN2uijIBPcStOpIGZyd9ePorCvMYBso6bAuPai8kLtb4fk8HCq
-         OKAl7nTLexItu+X0FlXg3TZGTcppFKzV5ixZfJ38=
+        b=hpByAe/eL7B4gwXAfyx/sk265qAsm1ioypQVo8Z7VM4y/kZQfR5wS0tkYy0LAuEIE
+         plFPP7WlbeRJSJKwKYEI0evoVXcNlaaIDmSY05+zBYgDiWxuUEuInI/mQxPTD2dUaJ
+         PTB3maim8BUCTbUAiV0uiRuVFpLyMuk6x5FhXUW8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Ian Rogers <irogers@google.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Sumanth Korikkar <sumanthk@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, ChenXiaoSong <chenxiaosong2@huawei.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 598/772] perf build: Fix btf__load_from_kernel_by_id() feature check
-Date:   Tue,  7 Jun 2022 19:03:10 +0200
-Message-Id: <20220607165006.563021102@linuxfoundation.org>
+Subject: [PATCH 5.17 582/772] NFS: Dont report ENOSPC write errors twice
+Date:   Tue,  7 Jun 2022 19:02:54 +0200
+Message-Id: <20220607165006.098890705@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -57,51 +51,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Olsa <jolsa@kernel.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 73534617dfa3c4cd95fe5ffaeff5315e9ffc2de6 ]
+[ Upstream commit e6005436f6cc9ed13288f936903f0151e5543485 ]
 
-The btf__load_from_kernel_by_id() only takes one arg, not two.
+Any errors reported by the write() system call need to be cleared from
+the file descriptor's error tracking. The current call to nfs_wb_all()
+causes the error to be reported, but since it doesn't call
+file_check_and_advance_wb_err(), we can end up reporting the same error
+a second time when the application calls fsync().
 
-Committer notes:
+Note that since Linux 4.13, the rule is that EIO may be reported for
+write(), but it must be reported by a subsequent fsync(), so let's just
+drop reporting it in write.
 
-I tested it just with an older libbpf, one where
-btf__load_from_kernel_by_id() wasn't introduced yet.
+The check for nfs_ctx_key_to_expire() is just a duplicate to the one
+already in nfs_write_end(), so let's drop that too.
 
-A test with a newer dynamic libbpf would fail because the
-btf__load_from_kernel_by_id() is there, but takes just one arg.
-
-Fixes: 0ae065a5d265bc5a ("perf build: Fix check for btf__load_from_kernel_by_id() in libbpf")
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Ilya Leoshkevich <iii@linux.ibm.com>
-Cc: Sumanth Korikkar <sumanthk@linux.ibm.com>
-Cc: Sven Schnelle <svens@linux.ibm.com>
-Cc: Thomas Richter <tmricht@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Link: http://lore.kernel.org/linux-perf-users/YozLKby7ITEtchC9@krava
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Reported-by: ChenXiaoSong <chenxiaosong2@huawei.com>
+Fixes: ce368536dd61 ("nfs: nfs_file_write() should check for writeback errors")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../build/feature/test-libbpf-btf__load_from_kernel_by_id.c  | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ fs/nfs/file.c | 34 ++++++++++++++--------------------
+ 1 file changed, 14 insertions(+), 20 deletions(-)
 
-diff --git a/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c b/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c
-index f7c084428735..a17647f7d5a4 100644
---- a/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c
-+++ b/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c
-@@ -1,7 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0
--#include <bpf/libbpf.h>
-+#include <bpf/btf.h>
+diff --git a/fs/nfs/file.c b/fs/nfs/file.c
+index ce761c88d260..7e0ce50e04f6 100644
+--- a/fs/nfs/file.c
++++ b/fs/nfs/file.c
+@@ -594,18 +594,6 @@ static const struct vm_operations_struct nfs_file_vm_ops = {
+ 	.page_mkwrite = nfs_vm_page_mkwrite,
+ };
  
- int main(void)
+-static int nfs_need_check_write(struct file *filp, struct inode *inode,
+-				int error)
+-{
+-	struct nfs_open_context *ctx;
+-
+-	ctx = nfs_file_open_context(filp);
+-	if (nfs_error_is_fatal_on_server(error) ||
+-	    nfs_ctx_key_to_expire(ctx, inode))
+-		return 1;
+-	return 0;
+-}
+-
+ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
  {
--	return btf__load_from_kernel_by_id(20151128, NULL);
-+	btf__load_from_kernel_by_id(20151128);
-+	return 0;
- }
+ 	struct file *file = iocb->ki_filp;
+@@ -633,7 +621,7 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
+ 	if (iocb->ki_flags & IOCB_APPEND || iocb->ki_pos > i_size_read(inode)) {
+ 		result = nfs_revalidate_file_size(inode, file);
+ 		if (result)
+-			goto out;
++			return result;
+ 	}
+ 
+ 	nfs_clear_invalid_mapping(file->f_mapping);
+@@ -652,6 +640,7 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
+ 
+ 	written = result;
+ 	iocb->ki_pos += written;
++	nfs_add_stats(inode, NFSIOS_NORMALWRITTENBYTES, written);
+ 
+ 	if (mntflags & NFS_MOUNT_WRITE_EAGER) {
+ 		result = filemap_fdatawrite_range(file->f_mapping,
+@@ -669,17 +658,22 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
+ 	}
+ 	result = generic_write_sync(iocb, written);
+ 	if (result < 0)
+-		goto out;
++		return result;
+ 
++out:
+ 	/* Return error values */
+ 	error = filemap_check_wb_err(file->f_mapping, since);
+-	if (nfs_need_check_write(file, inode, error)) {
+-		int err = nfs_wb_all(inode);
+-		if (err < 0)
+-			result = err;
++	switch (error) {
++	default:
++		break;
++	case -EDQUOT:
++	case -EFBIG:
++	case -ENOSPC:
++		nfs_wb_all(inode);
++		error = file_check_and_advance_wb_err(file);
++		if (error < 0)
++			result = error;
+ 	}
+-	nfs_add_stats(inode, NFSIOS_NORMALWRITTENBYTES, written);
+-out:
+ 	return result;
+ 
+ out_swapfile:
 -- 
 2.35.1
 
