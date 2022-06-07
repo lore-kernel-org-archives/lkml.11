@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F077CCA492
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB2D4CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:02:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358721AbiFGUCB (ORCPT
+        id S1358788AbiFGUCP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:02:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40288 "EHLO
+        Tue, 7 Jun 2022 16:02:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353105AbiFGS7n (ORCPT
+        with ESMTP id S1353739AbiFGTAl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:59:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A2314E953;
-        Tue,  7 Jun 2022 11:04:24 -0700 (PDT)
+        Tue, 7 Jun 2022 15:00:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB4B5150A31;
+        Tue,  7 Jun 2022 11:04:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96FD9617B4;
-        Tue,  7 Jun 2022 18:04:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7E15C34119;
-        Tue,  7 Jun 2022 18:04:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E3A26618FE;
+        Tue,  7 Jun 2022 18:04:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBDA8C385A5;
+        Tue,  7 Jun 2022 18:04:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625061;
-        bh=OcWhrdsFQIgNPCqf/QrOHTOvPgdXZMIducRNLcG6Qdg=;
+        s=korg; t=1654625072;
+        bh=8vZKfXai4OCPKtIGxrgBFOVUVu2qKtQk1KA+AD/xiQo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kXvpvoWU68TCz+XPz30lRXnMkShO+9by5NDxpXVPhYGpsdG85ddkGOSl1S+CfWl2W
-         nyN21HNJRJWleXFn2bSQaNPFcudOGCjDzhWnTNggV3C2ILERQRozMFa0krYQTqpyHk
-         1nAKf91t0Fq5/ke9vaeEJeVCQInICpNamHhqudYA=
+        b=owHzVgP9gYfFeZegERT1Q79/EQbsLZV3oUzlymijP5aF4N56DFk4MY1+j2+KvB/nB
+         cQAvoEDVbS166e85jkGTnUGwh3alJuKVQYw84q+KqEPaukVy+FyX8wAocB74RLHQBh
+         22slkSy0qh60sQYzGWakIR2KU9sY+/NypeoLT5Jk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
-        Gautam Menghani <gautammenghani201@gmail.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.15 552/667] tracing: Initialize integer variable to prevent garbage return value
-Date:   Tue,  7 Jun 2022 19:03:37 +0200
-Message-Id: <20220607164951.256161571@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 5.15 555/667] PCI: qcom: Fix runtime PM imbalance on probe errors
+Date:   Tue,  7 Jun 2022 19:03:40 +0200
+Message-Id: <20220607164951.344404851@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,37 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gautam Menghani <gautammenghani201@gmail.com>
+From: Johan Hovold <johan+linaro@kernel.org>
 
-commit 154827f8e53d8c492b3fb0cb757fbcadb5d516b5 upstream.
+commit 87d83b96c8d6c6c2d2096bd0bdba73bcf42b8ef0 upstream.
 
-Initialize the integer variable to 0 to fix the clang scan warning:
-Undefined or garbage value returned to caller
-[core.uninitialized.UndefReturn]
-        return ret;
+Drop the leftover pm_runtime_disable() calls from the late probe error
+paths that would, for example, prevent runtime PM from being reenabled
+after a probe deferral.
 
-Link: https://lkml.kernel.org/r/20220522061826.1751-1-gautammenghani201@gmail.com
-
-Cc: stable@vger.kernel.org
-Fixes: 8993665abcce ("tracing/boot: Support multiple handlers for per-event histogram")
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Link: https://lore.kernel.org/r/20220401133854.10421-2-johan+linaro@kernel.org
+Fixes: 6e5da6f7d824 ("PCI: qcom: Fix error handling in runtime PM support")
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+Cc: stable@vger.kernel.org      # 4.20
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_boot.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pci/controller/dwc/pcie-qcom.c |    5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
---- a/kernel/trace/trace_boot.c
-+++ b/kernel/trace/trace_boot.c
-@@ -300,7 +300,7 @@ trace_boot_hist_add_handlers(struct xbc_
- {
- 	struct xbc_node *node;
- 	const char *p, *handler;
--	int ret;
-+	int ret = 0;
+--- a/drivers/pci/controller/dwc/pcie-qcom.c
++++ b/drivers/pci/controller/dwc/pcie-qcom.c
+@@ -1521,17 +1521,14 @@ static int qcom_pcie_probe(struct platfo
+ 	pp->ops = &qcom_pcie_dw_ops;
  
- 	handler = xbc_node_get_data(hnode);
+ 	ret = phy_init(pcie->phy);
+-	if (ret) {
+-		pm_runtime_disable(&pdev->dev);
++	if (ret)
+ 		goto err_pm_runtime_put;
+-	}
+ 
+ 	platform_set_drvdata(pdev, pcie);
+ 
+ 	ret = dw_pcie_host_init(pp);
+ 	if (ret) {
+ 		dev_err(dev, "cannot initialize host\n");
+-		pm_runtime_disable(&pdev->dev);
+ 		goto err_pm_runtime_put;
+ 	}
  
 
 
