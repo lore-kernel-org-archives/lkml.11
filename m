@@ -2,109 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 752E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:21:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8428C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 12:21:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243627AbiFGMVO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:21:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52150 "EHLO
+        id S243652AbiFGMVt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:21:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243831AbiFGMUJ (ORCPT
+        with ESMTP id S243582AbiFGMVn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:20:09 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE024C5E41
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 05:19:48 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id s13so18978942ljd.4
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 05:19:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fastly.com; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=HFNl4deQqY2CVWCJqnRvkKKqDLhRyFvEhkD6zhbS1io=;
-        b=JYTSE+FQSj3LpqRsscj3Ljj0WQdmKkXCC/5x0wki7CIoE7ia2PcV2KUJNeCl1KS+Nv
-         fCI9RUTTFFXWbp2zY5i+KWMlj7jz5irPevyqWm8d5gZwidNRXAKSoFfWcR2JaZR81dz0
-         D6yi4hSrBrxvASQCafI9Wdno9St/pZQ9GHLLM=
+        Tue, 7 Jun 2022 08:21:43 -0400
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC951C5DBD;
+        Tue,  7 Jun 2022 05:20:48 -0700 (PDT)
+Received: by mail-yb1-f169.google.com with SMTP id w2so30835586ybi.7;
+        Tue, 07 Jun 2022 05:20:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=HFNl4deQqY2CVWCJqnRvkKKqDLhRyFvEhkD6zhbS1io=;
-        b=WqUb+qhTQt59hEN/0yGN6nl+L2sHc6Ur2/JkxwW+GhcFdiJvqn7kWIWFYjSGhfqISf
-         U2bLoT3hhzPobBsuKJnIhr8tFp8KByie2M3/ENy2fiNj4abXt5lG+k9kGDZWzq30+X6J
-         67QYWIPNfH34a+z8Bigke/U+PFF40guiXDgK0b2mE9JcxZ4fpJLTGc9n9jDuZwoSvLSk
-         kAtOoT4kTvjnOCpvL/K1hrDDUbhiZ/kYdpC/8TVlk8qrvgfXY20+x//61o+V3VPtiQKp
-         FKyWCBuSagVI8X+gVcSWiYbJLwa/nvdBWllOswBSr4gGdQYtTAQOk+G9iFMnhwFvXFkO
-         rlqA==
-X-Gm-Message-State: AOAM533l0jrpML2fUZAbb6Dl87SP+qkF6kPn/YneJ6z6C05P29Ae7PWw
-        BZYIZQFqvjVCbltgprVfLLq+7JXGysVf5z0nR0WT3dv6u3k=
-X-Google-Smtp-Source: ABdhPJwc6B8osrc3RlQBKNzSqQgX+GAmy2OiHGnBK9NNDbojQKeyzL1+XWJ6r/8G0SIaL9Qni0QATp5zSIL0fycCzko=
-X-Received: by 2002:a2e:b0d6:0:b0:255:7d62:d75c with SMTP id
- g22-20020a2eb0d6000000b002557d62d75cmr12516223ljl.118.1654604387151; Tue, 07
- Jun 2022 05:19:47 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VpZMM3nIIUg8SAe8O5vBSQaTSRtJGAcQXYQ3T0pf1NQ=;
+        b=7N9KlPz1+u3IKG8y0tWAogfbqNchVdAVjUxWOr6piBciSI3brlYpNEBG2OROWyWh8L
+         2n4XkeAoeeo/qLADsi1zv2KQVwElY/IR9+455n2Y1vOoRGvWJ+h7I8E1nZ8kHSy9ntKR
+         9uFR+GjhpdsJPxMRRqRn+D1JcENiex1+afbGlEXkoY8kpis1BE/qUbUuFl49sv8HDbyT
+         XlYlCqh4c2d5k1iioJGYzhQ0Q3ANjj+a2lmpp1+7Z2j33nB8GvyLgt0PUo6fAaIdI/w2
+         lV9HEibr47U40FvBOBNTKEn0oGkPrdVUNSBBdcRKv1SCN2s67MTLhEvHNdKAazIc0iN3
+         L/bQ==
+X-Gm-Message-State: AOAM532SJ+NrhVeL+sfzcT1gE5MbPdlVka90Ennl3LbRBEyU0XDJxvJE
+        4vHv1gMvgpAUz/xHkhC+wln2o5Sk0NlL41T2usE=
+X-Google-Smtp-Source: ABdhPJy7JbRPJ+kyEBxwBQ0h03CKHs4s0yzfq7fFavfnLZyLDYAcMebORrDsmuSgoFJc7oG18sfBfS6wYgkFsfGxJ5w=
+X-Received: by 2002:a25:6588:0:b0:65d:57b9:c470 with SMTP id
+ z130-20020a256588000000b0065d57b9c470mr30465552ybb.142.1654604447877; Tue, 07
+ Jun 2022 05:20:47 -0700 (PDT)
 MIME-Version: 1.0
-From:   Joe Damato <jdamato@fastly.com>
-Date:   Tue, 7 Jun 2022 15:19:36 +0300
-Message-ID: <CALALjgwSm07Cnbm6WaK74ZSs4wJ7hs4B3wLOe7h4Y-7sJ5cUWg@mail.gmail.com>
-Subject: 5.19-rc1 x86 build failure
-To:     x86@kernel.org
-Cc:     jpoimboe@redhat.com, peterz@infradead.org,
-        linux-kernel@vger.kernel.org, jiangshanlai@gmail.com, bp@suse.de,
-        brgerst@gmail.com, Andrew.Cooper3@citrix.com
+References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
+ <CAMZ6RqLNq2tQjjJudSZ5c_fJ2VR9cX5ihjhhuNszm4wG-DgLfw@mail.gmail.com> <20220607103923.5m6j4rykvitofsv4@pengutronix.de>
+In-Reply-To: <20220607103923.5m6j4rykvitofsv4@pengutronix.de>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Tue, 7 Jun 2022 21:20:36 +0900
+Message-ID: <CAMZ6RqJt8dBrYe+DdOKoVSpak8-5qi7B1vwT2wpe16H+29Ay=g@mail.gmail.com>
+Subject: Re: [RFC PATCH 00/13] can: slcan: extend supported features
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        linux-kernel@vger.kernel.org,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        michael@amarulasolutions.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Greetings:
+On Tue. 7 Jun 2022 at 19:39, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> On 07.06.2022 19:27:05, Vincent MAILHOL wrote:
+> > On Tue. 7 juin 2022 at 18:47, Dario Binacchi
+> > <dario.binacchi@amarulasolutions.com> wrote:
+> > > This series originated as a result of CAN communication tests for an
+> > > application using the USBtin adapter (https://www.fischl.de/usbtin/).
+> > > The tests showed some errors but for the driver everything was ok.
+> > > Also, being the first time I used the slcan driver, I was amazed that
+> > > it was not possible to configure the bitrate via the ip tool.
+> > > For these two reasons, I started looking at the driver code and realized
+> > > that it didn't use the CAN network device driver interface.
+> >
+> > That's funny! Yesterday, I sent this comment:
+> > https://lore.kernel.org/linux-can/CAMZ6RqKZwC_OKcgH+WPacY6kbNbj4xR2Gdg2NQtm5Ka5Hfw79A@mail.gmail.com/
+> >
+> > And today, you send a full series to remove all the dust from the
+> > slcan driver. Do I have some kind of mystical power to summon people
+> > on the mailing list?
+>
+> That would be very useful and awesome super power, I'm a bit jealous. :D
+>
+> > > Starting from these assumptions, I tried to:
+> > > - Use the CAN network device driver interface.
+> >
+> > In order to use the CAN network device driver, a.k.a. can-dev module,
+> > drivers/net/can/Kbuild has to be adjusted: move slcan inside CAN_DEV
+> > scope.
+> >
+> > @Mark: because I will have to send a new version for my can-dev/Kbuild
+> > cleanup, maybe I can take that change and add it to my series?
+>
+> Let's get the your Kconfig/Makefile changes into can-next/master first.
+> Then Dario can then base this series on that branch.
 
-My apologies if this is the incorrect place to report this, but I got a
-build error when trying to compile the net-next 5.19-rc1 tree.
-
-git bisect says that commit a1e2c031ec394 ("x86/mm: Simplify
-RESERVE_BRK()") is responsible for the build issue I am hitting.
-
-I am performing this build on an x86_64 system with GNU C11 (Ubuntu
-5.4.0-6ubuntu1~16.04.12) version 5.4.0 20160609 (x86_64-linux-gnu).
-
-The assembler outputs a cryptic error message:
-
-/tmp/ccnGOKZ5.s: Assembler messages:
-/tmp/ccnGOKZ5.s:98: Error: missing ')'
-/tmp/ccnGOKZ5.s:98: Error: missing ')'
-/tmp/ccnGOKZ5.s:98: Error: missing ')'
-/tmp/ccnGOKZ5.s:98: Error: junk at end of line, first unrecognized
-character is `U'
-/tmp/ccnGOKZ5.s:99: Error: missing ')'
-/tmp/ccnGOKZ5.s:99: Error: missing ')'
-/tmp/ccnGOKZ5.s:99: Error: missing ')'
-/tmp/ccnGOKZ5.s:99: Error: junk at end of line, first unrecognized
-character is `U'
-
-I've asked GCC to generate the assembly and output so I can see more
-specifically where this issue is (via "-fverbose-asm -Wa,-adhln=output"):
-
-  96                            .pushsection .brk_reservation,"aw",@nobits
-  97                            .brk.early_pgt_alloc:
-  98 ???? 00000000              .skip ((2 * 3) * ((1UL) << 12))
-****  Error: missing ')'
-****  Error: missing ')'
-****  Error: missing ')'
-****  Error: junk at end of line, first unrecognized character is `U'
-  98      0000
- 100                            .popsection
-
-This comes from arch/x86/mm/init.c, which has the following code:
-
-RESERVE_BRK(early_pgt_alloc, INIT_PGT_BUF_SIZE);
-
-wherein INIT_PGT_BUF_SIZE (via PAGE_SIZE) has a "1UL" which makes the
-assembler unhappy.
-
-I don't really know what the correct way to fix this is; it seems that the
-macro _AC should handle this if ASSEMBLY is defined, IIUC, but that does
-not seem to be the case at this point in init.c.
-
-Perhaps I am doing something incorrect during the build process causing
-this to happen?
-
-Thanks,
-Joe
+ACK. I'll keep my series as-is.
