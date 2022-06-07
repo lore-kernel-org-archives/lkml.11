@@ -2,125 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42A8CCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:38:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA20CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:38:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355784AbiFGTij (ORCPT
+        id S1355792AbiFGTit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:38:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53900 "EHLO
+        Tue, 7 Jun 2022 15:38:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354247AbiFGSqu (ORCPT
+        with ESMTP id S1354244AbiFGSqu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:46:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D5B1238A2;
-        Tue,  7 Jun 2022 11:00:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D71D1257A5;
+        Tue,  7 Jun 2022 11:00:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 022A9B82368;
-        Tue,  7 Jun 2022 18:00:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DC9BC385A5;
-        Tue,  7 Jun 2022 18:00:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624822;
-        bh=zTLuhzDy89XkcrD+0lrTvkHsRfUC6jvotz8qKuen6Eg=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1BCE2B82182;
+        Tue,  7 Jun 2022 18:00:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E560C3411C;
+        Tue,  7 Jun 2022 18:00:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624823;
+        bh=r7AE4TyLCHPSD38SysrDQyTnu+TvKZGuaaI/tTppefc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=avQ9pxfxyfJHmWLXrCVv2yV2PHj5IaCz16a2NHrFk1rVlgi+gU9W33IUFutyoqHrg
-         k5sX59Te1D1lB08HILHHk7cvxF5A7KHsIT9Dpk90IYQKRoT2vmAAvVREcwu/oCZsU4
-         LsLJFJm4QRyQKFSEL83mMnkrqKndH7EEzGnpRcGM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kajol Jain <kjain@linux.ibm.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        b=Ph+ymeQK2T4gi2QhKl+Expv3Ff6nU4XbGMo6U2ZOe8hD4robmTzFM8DCw3WT5/gdV
+         iwGvo71Mx3/KjsUTWx3smVAq+D4xFQtZI5h/NYIsU0hfXN6ihKuMisNdtxTcKF+q6g
+         q/i6GXJsGlSEhoeLrgYiKFvFD3YUmrbMv8htYhtOTCLQZCqsPw6CMur7SMZaaoTqJ0
+         TuHc/GIi+3SQY0RzdakUWJ0+HgzQ9NQQYqvmrj65x1l7B52n0mno5yb79hw/IgRxOp
+         HFd+iFU/g/WDVoe8xRGRJ92Y9DA7i1SQ2bDUE3t4LnzmlGjf1Y3GphoNNbXiKJ4ydO
+         O8MHXww6kSzhg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Zheyu Ma <zheyuma97@gmail.com>, Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 465/667] powerpc/perf: Fix the threshold compare group constraint for power9
-Date:   Tue,  7 Jun 2022 19:02:10 +0200
-Message-Id: <20220607164948.655635320@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+Subject: [PATCH AUTOSEL 5.4 04/34] tty: synclink_gt: Fix null-pointer-dereference in slgt_clean()
+Date:   Tue,  7 Jun 2022 13:59:39 -0400
+Message-Id: <20220607180011.481266-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
+References: <20220607180011.481266-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kajol Jain <kjain@linux.ibm.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit ab0cc6bbf0c812731c703ec757fcc3fc3a457a34 ]
+[ Upstream commit 689ca31c542687709ba21ec2195c1fbce34fd029 ]
 
-Thresh compare bits for a event is used to program thresh compare
-field in Monitor Mode Control Register A (MMCRA: 9-18 bits for power9).
-When scheduling events as a group, all events in that group should
-match value in threshold bits (like thresh compare, thresh control,
-thresh select). Otherwise event open for the sibling events should fail.
-But in the current code, incase thresh compare bits are not valid,
-we are not failing in group_constraint function which can result
-in invalid group schduling.
+When the driver fails at alloc_hdlcdev(), and then we remove the driver
+module, we will get the following splat:
 
-Fix the issue by returning -1 incase event is threshold and threshold
-compare value is not valid.
+[   25.065966] general protection fault, probably for non-canonical address 0xdffffc0000000182: 0000 [#1] PREEMPT SMP KASAN PTI
+[   25.066914] KASAN: null-ptr-deref in range [0x0000000000000c10-0x0000000000000c17]
+[   25.069262] RIP: 0010:detach_hdlc_protocol+0x2a/0x3e0
+[   25.077709] Call Trace:
+[   25.077924]  <TASK>
+[   25.078108]  unregister_hdlc_device+0x16/0x30
+[   25.078481]  slgt_cleanup+0x157/0x9f0 [synclink_gt]
 
-Thresh control bits in the event code is used to program thresh_ctl
-field in Monitor Mode Control Register A (MMCRA: 48-55). In below example,
-the scheduling of group events PM_MRK_INST_CMPL (873534401e0) and
-PM_THRESH_MET (8734340101ec) is expected to fail as both event
-request different thresh control bits and invalid thresh compare value.
+Fix this by checking whether the 'info->netdev' is a null pointer first.
 
-Result before the patch changes:
-
-[command]# perf stat -e "{r8735340401e0,r8734340101ec}" sleep 1
-
- Performance counter stats for 'sleep 1':
-
-            11,048      r8735340401e0
-             1,967      r8734340101ec
-
-       1.001354036 seconds time elapsed
-
-       0.001421000 seconds user
-       0.000000000 seconds sys
-
-Result after the patch changes:
-
-[command]# perf stat -e "{r8735340401e0,r8734340101ec}" sleep 1
-Error:
-The sys_perf_event_open() syscall returned with 22 (Invalid argument)
-for event (r8735340401e0).
-/bin/dmesg | grep -i perf may provide additional information.
-
-Fixes: 78a16d9fc1206 ("powerpc/perf: Avoid FAB_*_MATCH checks for power9")
-Signed-off-by: Kajol Jain <kjain@linux.ibm.com>
-Reviewed-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220506061015.43916-2-kjain@linux.ibm.com
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Link: https://lore.kernel.org/r/20220410114814.3920474-1-zheyuma97@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/perf/isa207-common.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/synclink_gt.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/powerpc/perf/isa207-common.c b/arch/powerpc/perf/isa207-common.c
-index b910a5a5d209..027a2add780e 100644
---- a/arch/powerpc/perf/isa207-common.c
-+++ b/arch/powerpc/perf/isa207-common.c
-@@ -462,7 +462,8 @@ int isa207_get_constraint(u64 event, unsigned long *maskp, unsigned long *valp,
- 		if (event_is_threshold(event) && is_thresh_cmp_valid(event)) {
- 			mask  |= CNST_THRESH_MASK;
- 			value |= CNST_THRESH_VAL(event >> EVENT_THRESH_SHIFT);
--		}
-+		} else if (event_is_threshold(event))
-+			return -1;
- 	} else {
- 		/*
- 		 * Special case for PM_MRK_FAB_RSP_MATCH and PM_MRK_FAB_RSP_MATCH_CYC,
+diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
+index ff345a8e0fcc..b72471373c71 100644
+--- a/drivers/tty/synclink_gt.c
++++ b/drivers/tty/synclink_gt.c
+@@ -1752,6 +1752,8 @@ static int hdlcdev_init(struct slgt_info *info)
+  */
+ static void hdlcdev_exit(struct slgt_info *info)
+ {
++	if (!info->netdev)
++		return;
+ 	unregister_hdlc_device(info->netdev);
+ 	free_netdev(info->netdev);
+ 	info->netdev = NULL;
 -- 
 2.35.1
-
-
 
