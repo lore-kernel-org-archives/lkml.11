@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F6FCC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:19:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC3AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:19:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380291AbiFGWTL (ORCPT
+        id S1357179AbiFGWTS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43842 "EHLO
+        Tue, 7 Jun 2022 18:19:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379972AbiFGVNp (ORCPT
+        with ESMTP id S1379970AbiFGVNW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:13:45 -0400
+        Tue, 7 Jun 2022 17:13:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078C3152D86;
-        Tue,  7 Jun 2022 11:54:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C0F1152DAF;
+        Tue,  7 Jun 2022 11:54:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE3BE61311;
-        Tue,  7 Jun 2022 18:54:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCF29C36B00;
-        Tue,  7 Jun 2022 18:54:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 13621612F2;
+        Tue,  7 Jun 2022 18:54:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2844FC385A5;
+        Tue,  7 Jun 2022 18:54:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628061;
-        bh=4YDsHdimR8u7sWuDUcn+7M1z80A9tCO2U93t+ProAg8=;
+        s=korg; t=1654628058;
+        bh=YUT/g2jwaEbyBeENevqDwxAfPQZzcjDa+B0CACpQ21Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Amo+ljtuA97bpECBlQC4BpYdl1tWWR7ZKsfWVaMSMVjs6t/kyRjiVuFbpiHN2Iq7M
-         XnTpXzBWmaPXf9kgz6dxSsEvCoedoh2TnfkntxL+QFvDs/YIzjN7br6+LV0AeRu2Ha
-         caXL9hs400ti5y+Sin4L32DcfoA7JUFBbLQkLAyk=
+        b=v7XhK6VmFuH42anhROnx9mF5Q7z4u0gX+84Z6rtBMN7BuNaIL0TUgnlIVFznNp0eU
+         imQxAYU7zheVc8JKydHqRXVPPg6sdtY/hLVMUvtz6xeUJXqjSX5i1rnrwH8ERJ2ciY
+         eZvvmkruhQ8aCuJRpSfAAVSYhpOsQWsZ1YZV7LNo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Wiese <jwiese@rackspace.com>,
-        Corey Minyard <cminyard@mvista.com>,
+        stable@vger.kernel.org, kernel test robot <yujie.liu@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 155/879] ipmi: Add an intializer for ipmi_smi_msg struct
-Date:   Tue,  7 Jun 2022 18:54:33 +0200
-Message-Id: <20220607165007.205311367@linuxfoundation.org>
+Subject: [PATCH 5.18 190/879] ASoC: rt1015p: remove dependency on GPIOLIB
+Date:   Tue,  7 Jun 2022 18:55:08 +0200
+Message-Id: <20220607165008.356874330@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,95 +52,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corey Minyard <cminyard@mvista.com>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit 9824117dd964ecebf5d81990dbf21dfb56445049 ]
+[ Upstream commit b390c25c6757b9d56cecdfbf6d55f15fc89a6386 ]
 
-There was a "type" element added to this structure, but some static
-values were missed.  The default value will be zero, which is correct,
-but create an initializer for the type and initialize the type properly
-in the initializer to avoid future issues.
+commit dcc2c012c7691 ("ASoC: Fix gpiolib dependencies") removed a
+series of unnecessary dependencies on GPIOLIB when the gpio was
+optional.
 
-Reported-by: Joe Wiese <jwiese@rackspace.com>
-Signed-off-by: Corey Minyard <cminyard@mvista.com>
+A similar simplification seems valid for rt1015p, so remove the
+dependency as well. This will avoid the following warning
+
+  WARNING: unmet direct dependencies detected for SND_SOC_RT1015P
+
+     Depends on [n]: SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] &&
+     GPIOLIB [=n]
+
+     Selected by [y]:
+
+     - SND_SOC_INTEL_SOF_RT5682_MACH [=y] && SOUND [=y] && !UML && SND
+       [=y] && SND_SOC [=y] && SND_SOC_INTEL_MACH [=y] &&
+       (SND_SOC_SOF_HDA_LINK [=y] || SND_SOC_SOF_BAYTRAIL [=n]) && I2C
+       [=y] && ACPI [=y] && (SND_HDA_CODEC_HDMI [=y] &&
+       SND_SOC_SOF_HDA_AUDIO_CODEC [=y] && (MFD_INTEL_LPSS [=y] ||
+       COMPILE_TEST [=y]) || SND_SOC_SOF_BAYTRAIL [=n] &&
+       (X86_INTEL_LPSS [=n] || COMPILE_TEST [=y]))
+
+Reported-by: kernel test robot <yujie.liu@intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://lore.kernel.org/r/20220517172647.468244-3-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/ipmi/ipmi_poweroff.c |  4 +---
- drivers/char/ipmi/ipmi_watchdog.c | 14 +++++---------
- include/linux/ipmi_smi.h          |  6 ++++++
- 3 files changed, 12 insertions(+), 12 deletions(-)
+ sound/soc/codecs/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/char/ipmi/ipmi_poweroff.c b/drivers/char/ipmi/ipmi_poweroff.c
-index bc3a18daf97a..62e71c46ac5f 100644
---- a/drivers/char/ipmi/ipmi_poweroff.c
-+++ b/drivers/char/ipmi/ipmi_poweroff.c
-@@ -94,9 +94,7 @@ static void dummy_recv_free(struct ipmi_recv_msg *msg)
- {
- 	atomic_dec(&dummy_count);
- }
--static struct ipmi_smi_msg halt_smi_msg = {
--	.done = dummy_smi_free
--};
-+static struct ipmi_smi_msg halt_smi_msg = INIT_IPMI_SMI_MSG(dummy_smi_free);
- static struct ipmi_recv_msg halt_recv_msg = {
- 	.done = dummy_recv_free
- };
-diff --git a/drivers/char/ipmi/ipmi_watchdog.c b/drivers/char/ipmi/ipmi_watchdog.c
-index 0604abdd249a..4c1e9663ea47 100644
---- a/drivers/char/ipmi/ipmi_watchdog.c
-+++ b/drivers/char/ipmi/ipmi_watchdog.c
-@@ -354,9 +354,7 @@ static void msg_free_recv(struct ipmi_recv_msg *msg)
- 			complete(&msg_wait);
- 	}
- }
--static struct ipmi_smi_msg smi_msg = {
--	.done = msg_free_smi
--};
-+static struct ipmi_smi_msg smi_msg = INIT_IPMI_SMI_MSG(msg_free_smi);
- static struct ipmi_recv_msg recv_msg = {
- 	.done = msg_free_recv
- };
-@@ -475,9 +473,8 @@ static void panic_recv_free(struct ipmi_recv_msg *msg)
- 	atomic_dec(&panic_done_count);
- }
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index 156f2519459d..3dea20b2c405 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -1212,7 +1212,6 @@ config SND_SOC_RT1015
  
--static struct ipmi_smi_msg panic_halt_heartbeat_smi_msg = {
--	.done = panic_smi_free
--};
-+static struct ipmi_smi_msg panic_halt_heartbeat_smi_msg =
-+	INIT_IPMI_SMI_MSG(panic_smi_free);
- static struct ipmi_recv_msg panic_halt_heartbeat_recv_msg = {
- 	.done = panic_recv_free
- };
-@@ -516,9 +513,8 @@ static void panic_halt_ipmi_heartbeat(void)
- 		atomic_sub(2, &panic_done_count);
- }
+ config SND_SOC_RT1015P
+ 	tristate
+-	depends on GPIOLIB
  
--static struct ipmi_smi_msg panic_halt_smi_msg = {
--	.done = panic_smi_free
--};
-+static struct ipmi_smi_msg panic_halt_smi_msg =
-+	INIT_IPMI_SMI_MSG(panic_smi_free);
- static struct ipmi_recv_msg panic_halt_recv_msg = {
- 	.done = panic_recv_free
- };
-diff --git a/include/linux/ipmi_smi.h b/include/linux/ipmi_smi.h
-index 9277d21c2690..5d69820d8b02 100644
---- a/include/linux/ipmi_smi.h
-+++ b/include/linux/ipmi_smi.h
-@@ -125,6 +125,12 @@ struct ipmi_smi_msg {
- 	void (*done)(struct ipmi_smi_msg *msg);
- };
- 
-+#define INIT_IPMI_SMI_MSG(done_handler) \
-+{						\
-+	.done = done_handler,			\
-+	.type = IPMI_SMI_MSG_TYPE_NORMAL	\
-+}
-+
- struct ipmi_smi_handlers {
- 	struct module *owner;
- 
+ config SND_SOC_RT1019
+ 	tristate
 -- 
 2.35.1
 
