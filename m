@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10CE2CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 500ABCCA485
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:26:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236137AbiFHAX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:23:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49784 "EHLO
+        id S1353046AbiFHAYG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 20:24:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383757AbiFGWZO (ORCPT
+        with ESMTP id S1382510AbiFGV56 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:25:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2899426EEBF;
-        Tue,  7 Jun 2022 12:22:54 -0700 (PDT)
+        Tue, 7 Jun 2022 17:57:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 737D024CC93;
+        Tue,  7 Jun 2022 12:13:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE713609D0;
-        Tue,  7 Jun 2022 19:22:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B82C7C385A2;
-        Tue,  7 Jun 2022 19:22:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23C30B823AE;
+        Tue,  7 Jun 2022 19:13:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 936EAC385A5;
+        Tue,  7 Jun 2022 19:13:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629772;
-        bh=9E8DLy1jXcYjYN0wqF0KZRXbQUMR5XhMKZCP7s2JCPY=;
+        s=korg; t=1654629235;
+        bh=BosxUKO/27/7KBdUbBO+j64psIFPo88G9Hi6DZud58k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lEjvzEqzSsrZTeAiG93YqHKJHj3wi96zXe2r6D1PytjGLCl8tyY+4y/zVDuC173zi
-         g8163PfgXtd84hCQKXwGRqqkV+nyGFQ7ImPbCxAdtGDAKQ8CCaDjUvatlNLsNWONaw
-         eEHBfdtlMCOEmn7whRwKHelSKGcPLlzfVEM5OZno=
+        b=NwgiBwqpsRGjvVkV1v4D6tWjvmiztU3PYCMSyiKC8kk7I0jiC4tYiVwgBekyYTekV
+         NvwoliY7Iz915/9jcs2GNOnYNhYHvqGmBVMu8WzqXbXeNw7aFLKfoGuWCwoPZkVZdH
+         QEQBmAAw2NCcXYFxLECy0sdG/N0GFmFpEmXKCW2k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Nico Boehr <nrb@linux.ibm.com>
-Subject: [PATCH 5.18 761/879] s390/perf: obtain sie_block from the right address
-Date:   Tue,  7 Jun 2022 19:04:39 +0200
-Message-Id: <20220607165024.953078037@linuxfoundation.org>
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 617/879] PCI: mediatek-gen3: Assert resets to ensure expected init state
+Date:   Tue,  7 Jun 2022 19:02:15 +0200
+Message-Id: <20220607165020.757146074@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -51,46 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nico Boehr <nrb@linux.ibm.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-commit c9bfb460c3e4da2462e16b0f0b200990b36b1dd2 upstream.
+[ Upstream commit 1d565935e3b9ccc682631e0bc6e415a7f48295d9 ]
 
-Since commit 1179f170b6f0 ("s390: fix fpu restore in entry.S"), the
-sie_block pointer is located at empty1[1], but in sie_block() it was
-taken from empty1[0].
+The controller may have been left out of reset by the bootloader,
+in which case, before the powerup sequence, the controller will be
+found preconfigured with values that were set before booting the
+kernel: this produces a controller failure, with the result of
+a failure during the mtk_pcie_startup_port() sequence as the PCIe
+link never gets up.
 
-This leads to a random pointer being dereferenced, possibly causing
-system crash.
+To ensure that we get a clean start in an expected state, assert
+both the PHY and MAC resets before executing the controller
+power-up sequence.
 
-This problem can be observed when running a simple guest with an endless
-loop and recording the cpu-clock event:
-
-  sudo perf kvm --guestvmlinux=<guestkernel> --guest top -e cpu-clock
-
-With this fix, the correct guest address is shown.
-
-Fixes: 1179f170b6f0 ("s390: fix fpu restore in entry.S")
-Cc: stable@vger.kernel.org
-Acked-by: Christian Borntraeger <borntraeger@de.ibm.com>
-Acked-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Nico Boehr <nrb@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220404144858.92390-1-angelogioacchino.delregno@collabora.com
+Fixes: d3bf75b579b9 ("PCI: mediatek-gen3: Add MediaTek Gen3 driver for MT8192")
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/kernel/perf_event.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pci/controller/pcie-mediatek-gen3.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/arch/s390/kernel/perf_event.c
-+++ b/arch/s390/kernel/perf_event.c
-@@ -30,7 +30,7 @@ static struct kvm_s390_sie_block *sie_bl
- 	if (!stack)
- 		return NULL;
+diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
+index 3e8d70bfabc6..5d9fd36b02d1 100644
+--- a/drivers/pci/controller/pcie-mediatek-gen3.c
++++ b/drivers/pci/controller/pcie-mediatek-gen3.c
+@@ -838,6 +838,14 @@ static int mtk_pcie_setup(struct mtk_gen3_pcie *pcie)
+ 	if (err)
+ 		return err;
  
--	return (struct kvm_s390_sie_block *) stack->empty1[0];
-+	return (struct kvm_s390_sie_block *)stack->empty1[1];
- }
- 
- static bool is_in_guest(struct pt_regs *regs)
++	/*
++	 * The controller may have been left out of reset by the bootloader
++	 * so make sure that we get a clean start by asserting resets here.
++	 */
++	reset_control_assert(pcie->phy_reset);
++	reset_control_assert(pcie->mac_reset);
++	usleep_range(10, 20);
++
+ 	/* Don't touch the hardware registers before power up */
+ 	err = mtk_pcie_power_up(pcie);
+ 	if (err)
+-- 
+2.35.1
+
 
 
