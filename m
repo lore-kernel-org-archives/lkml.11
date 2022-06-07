@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9AD3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:22:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35C82C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:22:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359391AbiFGUW2 (ORCPT
+        id S1358493AbiFGUWh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:22:28 -0400
+        Tue, 7 Jun 2022 16:22:37 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355735AbiFGTam (ORCPT
+        with ESMTP id S1356116AbiFGTbV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:30:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 299611A448B;
-        Tue,  7 Jun 2022 11:12:03 -0700 (PDT)
+        Tue, 7 Jun 2022 15:31:21 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D833B24BED;
+        Tue,  7 Jun 2022 11:12:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F25D61985;
-        Tue,  7 Jun 2022 18:11:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CAE4C385A2;
-        Tue,  7 Jun 2022 18:11:58 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 89C70CE2439;
+        Tue,  7 Jun 2022 18:12:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 981D9C385A2;
+        Tue,  7 Jun 2022 18:12:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625518;
-        bh=fu3hKi6Rwo9Qxne+luvdh8GJfotUrWq3TWXXU4Nq7uU=;
+        s=korg; t=1654625527;
+        bh=s3qNkoIYVWMpejiHT67UNIh/odgE/06E//y1wED6l1c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dot78FOvlmv/ilVTXJx+yRl/MTbo521Jd4kTlLm+aYv2P/iXQ2AE4rym02BrMantN
-         72nvX9WN9pWGklRBD337HrVdr4EYHuYHd+kKRySShbPX9OlRlTacdYkqrCQzFLPCXt
-         x64bTZmhP/6GPmrvLbNc4947Ehhkl3B8jVjSkOxI=
+        b=R2FCyte0qBGtNM0nP/BhNk6hAgDf9jzgh26D8WZTDPma9w+pzJROLVx0nvAt5wXXN
+         XSe0kcFbhF1Dt2rLRNSmn6rclX0j3ExIuhvT7fWGEnhDBCw8je+FASrYeB8kK5t0pQ
+         nGQZYDQw01IzLfIWkk7THaWJk9/1FYaDtgGCpBPo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pankaj Raghav <p.raghav@samsung.com>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.17 048/772] btrfs: zoned: finish block group when there are no more allocatable bytes left
-Date:   Tue,  7 Jun 2022 18:54:00 +0200
-Message-Id: <20220607164950.451573343@linuxfoundation.org>
+        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
+        Martin Krastev <krastevm@vmware.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 051/772] drm/vmwgfx: validate the screen formats
+Date:   Tue,  7 Jun 2022 18:54:03 +0200
+Message-Id: <20220607164950.542970412@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,51 +50,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naohiro Aota <naohiro.aota@wdc.com>
+From: Zack Rusin <zackr@vmware.com>
 
-commit 8b8a53998caefebfe5c8da7a74c2b601caf5dd48 upstream.
+[ Upstream commit 8bb75aeb58bd688d70827ae179bd3da57b6d975b ]
 
-Currently, btrfs_zone_finish_endio() finishes a block group only when the
-written region reaches the end of the block group. We can also finish the
-block group when no more allocation is possible.
+The kms code wasn't validating the modifiers and was letting through
+unsupported formats. rgb8 was never properly supported and has no
+matching svga screen target format so remove it.
+This fixes format/modifier failures in kms_addfb_basic from IGT.
 
-Fixes: be1a1d7a5d24 ("btrfs: zoned: finish fully written block group")
-CC: stable@vger.kernel.org # 5.16+
-Reviewed-by: Pankaj Raghav <p.raghav@samsung.com>
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Zack Rusin <zackr@vmware.com>
+Reviewed-by: Martin Krastev <krastevm@vmware.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220318174332.440068-4-zack@kde.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/zoned.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/vmwgfx/vmwgfx_kms.c | 30 +++++++++++++++--------------
+ drivers/gpu/drm/vmwgfx/vmwgfx_kms.h |  1 -
+ 2 files changed, 16 insertions(+), 15 deletions(-)
 
---- a/fs/btrfs/zoned.c
-+++ b/fs/btrfs/zoned.c
-@@ -1961,6 +1961,7 @@ void btrfs_zone_finish_endio(struct btrf
- 	struct btrfs_block_group *block_group;
- 	struct map_lookup *map;
- 	struct btrfs_device *device;
-+	u64 min_alloc_bytes;
- 	u64 physical;
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
+index 93431e8f6606..9410152f9d6f 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
+@@ -914,6 +914,15 @@ static int vmw_kms_new_framebuffer_surface(struct vmw_private *dev_priv,
+ 	 * Sanity checks.
+ 	 */
  
- 	if (!btrfs_is_zoned(fs_info))
-@@ -1969,7 +1970,15 @@ void btrfs_zone_finish_endio(struct btrf
- 	block_group = btrfs_lookup_block_group(fs_info, logical);
- 	ASSERT(block_group);
- 
--	if (logical + length < block_group->start + block_group->zone_capacity)
-+	/* No MIXED_BG on zoned btrfs. */
-+	if (block_group->flags & BTRFS_BLOCK_GROUP_DATA)
-+		min_alloc_bytes = fs_info->sectorsize;
-+	else
-+		min_alloc_bytes = fs_info->nodesize;
++	if (!drm_any_plane_has_format(&dev_priv->drm,
++				      mode_cmd->pixel_format,
++				      mode_cmd->modifier[0])) {
++		drm_dbg(&dev_priv->drm,
++			"unsupported pixel format %p4cc / modifier 0x%llx\n",
++			&mode_cmd->pixel_format, mode_cmd->modifier[0]);
++		return -EINVAL;
++	}
 +
-+	/* Bail out if we can allocate more data from this block group. */
-+	if (logical + length + min_alloc_bytes <=
-+	    block_group->start + block_group->zone_capacity)
- 		goto out;
+ 	/* Surface must be marked as a scanout. */
+ 	if (unlikely(!surface->metadata.scanout))
+ 		return -EINVAL;
+@@ -1236,20 +1245,13 @@ static int vmw_kms_new_framebuffer_bo(struct vmw_private *dev_priv,
+ 		return -EINVAL;
+ 	}
  
- 	spin_lock(&block_group->lock);
+-	/* Limited framebuffer color depth support for screen objects */
+-	if (dev_priv->active_display_unit == vmw_du_screen_object) {
+-		switch (mode_cmd->pixel_format) {
+-		case DRM_FORMAT_XRGB8888:
+-		case DRM_FORMAT_ARGB8888:
+-			break;
+-		case DRM_FORMAT_XRGB1555:
+-		case DRM_FORMAT_RGB565:
+-			break;
+-		default:
+-			DRM_ERROR("Invalid pixel format: %p4cc\n",
+-				  &mode_cmd->pixel_format);
+-			return -EINVAL;
+-		}
++	if (!drm_any_plane_has_format(&dev_priv->drm,
++				      mode_cmd->pixel_format,
++				      mode_cmd->modifier[0])) {
++		drm_dbg(&dev_priv->drm,
++			"unsupported pixel format %p4cc / modifier 0x%llx\n",
++			&mode_cmd->pixel_format, mode_cmd->modifier[0]);
++		return -EINVAL;
+ 	}
+ 
+ 	vfbd = kzalloc(sizeof(*vfbd), GFP_KERNEL);
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
+index 4d36e8507380..d9ebd02099a6 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
+@@ -247,7 +247,6 @@ struct vmw_framebuffer_bo {
+ static const uint32_t __maybe_unused vmw_primary_plane_formats[] = {
+ 	DRM_FORMAT_XRGB1555,
+ 	DRM_FORMAT_RGB565,
+-	DRM_FORMAT_RGB888,
+ 	DRM_FORMAT_XRGB8888,
+ 	DRM_FORMAT_ARGB8888,
+ };
+-- 
+2.35.1
+
 
 
