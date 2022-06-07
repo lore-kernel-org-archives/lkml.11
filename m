@@ -2,149 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5905CCCA493
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6921ECCA492
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:08:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382456AbiFHBEY (ORCPT
+        id S1384127AbiFHBEn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:04:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40468 "EHLO
+        Tue, 7 Jun 2022 21:04:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382960AbiFGWHT (ORCPT
+        with ESMTP id S1382966AbiFGVwI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:07:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E17254EF5;
-        Tue,  7 Jun 2022 12:18:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4078E61935;
-        Tue,  7 Jun 2022 19:18:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F28BC385A5;
-        Tue,  7 Jun 2022 19:18:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629507;
-        bh=Ue0c+wenPzgN/VZN46qNl7OXZmDwKF31qmcdXlPYR6g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PKz3OEF+RkwIj8P6mTQz9eAL/5ytUk00XUxZeC3IIxpdQX8sA+aK/BNbefsPx6Fxk
-         LzMFShB01N0dqmma1xFZCdtCmtR5sWnf2xBfRb3Jo0l7PoYHXPR3/zW8DP4jY+azSQ
-         d0VzRPXL+ZoiOuUwzKpNImlh+a5X15ZBLogc2v5c=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.18 714/879] f2fs: dont use casefolded comparison for "." and ".."
-Date:   Tue,  7 Jun 2022 19:03:52 +0200
-Message-Id: <20220607165023.578067656@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 17:52:08 -0400
+X-Greylist: delayed 538 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 12:10:08 PDT
+Received: from 3.mo575.mail-out.ovh.net (3.mo575.mail-out.ovh.net [46.105.58.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21170434A4
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 12:10:08 -0700 (PDT)
+Received: from player797.ha.ovh.net (unknown [10.109.138.131])
+        by mo575.mail-out.ovh.net (Postfix) with ESMTP id 60A9224473
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 19:10:06 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player797.ha.ovh.net (Postfix) with ESMTPSA id 4E982273DCAD8;
+        Tue,  7 Jun 2022 19:09:57 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-102R004f66d6445-5b4d-4b53-8766-d6f361bee8fc,
+                    38FB55E0ED6224772C245AF554E1AE62085133ED) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>, Helge Deller <deller@gmx.de>
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 2/4] backlight: arcxcnn: Use backlight helper
+Date:   Tue,  7 Jun 2022 21:09:23 +0200
+Message-Id: <20220607190925.1134737-3-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220607190925.1134737-1-steve@sk2.org>
+References: <20220607190925.1134737-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11713299682955658886
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddthedgudeffecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeghffhleeigffhteeiffelveefhfeiudehkedtgefhgedvleffgfejgfdtveeigeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejleejrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheejhe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+Instead of retrieving the backlight brightness in struct
+backlight_properties manually, and then checking whether the backlight
+should be on at all, use backlight_get_brightness() which does all
+this and insulates this from future changes.
 
-commit b5639bb4313b9d455fc9fc4768d23a5e4ca8cb9d upstream.
-
-Tryng to rename a directory that has all following properties fails with
-EINVAL and triggers the 'WARN_ON_ONCE(!fscrypt_has_encryption_key(dir))'
-in f2fs_match_ci_name():
-
-    - The directory is casefolded
-    - The directory is encrypted
-    - The directory's encryption key is not yet set up
-    - The parent directory is *not* encrypted
-
-The problem is incorrect handling of the lookup of ".." to get the
-parent reference to update.  fscrypt_setup_filename() treats ".." (and
-".") specially, as it's never encrypted.  It's passed through as-is, and
-setting up the directory's key is not attempted.  As the name isn't a
-no-key name, f2fs treats it as a "normal" name and attempts a casefolded
-comparison.  That breaks the assumption of the WARN_ON_ONCE() in
-f2fs_match_ci_name() which assumes that for encrypted directories,
-casefolded comparisons only happen when the directory's key is set up.
-
-We could just remove this WARN_ON_ONCE().  However, since casefolding is
-always a no-op on "." and ".." anyway, let's instead just not casefold
-these names.  This results in the standard bytewise comparison.
-
-Fixes: 7ad08a58bf67 ("f2fs: Handle casefolding with Encryption")
-Cc: <stable@vger.kernel.org> # v5.11+
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Reviewed-by: Gabriel Krisman Bertazi <krisman@collabora.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Jingoo Han <jingoohan1@gmail.com>
+Cc: Helge Deller <deller@gmx.de>
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-fbdev@vger.kernel.org
 ---
- fs/f2fs/dir.c  |    3 ++-
- fs/f2fs/f2fs.h |   10 +++++-----
- fs/f2fs/hash.c |   11 ++++++-----
- 3 files changed, 13 insertions(+), 11 deletions(-)
+ drivers/video/backlight/arcxcnn_bl.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
---- a/fs/f2fs/dir.c
-+++ b/fs/f2fs/dir.c
-@@ -82,7 +82,8 @@ int f2fs_init_casefolded_name(const stru
- #if IS_ENABLED(CONFIG_UNICODE)
- 	struct super_block *sb = dir->i_sb;
- 
--	if (IS_CASEFOLDED(dir)) {
-+	if (IS_CASEFOLDED(dir) &&
-+	    !is_dot_dotdot(fname->usr_fname->name, fname->usr_fname->len)) {
- 		fname->cf_name.name = f2fs_kmem_cache_alloc(f2fs_cf_name_slab,
- 					GFP_NOFS, false, F2FS_SB(sb));
- 		if (!fname->cf_name.name)
---- a/fs/f2fs/f2fs.h
-+++ b/fs/f2fs/f2fs.h
-@@ -508,11 +508,11 @@ struct f2fs_filename {
- #if IS_ENABLED(CONFIG_UNICODE)
- 	/*
- 	 * For casefolded directories: the casefolded name, but it's left NULL
--	 * if the original name is not valid Unicode, if the directory is both
--	 * casefolded and encrypted and its encryption key is unavailable, or if
--	 * the filesystem is doing an internal operation where usr_fname is also
--	 * NULL.  In all these cases we fall back to treating the name as an
--	 * opaque byte sequence.
-+	 * if the original name is not valid Unicode, if the original name is
-+	 * "." or "..", if the directory is both casefolded and encrypted and
-+	 * its encryption key is unavailable, or if the filesystem is doing an
-+	 * internal operation where usr_fname is also NULL.  In all these cases
-+	 * we fall back to treating the name as an opaque byte sequence.
- 	 */
- 	struct fscrypt_str cf_name;
- #endif
---- a/fs/f2fs/hash.c
-+++ b/fs/f2fs/hash.c
-@@ -91,7 +91,7 @@ static u32 TEA_hash_name(const u8 *p, si
- /*
-  * Compute @fname->hash.  For all directories, @fname->disk_name must be set.
-  * For casefolded directories, @fname->usr_fname must be set, and also
-- * @fname->cf_name if the filename is valid Unicode.
-+ * @fname->cf_name if the filename is valid Unicode and is not "." or "..".
-  */
- void f2fs_hash_filename(const struct inode *dir, struct f2fs_filename *fname)
+diff --git a/drivers/video/backlight/arcxcnn_bl.c b/drivers/video/backlight/arcxcnn_bl.c
+index 7b1c0a0e6cad..a706899eb7ac 100644
+--- a/drivers/video/backlight/arcxcnn_bl.c
++++ b/drivers/video/backlight/arcxcnn_bl.c
+@@ -130,12 +130,9 @@ static int arcxcnn_set_brightness(struct arcxcnn *lp, u32 brightness)
+ static int arcxcnn_bl_update_status(struct backlight_device *bl)
  {
-@@ -110,10 +110,11 @@ void f2fs_hash_filename(const struct ino
- 		/*
- 		 * If the casefolded name is provided, hash it instead of the
- 		 * on-disk name.  If the casefolded name is *not* provided, that
--		 * should only be because the name wasn't valid Unicode, so fall
--		 * back to treating the name as an opaque byte sequence.  Note
--		 * that to handle encrypted directories, the fallback must use
--		 * usr_fname (plaintext) rather than disk_name (ciphertext).
-+		 * should only be because the name wasn't valid Unicode or was
-+		 * "." or "..", so fall back to treating the name as an opaque
-+		 * byte sequence.  Note that to handle encrypted directories,
-+		 * the fallback must use usr_fname (plaintext) rather than
-+		 * disk_name (ciphertext).
- 		 */
- 		WARN_ON_ONCE(!fname->usr_fname->name);
- 		if (fname->cf_name.name) {
-
+ 	struct arcxcnn *lp = bl_get_data(bl);
+-	u32 brightness = bl->props.brightness;
++	u32 brightness = backlight_get_brightness(bl);
+ 	int ret;
+ 
+-	if (bl->props.state & (BL_CORE_SUSPENDED | BL_CORE_FBBLANK))
+-		brightness = 0;
+-
+ 	ret = arcxcnn_set_brightness(lp, brightness);
+ 	if (ret)
+ 		return ret;
+-- 
+2.30.2
 
