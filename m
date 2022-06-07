@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C4F7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:34:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BA69CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:34:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352166AbiFGSeO (ORCPT
+        id S1352395AbiFGSeU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:34:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33422 "EHLO
+        Tue, 7 Jun 2022 14:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351286AbiFGSB4 (ORCPT
+        with ESMTP id S1349606AbiFGSDl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:01:56 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B54A14FCB9;
-        Tue,  7 Jun 2022 10:44:06 -0700 (PDT)
+        Tue, 7 Jun 2022 14:03:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0466950028;
+        Tue,  7 Jun 2022 10:47:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 090ECCE21CD;
-        Tue,  7 Jun 2022 17:38:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D899CC34115;
-        Tue,  7 Jun 2022 17:38:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36AD4B8233D;
+        Tue,  7 Jun 2022 17:47:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D263C385A5;
+        Tue,  7 Jun 2022 17:47:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623527;
-        bh=bcdIFeJXlB+GJWVD5AtTpUmtkilRANrSvoajawvCIEs=;
+        s=korg; t=1654624027;
+        bh=Do59Zxbar/R53/RRVCDrJBRmogE79B0Y/2QF3y0rC8U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HkuHYygu+TUthYkFKVBgZNLh8gYE7PhLYr0jr50I6WE0gUeNoJBvkpHmyAFGN0EWu
-         i7DG2rKNd6i5HcJbALwP1dPanB39khbcxPjk/gf5c5dJ414+aPkEpQVgDcOJDPPnE1
-         oEpJR4RkkMnVCtZ0+RnAh9PWszC1zIuqs6+yfewg=
+        b=yDjx+zHsAtiyJdpmXMQe4e8AxI+yXpICds6vVbTWxQlfMunjwYrtarHRmjRBsbxZv
+         4Ux5vR69l3L08mDrOjSS3GtsOQCSheZF3f9WFIQ7PDTCqBWLYMGO0VmEDsTw9a1N0G
+         //hmqRnNXPDdimbfNMw1+OjsromIzax11tEObJBQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Stephen Zhang <starzhangzsd@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: [PATCH 5.10 449/452] MIPS: IP27: Remove incorrect `cpu_has_fpu override
-Date:   Tue,  7 Jun 2022 19:05:06 +0200
-Message-Id: <20220607164921.949577508@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 137/667] x86/microcode: Add explicit CPU vendor dependency
+Date:   Tue,  7 Jun 2022 18:56:42 +0200
+Message-Id: <20220607164938.930244713@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
-References: <20220607164908.521895282@linuxfoundation.org>
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,39 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: Borislav Petkov <bp@suse.de>
 
-commit 424c3781dd1cb401857585331eaaa425a13f2429 upstream.
+[ Upstream commit 9c55d99e099bd7aa6b91fce8718505c35d5dfc65 ]
 
-Remove unsupported forcing of `cpu_has_fpu' to 1, which makes the `nofpu'
-kernel parameter non-functional, and also causes a link error:
+Add an explicit dependency to the respective CPU vendor so that the
+respective microcode support for it gets built only when that support is
+enabled.
 
-ld: arch/mips/kernel/traps.o: in function `trap_init':
-./arch/mips/include/asm/msa.h:(.init.text+0x348): undefined reference to `handle_fpe'
-ld: ./arch/mips/include/asm/msa.h:(.init.text+0x354): undefined reference to `handle_fpe'
-ld: ./arch/mips/include/asm/msa.h:(.init.text+0x360): undefined reference to `handle_fpe'
-
-where the CONFIG_MIPS_FP_SUPPORT configuration option has been disabled.
-
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Reported-by: Stephen Zhang <starzhangzsd@gmail.com>
-Fixes: 0ebb2f4159af ("MIPS: IP27: Update/restructure CPU overrides")
-Cc: stable@vger.kernel.org # v4.2+
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/8ead0da9-9545-b10d-e3db-7df1a1f219e4@infradead.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h |    1 -
- 1 file changed, 1 deletion(-)
+ arch/x86/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h
-+++ b/arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h
-@@ -26,7 +26,6 @@
- #define cpu_has_3k_cache		0
- #define cpu_has_4k_cache		1
- #define cpu_has_tx39_cache		0
--#define cpu_has_fpu			1
- #define cpu_has_nofpuex			0
- #define cpu_has_32fpr			1
- #define cpu_has_counter			1
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index d02b04d30096..1d0f16b53393 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1323,7 +1323,7 @@ config MICROCODE
+ 
+ config MICROCODE_INTEL
+ 	bool "Intel microcode loading support"
+-	depends on MICROCODE
++	depends on CPU_SUP_INTEL && MICROCODE
+ 	default MICROCODE
+ 	help
+ 	  This options enables microcode patch loading support for Intel
+@@ -1335,7 +1335,7 @@ config MICROCODE_INTEL
+ 
+ config MICROCODE_AMD
+ 	bool "AMD microcode loading support"
+-	depends on MICROCODE
++	depends on CPU_SUP_AMD && MICROCODE
+ 	help
+ 	  If you select this option, microcode patch loading support for AMD
+ 	  processors will be enabled.
+-- 
+2.35.1
+
 
 
