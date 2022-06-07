@@ -2,94 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 527D0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 02:53:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AE82C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 02:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236115AbiFGCx0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 22:53:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41254 "EHLO
+        id S236124AbiFGCyj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 22:54:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233312AbiFGCxY (ORCPT
+        with ESMTP id S233312AbiFGCyh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 22:53:24 -0400
-X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Jun 2022 19:53:21 PDT
-Received: from vulcan.kevinlocke.name (vulcan.kevinlocke.name [107.191.43.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5296569CF0;
-        Mon,  6 Jun 2022 19:53:20 -0700 (PDT)
-Received: from kevinolos.kevinlocke.name (unknown [69.145.56.143])
-        (Authenticated sender: kevin@kevinlocke.name)
-        by vulcan.kevinlocke.name (Postfix) with ESMTPSA id 372882EE491B;
-        Tue,  7 Jun 2022 02:43:19 +0000 (UTC)
-Received: by kevinolos.kevinlocke.name (Postfix, from userid 1000)
-        id 14DEB1300202; Mon,  6 Jun 2022 20:43:07 -0600 (MDT)
-From:   Kevin Locke <kevin@kevinlocke.name>
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH] kbuild: avoid regex RS for POSIX awk
-Date:   Mon,  6 Jun 2022 20:42:54 -0600
-Message-Id: <368129160298161a9eb40ad4f489458be6be3b6f.1654569774.git.kevin@kevinlocke.name>
-X-Mailer: git-send-email 2.35.1
+        Mon, 6 Jun 2022 22:54:37 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B71A6A026;
+        Mon,  6 Jun 2022 19:54:35 -0700 (PDT)
+X-UUID: 3955505818d04c8b9969c59d09c432d2-20220607
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:96f292b6-9e19-4a32-9245-f3bdc58d0a67,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.5,REQID:96f292b6-9e19-4a32-9245-f3bdc58d0a67,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:2a19b09,CLOUDID:ea47677e-c8dc-403a-96e8-6237210dceee,C
+        OID:FAIL,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,Fil
+        e:nil,QS:0,BEC:nil
+X-UUID: 3955505818d04c8b9969c59d09c432d2-20220607
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 472154471; Tue, 07 Jun 2022 10:54:29 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Tue, 7 Jun 2022 10:54:28 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Tue, 7 Jun 2022 10:54:27 +0800
+Message-ID: <6dcb95f2f91d91fc8fd87a86ba988eee0168df19.camel@mediatek.com>
+Subject: Re: [PATCH v10 07/21] drm/mediatek: dpi: implement a CK/DE pol
+ toggle in SoC config
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     CK Hu <ck.hu@mediatek.com>,
+        Guillaume Ranquet <granquet@baylibre.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        "Kishon Vijay Abraham I" <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, "Helge Deller" <deller@gmx.de>,
+        Jitao shi <jitao.shi@mediatek.com>
+CC:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-phy@lists.infradead.org>, <linux-fbdev@vger.kernel.org>
+Date:   Tue, 7 Jun 2022 10:54:27 +0800
+In-Reply-To: <356624f3283f9203007ab21bedf15744d86e16f8.camel@mediatek.com>
+References: <20220523104758.29531-1-granquet@baylibre.com>
+         <20220523104758.29531-8-granquet@baylibre.com>
+         <356624f3283f9203007ab21bedf15744d86e16f8.camel@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In 22f26f21774f8 awk was added to deduplicate *.mod files.  The awk
-invocation passes -v RS='( |\n)' to match a space or newline character
-as the record separator.  Unfortunately, POSIX states[1]
+On Mon, 2022-05-30 at 15:44 +0800, CK Hu wrote:
+> Hi, Guillaume:
+> 
+> On Mon, 2022-05-23 at 12:47 +0200, Guillaume Ranquet wrote:
+> > Adds a bit of flexibility to support SoCs without CK/DE pol support
+> 
+> It seems that DP_INTF has no CK/DE pol function. If so, could you
+> explain why DP_INTF has this difference with DPI?
+> 
+> Regards,
+> CK
+> 
 
-> If RS contains more than one character, the results are unspecified.
+Hello CK,
 
-Some implementations (such as the One True Awk[2] used by the BSDs) do
-not treat RS as a regular expression.  When awk does not support regex
-RS, build failures such as the following are produced (first error using
-allmodconfig):
+Dp_intf does not support CK/DE polarity because the polarity
+information is not used for eDP and DP while dp_intf is only for eDP
+and DP.
 
-      CC [M]  arch/x86/events/intel/uncore.o
-      CC [M]  arch/x86/events/intel/uncore_nhmex.o
-      CC [M]  arch/x86/events/intel/uncore_snb.o
-      CC [M]  arch/x86/events/intel/uncore_snbep.o
-      CC [M]  arch/x86/events/intel/uncore_discovery.o
-      LD [M]  arch/x86/events/intel/intel-uncore.o
-    ld: cannot find uncore_nhmex.o: No such file or directory
-    ld: cannot find uncore_snb.o: No such file or directory
-    ld: cannot find uncore_snbep.o: No such file or directory
-    ld: cannot find uncore_discovery.o: No such file or directory
-    make[3]: *** [scripts/Makefile.build:422: arch/x86/events/intel/intel-uncore.o] Error 1
-    make[2]: *** [scripts/Makefile.build:487: arch/x86/events/intel] Error 2
-    make[1]: *** [scripts/Makefile.build:487: arch/x86/events] Error 2
-    make: *** [Makefile:1839: arch/x86] Error 2
+I will add this in commit message in next version.
 
-To avoid this, use printf(1) to produce a newline between each object
-path, instead of the space produced by echo(1), so that the default RS
-can be used by awk.
+BRs,
+Bo-Chen
 
-[1]: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html
-[2]: https://github.com/onetrueawk/awk
-
-Fixes: 22f26f21774f ("kbuild: get rid of duplication in *.mod files")
-Signed-off-by: Kevin Locke <kevin@kevinlocke.name>
----
- scripts/Makefile.build | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 1f01ac65c0cd..cac070aee791 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -251,8 +251,8 @@ $(obj)/%.o: $(src)/%.c $(recordmcount_source) FORCE
- 
- # To make this rule robust against "Argument list too long" error,
- # ensure to add $(obj)/ prefix by a shell command.
--cmd_mod = echo $(call real-search, $*.o, .o, -objs -y -m) | \
--	$(AWK) -v RS='( |\n)' '!x[$$0]++ { print("$(obj)/"$$0) }' > $@
-+cmd_mod = printf '%s\n' $(call real-search, $*.o, .o, -objs -y -m) | \
-+	$(AWK) '!x[$$0]++ { print("$(obj)/"$$0) }' > $@
- 
- $(obj)/%.mod: FORCE
- 	$(call if_changed,mod)
--- 
-2.35.1
+> > 
+> > Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> > Reviewed-by: AngeloGioacchino Del Regno <
+> > angelogioacchino.delregno@collabora.com>
+> > Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> > ---
+> >  drivers/gpu/drm/mediatek/mtk_dpi.c | 22 +++++++++++++++++-----
+> >  1 file changed, 17 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > index 4746eb342567..545a1337cc89 100644
+> > --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > @@ -125,6 +125,7 @@ struct mtk_dpi_conf {
+> >  	bool edge_sel_en;
+> >  	const u32 *output_fmts;
+> >  	u32 num_output_fmts;
+> > +	bool is_ck_de_pol;
+> >  	const struct mtk_dpi_yc_limit *limit;
+> >  };
+> >  
+> > @@ -211,13 +212,20 @@ static void mtk_dpi_config_pol(struct mtk_dpi
+> > *dpi,
+> >  			       struct mtk_dpi_polarities *dpi_pol)
+> >  {
+> >  	unsigned int pol;
+> > +	unsigned int mask;
+> >  
+> > -	pol = (dpi_pol->ck_pol == MTK_DPI_POLARITY_RISING ? 0 : CK_POL)
+> > > 
+> > 
+> > -	      (dpi_pol->de_pol == MTK_DPI_POLARITY_RISING ? 0 : DE_POL)
+> > > 
+> > 
+> > -	      (dpi_pol->hsync_pol == MTK_DPI_POLARITY_RISING ? 0 :
+> > HSYNC_POL) |
+> > +	mask = HSYNC_POL | VSYNC_POL;
+> > +	pol = (dpi_pol->hsync_pol == MTK_DPI_POLARITY_RISING ? 0 :
+> > HSYNC_POL) |
+> >  	      (dpi_pol->vsync_pol == MTK_DPI_POLARITY_RISING ? 0 :
+> > VSYNC_POL);
+> > -	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, pol,
+> > -		     CK_POL | DE_POL | HSYNC_POL | VSYNC_POL);
+> > +	if (dpi->conf->is_ck_de_pol) {
+> > +		mask |= CK_POL | DE_POL;
+> > +		pol |= (dpi_pol->ck_pol == MTK_DPI_POLARITY_RISING ?
+> > +			0 : CK_POL) |
+> > +		       (dpi_pol->de_pol == MTK_DPI_POLARITY_RISING ?
+> > +			0 : DE_POL);
+> > +	}
+> > +
+> > +	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, pol, mask);
+> >  }
+> >  
+> >  static void mtk_dpi_config_3d(struct mtk_dpi *dpi, bool en_3d)
+> > @@ -799,6 +807,7 @@ static const struct mtk_dpi_conf mt8173_conf =
+> > {
+> >  	.max_clock_khz = 300000,
+> >  	.output_fmts = mt8173_output_fmts,
+> >  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
+> > +	.is_ck_de_pol = true,
+> >  	.limit = &mtk_dpi_limit,
+> >  };
+> >  
+> > @@ -809,6 +818,7 @@ static const struct mtk_dpi_conf mt2701_conf =
+> > {
+> >  	.max_clock_khz = 150000,
+> >  	.output_fmts = mt8173_output_fmts,
+> >  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
+> > +	.is_ck_de_pol = true,
+> >  	.limit = &mtk_dpi_limit,
+> >  };
+> >  
+> > @@ -818,6 +828,7 @@ static const struct mtk_dpi_conf mt8183_conf =
+> > {
+> >  	.max_clock_khz = 100000,
+> >  	.output_fmts = mt8183_output_fmts,
+> >  	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
+> > +	.is_ck_de_pol = true,
+> >  	.limit = &mtk_dpi_limit,
+> >  };
+> >  
+> > @@ -827,6 +838,7 @@ static const struct mtk_dpi_conf mt8192_conf =
+> > {
+> >  	.max_clock_khz = 150000,
+> >  	.output_fmts = mt8173_output_fmts,
+> >  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
+> > +	.is_ck_de_pol = true,
+> >  	.limit = &mtk_dpi_limit,
+> >  };
+> >  
+> 
+> 
 
