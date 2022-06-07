@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6739C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6119CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380309AbiFGVfB (ORCPT
+        id S1380389AbiFGVfO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57242 "EHLO
+        Tue, 7 Jun 2022 17:35:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376332AbiFGUjM (ORCPT
+        with ESMTP id S1376577AbiFGUir (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:39:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D417414B2E5;
-        Tue,  7 Jun 2022 11:38:21 -0700 (PDT)
+        Tue, 7 Jun 2022 16:38:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA521842C5;
+        Tue,  7 Jun 2022 11:38:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99CE5B8237E;
-        Tue,  7 Jun 2022 18:38:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8BCFC385A5;
-        Tue,  7 Jun 2022 18:38:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFD3161677;
+        Tue,  7 Jun 2022 18:38:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D994FC385A2;
+        Tue,  7 Jun 2022 18:37:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627094;
-        bh=FjpVwRVNYYlAGn7k/OHLaxc52wPen+gS9TwWMFYhhXE=;
+        s=korg; t=1654627080;
+        bh=ZarOxv6OC6Lb7v0F8skjQkznp1Vq8KrFhn6FrSySwWs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q8DH7MF/DKLab7tRQrpkuxOS9KbddWcsscS8rzhh8gpjt2Hr/10ZFLicZmj47k4SH
-         l5rXm0iexvddNerNHaUfvUtiedpCwwJ+qXn6WdD+7OvdhcabPlT8Zb2bxZnpVwFmfR
-         pIaig3VnHUQDrpSlawSwxXIgslVrOovHQmEVmJjs=
+        b=O9jgsEd5wgbB17WnBtVv5Z0JV51pXKBkb0R4GRJ2vwmQOBhpuOvnSkIYPT1ws4+IS
+         jTLcoJFuFOiO08QPsb6LLpHiyOk86duJ2zduXaC+j/y5/a67G5U3xSE+5PPHgRfG8q
+         nSYrvKW1WeSSQ8ixYABYBbjYwJ8hU462t7jrM4JM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
         Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.17 616/772] f2fs: fix fallocate to use file_modified to update permissions consistently
-Date:   Tue,  7 Jun 2022 19:03:28 +0200
-Message-Id: <20220607165007.090617196@linuxfoundation.org>
+Subject: [PATCH 5.17 611/772] f2fs: fix to clear dirty inode in f2fs_evict_inode()
+Date:   Tue,  7 Jun 2022 19:03:23 +0200
+Message-Id: <20220607165006.943979258@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,42 +51,77 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Chao Yu <chao@kernel.org>
 
-commit 958ed92922028ec67f504dcdc72bfdfd0f43936a upstream.
+commit f2db71053dc0409fae785096ad19cce4c8a95af7 upstream.
 
-This patch tries to fix permission consistency issue as all other
-mainline filesystems.
+As Yanming reported in bugzilla:
 
-Since the initial introduction of (posix) fallocate back at the turn of
-the century, it has been possible to use this syscall to change the
-user-visible contents of files.  This can happen by extending the file
-size during a preallocation, or through any of the newer modes (punch,
-zero, collapse, insert range).  Because the call can be used to change
-file contents, we should treat it like we do any other modification to a
-file -- update the mtime, and drop set[ug]id privileges/capabilities.
+https://bugzilla.kernel.org/show_bug.cgi?id=215904
 
-The VFS function file_modified() does all this for us if pass it a
-locked inode, so let's make fallocate drop permissions correctly.
+The kernel message is shown below:
 
-Cc: stable@kernel.org
+kernel BUG at fs/f2fs/inode.c:825!
+Call Trace:
+ evict+0x282/0x4e0
+ __dentry_kill+0x2b2/0x4d0
+ shrink_dentry_list+0x17c/0x4f0
+ shrink_dcache_parent+0x143/0x1e0
+ do_one_tree+0x9/0x30
+ shrink_dcache_for_umount+0x51/0x120
+ generic_shutdown_super+0x5c/0x3a0
+ kill_block_super+0x90/0xd0
+ kill_f2fs_super+0x225/0x310
+ deactivate_locked_super+0x78/0xc0
+ cleanup_mnt+0x2b7/0x480
+ task_work_run+0xc8/0x150
+ exit_to_user_mode_prepare+0x14a/0x150
+ syscall_exit_to_user_mode+0x1d/0x40
+ do_syscall_64+0x48/0x90
+
+The root cause is: inode node and dnode node share the same nid,
+so during f2fs_evict_inode(), dnode node truncation will invalidate
+its NAT entry, so when truncating inode node, it fails due to
+invalid NAT entry, result in inode is still marked as dirty, fix
+this issue by clearing dirty for inode and setting SBI_NEED_FSCK
+flag in filesystem.
+
+output from dump.f2fs:
+[print_node_info: 354] Node ID [0xf:15] is inode
+i_nid[0]                      		[0x       f : 15]
+
+Cc: stable@vger.kernel.org
+Reported-by: Ming Yan <yanming@tju.edu.cn>
 Signed-off-by: Chao Yu <chao.yu@oppo.com>
 Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/f2fs/file.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ fs/f2fs/inode.c |   16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -1774,6 +1774,10 @@ static long f2fs_fallocate(struct file *
- 
- 	inode_lock(inode);
- 
-+	ret = file_modified(file);
-+	if (ret)
-+		goto out;
+--- a/fs/f2fs/inode.c
++++ b/fs/f2fs/inode.c
+@@ -796,8 +796,22 @@ retry:
+ 		f2fs_lock_op(sbi);
+ 		err = f2fs_remove_inode_page(inode);
+ 		f2fs_unlock_op(sbi);
+-		if (err == -ENOENT)
++		if (err == -ENOENT) {
+ 			err = 0;
 +
- 	if (mode & FALLOC_FL_PUNCH_HOLE) {
- 		if (offset >= inode->i_size)
- 			goto out;
++			/*
++			 * in fuzzed image, another node may has the same
++			 * block address as inode's, if it was truncated
++			 * previously, truncation of inode node will fail.
++			 */
++			if (is_inode_flag_set(inode, FI_DIRTY_INODE)) {
++				f2fs_warn(F2FS_I_SB(inode),
++					"f2fs_evict_inode: inconsistent node id, ino:%lu",
++					inode->i_ino);
++				f2fs_inode_synced(inode);
++				set_sbi_flag(sbi, SBI_NEED_FSCK);
++			}
++		}
+ 	}
+ 
+ 	/* give more chances, if ENOMEM case */
 
 
