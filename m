@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADAE4CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F01CC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377410AbiFGUuk (ORCPT
+        id S1377201AbiFGUu3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:50:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39596 "EHLO
+        Tue, 7 Jun 2022 16:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358338AbiFGTwW (ORCPT
+        with ESMTP id S1358253AbiFGTwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:52:22 -0400
+        Tue, 7 Jun 2022 15:52:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5EE5A309A;
-        Tue,  7 Jun 2022 11:20:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56090996AE;
+        Tue,  7 Jun 2022 11:19:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A638B8237C;
-        Tue,  7 Jun 2022 18:20:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B707C385A2;
-        Tue,  7 Jun 2022 18:20:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B928B8237D;
+        Tue,  7 Jun 2022 18:19:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0143C36B01;
+        Tue,  7 Jun 2022 18:19:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626002;
-        bh=4XUh0RFtbtG9XcppbCuMDevgZM/YDH7BjHgc9P/vsMY=;
+        s=korg; t=1654625994;
+        bh=SvxtK91i3xQESf6tbSBGHp7J+Iwy+arLxPKjfKCQuOg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sDjtNKYVKQakNor0trvNAW0lLIdfvmFAJ745jyu+JKxtk/zIimlTda5nwNsoQ2yc0
-         gQuoryqA+dWh3Q1MJCXMjaK10QCIZFAUIpykpkuaO4XOWjmq4OmmtM5h6S7wvGapxB
-         9Hj0doyN22aKQXGIDTpHYJYSmdPf4dF9p7d+hGzs=
+        b=MY99TftLAFvM1heayWeCyPRdmeSGbp37v+Resy2R4HxYhZRinkoDOB0hGW5P9KYPI
+         gL75fiWPE+y3ujhwz8hZga1D2Ac0cyqkia5M6S/A174YGeytts4PtT/wW8srZCiq6Q
+         6mQhamvLm131Qa1pUhbdL+dLrZf6oPT6rCDqsj9w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, Vasily Averin <vvs@openvz.org>,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
+        Christoph Hellwig <hch@lst.de>, Jan Kara <jack@suse.cz>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 223/772] cifs: do not use tcpStatus after negotiate completes
-Date:   Tue,  7 Jun 2022 18:56:55 +0200
-Message-Id: <20220607164955.604763471@linuxfoundation.org>
+Subject: [PATCH 5.17 220/772] fanotify: fix incorrect fmode_t casts
+Date:   Tue,  7 Jun 2022 18:56:52 +0200
+Message-Id: <20220607164955.515895606@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -50,114 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shyam Prasad N <sprasad@microsoft.com>
+From: Vasily Averin <vvs@openvz.org>
 
-[ Upstream commit 1a6a41d4cedd9b302e2200e6f0e3c44dbbe13689 ]
+[ Upstream commit dccd855771b37820b6d976a99729c88259549f85 ]
 
-Recent changes to multichannel to allow channel reconnects to
-work in parallel and independent of each other did so by
-making use of tcpStatus for the connection, and status for the
-session. However, this did not take into account the multiuser
-scenario, where same connection is used by multiple connections.
+Fixes sparce warnings:
+fs/notify/fanotify/fanotify_user.c:267:63: sparse:
+ warning: restricted fmode_t degrades to integer
+fs/notify/fanotify/fanotify_user.c:1351:28: sparse:
+ warning: restricted fmode_t degrades to integer
 
-However, tcpStatus should be tracked only till the end of
-negotiate exchange, and not used for session setup. This change
-fixes this.
+FMODE_NONTIFY have bitwise fmode_t type and requires __force attribute
+for any casts.
 
-Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Vasily Averin <vvs@openvz.org>
+Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/9adfd6ac-1b89-791e-796b-49ada3293985@openvz.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/connect.c       | 23 +++++++++++------------
- fs/cifs/smb2pdu.c       |  3 ++-
- fs/cifs/smb2transport.c |  3 ++-
- 3 files changed, 15 insertions(+), 14 deletions(-)
+ fs/notify/fanotify/fanotify_user.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
-index 82ae3b84caf6..faf4587804d9 100644
---- a/fs/cifs/connect.c
-+++ b/fs/cifs/connect.c
-@@ -3956,7 +3956,7 @@ cifs_negotiate_protocol(const unsigned int xid, struct cifs_ses *ses,
- 	if (rc == 0) {
- 		spin_lock(&cifs_tcp_ses_lock);
- 		if (server->tcpStatus == CifsInNegotiate)
--			server->tcpStatus = CifsNeedSessSetup;
-+			server->tcpStatus = CifsGood;
- 		else
- 			rc = -EHOSTDOWN;
- 		spin_unlock(&cifs_tcp_ses_lock);
-@@ -3979,19 +3979,18 @@ cifs_setup_session(const unsigned int xid, struct cifs_ses *ses,
- 	bool is_binding = false;
+diff --git a/fs/notify/fanotify/fanotify_user.c b/fs/notify/fanotify/fanotify_user.c
+index f2a1947ec5ee..ead37db01ab5 100644
+--- a/fs/notify/fanotify/fanotify_user.c
++++ b/fs/notify/fanotify/fanotify_user.c
+@@ -264,7 +264,7 @@ static int create_fd(struct fsnotify_group *group, struct path *path,
+ 	 * originally opened O_WRONLY.
+ 	 */
+ 	new_file = dentry_open(path,
+-			       group->fanotify_data.f_flags | FMODE_NONOTIFY,
++			       group->fanotify_data.f_flags | __FMODE_NONOTIFY,
+ 			       current_cred());
+ 	if (IS_ERR(new_file)) {
+ 		/*
+@@ -1329,7 +1329,7 @@ SYSCALL_DEFINE2(fanotify_init, unsigned int, flags, unsigned int, event_f_flags)
+ 	    (!(fid_mode & FAN_REPORT_NAME) || !(fid_mode & FAN_REPORT_FID)))
+ 		return -EINVAL;
  
- 	/* only send once per connect */
-+	spin_lock(&ses->chan_lock);
-+	is_binding = !CIFS_ALL_CHANS_NEED_RECONNECT(ses);
-+	spin_unlock(&ses->chan_lock);
-+
- 	spin_lock(&cifs_tcp_ses_lock);
--	if ((server->tcpStatus != CifsNeedSessSetup) &&
--	    (ses->status == CifsGood)) {
-+	if (ses->status == CifsExiting) {
- 		spin_unlock(&cifs_tcp_ses_lock);
- 		return 0;
- 	}
--	server->tcpStatus = CifsInSessSetup;
-+	ses->status = CifsInSessSetup;
- 	spin_unlock(&cifs_tcp_ses_lock);
- 
--	spin_lock(&ses->chan_lock);
--	is_binding = !CIFS_ALL_CHANS_NEED_RECONNECT(ses);
--	spin_unlock(&ses->chan_lock);
--
- 	if (!is_binding) {
- 		ses->capabilities = server->capabilities;
- 		if (!linuxExtEnabled)
-@@ -4015,13 +4014,13 @@ cifs_setup_session(const unsigned int xid, struct cifs_ses *ses,
- 	if (rc) {
- 		cifs_server_dbg(VFS, "Send error in SessSetup = %d\n", rc);
- 		spin_lock(&cifs_tcp_ses_lock);
--		if (server->tcpStatus == CifsInSessSetup)
--			server->tcpStatus = CifsNeedSessSetup;
-+		if (ses->status == CifsInSessSetup)
-+			ses->status = CifsNeedSessSetup;
- 		spin_unlock(&cifs_tcp_ses_lock);
- 	} else {
- 		spin_lock(&cifs_tcp_ses_lock);
--		if (server->tcpStatus == CifsInSessSetup)
--			server->tcpStatus = CifsGood;
-+		if (ses->status == CifsInSessSetup)
-+			ses->status = CifsGood;
- 		/* Even if one channel is active, session is in good state */
- 		ses->status = CifsGood;
- 		spin_unlock(&cifs_tcp_ses_lock);
-diff --git a/fs/cifs/smb2pdu.c b/fs/cifs/smb2pdu.c
-index 1704fd358b85..55e6879ef18b 100644
---- a/fs/cifs/smb2pdu.c
-+++ b/fs/cifs/smb2pdu.c
-@@ -3904,7 +3904,8 @@ SMB2_echo(struct TCP_Server_Info *server)
- 	cifs_dbg(FYI, "In echo request for conn_id %lld\n", server->conn_id);
- 
- 	spin_lock(&cifs_tcp_ses_lock);
--	if (server->tcpStatus == CifsNeedNegotiate) {
-+	if (server->ops->need_neg &&
-+	    server->ops->need_neg(server)) {
- 		spin_unlock(&cifs_tcp_ses_lock);
- 		/* No need to send echo on newly established connections */
- 		mod_delayed_work(cifsiod_wq, &server->reconnect, 0);
-diff --git a/fs/cifs/smb2transport.c b/fs/cifs/smb2transport.c
-index 2af79093b78b..01b732641edb 100644
---- a/fs/cifs/smb2transport.c
-+++ b/fs/cifs/smb2transport.c
-@@ -641,7 +641,8 @@ smb2_sign_rqst(struct smb_rqst *rqst, struct TCP_Server_Info *server)
- 	if (!is_signed)
- 		return 0;
- 	spin_lock(&cifs_tcp_ses_lock);
--	if (server->tcpStatus == CifsNeedNegotiate) {
-+	if (server->ops->need_neg &&
-+	    server->ops->need_neg(server)) {
- 		spin_unlock(&cifs_tcp_ses_lock);
- 		return 0;
- 	}
+-	f_flags = O_RDWR | FMODE_NONOTIFY;
++	f_flags = O_RDWR | __FMODE_NONOTIFY;
+ 	if (flags & FAN_CLOEXEC)
+ 		f_flags |= O_CLOEXEC;
+ 	if (flags & FAN_NONBLOCK)
 -- 
 2.35.1
 
