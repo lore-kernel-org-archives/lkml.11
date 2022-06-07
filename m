@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D350EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:39:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 356F1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:39:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346253AbiFGSjN (ORCPT
+        id S1352116AbiFGSjP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:39:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35738 "EHLO
+        Tue, 7 Jun 2022 14:39:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347428AbiFGSIw (ORCPT
+        with ESMTP id S1349625AbiFGSIy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:08:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B0BF6B035;
-        Tue,  7 Jun 2022 10:48:04 -0700 (PDT)
+        Tue, 7 Jun 2022 14:08:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC3056F4A1;
+        Tue,  7 Jun 2022 10:48:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F3886171A;
-        Tue,  7 Jun 2022 17:48:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A7B7C385A5;
-        Tue,  7 Jun 2022 17:48:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D6CE616A3;
+        Tue,  7 Jun 2022 17:47:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 280D0C385A5;
+        Tue,  7 Jun 2022 17:47:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624082;
-        bh=r7jRCbeD7ibDVQb0i+qLhsqpb8a+4ZpDIGUZQA4nKpA=;
+        s=korg; t=1654624062;
+        bh=ynjdX7sqIzj3XGbBUvL+J2pZWNuexzQpo7a/4F/yD1M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=adrAcfhRA6VE7o8qa33YbsoStWwj1KCuqznYoeJKZ3AdSblif42nfB1A6fPYghV+Z
-         x/ugooDDUlplXkszc8sgv3tesT4iOQ1HLcjrC3dyfDYMD7U3Qz40npimlF1BqtBWq+
-         G2o9I5xKNKXd9SFiIKxN2qGvQBDXPlP7EMAiDDzo=
+        b=2ouGVr2JvIk+MHJ8Y579s/R2VDKz+qe7n51533a6UeRKw3xrBiuUrtGJnegnMJOzv
+         i92KTScT2s3nNd8xKWbFaWLpPEWa7RCDtL6IVhCxVzm0t7h0KHrzDCuNEFXBWJ661O
+         xbD97uzGIgP9WScTf3KxkgCjDvblfHSTZB090lpc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        Haren Myneni <haren@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 198/667] drm/vc4: hvs: Fix frame count register readout
-Date:   Tue,  7 Jun 2022 18:57:43 +0200
-Message-Id: <20220607164940.738693291@linuxfoundation.org>
+Subject: [PATCH 5.15 174/667] powerpc/powernv/vas: Assign real address to rx_fifo in vas_rx_win_attr
+Date:   Tue,  7 Jun 2022 18:57:19 +0200
+Message-Id: <20220607164940.029744766@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,130 +50,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Haren Myneni <haren@linux.ibm.com>
 
-[ Upstream commit b51cd7ad143d2eb31a6df81c2183128920e47c2b ]
+[ Upstream commit c127d130f6d59fa81701f6b04023cf7cd1972fb3 ]
 
-In order to get the field currently being output, the driver has been
-using the display FIFO frame count in the HVS, reading a 6-bit field at
-the offset 12 in the DISPSTATx register.
+In init_winctx_regs(), __pa() is called on winctx->rx_fifo and this
+function is called to initialize registers for receive and fault
+windows. But the real address is passed in winctx->rx_fifo for
+receive windows and the virtual address for fault windows which
+causes errors with DEBUG_VIRTUAL enabled. Fixes this issue by
+assigning only real address to rx_fifo in vas_rx_win_attr struct
+for both receive and fault windows.
 
-While that field is indeed at that location for the FIFO 1 and 2, the
-one for the FIFO0 is actually in the DISPSTAT1 register, at the offset
-18.
-
-Fixes: e538092cb15c ("drm/vc4: Enable precise vblank timestamping for interlaced modes.")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://lore.kernel.org/r/20220331143744.777652-3-maxime@cerno.tech
+Reported-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Haren Myneni <haren@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/338e958c7ab8f3b266fa794a1f80f99b9671829e.camel@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_crtc.c |  2 +-
- drivers/gpu/drm/vc4/vc4_drv.h  |  1 +
- drivers/gpu/drm/vc4/vc4_hvs.c  | 23 +++++++++++++++++++++++
- drivers/gpu/drm/vc4/vc4_regs.h | 12 ++++++++++--
- 4 files changed, 35 insertions(+), 3 deletions(-)
+ arch/powerpc/include/asm/vas.h              | 2 +-
+ arch/powerpc/platforms/powernv/vas-fault.c  | 2 +-
+ arch/powerpc/platforms/powernv/vas-window.c | 4 ++--
+ arch/powerpc/platforms/powernv/vas.h        | 2 +-
+ drivers/crypto/nx/nx-common-powernv.c       | 2 +-
+ 5 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
-index 3e61184e194c..88dbb282d15c 100644
---- a/drivers/gpu/drm/vc4/vc4_crtc.c
-+++ b/drivers/gpu/drm/vc4/vc4_crtc.c
-@@ -123,7 +123,7 @@ static bool vc4_crtc_get_scanout_position(struct drm_crtc *crtc,
- 		*vpos /= 2;
+diff --git a/arch/powerpc/include/asm/vas.h b/arch/powerpc/include/asm/vas.h
+index 57573d9c1e09..56834a8a1465 100644
+--- a/arch/powerpc/include/asm/vas.h
++++ b/arch/powerpc/include/asm/vas.h
+@@ -112,7 +112,7 @@ static inline void vas_user_win_add_mm_context(struct vas_user_win_ref *ref)
+  * Receive window attributes specified by the (in-kernel) owner of window.
+  */
+ struct vas_rx_win_attr {
+-	void *rx_fifo;
++	u64 rx_fifo;
+ 	int rx_fifo_size;
+ 	int wcreds_max;
  
- 		/* Use hpos to correct for field offset in interlaced mode. */
--		if (VC4_GET_FIELD(val, SCALER_DISPSTATX_FRAME_COUNT) % 2)
-+		if (vc4_hvs_get_fifo_frame_count(dev, vc4_crtc_state->assigned_channel) % 2)
- 			*hpos += mode->crtc_htotal / 2;
+diff --git a/arch/powerpc/platforms/powernv/vas-fault.c b/arch/powerpc/platforms/powernv/vas-fault.c
+index a7aabc18039e..c1bfad56447d 100644
+--- a/arch/powerpc/platforms/powernv/vas-fault.c
++++ b/arch/powerpc/platforms/powernv/vas-fault.c
+@@ -216,7 +216,7 @@ int vas_setup_fault_window(struct vas_instance *vinst)
+ 	vas_init_rx_win_attr(&attr, VAS_COP_TYPE_FAULT);
+ 
+ 	attr.rx_fifo_size = vinst->fault_fifo_size;
+-	attr.rx_fifo = vinst->fault_fifo;
++	attr.rx_fifo = __pa(vinst->fault_fifo);
+ 
+ 	/*
+ 	 * Max creds is based on number of CRBs can fit in the FIFO.
+diff --git a/arch/powerpc/platforms/powernv/vas-window.c b/arch/powerpc/platforms/powernv/vas-window.c
+index 0f8d39fbf2b2..0072682531d8 100644
+--- a/arch/powerpc/platforms/powernv/vas-window.c
++++ b/arch/powerpc/platforms/powernv/vas-window.c
+@@ -404,7 +404,7 @@ static void init_winctx_regs(struct pnv_vas_window *window,
+ 	 *
+ 	 * See also: Design note in function header.
+ 	 */
+-	val = __pa(winctx->rx_fifo);
++	val = winctx->rx_fifo;
+ 	val = SET_FIELD(VAS_PAGE_MIGRATION_SELECT, val, 0);
+ 	write_hvwc_reg(window, VREG(LFIFO_BAR), val);
+ 
+@@ -739,7 +739,7 @@ static void init_winctx_for_rxwin(struct pnv_vas_window *rxwin,
+ 		 */
+ 		winctx->fifo_disable = true;
+ 		winctx->intr_disable = true;
+-		winctx->rx_fifo = NULL;
++		winctx->rx_fifo = 0;
  	}
  
-diff --git a/drivers/gpu/drm/vc4/vc4_drv.h b/drivers/gpu/drm/vc4/vc4_drv.h
-index 4b550ebd9572..94c178738fc1 100644
---- a/drivers/gpu/drm/vc4/vc4_drv.h
-+++ b/drivers/gpu/drm/vc4/vc4_drv.h
-@@ -933,6 +933,7 @@ void vc4_irq_reset(struct drm_device *dev);
- extern struct platform_driver vc4_hvs_driver;
- void vc4_hvs_stop_channel(struct drm_device *dev, unsigned int output);
- int vc4_hvs_get_fifo_from_output(struct drm_device *dev, unsigned int output);
-+u8 vc4_hvs_get_fifo_frame_count(struct drm_device *dev, unsigned int fifo);
- int vc4_hvs_atomic_check(struct drm_crtc *crtc, struct drm_atomic_state *state);
- void vc4_hvs_atomic_begin(struct drm_crtc *crtc, struct drm_atomic_state *state);
- void vc4_hvs_atomic_enable(struct drm_crtc *crtc, struct drm_atomic_state *state);
-diff --git a/drivers/gpu/drm/vc4/vc4_hvs.c b/drivers/gpu/drm/vc4/vc4_hvs.c
-index 604933e20e6a..c8cae10500b9 100644
---- a/drivers/gpu/drm/vc4/vc4_hvs.c
-+++ b/drivers/gpu/drm/vc4/vc4_hvs.c
-@@ -197,6 +197,29 @@ static void vc4_hvs_update_gamma_lut(struct drm_crtc *crtc)
- 	vc4_hvs_lut_load(crtc);
- }
+ 	winctx->lnotify_lpid = rxattr->lnotify_lpid;
+diff --git a/arch/powerpc/platforms/powernv/vas.h b/arch/powerpc/platforms/powernv/vas.h
+index 8bb08e395de0..08d9d3d5a22b 100644
+--- a/arch/powerpc/platforms/powernv/vas.h
++++ b/arch/powerpc/platforms/powernv/vas.h
+@@ -376,7 +376,7 @@ struct pnv_vas_window {
+  * is a container for the register fields in the window context.
+  */
+ struct vas_winctx {
+-	void *rx_fifo;
++	u64 rx_fifo;
+ 	int rx_fifo_size;
+ 	int wcreds_max;
+ 	int rsvd_txbuf_count;
+diff --git a/drivers/crypto/nx/nx-common-powernv.c b/drivers/crypto/nx/nx-common-powernv.c
+index 32a036ada5d0..f418817c0f43 100644
+--- a/drivers/crypto/nx/nx-common-powernv.c
++++ b/drivers/crypto/nx/nx-common-powernv.c
+@@ -827,7 +827,7 @@ static int __init vas_cfg_coproc_info(struct device_node *dn, int chip_id,
+ 		goto err_out;
  
-+u8 vc4_hvs_get_fifo_frame_count(struct drm_device *dev, unsigned int fifo)
-+{
-+	struct vc4_dev *vc4 = to_vc4_dev(dev);
-+	u8 field = 0;
-+
-+	switch (fifo) {
-+	case 0:
-+		field = VC4_GET_FIELD(HVS_READ(SCALER_DISPSTAT1),
-+				      SCALER_DISPSTAT1_FRCNT0);
-+		break;
-+	case 1:
-+		field = VC4_GET_FIELD(HVS_READ(SCALER_DISPSTAT1),
-+				      SCALER_DISPSTAT1_FRCNT1);
-+		break;
-+	case 2:
-+		field = VC4_GET_FIELD(HVS_READ(SCALER_DISPSTAT2),
-+				      SCALER_DISPSTAT2_FRCNT2);
-+		break;
-+	}
-+
-+	return field;
-+}
-+
- int vc4_hvs_get_fifo_from_output(struct drm_device *dev, unsigned int output)
- {
- 	struct vc4_dev *vc4 = to_vc4_dev(dev);
-diff --git a/drivers/gpu/drm/vc4/vc4_regs.h b/drivers/gpu/drm/vc4/vc4_regs.h
-index 489f921ef44d..8ac2f088106a 100644
---- a/drivers/gpu/drm/vc4/vc4_regs.h
-+++ b/drivers/gpu/drm/vc4/vc4_regs.h
-@@ -379,8 +379,6 @@
- # define SCALER_DISPSTATX_MODE_EOF		3
- # define SCALER_DISPSTATX_FULL			BIT(29)
- # define SCALER_DISPSTATX_EMPTY			BIT(28)
--# define SCALER_DISPSTATX_FRAME_COUNT_MASK	VC4_MASK(17, 12)
--# define SCALER_DISPSTATX_FRAME_COUNT_SHIFT	12
- # define SCALER_DISPSTATX_LINE_MASK		VC4_MASK(11, 0)
- # define SCALER_DISPSTATX_LINE_SHIFT		0
- 
-@@ -403,9 +401,15 @@
- 						 (x) * (SCALER_DISPBKGND1 - \
- 							SCALER_DISPBKGND0))
- #define SCALER_DISPSTAT1                        0x00000058
-+# define SCALER_DISPSTAT1_FRCNT0_MASK		VC4_MASK(23, 18)
-+# define SCALER_DISPSTAT1_FRCNT0_SHIFT		18
-+# define SCALER_DISPSTAT1_FRCNT1_MASK		VC4_MASK(17, 12)
-+# define SCALER_DISPSTAT1_FRCNT1_SHIFT		12
-+
- #define SCALER_DISPSTATX(x)			(SCALER_DISPSTAT0 +        \
- 						 (x) * (SCALER_DISPSTAT1 - \
- 							SCALER_DISPSTAT0))
-+
- #define SCALER_DISPBASE1                        0x0000005c
- #define SCALER_DISPBASEX(x)			(SCALER_DISPBASE0 +        \
- 						 (x) * (SCALER_DISPBASE1 - \
-@@ -415,7 +419,11 @@
- 						 (x) * (SCALER_DISPCTRL1 - \
- 							SCALER_DISPCTRL0))
- #define SCALER_DISPBKGND2                       0x00000064
-+
- #define SCALER_DISPSTAT2                        0x00000068
-+# define SCALER_DISPSTAT2_FRCNT2_MASK		VC4_MASK(17, 12)
-+# define SCALER_DISPSTAT2_FRCNT2_SHIFT		12
-+
- #define SCALER_DISPBASE2                        0x0000006c
- #define SCALER_DISPALPHA2                       0x00000070
- #define SCALER_GAMADDR                          0x00000078
+ 	vas_init_rx_win_attr(&rxattr, coproc->ct);
+-	rxattr.rx_fifo = (void *)rx_fifo;
++	rxattr.rx_fifo = rx_fifo;
+ 	rxattr.rx_fifo_size = fifo_size;
+ 	rxattr.lnotify_lpid = lpid;
+ 	rxattr.lnotify_pid = pid;
 -- 
 2.35.1
 
