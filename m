@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09650C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCDADC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:33:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379642AbiFGVcz (ORCPT
+        id S1379725AbiFGVdG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:32:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46072 "EHLO
+        Tue, 7 Jun 2022 17:33:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377807AbiFGUeH (ORCPT
+        with ESMTP id S1377805AbiFGUeG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 16:34:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00571E7AC2;
+        Tue, 7 Jun 2022 16:34:06 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7560117F82A;
         Tue,  7 Jun 2022 11:36:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 046F6612F2;
-        Tue,  7 Jun 2022 18:36:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19E0BC385A2;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 496FACE2461;
         Tue,  7 Jun 2022 18:36:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D437C385A2;
+        Tue,  7 Jun 2022 18:36:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654626964;
-        bh=sgwjSb0S/z/eQgKcVypW68oc31OgMlRsNapyvUhlqSE=;
+        s=korg; t=1654626961;
+        bh=HLX7pPoGn8AZ3p6Ae+pqSRxqIuL7yut+DcoPlzH7TiM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C4OaXcQqnO0RN1+zrOmaFp1Avsyb34i4kS6A/Vm7qyu0OHvMSlQbDsN/r25SFGtyu
-         gYkJbpoJ7J6bApaRigwLkxaVU09TERjryYUJyxp3YCaw2aXjMuwl8ohv/B+VkHpbsE
-         etrizePY6LDf+Hza64QPEk54rA+/bt3i3FONY8Yw=
+        b=S3wjzrUaq+C88n3ZbIbdyZFDtfxKXYkjTyAJZKZv1fPsUl8+miG/PkbiudiB9YX6y
+         azSapi/Md201e5wjcBVTp+MoeYnrAgCqWIQ7yqpYX5R/4NGTzhwm1WY7n1RgaUMM5u
+         FufEfXsSOGpWbmMKjrIeqnM60nX/YMpSbJm+dnlo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -38,9 +38,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         <angelogioacchino.delregno@collabora.com>,
         Matthias Brugger <matthias.bgg@gmail.com>,
         Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 569/772] iommu/mediatek: Add list_del in mtk_iommu_remove
-Date:   Tue,  7 Jun 2022 19:02:41 +0200
-Message-Id: <20220607165005.720082363@linuxfoundation.org>
+Subject: [PATCH 5.17 568/772] iommu/mediatek: Fix 2 HW sharing pgtable issue
+Date:   Tue,  7 Jun 2022 19:02:40 +0200
+Message-Id: <20220607165005.691533132@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -54,39 +54,51 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Yong Wu <yong.wu@mediatek.com>
 
-[ Upstream commit ee55f75e4bcade81d253163641b63bef3e76cac4 ]
+[ Upstream commit 645b87c190c959e9bb4f216b8c4add4ee880451a ]
 
-Lack the list_del in the mtk_iommu_remove, and remove
-bus_set_iommu(*, NULL) since there may be several iommu HWs.
-we can not bus_set_iommu null when one iommu driver unbind.
+In the commit 4f956c97d26b ("iommu/mediatek: Move domain_finalise into
+attach_device"), I overlooked the sharing pgtable case.
+After that commit, the "data" in the mtk_iommu_domain_finalise always is
+the data of the current IOMMU HW. Fix this for the sharing pgtable case.
 
-This could be a fix for mt2712 which support 2 M4U HW and list them.
+Only affect mt2712 which is the only SoC that share pgtable currently.
 
-Fixes: 7c3a2ec02806 ("iommu/mediatek: Merge 2 M4U HWs into one iommu domain")
+Fixes: 4f956c97d26b ("iommu/mediatek: Move domain_finalise into attach_device")
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Link: https://lore.kernel.org/r/20220503071427.2285-6-yong.wu@mediatek.com
+Link: https://lore.kernel.org/r/20220503071427.2285-5-yong.wu@mediatek.com
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/mtk_iommu.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/iommu/mtk_iommu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index cf4e33db6a2d..2285507d3354 100644
+index 5971a1168666..cf4e33db6a2d 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -954,8 +954,7 @@ static int mtk_iommu_remove(struct platform_device *pdev)
- 	iommu_device_sysfs_remove(&data->iommu);
- 	iommu_device_unregister(&data->iommu);
+@@ -451,7 +451,7 @@ static void mtk_iommu_domain_free(struct iommu_domain *domain)
+ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 				   struct device *dev)
+ {
+-	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
++	struct mtk_iommu_data *data = dev_iommu_priv_get(dev), *frstdata;
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+ 	struct device *m4udev = data->dev;
+ 	int ret, domid;
+@@ -461,7 +461,10 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 		return domid;
  
--	if (iommu_present(&platform_bus_type))
--		bus_set_iommu(&platform_bus_type, NULL);
-+	list_del(&data->list);
- 
- 	clk_disable_unprepare(data->bclk);
- 	device_link_remove(data->smicomm_dev, &pdev->dev);
+ 	if (!dom->data) {
+-		if (mtk_iommu_domain_finalise(dom, data, domid))
++		/* Data is in the frstdata in sharing pgtable case. */
++		frstdata = mtk_iommu_get_m4u_data();
++
++		if (mtk_iommu_domain_finalise(dom, frstdata, domid))
+ 			return -ENODEV;
+ 		dom->data = data;
+ 	}
 -- 
 2.35.1
 
