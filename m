@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F29CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43B27CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:27:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384697AbiFGWZ5 (ORCPT
+        id S1384143AbiFGWZU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47286 "EHLO
+        Tue, 7 Jun 2022 18:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380694AbiFGVQl (ORCPT
+        with ESMTP id S1381172AbiFGVRX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:16:41 -0400
+        Tue, 7 Jun 2022 17:17:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27EDA21F9A4;
-        Tue,  7 Jun 2022 11:56:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B66E220FCF;
+        Tue,  7 Jun 2022 11:58:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8EB661311;
-        Tue,  7 Jun 2022 18:56:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB5BFC385A2;
-        Tue,  7 Jun 2022 18:56:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F115C617A3;
+        Tue,  7 Jun 2022 18:58:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07751C36AFE;
+        Tue,  7 Jun 2022 18:58:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628172;
-        bh=jQUQChwJbrQ4qrR8OZj17hDr6QR/W1yv93vA5CkVftI=;
+        s=korg; t=1654628308;
+        bh=tS2WH6BptqUOTJEKj5TsxzQWl1Vl2qqs7ZN/hqeLxUc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rDWni6dsOnzh8jsJaagWAc3haxEXokpBVb4aHo33+oUtZlC2zQMzlIY9kXyqhdrTL
-         hlkgOlGAFtMfVRrdUfzhN6EL4zwHNfTadkDNu+x3eAUC1mu5R6ANAV8l4ap202YCpR
-         FPgX3Bt4Bxmp9TyPRMe+4XT+CMmY87CU/99xT3gA=
+        b=U4v93zmrsLCgXmx4F5WjzQaING6bGTNkufPFnlRNVuVHYgrRWIgdyfB+rTQRNrRfK
+         uyBGpjVBlYDRVjo0SBwtZBEdIqTKpSHY/dKcBcHIHkI2ewtKrKwAg3zFM42STZ3S2v
+         Rzikpj7p6GLrJy46oPGnMzPEigNEu2h6U+aR3Kpc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Hui Wang <hui.wang@canonical.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 231/879] arm64: dts: qcom: sc7280-idp: Configure CTS pin to bias-bus-hold for bluetooth
-Date:   Tue,  7 Jun 2022 18:55:49 +0200
-Message-Id: <20220607165009.558513009@linuxfoundation.org>
+Subject: [PATCH 5.18 280/879] ASoC: cs35l41: Fix an out-of-bounds access in otp_packed_element_t
+Date:   Tue,  7 Jun 2022 18:56:38 +0200
+Message-Id: <20220607165010.975687839@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -52,60 +53,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+From: Hui Wang <hui.wang@canonical.com>
 
-[ Upstream commit 497b272759986af1aa5a25b5e903d082c67bd8f6 ]
+[ Upstream commit 9f342904216f378e88008bb0ce1ae200a4b99fe8 ]
 
-WLAN rail was leaking power during RBSC/sleep even after turning BT off.
-Change active and sleep pinctrl configurations to handle same.
+The CS35L41_NUM_OTP_ELEM is 100, but only 99 entries are defined in
+the array otp_map_1/2[CS35L41_NUM_OTP_ELEM], this will trigger UBSAN
+to report a shift-out-of-bounds warning in the cs35l41_otp_unpack()
+since the last entry in the array will result in GENMASK(-1, 0).
 
-Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/1650556567-4995-2-git-send-email-quic_vnivarth@quicinc.com
+UBSAN reports this problem:
+ UBSAN: shift-out-of-bounds in /home/hwang4/build/jammy/jammy/sound/soc/codecs/cs35l41-lib.c:836:8
+ shift exponent 64 is too large for 64-bit type 'long unsigned int'
+ CPU: 10 PID: 595 Comm: systemd-udevd Not tainted 5.15.0-23-generic #23
+ Hardware name: LENOVO \x02MFG_IN_GO/\x02MFG_IN_GO, BIOS N3GET19W (1.00 ) 03/11/2022
+ Call Trace:
+  <TASK>
+  show_stack+0x52/0x58
+  dump_stack_lvl+0x4a/0x5f
+  dump_stack+0x10/0x12
+  ubsan_epilogue+0x9/0x45
+  __ubsan_handle_shift_out_of_bounds.cold+0x61/0xef
+  ? regmap_unlock_mutex+0xe/0x10
+  cs35l41_otp_unpack.cold+0x1c6/0x2b2 [snd_soc_cs35l41_lib]
+  cs35l41_hda_probe+0x24f/0x33a [snd_hda_scodec_cs35l41]
+  cs35l41_hda_i2c_probe+0x65/0x90 [snd_hda_scodec_cs35l41_i2c]
+  ? cs35l41_hda_i2c_remove+0x20/0x20 [snd_hda_scodec_cs35l41_i2c]
+  i2c_device_probe+0x252/0x2b0
+
+Fixes: 6450ef559056 ("ASoC: cs35l41: CS35L41 Boosted Smart Amplifier")
+Reviewed-by: Lucas Tanure <tanureal@opensource.cirrus.com>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Signed-off-by: Hui Wang <hui.wang@canonical.com>
+Link: https://lore.kernel.org/r/20220328123535.50000-2-hui.wang@canonical.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ include/sound/cs35l41.h        |  1 -
+ sound/soc/codecs/cs35l41-lib.c | 14 +++++++-------
+ 2 files changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index ecbf2b89d896..5ab3696af354 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -400,10 +400,13 @@
+diff --git a/include/sound/cs35l41.h b/include/sound/cs35l41.h
+index bf7f9a9aeba0..9341130257ea 100644
+--- a/include/sound/cs35l41.h
++++ b/include/sound/cs35l41.h
+@@ -536,7 +536,6 @@
  
- &qup_uart7_cts {
- 	/*
--	 * Configure a pull-down on CTS to match the pull of
--	 * the Bluetooth module.
-+	 * Configure a bias-bus-hold on CTS to lower power
-+	 * usage when Bluetooth is turned off. Bus hold will
-+	 * maintain a low power state regardless of whether
-+	 * the Bluetooth module drives the pin in either
-+	 * direction or leaves the pin fully unpowered.
- 	 */
--	bias-pull-down;
-+	bias-bus-hold;
+ #define CS35L41_MAX_CACHE_REG		36
+ #define CS35L41_OTP_SIZE_WORDS		32
+-#define CS35L41_NUM_OTP_ELEM		100
+ 
+ #define CS35L41_VALID_PDATA		0x80000000
+ #define CS35L41_NUM_SUPPLIES            2
+diff --git a/sound/soc/codecs/cs35l41-lib.c b/sound/soc/codecs/cs35l41-lib.c
+index aa6823fbd1a4..17cf782f39af 100644
+--- a/sound/soc/codecs/cs35l41-lib.c
++++ b/sound/soc/codecs/cs35l41-lib.c
+@@ -422,7 +422,7 @@ static bool cs35l41_volatile_reg(struct device *dev, unsigned int reg)
+ 	}
+ }
+ 
+-static const struct cs35l41_otp_packed_element_t otp_map_1[CS35L41_NUM_OTP_ELEM] = {
++static const struct cs35l41_otp_packed_element_t otp_map_1[] = {
+ 	/* addr         shift   size */
+ 	{ 0x00002030,	0,	4 }, /*TRIM_OSC_FREQ_TRIM*/
+ 	{ 0x00002030,	7,	1 }, /*TRIM_OSC_TRIM_DONE*/
+@@ -525,7 +525,7 @@ static const struct cs35l41_otp_packed_element_t otp_map_1[CS35L41_NUM_OTP_ELEM]
+ 	{ 0x00017044,	0,	24 }, /*LOT_NUMBER*/
  };
  
- &qup_uart7_rts {
-@@ -495,10 +498,13 @@
- 		pins = "gpio28";
- 		function = "gpio";
- 		/*
--		 * Configure a pull-down on CTS to match the pull of
--		 * the Bluetooth module.
-+		 * Configure a bias-bus-hold on CTS to lower power
-+		 * usage when Bluetooth is turned off. Bus hold will
-+		 * maintain a low power state regardless of whether
-+		 * the Bluetooth module drives the pin in either
-+		 * direction or leaves the pin fully unpowered.
- 		 */
--		bias-pull-down;
-+		bias-bus-hold;
- 	};
- 
- 	qup_uart7_sleep_rts: qup-uart7-sleep-rts {
+-static const struct cs35l41_otp_packed_element_t otp_map_2[CS35L41_NUM_OTP_ELEM] = {
++static const struct cs35l41_otp_packed_element_t otp_map_2[] = {
+ 	/* addr         shift   size */
+ 	{ 0x00002030,	0,	4 }, /*TRIM_OSC_FREQ_TRIM*/
+ 	{ 0x00002030,	7,	1 }, /*TRIM_OSC_TRIM_DONE*/
+@@ -671,35 +671,35 @@ static const struct cs35l41_otp_map_element_t cs35l41_otp_map_map[] = {
+ 	{
+ 		.id = 0x01,
+ 		.map = otp_map_1,
+-		.num_elements = CS35L41_NUM_OTP_ELEM,
++		.num_elements = ARRAY_SIZE(otp_map_1),
+ 		.bit_offset = 16,
+ 		.word_offset = 2,
+ 	},
+ 	{
+ 		.id = 0x02,
+ 		.map = otp_map_2,
+-		.num_elements = CS35L41_NUM_OTP_ELEM,
++		.num_elements = ARRAY_SIZE(otp_map_2),
+ 		.bit_offset = 16,
+ 		.word_offset = 2,
+ 	},
+ 	{
+ 		.id = 0x03,
+ 		.map = otp_map_2,
+-		.num_elements = CS35L41_NUM_OTP_ELEM,
++		.num_elements = ARRAY_SIZE(otp_map_2),
+ 		.bit_offset = 16,
+ 		.word_offset = 2,
+ 	},
+ 	{
+ 		.id = 0x06,
+ 		.map = otp_map_2,
+-		.num_elements = CS35L41_NUM_OTP_ELEM,
++		.num_elements = ARRAY_SIZE(otp_map_2),
+ 		.bit_offset = 16,
+ 		.word_offset = 2,
+ 	},
+ 	{
+ 		.id = 0x08,
+ 		.map = otp_map_1,
+-		.num_elements = CS35L41_NUM_OTP_ELEM,
++		.num_elements = ARRAY_SIZE(otp_map_1),
+ 		.bit_offset = 16,
+ 		.word_offset = 2,
+ 	},
 -- 
 2.35.1
 
