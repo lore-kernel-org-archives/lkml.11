@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C77CCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:42:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97DBDC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:42:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355211AbiFHBj5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:39:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45894 "EHLO
+        id S238408AbiFHBjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 7 Jun 2022 21:39:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383220AbiFGVwr (ORCPT
+        with ESMTP id S1382468AbiFGVv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:52:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B39B32431A6;
-        Tue,  7 Jun 2022 12:10:45 -0700 (PDT)
+        Tue, 7 Jun 2022 17:51:29 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E02E23BC31;
+        Tue,  7 Jun 2022 12:08:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A410617D0;
-        Tue,  7 Jun 2022 19:10:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 391A9C385A2;
-        Tue,  7 Jun 2022 19:10:44 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B16D4CE249A;
+        Tue,  7 Jun 2022 19:08:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE16CC385A5;
+        Tue,  7 Jun 2022 19:08:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629044;
-        bh=dJUCVa4nIa8YINdSoor1J/gc2l6XzUX9TFZT4NQvPgc=;
+        s=korg; t=1654628929;
+        bh=Oz1PMJqTL1/V968NB2oHZ+dh7qhXR35zqiuAnvBfErw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pEZlM2ceI6LteJexpDSdLlLsOGVjeB3ihvjUlu+opqlWiCFPgUsXzbtRss2an3463
-         +QcbTI5pgFTHkqctoH6nlwEKbzMTs+rffO//NQxMh+E8BuCSjzAt+65K9zVd19ucYB
-         MTe3JTwCuGme+eKHGu8j2UF0kWL2+g75xUyX0igA=
+        b=E6qH2QNufAUq4Daz1JBK/6zig7/8Nwagy0iUfuA7h/0h0Zaix+4B9x+Gb91aBbPCI
+         12b/wpbELCIdwGQoexKILGhsXN1NTf2Wv5s6FgDJwA/vsBJvPWp0rahOm8vHY+pmXx
+         J4fHaQeuH9P4ktwAWx/nT1vuSkqPHoP7G3kPmZlU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
+        Anup Patel <anup@brainfault.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 508/879] ASoC: max98090: Move check for invalid values before casting in max98090_put_enab_tlv()
-Date:   Tue,  7 Jun 2022 19:00:26 +0200
-Message-Id: <20220607165017.620148269@linuxfoundation.org>
+Subject: [PATCH 5.18 500/879] cpuidle: riscv-sbi: Fix code to allow a genpd governor to be used
+Date:   Tue,  7 Jun 2022 19:00:18 +0200
+Message-Id: <20220607165017.384952156@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -50,49 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Khoroshilov <khoroshilov@ispras.ru>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit f7a344468105ef8c54086dfdc800e6f5a8417d3e ]
+[ Upstream commit a6653fb584b5f6ac60ddd5d86ddd49a1f3945a04 ]
 
-Validation of signed input should be done before casting to unsigned int.
+The intent is to use a genpd governor when there are some states that needs
+to be managed. Although, the current code ends up to never assign a
+governor, let's fix this.
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
-
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Suggested-by: Mark Brown <broonie@kernel.org>
-Fixes: 2fbe467bcbfc ("ASoC: max98090: Reject invalid values in custom control put()")
-Link: https://lore.kernel.org/r/1652999486-29653-1-git-send-email-khoroshilov@ispras.ru
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 6abf32f1d9c50 ("cpuidle: Add RISC-V SBI CPU idle driver")
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Reviewed-by: Anup Patel <anup@brainfault.org>
+Tested-by: Anup Patel <anup@brainfault.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/max98090.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/cpuidle/cpuidle-riscv-sbi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
-index 62b41ca050a2..5513acd360b8 100644
---- a/sound/soc/codecs/max98090.c
-+++ b/sound/soc/codecs/max98090.c
-@@ -393,7 +393,8 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
- 	struct soc_mixer_control *mc =
- 		(struct soc_mixer_control *)kcontrol->private_value;
- 	unsigned int mask = (1 << fls(mc->max)) - 1;
--	unsigned int sel = ucontrol->value.integer.value[0];
-+	int sel_unchecked = ucontrol->value.integer.value[0];
-+	unsigned int sel;
- 	unsigned int val = snd_soc_component_read(component, mc->reg);
- 	unsigned int *select;
+diff --git a/drivers/cpuidle/cpuidle-riscv-sbi.c b/drivers/cpuidle/cpuidle-riscv-sbi.c
+index 5c852e671992..1151e5e2ba82 100644
+--- a/drivers/cpuidle/cpuidle-riscv-sbi.c
++++ b/drivers/cpuidle/cpuidle-riscv-sbi.c
+@@ -414,7 +414,7 @@ static int sbi_pd_init(struct device_node *np)
+ 	struct generic_pm_domain *pd;
+ 	struct sbi_pd_provider *pd_provider;
+ 	struct dev_power_governor *pd_gov;
+-	int ret = -ENOMEM, state_count = 0;
++	int ret = -ENOMEM;
  
-@@ -413,8 +414,9 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+ 	pd = dt_idle_pd_alloc(np, sbi_dt_parse_state_node);
+ 	if (!pd)
+@@ -433,7 +433,7 @@ static int sbi_pd_init(struct device_node *np)
+ 		pd->flags |= GENPD_FLAG_ALWAYS_ON;
  
- 	val = (val >> mc->shift) & mask;
+ 	/* Use governor for CPU PM domains if it has some states to manage. */
+-	pd_gov = state_count > 0 ? &pm_domain_cpu_gov : NULL;
++	pd_gov = pd->states ? &pm_domain_cpu_gov : NULL;
  
--	if (sel < 0 || sel > mc->max)
-+	if (sel_unchecked < 0 || sel_unchecked > mc->max)
- 		return -EINVAL;
-+	sel = sel_unchecked;
- 
- 	*select = sel;
- 
+ 	ret = pm_genpd_init(pd, pd_gov, false);
+ 	if (ret)
 -- 
 2.35.1
 
