@@ -2,120 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38421CCA48F
-	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C168ECCA48B
+	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 01:38:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386600AbiFHBhE (ORCPT
+        id S1386113AbiFHBge (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 21:37:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57792 "EHLO
+        Tue, 7 Jun 2022 21:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381302AbiFGXjC (ORCPT
+        with ESMTP id S1381781AbiFGWcc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 19:39:02 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4665822DFAE
-        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 14:36:25 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id t14-20020a65608e000000b003fa321e8ea3so9153770pgu.18
-        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 14:36:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=EJfk8nwbrnmO1UuI866I8yMqvfudRDGtQGXb6HNwIrM=;
-        b=cn1958um9WkdotZSF69FsUeBfSeTHbq+FyWFm/QqdUOkrDZ20ANQK0PPQrxi/NLkrE
-         EOzpX4xgCHfHqrGscVBpazqOyxk3P+phvhtPDrTGhOxUsewtUdzwQHQaIVUg0xhSIXTb
-         eMI18H3mg6NDelffkVysacbr4O/KHNry1/qOM9B+ptmEA3jvqd82zUILmyxqj3GOZmTn
-         JBd2U/5PRnm/VVZBlu9TSd1gbDdXCDHSkQKJ44gSooijmAJPLmXhMOgOyy2ZbGk8cIV3
-         mx2S3mDkwmj8zyAyHIfRq2V6TNIMTeyMzG/0cVYzVOSxBmrwSEEstbIEfIAWeE0sj+/p
-         G9wA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=EJfk8nwbrnmO1UuI866I8yMqvfudRDGtQGXb6HNwIrM=;
-        b=Ky2sLtaWk8e7RsK0IUk1sTiSZxv6sVu3E+P4gqjXmiRUHSvuQ/gZwlth4Kt1Ej0oBG
-         uR85E/qsldwNLuC3sagvdBQ+sMbeguXQlOa8g4w4+qHtbDqji6WYP/BVHVfSyu81JF2w
-         3EhjaEKMWhlrxalBHJvcKNzaFQ85RIT8kVnsLGJcKk6XlXdMY86UV111QnZ+dLoLlOrg
-         4wWHtGck1y226IQDbotP64HeCCvlvYOHQY66DdcWb1i62ACo32x6OCoQUr6nYY2MsUmP
-         L2DXPkpURsgCAmUOh4A6Q5GLEIv/CGgc4EidgNI2N6z86J8WtIjUtLps6CKmX8jmipcX
-         GjMA==
-X-Gm-Message-State: AOAM530f0nUCxlRZ1qgF9GA2+4WyQLc08us4rbH/LdH/c15BRhRros0q
-        cUKHpYeYSFMtcQe9gZWHQm6bV+rgyGY=
-X-Google-Smtp-Source: ABdhPJzHHxYpwDw7PZZ+h5cYuSRuLOiUBVayajr26XmFr4L8q40OPMapzi4SZKc/+lJsQarfzYlXjX9kFLU=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:da87:b0:166:423d:f3be with SMTP id
- j7-20020a170902da8700b00166423df3bemr29143461plx.150.1654637784762; Tue, 07
- Jun 2022 14:36:24 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue,  7 Jun 2022 21:35:53 +0000
-In-Reply-To: <20220607213604.3346000-1-seanjc@google.com>
-Message-Id: <20220607213604.3346000-5-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220607213604.3346000-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v5 04/15] KVM: nVMX: Rename handle_vm{on,off}() to handle_vmx{on,off}()
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Eric Li <ercli@ucdavis.edu>,
-        David Matlack <dmatlack@google.com>,
-        Oliver Upton <oupton@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 7 Jun 2022 18:32:32 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA4B22508;
+        Tue,  7 Jun 2022 12:25:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5B9C2CE2478;
+        Tue,  7 Jun 2022 19:25:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43FB3C385A2;
+        Tue,  7 Jun 2022 19:25:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654629921;
+        bh=4EKyYJ2EBnd47zcCCrMDKfdZTmj/kYWTH+AI9gJfgTg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kyC1SywNpxZ69SVJoNZIKdP53G5ImWEzNJUfyKq7Ccg2O436HjZ86KcA+nRnIXIF4
+         h8ipvEzum8hGcPdCtqPdZFpLw2PlgrGU8Tpm9El5qWFDfD7LIW5jdIKXbx9qaKV3uv
+         zH3AqyBK9vX6FIBpNaMPsHaZsLTSMGL9/3vtTivI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.18 866/879] Revert "random: use static branch for crng_ready()"
+Date:   Tue,  7 Jun 2022 19:06:24 +0200
+Message-Id: <20220607165027.989427675@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
+References: <20220607165002.659942637@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename the exit handlers for VMXON and VMXOFF to match the instruction
-names, the terms "vmon" and "vmoff" are not used anywhere in Intel's
-documentation, nor are they used elsehwere in KVM.
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-Sadly, the exit reasons are exposed to userspace and so cannot be renamed
-without breaking userspace. :-(
+This reverts upstream commit f5bda35fba615ace70a656d4700423fa6c9bebee
+from stable. It's not essential and will take some time during 5.19 to
+work out properly.
 
-Fixes: ec378aeef9df ("KVM: nVMX: Implement VMXON and VMXOFF")
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- arch/x86/kvm/vmx/nested.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/char/random.c |   12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 9a5b6ef16c1c..00c7b00c017a 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -4958,7 +4958,7 @@ static int enter_vmx_operation(struct kvm_vcpu *vcpu)
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -78,8 +78,7 @@ static enum {
+ 	CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
+ 	CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
+ } crng_init __read_mostly = CRNG_EMPTY;
+-static DEFINE_STATIC_KEY_FALSE(crng_is_ready);
+-#define crng_ready() (static_branch_likely(&crng_is_ready) || crng_init >= CRNG_READY)
++#define crng_ready() (likely(crng_init >= CRNG_READY))
+ /* Various types of waiters for crng_init->CRNG_READY transition. */
+ static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
+ static struct fasync_struct *fasync;
+@@ -109,11 +108,6 @@ bool rng_is_initialized(void)
  }
+ EXPORT_SYMBOL(rng_is_initialized);
  
- /* Emulate the VMXON instruction. */
--static int handle_vmon(struct kvm_vcpu *vcpu)
-+static int handle_vmxon(struct kvm_vcpu *vcpu)
- {
- 	int ret;
- 	gpa_t vmptr;
-@@ -5055,7 +5055,7 @@ static inline void nested_release_vmcs12(struct kvm_vcpu *vcpu)
- }
+-static void __cold crng_set_ready(struct work_struct *work)
+-{
+-	static_branch_enable(&crng_is_ready);
+-}
+-
+ /* Used by wait_for_random_bytes(), and considered an entropy collector, below. */
+ static void try_to_generate_entropy(void);
  
- /* Emulate the VMXOFF instruction */
--static int handle_vmoff(struct kvm_vcpu *vcpu)
-+static int handle_vmxoff(struct kvm_vcpu *vcpu)
+@@ -267,7 +261,7 @@ static void crng_reseed(void)
+ 		++next_gen;
+ 	WRITE_ONCE(base_crng.generation, next_gen);
+ 	WRITE_ONCE(base_crng.birth, jiffies);
+-	if (!static_branch_likely(&crng_is_ready))
++	if (!crng_ready())
+ 		crng_init = CRNG_READY;
+ 	spin_unlock_irqrestore(&base_crng.lock, flags);
+ 	memzero_explicit(key, sizeof(key));
+@@ -710,7 +704,6 @@ static void extract_entropy(void *buf, s
+ 
+ static void __cold _credit_init_bits(size_t bits)
  {
- 	if (!nested_vmx_check_permission(vcpu))
- 		return 1;
-@@ -6832,8 +6832,8 @@ __init int nested_vmx_hardware_setup(int (*exit_handlers[])(struct kvm_vcpu *))
- 	exit_handlers[EXIT_REASON_VMREAD]	= handle_vmread;
- 	exit_handlers[EXIT_REASON_VMRESUME]	= handle_vmresume;
- 	exit_handlers[EXIT_REASON_VMWRITE]	= handle_vmwrite;
--	exit_handlers[EXIT_REASON_VMOFF]	= handle_vmoff;
--	exit_handlers[EXIT_REASON_VMON]		= handle_vmon;
-+	exit_handlers[EXIT_REASON_VMOFF]	= handle_vmxoff;
-+	exit_handlers[EXIT_REASON_VMON]		= handle_vmxon;
- 	exit_handlers[EXIT_REASON_INVEPT]	= handle_invept;
- 	exit_handlers[EXIT_REASON_INVVPID]	= handle_invvpid;
- 	exit_handlers[EXIT_REASON_VMFUNC]	= handle_vmfunc;
--- 
-2.36.1.255.ge46751e96f-goog
+-	static struct execute_work set_ready;
+ 	unsigned int new, orig, add;
+ 	unsigned long flags;
+ 
+@@ -726,7 +719,6 @@ static void __cold _credit_init_bits(siz
+ 
+ 	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
+ 		crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
+-		execute_in_process_context(crng_set_ready, &set_ready);
+ 		process_random_ready_list();
+ 		wake_up_interruptible(&crng_init_wait);
+ 		kill_fasync(&fasync, SIGIO, POLL_IN);
+
 
