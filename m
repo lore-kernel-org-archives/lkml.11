@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8553FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:21:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D515DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 20:22:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358882AbiFGUV4 (ORCPT
+        id S1358928AbiFGUWF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 16:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53248 "EHLO
+        Tue, 7 Jun 2022 16:22:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355577AbiFGTaQ (ORCPT
+        with ESMTP id S1355954AbiFGTbE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:30:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D3341A43E6;
-        Tue,  7 Jun 2022 11:11:58 -0700 (PDT)
+        Tue, 7 Jun 2022 15:31:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A431B1A44B3;
+        Tue,  7 Jun 2022 11:12:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E013F6194C;
-        Tue,  7 Jun 2022 18:11:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC243C385A2;
-        Tue,  7 Jun 2022 18:11:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7CF18B80B66;
+        Tue,  7 Jun 2022 18:12:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED6F5C385A2;
+        Tue,  7 Jun 2022 18:12:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654625513;
-        bh=7VPY3M4k3DV2mNKTlGk5F4W6Vf2QdkjeBbyoRVU/c+I=;
+        s=korg; t=1654625524;
+        bh=3I8H0PKM1ZKkpegr2SIeaLTg+u2o3waLBCs6UGZmtm8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rM59DgfdXt26oBFEHexK8yEiwWMjNQDFBOzpw+Q7VINGXE3S0AJNcVznafNcH6O3N
-         tP1aOJEBQ4qWbIFrA24Smy4tqOie3NKgJKkhh1iFTN801EdqBwDY0+zoQMIUHmWhVA
-         7n9uaDtXQvH10Dfq6T/8fjKPlZIyU4rH04DuHTRw=
+        b=CpcHqk/uDbnLkO8mOCOcbI+Cw/VPs7bf5HfwhYXK87Eo8mJaj9hV2U7MLKjpf5xAa
+         ZPTDlqxHROntrlcV98bcD7OPscBlTdqinXGt9ZNC2dlLNggj3py6ptKxqgPLgnu6Wv
+         +Z6ZvVHSKMApLg7lS+kOp1lM3ZIGLc25jmt/xH9Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.17 046/772] btrfs: zoned: properly finish block group on metadata write
-Date:   Tue,  7 Jun 2022 18:53:58 +0200
-Message-Id: <20220607164950.390494545@linuxfoundation.org>
+        Raviteja Goud Talla <ravitejax.goud.talla@intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 050/772] iommu/vt-d: Add RPLS to quirk list to skip TE disabling
+Date:   Tue,  7 Jun 2022 18:54:02 +0200
+Message-Id: <20220607164950.513014568@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164948.980838585@linuxfoundation.org>
 References: <20220607164948.980838585@linuxfoundation.org>
@@ -51,144 +53,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naohiro Aota <naohiro.aota@wdc.com>
+From: Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>
 
-commit 56fbb0a4e8b3e929e41cc846e6ef89eb01152201 upstream.
+[ Upstream commit 0a967f5bfd9134b89681cae58deb222e20840e76 ]
 
-Commit be1a1d7a5d24 ("btrfs: zoned: finish fully written block group")
-introduced zone finishing code both for data and metadata end_io path.
-However, the metadata side is not working as it should. First, it
-compares logical address (eb->start + eb->len) with offset within a
-block group (cache->zone_capacity) in submit_eb_page(). That essentially
-disabled zone finishing on metadata end_io path.
+The VT-d spec requires (10.4.4 Global Command Register, TE
+field) that:
 
-Furthermore, fixing the issue above revealed we cannot call
-btrfs_zone_finish_endio() in end_extent_buffer_writeback(). We cannot
-call btrfs_lookup_block_group() which require spin lock inside end_io
-context.
+Hardware implementations supporting DMA draining must drain
+any in-flight DMA read/write requests queued within the
+Root-Complex before completing the translation enable
+command and reflecting the status of the command through
+the TES field in the Global Status register.
 
-Introduce btrfs_schedule_zone_finish_bg() to wait for the extent buffer
-writeback and do the zone finish IO in a workqueue.
+Unfortunately, some integrated graphic devices fail to do
+so after some kind of power state transition. As the
+result, the system might stuck in iommu_disable_translati
+on(), waiting for the completion of TE transition.
 
-Also, drop EXTENT_BUFFER_ZONE_FINISH as it is no longer used.
+This adds RPLS to a quirk list for those devices and skips
+TE disabling if the qurik hits.
 
-Fixes: be1a1d7a5d24 ("btrfs: zoned: finish fully written block group")
-CC: stable@vger.kernel.org # 5.16+
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://gitlab.freedesktop.org/drm/intel/-/issues/4898
+Tested-by: Raviteja Goud Talla <ravitejax.goud.talla@intel.com>
+Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>
+Reviewed-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220302043256.191529-1-tejaskumarx.surendrakumar.upadhyay@intel.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/block-group.h |    2 ++
- fs/btrfs/extent_io.c   |    6 +-----
- fs/btrfs/extent_io.h   |    1 -
- fs/btrfs/zoned.c       |   31 +++++++++++++++++++++++++++++++
- fs/btrfs/zoned.h       |    5 +++++
- 5 files changed, 39 insertions(+), 6 deletions(-)
+ drivers/iommu/intel/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/btrfs/block-group.h
-+++ b/fs/btrfs/block-group.h
-@@ -211,6 +211,8 @@ struct btrfs_block_group {
- 	u64 meta_write_pointer;
- 	struct map_lookup *physical_map;
- 	struct list_head active_bg_list;
-+	struct work_struct zone_finish_work;
-+	struct extent_buffer *last_eb;
- };
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index ab2273300346..e3f15e0cae34 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -5764,7 +5764,7 @@ static void quirk_igfx_skip_te_disable(struct pci_dev *dev)
+ 	ver = (dev->device >> 8) & 0xff;
+ 	if (ver != 0x45 && ver != 0x46 && ver != 0x4c &&
+ 	    ver != 0x4e && ver != 0x8a && ver != 0x98 &&
+-	    ver != 0x9a)
++	    ver != 0x9a && ver != 0xa7)
+ 		return;
  
- static inline u64 btrfs_block_group_end(struct btrfs_block_group *block_group)
---- a/fs/btrfs/extent_io.c
-+++ b/fs/btrfs/extent_io.c
-@@ -4173,9 +4173,6 @@ void wait_on_extent_buffer_writeback(str
- 
- static void end_extent_buffer_writeback(struct extent_buffer *eb)
- {
--	if (test_bit(EXTENT_BUFFER_ZONE_FINISH, &eb->bflags))
--		btrfs_zone_finish_endio(eb->fs_info, eb->start, eb->len);
--
- 	clear_bit(EXTENT_BUFFER_WRITEBACK, &eb->bflags);
- 	smp_mb__after_atomic();
- 	wake_up_bit(&eb->bflags, EXTENT_BUFFER_WRITEBACK);
-@@ -4795,8 +4792,7 @@ static int submit_eb_page(struct page *p
- 		/*
- 		 * Implies write in zoned mode. Mark the last eb in a block group.
- 		 */
--		if (cache->seq_zone && eb->start + eb->len == cache->zone_capacity)
--			set_bit(EXTENT_BUFFER_ZONE_FINISH, &eb->bflags);
-+		btrfs_schedule_zone_finish_bg(cache, eb);
- 		btrfs_put_block_group(cache);
- 	}
- 	ret = write_one_eb(eb, wbc, epd);
---- a/fs/btrfs/extent_io.h
-+++ b/fs/btrfs/extent_io.h
-@@ -32,7 +32,6 @@ enum {
- 	/* write IO error */
- 	EXTENT_BUFFER_WRITE_ERR,
- 	EXTENT_BUFFER_NO_CHECK,
--	EXTENT_BUFFER_ZONE_FINISH,
- };
- 
- /* these are flags for __process_pages_contig */
---- a/fs/btrfs/zoned.c
-+++ b/fs/btrfs/zoned.c
-@@ -2007,6 +2007,37 @@ out:
- 	btrfs_put_block_group(block_group);
- }
- 
-+static void btrfs_zone_finish_endio_workfn(struct work_struct *work)
-+{
-+	struct btrfs_block_group *bg =
-+		container_of(work, struct btrfs_block_group, zone_finish_work);
-+
-+	wait_on_extent_buffer_writeback(bg->last_eb);
-+	free_extent_buffer(bg->last_eb);
-+	btrfs_zone_finish_endio(bg->fs_info, bg->start, bg->length);
-+	btrfs_put_block_group(bg);
-+}
-+
-+void btrfs_schedule_zone_finish_bg(struct btrfs_block_group *bg,
-+				   struct extent_buffer *eb)
-+{
-+	if (!bg->seq_zone || eb->start + eb->len * 2 <= bg->start + bg->zone_capacity)
-+		return;
-+
-+	if (WARN_ON(bg->zone_finish_work.func == btrfs_zone_finish_endio_workfn)) {
-+		btrfs_err(bg->fs_info, "double scheduling of bg %llu zone finishing",
-+			  bg->start);
-+		return;
-+	}
-+
-+	/* For the work */
-+	btrfs_get_block_group(bg);
-+	atomic_inc(&eb->refs);
-+	bg->last_eb = eb;
-+	INIT_WORK(&bg->zone_finish_work, btrfs_zone_finish_endio_workfn);
-+	queue_work(system_unbound_wq, &bg->zone_finish_work);
-+}
-+
- void btrfs_clear_data_reloc_bg(struct btrfs_block_group *bg)
- {
- 	struct btrfs_fs_info *fs_info = bg->fs_info;
---- a/fs/btrfs/zoned.h
-+++ b/fs/btrfs/zoned.h
-@@ -76,6 +76,8 @@ int btrfs_zone_finish(struct btrfs_block
- bool btrfs_can_activate_zone(struct btrfs_fs_devices *fs_devices, u64 flags);
- void btrfs_zone_finish_endio(struct btrfs_fs_info *fs_info, u64 logical,
- 			     u64 length);
-+void btrfs_schedule_zone_finish_bg(struct btrfs_block_group *bg,
-+				   struct extent_buffer *eb);
- void btrfs_clear_data_reloc_bg(struct btrfs_block_group *bg);
- void btrfs_free_zone_cache(struct btrfs_fs_info *fs_info);
- #else /* CONFIG_BLK_DEV_ZONED */
-@@ -233,6 +235,9 @@ static inline bool btrfs_can_activate_zo
- static inline void btrfs_zone_finish_endio(struct btrfs_fs_info *fs_info,
- 					   u64 logical, u64 length) { }
- 
-+static inline void btrfs_schedule_zone_finish_bg(struct btrfs_block_group *bg,
-+						 struct extent_buffer *eb) { }
-+
- static inline void btrfs_clear_data_reloc_bg(struct btrfs_block_group *bg) { }
- 
- static inline void btrfs_free_zone_cache(struct btrfs_fs_info *fs_info) { }
+ 	if (risky_device(dev))
+-- 
+2.35.1
+
 
 
