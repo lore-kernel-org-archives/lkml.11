@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0C6CCCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69140CCA482
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:14:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385970AbiFGWrh (ORCPT
+        id S1385829AbiFGWrE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:47:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46842 "EHLO
+        Tue, 7 Jun 2022 18:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380703AbiFGVib (ORCPT
+        with ESMTP id S1380686AbiFGVhz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:38:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F0717A8A2;
-        Tue,  7 Jun 2022 12:05:31 -0700 (PDT)
+        Tue, 7 Jun 2022 17:37:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C54EAD2F;
+        Tue,  7 Jun 2022 12:05:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9BB9B82182;
-        Tue,  7 Jun 2022 19:05:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 357D8C385A2;
-        Tue,  7 Jun 2022 19:05:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C9F2761853;
+        Tue,  7 Jun 2022 19:05:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D65DDC385A2;
+        Tue,  7 Jun 2022 19:05:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628728;
-        bh=wcn8OR6hwXLb9GrRak3DYFeomYb3hzti77qpfWCvew4=;
+        s=korg; t=1654628706;
+        bh=B3rO21cPkyhp2+ZYKxUS2eTgGKkaeRxJgR4ZPsVHMak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qrr/eLjuJlQqHzsuO/tTmN2d744V0gMYHplg6i/rlHuLXmSSd6qXjL3x7LZoK0gOy
-         +0dKRhpNWMYS6pay8T7WEzCTFw5qbH4xmsykECMDp9eTApdl8uZrw3QN2sWJWsbEJt
-         NRBau/03iuv0jx/ugglHFzm5HVsiN5Pzc7R5Y5GA=
+        b=Ng4uUBx3gKatXSMYmdIebkOIM5BC4ovl+/MnVO61PeYlnQLaAiNhPRSlkbXJL+9aU
+         wuM8IZRr+j1KiFZEZzzfXT1ht7e58SpXNz/yah2TwyC7oc8ELtvyiZ0Ve4g8S4OsRt
+         ISYzv31lHlUBKuWBzDnYLvU3EDf6+nbFn+lmKYBA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 434/879] mt76: mt7915: fix possible NULL pointer dereference in mt7915_mac_fill_rx_vector
-Date:   Tue,  7 Jun 2022 18:59:12 +0200
-Message-Id: <20220607165015.467789454@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 427/879] media: aspeed: Fix an error handling path in aspeed_video_probe()
+Date:   Tue,  7 Jun 2022 18:59:05 +0200
+Message-Id: <20220607165015.260594975@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -49,48 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 62fdc974894eec80d678523458cf99bbdb887e22 ]
+[ Upstream commit 310fda622bbd38be17fb444f7f049b137af3bc0d ]
 
-Fix possible NULL pointer dereference in mt7915_mac_fill_rx_vector
-routine if the chip does not support dbdc and the hw reports band_idx
-set to 1.
+A dma_free_coherent() call is missing in the error handling path of the
+probe, as already done in the remove function.
 
-Fixes: 78fc30a21cf11 ("mt76: mt7915: move testmode data from dev to phy")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+In fact, this call is included in aspeed_video_free_buf(). So use the
+latter both in the error handling path of the probe and in the remove
+function.
+It is easier to see the relation with aspeed_video_alloc_buf() this way.
+
+Fixes: d2b4387f3bdf ("media: platform: Add Aspeed Video Engine driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/media/platform/aspeed/aspeed-video.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-index eaa31f5e0b00..fe2b63cf61d8 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-@@ -864,8 +864,11 @@ mt7915_mac_fill_rx_vector(struct mt7915_dev *dev, struct sk_buff *skb)
- 	int i;
+diff --git a/drivers/media/platform/aspeed/aspeed-video.c b/drivers/media/platform/aspeed/aspeed-video.c
+index b937dbcbe9e0..20f795ccc11b 100644
+--- a/drivers/media/platform/aspeed/aspeed-video.c
++++ b/drivers/media/platform/aspeed/aspeed-video.c
+@@ -1993,6 +1993,7 @@ static int aspeed_video_probe(struct platform_device *pdev)
  
- 	band_idx = le32_get_bits(rxv_hdr[1], MT_RXV_HDR_BAND_IDX);
--	if (band_idx && !phy->band_idx)
-+	if (band_idx && !phy->band_idx) {
- 		phy = mt7915_ext_phy(dev);
-+		if (!phy)
-+			goto out;
-+	}
+ 	rc = aspeed_video_setup_video(video);
+ 	if (rc) {
++		aspeed_video_free_buf(video, &video->jpeg);
+ 		clk_unprepare(video->vclk);
+ 		clk_unprepare(video->eclk);
+ 		return rc;
+@@ -2024,8 +2025,7 @@ static int aspeed_video_remove(struct platform_device *pdev)
  
- 	rcpi = le32_to_cpu(rxv[6]);
- 	ib_rssi = le32_to_cpu(rxv[7]);
-@@ -890,8 +893,8 @@ mt7915_mac_fill_rx_vector(struct mt7915_dev *dev, struct sk_buff *skb)
+ 	v4l2_device_unregister(v4l2_dev);
  
- 	phy->test.last_freq_offset = foe;
- 	phy->test.last_snr = snr;
-+out:
- #endif
--
- 	dev_kfree_skb(skb);
- }
+-	dma_free_coherent(video->dev, VE_JPEG_HEADER_SIZE, video->jpeg.virt,
+-			  video->jpeg.dma);
++	aspeed_video_free_buf(video, &video->jpeg);
+ 
+ 	of_reserved_mem_device_release(dev);
  
 -- 
 2.35.1
