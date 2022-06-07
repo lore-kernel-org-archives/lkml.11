@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67131C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:09:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2B70C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354834AbiFGTJO (ORCPT
+        id S1348458AbiFGTJV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:09:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42304 "EHLO
+        Tue, 7 Jun 2022 15:09:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352759AbiFGSVR (ORCPT
+        with ESMTP id S1352758AbiFGSVR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 14:21:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2DB0B36D4;
-        Tue,  7 Jun 2022 10:54:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04CDBCEBB;
+        Tue,  7 Jun 2022 10:54:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A09EB8234A;
-        Tue,  7 Jun 2022 17:54:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8F73C385A5;
-        Tue,  7 Jun 2022 17:54:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 08281B82370;
+        Tue,  7 Jun 2022 17:53:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58670C36AFF;
+        Tue,  7 Jun 2022 17:53:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624443;
-        bh=ZZ8C+6QAKn6aChr34NI5Vxn3nKDglyGtahTGH2x3iT0=;
+        s=korg; t=1654624426;
+        bh=bldrSuRs9w48d/Y14nMxTJiA4/cL+zY0VajW3jAz720=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QcUx1XolOX/OTJkLAc0KQDLLfKwKAxH09BwljpuGxe+5eNxVAoYMVpSIOREjZsSCm
-         4fuErdi2LBD0YS6A0RgYIJJMcK1yd1qqQVJh0aYchp8wBFJp0NcehZQhZ5HNwvtJZ/
-         3vdQDz3DgUNevQLh8sEgH7smF7JDNfiarRTxNSKM=
+        b=MoC3/hlGXY1IoaSwY40TTD2EKpLV06qQ6RuWvcuMTeRulHeStKKnk45wG61hyPoge
+         KuCtHBxQ182S6jFQXC4yUpgfc5MzaKT3YKrzdzck28l/BfGyi1lFC6u8+ihp06wOjo
+         kVqSmUshk2hUxUJz7zF3nnDd4UlIwFGRZvY8qEEU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com,
-        Ying Hsu <yinghsu@chromium.org>,
-        Joseph Hwang <josephsih@chromium.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 329/667] Bluetooth: fix dangling sco_conn and use-after-free in sco_sock_timeout
-Date:   Tue,  7 Jun 2022 18:59:54 +0200
-Message-Id: <20220607164944.636536276@linuxfoundation.org>
+Subject: [PATCH 5.15 306/667] ASoC: fsl: Fix refcount leak in imx_sgtl5000_probe
+Date:   Tue,  7 Jun 2022 18:59:31 +0200
+Message-Id: <20220607164943.954438636@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -53,85 +51,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ying Hsu <yinghsu@chromium.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 7aa1e7d15f8a5b65f67bacb100d8fc033b21efa2 ]
+[ Upstream commit 41cd312dfe980af869c3503b4d38e62ed20dd3b7 ]
 
-Connecting the same socket twice consecutively in sco_sock_connect()
-could lead to a race condition where two sco_conn objects are created
-but only one is associated with the socket. If the socket is closed
-before the SCO connection is established, the timer associated with the
-dangling sco_conn object won't be canceled. As the sock object is being
-freed, the use-after-free problem happens when the timer callback
-function sco_sock_timeout() accesses the socket. Here's the call trace:
+of_find_i2c_device_by_node() takes a reference,
+In error paths, we should call put_device() to drop
+the reference to aviod refount leak.
 
-dump_stack+0x107/0x163
-? refcount_inc+0x1c/
-print_address_description.constprop.0+0x1c/0x47e
-? refcount_inc+0x1c/0x7b
-kasan_report+0x13a/0x173
-? refcount_inc+0x1c/0x7b
-check_memory_region+0x132/0x139
-refcount_inc+0x1c/0x7b
-sco_sock_timeout+0xb2/0x1ba
-process_one_work+0x739/0xbd1
-? cancel_delayed_work+0x13f/0x13f
-? __raw_spin_lock_init+0xf0/0xf0
-? to_kthread+0x59/0x85
-worker_thread+0x593/0x70e
-kthread+0x346/0x35a
-? drain_workqueue+0x31a/0x31a
-? kthread_bind+0x4b/0x4b
-ret_from_fork+0x1f/0x30
-
-Link: https://syzkaller.appspot.com/bug?extid=2bef95d3ab4daa10155b
-Reported-by: syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com
-Fixes: e1dee2c1de2b ("Bluetooth: fix repeated calls to sco_sock_kill")
-Signed-off-by: Ying Hsu <yinghsu@chromium.org>
-Reviewed-by: Joseph Hwang <josephsih@chromium.org>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: 81e8e4926167 ("ASoC: fsl: add sgtl5000 clock support for imx-sgtl5000")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
+Link: https://lore.kernel.org/r/20220511065803.3957-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/sco.c | 21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ sound/soc/fsl/imx-sgtl5000.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
-index 6e047e178c0a..c7b43c75677f 100644
---- a/net/bluetooth/sco.c
-+++ b/net/bluetooth/sco.c
-@@ -575,19 +575,24 @@ static int sco_sock_connect(struct socket *sock, struct sockaddr *addr, int alen
- 	    addr->sa_family != AF_BLUETOOTH)
- 		return -EINVAL;
+diff --git a/sound/soc/fsl/imx-sgtl5000.c b/sound/soc/fsl/imx-sgtl5000.c
+index 52bb1844f548..c4e3699ad305 100644
+--- a/sound/soc/fsl/imx-sgtl5000.c
++++ b/sound/soc/fsl/imx-sgtl5000.c
+@@ -120,19 +120,19 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
+ 	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+ 	if (!data) {
+ 		ret = -ENOMEM;
+-		goto fail;
++		goto put_device;
+ 	}
  
--	if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND)
--		return -EBADFD;
-+	lock_sock(sk);
-+	if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND) {
-+		err = -EBADFD;
-+		goto done;
-+	}
+ 	comp = devm_kzalloc(&pdev->dev, 3 * sizeof(*comp), GFP_KERNEL);
+ 	if (!comp) {
+ 		ret = -ENOMEM;
+-		goto fail;
++		goto put_device;
+ 	}
  
--	if (sk->sk_type != SOCK_SEQPACKET)
--		return -EINVAL;
-+	if (sk->sk_type != SOCK_SEQPACKET) {
-+		err = -EINVAL;
-+		goto done;
-+	}
+ 	data->codec_clk = clk_get(&codec_dev->dev, NULL);
+ 	if (IS_ERR(data->codec_clk)) {
+ 		ret = PTR_ERR(data->codec_clk);
+-		goto fail;
++		goto put_device;
+ 	}
  
- 	hdev = hci_get_route(&sa->sco_bdaddr, &sco_pi(sk)->src, BDADDR_BREDR);
--	if (!hdev)
--		return -EHOSTUNREACH;
-+	if (!hdev) {
-+		err = -EHOSTUNREACH;
-+		goto done;
-+	}
- 	hci_dev_lock(hdev);
+ 	data->clk_frequency = clk_get_rate(data->codec_clk);
+@@ -158,10 +158,10 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
+ 	data->card.dev = &pdev->dev;
+ 	ret = snd_soc_of_parse_card_name(&data->card, "model");
+ 	if (ret)
+-		goto fail;
++		goto put_device;
+ 	ret = snd_soc_of_parse_audio_routing(&data->card, "audio-routing");
+ 	if (ret)
+-		goto fail;
++		goto put_device;
+ 	data->card.num_links = 1;
+ 	data->card.owner = THIS_MODULE;
+ 	data->card.dai_link = &data->dai;
+@@ -174,7 +174,7 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
+ 	ret = devm_snd_soc_register_card(&pdev->dev, &data->card);
+ 	if (ret) {
+ 		dev_err_probe(&pdev->dev, ret, "snd_soc_register_card failed\n");
+-		goto fail;
++		goto put_device;
+ 	}
  
--	lock_sock(sk);
--
- 	/* Set destination address and psm */
- 	bacpy(&sco_pi(sk)->dst, &sa->sco_bdaddr);
+ 	of_node_put(ssi_np);
+@@ -182,6 +182,8 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
  
+ 	return 0;
+ 
++put_device:
++	put_device(&codec_dev->dev);
+ fail:
+ 	if (data && !IS_ERR(data->codec_clk))
+ 		clk_put(data->codec_clk);
 -- 
 2.35.1
 
