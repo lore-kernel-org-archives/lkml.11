@@ -2,111 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7672CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA56CCA490
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:53:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358143AbiFGTvx (ORCPT
+        id S1358113AbiFGTvr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:51:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
+        Tue, 7 Jun 2022 15:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354268AbiFGSqv (ORCPT
+        with ESMTP id S1354299AbiFGSqx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:51 -0400
+        Tue, 7 Jun 2022 14:46:53 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BE743EFF;
-        Tue,  7 Jun 2022 11:00:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A771121CDF;
+        Tue,  7 Jun 2022 11:00:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63963B8236D;
-        Tue,  7 Jun 2022 18:00:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF888C385A5;
-        Tue,  7 Jun 2022 18:00:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624831;
-        bh=1RsreeyJ1480jzihPY5ZlpOHRIzNkF5fmVQoMhErTRo=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46B07B82182;
+        Tue,  7 Jun 2022 18:00:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 499C6C34119;
+        Tue,  7 Jun 2022 18:00:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654624836;
+        bh=1Zd8eT+4jXDy64Y37w5XfYXv5UqL+hhmiZJkakBpthI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fmJ0qQOF/m7ezzDfYKjY7sVbCDCChBMSVy/9vN/nnw7hneIB3kX7IfDUHvGGNCpRG
-         9N0tgi+JSdzAgXHKegA+F5TuhLrv9+WwFkF2LZtFGEsPq174SxYlk1Nub62JTpx11d
-         SUSihujogZLxYGWR9Fm95T9qguOjjX1xCiq2HCrU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 468/667] powerpc/xive: Fix refcount leak in xive_spapr_init
-Date:   Tue,  7 Jun 2022 19:02:13 +0200
-Message-Id: <20220607164948.743519823@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
-References: <20220607164934.766888869@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=BFNlxP7W3m20qLch4UfO5nvXQdSjF6hQbXT8Mnl1SX/XoWUrQA5tP5iJSTpcrXO72
+         Aizu3QkPhYt1ntxEgyGn1npk7UGwA9sAwMN0+0gAGMIEF8zJrRJlWd7fdaxLRmgShO
+         vtyplA6JV7wtc6vcarmtpI7ozC5S+zCtS4SsDcE5pzhixp5cijs+kdnuaoKI6C4ZdC
+         bibnny1A7rX6sVLEnBbar2QifXkgGB14k0k5tfjVlVr+aZg9lksUs2FP3gsnBmN85I
+         u5nWDj1HfUfz0VGyZuUdm84AOnJCINjA/SNmAPCpFvWhkDlo9RQLYHqwgivchK14Da
+         CY+rnByj1ML2A==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Zhen Ni <nizhen@uniontech.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, ok@artecdesign.ee,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 08/34] USB: host: isp116x: check return value after calling platform_get_resource()
+Date:   Tue,  7 Jun 2022 13:59:43 -0400
+Message-Id: <20220607180011.481266-8-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
+References: <20220607180011.481266-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Zhen Ni <nizhen@uniontech.com>
 
-[ Upstream commit 1d1fb9618bdd5a5fbf9a9eb75133da301d33721c ]
+[ Upstream commit 134a3408c2d3f7e23eb0e4556e0a2d9f36c2614e ]
 
-of_find_compatible_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+It will cause null-ptr-deref if platform_get_resource() returns NULL,
+we need check the return value.
 
-Fixes: eac1e731b59e ("powerpc/xive: guest exploitation of the XIVE interrupt controller")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Cédric Le Goater <clg@kaod.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220512090535.33397-1-linmq006@gmail.com
+Signed-off-by: Zhen Ni <nizhen@uniontech.com>
+Link: https://lore.kernel.org/r/20220302033716.31272-1-nizhen@uniontech.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/xive/spapr.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/usb/host/isp116x-hcd.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/sysdev/xive/spapr.c b/arch/powerpc/sysdev/xive/spapr.c
-index 905dd40bd5cd..a82f32fbe772 100644
---- a/arch/powerpc/sysdev/xive/spapr.c
-+++ b/arch/powerpc/sysdev/xive/spapr.c
-@@ -830,12 +830,12 @@ bool __init xive_spapr_init(void)
- 	/* Resource 1 is the OS ring TIMA */
- 	if (of_address_to_resource(np, 1, &r)) {
- 		pr_err("Failed to get thread mgmnt area resource\n");
--		return false;
-+		goto err_put;
- 	}
- 	tima = ioremap(r.start, resource_size(&r));
- 	if (!tima) {
- 		pr_err("Failed to map thread mgmnt area\n");
--		return false;
-+		goto err_put;
- 	}
+diff --git a/drivers/usb/host/isp116x-hcd.c b/drivers/usb/host/isp116x-hcd.c
+index a87c0b26279e..00a4e12a1f15 100644
+--- a/drivers/usb/host/isp116x-hcd.c
++++ b/drivers/usb/host/isp116x-hcd.c
+@@ -1541,10 +1541,12 @@ static int isp116x_remove(struct platform_device *pdev)
  
- 	if (!xive_get_max_prio(&max_prio))
-@@ -871,6 +871,7 @@ bool __init xive_spapr_init(void)
- 	if (!xive_core_init(np, &xive_spapr_ops, tima, TM_QW1_OS, max_prio))
- 		goto err_mem_free;
+ 	iounmap(isp116x->data_reg);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	release_mem_region(res->start, 2);
++	if (res)
++		release_mem_region(res->start, 2);
+ 	iounmap(isp116x->addr_reg);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	release_mem_region(res->start, 2);
++	if (res)
++		release_mem_region(res->start, 2);
  
-+	of_node_put(np);
- 	pr_info("Using %dkB queues\n", 1 << (xive_queue_shift - 10));
- 	return true;
- 
-@@ -878,6 +879,8 @@ bool __init xive_spapr_init(void)
- 	xive_irq_bitmap_remove_all();
- err_unmap:
- 	iounmap(tima);
-+err_put:
-+	of_node_put(np);
- 	return false;
- }
- 
+ 	usb_put_hcd(hcd);
+ 	return 0;
 -- 
 2.35.1
-
-
 
