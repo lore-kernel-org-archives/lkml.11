@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F5AAC04E83
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18634CCA48D
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:27:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352518AbiFGS0Q (ORCPT
+        id S1344029AbiFGS1f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:26:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33600 "EHLO
+        Tue, 7 Jun 2022 14:27:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351327AbiFGSB5 (ORCPT
+        with ESMTP id S1351776AbiFGSCU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:01:57 -0400
+        Tue, 7 Jun 2022 14:02:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5DE151FD5;
-        Tue,  7 Jun 2022 10:44:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E1121207F8;
+        Tue,  7 Jun 2022 10:45:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E00E615B8;
-        Tue,  7 Jun 2022 17:44:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C6C3C34115;
-        Tue,  7 Jun 2022 17:44:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE3136146F;
+        Tue,  7 Jun 2022 17:45:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA073C34115;
+        Tue,  7 Jun 2022 17:45:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654623854;
-        bh=z0nAyk/VU0ksVU4YbjsvPBgUNPDMbbrVaHL11Of9pZI=;
+        s=korg; t=1654623921;
+        bh=UEtTKC+segok9K/ynO7AyNzCmnn7J3j6y8rLTN8HqF0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qfZwCPgthLnnCZvBZWTD9plDiEjOY7odNojxcaIWKhmDxxtp7IJ2y8/cWm5pP5Kco
-         rXjpNNazQ9dEwfLXKgW5xJU/eiXv23bacNdt3gdy/Elv2pPxYn7EGa4W3YXIWDaUmQ
-         M+IP1PDf8BtAATnFW4gS7KmTgUDzV4gCcBOHWCr0=
+        b=o8IJ3UWF990tdTNF+ts7/jIbQSYfwU+WEELlg4gqRpq2rLD8//VfJepbgLkouu8fy
+         PClScVTnjOgEmuUhGka2ePxbporH7129BnuMJiUAEfIWBpGCFHGebRdA9tX3JeI6j/
+         HI6XYacBPCz9ptQ0EOKoOtiSvCDrVaL0VsRy0i88=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Thibaut=20VAR=C3=88NE?= <hacks+kernel@slashdirt.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 115/667] mt76: fix encap offload ethernet type check
-Date:   Tue,  7 Jun 2022 18:56:20 +0200
-Message-Id: <20220607164938.274372469@linuxfoundation.org>
+        stable@vger.kernel.org, Jeffrey Altman <jaltman@auristor.com>,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 141/667] rxrpc, afs: Fix selection of abort codes
+Date:   Tue,  7 Jun 2022 18:56:46 +0200
+Message-Id: <20220607164939.049319045@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -50,67 +53,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit bc98e7fdd80d215b4b55eea001023231eb8ce12e ]
+[ Upstream commit de696c4784f0706884458893c5a6c39b3a3ff65c ]
 
-The driver needs to check if the format is 802.2 vs 802.3 in order to set
-a tx descriptor flag. skb->protocol can't be used, since it may not be properly
-initialized for packets coming in from a packet socket.
-Fix misdetection by checking the ethertype from the skb data instead
+The RX_USER_ABORT code should really only be used to indicate that the user
+of the rxrpc service (ie. userspace) implicitly caused a call to be aborted
+- for instance if the AF_RXRPC socket is closed whilst the call was in
+progress.  (The user may also explicitly abort a call and specify the abort
+code to use).
 
-Reported-by: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Change some of the points of generation to use other abort codes instead:
+
+ (1) Abort the call with RXGEN_SS_UNMARSHAL or RXGEN_CC_UNMARSHAL if we see
+     ENOMEM and EFAULT during received data delivery and abort with
+     RX_CALL_DEAD in the default case.
+
+ (2) Abort with RXGEN_SS_MARSHAL if we get ENOMEM whilst trying to send a
+     reply.
+
+ (3) Abort with RX_CALL_DEAD if we stop hearing from the peer if we had
+     heard from the peer and abort with RX_CALL_TIMEOUT if we hadn't.
+
+ (4) Abort with RX_CALL_DEAD if we try to disconnect a call that's not
+     completed successfully or been aborted.
+
+Reported-by: Jeffrey Altman <jaltman@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 4 +++-
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 4 +++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ fs/afs/rxrpc.c          | 8 +++++---
+ net/rxrpc/call_event.c  | 4 ++--
+ net/rxrpc/conn_object.c | 2 +-
+ 3 files changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-index 7691292526e0..a8a0e6af51f8 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-@@ -799,6 +799,7 @@ mt7915_mac_write_txwi_8023(struct mt7915_dev *dev, __le32 *txwi,
- 
- 	u8 tid = skb->priority & IEEE80211_QOS_CTL_TID_MASK;
- 	u8 fc_type, fc_stype;
-+	u16 ethertype;
- 	bool wmm = false;
- 	u32 val;
- 
-@@ -812,7 +813,8 @@ mt7915_mac_write_txwi_8023(struct mt7915_dev *dev, __le32 *txwi,
- 	val = FIELD_PREP(MT_TXD1_HDR_FORMAT, MT_HDR_FORMAT_802_3) |
- 	      FIELD_PREP(MT_TXD1_TID, tid);
- 
--	if (be16_to_cpu(skb->protocol) >= ETH_P_802_3_MIN)
-+	ethertype = get_unaligned_be16(&skb->data[12]);
-+	if (ethertype >= ETH_P_802_3_MIN)
- 		val |= MT_TXD1_ETH_802_3;
- 
- 	txwi[1] |= cpu_to_le32(val);
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-index 5024ddf07cbc..bef8d4a76ed9 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-@@ -681,6 +681,7 @@ mt7921_mac_write_txwi_8023(struct mt7921_dev *dev, __le32 *txwi,
- {
- 	u8 tid = skb->priority & IEEE80211_QOS_CTL_TID_MASK;
- 	u8 fc_type, fc_stype;
-+	u16 ethertype;
- 	bool wmm = false;
- 	u32 val;
- 
-@@ -694,7 +695,8 @@ mt7921_mac_write_txwi_8023(struct mt7921_dev *dev, __le32 *txwi,
- 	val = FIELD_PREP(MT_TXD1_HDR_FORMAT, MT_HDR_FORMAT_802_3) |
- 	      FIELD_PREP(MT_TXD1_TID, tid);
- 
--	if (be16_to_cpu(skb->protocol) >= ETH_P_802_3_MIN)
-+	ethertype = get_unaligned_be16(&skb->data[12]);
-+	if (ethertype >= ETH_P_802_3_MIN)
- 		val |= MT_TXD1_ETH_802_3;
- 
- 	txwi[1] |= cpu_to_le32(val);
+diff --git a/fs/afs/rxrpc.c b/fs/afs/rxrpc.c
+index 23a1a92d64bb..a5434f3e57c6 100644
+--- a/fs/afs/rxrpc.c
++++ b/fs/afs/rxrpc.c
+@@ -537,6 +537,8 @@ static void afs_deliver_to_call(struct afs_call *call)
+ 		case -ENODATA:
+ 		case -EBADMSG:
+ 		case -EMSGSIZE:
++		case -ENOMEM:
++		case -EFAULT:
+ 			abort_code = RXGEN_CC_UNMARSHAL;
+ 			if (state != AFS_CALL_CL_AWAIT_REPLY)
+ 				abort_code = RXGEN_SS_UNMARSHAL;
+@@ -544,7 +546,7 @@ static void afs_deliver_to_call(struct afs_call *call)
+ 						abort_code, ret, "KUM");
+ 			goto local_abort;
+ 		default:
+-			abort_code = RX_USER_ABORT;
++			abort_code = RX_CALL_DEAD;
+ 			rxrpc_kernel_abort_call(call->net->socket, call->rxcall,
+ 						abort_code, ret, "KER");
+ 			goto local_abort;
+@@ -836,7 +838,7 @@ void afs_send_empty_reply(struct afs_call *call)
+ 	case -ENOMEM:
+ 		_debug("oom");
+ 		rxrpc_kernel_abort_call(net->socket, call->rxcall,
+-					RX_USER_ABORT, -ENOMEM, "KOO");
++					RXGEN_SS_MARSHAL, -ENOMEM, "KOO");
+ 		fallthrough;
+ 	default:
+ 		_leave(" [error]");
+@@ -878,7 +880,7 @@ void afs_send_simple_reply(struct afs_call *call, const void *buf, size_t len)
+ 	if (n == -ENOMEM) {
+ 		_debug("oom");
+ 		rxrpc_kernel_abort_call(net->socket, call->rxcall,
+-					RX_USER_ABORT, -ENOMEM, "KOO");
++					RXGEN_SS_MARSHAL, -ENOMEM, "KOO");
+ 	}
+ 	_leave(" [error]");
+ }
+diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
+index 22e05de5d1ca..e426f6831aab 100644
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -377,9 +377,9 @@ void rxrpc_process_call(struct work_struct *work)
+ 		if (test_bit(RXRPC_CALL_RX_HEARD, &call->flags) &&
+ 		    (int)call->conn->hi_serial - (int)call->rx_serial > 0) {
+ 			trace_rxrpc_call_reset(call);
+-			rxrpc_abort_call("EXP", call, 0, RX_USER_ABORT, -ECONNRESET);
++			rxrpc_abort_call("EXP", call, 0, RX_CALL_DEAD, -ECONNRESET);
+ 		} else {
+-			rxrpc_abort_call("EXP", call, 0, RX_USER_ABORT, -ETIME);
++			rxrpc_abort_call("EXP", call, 0, RX_CALL_TIMEOUT, -ETIME);
+ 		}
+ 		set_bit(RXRPC_CALL_EV_ABORT, &call->events);
+ 		goto recheck_state;
+diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
+index b2159dbf5412..660cd9b1a465 100644
+--- a/net/rxrpc/conn_object.c
++++ b/net/rxrpc/conn_object.c
+@@ -183,7 +183,7 @@ void __rxrpc_disconnect_call(struct rxrpc_connection *conn,
+ 			chan->last_type = RXRPC_PACKET_TYPE_ABORT;
+ 			break;
+ 		default:
+-			chan->last_abort = RX_USER_ABORT;
++			chan->last_abort = RX_CALL_DEAD;
+ 			chan->last_type = RXRPC_PACKET_TYPE_ABORT;
+ 			break;
+ 		}
 -- 
 2.35.1
 
