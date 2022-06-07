@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCF1FCCA499
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B1CC43334
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 21:54:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384391AbiFGVyi (ORCPT
+        id S1384303AbiFGVy0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 17:54:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49300 "EHLO
+        Tue, 7 Jun 2022 17:54:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379106AbiFGVCF (ORCPT
+        with ESMTP id S1379077AbiFGVCB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 17:02:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 208D11207D2;
-        Tue,  7 Jun 2022 11:46:32 -0700 (PDT)
+        Tue, 7 Jun 2022 17:02:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB87511E484;
+        Tue,  7 Jun 2022 11:46:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9255AB82018;
-        Tue,  7 Jun 2022 18:46:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00E50C385A2;
-        Tue,  7 Jun 2022 18:46:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F2A56156D;
+        Tue,  7 Jun 2022 18:46:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E332C385A2;
+        Tue,  7 Jun 2022 18:46:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654627590;
-        bh=lIQbYf0TkVPgHqacQsbXEfI+WghXsnVMfGGAywaL/M8=;
+        s=korg; t=1654627584;
+        bh=rpTWwyjktX7kqYmFTTv2lUiyxlshLEU5YxA/+fpgFro=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U0EKsgWiZVMSNynHcHA4/KVLD5v3hbgSOKabO0/gS2Aqh5NnsAZg29WK5KsydYgWE
-         7t1pI4snzs09o+Ml5N3fpccPyWgxM7Cs3AfitcDJVhbIVzIGkrgXEvJKrNCdGl73a/
-         M84rO/zOsR7NR4lmk59yIqHnaH0IM3uNIP9ZXrYs=
+        b=HkWOg/lMraIHHhm2xkeM6v3Oi60FnppCqE2S39ObQ676UJCcFLnp9xqJQRkdCS3rk
+         hMh/re2dlbjRkNn21HwiJRzf+94S9QdAPF7wOJENhHWe7dVdWNfloayeig/DpTd3VW
+         00pGKthLpNnUgH/hpBtHEfNSZfTqGeuJWiZmuxpU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.18 005/879] parisc/stifb: Keep track of hardware path of graphics card
-Date:   Tue,  7 Jun 2022 18:52:03 +0200
-Message-Id: <20220607165002.827279464@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.18 003/879] parisc: fix a crash with multicore scheduler
+Date:   Tue,  7 Jun 2022 18:52:01 +0200
+Message-Id: <20220607165002.768275874@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -48,113 +49,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit b046f984814af7985f444150ec28716d42d00d9a upstream.
+commit 6ba688364856ad083be537f08e86ba97f433d405 upstream.
 
-Keep the pa_path (hardware path) of the graphics card in sti_struct and use
-this info to give more useful info which card is currently being used.
+With the kernel 5.18, the system will hang on boot if it is compiled with
+CONFIG_SCHED_MC. The last printed message is "Brought up 1 node, 1 CPU".
 
+The crash happens in sd_init
+tl->mask (which is cpu_coregroup_mask) returns an empty mask. This happens
+	because cpu_topology[0].core_sibling is empty.
+Consequently, sd_span is set to an empty mask
+sd_id = cpumask_first(sd_span) sets sd_id == NR_CPUS (because the mask is
+	empty)
+sd->shared = *per_cpu_ptr(sdd->sds, sd_id); sets sd->shared to NULL
+	because sd_id is out of range
+atomic_inc(&sd->shared->ref); crashes without printing anything
+
+We can fix it by calling reset_cpu_topology() from init_cpu_topology() -
+this will initialize the sibling masks on CPUs, so that they're not empty.
+
+This patch also removes the variable "dualcores_found", it is useless,
+because during boot, init_cpu_topology is called before
+store_cpu_topology. Thus, set_sched_topology(parisc_mc_topology) is never
+called. We don't need to call it at all because default_topology in
+kernel/sched/topology.c contains the same items as parisc_mc_topology.
+
+Note that we should not call store_cpu_topology() from init_per_cpu()
+because it is called too early in the kernel initialization process and it
+results in the message "Failure to register CPU0 device". Before this
+patch, store_cpu_topology() would exit immediatelly because
+cpuid_topo->core id was uninitialized and it was 0.
+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Cc: stable@vger.kernel.org	# v5.18
 Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: stable@vger.kernel.org   # v5.10+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/console/sticon.c  |    5 ++++-
- drivers/video/console/sticore.c |   15 +++++++--------
- drivers/video/fbdev/sticore.h   |    3 +++
- 3 files changed, 14 insertions(+), 9 deletions(-)
+ arch/parisc/kernel/processor.c |  2 --
+ arch/parisc/kernel/topology.c  | 16 +---------------
+ 2 files changed, 1 insertion(+), 17 deletions(-)
 
---- a/drivers/video/console/sticon.c
-+++ b/drivers/video/console/sticon.c
-@@ -46,6 +46,7 @@
- #include <linux/slab.h>
- #include <linux/font.h>
- #include <linux/crc32.h>
-+#include <linux/fb.h>
+diff --git a/arch/parisc/kernel/processor.c b/arch/parisc/kernel/processor.c
+index 26eb568f8b96..dddaaa6e7a82 100644
+--- a/arch/parisc/kernel/processor.c
++++ b/arch/parisc/kernel/processor.c
+@@ -327,8 +327,6 @@ int init_per_cpu(int cpunum)
+ 	set_firmware_width();
+ 	ret = pdc_coproc_cfg(&coproc_cfg);
  
- #include <asm/io.h>
+-	store_cpu_topology(cpunum);
+-
+ 	if(ret >= 0 && coproc_cfg.ccr_functional) {
+ 		mtctl(coproc_cfg.ccr_functional, 10);  /* 10 == Coprocessor Control Reg */
  
-@@ -392,7 +393,9 @@ static int __init sticonsole_init(void)
-     for (i = 0; i < MAX_NR_CONSOLES; i++)
- 	font_data[i] = STI_DEF_FONT;
+diff --git a/arch/parisc/kernel/topology.c b/arch/parisc/kernel/topology.c
+index 9696e3cb6a2a..b9d845e314f8 100644
+--- a/arch/parisc/kernel/topology.c
++++ b/arch/parisc/kernel/topology.c
+@@ -20,8 +20,6 @@
  
--    pr_info("sticon: Initializing STI text console.\n");
-+    pr_info("sticon: Initializing STI text console on %s at [%s]\n",
-+	sticon_sti->sti_data->inq_outptr.dev_name,
-+	sticon_sti->pa_path);
-     console_lock();
-     err = do_take_over_console(&sti_con, 0, MAX_NR_CONSOLES - 1,
- 		PAGE0->mem_cons.cl_class != CL_DUPLEX);
---- a/drivers/video/console/sticore.c
-+++ b/drivers/video/console/sticore.c
-@@ -34,7 +34,7 @@
+ static DEFINE_PER_CPU(struct cpu, cpu_devices);
  
- #include "../fbdev/sticore.h"
- 
--#define STI_DRIVERVERSION "Version 0.9b"
-+#define STI_DRIVERVERSION "Version 0.9c"
- 
- static struct sti_struct *default_sti __read_mostly;
- 
-@@ -503,7 +503,7 @@ sti_select_fbfont(struct sti_cooked_rom
- 	if (!fbfont)
- 		return NULL;
- 
--	pr_info("STI selected %ux%u framebuffer font %s for sticon\n",
-+	pr_info("    using %ux%u framebuffer font %s\n",
- 			fbfont->width, fbfont->height, fbfont->name);
- 			
- 	bpc = ((fbfont->width+7)/8) * fbfont->height; 
-@@ -947,6 +947,7 @@ out_err:
- 
- static void sticore_check_for_default_sti(struct sti_struct *sti, char *path)
- {
-+	pr_info("    located at [%s]\n", sti->pa_path);
- 	if (strcmp (path, default_sti_path) == 0)
- 		default_sti = sti;
+-static int dualcores_found;
+-
+ /*
+  * store_cpu_topology is called at boot when only one cpu is running
+  * and with the mutex cpu_hotplug.lock locked, when several cpus have booted,
+@@ -60,7 +58,6 @@ void store_cpu_topology(unsigned int cpuid)
+ 			if (p->cpu_loc) {
+ 				cpuid_topo->core_id++;
+ 				cpuid_topo->package_id = cpu_topology[cpu].package_id;
+-				dualcores_found = 1;
+ 				continue;
+ 			}
+ 		}
+@@ -80,22 +77,11 @@ void store_cpu_topology(unsigned int cpuid)
+ 		cpu_topology[cpuid].package_id);
  }
-@@ -958,7 +959,6 @@ static void sticore_check_for_default_st
+ 
+-static struct sched_domain_topology_level parisc_mc_topology[] = {
+-#ifdef CONFIG_SCHED_MC
+-	{ cpu_coregroup_mask, cpu_core_flags, SD_INIT_NAME(MC) },
+-#endif
+-
+-	{ cpu_cpu_mask, SD_INIT_NAME(DIE) },
+-	{ NULL, },
+-};
+-
+ /*
+  * init_cpu_topology is called at boot when only one cpu is running
+  * which prevent simultaneous write access to cpu_topology array
   */
- static int __init sticore_pa_init(struct parisc_device *dev)
+ void __init init_cpu_topology(void)
  {
--	char pa_path[21];
- 	struct sti_struct *sti = NULL;
- 	int hpa = dev->hpa.start;
- 
-@@ -971,8 +971,8 @@ static int __init sticore_pa_init(struct
- 	if (!sti)
- 		return 1;
- 
--	print_pa_hwpath(dev, pa_path);
--	sticore_check_for_default_sti(sti, pa_path);
-+	print_pa_hwpath(dev, sti->pa_path);
-+	sticore_check_for_default_sti(sti, sti->pa_path);
- 	return 0;
+-	/* Set scheduler topology descriptor */
+-	if (dualcores_found)
+-		set_sched_topology(parisc_mc_topology);
++	reset_cpu_topology();
  }
- 
-@@ -1008,9 +1008,8 @@ static int sticore_pci_init(struct pci_d
- 
- 	sti = sti_try_rom_generic(rom_base, fb_base, pd);
- 	if (sti) {
--		char pa_path[30];
--		print_pci_hwpath(pd, pa_path);
--		sticore_check_for_default_sti(sti, pa_path);
-+		print_pci_hwpath(pd, sti->pa_path);
-+		sticore_check_for_default_sti(sti, sti->pa_path);
- 	}
- 	
- 	if (!sti) {
---- a/drivers/video/fbdev/sticore.h
-+++ b/drivers/video/fbdev/sticore.h
-@@ -370,6 +370,9 @@ struct sti_struct {
- 
- 	/* pointer to all internal data */
- 	struct sti_all_data *sti_data;
-+
-+	/* pa_path of this device */
-+	char pa_path[24];
- };
- 
- 
+-- 
+2.36.1
+
 
 
