@@ -2,164 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AE99CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49D77CCA48A
 	for <linux-kernel@archiver.kernel.org>; Wed,  8 Jun 2022 00:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388603AbiFHApr (ORCPT
+        id S1389144AbiFHAqD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 20:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35068 "EHLO
+        Tue, 7 Jun 2022 20:46:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385235AbiFGW0p (ORCPT
+        with ESMTP id S1450073AbiFGXKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 18:26:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C40270420;
-        Tue,  7 Jun 2022 12:23:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D503B823CE;
-        Tue,  7 Jun 2022 19:23:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA7ACC385A5;
-        Tue,  7 Jun 2022 19:23:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654629783;
-        bh=5W7m88KiTZvHvoWjyOt0GpGQuUxzdpHJkRGENQfNYDY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zNQtHpAr8KmEAjbZbq5JxN2s6Oe/6N01j7Zie8vBAIcnfonqGlazhhXvgpXtjuGFW
-         OnJAzdm6V2kq6W6I4L4aO3si75HrstoMUpW5uf0C7TF1XqLY7VlbdMzX9tCFGyLU1E
-         IYLouH/v34mL9qJ8cqql7DiByl9pEip1HbF2RWoU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.18 816/879] um: virtio_uml: Fix broken device handling in time-travel
-Date:   Tue,  7 Jun 2022 19:05:34 +0200
-Message-Id: <20220607165026.541253242@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
-References: <20220607165002.659942637@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 7 Jun 2022 19:10:49 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BDA6184931
+        for <linux-kernel@vger.kernel.org>; Tue,  7 Jun 2022 13:48:18 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id k4-20020a6b4004000000b006697f6074e6so1374371ioa.11
+        for <linux-kernel@vger.kernel.org>; Tue, 07 Jun 2022 13:48:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=F4ALpda75nlB6V1TanWvj/lUfY62eLCUke6YTesSXU0=;
+        b=qlELnEwXomhX0ynfOc+3DGuIYzwRNmfjqbifFG0bXK2TFbkuPrJ7A0kwV3Lz/BF4Af
+         UJ61Hg2NbdBueSKtt+cYqPwXud5dzAHWTGX7kFOHV4/vALnOaRxh7N5JdCR1a56jLRgp
+         zfvrQiBVeFBp5CBJJnp9f9s7HqChqO73SxyX4pSHeBZpg3AsjbCMYauJeqMMnSHTkxC0
+         S2qc32j1VDPf5tQy5ZPgB1h2DTEKyYUTEE6FrwJiAepoRVyJtaHhYM3TsQnk3WY6GbuH
+         Xwtxo6z7S55kkL4kRIM8DiR9YVVkIXlDGiJ8Voh7hMkLeQJR1orNt64BXaMVtgm8zSi5
+         PELg==
+X-Gm-Message-State: AOAM531P3TIjwjaEidmUq15JODZWNWAOWJgX58sv5kCSglse331TbMTv
+        55q8H+HBHBMI4tnb6EdLRBGCU6n25ZbdX3wYdyCucak8Bl+y
+X-Google-Smtp-Source: ABdhPJywpIJI/Qsn0/0LRzPy3Pf1VaqXJDD6UFpb2QRZsRbu49CjVlxdTBPAJ6dZb0YOM4HDd8FvUd/5fgQzJJYwO+C47z4AW1dG
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6e02:1d8a:b0:2d3:cfe9:4d89 with SMTP id
+ h10-20020a056e021d8a00b002d3cfe94d89mr18176040ila.322.1654634897458; Tue, 07
+ Jun 2022 13:48:17 -0700 (PDT)
+Date:   Tue, 07 Jun 2022 13:48:17 -0700
+In-Reply-To: <0000000000003fc46005e0db5390@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004bcf6905e0e1b527@google.com>
+Subject: Re: [syzbot] KASAN: stack-out-of-bounds Write in check_move_unevictable_pages
+From:   syzbot <syzbot+8847ae8c7bc46bc9c10e@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, dhowells@redhat.com,
+        linmiaohe@huawei.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, surenb@google.com,
+        syzkaller-bugs@googlegroups.com, vbabka@suse.cz,
+        willy@infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+syzbot has bisected this issue to:
 
-commit af9fb41ed315ce95f659f0b10b4d59a71975381d upstream.
+commit 15603c238d1318c66c49df232fb2e2631a0062a0
+Author: Matthew Wilcox (Oracle) <willy@infradead.org>
+Date:   Sat Jun 4 21:39:09 2022 +0000
 
-If a device implementation crashes, virtio_uml will mark it
-as dead by calling virtio_break_device() and scheduling the
-work that will remove it.
+    vmscan: Add check_move_unevictable_folios()
 
-This still seems like the right thing to do, but it's done
-directly while reading the message, and if time-travel is
-used, this is in the time-travel handler, outside of the
-normal Linux machinery. Therefore, we cannot acquire locks
-or do normal "linux-y" things because e.g. lockdep will be
-confused about the context.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11ad0107f00000
+start commit:   73d0e32571a0 Add linux-next specific files for 20220607
+git tree:       linux-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=13ad0107f00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15ad0107f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=448ee2b64e828049
+dashboard link: https://syzkaller.appspot.com/bug?extid=8847ae8c7bc46bc9c10e
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14359627f00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=177d5f3ff00000
 
-Move handling this situation out of the read function and
-into the actual IRQ handler and response handling instead,
-so that in the case of time-travel we don't call it in the
-wrong context.
+Reported-by: syzbot+8847ae8c7bc46bc9c10e@syzkaller.appspotmail.com
+Fixes: 15603c238d13 ("vmscan: Add check_move_unevictable_folios()")
 
-Chances are the system will still crash immediately, since
-the device implementation crashing may also cause the time-
-travel controller to go down, but at least all of that now
-happens without strange warnings from lockdep.
-
-Fixes: c8177aba37ca ("um: time-travel: rework interrupt handling in ext mode")
-Cc: stable@vger.kernel.org
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/um/drivers/virtio_uml.c |   33 +++++++++++++++++++++++----------
- 1 file changed, 23 insertions(+), 10 deletions(-)
-
---- a/arch/um/drivers/virtio_uml.c
-+++ b/arch/um/drivers/virtio_uml.c
-@@ -63,6 +63,7 @@ struct virtio_uml_device {
- 
- 	u8 config_changed_irq:1;
- 	uint64_t vq_irq_vq_map;
-+	int recv_rc;
- };
- 
- struct virtio_uml_vq_info {
-@@ -148,14 +149,6 @@ static int vhost_user_recv(struct virtio
- 
- 	rc = vhost_user_recv_header(fd, msg);
- 
--	if (rc == -ECONNRESET && vu_dev->registered) {
--		struct virtio_uml_platform_data *pdata;
--
--		pdata = vu_dev->pdata;
--
--		virtio_break_device(&vu_dev->vdev);
--		schedule_work(&pdata->conn_broken_wk);
--	}
- 	if (rc)
- 		return rc;
- 	size = msg->header.size;
-@@ -164,6 +157,21 @@ static int vhost_user_recv(struct virtio
- 	return full_read(fd, &msg->payload, size, false);
- }
- 
-+static void vhost_user_check_reset(struct virtio_uml_device *vu_dev,
-+				   int rc)
-+{
-+	struct virtio_uml_platform_data *pdata = vu_dev->pdata;
-+
-+	if (rc != -ECONNRESET)
-+		return;
-+
-+	if (!vu_dev->registered)
-+		return;
-+
-+	virtio_break_device(&vu_dev->vdev);
-+	schedule_work(&pdata->conn_broken_wk);
-+}
-+
- static int vhost_user_recv_resp(struct virtio_uml_device *vu_dev,
- 				struct vhost_user_msg *msg,
- 				size_t max_payload_size)
-@@ -171,8 +179,10 @@ static int vhost_user_recv_resp(struct v
- 	int rc = vhost_user_recv(vu_dev, vu_dev->sock, msg,
- 				 max_payload_size, true);
- 
--	if (rc)
-+	if (rc) {
-+		vhost_user_check_reset(vu_dev, rc);
- 		return rc;
-+	}
- 
- 	if (msg->header.flags != (VHOST_USER_FLAG_REPLY | VHOST_USER_VERSION))
- 		return -EPROTO;
-@@ -369,6 +379,7 @@ static irqreturn_t vu_req_read_message(s
- 				 sizeof(msg.msg.payload) +
- 				 sizeof(msg.extra_payload));
- 
-+	vu_dev->recv_rc = rc;
- 	if (rc)
- 		return IRQ_NONE;
- 
-@@ -412,7 +423,9 @@ static irqreturn_t vu_req_interrupt(int
- 	if (!um_irq_timetravel_handler_used())
- 		ret = vu_req_read_message(vu_dev, NULL);
- 
--	if (vu_dev->vq_irq_vq_map) {
-+	if (vu_dev->recv_rc) {
-+		vhost_user_check_reset(vu_dev, vu_dev->recv_rc);
-+	} else if (vu_dev->vq_irq_vq_map) {
- 		struct virtqueue *vq;
- 
- 		virtio_device_for_each_vq((&vu_dev->vdev), vq) {
-
-
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
