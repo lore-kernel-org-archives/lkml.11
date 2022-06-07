@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 529C1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:48:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC5AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 17:48:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348353AbiFGRsg (ORCPT
+        id S1348357AbiFGRsk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 13:48:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42956 "EHLO
+        Tue, 7 Jun 2022 13:48:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348072AbiFGRbb (ORCPT
+        with ESMTP id S1348130AbiFGRbf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 13:31:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58E111E48A;
-        Tue,  7 Jun 2022 10:29:13 -0700 (PDT)
+        Tue, 7 Jun 2022 13:31:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFA11157EE;
+        Tue,  7 Jun 2022 10:29:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5882C614C0;
-        Tue,  7 Jun 2022 17:29:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66E21C34115;
-        Tue,  7 Jun 2022 17:29:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10814B822B0;
+        Tue,  7 Jun 2022 17:29:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 700B7C385A5;
+        Tue,  7 Jun 2022 17:29:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654622952;
-        bh=7gLmPXzMhNy7D2VimkqVQcs4oFEM8KSRbDToOpCrFlw=;
+        s=korg; t=1654622966;
+        bh=vf/HxcC0bSo+zVL8D7b6Ki/cdRioCqznL6rtX/zg63w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UvaAk1UVVQh+bFohJDr8YlXUysT1ScGjWkI5G8/snEqiO8T2G/y5zEdgJXa5qZMcd
-         mXeqGLhaQMELaAjuz3aFKDmAAe8ERWnkMngB40jRoj5zpRuloFNG49pfmgiWO0e/5w
-         w/yQeFt9pJp3fhMQxXjgcrBmm7i8I41wy80RbjXA=
+        b=qn3Ww/GRAKsgvv4dqhWg90/O7WJcbtj2Qn9vLmzSn8hyaKkfqGaAAnBJosXvHLJ0o
+         1YPw7n767ihZyJ4YDWom1snAnkI2pUMfclIsedOUHltuRwTRV9D7SM5q8dHCGKRd/I
+         iqPD9pjVq85pB9pISkz+I5tFzYQ/mUK6fzvkE5uY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 240/452] thermal/drivers/broadcom: Fix potential NULL dereference in sr_thermal_probe
-Date:   Tue,  7 Jun 2022 19:01:37 +0200
-Message-Id: <20220607164915.712144429@linuxfoundation.org>
+Subject: [PATCH 5.10 206/452] ASoC: samsung: Fix refcount leak in aries_audio_probe
+Date:   Tue,  7 Jun 2022 19:01:03 +0200
+Message-Id: <20220607164914.703324084@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164908.521895282@linuxfoundation.org>
 References: <20220607164908.521895282@linuxfoundation.org>
@@ -50,36 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Yongjun <zhengyongjun3@huawei.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit e20d136ec7d6f309989c447638365840d3424c8e ]
+[ Upstream commit bf4a9b2467b775717d0e9034ad916888e19713a3 ]
 
-platform_get_resource() may return NULL, add proper check to
-avoid potential NULL dereferencing.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+If extcon_find_edev_by_node() fails, it doesn't call of_node_put()
+Calling of_node_put() after extcon_find_edev_by_node() to fix this.
 
-Fixes: 250e211057c72 ("thermal: broadcom: Add Stingray thermal driver")
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-Link: https://lore.kernel.org/r/20220425092929.90412-1-zhengyongjun3@huawei.com
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Fixes: 7a3a7671fa6c ("ASoC: samsung: Add driver for Aries boards")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220512043828.496-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/thermal/broadcom/sr-thermal.c | 3 +++
- 1 file changed, 3 insertions(+)
+ sound/soc/samsung/aries_wm8994.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/thermal/broadcom/sr-thermal.c b/drivers/thermal/broadcom/sr-thermal.c
-index 475ce2900771..85ab9edd580c 100644
---- a/drivers/thermal/broadcom/sr-thermal.c
-+++ b/drivers/thermal/broadcom/sr-thermal.c
-@@ -60,6 +60,9 @@ static int sr_thermal_probe(struct platform_device *pdev)
- 		return -ENOMEM;
+diff --git a/sound/soc/samsung/aries_wm8994.c b/sound/soc/samsung/aries_wm8994.c
+index 709336bbcc2f..18458192aff1 100644
+--- a/sound/soc/samsung/aries_wm8994.c
++++ b/sound/soc/samsung/aries_wm8994.c
+@@ -585,10 +585,10 @@ static int aries_audio_probe(struct platform_device *pdev)
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		return -ENOENT;
-+
- 	sr_thermal->regs = (void __iomem *)devm_memremap(&pdev->dev, res->start,
- 							 resource_size(res),
- 							 MEMREMAP_WB);
+ 	extcon_np = of_parse_phandle(np, "extcon", 0);
+ 	priv->usb_extcon = extcon_find_edev_by_node(extcon_np);
++	of_node_put(extcon_np);
+ 	if (IS_ERR(priv->usb_extcon))
+ 		return dev_err_probe(dev, PTR_ERR(priv->usb_extcon),
+ 				     "Failed to get extcon device");
+-	of_node_put(extcon_np);
+ 
+ 	priv->adc = devm_iio_channel_get(dev, "headset-detect");
+ 	if (IS_ERR(priv->adc))
 -- 
 2.35.1
 
