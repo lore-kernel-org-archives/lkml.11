@@ -2,114 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C934ACCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBA29CCA48F
 	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 19:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355984AbiFGT0P (ORCPT
+        id S1356037AbiFGT0Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:26:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38892 "EHLO
+        Tue, 7 Jun 2022 15:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351979AbiFGSdG (ORCPT
+        with ESMTP id S1352008AbiFGSdI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:33:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CDE717EC34;
-        Tue,  7 Jun 2022 10:57:06 -0700 (PDT)
+        Tue, 7 Jun 2022 14:33:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66343E25;
+        Tue,  7 Jun 2022 10:57:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6E0EB82371;
-        Tue,  7 Jun 2022 17:57:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0DF3C385A5;
-        Tue,  7 Jun 2022 17:57:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624624;
-        bh=wH7/90BcNZzwB2bJOgzMEcaResWqJwE5uqhLmPT9ENA=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2521DB82368;
+        Tue,  7 Jun 2022 17:57:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68691C3411F;
+        Tue,  7 Jun 2022 17:57:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654624629;
+        bh=Oa09tsOvQ9Bl2U03X5wl5mPwZC6XEVRvJHjy6u3ZsTY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PpZD7TKgF9X5yRD66zqx6I3uWcQWIaAF2yym1jzJLwz3wg8RGHPfWuMzdW0pydLLp
-         a8jYsAIMfVHqeRKApcOcyvMGCOLrt0ZIooME5BgB/eHLSkiOkKVJV/Q4JRdZCIX7Z6
-         5TzDYey8OjizP6CT6HUL948esx/z33J6pw+gAuDuOj2gKzHOWTfvbdMgZcuKyjMgzq
-         w7VSTp3m5rI7jEssQc2L1wSbI8mns1VIvgmdztYuDZJbwJx+zHB9Np5OQnHZv6/AJ1
-         wegSUFTb07xsf8h8gldBG6r01aXSNtcb4VtPQKCl0IY0xkpI7Z55yby/S7gtht+tnj
-         bSNfwElqy6nkQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andre Przywara <andre.przywara@arm.com>,
-        Robin Murphy <robin.murphy@arm.com>,
+        b=YvS2q3B3JKYgdR4jcMUlGV/MZ3/A/3w2yyNFjhc7fYH5AantCbaXN7Il1qvW0r5bv
+         bftF7ImqPXzSxdGoq8qCy8ynh9geSIIOom7hGE084iHgwcrHNm4vDEQbpeEOy3mezE
+         ExUgUCH7greDF3mCi6b5KTTpIqTwDZq6q6IiLTGk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de
-Subject: [PATCH AUTOSEL 5.15 23/51] clocksource/drivers/sp804: Avoid error on multiple instances
-Date:   Tue,  7 Jun 2022 13:55:22 -0400
-Message-Id: <20220607175552.479948-23-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175552.479948-1-sashal@kernel.org>
-References: <20220607175552.479948-1-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 356/667] thermal/drivers/imx_sc_thermal: Fix refcount leak in imx_sc_thermal_probe
+Date:   Tue,  7 Jun 2022 19:00:21 +0200
+Message-Id: <20220607164945.433122745@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
+References: <20220607164934.766888869@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit a98399cbc1e05f7b977419f03905501d566cf54e ]
+[ Upstream commit 09700c504d8e63faffd2a2235074e8c5d130cb8f ]
 
-When a machine sports more than one SP804 timer instance, we only bring
-up the first one, since multiple timers of the same kind are not useful
-to Linux. As this is intentional behaviour, we should not return an
-error message, as we do today:
-===============
-[    0.000800] Failed to initialize '/bus@8000000/motherboard-bus@8000000/iofpga-bus@300000000/timer@120000': -22
-===============
+of_find_node_by_name() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-Replace the -EINVAL return with a debug message and return 0 instead.
-
-Also we do not reach the init function anymore if the DT node is
-disabled (as this is now handled by OF_DECLARE), so remove the explicit
-check for that case.
-
-This fixes a long standing bogus error when booting ARM's fastmodels.
-
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/20220506162522.3675399-1-andre.przywara@arm.com
+Fixes: e20db70dba1c ("thermal: imx_sc: add i.MX system controller thermal support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220517055121.18092-1-linmq006@gmail.com
 Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/timer-sp804.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/thermal/imx_sc_thermal.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clocksource/timer-sp804.c b/drivers/clocksource/timer-sp804.c
-index 401d592e85f5..e6a87f4af2b5 100644
---- a/drivers/clocksource/timer-sp804.c
-+++ b/drivers/clocksource/timer-sp804.c
-@@ -259,6 +259,11 @@ static int __init sp804_of_init(struct device_node *np, struct sp804_timer *time
- 	struct clk *clk1, *clk2;
- 	const char *name = of_get_property(np, "compatible", NULL);
+diff --git a/drivers/thermal/imx_sc_thermal.c b/drivers/thermal/imx_sc_thermal.c
+index 8d76dbfde6a9..331a241eb0ef 100644
+--- a/drivers/thermal/imx_sc_thermal.c
++++ b/drivers/thermal/imx_sc_thermal.c
+@@ -94,8 +94,8 @@ static int imx_sc_thermal_probe(struct platform_device *pdev)
+ 		sensor = devm_kzalloc(&pdev->dev, sizeof(*sensor), GFP_KERNEL);
+ 		if (!sensor) {
+ 			of_node_put(child);
+-			of_node_put(sensor_np);
+-			return -ENOMEM;
++			ret = -ENOMEM;
++			goto put_node;
+ 		}
  
-+	if (initialized) {
-+		pr_debug("%pOF: skipping further SP804 timer device\n", np);
-+		return 0;
-+	}
-+
- 	base = of_iomap(np, 0);
- 	if (!base)
- 		return -ENXIO;
-@@ -270,11 +275,6 @@ static int __init sp804_of_init(struct device_node *np, struct sp804_timer *time
- 	writel(0, timer1_base + timer->ctrl);
- 	writel(0, timer2_base + timer->ctrl);
+ 		ret = thermal_zone_of_get_sensor_id(child,
+@@ -124,7 +124,9 @@ static int imx_sc_thermal_probe(struct platform_device *pdev)
+ 			dev_warn(&pdev->dev, "failed to add hwmon sysfs attributes\n");
+ 	}
  
--	if (initialized || !of_device_is_available(np)) {
--		ret = -EINVAL;
--		goto err;
--	}
--
- 	clk1 = of_clk_get(np, 0);
- 	if (IS_ERR(clk1))
- 		clk1 = NULL;
++put_node:
+ 	of_node_put(sensor_np);
++	of_node_put(np);
+ 
+ 	return ret;
+ }
 -- 
 2.35.1
+
+
 
