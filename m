@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6576FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:23:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89407C43334
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 22:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382184AbiFGWXx (ORCPT
+        id S1382331AbiFGWYC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 18:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54912 "EHLO
+        Tue, 7 Jun 2022 18:24:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380780AbiFGVQ6 (ORCPT
+        with ESMTP id S1380769AbiFGVQ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 7 Jun 2022 17:16:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC465D5C8;
-        Tue,  7 Jun 2022 11:57:23 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37499644F4;
+        Tue,  7 Jun 2022 11:57:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD111B822C0;
-        Tue,  7 Jun 2022 18:57:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29FC9C385A2;
-        Tue,  7 Jun 2022 18:57:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DDCF6B8220B;
+        Tue,  7 Jun 2022 18:57:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A2F5C385A2;
+        Tue,  7 Jun 2022 18:57:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654628240;
-        bh=4VbD8WfJB44zlOa5xh/C+Vp346v74EgwC6bktjAuxDc=;
+        s=korg; t=1654628237;
+        bh=XJ50Jb/dd9venn1pdAoNrEN6xPogM9j8x9SREus6Qzo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TMr9ImqT/ZKgbC6IXH6U1HlPvoxQNxCsuPsDsVnSNOLV/7gnFjv2Masp7j/NVbCU/
-         R+JJOI8geNpXiLrE8idezw0vv4J8EOebsYY1c0S1VxeOn+I9P6QBv0Bjt8dUhYpPv4
-         1aOz2iIdFoWVpNusjlzHx7vXph2h8fpqQZekSLzg=
+        b=GFdWrjbGQcqgFyovPXwNyikMW6sdbbq3R8DuLvX3P4j70A7ouSMiKn3MHLKEDgsHx
+         NC4ZzLNTUpb2NUM61FVIvfzs8ymGeH/vsuRxkmnLi8RoRafxIQ475zTTE2l2HA8onN
+         J/4EK8TxPtWvHA/S6zPMabTiT/KdchEcZoFG7EFQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Rob Herring <robh@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        David Lechner <david@lechnology.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 240/879] alpha: fix alloc_zeroed_user_highpage_movable()
-Date:   Tue,  7 Jun 2022 18:55:58 +0200
-Message-Id: <20220607165009.819107501@linuxfoundation.org>
+Subject: [PATCH 5.18 257/879] dt-bindings: display: sitronix, st7735r: Fix backlight in example
+Date:   Tue,  7 Jun 2022 18:56:15 +0200
+Message-Id: <20220607165010.309747977@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607165002.659942637@linuxfoundation.org>
 References: <20220607165002.659942637@linuxfoundation.org>
@@ -53,37 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Wilcox (Oracle) <willy@infradead.org>
+From: Noralf Trønnes <noralf@tronnes.org>
 
-[ Upstream commit f9c668d281aa20e38c9bda3b7b0adeb8891aa15e ]
+[ Upstream commit 471e201f543559e2cb19b182b680ebf04d80ee31 ]
 
-Due to a typo, the final argument to alloc_page_vma() didn't refer to a
-real variable.  This only affected CONFIG_NUMA, which was marked BROKEN in
-2006 and removed from alpha in 2021.  Found due to a refactoring patch.
+The backlight property was lost during conversion to yaml in commit
+abdd9e3705c8 ("dt-bindings: display: sitronix,st7735r: Convert to DT schema").
+Put it back.
 
-Link: https://lkml.kernel.org/r/20220504182857.4013401-4-willy@infradead.org
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: abdd9e3705c8 ("dt-bindings: display: sitronix,st7735r: Convert to DT schema")
+Signed-off-by: Noralf Trønnes <noralf@tronnes.org>
+Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: David Lechner <david@lechnology.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211124150757.17929-2-noralf@tronnes.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/alpha/include/asm/page.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/display/sitronix,st7735r.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/alpha/include/asm/page.h b/arch/alpha/include/asm/page.h
-index 18f48a6f2ff6..8f3f5eecba28 100644
---- a/arch/alpha/include/asm/page.h
-+++ b/arch/alpha/include/asm/page.h
-@@ -18,7 +18,7 @@ extern void clear_page(void *page);
- #define clear_user_page(page, vaddr, pg)	clear_page(page)
+diff --git a/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml b/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
+index 0cebaaefda03..419c3b2ac5a6 100644
+--- a/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
++++ b/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
+@@ -72,6 +72,7 @@ examples:
+                     dc-gpios = <&gpio 43 GPIO_ACTIVE_HIGH>;
+                     reset-gpios = <&gpio 80 GPIO_ACTIVE_HIGH>;
+                     rotation = <270>;
++                    backlight = <&backlight>;
+             };
+     };
  
- #define alloc_zeroed_user_highpage_movable(vma, vaddr) \
--	alloc_page_vma(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, vma, vmaddr)
-+	alloc_page_vma(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, vma, vaddr)
- #define __HAVE_ARCH_ALLOC_ZEROED_USER_HIGHPAGE_MOVABLE
- 
- extern void copy_page(void * _to, void * _from);
 -- 
 2.35.1
 
