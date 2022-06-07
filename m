@@ -2,92 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D64C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:46:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A96E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 14:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343508AbiFGOqT (ORCPT
+        id S1343516AbiFGOsA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 10:46:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43566 "EHLO
+        Tue, 7 Jun 2022 10:48:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244641AbiFGOqQ (ORCPT
+        with ESMTP id S243135AbiFGOr5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 10:46:16 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89D5950033;
-        Tue,  7 Jun 2022 07:46:15 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="302086240"
+        Tue, 7 Jun 2022 10:47:57 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5DD3DB0;
+        Tue,  7 Jun 2022 07:47:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1654613274; x=1686149274;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=gRbhG78MY8udPJw/imfYfbVX4LURQtV185AXL5K7JtY=;
+  b=BoWrDpRoZfkl9gD9wcGRZ+2xpEHqdMXWRaLS85L/gSsHX1cLqBRofJLs
+   6CuJVuc4QtQKNcergU4FPD8lqUhoLdtuOhXNdAazR0Pzo6cpGuTiPsTPM
+   8LaqRxohu6dyP27KsDCrYVAAONcNxsZKvnFviH6uqZzOJ+cwecCUVsUX1
+   dzBC4ueRxUczFg0St7tvr7VVzp7Xg3WKaRV42T91MIdtb1jxJdzJT+Jg0
+   Gm8pbiGzcHO8tNOuS+JXxIDeLY/ZD14vNUGUIbdQi+mVWsbRpMGNLHz0p
+   G/ZtUuvlD2SqeF5bMtNKIG+FoZGOd+lz6VloajHntG43gdwJPdNU61Xdv
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="302086240"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:46:15 -0700
-X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="532634778"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:46:12 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1nyaTB-000VmS-MK;
-        Tue, 07 Jun 2022 17:46:09 +0300
-Date:   Tue, 7 Jun 2022 17:46:09 +0300
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 4/6] serial: 8250: Adjust misleading LSR related
- comment
-Message-ID: <Yp9ksSTrFb+11d7h@smile.fi.intel.com>
-References: <20220607082934.7242-1-ilpo.jarvinen@linux.intel.com>
- <20220607082934.7242-5-ilpo.jarvinen@linux.intel.com>
- <CAHp75VfK4v15HrBwwD9b7q6EYdcp3VnP5RGKVuPeSWk4TSyq+w@mail.gmail.com>
- <e22db21a-cfc3-b7e4-3fd9-6cee9e189213@linux.intel.com>
+   d="scan'208";a="162250811"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Jun 2022 07:47:50 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 7 Jun 2022 07:47:50 -0700
+Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 7 Jun 2022 07:47:46 -0700
+From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+To:     <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <kavyasree.kotagiri@microchip.com>,
+        <UNGLinuxDriver@microchip.com>
+Subject: [PATCH v2 0/3] Add support for lan966x flexcom chip-select configuration
+Date:   Tue, 7 Jun 2022 20:17:37 +0530
+Message-ID: <20220607144740.14937-1-kavyasree.kotagiri@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e22db21a-cfc3-b7e4-3fd9-6cee9e189213@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 03:11:32PM +0300, Ilpo Järvinen wrote:
-> On Tue, 7 Jun 2022, Andy Shevchenko wrote:
-> > On Tue, Jun 7, 2022 at 11:16 AM Ilpo Järvinen
-> > <ilpo.jarvinen@linux.intel.com> wrote:
+This patch series converts atmel-flexcom bindings into json-schema format.
+Adds support for lan966x flexcom chip-select configurations and its
+DT bindings.
 
-...
+v1 -> v2:
+ - minor fix in title of dt-bindings.
+ - Modified new dt properties usage in atmel,flexcom.yaml.
+ - Used GENMASK and macros for maximum allowed values.
+ - Use u32 values for flexcom chipselects instead of strings.
+ - disable clock in case of errors.
 
-> > >   https://www.spinics.net/lists/linux-serial/msg20555.html
+Kavyasree Kotagiri (3):
+  dt-bindings: mfd: atmel,flexcom: Convert to json-schema
+  dt-bindings: mfd: atmel,flexcom: Add new compatible string for lan966x
+  mfd: atmel-flexcom: Add support for lan966x flexcom chip-select
+    configuration
 
-> > Can it be transformed to lore.kernel.org link?
-> 
-> Unfortunately no, AFAICT. I tried searching but I couldn't find one
-> from there (In fact, I tried even before submitting them because you
-> previously told me I should use lore links instead).
-> 
-> More importantly though, it seems that the link was not the one I was
-> supposed to use (I probably copy pasted the url from a wrong window while
-> investigating all turns of it). This is the correct link:
-> 
->   https://www.spinics.net/lists/linux-serial/msg16220.html
-
-Indeed, that discussion by some reason is not in the lore archive.
-
-...
-
-> I put the correct URL now into Link tag.
-> 
-> I'll resend tomorrow to give the dust some time to settle.
-
-Fine with me, thanks!
+ .../bindings/mfd/atmel,flexcom.yaml           | 134 ++++++++++++++++++
+ .../devicetree/bindings/mfd/atmel-flexcom.txt |  63 --------
+ drivers/mfd/atmel-flexcom.c                   |  93 +++++++++++-
+ 3 files changed, 226 insertions(+), 64 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
+ delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-flexcom.txt
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.17.1
 
