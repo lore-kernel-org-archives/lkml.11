@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F53FCCA48F
-	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:37:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6547CCA491
+	for <linux-kernel@archiver.kernel.org>; Tue,  7 Jun 2022 18:37:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353169AbiFGSgY (ORCPT
+        id S1353120AbiFGSgL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:36:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52072 "EHLO
+        Tue, 7 Jun 2022 14:36:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350503AbiFGSGG (ORCPT
+        with ESMTP id S1350143AbiFGSFY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:06:06 -0400
+        Tue, 7 Jun 2022 14:05:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 820DB237D7;
-        Tue,  7 Jun 2022 10:47:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E557311A2E;
+        Tue,  7 Jun 2022 10:47:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 140E46172C;
-        Tue,  7 Jun 2022 17:47:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27775C385A5;
-        Tue,  7 Jun 2022 17:47:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F129616B6;
+        Tue,  7 Jun 2022 17:47:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD25BC34115;
+        Tue,  7 Jun 2022 17:47:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654624043;
-        bh=6JLqq5nJsfk/fwyQoTCHxonMpl4UaSqujM40ft8+ZoI=;
+        s=korg; t=1654624038;
+        bh=NCtpBLNwBQo5LnWRjTwnh9ne8DWfF2A34nsadgQaqzc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YB5hu5Gc8LoCzwYbkdK+rLtxtbN3CSgtM0yfMLvihL+fXd2bsEcwo5Z20jZeJlXF6
-         jSSQa/qYR1aARPd2Jw2EkEb1GZVE+0qOE3q+yntKAM8yPN7ic7DRd8lZ3xrzvY3Giv
-         g5bb0AW+fjq/jMYaxjdJS5fWT02u/ShwYEE97rYc=
+        b=j5b9TMPD+C2JFT9+S5/9LqkrNQrJzgpafYjSR4Aonr0tZI3yJsMmnN4gvhQY/nVFi
+         9foH/UXDdPZpqBEzrZvnQI2V8Ifhkc3cxRIz5+JHxIpTig97bzAZuGRTJnE0yPluHD
+         hBk8xmXHZONWFfvTV6s1nup78hZ2tjJTcHX9+nm8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
-        Chuck Lever III <chuck.lever@oracle.com>,
-        Martin Krastev <krastevm@vmware.com>,
+        stable@vger.kernel.org,
+        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 185/667] drm/vmwgfx: Fix an invalid read
-Date:   Tue,  7 Jun 2022 18:57:30 +0200
-Message-Id: <20220607164940.355852813@linuxfoundation.org>
+Subject: [PATCH 5.15 183/667] drm/bridge_connector: enable HPD by default if supported
+Date:   Tue,  7 Jun 2022 18:57:28 +0200
+Message-Id: <20220607164940.296214813@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607164934.766888869@linuxfoundation.org>
 References: <20220607164934.766888869@linuxfoundation.org>
@@ -51,70 +53,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zack Rusin <zackr@vmware.com>
+From: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
 
-[ Upstream commit 10a26e0d5fc3574f63ce8a6cf28381b126317f40 ]
+[ Upstream commit 09077bc3116581f4d1cb961ec359ad56586e370b ]
 
-vmw_move assumed that buffers to be moved would always be
-vmw_buffer_object's but after introduction of new placement for mob
-pages that's no longer the case.
-The resulting invalid read didn't have any practical consequences
-because the memory isn't used unless the object actually is a
-vmw_buffer_object.
-Fix it by moving the cast to the spot where the results are used.
+Hotplug events reported by bridge drivers over drm_bridge_hpd_notify()
+get ignored unless somebody calls drm_bridge_hpd_enable(). When the
+connector for the bridge is bridge_connector, such a call is done from
+drm_bridge_connector_enable_hpd().
 
-Signed-off-by: Zack Rusin <zackr@vmware.com>
-Fixes: f6be23264bba ("drm/vmwgfx: Introduce a new placement for MOB page tables")
-Reported-by: Chuck Lever III <chuck.lever@oracle.com>
-Reviewed-by: Martin Krastev <krastevm@vmware.com>
-Tested-by: Chuck Lever <chuck.lever@oracle.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220318174332.440068-2-zack@kde.org
+However drm_bridge_connector_enable_hpd() is never called on init paths,
+documentation suggests that it is intended for suspend/resume paths.
+
+In result, once encoders are switched to bridge_connector,
+bridge-detected HPD stops working.
+
+This patch adds a call to that API on init path.
+
+This fixes HDMI HPD with rcar-du + adv7513 case when adv7513 reports HPD
+events via interrupts.
+
+Fixes: c24110a8fd09 ("drm: rcar-du: Use drm_bridge_connector_init() helper")
+Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Tested-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211225063151.2110878-1-nikita.yoush@cogentembedded.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vmwgfx/vmwgfx_resource.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ drivers/gpu/drm/drm_bridge_connector.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_resource.c b/drivers/gpu/drm/vmwgfx/vmwgfx_resource.c
-index 8d1e869cc196..34ab08369e04 100644
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_resource.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_resource.c
-@@ -862,22 +862,21 @@ void vmw_query_move_notify(struct ttm_buffer_object *bo,
- 	struct ttm_device *bdev = bo->bdev;
- 	struct vmw_private *dev_priv;
+diff --git a/drivers/gpu/drm/drm_bridge_connector.c b/drivers/gpu/drm/drm_bridge_connector.c
+index 791379816837..4f20137ef21d 100644
+--- a/drivers/gpu/drm/drm_bridge_connector.c
++++ b/drivers/gpu/drm/drm_bridge_connector.c
+@@ -369,8 +369,10 @@ struct drm_connector *drm_bridge_connector_init(struct drm_device *drm,
+ 				    connector_type, ddc);
+ 	drm_connector_helper_add(connector, &drm_bridge_connector_helper_funcs);
  
--
- 	dev_priv = container_of(bdev, struct vmw_private, bdev);
- 
- 	mutex_lock(&dev_priv->binding_mutex);
- 
--	dx_query_mob = container_of(bo, struct vmw_buffer_object, base);
--	if (!dx_query_mob || !dx_query_mob->dx_query_ctx) {
--		mutex_unlock(&dev_priv->binding_mutex);
--		return;
--	}
--
- 	/* If BO is being moved from MOB to system memory */
- 	if (new_mem->mem_type == TTM_PL_SYSTEM &&
- 	    old_mem->mem_type == VMW_PL_MOB) {
- 		struct vmw_fence_obj *fence;
- 
-+		dx_query_mob = container_of(bo, struct vmw_buffer_object, base);
-+		if (!dx_query_mob || !dx_query_mob->dx_query_ctx) {
-+			mutex_unlock(&dev_priv->binding_mutex);
-+			return;
-+		}
-+
- 		(void) vmw_query_readback_all(dx_query_mob);
- 		mutex_unlock(&dev_priv->binding_mutex);
- 
-@@ -891,7 +890,6 @@ void vmw_query_move_notify(struct ttm_buffer_object *bo,
- 		(void) ttm_bo_wait(bo, false, false);
- 	} else
- 		mutex_unlock(&dev_priv->binding_mutex);
--
- }
- 
- /**
+-	if (bridge_connector->bridge_hpd)
++	if (bridge_connector->bridge_hpd) {
+ 		connector->polled = DRM_CONNECTOR_POLL_HPD;
++		drm_bridge_connector_enable_hpd(connector);
++	}
+ 	else if (bridge_connector->bridge_detect)
+ 		connector->polled = DRM_CONNECTOR_POLL_CONNECT
+ 				  | DRM_CONNECTOR_POLL_DISCONNECT;
 -- 
 2.35.1
 
